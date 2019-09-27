@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cjyc.customer.api.dao.CustomerMapper">
+
+    <!-- 通用查询结果列-->
+    <sql id="Base_Column_List">
+        id, name, age
+    </sql>
+
+    <select id="selectByPhone" resultType="com.cjyc.customer.api.entity.Customer">
+        SELECT * FROM yc_customer WHERE phone=#{phone}
+    </select>
+</mapper>
