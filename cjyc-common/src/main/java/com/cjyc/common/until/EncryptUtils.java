@@ -1,13 +1,13 @@
-package com.cjyc.customer.api.until;
+package com.cjyc.common.until;
+
+import org.apache.commons.codec.digest.DigestUtils;
+import org.springframework.util.Base64Utils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-
-import org.apache.commons.codec.digest.DigestUtils;
-import org.springframework.util.Base64Utils;
 
 /**
  * 加密工具类

@@ -1,4 +1,4 @@
-package com.cjyc.customer.api.config;
+package com.cjyc.common.base;
 
 import java.io.Serializable;
 

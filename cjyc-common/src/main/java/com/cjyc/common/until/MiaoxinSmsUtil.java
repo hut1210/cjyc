@@ -1,11 +1,10 @@
-package com.cjyc.customer.api.until;
+package com.cjyc.common.until;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -14,12 +13,9 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Random;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import static com.cjyc.customer.api.until.EncryptUtils.SHA1;
+import static com.cjyc.common.until.EncryptUtils.SHA1;
+
 /**
  * 秒信短信服务工具类
  * @author leo

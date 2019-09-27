@@ -1,4 +1,4 @@
-package com.cjyc.customer.api.until;
+package com.cjyc.common.until;
 
 import java.util.Date;
 import java.util.Random;

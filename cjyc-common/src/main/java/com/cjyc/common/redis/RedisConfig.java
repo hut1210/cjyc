@@ -1,4 +1,4 @@
-package com.cjyc.customer.api.redis;
+package com.cjyc.common.redis;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;

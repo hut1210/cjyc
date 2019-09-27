@@ -1,9 +1,12 @@
 package com.cjyc.customer.api.service.impl;
+import com.cjyc.common.until.CommonUtil;
+import com.cjyc.common.until.Constants;
+import com.cjyc.common.until.MiaoxinSmsUtil;
+import com.cjyc.common.until.PinyinUtil;
 import com.cjyc.customer.api.dao.CustomerMapper;
 import com.cjyc.customer.api.entity.Customer;
 import com.cjyc.customer.api.service.IAppService;
 import com.cjyc.customer.api.service.ITokenService;
-import com.cjyc.customer.api.until.*;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -115,7 +118,7 @@ public class AppServiceImpl implements IAppService {
             String token = tokenService.createToken(customer.getCustomerCode());
             customer.setToken(token);
             customer.setPhone(phone);
-            customer.setName("客户"+CommonUtil.randomNum(10));//默认名称
+            customer.setName("客户"+ CommonUtil.randomNum(10));//默认名称
             customer.setFirstLetter(PinyinUtil.getPinYinAcronym("客户"));
             customer.setPwd(phone);//默认密码是其手机号
             customer.setToken(token);

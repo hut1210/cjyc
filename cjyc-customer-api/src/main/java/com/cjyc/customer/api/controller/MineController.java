@@ -1,10 +1,10 @@
 package com.cjyc.customer.api.controller;
 
 import com.cjkj.common.utils.JsonUtil;
+import com.cjyc.common.base.RetCodeEnum;
+import com.cjyc.common.base.RetResult;
 import com.cjyc.customer.api.annotations.ApiVersion;
 import com.cjyc.customer.api.annotations.OperationLogNav;
-import com.cjyc.customer.api.config.RetCodeEnum;
-import com.cjyc.customer.api.config.RetResult;
 import com.cjyc.customer.api.entity.Customer;
 import com.cjyc.customer.api.service.ICustomerService;
 import com.cjyc.customer.api.until.ApiVersionContant;

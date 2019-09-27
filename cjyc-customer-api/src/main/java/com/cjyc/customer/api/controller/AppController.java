@@ -1,10 +1,10 @@
 package com.cjyc.customer.api.controller;
 
 import com.cjkj.common.utils.JsonUtil;
+import com.cjyc.common.base.RetCodeEnum;
+import com.cjyc.common.base.RetResult;
 import com.cjyc.customer.api.annotations.HeaderIgnoreNav;
 import com.cjyc.customer.api.annotations.OperationLogNav;
-import com.cjyc.customer.api.config.RetCodeEnum;
-import com.cjyc.customer.api.config.RetResult;
 import com.cjyc.customer.api.service.IAppService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;

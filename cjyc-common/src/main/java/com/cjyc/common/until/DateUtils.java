@@ -1,14 +1,9 @@
-package com.cjyc.customer.api.until;
+package com.cjyc.common.until;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Random;
+import java.util.*;
 
 public class DateUtils {
 
@@ -76,20 +71,6 @@ public class DateUtils {
 	public static String getTimeFromLong2(Long time) {
 		Date date = new Date(time);
 		return formatter_hour.format(date);
-	}
-
-	/**
-	 * 学年规则 如果是2013 上半年，学年为2012 。2013下半年，学年为 2013
-	 */
-	public static int getYear() {
-		Calendar cal = Calendar.getInstance();
-		int y = cal.get(Calendar.YEAR);
-		int m = cal.get(Calendar.MONTH) + 1;
-		if (m >= 9 || m == 1) {
-			return y;
-		} else {
-			return y - 1;
-		}
 	}
 
 	public static int getTerm() {
@@ -973,9 +954,9 @@ public class DateUtils {
 		return getListBetweenDate(monday, today);
 	}
 	public static void main(String[] s) throws Exception{
-		System.out.println(randomVerificationCode(6));
-		System.out.println(hm(1481681747));
-		System.out.println(getMillSeconds2(new Date(), "yyyy-MM-dd"));
+//		System.out.println(randomVerificationCode(6));
+//		System.out.println(hm(1481681747));
+//		System.out.println(getMillSeconds2(new Date(), "yyyy-MM-dd"));
 //		System.out.println(DateUtils.getMillSeconds2("05:44:00","HH:mm:ss"));
 //		System.out.println(DateUtils.getDateString(-8160,"HH:mm:ss"));
 //		System.out.println(DateUtils.formatYMDToEnMD("2016-09-07"));

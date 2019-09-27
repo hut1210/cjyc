@@ -16,6 +16,13 @@
     </properties>
 
     <dependencies>
+        <!-- 项目内部module -->
+        <dependency>
+            <groupId>com.cjyc</groupId>
+            <artifactId>cjyc-common</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
         <!--公司jar-->
         <dependency>
             <groupId>com.cjkj</groupId>

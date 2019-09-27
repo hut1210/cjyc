@@ -1,4 +1,4 @@
-package com.cjyc.customer.api.until;
+package com.cjyc.common.until;
 
 import org.springframework.stereotype.Component;
 

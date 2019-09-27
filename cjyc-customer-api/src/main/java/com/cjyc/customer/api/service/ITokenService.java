@@ -1,6 +1,5 @@
 package com.cjyc.customer.api.service;
 
-import com.cjyc.customer.api.entity.Customer;
 
 /**
  * Created by leo on 2019/7/25.

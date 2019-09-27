@@ -1,22 +1,18 @@
 package com.cjyc.customer.api.service.impl;
 
-import com.cjyc.customer.api.entity.Customer;
-import com.cjyc.customer.api.redis.RedisUtil;
+import com.cjyc.common.redis.RedisUtil;
+import com.cjyc.common.until.EncryptUtils;
 import com.cjyc.customer.api.service.ITokenService;
-import com.cjyc.customer.api.until.Constants;
-import com.cjyc.customer.api.until.EncryptUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.util.Date;
-import java.util.UUID;
 
 /**
  * Created by leo on 2019/7/25.
  */
 @Service
-public class TokenServiceImpl implements ITokenService{
+public class
+TokenServiceImpl implements ITokenService{
 
     @Autowired
     private RedisUtil redisUtil;

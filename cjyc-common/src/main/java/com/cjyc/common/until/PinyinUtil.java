@@ -1,5 +1,4 @@
-package com.cjyc.customer.api.until;
-import ch.qos.logback.core.net.SyslogOutputStream;
+package com.cjyc.common.until;
 import net.sourceforge.pinyin4j.PinyinHelper;
 import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;
 import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;

@@ -1,4 +1,4 @@
-package com.cjyc.customer.api.until;
+package com.cjyc.common.until;
 
 import cn.jpush.api.JPushClient;
 import cn.jpush.api.push.PushResult;
@@ -12,7 +12,6 @@ import cn.jpush.api.push.model.notification.Notification;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Map;
-
 
 
 /**

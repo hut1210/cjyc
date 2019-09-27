@@ -1,4 +1,4 @@
-package com.cjyc.customer.api.config;
+package com.cjyc.common.base;
 
 /**
  * 响应状态码枚举类

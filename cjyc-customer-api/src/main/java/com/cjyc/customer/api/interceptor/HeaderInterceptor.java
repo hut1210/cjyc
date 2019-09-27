@@ -1,14 +1,13 @@
 package com.cjyc.customer.api.interceptor;
 
 import com.cjkj.common.utils.JsonUtil;
+import com.cjyc.common.base.RetCodeEnum;
+import com.cjyc.common.base.RetResult;
+import com.cjyc.common.until.EncryptUtils;
 import com.cjyc.customer.api.annotations.HeaderIgnoreNav;
-import com.cjyc.customer.api.config.RetCodeEnum;
-import com.cjyc.customer.api.config.RetResult;
-import com.cjyc.customer.api.redis.RedisUtil;
-import com.cjyc.customer.api.until.EncryptUtils;
+import com.cjyc.common.redis.RedisUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
