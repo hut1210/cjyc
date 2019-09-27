@@ -93,7 +93,7 @@ public class AppController {
     })
     public String notice(String phone, String token){
         List<Map<String,Object>> noticeList = null;
-        //todo 查询通知列表
+        //todo 查询通知列表s
         return JsonUtil.toJson(RetResult.buildResponse(RetCodeEnum.SUCCESS.getCode(),"获取成功",noticeList));
     }
 
