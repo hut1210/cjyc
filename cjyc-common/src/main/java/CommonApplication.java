@@ -5,7 +5,6 @@ import org.springframework.context.annotation.ComponentScan;
 
 /**
  * @auther litan
- * @description: PACKAGE_NAME
  * @date:2019/9/28
  */
 @SpringBootApplication

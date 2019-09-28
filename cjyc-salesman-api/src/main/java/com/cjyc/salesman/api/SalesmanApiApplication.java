@@ -10,7 +10,7 @@ import org.springframework.context.annotation.ComponentScan;
  */
 @SpringBootApplication
 @MapperScan("com.cjyc.salesman.api.dao")
-@ComponentScan("com.cjyc.common")
+@ComponentScan({"com.cjyc.common","com.cjyc.salesman.api"})
 public class SalesmanApiApplication {
     public static void main(String[] args) {
         SpringApplication.run(SalesmanApiApplication.class, args);

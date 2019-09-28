@@ -10,7 +10,7 @@ import org.springframework.context.annotation.ComponentScan;
  */
 @SpringBootApplication
 @MapperScan("com.cjyc.driver.api.dao")
-@ComponentScan("com.cjyc.common")
+@ComponentScan({"com.cjyc.common","com.cjyc.driver.api"})
 public class DriverApiApplication {
     public static void main(String[] args) {
         SpringApplication.run(DriverApiApplication.class, args);
