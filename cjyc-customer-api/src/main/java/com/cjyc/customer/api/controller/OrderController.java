@@ -3,11 +3,10 @@ package com.cjyc.customer.api.controller;
 
 import com.cjyc.common.base.ResultEnum;
 import com.cjyc.common.base.ResultVo;
+import com.cjyc.common.service.ICustomerService;
 import com.cjyc.customer.api.annotations.ApiVersion;
-import com.cjyc.customer.api.entity.Customer;
-import com.cjyc.customer.api.service.ICustomerService;
+import com.cjyc.customer.api.annotations.HeaderIgnoreNav;
 import com.cjyc.customer.api.until.ApiVersionContant;
-import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -16,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
 
 /**
  * Created by leo on 2019/7/25.
@@ -38,9 +38,9 @@ public class OrderController {
             @ApiImplicitParam(name = "pageSize", value = "条数", required = true, dataType = "Integer", paramType = "query")
     })
     @ApiVersion(group = ApiVersionContant.CUSTOMER_APP_100)
+    @HeaderIgnoreNav
     public ResultVo testPageList(Integer pageNum, Integer pageSize){
-        //todo
-        PageInfo<Customer> customerPageInfo = customerService.pageList(pageNum,pageSize);
-        return ResultVo.response(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),customerPageInfo);
+
+        return ResultVo.response(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),null);
     }
 }

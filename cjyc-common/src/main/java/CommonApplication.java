@@ -9,7 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
  */
 @SpringBootApplication
 @MapperScan("com.cjyc.common.dao")
-@ComponentScan("com.cjyc.common")
+@ComponentScan({"com.cjyc.common"})
 public class CommonApplication {
     public static void main(String[] args) {
         SpringApplication.run(CommonApplication.class, args);

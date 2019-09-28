@@ -34,21 +34,18 @@ public class IndexController {
             @ApiImplicitParam(name = "userName", value = "登录名", required = true, dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "pwd", value = "密码", required = true, dataType = "String", paramType = "query")
     })
-    public String login(String userName,String pwd){
+    public ResultVo login(String userName,String pwd){
         try {
             if(true){
                 Map map = new HashMap();
                 map.put("userName",userName);
                 map.put("pwd",pwd);
-                return JsonUtil.toJson(ResultVo.response(
-                        ResultEnum.SUCCESS.getCode(),"登录成功",map));
+                return ResultVo.response(ResultEnum.SUCCESS.getCode(),"登录成功",map);
             }else{
-                return JsonUtil.toJson(ResultVo.response(
-                        ResultEnum.FAIL.getCode(),"登陆失败"));
+                return ResultVo.response(ResultEnum.FAIL.getCode(),"登陆失败");
             }
         }catch (Exception e){
-            return JsonUtil.toJson(ResultVo.response(
-                    ResultEnum.API_INVOKE_ERROR.getCode(), ResultEnum.API_INVOKE_ERROR.getMsg()));
+            return ResultVo.response(ResultEnum.API_INVOKE_ERROR.getCode(), ResultEnum.API_INVOKE_ERROR.getMsg());
         }
 
     }

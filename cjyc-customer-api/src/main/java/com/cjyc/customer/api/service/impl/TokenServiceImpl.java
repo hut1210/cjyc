@@ -1,7 +1,7 @@
 package com.cjyc.customer.api.service.impl;
 
 import com.cjyc.common.redis.RedisUtil;
-import com.cjyc.common.until.EncryptUtils;
+import com.cjyc.common.util.EncryptUtils;
 import com.cjyc.customer.api.service.ITokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

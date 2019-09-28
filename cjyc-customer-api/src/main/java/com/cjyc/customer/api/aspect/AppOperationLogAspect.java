@@ -1,9 +1,9 @@
 package com.cjyc.customer.api.aspect;
 
 import com.cjkj.common.utils.IPUtil;
-import com.cjyc.common.until.DateUtils;
-import com.cjyc.customer.api.entity.OperationLog;
-import com.cjyc.customer.api.service.ILogService;
+import com.cjyc.common.entity.OperationLog;
+import com.cjyc.common.service.ILogService;
+import com.cjyc.common.util.DateUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;

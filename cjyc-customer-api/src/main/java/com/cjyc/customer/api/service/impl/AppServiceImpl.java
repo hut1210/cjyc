@@ -1,10 +1,10 @@
 package com.cjyc.customer.api.service.impl;
-import com.cjyc.common.until.CommonUtil;
-import com.cjyc.common.until.Constants;
-import com.cjyc.common.until.MiaoxinSmsUtil;
-import com.cjyc.common.until.PinyinUtil;
-import com.cjyc.customer.api.dao.CustomerMapper;
-import com.cjyc.customer.api.entity.Customer;
+import com.cjyc.common.dao.CustomerDao;
+import com.cjyc.common.entity.Customer;
+import com.cjyc.common.util.CommonUtil;
+import com.cjyc.common.util.Constants;
+import com.cjyc.common.util.MiaoxinSmsUtil;
+import com.cjyc.common.util.PinyinUtil;
 import com.cjyc.customer.api.service.IAppService;
 import com.cjyc.customer.api.service.ITokenService;
 import org.apache.commons.lang.StringUtils;
@@ -23,7 +23,7 @@ public class AppServiceImpl implements IAppService {
     @Autowired
     private ITokenService tokenService;
     @Autowired
-    private CustomerMapper customerMapper;
+    private CustomerDao customerDao;
 
     @Value("${messages.expires}")
     private int msgExpires;
@@ -103,7 +103,7 @@ public class AppServiceImpl implements IAppService {
         msgMap.remove(phone);
 
         //查询注册用户
-        Customer customer = customerMapper.selectByPhone(phone);
+        Customer customer = customerDao.selectByPhone(phone);
 
         //登录
         if(customer != null){
@@ -122,12 +122,12 @@ public class AppServiceImpl implements IAppService {
             customer.setFirstLetter(PinyinUtil.getPinYinAcronym("客户"));
             customer.setPwd(phone);//默认密码是其手机号
             customer.setToken(token);
-            int id = customerMapper.insert(customer);
+            int id = customerDao.insert(customer);
 
             if(id > 0){
                 //todo 极光注册别名
                 customer.setAlias("alias"+String.valueOf(id));
-                customerMapper.updateById(customer);
+                customerDao.updateById(customer);
             }
         }
 

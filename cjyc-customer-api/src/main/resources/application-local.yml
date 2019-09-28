@@ -122,9 +122,3 @@ messages:
   ##单日最大发送条数
   daylimit: 20
 
-
-#mybatis-plus
-mybatis-plus:
-   mapper-locations: classpath:mapper/*.xml
-   type-aliases-package: com.cjyc.customer.api.entity
-   configuration.map-underscore-to-camel-case: true
