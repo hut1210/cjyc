@@ -1,10 +1,8 @@
 package com.cjyc.customer.api.controller;
 
-import com.cjkj.common.utils.JsonUtil;
+import com.cjyc.common.annotations.OperationLogNav;
 import com.cjyc.common.base.ResultEnum;
 import com.cjyc.common.base.ResultVo;
-import com.cjyc.customer.api.annotations.HeaderIgnoreNav;
-import com.cjyc.customer.api.annotations.OperationLogNav;
 import com.cjyc.customer.api.service.IAppService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -40,7 +38,6 @@ public class AppController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "phone", value = "发送手机号", required = true, dataType = "String", paramType = "query"),
     })
-    @HeaderIgnoreNav
     public ResultVo sendMessage(String phone) throws Exception{
 
         boolean success = appService.sendMessage(phone);
@@ -59,7 +56,6 @@ public class AppController {
             @ApiImplicitParam(name = "phone", value = "客户登录手机号", required = true, dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "messageCode", value = "客户登录短信验证码", required = true, dataType = "String", paramType = "query")
     })
-    @HeaderIgnoreNav
     public ResultVo login(String phone,String messageCode){
         try {
             //校验验证码
@@ -83,7 +79,6 @@ public class AppController {
      * */
     @ApiOperation(value = "获取通知接口", notes = "app登录后调用", httpMethod = "POST")
     @RequestMapping(value = "/notice", method = RequestMethod.POST)
-    @OperationLogNav
     @ApiImplicitParams({
             @ApiImplicitParam(name = "phone", value = "客户登录手机号", required = true, dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "token", value = "客户token", required = true, dataType = "String", paramType = "query")
@@ -103,7 +98,7 @@ public class AppController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "customerCode", value = "客户code", required = true, dataType = "String", paramType = "query"),
     })
-    @HeaderIgnoreNav
+    @OperationLogNav
     public ResultVo logout(String customerCode, @RequestHeader String token){
         appService.logout(customerCode,token);
         return ResultVo.response(ResultEnum.SUCCESS.getCode(),"登出成功");
@@ -115,7 +110,6 @@ public class AppController {
      * */
     @ApiOperation(value = "检查更新接口", notes = "app登录后调用", httpMethod = "POST")
     @RequestMapping(value = "/checkVersion", method = RequestMethod.POST)
-    @OperationLogNav
     @ApiImplicitParams({
             @ApiImplicitParam(name = "customerId", value = "客户id", required = true, dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "versionCode", value = "当前客户端app版本号", required = true, dataType = "String", paramType = "query"),
@@ -132,7 +126,6 @@ public class AppController {
      * */
     @ApiOperation(value = "获取客户端隐私协议", notes = "点击协议链接时调用",httpMethod = "POST")
     @RequestMapping(value = "/getAgreementPage",method = RequestMethod.POST)
-    @HeaderIgnoreNav
     public ResultVo getAgreementPage(){
         //todo 隐私协议h5地址
         String agreementHtml = "";

@@ -3,8 +3,8 @@ package com.cjyc.customer.api.controller;
 import com.cjyc.common.base.ResultEnum;
 import com.cjyc.common.base.ResultVo;
 import com.cjyc.common.service.ICustomerService;
-import com.cjyc.customer.api.annotations.ApiVersion;
-import com.cjyc.customer.api.until.ApiVersionContant;
+import com.cjyc.customer.api.annotations.CustomerApiVersionNav;
+import com.cjyc.customer.api.contant.CustomerApiVersionContant;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -32,7 +32,7 @@ public class PayController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "amount", value = "支付金额,单位：分", required = true, dataType = "String", paramType = "query")
     })
-    @ApiVersion(group = ApiVersionContant.CUSTOMER_APP_100)
+    @CustomerApiVersionNav(group = CustomerApiVersionContant.CUSTOMER_APP_100)
     public ResultVo testPageList(BigDecimal amount){
         //todo
         return ResultVo.response(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),amount);

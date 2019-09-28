@@ -1,10 +1,10 @@
 package com.cjyc.customer.api.service.impl;
 import com.cjyc.common.dao.CustomerDao;
 import com.cjyc.common.entity.Customer;
-import com.cjyc.common.util.CommonUtil;
-import com.cjyc.common.util.Constants;
-import com.cjyc.common.util.MiaoxinSmsUtil;
-import com.cjyc.common.util.PinyinUtil;
+import com.cjyc.common.utils.CommonUtil;
+import com.cjyc.common.utils.Constants;
+import com.cjyc.common.utils.MiaoxinSmsUtil;
+import com.cjyc.common.utils.PinyinUtil;
 import com.cjyc.customer.api.service.IAppService;
 import com.cjyc.customer.api.service.ITokenService;
 import org.apache.commons.lang.StringUtils;

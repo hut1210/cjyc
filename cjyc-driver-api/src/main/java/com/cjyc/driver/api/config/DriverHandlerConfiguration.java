@@ -1,4 +1,4 @@
-package com.cjyc.customer.api.config;
+package com.cjyc.driver.api.config;
 
 import com.cjyc.common.interceptor.HeaderInterceptor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -17,8 +17,8 @@ import springfox.documentation.spring.web.SpringfoxWebMvcConfiguration;
  */
 @Configuration
 @ConditionalOnClass(SpringfoxWebMvcConfiguration.class)
-@ComponentScan("com.cjyc.customer.api.controller")
-public class CustomerHandlerConfiguration implements WebMvcConfigurer {
+@ComponentScan("com.cjyc.driver.api.controller")
+public class DriverHandlerConfiguration implements WebMvcConfigurer {
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {

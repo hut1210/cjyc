@@ -1,5 +1,6 @@
 package com.cjyc.web.api.controller;
 
+import com.cjyc.common.annotations.HeaderIgnoreNav;
 import com.cjyc.common.base.ResultEnum;
 import com.cjyc.common.base.ResultVo;
 import com.cjyc.common.entity.Customer;
@@ -37,6 +38,7 @@ public class OrderController {
             @ApiImplicitParam(name = "pageNum", value = "当前页", required = true, dataType = "Integer", paramType = "query"),
             @ApiImplicitParam(name = "pageSize", value = "条数", required = true, dataType = "Integer", paramType = "query")
     })
+    @HeaderIgnoreNav
     public ResultVo testPageList(Integer pageNum, Integer pageSize){
 
         PageInfo<Customer> customerPageInfo = customerServiceimpl.pageList(pageNum,pageSize);

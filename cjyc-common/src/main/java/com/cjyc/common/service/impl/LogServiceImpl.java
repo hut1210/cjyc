@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 /**
  * Created by leo on 2019/7/26.
  */
-@Service
+@Service("logServiceImpl")
 public class LogServiceImpl implements ILogService {
 
     @Autowired
