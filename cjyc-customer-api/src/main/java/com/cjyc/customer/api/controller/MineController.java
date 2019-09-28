@@ -1,8 +1,8 @@
 package com.cjyc.customer.api.controller;
 
 import com.cjkj.common.utils.JsonUtil;
-import com.cjyc.common.base.RetCodeEnum;
-import com.cjyc.common.base.RetResult;
+import com.cjyc.common.base.ResultEnum;
+import com.cjyc.common.base.ResultVo;
 import com.cjyc.customer.api.annotations.ApiVersion;
 import com.cjyc.customer.api.annotations.OperationLogNav;
 import com.cjyc.customer.api.entity.Customer;
@@ -36,9 +36,9 @@ public class MineController {
             @ApiImplicitParam(name = "pageSize", value = "条数", required = true, dataType = "Integer", paramType = "query")
     })
     @ApiVersion(group = ApiVersionContant.CUSTOMER_APP_100)
-    public String testPageList(Integer pageNum, Integer pageSize){
+    public ResultVo testPageList(Integer pageNum, Integer pageSize){
         PageInfo<Customer> customerPageInfo = customerService.pageList(pageNum,pageSize);
-        return JsonUtil.toJson(RetResult.buildResponse(RetCodeEnum.SUCCESS.getCode(),RetCodeEnum.SUCCESS.getMsg(),customerPageInfo));
+        return ResultVo.response(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),customerPageInfo);
     }
 
     /**
@@ -50,9 +50,9 @@ public class MineController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "customerId", value = "客户id", required = true, dataType = "String", paramType = "query")
     })
-    public String getCustomerInfo(String customerId){
+    public ResultVo getCustomerInfo(String customerId){
         Object customerInfoVo = null;
-        return JsonUtil.toJson(RetResult.buildResponse(RetCodeEnum.SUCCESS.getCode(),RetCodeEnum.SUCCESS.getMsg(),customerInfoVo));
+        return ResultVo.response(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),customerInfoVo);
     }
 
     /**
@@ -65,8 +65,8 @@ public class MineController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "customerId", value = "客户id", required = true, dataType = "String", paramType = "query")
     })
-    public String uploadPhotoImg(@ApiParam(value="图片文件",required=true)MultipartFile file){
+    public ResultVo uploadPhotoImg(@ApiParam(value="图片文件",required=true)MultipartFile file){
         //todo 上传处理
-        return JsonUtil.toJson(RetResult.buildResponse(RetCodeEnum.SUCCESS.getCode(),RetCodeEnum.SUCCESS.getMsg()));
+        return ResultVo.response(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg());
     }
 }

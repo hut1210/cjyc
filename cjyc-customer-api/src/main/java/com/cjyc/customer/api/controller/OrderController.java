@@ -1,9 +1,8 @@
 package com.cjyc.customer.api.controller;
 
 
-import com.cjkj.common.utils.JsonUtil;
-import com.cjyc.common.base.RetCodeEnum;
-import com.cjyc.common.base.RetResult;
+import com.cjyc.common.base.ResultEnum;
+import com.cjyc.common.base.ResultVo;
 import com.cjyc.customer.api.annotations.ApiVersion;
 import com.cjyc.customer.api.entity.Customer;
 import com.cjyc.customer.api.service.ICustomerService;
@@ -39,8 +38,8 @@ public class OrderController {
             @ApiImplicitParam(name = "pageSize", value = "条数", required = true, dataType = "Integer", paramType = "query")
     })
     @ApiVersion(group = ApiVersionContant.CUSTOMER_APP_100)
-    public String testPageList(Integer pageNum, Integer pageSize){
+    public ResultVo testPageList(Integer pageNum, Integer pageSize){
         PageInfo<Customer> customerPageInfo = customerService.pageList(pageNum,pageSize);
-        return JsonUtil.toJson(RetResult.buildResponse(RetCodeEnum.SUCCESS.getCode(),RetCodeEnum.SUCCESS.getMsg(),customerPageInfo));
+        return ResultVo.response(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),customerPageInfo);
     }
 }

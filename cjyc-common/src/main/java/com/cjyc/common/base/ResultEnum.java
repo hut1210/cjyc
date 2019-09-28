@@ -4,7 +4,7 @@ package com.cjyc.common.base;
  * 响应状态码枚举类
  * Created by leo on 2019/7/23.
  */
-public enum RetCodeEnum {
+public enum ResultEnum {
     /* 通用 */
     SUCCESS(0, "成功"),
     FAIL(9, "处理失败"),//通用业务失败状态， 可以自定义返回消息msg 如：用户名或密码错误、提交失败等
@@ -34,7 +34,7 @@ public enum RetCodeEnum {
     private String msg;
 
     //构造方法
-    RetCodeEnum(Integer code, String msg) {
+    ResultEnum(Integer code, String msg) {
         this.code = code;
         this.msg = msg;
     }

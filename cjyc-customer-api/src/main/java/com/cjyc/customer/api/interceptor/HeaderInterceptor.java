@@ -1,8 +1,8 @@
 package com.cjyc.customer.api.interceptor;
 
 import com.cjkj.common.utils.JsonUtil;
-import com.cjyc.common.base.RetCodeEnum;
-import com.cjyc.common.base.RetResult;
+import com.cjyc.common.base.ResultEnum;
+import com.cjyc.common.base.ResultVo;
 import com.cjyc.common.until.EncryptUtils;
 import com.cjyc.customer.api.annotations.HeaderIgnoreNav;
 import com.cjyc.common.redis.RedisUtil;
@@ -56,8 +56,8 @@ public class HeaderInterceptor extends HandlerInterceptorAdapter {
         if(StringUtils.isBlank(token)){
             //返回移动端封装状态码
             responseOutWithJson(response,
-                    JsonUtil.toJson(RetResult.buildResponse(RetCodeEnum.MOBILE_TOKEN_ILLEGAL.getCode(),
-                            RetCodeEnum.MOBILE_TOKEN_ILLEGAL.getMsg())));
+                    ResultVo.response(ResultEnum.MOBILE_TOKEN_ILLEGAL.getCode(),
+                            ResultEnum.MOBILE_TOKEN_ILLEGAL.getMsg()));
             return false;
 
         }else{
@@ -76,14 +76,14 @@ public class HeaderInterceptor extends HandlerInterceptorAdapter {
                     return true;
                 }else{
                     responseOutWithJson(response,
-                            JsonUtil.toJson(RetResult.buildResponse(RetCodeEnum.MOBILE_TOKEN_ILLEGAL.getCode(),
-                                    RetCodeEnum.MOBILE_TOKEN_ILLEGAL.getMsg())));
+                            ResultVo.response(ResultEnum.MOBILE_TOKEN_ILLEGAL.getCode(),
+                                    ResultEnum.MOBILE_TOKEN_ILLEGAL.getMsg()));
                     return false;
                 }
             }else{
                 responseOutWithJson(response,
-                        JsonUtil.toJson(RetResult.buildResponse(RetCodeEnum.MOBILE_TOKEN_TIMEOUT.getCode(),
-                                RetCodeEnum.MOBILE_TOKEN_TIMEOUT.getMsg())));
+                        ResultVo.response(ResultEnum.MOBILE_TOKEN_TIMEOUT.getCode(),
+                                ResultEnum.MOBILE_TOKEN_TIMEOUT.getMsg()));
                 return false;
             }
 
@@ -97,13 +97,13 @@ public class HeaderInterceptor extends HandlerInterceptorAdapter {
      * @param response
      * @param json
      */
-    private void responseOutWithJson(HttpServletResponse response,String json) {
+    private void responseOutWithJson(HttpServletResponse response,ResultVo json) {
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json; charset=utf-8");
         PrintWriter out = null;
         try {
             out = response.getWriter();
-            out.append(json);
+            out.append(JsonUtil.toJson(json));
         } catch (IOException e) {
             e.printStackTrace();
         } finally {

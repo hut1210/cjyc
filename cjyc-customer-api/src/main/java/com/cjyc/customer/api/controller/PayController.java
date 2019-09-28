@@ -1,8 +1,8 @@
 package com.cjyc.customer.api.controller;
 
 import com.cjkj.common.utils.JsonUtil;
-import com.cjyc.common.base.RetCodeEnum;
-import com.cjyc.common.base.RetResult;
+import com.cjyc.common.base.ResultEnum;
+import com.cjyc.common.base.ResultVo;
 import com.cjyc.customer.api.annotations.ApiVersion;
 import com.cjyc.customer.api.service.ICustomerService;
 import com.cjyc.customer.api.until.ApiVersionContant;
@@ -34,8 +34,8 @@ public class PayController {
             @ApiImplicitParam(name = "amount", value = "支付金额,单位：分", required = true, dataType = "String", paramType = "query")
     })
     @ApiVersion(group = ApiVersionContant.CUSTOMER_APP_100)
-    public String testPageList(BigDecimal amount){
+    public ResultVo testPageList(BigDecimal amount){
         //todo
-        return JsonUtil.toJson(RetResult.buildResponse(RetCodeEnum.SUCCESS.getCode(),RetCodeEnum.SUCCESS.getMsg(),amount));
+        return ResultVo.response(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),amount);
     }
 }

@@ -7,7 +7,9 @@ import java.io.Serializable;
  * 可以根据业务需要调用不同方法返回数据
  * Created by leo on 2019/7/23.
  */
-public class RetResult<T> implements Serializable {
+public class ResultVo<T> implements Serializable {
+
+    private static final long serialVersionUID = 8547137674611521490L;
 
     //错误码
     private Integer code;
@@ -16,42 +18,42 @@ public class RetResult<T> implements Serializable {
     private String msg;
 
     //返回的数据内容
-    private T data;
+    private T data ;
 
-    public RetResult(Integer code, String msg){
+    public ResultVo(Integer code, String msg){
         this.code = code;
         this.msg = msg;
     }
 
-    public RetResult(Integer code, String msg, T data){
+    public ResultVo(Integer code, String msg, T data){
         this.code = code;
         this.msg = msg;
         this.data = data;
     }
 
     //自定义返回值
-    public static <T> RetResult<T> buildResponse(Integer code, String msg, T data) {
-        return new RetResult<T>(code, msg, data);
+    public static <T> ResultVo<T> response(Integer code, String msg, T data) {
+        return new ResultVo<T>(code, msg, data);
     }
 
     //自定义返回值（不带返回数据）
-    public static <T> RetResult<T> buildResponse(Integer code, String msg) {
-        return new RetResult<T>(code, msg);
+    public static <T> ResultVo<T> response(Integer code, String msg) {
+        return new ResultVo<T>(code, msg);
     }
 
     //成功（带返回数据）
-    public static <T> RetResult<T> buildSuccessResponse(T data) {
-        return new RetResult<T>(RetCodeEnum.SUCCESS.getCode(), RetCodeEnum.SUCCESS.getMsg(), data);
+    public static <T> ResultVo<T> success(T data) {
+        return new ResultVo<T>(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(), data);
     }
 
     //成功（不带返回数据）
-    public static <T> RetResult<T> buildSuccessResponse() {
-        return new RetResult<T>(RetCodeEnum.SUCCESS.getCode(), RetCodeEnum.SUCCESS.getMsg());
+    public static <T> ResultVo<T> success() {
+        return new ResultVo<T>(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg());
     }
 
     //失败
-    public static <T> RetResult<T> buildFailResponse() {
-        return new RetResult<T>(RetCodeEnum.FAIL.getCode(), RetCodeEnum.FAIL.getMsg());
+    public static <T> ResultVo<T> fail() {
+        return new ResultVo<T>(ResultEnum.FAIL.getCode(), ResultEnum.FAIL.getMsg());
     }
 
     public Integer getCode() {
