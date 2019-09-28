@@ -38,7 +38,7 @@ public class OrderController {
             @ApiImplicitParam(name = "pageSize", value = "条数", required = true, dataType = "Integer", paramType = "query")
     })
     public ResultVo testPageList(Integer pageNum, Integer pageSize){
-//asdfasd
+
         PageInfo<Customer> customerPageInfo = customerServiceimpl.pageList(pageNum,pageSize);
         return ResultVo.response(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),customerPageInfo);
     }
