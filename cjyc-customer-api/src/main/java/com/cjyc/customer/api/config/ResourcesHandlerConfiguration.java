@@ -2,6 +2,7 @@ package com.cjyc.customer.api.config;
 
 import com.cjyc.customer.api.interceptor.HeaderInterceptor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -16,6 +17,7 @@ import springfox.documentation.spring.web.SpringfoxWebMvcConfiguration;
  */
 @Configuration
 @ConditionalOnClass(SpringfoxWebMvcConfiguration.class)
+@ComponentScan("com.cjyc.customer.api.controller")
 public class ResourcesHandlerConfiguration implements WebMvcConfigurer {
 
 	@Override
