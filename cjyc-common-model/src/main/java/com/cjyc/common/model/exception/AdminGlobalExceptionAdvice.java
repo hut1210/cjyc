@@ -2,7 +2,6 @@ package com.cjyc.common.model.exception;
 
 import com.cjkj.common.exception.GlobalExceptionAdvice;
 import com.cjkj.common.model.ResultData;
-import com.cjyc.common.model.util.ResultEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -28,8 +27,7 @@ public class AdminGlobalExceptionAdvice extends GlobalExceptionAdvice{
     @ExceptionHandler(value = {HttpMessageNotReadableException.class})
     public ResultData handleException(HttpMessageNotReadableException e){
         log.error("参数异常", e);
-        return ResultData.failed(ResultEnum.MOBILE_PARAM_ERROR.getCode(),
-                ResultEnum.MOBILE_PARAM_ERROR.getMsg());
+        return ResultData.failed("400", "参数异常");
     }
 
     /**
@@ -40,8 +38,7 @@ public class AdminGlobalExceptionAdvice extends GlobalExceptionAdvice{
     @ExceptionHandler(value = {MissingServletRequestParameterException.class})
     public ResultData handleException(MissingServletRequestParameterException e){
         log.error("参数异常", e);
-        return ResultData.failed(ResultEnum.MOBILE_PARAM_ERROR.getCode(),
-                ResultEnum.MOBILE_PARAM_ERROR.getMsg());
+        return ResultData.failed("400", "参数异常");
     }
 
     /**
