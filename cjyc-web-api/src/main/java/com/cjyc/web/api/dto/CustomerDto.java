@@ -13,13 +13,13 @@ public class CustomerDto implements Serializable {
     /**
      * 客户名称
      */
-    @NotBlank(groups = {SaveCustomerVo.class},message = "客户名称不能为空。")
+    @NotBlank(groups = {SaveCustomerVo.class},message = "客户名称不能为空")
     private String name;
 
     /**
      * 手机号
      */
-    @NotBlank(groups = {SaveCustomerVo.class},message = "手机号不能为空。")
+    @NotBlank(groups = {SaveCustomerVo.class},message = "手机号不能为空")
     private String phone;
 
     /**
