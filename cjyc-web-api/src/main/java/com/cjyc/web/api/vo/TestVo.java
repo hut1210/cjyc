@@ -1,9 +1,9 @@
-package com.cjyc.web.api.dto.res;
+package com.cjyc.web.api.vo;
 
 /**
  * @auther litan
  * @description: com.cjyc.web.api.dto.res
  * @date:2019/9/28
  */
-public class TestRes {
+public class TestVo {
 }
