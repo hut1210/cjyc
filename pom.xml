@@ -21,7 +21,6 @@
         <module>cjyc-salesman-api</module>
         <module>cjyc-web-api</module>
         <module>cjyc-common</module>
-        <module>cjyc-service</module>
     </modules>
 
     <properties>
