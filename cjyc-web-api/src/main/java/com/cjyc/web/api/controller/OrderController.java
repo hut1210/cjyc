@@ -60,7 +60,6 @@ public class OrderController {
     @ApiOperation(value = "下单测试接口", notes = "下单测试", httpMethod = "POST")
     @RequestMapping(value = "/orderTest2", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultVo orderTest2(@RequestBody Map<String,Object> map) {
-        //adsf
         return ResultVo.response(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),map);
     }
 
