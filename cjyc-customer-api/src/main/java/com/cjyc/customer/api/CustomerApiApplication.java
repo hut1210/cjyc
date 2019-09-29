@@ -11,8 +11,8 @@ import org.springframework.context.annotation.ComponentScan;
  * @Date 2019/7/19 17:14
  */
 @SpringBootApplication
-@MapperScan("com.cjyc.customer.api.dao")
-@ComponentScan({"com.cjyc.common.service","com.cjyc.customer.api"})
+@MapperScan({"com.cjyc.customer.api.dao","com.cjyc.common.model"})
+@ComponentScan({"com.cjyc.customer.api","com.cjyc.common.model","com.cjyc.common.service"})
 public class CustomerApiApplication {
     public static void main(String[] args) {
         SpringApplication.run(CustomerApiApplication.class, args);

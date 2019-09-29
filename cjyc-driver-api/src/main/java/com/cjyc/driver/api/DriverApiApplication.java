@@ -9,8 +9,8 @@ import org.springframework.context.annotation.ComponentScan;
  * Created by litan on 2019/9/27.
  */
 @SpringBootApplication
-@MapperScan("com.cjyc.driver.api.dao")
-@ComponentScan({"com.cjyc.common","com.cjyc.driver.api"})
+@MapperScan({"com.cjyc.driver.api.dao","com.cjyc.common.model"})
+@ComponentScan({"com.cjyc.driver.api","com.cjyc.common.model","com.cjyc.common.service"})
 public class DriverApiApplication {
     public static void main(String[] args) {
         SpringApplication.run(DriverApiApplication.class, args);
