@@ -1,9 +1,10 @@
 package com.cjyc.web.api.service.impl;
 
-import com.cjyc.common.base.ResultEnum;
-import com.cjyc.common.base.ResultVo;
-import com.cjyc.common.model.entity.auto.Customer;
 import com.cjyc.common.model.dao.ICustomerDao;
+import com.cjyc.common.model.entity.Customer;
+import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.ResultEnum;
+import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.web.api.dto.CustomerDto;
 import com.cjyc.web.api.service.ICustomerService;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +29,7 @@ public class CustomerServiceImpl implements ICustomerService{
     @Override
     public ResultVo saveCustomer(CustomerDto customerDto) {
         try{
-            Customer customer = new Customer();
+            Customer customer = Customer.getInstance();
             customer.setName(customerDto.getName());
             customer.setPhone(customerDto.getPhone());
             customer.setIdCard(customerDto.getIdCard());
@@ -37,8 +38,8 @@ public class CustomerServiceImpl implements ICustomerService{
             iCustomerDao.insert(customer);
         }catch (Exception e){
             log.error("新增用户出现异常",e);
-            return ResultVo.response(ResultEnum.FAIL.getCode(),"新增移动用户出现异常");
+            return BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),"新增移动用户出现异常");
         }
-        return ResultVo.response(ResultEnum.SUCCESS.getCode(),"新增移动用户成功");
+        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),"新增移动用户成功");
     }
 }
