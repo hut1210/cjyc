@@ -1,6 +1,6 @@
 package com.cjyc.web.api.controller;
 
-import com.cjyc.common.base.ResultVo;
+import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.web.api.dto.CustomerDto;
 import com.cjyc.web.api.service.ICustomerService;
 import io.swagger.annotations.Api;

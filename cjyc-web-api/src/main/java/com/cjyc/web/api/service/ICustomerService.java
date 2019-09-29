@@ -1,6 +1,6 @@
 package com.cjyc.web.api.service;
 
-import com.cjyc.common.base.ResultVo;
+import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.web.api.dto.CustomerDto;
 
 /**
