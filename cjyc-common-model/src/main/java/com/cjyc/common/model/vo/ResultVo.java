@@ -1,4 +1,4 @@
-package com.cjyc.common.model.dto;
+package com.cjyc.common.model.vo;
 
 import lombok.Builder;
 import lombok.Getter;

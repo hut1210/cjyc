@@ -17,7 +17,6 @@
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-boot-starter</artifactId>
-            <version>3.0.3</version> <!-- ？指定版本号，否则启动报错 -->
         </dependency>
         <!--<dependency>
             <groupId>org.mybatis.spring.boot</groupId>
