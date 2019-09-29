@@ -22,12 +22,12 @@ public enum ResultEnum {
     MOBILE_VERRION_LOW_FORCE(1008, "版本太低，强制更新"),
     MOBILE_HTTP_OFTEN(1009, "请求太过频繁"),
 
-    /* 系统错误：201-299*/
-    API_INVOKE_ERROR(201, "接口异常"),
-    API_SYSTEM_BUSY(202, "系统繁忙，请稍后重试"),
-    API_FORBID_VISIT(203, "该接口禁止访问"),
-    API_ADDRESS_INVALID(204, "接口地址无效"),
-    API_REQUEST_TIMEOUT(205, "接口请求超时");
+    /* 系统错误：2001-2999*/
+    API_INVOKE_ERROR(2001, "接口异常"),
+    API_SYSTEM_BUSY(2002, "系统繁忙，请稍后重试"),
+    API_FORBID_VISIT(2003, "该接口禁止访问"),
+    API_ADDRESS_INVALID(2004, "接口地址无效"),
+    API_REQUEST_TIMEOUT(2005, "接口请求超时");
 
     //状态码
     private Integer code;
