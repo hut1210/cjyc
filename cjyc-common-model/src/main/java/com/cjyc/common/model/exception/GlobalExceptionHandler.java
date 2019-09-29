@@ -29,7 +29,9 @@ public class GlobalExceptionHandler {
     public ResultVo allExceptionHandler(HttpServletRequest request,
                                         Exception exception) throws Exception {
         log.error("服务端异常 ：", exception);
-        return BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),"服务器异常，请联系管理员！",exception.getMessage());
+        return BaseResultUtil.getVo(ResultEnum.API_INVOKE_ERROR.getCode(),
+                ResultEnum.API_INVOKE_ERROR.getMsg(),
+                 exception.getMessage());
     }
 
 }
