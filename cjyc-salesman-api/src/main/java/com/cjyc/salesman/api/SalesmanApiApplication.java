@@ -9,8 +9,8 @@ import org.springframework.context.annotation.ComponentScan;
  * Created by DELL on 2019/9/27.
  */
 @SpringBootApplication
-@MapperScan("com.cjyc.salesman.api.dao")
-@ComponentScan({"com.cjyc.common","com.cjyc.salesman.api"})
+@MapperScan({"com.cjyc.salesman.api.dao","com.cjyc.common.model"})
+@ComponentScan({"com.cjyc.salesman.api","com.cjyc.common.model","com.cjyc.common.service"})
 public class SalesmanApiApplication {
     public static void main(String[] args) {
         SpringApplication.run(SalesmanApiApplication.class, args);
