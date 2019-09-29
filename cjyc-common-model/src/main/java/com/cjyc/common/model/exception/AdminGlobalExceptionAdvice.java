@@ -21,7 +21,7 @@ public class AdminGlobalExceptionAdvice extends GlobalExceptionAdvice{
 
     /**
      * HttpMessageNotReadableException 需要读RequestBody时，没有传值时
-     * @param e22
+     * @param
      * @return 400
      */
     @ExceptionHandler(value = {HttpMessageNotReadableException.class})
