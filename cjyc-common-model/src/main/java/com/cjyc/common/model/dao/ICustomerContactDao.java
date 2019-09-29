@@ -1,6 +1,6 @@
 package com.cjyc.common.model.dao;
 
-import com.cjyc.common.model.entity.auto.CustomerContact;
+import com.cjyc.common.model.entity.CustomerContact;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**

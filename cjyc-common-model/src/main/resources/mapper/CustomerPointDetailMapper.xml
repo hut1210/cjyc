@@ -3,7 +3,7 @@
 <mapper namespace="com.cjyc.common.model.dao.ICustomerPointDetailDao">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.auto.CustomerPointDetail">
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.CustomerPointDetail">
         <id column="id" property="id" />
         <result column="source" property="source" />
         <result column="source_no" property="sourceNo" />

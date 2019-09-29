@@ -3,7 +3,7 @@
 <mapper namespace="com.cjyc.common.model.dao.IStoreCityConDao">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.auto.StoreCityCon">
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.StoreCityCon">
         <id column="id" property="id" />
         <result column="store_id" property="storeId" />
         <result column="area_code" property="areaCode" />

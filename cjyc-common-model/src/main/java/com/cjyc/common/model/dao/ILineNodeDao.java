@@ -1,6 +1,6 @@
 package com.cjyc.common.model.dao;
 
-import com.cjyc.common.model.entity.auto.LineNode;
+import com.cjyc.common.model.entity.LineNode;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**

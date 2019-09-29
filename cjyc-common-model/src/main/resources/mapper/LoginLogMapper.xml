@@ -3,7 +3,7 @@
 <mapper namespace="com.cjyc.common.model.dao.ILoginLogDao">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.auto.LoginLog">
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.LoginLog">
         <id column="id" property="id" />
         <result column="user_id" property="userId" />
         <result column="user_name" property="userName" />

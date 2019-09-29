@@ -3,7 +3,7 @@
 <mapper namespace="com.cjyc.common.model.dao.IBankCardBindDao">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.auto.BankCardBind">
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.BankCardBind">
         <result column="id" property="id" />
         <result column="user_id" property="userId" />
         <result column="user_type" property="userType" />

@@ -3,7 +3,7 @@
 <mapper namespace="com.cjyc.common.model.dao.IFinancePaymentDetailDao">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.auto.FinancePaymentDetail">
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.FinancePaymentDetail">
         <id column="id" property="id" />
         <result column="finance_payment_id" property="financePaymentId" />
         <result column="detail_id" property="detailId" />

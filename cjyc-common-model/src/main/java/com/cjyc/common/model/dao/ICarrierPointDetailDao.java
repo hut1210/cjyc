@@ -1,6 +1,6 @@
 package com.cjyc.common.model.dao;
 
-import com.cjyc.common.model.entity.auto.CarrierPointDetail;
+import com.cjyc.common.model.entity.CarrierPointDetail;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**

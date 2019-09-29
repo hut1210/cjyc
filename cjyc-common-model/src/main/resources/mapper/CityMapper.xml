@@ -3,7 +3,7 @@
 <mapper namespace="com.cjyc.common.model.dao.ICityDao">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.auto.City">
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.City">
         <id column="code" property="code" />
         <result column="parent_code" property="parentCode" />
         <result column="name" property="name" />

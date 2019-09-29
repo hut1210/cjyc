@@ -1,5 +1,8 @@
 package com.cjyc.web.api.service;
 
+import com.cjyc.common.model.entity.Customer;
+import com.github.pagehelper.PageInfo;
+
 /**
  * @auther litan
  * @description: com.cjyc.web.api.service

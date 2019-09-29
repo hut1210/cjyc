@@ -3,7 +3,7 @@
 <mapper namespace="com.cjyc.common.model.dao.ITaskCarDao">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.auto.TaskCar">
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.TaskCar">
         <id column="id" property="id" />
         <result column="task_id" property="taskId" />
         <result column="waybill_id" property="waybillId" />

@@ -3,7 +3,7 @@
 <mapper namespace="com.cjyc.common.model.dao.ILineNodeDao">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.auto.LineNode">
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.LineNode">
         <result column="id" property="id" />
         <result column="line_id" property="lineId" />
         <result column="nodes" property="nodes" />

@@ -1,6 +1,6 @@
 package com.cjyc.common.model.dao;
 
-import com.cjyc.common.model.entity.auto.FinanceReceipt;
+import com.cjyc.common.model.entity.FinanceReceipt;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
