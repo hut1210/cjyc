@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cjyc.common.model.dao.ICustomerInvoiceDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.auto.CustomerInvoice">
+        <id column="id" property="id" />
+        <result column="customer_id" property="customerId" />
+        <result column="type" property="type" />
+        <result column="title" property="title" />
+        <result column="name" property="name" />
+        <result column="tax_code" property="taxCode" />
+        <result column="invoice_address" property="invoiceAddress" />
+        <result column="tel" property="tel" />
+        <result column="bank_name" property="bankName" />
+        <result column="bank_account" property="bankAccount" />
+        <result column="default_flag" property="defaultFlag" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, customer_id, type, title, name, tax_code, invoice_address, tel, bank_name, bank_account, default_flag
+    </sql>
+
+</mapper>

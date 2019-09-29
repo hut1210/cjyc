@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cjyc.common.model.dao.ICustomerDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.auto.Customer">
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="name" property="name" />
+        <result column="alias" property="alias" />
+        <result column="phone" property="phone" />
+        <result column="initials" property="initials" />
+        <result column="photo_img" property="photoImg" />
+        <result column="sex" property="sex" />
+        <result column="id_card" property="idCard" />
+        <result column="id_card_front_img" property="idCardFrontImg" />
+        <result column="id_card_back_img" property="idCardBackImg" />
+        <result column="type" property="type" />
+        <result column="source" property="source" />
+        <result column="company_id" property="companyId" />
+        <result column="state" property="state" />
+        <result column="register_time" property="registerTime" />
+        <result column="create_time" property="createTime" />
+        <result column="create_user_id" property="createUserId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_id, name, alias, phone, initials, photo_img, sex, id_card, id_card_front_img, id_card_back_img, type, source, company_id, state, register_time, create_time, create_user_id
+    </sql>
+
+</mapper>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cjyc.common.model.dao.ICarrierDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.auto.Carrier">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="type" property="type" />
+        <result column="register_name" property="registerName" />
+        <result column="register_phone" property="registerPhone" />
+        <result column="legal_name" property="legalName" />
+        <result column="legal_idcard_img" property="legalIdcardImg" />
+        <result column="transport_license_img" property="transportLicenseImg" />
+        <result column="linkman" property="linkman" />
+        <result column="linkman_phone" property="linkmanPhone" />
+        <result column="admin_num" property="adminNum" />
+        <result column="default_admin_id" property="defaultAdminId" />
+        <result column="driver_num" property="driverNum" />
+        <result column="settle_type" property="settleType" />
+        <result column="settle_period" property="settlePeriod" />
+        <result column="settle_corporation" property="settleCorporation" />
+        <result column="create_user" property="createUser" />
+        <result column="create_user_id" property="createUserId" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, name, type, register_name, register_phone, legal_name, legal_idcard_img, transport_license_img, linkman, linkman_phone, admin_num, default_admin_id, driver_num, settle_type, settle_period, settle_corporation, create_user, create_user_id, create_time
+    </sql>
+
+</mapper>

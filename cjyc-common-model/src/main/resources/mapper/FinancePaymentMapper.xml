@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cjyc.common.model.dao.IFinancePaymentDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.auto.FinancePayment">
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="user_name" property="userName" />
+        <result column="source" property="source" />
+        <result column="amount" property="amount" />
+        <result column="real_amount" property="realAmount" />
+        <result column="bank_card_no" property="bankCardNo" />
+        <result column="bank_name" property="bankName" />
+        <result column="pay_type" property="payType" />
+        <result column="pay_state" property="payState" />
+        <result column="remark" property="remark" />
+        <result column="create_time" property="createTime" />
+        <result column="trade_bill_no" property="tradeBillNo" />
+        <result column="pay_time" property="payTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_id, user_name, source, amount, real_amount, bank_card_no, bank_name, pay_type, pay_state, remark, create_time, trade_bill_no, pay_time
+    </sql>
+
+</mapper>

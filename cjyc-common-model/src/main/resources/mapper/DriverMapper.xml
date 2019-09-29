@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cjyc.common.model.dao.IDriverDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.auto.Driver">
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="name" property="name" />
+        <result column="phone" property="phone" />
+        <result column="emergency_phone" property="emergencyPhone" />
+        <result column="type" property="type" />
+        <result column="mode" property="mode" />
+        <result column="id_card" property="idCard" />
+        <result column="real_name" property="realName" />
+        <result column="age" property="age" />
+        <result column="sex" property="sex" />
+        <result column="address" property="address" />
+        <result column="id_card_front_img" property="idCardFrontImg" />
+        <result column="id_card_back_img" property="idCardBackImg" />
+        <result column="driver_licence_front_img" property="driverLicenceFrontImg" />
+        <result column="driver_licence_back_img" property="driverLicenceBackImg" />
+        <result column="driver_licence_expire" property="driverLicenceExpire" />
+        <result column="remark" property="remark" />
+        <result column="state" property="state" />
+        <result column="deposit_pay_state" property="depositPayState" />
+        <result column="bussiness_state" property="bussinessState" />
+        <result column="source" property="source" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_id, name, phone, emergency_phone, type, mode, id_card, real_name, age, sex, address, id_card_front_img, id_card_back_img, driver_licence_front_img, driver_licence_back_img, driver_licence_expire, remark, state, deposit_pay_state, bussiness_state, source
+    </sql>
+
+</mapper>

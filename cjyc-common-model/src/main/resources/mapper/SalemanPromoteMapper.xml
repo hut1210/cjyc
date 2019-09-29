@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cjyc.common.model.dao.ISalemanPromoteDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.auto.SalemanPromote">
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="customer_num" property="customerNum" />
+        <result column="customer_num_valid" property="customerNumValid" />
+        <result column="income_amount" property="incomeAmount" />
+        <result column="settling_amount" property="settlingAmount" />
+        <result column="unsettle_amount" property="unsettleAmount" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_id, customer_num, customer_num_valid, income_amount, settling_amount, unsettle_amount
+    </sql>
+
+</mapper>

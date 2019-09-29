@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cjyc.common.model.dao.IDictionaryDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.auto.Dictionary">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="item" property="item" />
+        <result column="item_key" property="itemKey" />
+        <result column="item_value" property="itemValue" />
+        <result column="item_unit" property="itemUnit" />
+        <result column="fixed_flag" property="fixedFlag" />
+        <result column="remark" property="remark" />
+        <result column="state" property="state" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, name, item, item_key, item_value, item_unit, fixed_flag, remark, state, create_time
+    </sql>
+
+</mapper>

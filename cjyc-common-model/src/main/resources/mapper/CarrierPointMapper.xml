@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cjyc.common.model.dao.ICarrierPointDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.auto.CarrierPoint">
+        <id column="id" property="id" />
+        <result column="carrier_id" property="carrierId" />
+        <result column="protected_point" property="protectedPoint" />
+        <result column="available_point" property="availablePoint" />
+        <result column="state" property="state" />
+        <result column="total_income_point" property="totalIncomePoint" />
+        <result column="total_expend_point" property="totalExpendPoint" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, carrier_id, protected_point, available_point, state, total_income_point, total_expend_point, create_time, update_time
+    </sql>
+
+</mapper>

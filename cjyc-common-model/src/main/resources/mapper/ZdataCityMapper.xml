@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cjyc.common.model.dao.IZdataCityDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.auto.ZdataCity">
+        <id column="code" property="code" />
+        <result column="name" property="name" />
+        <result column="parent_code" property="parentCode" />
+        <result column="parent_name" property="parentName" />
+        <result column="grandpa_code" property="grandpaCode" />
+        <result column="grandpa_name" property="grandpaName" />
+        <result column="level" property="level" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        code, name, parent_code, parent_name, grandpa_code, grandpa_name, level
+    </sql>
+
+</mapper>

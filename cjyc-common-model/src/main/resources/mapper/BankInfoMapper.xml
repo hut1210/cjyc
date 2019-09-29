@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cjyc.common.model.dao.IBankInfoDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.auto.BankInfo">
+        <result column="open_bank_code" property="openBankCode" />
+        <result column="sub_bank_code" property="subBankCode" />
+        <result column="sub_bank" property="subBank" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        open_bank_code, sub_bank_code, sub_bank
+    </sql>
+
+</mapper>
