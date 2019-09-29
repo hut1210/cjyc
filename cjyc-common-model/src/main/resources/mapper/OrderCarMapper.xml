@@ -3,7 +3,7 @@
 <mapper namespace="com.cjyc.common.model.dao.IOrderCarDao">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.auto.OrderCar">
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.OrderCar">
         <id column="id" property="id" />
         <result column="order_id" property="orderId" />
         <result column="order_no" property="orderNo" />

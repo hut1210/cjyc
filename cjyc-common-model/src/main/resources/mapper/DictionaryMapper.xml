@@ -3,7 +3,7 @@
 <mapper namespace="com.cjyc.common.model.dao.IDictionaryDao">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.auto.Dictionary">
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.Dictionary">
         <id column="id" property="id" />
         <result column="name" property="name" />
         <result column="item" property="item" />

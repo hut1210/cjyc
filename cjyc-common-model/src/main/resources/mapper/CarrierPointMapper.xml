@@ -3,7 +3,7 @@
 <mapper namespace="com.cjyc.common.model.dao.ICarrierPointDao">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.auto.CarrierPoint">
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.CarrierPoint">
         <id column="id" property="id" />
         <result column="carrier_id" property="carrierId" />
         <result column="protected_point" property="protectedPoint" />

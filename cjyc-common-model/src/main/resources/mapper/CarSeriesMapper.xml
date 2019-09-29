@@ -3,7 +3,7 @@
 <mapper namespace="com.cjyc.common.model.dao.ICarSeriesDao">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.auto.CarSeries">
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.CarSeries">
         <id column="id" property="id" />
         <result column="car_code" property="carCode" />
         <result column="brand" property="brand" />

@@ -1,6 +1,6 @@
 package com.cjyc.common.model.dao;
 
-import com.cjyc.common.model.entity.auto.Incrementer;
+import com.cjyc.common.model.entity.Incrementer;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**

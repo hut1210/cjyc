@@ -3,7 +3,7 @@
 <mapper namespace="com.cjyc.common.model.dao.IWaybillDao">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.auto.Waybill">
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.Waybill">
         <id column="id" property="id" />
         <result column="waybill_no" property="waybillNo" />
         <result column="type" property="type" />

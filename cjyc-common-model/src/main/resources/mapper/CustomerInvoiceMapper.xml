@@ -3,7 +3,7 @@
 <mapper namespace="com.cjyc.common.model.dao.ICustomerInvoiceDao">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.auto.CustomerInvoice">
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.CustomerInvoice">
         <id column="id" property="id" />
         <result column="customer_id" property="customerId" />
         <result column="type" property="type" />

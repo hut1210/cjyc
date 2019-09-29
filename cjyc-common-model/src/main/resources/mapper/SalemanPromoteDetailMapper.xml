@@ -3,7 +3,7 @@
 <mapper namespace="com.cjyc.common.model.dao.ISalemanPromoteDetailDao">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.auto.SalemanPromoteDetail">
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.SalemanPromoteDetail">
         <id column="id" property="id" />
         <result column="user_id" property="userId" />
         <result column="customer_id" property="customerId" />

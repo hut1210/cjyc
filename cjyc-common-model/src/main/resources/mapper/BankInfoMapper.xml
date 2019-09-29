@@ -3,7 +3,7 @@
 <mapper namespace="com.cjyc.common.model.dao.IBankInfoDao">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.auto.BankInfo">
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.BankInfo">
         <result column="open_bank_code" property="openBankCode" />
         <result column="sub_bank_code" property="subBankCode" />
         <result column="sub_bank" property="subBank" />

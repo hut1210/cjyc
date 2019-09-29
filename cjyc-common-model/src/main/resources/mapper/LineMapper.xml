@@ -3,7 +3,7 @@
 <mapper namespace="com.cjyc.common.model.dao.ILineDao">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.auto.Line">
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.Line">
         <id column="id" property="id" />
         <result column="code" property="code" />
         <result column="name" property="name" />
