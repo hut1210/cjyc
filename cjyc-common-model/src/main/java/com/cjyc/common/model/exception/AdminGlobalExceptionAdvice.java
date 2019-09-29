@@ -27,6 +27,8 @@ public class AdminGlobalExceptionAdvice extends GlobalExceptionAdvice{
     @ExceptionHandler(value = {HttpMessageNotReadableException.class})
     public ResultData handleException(HttpMessageNotReadableException e){
         log.error("参数异常", e);
+
+
         return ResultData.failed("400", "参数异常");
     }
 
