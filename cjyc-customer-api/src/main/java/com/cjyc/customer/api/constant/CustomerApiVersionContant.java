@@ -1,4 +1,4 @@
-package com.cjyc.customer.api.contant;
+package com.cjyc.customer.api.constant;
 
 /**
  * Created by leo on 2019/7/25.

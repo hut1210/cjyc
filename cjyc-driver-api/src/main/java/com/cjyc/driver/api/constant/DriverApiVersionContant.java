@@ -1,4 +1,4 @@
-package com.cjyc.driver.api.contant;
+package com.cjyc.driver.api.constant;
 
 /**
  * Created by leo on 2019/7/25.

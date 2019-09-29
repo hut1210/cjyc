@@ -20,7 +20,6 @@
         <module>cjyc-customer-api</module>
         <module>cjyc-salesman-api</module>
         <module>cjyc-web-api</module>
-        <module>cjyc-common</module>
         <module>cjyc-common-service</module>
         <module>cjyc-common-model</module>
     </modules>
