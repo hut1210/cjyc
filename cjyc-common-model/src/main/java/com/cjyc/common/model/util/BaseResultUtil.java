@@ -6,6 +6,7 @@ import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.github.pagehelper.PageInfo;
+import org.springframework.lang.NonNull;
 
 import java.util.List;
 import java.util.Map;
@@ -185,4 +186,4 @@ public class BaseResultUtil<T> {
 
     }
 
-}
+ }
