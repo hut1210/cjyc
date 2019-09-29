@@ -1,20 +1,20 @@
 package com.cjyc.web.api.controller;
 
-import com.cjyc.common.annotations.HeaderIgnoreNav;
-import com.cjyc.common.base.ResultEnum;
-import com.cjyc.common.base.ResultVo;
-import com.cjyc.common.entity.Customer;
-import com.cjyc.common.service.ICustomerService;
+import com.cjyc.common.model.entity.Customer;
+import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.ResultEnum;
+import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.service.service.ICustomerService;
 import com.cjyc.web.api.dto.OrderDto;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 import java.util.Map;
 
 
@@ -28,8 +28,9 @@ import java.util.Map;
 @Api(tags = "order",description = "订单接口,包含下单、查询等")
 public class OrderController {
 
-    @Resource(name="customerService")
-    private ICustomerService customerServiceimpl;
+    @Autowired
+    private ICustomerService customerServiceCom;
+
     /**
      * 测试分页
      * */
@@ -41,8 +42,8 @@ public class OrderController {
     })
     public ResultVo testPageList(Integer pageNum, Integer pageSize){
 
-        PageInfo<Customer> customerPageInfo = customerServiceimpl.pageList(pageNum,pageSize);
-        return ResultVo.response(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),customerPageInfo);
+        PageInfo<Customer> customerPageInfo = customerServiceCom.pageList(pageNum,pageSize);
+        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),customerPageInfo);
     }
 
     /**
@@ -51,7 +52,7 @@ public class OrderController {
     @ApiOperation(value = "下单测试接口", notes = "下单测试", httpMethod = "POST")
     @RequestMapping(value = "/orderTest", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultVo orderTest(@RequestBody OrderDto orderDto) {
-        return ResultVo.response(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),orderDto);
+        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),orderDto);
     }
 
     /**
@@ -60,7 +61,7 @@ public class OrderController {
     @ApiOperation(value = "下单测试接口", notes = "下单测试", httpMethod = "POST")
     @RequestMapping(value = "/orderTest2", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultVo orderTest2(@RequestBody Map<String,Object> map) {
-        return ResultVo.response(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),map);
+        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),map);
     }
 
 }

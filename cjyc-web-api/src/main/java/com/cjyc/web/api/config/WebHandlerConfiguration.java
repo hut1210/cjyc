@@ -1,6 +1,6 @@
 package com.cjyc.web.api.config;
 
-import com.cjyc.common.interceptor.HeaderInterceptor;
+import com.cjyc.common.service.interceptor.HeaderInterceptor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;

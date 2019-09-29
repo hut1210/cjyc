@@ -1,6 +1,6 @@
 package com.cjyc.common.model.dao;
 
-import com.cjyc.common.model.entity.auto.OrderCarLog;
+import com.cjyc.common.model.entity.OrderCarLog;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**

@@ -1,7 +1,8 @@
 package com.cjyc.customer.api.controller;
 
-import com.cjyc.common.base.ResultEnum;
-import com.cjyc.common.base.ResultVo;
+import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.ResultEnum;
+import com.cjyc.common.model.vo.ResultVo;
 import io.swagger.annotations.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,7 +25,7 @@ public class MineController {
     })
     public ResultVo getCustomerInfo(String customerId){
         Object customerInfoVo = null;
-        return ResultVo.response(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),customerInfoVo);
+        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),customerInfoVo);
     }
 
     /**
@@ -38,6 +39,6 @@ public class MineController {
     })
     public ResultVo uploadPhotoImg(@ApiParam(value="图片文件",required=true)MultipartFile file){
         //todo 上传处理
-        return ResultVo.response(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg());
+        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg());
     }
 }

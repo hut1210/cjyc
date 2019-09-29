@@ -1,8 +1,9 @@
 package com.cjyc.customer.api.controller;
 
-import com.cjyc.common.annotations.OperationLogNav;
-import com.cjyc.common.base.ResultEnum;
-import com.cjyc.common.base.ResultVo;
+import com.cjyc.common.model.annotations.OperationLogNav;
+import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.ResultEnum;
+import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.customer.api.service.IAppService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -42,8 +43,8 @@ public class AppController {
 
         boolean success = appService.sendMessage(phone);
 
-        return success ? ResultVo.response(ResultEnum.SUCCESS.getCode(),"短信已发送")
-                : ResultVo.response(ResultEnum.FAIL.getCode(),"短信发送失败");
+        return success ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),"短信已发送")
+                : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),"短信发送失败");
     }
 
     /**
@@ -63,12 +64,12 @@ public class AppController {
 
                 Map map = appService.login(phone);
 
-                return ResultVo.response(ResultEnum.SUCCESS.getCode(),"登录成功",map);
+                return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),"登录成功",map);
             }else{
-                return ResultVo.response(ResultEnum.FAIL.getCode(),"验证码错误");
+                return BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),"验证码错误");
             }
         }catch (Exception e){
-            return ResultVo.response(ResultEnum.API_INVOKE_ERROR.getCode(), ResultEnum.API_INVOKE_ERROR.getMsg());
+            return BaseResultUtil.getVo(ResultEnum.API_INVOKE_ERROR.getCode(), ResultEnum.API_INVOKE_ERROR.getMsg());
         }
 
     }
@@ -86,7 +87,7 @@ public class AppController {
     public ResultVo notice(String phone, String token){
         List<Map<String,Object>> noticeList = null;
         //todo 查询通知列表s
-        return ResultVo.response(ResultEnum.SUCCESS.getCode(),"获取成功",noticeList);
+        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),"获取成功",noticeList);
     }
 
     /**
@@ -101,7 +102,7 @@ public class AppController {
     @OperationLogNav
     public ResultVo logout(String customerCode, @RequestHeader String token){
         appService.logout(customerCode,token);
-        return ResultVo.response(ResultEnum.SUCCESS.getCode(),"登出成功");
+        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),"登出成功");
     }
 
     /**
@@ -117,7 +118,7 @@ public class AppController {
     public ResultVo checkVersion(String phone, String versionCode){
         List<Map<String,Object>> versionInfoList = null;
         //todo 查询app更新信息
-        return ResultVo.response(ResultEnum.SUCCESS.getCode(),"获取成功",versionInfoList);
+        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),"获取成功",versionInfoList);
     }
 
     /**
@@ -129,6 +130,6 @@ public class AppController {
     public ResultVo getAgreementPage(){
         //todo 隐私协议h5地址
         String agreementHtml = "";
-        return ResultVo.response(ResultEnum.SUCCESS.getCode(),"获取成功",agreementHtml);
+        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),"获取成功",agreementHtml);
     }
 }

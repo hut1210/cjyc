@@ -1,8 +1,8 @@
 package com.cjyc.web.api.controller;
 
-import com.cjkj.common.utils.JsonUtil;
-import com.cjyc.common.base.ResultEnum;
-import com.cjyc.common.base.ResultVo;
+import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.ResultEnum;
+import com.cjyc.common.model.vo.ResultVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -40,12 +40,13 @@ public class IndexController {
                 Map map = new HashMap();
                 map.put("userName",userName);
                 map.put("pwd",pwd);
-                return ResultVo.response(ResultEnum.SUCCESS.getCode(),"登录成功",map);
+
+                return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),"登录成功",map);
             }else{
-                return ResultVo.response(ResultEnum.FAIL.getCode(),"登陆失败");
+                return BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),"登陆失败");
             }
         }catch (Exception e){
-            return ResultVo.response(ResultEnum.API_INVOKE_ERROR.getCode(), ResultEnum.API_INVOKE_ERROR.getMsg());
+            return BaseResultUtil.getVo(ResultEnum.API_INVOKE_ERROR.getCode(), ResultEnum.API_INVOKE_ERROR.getMsg());
         }
 
     }

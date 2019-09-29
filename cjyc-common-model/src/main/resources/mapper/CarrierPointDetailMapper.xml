@@ -3,7 +3,7 @@
 <mapper namespace="com.cjyc.common.model.dao.ICarrierPointDetailDao">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.auto.CarrierPointDetail">
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.CarrierPointDetail">
         <result column="id" property="id" />
         <result column="source" property="source" />
         <result column="source_no" property="sourceNo" />

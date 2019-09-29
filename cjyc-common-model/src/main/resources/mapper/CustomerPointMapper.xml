@@ -3,7 +3,7 @@
 <mapper namespace="com.cjyc.common.model.dao.ICustomerPointDao">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.auto.CustomerPoint">
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.CustomerPoint">
         <id column="id" property="id" />
         <result column="customer_id" property="customerId" />
         <result column="protected_points" property="protectedPoints" />

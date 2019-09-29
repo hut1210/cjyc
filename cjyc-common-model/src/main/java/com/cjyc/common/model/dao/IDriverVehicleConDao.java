@@ -1,6 +1,6 @@
 package com.cjyc.common.model.dao;
 
-import com.cjyc.common.model.entity.auto.DriverVehicleCon;
+import com.cjyc.common.model.entity.DriverVehicleCon;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**

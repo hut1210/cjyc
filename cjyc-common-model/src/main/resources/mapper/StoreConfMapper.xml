@@ -3,7 +3,7 @@
 <mapper namespace="com.cjyc.common.model.dao.IStoreConfDao">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.auto.StoreConf">
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.StoreConf">
         <result column="id" property="id" />
         <result column="store_id" property="storeId" />
         <result column="item" property="item" />
