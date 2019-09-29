@@ -1,4 +1,4 @@
-package com.cjyc.common.model.annotation;
+package com.cjyc.common.model.annotations;
 
 import java.lang.annotation.*;
 

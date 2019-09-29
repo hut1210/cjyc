@@ -19,7 +19,7 @@ public class CountExecuteTimeAspect {
     //public static final String POINTCUT = "execution (* com.cjyc.api.service..*.*(..))";
     public static final long TIME_THRESHOLD = 1000;
 
-    @Pointcut("@annotation(com.cjyc.common.model.annotation.CountExecuteTime)")
+    @Pointcut("@annotation(com.cjyc.common.model.annotations.CountExecuteTime)")
     public void pointcut(){
 
     }
