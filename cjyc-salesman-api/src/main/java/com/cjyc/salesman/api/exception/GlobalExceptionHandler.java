@@ -1,4 +1,4 @@
-package com.cjyc.common.model.exception;
+package com.cjyc.salesman.api.exception;
 
 
 import com.cjyc.common.model.util.BaseResultUtil;

@@ -1,4 +1,4 @@
-package com.cjyc.common.model.exception;
+package com.cjyc.salesman.api.exception;
 
 import com.cjkj.common.exception.GlobalExceptionAdvice;
 import com.cjkj.common.model.ResultData;
@@ -17,7 +17,7 @@ import java.lang.reflect.UndeclaredThrowableException;
  */
 @RestControllerAdvice
 @Slf4j
-public class AdminGlobalExceptionAdvice extends GlobalExceptionAdvice{
+public class AdminGlobalExceptionAdvice extends GlobalExceptionAdvice {
 
     /**
      * HttpMessageNotReadableException 需要读RequestBody时，没有传值时
