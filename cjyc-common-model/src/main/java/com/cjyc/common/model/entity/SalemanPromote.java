@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -16,7 +15,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-09-29
+ * @since 2019-10-08
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -29,43 +28,37 @@ public class SalemanPromote implements Serializable {
     /**
      * ID
      */
-    @TableId(value = "id", type = IdType.ID_WORKER)
+    @TableId(value = "id", type = IdType.INPUT)
     private Long id;
 
     /**
      * user_id
      */
-    @TableField("user_id")
     private Long userId;
 
     /**
      * 推广人数
      */
-    @TableField("customer_num")
     private Integer customerNum;
 
     /**
      * 有效推广人数
      */
-    @TableField("customer_num_valid")
     private Integer customerNumValid;
 
     /**
      * 总收益
      */
-    @TableField("income_amount")
     private BigDecimal incomeAmount;
 
     /**
      * 结算中收益
      */
-    @TableField("settling_amount")
     private BigDecimal settlingAmount;
 
     /**
      * 未结算收益
      */
-    @TableField("unsettle_amount")
     private BigDecimal unsettleAmount;
 
 

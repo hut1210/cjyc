@@ -3,7 +3,6 @@ package com.cjyc.common.model.entity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -15,7 +14,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-09-29
+ * @since 2019-10-08
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -28,31 +27,26 @@ public class LineNode implements Serializable {
     /**
      * ID
      */
-    @TableField("id")
     private Long id;
 
     /**
      * 线路ID
      */
-    @TableField("line_id")
     private Long lineId;
 
     /**
      * 节点，逗号分隔
      */
-    @TableField("nodes")
     private String nodes;
 
     /**
      * 默认标识
      */
-    @TableField("default_flag")
     private Integer defaultFlag;
 
     /**
      * 状态
      */
-    @TableField("state")
     private Integer state;
 
 

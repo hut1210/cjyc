@@ -3,7 +3,6 @@ package com.cjyc.common.model.entity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -15,7 +14,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-09-29
+ * @since 2019-10-08
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -28,19 +27,16 @@ public class BankInfo implements Serializable {
     /**
      * 开户银行编号
      */
-    @TableField("open_bank_code")
     private String openBankCode;
 
     /**
      * 支付行号
      */
-    @TableField("sub_bank_code")
     private String subBankCode;
 
     /**
      * 开户支行名称
      */
-    @TableField("sub_bank")
     private String subBank;
 
 

@@ -3,7 +3,6 @@ package com.cjyc.common.model.entity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -15,7 +14,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-09-29
+ * @since 2019-10-08
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -28,31 +27,27 @@ public class OrderCarLog implements Serializable {
     /**
      * ID
      */
-    @TableField("id")
+    @TableId(value = "id", type = IdType.INPUT)
     private Long id;
 
     /**
      * 订单车辆ID
      */
-    @TableField("order_car_id")
     private Long orderCarId;
 
     /**
      * 内部日志
      */
-    @TableField("inner_log")
     private String innerLog;
 
     /**
      * 外部日志
      */
-    @TableField("outer_log")
     private String outerLog;
 
     /**
      * 创建时间
      */
-    @TableField("create_time")
     private Long createTime;
 
 

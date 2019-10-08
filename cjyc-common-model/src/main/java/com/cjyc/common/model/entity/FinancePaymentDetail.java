@@ -3,7 +3,6 @@ package com.cjyc.common.model.entity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -15,7 +14,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-09-29
+ * @since 2019-10-08
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -34,13 +33,11 @@ public class FinancePaymentDetail implements Serializable {
     /**
      * 付款单ID
      */
-    @TableField("finance_payment_id")
     private Long financePaymentId;
 
     /**
      * 明细ID
      */
-    @TableField("detail_id")
     private Long detailId;
 
 

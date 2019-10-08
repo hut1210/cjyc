@@ -2,6 +2,9 @@ package com.cjyc.common.model.dao;
 
 import com.cjyc.common.model.entity.Order;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Options;
+import org.springframework.stereotype.Repository;
 
 /**
  * <p>
@@ -11,6 +14,10 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author JPG
  * @since 2019-09-29
  */
+@Repository
 public interface IOrderDao extends BaseMapper<Order> {
 
+    @Insert("insert into w_order(id,no) values(#{id},#{no})")
+    @Options(useGeneratedKeys = true, keyProperty = "id")
+    int add(Order order);
 }
