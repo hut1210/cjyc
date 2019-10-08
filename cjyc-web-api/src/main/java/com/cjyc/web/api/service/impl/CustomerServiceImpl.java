@@ -37,7 +37,7 @@ public class CustomerServiceImpl implements ICustomerService{
     @Override
     public ResultVo saveCustomer(CustomerDto customerDto) {
         try{
-            Customer customer = Customer.getInstance();
+            Customer customer = new Customer();
             customer.setName(customerDto.getName());
             customer.setPhone(customerDto.getPhone());
             customer.setIdCard(customerDto.getIdCard());
