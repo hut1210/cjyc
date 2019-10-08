@@ -19,5 +19,10 @@
     <sql id="Base_Column_List">
         code, parent_code, name, level, lng, lat, hot, create_time, update_time
     </sql>
+    <select id="findById" parameterType="string" resultType="com.cjyc.common.model.entity.City">
+        select
+        <include refid="Base_Column_List"/>
+        from s_city where code = #{cityCode,jdbcType=VARCHAR};
+    </select>
 
 </mapper>

@@ -1,34 +1,15 @@
-package com.cjyc.common.model.entity;
+package com.cjyc.common.model.vo;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableField;
-import java.io.Serializable;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 
-/**
- * <p>
- * 韵车城市信息表
- * </p>
- *
- * @author JPG
- * @since 2019-09-29
- */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
-@TableName("s_city")
-public class City implements Serializable {
+public class CityVo {
 
     private static final long serialVersionUID = 1L;
 
     /**
      * 行政区编码（含大区、省、市、区）
      */
-    @TableId
     private String code;
 
     /**

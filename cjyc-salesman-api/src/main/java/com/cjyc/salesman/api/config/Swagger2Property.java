@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 @Getter
 @Setter
 @ConfigurationProperties("cjyc.swagger")
-@RefreshScope
 public class Swagger2Property {
     private Boolean enabled;
     private String groupName;
