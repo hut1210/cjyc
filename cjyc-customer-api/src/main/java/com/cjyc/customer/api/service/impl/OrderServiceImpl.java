@@ -4,6 +4,7 @@ import com.cjyc.common.model.dao.IOrderDao;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.customer.api.dto.OrderDto;
 import com.cjyc.customer.api.service.IOrderService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,9 +20,13 @@ public class OrderServiceImpl implements IOrderService{
     IOrderDao orderDao;
     @Override
     public boolean commitOrder(OrderDto orderDto) {
+
         Order order = new Order();
+        BeanUtils.copyProperties(orderDto,order);
+        order.setId(001121212335653L);
         order.setNo("555666");
-        orderDao.insert(order);
+        int id = orderDao.add(order);
+        System.out.print("adsf----->"+id);
         return false;
     }
 }
