@@ -2,7 +2,9 @@ package com.cjyc.web.api.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.web.api.dto.BasePageVo;
 import com.cjyc.web.api.dto.CustomerDto;
+import com.cjyc.web.api.dto.KeyCustomerVo;
 import com.cjyc.web.api.service.ICustomerService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -60,4 +62,23 @@ public class CustomerController {
     public ResultVo findCustomer(@RequestBody JSONObject jsonObject){
         return iCustomerService.findCustomer(jsonObject);
     }
+
+    @ApiOperation(value = "新增大客户&合同", notes = "新增大客户&合同", httpMethod = "POST")
+    @RequestMapping(value = "/saveKeyCustAndContract", method = RequestMethod.POST)
+    public ResultVo saveKeyCustAndContract(@Validated({ KeyCustomerVo.SaveKeyCustomerVo.class }) @RequestBody KeyCustomerVo keyCustomerVo){
+        return iCustomerService.saveKeyCustAndContract(keyCustomerVo);
+    }
+
+    @ApiOperation(value = "根据ids删除大用户", notes = "根据ids删除大用户", httpMethod = "DELETE")
+    @DeleteMapping(value = "/deleteKeyCustomer/{arrIds}")
+    public ResultVo deleteKeyCustomer(@PathVariable Long[] arrIds){
+        return iCustomerService.deleteKeyCustomer(arrIds);
+    }
+
+    @ApiOperation(value = "分页查看大客户", notes = "分页查看大客户", httpMethod = "POST")
+    @PostMapping(value = "/getAllKeyCustomer")
+    public ResultVo getAllKeyCustomer(@RequestBody BasePageVo pageVo){
+        return iCustomerService.getAllKeyCustomer(pageVo);
+    }
+
 }

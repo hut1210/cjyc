@@ -1,10 +1,7 @@
 package com.cjyc.web.api.config;
 
-import com.cjyc.common.service.interceptor.HeaderInterceptor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import springfox.documentation.spring.web.SpringfoxWebMvcConfiguration;
@@ -17,16 +14,15 @@ import springfox.documentation.spring.web.SpringfoxWebMvcConfiguration;
  */
 @Configuration
 @ConditionalOnClass(SpringfoxWebMvcConfiguration.class)
-@ComponentScan("com.cjyc.web.api.controller")
 public class WebHandlerConfiguration implements WebMvcConfigurer {
 
-	@Override
+/*	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(new HeaderInterceptor())
 				.addPathPatterns("/**")
 				.excludePathPatterns("/swagger-resources/**", "/webjars/**", "/v2/**", "/swagger-ui.html/**","/doc.html");
 
-	}
+	}*/
 
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {

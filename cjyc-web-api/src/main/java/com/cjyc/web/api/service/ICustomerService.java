@@ -2,7 +2,9 @@ package com.cjyc.web.api.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.web.api.dto.BasePageVo;
 import com.cjyc.web.api.dto.CustomerDto;
+import com.cjyc.web.api.dto.KeyCustomerVo;
 
 /**
  *  @author: zj
@@ -24,7 +26,7 @@ public interface ICustomerService  {
      * @param pageSize 每页大小
      * @return
      */
-    ResultVo getAllCustomer(Integer pageNo,Integer pageSize);
+    ResultVo getAllCustomer(Integer pageNo, Integer pageSize);
 
     /**
      * 根据用户id查看移动端用户
@@ -53,5 +55,26 @@ public interface ICustomerService  {
      * @return
      */
     ResultVo findCustomer(JSONObject jsonObject);
+
+    /**
+     * 新增大客户&合同
+     * @param keyCustomerVo
+     * @return
+     */
+    ResultVo saveKeyCustAndContract(KeyCustomerVo keyCustomerVo);
+
+    /**
+     * 根据ids删除大客户
+     * @param arrIds
+     * @return
+     */
+    ResultVo deleteKeyCustomer(Long[] arrIds);
+
+    /**
+     * 分页查看所有大客户
+     * @param pageVo
+     * @return
+     */
+    ResultVo getAllKeyCustomer(BasePageVo pageVo);
 
 }
