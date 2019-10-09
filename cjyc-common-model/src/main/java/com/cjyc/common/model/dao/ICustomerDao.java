@@ -3,6 +3,7 @@ package com.cjyc.common.model.dao;
 import com.cjyc.common.model.entity.Customer;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.vo.CustomerVo;
+import com.cjyc.common.model.vo.KeyCustomerDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -29,4 +30,5 @@ public interface ICustomerDao extends BaseMapper<Customer> {
      */
     List<CustomerVo> findCustomer(@Param("phone") String phone, @Param("name") String name, @Param("idCard") String idCard);
 
+    List<KeyCustomerDto> getAllKeyCustomter();
 }
