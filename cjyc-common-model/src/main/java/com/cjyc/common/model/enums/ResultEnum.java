@@ -1,4 +1,4 @@
-package com.cjyc.common.model.util;
+package com.cjyc.common.model.enums;
 
 /**
  * 响应状态码枚举类

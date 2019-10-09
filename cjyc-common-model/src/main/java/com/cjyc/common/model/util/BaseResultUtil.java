@@ -1,6 +1,7 @@
 package com.cjyc.common.model.util;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
