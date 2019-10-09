@@ -72,6 +72,8 @@ spring:
 ##日志
 logging:
   level:
+    #root: debug
+    com.cjyc.salesman.api: debug
     com.cjyc.common.model.dao: debug
 
 

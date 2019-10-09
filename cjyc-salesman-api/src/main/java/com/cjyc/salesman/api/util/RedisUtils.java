@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
  * Redis高级抽象封装工具类
  * @author JPG
  */
+@Deprecated
 public class RedisUtils {
 
 	private StringRedisTemplate redisTemplate;

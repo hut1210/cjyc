@@ -80,13 +80,9 @@ public class JsonObjectParamUtil {
     }
 
     private static void ValidateParam(String key, Object value, Boolean required) throws ParameterException {
-
-        if (key == null) {
-            key = "";
-        }
-        if (!required) {
+        if (required) {
             if (null == value || "".equals(value)) {
-                throw new ParameterException("{0}参数不能为空", key);
+                throw new ParameterException("{0}参数不能为空", key == null ? "" : key);
             }
         }
     }

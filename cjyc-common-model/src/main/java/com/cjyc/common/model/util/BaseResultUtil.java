@@ -23,7 +23,7 @@ public class BaseResultUtil<T> {
      * @param
      * @return
      */
-    public static ResultVo success(){
+    public static <T> ResultVo<T> success(){
         return success(null);
     }
 
@@ -38,12 +38,41 @@ public class BaseResultUtil<T> {
      * @param
      * @return
      */
-    public static ResultVo fail(){
+    public static <T> ResultVo<T> fail(){
         return fail(null);
     }
     public static <T> ResultVo<T> fail(T data){
         return getVo(ResultEnum.FAIL.getCode(), ResultEnum.FAIL.getMsg(), data);
     }
+
+    /**
+     * 快速返回参数错误
+     * @author JPG
+     * @since 2019/10/9 11:49
+     * @param
+     * @return
+     */
+    public static <T> ResultVo<T> paramError(){
+        return paramError(ResultEnum.MOBILE_PARAM_ERROR.getMsg());
+    }
+    public static <T> ResultVo<T> paramError(String message){
+        return getVo(ResultEnum.MOBILE_PARAM_ERROR.getCode(), message);
+    }
+
+    /**
+     * 快速返回服务器错误
+     * @author JPG
+     * @since 2019/10/9 11:49
+     * @param
+     * @return
+     */
+    public static <T> ResultVo<T> serverError(){
+        return serverError(ResultEnum.API_INVOKE_ERROR.getMsg());
+    }
+    public static <T> ResultVo<T> serverError(String message){
+        return getVo(ResultEnum.API_INVOKE_ERROR.getCode(), message);
+    }
+
 
     /**
      * 获取ResultVo<T>(无内容)
@@ -53,7 +82,7 @@ public class BaseResultUtil<T> {
      * @param message 返回信息
      * @return ResultVo
      */
-    public static ResultVo getVo(int code, String message){
+    public static<T> ResultVo<T> getVo(int code, String message){
         return getVo(code, message, null);
     }
 
