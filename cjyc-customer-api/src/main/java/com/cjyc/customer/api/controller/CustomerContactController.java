@@ -1,8 +1,8 @@
 package com.cjyc.customer.api.controller;
 
 import com.cjyc.common.model.entity.CustomerContact;
+import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.util.ResultEnum;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.service.service.ICustomerContactService;
 import com.cjyc.common.service.service.ICustomerService;
@@ -41,7 +41,7 @@ public class CustomerContactController {
     })
     public ResultVo getContacts(Long customerId, Integer page, Integer pageSize) {
         PageInfo<CustomerContact> pageInfo = customerContactService.getContactPage(customerId,page,pageSize);
-        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),pageInfo);
+        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),pageInfo);
     }
 
 }

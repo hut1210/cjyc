@@ -9,7 +9,6 @@ package com.cjyc.customer.api.controller;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.entity.CustomerContact;
 import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.util.ResultEnum;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.service.service.ICustomerService;
 import com.cjyc.customer.api.dto.OrderDto;

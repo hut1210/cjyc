@@ -1,7 +1,7 @@
 package com.cjyc.customer.api.controller;
 
+import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.util.ResultEnum;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.customer.api.dto.OrderDto;
 import com.cjyc.customer.api.service.IOrderService;
