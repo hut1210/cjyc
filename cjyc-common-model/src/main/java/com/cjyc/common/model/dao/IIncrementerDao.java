@@ -2,6 +2,8 @@ package com.cjyc.common.model.dao;
 
 import com.cjyc.common.model.entity.Incrementer;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 /**
  * <p>
@@ -11,6 +13,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author JPG
  * @since 2019-09-29
  */
+@Repository
 public interface IIncrementerDao extends BaseMapper<Incrementer> {
 
+    String getIncrementer(@Param("pre") String pre);
 }

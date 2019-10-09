@@ -15,4 +15,8 @@
         id, date, prefix, number
     </sql>
 
+    <!-- 通过手机号，姓名，身份证号查询 -->
+    <select id="getIncrementer" resultType="com.cjyc.common.model.vo.CustomerVo">
+        select fuc_increamenter("we")
+    </select>
 </mapper>

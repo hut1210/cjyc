@@ -29,6 +29,12 @@ public class CustomerContactServiceImpl implements ICustomerContactService {
     }
 
     @Override
+    public boolean updCustomerContact(CustomerContact customerContact) {
+        int re = customerContactDao.updateById(customerContact);
+        return re > 0 ? true : false;
+    }
+
+    @Override
     public PageInfo<CustomerContact> getContactPage(Long customerId, Integer pageNum, Integer pageSize) {
 
         PageHelper.startPage(pageNum, pageSize);

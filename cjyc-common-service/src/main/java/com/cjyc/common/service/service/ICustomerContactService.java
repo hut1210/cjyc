@@ -12,5 +12,7 @@ public interface ICustomerContactService {
 
     boolean addCustomerContact(CustomerContact customerContact);
 
+    boolean updCustomerContact(CustomerContact customerContact);
+
     PageInfo<CustomerContact> getContactPage(Long customerId, Integer pageNum, Integer pageSize);
 }
