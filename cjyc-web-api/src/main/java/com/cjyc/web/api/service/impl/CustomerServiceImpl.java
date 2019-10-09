@@ -4,8 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjyc.common.model.dao.ICustomerDao;
 import com.cjyc.common.model.entity.Customer;
-import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.ResultEnum;
 import com.cjyc.common.model.vo.CustomerVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.web.api.dto.CustomerDto;
@@ -25,7 +25,7 @@ import java.util.List;
  *  @author: zj
  *  @Date: 2019/9/29 15:20
  *  @Description: 移动用户
- */ 
+ */
 @Service
 @Slf4j
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
