@@ -16,5 +16,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface IIncrementerDao extends BaseMapper<Incrementer> {
 
-    String getIncrementer(@Param("pre") String pre);
+    String getIncrementer(@Param("preName") String preName);
 }
