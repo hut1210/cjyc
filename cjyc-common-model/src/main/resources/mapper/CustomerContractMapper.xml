@@ -5,14 +5,33 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.CustomerContract">
         <id column="id" property="id" />
-        <result column="no" property="no" />
         <result column="customer_id" property="customerId" />
+        <result column="contract_no" property="contractNo" />
+        <result column="contact_nature" property="contactNature" />
         <result column="settle_period" property="settlePeriod" />
+        <result column="contract_life" property="contractLife" />
+        <result column="project_name" property="projectName" />
+        <result column="project_level" property="projectLevel" />
+        <result column="major_product" property="majorProduct" />
+        <result column="project_nature" property="projectNature" />
+        <result column="date_of_pro_sign" property="dateOfProSign" />
+        <result column="one_off_contract" property="oneOffContract" />
+        <result column="pro_tra_volume" property="proTraVolume" />
+        <result column="avg_mth_tra_volume" property="avgMthTraVolume" />
+        <result column="busi_cover" property="busiCover" />
+        <result column="fixed_route" property="fixedRoute" />
+        <result column="project_deper" property="projectDeper" />
+        <result column="project_leader" property="projectLeader" />
+        <result column="leader_phone" property="leaderPhone" />
+        <result column="project_status" property="projectStatus" />
+        <result column="project_team_per" property="projectTeamPer" />
+        <result column="project_estab_time" property="projectEstabTime" />
+        <result column="major_kpi" property="majorKpi" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, no, customer_id, settle_period
+        id, customer_id, contract_no, contact_nature, settle_period, contract_life, project_name, project_level, major_product, project_nature, date_of_pro_sign, one_off_contract, pro_tra_volume, avg_mth_tra_volume, busi_cover, fixed_route, project_deper, project_leader, leader_phone, project_status, project_team_per, project_estab_time, major_kpi
     </sql>
 
 </mapper>

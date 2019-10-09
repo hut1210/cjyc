@@ -9,6 +9,7 @@ import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 
@@ -18,7 +19,7 @@ import java.util.List;
 @Service("customerService")
 public class CustomerServiceImpl implements ICustomerService {
 
-    @Autowired
+    @Resource
     private ICustomerDao customerDao;
 
     /**
@@ -27,7 +28,7 @@ public class CustomerServiceImpl implements ICustomerService {
      * */
     @Override
     public void addUser() {
-        Customer c = Customer.getInstance();
+        Customer c = new Customer();
         c.setAlias("sdfasf");
         customerDao.insert(c);
     }
