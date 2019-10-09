@@ -14,7 +14,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-08
+ * @since 2019-10-09
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -49,6 +49,31 @@ public class Customer implements Serializable {
      * 手机号
      */
     private String phone;
+
+    /**
+     * 联系人
+     */
+    private String contactMan;
+
+    /**
+     * 客户地址
+     */
+    private String contactAddress;
+
+    /**
+     * 客户性质
+     */
+    private String customerNature;
+
+    /**
+     * 公司性质/规模
+     */
+    private String companyNature;
+
+    /**
+     * 主要业务描述
+     */
+    private String majorBusDes;
 
     /**
      * 首字母
