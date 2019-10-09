@@ -43,9 +43,8 @@ public class CustomerController {
             @ApiImplicitParam(name = "page", value = "页数", defaultValue = "1", dataType = "Integer", paramType = "query"),
             @ApiImplicitParam(name = "pageSize", value = "每页条数", defaultValue = "20", dataType = "Integer", paramType = "query")
     })
-    public ResultVo getContacts(String customerId, Integer page, Integer pageSize) {
-
-        PageInfo<CustomerContact> pageInfo = customerService.getContactPage(1L,page,pageSize);
+    public ResultVo getContacts(Long customerId, Integer page, Integer pageSize) {
+        PageInfo<CustomerContact> pageInfo = customerService.getContactPage(customerId,page,pageSize);
         return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),pageInfo);
     }
 }
