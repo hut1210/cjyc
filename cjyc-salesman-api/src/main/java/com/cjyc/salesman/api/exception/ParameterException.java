@@ -1,7 +1,12 @@
 package com.cjyc.salesman.api.exception;
 
+import com.alibaba.fastjson.JSONObject;
+
+import java.text.MessageFormat;
+
 public class ParameterException extends RuntimeException {
 
+    private static final long serialVersionUID = 1L;
 
     public ParameterException() {
         super();
@@ -11,7 +16,8 @@ public class ParameterException extends RuntimeException {
         super(message);
     }
 
-    public ParameterException(String message, String... args) {
-        super(String.format(message, args));
+    public ParameterException(String message, Object... args) {
+        super(MessageFormat.format(message, args));
     }
+
 }

@@ -4,9 +4,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.cjyc.common.model.entity.City;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.ResultEnum;
-import com.cjyc.common.model.vo.CityVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.salesman.api.service.ICityService;
+import com.cjyc.salesman.api.util.JsonObjectParamUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +28,7 @@ public class CityController {
     @ApiOperation(value = "获取城市1", notes = "接口详细描述", produces = "application/json")
     @GetMapping(value = "/get")
     public ResultVo<City> get(@RequestBody JSONObject json){
-        String cityCode = json.getString("cityCode");
+        String cityCode = JsonObjectParamUtil.getString(json,"cityCode");
         City city = cityService.getById(cityCode);
 
         return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(), city);
