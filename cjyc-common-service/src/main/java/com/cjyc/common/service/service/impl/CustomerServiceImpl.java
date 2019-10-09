@@ -1,8 +1,10 @@
 package com.cjyc.common.service.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.cjyc.common.model.dao.ICustomerContactDao;
 import com.cjyc.common.model.dao.ICustomerDao;
 import com.cjyc.common.model.entity.Customer;
+import com.cjyc.common.model.entity.CustomerContact;
 import com.cjyc.common.service.service.ICustomerService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -22,6 +24,9 @@ public class CustomerServiceImpl implements ICustomerService {
     @Resource
     private ICustomerDao customerDao;
 
+    @Resource
+    private ICustomerContactDao customerContactDao;
+
     /**
      * 新增客户信息
      *
@@ -34,6 +39,20 @@ public class CustomerServiceImpl implements ICustomerService {
     }
 
     /**
+     * 获取客户联系人
+     *
+     * */
+    @Override
+    public PageInfo<CustomerContact> getContactPage(Long customerId, Integer pageNum, Integer pageSize) {
+        PageHelper.startPage(pageNum, pageSize);
+        List<CustomerContact> selectList = customerContactDao.selectList(
+                new QueryWrapper<CustomerContact>().eq("id",customerId));
+        PageInfo<CustomerContact> pageInfo = new PageInfo<>(selectList);
+        return pageInfo;
+    }
+
+
+    /**
      * 测试分页
      * @return
      */
@@ -44,6 +63,4 @@ public class CustomerServiceImpl implements ICustomerService {
         PageInfo<Customer> pageInfo = new PageInfo<>(selectList);
         return pageInfo;
     }
-
-
 }
