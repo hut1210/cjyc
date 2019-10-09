@@ -1,7 +1,7 @@
 package com.cjyc.web.api.controller;
 
+import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.util.ResultEnum;
 import com.cjyc.common.model.vo.ResultVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;

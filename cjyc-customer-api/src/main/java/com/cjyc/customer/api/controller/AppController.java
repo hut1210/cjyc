@@ -1,8 +1,8 @@
 package com.cjyc.customer.api.controller;
 
 import com.cjyc.common.model.annotations.OperationLogNav;
+import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.util.ResultEnum;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.customer.api.service.IAppService;
 import io.swagger.annotations.Api;

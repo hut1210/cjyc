@@ -2,8 +2,8 @@ package com.cjyc.salesman.api.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.cjyc.common.model.entity.City;
+import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.util.ResultEnum;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.salesman.api.service.ICityService;
 import com.cjyc.salesman.api.util.JsonObjectParamUtil;

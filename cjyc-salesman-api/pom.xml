@@ -126,16 +126,16 @@
 
         <!--tools-->
         <!--pinyin4j-->
-        <dependency>
-            <groupId>com.belerweb</groupId>
-            <artifactId>pinyin4j</artifactId>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.belerweb</groupId>-->
+            <!--<artifactId>pinyin4j</artifactId>-->
+        <!--</dependency>-->
 
         <!-- 极光推送 -->
-        <dependency>
-            <groupId>cn.jpush.api</groupId>
-            <artifactId>jpush-client</artifactId>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>cn.jpush.api</groupId>-->
+            <!--<artifactId>jpush-client</artifactId>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>org.apache.commons</groupId>

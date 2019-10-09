@@ -1,8 +1,8 @@
 package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.entity.Customer;
+import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.util.ResultEnum;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.service.service.ICustomerService;
 import com.cjyc.web.api.dto.OrderDto;
@@ -43,7 +43,7 @@ public class OrderController {
     public ResultVo testPageList(Integer pageNum, Integer pageSize){
 
         PageInfo<Customer> customerPageInfo = customerServiceCom.pageList(pageNum,pageSize);
-        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),customerPageInfo);
+        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),customerPageInfo);
     }
 
     /**

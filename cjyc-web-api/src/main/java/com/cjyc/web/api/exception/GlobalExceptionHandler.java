@@ -1,8 +1,8 @@
 package com.cjyc.web.api.exception;
 
 
+import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.util.ResultEnum;
 import com.cjyc.common.model.vo.ResultVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -31,7 +31,7 @@ public class GlobalExceptionHandler {
         log.error("服务端异常 ：", exception);
         return BaseResultUtil.getVo(ResultEnum.API_INVOKE_ERROR.getCode(),
                 ResultEnum.API_INVOKE_ERROR.getMsg(),
-                 exception.getMessage());
+                exception.getMessage());
     }
 
 }
