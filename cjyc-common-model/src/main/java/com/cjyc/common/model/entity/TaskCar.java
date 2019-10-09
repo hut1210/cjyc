@@ -15,7 +15,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-08
+ * @since 2019-10-09
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -60,6 +60,16 @@ public class TaskCar implements Serializable {
      * 图片地址，逗号分隔
      */
     private String photoImg;
+
+    /**
+     * 装车时间
+     */
+    private Long loadTime;
+
+    /**
+     * 卸车时间
+     */
+    private Long unloadTime;
 
     /**
      * 车辆运费

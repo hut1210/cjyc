@@ -11,13 +11,15 @@
         <result column="order_car_id" property="orderCarId" />
         <result column="state" property="state" />
         <result column="photo_img" property="photoImg" />
+        <result column="load_time" property="loadTime" />
+        <result column="unload_time" property="unloadTime" />
         <result column="freight_fee" property="freightFee" />
         <result column="create_time" property="createTime" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, task_id, waybill_id, waybill_car_id, order_car_id, state, photo_img, freight_fee, create_time
+        id, task_id, waybill_id, waybill_car_id, order_car_id, state, photo_img, load_time, unload_time, freight_fee, create_time
     </sql>
 
 </mapper>

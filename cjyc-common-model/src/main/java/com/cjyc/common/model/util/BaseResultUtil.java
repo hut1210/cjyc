@@ -1,12 +1,10 @@
 package com.cjyc.common.model.util;
 
-
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.github.pagehelper.PageInfo;
-import org.springframework.lang.NonNull;
 
 import java.util.List;
 import java.util.Map;
@@ -24,7 +22,7 @@ public class BaseResultUtil<T> {
      * @param
      * @return
      */
-    public static <T> ResultVo<T> success(){
+    public static ResultVo success(){
         return success(null);
     }
 
@@ -39,7 +37,7 @@ public class BaseResultUtil<T> {
      * @param
      * @return
      */
-    public static <T> ResultVo<T> fail(){
+    public static ResultVo fail(){
         return fail(null);
     }
     public static <T> ResultVo<T> fail(T data){
