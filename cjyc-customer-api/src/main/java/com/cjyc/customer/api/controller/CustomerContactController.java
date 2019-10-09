@@ -12,13 +12,15 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @auther litan
- * @description: 客户联系人控制器
+ * @description: 客户联系人
  * @date:2019/10/9
  */
 @RestController
@@ -30,7 +32,7 @@ public class CustomerContactController {
     private ICustomerContactService customerContactService;
 
     /**
-     * 客户端获取联系人接口
+     * 获取联系人接口（分页）
      * */
     @ApiOperation(value = "客户端获取联系人接口", notes = "客户端获取联系人接口", httpMethod = "POST")
     @RequestMapping(value = "/getContacts", method = RequestMethod.POST)
@@ -42,6 +44,17 @@ public class CustomerContactController {
     public ResultVo getContacts(Long customerId, Integer page, Integer pageSize) {
         PageInfo<CustomerContact> pageInfo = customerContactService.getContactPage(customerId,page,pageSize);
         return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),pageInfo);
+    }
+
+    /**
+     * 添加联系人接口
+     * */
+    @ApiOperation(value = "添加联系人接口", notes = "添加联系人接口", httpMethod = "POST")
+    @RequestMapping(value = "/add", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultVo add(@RequestBody CustomerContact customerContact) {
+        boolean result = customerContactService.addCustomerContact(customerContact);
+        return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg())
+                : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
     }
 
 }

@@ -23,6 +23,12 @@ public class CustomerContactServiceImpl implements ICustomerContactService {
     private ICustomerContactDao customerContactDao;
 
     @Override
+    public boolean addCustomerContact(CustomerContact entity) {
+        int re = customerContactDao.insert(entity);
+        return re > 0 ? true : false;
+    }
+
+    @Override
     public PageInfo<CustomerContact> getContactPage(Long customerId, Integer pageNum, Integer pageSize) {
 
         PageHelper.startPage(pageNum, pageSize);

@@ -9,5 +9,8 @@ import com.github.pagehelper.PageInfo;
  * @date:2019/10/9
  */
 public interface ICustomerContactService {
+
+    boolean addCustomerContact(CustomerContact customerContact);
+
     PageInfo<CustomerContact> getContactPage(Long customerId, Integer pageNum, Integer pageSize);
 }
