@@ -33,18 +33,5 @@ public class CustomerController {
     @Autowired
     private ICustomerService customerService;
 
-    /**
-     * 客户端获取联系人接口
-     * */
-    @ApiOperation(value = "客户端获取联系人接口", notes = "客户端获取联系人接口", httpMethod = "POST")
-    @RequestMapping(value = "/getContacts", method = RequestMethod.POST)
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "customerId", value = "客户id",  required = true, dataType = "Long", paramType = "query"),
-            @ApiImplicitParam(name = "page", value = "页数", defaultValue = "1", dataType = "Integer", paramType = "query"),
-            @ApiImplicitParam(name = "pageSize", value = "每页条数", defaultValue = "20", dataType = "Integer", paramType = "query")
-    })
-    public ResultVo getContacts(Long customerId, Integer page, Integer pageSize) {
-        PageInfo<CustomerContact> pageInfo = customerService.getContactPage(customerId,page,pageSize);
-        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),pageInfo);
-    }
+
 }

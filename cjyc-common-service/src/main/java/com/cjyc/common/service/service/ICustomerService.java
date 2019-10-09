@@ -15,6 +15,4 @@ public interface ICustomerService {
 
     PageInfo<Customer> pageList(Integer pageNum, Integer pageSize);
 
-
-    PageInfo<CustomerContact> getContactPage(Long customerId,Integer pageNum, Integer pageSize);
 }

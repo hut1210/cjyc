@@ -39,20 +39,6 @@ public class CustomerServiceImpl implements ICustomerService {
     }
 
     /**
-     * 获取客户联系人
-     *
-     * */
-    @Override
-    public PageInfo<CustomerContact> getContactPage(Long customerId, Integer pageNum, Integer pageSize) {
-        PageHelper.startPage(pageNum, pageSize);
-        List<CustomerContact> selectList = customerContactDao.selectList(
-                new QueryWrapper<CustomerContact>().eq("id",customerId));
-        PageInfo<CustomerContact> pageInfo = new PageInfo<>(selectList);
-        return pageInfo;
-    }
-
-
-    /**
      * 测试分页
      * @return
      */
