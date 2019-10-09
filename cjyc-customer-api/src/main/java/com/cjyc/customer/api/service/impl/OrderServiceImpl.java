@@ -21,12 +21,30 @@ public class OrderServiceImpl implements IOrderService{
     @Override
     public boolean commitOrder(OrderDto orderDto) {
 
+        int isSimple = orderDto.getIsSimple();
+        int saveType = orderDto.getSaveType();
+
+
         Order order = new Order();
         BeanUtils.copyProperties(orderDto,order);
         order.setId(001121212335653L);
         order.setNo("555666");
+        //简单
+        if(isSimple == 1){
+
+        //详单
+        }else if(isSimple == 0){
+            //草稿
+            if(saveType==0){
+                order.setState(0);//待提交
+
+            //正式下单
+            }else if(saveType==1){
+                order.setState(1);//待分配
+            }
+        }
         int id = orderDao.add(order);
-        System.out.print("adsf----->"+id);
-        return false;
+
+        return id > 0 ? true : false;
     }
 }
