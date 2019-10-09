@@ -31,7 +31,7 @@ public class GlobalExceptionHandler {
         log.error("服务端异常 ：", exception);
         return BaseResultUtil.getVo(ResultEnum.API_INVOKE_ERROR.getCode(),
                 ResultEnum.API_INVOKE_ERROR.getMsg(),
-                 exception.getMessage());
+                exception.getMessage());
     }
 
 }
