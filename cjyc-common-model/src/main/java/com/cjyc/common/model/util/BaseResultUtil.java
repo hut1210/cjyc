@@ -18,6 +18,35 @@ import java.util.Map;
 public class BaseResultUtil<T> {
 
     /**
+     * 快速返回成功
+     * @author JPG
+     * @since 2019/10/9 11:49
+     * @param
+     * @return
+     */
+    public static <T> ResultVo<T> success(){
+        return success(null);
+    }
+
+    public static <T> ResultVo<T> success(T data){
+        return getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(), data);
+    }
+
+    /**
+     * 快速返回失败
+     * @author JPG
+     * @since 2019/10/9 11:49
+     * @param
+     * @return
+     */
+    public static <T> ResultVo<T> fail(){
+        return fail(null);
+    }
+    public static <T> ResultVo<T> fail(T data){
+        return getVo(ResultEnum.FAIL.getCode(), ResultEnum.FAIL.getMsg(), data);
+    }
+
+    /**
      * 获取ResultVo<T>(无内容)
      * @author JPG
      * @date 2019/7/31 9:47
