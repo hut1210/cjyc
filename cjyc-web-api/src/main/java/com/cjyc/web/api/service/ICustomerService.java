@@ -1,10 +1,14 @@
 package com.cjyc.web.api.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.cjyc.common.model.entity.Customer;
+import com.cjyc.common.model.vo.CustomerVo;
+import com.cjyc.common.model.vo.KeyCustomerDto;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.web.api.dto.BasePageVo;
 import com.cjyc.web.api.dto.CustomerDto;
 import com.cjyc.web.api.dto.KeyCustomerVo;
+import com.github.pagehelper.PageInfo;
 
 /**
  *  @author: zj
@@ -18,7 +22,7 @@ public interface ICustomerService  {
      * @param customerDto
      * @return
      */
-    ResultVo saveCustomer(CustomerDto customerDto);
+    boolean saveCustomer(CustomerDto customerDto);
 
     /**
      * 分页查询移动端用户
@@ -26,35 +30,35 @@ public interface ICustomerService  {
      * @param pageSize 每页大小
      * @return
      */
-    ResultVo getAllCustomer(Integer pageNo, Integer pageSize);
+    PageInfo<Customer> getAllCustomer(Integer pageNo, Integer pageSize);
 
     /**
      * 根据用户id查看移动端用户
      * @param id
      * @return
      */
-    ResultVo showCustomerById(Long id);
+    Customer showCustomerById(Long id);
 
     /**
      * 更新移动端用户
      * @param customerDto
      * @return
      */
-    ResultVo updateCustomer(CustomerDto customerDto);
+    boolean updateCustomer(CustomerDto customerDto);
 
     /**
      * 根据id删除移动端用户
      * @param arrIds
      * @return
      */
-    ResultVo deleteCustomer(Long[] arrIds);
+    boolean deleteCustomer(Long[] arrIds);
 
     /**
      * 根据条件查询移动端用户
      * @param jsonObject
      * @return
      */
-    ResultVo findCustomer(JSONObject jsonObject);
+    PageInfo<CustomerVo> findCustomer(JSONObject jsonObject);
 
     /**
      * 新增大客户&合同
@@ -75,6 +79,6 @@ public interface ICustomerService  {
      * @param pageVo
      * @return
      */
-    ResultVo getAllKeyCustomer(BasePageVo pageVo);
+    PageInfo<KeyCustomerDto> getAllKeyCustomer(BasePageVo pageVo);
 
 }

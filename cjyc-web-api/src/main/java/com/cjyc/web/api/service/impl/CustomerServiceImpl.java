@@ -50,7 +50,7 @@ public class CustomerServiceImpl implements ICustomerService{
     private ICustomerContractDao iCustomerContractDao;
 
     @Override
-    public ResultVo saveCustomer(CustomerDto customerDto) {
+    public boolean saveCustomer(CustomerDto customerDto) {
         try{
             Customer customer = new Customer();
             customer.setId(SnowflakeIdWorker.nextId());
@@ -60,16 +60,15 @@ public class CustomerServiceImpl implements ICustomerService{
             customer.setIdCardFrontImg(customerDto.getIdCardFrontImg());
             customer.setIdCardBackImg(customerDto.getIdCardBackImg());
             customer.setType(1);
-            iCustomerDao.insert(customer);
+            return iCustomerDao.insert(customer)> 0 ? true : false;
         }catch (Exception e){
             log.error("新增用户出现异常",e);
             throw new CommonException(e.getMessage());
         }
-        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),"新增移动用户成功");
     }
 
     @Override
-    public ResultVo getAllCustomer(Integer pageNo,Integer pageSize) {
+    public PageInfo<Customer> getAllCustomer(Integer pageNo,Integer pageSize) {
         PageInfo<Customer> pageInfo = null;
         try{
             if (null == pageNo) {
@@ -83,28 +82,25 @@ public class CustomerServiceImpl implements ICustomerService{
             pageInfo = new PageInfo<>(customerList);
         }catch (Exception e){
             log.error("分页查询移动端用户出现异常",e);
-            return BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),"分页查询移动端用户处理异常");
         }
-        return BaseResultUtil.getPageVo(ResultEnum.SUCCESS.getCode(),"分页查询移动端用户处理成功",pageInfo);
+        return pageInfo;
     }
 
     @Override
-    public ResultVo showCustomerById(Long id) {
+    public Customer showCustomerById(Long id) {
         Customer customer = null;
         try{
-            if(null == id){
-                return BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),"用户id不能为空");
+            if(null != id){
+                customer = iCustomerDao.selectById(id);
             }
-            customer = iCustomerDao.selectById(id);
-            return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),"根据用户id查看移动端用户成功",customer);
         }catch (Exception e){
             log.error("根据用户id查看移动端用户出现异常",e);
-            return BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),"根据用户id查看移动端用户出现异常");
         }
+        return customer;
     }
 
     @Override
-    public ResultVo updateCustomer(CustomerDto customerDto) {
+    public boolean updateCustomer(CustomerDto customerDto) {
         try{
             Customer customer = iCustomerDao.selectById(customerDto.getId());
             if(null != customer){
@@ -113,36 +109,31 @@ public class CustomerServiceImpl implements ICustomerService{
                 customer.setIdCard(customerDto.getIdCard());
                 customer.setIdCardFrontImg(customerDto.getIdCardFrontImg());
                 customer.setIdCardBackImg(customerDto.getIdCardBackImg());
-                iCustomerDao.updateById(customer);
             }
+           return iCustomerDao.updateById(customer) > 0 ? true : false;
         }catch (Exception e){
             log.error("更新用户出现异常",e);
             throw new CommonException(e.getMessage());
         }
-        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),"更新移动端用户成功");
     }
 
     @Override
-    public ResultVo deleteCustomer(Long[] arrIds) {
-        int num ;
+    public boolean deleteCustomer(Long[] arrIds) {
+        List<Long> listIds = null;
         try{
             if( null != arrIds && arrIds.length != 0){
-                List<Long> listIds = Arrays.asList(arrIds);
-                num = iCustomerDao.deleteBatchIds(listIds);
-                if(num > 0){
-                    return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),"删除移动端用户处理成功");
-                }
+                listIds = Arrays.asList(arrIds);
             }
+            return iCustomerDao.deleteBatchIds(listIds) > 0 ? true:false;
         }catch (Exception e){
             log.error("删除用户出现异常",e);
             throw new CommonException(e.getMessage());
         }
-        return null;
     }
 
     @Override
-    public ResultVo findCustomer(JSONObject jsonObject) {
-        PageInfo<CustomerVo> pageInfo ;
+    public PageInfo<CustomerVo> findCustomer(JSONObject jsonObject) {
+        PageInfo<CustomerVo> pageInfo = null;
         try{
             Integer pageNo = jsonObject.getInteger("pageNo");
             Integer pageSize = jsonObject.getInteger("pageSize");
@@ -161,9 +152,8 @@ public class CustomerServiceImpl implements ICustomerService{
             pageInfo = new PageInfo<>(customerVos);
         }catch (Exception e){
             log.error("根据条件查询用户出现异常",e);
-            return BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),"根据条件查询用户处理出现异常");
         }
-        return BaseResultUtil.getPageVo(ResultEnum.SUCCESS.getCode(),"根据条件分页查询移动端用户处理成功",pageInfo);
+        return pageInfo;
     }
 
     @Override
@@ -216,8 +206,8 @@ public class CustomerServiceImpl implements ICustomerService{
     }
 
     @Override
-    public ResultVo getAllKeyCustomer(BasePageVo pageVo) {
-        PageInfo<KeyCustomerDto> pageInfo;
+    public PageInfo<KeyCustomerDto> getAllKeyCustomer(BasePageVo pageVo) {
+        PageInfo<KeyCustomerDto> pageInfo = null;
         try{
             Integer pageNo = pageVo.getPageNo();
             Integer pageSize = pageVo.getPageSize();
@@ -234,7 +224,7 @@ public class CustomerServiceImpl implements ICustomerService{
             log.error("分页查看大客户出现异常",e);
             throw new CommonException(e.getMessage());
         }
-        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),"分页查看大客户处理成功",pageInfo);
+        return pageInfo;
     }
 
     /**
