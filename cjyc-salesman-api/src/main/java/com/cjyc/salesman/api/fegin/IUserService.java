@@ -14,7 +14,7 @@ import java.util.List;
 /** 提取获取
  */
 @FeignClient(name = ServiceNameConstants.USER_SERVICE, fallbackFactory = UserServiceFallbackFactory.class, decode404 = true)
-public interface UserService {
+public interface IUserService {
     /**
      * feign rpc访问远程/users/{username}接口
      * 查询用户实体对象SysUser
