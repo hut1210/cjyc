@@ -55,8 +55,8 @@ public class BaseResultUtil<T> {
     public static <T> ResultVo<T> paramError(){
         return paramError(ResultEnum.MOBILE_PARAM_ERROR.getMsg());
     }
-    public static <T> ResultVo<T> paramError(String message){
-        return getVo(ResultEnum.MOBILE_PARAM_ERROR.getCode(), message);
+    public static <T> ResultVo<T> paramError(String msg){
+        return getVo(ResultEnum.MOBILE_PARAM_ERROR.getCode(), msg);
     }
 
     /**
@@ -69,8 +69,8 @@ public class BaseResultUtil<T> {
     public static <T> ResultVo<T> serverError(){
         return serverError(ResultEnum.API_INVOKE_ERROR.getMsg());
     }
-    public static <T> ResultVo<T> serverError(String message){
-        return getVo(ResultEnum.API_INVOKE_ERROR.getCode(), message);
+    public static <T> ResultVo<T> serverError(String msg){
+        return getVo(ResultEnum.API_INVOKE_ERROR.getCode(), msg);
     }
 
 
@@ -79,11 +79,11 @@ public class BaseResultUtil<T> {
      * @author JPG
      * @date 2019/7/31 9:47
      * @param code 返回码
-     * @param message 返回信息
+     * @param msg 返回信息
      * @return ResultVo
      */
-    public static<T> ResultVo<T> getVo(int code, String message){
-        return getVo(code, message, null);
+    public static<T> ResultVo<T> getVo(int code, String msg){
+        return getVo(code, msg, null);
     }
 
     /**
@@ -91,14 +91,14 @@ public class BaseResultUtil<T> {
      * @author JPG
      * @date 2019/7/31 10:02
      * @param code 返回码
-     * @param message 返回信息
+     * @param msg 返回信息
      * @param data 返回内容
      * @return ResultVo
      */
-    public static <T> ResultVo<T> getVo(int code, String message, T data){
+    public static <T> ResultVo<T> getVo(int code, String msg, T data){
         return ResultVo.<T>builder()
                 .code(code)
-                .message(message)
+                .msg(msg)
                 .data(data)
                 .build();
     }
@@ -109,12 +109,12 @@ public class BaseResultUtil<T> {
      * @author JPG
      * @date 2019/7/31 10:46
      * @param code 返回码
-     * @param message 返回信息
+     * @param msg 返回信息
      * @param list 返回内容
      * @param countInfo 非分页相关统计信息
      * @return  ResultVo<ListVo<T>>
      */
-    public static <T> ResultVo<ListVo<T>> getListVo(int code, String message, List<T> list, Map<String, Object> countInfo){
+    public static <T> ResultVo<ListVo<T>> getListVo(int code, String msg, List<T> list, Map<String, Object> countInfo){
         Long totalRecords = null;
         if(countInfo != null){
             try {
@@ -130,7 +130,7 @@ public class BaseResultUtil<T> {
                 .build();
         return ResultVo.<ListVo<T>>builder()
                 .code(code)
-                .message(message)
+                .msg(msg)
                 .data(listVo)
                 .build();
 
@@ -142,11 +142,11 @@ public class BaseResultUtil<T> {
      * @author JPG
      * @date 2019/7/31 10:23
      * @param code 返回码
-     * @param message 返回信息
+     * @param msg 返回信息
      * @param pageInfo 返回内容
      * @return ResultVo<PageVo<T>>
      */
-    public static <T> ResultVo<PageVo<T>> getPageVo(int code, String message, PageInfo<T> pageInfo){
+    public static <T> ResultVo<PageVo<T>> getPageVo(int code, String msg, PageInfo<T> pageInfo){
         PageVo<T> pageVo = PageVo.<T>builder()
                 .totalRecords(pageInfo.getTotal())
                 .totalPages(pageInfo.getPages())
@@ -157,7 +157,7 @@ public class BaseResultUtil<T> {
 
         return ResultVo.<PageVo<T>>builder()
                 .code(code)
-                .message(message)
+                .msg(msg)
                 .data(pageVo)
                 .build();
 
@@ -169,12 +169,12 @@ public class BaseResultUtil<T> {
      * @author JPG
      * @date 2019/7/31 10:25
      * @param code 返回码
-     * @param message 返回信息
+     * @param msg 返回信息
      * @param pageInfo 返回内容
      * @param countInfo 非分页相关统计信息
      * @return ResultVo<PageVo<T>>
      */
-    public static <T> ResultVo<PageVo<T>> getPageVo(int code, String message, PageInfo<T> pageInfo, Map<String, Object> countInfo){
+    public static <T> ResultVo<PageVo<T>> getPageVo(int code, String msg, PageInfo<T> pageInfo, Map<String, Object> countInfo){
         PageVo<T> pageVo = PageVo.<T>builder()
                 .totalRecords(pageInfo.getTotal())
                 .totalPages(pageInfo.getPages())
@@ -185,7 +185,7 @@ public class BaseResultUtil<T> {
                 .build();
         return ResultVo.<PageVo<T>>builder()
                 .code(code)
-                .message(message)
+                .msg(msg)
                 .data(pageVo)
                 .build();
 
@@ -196,11 +196,11 @@ public class BaseResultUtil<T> {
      * @author JPG
      * @date 2019/7/31 14:09
      * @param code 返回码
-     * @param message 返回信息
+     * @param msg 返回信息
      * @param page 返回内容
      * @return ResultVo<PageVo<T>>
      */
-    public static <T> ResultVo<PageVo<T>> getPageVo(int code, String message, Page<T> page){
+    public static <T> ResultVo<PageVo<T>> getPageVo(int code, String msg, Page<T> page){
         PageVo<T> pageVo = PageVo.<T>builder()
                 .totalRecords(page.getTotal())
                 .totalPages((int)page.getPages())
@@ -210,7 +210,7 @@ public class BaseResultUtil<T> {
                 .build();
         return ResultVo.<PageVo<T>>builder()
                 .code(code)
-                .message(message)
+                .msg(msg)
                 .data(pageVo)
                 .build();
 
@@ -221,12 +221,12 @@ public class BaseResultUtil<T> {
      * @author JPG
      * @date 2019/7/31 14:09
      * @param code 返回码
-     * @param message 返回信息
+     * @param msg 返回信息
      * @param page 返回内容
      * @param countInfo 非分页相关统计信息
      * @return ResultVo<PageVo<T>>
      */
-    public static <T> ResultVo<PageVo<T>> getPageVo(int code, String message, Page<T> page, Map<String, Object> countInfo){
+    public static <T> ResultVo<PageVo<T>> getPageVo(int code, String msg, Page<T> page, Map<String, Object> countInfo){
         PageVo<T> pageVo = PageVo.<T>builder()
                 .totalRecords(page.getTotal())
                 .totalPages((int)page.getPages())
@@ -237,7 +237,7 @@ public class BaseResultUtil<T> {
                 .build();
         return ResultVo.<PageVo<T>>builder()
                 .code(code)
-                .message(message)
+                .msg(msg)
                 .data(pageVo)
                 .build();
 

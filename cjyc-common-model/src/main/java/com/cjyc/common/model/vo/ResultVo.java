@@ -18,7 +18,7 @@ public class ResultVo<T> implements Serializable {
     /**返回码*/
     private int code;
     /**返回提示信息*/
-    private String message;
+    private String msg;
     /**
      * 返回内容：自定义对象、集合、List&统计信息{@link ListVo} 、分页&统计{@link PageVo}
      */
