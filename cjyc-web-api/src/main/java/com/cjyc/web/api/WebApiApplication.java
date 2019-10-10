@@ -9,9 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
  * Created by DELL on 2019/9/27.
  */
 @SpringBootApplication
-
-@MapperScan({"com.cjyc.web.api.dao","com.cjyc.common.model"})
-@ComponentScan({"com.cjyc.web.api","com.cjyc.common.model","com.cjyc.common.service"})
+@MapperScan("com.cjyc.common.model.dao")
 public class WebApiApplication {
 
     public static void main(String[] args) {
