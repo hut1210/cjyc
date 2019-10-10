@@ -35,7 +35,7 @@
     </sql>
 
     <!-- 通过手机号，姓名，身份证号查询 -->
-    <select id="findCustomer" resultType="com.cjyc.common.model.vo.CustomerVo">
+    <select id="findCustomer" resultType="com.cjyc.common.model.vo.web.CustomerVo">
         select  phone as phone,name as name,id_card as idCard,id_card_front_img as idCardFrontImg,
                 id_card_back_img as idCardBackImg,register_time as registerTime
         from c_customer
@@ -53,7 +53,7 @@
     </select>
 
     <!-- 查询所有大客户用户-->
-    <select id="getAllKeyCustomter" resultType="com.cjyc.common.model.vo.KeyCustomerDto">
+    <select id="getAllKeyCustomter" resultType="com.cjyc.common.model.vo.ListKeyCustomerDto">
         select id as id, name as name,alias as alias,contact_man as contactMan,phone as phone,customer_nature as customerNature,major_bus_des as majorBusDes,create_time as createTime
                 from c_customer where type = 2
     </select>
