@@ -1,5 +1,6 @@
 package com.cjyc.common.model.vo.web;
 
+import com.cjyc.common.model.vo.BasePageVo;
 import lombok.Data;
 
 import java.io.Serializable;
