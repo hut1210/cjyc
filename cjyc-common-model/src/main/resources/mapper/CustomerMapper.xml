@@ -53,7 +53,7 @@
     </select>
 
     <!-- 查询所有大客户用户-->
-    <select id="getAllKeyCustomter" resultType="com.cjyc.common.model.vo.ListKeyCustomerDto">
+    <select id="getAllKeyCustomter" resultType="com.cjyc.common.model.dto.web.ListKeyCustomerDto">
         select id as id, name as name,alias as alias,contact_man as contactMan,phone as phone,customer_nature as customerNature,major_bus_des as majorBusDes,create_time as createTime
                 from c_customer where type = 2
     </select>
