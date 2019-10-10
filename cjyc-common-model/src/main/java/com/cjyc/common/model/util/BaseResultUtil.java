@@ -16,6 +16,9 @@ import java.util.Map;
  */
 public class BaseResultUtil<T> {
 
+
+
+
     /**
      * 快速返回成功
      * @author JPG
@@ -41,8 +44,8 @@ public class BaseResultUtil<T> {
     public static <T> ResultVo<T> fail(){
         return fail(null);
     }
-    public static <T> ResultVo<T> fail(T data){
-        return getVo(ResultEnum.FAIL.getCode(), ResultEnum.FAIL.getMsg(), data);
+    public static <T> ResultVo<T> fail(String message){
+        return getVo(ResultEnum.FAIL.getCode(), message);
     }
 
     /**
@@ -72,7 +75,6 @@ public class BaseResultUtil<T> {
     public static <T> ResultVo<T> serverError(String msg){
         return getVo(ResultEnum.API_INVOKE_ERROR.getCode(), msg);
     }
-
 
     /**
      * 获取ResultVo<T>(无内容)
