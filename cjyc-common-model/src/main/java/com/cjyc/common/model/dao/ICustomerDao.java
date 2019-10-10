@@ -4,8 +4,8 @@ import com.cjyc.common.model.dto.web.CustomerDto;
 import com.cjyc.common.model.dto.web.ListKeyCustomerDto;
 import com.cjyc.common.model.entity.Customer;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cjyc.common.model.vo.web.SelectCustomerVo;
 import com.cjyc.common.model.vo.web.SelectKeyCustomerVo;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -23,12 +23,10 @@ public interface ICustomerDao extends BaseMapper<Customer> {
 
     /**
      * 根据手机号，姓名，身份证号查询移动端用户
-     * @param phone
-     * @param name
-     * @param idCard
+     * @param customerVo
      * @return
      */
-    List<CustomerDto> findCustomer(@Param("phone") String phone, @Param("name") String name, @Param("idCard") String idCard);
+    List<CustomerDto> findCustomer(SelectCustomerVo customerVo);
 
     /**
      * 查询所有大客户用户
