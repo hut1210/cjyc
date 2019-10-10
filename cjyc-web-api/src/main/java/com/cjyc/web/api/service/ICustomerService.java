@@ -1,13 +1,14 @@
 package com.cjyc.web.api.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.cjyc.common.model.dto.web.CustomerDto;
+import com.cjyc.common.model.dto.web.ListKeyCustomerDto;
+import com.cjyc.common.model.dto.web.ShowKeyCustomerDto;
 import com.cjyc.common.model.entity.Customer;
-import com.cjyc.common.model.vo.CustomerVo;
-import com.cjyc.common.model.vo.KeyCustomerDto;
-import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.web.api.dto.BasePageVo;
-import com.cjyc.web.api.dto.CustomerDto;
-import com.cjyc.web.api.dto.KeyCustomerVo;
+import com.cjyc.common.model.vo.web.BasePageVo;
+import com.cjyc.common.model.vo.web.CustomerVo;
+import com.cjyc.common.model.vo.web.KeyCustomerVo;
+import com.cjyc.common.model.vo.web.SelectKeyCustomerVo;
 import com.github.pagehelper.PageInfo;
 
 /**
@@ -19,10 +20,10 @@ public interface ICustomerService  {
 
     /**
      *  新增移动端用户
-     * @param customerDto
+     * @param customerVo
      * @return
      */
-    boolean saveCustomer(CustomerDto customerDto);
+    boolean saveCustomer(CustomerVo customerVo);
 
     /**
      * 分页查询移动端用户
@@ -44,7 +45,7 @@ public interface ICustomerService  {
      * @param customerDto
      * @return
      */
-    boolean updateCustomer(CustomerDto customerDto);
+    boolean updateCustomer(CustomerVo customerDto);
 
     /**
      * 根据id删除移动端用户
@@ -58,7 +59,7 @@ public interface ICustomerService  {
      * @param jsonObject
      * @return
      */
-    PageInfo<CustomerVo> findCustomer(JSONObject jsonObject);
+    PageInfo<CustomerDto> findCustomer(JSONObject jsonObject);
 
     /**
      * 新增大客户&合同
@@ -79,6 +80,27 @@ public interface ICustomerService  {
      * @param pageVo
      * @return
      */
-    PageInfo<KeyCustomerDto> getAllKeyCustomer(BasePageVo pageVo);
+    PageInfo<ListKeyCustomerDto> getAllKeyCustomer(BasePageVo pageVo);
+
+    /**
+     * 根据大客户id查看大客户&合同
+     * @param id
+     * @return
+     */
+    ShowKeyCustomerDto showKeyCustomerById(Long id);
+
+    /**
+     * 更新大客户&合同
+     * @param keyCustomerVo
+     * @return
+     */
+    boolean updateKeyCustomer(KeyCustomerVo keyCustomerVo);
+
+    /**
+     * 根据条件查询大客户信息
+     * @param selectKeyCustomerVo
+     * @return
+     */
+    PageInfo<ListKeyCustomerDto> findKeyCustomer(SelectKeyCustomerVo selectKeyCustomerVo);
 
 }

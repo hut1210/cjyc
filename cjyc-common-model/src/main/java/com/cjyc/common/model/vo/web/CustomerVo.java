@@ -1,4 +1,4 @@
-package com.cjyc.web.api.dto;
+package com.cjyc.common.model.vo.web;
 
 import lombok.Data;
 
@@ -7,7 +7,7 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 @Data
-public class CustomerDto implements Serializable {
+public class CustomerVo implements Serializable {
 
     public interface SaveCustomerVo {
     }

@@ -39,4 +39,13 @@
         delete from c_customer_contract where customer_id = #{customerId}
     </delete>
 
+    <!-- 根据customerId查询大客户合同 -->
+    <select id="getCustContractByCustId" resultType="com.cjyc.common.model.dto.web.CustomerContractDto" parameterType="java.lang.Long">
+        select id as id, contract_no as contractNo,contact_nature as contactNature,settle_period as settlePeriod,contract_life as contractLife,project_name as projectName,
+                project_level as projectLevel,major_product as majorProduct,project_nature as projectNature,date_of_pro_sign as dateOfProSign,one_off_contract as oneOffContract,
+                pro_tra_volume as proTraVolume,avg_mth_tra_volume as avgMthTraVolume,busi_cover as busiCover,fixed_route as fixedRoute,project_deper as projectDeper,
+                project_leader as projectLeader,leader_phone as leaderPhone,project_status as projectStatus,project_team_per as projectTeamPer,project_estab_time as projectEstabTime,
+                major_kpi as majorKpi from c_customer_contract where customer_id = #{customerId}
+    </select>
+
 </mapper>
