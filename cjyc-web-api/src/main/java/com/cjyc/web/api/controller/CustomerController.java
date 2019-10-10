@@ -23,9 +23,9 @@ import org.springframework.web.bind.annotation.*;
 /**
  *  @author: zj
  *  @Date: 2019/9/29 14:37
- *  @Description: 韵车移动端用户
+ *  @Description: 韵车大客户/移动端用户
  */
-@Api(description = "韵车移动端用户 | CustomerController")
+@Api(tags = "韵车大客户/移动端用户")
 @CrossOrigin
 @RestController
 @RequestMapping("/customerController")
