@@ -12,7 +12,7 @@ public class BasePageVo implements Serializable {
      * 每页大小
      */
     @ApiModelProperty(value = "当前页码")
-    private Integer pageNum;
+    private Integer currentPage;
 
     /**
      * 当前页码
