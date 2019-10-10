@@ -24,5 +24,10 @@
         <include refid="Base_Column_List"/>
         from s_city where code = #{cityCode,jdbcType=VARCHAR};
     </select>
+    <select id="findList" resultType="com.cjyc.common.model.entity.City">
+        select
+        <include refid="Base_Column_List"/>
+        from s_city;
+    </select>
 
 </mapper>
