@@ -5,23 +5,21 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjkj.common.utils.SnowflakeIdWorker;
 import com.cjyc.common.model.dao.ICustomerContractDao;
 import com.cjyc.common.model.dao.ICustomerDao;
+import com.cjyc.common.model.dto.web.CustomerContractDto;
+import com.cjyc.common.model.dto.web.CustomerDto;
+import com.cjyc.common.model.dto.web.ListKeyCustomerDto;
+import com.cjyc.common.model.dto.web.ShowKeyCustomerDto;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.entity.CustomerContract;
-import com.cjyc.common.model.enums.ResultEnum;
-import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
-import com.cjyc.common.model.vo.CustomerVo;
-import com.cjyc.common.model.vo.KeyCustomerDto;
-import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.web.api.dto.BasePageVo;
-import com.cjyc.web.api.dto.CustomerContractVo;
-import com.cjyc.web.api.dto.CustomerDto;
-import com.cjyc.web.api.dto.KeyCustomerVo;
+import com.cjyc.common.model.vo.web.*;
 import com.cjyc.web.api.exception.CommonException;
 import com.cjyc.web.api.service.ICustomerService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,7 +48,7 @@ public class CustomerServiceImpl implements ICustomerService{
     private ICustomerContractDao iCustomerContractDao;
 
     @Override
-    public boolean saveCustomer(CustomerDto customerDto) {
+    public boolean saveCustomer(CustomerVo customerDto) {
         try{
             Customer customer = new Customer();
             customer.setId(SnowflakeIdWorker.nextId());
@@ -100,7 +98,7 @@ public class CustomerServiceImpl implements ICustomerService{
     }
 
     @Override
-    public boolean updateCustomer(CustomerDto customerDto) {
+    public boolean updateCustomer(CustomerVo customerDto) {
         try{
             Customer customer = iCustomerDao.selectById(customerDto.getId());
             if(null != customer){
@@ -132,8 +130,8 @@ public class CustomerServiceImpl implements ICustomerService{
     }
 
     @Override
-    public PageInfo<CustomerVo> findCustomer(JSONObject jsonObject) {
-        PageInfo<CustomerVo> pageInfo = null;
+    public PageInfo<CustomerDto> findCustomer(JSONObject jsonObject) {
+        PageInfo<CustomerDto> pageInfo = null;
         try{
             Integer pageNo = jsonObject.getInteger("pageNo");
             Integer pageSize = jsonObject.getInteger("pageSize");
@@ -148,7 +146,7 @@ public class CustomerServiceImpl implements ICustomerService{
             String idCard = jsonObject.getString("idCard");
 
             PageHelper.startPage(pageNo, pageSize);
-            List<CustomerVo> customerVos = iCustomerDao.findCustomer(phone,name,idCard);
+            List<CustomerDto> customerVos = iCustomerDao.findCustomer(phone,name,idCard);
             pageInfo = new PageInfo<>(customerVos);
         }catch (Exception e){
             log.error("根据条件查询用户出现异常",e);
@@ -224,25 +222,105 @@ public class CustomerServiceImpl implements ICustomerService{
     }
 
     @Override
-    public PageInfo<KeyCustomerDto> getAllKeyCustomer(BasePageVo pageVo) {
-        PageInfo<KeyCustomerDto> pageInfo = null;
+    public PageInfo<ListKeyCustomerDto> getAllKeyCustomer(BasePageVo pageVo) {
+        PageInfo<ListKeyCustomerDto> pageInfo = null;
         try{
-            Integer pageNo = pageVo.getPageNo();
-            Integer pageSize = pageVo.getPageSize();
-            if (null == pageNo) {
-                pageNo=1;
-            }
-            if (null == pageSize) {
-                pageSize=10;
-            }
-            PageHelper.startPage(pageNo, pageSize);
-            List<KeyCustomerDto> customerList = iCustomerDao.getAllKeyCustomter();
+            PageHelper.startPage(pageVo.getPageNo(), pageVo.getPageSize());
+            List<ListKeyCustomerDto> customerList = iCustomerDao.getAllKeyCustomter();
             pageInfo = new PageInfo<>(customerList);
         }catch (Exception e){
             log.error("分页查看大客户出现异常",e);
             throw new CommonException(e.getMessage());
         }
         return pageInfo;
+    }
+
+    @Override
+    public ShowKeyCustomerDto showKeyCustomerById(Long id) {
+        ShowKeyCustomerDto sKeyCustomerDto = null;
+        try{
+            if(null != id){
+                //根据主键id查询大客户
+                Customer customer = iCustomerDao.selectById(id);
+                //根据customer_id查询大客户的合同
+                List<CustomerContractDto> contractDtos = iCustomerContractDao.getCustContractByCustId(id);
+                sKeyCustomerDto = new ShowKeyCustomerDto();
+                sKeyCustomerDto.setName(customer.getName());
+                sKeyCustomerDto.setAlias(customer.getAlias());
+                sKeyCustomerDto.setContactMan(customer.getContactMan());
+                sKeyCustomerDto.setPhone(customer.getPhone());
+                sKeyCustomerDto.setContactAddress(customer.getContactAddress());
+                sKeyCustomerDto.setCompanyNature(customer.getCompanyNature());
+                sKeyCustomerDto.setCompanyNature(customer.getCompanyNature());
+
+                if(contractDtos != null && contractDtos.size() > 0){
+                    for(CustomerContractDto dto : contractDtos){
+                        dto.setContractLife(LocalDateTimeUtil.convertToString(Long.valueOf(dto.getContractLife()),DATE_FORMAT));
+                        dto.setDateOfProSign(LocalDateTimeUtil.convertToString(Long.valueOf(dto.getDateOfProSign()),DATE_FORMAT));
+                        if(StringUtils.isNotBlank(dto.getProjectEstabTime())){
+                            dto.setProjectEstabTime(LocalDateTimeUtil.convertToString(Long.valueOf(dto.getProjectEstabTime()),DATE_FORMAT));
+                        }
+                    }
+                }
+                sKeyCustomerDto.setCustContraVos(contractDtos);
+            }
+        }catch (Exception e){
+            log.error("查看大客户出现异常",e);
+            throw new CommonException(e.getMessage());
+        }
+        return sKeyCustomerDto;
+    }
+
+    @Override
+    public boolean updateKeyCustomer(KeyCustomerVo keyCustomerVo) {
+        try{
+            Customer customer = iCustomerDao.selectById(keyCustomerVo.getId());
+            if(null != customer){
+                customer.setName(keyCustomerVo.getName());
+                customer.setAlias(keyCustomerVo.getAlias());
+                customer.setContactMan(keyCustomerVo.getContactMan());
+                customer.setPhone(keyCustomerVo.getPhone());
+                customer.setContactAddress(keyCustomerVo.getContactAddress());
+                customer.setCustomerNature(keyCustomerVo.getCustomerNature());
+                customer.setCompanyNature(keyCustomerVo.getCompanyNature());
+                int num = iCustomerDao.updateById(customer);
+                if(num > 0){
+                    int no = 0;
+                    List<CustomerContractVo> contractVos = keyCustomerVo.getCustContraVos();
+                    if(null != contractVos && contractVos.size() > 0){
+                        for(CustomerContractVo vo : contractVos){
+                            int i = updateCustomerContractById(vo);
+                            if(i > 0){
+                                no ++;
+                            }
+                        }
+                        if(no == contractVos.size()){
+                            return true;
+                        }
+                    }
+                }
+            }
+        }catch (Exception e){
+            log.error("更新大客户&合同出现异常",e);
+            throw new CommonException(e.getMessage());
+        }
+        return false;
+    }
+
+    @Override
+    public PageInfo<ListKeyCustomerDto> findKeyCustomer(SelectKeyCustomerVo keyCustomerVo) {
+        PageInfo<ListKeyCustomerDto> pageInfo = null;
+        Customer cu = new Customer();
+        try{
+            PageHelper.startPage(keyCustomerVo.getPageNo(), keyCustomerVo.getPageSize());
+            BeanUtils.copyProperties(keyCustomerVo,cu);
+            List<ListKeyCustomerDto> keyCustomerList = iCustomerDao.findKeyCustomter(cu);
+            pageInfo = new PageInfo<>(keyCustomerList);
+        }catch (Exception e){
+            log.error("根据条件查询大客户出现异常",e);
+            throw new CommonException(e.getMessage());
+        }
+        return null;
     }
 
     /**
@@ -280,5 +358,39 @@ public class CustomerServiceImpl implements ICustomerService{
             log.error("新增合同出现异常",e);
             throw new CommonException("新增合同出现异常");
         }
+    }
+
+    private int updateCustomerContractById(CustomerContractVo vo){
+        try{
+            CustomerContract contract = iCustomerContractDao.selectById(vo.getId());
+            if(null != contract){
+                contract.setContractNo(vo.getContractNo());
+                contract.setContactNature(vo.getContactNature());
+                contract.setSettlePeriod(vo.getSettlePeriod());
+                contract.setContractLife(LocalDateTimeUtil.convertToLong(vo.getProjectEstabTime(),DATE_FORMAT));
+                contract.setProjectName(vo.getProjectName());
+                contract.setProjectLevel(vo.getProjectLevel());
+                contract.setMajorProduct(vo.getMajorProduct());
+                contract.setProjectNature(vo.getProjectNature());
+                contract.setDateOfProSign(LocalDateTimeUtil.convertToLong(vo.getDateOfProSign(),DATE_FORMAT));
+                contract.setOneOffContract(vo.getOneOffContract());
+                contract.setProTraVolume(vo.getProTraVolume());
+                contract.setAvgMthTraVolume(vo.getAvgMthTraVolume());
+                contract.setBusiCover(vo.getBusiCover());
+                contract.setFixedRoute(vo.getFixedRoute());
+                contract.setProjectDeper(vo.getProjectDeper());
+                contract.setProjectLeader(vo.getProjectLeader());
+                contract.setLeaderPhone(vo.getLeaderPhone());
+                contract.setProjectStatus(vo.getProjectStatus());
+                contract.setProjectTeamPer(vo.getProjectTeamPer());
+                contract.setProjectEstabTime(LocalDateTimeUtil.convertToLong(vo.getProjectEstabTime(),DATE_FORMAT));
+                contract.setMajorKpi(vo.getMajorKpi());
+                return iCustomerContractDao.updateById(contract);
+            }
+        }catch (Exception e){
+            log.error("更新合同出现异常",e);
+            throw new CommonException("更新合同出现异常");
+        }
+        return 0;
     }
 }
