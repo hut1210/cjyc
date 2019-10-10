@@ -1,11 +1,11 @@
-package com.cjyc.common.model.vo;
+package com.cjyc.common.model.dto.web;
 
 import lombok.Data;
 
 import java.io.Serializable;
 
 @Data
-public class CustomerVo implements Serializable {
+public class CustomerDto implements Serializable {
 
     /**
      * 账号（手机号）
