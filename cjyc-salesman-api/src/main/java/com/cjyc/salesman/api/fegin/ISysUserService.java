@@ -29,7 +29,7 @@ public interface ISysUserService {
      * @param userId 用户ID
      */
     @GetMapping("/sys/user/get/{userId}")
-    ResultData<SysUserEntity> selectById(@PathVariable Long userId);
+    ResultData<SysUserEntity> selectById(@PathVariable("userId") Long userId);
 
     /**
      * 查询用户实体对象SysUser
@@ -38,7 +38,7 @@ public interface ISysUserService {
      * @param username 用户名
      */
     @GetMapping("/sys/user/getbyname/{username}")
-    ResultData<SysUserEntity> selectByUsername(@PathVariable String username);
+    ResultData<SysUserEntity> selectByUsername(@PathVariable("username") String username);
 
     /**
      * 查询用户列表（分页）
@@ -66,7 +66,7 @@ public interface ISysUserService {
      * @param userId 用户ID
      */
     @GetMapping("/sys/user/getRoleTopDeptId/{userId}")
-    ResultData<List<Long>> getRoleTopDeptId(@PathVariable Long userId);
+    ResultData<List<Long>> getRoleTopDeptId(@PathVariable("userId") Long userId);
 
     /**
      * 查询用户列表信息: 部门id必传，需要针对部门做数据过滤
