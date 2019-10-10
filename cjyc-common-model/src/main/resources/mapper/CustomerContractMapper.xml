@@ -35,7 +35,7 @@
     </sql>
 
     <!-- 根据customerId删除大客户合同 -->
-    <delete id="deleteContractByCustomerId" parameterType="java.lang.Long">
+    <delete id="deleteContractByCustomerId" parameterType="java.lang.Long" >
         delete from c_customer_contract where customer_id = #{customerId}
     </delete>
 

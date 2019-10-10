@@ -2,6 +2,7 @@ package com.cjyc.common.service.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjyc.common.model.dao.ICustomerContactDao;
+import com.cjyc.common.model.dao.IIncrementerDao;
 import com.cjyc.common.model.entity.CustomerContact;
 import com.cjyc.common.service.service.ICustomerContactService;
 import com.github.pagehelper.PageHelper;
@@ -21,10 +22,21 @@ public class CustomerContactServiceImpl implements ICustomerContactService {
 
     @Resource
     private ICustomerContactDao customerContactDao;
+    @Resource
+    private IIncrementerDao incrementerDao;
 
     @Override
     public boolean addCustomerContact(CustomerContact entity) {
-        int re = customerContactDao.insert(entity);
+        String no = incrementerDao.getIncrementer("ie");
+        System.out.print("+++++++++++>>"+no);
+        //int re = customerContactDao.insert(entity);
+        //return re > 0 ? true : false;
+        return false;
+    }
+
+    @Override
+    public boolean updCustomerContact(CustomerContact customerContact) {
+        int re = customerContactDao.updateById(customerContact);
         return re > 0 ? true : false;
     }
 
