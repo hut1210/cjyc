@@ -30,5 +30,9 @@ public interface ICustomerDao extends BaseMapper<Customer> {
      */
     List<CustomerVo> findCustomer(@Param("phone") String phone, @Param("name") String name, @Param("idCard") String idCard);
 
+    /**
+     * 查询所有大客户用户
+     * @return
+     */
     List<KeyCustomerDto> getAllKeyCustomter();
 }
