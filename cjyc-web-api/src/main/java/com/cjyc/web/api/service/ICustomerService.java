@@ -65,14 +65,14 @@ public interface ICustomerService  {
      * @param keyCustomerVo
      * @return
      */
-    ResultVo saveKeyCustAndContract(KeyCustomerVo keyCustomerVo);
+    boolean saveKeyCustAndContract(KeyCustomerVo keyCustomerVo);
 
     /**
      * 根据ids删除大客户
      * @param arrIds
      * @return
      */
-    ResultVo deleteKeyCustomer(Long[] arrIds);
+    boolean deleteKeyCustomer(Long[] arrIds);
 
     /**
      * 分页查看所有大客户

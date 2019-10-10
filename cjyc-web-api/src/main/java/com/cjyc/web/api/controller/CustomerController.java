@@ -81,13 +81,17 @@ public class CustomerController {
     @ApiOperation(value = "新增大客户&合同", notes = "新增大客户&合同", httpMethod = "POST")
     @RequestMapping(value = "/saveKeyCustAndContract", method = RequestMethod.POST)
     public ResultVo saveKeyCustAndContract(@Validated({ KeyCustomerVo.SaveKeyCustomerVo.class }) @RequestBody KeyCustomerVo keyCustomerVo){
-        return iCustomerService.saveKeyCustAndContract(keyCustomerVo);
+        boolean result =  iCustomerService.saveKeyCustAndContract(keyCustomerVo);
+        return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg())
+                : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
     }
 
     @ApiOperation(value = "根据ids删除大用户", notes = "根据ids删除大用户", httpMethod = "DELETE")
     @DeleteMapping(value = "/deleteKeyCustomer/{arrIds}")
     public ResultVo deleteKeyCustomer(@PathVariable Long[] arrIds){
-        return iCustomerService.deleteKeyCustomer(arrIds);
+        boolean result = iCustomerService.deleteKeyCustomer(arrIds);
+        return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg())
+                : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
     }
 
     @ApiOperation(value = "分页查看大客户", notes = "分页查看大客户", httpMethod = "POST")

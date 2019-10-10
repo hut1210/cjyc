@@ -157,7 +157,7 @@ public class CustomerServiceImpl implements ICustomerService{
     }
 
     @Override
-    public ResultVo saveKeyCustAndContract(KeyCustomerVo keyCustomerVo) {
+    public boolean saveKeyCustAndContract(KeyCustomerVo keyCustomerVo) {
         try{
             //新增大客户
             Customer customer = new Customer();
@@ -171,38 +171,56 @@ public class CustomerServiceImpl implements ICustomerService{
             customer.setCustomerNature(keyCustomerVo.getCustomerNature());
             customer.setCompanyNature(keyCustomerVo.getCompanyNature());
             customer.setType(2);
-            iCustomerDao.insert(customer);
-
-            //合同集合
-            List<CustomerContractVo> customerConList = keyCustomerVo.getCustContraVos();
-            if(customerConList != null && customerConList.size() > 0){
-                for(CustomerContractVo vo : customerConList){
-                    saveCustomerContract(id , vo);
+            int num = iCustomerDao.insert(customer);
+            if(num > 0){
+                //合同集合
+                int no = 0;
+                List<CustomerContractVo> customerConList = keyCustomerVo.getCustContraVos();
+                if(customerConList != null && customerConList.size() > 0){
+                    for(CustomerContractVo vo : customerConList){
+                        int i = saveCustomerContract(id , vo);
+                        if(i > 0){
+                            no ++;
+                        }
+                    }
+                    if(no == customerConList.size()){
+                        return true;
+                    }
                 }
             }
         }catch (Exception e){
             log.error("新增大客户&合同出现异常",e);
             throw new CommonException("新增大客户&合同出现异常");
         }
-        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),"新增大客户&合同处理成功");
+        return false;
     }
 
     @Override
-    public ResultVo deleteKeyCustomer(Long[] arrIds) {
+    public boolean deleteKeyCustomer(Long[] arrIds) {
+        int num ;
+        int no = 0;
         try{
             if( null != arrIds && arrIds.length > 0){
                 List<Long> ids = Arrays.asList(arrIds);
-                iCustomerDao.deleteBatchIds(ids);
-                //循环删除大客户合同
-                for(Long custid : ids){
-                    iCustomerContractDao.deleteContractByCustomerId(custid);
+                num = iCustomerDao.deleteBatchIds(ids);
+                if(num > 0){
+                    //循环删除大客户合同
+                    for(Long custid : ids){
+                        int i = iCustomerContractDao.deleteContractByCustomerId(custid);
+                        if(i > 0){
+                            no ++;
+                        }
+                    }
+                    if(no == arrIds.length){
+                        return true;
+                    }
                 }
             }
         }catch (Exception e){
             log.error("删除大客户出现异常",e);
             throw new CommonException(e.getMessage());
         }
-        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),"删除大客户处理成功");
+        return false;
     }
 
     @Override
@@ -232,7 +250,7 @@ public class CustomerServiceImpl implements ICustomerService{
      * @param id  大客户id
      * @param vo  合同
      */
-    private void saveCustomerContract(Long id ,CustomerContractVo vo){
+    private int saveCustomerContract(Long id ,CustomerContractVo vo){
         try{
             CustomerContract custCont = new CustomerContract();
             custCont.setId(SnowflakeIdWorker.nextId());
@@ -257,7 +275,7 @@ public class CustomerServiceImpl implements ICustomerService{
             custCont.setProjectTeamPer(vo.getProjectTeamPer());
             custCont.setProjectEstabTime(LocalDateTimeUtil.convertToLong(vo.getProjectEstabTime(),DATE_FORMAT));
             custCont.setMajorKpi(vo.getMajorKpi());
-            iCustomerContractDao.insert(custCont);
+            return iCustomerContractDao.insert(custCont);
         }catch (Exception e){
             log.error("新增合同出现异常",e);
             throw new CommonException("新增合同出现异常");
