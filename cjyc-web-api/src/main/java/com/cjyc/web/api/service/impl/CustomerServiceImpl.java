@@ -12,6 +12,7 @@ import com.cjyc.common.model.dto.web.ShowKeyCustomerDto;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.entity.CustomerContract;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
+import com.cjyc.common.model.vo.BasePageVo;
 import com.cjyc.common.model.vo.web.*;
 import com.cjyc.web.api.exception.CommonException;
 import com.cjyc.web.api.service.ICustomerService;
@@ -19,7 +20,6 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,16 +66,16 @@ public class CustomerServiceImpl implements ICustomerService{
     }
 
     @Override
-    public PageInfo<Customer> getAllCustomer(Integer pageNo,Integer pageSize) {
+    public PageInfo<Customer> getAllCustomer(BasePageVo basePageVo) {
         PageInfo<Customer> pageInfo = null;
         try{
-            if (null == pageNo) {
-                pageNo=1;
+            if(basePageVo.getCurrentPage() == null || basePageVo.getCurrentPage() < 1){
+                basePageVo.setCurrentPage(1);
             }
-            if (null == pageSize) {
-                pageSize=10;
+            if(basePageVo.getPageSize() == null || basePageVo.getPageSize() < 1){
+                basePageVo.setPageSize(10);
             }
-            PageHelper.startPage(pageNo, pageSize);
+            PageHelper.startPage(basePageVo.getCurrentPage(), basePageVo.getPageSize());
             List<Customer> customerList = iCustomerDao.selectList(new QueryWrapper<Customer>().eq("type",1));
             pageInfo = new PageInfo<>(customerList);
         }catch (Exception e){
@@ -130,23 +130,17 @@ public class CustomerServiceImpl implements ICustomerService{
     }
 
     @Override
-    public PageInfo<CustomerDto> findCustomer(JSONObject jsonObject) {
+    public PageInfo<CustomerDto> findCustomer(SelectCustomerVo customerVo) {
         PageInfo<CustomerDto> pageInfo = null;
         try{
-            Integer pageNo = jsonObject.getInteger("pageNo");
-            Integer pageSize = jsonObject.getInteger("pageSize");
-            if (null == pageNo) {
-                pageNo=1;
+            if(customerVo.getCurrentPage() == null || customerVo.getCurrentPage() < 1){
+                customerVo.setCurrentPage(1);
             }
-            if (null == pageSize) {
-                pageSize=10;
+            if(customerVo.getPageSize() == null || customerVo.getPageSize() < 1){
+                customerVo.setPageSize(10);
             }
-            String phone = jsonObject.getString("phone");
-            String name = jsonObject.getString("name");
-            String idCard = jsonObject.getString("idCard");
-
-            PageHelper.startPage(pageNo, pageSize);
-            List<CustomerDto> customerVos = iCustomerDao.findCustomer(phone,name,idCard);
+            PageHelper.startPage(customerVo.getCurrentPage(), customerVo.getPageSize());
+            List<CustomerDto> customerVos = iCustomerDao.findCustomer(customerVo);
             pageInfo = new PageInfo<>(customerVos);
         }catch (Exception e){
             log.error("根据条件查询用户出现异常",e);
@@ -225,7 +219,13 @@ public class CustomerServiceImpl implements ICustomerService{
     public PageInfo<ListKeyCustomerDto> getAllKeyCustomer(BasePageVo pageVo) {
         PageInfo<ListKeyCustomerDto> pageInfo = null;
         try{
-            PageHelper.startPage(pageVo.getPageNo(), pageVo.getPageSize());
+            if(pageVo.getCurrentPage() == null || pageVo.getCurrentPage() < 1){
+                pageVo.setCurrentPage(1);
+            }
+            if(pageVo.getPageSize() == null || pageVo.getPageSize() < 1){
+                pageVo.setPageSize(10);
+            }
+            PageHelper.startPage(pageVo.getCurrentPage(), pageVo.getPageSize());
             List<ListKeyCustomerDto> customerList = iCustomerDao.getAllKeyCustomter();
             pageInfo = new PageInfo<>(customerList);
         }catch (Exception e){
@@ -245,6 +245,7 @@ public class CustomerServiceImpl implements ICustomerService{
                 //根据customer_id查询大客户的合同
                 List<CustomerContractDto> contractDtos = iCustomerContractDao.getCustContractByCustId(id);
                 sKeyCustomerDto = new ShowKeyCustomerDto();
+                sKeyCustomerDto.setId(customer.getId());
                 sKeyCustomerDto.setName(customer.getName());
                 sKeyCustomerDto.setAlias(customer.getAlias());
                 sKeyCustomerDto.setContactMan(customer.getContactMan());
@@ -310,17 +311,21 @@ public class CustomerServiceImpl implements ICustomerService{
     @Override
     public PageInfo<ListKeyCustomerDto> findKeyCustomer(SelectKeyCustomerVo keyCustomerVo) {
         PageInfo<ListKeyCustomerDto> pageInfo = null;
-        Customer cu = new Customer();
         try{
-            PageHelper.startPage(keyCustomerVo.getPageNo(), keyCustomerVo.getPageSize());
-            BeanUtils.copyProperties(keyCustomerVo,cu);
-            List<ListKeyCustomerDto> keyCustomerList = iCustomerDao.findKeyCustomter(cu);
+            if(keyCustomerVo.getCurrentPage() == null || keyCustomerVo.getCurrentPage() < 1){
+                keyCustomerVo.setCurrentPage(1);
+            }
+            if(keyCustomerVo.getPageSize() == null || keyCustomerVo.getPageSize() < 1){
+                keyCustomerVo.setPageSize(10);
+            }
+            PageHelper.startPage(keyCustomerVo.getCurrentPage(), keyCustomerVo.getPageSize());
+            List<ListKeyCustomerDto> keyCustomerList = iCustomerDao.findKeyCustomter(keyCustomerVo);
             pageInfo = new PageInfo<>(keyCustomerList);
         }catch (Exception e){
             log.error("根据条件查询大客户出现异常",e);
             throw new CommonException(e.getMessage());
         }
-        return null;
+        return pageInfo;
     }
 
     /**
@@ -393,4 +398,5 @@ public class CustomerServiceImpl implements ICustomerService{
         }
         return 0;
     }
+
 }

@@ -1,6 +1,5 @@
 package com.cjyc.web.api.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.cjyc.common.model.dto.web.CustomerDto;
 import com.cjyc.common.model.dto.web.ListKeyCustomerDto;
 import com.cjyc.common.model.dto.web.ShowKeyCustomerDto;
@@ -8,9 +7,10 @@ import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.BasePageVo;
+import com.cjyc.common.model.vo.BasePageVo;
 import com.cjyc.common.model.vo.web.CustomerVo;
 import com.cjyc.common.model.vo.web.KeyCustomerVo;
+import com.cjyc.common.model.vo.web.SelectCustomerVo;
 import com.cjyc.common.model.vo.web.SelectKeyCustomerVo;
 import com.cjyc.web.api.service.ICustomerService;
 import com.github.pagehelper.PageInfo;
@@ -43,10 +43,10 @@ public class CustomerController {
     }
 
     @ApiOperation(value = "分页查看移动端用户", notes = "分页查看移动端用户", httpMethod = "POST")
-    @PostMapping(value = "/getAllCustomer/{pageNo}/{pageSize}")
-    public ResultVo getAllCustomer(@PathVariable Integer pageNo,@PathVariable Integer pageSize){
-        PageInfo<Customer> pageInfo = iCustomerService.getAllCustomer(pageNo,pageSize);
-        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),pageInfo);
+    @PostMapping(value = "/getAllCustomer")
+    public ResultVo getAllCustomer(@RequestBody BasePageVo basePageVo){
+        PageInfo<Customer> pageInfo = iCustomerService.getAllCustomer(basePageVo);
+        return BaseResultUtil.getPageVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),pageInfo);
     }
 
     @ApiOperation(value = "根据用户id查看移动端用户", notes = "根据用户id查看移动端用户", httpMethod = "GET")
@@ -75,9 +75,9 @@ public class CustomerController {
 
     @ApiOperation(value = "根据条件查询移动端用户", notes = "根据条件查询移动端用户", httpMethod = "POST")
     @PostMapping(value = "/findCustomer")
-    public ResultVo findCustomer(@RequestBody JSONObject jsonObject){
-        PageInfo<CustomerDto> pageInfo = iCustomerService.findCustomer(jsonObject);
-        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),pageInfo);
+    public ResultVo findCustomer(@RequestBody SelectCustomerVo selectCustomerVo){
+        PageInfo<CustomerDto> pageInfo = iCustomerService.findCustomer(selectCustomerVo);
+        return BaseResultUtil.getPageVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),pageInfo);
     }
 
     @ApiOperation(value = "新增大客户&合同", notes = "新增大客户&合同", httpMethod = "POST")
@@ -100,10 +100,10 @@ public class CustomerController {
     @PostMapping(value = "/getAllKeyCustomer")
     public ResultVo getAllKeyCustomer(@RequestBody BasePageVo pageVo){
         PageInfo<ListKeyCustomerDto> pageInfo = iCustomerService.getAllKeyCustomer(pageVo);
-        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),pageInfo);
+        return BaseResultUtil.getPageVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),pageInfo);
     }
 
-    @ApiOperation(value = "根据大客户id查看大客户&合同", notes = "根据大客户id查看大客户&合同", httpMethod = "GET")
+    @ApiOperation(value = "大客户id查看大客户&合同", notes = "大客户id查看大客户&合同", httpMethod = "GET")
     @GetMapping(value = "/showKeyCustomerById/{id}")
     public ResultVo showKeyCustomerById(@PathVariable Long id){
         ShowKeyCustomerDto dto = iCustomerService.showKeyCustomerById(id);
@@ -122,6 +122,6 @@ public class CustomerController {
     @PostMapping(value = "/findKeyCustomer")
     public ResultVo findKeyCustomer(@RequestBody SelectKeyCustomerVo selectKeyCustomerVo){
         PageInfo<ListKeyCustomerDto> pageInfo = iCustomerService.findKeyCustomer(selectKeyCustomerVo);
-        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),pageInfo);
+        return BaseResultUtil.getPageVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),pageInfo);
     }
 }
