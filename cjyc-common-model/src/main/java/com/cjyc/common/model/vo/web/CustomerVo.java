@@ -1,5 +1,6 @@
 package com.cjyc.common.model.vo.web;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -16,33 +17,25 @@ public class CustomerVo implements Serializable {
     }
 
     @NotNull(groups = {UpdateCustomerVo.class},message = "id不能为空")
+    @ApiModelProperty(value = "主键id",required = true)
     private Long id;
-    /**
-     * 客户名称
-     */
+
     @NotBlank(groups = {SaveCustomerVo.class},message = "客户名称不能为空")
     @NotBlank(groups = {UpdateCustomerVo.class},message = "客户名称不能为空")
+    @ApiModelProperty(value = "客户名称",required = true)
     private String name;
 
-    /**
-     * 手机号
-     */
     @NotBlank(groups = {SaveCustomerVo.class},message = "手机号不能为空")
     @NotBlank(groups = {UpdateCustomerVo.class},message = "手机号不能为空")
+    @ApiModelProperty(value = "手机号",required = true)
     private String phone;
 
-    /**
-     * 身份证号
-     */
+    @ApiModelProperty(value = "身份证号")
     private String idCard;
 
-    /**
-     * 身份证正面
-     */
+    @ApiModelProperty(value = "身份证正面")
     private String idCardFrontImg;
 
-    /**
-     * 身份证反面
-     */
+    @ApiModelProperty(value = "身份证反面")
     private String idCardBackImg;
 }
