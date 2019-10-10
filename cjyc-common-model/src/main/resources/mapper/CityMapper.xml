@@ -29,5 +29,10 @@
         <include refid="Base_Column_List"/>
         from s_city;
     </select>
+    <select id="countInfo" resultType="java.util.Map">
+        select
+        count(0) as count
+        from s_city;
+    </select>
 
 </mapper>
