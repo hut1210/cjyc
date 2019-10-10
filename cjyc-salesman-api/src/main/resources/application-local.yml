@@ -18,13 +18,8 @@ server:
 
 ##-----------------------------------spring-------------------------------------------
 spring:
-  ##静态资源本地位置(最后的/记得加) TODO 修改静态资源路径
-  #resources:
-    #static-locations: file:D:\\upload\\
-  #静态资源过滤url
-  #mvc:
-    #static-path-pattern: /**
-
+  main:
+    allow-bean-definition-overriding: true
   ##actuator管理
   management:
     endpoints:

@@ -1,7 +1,5 @@
 package com.cjyc.salesman.api.exception;
 
-import com.alibaba.fastjson.JSONObject;
-
 import java.text.MessageFormat;
 
 public class ParameterException extends RuntimeException {
