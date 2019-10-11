@@ -1,13 +1,10 @@
 package com.cjyc.common.model.dao;
 
-import com.cjyc.common.model.dto.CityDto;
-import com.cjyc.common.model.entity.City;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.cjyc.common.model.vo.CityVo;
+import com.cjyc.common.model.entity.City;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -23,6 +20,5 @@ public interface ICityDao extends BaseMapper<City> {
 
     List<City> findList();
 
-    Map<String, Object> countInfo(CityDto cityDto);
 }
 
