@@ -1,7 +1,9 @@
 package com.cjyc.common.model.dao;
 
-import com.cjyc.common.model.entity.ZdataCity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cjyc.common.model.entity.ZdataCity;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +15,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface IZdataCityDao extends BaseMapper<ZdataCity> {
 
+
+
+    List<ZdataCity> findList();
 }
