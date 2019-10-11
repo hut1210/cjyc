@@ -25,7 +25,4 @@ public interface ICityService extends IService<City> {
 
     City findById(@Param("cityCode") String cityCode);
 
-    PageInfo<City> findPage(CityDto cityDto);
-
-    Map<String, Object> countInfo(CityDto cityDto);
 }
