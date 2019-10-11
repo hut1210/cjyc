@@ -1,13 +1,13 @@
-package com.cjyc.common.model.vo.web;
+package com.cjyc.common.model.dto.web;
 
-import com.cjyc.common.model.vo.BasePageVo;
+import com.cjyc.common.model.dto.BasePageDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
 
 @Data
-public class SelectKeyCustomerVo extends BasePageVo implements Serializable {
+public class SelectKeyCustomerDto extends BasePageDto implements Serializable {
 
     @ApiModelProperty(value = "大客户主键id")
     private Long id;

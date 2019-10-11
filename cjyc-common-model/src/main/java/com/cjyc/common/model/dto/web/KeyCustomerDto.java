@@ -1,4 +1,4 @@
-package com.cjyc.common.model.vo.web;
+package com.cjyc.common.model.dto.web;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.util.List;
 
 @Data
-public class KeyCustomerVo implements Serializable {
+public class KeyCustomerDto implements Serializable {
 
     public interface SaveKeyCustomerVo {
     }
@@ -49,5 +49,5 @@ public class KeyCustomerVo implements Serializable {
     private String companyNature;
 
     @ApiModelProperty(value = "大客户合同")
-    private List<CustomerContractVo> custContraVos;
+    private List<CustomerContractDto> custContraVos;
 }
