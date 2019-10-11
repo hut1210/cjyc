@@ -8,6 +8,7 @@ import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.vo.BasePageVo;
 import com.cjyc.common.model.vo.web.CustomerVo;
 import com.cjyc.common.model.vo.web.KeyCustomerVo;
+import com.cjyc.common.model.vo.web.SelectCustomerVo;
 import com.cjyc.common.model.vo.web.SelectKeyCustomerVo;
 import com.github.pagehelper.PageInfo;
 
@@ -26,12 +27,11 @@ public interface ICustomerService  {
     boolean saveCustomer(CustomerVo customerVo);
 
     /**
-     * 分页查询移动端用户
-     * @param pageNo  当前页
-     * @param pageSize 每页大小
+     *  分页查询所有移动端用户
+     * @param basePageVo
      * @return
      */
-    PageInfo<Customer> getAllCustomer(Integer pageNo, Integer pageSize);
+    PageInfo<Customer> getAllCustomer(BasePageVo basePageVo);
 
     /**
      * 根据用户id查看移动端用户
@@ -56,10 +56,10 @@ public interface ICustomerService  {
 
     /**
      * 根据条件查询移动端用户
-     * @param jsonObject
+     * @param selectCustomerVo
      * @return
      */
-    PageInfo<CustomerDto> findCustomer(JSONObject jsonObject);
+    PageInfo<CustomerDto> findCustomer(SelectCustomerVo selectCustomerVo);
 
     /**
      * 新增大客户&合同

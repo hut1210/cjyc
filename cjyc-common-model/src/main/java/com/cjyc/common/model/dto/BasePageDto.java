@@ -1,4 +1,4 @@
-package com.cjyc.common.model.vo;
+package com.cjyc.common.model.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -6,13 +6,13 @@ import lombok.Data;
 import java.io.Serializable;
 
 @Data
-public class BasePageVo implements Serializable {
+public class BasePageDto implements Serializable {
 
     /**
      * 每页大小
      */
     @ApiModelProperty(value = "当前页码")
-    private Integer pageNum;
+    private Integer currentPage;
 
     /**
      * 当前页码

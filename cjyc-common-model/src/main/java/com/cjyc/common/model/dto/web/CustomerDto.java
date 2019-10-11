@@ -1,39 +1,41 @@
 package com.cjyc.common.model.dto.web;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 @Data
 public class CustomerDto implements Serializable {
 
-    /**
-     * 账号（手机号）
-     */
-    private String phone;
+    public interface SaveCustomerVo {
+    }
 
-    /**
-     * 姓名
-     */
+    public interface UpdateCustomerVo {
+    }
+
+    @NotNull(groups = {UpdateCustomerVo.class},message = "id不能为空")
+    @ApiModelProperty(value = "主键id",required = true)
+    private Long id;
+
+    @NotBlank(groups = {SaveCustomerVo.class},message = "客户名称不能为空")
+    @NotBlank(groups = {UpdateCustomerVo.class},message = "客户名称不能为空")
+    @ApiModelProperty(value = "客户名称",required = true)
     private String name;
 
-    /**
-     * 身份证号
-     */
+    @NotBlank(groups = {SaveCustomerVo.class},message = "手机号不能为空")
+    @NotBlank(groups = {UpdateCustomerVo.class},message = "手机号不能为空")
+    @ApiModelProperty(value = "手机号",required = true)
+    private String phone;
+
+    @ApiModelProperty(value = "身份证号")
     private String idCard;
 
-    /**
-     * 身份证人像
-     */
+    @ApiModelProperty(value = "身份证正面")
     private String idCardFrontImg;
 
-    /**
-     * 身份证反面（国徽）
-     */
+    @ApiModelProperty(value = "身份证反面")
     private String idCardBackImg;
-
-    /**
-     * 注册时间
-     */
-    private String registerTime;
 }
