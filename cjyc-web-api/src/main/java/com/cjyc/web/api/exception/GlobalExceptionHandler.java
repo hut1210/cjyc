@@ -2,8 +2,8 @@ package com.cjyc.web.api.exception;
 
 
 
-import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.enums.ResultEnum;
+import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ControllerAdvice;

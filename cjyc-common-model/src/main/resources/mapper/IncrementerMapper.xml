@@ -14,9 +14,9 @@
     <sql id="Base_Column_List">
         id, date, prefix, number
     </sql>
-
-    <!-- 根据前缀获取业务自增编号 -->
+        <!-- 根据前缀获取业务自增编号 -->
     <select id="getIncrementer" resultType="String">
         select fuc_increamenter(#{preName})
     </select>
+
 </mapper>

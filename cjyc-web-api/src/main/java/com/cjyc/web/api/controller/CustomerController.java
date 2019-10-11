@@ -21,8 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 /**
  *  @author: zj
  *  @Date: 2019/9/29 14:37
@@ -38,8 +36,8 @@ public class CustomerController {
     private ICustomerService iCustomerService;
 
     @ApiOperation(value = "新增移动端用户", notes = "新增移动端用户", httpMethod = "POST")
-    @PostMapping(value = "/saveCustomer")
-    public ResultVo saveCustomer(@Validated({ CustomerDto.SaveCustomerVo.class }) @RequestBody CustomerDto customerVo){
+    @RequestMapping(value = "/saveCustomer", method = RequestMethod.POST)
+    public ResultVo saveCustomer(@Validated({ CustomerVo.SaveCustomerVo.class }) @RequestBody CustomerVo customerVo){
         boolean result = iCustomerService.saveCustomer(customerVo);
         return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg())
                 : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
@@ -47,30 +45,30 @@ public class CustomerController {
 
     @ApiOperation(value = "分页查看移动端用户", notes = "分页查看移动端用户", httpMethod = "POST")
     @PostMapping(value = "/getAllCustomer")
-    public ResultVo<PageVo<Customer>> getAllCustomer(@RequestBody BasePageDto basePageDto){
-        PageInfo<Customer> pageInfo = iCustomerService.getAllCustomer(basePageDto);
+    public ResultVo getAllCustomer(@RequestBody BasePageVo basePageVo){
+        PageInfo<Customer> pageInfo = iCustomerService.getAllCustomer(basePageVo);
         return BaseResultUtil.getPageVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),pageInfo);
     }
 
-    @ApiOperation(value = "根据用户id查看移动端用户", notes = "根据用户id查看移动端用户", httpMethod = "POST")
-    @PostMapping(value = "/showCustomerById/{id}")
-    public ResultVo<Customer> showCustomerById(@PathVariable Long id){
+    @ApiOperation(value = "根据用户id查看移动端用户", notes = "根据用户id查看移动端用户", httpMethod = "GET")
+    @GetMapping(value = "/showCustomerById/{id}")
+    public ResultVo showCustomerById(@PathVariable Long id){
         Customer customer = iCustomerService.showCustomerById(id);
         return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),customer);
     }
 
 
-    @ApiOperation(value = "更新移动端用户", notes = "更新移动端用户", httpMethod = "POST")
-    @PostMapping(value = "/updateCustomer")
-    public ResultVo updateCustomer(@Validated({ CustomerDto.UpdateCustomerVo.class }) @RequestBody CustomerDto customerDto){
+    @ApiOperation(value = "更新移动端用户", notes = "更新移动端用户", httpMethod = "PUT")
+    @PutMapping(value = "/updateCustomer")
+    public ResultVo updateCustomer(@Validated({ CustomerVo.UpdateCustomerVo.class }) @RequestBody CustomerVo customerDto){
         boolean result = iCustomerService.updateCustomer(customerDto);
         return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg())
                 : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
     }
 
-    @ApiOperation(value = "根据id删除移动端用户", notes = "根据id删除移动端用户", httpMethod = "POST")
-    @PostMapping(value = "/deleteCustomer")
-    public ResultVo deleteCustomer(@RequestBody List<Long> arrIds){
+    @ApiOperation(value = "根据id删除移动端用户", notes = "根据id删除移动端用户", httpMethod = "DELETE")
+    @DeleteMapping(value = "/deleteCustomer/{arrIds}")
+    public ResultVo deleteCustomer(@PathVariable Long[] arrIds){
         boolean result = iCustomerService.deleteCustomer(arrIds);
         return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg())
                 : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
@@ -78,22 +76,22 @@ public class CustomerController {
 
     @ApiOperation(value = "根据条件查询移动端用户", notes = "根据条件查询移动端用户", httpMethod = "POST")
     @PostMapping(value = "/findCustomer")
-    public ResultVo<PageVo<CustomerVo>> findCustomer(@RequestBody SelectCustomerDto selectCustomerDto){
-        PageInfo<CustomerVo> pageInfo = iCustomerService.findCustomer(selectCustomerDto);
+    public ResultVo findCustomer(@RequestBody SelectCustomerVo selectCustomerVo){
+        PageInfo<CustomerDto> pageInfo = iCustomerService.findCustomer(selectCustomerVo);
         return BaseResultUtil.getPageVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),pageInfo);
     }
 
     @ApiOperation(value = "新增大客户&合同", notes = "新增大客户&合同", httpMethod = "POST")
-    @PostMapping(value = "/saveKeyCustAndContract")
-    public ResultVo saveKeyCustAndContract(@Validated({ KeyCustomerDto.SaveKeyCustomerVo.class }) @RequestBody KeyCustomerDto keyCustomerDto){
-        boolean result =  iCustomerService.saveKeyCustAndContract(keyCustomerDto);
+    @RequestMapping(value = "/saveKeyCustAndContract", method = RequestMethod.POST)
+    public ResultVo saveKeyCustAndContract(@Validated({ KeyCustomerVo.SaveKeyCustomerVo.class }) @RequestBody KeyCustomerVo keyCustomerVo){
+        boolean result =  iCustomerService.saveKeyCustAndContract(keyCustomerVo);
         return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg())
                 : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
     }
 
-    @ApiOperation(value = "根据ids删除大用户", notes = "根据ids删除大用户", httpMethod = "POST")
-    @PostMapping(value = "/deleteKeyCustomer")
-    public ResultVo deleteKeyCustomer(@RequestBody List<Long> arrIds){
+    @ApiOperation(value = "根据ids删除大用户", notes = "根据ids删除大用户", httpMethod = "DELETE")
+    @DeleteMapping(value = "/deleteKeyCustomer/{arrIds}")
+    public ResultVo deleteKeyCustomer(@PathVariable Long[] arrIds){
         boolean result = iCustomerService.deleteKeyCustomer(arrIds);
         return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg())
                 : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
@@ -101,21 +99,21 @@ public class CustomerController {
 
     @ApiOperation(value = "分页查看大客户", notes = "分页查看大客户", httpMethod = "POST")
     @PostMapping(value = "/getAllKeyCustomer")
-    public ResultVo<PageVo<ListKeyCustomerVo>> getAllKeyCustomer(@RequestBody BasePageDto pageVo){
-        PageInfo<ListKeyCustomerVo> pageInfo = iCustomerService.getAllKeyCustomer(pageVo);
+    public ResultVo getAllKeyCustomer(@RequestBody BasePageVo pageVo){
+        PageInfo<ListKeyCustomerDto> pageInfo = iCustomerService.getAllKeyCustomer(pageVo);
         return BaseResultUtil.getPageVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),pageInfo);
     }
 
-    @ApiOperation(value = "大客户id查看大客户&合同", notes = "大客户id查看大客户&合同", httpMethod = "POST")
-    @PostMapping(value = "/showKeyCustomerById/{id}")
-    public ResultVo<ShowKeyCustomerVo> showKeyCustomerById(@PathVariable Long id){
-        ShowKeyCustomerVo vo = iCustomerService.showKeyCustomerById(id);
-        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),vo);
+    @ApiOperation(value = "大客户id查看大客户&合同", notes = "大客户id查看大客户&合同", httpMethod = "GET")
+    @GetMapping(value = "/showKeyCustomerById/{id}")
+    public ResultVo showKeyCustomerById(@PathVariable Long id){
+        ShowKeyCustomerDto dto = iCustomerService.showKeyCustomerById(id);
+        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),dto);
     }
 
-    @ApiOperation(value = "更新大客户&合同", notes = "更新大客户&合同", httpMethod = "POST")
-    @PostMapping(value = "/updateKeyCustomer")
-    public ResultVo updateKeyCustomer(@Validated({ KeyCustomerDto.UpdateKeyCustomerVo.class }) @RequestBody KeyCustomerDto customerVo){
+    @ApiOperation(value = "更新大客户&合同", notes = "更新大客户&合同", httpMethod = "PUT")
+    @PutMapping(value = "/updateKeyCustomer")
+    public ResultVo updateKeyCustomer(@Validated({ KeyCustomerVo.UpdateKeyCustomerVo.class }) @RequestBody KeyCustomerVo customerVo){
         boolean result = iCustomerService.updateKeyCustomer(customerVo);
         return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg())
                 : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
@@ -123,8 +121,8 @@ public class CustomerController {
 
     @ApiOperation(value = "根据条件查询大客户", notes = "根据条件查询大客户", httpMethod = "POST")
     @PostMapping(value = "/findKeyCustomer")
-    public ResultVo<PageVo<ListKeyCustomerVo>> findKeyCustomer(@RequestBody SelectKeyCustomerDto selectKeyCustomerDto){
-        PageInfo<ListKeyCustomerVo> pageInfo = iCustomerService.findKeyCustomer(selectKeyCustomerDto);
+    public ResultVo findKeyCustomer(@RequestBody SelectKeyCustomerVo selectKeyCustomerVo){
+        PageInfo<ListKeyCustomerDto> pageInfo = iCustomerService.findKeyCustomer(selectKeyCustomerVo);
         return BaseResultUtil.getPageVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),pageInfo);
     }
 }

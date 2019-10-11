@@ -4,61 +4,59 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 
+ * 城市表
  * </p>
  *
  * @author JPG
- * @since 2019-10-08
+ * @since 2019-10-11
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("zdata_city")
+@ApiModel(value="ZdataCity对象", description="城市表")
 public class ZdataCity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * 编码
-     */
-    @TableId(value = "code", type = IdType.INPUT)
+    @ApiModelProperty(value = "编码")
+    @TableId(value = "code", type = IdType.AUTO)
     private String code;
 
-    /**
-     * 名称
-     */
+    @ApiModelProperty(value = "名称")
     private String name;
 
-    /**
-     * 上级行政区编码
-     */
+    @ApiModelProperty(value = "级别")
+    private Boolean level;
+
+    @ApiModelProperty(value = "上级行政区编码")
     private String parentCode;
 
-    /**
-     * 上级行政区名称
-     */
+    @ApiModelProperty(value = "上级行政区名称")
     private String parentName;
 
-    /**
-     * 上上级行政区编码
-     */
-    private String grandpaCode;
+    private String pinYin;
 
-    /**
-     * 上上级行政区名称
-     */
-    private String grandpaName;
+    private String pinInitial;
 
-    /**
-     * 级别
-     */
-    private Boolean level;
+    private String pinAcronym;
+
+    @ApiModelProperty(value = "经度")
+    private String lng;
+
+    @ApiModelProperty(value = "纬度")
+    private String lat;
+
+    @ApiModelProperty(value = "热门城市：0否，1是")
+    private Boolean hot;
 
 
 }

@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -15,95 +17,64 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-08
+ * @since 2019-10-11
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("s_line")
+@ApiModel(value="Line对象", description="班线管理")
 public class Line implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * 线路ID
-     */
+    @ApiModelProperty(value = "线路ID")
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    /**
-     * 线路编号
-     */
+    @ApiModelProperty(value = "线路编号")
     private String code;
 
-    /**
-     * 线路名称
-     */
+    @ApiModelProperty(value = "线路名称")
     private String name;
 
-    /**
-     * 出发地行政区编码
-     */
+    @ApiModelProperty(value = "出发地行政区编码")
     private String fromCode;
 
-    /**
-     * 目的地行政区编码
-     */
+    @ApiModelProperty(value = "目的地行政区编码")
     private String toCode;
 
-    /**
-     * 级别：2市级，3区级
-     */
+    @ApiModelProperty(value = "级别：2市级，3区级")
     private Boolean level;
 
-    /**
-     * 总理程(KM)
-     */
+    @ApiModelProperty(value = "总理程(KM)")
     private BigDecimal kilometer;
 
-    /**
-     * 总耗时(天)
-     */
+    @ApiModelProperty(value = "总耗时(天)")
     private BigDecimal days;
 
-    /**
-     * 状态:1启用 2停用
-     */
+    @ApiModelProperty(value = "状态:1启用 2停用")
     private BigDecimal state;
 
-    /**
-     * 默认物流费（上游），单位分
-     */
+    @ApiModelProperty(value = "默认物流费（上游），单位分")
     private BigDecimal defaultWlFee;
 
-    /**
-     * 默认运费（下游），单位分
-     */
+    @ApiModelProperty(value = "默认运费（下游），单位分")
     private BigDecimal defaultFreightFee;
 
-    /**
-     * 备注
-     */
+    @ApiModelProperty(value = "备注")
     private String remark;
 
-    /**
-     * 创建时间
-     */
+    @ApiModelProperty(value = "创建时间")
     private String createTime;
 
-    /**
-     * 创建人ID
-     */
+    @ApiModelProperty(value = "创建人ID")
     private Long createUserId;
 
-    /**
-     * 更新时间
-     */
+    @ApiModelProperty(value = "更新时间")
     private String updateTime;
 
-    /**
-     * 更新人ID
-     */
+    @ApiModelProperty(value = "更新人ID")
     private Long updateUserId;
 
 

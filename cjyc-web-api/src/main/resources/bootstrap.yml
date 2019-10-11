@@ -4,4 +4,16 @@ spring:
     active: local
   #应用名称
   application:
-    name: yunche-web-api
+    name: cjyc-web-api
+  #nacos Data ID：yunche-api-${spring.profiles.active}.${file-extension}
+  cloud:
+    nacos:
+      #      config:
+      #        # Nacos服务接口(不能加http前缀)
+      #        server-addr: 10.253.96.126:8848
+      #        # Group: yunche.api
+      #        group: yunche.api
+      #        # 指定配置的后缀，支持 properties、yaml、yml，默认为 properties
+      #        file-extension: yml
+      discovery:
+        server-addr: 10.253.96.126:8848

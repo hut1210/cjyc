@@ -4,7 +4,7 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.StoreConf">
-        <result column="id" property="id" />
+        <id column="id" property="id" />
         <result column="store_id" property="storeId" />
         <result column="item" property="item" />
         <result column="item_key" property="itemKey" />

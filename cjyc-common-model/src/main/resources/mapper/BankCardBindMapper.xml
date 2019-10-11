@@ -4,7 +4,7 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.BankCardBind">
-        <result column="id" property="id" />
+        <id column="id" property="id" />
         <result column="user_id" property="userId" />
         <result column="user_type" property="userType" />
         <result column="card_type" property="cardType" />

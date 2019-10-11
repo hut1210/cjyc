@@ -4,7 +4,7 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.LineNode">
-        <result column="id" property="id" />
+        <id column="id" property="id" />
         <result column="line_id" property="lineId" />
         <result column="nodes" property="nodes" />
         <result column="default_flag" property="defaultFlag" />

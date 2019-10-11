@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -14,12 +16,13 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-08
+ * @since 2019-10-11
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("s_car_series")
+@ApiModel(value="CarSeries对象", description="车系管理")
 public class CarSeries implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -27,56 +30,36 @@ public class CarSeries implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
-    /**
-     * 车辆ID
-     */
+    @ApiModelProperty(value = "车辆ID")
     private String carCode;
 
-    /**
-     * 品牌
-     */
+    @ApiModelProperty(value = "品牌")
     private String brand;
 
-    /**
-     * 型号
-     */
+    @ApiModelProperty(value = "型号")
     private String model;
 
-    /**
-     * 分类： 1微型车，2小型车，3中型车，4大型车， 5其他车
-     */
+    @ApiModelProperty(value = "分类： 1微型车，2小型车，3中型车，4大型车， 5其他车")
     private Boolean type;
 
-    /**
-     * 拼音首字母
-     */
+    @ApiModelProperty(value = "拼音首字母")
     private String pinInitial;
 
-    /**
-     * 拼音首字母缩写
-     */
+    @ApiModelProperty(value = "拼音首字母缩写")
     private String pinAcronym;
 
     private String logoImg;
 
-    /**
-     * 创建时间
-     */
+    @ApiModelProperty(value = "创建时间")
     private String createTime;
 
-    /**
-     * 创建人
-     */
+    @ApiModelProperty(value = "创建人")
     private String createUserId;
 
-    /**
-     * 最后修改时间
-     */
+    @ApiModelProperty(value = "最后修改时间")
     private String updateTime;
 
-    /**
-     * 最后修改人
-     */
+    @ApiModelProperty(value = "最后修改人")
     private String updateUserId;
 
 

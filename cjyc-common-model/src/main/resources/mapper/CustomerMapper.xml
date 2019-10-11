@@ -86,4 +86,5 @@
                 and type = 2
         </where>
     </select>
+
 </mapper>

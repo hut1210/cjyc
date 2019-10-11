@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -14,60 +16,43 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-08
+ * @since 2019-10-11
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("r_operate_log")
+@ApiModel(value="OperateLog对象", description="操作日志")
 public class OperateLog implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * ID
-     */
+    @ApiModelProperty(value = "ID")
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    /**
-     * 用户ID
-     */
+    @ApiModelProperty(value = "用户ID")
     private Long userId;
 
-    /**
-     * 用户名
-     */
+    @ApiModelProperty(value = "用户名")
     private String userName;
 
-    /**
-     * 用户操作
-     */
+    @ApiModelProperty(value = "用户操作")
     private String operation;
 
-    /**
-     * 操作方法
-     */
+    @ApiModelProperty(value = "操作方法")
     private String method;
 
-    /**
-     * 操作参数
-     */
+    @ApiModelProperty(value = "操作参数")
     private String params;
 
-    /**
-     * 操作时长
-     */
+    @ApiModelProperty(value = "操作时长")
     private Long duration;
 
-    /**
-     * IP地址
-     */
+    @ApiModelProperty(value = "IP地址")
     private String ip;
 
-    /**
-     * 创建时间
-     */
+    @ApiModelProperty(value = "创建时间")
     private Long createTime;
 
 
