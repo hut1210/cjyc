@@ -37,8 +37,10 @@ import java.util.List;
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
 public class CustomerServiceImpl implements ICustomerService{
 
-    // 短日期格式
-    public static String DATE_FORMAT = "yyyy/MM/dd";
+    /**
+     * 短日期格式
+     */
+    private static String DATE_FORMAT = "yyyy/MM/dd";
 
     @Resource
     private ICustomerDao iCustomerDao;
