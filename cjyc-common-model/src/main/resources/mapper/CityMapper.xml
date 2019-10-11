@@ -34,5 +34,8 @@
         count(0) as count
         from s_city;
     </select>
+    <insert id="">
+
+    </insert>
 
 </mapper>

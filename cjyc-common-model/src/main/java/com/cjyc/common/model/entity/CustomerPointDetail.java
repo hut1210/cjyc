@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -14,55 +16,40 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-08
+ * @since 2019-10-11
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("c_customer_point_detail")
+@ApiModel(value="CustomerPointDetail对象", description="用户积分明细表")
 public class CustomerPointDetail implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * ID
-     */
-    @TableId(value = "id", type = IdType.INPUT)
+    @ApiModelProperty(value = "ID")
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    /**
-     * 来源：1订单完结
-     */
+    @ApiModelProperty(value = "来源：1订单完结")
     private Integer source;
 
-    /**
-     * 来源编号：订单编号
-     */
+    @ApiModelProperty(value = "来源编号：订单编号")
     private String sourceNo;
 
-    /**
-     * 类型：0收入，1支出
-     */
+    @ApiModelProperty(value = "类型：0收入，1支出")
     private Integer type;
 
-    /**
-     * 积分数量
-     */
+    @ApiModelProperty(value = "积分数量")
     private Integer pointNum;
 
-    /**
-     * 说明
-     */
+    @ApiModelProperty(value = "说明")
     private String description;
 
-    /**
-     * 备注
-     */
+    @ApiModelProperty(value = "备注")
     private String remark;
 
-    /**
-     * 创建时间
-     */
+    @ApiModelProperty(value = "创建时间")
     private Long createTime;
 
 

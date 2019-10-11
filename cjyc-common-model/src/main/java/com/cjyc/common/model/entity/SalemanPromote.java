@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -15,50 +17,37 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-08
+ * @since 2019-10-11
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("b_saleman_promote")
+@ApiModel(value="SalemanPromote对象", description="业务员推广表")
 public class SalemanPromote implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * ID
-     */
-    @TableId(value = "id", type = IdType.INPUT)
+    @ApiModelProperty(value = "ID")
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    /**
-     * user_id
-     */
+    @ApiModelProperty(value = "user_id")
     private Long userId;
 
-    /**
-     * 推广人数
-     */
+    @ApiModelProperty(value = "推广人数")
     private Integer customerNum;
 
-    /**
-     * 有效推广人数
-     */
+    @ApiModelProperty(value = "有效推广人数")
     private Integer customerNumValid;
 
-    /**
-     * 总收益
-     */
+    @ApiModelProperty(value = "总收益")
     private BigDecimal incomeAmount;
 
-    /**
-     * 结算中收益
-     */
+    @ApiModelProperty(value = "结算中收益")
     private BigDecimal settlingAmount;
 
-    /**
-     * 未结算收益
-     */
+    @ApiModelProperty(value = "未结算收益")
     private BigDecimal unsettleAmount;
 
 

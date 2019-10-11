@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -15,60 +17,43 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-08
+ * @since 2019-10-11
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("w_waybill_car")
+@ApiModel(value="WaybillCar对象", description="运单明细表(车辆表)")
 public class WaybillCar implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * ID
-     */
-    @TableId(value = "id", type = IdType.INPUT)
+    @ApiModelProperty(value = "ID")
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    /**
-     * 运单ID
-     */
+    @ApiModelProperty(value = "运单ID")
     private Long waybillId;
 
-    /**
-     * 订单车辆ID
-     */
+    @ApiModelProperty(value = "订单车辆ID")
     private Long orderCarId;
 
-    /**
-     * 运费
-     */
+    @ApiModelProperty(value = "运费")
     private BigDecimal freightFee;
 
-    /**
-     * 装车地址
-     */
+    @ApiModelProperty(value = "装车地址")
     private String startAddress;
 
-    /**
-     * 卸车地址
-     */
+    @ApiModelProperty(value = "卸车地址")
     private String endAddress;
 
-    /**
-     * 装车区县编码
-     */
+    @ApiModelProperty(value = "装车区县编码")
     private String startAreaCode;
 
-    /**
-     * 卸车区县编码
-     */
+    @ApiModelProperty(value = "卸车区县编码")
     private String endAreaCode;
 
-    /**
-     * 状态：1待指派，3已指派，9已完成
-     */
+    @ApiModelProperty(value = "状态：1待指派，3已指派，9已完成")
     private Integer state;
 
 

@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -14,80 +16,55 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-08
+ * @since 2019-10-11
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("d_vehicle_running")
+@ApiModel(value="VehicleRunning对象", description="运行运力池表")
 public class VehicleRunning implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * ID
-     */
-    @TableId(value = "id", type = IdType.INPUT)
+    @ApiModelProperty(value = "ID")
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    /**
-     * 司机ID
-     */
+    @ApiModelProperty(value = "司机ID")
     private Long driverId;
 
-    /**
-     * 运力ID
-     */
+    @ApiModelProperty(value = "运力ID")
     private Long vehicleId;
 
-    /**
-     * 运力车牌
-     */
+    @ApiModelProperty(value = "运力车牌")
     private String vehicleNo;
 
-    /**
-     * 承运数
-     */
+    @ApiModelProperty(value = "承运数")
     private Integer carryCarNum;
 
-    /**
-     * 空车位
-     */
+    @ApiModelProperty(value = "空车位")
     private Integer emptyCarNum;
 
-    /**
-     * 状态：0无效，1有效
-     */
+    @ApiModelProperty(value = "状态：0无效，1有效")
     private Integer state;
 
-    /**
-     * 运行状态：0空闲，1在途
-     */
+    @ApiModelProperty(value = "运行状态：0空闲，1在途")
     private Integer runningState;
 
-    /**
-     * 创建时间
-     */
+    @ApiModelProperty(value = "创建时间")
     private Long createTime;
 
-    /**
-     * 更新时间
-     */
+    @ApiModelProperty(value = "更新时间")
     private Long updateTime;
 
-    /**
-     * 上报时间
-     */
+    @ApiModelProperty(value = "上报时间")
     private String beatTime;
 
-    /**
-     * 经度
-     */
+    @ApiModelProperty(value = "经度")
     private String lng;
 
-    /**
-     * 纬度
-     */
+    @ApiModelProperty(value = "纬度")
     private String lat;
 
 

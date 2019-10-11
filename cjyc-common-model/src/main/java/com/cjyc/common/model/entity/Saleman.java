@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -14,105 +16,70 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-08
+ * @since 2019-10-11
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("b_saleman")
+@ApiModel(value="Saleman对象", description="业务员表")
 public class Saleman implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * ID
-     */
-    @TableId(value = "id", type = IdType.INPUT)
+    @ApiModelProperty(value = "ID")
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    /**
-     * user_id(查询架构组数据时使用)
-     */
+    @ApiModelProperty(value = "user_id(查询架构组数据时使用)")
     private Long userId;
 
-    /**
-     * 编号
-     */
+    @ApiModelProperty(value = "编号")
     private String no;
 
-    /**
-     * 姓名
-     */
+    @ApiModelProperty(value = "姓名")
     private String name;
 
-    /**
-     * 手机号
-     */
+    @ApiModelProperty(value = "手机号")
     private String phone;
 
-    /**
-     * 座机号
-     */
+    @ApiModelProperty(value = "座机号")
     private String tel;
 
-    /**
-     * 职位：1提送车业务员，2业务员，3调度员，4客服，81财务
-     */
+    @ApiModelProperty(value = "职位：1提送车业务员，2业务员，3调度员，4客服，81财务")
     private Integer job;
 
-    /**
-     * 状态：0审核中，2在职，4取消审核，7已驳回，9已离职
-     */
+    @ApiModelProperty(value = "状态：0审核中，2在职，4取消审核，7已驳回，9已离职")
     private Integer state;
 
-    /**
-     * 身份证号
-     */
+    @ApiModelProperty(value = "身份证号")
     private String idCard;
 
-    /**
-     * 性别: 0女，1男
-     */
+    @ApiModelProperty(value = "性别: 0女，1男")
     private Integer sex;
 
-    /**
-     * 上级ID
-     */
+    @ApiModelProperty(value = "上级ID")
     private Long leaderId;
 
-    /**
-     * 所属业务中心ID
-     */
+    @ApiModelProperty(value = "所属业务中心ID")
     private Long storeId;
 
-    /**
-     * 头像
-     */
+    @ApiModelProperty(value = "头像")
     private String photoImg;
 
-    /**
-     * 创建时间
-     */
+    @ApiModelProperty(value = "创建时间")
     private Long createTime;
 
-    /**
-     * 创建人
-     */
+    @ApiModelProperty(value = "创建人")
     private Long createUserId;
 
-    /**
-     * 审核人
-     */
+    @ApiModelProperty(value = "审核人")
     private Long checkUserId;
 
-    /**
-     * 入职时间
-     */
+    @ApiModelProperty(value = "入职时间")
     private Long hireTime;
 
-    /**
-     * 离职时间
-     */
+    @ApiModelProperty(value = "离职时间")
     private Long leaveTime;
 
 

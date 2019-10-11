@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -15,74 +17,52 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-08
+ * @since 2019-10-11
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("w_order_car")
+@ApiModel(value="OrderCar对象", description="订单明细（车辆表）")
 public class OrderCar implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * ID
-     */
-    @TableId(value = "id", type = IdType.INPUT)
+    @ApiModelProperty(value = "ID")
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    /**
-     * 订单ID
-     */
+    @ApiModelProperty(value = "订单ID")
     private Long orderId;
 
-    /**
-     * 订单编号
-     */
+    @ApiModelProperty(value = "订单编号")
     private String orderNo;
 
-    /**
-     * 车辆编码
-     */
+    @ApiModelProperty(value = "车辆编码")
     private String no;
 
-    /**
-     * 品牌
-     */
+    @ApiModelProperty(value = "品牌")
     private String brand;
 
-    /**
-     * 型号
-     */
+    @ApiModelProperty(value = "型号")
     private String model;
 
-    /**
-     * 车牌号
-     */
+    @ApiModelProperty(value = "车牌号")
     private String plateNo;
 
-    /**
-     * vin码
-     */
+    @ApiModelProperty(value = "vin码")
     private String vin;
 
-    /**
-     * 估值/万
-     */
+    @ApiModelProperty(value = "估值/万")
     private Integer valuation;
 
-    /**
-     * 当前所在地所属业务中心
-     */
+    @ApiModelProperty(value = "当前所在地所属业务中心")
     private Long nowStoreId;
 
-    /**
-     * 当前所在区
-     */
+    @ApiModelProperty(value = "当前所在区")
     private String nowAreaCode;
 
-    /**
-     * 状态：0待路由，
+    @ApiModelProperty(value = "状态：0待路由，
 5待提车调度，
 10待提车，
 15提车中（待交车），
@@ -94,48 +74,31 @@ public class OrderCar implements Serializable {
 50待配送提车，
 55配送中（待配送交车），
 70待自取提车，
-100已签收
-     */
+100已签收")
     private Integer state;
 
-    /**
-     * 车辆描述
-     */
+    @ApiModelProperty(value = "车辆描述")
     private String description;
 
-    /**
-     * 车辆应收提车费
-     */
+    @ApiModelProperty(value = "车辆应收提车费")
     private BigDecimal pickFee;
 
-    /**
-     * 车辆应收干线费
-     */
+    @ApiModelProperty(value = "车辆应收干线费")
     private BigDecimal trunkFee;
 
-    /**
-     * 车辆应收送车费
-     */
+    @ApiModelProperty(value = "车辆应收送车费")
     private BigDecimal backFee;
 
-    /**
-     * 车辆应收保险费
-     */
+    @ApiModelProperty(value = "车辆应收保险费")
     private BigDecimal insuranceFee;
 
-    /**
-     * 保额/万
-     */
+    @ApiModelProperty(value = "保额/万")
     private Integer insuranceCoverageAmount;
 
-    /**
-     * 车辆代收中介费（为资源合伙人代收）
-     */
+    @ApiModelProperty(value = "车辆代收中介费（为资源合伙人代收）")
     private BigDecimal agencyFee;
 
-    /**
-     * 应收状态：0未支付，1已支付
-     */
+    @ApiModelProperty(value = "应收状态：0未支付，1已支付")
     private Integer wlPayState;
 
 

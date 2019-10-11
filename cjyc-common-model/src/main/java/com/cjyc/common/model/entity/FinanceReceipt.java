@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -15,75 +17,52 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-08
+ * @since 2019-10-11
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("f_finance_receipt")
+@ApiModel(value="FinanceReceipt对象", description="财务收款单表")
 public class FinanceReceipt implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * ID
-     */
+    @ApiModelProperty(value = "ID")
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    /**
-     * 客户ID
-     */
+    @ApiModelProperty(value = "客户ID")
     private Long customerId;
 
-    /**
-     * 客户名称
-     */
+    @ApiModelProperty(value = "客户名称")
     private String customerName;
 
-    /**
-     * 款项来源：1物流费，2损失赔付
-     */
+    @ApiModelProperty(value = "款项来源：1物流费，2损失赔付")
     private String source;
 
-    /**
-     * 类型：1物流费预付，2物流费全款到付，3物流费部分到付
-     */
+    @ApiModelProperty(value = "类型：1物流费预付，2物流费全款到付，3物流费部分到付")
     private Integer type;
 
-    /**
-     * 支付渠道： 微信、支付宝、现金
-     */
+    @ApiModelProperty(value = "支付渠道： 微信、支付宝、现金")
     private String channel;
 
-    /**
-     * 应收金额
-     */
+    @ApiModelProperty(value = "应收金额")
     private BigDecimal amount;
 
-    /**
-     * 实收金额
-     */
+    @ApiModelProperty(value = "实收金额")
     private BigDecimal realAmount;
 
-    /**
-     * 支付状态： 0待结算， 1已结算， 2未结算
-     */
+    @ApiModelProperty(value = "支付状态： 0待结算， 1已结算， 2未结算")
     private Integer payState;
 
-    /**
-     * 支付时间
-     */
+    @ApiModelProperty(value = "支付时间")
     private Long payTime;
 
-    /**
-     * 备注
-     */
+    @ApiModelProperty(value = "备注")
     private String remark;
 
-    /**
-     * 创建时间
-     */
+    @ApiModelProperty(value = "创建时间")
     private Long createTime;
 
 

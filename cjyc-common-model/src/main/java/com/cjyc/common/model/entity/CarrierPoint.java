@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -14,60 +16,43 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-08
+ * @since 2019-10-11
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("d_carrier_point")
+@ApiModel(value="CarrierPoint对象", description="承运商分表")
 public class CarrierPoint implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * ID
-     */
-    @TableId(value = "id", type = IdType.INPUT)
+    @ApiModelProperty(value = "ID")
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    /**
-     * 司机ID
-     */
+    @ApiModelProperty(value = "司机ID")
     private Long carrierId;
 
-    /**
-     * 锁定积分
-     */
+    @ApiModelProperty(value = "锁定积分")
     private Integer protectedPoint;
 
-    /**
-     * 可用积分
-     */
+    @ApiModelProperty(value = "可用积分")
     private Integer availablePoint;
 
-    /**
-     * 状态：
-     */
+    @ApiModelProperty(value = "状态：")
     private Integer state;
 
-    /**
-     * 总收入积分
-     */
+    @ApiModelProperty(value = "总收入积分")
     private Integer totalIncomePoint;
 
-    /**
-     * 总花费积分
-     */
+    @ApiModelProperty(value = "总花费积分")
     private Integer totalExpendPoint;
 
-    /**
-     * 创建时间
-     */
+    @ApiModelProperty(value = "创建时间")
     private String createTime;
 
-    /**
-     * 更新时间
-     */
+    @ApiModelProperty(value = "更新时间")
     private String updateTime;
 
 

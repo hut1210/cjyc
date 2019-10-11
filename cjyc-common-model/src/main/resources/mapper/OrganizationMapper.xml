@@ -4,7 +4,7 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.Organization">
-        <result column="id" property="id" />
+        <id column="id" property="id" />
         <result column="no" property="no" />
         <result column="name" property="name" />
         <result column="type" property="type" />

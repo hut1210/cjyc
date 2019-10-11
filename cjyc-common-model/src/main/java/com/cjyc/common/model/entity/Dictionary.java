@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -14,65 +16,46 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-08
+ * @since 2019-10-11
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("s_dictionary")
+@ApiModel(value="Dictionary对象", description="字典配置表")
 public class Dictionary implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * ID
-     */
-    @TableId(value = "id", type = IdType.INPUT)
+    @ApiModelProperty(value = "ID")
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    /**
-     * 名称
-     */
+    @ApiModelProperty(value = "名称")
     private String name;
 
-    /**
-     * 条目
-     */
+    @ApiModelProperty(value = "条目")
     private String item;
 
-    /**
-     * 键
-     */
+    @ApiModelProperty(value = "键")
     private String itemKey;
 
-    /**
-     * 值
-     */
+    @ApiModelProperty(value = "值")
     private String itemValue;
 
-    /**
-     * 单位
-     */
+    @ApiModelProperty(value = "单位")
     private String itemUnit;
 
-    /**
-     * 是否固定值：1不可修改，0可修改
-     */
+    @ApiModelProperty(value = "是否固定值：1不可修改，0可修改")
     private Integer fixedFlag;
 
-    /**
-     * 备注
-     */
+    @ApiModelProperty(value = "备注")
     private String remark;
 
-    /**
-     * 状态：0无效，1有效
-     */
+    @ApiModelProperty(value = "状态：0无效，1有效")
     private Integer state;
 
-    /**
-     * 创建时间
-     */
+    @ApiModelProperty(value = "创建时间")
     private Long createTime;
 
 

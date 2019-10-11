@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.time.LocalDateTime;
 import java.io.Serializable;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -15,45 +17,34 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-08
+ * @since 2019-10-11
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("r_login_log")
+@ApiModel(value="LoginLog对象", description="登录日志")
 public class LoginLog implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * ID
-     */
+    @ApiModelProperty(value = "ID")
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
-    /**
-     * 用户ID
-     */
+    @ApiModelProperty(value = "用户ID")
     private Integer userId;
 
-    /**
-     * 用户名
-     */
+    @ApiModelProperty(value = "用户名")
     private String userName;
 
-    /**
-     * IP地址
-     */
+    @ApiModelProperty(value = "IP地址")
     private String ip;
 
-    /**
-     * 地理位置
-     */
+    @ApiModelProperty(value = "地理位置")
     private String address;
 
-    /**
-     * 创建时间
-     */
+    @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
 
 

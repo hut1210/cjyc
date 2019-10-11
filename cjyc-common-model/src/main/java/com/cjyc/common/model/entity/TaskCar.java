@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -15,70 +17,49 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-09
+ * @since 2019-10-11
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("w_task_car")
+@ApiModel(value="TaskCar对象", description="任务明细表(车辆表)")
 public class TaskCar implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * ID
-     */
-    @TableId(value = "id", type = IdType.INPUT)
+    @ApiModelProperty(value = "ID")
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    /**
-     * 任务ID
-     */
+    @ApiModelProperty(value = "任务ID")
     private Long taskId;
 
-    /**
-     * 运单ID
-     */
+    @ApiModelProperty(value = "运单ID")
     private Long waybillId;
 
-    /**
-     * 运单车辆ID
-     */
+    @ApiModelProperty(value = "运单车辆ID")
     private Long waybillCarId;
 
-    /**
-     * 订单车辆ID
-     */
+    @ApiModelProperty(value = "订单车辆ID")
     private String orderCarId;
 
-    /**
-     * 任务车辆状态：1待装车，2已装车，4已卸车，9确认收车
-     */
+    @ApiModelProperty(value = "任务车辆状态：1待装车，2已装车，4已卸车，9确认收车")
     private Integer state;
 
-    /**
-     * 图片地址，逗号分隔
-     */
+    @ApiModelProperty(value = "图片地址，逗号分隔")
     private String photoImg;
 
-    /**
-     * 装车时间
-     */
+    @ApiModelProperty(value = "装车时间")
     private Long loadTime;
 
-    /**
-     * 卸车时间
-     */
+    @ApiModelProperty(value = "卸车时间")
     private Long unloadTime;
 
-    /**
-     * 车辆运费
-     */
+    @ApiModelProperty(value = "车辆运费")
     private BigDecimal freightFee;
 
-    /**
-     * 创建时间
-     */
+    @ApiModelProperty(value = "创建时间")
     private Long createTime;
 
 

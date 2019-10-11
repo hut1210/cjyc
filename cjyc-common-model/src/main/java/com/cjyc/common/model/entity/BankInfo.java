@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -14,29 +16,24 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-08
+ * @since 2019-10-11
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("s_bank_info")
+@ApiModel(value="BankInfo对象", description="银行信息对照表")
 public class BankInfo implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * 开户银行编号
-     */
+    @ApiModelProperty(value = "开户银行编号")
     private String openBankCode;
 
-    /**
-     * 支付行号
-     */
+    @ApiModelProperty(value = "支付行号")
     private String subBankCode;
 
-    /**
-     * 开户支行名称
-     */
+    @ApiModelProperty(value = "开户支行名称")
     private String subBank;
 
 

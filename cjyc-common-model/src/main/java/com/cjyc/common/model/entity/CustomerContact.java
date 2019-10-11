@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -14,80 +16,55 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-08
+ * @since 2019-10-11
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("c_customer_contact")
+@ApiModel(value="CustomerContact对象", description="客户常用联系人表")
 public class CustomerContact implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * ID
-     */
-    @TableId(value = "id", type = IdType.INPUT)
+    @ApiModelProperty(value = "ID")
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    /**
-     * 客户ID
-     */
+    @ApiModelProperty(value = "客户ID")
     private Long customerId;
 
-    /**
-     * 姓名
-     */
+    @ApiModelProperty(value = "姓名")
     private String name;
 
-    /**
-     * 手机号
-     */
+    @ApiModelProperty(value = "手机号")
     private String phone;
 
-    /**
-     * 省
-     */
+    @ApiModelProperty(value = "省")
     private String province;
 
-    /**
-     * 省编码
-     */
+    @ApiModelProperty(value = "省编码")
     private String provinceCode;
 
-    /**
-     * 市
-     */
+    @ApiModelProperty(value = "市")
     private String city;
 
-    /**
-     * 市编码
-     */
+    @ApiModelProperty(value = "市编码")
     private String cityCode;
 
-    /**
-     * 区
-     */
+    @ApiModelProperty(value = "区")
     private String area;
 
-    /**
-     * 区编码
-     */
+    @ApiModelProperty(value = "区编码")
     private String areaCode;
 
-    /**
-     * 详细地址
-     */
+    @ApiModelProperty(value = "详细地址")
     private String detailAddr;
 
-    /**
-     * 备注
-     */
+    @ApiModelProperty(value = "备注")
     private String rewark;
 
-    /**
-     * 状态：0无效，1有效
-     */
+    @ApiModelProperty(value = "状态：0无效，1有效")
     private Integer state;
 
 
