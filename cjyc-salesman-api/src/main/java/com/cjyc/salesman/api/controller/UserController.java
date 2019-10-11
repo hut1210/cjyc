@@ -24,11 +24,11 @@ public class UserController {
     private ISysUserService sysUserService;
 
 
-    @GetMapping("/get/{phone}")
+/*    @GetMapping("/get/{phone}")
     public ResultVo<SysUserEntity> get(@PathVariable String phone){
         ResultData<SysUserEntity> sysUserEntityResultData = sysUserService.selectByUsername(phone);
         return BaseResultUtil.success(sysUserEntityResultData.getData());
-    }
+    }*/
 
 
 }

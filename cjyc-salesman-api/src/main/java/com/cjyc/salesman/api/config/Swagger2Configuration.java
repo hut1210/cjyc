@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.async.DeferredResult;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
@@ -51,6 +52,10 @@ public class Swagger2Configuration {
                 .groupName(swagger2Property.getGroupName())
                 .genericModelSubstitutes(DeferredResult.class)
                 .useDefaultResponseMessages(swagger2Property.getUseDefaultResponseMessages())
+                .globalResponseMessage(RequestMethod.GET, responseMessageList)
+                .globalResponseMessage(RequestMethod.POST, responseMessageList)
+                .globalResponseMessage(RequestMethod.PUT, responseMessageList)
+                .globalResponseMessage(RequestMethod.DELETE, responseMessageList)
                 .forCodeGeneration(swagger2Property.getForCodeGeneration())
                 .pathMapping(swagger2Property.getUsePathMapping() ? swagger2Property.baseUrl : null)
                 .apiInfo(apiInfo(swagger2Property))

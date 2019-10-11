@@ -1,16 +1,13 @@
 package com.cjyc.salesman.api.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.cjyc.common.model.dto.CityDto;
 import com.cjyc.common.model.entity.City;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.salesman.api.fegin.ISysUserService;
 import com.cjyc.salesman.api.service.ICityService;
 import com.cjyc.salesman.api.util.JsObjParamUtil;
-import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -18,13 +15,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-
-@Api(tags = "城市", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@Api(tags = "城市")
 @Slf4j
 @RestController
-@RequestMapping("/city")
+@RequestMapping(value = "/city",
+        consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
+        produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class CityController {
+
     private ISysUserService userService;
 
     @Autowired
@@ -39,9 +37,18 @@ public class CityController {
         return BaseResultUtil.success(city);
     }
 
+
+    @ApiOperation(value = "获取城市1", notes = "接口详细描述")
+    @GetMapping(value = "/get/1")
+    public ResultVo<City> get1(@RequestBody(required = true) String cityCode){
+        System.out.println(cityCode);
+        City city = cityService.getById(cityCode);
+        return BaseResultUtil.success(city);
+    }
+
     @ApiOperation(value = "获取城市2", notes = "接口详细描述")
     @GetMapping(value = "/get/{cityCode}")
-        public ResultVo<City> get(@PathVariable(required = true) String cityCode){
+    public ResultVo<City> get(@PathVariable(required = true) String cityCode){
         City city = cityService.getById(cityCode);
         return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(), city);
     }
@@ -51,16 +58,6 @@ public class CityController {
     public ResultVo<City> getOne(@RequestParam String cityCode){
         City city = cityService.findById(cityCode);
         return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(), city);
-    }
-
-    @ApiOperation(value = "获取城市5", notes = "接口详细描述")
-    @GetMapping(value = "/get/page")
-    public ResultVo<PageVo<City>> getPage(@RequestBody CityDto cityDto){
-        PageInfo<City> pageInfo = cityService.findPage(cityDto);
-        if(pageInfo.getTotal() > 0){
-            Map<String, Object> countInfo = cityService.countInfo(cityDto);
-        }
-        return BaseResultUtil.getPageVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(), pageInfo);
     }
 
 }
