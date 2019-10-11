@@ -1,11 +1,11 @@
 package com.cjyc.common.model.dao;
 
-import com.cjyc.common.model.dto.web.CustomerDto;
-import com.cjyc.common.model.dto.web.ListKeyCustomerDto;
+import com.cjyc.common.model.vo.web.CustomerVo;
+import com.cjyc.common.model.vo.web.ListKeyCustomerVo;
 import com.cjyc.common.model.entity.Customer;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.cjyc.common.model.vo.web.SelectCustomerVo;
-import com.cjyc.common.model.vo.web.SelectKeyCustomerVo;
+import com.cjyc.common.model.dto.web.SelectCustomerDto;
+import com.cjyc.common.model.dto.web.SelectKeyCustomerDto;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -26,20 +26,20 @@ public interface ICustomerDao extends BaseMapper<Customer> {
      * @param customerVo
      * @return
      */
-    List<CustomerDto> findCustomer(SelectCustomerVo customerVo);
+    List<CustomerVo> findCustomer(SelectCustomerDto customerVo);
 
     /**
      * 查询所有大客户用户
      * @return
      */
-    List<ListKeyCustomerDto> getAllKeyCustomter();
+    List<ListKeyCustomerVo> getAllKeyCustomter();
 
     /**
      * 根据条件查询大客户用户
      * @param keyCustomerVo
      * @return
      */
-    List<ListKeyCustomerDto> findKeyCustomter(SelectKeyCustomerVo keyCustomerVo);
+    List<ListKeyCustomerVo> findKeyCustomter(SelectKeyCustomerDto keyCustomerVo);
 
 
 }

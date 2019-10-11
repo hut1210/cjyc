@@ -129,17 +129,17 @@ public class CustomerServiceImpl implements ICustomerService{
     }
 
     @Override
-    public PageInfo<CustomerVo> findCustomer(SelectCustomerDto customerVo) {
+    public PageInfo<CustomerVo> findCustomer(SelectCustomerDto customerDto) {
         PageInfo<CustomerVo> pageInfo = null;
         try{
-            if(customerVo.getCurrentPage() == null || customerVo.getCurrentPage() < 1){
-                customerVo.setCurrentPage(1);
+            if(customerDto.getCurrentPage() == null || customerDto.getCurrentPage() < 1){
+                customerDto.setCurrentPage(1);
             }
-            if(customerVo.getPageSize() == null || customerVo.getPageSize() < 1){
-                customerVo.setPageSize(10);
+            if(customerDto.getPageSize() == null || customerDto.getPageSize() < 1){
+                customerDto.setPageSize(10);
             }
-            PageHelper.startPage(customerVo.getCurrentPage(), customerVo.getPageSize());
-            List<CustomerVo> customerVos = iCustomerDao.findCustomer(customerVo);
+            PageHelper.startPage(customerDto.getCurrentPage(), customerDto.getPageSize());
+            List<CustomerVo> customerVos = iCustomerDao.findCustomer(customerDto);
             pageInfo = new PageInfo<>(customerVos);
         }catch (Exception e){
             log.error("根据条件查询用户出现异常",e);
@@ -212,16 +212,16 @@ public class CustomerServiceImpl implements ICustomerService{
     }
 
     @Override
-    public PageInfo<ListKeyCustomerVo> getAllKeyCustomer(BasePageDto pageVo) {
+    public PageInfo<ListKeyCustomerVo> getAllKeyCustomer(BasePageDto pageDto) {
         PageInfo<ListKeyCustomerVo> pageInfo = null;
         try{
-            if(pageVo.getCurrentPage() == null || pageVo.getCurrentPage() < 1){
-                pageVo.setCurrentPage(1);
+            if(pageDto.getCurrentPage() == null || pageDto.getCurrentPage() < 1){
+                pageDto.setCurrentPage(1);
             }
-            if(pageVo.getPageSize() == null || pageVo.getPageSize() < 1){
-                pageVo.setPageSize(10);
+            if(pageDto.getPageSize() == null || pageDto.getPageSize() < 1){
+                pageDto.setPageSize(10);
             }
-            PageHelper.startPage(pageVo.getCurrentPage(), pageVo.getPageSize());
+            PageHelper.startPage(pageDto.getCurrentPage(), pageDto.getPageSize());
             List<ListKeyCustomerVo> customerList = iCustomerDao.getAllKeyCustomter();
             pageInfo = new PageInfo<>(customerList);
         }catch (Exception e){
@@ -308,17 +308,17 @@ public class CustomerServiceImpl implements ICustomerService{
     }
 
     @Override
-    public PageInfo<ListKeyCustomerVo> findKeyCustomer(SelectKeyCustomerDto keyCustomerVo) {
+    public PageInfo<ListKeyCustomerVo> findKeyCustomer(SelectKeyCustomerDto keyCustomerDto) {
         PageInfo<ListKeyCustomerVo> pageInfo = null;
         try{
-            if(keyCustomerVo.getCurrentPage() == null || keyCustomerVo.getCurrentPage() < 1){
-                keyCustomerVo.setCurrentPage(1);
+            if(keyCustomerDto.getCurrentPage() == null || keyCustomerDto.getCurrentPage() < 1){
+                keyCustomerDto.setCurrentPage(1);
             }
-            if(keyCustomerVo.getPageSize() == null || keyCustomerVo.getPageSize() < 1){
-                keyCustomerVo.setPageSize(10);
+            if(keyCustomerDto.getPageSize() == null || keyCustomerDto.getPageSize() < 1){
+                keyCustomerDto.setPageSize(10);
             }
-            PageHelper.startPage(keyCustomerVo.getCurrentPage(), keyCustomerVo.getPageSize());
-            List<ListKeyCustomerVo> keyCustomerList = iCustomerDao.findKeyCustomter(keyCustomerVo);
+            PageHelper.startPage(keyCustomerDto.getCurrentPage(), keyCustomerDto.getPageSize());
+            List<ListKeyCustomerVo> keyCustomerList = iCustomerDao.findKeyCustomter(keyCustomerDto);
             pageInfo = new PageInfo<>(keyCustomerList);
         }catch (Exception e){
             log.error("根据条件查询大客户出现异常",e);
@@ -330,33 +330,33 @@ public class CustomerServiceImpl implements ICustomerService{
     /**
      * 新增大客户合同
      * @param id  大客户id
-     * @param vo  合同
+     * @param dto  合同
      */
-    private int saveCustomerContract(Long id , CustomerContractDto vo){
+    private int saveCustomerContract(Long id , CustomerContractDto dto){
         try{
             CustomerContract custCont = new CustomerContract();
             custCont.setId(SnowflakeIdWorker.nextId());
             custCont.setCustomerId(id);
-            custCont.setContractNo(vo.getContractNo());
-            custCont.setContactNature(vo.getContactNature());
-            custCont.setContractLife(LocalDateTimeUtil.convertToLong(vo.getContractLife(),DATE_FORMAT));
-            custCont.setProjectName(vo.getProjectName());
-            custCont.setProjectLevel(vo.getProjectLevel());
-            custCont.setMajorProduct(vo.getMajorProduct());
-            custCont.setProjectNature(vo.getProjectNature());
-            custCont.setDateOfProSign(LocalDateTimeUtil.convertToLong(vo.getDateOfProSign(),DATE_FORMAT));
-            custCont.setOneOffContract(vo.getOneOffContract());
-            custCont.setProTraVolume(vo.getProTraVolume());
-            custCont.setAvgMthTraVolume(vo.getAvgMthTraVolume());
-            custCont.setBusiCover(vo.getBusiCover());
-            custCont.setFixedRoute(vo.getFixedRoute());
-            custCont.setProjectDeper(vo.getProjectDeper());
-            custCont.setProjectLeader(vo.getProjectLeader());
-            custCont.setLeaderPhone(vo.getLeaderPhone());
-            custCont.setProjectStatus(vo.getProjectStatus());
-            custCont.setProjectTeamPer(vo.getProjectTeamPer());
-            custCont.setProjectEstabTime(LocalDateTimeUtil.convertToLong(vo.getProjectEstabTime(),DATE_FORMAT));
-            custCont.setMajorKpi(vo.getMajorKpi());
+            custCont.setContractNo(dto.getContractNo());
+            custCont.setContactNature(dto.getContactNature());
+            custCont.setContractLife(LocalDateTimeUtil.convertToLong(dto.getContractLife(),DATE_FORMAT));
+            custCont.setProjectName(dto.getProjectName());
+            custCont.setProjectLevel(dto.getProjectLevel());
+            custCont.setMajorProduct(dto.getMajorProduct());
+            custCont.setProjectNature(dto.getProjectNature());
+            custCont.setDateOfProSign(LocalDateTimeUtil.convertToLong(dto.getDateOfProSign(),DATE_FORMAT));
+            custCont.setOneOffContract(dto.getOneOffContract());
+            custCont.setProTraVolume(dto.getProTraVolume());
+            custCont.setAvgMthTraVolume(dto.getAvgMthTraVolume());
+            custCont.setBusiCover(dto.getBusiCover());
+            custCont.setFixedRoute(dto.getFixedRoute());
+            custCont.setProjectDeper(dto.getProjectDeper());
+            custCont.setProjectLeader(dto.getProjectLeader());
+            custCont.setLeaderPhone(dto.getLeaderPhone());
+            custCont.setProjectStatus(dto.getProjectStatus());
+            custCont.setProjectTeamPer(dto.getProjectTeamPer());
+            custCont.setProjectEstabTime(LocalDateTimeUtil.convertToLong(dto.getProjectEstabTime(),DATE_FORMAT));
+            custCont.setMajorKpi(dto.getMajorKpi());
             return iCustomerContractDao.insert(custCont);
         }catch (Exception e){
             log.error("新增合同出现异常",e);
@@ -364,31 +364,31 @@ public class CustomerServiceImpl implements ICustomerService{
         }
     }
 
-    private int updateCustomerContractById(CustomerContractDto vo){
+    private int updateCustomerContractById(CustomerContractDto dto){
         try{
-            CustomerContract contract = iCustomerContractDao.selectById(vo.getId());
+            CustomerContract contract = iCustomerContractDao.selectById(dto.getId());
             if(null != contract){
-                contract.setContractNo(vo.getContractNo());
-                contract.setContactNature(vo.getContactNature());
-                contract.setSettlePeriod(vo.getSettlePeriod());
-                contract.setContractLife(LocalDateTimeUtil.convertToLong(vo.getProjectEstabTime(),DATE_FORMAT));
-                contract.setProjectName(vo.getProjectName());
-                contract.setProjectLevel(vo.getProjectLevel());
-                contract.setMajorProduct(vo.getMajorProduct());
-                contract.setProjectNature(vo.getProjectNature());
-                contract.setDateOfProSign(LocalDateTimeUtil.convertToLong(vo.getDateOfProSign(),DATE_FORMAT));
-                contract.setOneOffContract(vo.getOneOffContract());
-                contract.setProTraVolume(vo.getProTraVolume());
-                contract.setAvgMthTraVolume(vo.getAvgMthTraVolume());
-                contract.setBusiCover(vo.getBusiCover());
-                contract.setFixedRoute(vo.getFixedRoute());
-                contract.setProjectDeper(vo.getProjectDeper());
-                contract.setProjectLeader(vo.getProjectLeader());
-                contract.setLeaderPhone(vo.getLeaderPhone());
-                contract.setProjectStatus(vo.getProjectStatus());
-                contract.setProjectTeamPer(vo.getProjectTeamPer());
-                contract.setProjectEstabTime(LocalDateTimeUtil.convertToLong(vo.getProjectEstabTime(),DATE_FORMAT));
-                contract.setMajorKpi(vo.getMajorKpi());
+                contract.setContractNo(dto.getContractNo());
+                contract.setContactNature(dto.getContactNature());
+                contract.setSettlePeriod(dto.getSettlePeriod());
+                contract.setContractLife(LocalDateTimeUtil.convertToLong(dto.getProjectEstabTime(),DATE_FORMAT));
+                contract.setProjectName(dto.getProjectName());
+                contract.setProjectLevel(dto.getProjectLevel());
+                contract.setMajorProduct(dto.getMajorProduct());
+                contract.setProjectNature(dto.getProjectNature());
+                contract.setDateOfProSign(LocalDateTimeUtil.convertToLong(dto.getDateOfProSign(),DATE_FORMAT));
+                contract.setOneOffContract(dto.getOneOffContract());
+                contract.setProTraVolume(dto.getProTraVolume());
+                contract.setAvgMthTraVolume(dto.getAvgMthTraVolume());
+                contract.setBusiCover(dto.getBusiCover());
+                contract.setFixedRoute(dto.getFixedRoute());
+                contract.setProjectDeper(dto.getProjectDeper());
+                contract.setProjectLeader(dto.getProjectLeader());
+                contract.setLeaderPhone(dto.getLeaderPhone());
+                contract.setProjectStatus(dto.getProjectStatus());
+                contract.setProjectTeamPer(dto.getProjectTeamPer());
+                contract.setProjectEstabTime(LocalDateTimeUtil.convertToLong(dto.getProjectEstabTime(),DATE_FORMAT));
+                contract.setMajorKpi(dto.getMajorKpi());
                 return iCustomerContractDao.updateById(contract);
             }
         }catch (Exception e){

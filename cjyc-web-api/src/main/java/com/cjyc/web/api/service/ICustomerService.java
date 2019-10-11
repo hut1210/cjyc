@@ -22,10 +22,10 @@ public interface ICustomerService  {
 
     /**
      *  新增移动端用户
-     * @param customerVo
+     * @param customerDto
      * @return
      */
-    boolean saveCustomer(CustomerDto customerVo);
+    boolean saveCustomer(CustomerDto customerDto);
 
     /**
      *  分页查询所有移动端用户
@@ -78,10 +78,10 @@ public interface ICustomerService  {
 
     /**
      * 分页查看所有大客户
-     * @param pageVo
+     * @param pageDto
      * @return
      */
-    PageInfo<ListKeyCustomerVo> getAllKeyCustomer(BasePageDto pageVo);
+    PageInfo<ListKeyCustomerVo> getAllKeyCustomer(BasePageDto pageDto);
 
     /**
      * 根据大客户id查看大客户&合同

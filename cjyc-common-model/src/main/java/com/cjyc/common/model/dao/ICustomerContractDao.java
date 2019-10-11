@@ -1,6 +1,6 @@
 package com.cjyc.common.model.dao;
 
-import com.cjyc.common.model.dto.web.CustomerContractDto;
+import com.cjyc.common.model.vo.web.CustomerContractVo;
 import com.cjyc.common.model.entity.CustomerContract;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
@@ -28,6 +28,6 @@ public interface ICustomerContractDao extends BaseMapper<CustomerContract> {
      * @param customerId
      * @return
      */
-    List<CustomerContractDto> getCustContractByCustId(@Param("customerId") Long customerId);
+    List<CustomerContractVo> getCustContractByCustId(@Param("customerId") Long customerId);
 
 }
