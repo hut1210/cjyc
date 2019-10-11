@@ -5,7 +5,7 @@ import com.cjyc.common.model.dto.web.CustomerDto;
 import com.cjyc.common.model.dto.web.ListKeyCustomerDto;
 import com.cjyc.common.model.dto.web.ShowKeyCustomerDto;
 import com.cjyc.common.model.entity.Customer;
-import com.cjyc.common.model.vo.web.BasePageVo;
+import com.cjyc.common.model.vo.BasePageVo;
 import com.cjyc.common.model.vo.web.CustomerVo;
 import com.cjyc.common.model.vo.web.KeyCustomerVo;
 import com.cjyc.common.model.vo.web.SelectKeyCustomerVo;
