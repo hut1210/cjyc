@@ -1,16 +1,17 @@
 package com.cjyc.web.api.service;
 
-import com.alibaba.fastjson.JSONObject;
-import com.cjyc.common.model.dto.web.CustomerDto;
-import com.cjyc.common.model.dto.web.ListKeyCustomerDto;
-import com.cjyc.common.model.dto.web.ShowKeyCustomerDto;
-import com.cjyc.common.model.entity.Customer;
-import com.cjyc.common.model.vo.BasePageVo;
 import com.cjyc.common.model.vo.web.CustomerVo;
-import com.cjyc.common.model.vo.web.KeyCustomerVo;
-import com.cjyc.common.model.vo.web.SelectCustomerVo;
-import com.cjyc.common.model.vo.web.SelectKeyCustomerVo;
+import com.cjyc.common.model.vo.web.ListKeyCustomerVo;
+import com.cjyc.common.model.vo.web.ShowKeyCustomerVo;
+import com.cjyc.common.model.entity.Customer;
+import com.cjyc.common.model.dto.BasePageDto;
+import com.cjyc.common.model.dto.web.CustomerDto;
+import com.cjyc.common.model.dto.web.KeyCustomerDto;
+import com.cjyc.common.model.dto.web.SelectCustomerDto;
+import com.cjyc.common.model.dto.web.SelectKeyCustomerDto;
 import com.github.pagehelper.PageInfo;
+
+import java.util.List;
 
 /**
  *  @author: zj
@@ -24,14 +25,14 @@ public interface ICustomerService  {
      * @param customerVo
      * @return
      */
-    boolean saveCustomer(CustomerVo customerVo);
+    boolean saveCustomer(CustomerDto customerVo);
 
     /**
      *  分页查询所有移动端用户
-     * @param basePageVo
+     * @param basePageDto
      * @return
      */
-    PageInfo<Customer> getAllCustomer(BasePageVo basePageVo);
+    PageInfo<Customer> getAllCustomer(BasePageDto basePageDto);
 
     /**
      * 根据用户id查看移动端用户
@@ -45,62 +46,62 @@ public interface ICustomerService  {
      * @param customerDto
      * @return
      */
-    boolean updateCustomer(CustomerVo customerDto);
+    boolean updateCustomer(CustomerDto customerDto);
 
     /**
      * 根据id删除移动端用户
      * @param arrIds
      * @return
      */
-    boolean deleteCustomer(Long[] arrIds);
+    boolean deleteCustomer(List<Long> arrIds);
 
     /**
      * 根据条件查询移动端用户
-     * @param selectCustomerVo
+     * @param selectCustomerDto
      * @return
      */
-    PageInfo<CustomerDto> findCustomer(SelectCustomerVo selectCustomerVo);
+    PageInfo<CustomerVo> findCustomer(SelectCustomerDto selectCustomerDto);
 
     /**
      * 新增大客户&合同
-     * @param keyCustomerVo
+     * @param keyCustomerDto
      * @return
      */
-    boolean saveKeyCustAndContract(KeyCustomerVo keyCustomerVo);
+    boolean saveKeyCustAndContract(KeyCustomerDto keyCustomerDto);
 
     /**
      * 根据ids删除大客户
      * @param arrIds
      * @return
      */
-    boolean deleteKeyCustomer(Long[] arrIds);
+    boolean deleteKeyCustomer(List<Long> arrIds);
 
     /**
      * 分页查看所有大客户
      * @param pageVo
      * @return
      */
-    PageInfo<ListKeyCustomerDto> getAllKeyCustomer(BasePageVo pageVo);
+    PageInfo<ListKeyCustomerVo> getAllKeyCustomer(BasePageDto pageVo);
 
     /**
      * 根据大客户id查看大客户&合同
      * @param id
      * @return
      */
-    ShowKeyCustomerDto showKeyCustomerById(Long id);
+    ShowKeyCustomerVo showKeyCustomerById(Long id);
 
     /**
      * 更新大客户&合同
-     * @param keyCustomerVo
+     * @param keyCustomerDto
      * @return
      */
-    boolean updateKeyCustomer(KeyCustomerVo keyCustomerVo);
+    boolean updateKeyCustomer(KeyCustomerDto keyCustomerDto);
 
     /**
      * 根据条件查询大客户信息
-     * @param selectKeyCustomerVo
+     * @param selectKeyCustomerDto
      * @return
      */
-    PageInfo<ListKeyCustomerDto> findKeyCustomer(SelectKeyCustomerVo selectKeyCustomerVo);
+    PageInfo<ListKeyCustomerVo> findKeyCustomer(SelectKeyCustomerDto selectKeyCustomerDto);
 
 }

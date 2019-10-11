@@ -1,19 +1,18 @@
 package com.cjyc.web.api.service.impl;
 
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjkj.common.utils.SnowflakeIdWorker;
 import com.cjyc.common.model.dao.ICustomerContractDao;
 import com.cjyc.common.model.dao.ICustomerDao;
-import com.cjyc.common.model.dto.web.CustomerContractDto;
-import com.cjyc.common.model.dto.web.CustomerDto;
-import com.cjyc.common.model.dto.web.ListKeyCustomerDto;
-import com.cjyc.common.model.dto.web.ShowKeyCustomerDto;
+import com.cjyc.common.model.dto.web.*;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.entity.CustomerContract;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
-import com.cjyc.common.model.vo.BasePageVo;
-import com.cjyc.common.model.vo.web.*;
+import com.cjyc.common.model.dto.BasePageDto;
+import com.cjyc.common.model.vo.web.CustomerContractVo;
+import com.cjyc.common.model.vo.web.CustomerVo;
+import com.cjyc.common.model.vo.web.ListKeyCustomerVo;
+import com.cjyc.common.model.vo.web.ShowKeyCustomerVo;
 import com.cjyc.web.api.exception.CommonException;
 import com.cjyc.web.api.service.ICustomerService;
 import com.github.pagehelper.PageHelper;
@@ -48,10 +47,9 @@ public class CustomerServiceImpl implements ICustomerService{
     private ICustomerContractDao iCustomerContractDao;
 
     @Override
-    public boolean saveCustomer(CustomerVo customerDto) {
+    public boolean saveCustomer(CustomerDto customerDto) {
         try{
             Customer customer = new Customer();
-            customer.setId(SnowflakeIdWorker.nextId());
             customer.setName(customerDto.getName());
             customer.setPhone(customerDto.getPhone());
             customer.setIdCard(customerDto.getIdCard());
@@ -66,16 +64,16 @@ public class CustomerServiceImpl implements ICustomerService{
     }
 
     @Override
-    public PageInfo<Customer> getAllCustomer(BasePageVo basePageVo) {
+    public PageInfo<Customer> getAllCustomer(BasePageDto basePageDto) {
         PageInfo<Customer> pageInfo = null;
         try{
-            if(basePageVo.getCurrentPage() == null || basePageVo.getCurrentPage() < 1){
-                basePageVo.setCurrentPage(1);
+            if(basePageDto.getCurrentPage() == null || basePageDto.getCurrentPage() < 1){
+                basePageDto.setCurrentPage(1);
             }
-            if(basePageVo.getPageSize() == null || basePageVo.getPageSize() < 1){
-                basePageVo.setPageSize(10);
+            if(basePageDto.getPageSize() == null || basePageDto.getPageSize() < 1){
+                basePageDto.setPageSize(10);
             }
-            PageHelper.startPage(basePageVo.getCurrentPage(), basePageVo.getPageSize());
+            PageHelper.startPage(basePageDto.getCurrentPage(), basePageDto.getPageSize());
             List<Customer> customerList = iCustomerDao.selectList(new QueryWrapper<Customer>().eq("type",1));
             pageInfo = new PageInfo<>(customerList);
         }catch (Exception e){
@@ -88,7 +86,7 @@ public class CustomerServiceImpl implements ICustomerService{
     public Customer showCustomerById(Long id) {
         Customer customer = null;
         try{
-            if(null != id){
+            if(id != null){
                 customer = iCustomerDao.selectById(id);
             }
         }catch (Exception e){
@@ -98,7 +96,7 @@ public class CustomerServiceImpl implements ICustomerService{
     }
 
     @Override
-    public boolean updateCustomer(CustomerVo customerDto) {
+    public boolean updateCustomer(CustomerDto customerDto) {
         try{
             Customer customer = iCustomerDao.selectById(customerDto.getId());
             if(null != customer){
@@ -116,22 +114,21 @@ public class CustomerServiceImpl implements ICustomerService{
     }
 
     @Override
-    public boolean deleteCustomer(Long[] arrIds) {
-        List<Long> listIds = null;
+    public boolean deleteCustomer(List<Long> arrIds) {
         try{
-            if( null != arrIds && arrIds.length != 0){
-                listIds = Arrays.asList(arrIds);
+            if(arrIds != null && arrIds.size() > 0){
+                return iCustomerDao.deleteBatchIds(arrIds) > 0 ? true:false;
             }
-            return iCustomerDao.deleteBatchIds(listIds) > 0 ? true:false;
         }catch (Exception e){
             log.error("删除用户出现异常",e);
             throw new CommonException(e.getMessage());
         }
+        return false;
     }
 
     @Override
-    public PageInfo<CustomerDto> findCustomer(SelectCustomerVo customerVo) {
-        PageInfo<CustomerDto> pageInfo = null;
+    public PageInfo<CustomerVo> findCustomer(SelectCustomerDto customerVo) {
+        PageInfo<CustomerVo> pageInfo = null;
         try{
             if(customerVo.getCurrentPage() == null || customerVo.getCurrentPage() < 1){
                 customerVo.setCurrentPage(1);
@@ -140,7 +137,7 @@ public class CustomerServiceImpl implements ICustomerService{
                 customerVo.setPageSize(10);
             }
             PageHelper.startPage(customerVo.getCurrentPage(), customerVo.getPageSize());
-            List<CustomerDto> customerVos = iCustomerDao.findCustomer(customerVo);
+            List<CustomerVo> customerVos = iCustomerDao.findCustomer(customerVo);
             pageInfo = new PageInfo<>(customerVos);
         }catch (Exception e){
             log.error("根据条件查询用户出现异常",e);
@@ -149,28 +146,26 @@ public class CustomerServiceImpl implements ICustomerService{
     }
 
     @Override
-    public boolean saveKeyCustAndContract(KeyCustomerVo keyCustomerVo) {
+    public boolean saveKeyCustAndContract(KeyCustomerDto keyCustomerDto) {
         try{
             //新增大客户
             Customer customer = new Customer();
-            Long id = SnowflakeIdWorker.nextId();
-            customer.setId(id);
-            customer.setName(keyCustomerVo.getName());
-            customer.setAlias(keyCustomerVo.getAlias());
-            customer.setContactMan(keyCustomerVo.getContactMan());
-            customer.setPhone(keyCustomerVo.getPhone());
-            customer.setContactAddress(keyCustomerVo.getContactAddress());
-            customer.setCustomerNature(keyCustomerVo.getCustomerNature());
-            customer.setCompanyNature(keyCustomerVo.getCompanyNature());
+            customer.setName(keyCustomerDto.getName());
+            customer.setAlias(keyCustomerDto.getAlias());
+            customer.setContactMan(keyCustomerDto.getContactMan());
+            customer.setPhone(keyCustomerDto.getPhone());
+            customer.setContactAddress(keyCustomerDto.getContactAddress());
+            customer.setCustomerNature(keyCustomerDto.getCustomerNature());
+            customer.setCompanyNature(keyCustomerDto.getCompanyNature());
             customer.setType(2);
             int num = iCustomerDao.insert(customer);
             if(num > 0){
                 //合同集合
                 int no = 0;
-                List<CustomerContractVo> customerConList = keyCustomerVo.getCustContraVos();
+                List<CustomerContractDto> customerConList = keyCustomerDto.getCustContraVos();
                 if(customerConList != null && customerConList.size() > 0){
-                    for(CustomerContractVo vo : customerConList){
-                        int i = saveCustomerContract(id , vo);
+                    for(CustomerContractDto vo : customerConList){
+                        int i = saveCustomerContract(customer.getId() , vo);
                         if(i > 0){
                             no ++;
                         }
@@ -188,22 +183,21 @@ public class CustomerServiceImpl implements ICustomerService{
     }
 
     @Override
-    public boolean deleteKeyCustomer(Long[] arrIds) {
+    public boolean deleteKeyCustomer(List<Long> arrIds) {
         int num ;
         int no = 0;
         try{
-            if( null != arrIds && arrIds.length > 0){
-                List<Long> ids = Arrays.asList(arrIds);
-                num = iCustomerDao.deleteBatchIds(ids);
+            if( null != arrIds && arrIds.size() > 0){
+                num = iCustomerDao.deleteBatchIds(arrIds);
                 if(num > 0){
                     //循环删除大客户合同
-                    for(Long custid : ids){
+                    for(Long custid : arrIds){
                         int i = iCustomerContractDao.deleteContractByCustomerId(custid);
                         if(i > 0){
                             no ++;
                         }
                     }
-                    if(no == arrIds.length){
+                    if(no == arrIds.size()){
                         return true;
                     }
                 }
@@ -216,8 +210,8 @@ public class CustomerServiceImpl implements ICustomerService{
     }
 
     @Override
-    public PageInfo<ListKeyCustomerDto> getAllKeyCustomer(BasePageVo pageVo) {
-        PageInfo<ListKeyCustomerDto> pageInfo = null;
+    public PageInfo<ListKeyCustomerVo> getAllKeyCustomer(BasePageDto pageVo) {
+        PageInfo<ListKeyCustomerVo> pageInfo = null;
         try{
             if(pageVo.getCurrentPage() == null || pageVo.getCurrentPage() < 1){
                 pageVo.setCurrentPage(1);
@@ -226,7 +220,7 @@ public class CustomerServiceImpl implements ICustomerService{
                 pageVo.setPageSize(10);
             }
             PageHelper.startPage(pageVo.getCurrentPage(), pageVo.getPageSize());
-            List<ListKeyCustomerDto> customerList = iCustomerDao.getAllKeyCustomter();
+            List<ListKeyCustomerVo> customerList = iCustomerDao.getAllKeyCustomter();
             pageInfo = new PageInfo<>(customerList);
         }catch (Exception e){
             log.error("分页查看大客户出现异常",e);
@@ -236,15 +230,18 @@ public class CustomerServiceImpl implements ICustomerService{
     }
 
     @Override
-    public ShowKeyCustomerDto showKeyCustomerById(Long id) {
-        ShowKeyCustomerDto sKeyCustomerDto = null;
+    public ShowKeyCustomerVo showKeyCustomerById(Long id) {
+        ShowKeyCustomerVo sKeyCustomerDto = null;
         try{
-            if(null != id){
+            if(id != null){
                 //根据主键id查询大客户
                 Customer customer = iCustomerDao.selectById(id);
+                if(customer == null){
+                    return sKeyCustomerDto;
+                }
                 //根据customer_id查询大客户的合同
-                List<CustomerContractDto> contractDtos = iCustomerContractDao.getCustContractByCustId(id);
-                sKeyCustomerDto = new ShowKeyCustomerDto();
+                List<CustomerContractVo> contractDtos = iCustomerContractDao.getCustContractByCustId(id);
+                sKeyCustomerDto = new ShowKeyCustomerVo();
                 sKeyCustomerDto.setId(customer.getId());
                 sKeyCustomerDto.setName(customer.getName());
                 sKeyCustomerDto.setAlias(customer.getAlias());
@@ -255,15 +252,15 @@ public class CustomerServiceImpl implements ICustomerService{
                 sKeyCustomerDto.setCompanyNature(customer.getCompanyNature());
 
                 if(contractDtos != null && contractDtos.size() > 0){
-                    for(CustomerContractDto dto : contractDtos){
+                    for(CustomerContractVo dto : contractDtos){
                         dto.setContractLife(LocalDateTimeUtil.convertToString(Long.valueOf(dto.getContractLife()),DATE_FORMAT));
                         dto.setDateOfProSign(LocalDateTimeUtil.convertToString(Long.valueOf(dto.getDateOfProSign()),DATE_FORMAT));
                         if(StringUtils.isNotBlank(dto.getProjectEstabTime())){
                             dto.setProjectEstabTime(LocalDateTimeUtil.convertToString(Long.valueOf(dto.getProjectEstabTime()),DATE_FORMAT));
                         }
                     }
+                    sKeyCustomerDto.setCustContraVos(contractDtos);
                 }
-                sKeyCustomerDto.setCustContraVos(contractDtos);
             }
         }catch (Exception e){
             log.error("查看大客户出现异常",e);
@@ -273,23 +270,23 @@ public class CustomerServiceImpl implements ICustomerService{
     }
 
     @Override
-    public boolean updateKeyCustomer(KeyCustomerVo keyCustomerVo) {
+    public boolean updateKeyCustomer(KeyCustomerDto keyCustomerDto) {
         try{
-            Customer customer = iCustomerDao.selectById(keyCustomerVo.getId());
+            Customer customer = iCustomerDao.selectById(keyCustomerDto.getId());
             if(null != customer){
-                customer.setName(keyCustomerVo.getName());
-                customer.setAlias(keyCustomerVo.getAlias());
-                customer.setContactMan(keyCustomerVo.getContactMan());
-                customer.setPhone(keyCustomerVo.getPhone());
-                customer.setContactAddress(keyCustomerVo.getContactAddress());
-                customer.setCustomerNature(keyCustomerVo.getCustomerNature());
-                customer.setCompanyNature(keyCustomerVo.getCompanyNature());
+                customer.setName(keyCustomerDto.getName());
+                customer.setAlias(keyCustomerDto.getAlias());
+                customer.setContactMan(keyCustomerDto.getContactMan());
+                customer.setPhone(keyCustomerDto.getPhone());
+                customer.setContactAddress(keyCustomerDto.getContactAddress());
+                customer.setCustomerNature(keyCustomerDto.getCustomerNature());
+                customer.setCompanyNature(keyCustomerDto.getCompanyNature());
                 int num = iCustomerDao.updateById(customer);
                 if(num > 0){
                     int no = 0;
-                    List<CustomerContractVo> contractVos = keyCustomerVo.getCustContraVos();
+                    List<CustomerContractDto> contractVos = keyCustomerDto.getCustContraVos();
                     if(null != contractVos && contractVos.size() > 0){
-                        for(CustomerContractVo vo : contractVos){
+                        for(CustomerContractDto vo : contractVos){
                             int i = updateCustomerContractById(vo);
                             if(i > 0){
                                 no ++;
@@ -309,8 +306,8 @@ public class CustomerServiceImpl implements ICustomerService{
     }
 
     @Override
-    public PageInfo<ListKeyCustomerDto> findKeyCustomer(SelectKeyCustomerVo keyCustomerVo) {
-        PageInfo<ListKeyCustomerDto> pageInfo = null;
+    public PageInfo<ListKeyCustomerVo> findKeyCustomer(SelectKeyCustomerDto keyCustomerVo) {
+        PageInfo<ListKeyCustomerVo> pageInfo = null;
         try{
             if(keyCustomerVo.getCurrentPage() == null || keyCustomerVo.getCurrentPage() < 1){
                 keyCustomerVo.setCurrentPage(1);
@@ -319,7 +316,7 @@ public class CustomerServiceImpl implements ICustomerService{
                 keyCustomerVo.setPageSize(10);
             }
             PageHelper.startPage(keyCustomerVo.getCurrentPage(), keyCustomerVo.getPageSize());
-            List<ListKeyCustomerDto> keyCustomerList = iCustomerDao.findKeyCustomter(keyCustomerVo);
+            List<ListKeyCustomerVo> keyCustomerList = iCustomerDao.findKeyCustomter(keyCustomerVo);
             pageInfo = new PageInfo<>(keyCustomerList);
         }catch (Exception e){
             log.error("根据条件查询大客户出现异常",e);
@@ -333,7 +330,7 @@ public class CustomerServiceImpl implements ICustomerService{
      * @param id  大客户id
      * @param vo  合同
      */
-    private int saveCustomerContract(Long id ,CustomerContractVo vo){
+    private int saveCustomerContract(Long id , CustomerContractDto vo){
         try{
             CustomerContract custCont = new CustomerContract();
             custCont.setId(SnowflakeIdWorker.nextId());
@@ -365,7 +362,7 @@ public class CustomerServiceImpl implements ICustomerService{
         }
     }
 
-    private int updateCustomerContractById(CustomerContractVo vo){
+    private int updateCustomerContractById(CustomerContractDto vo){
         try{
             CustomerContract contract = iCustomerContractDao.selectById(vo.getId());
             if(null != contract){
