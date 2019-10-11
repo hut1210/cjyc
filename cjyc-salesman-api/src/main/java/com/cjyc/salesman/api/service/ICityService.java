@@ -1,16 +1,8 @@
 package com.cjyc.salesman.api.service;
 
-import com.cjkj.common.redis.template.StringRedisUtil;
-import com.cjyc.common.model.dto.CityDto;
-import com.cjyc.common.model.entity.City;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.cjyc.common.model.vo.CityVo;
-import com.github.pagehelper.PageInfo;
+import com.cjyc.common.model.entity.City;
 import org.apache.ibatis.annotations.Param;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
