@@ -50,10 +50,10 @@ public interface ICustomerService  {
 
     /**
      * 根据id删除移动端用户
-     * @param arrIds
+     * @param ids
      * @return
      */
-    boolean deleteCustomer(List<Long> arrIds);
+    boolean delCustomerByIds(List<Long> ids);
 
     /**
      * 根据条件查询移动端用户
@@ -71,10 +71,10 @@ public interface ICustomerService  {
 
     /**
      * 根据ids删除大客户
-     * @param arrIds
+     * @param ids
      * @return
      */
-    boolean deleteKeyCustomer(List<Long> arrIds);
+    boolean delKeyCustomerByIds(List<Long> ids);
 
     /**
      * 分页查看所有大客户
