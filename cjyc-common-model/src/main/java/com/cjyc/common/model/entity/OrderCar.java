@@ -62,19 +62,7 @@ public class OrderCar implements Serializable {
     @ApiModelProperty(value = "当前所在区")
     private String nowAreaCode;
 
-    @ApiModelProperty(value = "状态：0待路由，
-5待提车调度，
-10待提车，
-15提车中（待交车），
-20待自送交车
-25待干线调度<循环>（提车入库），
-35待干线提车<循环>，
-40干线中<循环>（待干线交车），
-45待配送调度（干线入库），
-50待配送提车，
-55配送中（待配送交车），
-70待自取提车，
-100已签收")
+    @ApiModelProperty(value = "状态：0待路由,5待提车调度,10待提车，15提车中（待交车），20待自送交车 25待干线调度<循环>（提车入库）， 35待干线提车<循环>，40干线中<循环>（待干线交车），45待配送调度（干线入库），50待配送提车，55配送中（待配送交车），70待自取提车，100已签收")
     private Integer state;
 
     @ApiModelProperty(value = "车辆描述")

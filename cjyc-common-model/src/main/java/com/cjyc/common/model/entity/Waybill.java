@@ -53,14 +53,7 @@ public class Waybill implements Serializable {
     @ApiModelProperty(value = "车数量")
     private Integer carNum;
 
-    @ApiModelProperty(value = "运单状态：
-0待分配承运商（竞抢），
-15待承运商承接任务，
-30运输中，
-100已完成，
-102已撤回，
-103已拒接，
-111超时关闭")
+    @ApiModelProperty(value = "运单状态：0待分配承运商（竞抢），15待承运商承接任务，30运输中,100已完成，102已撤回，103已拒接，111超时关闭")
     private Integer state;
 
     @ApiModelProperty(value = "运单总运费")
@@ -83,6 +76,5 @@ public class Waybill implements Serializable {
 
     @ApiModelProperty(value = "调度人ID")
     private Long createUserId;
-
 
 }
