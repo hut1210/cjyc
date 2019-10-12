@@ -3,8 +3,10 @@ package com.cjyc.common.service.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjyc.common.model.dao.ICustomerContactDao;
 import com.cjyc.common.model.dao.ICustomerDao;
+import com.cjyc.common.model.dao.ICustomerLineDao;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.entity.CustomerContact;
+import com.cjyc.common.model.entity.CustomerLine;
 import com.cjyc.common.service.service.ICustomerService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -25,7 +27,7 @@ public class CustomerServiceImpl implements ICustomerService {
     private ICustomerDao customerDao;
 
     @Resource
-    private ICustomerContactDao customerContactDao;
+    private ICustomerLineDao customerLineDao;
 
     /**
      * 新增客户信息
@@ -38,15 +40,13 @@ public class CustomerServiceImpl implements ICustomerService {
         customerDao.insert(c);
     }
 
-    /**
-     * 测试分页
-     * @return
-     */
     @Override
-    public PageInfo<Customer> pageList(Integer pageNum, Integer pageSize) {
+    public PageInfo<CustomerLine> getLineHistoryPage(Long customerId, Integer pageNum, Integer pageSize) {
+        QueryWrapper queryWrapper = new QueryWrapper();
         PageHelper.startPage(pageNum, pageSize);
-        List<Customer> selectList = customerDao.selectList(new QueryWrapper<>());
-        PageInfo<Customer> pageInfo = new PageInfo<>(selectList);
+        queryWrapper.eq("customer_id",customerId);
+        List<CustomerLine> selectList = customerLineDao.selectList(queryWrapper);
+        PageInfo<CustomerLine> pageInfo = new PageInfo<>(selectList);
         return pageInfo;
     }
 }

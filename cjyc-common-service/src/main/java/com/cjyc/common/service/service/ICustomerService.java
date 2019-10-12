@@ -2,6 +2,7 @@ package com.cjyc.common.service.service;
 
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.entity.CustomerContact;
+import com.cjyc.common.model.entity.CustomerLine;
 import com.github.pagehelper.PageInfo;
 
 /**
@@ -14,6 +15,5 @@ public interface ICustomerService {
 
     void addUser();
 
-    PageInfo<Customer> pageList(Integer pageNum, Integer pageSize);
-
+    PageInfo<CustomerLine> getLineHistoryPage(Long customerId, Integer pageNum, Integer pageSize);
 }

@@ -84,7 +84,7 @@ public class AppController {
             @ApiImplicitParam(name = "phone", value = "客户登录手机号", required = true, dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "token", value = "客户token", required = true, dataType = "String", paramType = "query")
     })
-    public ResultVo notice(String phone, String token){
+    public ResultVo<List<Map<String,Object>>> notice(String phone, String token){
         List<Map<String,Object>> noticeList = null;
         //todo 查询通知列表s
         return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),"获取成功",noticeList);
@@ -115,7 +115,7 @@ public class AppController {
             @ApiImplicitParam(name = "customerId", value = "客户id", required = true, dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "versionCode", value = "当前客户端app版本号", required = true, dataType = "String", paramType = "query"),
     })
-    public ResultVo checkVersion(String phone, String versionCode){
+    public ResultVo<List<Map<String,Object>>> checkVersion(String phone, String versionCode){
         List<Map<String,Object>> versionInfoList = null;
         //todo 查询app更新信息
         return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),"获取成功",versionInfoList);
