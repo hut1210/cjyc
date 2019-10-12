@@ -1,13 +1,10 @@
 package com.cjyc.common.model.entity;
 
 import java.math.BigDecimal;
-
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-
 import java.io.Serializable;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -20,13 +17,13 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-11
+ * @since 2019-10-12
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("w_waybill")
-@ApiModel(value = "Waybill对象", description = "运单表(业务员调度单)")
+@ApiModel(value="Waybill对象", description="运单表(业务员调度单)")
 public class Waybill implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -56,14 +53,14 @@ public class Waybill implements Serializable {
     @ApiModelProperty(value = "车数量")
     private Integer carNum;
 
-    @ApiModelProperty(value = "运单状态："
-            + "0待分配承运商（竞抢），"
-            + "15待承运商承接任务，"
-            + "30运输中，"
-            + "100已完成，"
-            + "102已撤回，"
-            + "103已拒接，"
-            + "111超时关闭")
+    @ApiModelProperty(value = "运单状态：
+0待分配承运商（竞抢），
+15待承运商承接任务，
+30运输中，
+100已完成，
+102已撤回，
+103已拒接，
+111超时关闭")
     private Integer state;
 
     @ApiModelProperty(value = "运单总运费")
@@ -86,5 +83,6 @@ public class Waybill implements Serializable {
 
     @ApiModelProperty(value = "调度人ID")
     private Long createUserId;
+
 
 }

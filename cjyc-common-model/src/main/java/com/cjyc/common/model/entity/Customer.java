@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-11
+ * @since 2019-10-12
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -85,8 +85,14 @@ public class Customer implements Serializable {
     @ApiModelProperty(value = "公司ID")
     private Long companyId;
 
+    @ApiModelProperty(value = "审核状态 0：未审核  1：已审核")
+    private Integer auditState;
+
     @ApiModelProperty(value = "状态：0未注册，2已注册，7已冻结")
     private Integer state;
+
+    @ApiModelProperty(value = "结算方式 0：时付  1：账期")
+    private Integer payMode;
 
     @ApiModelProperty(value = "注册时间，用户自己注册APP或者首次登陆操作APP时间")
     private Long registerTime;
@@ -96,6 +102,12 @@ public class Customer implements Serializable {
 
     @ApiModelProperty(value = "创建人")
     private Long createUserId;
+
+    @ApiModelProperty(value = "审核时间")
+    private Long auditTime;
+
+    @ApiModelProperty(value = "审核人")
+    private Long auditUserId;
 
 
 }

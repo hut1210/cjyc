@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-11
+ * @since 2019-10-12
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -33,7 +33,7 @@ public class Incrementer implements Serializable {
     @ApiModelProperty(value = "日期 yyyyHHMM")
     private String date;
 
-    @ApiModelProperty(value = "业务类型前缀 如W|T")
+    @ApiModelProperty(value = "业务类型前缀 如"W"\"T"")
     private String prefix;
 
     @ApiModelProperty(value = "流水号")
