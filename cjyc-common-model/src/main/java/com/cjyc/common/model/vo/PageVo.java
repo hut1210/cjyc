@@ -1,5 +1,7 @@
 package com.cjyc.common.model.vo;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -14,20 +16,27 @@ import java.util.Map;
  */
 @Builder
 @Getter
+@ApiModel(value = "PageVo对象", description = "通用返回Data报文Page结构")
 public class PageVo<T> implements Serializable {
 
     private static final long serialVersionUID = 2L;
-    /**总记录**/
+
+    @ApiModelProperty(value = "<总记录数（分页）>")
     private long totalRecords;
-    /**显示条数**/
+
+    @ApiModelProperty(value = "<每页条数（分页）>")
     private int pageSize;
-    /**当前页数**/
+
+    @ApiModelProperty(value = "<当前页码（分页）>")
     private int currentPage;
-    /**总页数**/
+
+    @ApiModelProperty(value = "<总页数（分页）>")
     private int totalPages;
-    /**内容*/
+
+    @ApiModelProperty(value = "<内容（分页）>")
     private List<T> list;
-    /**非分页相关统计信息*/
+
+    @ApiModelProperty(value = "<非分页相关统计信息（分页）>")
     private Map<String, Object> countInfo;
 
 }

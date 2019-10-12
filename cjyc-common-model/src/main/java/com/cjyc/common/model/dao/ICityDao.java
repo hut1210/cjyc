@@ -21,5 +21,6 @@ public interface ICityDao extends BaseMapper<City> {
 
     List<City> findList();
 
+    List<City> findChildList(String code);
 }
 
