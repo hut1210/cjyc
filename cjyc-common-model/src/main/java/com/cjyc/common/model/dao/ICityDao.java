@@ -1,6 +1,7 @@
 package com.cjyc.common.model.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.mapper.Mapper;
 import com.cjyc.common.model.entity.City;
 import org.apache.ibatis.annotations.Param;
 
