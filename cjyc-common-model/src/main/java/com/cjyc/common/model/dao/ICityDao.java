@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.mapper.Mapper;
 import com.cjyc.common.model.entity.City;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ import java.util.List;
  * @author JPG
  * @since 2019-09-29
  */
+@Repository
 public interface ICityDao extends BaseMapper<City> {
 
     City findById(@Param("cityCode") String cityCode);
