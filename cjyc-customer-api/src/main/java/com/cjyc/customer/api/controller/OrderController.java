@@ -29,7 +29,7 @@ public class OrderController {
      * 客户端下单--dto接收
      * */
     @ApiOperation(value = "客户端下单接口", notes = "客户端下单", httpMethod = "POST")
-    @RequestMapping(value = "/commitOrder", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "/commitOrder", method = RequestMethod.POST,  consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultVo commitOrder(@RequestBody OrderDto orderDto) {
         boolean result = orderService.commitOrder(orderDto);
 

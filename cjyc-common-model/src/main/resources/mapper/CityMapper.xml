@@ -19,23 +19,12 @@
     <sql id="Base_Column_List">
         code, parent_code, name, level, lng, lat, hot, create_time, update_time
     </sql>
-    <select id="findById" parameterType="string" resultType="com.cjyc.common.model.entity.City">
+    <select id="findChildList" resultType="com.cjyc.common.model.entity.City">
         select
         <include refid="Base_Column_List"/>
-        from s_city where code = #{cityCode,jdbcType=VARCHAR};
+        from s_city c1
+        join s_city c2 on c1.parent_code = c2.code
+        where c2.code = #{code,jdbcType=VARCHAR}
     </select>
-    <select id="findList" resultType="com.cjyc.common.model.entity.City">
-        select
-        <include refid="Base_Column_List"/>
-        from s_city;
-    </select>
-    <select id="countInfo" resultType="java.util.Map">
-        select
-        count(0) as count
-        from s_city;
-    </select>
-    <insert id="">
-
-    </insert>
 
 </mapper>

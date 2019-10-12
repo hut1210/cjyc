@@ -33,7 +33,7 @@ public class Incrementer implements Serializable {
     @ApiModelProperty(value = "日期 yyyyHHMM")
     private String date;
 
-    @ApiModelProperty(value = "业务类型前缀 如WT")
+    @ApiModelProperty(value = "业务类型前缀 如W|T")
     private String prefix;
 
     @ApiModelProperty(value = "流水号")

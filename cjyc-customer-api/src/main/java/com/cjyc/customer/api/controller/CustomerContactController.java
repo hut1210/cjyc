@@ -50,7 +50,7 @@ public class CustomerContactController {
      * 添加联系人接口
      * */
     @ApiOperation(value = "添加联系人接口", notes = "添加联系人接口", httpMethod = "POST")
-    @RequestMapping(value = "/add", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "/add", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultVo add(@RequestBody CustomerContact customerContact) {
         boolean result = customerContactService.addCustomerContact(customerContact);
         return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg())

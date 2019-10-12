@@ -1,5 +1,7 @@
 package com.cjyc.common.model.vo;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -14,15 +16,18 @@ import java.util.Map;
  */
 @Builder
 @Getter
+@ApiModel(value = "ListVo对象", description = "通用返回Data报文List结构")
 public class ListVo<T> implements Serializable {
 
     private static final long serialVersionUID = 2L;
 
-    /**总记录**/
+    @ApiModelProperty(value = "<总记录数>")
     private long totalRecords;
-    /**内容**/
+
+    @ApiModelProperty(value = "<内容>")
     private List<T> list;
-    /**非分页相关统计信息*/
+
+    @ApiModelProperty(value = "<统计信息>")
     private Map<String, Object> countInfo;
 
 }

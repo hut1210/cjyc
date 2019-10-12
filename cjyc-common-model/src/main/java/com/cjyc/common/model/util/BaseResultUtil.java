@@ -27,18 +27,18 @@ public class BaseResultUtil<T> {
      * @return
      */
     public static <T> ResultVo<T> success(){
-        return success(null);
+        return getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg());
     }
 
     public static <T> ResultVo<T> success(T data){
         return getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(), data);
     }
 
-    public static <T> ResultVo<T> success(IPage page){
+    public static <T> ResultVo<PageVo<T>> success(IPage<T> page){
         return getPageVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(), page);
     }
 
-    public static <T> ResultVo<T> success(IPage page, Map<String, Object> countInfo){
+    public static <T> ResultVo<PageVo<T>> success(IPage<T> page, Map<String, Object> countInfo){
         return getPageVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(), page, countInfo);
     }
 
