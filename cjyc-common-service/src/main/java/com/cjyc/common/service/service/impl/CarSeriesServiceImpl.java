@@ -2,8 +2,11 @@ package com.cjyc.common.service.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjyc.common.model.dao.ICarSeriesDao;
+import com.cjyc.common.model.entity.CarSeries;
 import com.cjyc.common.service.service.ICarSeriesService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
@@ -13,28 +16,25 @@ import java.util.Map;
  * @description: 车系管理service
  * @date:2019/10/12
  */
+@Service("carSeriesService")
 public class CarSeriesServiceImpl implements ICarSeriesService{
 
     @Autowired
     private ICarSeriesDao carSeriesDao;
 
     /**
-     * 查询全部车系信息
-     * */
-    @Override
-    public List<Map<String, Object>> getAllList() {
-        return carSeriesDao.selectMaps(null);
-    }
-
-    /**
-     * 根据关键词查询
+     * 根据关键词查询列表
+     * 关键词为空查询所有
      *
      * */
     @Override
-    public List<Map<String, Object>> getByKeyword(String keyword) {
-        QueryWrapper queryWrapper = new QueryWrapper<>();
-        queryWrapper.like("brand",keyword);
-        queryWrapper.like("model",keyword);
-        return carSeriesDao.selectMaps(queryWrapper);
+    public List<CarSeries> getList(String keyword) {
+        QueryWrapper<CarSeries> queryWrapper = new QueryWrapper<>();
+        if(StringUtils.isNotBlank(keyword)) {
+            queryWrapper.like("brand",keyword);
+            queryWrapper.or();
+            queryWrapper.like("model",keyword);
+        }
+        return carSeriesDao.selectList(queryWrapper);
     }
 }

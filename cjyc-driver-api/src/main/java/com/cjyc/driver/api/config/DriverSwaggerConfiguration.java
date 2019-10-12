@@ -1,5 +1,6 @@
 package com.cjyc.driver.api.config;
 
+import com.cjyc.common.model.enums.ResultEnum;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -31,8 +32,8 @@ public class DriverSwaggerConfiguration {
     @Bean
     public Docket apiConfig() {
         List<ResponseMessage> responseMessageList = new ArrayList<>();
-        responseMessageList.add(new ResponseMessageBuilder().code(0).message("成功").build());
-        responseMessageList.add(new ResponseMessageBuilder().code(9).message("处理失败").build());
+        responseMessageList.add(new ResponseMessageBuilder().code(ResultEnum.SUCCESS.getCode()).message(ResultEnum.SUCCESS.getMsg()).build());
+        responseMessageList.add(new ResponseMessageBuilder().code(ResultEnum.FAIL.getCode()).message(ResultEnum.FAIL.getMsg()).build());
 
         return new Docket(DocumentationType.SWAGGER_2)
                 .groupName("司机端api")

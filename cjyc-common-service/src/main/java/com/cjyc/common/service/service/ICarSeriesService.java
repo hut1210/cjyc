@@ -1,5 +1,7 @@
 package com.cjyc.common.service.service;
 
+import com.cjyc.common.model.entity.CarSeries;
+
 import java.util.List;
 import java.util.Map;
 
@@ -10,7 +12,5 @@ import java.util.Map;
  */
 public interface ICarSeriesService {
 
-    List<Map<String,Object>> getAllList();
-
-    List<Map<String,Object>> getByKeyword(String keyword);
+    List<CarSeries> getList(String keyword);
 }
