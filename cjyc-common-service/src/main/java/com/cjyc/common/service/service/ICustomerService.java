@@ -5,6 +5,7 @@ import com.cjyc.common.model.entity.CustomerContact;
 import com.github.pagehelper.PageInfo;
 
 /**
+ * 客户信息service
  * @auther litan
  * @description: com.cjyc.common.service
  * @date:2019/9/28
