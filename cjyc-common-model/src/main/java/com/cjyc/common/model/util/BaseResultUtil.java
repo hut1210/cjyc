@@ -1,6 +1,6 @@
 package com.cjyc.common.model.util;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
@@ -32,6 +32,14 @@ public class BaseResultUtil<T> {
 
     public static <T> ResultVo<T> success(T data){
         return getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(), data);
+    }
+
+    public static <T> ResultVo<T> success(IPage page){
+        return getPageVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(), page);
+    }
+
+    public static <T> ResultVo<T> success(IPage page, Map<String, Object> countInfo){
+        return getPageVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(), page, countInfo);
     }
 
     /**
@@ -202,7 +210,7 @@ public class BaseResultUtil<T> {
      * @param page 返回内容
      * @return ResultVo<PageVo<T>>
      */
-    public static <T> ResultVo<PageVo<T>> getPageVo(int code, String msg, Page<T> page){
+    public static <T> ResultVo<PageVo<T>> getPageVo(int code, String msg, IPage<T> page){
         PageVo<T> pageVo = PageVo.<T>builder()
                 .totalRecords(page.getTotal())
                 .totalPages((int)page.getPages())
@@ -228,7 +236,7 @@ public class BaseResultUtil<T> {
      * @param countInfo 非分页相关统计信息
      * @return ResultVo<PageVo<T>>
      */
-    public static <T> ResultVo<PageVo<T>> getPageVo(int code, String msg, Page<T> page, Map<String, Object> countInfo){
+    public static <T> ResultVo<PageVo<T>> getPageVo(int code, String msg, IPage<T> page, Map<String, Object> countInfo){
         PageVo<T> pageVo = PageVo.<T>builder()
                 .totalRecords(page.getTotal())
                 .totalPages((int)page.getPages())
