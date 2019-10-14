@@ -7,10 +7,11 @@ package com.cjyc.common.model.enums.saleman;
  */
 public enum SalemanStateEnum {
 
-    wait_check("待审核",0),
-    checked("审核通过",2),
-    rejected("已驳回", 4),
-    leave("已离职", 7);
+    /***/
+    WAIT_CHECK("待审核",0),
+    CHECKED("审核通过",2),
+    REJECTED("已驳回", 4),
+    LEAVE("已离职", 7);
 
     public String name;
     public int code;
