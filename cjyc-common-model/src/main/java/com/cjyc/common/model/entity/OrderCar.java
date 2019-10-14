@@ -56,6 +56,12 @@ public class OrderCar implements Serializable {
     @ApiModelProperty(value = "vin码")
     private String vin;
 
+    @ApiModelProperty(value = "是否能动 0-否 1-是")
+    private int isMove;
+
+    @ApiModelProperty(value = "是否新车 0-否 1-是")
+    private int isNew;
+
     @ApiModelProperty(value = "估值/万")
     private Integer valuation;
 

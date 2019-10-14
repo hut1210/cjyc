@@ -28,10 +28,8 @@ public class OrderServiceImpl implements IOrderService{
         int isSimple = orderDto.getIsSimple();
         int saveType = orderDto.getSaveType();
 
-
         Order order = new Order();
         BeanUtils.copyProperties(orderDto,order);
-        order.setId(001121212335653L);
         order.setNo("555666");
         //简单
         if(isSimple == 1){
