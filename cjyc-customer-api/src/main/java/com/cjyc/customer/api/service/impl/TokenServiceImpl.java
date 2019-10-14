@@ -16,10 +16,10 @@ TokenServiceImpl implements ITokenService{
 //    @Autowired
 //    private RedisUtil redisUtil;
 
-    @Value("${token.expires}")
+    @Value("${cjyc.token.expires}")
     private int expires;
 
-    @Value("${salt.customer_salt}")
+    @Value("${cjyc.salt.customer}")
     private String customerSalt;
 
     /**

@@ -20,10 +20,10 @@ public class AppServiceImpl implements IAppService {
 //    @Autowired
 //    private CustomerDao customerDao;
 
-    @Value("${messages.expires}")
+    @Value("${cjyc.sms.expires}")
     private int msgExpires;
 
-    @Value("${messages.daylimit}")
+    @Value("${cjyc.sms.daylimit}")
     private int msgDaylimit;
 
     private static Map<String, Customer> loginUserMap = new HashMap<>();

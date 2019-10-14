@@ -5,7 +5,7 @@
 
 server:
   #服务端口
-  port: 9502
+  port: 9504
   #服务baseURl
   servlet:
     context-path: /cjyc/customer
@@ -16,17 +16,6 @@ server:
 #    keyStoreType: JKS
 
 spring:
-  #项目名
-  #application:
-    #name: yunche-api
-
-  ##静态资源本地位置(最后的/记得加)
-  resources:
-    static-locations: file:D:\\upload\\
-  #静态资源过滤url
-  mvc:
-    static-path-pattern: /**
-
   ##actuator管理
   management:
     endpoints:
@@ -63,9 +52,9 @@ spring:
 
   ##缓存
   redis:
-    host: 192.168.225.11
+    host: 39.107.96.231
     port: 6379
-    password:
+    password: Qaz123$%^Qaz123$%^Qaz123$%^Qaz123$%^Qaz123$%^
     #Redis默认情况下有16个分片，这里配置具体使用的分片，默认是0
     database: 0
     timeout: 1000ms
@@ -80,45 +69,73 @@ spring:
         max-idle: 16
         #连接池中的最小空闲连接 默认 0
         min-idle: 8
+##-----------------------------------logging-------------------------------------------
+##日志
+logging:
+  level:
+    #root: debug
+    com.cjyc.customer.api: debug
+    com.cjyc.common.model.dao: debug
 
 
+cjyc:
+  swagger:
+    enabled: true
+    title: CJYC客户Api
+    description: 韵车项目接口文档
+    version: 2.0.1
+    basePackage: com.cjyc.customer.api.controller
+    groupName: CJYC-Customer-Api
+    usePathMapping: false
 
-  ##自定义参数
+  #短信
+  sms:
+    ##短信时效(秒)
+    expires: 300
+    ##单日最大发送条数
+    daylimit: 20
+    miaoxin:
+      enabled: true
+      server: http://www.51miaoxin.com
+      account: cjwlhy
+      secret: ba9jet8miibxepu4gb5q
 
-  ##极光推送
-  JPush:
+  #推送
+  push:
+    jiguang:
+      enabled: true
       appKey: 8a4abf674ba61fc9c47d6616
       masterSecret: 6fc93a75e2f813f4798e88ff
 
-##ping++
-Ping++:
-    businessCode: 200604000004527
-    apikey: sk_test_40WD00COyLKOKKCiD8vH04qL
-    customer:
-       appid: app_WHKWv9XDWTyPz1G8
-       webhooks: http://39.106.134.87:80/manycc/pingpay/webhooksNotice
-    driver:
-       appid: app_XzvvzPDmDm1GbTi1
-       webhooks: http://39.106.134.87:80/manycc/pingpay/webhooksNotice
-    salesman:
-       appid: app_LSm9WLS4SmLSSC48
-       webhooks: http://39.106.134.87:80/manycc/pingpay/webhooksNotice
+  #支付
+  pay:
+    ping++:
+      businessCode: 200604000004527
+      apikey: sk_test_40WD00COyLKOKKCiD8vH04qL
+      customer:
+        appid: app_WHKWv9XDWTyPz1G8
+        webhooks: http://39.106.134.87:80/manycc/pingpay/webhooksNotice
+      driver:
+        appid: app_XzvvzPDmDm1GbTi1
+        webhooks: http://39.106.134.87:80/manycc/pingpay/webhooksNotice
+      salesman:
+        appid: app_LSm9WLS4SmLSSC48
+        webhooks: http://39.106.134.87:80/manycc/pingpay/webhooksNotice
 
-##SALT
-salt:
-   customer_salt: YCcustomersalt
-   driver_salt: YCdriversalt
-   salesman_salt: YCsalesmansalt
 
-##TOKEN
-token:
-  ##过期时间（秒）
-  expires: 1800
+  #SALT
+  salt:
+    customer: YCcustomersalt
+    driver: YCdriversalt
+    salesman: YCsalesmansalt
 
-##短信
-messages:
-  ##短信时效(分钟)
-  expires: 5
-  ##单日最大发送条数
-  daylimit: 20
+  ##TOKEN
+  token:
+    ##过期时间（秒）
+    expires: 1800
+
+
+
+
+
 
