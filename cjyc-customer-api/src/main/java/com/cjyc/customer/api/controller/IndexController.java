@@ -9,6 +9,7 @@ package com.cjyc.customer.api.controller;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.vo.CityVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.service.service.ICarSeriesService;
 import com.cjyc.common.service.service.ICityService;
@@ -32,7 +33,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/index")
-@Api(tags = "index",description = "基础信息相关,包含联系人、获取城市、车系等")
+@Api(tags = "基础数据接口",description = "基础信息相关,包含联系人、获取城市、车系等")
 public class IndexController {
 
     @Autowired
@@ -104,8 +105,8 @@ public class IndexController {
             @ApiImplicitParam(name = "cityCode", value = "城市code,空表示全国和大区", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "keyword", value = "检索关键词",  dataType = "String", paramType = "query")
     })
-    public ResultVo<List<City>> getCityList(String cityCode, String keyword) {
-        List<City> cityList = cityService.getCityList(cityCode,keyword);
+    public ResultVo<List<CityVo>> getCityList(String cityCode, String keyword) {
+        List<CityVo> cityList = cityService.getCityList(cityCode,keyword);
         return BaseResultUtil.success(cityList);
     }
 

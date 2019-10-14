@@ -2,9 +2,12 @@ package com.cjyc.customer.api.service.impl;
 
 import com.cjyc.common.model.constant.NoConstant;
 import com.cjyc.common.model.dao.IIncrementerDao;
+import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IOrderDao;
 import com.cjyc.common.model.entity.Order;
+import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.vo.customer.OrderCenterVo;
+import com.cjyc.customer.api.dto.OrderCarDto;
 import com.cjyc.customer.api.dto.OrderDto;
 import com.cjyc.customer.api.service.IOrderService;
 import com.github.pagehelper.PageInfo;
@@ -12,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * @auther litan
@@ -26,6 +31,8 @@ public class OrderServiceImpl implements IOrderService{
     IOrderDao orderDao;
     @Autowired
     IIncrementerDao incrementerDao;
+    @Autowired
+    IOrderCarDao orderCarDao;
 
     @Override
     public boolean commitOrder(OrderDto orderDto) {
@@ -47,13 +54,25 @@ public class OrderServiceImpl implements IOrderService{
             //草稿
             if(saveType==0){
                 order.setState(0);//待提交
-
             //正式下单
             }else if(saveType==1){
                 order.setState(1);//待分配
             }
         }
-        int id = orderDao.add(order);
+        int id = orderDao.insert(order);
+
+        //保存车辆信息
+        List<OrderCarDto> carDtoList =  orderDto.getOrderCarDtoList();
+        if(id > 0){
+
+            for(OrderCarDto orderCarDto : carDtoList){
+
+                OrderCar orderCar = new OrderCar();
+                BeanUtils.copyProperties(orderCarDto,orderCar);
+
+                orderCarDao.insert(orderCar);
+            }
+        }
 
         return id > 0 ? true : false;
     }
