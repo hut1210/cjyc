@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cjyc.common.model.dao.IUploadFileDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.UploadFile">
+        <id column="id" property="id" />
+        <result column="file_url" property="fileUrl" />
+        <result column="server_url" property="serverUrl" />
+        <result column="file_name" property="fileName" />
+        <result column="file_type" property="fileType" />
+        <result column="file_belong" property="fileBelong" />
+        <result column="file_size" property="fileSize" />
+        <result column="limit_size" property="limitSize" />
+        <result column="create_time" property="createTime" />
+        <result column="ending_time" property="endingTime" />
+        <result column="remark" property="remark" />
+        <result column="state" property="state" />
+        <result column="original_name" property="originalName" />
+        <result column="thumbnail_url" property="thumbnailUrl" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, file_url, server_url, file_name, file_type, file_belong, file_size, limit_size, create_time, ending_time, remark, state, original_name, thumbnail_url
+    </sql>
+
+</mapper>

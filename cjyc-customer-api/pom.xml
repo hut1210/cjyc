@@ -83,25 +83,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!--mybatis-->
-        <dependency>
-            <groupId>tk.mybatis</groupId>
-            <artifactId>mapper-spring-boot-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-boot-starter</artifactId>
-            <version>3.0.3</version> <!-- ？指定版本号，否则启动报错 -->
-        </dependency>
-        <dependency>
-            <groupId>org.mybatis.spring.boot</groupId>
-            <artifactId>mybatis-spring-boot-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.github.pagehelper</groupId>
-            <artifactId>pagehelper-spring-boot-starter</artifactId>
-        </dependency>
-
         <!--nacos-->
         <!--<dependency>-->
         <!--<groupId>org.springframework.cloud</groupId>-->
@@ -111,12 +92,6 @@
         <!--<groupId>org.springframework.cloud</groupId>-->
         <!--<artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>-->
         <!--</dependency>-->
-
-        <!--redis-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
-        </dependency>
 
         <!--mq-->
         <!--<dependency>

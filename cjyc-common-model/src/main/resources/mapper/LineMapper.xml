@@ -27,4 +27,19 @@
         id, code, name, from_code, to_code, level, kilometer, days, state, default_wl_fee, default_freight_fee, remark, create_time, create_user_id, update_time, update_user_id
     </sql>
 
+    <!-- 通过城市编码查看上游运价 -->
+    <select id="getLinePriceByCode" resultType="java.lang.String" parameterType="java.lang.String">
+        select default_wl_fee
+        from s_line
+        <where>
+            <if test="fromCode != null and fromCode != ''">
+                from_code = #{fromCode}
+            </if>
+            <if test="toCode != null  and toCode != ''">
+                and to_code = #{toCode}
+            </if>
+            and state = 1
+        </where>
+    </select>
+
 </mapper>
