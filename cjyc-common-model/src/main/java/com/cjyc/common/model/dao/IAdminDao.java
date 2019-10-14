@@ -2,6 +2,7 @@ package com.cjyc.common.model.dao;
 
 import com.cjyc.common.model.entity.Admin;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -13,4 +14,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface IAdminDao extends BaseMapper<Admin> {
 
+    Admin findByUserId(@Param("userId") Long userId);
 }

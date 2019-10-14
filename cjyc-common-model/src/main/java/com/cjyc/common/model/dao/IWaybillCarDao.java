@@ -1,7 +1,11 @@
 package com.cjyc.common.model.dao;
 
+import com.cjyc.common.model.dto.web.WayBillCarrierDto;
 import com.cjyc.common.model.entity.WaybillCar;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cjyc.common.model.vo.web.WayBillCarrierVo;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +17,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
 
+    List<WayBillCarrierDto> getWayBillCarrier(WayBillCarrierVo wayBillCarrierVo);
 }

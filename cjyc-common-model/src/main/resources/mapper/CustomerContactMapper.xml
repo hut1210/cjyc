@@ -24,14 +24,5 @@
         id, customer_id, name, phone, province, province_code, city, city_code, area, area_code, detail_addr, rewark, state
     </sql>
 
-    <update id="updateById">
-        update t_emp set
-        <if test="empName!=null and empName!='' ">
-           emp_name=#{empName},
-        </if>
-        <if test="empEmail!=null and empEmail.trim()!='' ">
-           emp_email=#{empEmail},
-        </if>
-      where id=#{id}
-    </update>
+
 </mapper>

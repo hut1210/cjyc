@@ -1,6 +1,7 @@
 package com.cjyc.customer.api.dto;
 
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -20,65 +21,80 @@ public class OrderDto implements Serializable {
     public interface DetailOrderVali {
     }
 
+    @ApiModelProperty(value = "0-保存（草稿） 1-下单",required = true)
     private int saveType;//0-保存（草稿） 1-下单
-    private int isSimple;//0-详单 1-简单
-    private String no;
+    @ApiModelProperty(value = "0-详单 1-简单",required = true)
+    private int isSimple;
+
+    @ApiModelProperty(value = "客户id",required = true)
     private String customerId;
+    @ApiModelProperty(value = "客户姓名",required = true)
     private String customerName;
 
+    @ApiModelProperty(value = "始发省",required = true)
     @NotBlank(groups = {SimpleOrderVali.class,DetailOrderVali.class},message = "始发城市code不能为空")
     private String startProvince;
+    @ApiModelProperty(value = "始发省code",required = true)
+    private String startProvinceCode;
 
-    private String startProvinceName;
+    @ApiModelProperty(value = "始发市",required = true)
     @NotBlank(groups = {DetailOrderVali.class},message = "始发城市code不能为空")
     private String startCity;
+    @ApiModelProperty(value = "始发市code",required = true)
     private String startCityCode;
-    private String startArea;
-    private String startAreaCode;
-    private String startLng;
-    private String startLat;
-    private String endProvince;
-    private String endProvinceName;
-    private String endCity;
-    private String endCityCode;
-    private String endArea;
-    private String endAreaCode;
-    private String endLng;
-    private String endLat;
-    private String expectStartDate;
-    private int carNum;
-    private String lineId;
-    private int pickType;
-    private String pickContactName;
-    private String getPickContactPhone;
-    private int backType;
-    private String backContactName;
-    private String backPickContactPhone;
-    private int source;
-    private int createTime;
-    private String createUserName;
-    private int createUserType;
-    private int checkTime;
-    private String checkSalesmanName;
-    private int checkSalesmanId;
-    private int state;
-    private String remark;
-    private int invoiceFlag;
-    private int invoiceType;
-    private int pickFee;
-    private int trunkFee;
-    private int backFee;
-    private int insuranceFee;
-    private int depositFee;
-    private int agencyFee;
-    private int totalFee;
-    private int feeShareType;//车辆均摊费用（提车费/送车费/中转费）方式：0均分余数散列（默认），1不均分
-    private int customerContractId;//合同ID
-    private int customerPayType;//客户付款方式：0时付（默认），1账期
-    private int wlPayState;//客户支付尾款状态：0未支付，1部分支付，2支付完成
-    private int wlPayTime;//上次客户支付尾款时间
-    private int offlinePayFlag;//线下收款标识：默认0（不允许），
-    private List<OrderCarDto> orderCarDtoList;
 
+    @ApiModelProperty(value = "始发区县")
+    private String startArea;
+    @ApiModelProperty(value = "始发区县code")
+    private String startAreaCode;
+    @ApiModelProperty(value = "始发地详细地址",required = true)
+    private String startAddress;
+
+    @ApiModelProperty(value = "目的省",required = true)
+    private String endProvince;
+    @ApiModelProperty(value = "目的省code",required = true)
+    private String endProvinceCode;
+    @ApiModelProperty(value = "目的市",required = true)
+    private String endCity;
+    @ApiModelProperty(value = "目的市code",required = true)
+    private String endCityCode;
+    @ApiModelProperty(value = "目的区县")
+    private String endArea;
+    @ApiModelProperty(value = "目的区县code")
+    private String endAreaCode;
+    @ApiModelProperty(value = "目的地详细地址",required = true)
+    private String endAddress;
+
+    @ApiModelProperty(value = "期望提车日期",required = true)
+    private String expectStartDate;
+    @ApiModelProperty(value = "车辆数",required = true)
+    private int carNum;
+    @ApiModelProperty(value = "班线id",required = true)
+    private String lineId;
+    @ApiModelProperty(value = "提车方式:1 自送，2代驾上门，3拖车上门",required = true)
+    private int pickType;
+    @ApiModelProperty(value = "发车联系人",required = true)
+    private String pickContactName;
+    @ApiModelProperty(value = "发车联系人电话",required = true)
+    private String PickContactPhone;
+    @ApiModelProperty(value = "送车方式： 1 自提，2代驾上门，3拖车上门",required = true)
+    private int backType;
+    @ApiModelProperty(value = "收车联系人",required = true)
+    private String backContactName;
+    @ApiModelProperty(value = "收车联系人电话",required = true)
+    private String backContactPhone;
+    @ApiModelProperty(value = "备注")
+    private String remark;
+    @ApiModelProperty(value = "是否开票：0否（默认根据设置），1是")
+    private int invoiceFlag;
+    @ApiModelProperty(value = "发票类型：0无， 1-普通(个人) ，2增值普票(企业) ，3增值专用发票")
+    private int invoiceType;
+    @ApiModelProperty(value = "预估费用 单位：分")
+    private int totalFee;
+    @ApiModelProperty(value = "合同ID")
+    private int customerContractId;//合同ID
+    @ApiModelProperty(value = "优惠券ID")
+    private int couponId;
+    private List<OrderCarDto> orderCarDtoList;
 
 }

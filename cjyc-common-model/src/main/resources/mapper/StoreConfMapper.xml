@@ -17,4 +17,16 @@
         id, store_id, item, item_key, item_value, rewark
     </sql>
 
+    <select id="getSwitch" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select item_value from s_store_conf where item_key = #{key}
+    </select>
+
+    <insert id="addSwitch" parameterType="java.util.Map">
+        insert into s_store_conf(item_key,item_value)
+        values (#{key},#{value})
+    </insert>
+
+    <update id="updateSwitch" parameterType="java.util.Map">
+        update s_store_conf set item_value = #{value} where item_key = #{key}
+    </update>
 </mapper>

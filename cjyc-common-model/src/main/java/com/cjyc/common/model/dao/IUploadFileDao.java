@@ -2,6 +2,7 @@ package com.cjyc.common.model.dao;
 
 import com.cjyc.common.model.entity.UploadFile;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -13,6 +14,7 @@ import java.util.List;
  * @author JPG
  * @since 2019-10-12
  */
+@Repository
 public interface IUploadFileDao extends BaseMapper<UploadFile> {
 
     /**

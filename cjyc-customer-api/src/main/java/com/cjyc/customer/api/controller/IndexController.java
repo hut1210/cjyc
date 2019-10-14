@@ -9,6 +9,7 @@ package com.cjyc.customer.api.controller;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.vo.CityVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.service.service.ICarSeriesService;
 import com.cjyc.common.service.service.ICityService;
@@ -32,7 +33,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/index")
-@Api(tags = "index",description = "基础信息相关的接口")
+@Api(tags = "基础数据接口",description = "基础信息相关,包含联系人、获取城市、车系等")
 public class IndexController {
 
     @Autowired
@@ -72,6 +73,17 @@ public class IndexController {
     }
 
     /**
+     * 修改联系人接口
+     * */
+    @ApiOperation(value = "修改联系人接口", notes = "修改联系人接口", httpMethod = "POST")
+    @RequestMapping(value = "/editContact", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultVo editContact(@RequestBody CustomerContact customerContact) {
+        boolean result = customerContactService.updCustomerContact(customerContact);
+        return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg())
+                : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
+    }
+
+    /**
      * 获取车系列表
      * */
     @ApiOperation(value = "获取下单车辆列表", notes = "获取下单车辆列表", httpMethod = "POST")
@@ -93,8 +105,8 @@ public class IndexController {
             @ApiImplicitParam(name = "cityCode", value = "城市code,空表示全国和大区", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "keyword", value = "检索关键词",  dataType = "String", paramType = "query")
     })
-    public ResultVo<List<City>> getCityList(String cityCode, String keyword) {
-        List<City> cityList = cityService.getCityList(cityCode,keyword);
+    public ResultVo<List<CityVo>> getCityList(String cityCode, String keyword) {
+        List<CityVo> cityList = cityService.getCityList(cityCode,keyword);
         return BaseResultUtil.success(cityList);
     }
 

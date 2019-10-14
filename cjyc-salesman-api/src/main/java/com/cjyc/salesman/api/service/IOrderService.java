@@ -2,6 +2,7 @@ package com.cjyc.salesman.api.service;
 
 import com.cjyc.common.model.entity.Order;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.cjyc.salesman.api.dto.OrderDto;
 
 /**
  * <p>
@@ -12,5 +13,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2019-10-09
  */
 public interface IOrderService extends IService<Order> {
+
+    boolean confirm(OrderDto orderDto);
 
 }

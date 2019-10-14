@@ -20,7 +20,6 @@ import java.util.List;
 @Repository
 public interface IOrderDao extends BaseMapper<Order> {
 
-    @Insert("insert into w_order(id,no) values(#{id},#{no})")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int add(Order order);
 

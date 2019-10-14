@@ -2,10 +2,6 @@ package com.cjyc.common.model.dao;
 
 import com.cjyc.common.model.entity.OrderCar;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.cjyc.common.model.vo.customer.OrderCarCenterVo;
-import org.apache.ibatis.annotations.Param;
-
-import java.util.List;
 
 /**
  * <p>
