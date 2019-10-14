@@ -132,19 +132,6 @@ public class OrderServiceImpl implements IOrderService{
         try{
             if(ordCenVos.get(0) != null && ordCenVos.size() >= 1){
                 for(OrderCenterVo order : ordCenVos){
-                    if(SysEnum.ZERO.getValue().equals(order.getState())){
-                        order.setState("待下单");
-                    }else if(SysEnum.TWO.getValue().equals(order.getState()) || SysEnum.FIVE.getValue().equals(order.getState())){
-                        order.setState("已下单");
-                    }else if(SysEnum.FIFTEEN.getValue().equals(order.getState())){
-                        order.setState("待预付款");
-                    }else if(SysEnum.TWENTY_FIVE.getValue().equals(order.getState())){
-                        order.setState("待调度");
-                    }else if(SysEnum.FIFTY_FIVE.getValue().equals(order.getState()) || SysEnum.EIGHTY_EIGHT.getValue().equals(order.getState())){
-                        order.setState("运输中");
-                    }else if(SysEnum.ONE_HUNDRED.getValue().equals(order.getState())){
-                        order.setState("已支付");
-                    }
                     if(StringUtils.isNotBlank(order.getTotalFee())){
                         order.setTotalFee(new BigDecimal(order.getTotalFee()).divide(new BigDecimal(100)).toString());
                     }else{
