@@ -73,7 +73,8 @@
         select no as no,start_city as startCity,end_city as endCity,car_num as carNum,sum(pick_fee+trunk_fee+back_fee+insurance_fee+deposit_fee) as totalFee,
         (case state
          when  0  then '待下单'
-         when  2 or 5 then  '已下单'
+         when  2  then  '已下单'
+         when  5  then  '已下单'
          when  15 then  '待付款'
          when  25  then '待调度'
          end) as state
@@ -84,7 +85,8 @@
     <select id="getTransOrders" resultType="com.cjyc.common.model.vo.customer.OrderCenterVo">
         select no as no,start_city as startCity,end_city as endCity,car_num as carNum,sum(pick_fee+trunk_fee+back_fee+insurance_fee+deposit_fee) as totalFee,
         (case state
-         when  55 or 88 then '运输中'
+         when  55 then '运输中'
+         when  88 then '运输中'
          end) as state
         from w_order where state in ('55','88')
     </select>
@@ -103,10 +105,12 @@
         select no as no,start_city as startCity,end_city as endCity,car_num as carNum,sum(pick_fee+trunk_fee+back_fee+insurance_fee+deposit_fee) as totalFee,
         (case state
          when  0  then '待下单'
-         when  2 or 5 then  '已下单'
+         when  2  then  '已下单'
+         when  5  then  '已下单'
          when  15 then  '待付款'
-         when  25  then '待调度'
-         when  55 or 88 then '运输中'
+         when  25 then '待调度'
+         when  55  then '运输中'
+         when  88  then '运输中'
          when  100 then '已支付'
          when  111  then '原返'
          when  113  then '已取消'
