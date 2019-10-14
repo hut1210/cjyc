@@ -1,4 +1,4 @@
 package com.cjyc.common.model.enums.order;
 
-public class OrderStatusEnum {
+public class OrderDetailStateEnum {
 }
