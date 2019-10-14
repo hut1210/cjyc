@@ -101,7 +101,7 @@ public class OrderServiceImpl implements IOrderService{
     public PageInfo<OrderCenterVo> getPaidOrders(BasePageDto basePageDto) {
         try{
             //查询所有已支付订单信息
-            List<OrderCenterVo> ordCenVos = orderDao.getTransOrders();
+            List<OrderCenterVo> ordCenVos = orderDao.getPaidOrders();
             return encapOrderList(ordCenVos,basePageDto);
         }catch (Exception e){
             log.info("获取已支付订单出现异常");
@@ -113,7 +113,7 @@ public class OrderServiceImpl implements IOrderService{
     public PageInfo<OrderCenterVo> getAllOrders(BasePageDto basePageDto) {
         try{
             //查询全部订单信息
-            List<OrderCenterVo> ordCenVos = orderDao.getTransOrders();
+            List<OrderCenterVo> ordCenVos = orderDao.getAllOrders();
             return encapOrderList(ordCenVos,basePageDto);
         }catch (Exception e){
             log.info("获取全部订单出现异常");
@@ -128,9 +128,9 @@ public class OrderServiceImpl implements IOrderService{
      * @return
      */
     private PageInfo<OrderCenterVo> encapOrderList(List<OrderCenterVo> ordCenVos,BasePageDto basePageDto){
-        PageInfo<OrderCenterVo> pageInfo = null;
+        PageInfo<OrderCenterVo> pageInfo = new PageInfo<>();
         try{
-            if(ordCenVos != null && ordCenVos.size() > 0){
+            if(ordCenVos.get(0) != null && ordCenVos.size() >= 1){
                 for(OrderCenterVo order : ordCenVos){
                     if(SysEnum.ZERO.getValue().equals(order.getState())){
                         order.setState("待下单");
@@ -161,9 +161,9 @@ public class OrderServiceImpl implements IOrderService{
                     }
                     order.setOrderCarCenterVos(ordCarCenVos);
                 }
+                PageHelper.startPage(basePageDto.getCurrentPage(), basePageDto.getPageSize());
+                pageInfo = new PageInfo<>(ordCenVos);
             }
-            PageHelper.startPage(basePageDto.getCurrentPage(), basePageDto.getPageSize());
-            pageInfo = new PageInfo<>(ordCenVos);
         }catch (Exception e){
             log.info("获取订单列表出现异常");
         }
