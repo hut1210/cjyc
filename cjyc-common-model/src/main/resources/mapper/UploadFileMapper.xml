@@ -25,4 +25,9 @@
         id, file_url, server_url, file_name, file_type, file_belong, file_size, limit_size, create_time, ending_time, remark, state, original_name, thumbnail_url
     </sql>
 
+    <!-- 查询所有移动端用户banner图片链接地址-->
+    <select id="getAllBannerPhone" resultType="java.lang.String">
+        select server_url from s_upload_file where file_belong = 0 and state = 0
+    </select>
+
 </mapper>
