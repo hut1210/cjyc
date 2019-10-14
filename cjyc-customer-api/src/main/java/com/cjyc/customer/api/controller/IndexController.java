@@ -32,7 +32,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/index")
-@Api(tags = "index",description = "基础信息相关的接口")
+@Api(tags = "index",description = "基础信息相关,包含联系人、获取城市、车系等")
 public class IndexController {
 
     @Autowired
@@ -67,6 +67,17 @@ public class IndexController {
     @RequestMapping(value = "/addContact", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultVo addContact(@RequestBody CustomerContact customerContact) {
         boolean result = customerContactService.addCustomerContact(customerContact);
+        return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg())
+                : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
+    }
+
+    /**
+     * 修改联系人接口
+     * */
+    @ApiOperation(value = "修改联系人接口", notes = "修改联系人接口", httpMethod = "POST")
+    @RequestMapping(value = "/editContact", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultVo editContact(@RequestBody CustomerContact customerContact) {
+        boolean result = customerContactService.updCustomerContact(customerContact);
         return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg())
                 : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
     }

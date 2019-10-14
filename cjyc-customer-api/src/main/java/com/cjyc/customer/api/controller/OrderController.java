@@ -30,7 +30,7 @@ public class OrderController {
     IOrderService orderService;
 
     /**
-     * 客户端下单
+     * 客户端下单 ： 详单、简单
      * */
     @ApiOperation(value = "客户端下单接口", notes = "客户端下单", httpMethod = "POST")
     @RequestMapping(value = "/commit", method = RequestMethod.POST,  consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -38,6 +38,8 @@ public class OrderController {
         boolean result = orderService.commitOrder(orderDto);
         return result ? BaseResultUtil.success(orderDto) : BaseResultUtil.fail();
     }
+
+
 
     @ApiOperation(value = "分页查看移动端用户", notes = "分页查看移动端用户", httpMethod = "POST")
     @PostMapping(value = "/getWaitConFirmOrders")
