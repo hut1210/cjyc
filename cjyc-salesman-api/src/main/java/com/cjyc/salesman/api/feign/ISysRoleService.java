@@ -1,4 +1,4 @@
-package com.cjyc.salesman.api.fegin;
+package com.cjyc.salesman.api.feign;
 
 import com.cjkj.common.constant.ServiceNameConstants;
 import com.cjkj.common.feign.fallback.UserServiceFallbackFactory;

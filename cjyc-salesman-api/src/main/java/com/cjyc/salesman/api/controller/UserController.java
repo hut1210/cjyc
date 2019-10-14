@@ -1,6 +1,6 @@
 package com.cjyc.salesman.api.controller;
 
-import com.cjyc.salesman.api.fegin.ISysUserService;
+import com.cjyc.salesman.api.feign.ISysUserService;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

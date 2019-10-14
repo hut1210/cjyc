@@ -1,4 +1,4 @@
-package com.cjyc.salesman.api.fegin;
+package com.cjyc.customer.api.feign;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.cjkj.common.constant.ServiceNameConstants;

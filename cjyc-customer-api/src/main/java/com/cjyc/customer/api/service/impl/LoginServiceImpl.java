@@ -1,4 +1,4 @@
-package com.cjyc.salesman.api.service.impl;
+package com.cjyc.customer.api.service.impl;
 
 import com.cjkj.common.redis.template.StringRedisUtil;
 import com.cjyc.common.model.dto.salesman.login.LoginByPhoneDto;
@@ -10,10 +10,10 @@ import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.salesman.login.SalemanLoginVo;
-import com.cjyc.salesman.api.feign.ISysRoleService;
-import com.cjyc.salesman.api.service.IAdminService;
-import com.cjyc.salesman.api.service.ILoginService;
-import com.cjyc.salesman.api.service.ISalemanService;
+import com.cjyc.customer.api.feign.ISysRoleService;
+import com.cjyc.customer.api.service.IAdminService;
+import com.cjyc.customer.api.service.ILoginService;
+import com.cjyc.customer.api.service.ISalemanService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;

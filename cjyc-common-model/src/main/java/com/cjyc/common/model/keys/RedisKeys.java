@@ -12,38 +12,37 @@ public class RedisKeys {
      * 一级前缀
      */
     /**项目前缀：长久韵车首字母**/
-    private final static String PROJECT_1_PREFIX = "cjyc";
+    private final static String PROJECT_PREFIX = "cjyc";
     /**项目前缀：web缩写**/
-    private final static String WEB_1_PREFIX = PROJECT_1_PREFIX + I + "web";
+    private final static String WEB_PREFIX = "cjyc:web";
     /**项目前缀：salesman缩写**/
-    private final static String SALESMAN_1_PREFIX = PROJECT_1_PREFIX + I + "sale";
+    private final static String SALESMAN_PREFIX = "cjyc:sale";
     /**业务项目前缀：driver缩写**/
-    private final static String DRIVER_1_PREFIX = PROJECT_1_PREFIX + I + "drv";
+    private final static String DRIVER_PREFIX = "cjyc:drv";
     /**业务项目前缀：customer缩写**/
-    private final static String CUSTOMER_1_PREFIX = PROJECT_1_PREFIX + I + "csr";
+    private final static String CUSTOMER_PREFIX = "cjyc:csr";
 
 
-    /**
-     * 二级前缀
-     */
-    /**所有项目公用-前缀：韵车首字母**/
-    private final static String PUBLIC_2_LEVEL = "pub";
-    /**本项目公用-前缀：韵车首字母**/
-    private final static String PROTECTED_2_LEVEL = "pro";
-    /**本项目私用-前缀：韵车首字母**/
-    private final static String PRIVATE_2_LEVEL = "pvt";
 
     /**---------------common-------------------------------------------------------------------*/
     /**验证码*/
-    private final static String CAPTCHA_KEY = "captcha:";
+    private final static String SMS_COUNT_KEY = "cjyc:sms:count";
 
     /**---------------salesman-------------------------------------------------------------------*/
+    /**验证码*/
+    private final static String CAPTCHA_KEY = "cjyc:sale:";
     /**---------------driver-------------------------------------------------------------------*/
+
+
     /**---------------customer-------------------------------------------------------------------*/
 
 
 
     public static String getSalesmanCaptchaKeyByPhone(String phone, int type) {
-        return SALESMAN_1_PREFIX + I + PUBLIC_2_LEVEL + I + CAPTCHA_KEY + I + type + I + phone;
+        return SALESMAN_PREFIX + I + CAPTCHA_KEY + I + type + I + phone;
+    }
+
+    public static String getSmsCountKey(String phone) {
+        return PROJECT_PREFIX + I + SMS_COUNT_KEY + I;
     }
 }

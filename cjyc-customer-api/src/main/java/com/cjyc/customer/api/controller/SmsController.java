@@ -1,4 +1,4 @@
-package com.cjyc.salesman.api.controller;
+package com.cjyc.customer.api.controller;
 
 import com.cjkj.common.redis.template.StringRedisUtil;
 import com.cjyc.common.model.dto.salesman.sms.CaptchaSendDto;
@@ -7,7 +7,7 @@ import com.cjyc.common.model.enums.message.SmsMessageEnum;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.salesman.api.util.MiaoxinSmsUtil;
+import com.cjyc.customer.api.util.MiaoxinSmsUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -15,9 +15,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 

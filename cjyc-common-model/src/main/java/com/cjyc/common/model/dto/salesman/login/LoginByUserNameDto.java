@@ -19,7 +19,7 @@ import javax.validation.constraints.NotNull;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel(value="LoginInDto对象", description="/login/in")
-public class LoginByPasswordDto {
+public class LoginByUserNameDto {
 
     @NotNull
     @ApiModelProperty(value = "用户名", required = true)

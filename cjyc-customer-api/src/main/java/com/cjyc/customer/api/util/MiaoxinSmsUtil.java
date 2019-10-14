@@ -1,7 +1,6 @@
-package com.cjyc.salesman.api.util;
+package com.cjyc.customer.api.util;
 
-
-import com.cjyc.salesman.api.config.MiaoxinProperty;
+import com.cjyc.customer.api.config.MiaoxinProperty;
 
 import java.io.*;
 import java.net.HttpURLConnection;

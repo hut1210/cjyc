@@ -1,7 +1,6 @@
-package com.cjyc.salesman.api.service;
+package com.cjyc.customer.api.service;
 
 import com.cjyc.common.model.dto.salesman.login.LoginByPhoneDto;
-import com.cjyc.common.model.dto.salesman.sms.CaptchaValidatedDto;
 import com.cjyc.common.model.dto.salesman.login.LoginByUserNameDto;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.salesman.login.SalemanLoginVo;

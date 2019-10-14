@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.dao.IOrganizationDao;
 import com.cjyc.common.model.entity.Organization;
 import com.cjyc.common.model.entity.sys.SysRoleEntity;
-import com.cjyc.salesman.api.fegin.ISysDeptService;
+import com.cjyc.salesman.api.feign.ISysDeptService;
 import com.cjyc.salesman.api.service.IOrganizationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

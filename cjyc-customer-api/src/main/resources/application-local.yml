@@ -16,6 +16,8 @@ server:
 #    keyStoreType: JKS
 
 spring:
+  main:
+    allow-bean-definition-overriding: true
   ##actuator管理
   management:
     endpoints:

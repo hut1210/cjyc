@@ -1,11 +1,10 @@
-package com.cjyc.salesman.api.controller;
+package com.cjyc.customer.api.controller;
 
 import com.cjyc.common.model.dto.salesman.login.LoginByPhoneDto;
-import com.cjyc.common.model.dto.salesman.sms.CaptchaValidatedDto;
 import com.cjyc.common.model.dto.salesman.login.LoginByUserNameDto;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.salesman.login.SalemanLoginVo;
-import com.cjyc.salesman.api.service.ILoginService;
+import com.cjyc.customer.api.service.ILoginService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
