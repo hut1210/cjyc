@@ -20,4 +20,48 @@
         id, waybill_id, order_car_id, freight_fee, start_address, end_address, start_area_code, end_area_code, state
     </sql>
 
+    <select id="getWayBillCarrier" parameterType="com.cjyc.common.model.vo.web.WayBillCarrierVo" resultType="com.cjyc.common.model.dto.web.WayBillCarrierDto">
+        select ww.waybill_no as waybillNo,ww.state as state,ww.type as type,woc.no as carNo,woc.vin as vin,woc.brand as brand,
+        woc.model as model,wwc.freight_fee as freightFee,wo.pick_type as pickType,wo.back_type as backType,dc.id as carrierId,
+        dc.name as carrierName,wo.expect_start_date as expectStartDate, wtc.load_time as loadTime,wtc.unload_time as unLoadTime,
+        wt.driver_name as driverName,wt.driver_id as driverId, dd.phone as phone,dvr.vehicle_no as vehicleNo,dd.id_card as idCard,
+        wo.start_address as startAddress,wo.end_address as endAddress,wo.no as orderNo,wo.pick_contact_name as pickContactName,
+        wo.pick_contact_phone as pickContactPhone,wo.back_contact_name as backContactName,wo.back_contact_phone as backContactPhone
+        from w_waybill_car wwc
+        left join w_waybill ww on wwc.waybill_id=ww.id
+        left join w_order_car woc on wwc.order_car_id=woc.id
+        left join d_carrier dc on ww.carrier_id = dc.id
+        left join w_order wo on woc.order_id = wo.id
+        left join w_task_car wtc on wwc.id = wtc.waybill_car_id
+        left join w_task wt on wt.waybill_id = wwc.waybill_id
+        left join d_driver dd on dd.id =wt.driver_id
+        left join d_vehicle_running dvr on dvr.id = wt.vehicle_running_id
+        <where>
+            <if test="wayBillNo != null and wayBillNo != ''">
+                ww.waybill_no = #{wayBillNo}
+            </if>
+            <if test="carNo != null and carNo != ''">
+                and  woc.no = #{carNo}
+            </if>
+            <if test="vin != null  and vin != ''">
+                and  woc.vin = #{vin}
+            </if>
+            <if test="brand != null  and brand != ''">
+                and woc.brand = #{brand}
+            </if>
+            <if test="model != null  and model != ''">
+                and  woc.model = #{model}
+            </if>
+            <if test="dispatchType != null ">
+                and ww.type = #{dispatchType}
+            </if>
+            <!--<if test="deliveryWay != null ">
+                and  wo.deliveryWay = #{deliveryWay}
+            </if>-->
+
+            <if test="carrierName != null  and carrierName != ''">
+                and  dc.name = #{model}
+            </if>
+        </where>
+    </select>
 </mapper>
