@@ -47,13 +47,13 @@ public class Dictionary implements Serializable {
     private String itemUnit;
 
     @ApiModelProperty(value = "是否固定值：1不可修改，0可修改")
-    private Integer fixedFlag;
+    private String fixedFlag;
 
     @ApiModelProperty(value = "备注")
     private String remark;
 
     @ApiModelProperty(value = "状态：0无效，1有效")
-    private Integer state;
+    private String state;
 
     @ApiModelProperty(value = "创建时间")
     private Long createTime;

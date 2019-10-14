@@ -2,7 +2,6 @@ package com.cjyc.common.model.dao;
 
 import com.cjyc.common.model.entity.OrderCar;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.springframework.stereotype.Repository;
 
 /**
  * <p>
@@ -12,7 +11,13 @@ import org.springframework.stereotype.Repository;
  * @author JPG
  * @since 2019-09-29
  */
-@Repository
 public interface IOrderCarDao extends BaseMapper<OrderCar> {
+
+    /**
+     * 根据订单编号查询车辆信息
+     * @param orderNo
+     * @return
+     */
+    List<OrderCarCenterVo> getOrderCarByNo(@Param("orderNo") String orderNo);
 
 }

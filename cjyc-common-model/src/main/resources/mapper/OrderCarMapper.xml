@@ -31,4 +31,9 @@
         id, order_id, order_no, no, brand, model, plate_no, vin, valuation, now_store_id, now_area_code, state, description, pick_fee, trunk_fee, back_fee, insurance_fee, insurance_coverage_amount, agency_fee, wl_pay_state
     </sql>
 
+    <!-- 通过订单编号查询车辆信息 -->
+    <select id="getOrderCarByNo" resultType="com.cjyc.common.model.vo.customer.OrderCarCenterVo" parameterType="java.lang.String">
+         select brand as brand ,model as model ,plate_no as plateNo,vin as vin from w_order_car where order_no = #{orderNo};
+    </select>
+
 </mapper>
