@@ -1,19 +1,13 @@
 package com.cjyc.customer.api.controller;
 
-import com.cjyc.common.model.dto.BasePageDto;
-import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.customer.api.service.IPriceQueryService;
-import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.*;
-import org.apache.ibatis.annotations.Param;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.math.BigDecimal;
 
 /**
  *  @author: zj
@@ -32,6 +26,9 @@ public class PriceQueryController {
     @ApiOperation(value = "分页查看移动端用户", notes = "分页查看移动端用户", httpMethod = "POST")
     @PostMapping(value = "/getLinePriceByCode/{fromCode}/{toCode}")
     public ResultVo getLinePriceByCode(@ApiParam(required = true) @PathVariable String fromCode,@ApiParam(required = true) @PathVariable String toCode){
+        if(StringUtils.isBlank(fromCode) || StringUtils.isBlank(toCode)){
+            return BaseResultUtil.getVo(ResultEnum.MOBILE_HTTP_ILLEGAL.getCode(), ResultEnum.MOBILE_HTTP_ILLEGAL.getMsg());
+        }
         String price = iPriceQueryService.getLinePriceByCode(fromCode,toCode);
         return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),price);
     }

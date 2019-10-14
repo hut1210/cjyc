@@ -1,12 +1,18 @@
 package com.cjyc.customer.api.controller;
 
 
+import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.customer.OrderCenterVo;
 import com.cjyc.customer.api.dto.OrderDto;
 import com.cjyc.customer.api.service.IOrderService;
+import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +39,12 @@ public class OrderController {
         return result ? BaseResultUtil.success(orderDto) : BaseResultUtil.fail();
     }
 
+    @ApiOperation(value = "分页查看移动端用户", notes = "分页查看移动端用户", httpMethod = "POST")
+    @PostMapping(value = "/getWaitConFirmOrders")
+    public ResultVo<PageVo<OrderCenterVo>> getWaitConFirmOrders(){
+        PageInfo<OrderCenterVo> pageInfo = orderService.getWaitConFirmOrders();
+        return BaseResultUtil.getPageVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),pageInfo);
+    }
 
 
 

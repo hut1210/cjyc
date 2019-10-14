@@ -2,8 +2,11 @@ package com.cjyc.customer.api.service.impl;
 
 import com.cjyc.common.model.dao.IOrderDao;
 import com.cjyc.common.model.entity.Order;
+import com.cjyc.common.model.vo.customer.OrderCenterVo;
 import com.cjyc.customer.api.dto.OrderDto;
 import com.cjyc.customer.api.service.IOrderService;
+import com.github.pagehelper.PageInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Service;
  * @date:2019/10/8
  */
 @Service
+@Slf4j
 public class OrderServiceImpl implements IOrderService{
 
     @Autowired
@@ -46,5 +50,16 @@ public class OrderServiceImpl implements IOrderService{
         int id = orderDao.add(order);
 
         return id > 0 ? true : false;
+    }
+
+    @Override
+    public PageInfo<OrderCenterVo> getWaitConFirmOrders() {
+        try{
+
+
+        }catch (Exception e){
+            log.info("获取待确认订单出现异常");
+        }
+        return null;
     }
 }
