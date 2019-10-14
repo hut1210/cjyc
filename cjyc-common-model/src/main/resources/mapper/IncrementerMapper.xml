@@ -14,9 +14,9 @@
     <sql id="Base_Column_List">
         id, date, prefix, number
     </sql>
-        <!-- 根据前缀获取业务自增编号 -->
-    <select id="getIncrementer" resultType="String">
-        select fuc_increamenter(#{preName})
-    </select>
 
+    <!-- 公用方法 获取自增业务编号 statementType 声明指向的是什么类型，其中CALLABLE是执行存储过程和函数的-->
+    <select id="getIncrementer" parameterType="String" statementType="CALLABLE" resultType="String">
+        SELECT fuc_increamenter(#{preName}) FROM dual
+    </select>
 </mapper>

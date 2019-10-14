@@ -1,5 +1,7 @@
 package com.cjyc.customer.api.service.impl;
 
+import com.cjyc.common.model.constant.NoConstant;
+import com.cjyc.common.model.dao.IIncrementerDao;
 import com.cjyc.common.model.dao.IOrderDao;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.vo.customer.OrderCenterVo;
@@ -22,6 +24,9 @@ public class OrderServiceImpl implements IOrderService{
 
     @Autowired
     IOrderDao orderDao;
+    @Autowired
+    IIncrementerDao incrementerDao;
+
     @Override
     public boolean commitOrder(OrderDto orderDto) {
 
@@ -30,7 +35,10 @@ public class OrderServiceImpl implements IOrderService{
 
         Order order = new Order();
         BeanUtils.copyProperties(orderDto,order);
-        order.setNo("555666");
+
+        //获取订单业务编号
+        String orderNo = incrementerDao.getIncrementer(NoConstant.ORDER_PREFIX);
+        order.setNo(orderNo);
         //简单
         if(isSimple == 1){
 

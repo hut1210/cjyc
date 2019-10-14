@@ -17,7 +17,7 @@ public class NoConstant {
     public static final int START_INDEX = 1;
 
 
-    public static final String ORDER_PREFIX = "D";
-    public static final String TASK_PREFIX = "R";
-    public static final String WAYBILL_PREFIX = "Y";
+    public static final String ORDER_PREFIX = "Y";
+    public static final String TASK_PREFIX = "T";
+    public static final String WAYBILL_PREFIX = "W";
 }
