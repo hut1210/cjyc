@@ -10,7 +10,7 @@ import java.math.BigDecimal;
  * JsonObject参数获取和验证
  * @author JPG
  */
-public class JsObjParamUtil {
+public class JsonObjParamUtil {
     private final static String CURRENTPAGE_DEFAULT_NAME = "currentPage";
     private final static String PAGESIZE_DEFAULT_NAME = "pageSize";
     private final static Integer CURRENTPAGE_DEFAULT_VALUE = 1;

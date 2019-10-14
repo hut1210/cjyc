@@ -2,6 +2,9 @@ package com.cjyc.salesman.api.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.entity.Organization;
+import com.cjyc.common.model.entity.sys.SysRoleEntity;
+
+import java.util.List;
 
 /**
  * <p>
@@ -12,5 +15,7 @@ import com.cjyc.common.model.entity.Organization;
  * @since 2019-10-09
  */
 public interface IOrganizationService extends IService<Organization> {
+
+    List<SysRoleEntity> getSysRoleList(long id);
 
 }

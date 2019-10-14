@@ -13,7 +13,7 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 城市信息表
+ * 入参对象
  * </p>
  *
  * @author JPG

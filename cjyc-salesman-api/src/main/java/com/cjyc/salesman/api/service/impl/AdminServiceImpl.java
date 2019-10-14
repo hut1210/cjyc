@@ -6,6 +6,8 @@ import com.cjyc.salesman.api.service.IAdminService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+
 /**
  * <p>
  * 韵车后台管理员表 服务实现类
@@ -16,5 +18,11 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class AdminServiceImpl extends ServiceImpl<IAdminDao, Admin> implements IAdminService {
+    @Resource
+    private IAdminDao adminDao;
 
+    @Override
+    public Admin getByUserId(Long userId) {
+        return adminDao.findByUserId(userId);
+    }
 }
