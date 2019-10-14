@@ -23,4 +23,18 @@
         id, car_code, brand, model, type, pin_initial, pin_acronym, logo_img, create_time, create_user_id, update_time, update_user_id
     </sql>
 
+    <!-- 通过品牌和型号查询logo -->
+    <select id="getLogoImgByBraMod" resultType="java.lang.String" parameterType="java.lang.String">
+         select logo_img from s_car_series
+        <where>
+            <if test="brand != null and brand != ''">
+                brand = #{brand}
+            </if>
+            <if test="model != null and model != ''">
+                and  model = #{model}
+            </if>
+        </where>
+            limit 1
+    </select>
+
 </mapper>

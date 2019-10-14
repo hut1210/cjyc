@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.util.List;
 
 @Data
-public class OrderCenterVo extends BasePageDto implements Serializable {
+public class OrderCenterVo implements Serializable {
 
     @ApiModelProperty("订单编号")
     private String no;
@@ -25,5 +25,9 @@ public class OrderCenterVo extends BasePageDto implements Serializable {
     @ApiModelProperty(value = "车辆总数")
     private String carNum;
 
-    List<OrderCarCenterVo> orderCarCenterVos;
+    @ApiModelProperty(value = "订单状态")
+    private String state;
+
+    private List<OrderCarCenterVo> orderCarCenterVos;
+
 }
