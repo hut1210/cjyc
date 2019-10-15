@@ -5,7 +5,7 @@
 
 server:
   #服务端口
-  port: 9504
+  port: 9503
   #服务baseURl
   servlet:
     context-path: /cjyc/driver
@@ -42,7 +42,7 @@ spring:
       maximum-pool-size: 15
       auto-commit: true
       idle-timeout: 30000
-      pool-name: YuncheHikari
+      pool-name: CjycHikari
       max-lifetime: 1800000
       connection-timeout: 30000
       #connection-test-query: select 1
