@@ -17,7 +17,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-12
+ * @since 2019-10-15
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -68,6 +68,12 @@ public class Order implements Serializable {
     @ApiModelProperty(value = "出发地纬度")
     private String startLat;
 
+    @ApiModelProperty(value = "出发地业务中心ID: -1不经过业务中心")
+    private Long startStoreId;
+
+    @ApiModelProperty(value = "出发地业务中心名称")
+    private String startStoreName;
+
     @ApiModelProperty(value = "省")
     private String endProvince;
 
@@ -94,6 +100,12 @@ public class Order implements Serializable {
 
     @ApiModelProperty(value = "目的地纬度")
     private String endLat;
+
+    @ApiModelProperty(value = "目的地业务中心ID: -1不经过业务中心")
+    private Long endStoreId;
+
+    @ApiModelProperty(value = "目的地业务中心名称")
+    private String endStoreName;
 
     @ApiModelProperty(value = "预计出发时间（提车日期）")
     private Long expectStartDate;
@@ -178,6 +190,9 @@ public class Order implements Serializable {
 
     @ApiModelProperty(value = "合伙人服务费（为资源合伙人代收）")
     private BigDecimal agencyFee;
+
+    @ApiModelProperty(value = "预付款")
+    private BigDecimal advanceFee;
 
     @ApiModelProperty(value = "应收总价：提车费+干线费+送车费+保险费+中介费")
     private BigDecimal totalFee;

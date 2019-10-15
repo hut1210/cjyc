@@ -34,6 +34,7 @@ public class BaseResultUtil<T> {
         return getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(), data);
     }
 
+
     public static <T> ResultVo<PageVo<T>> success(IPage<T> page){
         return getPageVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(), page);
     }

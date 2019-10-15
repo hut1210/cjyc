@@ -1,5 +1,6 @@
 package com.cjyc.web.api.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.constant.NoConstant;
 import com.cjyc.common.model.dao.IIncrementerDao;
 import com.cjyc.common.model.dao.IOrderCarDao;
@@ -9,30 +10,45 @@ import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.web.api.dto.OrderCarDto;
 import com.cjyc.web.api.dto.OrderDto;
 import com.cjyc.web.api.service.IOrderService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 
 /**
- * @auther litan
- * @description: com.cjyc.web.api.service.impl
- * @date:2019/10/15
+ * <p>
+ * 订单表(客户下单) 服务实现类
+ * </p>
+ *
+ * @author JPG
+ * @since 2019-10-09
  */
 @Service
-@Slf4j
-public class OrderSerivceImpl implements IOrderService{
-    @Autowired
-    IOrderDao orderDao;
-
-    @Autowired
-    IIncrementerDao incrementerDao;
+public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements IOrderService {
 
     @Resource
+    private IOrderDao orderDao;
+    @Resource
+    private IOrderCarDao orderCarDao;
+    @Resource
+    IIncrementerDao incrementerDao;
+    @Resource
     IOrderCarDao iOrderCarDao;
+
+
+    @Override
+    public List<Map<String, Object>> waitDispatchCarCountList() {
+        return orderCarDao.countListWaitDispatchCar();
+    }
+
+    @Override
+    public Map<String, Object> totalWaitDispatchCarCount() {
+        return orderCarDao.countTotalWaitDispatchCar();
+    }
+
 
     @Override
     public boolean commitOrder(OrderDto orderDto) {

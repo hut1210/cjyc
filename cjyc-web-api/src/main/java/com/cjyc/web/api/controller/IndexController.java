@@ -1,10 +1,6 @@
 package com.cjyc.web.api.controller;
 
-import com.cjyc.common.model.entity.CarSeries;
-import com.cjyc.common.model.entity.City;
-import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.vo.CityVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.service.service.ICarSeriesService;
 import com.cjyc.common.service.service.ICityService;
@@ -18,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
