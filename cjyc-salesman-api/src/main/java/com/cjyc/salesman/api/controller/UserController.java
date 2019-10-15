@@ -16,12 +16,9 @@ public class UserController {
     @Autowired
     private ISysUserService sysUserService;
 
-
-/*    @GetMapping("/get/{phone}")
-    public ResultVo<SysUserEntity> get(@PathVariable String phone){
-        ResultData<SysUserEntity> sysUserEntityResultData = sysUserService.selectByUsername(phone);
-        return BaseResultUtil.success(sysUserEntityResultData.getData());
-    }*/
+    /**
+     * 查询用户
+     */
 
 
 }

@@ -61,9 +61,9 @@ spring:
 
   ##缓存
   redis:
-    host: 192.168.225.11
+    host: 39.107.96.231
     port: 6379
-    password:
+    password: Qaz123$%^Qaz123$%^Qaz123$%^Qaz123$%^Qaz123$%^
     #Redis默认情况下有16个分片，这里配置具体使用的分片，默认是0
     database: 0
     timeout: 1000ms
@@ -80,6 +80,13 @@ spring:
         min-idle: 8
 
 
+##-----------------------------------logging-------------------------------------------
+##日志
+logging:
+  level:
+    #root: debug
+    com.cjyc.web.api: debug
+    com.cjyc.common.model.dao: debug
 
 ##-----------------------------------cjyc-------------------------------------------
 cjyc:

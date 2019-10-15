@@ -18,7 +18,7 @@ import javax.validation.constraints.NotNull;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="LoginInDto对象", description="/sms/captcha/validate")
+@ApiModel
 public class CaptchaValidatedDto {
 
     @NotNull
