@@ -37,4 +37,15 @@ public class CarSeriesServiceImpl implements ICarSeriesService{
         }
         return carSeriesDao.selectList(queryWrapper);
     }
+
+    @Override
+    public List<String> getBrand() {
+        return carSeriesDao.getBrand();
+    }
+
+    @Override
+    public List<String> getSeriesByBrand(String brand) {
+        return carSeriesDao.getSeriesByBrand(brand);
+    }
+
 }

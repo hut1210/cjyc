@@ -2,6 +2,7 @@ package com.cjyc.customer.api.controller;
 
 import com.cjyc.common.model.dto.salesman.login.LoginByPhoneDto;
 import com.cjyc.common.model.dto.salesman.login.LoginByUserNameDto;
+import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.salesman.login.SalemanLoginVo;
 import com.cjyc.customer.api.service.ILoginService;
@@ -16,7 +17,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Api(tags = "登录")
+/**
+ * 注册登录
+ * @author JPG
+ */
+@Api(tags = "注册登录")
 @Slf4j
 @RestController
 @RequestMapping(value = "/login",
@@ -28,16 +33,15 @@ public class LoginController {
     private ILoginService loginService;
 
 
-
     @ApiOperation(value = "手机号验证码登录", notes = " ")
     @PostMapping("/phone")
-    public ResultVo<SalemanLoginVo> login(@Validated @RequestBody LoginByPhoneDto reqDto){
+    public ResultVo<Customer> login(@Validated @RequestBody LoginByPhoneDto reqDto){
         return loginService.loginByCaptcha(reqDto);
     }
 
     @ApiOperation(value = "用户名密码登录", notes = " ")
     @PostMapping("/username")
-    public ResultVo<SalemanLoginVo> login(@Validated @RequestBody LoginByUserNameDto reqDto){
+    public ResultVo<Customer> login(@Validated @RequestBody LoginByUserNameDto reqDto){
         return loginService.loginBypassword(reqDto);
     }
 }

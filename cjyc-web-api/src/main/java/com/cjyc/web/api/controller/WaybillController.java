@@ -11,6 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/waybill")
-@Api(tags = "waybill",description = "web端基础接口,包含登录、登出、等")
+@Api(tags = "运单接口",description = "运单接口")
 public class WaybillController {
 }

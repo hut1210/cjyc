@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * <p>
  * 车系管理 Mapper 接口
@@ -23,4 +25,8 @@ public interface ICarSeriesDao extends BaseMapper<CarSeries> {
      * @return
      */
     String getLogoImgByBraMod(@Param("brand") String brand,@Param("model") String model);
+
+    List<String> getBrand();
+
+    List<String> getSeriesByBrand(@Param("brand") String brand);
 }

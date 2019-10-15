@@ -107,6 +107,9 @@ public class OrderCar implements Serializable {
     @ApiModelProperty(value = "车辆代收中介费（为资源合伙人代收）")
     private BigDecimal agencyFee;
 
+    @ApiModelProperty(value = "单车总费用")
+    private BigDecimal totalFee;
+
     @ApiModelProperty(value = "应收状态：0未支付，1已支付")
     private Integer wlPayState;
 

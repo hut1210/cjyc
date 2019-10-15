@@ -57,6 +57,14 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-undertow</artifactId>
         </dependency>
+
+        <!--配置工具-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+
         <!--springcloud-->
         <!--<dependency>-->
         <!--<groupId>org.springframework.cloud</groupId>-->

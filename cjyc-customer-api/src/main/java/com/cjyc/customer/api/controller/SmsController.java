@@ -23,7 +23,11 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 
-@Api(tags = "验证码")
+/**
+ * 短信
+ * @author JPG
+ */
+@Api(tags = "短信")
 @Slf4j
 @RestController
 @RequestMapping(value = "/sms",

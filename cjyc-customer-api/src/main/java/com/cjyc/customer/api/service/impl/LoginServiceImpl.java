@@ -1,44 +1,38 @@
 package com.cjyc.customer.api.service.impl;
 
 import com.cjkj.common.redis.template.StringRedisUtil;
+import com.cjyc.common.model.dao.ICustomerDao;
 import com.cjyc.common.model.dto.salesman.login.LoginByPhoneDto;
 import com.cjyc.common.model.dto.salesman.login.LoginByUserNameDto;
-import com.cjyc.common.model.dto.sys.SysRoleDto;
-import com.cjyc.common.model.entity.Admin;
-import com.cjyc.common.model.entity.Saleman;
+import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.salesman.login.SalemanLoginVo;
+import com.cjyc.common.model.vo.customer.login.CustomerLoginVo;
+import com.cjyc.common.model.vo.web.CustomerVo;
 import com.cjyc.customer.api.feign.ISysRoleService;
 import com.cjyc.customer.api.service.IAdminService;
 import com.cjyc.customer.api.service.ILoginService;
-import com.cjyc.customer.api.service.ISalemanService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.List;
 
 @Service
 @Slf4j
 public class LoginServiceImpl implements ILoginService {
 
     @Resource
-    private ISalemanService salemanService;
-    @Resource
-    private IAdminService adminService;
-    @Resource
-    private ISysRoleService sysRoleService;
+    private ICustomerDao customerDao;
     @Autowired
     private StringRedisUtil redisUtil;
 
     @Override
-    public ResultVo<SalemanLoginVo> loginByCaptcha(LoginByPhoneDto paramsDto) {
+    public ResultVo<Customer> loginByCaptcha(LoginByPhoneDto paramsDto) {
         //返回内容
-        SalemanLoginVo salemanLoginVo = new SalemanLoginVo();
+        CustomerLoginVo customerLoginVo = new CustomerLoginVo();
         //参数
         String phone = paramsDto.getPhone();
         String captcha = paramsDto.getCaptcha();
@@ -54,24 +48,27 @@ public class LoginServiceImpl implements ILoginService {
         }
 
         //查询本地用户信息
-        Saleman saleman = salemanService.getByphone(phone);
-        if(saleman == null || saleman.getUserId() == null){
+        Customer customer = customerDao.findByPhone(phone);
+        if(customer == null || customer.getUserId() == null){
             return BaseResultUtil.fail("用户不存在");
         }
-        BeanUtils.copyProperties(saleman, salemanLoginVo);
+        BeanUtils.copyProperties(customer, customerLoginVo);
+
+        //获取网关令牌
+
 
         //验证是否是管理员
-        Admin admin = adminService.getByUserId(saleman.getUserId());
+       /* Admin admin = adminService.getByUserId(customer.getUserId());
         if(admin != null){
             //查询用户角色信息
             List<SysRoleDto> roleList = sysRoleService.getListByUserId(saleman.getUserId());
             salemanLoginVo.setRoleList(roleList);
-        }
-        return BaseResultUtil.success();
+        }*/
+        return BaseResultUtil.success(customer);
     }
 
     @Override
-    public ResultVo<SalemanLoginVo> loginBypassword(LoginByUserNameDto paramsDto) {
+    public ResultVo<Customer> loginBypassword(LoginByUserNameDto paramsDto) {
         //TODO 用户名密码登录
         return null;
     }

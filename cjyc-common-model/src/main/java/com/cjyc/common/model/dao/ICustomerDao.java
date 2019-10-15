@@ -6,6 +6,7 @@ import com.cjyc.common.model.entity.Customer;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.dto.web.SelectCustomerDto;
 import com.cjyc.common.model.dto.web.SelectKeyCustomerDto;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -41,5 +42,5 @@ public interface ICustomerDao extends BaseMapper<Customer> {
      */
     List<ListKeyCustomerVo> findKeyCustomter(SelectKeyCustomerDto keyCustomerVo);
 
-
+    Customer findByPhone(@Param("phone") String phone);
 }
