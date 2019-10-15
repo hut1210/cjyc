@@ -20,8 +20,7 @@ import java.util.List;
 @Repository
 public interface IOrderDao extends BaseMapper<Order> {
 
-    @Options(useGeneratedKeys = true, keyProperty = "id")
-    int add(Order order);
+    int addOrder(Order order);
 
     /**
      * 获取所有待确认订单

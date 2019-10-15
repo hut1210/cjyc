@@ -75,22 +75,28 @@ public class OrderServiceImpl implements IOrderService{
                 order.setState(1);//待分配
             }
         }
-        int id = orderDao.insert(order);
+
+        int count = orderDao.addOrder(order);
 
         //保存车辆信息
         List<OrderCarDto> carDtoList =  orderDto.getOrderCarDtoList();
-        if(id > 0){
+        if(count > 0){
 
             for(OrderCarDto orderCarDto : carDtoList){
 
                 OrderCar orderCar = new OrderCar();
                 BeanUtils.copyProperties(orderCarDto,orderCar);
+                String carNo = incrementerDao.getIncrementer(NoConstant.CAR_PREFIX);
+
+                orderCar.setOrderNo(orderNo);
+                orderCar.setOrderId(order.getId());
+                orderCar.setNo(carNo);
 
                 iOrderCarDao.insert(orderCar);
             }
         }
 
-        return id > 0 ? true : false;
+        return count > 0 ? true : false;
     }
 
     @Override
