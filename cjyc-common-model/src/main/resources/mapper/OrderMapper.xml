@@ -70,8 +70,8 @@
 
     <!-- 客户端新增订单-->
     <insert id="addOrder" useGeneratedKeys="true" keyProperty="id" parameterType="com.cjyc.common.model.entity.Order">
-        insert into w_order (no, customer_name, start_province)
-        values (#{no}, #{customerName}, #{startProvince})
+        insert into w_order (no, customer_id, customer_name, start_province, start_province_code, start_city, start_city_code, start_area, start_area_code, start_address, start_lng, start_lat, end_province, end_province_code, end_city, end_city_code, end_area, end_area_code, end_address, end_lng, end_lat, expect_start_date, expect_end_date, car_num, line_id, pick_type, pick_contact_name, pick_contact_phone, back_type, back_contact_name, back_contact_phone, hurry_days, source, create_time, create_user_name, create_user_type, state, remark, invoice_flag, invoice_type, pick_fee, trunk_fee, back_fee, insurance_fee, deposit_fee, agency_fee, total_fee, fee_share_type, customer_contract_id, customer_pay_type, wl_pay_state, wl_pay_time, offline_pay_flag)
+        values (#{no}, #{customerId}, #{customerName}, #{startProvince}, #{startProvinceCode}, #{startCity}, #{startCityCode}, #{startArea}, #{startAreaCode}, #{startAddress}, #{startLng}, #{startLat}, #{endProvince}, #{endProvinceCode}, #{endCity}, #{endCityCode}, #{endArea}, #{endAreaCode}, #{endAddress}, #{endLng}, #{endLat}, #{expectStartDate}, #{expectEndDate}, #{carNum}, #{lineId}, #{pickType}, #{pickContactName}, #{pickContactPhone}, #{backType}, #{backContactName}, #{backContactPhone}, #{hurryDays}, #{source}, #{createTime}, #{createUserName}, #{createUserType}, #{state}, #{remark}, #{invoiceFlag}, #{invoiceType}, #{pickFee}, #{trunkFee}, #{backFee}, #{insuranceFee}, #{depositFee}, #{agencyFee}, #{totalFee}, #{feeShareType}, #{customerContractId}, #{customerPayType}, #{wlPayState}, #{wlPayTime}, #{offlinePayFlag})
     </insert>
 
     <!-- 查询待确定订单信息 -->

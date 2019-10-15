@@ -1,6 +1,7 @@
 package com.cjyc.customer.api.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.cjkj.common.utils.DateUtil;
 import com.cjkj.common.utils.ExcelUtil;
 import com.cjyc.common.model.constant.NoConstant;
 import com.cjyc.common.model.dao.ICarSeriesDao;
@@ -76,6 +77,11 @@ public class OrderServiceImpl implements IOrderService{
             }
         }
 
+        order.setSource(1);
+        order.setCarNum(orderDto.getOrderCarDtoList().size());
+        order.setCreateTime(System.currentTimeMillis());
+        order.setCreateUserName(orderDto.getCustomerName());
+        order.setCreateUserType(0);
         int count = orderDao.addOrder(order);
 
         //保存车辆信息
