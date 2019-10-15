@@ -40,13 +40,13 @@
                 id_card_back_img as idCardBackImg,register_time as registerTime
         from c_customer
         <where>
-            <if test="phone != null and phone != ''">
+            <if test="phone != null and phone.trim() != ''">
                    phone = #{phone}
             </if>
-            <if test="name != null  and name != ''">
+            <if test="name != null  and name.trim() != ''">
                 and   name = #{name}
             </if>
-            <if test="idCard != null and idCard != ''">
+            <if test="idCard != null and idCard.trim() != ''">
                 and   id_card = #{idCard}
             </if>
                 and type = 1
@@ -68,19 +68,19 @@
             <if test="id != null">
                 id = #{id}
             </if>
-            <if test="name != null and name != ''">
+            <if test="name != null and name.trim() != ''">
                 and   name = #{name}
             </if>
-            <if test="alias != null  and alias != ''">
+            <if test="alias != null  and alias.trim() != ''">
                 and  alias = #{alias}
             </if>
-            <if test="contactMan != null  and contactMan != ''">
+            <if test="contactMan != null  and contactMan.trim() != ''">
                 and contact_man = #{contactMan}
             </if>
-            <if test="phone != null  and phone != ''">
+            <if test="phone != null  and phone.trim() != ''">
                 and  phone = #{phone}
             </if>
-            <if test="createUserId != null and createUserId != ''">
+            <if test="createUserId != null and createUserId.trim() != ''">
                 and create_user_id = #{createUserId}
             </if>
                 and type = 2

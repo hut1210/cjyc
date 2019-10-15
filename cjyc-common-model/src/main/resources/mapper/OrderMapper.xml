@@ -93,19 +93,19 @@
 
     <!-- 通用if条件 -->
     <sql id="Common_Where_If">
-        <if test="key != null and key != ''">
+        <if test="key != null and key.trim() != ''">
             no like #{key}
         </if>
-        <if test="startDate != null  and startDate != ''">
+        <if test="startDate != null  and startDate.trim() != ''">
             and expect_start_date >= #{startDate}
         </if>
-        <if test="endDate != null and endDate != ''">
+        <if test="endDate != null and endDate.trim() != ''">
             and  expect_end_date &lt;= #{endDate}
         </if>
-        <if test="startCityCode != null  and startCityCode != ''">
+        <if test="startCityCode != null  and startCityCode.trim() != ''">
             and start_city_code = #{startCityCode}
         </if>
-        <if test="endCityCode != null and endCityCode != ''">
+        <if test="endCityCode != null and endCityCode.trim() != ''">
             and  end_city_code = #{endCityCode}
         </if>
     </sql>
@@ -113,13 +113,13 @@
     <!-- 通用排序条件 -->
     <sql id="Common_Order_By">
         order by create_time
-        <if test="sort != null and sort == 0">
+        <if test="sort != null and sort.trim() == 0">
             desc
         </if>
-        <if test="sort != null and sort == 1">
+        <if test="sort != null and sort.trim() == 1">
             asc
         </if>
-        <if test="sort != null and sort == 2">
+        <if test="sort != null and sort.trim() == 2">
             desc
         </if>
     </sql>
