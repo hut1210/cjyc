@@ -36,32 +36,31 @@
         left join w_task wt on wt.waybill_id = wwc.waybill_id
         left join d_driver dd on dd.id =wt.driver_id
         left join d_vehicle_running dvr on dvr.id = wt.vehicle_running_id
-        <where>
-            <if test="wayBillNo != null and wayBillNo != ''">
-                ww.waybill_no = #{wayBillNo}
-            </if>
-            <if test="carNo != null and carNo != ''">
-                and  woc.no = #{carNo}
-            </if>
-            <if test="vin != null  and vin != ''">
-                and  woc.vin = #{vin}
-            </if>
-            <if test="brand != null  and brand != ''">
-                and woc.brand = #{brand}
-            </if>
-            <if test="model != null  and model != ''">
-                and  woc.model = #{model}
-            </if>
-            <if test="dispatchType != null ">
-                and ww.type = #{dispatchType}
-            </if>
-            <!--<if test="deliveryWay != null ">
-                and  wo.deliveryWay = #{deliveryWay}
-            </if>-->
+        where 1=1
+        <if test="wayBillNo != null and wayBillNo != ''">
+            ww.waybill_no = #{wayBillNo}
+        </if>
+        <if test="carNo != null and carNo != ''">
+            and  woc.no = #{carNo}
+        </if>
+        <if test="vin != null  and vin != ''">
+            and  woc.vin = #{vin}
+        </if>
+        <if test="brand != null  and brand != ''">
+            and woc.brand = #{brand}
+        </if>
+        <if test="model != null  and model != ''">
+            and  woc.model = #{model}
+        </if>
+        <if test="dispatchType != null ">
+            and ww.type = #{dispatchType}
+        </if>
+        <!--<if test="deliveryWay != null ">
+            and  wo.deliveryWay = #{deliveryWay}
+        </if>-->
 
-            <if test="carrierName != null  and carrierName != ''">
-                and  dc.name = #{model}
-            </if>
-        </where>
+        <if test="carrierName != null  and carrierName != ''">
+            and  dc.name = #{model}
+        </if>
     </select>
 </mapper>

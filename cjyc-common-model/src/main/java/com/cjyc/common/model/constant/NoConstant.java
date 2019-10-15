@@ -16,8 +16,23 @@ public class NoConstant {
      */
     public static final int START_INDEX = 1;
 
-
+    /**
+     * 订单编号前缀
+     */
     public static final String ORDER_PREFIX = "Y";
+
+    /**
+     * 任务编号前缀
+     */
     public static final String TASK_PREFIX = "T";
+
+    /**
+     * 运单编号前缀
+     */
     public static final String WAYBILL_PREFIX = "W";
+
+    /**
+     * 车辆编号前缀
+     */
+    public static final String CAR_PREFIX = "C";
 }
