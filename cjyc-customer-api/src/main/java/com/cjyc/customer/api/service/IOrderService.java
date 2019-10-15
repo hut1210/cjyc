@@ -2,6 +2,7 @@ package com.cjyc.customer.api.service;
 
 import com.cjyc.common.model.dto.BasePageDto;
 import com.cjyc.common.model.vo.customer.OrderCenterVo;
+import com.cjyc.common.model.vo.customer.OrderDetailVo;
 import com.cjyc.customer.api.dto.OrderDto;
 import com.github.pagehelper.PageInfo;
 
@@ -39,5 +40,12 @@ public interface IOrderService {
      * @return
      */
     PageInfo<OrderCenterVo> getAllOrders(BasePageDto dto);
+
+    /**
+     * 根据订单编号查看订单详情
+     * @param orderNo
+     * @return
+     */
+    OrderDetailVo getOrderDetailByNo(String orderNo);
 
 }

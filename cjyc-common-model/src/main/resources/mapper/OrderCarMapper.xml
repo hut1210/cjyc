@@ -36,4 +36,8 @@
          select brand as brand ,model as model ,plate_no as plateNo,vin as vin from w_order_car where order_no = #{orderNo};
     </select>
 
+    <!-- 通过主键查询车辆信息 -->
+    <select id="getOrderCarInfoById" resultType="com.cjyc.common.model.vo.customer.OrderCarCenterVo" parameterType="java.lang.Long">
+         select valuation as valuation,insurance_coverage_amount as insuredAmount,insurance_fee as insuranceFee,is_move as isMove, brand as brand ,model as model ,plate_no as plateNo,vin as vin from w_order_car where id = #{orderCarId};
+    </select>
 </mapper>

@@ -2,6 +2,7 @@ package com.cjyc.customer.api.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjkj.common.utils.ExcelUtil;
+import com.cjyc.common.model.constant.PatternConstant;
 import com.cjyc.common.model.dao.ICarSeriesDao;
 import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IOrderDao;
@@ -9,8 +10,10 @@ import com.cjyc.common.model.dto.BasePageDto;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.enums.SysEnum;
+import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.customer.OrderCarCenterVo;
 import com.cjyc.common.model.vo.customer.OrderCenterVo;
+import com.cjyc.common.model.vo.customer.OrderDetailVo;
 import com.cjyc.customer.api.dto.OrderDto;
 import com.cjyc.customer.api.service.IOrderService;
 import com.github.pagehelper.PageHelper;
@@ -23,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -121,6 +125,23 @@ public class OrderServiceImpl implements IOrderService{
         return null;
     }
 
+    @Override
+    public OrderDetailVo getOrderDetailByNo(String orderNo) {
+        OrderDetailVo detailVo = null;
+        try{
+            //根据订单编号查询订单详情
+            detailVo = orderDao.getOrderDetailByNo(orderNo);
+            detailVo.setCreateTime(LocalDateTimeUtil.convertToString(Long.valueOf(detailVo.getCreateTime()), PatternConstant.DATE));
+            detailVo.setExpectStartDate(LocalDateTimeUtil.convertToString(Long.valueOf(detailVo.getExpectStartDate()), PatternConstant.DATE));
+            //根据订单编号获取车辆信息
+            List<OrderCarCenterVo> ordCarCenVos = encapOrderCarList(orderNo);
+            detailVo.setOrderCarCenterVos(ordCarCenVos);
+        }catch (Exception e){
+            log.info("获取订单详情出现异常");
+        }
+        return detailVo;
+    }
+
     /**
      * 封装待确认/运输中/待支付/全部订单列表
      * @param ordCenVos
@@ -137,15 +158,7 @@ public class OrderServiceImpl implements IOrderService{
                     }else{
                         order.setTotalFee(SysEnum.ZERO.toString());
                     }
-                    //通过订单编号查询车辆信息
-                    List<OrderCarCenterVo> ordCarCenVos = iOrderCarDao.getOrderCarByNo(order.getNo());
-                    if(ordCarCenVos != null && ordCarCenVos.size() > 0){
-                        //根据车牌和型号查logo
-                        for(OrderCarCenterVo carCenterVo : ordCarCenVos){
-                            String logoImg = iCarSeriesDao.getLogoImgByBraMod(carCenterVo.getBrand(),carCenterVo.getModel());
-                            carCenterVo.setLogoImg(logoImg);
-                        }
-                    }
+                    List<OrderCarCenterVo> ordCarCenVos = encapOrderCarList(order.getNo());
                     order.setOrderCarCenterVos(ordCarCenVos);
                 }
                 PageHelper.startPage(basePageDto.getCurrentPage(), basePageDto.getPageSize());
@@ -155,5 +168,25 @@ public class OrderServiceImpl implements IOrderService{
             log.info("获取订单列表出现异常");
         }
         return pageInfo;
+    }
+
+    /**
+     * 通过订单编号封装车辆信息
+     * @param orderNo
+     * @return
+     */
+    private List<OrderCarCenterVo> encapOrderCarList(String orderNo){
+        //通过订单编号查询车辆信息
+        List<OrderCarCenterVo> ordCarCenVos = iOrderCarDao.getOrderCarByNo(orderNo);
+        if(ordCarCenVos != null && ordCarCenVos.size() > 0){
+            //根据车牌和型号查logo
+            for(OrderCarCenterVo carCenterVo : ordCarCenVos){
+                String logoImg = iCarSeriesDao.getLogoImgByBraMod(carCenterVo.getBrand(),carCenterVo.getModel());
+                carCenterVo.setLogoImg(logoImg);
+            }
+        }else{
+            ordCarCenVos = new ArrayList<OrderCarCenterVo>();
+        }
+        return ordCarCenVos;
     }
 }

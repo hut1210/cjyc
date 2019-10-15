@@ -24,4 +24,11 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
      */
     List<OrderCarCenterVo> getOrderCarByNo(@Param("orderNo") String orderNo);
 
+    /**
+     * 根据车辆id获取指定车辆信息
+     * @param orderCarId
+     * @return
+     */
+    OrderCarCenterVo  getOrderCarInfoById(@Param("orderCarId") Long orderCarId);
+
 }

@@ -14,4 +14,13 @@ public class BasePageUtil implements Serializable {
             basePageDto.setPageSize(10);
         }
     }
+
+    public static void initPage(Integer currentPage,Integer pageSize){
+        if(currentPage == null || currentPage < 1){
+            currentPage = 1;
+        }
+        if(pageSize == null || pageSize < 1){
+            pageSize = 10;
+        }
+    }
 }

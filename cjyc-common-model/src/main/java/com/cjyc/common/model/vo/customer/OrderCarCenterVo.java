@@ -7,6 +7,15 @@ import java.io.Serializable;
 @Data
 public class OrderCarCenterVo implements Serializable {
 
+    @ApiModelProperty(value = "估值/万")
+    private String valuation;
+
+    @ApiModelProperty(value = "车辆应收保险费")
+    private String insuranceFee;
+
+    @ApiModelProperty(value = "保额/万")
+    private String insuredAmount;
+
     @ApiModelProperty("车辆图片链接")
     private String logoImg;
 
@@ -21,4 +30,8 @@ public class OrderCarCenterVo implements Serializable {
 
     @ApiModelProperty(value = "vin码")
     private String vin;
+
+    @ApiModelProperty(value = "是否能动 0-否 1-是")
+    private String isMove;
+
 }

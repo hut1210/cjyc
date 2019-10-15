@@ -3,8 +3,10 @@ package com.cjyc.common.model.dao;
 import com.cjyc.common.model.entity.Order;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.vo.customer.OrderCenterVo;
+import com.cjyc.common.model.vo.customer.OrderDetailVo;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -46,4 +48,11 @@ public interface IOrderDao extends BaseMapper<Order> {
      * @return
      */
     List<OrderCenterVo> getAllOrders();
+
+    /**
+     * 根据订单编号查看订单相关信息
+     * @param orderNo
+     * @return
+     */
+    OrderDetailVo getOrderDetailByNo(@Param("orderNo") String orderNo);
 }

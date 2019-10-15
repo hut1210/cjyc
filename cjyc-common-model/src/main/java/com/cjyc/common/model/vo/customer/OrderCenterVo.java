@@ -1,6 +1,5 @@
 package com.cjyc.common.model.vo.customer;
 
-import com.cjyc.common.model.dto.BasePageDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 

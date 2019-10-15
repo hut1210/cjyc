@@ -8,11 +8,14 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.OrderCenterVo;
+import com.cjyc.common.model.vo.customer.OrderDetailVo;
 import com.cjyc.customer.api.dto.OrderDto;
 import com.cjyc.customer.api.service.IOrderService;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -70,6 +73,17 @@ public class OrderController {
         PageInfo<OrderCenterVo> pageInfo = orderService.getAllOrders(basePageDto);
         return BaseResultUtil.getPageVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),pageInfo);
     }
+
+    @ApiOperation(value = "根据订单编号查看订单详情", notes = "根据订单编号查看订单详情", httpMethod = "POST")
+    @PostMapping(value = "/getOrderDetailByNo/{orderNo}/")
+    public ResultVo<OrderDetailVo> getOrderDetailByNo(@ApiParam(value="订单编号",required = true) @PathVariable String orderNo){
+        if(StringUtils.isBlank(orderNo)){
+            BaseResultUtil.getVo(ResultEnum.MOBILE_PARAM_ERROR.getCode(), ResultEnum.MOBILE_PARAM_ERROR.getMsg());
+        }
+        OrderDetailVo vo = orderService.getOrderDetailByNo(orderNo);
+        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),vo);
+    }
+
 
 
 }
