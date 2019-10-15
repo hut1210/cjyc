@@ -21,7 +21,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/index")
-@Api(tags = "index",description = "web端基础接口,包含登录、登出、等")
+@Api(tags = "公共基础数据接口",description = "web端基础接口,包含城市、班线等")
 public class IndexController {
 
     /**

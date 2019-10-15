@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * @auther litan
@@ -34,5 +35,12 @@ public class OrderCarDto implements Serializable {
     @ApiModelProperty(value = "保额 单位：分")
     private int insuranceCoverageAmount;
 
-
+    @ApiModelProperty(value = "车辆应收提车费 单位：分")
+    private BigDecimal pickFee;
+    @ApiModelProperty(value = "车辆应收干线费 单位：分")
+    private BigDecimal trunkFee;
+    @ApiModelProperty(value = "车辆应收送车费 单位：分")
+    private BigDecimal backFee;
+    @ApiModelProperty(value = "单车总费用 单位：分")
+    private BigDecimal totalFee;
 }
