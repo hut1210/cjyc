@@ -35,5 +35,54 @@
     <select id="getOrderCarByNo" resultType="com.cjyc.common.model.vo.customer.OrderCarCenterVo" parameterType="java.lang.String">
          select brand as brand ,model as model ,plate_no as plateNo,vin as vin from w_order_car where order_no = #{orderNo};
     </select>
+    <!--按地级城市统计待调度车辆数量-->
+    <select id="countListWaitDispatchCar" resultType="java.util.Map">
+        select count(0) as car_num, start_city_code as cityCode, start_city as cityName from w_order o
+        join w_order_car c on o.id = c.order_id
+        where o.state BETWEEN 25 and 100
+        and c.state &lt; 5
+        group by o.start_city_code
+
+        union
+        select count(0) as car_num, start_city_code as cityCode, start_city as cityName from w_order o
+        join w_order_car c on o.id = c.order_id
+        where o.state BETWEEN 25 and 100
+        and c.state = 25
+        group by o.start_city_code
+
+        union
+        select count(0) as car_num, start_city_code as cityCode, start_city as cityName from w_order o
+        join w_order_car c on o.id = c.order_id
+        where o.state BETWEEN 25 and 100
+        and c.state = 45
+        group by o.start_city_code
+    </select>
+
+    <select id="countTotalWaitDispatchCar" resultType="java.lang.Integer">
+        select sum(carNum) from (
+        select count(0) as carNum
+        from w_order o
+        join w_order_car c on o.id = c.order_id
+        where o.state BETWEEN 25 and 100
+        and c.state &lt; 5
+        group by o.start_city_code
+
+        union
+        select count(0) as carNum
+        from w_order o
+        join w_order_car c on o.id = c.order_id
+        where o.state BETWEEN 25 and 100
+        and c.state = 25
+        group by o.start_city_code
+
+        union
+        select count(0) as carNum
+        from w_order o
+        join w_order_car c on o.id = c.order_id
+        where o.state BETWEEN 25 and 100
+        and c.state = 45
+        group by o.start_city_code
+        ) as t
+    </select>
 
 </mapper>

@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Options;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -45,4 +46,6 @@ public interface IOrderDao extends BaseMapper<Order> {
      * @return
      */
     List<OrderCenterVo> getAllOrders();
+
+
 }
