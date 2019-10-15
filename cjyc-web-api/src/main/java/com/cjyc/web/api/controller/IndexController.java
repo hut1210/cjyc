@@ -1,6 +1,7 @@
 package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.entity.CarSeries;
+import com.cjyc.common.model.entity.City;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.CityVo;
@@ -65,11 +66,10 @@ public class IndexController {
     @ApiOperation(value = "获取城市列表", notes = "获取城市列表", httpMethod = "POST")
     @RequestMapping(value = "/getCityList", method = RequestMethod.POST,  consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "cityCode", value = "城市code,空表示全国和大区", dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "keyword", value = "检索关键词",  dataType = "String", paramType = "query")
+            @ApiImplicitParam(name = "cityCode", value = "城市code,空表示查询省", dataType = "String", paramType = "query")
     })
-    public ResultVo<List<CityVo>> getCityList(String cityCode, String keyword) {
-        List<CityVo> cityList = cityService.getCityList(cityCode,keyword);
+    public ResultVo<List<Map<String,Object>>> getCityList(String cityCode) {
+        List<Map<String,Object>> cityList = cityService.getWebCityList(cityCode);
         return BaseResultUtil.success(cityList);
     }
 }

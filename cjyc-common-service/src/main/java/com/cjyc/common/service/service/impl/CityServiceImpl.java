@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @auther litan
@@ -50,6 +52,14 @@ public class CityServiceImpl implements ICityService{
         cityVo.setHotCityList(hotCityList);
         voList.add(cityVo);
         return voList;
+    }
+
+    @Override
+    public List<Map<String,Object>> getWebCityList(String cityCode) {
+        List<Map<String,Object>> list ;
+        list = cityDao.getList(cityCode);
+        // todo 添加业务中心数据到集合
+        return list;
     }
 
 }
