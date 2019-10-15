@@ -7,10 +7,12 @@ import com.cjyc.common.model.dao.ICarSeriesDao;
 import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IOrderDao;
 import com.cjyc.common.model.dto.BasePageDto;
+import com.cjyc.common.model.dto.customer.OrderConditionDto;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.enums.SysEnum;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
+import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.customer.OrderCarCenterVo;
 import com.cjyc.common.model.vo.customer.OrderCenterVo;
 import com.cjyc.common.model.vo.customer.OrderDetailVo;
@@ -72,7 +74,7 @@ public class OrderServiceImpl implements IOrderService{
                 order.setState(1);//待分配
             }
         }
-        int id = orderDao.add(order);
+        int id = orderDao.addOrder(order);
 
         return id > 0 ? true : false;
     }
@@ -142,6 +144,68 @@ public class OrderServiceImpl implements IOrderService{
         return detailVo;
     }
 
+    @Override
+    public PageInfo<OrderCenterVo> getConFirmOrdsByTerm(OrderConditionDto dto) {
+        try{
+            List<OrderCenterVo> orderCenterVos = orderDao.getConFirmOrdsByTerm(dto);
+            return encapOrderByTermList(orderCenterVos,dto);
+        }catch (Exception e){
+            log.info("根据条件筛选待确认订单出现异常");
+        }
+        return null;
+    }
+
+    @Override
+    public PageInfo<OrderCenterVo> getTransOrdsByTerm(OrderConditionDto dto) {
+        try{
+            List<OrderCenterVo> orderCenterVos = orderDao.getTransOrdsByTerm(dto);
+            return encapOrderByTermList(orderCenterVos,dto);
+        }catch (Exception e){
+            log.info("根据条件筛选待确认订单出现异常");
+        }
+        return null;
+    }
+
+    @Override
+    public PageInfo<OrderCenterVo> getPaidOrdsByTerm(OrderConditionDto dto) {
+        try{
+            List<OrderCenterVo> orderCenterVos = orderDao.getPaidOrdsByTerm(dto);
+            return encapOrderByTermList(orderCenterVos,dto);
+        }catch (Exception e){
+            log.info("根据条件筛选待确认订单出现异常");
+        }
+        return null;
+    }
+
+    @Override
+    public PageInfo<OrderCenterVo> getAllOrdsByTerm(OrderConditionDto dto) {
+        try{
+            List<OrderCenterVo> orderCenterVos = orderDao.getAllOrdsByTerm(dto);
+            return encapOrderByTermList(orderCenterVos,dto);
+        }catch (Exception e){
+            log.info("根据条件筛选待确认订单出现异常");
+        }
+        return null;
+    }
+
+    /**
+     * 通过条件封装筛选后的订单列表
+     * @return
+     */
+    private PageInfo<OrderCenterVo> encapOrderByTermList(List<OrderCenterVo> orderCenterVos,OrderConditionDto dto){
+        PageInfo<OrderCenterVo> pageInfo = new PageInfo<>();
+        List<OrderCarCenterVo> carCenterVos = null;
+        if(orderCenterVos.get(0) != null && orderCenterVos.size() >= 1){
+            for(OrderCenterVo order : orderCenterVos){
+                carCenterVos = encapOrderCarList(order.getNo(),dto.getStoreId(),dto.getBrand(),dto.getModel());
+                order.setOrderCarCenterVos(carCenterVos);
+            }
+            PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
+            pageInfo = new PageInfo<>(orderCenterVos);
+        }
+        return pageInfo;
+    }
+
     /**
      * 封装待确认/运输中/待支付/全部订单列表
      * @param ordCenVos
@@ -153,11 +217,6 @@ public class OrderServiceImpl implements IOrderService{
         try{
             if(ordCenVos.get(0) != null && ordCenVos.size() >= 1){
                 for(OrderCenterVo order : ordCenVos){
-                    if(StringUtils.isNotBlank(order.getTotalFee())){
-                        order.setTotalFee(new BigDecimal(order.getTotalFee()).divide(new BigDecimal(100)).toString());
-                    }else{
-                        order.setTotalFee(SysEnum.ZERO.toString());
-                    }
                     List<OrderCarCenterVo> ordCarCenVos = encapOrderCarList(order.getNo());
                     order.setOrderCarCenterVos(ordCarCenVos);
                 }
@@ -172,20 +231,23 @@ public class OrderServiceImpl implements IOrderService{
 
     /**
      * 通过订单编号封装车辆信息
-     * @param orderNo
+     * @param strs
      * @return
      */
-    private List<OrderCarCenterVo> encapOrderCarList(String orderNo){
-        //通过订单编号查询车辆信息
-        List<OrderCarCenterVo> ordCarCenVos = iOrderCarDao.getOrderCarByNo(orderNo);
+    private List<OrderCarCenterVo> encapOrderCarList(String... strs){
+        List<OrderCarCenterVo> ordCarCenVos = new ArrayList<>();
+        if(strs.length == 1){
+            //通过订单编号查询车辆信息
+            ordCarCenVos = iOrderCarDao.getOrderCarByNo(strs[0]);
+        }else if(strs.length == 4){
+            ordCarCenVos = iOrderCarDao.getOrderCarInfoByTerm(strs[0],strs[1],strs[2],strs[3]);
+        }
         if(ordCarCenVos != null && ordCarCenVos.size() > 0){
             //根据车牌和型号查logo
             for(OrderCarCenterVo carCenterVo : ordCarCenVos){
                 String logoImg = iCarSeriesDao.getLogoImgByBraMod(carCenterVo.getBrand(),carCenterVo.getModel());
                 carCenterVo.setLogoImg(logoImg);
             }
-        }else{
-            ordCarCenVos = new ArrayList<OrderCarCenterVo>();
         }
         return ordCarCenVos;
     }

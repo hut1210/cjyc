@@ -2,6 +2,7 @@ package com.cjyc.customer.api.controller;
 
 
 import com.cjyc.common.model.dto.BasePageDto;
+import com.cjyc.common.model.dto.customer.OrderConditionDto;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BasePageUtil;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -75,7 +76,7 @@ public class OrderController {
     }
 
     @ApiOperation(value = "根据订单编号查看订单详情", notes = "根据订单编号查看订单详情", httpMethod = "POST")
-    @PostMapping(value = "/getOrderDetailByNo/{orderNo}/")
+    @PostMapping(value = "/getOrderDetailByNo/{orderNo}")
     public ResultVo<OrderDetailVo> getOrderDetailByNo(@ApiParam(value="订单编号",required = true) @PathVariable String orderNo){
         if(StringUtils.isBlank(orderNo)){
             BaseResultUtil.getVo(ResultEnum.MOBILE_PARAM_ERROR.getCode(), ResultEnum.MOBILE_PARAM_ERROR.getMsg());
@@ -84,6 +85,36 @@ public class OrderController {
         return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),vo);
     }
 
+    @ApiOperation(value = "根据条件分页查询待确认订单", notes = "根据条件分页查询待确认订单", httpMethod = "POST")
+    @PostMapping(value = "/getConFirmOrdsByTerm")
+    public ResultVo<PageVo<OrderCenterVo>> getConFirmOrdsByTerm(@RequestBody OrderConditionDto dto){
+        BasePageUtil.initPage(dto.getCurrentPage(),dto.getPageSize());
+        PageInfo<OrderCenterVo> pageInfo = orderService.getConFirmOrdsByTerm(dto);
+        return BaseResultUtil.getPageVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),pageInfo);
+    }
 
+    @ApiOperation(value = "根据条件分页查询运输中订单", notes = "根据条件分页查询运输中订单", httpMethod = "POST")
+    @PostMapping(value = "/getTransOrdsByTerm")
+    public ResultVo<PageVo<OrderCenterVo>> getTransOrdsByTerm(@RequestBody OrderConditionDto dto){
+        BasePageUtil.initPage(dto.getCurrentPage(),dto.getPageSize());
+        PageInfo<OrderCenterVo> pageInfo = orderService.getTransOrdsByTerm(dto);
+        return BaseResultUtil.getPageVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),pageInfo);
+    }
+
+    @ApiOperation(value = "根据条件分页查询已支付订单", notes = "根据条件分页查询已支付订单", httpMethod = "POST")
+    @PostMapping(value = "/getPaidOrdsByTerm")
+    public ResultVo<PageVo<OrderCenterVo>> getPaidOrdsByTerm(@RequestBody OrderConditionDto dto){
+        BasePageUtil.initPage(dto.getCurrentPage(),dto.getPageSize());
+        PageInfo<OrderCenterVo> pageInfo = orderService.getPaidOrdsByTerm(dto);
+        return BaseResultUtil.getPageVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),pageInfo);
+    }
+
+    @ApiOperation(value = "根据条件分页查询全部订单", notes = "根据条件分页查询全部订单", httpMethod = "POST")
+    @PostMapping(value = "/getAllOrdsByTerm")
+    public ResultVo<PageVo<OrderCenterVo>> getAllOrdsByTerm(@RequestBody OrderConditionDto dto){
+        BasePageUtil.initPage(dto.getCurrentPage(),dto.getPageSize());
+        PageInfo<OrderCenterVo> pageInfo = orderService.getAllOrdsByTerm(dto);
+        return BaseResultUtil.getPageVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),pageInfo);
+    }
 
 }
