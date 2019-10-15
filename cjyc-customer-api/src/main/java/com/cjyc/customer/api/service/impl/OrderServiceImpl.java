@@ -53,7 +53,7 @@ public class OrderServiceImpl implements IOrderService{
         Order order = new Order();
         BeanUtils.copyProperties(orderDto,order);
         order.setId(001121212335653L);
-        order.setNo("555666");
+        order.setNo("55566655");
         //简单
         if(isSimple == 1){
 
