@@ -1,7 +1,16 @@
 package com.cjyc.web.api.controller;
 
+import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.web.api.dto.OrderDto;
+import com.cjyc.web.api.service.IOrderService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -14,6 +23,20 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/order")
 @Api(tags = "order",description = "订单接口,包含下单、查询等")
 public class OrderController {
+
+    @Autowired
+    IOrderService orderService;
+
+    /**
+     * 客户端下单
+     * */
+    @ApiOperation(value = "客户端下单接口", notes = "客户端下单", httpMethod = "POST")
+    @RequestMapping(value = "/commit", method = RequestMethod.POST,  consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultVo commit(@RequestBody OrderDto orderDto) {
+        boolean result = orderService.commitOrder(orderDto);
+        return result ? BaseResultUtil.success(orderDto) : BaseResultUtil.fail();
+    }
+
 
 //    @Autowired
 //    private ICustomerService customerServiceCom;
