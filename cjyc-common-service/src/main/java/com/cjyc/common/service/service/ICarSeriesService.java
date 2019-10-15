@@ -13,4 +13,8 @@ import java.util.Map;
 public interface ICarSeriesService {
 
     List<CarSeries> getList(String keyword);
+
+    List<String> getBrand();
+
+    List<String> getSeriesByBrand(String brand);
 }

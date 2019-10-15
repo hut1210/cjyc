@@ -21,14 +21,14 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/order")
-@Api(tags = "order",description = "订单接口,包含下单、查询等")
+@Api(tags = "订单相关接口",description = "订单接口,包含下单、查询等")
 public class OrderController {
 
     @Autowired
     IOrderService orderService;
 
     /**
-     * 客户端下单
+     * web端下单
      * */
     @ApiOperation(value = "客户端下单接口", notes = "客户端下单", httpMethod = "POST")
     @RequestMapping(value = "/commit", method = RequestMethod.POST,  consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)

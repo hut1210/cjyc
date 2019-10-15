@@ -37,4 +37,20 @@
             limit 1
     </select>
 
+    <!-- 品牌查询 -->
+    <select id="getBrand" resultType="java.lang.String" >
+        select brand from s_car_series
+        GROUP BY brand
+    </select>
+
+    <!-- 通过品牌查询型号 -->
+    <select id="getSeriesByBrand" resultType="java.lang.String" parameterType="java.lang.String">
+        select model from s_car_series
+        <where>
+            <if test="brand != null and brand != ''">
+                brand = #{brand}
+            </if>
+        </where>
+        ORDER BY brand
+    </select>
 </mapper>

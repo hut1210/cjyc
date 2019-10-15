@@ -30,7 +30,7 @@ public class CarSeries implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
-    @ApiModelProperty(value = "车辆ID")
+    @ApiModelProperty(value = "编号")
     private String carCode;
 
     @ApiModelProperty(value = "品牌")
