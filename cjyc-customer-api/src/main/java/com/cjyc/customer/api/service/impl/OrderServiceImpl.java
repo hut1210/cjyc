@@ -2,15 +2,19 @@ package com.cjyc.customer.api.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjkj.common.utils.ExcelUtil;
+import com.cjyc.common.model.constant.NoConstant;
 import com.cjyc.common.model.dao.ICarSeriesDao;
+import com.cjyc.common.model.dao.IIncrementerDao;
 import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IOrderDao;
 import com.cjyc.common.model.dto.BasePageDto;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.entity.Order;
+import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.enums.SysEnum;
 import com.cjyc.common.model.vo.customer.OrderCarCenterVo;
 import com.cjyc.common.model.vo.customer.OrderCenterVo;
+import com.cjyc.customer.api.dto.OrderCarDto;
 import com.cjyc.customer.api.dto.OrderDto;
 import com.cjyc.customer.api.service.IOrderService;
 import com.github.pagehelper.PageHelper;
@@ -37,6 +41,9 @@ public class OrderServiceImpl implements IOrderService{
     @Autowired
     IOrderDao orderDao;
 
+    @Autowired
+    IIncrementerDao incrementerDao;
+
     @Resource
     IOrderCarDao iOrderCarDao;
 
@@ -49,26 +56,39 @@ public class OrderServiceImpl implements IOrderService{
         int isSimple = orderDto.getIsSimple();
         int saveType = orderDto.getSaveType();
 
-
         Order order = new Order();
         BeanUtils.copyProperties(orderDto,order);
-        order.setId(001121212335653L);
-        order.setNo("55566655");
+
+        //获取订单业务编号
+        String orderNo = incrementerDao.getIncrementer(NoConstant.ORDER_PREFIX);
+        order.setNo(orderNo);
         //简单
         if(isSimple == 1){
 
-        //详单
+            //详单
         }else if(isSimple == 0){
             //草稿
             if(saveType==0){
                 order.setState(0);//待提交
-
-            //正式下单
+                //正式下单
             }else if(saveType==1){
                 order.setState(1);//待分配
             }
         }
-        int id = orderDao.add(order);
+        int id = orderDao.insert(order);
+
+        //保存车辆信息
+        List<OrderCarDto> carDtoList =  orderDto.getOrderCarDtoList();
+        if(id > 0){
+
+            for(OrderCarDto orderCarDto : carDtoList){
+
+                OrderCar orderCar = new OrderCar();
+                BeanUtils.copyProperties(orderCarDto,orderCar);
+
+                iOrderCarDao.insert(orderCar);
+            }
+        }
 
         return id > 0 ? true : false;
     }
