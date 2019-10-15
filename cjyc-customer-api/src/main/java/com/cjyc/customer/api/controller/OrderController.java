@@ -43,6 +43,16 @@ public class OrderController {
         return result ? BaseResultUtil.success(orderDto) : BaseResultUtil.fail();
     }
 
+    /**
+     * 客户修改订单接口
+     * */
+    @ApiOperation(value = "客户修改订单接口", notes = "客户修改订单接口", httpMethod = "POST")
+    @RequestMapping(value = "/modify", method = RequestMethod.POST,  consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultVo modify(@RequestBody OrderDto orderDto) {
+        boolean result = orderService.modify(orderDto);
+        return result ? BaseResultUtil.success(orderDto) : BaseResultUtil.fail();
+    }
+
     @ApiOperation(value = "分页查看待确认订单", notes = "分页查看待确认订单", httpMethod = "POST")
     @PostMapping(value = "/getWaitConFirmOrders")
     public ResultVo<PageVo<OrderCenterVo>> getWaitConFirmOrders(@RequestBody BasePageDto basePageDto){

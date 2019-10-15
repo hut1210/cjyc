@@ -2,20 +2,24 @@ package com.cjyc.customer.api.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjkj.common.utils.ExcelUtil;
+import com.cjyc.common.model.constant.NoConstant;
 import com.cjyc.common.model.constant.PatternConstant;
 import com.cjyc.common.model.dao.ICarSeriesDao;
+import com.cjyc.common.model.dao.IIncrementerDao;
 import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IOrderDao;
 import com.cjyc.common.model.dto.BasePageDto;
 import com.cjyc.common.model.dto.customer.OrderConditionDto;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.entity.Order;
+import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.enums.SysEnum;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.customer.OrderCarCenterVo;
 import com.cjyc.common.model.vo.customer.OrderCenterVo;
 import com.cjyc.common.model.vo.customer.OrderDetailVo;
+import com.cjyc.customer.api.dto.OrderCarDto;
 import com.cjyc.customer.api.dto.OrderDto;
 import com.cjyc.customer.api.service.IOrderService;
 import com.github.pagehelper.PageHelper;
@@ -43,6 +47,9 @@ public class OrderServiceImpl implements IOrderService{
     @Autowired
     IOrderDao orderDao;
 
+    @Autowired
+    IIncrementerDao incrementerDao;
+
     @Resource
     IOrderCarDao iOrderCarDao;
 
@@ -55,28 +62,79 @@ public class OrderServiceImpl implements IOrderService{
         int isSimple = orderDto.getIsSimple();
         int saveType = orderDto.getSaveType();
 
-
         Order order = new Order();
         BeanUtils.copyProperties(orderDto,order);
-        order.setId(001121212335653L);
-        order.setNo("555666");
+
+        //获取订单业务编号
+        String orderNo = incrementerDao.getIncrementer(NoConstant.ORDER_PREFIX);
+        order.setNo(orderNo);
         //简单
         if(isSimple == 1){
 
-        //详单
+            //详单
         }else if(isSimple == 0){
             //草稿
             if(saveType==0){
                 order.setState(0);//待提交
-
-            //正式下单
+                //正式下单
             }else if(saveType==1){
                 order.setState(1);//待分配
             }
         }
-        int id = orderDao.addOrder(order);
 
-        return id > 0 ? true : false;
+        order.setSource(1);
+        order.setCarNum(orderDto.getOrderCarDtoList().size());
+        order.setCreateTime(System.currentTimeMillis());
+        order.setCreateUserName(orderDto.getCustomerName());
+        order.setCreateUserType(0);//创建人类型：0客户，1业务员
+        int count = orderDao.addOrder(order);
+
+        //保存车辆信息
+        List<OrderCarDto> carDtoList =  orderDto.getOrderCarDtoList();
+        if(count > 0){
+            for(OrderCarDto orderCarDto : carDtoList){
+                OrderCar orderCar = new OrderCar();
+                BeanUtils.copyProperties(orderCarDto,orderCar);
+                String carNo = incrementerDao.getIncrementer(NoConstant.CAR_PREFIX);
+
+                orderCar.setOrderNo(orderNo);
+                orderCar.setOrderId(order.getId());
+                orderCar.setNo(carNo);
+
+                iOrderCarDao.insert(orderCar);
+            }
+        }
+
+        return count > 0 ? true : false;
+    }
+
+    @Override
+    public boolean modify(OrderDto orderDto) {
+        Order order = orderDao.selectById(orderDto.getOrderId());
+        BeanUtils.copyProperties(orderDto,order);
+
+        //删除之前的
+        QueryWrapper<OrderCar> wrapper = new QueryWrapper<>();
+        wrapper.eq("order_id",orderDto.getOrderId());
+        int delCount = iOrderCarDao.delete(wrapper);
+
+        //保存车辆信息
+        List<OrderCarDto> carDtoList =  orderDto.getOrderCarDtoList();
+        if(delCount > 0){
+            for(OrderCarDto orderCarDto : carDtoList){
+                OrderCar orderCar = new OrderCar();
+                BeanUtils.copyProperties(orderCarDto,orderCar);
+                String carNo = incrementerDao.getIncrementer(NoConstant.CAR_PREFIX);
+                orderCar.setWlPayState(0);
+                orderCar.setOrderNo(order.getNo());
+                orderCar.setOrderId(order.getId());
+                orderCar.setNo(carNo);
+
+                iOrderCarDao.insert(orderCar);
+            }
+        }
+
+        return false;
     }
 
     @Override

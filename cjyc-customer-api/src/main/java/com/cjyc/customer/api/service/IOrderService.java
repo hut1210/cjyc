@@ -14,7 +14,18 @@ import com.github.pagehelper.PageInfo;
  * @date:2019/10/8
  */
 public interface IOrderService {
+
+    /**
+     * 客户下单
+     * @return
+     */
     boolean commitOrder(OrderDto orderDto);
+
+    /**
+     * 客户修改订单
+     * @return
+     */
+    boolean modify(OrderDto orderDto);
 
     /**
      * 获取待确认订单

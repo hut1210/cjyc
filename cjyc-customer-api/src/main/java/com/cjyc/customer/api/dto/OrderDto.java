@@ -26,6 +26,9 @@ public class OrderDto implements Serializable {
     @ApiModelProperty(value = "0-详单 1-简单",required = true)
     private int isSimple;
 
+    @ApiModelProperty(value = "订单Id(修改订单时必传)")
+    private Long orderId;
+
     @ApiModelProperty(value = "客户id",required = true)
     private String customerId;
     @ApiModelProperty(value = "客户姓名",required = true)
