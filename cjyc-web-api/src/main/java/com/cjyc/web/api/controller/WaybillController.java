@@ -12,10 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Api(tags = "运单")
 @RestController
-@Slf4j
-@RequestMapping(value = "/waybill",
-        consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
-        produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping("/waybill")
 public class WaybillController {
 
     /**

@@ -1,17 +1,20 @@
 package com.cjyc.web.api.controller;
 
-import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.service.service.ICarSeriesService;
+import com.cjyc.common.service.service.ICityService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,47 +24,47 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/index")
-@Api(tags = "index",description = "web端基础接口,包含登录、登出、等")
+@Api(tags = "公共基础数据接口",description = "web端基础接口,包含城市、班线等")
 public class IndexController {
 
+    @Autowired
+    ICityService cityService;
+    @Autowired
+    ICarSeriesService carSeriesService;
+
     /**
-     * 登录接口
-     *
+     * 获取车辆品牌
      * */
-    @ApiOperation(value = "web端登录接口", notes = "登录操作时调用", httpMethod = "POST")
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "userName", value = "登录名", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "pwd", value = "密码", required = true, dataType = "String", paramType = "query")
-    })
-    public ResultVo login(String userName,String pwd){
-        try {
-            if(true){
-                Map map = new HashMap();
-                map.put("userName",userName);
-                map.put("pwd",pwd);
-
-                return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),"登录成功",map);
-            }else{
-                return BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),"登陆失败");
-            }
-        }catch (Exception e){
-            return BaseResultUtil.getVo(ResultEnum.API_INVOKE_ERROR.getCode(), ResultEnum.API_INVOKE_ERROR.getMsg());
-        }
-
+    @ApiOperation(value = "获取车辆品牌", notes = "获取车辆品牌", httpMethod = "POST")
+    @RequestMapping(value = "/getBrandList", method = RequestMethod.POST,  consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultVo<List<String>> getBrandList() {
+        List<String> carSeriesList = carSeriesService.getBrand();
+        return BaseResultUtil.success(carSeriesList);
     }
 
     /**
-     * 登出接口
-     *
+     * 获取品牌下车辆列表
      * */
-    @ApiOperation(value = "web端登出接口", httpMethod = "POST")
-    @RequestMapping(value = "/loginout", method = RequestMethod.POST)
-    public String loginout(){
-        try {
+    @ApiOperation(value = "获取品牌下车辆列表", notes = "获取品牌下车辆列表", httpMethod = "POST")
+    @RequestMapping(value = "/getSeriesListByBrand", method = RequestMethod.POST,  consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "brand", value = "品牌",  dataType = "String", paramType = "query")
+    })
+    public ResultVo<List<String>> getSeriesListByBrand(String brand) {
+        List<String> carSeriesList = carSeriesService.getSeriesByBrand(brand);
+        return BaseResultUtil.success(carSeriesList);
+    }
 
-        }catch (Exception e){
-        }
-        return  null;
+    /**
+     * 获取城市列表
+     * */
+    @ApiOperation(value = "获取城市列表", notes = "获取城市列表", httpMethod = "POST")
+    @RequestMapping(value = "/getCityList", method = RequestMethod.POST,  consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "cityCode", value = "城市code,空表示查询省", dataType = "String", paramType = "query")
+    })
+    public ResultVo<List<Map<String,Object>>> getCityList(String cityCode) {
+        List<Map<String,Object>> cityList = cityService.getWebCityList(cityCode);
+        return BaseResultUtil.success(cityList);
     }
 }

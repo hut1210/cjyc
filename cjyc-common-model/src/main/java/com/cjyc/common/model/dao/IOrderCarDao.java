@@ -41,5 +41,21 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
      * @since 2019/10/15 14:54
      * @param
      */
-    int countTotalWaitDispatchCar();
+    Map<String, Object> countTotalWaitDispatchCar();
+    /**
+     * 根据车辆id获取指定车辆信息
+     * @param orderCarId
+     * @return
+     */
+    OrderCarCenterVo  getOrderCarInfoById(@Param("orderCarId") Long orderCarId);
+
+    /**
+     * 根据条件进行筛选车辆信息
+     * @param orderNo
+     * @param brand
+     * @param model
+     * @return
+     */
+    List<OrderCarCenterVo> getOrderCarInfoByTerm(@Param("orderNo") String orderNo,@Param("storeId") String storeId,@Param("brand") String brand,@Param("model") String model);
+
 }

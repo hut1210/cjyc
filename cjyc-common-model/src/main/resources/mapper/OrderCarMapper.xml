@@ -58,7 +58,7 @@
         group by o.start_city_code
     </select>
 
-    <select id="countTotalWaitDispatchCar" resultType="java.lang.Integer">
+    <select id="countTotalWaitDispatchCar" resultType="java.util.Map">
         select sum(carNum) from (
         select count(0) as carNum
         from w_order o
@@ -85,4 +85,26 @@
         ) as t
     </select>
 
+    <!-- 通过主键查询车辆信息 -->
+    <select id="getOrderCarInfoById" resultType="com.cjyc.common.model.vo.customer.OrderCarCenterVo" parameterType="java.lang.Long">
+         select valuation as valuation,insurance_coverage_amount as insuredAmount,insurance_fee as insuranceFee,is_move as isMove, brand as brand ,model as model ,plate_no as plateNo,vin as vin from w_order_car where id = #{orderCarId};
+    </select>
+
+    <!-- 通过筛选条件查询车辆信息 -->
+    <select id="getOrderCarInfoByTerm" resultType="com.cjyc.common.model.vo.customer.OrderCarCenterVo" parameterType="java.lang.String">
+         select brand as brand ,model as model ,plate_no as plateNo,vin as vin from w_order_car
+           <where>
+               <if test="storeId != null and storeId != ''">
+                   and  now_store_id = #{storeId}
+               </if>
+               <if test="brand != null and brand != ''">
+                   and  brand = #{brand}
+               </if>
+               <if test="model != null and model != ''">
+                   and  model = #{model}
+               </if>
+                   and order_no = #{orderNo}
+           </where>
+
+    </select>
 </mapper>

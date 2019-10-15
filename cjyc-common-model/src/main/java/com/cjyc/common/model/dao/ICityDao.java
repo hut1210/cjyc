@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -24,5 +25,7 @@ public interface ICityDao extends BaseMapper<City> {
     List<City> findList();
 
     List<City> findChildList(String code);
+
+    List<Map<String,Object>> getList(@Param("cityCode") String cityCode);
 }
 

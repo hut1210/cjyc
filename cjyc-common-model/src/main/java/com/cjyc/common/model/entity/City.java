@@ -27,14 +27,14 @@ public class City implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "行政区编码（含大区、省、市、区）")
+    @ApiModelProperty(value = "地区编码（含大区、省、市、区）")
     @TableId(value = "code", type = IdType.AUTO)
     private String code;
 
     @ApiModelProperty(value = "上级城市编码")
     private String parentCode;
 
-    @ApiModelProperty(value = "行政区名称")
+    @ApiModelProperty(value = "城市名称")
     private String name;
 
     @ApiModelProperty(value = "行政区级别： 0大区， 1省， 2市， 3区县")

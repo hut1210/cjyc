@@ -64,12 +64,6 @@ public class CustomerServiceImpl implements ICustomerService{
     public PageInfo<Customer> getAllCustomer(BasePageDto basePageDto) {
         PageInfo<Customer> pageInfo = null;
         try{
-            if(basePageDto.getCurrentPage() == null || basePageDto.getCurrentPage() < 1){
-                basePageDto.setCurrentPage(1);
-            }
-            if(basePageDto.getPageSize() == null || basePageDto.getPageSize() < 1){
-                basePageDto.setPageSize(10);
-            }
             PageHelper.startPage(basePageDto.getCurrentPage(), basePageDto.getPageSize());
             List<Customer> customerList = iCustomerDao.selectList(new QueryWrapper<Customer>().eq("type",1));
             pageInfo = new PageInfo<>(customerList);
@@ -128,12 +122,6 @@ public class CustomerServiceImpl implements ICustomerService{
     public PageInfo<CustomerVo> findCustomer(SelectCustomerDto customerDto) {
         PageInfo<CustomerVo> pageInfo = null;
         try{
-            if(customerDto.getCurrentPage() == null || customerDto.getCurrentPage() < 1){
-                customerDto.setCurrentPage(1);
-            }
-            if(customerDto.getPageSize() == null || customerDto.getPageSize() < 1){
-                customerDto.setPageSize(10);
-            }
             PageHelper.startPage(customerDto.getCurrentPage(), customerDto.getPageSize());
             List<CustomerVo> customerVos = iCustomerDao.findCustomer(customerDto);
             pageInfo = new PageInfo<>(customerVos);
@@ -211,12 +199,6 @@ public class CustomerServiceImpl implements ICustomerService{
     public PageInfo<ListKeyCustomerVo> getAllKeyCustomer(BasePageDto pageDto) {
         PageInfo<ListKeyCustomerVo> pageInfo = null;
         try{
-            if(pageDto.getCurrentPage() == null || pageDto.getCurrentPage() < 1){
-                pageDto.setCurrentPage(1);
-            }
-            if(pageDto.getPageSize() == null || pageDto.getPageSize() < 1){
-                pageDto.setPageSize(10);
-            }
             PageHelper.startPage(pageDto.getCurrentPage(), pageDto.getPageSize());
             List<ListKeyCustomerVo> customerList = iCustomerDao.getAllKeyCustomter();
             pageInfo = new PageInfo<>(customerList);
@@ -307,12 +289,6 @@ public class CustomerServiceImpl implements ICustomerService{
     public PageInfo<ListKeyCustomerVo> findKeyCustomer(SelectKeyCustomerDto keyCustomerDto) {
         PageInfo<ListKeyCustomerVo> pageInfo = null;
         try{
-            if(keyCustomerDto.getCurrentPage() == null || keyCustomerDto.getCurrentPage() < 1){
-                keyCustomerDto.setCurrentPage(1);
-            }
-            if(keyCustomerDto.getPageSize() == null || keyCustomerDto.getPageSize() < 1){
-                keyCustomerDto.setPageSize(10);
-            }
             PageHelper.startPage(keyCustomerDto.getCurrentPage(), keyCustomerDto.getPageSize());
             List<ListKeyCustomerVo> keyCustomerList = iCustomerDao.findKeyCustomter(keyCustomerDto);
             pageInfo = new PageInfo<>(keyCustomerList);

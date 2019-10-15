@@ -17,7 +17,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        code, parent_code, name, level, lng, lat, hot, create_time, update_time
+        code, parent_code as parentCode, name, level, lng, lat, hot, create_time as createTime, update_time as updateTime
     </sql>
     <select id="findChildList" resultType="com.cjyc.common.model.entity.City">
         select
@@ -25,6 +25,20 @@
         from s_city c1
         join s_city c2 on c1.parent_code = c2.code
         where c2.code = #{code,jdbcType=VARCHAR}
+    </select>
+
+    <select id="getList" resultType="hashmap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from s_city where 1=1
+        <choose>
+            <when test="cityCode != null and cityCode != ''">
+                and parent_code = #{cityCode}
+            </when>
+            <otherwise >
+                and level = 1
+            </otherwise>
+        </choose>
     </select>
 
 </mapper>

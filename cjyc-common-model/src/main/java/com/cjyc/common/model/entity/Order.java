@@ -188,7 +188,7 @@ public class Order implements Serializable {
     @ApiModelProperty(value = "应收订单定金（保留字段）")
     private BigDecimal depositFee;
 
-    @ApiModelProperty(value = "代收中介费（为资源合伙人代收）")
+    @ApiModelProperty(value = "合伙人服务费（为资源合伙人代收）")
     private BigDecimal agencyFee;
 
     @ApiModelProperty(value = "预付款")
@@ -215,5 +215,6 @@ public class Order implements Serializable {
     @ApiModelProperty(value = "线下收款标识：默认0（不允许），")
     private Integer offlinePayFlag;
 
-
+    @ApiModelProperty(value = "优惠券id")
+    private Long couponId;//优惠券id
 }
