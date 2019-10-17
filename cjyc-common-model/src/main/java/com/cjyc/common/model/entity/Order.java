@@ -17,7 +17,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-15
+ * @since 2019-10-17
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -40,6 +40,12 @@ public class Order implements Serializable {
 
     @ApiModelProperty(value = "客户名称")
     private String customerName;
+
+    @ApiModelProperty(value = "订单所属业务中心ID")
+    private Long inputStoreId;
+
+    @ApiModelProperty(value = "订单所属业务中心名称")
+    private String inputStoreName;
 
     @ApiModelProperty(value = "省")
     private String startProvince;
@@ -68,7 +74,7 @@ public class Order implements Serializable {
     @ApiModelProperty(value = "出发地纬度")
     private String startLat;
 
-    @ApiModelProperty(value = "出发地业务中心ID: -1不经过业务中心,0无业务中心")
+    @ApiModelProperty(value = "出发地业务中心ID: -1不经过业务中心")
     private Long startStoreId;
 
     @ApiModelProperty(value = "出发地业务中心名称")
@@ -101,7 +107,7 @@ public class Order implements Serializable {
     @ApiModelProperty(value = "目的地纬度")
     private String endLat;
 
-    @ApiModelProperty(value = "目的地业务中心ID: -1不经过业务中心,0无业务中心")
+    @ApiModelProperty(value = "目的地业务中心ID: -1不经过业务中心")
     private Long endStoreId;
 
     @ApiModelProperty(value = "目的地业务中心名称")
@@ -119,7 +125,7 @@ public class Order implements Serializable {
     @ApiModelProperty(value = "线路ID")
     private Long lineId;
 
-    @ApiModelProperty(value = "提车方式:1 自送，2代驾上门，3拖车上门")
+    @ApiModelProperty(value = "提车方式:1 自送，2代驾上门，3拖车上门，4物流上门")
     private Integer pickType;
 
     @ApiModelProperty(value = "发车人")
@@ -128,7 +134,7 @@ public class Order implements Serializable {
     @ApiModelProperty(value = "发车人联系方式")
     private String pickContactPhone;
 
-    @ApiModelProperty(value = "送车方式： 1 自提，2代驾上门，3拖车上门")
+    @ApiModelProperty(value = "送车方式： 1 自提，2代驾上门，3拖车上门，4物流上门")
     private Integer backType;
 
     @ApiModelProperty(value = "收车人")
@@ -149,7 +155,7 @@ public class Order implements Serializable {
     @ApiModelProperty(value = "创建人：客户/业务员")
     private String createUserName;
 
-    @ApiModelProperty(value = "创建人userId")
+    @ApiModelProperty(value = "创建人类型：0客户，1业务员")
     private Long createUserId;
 
     @ApiModelProperty(value = "确认时间")
@@ -188,7 +194,7 @@ public class Order implements Serializable {
     @ApiModelProperty(value = "应收订单定金（保留字段）")
     private BigDecimal depositFee;
 
-    @ApiModelProperty(value = "合伙人服务费（为资源合伙人代收）")
+    @ApiModelProperty(value = "代收中介费（为资源合伙人代收）")
     private BigDecimal agencyFee;
 
     @ApiModelProperty(value = "预付款")
@@ -216,5 +222,7 @@ public class Order implements Serializable {
     private Integer offlinePayFlag;
 
     @ApiModelProperty(value = "优惠券id")
-    private Long couponId;//优惠券id
+    private Long couponId;
+
+
 }
