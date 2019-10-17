@@ -4,6 +4,8 @@ import com.cjyc.common.model.entity.Admin;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * <p>
  * 韵车后台管理员表 Mapper 接口
@@ -15,4 +17,6 @@ import org.apache.ibatis.annotations.Param;
 public interface IAdminDao extends BaseMapper<Admin> {
 
     Admin findByUserId(@Param("userId") Long userId);
+
+    List<Long> findStoreBizScope(@Param("adminId") Long adminId);
 }

@@ -2,6 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.cjyc.common.model.dao.IWaybillCarDao">
 
+
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.WaybillCar">
         <id column="id" property="id" />
@@ -13,11 +14,15 @@
         <result column="start_area_code" property="startAreaCode" />
         <result column="end_area_code" property="endAreaCode" />
         <result column="state" property="state" />
+        <result column="expect_pick_time" property="expectPickTime" />
+        <result column="pick_type" property="pickType" />
+        <result column="pick_contact_name" property="pickContactName" />
+        <result column="pick_contact_phone" property="pickContactPhone" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, waybill_id, order_car_id, freight_fee, start_address, end_address, start_area_code, end_area_code, state
+        id, waybill_id, order_car_id, freight_fee, start_address, end_address, start_area_code, end_area_code, state, expect_pick_time, pick_type, pick_contact_name, pick_contact_phone
     </sql>
 
     <select id="getWayBillCarrier" parameterType="com.cjyc.common.model.vo.web.WayBillCarrierVo" resultType="com.cjyc.common.model.dto.web.WayBillCarrierDto">

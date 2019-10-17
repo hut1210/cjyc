@@ -23,18 +23,26 @@
         <result column="hire_time" property="hireTime" />
         <result column="leave_time" property="leaveTime" />
         <result column="account_id" property="accountId" />
+        <result column="biz_scope" property="bizScope" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, user_id, no, name, phone, tel, job, state, id_number, sex, leader_id, store_id, photo_img, create_time, create_user_id, check_user_id, hire_time, leave_time, account_id
+        id, user_id, no, name, phone, tel, job, state, id_number, sex, leader_id, store_id, photo_img, create_time, create_user_id, check_user_id, hire_time, leave_time, account_id, biz_scope
     </sql>
+
     <select id="findByUserId" resultType="com.cjyc.common.model.entity.Admin">
         select
         <include refid="Base_Column_List"/>
         from b_admin
         where user_id = #{userId}
 
+    </select>
+    <select id="findStoreBizScope" resultType="java.lang.Long">
+        select
+        store_id
+        from b_admin_store_con
+        where admin_id = #{adminId}
     </select>
 
 </mapper>

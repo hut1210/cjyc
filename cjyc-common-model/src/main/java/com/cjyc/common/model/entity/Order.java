@@ -68,7 +68,7 @@ public class Order implements Serializable {
     @ApiModelProperty(value = "出发地纬度")
     private String startLat;
 
-    @ApiModelProperty(value = "出发地业务中心ID: -1不经过业务中心")
+    @ApiModelProperty(value = "出发地业务中心ID: -1不经过业务中心,0无业务中心")
     private Long startStoreId;
 
     @ApiModelProperty(value = "出发地业务中心名称")
@@ -101,7 +101,7 @@ public class Order implements Serializable {
     @ApiModelProperty(value = "目的地纬度")
     private String endLat;
 
-    @ApiModelProperty(value = "目的地业务中心ID: -1不经过业务中心")
+    @ApiModelProperty(value = "目的地业务中心ID: -1不经过业务中心,0无业务中心")
     private Long endStoreId;
 
     @ApiModelProperty(value = "目的地业务中心名称")
@@ -149,8 +149,8 @@ public class Order implements Serializable {
     @ApiModelProperty(value = "创建人：客户/业务员")
     private String createUserName;
 
-    @ApiModelProperty(value = "创建人类型：0客户，1业务员")
-    private Integer createUserType;
+    @ApiModelProperty(value = "创建人userId")
+    private Long createUserId;
 
     @ApiModelProperty(value = "确认时间")
     private Long checkTime;

@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-12
+ * @since 2019-10-16
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -84,6 +84,9 @@ public class Admin implements Serializable {
 
     @ApiModelProperty(value = "资金账户ID")
     private Long accountId;
+
+    @ApiModelProperty(value = "业务范围类型:0业务中心范围，1行政区域范围")
+    private Integer bizScope;
 
 
 }

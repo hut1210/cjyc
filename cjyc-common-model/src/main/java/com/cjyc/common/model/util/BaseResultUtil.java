@@ -34,6 +34,16 @@ public class BaseResultUtil<T> {
         return getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(), data);
     }
 
+    public static <T> ResultVo<ListVo<T>> success(List<T> list, Map<String, Object> countInfo){
+        return getListVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(), list, countInfo);
+    }
+    public static <T> ResultVo<PageVo<T>> success(PageInfo<T> pageInfo){
+        return getPageVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(), pageInfo);
+    }
+
+    public static <T> ResultVo<PageVo<T>> success(PageInfo<T> pageInfo, Map<String, Object> countInfo){
+        return getPageVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(), pageInfo, countInfo);
+    }
 
     public static <T> ResultVo<PageVo<T>> success(IPage<T> page){
         return getPageVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(), page);

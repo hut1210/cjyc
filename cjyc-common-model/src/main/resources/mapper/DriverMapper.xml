@@ -4,33 +4,78 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.Driver">
-        <id column="id" property="id" />
-        <result column="user_id" property="userId" />
-        <result column="name" property="name" />
-        <result column="phone" property="phone" />
-        <result column="emergency_phone" property="emergencyPhone" />
-        <result column="type" property="type" />
-        <result column="mode" property="mode" />
-        <result column="id_card" property="idCard" />
-        <result column="real_name" property="realName" />
-        <result column="age" property="age" />
-        <result column="sex" property="sex" />
-        <result column="address" property="address" />
-        <result column="id_card_front_img" property="idCardFrontImg" />
-        <result column="id_card_back_img" property="idCardBackImg" />
-        <result column="driver_licence_front_img" property="driverLicenceFrontImg" />
-        <result column="driver_licence_back_img" property="driverLicenceBackImg" />
-        <result column="driver_licence_expire" property="driverLicenceExpire" />
-        <result column="remark" property="remark" />
-        <result column="state" property="state" />
-        <result column="deposit_pay_state" property="depositPayState" />
-        <result column="bussiness_state" property="bussinessState" />
-        <result column="source" property="source" />
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="name" property="name"/>
+        <result column="phone" property="phone"/>
+        <result column="emergency_phone" property="emergencyPhone"/>
+        <result column="type" property="type"/>
+        <result column="mode" property="mode"/>
+        <result column="id_card" property="idCard"/>
+        <result column="real_name" property="realName"/>
+        <result column="age" property="age"/>
+        <result column="sex" property="sex"/>
+        <result column="address" property="address"/>
+        <result column="id_card_front_img" property="idCardFrontImg"/>
+        <result column="id_card_back_img" property="idCardBackImg"/>
+        <result column="driver_licence_front_img" property="driverLicenceFrontImg"/>
+        <result column="driver_licence_back_img" property="driverLicenceBackImg"/>
+        <result column="driver_licence_expire" property="driverLicenceExpire"/>
+        <result column="remark" property="remark"/>
+        <result column="state" property="state"/>
+        <result column="deposit_pay_state" property="depositPayState"/>
+        <result column="bussiness_state" property="bussinessState"/>
+        <result column="source" property="source"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id, user_id, name, phone, emergency_phone, type, mode, id_card, real_name, age, sex, address, id_card_front_img, id_card_back_img, driver_licence_front_img, driver_licence_back_img, driver_licence_expire, remark, state, deposit_pay_state, bussiness_state, source
     </sql>
+    <select id="findList" resultType="com.cjyc.common.model.vo.web.user.DriverListVo">
+        select
+        c.`name` as `carrierName`,
+        c.type as carrierType,
+        c.settle_type as settleType,
+        d.user_id as userId,
+        d.`name` as `name`,
+        d.real_name as realName,
+        d.phone as phone,
+        d.type as type,
+        d.`mode` as `mode`,
+        d.id_card as idCard,
+        r.plate_no as plateNo,
+        r.running_state as runningState
+        from d_carrier c
+        join d_carrier_driver_con con on con.carrier_id = c.id
+        join d_driver d on con.driver_id = d.id
+        LEFT JOIN d_vehicle_running r on d.id = r.driver_id
+        <where>
+            <choose>
+                <when test="paramsDto.queryType == 1">
+                    and d.type = 0
+                </when>
+                <when test="paramsDto.queryType == 2">
+                    and d.type != 0 and (d.mode = 1 or d.mode = 3)
+                </when>
+                <otherwise>
+                    and d.type != 0 and (d.mode = 2 or d.mode = 3)
+                </otherwise>
+            </choose>
+
+            <if test="paramsDto.name != null">
+                and d.name like CONCAT('%',#{name},'%')
+            </if>
+            <if test="paramsDto.name != null">
+                and d.real_name like CONCAT('%',#{name},'%')
+            </if>
+            <if test="paramsDto.idCard != null">
+                and r.id_card like CONCAT('%',#{idCard},'%')
+            </if>
+            <if test="paramsDto.plateNo != null">
+                and r.plate_no like CONCAT('%',#{plateNo},'%')
+            </if>
+        </where>
+    </select>
 
 </mapper>

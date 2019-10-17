@@ -1,8 +1,8 @@
 package com.cjyc.web.api.service;
 
-import com.cjyc.common.model.vo.BusinessScopeDto;
+import com.cjyc.common.model.vo.BizScopeVo;
 
-public interface IBusinessScopeService {
+public interface IBizScopeService {
 
     /**
      * 获取用户业务范围
@@ -10,6 +10,6 @@ public interface IBusinessScopeService {
      * @since 2019/10/15 16:38
      * @param
      */
-    BusinessScopeDto getBusinessScope(Long userId);
+    BizScopeVo getBizScope(Long userId);
 
 }
