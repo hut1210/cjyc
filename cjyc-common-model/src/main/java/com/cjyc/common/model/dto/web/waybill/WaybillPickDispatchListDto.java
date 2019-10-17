@@ -1,6 +1,5 @@
 package com.cjyc.common.model.dto.web.waybill;
 
-import com.cjyc.common.model.dto.BaseUserDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -13,7 +12,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel
-public class WaybillPickDispatchListDto extends BaseUserDto {
+public class WaybillPickDispatchListDto {
 
     @ApiModelProperty(value = "用户userId", required = true)
     private Long UserId;
