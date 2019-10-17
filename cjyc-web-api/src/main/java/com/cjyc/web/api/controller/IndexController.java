@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -38,7 +39,7 @@ public class IndexController {
     @ApiOperation(value = "获取车辆品牌", notes = "获取车辆品牌", httpMethod = "POST")
     @RequestMapping(value = "/getBrandList", method = RequestMethod.POST,  consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultVo<List<String>> getBrandList() {
-        List<String> carSeriesList = carSeriesService.getBrand();
+        List<String> carSeriesList = new ArrayList<>();
         return BaseResultUtil.success(carSeriesList);
     }
 
@@ -51,7 +52,7 @@ public class IndexController {
             @ApiImplicitParam(name = "brand", value = "品牌",  dataType = "String", paramType = "query")
     })
     public ResultVo<List<String>> getSeriesListByBrand(String brand) {
-        List<String> carSeriesList = carSeriesService.getSeriesByBrand(brand);
+        List<String> carSeriesList = new ArrayList<>();
         return BaseResultUtil.success(carSeriesList);
     }
 
@@ -64,7 +65,7 @@ public class IndexController {
             @ApiImplicitParam(name = "cityCode", value = "城市code,空表示查询省", dataType = "String", paramType = "query")
     })
     public ResultVo<List<Map<String,Object>>> getCityList(String cityCode) {
-        List<Map<String,Object>> cityList = cityService.getWebCityList(cityCode);
+        List<Map<String,Object>> cityList = new ArrayList<>();
         return BaseResultUtil.success(cityList);
     }
 }
