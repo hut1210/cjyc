@@ -2,6 +2,10 @@ package com.cjyc.common.model.dao;
 
 import com.cjyc.common.model.entity.Store;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.github.pagehelper.PageInfo;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -13,4 +17,9 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface IStoreDao extends BaseMapper<Store> {
 
+    /**
+     * 查询所有业务中心
+     * @return
+     */
+    PageInfo<Map> getAllStore();
 }

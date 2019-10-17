@@ -5,6 +5,7 @@ import com.cjyc.common.model.dto.web.DictionaryDto;
 import com.cjyc.common.model.dto.web.SelectDictionaryDto;
 import com.cjyc.common.model.entity.Dictionary;
 import com.cjyc.common.model.enums.ResultEnum;
+import com.cjyc.common.model.util.BasePageUtil;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -65,8 +66,9 @@ public class DictionaryController {
 
     @ApiOperation(value = "分页查询字典项", notes = "分页查询字典项", httpMethod = "POST")
     @PostMapping(value = "/getAllDictionary")
-    public ResultVo<PageVo<Dictionary>> getAllDictionary(@RequestBody BasePageDto pageDto){
-        PageInfo<Dictionary> pageInfo = iDictionaryService.getAllDictionary(pageDto);
+    public ResultVo<PageVo<Dictionary>> getAllDictionary(@RequestBody BasePageDto basePageDto){
+        BasePageUtil.initPage(basePageDto.getCurrentPage(),basePageDto.getPageSize());
+        PageInfo<Dictionary> pageInfo = iDictionaryService.getAllDictionary(basePageDto);
         return BaseResultUtil.getPageVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),pageInfo);
     }
 

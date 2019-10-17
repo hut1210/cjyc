@@ -7,8 +7,8 @@ package com.cjyc.common.model.enums;
  */
 public enum SysEnum {
 
-    ZERO("0"), ONE("1"),TWO("2"),FIVE("5"),TEN("10"),FIFTEEN("15"),TWENTY_FIVE("25"),
-    FIFTY_FIVE("55"),EIGHTY_EIGHT("88"),ONE_HUNDRED("100");
+    ZERO("0"), ONE("1"),TWO("2"),THREE("3"),FOUR("4"),FIVE("5"),
+    SIX("6"),SEVEN("7"),EIGHT("8"),NINE("9"),TEN("10");
 
     private String value;
 

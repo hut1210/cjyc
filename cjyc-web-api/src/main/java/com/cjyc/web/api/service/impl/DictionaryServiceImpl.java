@@ -104,12 +104,6 @@ public class DictionaryServiceImpl implements IDictionaryService {
     public PageInfo<Dictionary> getAllDictionary(BasePageDto pageDto) {
         PageInfo<Dictionary> pageInfo = null;
         try{
-            if(pageDto.getCurrentPage() == null || pageDto.getCurrentPage() < 1){
-                pageDto.setCurrentPage(1);
-            }
-            if(pageDto.getPageSize() == null || pageDto.getPageSize() < 1){
-                pageDto.setPageSize(10);
-            }
             PageHelper.startPage(pageDto.getCurrentPage(), pageDto.getPageSize());
             List<Dictionary> dictionaryList = iDictionaryDao.selectList(new QueryWrapper<>());
             pageInfo = new PageInfo<>(dictionaryList);

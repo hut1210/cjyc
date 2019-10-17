@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cjyc.common.model.dao.ICouponSendDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.CouponSend">
+        <id column="id" property="id" />
+        <result column="coupon_id" property="couponId" />
+        <result column="customer_id" property="customerId" />
+        <result column="customer_name" property="customerName" />
+        <result column="order_no" property="orderNo" />
+        <result column="coupon_no" property="couponNo" />
+        <result column="is_use" property="isUse" />
+        <result column="receive_time" property="receiveTime" />
+        <result column="use_time" property="useTime" />
+        <result column="discount_amount" property="discountAmount" />
+        <result column="final_order_amount" property="finalOrderAmount" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, coupon_id, customer_id, customer_name, order_no, coupon_no, is_use, receive_time, use_time, discount_amount, final_order_amount
+    </sql>
+
+    <!-- 根据条件查询发放优惠券列表 -->
+    <select id="seleCouponSendByTerm" resultType="com.cjyc.common.model.vo.web.coupon.CouponSendVo"
+            parameterType="com.cjyc.common.model.dto.web.coupon.SeleCouponSendDto">
+        select id as id,use_time as useTime,customer_name as customerName,order_no as orderNo,discount_amount as disAmount,final_order_amount as finOrdAmount
+               from c_coupon_send
+        <where>
+            <if test="couponId != null and couponId.trim() != ''">
+                id = #{couponId}
+            </if>
+            <if test="customerName != null and customerName.trim() != ''">
+                and  customer_name = #{customerName}
+            </if>
+            <if test="orderNo != null and orderNo.trim() != ''">
+                and  order_no = #{orderNo}
+            </if>
+            <if test="startDate != null and startDate.trim() != ''">
+                and  use_time >=  #{startDate}
+            </if>
+            <if test="endDate != null and endDate.trim() != ''">
+                and  use_time &lt;= #{endDate}
+            </if>
+        </where>
+    </select>
+
+</mapper>
