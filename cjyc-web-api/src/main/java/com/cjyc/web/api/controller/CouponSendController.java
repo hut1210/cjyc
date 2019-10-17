@@ -1,7 +1,5 @@
 package com.cjyc.web.api.controller;
 
-import com.cjyc.common.model.dto.BasePageDto;
-import com.cjyc.common.model.dto.web.coupon.CouponDto;
 import com.cjyc.common.model.dto.web.coupon.CouponSendDto;
 import com.cjyc.common.model.dto.web.coupon.SeleCouponSendDto;
 import com.cjyc.common.model.entity.CouponSend;
@@ -27,7 +25,7 @@ import java.util.List;
 @Api(tags = "发放优惠券")
 @CrossOrigin
 @RestController
-@RequestMapping("/couponSendController")
+@RequestMapping("/couponSend")
 public class CouponSendController {
 
     @Autowired

@@ -32,7 +32,7 @@ import java.util.List;
 @Api(tags = "优惠券管理")
 @CrossOrigin
 @RestController
-@RequestMapping("/couponController")
+@RequestMapping("/coupon")
 public class CouponController {
 
     @Autowired

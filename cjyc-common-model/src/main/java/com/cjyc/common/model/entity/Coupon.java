@@ -17,7 +17,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-16
+ * @since 2019-10-17
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -80,8 +80,11 @@ public class Coupon implements Serializable {
     @ApiModelProperty(value = "创建时间")
     private Long createTime;
 
-    @ApiModelProperty(value = "创建人")
+    @ApiModelProperty(value = "创建人id")
     private Long createUserId;
+
+    @ApiModelProperty(value = "创建人姓名")
+    private String createUserName;
 
 
 }
