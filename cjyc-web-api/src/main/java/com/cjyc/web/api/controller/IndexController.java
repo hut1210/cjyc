@@ -39,7 +39,7 @@ public class IndexController {
     @ApiOperation(value = "获取车辆品牌", notes = "获取车辆品牌", httpMethod = "POST")
     @RequestMapping(value = "/getBrandList", method = RequestMethod.POST,  consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultVo<List<String>> getBrandList() {
-        List<String> carSeriesList = new ArrayList<>();
+        List<String> carSeriesList = carSeriesService.getBrand();
         return BaseResultUtil.success(carSeriesList);
     }
 
@@ -52,7 +52,7 @@ public class IndexController {
             @ApiImplicitParam(name = "brand", value = "品牌",  dataType = "String", paramType = "query")
     })
     public ResultVo<List<String>> getSeriesListByBrand(String brand) {
-        List<String> carSeriesList = new ArrayList<>();
+        List<String> carSeriesList = carSeriesService.getSeriesByBrand(brand);
         return BaseResultUtil.success(carSeriesList);
     }
 
@@ -65,7 +65,7 @@ public class IndexController {
             @ApiImplicitParam(name = "cityCode", value = "城市code,空表示查询省", dataType = "String", paramType = "query")
     })
     public ResultVo<List<Map<String,Object>>> getCityList(String cityCode) {
-        List<Map<String,Object>> cityList = new ArrayList<>();
+        List<Map<String,Object>> cityList = cityService.getList(cityCode);
         return BaseResultUtil.success(cityList);
     }
 }
