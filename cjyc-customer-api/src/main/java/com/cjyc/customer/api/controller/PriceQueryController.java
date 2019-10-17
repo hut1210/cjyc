@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @Api(tags = "价格相关信息")
 @CrossOrigin
 @RestController
-@RequestMapping("/priceQueryController")
+@RequestMapping("/priceQuery")
 public class PriceQueryController {
 
     @Autowired

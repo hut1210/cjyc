@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @auther litan
@@ -50,6 +51,11 @@ public class CityServiceImpl implements ICityService{
         cityVo.setHotCityList(hotCityList);
         voList.add(cityVo);
         return voList;
+    }
+
+    @Override
+    public List<Map<String, Object>> getList(String cityCode) {
+        return cityDao.getList(cityCode);
     }
 
 }

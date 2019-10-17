@@ -86,7 +86,7 @@ public class OrderServiceImpl implements IOrderService{
         order.setCarNum(orderDto.getOrderCarDtoList().size());
         order.setCreateTime(System.currentTimeMillis());
         order.setCreateUserName(orderDto.getCustomerName());
-        order.setCreateUserType(0);//创建人类型：0客户，1业务员
+        //order.setCreateUserType(0);//创建人类型：0客户，1业务员
         int count = orderDao.addOrder(order);
 
         //保存车辆信息
