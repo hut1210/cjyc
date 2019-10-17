@@ -5,13 +5,23 @@ import com.cjyc.common.model.constant.NoConstant;
 import com.cjyc.common.model.dao.IIncrementerDao;
 import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IOrderDao;
+import com.cjyc.common.model.dto.web.order.OrderCarLineWaitDispatchCountListDto;
+import com.cjyc.common.model.dto.web.order.OrderCarWaitDispatchListDto;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.entity.OrderCar;
+import com.cjyc.common.model.enums.ResultEnum;
+import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.vo.ListVo;
+import com.cjyc.common.model.vo.PageVo;
+import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo;
 import com.cjyc.web.api.dto.OrderCarDto;
 import com.cjyc.web.api.dto.OrderDto;
+import com.cjyc.web.api.service.IBizScopeService;
 import com.cjyc.web.api.service.IOrderService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -38,17 +48,43 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     @Resource
     IOrderCarDao iOrderCarDao;
 
-
     @Override
-    public List<Map<String, Object>> waitDispatchCarCountList() {
-        return orderCarDao.countListWaitDispatchCar();
+    public ResultVo<ListVo<Map<String, Object>>> waitDispatchCarCountList() {
+        List<Map<String, Object>> list = orderCarDao.countListWaitDispatchCar();
+        //查询统计
+        Map<String, Object> countInfo = null;
+        if(list != null || !list.isEmpty()){
+            countInfo = orderCarDao.countTotalWaitDispatchCar();
+        }
+        return BaseResultUtil.success(list, countInfo);
     }
 
+
     @Override
-    public Map<String, Object> totalWaitDispatchCarCount() {
-        return orderCarDao.countTotalWaitDispatchCar();
+    public ResultVo<PageVo<OrderCarWaitDispatchVo>> waitDispatchCarList(OrderCarWaitDispatchListDto paramsDto, List<Long> bizScope) {
+        PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
+        List<OrderCarWaitDispatchVo> list = orderCarDao.findWaitDispatchCarList(paramsDto, bizScope);
+        PageInfo<OrderCarWaitDispatchVo> pageInfo = new PageInfo<>(list);
+        if(paramsDto.getCurrentPage() > pageInfo.getPages()){
+            pageInfo.setList(null);
+        }
+        return BaseResultUtil.success(pageInfo);
     }
 
+    /**
+     * 按线路统计待调度车辆（统计列表）
+     *
+     * @author JPG
+     * @since 2019/10/16 10:04
+     */
+    @Override
+    public ResultVo<ListVo<Map<String, Object>>> lineWaitDispatchCarCountList(OrderCarLineWaitDispatchCountListDto paramsDto, List<Long> bizScopeStoreIds) {
+        //查询列表
+        List<Map<String, Object>> list = orderCarDao.findlineWaitDispatchCarCountList(paramsDto, bizScopeStoreIds);
+
+        //统计结果
+        return null;
+    }
 
     @Override
     public boolean commitOrder(OrderDto orderDto) {
@@ -74,7 +110,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         order.setCarNum(orderDto.getOrderCarDtoList().size());
         order.setCreateTime(System.currentTimeMillis());
         order.setCreateUserName(orderDto.getSalesmanName());
-        order.setCreateUserType(1);//创建人类型：0客户，1业务员
+        order.setCreateUserId(1L);//创建人类型：0客户，1业务员
         int count = orderDao.addOrder(order);
 
         //保存车辆信息
