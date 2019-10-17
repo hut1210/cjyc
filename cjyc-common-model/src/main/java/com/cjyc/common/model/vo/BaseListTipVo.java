@@ -6,13 +6,17 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @ApiModel
-public class BaseTipVo {
+public class BaseListTipVo {
     @ApiModelProperty("返回信息编号")
     private String no;
+    @ApiModelProperty("返回信息编号")
+    private String num;
     @ApiModelProperty("返回信息提示")
-    private String tip;
+    private List<BaseTipVo> list;
 }

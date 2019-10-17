@@ -44,7 +44,7 @@ public class Task implements Serializable {
     private Integer state;
 
     @ApiModelProperty(value = "司机名称")
-    private Integer driverName;
+    private String driverName;
 
     @ApiModelProperty(value = "司机ID")
     private Long driverId;

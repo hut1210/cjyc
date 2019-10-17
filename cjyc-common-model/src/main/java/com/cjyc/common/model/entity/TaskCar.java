@@ -42,7 +42,7 @@ public class TaskCar implements Serializable {
     private Long waybillCarId;
 
     @ApiModelProperty(value = "订单车辆ID")
-    private String orderCarId;
+    private Long orderCarId;
 
     @ApiModelProperty(value = "任务车辆状态：1待装车，2已装车，4已卸车，9确认收车")
     private Integer state;

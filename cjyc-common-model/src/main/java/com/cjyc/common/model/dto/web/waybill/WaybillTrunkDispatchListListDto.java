@@ -6,17 +6,18 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel
-public class WaybillPickDispatchListDto {
+public class WaybillTrunkDispatchListListDto {
 
     @ApiModelProperty(value = "用户userId", required = true)
     private Long UserId;
 
     @ApiModelProperty(value = "调度内容", required = true)
-    private List<WaybillPickDispatchDto> list;
+    private List<WaybillTrunkDispatchListDto> list;
 }

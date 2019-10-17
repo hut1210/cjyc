@@ -77,5 +77,15 @@
             </if>
         </where>
     </select>
+    <!--根据承运商查询承运商唯一的司机-->
+    <select id="findTopByCarrierId" resultType="com.cjyc.common.model.entity.Driver">
+        select
+        <include refid="Base_Column_List"/>
+        from d_driver d
+        join d_carrier_driver_con con
+        where con.carrier_id = #{carrierId}
+        and d.
+        limit 1
+    </select>
 
 </mapper>

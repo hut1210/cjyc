@@ -34,8 +34,14 @@ public class BaseResultUtil<T> {
         return getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(), data);
     }
 
-    public static <T> ResultVo<ListVo<T>> success(List<T> list, Map<String, Object> countInfo){
-        return getListVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(), list, countInfo);
+    public static <T> ResultVo<ListVo<T>> success(List<T> list,  Map<String, Object> countInfo){
+        return getListVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(), list, null, countInfo);
+    }
+    public static <T> ResultVo<ListVo<T>> success(List<T> list, Long totalRecords){
+        return getListVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(), list, totalRecords, null);
+    }
+    public static <T> ResultVo<ListVo<T>> success(List<T> list, Long totalRecords, Map<String, Object> countInfo){
+        return getListVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(), list, totalRecords, countInfo);
     }
     public static <T> ResultVo<PageVo<T>> success(PageInfo<T> pageInfo){
         return getPageVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(), pageInfo);
@@ -135,15 +141,17 @@ public class BaseResultUtil<T> {
      * @param countInfo 非分页相关统计信息
      * @return  ResultVo<ListVo<T>>
      */
-    public static <T> ResultVo<ListVo<T>> getListVo(int code, String msg, List<T> list, Map<String, Object> countInfo){
-        Long totalRecords = null;
-        if(countInfo != null){
-            try {
-                totalRecords = countInfo.get("totalCount") == null ? null : (long)countInfo.get("totalCount");
-            }catch (Exception e){
-                e.printStackTrace();
+    public static <T> ResultVo<ListVo<T>> getListVo(int code, String msg, List<T> list, Long totalRecords, Map<String, Object> countInfo){
+        if(totalRecords == null){
+            if(countInfo != null){
+                try {
+                    totalRecords = countInfo.get("totalCount") == null ? null : (long)countInfo.get("totalCount");
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
             }
         }
+
         ListVo<T> listVo = ListVo.<T>builder()
                 .totalRecords(totalRecords)
                 .list(list)

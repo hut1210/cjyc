@@ -17,7 +17,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-16
+ * @since 2019-10-17
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -70,6 +70,12 @@ public class Waybill implements Serializable {
 
     @ApiModelProperty(value = "运费支付流水单号")
     private String freightPayBillno;
+
+    @ApiModelProperty(value = "运费是否固定（包板）0否，1是")
+    private Boolean fixedFreightFee;
+
+    @ApiModelProperty(value = "备注")
+    private String remark;
 
     @ApiModelProperty(value = "调度人")
     private String createUser;

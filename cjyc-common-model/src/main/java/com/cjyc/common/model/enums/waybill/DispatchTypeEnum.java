@@ -1,4 +1,4 @@
-package com.cjyc.common.model.enums;
+package com.cjyc.common.model.enums.waybill;
 
 /**
  * 调度方式

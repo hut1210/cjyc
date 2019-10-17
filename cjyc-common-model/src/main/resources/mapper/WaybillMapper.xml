@@ -2,7 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.cjyc.common.model.dao.IWaybillDao">
 
-
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.Waybill">
         <id column="id" property="id" />
@@ -19,12 +18,15 @@
         <result column="create_time" property="createTime" />
         <result column="freight_pay_time" property="freightPayTime" />
         <result column="freight_pay_billno" property="freightPayBillno" />
+        <result column="fixed_freight_fee" property="fixedFreightFee" />
+        <result column="remark" property="remark" />
         <result column="create_user" property="createUser" />
         <result column="create_user_id" property="createUserId" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, no, type, dispatch_type, guide_line, recommend_line, carrier_id, car_num, state, freight_fee, freight_pay_state, create_time, freight_pay_time, freight_pay_billno, create_user, create_user_id
+        id, no, type, dispatch_type, guide_line, recommend_line, carrier_id, car_num, state, freight_fee, freight_pay_state, create_time, freight_pay_time, freight_pay_billno, fixed_freight_fee, remark, create_user, create_user_id
     </sql>
+
 </mapper>

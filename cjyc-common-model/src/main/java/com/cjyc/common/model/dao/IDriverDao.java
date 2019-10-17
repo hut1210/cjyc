@@ -24,4 +24,12 @@ public interface IDriverDao extends BaseMapper<Driver> {
      * @param paramsDto
      */
     List<DriverListVo> findList(DriverListDto paramsDto);
+
+    /**
+     * 根据承运商查询承运商唯一的司机
+     * @author JPG
+     * @since 2019/10/17 15:23
+     * @param carrierId
+     */
+    Driver findTopByCarrierId(Long carrierId);
 }

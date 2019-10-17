@@ -58,6 +58,9 @@ public class Carrier implements Serializable {
     @ApiModelProperty(value = "公司联系人手机号")
     private String linkmanPhone;
 
+    @ApiModelProperty(value = "承运方式：1代驾，2托运，3全支持")
+    private Integer mode;
+
     @ApiModelProperty(value = "管理员数量")
     private Integer adminNum;
 

@@ -8,8 +8,8 @@ public enum BizScopeEnum {
 
     /***/
     NONE("无数据权限", 0),
-    ALL("全部数据权限", 1),
-    STORE("业务中心数据权限", 2);
+    STORE("业务中心数据权限", 2),
+    CITY("行政区划数据权限", 1);
 
     public String name;
     public int code;
