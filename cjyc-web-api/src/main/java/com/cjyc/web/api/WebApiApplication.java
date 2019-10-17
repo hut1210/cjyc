@@ -14,9 +14,8 @@ import org.springframework.context.annotation.ComponentScan;
 @EnableDiscoveryClient
 @EnableFeignClients
 @MapperScan("com.cjyc.common.model.dao")
-@ComponentScan({"com.cjyc.web.api","com.cjyc.common.service"})
+@ComponentScan({"com.cjyc.web.api","com.cjyc.common.service","com.cjkj.common.redis"})
 public class WebApiApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(WebApiApplication.class, args);
     }

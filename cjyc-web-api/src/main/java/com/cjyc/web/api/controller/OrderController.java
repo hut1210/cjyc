@@ -29,7 +29,6 @@ import java.util.Map;
 @RestController
 @Api(tags = "订单")
 @RequestMapping(value = "/order",
-        consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
         produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class OrderController {
 

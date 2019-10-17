@@ -44,17 +44,17 @@ import java.util.List;
 @Slf4j
 public class OrderServiceImpl implements IOrderService{
 
-    @Autowired
-    IOrderDao orderDao;
-
-    @Autowired
-    IIncrementerDao incrementerDao;
+    @Resource
+    private IOrderDao orderDao;
 
     @Resource
-    IOrderCarDao iOrderCarDao;
+    private IIncrementerDao incrementerDao;
 
     @Resource
-    ICarSeriesDao iCarSeriesDao;
+    private IOrderCarDao iOrderCarDao;
+
+    @Resource
+    private ICarSeriesDao iCarSeriesDao;
 
     @Override
     public boolean commitOrder(OrderDto orderDto) {
@@ -87,6 +87,7 @@ public class OrderServiceImpl implements IOrderService{
         order.setCreateTime(System.currentTimeMillis());
         order.setCreateUserName(orderDto.getCustomerName());
         //order.setCreateUserType(0);//创建人类型：0客户，1业务员
+        order.setCreateUserId(0L);
         int count = orderDao.addOrder(order);
 
         //保存车辆信息
