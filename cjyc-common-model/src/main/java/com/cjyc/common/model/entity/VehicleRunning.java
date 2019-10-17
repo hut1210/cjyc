@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-12
+ * @since 2019-10-16
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -38,7 +38,7 @@ public class VehicleRunning implements Serializable {
     private Long vehicleId;
 
     @ApiModelProperty(value = "运力车牌")
-    private String vehicleNo;
+    private String plateNo;
 
     @ApiModelProperty(value = "承运数")
     private Integer carryCarNum;

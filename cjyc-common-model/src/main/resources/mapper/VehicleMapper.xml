@@ -2,27 +2,27 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.cjyc.common.model.dao.IVehicleDao">
 
+
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.Vehicle">
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.VehicleRunning">
         <id column="id" property="id" />
+        <result column="driver_id" property="driverId" />
+        <result column="vehicle_id" property="vehicleId" />
         <result column="plate_no" property="plateNo" />
-        <result column="vin" property="vin" />
-        <result column="default_carry_num" property="defaultCarryNum" />
-        <result column="ownership_type" property="ownershipType" />
-        <result column="position_sensor_flag" property="positionSensorFlag" />
-        <result column="tachograph_flag" property="tachographFlag" />
+        <result column="carry_car_num" property="carryCarNum" />
+        <result column="empty_car_num" property="emptyCarNum" />
         <result column="state" property="state" />
-        <result column="driving_license" property="drivingLicense" />
-        <result column="driving_license_left_img" property="drivingLicenseLeftImg" />
-        <result column="driving_license_right_img" property="drivingLicenseRightImg" />
-        <result column="driving_license_expire" property="drivingLicenseExpire" />
-        <result column="create_user_id" property="createUserId" />
+        <result column="running_state" property="runningState" />
         <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="beat_time" property="beatTime" />
+        <result column="lng" property="lng" />
+        <result column="lat" property="lat" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, plate_no, vin, default_carry_num, ownership_type, position_sensor_flag, tachograph_flag, state, driving_license, driving_license_left_img, driving_license_right_img, driving_license_expire, create_user_id, create_time
+        id, driver_id, vehicle_id, plate_no, carry_car_num, empty_car_num, state, running_state, create_time, update_time, beat_time, lng, lat
     </sql>
 
 </mapper>

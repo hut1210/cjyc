@@ -12,9 +12,10 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class BusinessScopeDto {
-    @ApiModelProperty(value = "业务范围类型：0业务中心，1全国")
-    private Integer type;
+public class BizScopeVo {
     @ApiModelProperty(value = "业务范围，业务中心ID")
-    private List<Long> storeIds;
+    private List<Long> bizScopeStoreIds;
+
+    //@ApiModelProperty(value = "业务范围，行政区域")
+    //private List<String> bizScopeCityCode;
 }

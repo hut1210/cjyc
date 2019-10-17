@@ -59,7 +59,7 @@
     </select>
 
     <select id="countTotalWaitDispatchCar" resultType="java.util.Map">
-        select sum(carNum) from (
+        select sum(carNum) as totalCount from (
         select count(0) as carNum
         from w_order o
         join w_order_car c on o.id = c.order_id
@@ -107,4 +107,143 @@
            </where>
 
     </select>
+    <!--查询待调度车辆列表-->
+    <select id="findWaitDispatchCarList" resultType="com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo">
+        select
+            c.id as id,
+            c.order_id as orderId,
+            c.order_no as orderNo,
+            o.source as source,
+            o.start_store_id as startStoreId,
+            o.start_store_name as startStoreName,
+            o.end_store_id as endStoreId,
+            o.end_store_name as endStoreName,
+            o.state as state,
+            o.start_city as startCity,
+            o.end_city as endCity,
+            c.no as carNo,
+            c.brand as brand,
+            c.model as model,
+            c.plate_no as plateNo,
+            c.vin as vin,
+            c.is_move as isMove,
+            c.is_new as isNew,
+            c.valuation as valuation,
+            c.now_store_id as nowStoreId,
+            c.now_area_code as nowAreaCode,
+            c.description as description,
+            c.pick_fee as pickFee,
+            c.trunk_fee as trunkFee,
+            c.back_fee as backFee,
+            c.insurance_fee as insuranceFee,
+            c.insurance_coverage_amount as insuranceCoverageAmount,
+            c.agency_fee as agencyFee,
+            c.total_fee as totalFee,
+            c.wl_pay_state as wlPayState,
+            o.create_time as createTime,
+            o.create_user_name as createUserName,
+            o.create_user_id as createUserId
+        from w_order o
+        join w_order_car c on c.order_id = o.id
+        <where>
+            <if test="paramsDto.startProvinceCode != null and paramsDto.startProvinceCode != ''" >
+                and o.start_province_code = #{paramsDto.startProvinceCode,jdbcType=VARCHAR},
+            </if>
+            <if test="paramsDto.startCityCode != null and paramsDto.startCityCode != ''" >
+                and o.start_city_code = #{paramsDto.startCityCode,jdbcType=VARCHAR},
+            </if>
+            <if test="paramsDto.startAreaCode != null and paramsDto.startAreaCode != ''" >
+                and o.start_area_code = #{paramsDto.startAreaCode,jdbcType=VARCHAR},
+            </if>
+            <if test="paramsDto.startStoreId != null" >
+                and o.start_store_id = #{paramsDto.startStoreId,jdbcType=BIGINT},
+            </if>
+            <if test="paramsDto.endProvinceCode != null and paramsDto.endProvinceCode != ''" >
+                and o.end_province_code = #{paramsDto.endProvinceCode,jdbcType=VARCHAR},
+            </if>
+            <if test="paramsDto.endCityCode != null and paramsDto.endCityCode != ''" >
+                and o.end_city_code = #{paramsDto.endCityCode,jdbcType=VARCHAR},
+            </if>
+            <if test="paramsDto.endAreaCode != null and paramsDto.endAreaCode != ''" >
+                and o.end_area_code = #{paramsDto.endAreaCode,jdbcType=VARCHAR},
+            </if>
+            <if test="paramsDto.endStoreId != null" >
+                and o.end_store_id = #{paramsDto.endStoreId,jdbcType=BIGINT},
+            </if>
+            <if test="paramsDto.orderNo != null and paramsDto.orderNo != ''" >
+                and c.order_no = #{paramsDto.orderNo,jdbcType=VARCHAR},
+            </if>
+            <if test="paramsDto.carNo != null and paramsDto.carNo != ''" >
+                and c.no = #{paramsDto.carNo,jdbcType=VARCHAR},
+            </if>
+            <if test="paramsDto.vin != null and paramsDto.vin != ''" >
+                and c.vin = #{paramsDto.vin,jdbcType=VARCHAR},
+            </if>
+
+            <if test="paramsDto.beginExpectStartDate != null" >
+                and o.expect_start_date &gt; #{paramsDto.beginExpectStartDate,jdbcType=BIGINT},
+            </if>
+            <if test="paramsDto.endExpectStartDate != null" >
+                and o.expect_start_date &lt; #{paramsDto.endExpectStartDate,jdbcType=BIGINT},
+            </if>
+
+            <if test="paramsDto.pickType != null" >
+                and o.pick_type = #{paramsDto.pickType,jdbcType=TINYINT},
+            </if>
+            <if test="paramsDto.pickContactName != null and paramsDto.pickContactName != ''" >
+                and o.pick_contact_name = #{paramsDto.pickContactName,jdbcType=VARCHAR},
+            </if>
+            <if test="paramsDto.pickContactPhone != null and paramsDto.pickContactPhone != ''" >
+                and o.pick_contact_phone = #{paramsDto.pickContactPhone,jdbcType=VARCHAR},
+            </if>
+            <if test="paramsDto.backType != null" >
+                and o.back_type = #{paramsDto.backType,jdbcType=TINYINT},
+            </if>
+            <if test="paramsDto.backContactName != null and paramsDto.backContactName != ''" >
+                and o.back_contact_name = #{paramsDto.backContactName,jdbcType=VARCHAR},
+            </if>
+            <if test="paramsDto.backContactPhone != null and paramsDto.backContactPhone != ''" >
+                and o.back_contact_phone = #{paramsDto.backContactPhone,jdbcType=VARCHAR},
+            </if>
+            <if test="paramsDto.brand != null and paramsDto.brand != ''" >
+                and c.brand = #{paramsDto.brand,jdbcType=VARCHAR},
+            </if>
+            <if test="paramsDto.model != null and paramsDto.model != ''" >
+                and c.model = #{paramsDto.model,jdbcType=VARCHAR},
+            </if>
+            <if test="paramsDto.plateNo != null and paramsDto.plateNo != ''" >
+                and c.plate_no = #{paramsDto.plateNo,jdbcType=VARCHAR},
+            </if>
+            <if test="paramsDto.startStoreId != null" >
+                and o.start_store_id = #{paramsDto.startStoreId,jdbcType=BIGINT},
+            </if>
+            <if test="paramsDto.endStoreId != null" >
+                and end_store_id = #{paramsDto.endStoreId,jdbcType=BIGINT},
+            </if>
+            <include refid="and_bizScope"/>
+            <if test="bizScope != null">
+                and now_store_id in
+
+            </if>
+
+
+
+        </where>
+
+    </select>
+    <!--按线路统计待调度车辆（统计列表）-->
+    <select id="findlineWaitDispatchCarCountList" resultType="java.util.Map">
+
+
+    </select>
+
+    <!--业务范围条件-->
+    <sql id="and_bizScopeStoreIds">
+        <if test="bizScope != null">
+            and now_store_id in
+            <foreach collection="bizScope" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </sql>
 </mapper>
