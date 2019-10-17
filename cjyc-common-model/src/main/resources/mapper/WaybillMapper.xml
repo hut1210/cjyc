@@ -6,7 +6,7 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.Waybill">
         <id column="id" property="id" />
-        <result column="waybill_no" property="waybillNo" />
+        <result column="no" property="no" />
         <result column="type" property="type" />
         <result column="dispatch_type" property="dispatchType" />
         <result column="guide_line" property="guideLine" />
@@ -25,6 +25,6 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, waybill_no, type, dispatch_type, guide_line, recommend_line, carrier_id, car_num, state, freight_fee, freight_pay_state, create_time, freight_pay_time, freight_pay_billno, create_user, create_user_id
+        id, no, type, dispatch_type, guide_line, recommend_line, carrier_id, car_num, state, freight_fee, freight_pay_state, create_time, freight_pay_time, freight_pay_billno, create_user, create_user_id
     </sql>
 </mapper>

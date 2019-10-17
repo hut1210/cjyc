@@ -5,6 +5,7 @@ import com.cjyc.common.model.dto.web.order.OrderCarLineWaitDispatchCountListDto;
 import com.cjyc.common.model.dto.web.order.OrderCarWaitDispatchListDto;
 import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.vo.customer.OrderCarCenterVo;
+import com.cjyc.common.model.vo.web.OrderCarVo;
 import com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo;
 import org.apache.ibatis.annotations.Param;
 
@@ -79,4 +80,6 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
      * @param bizScopeStoreIds
      */
     List<Map<String, Object>> findlineWaitDispatchCarCountList(@Param("paramsDto") OrderCarLineWaitDispatchCountListDto paramsDto, List<Long> bizScopeStoreIds);
+
+
 }

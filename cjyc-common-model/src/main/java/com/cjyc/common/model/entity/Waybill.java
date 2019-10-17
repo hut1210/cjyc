@@ -33,7 +33,7 @@ public class Waybill implements Serializable {
     private Long id;
 
     @ApiModelProperty(value = "运单编号")
-    private String waybillNo;
+    private String no;
 
     @ApiModelProperty(value = "运单类型：1提车运单，2送车运单，8干线运单")
     private Integer type;

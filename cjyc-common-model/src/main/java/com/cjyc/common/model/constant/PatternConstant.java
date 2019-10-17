@@ -12,6 +12,7 @@ public class PatternConstant {
     public static final String LONGDATETIME = "yyyy-MM-dd HH:mm:ss.SSS";
     public static final String SIMPLE_MONTH = "yyyyMM";
     public static final String SIMPLE_DATE = "yyyyMMdd";
+    public static final String SUB_SIMPLE_DATE = "yyMMdd";
     public static final String SIMPLE_DATETIME = "yyyyMMddHHmmss";
     public static final String SIMPLE_LONGDATETIME = "yyyyMMddHHmmssSSS";
     public static final String SIMPLE_DATE_FORMAT = "yyyy/MM/dd";

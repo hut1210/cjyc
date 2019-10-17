@@ -20,6 +20,8 @@
         <result column="settle_type" property="settleType" />
         <result column="settle_period" property="settlePeriod" />
         <result column="settle_corporation" property="settleCorporation" />
+        <result column="state" property="state" />
+        <result column="business_state" property="businessState" />
         <result column="create_user" property="createUser" />
         <result column="create_user_id" property="createUserId" />
         <result column="create_time" property="createTime" />
@@ -27,7 +29,8 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, name, type, register_name, register_phone, legal_name, legal_idcard_img, transport_license_img, linkman, linkman_phone, admin_num, default_admin_id, driver_num, settle_type, settle_period, settle_corporation, create_user, create_user_id, create_time
+        id, name, type, register_name, register_phone, legal_name, legal_idcard_img, transport_license_img, linkman, linkman_phone, admin_num, default_admin_id, driver_num, settle_type, settle_period, settle_corporation, state, business_state, create_user, create_user_id, create_time
     </sql>
+
 
 </mapper>

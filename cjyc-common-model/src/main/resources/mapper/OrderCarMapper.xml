@@ -220,7 +220,7 @@
             <if test="paramsDto.endStoreId != null" >
                 and end_store_id = #{paramsDto.endStoreId,jdbcType=BIGINT},
             </if>
-            <include refid="and_bizScope"/>
+            <include refid="and_bizScopeStoreIds"/>
             <if test="bizScope != null">
                 and now_store_id in
 

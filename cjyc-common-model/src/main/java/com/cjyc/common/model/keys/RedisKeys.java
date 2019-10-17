@@ -28,6 +28,8 @@ public class RedisKeys {
     /**验证码*/
     private final static String SMS_COUNT_KEY = "cjyc:sms:count";
 
+    private final static String DISPATCH_CAR_LOCK_KEY = "dispatch:car:lock";
+
     /**---------------salesman-------------------------------------------------------------------*/
     /**验证码*/
     private final static String CAPTCHA_KEY = "cjyc:sale:";
@@ -44,5 +46,9 @@ public class RedisKeys {
 
     public static String getSmsCountKey(String phone) {
         return PROJECT_PREFIX + I + SMS_COUNT_KEY + I;
+    }
+
+    public static String getDispatchLock(Long orderCarId) {
+        return PROJECT_PREFIX + I + DISPATCH_CAR_LOCK_KEY + I + orderCarId;
     }
 }

@@ -24,13 +24,13 @@
         <result column="remark" property="remark"/>
         <result column="state" property="state"/>
         <result column="deposit_pay_state" property="depositPayState"/>
-        <result column="bussiness_state" property="bussinessState"/>
+        <result column="business_state" property="businessState"/>
         <result column="source" property="source"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, user_id, name, phone, emergency_phone, type, mode, id_card, real_name, age, sex, address, id_card_front_img, id_card_back_img, driver_licence_front_img, driver_licence_back_img, driver_licence_expire, remark, state, deposit_pay_state, bussiness_state, source
+        id, user_id, name, phone, emergency_phone, type, mode, id_card, real_name, age, sex, address, id_card_front_img, id_card_back_img, driver_licence_front_img, driver_licence_back_img, driver_licence_expire, remark, state, deposit_pay_state, business_state, source
     </sql>
     <select id="findList" resultType="com.cjyc.common.model.vo.web.user.DriverListVo">
         select

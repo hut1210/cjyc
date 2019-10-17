@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-12
+ * @since 2019-10-17
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -89,7 +89,7 @@ public class Driver implements Serializable {
     private Integer depositPayState;
 
     @ApiModelProperty(value = "营运状态：0营运中，1停运中")
-    private Integer bussinessState;
+    private Integer businessState;
 
     @ApiModelProperty(value = "账号来源：1App注册，2Applet注册，3业务员创建，4承运商管理员创建，11掌控接口，12otm接口")
     private Integer source;
