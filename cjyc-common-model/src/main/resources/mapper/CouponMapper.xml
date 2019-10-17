@@ -22,11 +22,12 @@
         <result column="state" property="state" />
         <result column="create_time" property="createTime" />
         <result column="create_user_id" property="createUserId" />
+        <result column="create_user_name" property="createUserName" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, coupon_no, coupon_name, coupon_type, full_amount, cut_amount, discount, grant_num, receive_num, consume_num, expire_dele_num, surplus_avail_num, is_forever, start_period_date, end_period_date, state, create_time, create_user_id
+        id, coupon_no, coupon_name, coupon_type, full_amount, cut_amount, discount, grant_num, receive_num, consume_num, expire_dele_num, surplus_avail_num, is_forever, start_period_date, end_period_date, state, create_time, create_user_id, create_user_name
     </sql>
 
     <!-- 通用查询结果列 -->
@@ -78,7 +79,7 @@
                 and  create_time &lt;= #{endTime}
             </if>
             <if test="createName != null and createName.trim() != ''">
-                and  create_user_id like CONCAT('%',#{createName},'%')
+                and  create_user_name like CONCAT('%',#{createName},'%')
             </if>
         </where>
     </select>

@@ -32,7 +32,7 @@ import java.util.List;
 @Api(tags = "韵车大客户/移动端用户")
 @CrossOrigin
 @RestController
-@RequestMapping("/customerController")
+@RequestMapping("/customer")
 public class CustomerController {
 
     @Autowired

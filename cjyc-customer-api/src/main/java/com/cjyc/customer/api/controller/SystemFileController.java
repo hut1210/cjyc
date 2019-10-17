@@ -21,7 +21,7 @@ import java.util.List;
 @Api(tags = "系统文件")
 @CrossOrigin
 @RestController
-@RequestMapping("/systemFileController")
+@RequestMapping("/systemFile")
 public class SystemFileController {
 
     @Resource

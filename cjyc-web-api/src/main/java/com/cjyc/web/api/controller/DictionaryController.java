@@ -26,7 +26,7 @@ import java.util.List;
 @Api(tags = "韵车2.0字典维护")
 @CrossOrigin
 @RestController
-@RequestMapping("/dictionaryController")
+@RequestMapping("/dictionary")
 public class DictionaryController {
 
     @Autowired
