@@ -17,7 +17,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-16
+ * @since 2019-10-17
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -36,7 +36,7 @@ public class CouponSend implements Serializable {
     private Long couponId;
 
     @ApiModelProperty(value = "客户ID")
-    private Long customerId;
+    private Long userId;
 
     @ApiModelProperty(value = "客户名称")
     private String customerName;

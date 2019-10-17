@@ -9,18 +9,12 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.coupon.CouponSendVo;
-import com.cjyc.common.model.vo.web.coupon.CouponVo;
 import com.cjyc.web.api.service.ICouponSendService;
-import com.cjyc.web.api.service.ICouponService;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Api(tags = "发放优惠券")
 @CrossOrigin

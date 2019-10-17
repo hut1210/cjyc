@@ -6,7 +6,7 @@
     <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.CouponSend">
         <id column="id" property="id" />
         <result column="coupon_id" property="couponId" />
-        <result column="customer_id" property="customerId" />
+        <result column="user_id" property="userId" />
         <result column="customer_name" property="customerName" />
         <result column="order_no" property="orderNo" />
         <result column="coupon_no" property="couponNo" />
@@ -19,7 +19,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, coupon_id, customer_id, customer_name, order_no, coupon_no, is_use, receive_time, use_time, discount_amount, final_order_amount
+        id, coupon_id, user_id, customer_name, order_no, coupon_no, is_use, receive_time, use_time, discount_amount, final_order_amount
     </sql>
 
     <!-- 根据条件查询发放优惠券列表 -->
@@ -46,4 +46,27 @@
         </where>
     </select>
 
+    <!-- 根据用户编号查询所属自己的优惠券 -->
+    <select id="getCouponSendByUserId" resultType="com.cjyc.common.model.vo.customer.couponSend.CouponSendVo"
+            parameterType="java.lang.Long">
+        select c.coupon_name as couponName,
+              (case c.coupon_type when 0 then '满减券'
+                                   when 3 then '直减券'
+                                   when 5 then  '折扣券'
+              end) as couponType,
+              c.end_period_date as periodDate,
+              (case c.is_forever when 0 then ''
+                                  when 1 then '永久'
+              end) as isForever,
+             (case send.is_use when 0 then '未使用'
+                                when 1 then '已使用'
+              end) as isUse
+          from c_coupon c left join c_coupon_send send on c.id = send.coupon_id
+        <where>
+            <if test="userId != null">
+                send.user_id = #{userId}
+            </if>
+               and c.state=3
+        </where>
+    </select>
 </mapper>
