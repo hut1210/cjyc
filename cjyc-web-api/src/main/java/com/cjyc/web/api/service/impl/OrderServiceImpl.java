@@ -110,7 +110,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         order.setCarNum(orderDto.getOrderCarDtoList().size());
         order.setCreateTime(System.currentTimeMillis());
         order.setCreateUserName(orderDto.getSalesmanName());
-        order.setCreateUserId(1L);//创建人类型：0客户，1业务员
+        order.setCreateUserId(orderDto.getSalesmanId());
         int count = orderDao.addOrder(order);
 
         //保存车辆信息
