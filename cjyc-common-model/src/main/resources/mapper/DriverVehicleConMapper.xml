@@ -14,4 +14,16 @@
         id, driver_id, vehicle_id
     </sql>
 
+    <!-- 根据运力vehicleId查看运行运力信息 -->
+    <select id="getDriverVehicleCon" resultType="com.cjyc.common.model.entity.DriverVehicleCon" parameterType="java.lang.String">
+      select
+        <include refid="Base_Column_List"/>
+        where vehicle_id = #{vehicleId}
+    </select>
+
+    <!-- 根据运力vehicleId删除司机与运力关系 -->
+    <delete id="delDriverVehConByVehId" parameterType="java.lang.Long">
+        delete from d_driver_vehicle_con where vehicle_id = #{vehicleId}
+    </delete>
+
 </mapper>

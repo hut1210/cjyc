@@ -7,7 +7,7 @@
         <id column="id" property="id" />
         <result column="driver_id" property="driverId" />
         <result column="vehicle_id" property="vehicleId" />
-        <result column="vehicle_no" property="vehicleNo" />
+        <result column="plate_no" property="plateNo" />
         <result column="carry_car_num" property="carryCarNum" />
         <result column="empty_car_num" property="emptyCarNum" />
         <result column="state" property="state" />
@@ -21,7 +21,19 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, driver_id, vehicle_id, vehicle_no, carry_car_num, empty_car_num, state, running_state, create_time, update_time, beat_time, lng, lat
+        id, driver_id, vehicle_id, plate_no, carry_car_num, empty_car_num, state, running_state, create_time, update_time, beat_time, lng, lat
     </sql>
+
+    <!-- 根据运力vehicleId获取运力信息 -->
+    <select id="getVehiRunByVehiId" resultType="com.cjyc.common.model.entity.VehicleRunning" parameterType="java.lang.String">
+        select
+           <include refid="Base_Column_List"/>
+        where vehicle_id = #{vehicleId}
+    </select>
+
+    <!-- 根据运力vehicleId删除运力信息 -->
+    <delete id="delVehicleRunByVehId" parameterType="java.lang.Long">
+        delete from d_vehicle_running where vehicle_id = #{vehicleId}
+    </delete>
 
 </mapper>

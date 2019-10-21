@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-17
+ * @since 2019-10-18
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -46,8 +46,11 @@ public class Driver implements Serializable {
     @ApiModelProperty(value = "类型：0业务员，1自营司机，2社会司机")
     private Integer type;
 
-    @ApiModelProperty(value = "承运方式：1代驾，2托运，3全支持")
+    @ApiModelProperty(value = "承运方式：0 ：代驾 1：干线司机  2：拖车司机 4全支持")
     private Integer mode;
+
+    @ApiModelProperty(value = "司机身份 0：普通司机 1：管理员")
+    private Integer identity;
 
     @ApiModelProperty(value = "身份证号")
     private String idCard;
@@ -79,10 +82,28 @@ public class Driver implements Serializable {
     @ApiModelProperty(value = "驾驶证过期时间")
     private String driverLicenceExpire;
 
+    @ApiModelProperty(value = "行驶证正面")
+    private String travelLicenceFrontImg;
+
+    @ApiModelProperty(value = "行驶证反面")
+    private String travelLicenceBackImg;
+
+    @ApiModelProperty(value = "营运证正面")
+    private String taxiLicenceFrontImg;
+
+    @ApiModelProperty(value = "营运证反面")
+    private String taxiLicenceBackImg;
+
+    @ApiModelProperty(value = "从业证正面")
+    private String qualifiCertFrontImg;
+
+    @ApiModelProperty(value = "从业证反面")
+    private String qualifiCertBackImg;
+
     @ApiModelProperty(value = "备注")
     private String remark;
 
-    @ApiModelProperty(value = "状态：0待审核，2审核通过，4已驳回，7已冻结")
+    @ApiModelProperty(value = "状态：0待审核，2审核通过，4已驳回(审核不通过)，7已冻结")
     private Integer state;
 
     @ApiModelProperty(value = "是否缴纳保证金：0否，1是")
