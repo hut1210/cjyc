@@ -1,7 +1,7 @@
 package com.cjyc.web.api.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.cjyc.common.model.constant.PatternConstant;
+import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.dao.IDictionaryDao;
 import com.cjyc.common.model.dto.BasePageDto;
 import com.cjyc.common.model.dto.web.DictionaryDto;
@@ -46,7 +46,7 @@ public class DictionaryServiceImpl implements IDictionaryService {
             dic.setFixedFlag(SysEnum.ZERO.getValue());
             dic.setRemark(dto.getRemark());
             dic.setState(SysEnum.ONE.getValue());
-            dic.setCreateTime(LocalDateTimeUtil.convertToLong(LocalDateTimeUtil.formatLDTNow(PatternConstant.COMPLEX_TIME_FORMAT),PatternConstant.COMPLEX_TIME_FORMAT));
+            dic.setCreateTime(LocalDateTimeUtil.convertToLong(LocalDateTimeUtil.formatLDTNow(TimePatternConstant.COMPLEX_TIME_FORMAT), TimePatternConstant.COMPLEX_TIME_FORMAT));
             return iDictionaryDao.insert(dic) > 0 ? true:false;
         }catch (Exception e){
             log.info("保存字典项出现异常");

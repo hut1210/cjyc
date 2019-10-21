@@ -1,24 +1,16 @@
 package com.cjyc.web.api.service.impl;
 
-import com.cjyc.common.model.constant.PatternConstant;
-import com.cjyc.common.model.dao.ICouponDao;
+import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.dao.ICouponSendDao;
-import com.cjyc.common.model.dto.BasePageDto;
-import com.cjyc.common.model.dto.web.coupon.CouponDto;
 import com.cjyc.common.model.dto.web.coupon.CouponSendDto;
 import com.cjyc.common.model.dto.web.coupon.SeleCouponSendDto;
-import com.cjyc.common.model.entity.Coupon;
 import com.cjyc.common.model.entity.CouponSend;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.web.coupon.CouponSendVo;
-import com.cjyc.common.model.vo.web.coupon.CouponVo;
-import com.cjyc.web.api.exception.CommonException;
 import com.cjyc.web.api.service.ICouponSendService;
-import com.cjyc.web.api.service.ICouponService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,7 +38,7 @@ public class CouponSendServiceImpl implements ICouponSendService {
             List<CouponSendVo> couponSendVos = iCouponSendDao.seleCouponSendByTerm(dto);
             if(couponSendVos != null && couponSendVos.size() > 0){
                 for(CouponSendVo vo : couponSendVos){
-                    LocalDateTimeUtil.convertToString(Long.valueOf(vo.getUseTime()), PatternConstant.COMPLEX_TIME_FORMAT);
+                    LocalDateTimeUtil.convertToString(Long.valueOf(vo.getUseTime()), TimePatternConstant.COMPLEX_TIME_FORMAT);
                 }
                 PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
                 pageInfo = new PageInfo<>(couponSendVos);
@@ -64,7 +56,7 @@ public class CouponSendServiceImpl implements ICouponSendService {
             List<CouponSend> couponSends = iCouponSendDao.selectBatchIds(dto.getIds());
             if(couponSends != null && couponSends.size() > 0){
                 for(CouponSend vo : couponSends){
-                    LocalDateTimeUtil.convertToString(Long.valueOf(vo.getUseTime()), PatternConstant.COMPLEX_TIME_FORMAT);
+                    LocalDateTimeUtil.convertToString(Long.valueOf(vo.getUseTime()), TimePatternConstant.COMPLEX_TIME_FORMAT);
                 }
                 PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
                 pageInfo = new PageInfo<>(couponSends);

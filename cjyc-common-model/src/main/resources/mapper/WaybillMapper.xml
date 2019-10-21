@@ -28,5 +28,35 @@
     <sql id="Base_Column_List">
         id, no, type, dispatch_type, guide_line, recommend_line, carrier_id, car_num, state, freight_fee, freight_pay_state, create_time, freight_pay_time, freight_pay_billno, fixed_freight_fee, remark, create_user, create_user_id
     </sql>
+    <update id="updateStateBatchByNos">
+        update w_waybill
+        set state = #{state}
+        <where>
+            and state &lt; 15
+            and no in
+            <foreach collection="waybillNoList" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
+
+    </update>
+    <select id="findByNo" resultType="com.cjyc.common.model.entity.Waybill">
+        select
+        <include refid="Base_Column_List"/>
+        from w_waybill
+        where no = #{waybillNo}
+    </select>
+    <select id="findListByNos" resultType="com.cjyc.common.model.entity.Waybill">
+        select
+        no
+        from w_waybill
+        <where>
+            no in
+            <foreach collection="waybillNoList" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
+
+    </select>
 
 </mapper>

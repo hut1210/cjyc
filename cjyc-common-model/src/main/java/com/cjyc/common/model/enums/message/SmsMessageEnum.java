@@ -1,7 +1,5 @@
 package com.cjyc.common.model.enums.message;
 
-import org.springframework.lang.NonNull;
-
 import java.text.MessageFormat;
 
 /**
@@ -11,7 +9,7 @@ import java.text.MessageFormat;
 public enum SmsMessageEnum {
 
     /***/
-    SMS_CAPTCHA("【韵车物流】您的验证码为：{0}。请在页面中完成验证，三十分钟内有效。"),
+    SMS_CAPTCHA("【韵车物流】验证码：{0}。请在5分钟内填写。如非本人操作，请忽略本短信。要运车，找韵车，韵车物流为您提供最优质的的车辆运输服务"),
     /**
      * 客户自提短信通知
      * {1} 订单号

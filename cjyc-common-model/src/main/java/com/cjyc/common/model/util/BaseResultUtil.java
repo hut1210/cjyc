@@ -7,6 +7,7 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.github.pagehelper.PageInfo;
 
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 
@@ -71,6 +72,10 @@ public class BaseResultUtil<T> {
     }
     public static <T> ResultVo<T> fail(String message){
         return getVo(ResultEnum.FAIL.getCode(), message);
+    }
+
+    public static <T> ResultVo<T> fail(String message, String... args){
+        return getVo(ResultEnum.FAIL.getCode(), MessageFormat.format(message, args));
     }
 
     /**

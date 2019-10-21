@@ -1,37 +1,16 @@
-package com.cjyc.common.model.entity;
+package com.cjyc.common.model.dto.customer;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import java.io.Serializable;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
-/**
- * <p>
- * 客户表（登录用户端APP用户）
- * </p>
- *
- * @author JPG
- * @since 2019-10-21
- */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("c_customer")
-@ApiModel(value="Customer对象", description="客户表（登录用户端APP用户）")
-public class Customer implements Serializable {
+public class UpdateCustomerDto {
 
-    private static final long serialVersionUID = 1L;
-
-    @ApiModelProperty(value = "ID")
-    @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
-
-    @ApiModelProperty(value = "user_id(查询架构组数据时使用)")
+    @ApiModelProperty(value = "user_id", required = true)
     private Long userId;
 
     @ApiModelProperty(value = "客户名称")
@@ -59,7 +38,7 @@ public class Customer implements Serializable {
     private String majorBusDes;
 
     @ApiModelProperty(value = "首字母")
-    private String initial;
+    private String initials;
 
     @ApiModelProperty(value = "头像")
     private String photoImg;
@@ -76,7 +55,7 @@ public class Customer implements Serializable {
     @ApiModelProperty(value = "身份证反面")
     private String idCardBackImg;
 
-    @ApiModelProperty(value = "类型：1个人，2企业（大客户）3-合伙人")
+    @ApiModelProperty(value = "类型：1个人，2企业")
     private Integer type;
 
     @ApiModelProperty(value = "账号来源：1App注册，2Applet注册，3业务员创建，4企业管理员创建，5合伙人创建")
@@ -85,7 +64,10 @@ public class Customer implements Serializable {
     @ApiModelProperty(value = "公司ID")
     private Long companyId;
 
-    @ApiModelProperty(value = "状态：0待审核，1未登录，2已审核，7已冻结")
+    @ApiModelProperty(value = "审核状态 0：未审核  1：已审核")
+    private Integer auditState;
+
+    @ApiModelProperty(value = "状态：0未注册，2已注册，7已冻结")
     private Integer state;
 
     @ApiModelProperty(value = "结算方式 0：时付  1：账期")
@@ -99,12 +81,5 @@ public class Customer implements Serializable {
 
     @ApiModelProperty(value = "创建人")
     private Long createUserId;
-
-    @ApiModelProperty(value = "审核时间")
-    private Long checkTime;
-
-    @ApiModelProperty(value = "审核人")
-    private Long checkUserId;
-
 
 }

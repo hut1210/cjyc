@@ -2,7 +2,7 @@ package com.cjyc.web.api.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjkj.common.utils.SnowflakeIdWorker;
-import com.cjyc.common.model.constant.PatternConstant;
+import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.dao.ICustomerContractDao;
 import com.cjyc.common.model.dao.ICustomerDao;
 import com.cjyc.common.model.dto.web.*;
@@ -233,10 +233,10 @@ public class CustomerServiceImpl implements ICustomerService{
 
                 if(contractDtos != null && contractDtos.size() > 0){
                     for(CustomerContractVo dto : contractDtos){
-                        dto.setContractLife(LocalDateTimeUtil.convertToString(Long.valueOf(dto.getContractLife()), PatternConstant.SIMPLE_DATE_FORMAT));
-                        dto.setDateOfProSign(LocalDateTimeUtil.convertToString(Long.valueOf(dto.getDateOfProSign()),PatternConstant.SIMPLE_DATE_FORMAT));
+                        dto.setContractLife(LocalDateTimeUtil.convertToString(Long.valueOf(dto.getContractLife()), TimePatternConstant.SIMPLE_DATE_FORMAT));
+                        dto.setDateOfProSign(LocalDateTimeUtil.convertToString(Long.valueOf(dto.getDateOfProSign()), TimePatternConstant.SIMPLE_DATE_FORMAT));
                         if(StringUtils.isNotBlank(dto.getProjectEstabTime())){
-                            dto.setProjectEstabTime(LocalDateTimeUtil.convertToString(Long.valueOf(dto.getProjectEstabTime()),PatternConstant.SIMPLE_DATE_FORMAT));
+                            dto.setProjectEstabTime(LocalDateTimeUtil.convertToString(Long.valueOf(dto.getProjectEstabTime()), TimePatternConstant.SIMPLE_DATE_FORMAT));
                         }
                     }
                     sKeyCustomerDto.setCustContraVos(contractDtos);
@@ -311,12 +311,12 @@ public class CustomerServiceImpl implements ICustomerService{
             custCont.setCustomerId(id);
             custCont.setContractNo(dto.getContractNo());
             custCont.setContactNature(dto.getContactNature());
-            custCont.setContractLife(LocalDateTimeUtil.convertToLong(dto.getContractLife(),PatternConstant.SIMPLE_DATE_FORMAT));
+            custCont.setContractLife(LocalDateTimeUtil.convertToLong(dto.getContractLife(), TimePatternConstant.SIMPLE_DATE_FORMAT));
             custCont.setProjectName(dto.getProjectName());
             custCont.setProjectLevel(dto.getProjectLevel());
             custCont.setMajorProduct(dto.getMajorProduct());
             custCont.setProjectNature(dto.getProjectNature());
-            custCont.setDateOfProSign(LocalDateTimeUtil.convertToLong(dto.getDateOfProSign(),PatternConstant.SIMPLE_DATE_FORMAT));
+            custCont.setDateOfProSign(LocalDateTimeUtil.convertToLong(dto.getDateOfProSign(), TimePatternConstant.SIMPLE_DATE_FORMAT));
             custCont.setOneOffContract(dto.getOneOffContract());
             custCont.setProTraVolume(dto.getProTraVolume());
             custCont.setAvgMthTraVolume(dto.getAvgMthTraVolume());
@@ -327,7 +327,7 @@ public class CustomerServiceImpl implements ICustomerService{
             custCont.setLeaderPhone(dto.getLeaderPhone());
             custCont.setProjectStatus(dto.getProjectStatus());
             custCont.setProjectTeamPer(dto.getProjectTeamPer());
-            custCont.setProjectEstabTime(LocalDateTimeUtil.convertToLong(dto.getProjectEstabTime(),PatternConstant.SIMPLE_DATE_FORMAT));
+            custCont.setProjectEstabTime(LocalDateTimeUtil.convertToLong(dto.getProjectEstabTime(), TimePatternConstant.SIMPLE_DATE_FORMAT));
             custCont.setMajorKpi(dto.getMajorKpi());
             return iCustomerContractDao.insert(custCont);
         }catch (Exception e){
@@ -343,12 +343,12 @@ public class CustomerServiceImpl implements ICustomerService{
                 contract.setContractNo(dto.getContractNo());
                 contract.setContactNature(dto.getContactNature());
                 contract.setSettlePeriod(dto.getSettlePeriod());
-                contract.setContractLife(LocalDateTimeUtil.convertToLong(dto.getProjectEstabTime(),PatternConstant.SIMPLE_DATE_FORMAT));
+                contract.setContractLife(LocalDateTimeUtil.convertToLong(dto.getProjectEstabTime(), TimePatternConstant.SIMPLE_DATE_FORMAT));
                 contract.setProjectName(dto.getProjectName());
                 contract.setProjectLevel(dto.getProjectLevel());
                 contract.setMajorProduct(dto.getMajorProduct());
                 contract.setProjectNature(dto.getProjectNature());
-                contract.setDateOfProSign(LocalDateTimeUtil.convertToLong(dto.getDateOfProSign(),PatternConstant.SIMPLE_DATE_FORMAT));
+                contract.setDateOfProSign(LocalDateTimeUtil.convertToLong(dto.getDateOfProSign(), TimePatternConstant.SIMPLE_DATE_FORMAT));
                 contract.setOneOffContract(dto.getOneOffContract());
                 contract.setProTraVolume(dto.getProTraVolume());
                 contract.setAvgMthTraVolume(dto.getAvgMthTraVolume());
@@ -359,7 +359,7 @@ public class CustomerServiceImpl implements ICustomerService{
                 contract.setLeaderPhone(dto.getLeaderPhone());
                 contract.setProjectStatus(dto.getProjectStatus());
                 contract.setProjectTeamPer(dto.getProjectTeamPer());
-                contract.setProjectEstabTime(LocalDateTimeUtil.convertToLong(dto.getProjectEstabTime(),PatternConstant.SIMPLE_DATE_FORMAT));
+                contract.setProjectEstabTime(LocalDateTimeUtil.convertToLong(dto.getProjectEstabTime(), TimePatternConstant.SIMPLE_DATE_FORMAT));
                 contract.setMajorKpi(dto.getMajorKpi());
                 return iCustomerContractDao.updateById(contract);
             }

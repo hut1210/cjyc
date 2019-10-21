@@ -19,7 +19,24 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, task_id, waybill_id, waybill_car_id, order_car_id, state, photo_img, load_time, unload_time, freight_fee, create_time
+        id, task_id, waybill_id, waybill_car_id, order_car_id, state, photo_img, load_time,
+        unload_time, freight_fee, create_time
     </sql>
+    <insert id="saveBatch">
+        insert into w_task_car
+        (task_id, waybill_id, waybill_car_id, order_car_id, state, freight_fee, create_time)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.taskId},
+            #{item.waybillId},
+            #{item.waybillCarId},
+            #{item.orderCarId},
+            #{item.state},
+            #{item.freightFee},
+            #{item.createTime}
+            )
+        </foreach>
+    </insert>
 
 </mapper>

@@ -1,11 +1,14 @@
 package com.cjyc.customer.api.controller;
 
 import com.cjkj.common.redis.template.StringRedisUtil;
+import com.cjyc.common.model.constant.TimeConstant;
+import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.dto.salesman.sms.CaptchaSendDto;
 import com.cjyc.common.model.dto.salesman.sms.CaptchaValidatedDto;
 import com.cjyc.common.model.enums.message.SmsMessageEnum;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.customer.api.util.MiaoxinSmsUtil;
 import io.swagger.annotations.Api;
@@ -22,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 /**
  * 短信
@@ -51,7 +55,12 @@ public class SmsController {
         //生成随机验证码
         String captcha = String.valueOf((int) ((Math.random() * 9 + 1) * Math.pow(10, 6 - 1)));
         //验证短信限制
-        String countKey = RedisKeys.getSmsCountKey(phone);
+        String keyPrefix = LocalDateTimeUtil.formatLDT(LocalDateTime.now(), TimePatternConstant.SIMPLE_DATE);
+        String countKey = RedisKeys.getSmsCountKey(keyPrefix, phone);
+        String count = redisUtil.getStrValue(countKey);
+        if(count != null && Integer.valueOf(count) > 20){
+            return BaseResultUtil.fail("发送短信数量超出数量限制，请明天再试");
+        }
 
         //发送短信
         try {
@@ -66,6 +75,7 @@ public class SmsController {
         String key = RedisKeys.getSalesmanCaptchaKeyByPhone(phone, type);
         redisUtil.set(key, captcha, expires);
         redisUtil.incr(countKey);
+        redisUtil.setExpire(countKey, TimeConstant.SEC_OF_ONE_DAY);
         return BaseResultUtil.success();
     }
 
@@ -84,7 +94,7 @@ public class SmsController {
         if(!captcha.equals(captchaCached)){
             return BaseResultUtil.fail("验证码错误");
         }
-        return BaseResultUtil.success();
+        return BaseResultUtil.success("验证码正确");
     }
 
 }

@@ -1,21 +1,17 @@
 package com.cjyc.customer.api.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.cjkj.common.utils.ExcelUtil;
 import com.cjyc.common.model.constant.NoConstant;
-import com.cjyc.common.model.constant.PatternConstant;
+import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.dao.ICarSeriesDao;
 import com.cjyc.common.model.dao.IIncrementerDao;
 import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IOrderDao;
 import com.cjyc.common.model.dto.BasePageDto;
 import com.cjyc.common.model.dto.customer.OrderConditionDto;
-import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.entity.OrderCar;
-import com.cjyc.common.model.enums.SysEnum;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
-import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.customer.OrderCarCenterVo;
 import com.cjyc.common.model.vo.customer.OrderCenterVo;
 import com.cjyc.common.model.vo.customer.OrderDetailVo;
@@ -25,13 +21,10 @@ import com.cjyc.customer.api.service.IOrderService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -192,8 +185,8 @@ public class OrderServiceImpl implements IOrderService{
         try{
             //根据订单编号查询订单详情
             detailVo = orderDao.getOrderDetailByNo(orderNo);
-            detailVo.setCreateTime(LocalDateTimeUtil.convertToString(Long.valueOf(detailVo.getCreateTime()), PatternConstant.DATE));
-            detailVo.setExpectStartDate(LocalDateTimeUtil.convertToString(Long.valueOf(detailVo.getExpectStartDate()), PatternConstant.DATE));
+            detailVo.setCreateTime(LocalDateTimeUtil.convertToString(Long.valueOf(detailVo.getCreateTime()), TimePatternConstant.DATE));
+            detailVo.setExpectStartDate(LocalDateTimeUtil.convertToString(Long.valueOf(detailVo.getExpectStartDate()), TimePatternConstant.DATE));
             //根据订单编号获取车辆信息
             List<OrderCarCenterVo> ordCarCenVos = encapOrderCarList(orderNo);
             detailVo.setOrderCarCenterVos(ordCarCenVos);

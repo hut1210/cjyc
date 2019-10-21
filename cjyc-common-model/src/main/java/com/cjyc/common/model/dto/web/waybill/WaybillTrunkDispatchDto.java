@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * <p>
@@ -100,11 +101,7 @@ public class WaybillTrunkDispatchDto implements Serializable {
     @ApiModelProperty(value = "收车联系人电话", required = true)
     private String receiveContactPhone;
 
-    @ApiModelProperty(value = "承运商ID", required = true)
-    private Long carrierId;
-
-    @ApiModelProperty(value = "司机ID")
-    private Long driverId;
-
+    @ApiModelProperty(value = "运费", required = true)
+    private BigDecimal freightFee;
 
 }

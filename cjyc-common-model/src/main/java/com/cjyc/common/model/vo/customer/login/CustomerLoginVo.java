@@ -110,8 +110,8 @@ public class CustomerLoginVo implements Serializable {
     /**
      * -------------------------
      */
-    @ApiModelProperty(value = "auth")
-    private String auth;
+    @ApiModelProperty(value = "authentication")
+    private String authentication;
 
     @ApiModelProperty(value = "token")
     private String token;

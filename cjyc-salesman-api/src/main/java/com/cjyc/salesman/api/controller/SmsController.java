@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 
@@ -45,7 +44,7 @@ public class SmsController {
         //生成随机验证码
         String captcha = String.valueOf((int) ((Math.random() * 9 + 1) * Math.pow(10, 6 - 1)));
         //验证短信限制
-        String countKey = RedisKeys.getSmsCountKey(phone);
+        String countKey = RedisKeys.getSmsCountKey(keyPrefix, phone);
 
         //发送短信
         try {

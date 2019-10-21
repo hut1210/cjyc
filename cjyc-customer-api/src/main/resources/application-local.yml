@@ -80,6 +80,14 @@ logging:
     com.cjyc.common.model.dao: debug
 
 
+cjkj:
+  customer:
+    clientId: 1186108891007336449
+    clientSecret: acffa1064e9a629d3140e5b36be31bd3
+    grantType: password
+    password: cc8$wT^n4L#W4Fii
+
+
 cjyc:
   swagger:
     enabled: true
@@ -124,19 +132,12 @@ cjyc:
         appid: app_LSm9WLS4SmLSSC48
         webhooks: http://39.106.134.87:80/manycc/pingpay/webhooksNotice
 
-
-  #SALT
-  salt:
-    customer: YCcustomersalt
-    driver: YCdriversalt
-    salesman: YCsalesmansalt
-
   ##TOKEN
   token:
     ##过期时间（秒）
     expires: 1800
 
-  fixedCode: 8FwZcdKzJg4Vi%oy
+
 
 
 
