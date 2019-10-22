@@ -187,9 +187,12 @@ public class DriverServiceImpl implements IDriverService {
     }
 
     @Override
-    public boolean examineDriById(Long userId) {
+    public boolean examineDriById(Long id,String sign) {
         try{
+            //审核通过
+            if(SysEnum.ONE.getValue().equals(sign)){
 
+            }
         }catch (Exception e){
             log.info("根据司机userId审核出现异常");
             throw new CommonException(e.getMessage());

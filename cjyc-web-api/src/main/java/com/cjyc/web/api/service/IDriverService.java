@@ -34,8 +34,8 @@ public interface IDriverService {
 
     /**
      * 根据司机userId进行审核
-     * @param userId
+     * @param id
      * @return
      */
-    boolean examineDriById(Long userId);
+    boolean examineDriById(Long id,String sign);
 }

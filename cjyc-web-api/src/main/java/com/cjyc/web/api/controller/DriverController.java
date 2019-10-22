@@ -16,6 +16,8 @@ import com.cjyc.web.api.service.IDriverService;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -64,8 +66,12 @@ public class DriverController {
 
     @ApiOperation(value = "根据司机userId进行审核通过/拒绝", notes = "根据司机userId进行审核通过/拒绝", httpMethod = "POST")
     @RequestMapping(value = "/examineDriById/{id}", method = RequestMethod.POST)
-    public ResultVo examineDriById(@PathVariable Long userId){
-        boolean result = driverService.examineDriById(userId);
+    public ResultVo examineDriById(@PathVariable @ApiParam(value = "用户id",required = true) Long id,
+                                   @PathVariable @ApiParam(value = "标志 1：审核通过 2：审核拒绝",required = true) String sign){
+        if(id == null || StringUtils.isBlank(sign)){
+            BaseResultUtil.getVo(ResultEnum.MOBILE_PARAM_ERROR.getCode(),ResultEnum.MOBILE_PARAM_ERROR.getMsg());
+        }
+        boolean result = driverService.examineDriById(id,sign);
         return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg());
     }
 
