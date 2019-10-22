@@ -27,5 +27,12 @@ public interface ICityDao extends BaseMapper<City> {
     List<City> findChildList(String code);
 
     List<Map<String,Object>> getList(@Param("cityCode") String cityCode);
+
+    /**
+     * 根据城市编码code获取子级code
+     * @param parentCode
+     * @return
+     */
+    List<String> getCodesList(@Param("parentCode") String parentCode);
 }
 

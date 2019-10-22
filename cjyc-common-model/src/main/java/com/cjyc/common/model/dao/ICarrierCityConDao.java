@@ -1,6 +1,6 @@
 package com.cjyc.common.model.dao;
 
-import com.cjyc.common.model.entity.DriverCityCon;
+import com.cjyc.common.model.entity.CarrierCityCon;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
@@ -11,6 +11,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author JPG
  * @since 2019-10-21
  */
-public interface IDriverCityConDao extends BaseMapper<DriverCityCon> {
+public interface ICarrierCityConDao extends BaseMapper<CarrierCityCon> {
 
 }

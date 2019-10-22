@@ -34,6 +34,9 @@ public class Admin implements Serializable {
     @ApiModelProperty(value = "user_id(查询架构组数据时使用)")
     private Long userId;
 
+    @ApiModelProperty(value = "承运商ID")
+    private Long carrierId;
+
     @ApiModelProperty(value = "编号")
     private String no;
 

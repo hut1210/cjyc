@@ -3,19 +3,24 @@ package com.cjyc.common.model.dto.web.carrier;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.List;
 
 @Data
 public class CarrierDto implements Serializable {
 
+    public interface SaveCarrierDto {
+    }
+
     @ApiModelProperty("登录人id")
+    @NotBlank(groups = {CarrierDto.SaveCarrierDto.class},message = "登录人id不能为空")
     private String userId;
 
     @ApiModelProperty("企业名称/个人姓名")
     private String name;
 
-    @ApiModelProperty("承运商类型：1个人承运商，2企业承运商")
+    @ApiModelProperty("承运商类型：1个人承运商，2企业承运商 3合伙人承运商")
     private Integer type;
 
     @ApiModelProperty("法人姓名")
@@ -31,7 +36,7 @@ public class CarrierDto implements Serializable {
     private String linkmanPhone;
 
     @ApiModelProperty("结算类型 1时付，2账期")
-    private String settleType;
+    private Integer settleType;
 
     @ApiModelProperty("账期/天")
     private Integer settlePeriod;
@@ -57,7 +62,7 @@ public class CarrierDto implements Serializable {
     @ApiModelProperty("卡类型:1公户，2私户")
     private Integer cardType;
 
-    @ApiModelProperty("持卡人姓名")
+    @ApiModelProperty("持卡人姓名/企业名称")
     private String cardName;
 
     @ApiModelProperty("开户行")

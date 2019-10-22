@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-18
+ * @since 2019-10-21
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -114,6 +114,12 @@ public class Driver implements Serializable {
 
     @ApiModelProperty(value = "账号来源：1App注册，2Applet注册，3业务员创建，4承运商管理员创建，11掌控接口，12otm接口")
     private Integer source;
+
+    @ApiModelProperty(value = "创建人ID")
+    private Long createUserId;
+
+    @ApiModelProperty(value = "创建人姓名")
+    private String createName;
 
 
 }

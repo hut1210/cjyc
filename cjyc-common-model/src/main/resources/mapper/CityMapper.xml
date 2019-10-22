@@ -41,4 +41,9 @@
         </choose>
     </select>
 
+    <!--根据城市编码code获取子code -->
+    <select id="getCodesList"  resultType="java.lang.String" parameterType="java.lang.String">
+        select code from s_city where parent_code = #{parentCode,jdbcType=VARCHAR}
+    </select>
+
 </mapper>

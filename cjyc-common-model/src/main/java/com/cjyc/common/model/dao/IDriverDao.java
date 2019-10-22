@@ -1,8 +1,10 @@
 package com.cjyc.common.model.dao;
 
+import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
 import com.cjyc.common.model.dto.web.user.DriverListDto;
 import com.cjyc.common.model.entity.Driver;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cjyc.common.model.vo.web.driver.DriverVo;
 import com.cjyc.common.model.vo.web.user.DriverListVo;
 
 import java.util.List;
@@ -32,4 +34,11 @@ public interface IDriverDao extends BaseMapper<Driver> {
      * @param carrierId
      */
     Driver findTopByCarrierId(Long carrierId);
+
+    /**
+     * 根据条件查询司机信息
+     * @param dto
+     * @return
+     */
+    List<DriverVo> getDriverByTerm(SelectDriverDto dto);
 }

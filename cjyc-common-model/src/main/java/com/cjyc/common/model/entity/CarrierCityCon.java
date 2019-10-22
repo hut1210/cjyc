@@ -23,7 +23,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @TableName("d_driver_city_con")
 @ApiModel(value="DriverCityCon对象", description="司机与区县绑定")
-public class DriverCityCon implements Serializable {
+public class CarrierCityCon implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -32,7 +32,7 @@ public class DriverCityCon implements Serializable {
     private Long id;
 
     @ApiModelProperty(value = "司机ID")
-    private Long driverId;
+    private Long carrierId;
 
     @ApiModelProperty(value = "全国code")
     private String countryCode;

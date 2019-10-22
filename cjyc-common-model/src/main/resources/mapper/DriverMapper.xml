@@ -33,11 +33,13 @@
         <result column="deposit_pay_state" property="depositPayState" />
         <result column="business_state" property="businessState" />
         <result column="source" property="source" />
+        <result column="create_user_id" property="createUserId" />
+        <result column="create_name" property="createName" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, user_id, name, phone, emergency_phone, type, mode, identity, id_card, real_name, age, sex, address, id_card_front_img, id_card_back_img, driver_licence_front_img, driver_licence_back_img, driver_licence_expire, travel_licence_front_img, travel_licence_back_img, taxi_licence_front_img, taxi_licence_back_img, qualifi_cert_front_img, qualifi_cert_back_img, remark, state, deposit_pay_state, business_state, source
+        id, user_id, name, phone, emergency_phone, type, mode, identity, id_card, real_name, age, sex, address, id_card_front_img, id_card_back_img, driver_licence_front_img, driver_licence_back_img, driver_licence_expire, travel_licence_front_img, travel_licence_back_img, taxi_licence_front_img, taxi_licence_back_img, qualifi_cert_front_img, qualifi_cert_back_img, remark, state, deposit_pay_state, business_state, source, create_user_id, create_name
     </sql>
     <select id="findList" resultType="com.cjyc.common.model.vo.web.user.DriverListVo">
         select
@@ -93,6 +95,82 @@
         where con.carrier_id = #{carrierId}
         and d.
         limit 1
+    </select>
+
+    <!--根据条件查询司机信息-->
+    <select id="getDriverByTerm" resultType="com.cjyc.common.model.vo.web.driver.DriverVo" parameterType="com.cjyc.common.model.dto.web.driver.SelectDriverDto">
+            SELECT
+        d.id AS id,
+        d.real_name AS realName,
+        d.phone AS phone,
+        d.id_card AS idCard,
+        d.id_card_front_img AS idCardFrontImg,
+        d.id_card_back_img AS idCardBackImg,
+        d.driver_licence_front_img AS driverLicenceFrontImg,
+        d.travel_licence_front_img AS travelLicenceFrontImg,
+        d.taxi_licence_front_img AS taxiLicenceFrontImg,
+        d.qualifi_cert_front_img AS qualifiCertFrontImg,
+        ( CASE d.MODE WHEN 0 THEN '代驾' WHEN 1 THEN '干线司机' WHEN 2 THEN '拖车司机' WHEN 4 THEN '全支持' END ) AS MODE,
+        (
+    CASE
+        d.source
+        WHEN 1 THEN
+        'App注册'
+        WHEN 2 THEN
+        'Applet注册'
+        WHEN 3 THEN
+        '业务员创建'
+        WHEN 4 THEN
+        '承运商管理员创建'
+        WHEN 11 THEN
+        '掌控接口'
+        WHEN 12 THEN
+        'otm接口'
+    END
+        ) AS source,
+        ( CASE d.business_state WHEN 0 THEN '营运中' WHEN 1 THEN '停运中' END ) AS businessState,
+        ( CASE d.state WHEN 0 THEN '待审核' WHEN 2 THEN '审核通过' WHEN 4 THEN '已驳回' WHEN 7 THEN '已冻结' END ) AS state,
+        v.plate_no AS plateNo,
+        card.card_name AS cardName,
+        card.bank_name AS bankName,
+        card.card_no AS cardNo,
+        ( CASE carr.settle_type WHEN 1 THEN '时付' WHEN 2 THEN '账期' END ) AS settleType,
+        cou.car_num AS carNum,
+        cou.total_income AS totalIncome
+    FROM
+        d_driver d
+        LEFT JOIN d_carrier_driver_con driCon ON driCon.driver_id = d.id
+        LEFT JOIN d_carrier carr ON carr.id = driCon.carrier_id
+        LEFT JOIN s_bank_card_bind card ON card.user_id = d.user_id
+        LEFT JOIN d_driver_vehicle_con con ON con.driver_id = d.id
+        LEFT JOIN d_vehicle v ON v.id = con.vehicle_id
+        LEFT JOIN d_driver_car_count cou ON cou.driver_id = d.id
+        <where>
+            <if test="realName != null and realName.trim() != ''">
+                d.real_name like CONCAT('%',#{realName},'%')
+            </if>
+            <if test="phone != null and phone.trim() != ''">
+                and  d.phone = #{phone}
+            </if>
+            <if test="idCard != null and idCard.trim() != ''">
+                and  d.id_card = #{idCard}
+            </if>
+            <if test="plateNo != null and plateNo.trim() != ''">
+                and  v.plate_no = #{plateNo}
+            </if>
+            <if test="identity != null and identity != ''">
+                and  d.identity = #{identity}
+            </if>
+            <if test="businessState != null and businessState != ''">
+                and  d.business_state = #{businessState}
+            </if>
+            <if test="state != null and state != ''">
+                and  d.state = #{state}
+            </if>
+            <if test="mode != null and mode != ''">
+                and  d.mode = #{mode}
+            </if>
+        </where>
     </select>
 
 </mapper>

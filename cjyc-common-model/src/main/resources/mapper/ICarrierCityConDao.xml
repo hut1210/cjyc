@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.cjyc.common.model.dao.IDriverCityConDao">
+<mapper namespace="com.cjyc.common.model.dao.ICarrierCityConDao">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.DriverCityCon">
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.CarrierCityCon">
         <id column="id" property="id" />
-        <result column="driver_id" property="driverId" />
+        <result column="carrier_id" property="carrierId" />
         <result column="country_code" property="countryCode" />
         <result column="large_area_code" property="largeAreaCode" />
         <result column="province_code" property="provinceCode" />
@@ -15,7 +15,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, driver_id, country_code, large_area_code, province_code, city_code, area_code
+        id, carrier_id, country_code, large_area_code, province_code, city_code, area_code
     </sql>
 
 </mapper>
