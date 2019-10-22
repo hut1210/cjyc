@@ -5,11 +5,10 @@ import com.cjyc.common.model.dao.ICarSeriesDao;
 import com.cjyc.common.model.entity.CarSeries;
 import com.cjyc.common.service.service.ICarSeriesService;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @auther litan
@@ -19,7 +18,7 @@ import java.util.Map;
 @Service("carSeriesService")
 public class CarSeriesServiceImpl implements ICarSeriesService{
 
-    @Autowired
+    @Resource
     private ICarSeriesDao carSeriesDao;
 
     /**
@@ -47,4 +46,5 @@ public class CarSeriesServiceImpl implements ICarSeriesService{
     public List<String> getSeriesByBrand(String brand) {
         return carSeriesDao.getSeriesByBrand(brand);
     }
+
 }

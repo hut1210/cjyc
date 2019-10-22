@@ -1,5 +1,7 @@
 package com.cjyc.common.model.dto.customer;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -10,38 +12,14 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class UpdateCustomerDto {
 
-    @ApiModelProperty(value = "user_id", required = true)
-    private Long userId;
+    @ApiModelProperty(value = "ID")
+    private Long id;
 
-    @ApiModelProperty(value = "客户名称")
-    private String name;
-
-    @ApiModelProperty(value = "别称")
-    private String alias;
-
-    @ApiModelProperty(value = "手机号")
-    private String phone;
-
-    @ApiModelProperty(value = "联系人")
+    @ApiModelProperty(value = "联系人名称")
     private String contactMan;
 
     @ApiModelProperty(value = "客户地址")
     private String contactAddress;
-
-    @ApiModelProperty(value = "客户性质")
-    private String customerNature;
-
-    @ApiModelProperty(value = "公司性质/规模")
-    private String companyNature;
-
-    @ApiModelProperty(value = "主营业务描述")
-    private String majorBusDes;
-
-    @ApiModelProperty(value = "首字母")
-    private String initials;
-
-    @ApiModelProperty(value = "头像")
-    private String photoImg;
 
     @ApiModelProperty(value = "性别")
     private Integer sex;
@@ -55,31 +33,5 @@ public class UpdateCustomerDto {
     @ApiModelProperty(value = "身份证反面")
     private String idCardBackImg;
 
-    @ApiModelProperty(value = "类型：1个人，2企业")
-    private Integer type;
-
-    @ApiModelProperty(value = "账号来源：1App注册，2Applet注册，3业务员创建，4企业管理员创建，5合伙人创建")
-    private Integer source;
-
-    @ApiModelProperty(value = "公司ID")
-    private Long companyId;
-
-    @ApiModelProperty(value = "审核状态 0：未审核  1：已审核")
-    private Integer auditState;
-
-    @ApiModelProperty(value = "状态：0未注册，2已注册，7已冻结")
-    private Integer state;
-
-    @ApiModelProperty(value = "结算方式 0：时付  1：账期")
-    private Integer payMode;
-
-    @ApiModelProperty(value = "注册时间，用户自己注册APP或者首次登陆操作APP时间")
-    private Long registerTime;
-
-    @ApiModelProperty(value = "创建时间")
-    private Long createTime;
-
-    @ApiModelProperty(value = "创建人")
-    private Long createUserId;
 
 }

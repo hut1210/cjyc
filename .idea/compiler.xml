@@ -6,20 +6,40 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="cjyc-common" />
+        <module name="cjyc-common-model" />
+        <module name="cjyc-common-service" />
         <module name="cjyc-customer-api" />
         <module name="cjyc-driver-api" />
         <module name="cjyc-salesman-api" />
         <module name="cjyc-web-api" />
+        <module name="mybatis-plus-generator" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.8">
       <module name="cjyc" target="1.8" />
       <module name="cjyc-common" target="1.8" />
+      <module name="cjyc-common-filter" target="1.8" />
+      <module name="cjyc-common-model" target="1.8" />
+      <module name="cjyc-common-service" target="1.8" />
       <module name="cjyc-customer-api" target="1.8" />
       <module name="cjyc-driver-api" target="1.8" />
       <module name="cjyc-salesman-api" target="1.8" />
+      <module name="cjyc-service" target="1.8" />
       <module name="cjyc-web-api" target="1.8" />
+      <module name="mybatis-plus-generator" target="1.8" />
     </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="cjyc-common" options="-parameters" />
+      <module name="cjyc-common-filter" options="-parameters" />
+      <module name="cjyc-common-model" options="-parameters" />
+      <module name="cjyc-common-service" options="-parameters" />
+      <module name="cjyc-customer-api" options="-parameters" />
+      <module name="cjyc-driver-api" options="-parameters" />
+      <module name="cjyc-salesman-api" options="-parameters" />
+      <module name="cjyc-service" options="-parameters" />
+      <module name="cjyc-web-api" options="-parameters" />
+    </option>
   </component>
 </project>

@@ -1,0 +1,1446 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BookmarkManager">
+    <bookmark url="file://$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/dto/salesman/sms/CaptchaValidatedDto.java" line="24" mnemonic="9" />
+    <bookmark url="file://$PROJECT_DIR$/cjyc-web-api/src/main/java/com/cjyc/web/api/service/impl/OrderServiceImpl.java" line="87" mnemonic="2" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="f6fe985f-6f18-4a25-b007-33d0be0c6535" name="Default Changelist" comment="dispatch">
+      <change afterPath="$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/enums/ClientEnum.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/dto/customer/UpdateCustomerDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/dto/customer/UpdateCustomerDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/entity/Order.java" beforeDir="false" afterPath="$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/entity/Order.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/enums/ClientTypeEnum.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/enums/CustomerSourceEnum.java" beforeDir="false" afterPath="$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/enums/customer/CustomerSourceEnum.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/enums/CustomerStateEnum.java" beforeDir="false" afterPath="$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/enums/customer/CustomerStateEnum.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/enums/CustomerTypeEnum.java" beforeDir="false" afterPath="$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/enums/customer/CustomerTypeEnum.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/enums/order/OrderDetailStateEnum.java" beforeDir="false" afterPath="$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/enums/order/OrderDetailStateEnum.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cjyc-common-model/src/main/resources/mapper/OrderMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/cjyc-common-model/src/main/resources/mapper/OrderMapper.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cjyc-common-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/cjyc-common-service/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cjyc-common-service/src/main/java/com/cjyc/common/service/aspect/OperationLogAspect.java" beforeDir="false" afterPath="$PROJECT_DIR$/cjyc-common-service/src/main/java/com/cjyc/common/service/aspect/OperationLogAspect.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cjyc-common-service/src/main/java/com/cjyc/common/service/interceptor/HeaderInterceptor.java" beforeDir="false" afterPath="$PROJECT_DIR$/cjyc-common-service/src/main/java/com/cjyc/common/service/interceptor/HeaderInterceptor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cjyc-common-service/src/main/java/com/cjyc/common/service/service/ICityService.java" beforeDir="false" afterPath="$PROJECT_DIR$/cjyc-common-service/src/main/java/com/cjyc/common/service/service/ICityService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cjyc-common-service/src/main/java/com/cjyc/common/service/service/impl/CarSeriesServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cjyc-common-service/src/main/java/com/cjyc/common/service/service/impl/CarSeriesServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cjyc-common-service/src/main/java/com/cjyc/common/service/service/impl/CityServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cjyc-common-service/src/main/java/com/cjyc/common/service/service/impl/CityServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cjyc-customer-api/src/main/java/com/cjyc/customer/api/controller/CustomerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/cjyc-customer-api/src/main/java/com/cjyc/customer/api/controller/CustomerController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cjyc-customer-api/src/main/java/com/cjyc/customer/api/service/impl/LoginServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cjyc-customer-api/src/main/java/com/cjyc/customer/api/service/impl/LoginServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cjyc-web-api/src/main/java/com/cjyc/web/api/controller/OrderController.java" beforeDir="false" afterPath="$PROJECT_DIR$/cjyc-web-api/src/main/java/com/cjyc/web/api/controller/OrderController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cjyc-web-api/src/main/java/com/cjyc/web/api/dto/OrderCarDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/cjyc-web-api/src/main/java/com/cjyc/web/api/dto/OrderCarDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cjyc-web-api/src/main/java/com/cjyc/web/api/dto/OrderDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/cjyc-web-api/src/main/java/com/cjyc/web/api/dto/OrderCommitDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cjyc-web-api/src/main/java/com/cjyc/web/api/service/IOrderService.java" beforeDir="false" afterPath="$PROJECT_DIR$/cjyc-web-api/src/main/java/com/cjyc/web/api/service/IOrderService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cjyc-web-api/src/main/java/com/cjyc/web/api/service/impl/OrderServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cjyc-web-api/src/main/java/com/cjyc/web/api/service/impl/OrderServiceImpl.java" afterDir="false" />
+    </list>
+    <list id="ae52dcf0-ce1a-45dd-a355-5de22e516d9e" name="setDefaultValue" comment="" />
+    <ignored path="$PROJECT_DIR$/cjyc-customer-api/target/" />
+    <ignored path="$PROJECT_DIR$/cjyc-salesman-api/target/" />
+    <ignored path="$PROJECT_DIR$/cjyc-web-api/target/" />
+    <ignored path="$PROJECT_DIR$/cjyc-common/target/" />
+    <ignored path="$PROJECT_DIR$/cjyc-driver-api/target/" />
+    <ignored path="$PROJECT_DIR$/target/" />
+    <ignored path="$PROJECT_DIR$/cjyc-service/target/" />
+    <ignored path="$PROJECT_DIR$/cjyc-common-service/target/" />
+    <ignored path="$PROJECT_DIR$/cjyc-common-model/target/" />
+    <ignored path="$PROJECT_DIR$/../mybatis-plus-generator/target/" />
+    <ignored path="$PROJECT_DIR$/cjyc-common-filter/target/" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CoverageDataManager">
+    <SUITE FILE_PATH="coverage/cjyc$SalesmanApiApplication.ic" NAME="SalesmanApiApplication Coverage Results" MODIFIED="1570496078670" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>com.cjyc.salesman.api.*</FILTER>
+    </SUITE>
+  </component>
+  <component name="DatabaseView">
+    <option name="SHOW_INTERMEDIATE" value="true" />
+    <option name="GROUP_DATA_SOURCES" value="true" />
+    <option name="GROUP_SCHEMA" value="true" />
+    <option name="GROUP_CONTENTS" value="false" />
+    <option name="SORT_POSITIONED" value="false" />
+    <option name="SHOW_EMPTY_GROUPS" value="false" />
+    <option name="AUTO_SCROLL_FROM_SOURCE" value="false" />
+    <option name="HIDDEN_KINDS">
+      <set />
+    </option>
+    <expand />
+    <select />
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/cjyc-web-api/src/main/java/com/cjyc/web/api/service/impl/OrderServiceImpl.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="110">
+              <caret line="99" lean-forward="true" selection-start-line="99" selection-end-line="99" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/entity/Order.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1955">
+              <caret line="151" column="37" lean-forward="true" selection-start-line="151" selection-start-column="37" selection-end-line="151" selection-end-column="37" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/cjyc-web-api/src/main/java/com/cjyc/web/api/service/IOrderService.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="98">
+              <caret line="23" column="13" selection-start-line="23" selection-start-column="13" selection-end-line="23" selection-end-column="13" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/cjyc-web-api/src/main/java/com/cjyc/web/api/controller/OrderController.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="85">
+              <caret line="65" column="38" selection-start-line="65" selection-start-column="38" selection-end-line="65" selection-end-column="38" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/cjyc-web-api/src/main/java/com/cjyc/web/api/dto/OrderCommitDto.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="200">
+              <caret line="118" column="26" lean-forward="true" selection-start-line="118" selection-start-column="26" selection-end-line="118" selection-end-column="26" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/enums/ClientEnum.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="124">
+              <caret line="12" column="27" lean-forward="true" selection-start-line="12" selection-start-column="27" selection-end-line="12" selection-end-column="27" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/cjyc-web-api/src/main/java/com/cjyc/web/api/dto/OrderCarDto.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="175">
+              <caret line="44" column="36" lean-forward="true" selection-start-line="44" selection-start-column="36" selection-end-line="44" selection-end-column="36" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="JUnit4 Test Class" />
+        <option value="Aspect" />
+        <option value="Interface" />
+        <option value="AnnotationType" />
+        <option value="Enum" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>SysUserEntity</find>
+      <find>supermapper</find>
+      <find>Ipage</find>
+      <find>admin</find>
+      <find>0大区， 1省， 2市， 3区县</find>
+      <find>saleman</find>
+      <find>SPLIT</find>
+      <find>CaptchaService</find>
+      <find>smscontr</find>
+      <find>token.expires</find>
+      <find>base</find>
+      <find>create</find>
+      <find>Order</find>
+      <find>create_user</find>
+      <find>recor</find>
+      <find>,required = true</find>
+      <find>start</find>
+      <find>appoint</find>
+      <find>RedisUtils</find>
+      <find>RedisDistributedLock</find>
+      <find>baseListTipVo.getList()</find>
+      <find>carFailNum++;</find>
+      <find>i + 1</find>
+      <find>lockKey</find>
+      <find>当前业务员，没有操作权限</find>
+      <find>没有不在职</find>
+      <find>String nos = Joiner.on(&quot;,&quot;).join(receivedNoList::);</find>
+      <find>cjyc.salt.customer</find>
+      <find>user</find>
+      <find>source</find>
+    </findStrings>
+    <replaceStrings>
+      <replace>Vo</replace>
+      <replace>_default_</replace>
+      <replace>msg</replace>
+      <replace>0大区，1省，2市，3区县</replace>
+      <replace>&quot;:&quot;</replace>
+      <replace>failList</replace>
+      <replace>index</replace>
+      <replace>当前业务员，没有不在职</replace>
+      <replace>不在职</replace>
+    </replaceStrings>
+    <dirStrings>
+      <dir>D:\workspace_idea\git\cjyc\cjyc-salesman-api\src\main\java\com\cjyc\salesman\api</dir>
+      <dir>D:\workspace_idea\git\cjyc\cjyc-salesman-api</dir>
+      <dir>D:\workspace_idea\git\cjyc\cjyc-salesman-api\src\main\java\com\cjyc\salesman\api\service\impl</dir>
+    </dirStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/cjyc-web-api/src/main/java/com/cjyc/web/api/controller/WaybillController.java" />
+        <option value="$PROJECT_DIR$/cjyc-web-api/src/main/java/com/cjyc/web/api/service/IWaybillService.java" />
+        <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/util/BaseResultUtil.java" />
+        <option value="$PROJECT_DIR$/cjyc-web-api/pom.xml" />
+        <option value="$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/dao/IWaybillDao.java" />
+        <option value="$PROJECT_DIR$/cjyc-common-model/src/main/resources/mapper/WaybillMapper.xml" />
+        <option value="$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/dao/ITaskDao.java" />
+        <option value="$PROJECT_DIR$/cjyc-common-model/src/main/resources/mapper/TaskMapper.xml" />
+        <option value="$PROJECT_DIR$/cjyc-web-api/src/main/java/com/cjyc/web/api/service/impl/WaybillServiceImpl.java" />
+        <option value="$PROJECT_DIR$/cjyc-customer-api/pom.xml" />
+        <option value="$PROJECT_DIR$/cjyc-customer-api/src/main/java/com/cjyc/customer/api/config/LoginProperty.java" />
+        <option value="$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/vo/customer/login/CustomerLoginVo.java" />
+        <option value="$PROJECT_DIR$/cjyc-customer-api/src/main/java/com/cjyc/customer/api/service/ILoginService.java" />
+        <option value="$PROJECT_DIR$/cjyc-customer-api/src/main/java/com/cjyc/customer/api/feign/ISysLoginService.java" />
+        <option value="$PROJECT_DIR$/cjyc-customer-api/src/main/java/com/cjyc/customer/api/feign/ISysRoleService.java" />
+        <option value="$PROJECT_DIR$/cjyc-customer-api/src/main/java/com/cjyc/customer/api/feign/ISysUserService.java" />
+        <option value="$PROJECT_DIR$/cjyc-customer-api/src/main/java/com/cjyc/customer/api/feign/ISysDeptService.java" />
+        <option value="$PROJECT_DIR$/cjyc-customer-api/src/main/java/com/cjyc/customer/api/service/impl/TokenServiceImpl.java" />
+        <option value="$PROJECT_DIR$/cjyc-customer-api/src/main/resources/application-local.yml" />
+        <option value="$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/dto/salesman/login/LoginByPhoneDto.java" />
+        <option value="$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/constant/TimeConstant.java" />
+        <option value="$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/constant/TimePatternConstant.java" />
+        <option value="$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/keys/RedisKeys.java" />
+        <option value="$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/enums/message/SmsMessageEnum.java" />
+        <option value="$PROJECT_DIR$/cjyc-customer-api/src/main/java/com/cjyc/customer/api/controller/SmsController.java" />
+        <option value="$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/enums/CaptchaTypeEnum.java" />
+        <option value="$PROJECT_DIR$/cjyc-customer-api/src/main/java/com/cjyc/customer/api/controller/LoginController.java" />
+        <option value="$PROJECT_DIR$/cjyc-customer-api/src/main/java/com/cjyc/customer/api/service/ICustomerService.java" />
+        <option value="$PROJECT_DIR$/cjyc-customer-api/src/main/java/com/cjyc/customer/api/service/impl/CustomerServiceImpl.java" />
+        <option value="$PROJECT_DIR$/cjyc-common-model/src/main/resources/mapper/CustomerMapper.xml" />
+        <option value="$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/enums/CustomerSourceEnum.java" />
+        <option value="$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/enums/CustomerTypeEnum.java" />
+        <option value="$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/entity/Customer.java" />
+        <option value="$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/enums/CustomerStateEnum.java" />
+        <option value="$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/enums/PayModeEnum.java" />
+        <option value="$PROJECT_DIR$/cjyc-customer-api/src/main/java/com/cjyc/customer/api/service/impl/LoginServiceImpl.java" />
+        <option value="$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/dto/customer/UpdateCustomerDto.java" />
+        <option value="$PROJECT_DIR$/cjyc-customer-api/src/main/java/com/cjyc/customer/api/controller/CustomerController.java" />
+        <option value="$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/enums/order/OrderDetailStateEnum.java" />
+        <option value="$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/enums/order/OrderSourceEnum.java" />
+        <option value="$PROJECT_DIR$/cjyc-web-api/src/main/java/com/cjyc/web/api/dto/OrderDto.java" />
+        <option value="$PROJECT_DIR$/cjyc-web-api/src/main/java/com/cjyc/web/api/service/IOrderService.java" />
+        <option value="$PROJECT_DIR$/cjyc-common-model/src/main/resources/mapper/OrderMapper.xml" />
+        <option value="$PROJECT_DIR$/cjyc-web-api/src/main/java/com/cjyc/web/api/dto/OrderCarDto.java" />
+        <option value="$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/enums/ClientTypeEnum.java" />
+        <option value="$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/enums/ClientEnum.java" />
+        <option value="$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/entity/Order.java" />
+        <option value="$PROJECT_DIR$/cjyc-web-api/src/main/java/com/cjyc/web/api/dto/OrderCommitDto.java" />
+        <option value="$PROJECT_DIR$/cjyc-web-api/src/main/java/com/cjyc/web/api/controller/OrderController.java" />
+        <option value="$PROJECT_DIR$/cjyc-web-api/src/main/java/com/cjyc/web/api/service/impl/OrderServiceImpl.java" />
+      </list>
+    </option>
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="localRepository" value="D:\repository_cjwl" />
+        <option name="mavenHome" value="D:/Program Files/apache-maven-3.6.1" />
+        <option name="userSettingsFile" value="D:\Program Files\apache-maven-3.6.1\conf\settings.xml" />
+      </MavenGeneralSettings>
+    </option>
+    <option name="importingSettings">
+      <MavenImportingSettings>
+        <option name="importAutomatically" value="true" />
+      </MavenImportingSettings>
+    </option>
+  </component>
+  <component name="MavenProjectNavigator">
+    <treeState>
+      <expand>
+        <path>
+          <item name="" type="16c1761:MavenProjectsStructure$RootNode" />
+          <item name="cjyc-salesman-api" type="9519ce18:MavenProjectsStructure$ProjectNode" />
+        </path>
+        <path>
+          <item name="" type="16c1761:MavenProjectsStructure$RootNode" />
+          <item name="mybatis-plus-generator" type="9519ce18:MavenProjectsStructure$ProjectNode" />
+        </path>
+        <path>
+          <item name="" type="16c1761:MavenProjectsStructure$RootNode" />
+          <item name="mybatis-plus-generator" type="9519ce18:MavenProjectsStructure$ProjectNode" />
+          <item name="Lifecycle" type="58874e2:MavenProjectsStructure$LifecycleNode" />
+        </path>
+        <path>
+          <item name="" type="16c1761:MavenProjectsStructure$RootNode" />
+          <item name="mybatis-plus-generator" type="9519ce18:MavenProjectsStructure$ProjectNode" />
+          <item name="Plugins" type="7aea1407:MavenProjectsStructure$PluginsNode" />
+        </path>
+        <path>
+          <item name="" type="16c1761:MavenProjectsStructure$RootNode" />
+          <item name="mybatis-plus-generator" type="9519ce18:MavenProjectsStructure$ProjectNode" />
+          <item name="Plugins" type="7aea1407:MavenProjectsStructure$PluginsNode" />
+          <item name="mybatis-generator" type="36feed69:MavenProjectsStructure$PluginNode" />
+        </path>
+      </expand>
+      <select />
+    </treeState>
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="1" />
+    <option name="y" value="1" />
+    <option name="width" value="1364" />
+    <option name="height" value="726" />
+  </component>
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="cjyc" type="b2602c69:ProjectViewProjectNode" />
+              <item name="cjyc" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RequestMappingsPanelOrder0" value="0" />
+    <property name="RequestMappingsPanelOrder1" value="1" />
+    <property name="RequestMappingsPanelWidth0" value="75" />
+    <property name="RequestMappingsPanelWidth1" value="75" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary" value="JUnit4" />
+    <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit4" value="" />
+    <property name="extract.method.default.visibility" value="private" />
+    <property name="last_opened_file_path" value="D:/history/workspace/generator" />
+    <property name="project.structure.last.edited" value="Problems" />
+    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.2" />
+    <property name="settings.editor.selected.configurable" value="Errors" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CreateTestDialog.RecentsKey">
+      <recent name="com.cjyc.salesman" />
+    </key>
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="com.cjyc.web.api.service" />
+      <recent name="com.cjyc.common.model.vo.web" />
+      <recent name="com.cjyc.salesman.api.service" />
+    </key>
+    <key name="CreateTestDialog.Recents.Supers">
+      <recent name="" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.cjyc.common.model.dto.web.line" />
+      <recent name="com.cjyc.common.model.dto.web.waybill" />
+      <recent name="com.cjyc.web.api.util" />
+      <recent name="com.cjyc.common.model.vo.web" />
+      <recent name="com.cjyc.common.model.vo.web.user" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\workspace_idea\git\cjyc\cjyc-common-model\src\main\java\com\cjyc\common\model\entity" />
+      <recent name="D:\workspace_idea\git\cjyc\cjyc-customer-api\src\main\java\com\cjyc\customer\api\service\impl" />
+      <recent name="D:\workspace_idea\git\cjyc\cjyc-customer-api\src\main\java\com\cjyc\customer\api\service" />
+      <recent name="D:\workspace_idea\git\cjyc\cjyc-web-api\src\main\java\com\cjyc\web\api\service\impl" />
+      <recent name="D:\workspace_idea\git\cjyc\cjyc-web-api\src\main\java\com\cjyc\web\api\service" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="Application.MybatisPlusGenerator">
+    <configuration name="LineServiceImpl" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.cjyc.web.api.service.impl.LineServiceImpl" />
+      <module name="cjyc-web-api" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.cjyc.web.api.service.impl.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="MybatisPlusGenerator" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.baomidou.mybatisplus.generator.MybatisPlusGenerator" />
+      <module name="mybatis-plus-generator" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.baomidou.mybatisplus.generator.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="WaybillServiceImpl" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.cjyc.web.api.service.impl.WaybillServiceImpl" />
+      <module name="cjyc-web-api" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.cjyc.web.api.service.impl.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="CustomerApiApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
+      <module name="cjyc-customer-api" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.cjyc.customer.api.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.cjyc.customer.api.CustomerApiApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="WebApiApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
+      <module name="cjyc-web-api" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.cjyc.web.api.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.cjyc.web.api.WebApiApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.MybatisPlusGenerator" />
+        <item itemvalue="Spring Boot.CustomerApiApplication" />
+        <item itemvalue="Spring Boot.WebApiApplication" />
+        <item itemvalue="Application.LineServiceImpl" />
+        <item itemvalue="Application.WaybillServiceImpl" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="f6fe985f-6f18-4a25-b007-33d0be0c6535" name="Default Changelist" comment="" />
+      <changelist id="ae52dcf0-ce1a-45dd-a355-5de22e516d9e" name="setDefaultValue" comment="" />
+      <created>1569724256456</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1569724256456</updated>
+      <workItem from="1569724257706" duration="3489000" />
+      <workItem from="1569727801267" duration="14144000" />
+      <workItem from="1569743805214" duration="3255000" />
+      <workItem from="1569747189495" duration="1398000" />
+      <workItem from="1569748611102" duration="1991000" />
+      <workItem from="1569764203500" duration="4144000" />
+      <workItem from="1569794517272" duration="1501000" />
+      <workItem from="1570494734194" duration="8045000" />
+      <workItem from="1570502808781" duration="28536000" />
+      <workItem from="1570580673942" duration="38375000" />
+      <workItem from="1570666501262" duration="28483000" />
+      <workItem from="1570754362100" duration="14399000" />
+      <workItem from="1570779001765" duration="1417000" />
+      <workItem from="1570839682699" duration="28950000" />
+      <workItem from="1571012716083" duration="16466000" />
+      <workItem from="1571029332048" duration="160000" />
+      <workItem from="1571029518204" duration="25188000" />
+      <workItem from="1571098838804" duration="2275000" />
+      <workItem from="1571106483020" duration="25101000" />
+      <workItem from="1571185501230" duration="27715000" />
+      <workItem from="1571272341133" duration="40740000" />
+      <workItem from="1571358024773" duration="28571000" />
+      <workItem from="1571617856716" duration="41264000" />
+      <workItem from="1571703412680" duration="5110000" />
+    </task>
+    <task id="LOCAL-00014" summary="common service">
+      <created>1570498701781</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1570498701781</updated>
+    </task>
+    <task id="LOCAL-00015" summary="saleman Demo">
+      <created>1570499364242</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1570499364242</updated>
+    </task>
+    <task id="LOCAL-00016" summary="saleman Demo">
+      <created>1570524751477</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1570524751477</updated>
+    </task>
+    <task id="LOCAL-00017" summary="entity id-&gt;input">
+      <created>1570528838603</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1570528838603</updated>
+    </task>
+    <task id="LOCAL-00018" summary="saleman Demo">
+      <created>1570592064388</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1570592064388</updated>
+    </task>
+    <task id="LOCAL-00019" summary="添加快速success和fail">
+      <created>1570593081864</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1570593081864</updated>
+    </task>
+    <task id="LOCAL-00020" summary="w_task_car添加load_time、unload_time&#10;BaseResultUtil添加快速失败和成功防范">
+      <created>1570599361676</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1570599361676</updated>
+    </task>
+    <task id="LOCAL-00021" summary="ResultEnum">
+      <created>1570610854106</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1570610854106</updated>
+    </task>
+    <task id="LOCAL-00022" summary="BaseResultUtil添加快速参数错误，快速服务器错误">
+      <created>1570615749428</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1570615749429</updated>
+    </task>
+    <task id="LOCAL-00023" summary="saleman example">
+      <created>1570616063954</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1570616063954</updated>
+    </task>
+    <task id="LOCAL-00024" summary="JsonObjectParamUtil添加defaultValue">
+      <created>1570618014871</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1570618014871</updated>
+    </task>
+    <task id="LOCAL-00025" summary="ResultVo message-&gt;msg">
+      <created>1570668896022</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1570668896022</updated>
+    </task>
+    <task id="LOCAL-00026" summary="fail">
+      <created>1570669683729</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1570669683729</updated>
+    </task>
+    <task id="LOCAL-00027" summary="JsObjParamUtil.java">
+      <created>1570672048106</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1570672048106</updated>
+    </task>
+    <task id="LOCAL-00028" summary="Dto-ApiModel">
+      <created>1570673965903</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1570673965903</updated>
+    </task>
+    <task id="LOCAL-00029" summary="ApiModel注解">
+      <created>1570678600937</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1570678600937</updated>
+    </task>
+    <task id="LOCAL-00030" summary="web config">
+      <created>1570686237452</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1570686237452</updated>
+    </task>
+    <task id="LOCAL-00031" summary="web config">
+      <created>1570686324932</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1570686324932</updated>
+    </task>
+    <task id="LOCAL-00032" summary="web config">
+      <created>1570769227199</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1570769227199</updated>
+    </task>
+    <task id="LOCAL-00033" summary="自增主键">
+      <created>1570776725070</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1570776725070</updated>
+    </task>
+    <task id="LOCAL-00034" summary="删除Dto">
+      <created>1570776951366</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1570776951366</updated>
+    </task>
+    <task id="LOCAL-00035" summary="自动注释修改">
+      <created>1570777219253</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1570777219253</updated>
+    </task>
+    <task id="LOCAL-00036" summary="web config">
+      <created>1570777818378</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1570777818378</updated>
+    </task>
+    <task id="LOCAL-00037" summary="web config">
+      <created>1570777920272</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1570777920272</updated>
+    </task>
+    <task id="LOCAL-00038" summary="web config">
+      <created>1570777956176</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1570777956176</updated>
+    </task>
+    <task id="LOCAL-00039" summary="web config">
+      <created>1570777963195</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1570777963195</updated>
+    </task>
+    <task id="LOCAL-00040" summary="tinyint-&gt;int">
+      <created>1570855217677</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1570855217677</updated>
+    </task>
+    <task id="LOCAL-00041" summary="tinyint-&gt;int">
+      <created>1570856024263</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1570856024263</updated>
+    </task>
+    <task id="LOCAL-00042" summary="successpage">
+      <created>1570856743447</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1570856743447</updated>
+    </task>
+    <task id="LOCAL-00043" summary="web config">
+      <created>1570857640884</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1570857640884</updated>
+    </task>
+    <task id="LOCAL-00044" summary="返回结构swagger注释">
+      <created>1570862401138</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1570862401138</updated>
+    </task>
+    <task id="LOCAL-00045" summary="saleman login">
+      <created>1571039598425</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1571039598425</updated>
+    </task>
+    <task id="LOCAL-00046" summary="order state">
+      <created>1571048395541</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1571048395541</updated>
+    </task>
+    <task id="LOCAL-00047" summary="order state">
+      <created>1571048455182</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1571048455182</updated>
+    </task>
+    <task id="LOCAL-00048" summary="order state">
+      <created>1571048833152</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1571048833152</updated>
+    </task>
+    <task id="LOCAL-00049" summary="customer">
+      <created>1571050130992</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1571050130992</updated>
+    </task>
+    <task id="LOCAL-00050" summary="customer login">
+      <created>1571053447273</created>
+      <option name="number" value="00050" />
+      <option name="presentableId" value="LOCAL-00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1571053447275</updated>
+    </task>
+    <task id="LOCAL-00051" summary="driver">
+      <created>1571111014883</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1571111014883</updated>
+    </task>
+    <task id="LOCAL-00052" summary="driver config">
+      <created>1571111370508</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1571111370508</updated>
+    </task>
+    <task id="LOCAL-00053" summary="orderscope">
+      <created>1571132722612</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1571132722612</updated>
+    </task>
+    <task id="LOCAL-00054" summary="merge">
+      <created>1571134034329</created>
+      <option name="number" value="00054" />
+      <option name="presentableId" value="LOCAL-00054" />
+      <option name="project" value="LOCAL" />
+      <updated>1571134034329</updated>
+    </task>
+    <task id="LOCAL-00055" summary="order state">
+      <created>1571272396523</created>
+      <option name="number" value="00055" />
+      <option name="presentableId" value="LOCAL-00055" />
+      <option name="project" value="LOCAL" />
+      <updated>1571272396523</updated>
+    </task>
+    <task id="LOCAL-00056" summary="order interface">
+      <created>1571272786541</created>
+      <option name="number" value="00056" />
+      <option name="presentableId" value="LOCAL-00056" />
+      <option name="project" value="LOCAL" />
+      <updated>1571272786542</updated>
+    </task>
+    <task id="LOCAL-00057" summary="order add column -&gt;input_store_id,input_store_name">
+      <created>1571273983302</created>
+      <option name="number" value="00057" />
+      <option name="presentableId" value="LOCAL-00057" />
+      <option name="project" value="LOCAL" />
+      <updated>1571273983302</updated>
+    </task>
+    <task id="LOCAL-00058" summary="update">
+      <created>1571292423023</created>
+      <option name="number" value="00058" />
+      <option name="presentableId" value="LOCAL-00058" />
+      <option name="project" value="LOCAL" />
+      <updated>1571292423023</updated>
+    </task>
+    <task id="LOCAL-00059" summary="update">
+      <created>1571292573095</created>
+      <option name="number" value="00059" />
+      <option name="presentableId" value="LOCAL-00059" />
+      <option name="project" value="LOCAL" />
+      <updated>1571292573095</updated>
+    </task>
+    <task id="LOCAL-00060" summary="model">
+      <created>1571313241463</created>
+      <option name="number" value="00060" />
+      <option name="presentableId" value="LOCAL-00060" />
+      <option name="project" value="LOCAL" />
+      <updated>1571313241463</updated>
+    </task>
+    <task id="LOCAL-00061" summary="dispatch">
+      <created>1571313698511</created>
+      <option name="number" value="00061" />
+      <option name="presentableId" value="LOCAL-00061" />
+      <option name="project" value="LOCAL" />
+      <updated>1571313698511</updated>
+    </task>
+    <task id="LOCAL-00062" summary="user center">
+      <created>1571636459723</created>
+      <option name="number" value="00062" />
+      <option name="presentableId" value="LOCAL-00062" />
+      <option name="project" value="LOCAL" />
+      <updated>1571636459724</updated>
+    </task>
+    <option name="localTasksCounter" value="63" />
+    <servers />
+  </component>
+  <component name="TestHistory">
+    <history-entry file="ZcityServiceTest - 2019.10.10 at 14h 56m 46s.xml">
+      <configuration name="ZcityServiceTest" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="ZcityServiceTest - 2019.10.10 at 14h 58m 21s.xml">
+      <configuration name="ZcityServiceTest" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="ZcityServiceTest - 2019.10.10 at 15h 02m 09s.xml">
+      <configuration name="ZcityServiceTest" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="ZcityServiceTest - 2019.10.10 at 15h 15m 13s.xml">
+      <configuration name="ZcityServiceTest" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="ZcityServiceTest_run - 2019.10.10 at 16h 00m 01s.xml">
+      <configuration name="ZcityServiceTest.run" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="ZcityServiceTest_run - 2019.10.10 at 16h 00m 59s.xml">
+      <configuration name="ZcityServiceTest.run" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="ZcityServiceTest_run - 2019.10.10 at 16h 03m 11s.xml">
+      <configuration name="ZcityServiceTest.run" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="ZcityServiceTest_run - 2019.10.10 at 17h 34m 23s.xml">
+      <configuration name="ZcityServiceTest.run" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="ZcityServiceTest - 2019.10.10 at 17h 36m 05s.xml">
+      <configuration name="ZcityServiceTest" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="ZcityServiceTest - 2019.10.10 at 17h 40m 20s.xml">
+      <configuration name="ZcityServiceTest" configurationId="JUnit" />
+    </history-entry>
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="390717000" />
+  </component>
+  <component name="TodoView">
+    <todo-panel id="selected-file">
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
+    <layout>
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49872774" visible="true" weight="0.25813776" />
+      <window_info id="Web" order="1" side_tool="true" />
+      <window_info id="Designer" order="2" />
+      <window_info id="UI Designer" order="3" />
+      <window_info id="Favorites" order="4" side_tool="true" />
+      <window_info id="Structure" order="5" sideWeight="0.50127226" weight="0.2672218" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32933104" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49848714" weight="0.3670669" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.39794168" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" weight="0.32933104" />
+      <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" order="8" sideWeight="0.49924356" weight="0.32933104" />
+      <window_info anchor="bottom" id="Database Changes" order="9" />
+      <window_info anchor="bottom" id="Spring" order="10" />
+      <window_info anchor="bottom" id="Terminal" order="11" weight="0.32933104" />
+      <window_info anchor="bottom" id="Event Log" order="12" sideWeight="0.5015129" side_tool="true" weight="0.32935154" />
+      <window_info anchor="bottom" id="Java Enterprise" order="13" weight="0.32935154" />
+      <window_info anchor="bottom" id="Messages" order="14" weight="0.32933104" />
+      <window_info anchor="bottom" id="Duplicate detector" order="15" weight="0.32935154" />
+      <window_info anchor="bottom" id="Tail" order="16" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.24962178" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.24981076" />
+      <window_info anchor="right" id="Palette" order="3" />
+      <window_info anchor="right" id="Database" order="4" weight="0.32980332" />
+      <window_info anchor="right" id="Maven" order="5" weight="0.329296" />
+      <window_info anchor="right" id="Bean Validation" order="6" />
+      <window_info anchor="right" id="Palette&#9;" order="7" />
+      <window_info anchor="right" id="Coverage" order="8" side_tool="true" weight="0.32980332" />
+      <window_info anchor="right" id="Key Promoter X" order="9" />
+    </layout>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Dto-ApiModel" />
+    <MESSAGE value="ResultEnum" />
+    <MESSAGE value="ApiModel注解" />
+    <MESSAGE value="自增主键" />
+    <MESSAGE value="删除Dto" />
+    <MESSAGE value="自动注释修改" />
+    <MESSAGE value="tinyint-&gt;int" />
+    <MESSAGE value="successpage" />
+    <MESSAGE value="web config" />
+    <MESSAGE value="返回结构swagger注释" />
+    <MESSAGE value="saleman login" />
+    <MESSAGE value="customer" />
+    <MESSAGE value="customer login" />
+    <MESSAGE value="driver" />
+    <MESSAGE value="driver config" />
+    <MESSAGE value="orderscope" />
+    <MESSAGE value="merge" />
+    <MESSAGE value="order interface" />
+    <MESSAGE value="order add column -&gt;input_store_id,input_store_name" />
+    <MESSAGE value="update" />
+    <MESSAGE value="model" />
+    <MESSAGE value="order state" />
+    <MESSAGE value="dispatch" />
+    <MESSAGE value="login" />
+    <MESSAGE value="user center" />
+    <option name="LAST_COMMIT_MESSAGE" value="user center" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-method">
+          <url>jar://$MAVEN_REPOSITORY$/com/cjkj/cjkj-common-spring-boot-starter/1.5.0/cjkj-common-spring-boot-starter-1.5.0.jar!/com/cjkj/common/lock/DistributedLock.class</url>
+          <line>24</line>
+          <properties class="com.cjkj.common.lock.DistributedLock" method="releaseLock">
+            <option name="EMULATED" value="true" />
+          </properties>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/cjyc-customer-api/src/main/java/com/cjyc/customer/api/service/impl/LoginServiceImpl.java</url>
+          <line>47</line>
+          <properties />
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/cjyc-customer-api/src/main/java/com/cjyc/customer/api/controller/SmsController.java</url>
+          <line>55</line>
+          <properties />
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="antWorkspaceConfiguration">
+    <option name="IS_AUTOSCROLL_TO_SOURCE" value="false" />
+    <option name="FILTER_TARGETS" value="false" />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/cjyc-customer-api/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="43" column="39" selection-start-line="43" selection-start-column="39" selection-end-line="43" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/com/cjkj/cjkj-usercenter-dto/1.5.0/cjkj-usercenter-dto-1.5.0.jar!/com/cjkj/usercenter/dto/common/auth/AuthLoginReq.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="408">
+          <caret line="34" column="31" selection-start-line="34" selection-start-column="19" selection-end-line="34" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-customer-api/src/main/java/com/cjyc/customer/api/config/MiaoxinProperty.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="211">
+          <caret line="16" column="33" lean-forward="true" selection-start-line="16" selection-start-column="33" selection-end-line="16" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-customer-api/src/main/java/com/cjyc/customer/api/config/LoginProperty.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="287">
+          <caret line="28" column="50" lean-forward="true" selection-start-line="28" selection-start-column="50" selection-end-line="28" selection-end-column="50" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/vo/customer/login/CustomerLoginVo.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="901">
+          <caret line="109" column="7" lean-forward="true" selection-start-line="109" selection-start-column="7" selection-end-line="109" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-customer-api/src/main/java/com/cjyc/customer/api/feign/ISysUserService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="425">
+          <caret line="56" column="39" lean-forward="true" selection-start-line="56" selection-start-column="39" selection-end-line="56" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-customer-api/src/main/java/com/cjyc/customer/api/feign/ISysRoleService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="228">
+          <caret line="77" column="7" lean-forward="true" selection-start-line="77" selection-start-column="7" selection-end-line="77" selection-end-column="7" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-customer-api/src/main/java/com/cjyc/customer/api/feign/ISysLoginService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="21" column="29" selection-start-line="21" selection-start-column="29" selection-end-line="21" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-customer-api/src/main/java/com/cjyc/customer/api/feign/ISysDeptService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-196">
+          <caret line="21" column="13" lean-forward="true" selection-start-line="21" selection-start-column="13" selection-end-line="21" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-customer-api/src/main/java/com/cjyc/customer/api/service/impl/TokenServiceImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="209">
+          <caret line="59" column="19" lean-forward="true" selection-start-line="59" selection-start-column="19" selection-end-line="59" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/dto/salesman/login/LoginByPhoneDto.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="146">
+          <caret line="33" column="63" selection-start-line="33" selection-start-column="37" selection-end-line="33" selection-end-column="63" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-salesman-api/src/main/java/com/cjyc/salesman/api/controller/LoginController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="98">
+          <caret line="25" column="13" selection-start-line="25" selection-start-column="13" selection-end-line="25" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-salesman-api/src/main/java/com/cjyc/salesman/api/controller/SmsController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="799">
+          <caret line="66" column="18" selection-start-line="66" selection-start-column="18" selection-end-line="66" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/com/cjkj/cjkj-redis-spring-boot-starter/1.5.0/cjkj-redis-spring-boot-starter-1.5.0.jar!/com/cjkj/common/redis/template/StringRedisUtil.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="454">
+          <caret line="317" column="19" selection-start-line="317" selection-start-column="19" selection-end-line="317" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/springframework/spring-webmvc/5.1.8.RELEASE/spring-webmvc-5.1.8.RELEASE.jar!/org/springframework/web/servlet/DispatcherServlet.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="82">
+          <caret line="470" column="19" selection-start-line="470" selection-start-column="19" selection-end-line="470" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/springframework/spring-webmvc/5.1.8.RELEASE/spring-webmvc-5.1.8.RELEASE.jar!/org/springframework/web/servlet/mvc/method/annotation/RequestMappingHandlerAdapter.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="91">
+          <caret line="519" column="27" selection-start-line="519" selection-start-column="27" selection-end-line="519" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/constant/TimePatternConstant.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="221">
+          <caret line="13" column="42" selection-start-line="13" selection-start-column="31" selection-end-line="13" selection-end-column="42" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/constant/TimeConstant.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="170">
+          <caret line="10" column="55" lean-forward="true" selection-start-line="10" selection-start-column="55" selection-end-line="10" selection-end-column="55" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-customer-api/src/main/resources/application-local.yml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="170">
+          <caret line="61" column="19" lean-forward="true" selection-start-line="61" selection-start-column="19" selection-end-line="61" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/springframework/spring-web/5.1.8.RELEASE/spring-web-5.1.8.RELEASE-sources.jar!/org/springframework/web/method/support/InvocableHandlerMethod.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="542">
+          <caret line="198" selection-start-line="198" selection-end-line="198" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/keys/RedisKeys.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="168">
+          <caret line="49" lean-forward="true" selection-start-line="49" selection-end-line="49" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/enums/message/SmsMessageEnum.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="58">
+          <caret line="5" column="9" lean-forward="true" selection-start-line="5" selection-start-column="9" selection-end-line="5" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-customer-api/src/main/java/com/cjyc/customer/api/controller/SmsController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="165">
+          <caret line="68" column="41" lean-forward="true" selection-start-line="68" selection-start-column="41" selection-end-line="68" selection-end-column="41" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/enums/CaptchaTypeEnum.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="40">
+          <caret line="4" column="14" lean-forward="true" selection-start-line="4" selection-start-column="14" selection-end-line="4" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-customer-api/src/main/java/com/cjyc/customer/api/service/ICustomerService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="123">
+          <caret line="13" column="17" selection-start-line="13" selection-start-column="17" selection-end-line="13" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-customer-api/src/main/java/com/cjyc/customer/api/service/impl/CustomerServiceImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="14" column="20" lean-forward="true" selection-start-line="14" selection-start-column="20" selection-end-line="14" selection-end-column="20" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/dto/customer/OrderConditionDto.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="6" column="28" lean-forward="true" selection-start-line="6" selection-start-column="28" selection-end-line="6" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-common-model/src/main/resources/mapper/CustomerMapper.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="183">
+          <caret line="97" lean-forward="true" selection-start-line="97" selection-end-line="97" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/enums/PayModeEnum.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="6" column="23" selection-start-line="6" selection-start-column="12" selection-end-line="6" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/entity/Customer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="217">
+          <caret line="106" column="29" lean-forward="true" selection-start-line="29" selection-start-column="3" selection-end-line="106" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-customer-api/src/main/java/com/cjyc/customer/api/controller/LoginController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="355">
+          <caret line="50" column="34" selection-start-line="50" selection-start-column="34" selection-end-line="50" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-customer-api/src/main/java/com/cjyc/customer/api/service/ILoginService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="13" column="30" selection-start-line="13" selection-start-column="30" selection-end-line="13" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-customer-api/src/main/java/com/cjyc/customer/api/service/impl/LoginServiceImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="185">
+          <caret line="104" column="43" lean-forward="true" selection-start-line="104" selection-start-column="43" selection-end-line="104" selection-end-column="43" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/dto/customer/UpdateCustomerDto.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="219">
+          <caret line="26" column="37" lean-forward="true" selection-start-line="26" selection-start-column="37" selection-end-line="26" selection-end-column="37" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-web-api/src/main/java/com/cjyc/web/api/controller/CustomerController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="157">
+          <caret line="35" column="13" selection-start-line="35" selection-start-column="13" selection-end-line="35" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-customer-api/src/main/java/com/cjyc/customer/api/controller/CustomerController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="304">
+          <caret line="35" column="8" selection-start-line="35" selection-start-column="8" selection-end-line="35" selection-end-column="8" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/enums/order/OrderStateEnum.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="221">
+          <caret line="13" column="13" selection-start-line="13" selection-start-column="4" selection-end-line="13" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/enums/customer/CustomerStateEnum.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="6" column="12" selection-start-line="6" selection-start-column="12" selection-end-line="6" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/enums/customer/CustomerTypeEnum.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="7" column="12" selection-start-line="7" selection-start-column="12" selection-end-line="7" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/enums/order/OrderSourceEnum.java" />
+    <entry file="file://$PROJECT_DIR$/cjyc-common-model/src/main/resources/mapper/OrderMapper.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-46">
+          <caret line="72" column="16" lean-forward="true" selection-start-line="72" selection-start-column="16" selection-end-line="72" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/enums/order/OrderDetailStateEnum.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="2" column="11" selection-start-line="2" selection-start-column="11" selection-end-line="2" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/enums/ResultEnum.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="17">
+          <caret line="6" column="12" selection-start-line="6" selection-start-column="12" selection-end-line="6" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/enums/customer/CustomerSourceEnum.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="100">
+          <caret line="7" column="12" selection-start-line="7" selection-start-column="12" selection-end-line="7" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-web-api/src/main/java/com/cjyc/web/api/dto/OrderCarDto.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="175">
+          <caret line="44" column="36" lean-forward="true" selection-start-line="44" selection-start-column="36" selection-end-line="44" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/enums/ClientEnum.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="124">
+          <caret line="12" column="27" lean-forward="true" selection-start-line="12" selection-start-column="27" selection-end-line="12" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-web-api/src/main/java/com/cjyc/web/api/dto/OrderCommitDto.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="200">
+          <caret line="118" column="26" lean-forward="true" selection-start-line="118" selection-start-column="26" selection-end-line="118" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-common-model/src/main/java/com/cjyc/common/model/entity/Order.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1955">
+          <caret line="151" column="37" lean-forward="true" selection-start-line="151" selection-start-column="37" selection-end-line="151" selection-end-column="37" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-web-api/src/main/java/com/cjyc/web/api/controller/OrderController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="65" column="38" selection-start-line="65" selection-start-column="38" selection-end-line="65" selection-end-column="38" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-web-api/src/main/java/com/cjyc/web/api/service/IOrderService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="98">
+          <caret line="23" column="13" selection-start-line="23" selection-start-column="13" selection-end-line="23" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cjyc-web-api/src/main/java/com/cjyc/web/api/service/impl/OrderServiceImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="110">
+          <caret line="99" lean-forward="true" selection-start-line="99" selection-end-line="99" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+  <component name="masterDetails">
+    <states>
+      <state key="ArtifactsStructureConfigurable.UI">
+        <settings>
+          <artifact-editor />
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="FacetStructureConfigurable.UI">
+        <settings>
+          <last-edited>Spring</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="GlobalLibrariesConfigurable.UI">
+        <settings>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="JdkListConfigurable.UI">
+        <settings>
+          <last-edited>1.8</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ModuleStructureConfigurable.UI">
+        <settings>
+          <last-edited>cjyc-common-model</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+                <option value="0.6" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ProjectLibrariesConfigurable.UI">
+        <settings>
+          <last-edited>Maven: ch.qos.logback:logback-classic:1.2.3</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+    </states>
+  </component>
+</project>

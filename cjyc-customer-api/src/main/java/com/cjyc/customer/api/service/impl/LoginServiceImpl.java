@@ -10,6 +10,9 @@ import com.cjyc.common.model.dao.ICustomerDao;
 import com.cjyc.common.model.dto.salesman.login.LoginByPhoneDto;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.enums.*;
+import com.cjyc.common.model.enums.customer.CustomerSourceEnum;
+import com.cjyc.common.model.enums.customer.CustomerStateEnum;
+import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
@@ -22,7 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.annotation.Resource;
 

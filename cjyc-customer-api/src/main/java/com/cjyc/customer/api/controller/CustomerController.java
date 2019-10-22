@@ -30,7 +30,7 @@ public class CustomerController {
     private ICustomerService customerService;
 
 
-    @ApiOperation(value = "修改用户")
+    @ApiOperation(value = "修改个人信息")
     @PostMapping("/update")
     public ResultVo update(@RequestBody UpdateCustomerDto updateCustomerDto) {
 

@@ -19,7 +19,7 @@ public class OrderCarDto implements Serializable {
     @ApiModelProperty(value = "型号",required = true)
     private String model;
     @ApiModelProperty(value = "车牌号")
-    private String plateNo;//车牌号
+    private String plateNo;
     @ApiModelProperty(value = "vin码")
     private String vin;
     @ApiModelProperty(value = "是否能动 0-否 1-是")
@@ -41,6 +41,8 @@ public class OrderCarDto implements Serializable {
     private BigDecimal trunkFee;
     @ApiModelProperty(value = "车辆应收送车费 单位：分")
     private BigDecimal backFee;
-    @ApiModelProperty(value = "单车总费用 单位：分")
-    private BigDecimal totalFee;
+    @ApiModelProperty(value = "单车实际总费用 单位：分")
+    private BigDecimal realTotalFee;
+    @ApiModelProperty(value = "物流券抵消金额")
+    private BigDecimal couponOffsetFee;
 }

@@ -1,4 +1,4 @@
-package com.cjyc.common.model.enums;
+package com.cjyc.common.model.enums.customer;
 
 /**
  * 客户状态枚举

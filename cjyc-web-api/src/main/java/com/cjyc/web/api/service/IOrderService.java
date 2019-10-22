@@ -8,7 +8,7 @@ import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo;
-import com.cjyc.web.api.dto.OrderDto;
+import com.cjyc.web.api.dto.OrderCommitDto;
 
 import java.util.List;
 import java.util.Map;
@@ -20,7 +20,11 @@ import java.util.Map;
  */
 public interface IOrderService extends IService<Order> {
 
-    boolean commitOrder(OrderDto orderDto);
+
+    ResultVo save(OrderCommitDto orderCommitDto);
+
+    ResultVo update(OrderCommitDto orderCommitDto);
+
 
     ResultVo<ListVo<Map<String, Object>>> waitDispatchCarCountList();
 
@@ -40,4 +44,5 @@ public interface IOrderService extends IService<Order> {
      * @param bizScopeStoreIds
      */
     ResultVo<ListVo<Map<String, Object>>> lineWaitDispatchCarCountList(OrderCarLineWaitDispatchCountListDto reqDto, List<Long> bizScopeStoreIds);
+
 }
