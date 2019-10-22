@@ -188,10 +188,13 @@ public class DriverServiceImpl implements IDriverService {
 
     @Override
     public boolean examineDriById(Long id,String sign) {
+        int i = 0;
         try{
             //审核通过
             if(SysEnum.ONE.getValue().equals(sign)){
-
+                Driver driver = driverDao.selectById(id);
+                driver.setState(Integer.valueOf(SysEnum.TWO.getValue()));
+                i = driverDao.updateById(driver);
             }
         }catch (Exception e){
             log.info("根据司机userId审核出现异常");

@@ -3,7 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/cjyc.iml" filepath="$PROJECT_DIR$/cjyc.iml" />
-      <module fileurl="file://$PROJECT_DIR$/cjyc-common/cjyc-common.iml" filepath="$PROJECT_DIR$/cjyc-common/cjyc-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/cjyc-common-model/cjyc-common-model.iml" filepath="$PROJECT_DIR$/cjyc-common-model/cjyc-common-model.iml" />
+      <module fileurl="file://$PROJECT_DIR$/cjyc-common-service/cjyc-common-service.iml" filepath="$PROJECT_DIR$/cjyc-common-service/cjyc-common-service.iml" />
       <module fileurl="file://$PROJECT_DIR$/cjyc-customer-api/cjyc-customer-api.iml" filepath="$PROJECT_DIR$/cjyc-customer-api/cjyc-customer-api.iml" />
       <module fileurl="file://$PROJECT_DIR$/cjyc-driver-api/cjyc-driver-api.iml" filepath="$PROJECT_DIR$/cjyc-driver-api/cjyc-driver-api.iml" />
       <module fileurl="file://$PROJECT_DIR$/cjyc-salesman-api/cjyc-salesman-api.iml" filepath="$PROJECT_DIR$/cjyc-salesman-api/cjyc-salesman-api.iml" />
