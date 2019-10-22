@@ -30,8 +30,8 @@ public class LoginByPhoneDto {
     @ApiModelProperty(value = "验证码", required = true)
     private String captcha;
 
-    @NotNull
+    /*@NotNull
     @ApiModelProperty(value = "验证码类型：1登录，2忘记登录密码，3忘记安全密码，4修改银行卡", required = true)
-    private Integer type;
+    private Integer type;*/
 
 }

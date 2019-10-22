@@ -3,6 +3,7 @@
 <mapper namespace="com.cjyc.common.model.dao.IWaybillCarDao">
 
 
+
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.WaybillCar">
         <id column="id" property="id" />
@@ -18,12 +19,39 @@
         <result column="pick_type" property="pickType" />
         <result column="pick_contact_name" property="pickContactName" />
         <result column="pick_contact_phone" property="pickContactPhone" />
+        <result column="receive_contact_name" property="receiveContactName" />
+        <result column="receive_contact_phone" property="receiveContactPhone" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, waybill_id, order_car_id, freight_fee, start_address, end_address, start_area_code, end_area_code, state, expect_pick_time, pick_type, pick_contact_name, pick_contact_phone
+        id, waybill_id, order_car_id, freight_fee, start_address, end_address, start_area_code, end_area_code, state, expect_pick_time, pick_type, pick_contact_name, pick_contact_phone, receive_contact_name, receive_contact_phone
     </sql>
+
+
+    <insert id="saveBatch">
+        insert into w_waybill_car
+            (waybill_id, order_car_id, freight_fee, start_address, end_address, start_area_code, end_area_code,
+            state, expect_pick_time, pick_type, pick_contact_name, pick_contact_phone)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.waybillId},
+            #{item.orderCarId},
+            #{item.freightFee},
+            #{item.startAddress},
+            #{item.endAddress},
+            #{item.startAreaCode},
+            #{item.startAreaCode},
+            #{item.state},
+            #{item.expectPickTime},
+            #{item.pickType},
+            #{item.pickContactName},
+            #{item.pickContactPhone}
+            )
+        </foreach>
+
+    </insert>
 
     <select id="getWayBillCarrier" parameterType="com.cjyc.common.model.vo.web.WayBillCarrierVo" resultType="com.cjyc.common.model.dto.web.WayBillCarrierDto">
         select ww.waybill_no as waybillNo,ww.state as state,ww.type as type,woc.no as carNo,woc.vin as vin,woc.brand as brand,

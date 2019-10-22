@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-12
+ * @since 2019-10-21
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -59,7 +59,7 @@ public class Customer implements Serializable {
     private String majorBusDes;
 
     @ApiModelProperty(value = "首字母")
-    private String initials;
+    private String initial;
 
     @ApiModelProperty(value = "头像")
     private String photoImg;
@@ -76,7 +76,7 @@ public class Customer implements Serializable {
     @ApiModelProperty(value = "身份证反面")
     private String idCardBackImg;
 
-    @ApiModelProperty(value = "类型：1个人，2企业")
+    @ApiModelProperty(value = "类型：1个人，2企业（大客户）3-合伙人")
     private Integer type;
 
     @ApiModelProperty(value = "账号来源：1App注册，2Applet注册，3业务员创建，4企业管理员创建，5合伙人创建")
@@ -85,10 +85,7 @@ public class Customer implements Serializable {
     @ApiModelProperty(value = "公司ID")
     private Long companyId;
 
-    @ApiModelProperty(value = "审核状态 0：未审核  1：已审核")
-    private Integer auditState;
-
-    @ApiModelProperty(value = "状态：0未注册，2已注册，7已冻结")
+    @ApiModelProperty(value = "状态：0待审核，1未登录，2已审核，7已冻结")
     private Integer state;
 
     @ApiModelProperty(value = "结算方式 0：时付  1：账期")
@@ -104,10 +101,10 @@ public class Customer implements Serializable {
     private Long createUserId;
 
     @ApiModelProperty(value = "审核时间")
-    private Long auditTime;
+    private Long checkTime;
 
     @ApiModelProperty(value = "审核人")
-    private Long auditUserId;
+    private Long checkUserId;
 
 
 }

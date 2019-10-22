@@ -17,7 +17,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-16
+ * @since 2019-10-18
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -53,13 +53,13 @@ public class WaybillCar implements Serializable {
     @ApiModelProperty(value = "卸车区县编码")
     private String endAreaCode;
 
-    @ApiModelProperty(value = "状态：1待指派，3已指派，9已完成")
+    @ApiModelProperty(value = "状态：0待指派，2已指派，9已完成")
     private Integer state;
 
     @ApiModelProperty(value = "预计提车日期")
     private Long expectPickTime;
 
-    @ApiModelProperty(value = "提车方式:1 自送，2上门")
+    @ApiModelProperty(value = "提车方式:1上门，2 自送")
     private Integer pickType;
 
     @ApiModelProperty(value = "提车联系人")
@@ -67,6 +67,10 @@ public class WaybillCar implements Serializable {
 
     @ApiModelProperty(value = "提车联系人电话")
     private String pickContactPhone;
+
+    private String receiveContactName;
+
+    private String receiveContactPhone;
 
 
 }

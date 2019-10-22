@@ -1,6 +1,5 @@
 package com.cjyc.common.service.service;
 
-import com.cjyc.common.model.entity.City;
 import com.cjyc.common.model.vo.CityVo;
 
 import java.util.List;
@@ -16,4 +15,6 @@ public interface ICityService {
     List<CityVo> getCityList(String cityCode, String keyword);
 
     List<Map<String,Object>> getList(String cityCode);
+    List<Map<String,Object>> getWebCityList(String cityCode);
+
 }

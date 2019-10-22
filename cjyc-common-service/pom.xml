@@ -16,7 +16,6 @@
         <dependency>
             <groupId>com.cjyc</groupId>
             <artifactId>cjyc-common-model</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
 

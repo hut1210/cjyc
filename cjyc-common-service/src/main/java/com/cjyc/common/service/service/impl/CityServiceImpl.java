@@ -9,7 +9,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +22,7 @@ import java.util.Map;
  */
 @Service("cityService")
 public class CityServiceImpl implements ICityService{
-    @Autowired
+    @Resource
     private ICityDao cityDao;
 
 
@@ -56,6 +58,14 @@ public class CityServiceImpl implements ICityService{
     @Override
     public List<Map<String, Object>> getList(String cityCode) {
         return cityDao.getList(cityCode);
+    }
+
+    @Override
+    public List<Map<String,Object>> getWebCityList(String cityCode) {
+        List<Map<String,Object>> list ;
+        list = cityDao.getList(cityCode);
+        // todo 添加业务中心数据到集合
+        return list;
     }
 
 }

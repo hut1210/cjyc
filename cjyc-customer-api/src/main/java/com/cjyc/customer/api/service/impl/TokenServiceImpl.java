@@ -19,8 +19,6 @@ TokenServiceImpl implements ITokenService{
     @Value("${cjyc.token.expires}")
     private int expires;
 
-    @Value("${cjyc.salt.customer}")
-    private String customerSalt;
 
     /**
      * 创建token

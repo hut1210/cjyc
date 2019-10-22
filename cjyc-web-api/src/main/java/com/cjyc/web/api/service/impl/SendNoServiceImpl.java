@@ -1,7 +1,7 @@
 package com.cjyc.web.api.service.impl;
 
 import com.cjkj.common.redis.template.StringRedisUtil;
-import com.cjyc.common.model.constant.PatternConstant;
+import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.web.api.service.ISendNoService;
@@ -62,7 +62,7 @@ public class SendNoServiceImpl implements ISendNoService {
 	 * @param noTailRandomLength 编号后随机数位数
 	 */
 	public String getNo(SendNoTypeEnum sendNoType, int noLength, Integer timeTailRandomLength, Integer noTailRandomLength) {
-		String time = LocalDateTimeUtil.formatLDTNow(PatternConstant.SUB_SIMPLE_DATE);
+		String time = LocalDateTimeUtil.formatLDTNow(TimePatternConstant.SUB_SIMPLE_SIMPLE_DATE);
 		String no = "";
 		try {
 			String key = getSendNoKey(sendNoType.name, time);

@@ -17,7 +17,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-17
+ * @since 2019-10-22
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -146,7 +146,7 @@ public class Order implements Serializable {
     @ApiModelProperty(value = "加急")
     private Integer hurryDays;
 
-    @ApiModelProperty(value = "订单来源：1用户app，2用户小程序，12业务员app，12业务员小程序，21韵车后台")
+    @ApiModelProperty(value = "订单来源：1WEB管理后台, 2业务员APP, 3业务员小程序, 4业务员APP, 5业务员小程序, 6用户端APP, 7用户端小程序")
     private Integer source;
 
     @ApiModelProperty(value = "创建时间")
@@ -162,10 +162,10 @@ public class Order implements Serializable {
     private Long checkTime;
 
     @ApiModelProperty(value = "确认人：业务员")
-    private String checkSalesmanName;
+    private String checkUserName;
 
     @ApiModelProperty(value = "确认人ID")
-    private Long checkSalesmanId;
+    private Long checkUserId;
 
     @ApiModelProperty(value = "订单状态：0待提交，2待分配，5待确认，10待复确认，15待预付款，25已确认，55运输中，88待付款，100已完成，111原返（待），112异常结束，113取消（待），114作废（待）")
     private Integer state;
@@ -197,8 +197,8 @@ public class Order implements Serializable {
     @ApiModelProperty(value = "代收中介费（为资源合伙人代收）")
     private BigDecimal agencyFee;
 
-    @ApiModelProperty(value = "预付款")
-    private BigDecimal advanceFee;
+    @ApiModelProperty(value = "物流券抵消金额")
+    private BigDecimal couponOffsetFee;
 
     @ApiModelProperty(value = "应收总价：提车费+干线费+送车费+保险费+中介费")
     private BigDecimal totalFee;
@@ -209,8 +209,8 @@ public class Order implements Serializable {
     @ApiModelProperty(value = "合同ID")
     private Long customerContractId;
 
-    @ApiModelProperty(value = "客户付款方式：0时付（默认），1账期")
-    private Integer customerPayType;
+    @ApiModelProperty(value = "客户付款方式：0到付（默认），1预付，2账期")
+    private Integer payType;
 
     @ApiModelProperty(value = "客户支付尾款状态：0未支付，1部分支付，2支付完成")
     private Integer wlPayState;

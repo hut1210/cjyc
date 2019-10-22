@@ -37,6 +37,10 @@
             <groupId>com.cjkj</groupId>
             <artifactId>cjkj-redis-spring-boot-starter</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.cjkj</groupId>
+            <artifactId>cjkj-usercenter-dto</artifactId>
+        </dependency>
         <!--本地jar-->
 
         <!--web-->
@@ -134,14 +138,17 @@
         <dependency>
             <groupId>com.belerweb</groupId>
             <artifactId>pinyin4j</artifactId>
-            <version>2.5.0</version>
         </dependency>
 
         <!-- 极光推送 -->
         <dependency>
             <groupId>cn.jpush.api</groupId>
             <artifactId>jpush-client</artifactId>
-            <version>3.3.10</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
         </dependency>
 
     </dependencies>

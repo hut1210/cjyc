@@ -100,6 +100,11 @@
             </dependency>
             <dependency>
                 <groupId>com.cjkj</groupId>
+                <artifactId>cjkj-usercenter-dto</artifactId>
+                <version>1.5.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.cjkj</groupId>
                 <artifactId>cjkj-sentinel-spring-boot-starter</artifactId>
                 <version>${cjkj.sentinel.version}</version>
             </dependency>

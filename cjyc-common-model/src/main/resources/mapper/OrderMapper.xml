@@ -2,6 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.cjyc.common.model.dao.IOrderDao">
 
+
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.Order">
         <id column="id" property="id" />
@@ -48,8 +49,8 @@
         <result column="create_user_name" property="createUserName" />
         <result column="create_user_id" property="createUserId" />
         <result column="check_time" property="checkTime" />
-        <result column="check_salesman_name" property="checkSalesmanName" />
-        <result column="check_salesman_id" property="checkSalesmanId" />
+        <result column="check_user_name" property="checkUserName" />
+        <result column="check_user_id" property="checkUserId" />
         <result column="state" property="state" />
         <result column="remark" property="remark" />
         <result column="invoice_flag" property="invoiceFlag" />
@@ -60,11 +61,11 @@
         <result column="insurance_fee" property="insuranceFee" />
         <result column="deposit_fee" property="depositFee" />
         <result column="agency_fee" property="agencyFee" />
-        <result column="advance_fee" property="advanceFee" />
+        <result column="coupon_offset_fee" property="couponOffsetFee" />
         <result column="total_fee" property="totalFee" />
         <result column="fee_share_type" property="feeShareType" />
         <result column="customer_contract_id" property="customerContractId" />
-        <result column="customer_pay_type" property="customerPayType" />
+        <result column="pay_type" property="payType" />
         <result column="wl_pay_state" property="wlPayState" />
         <result column="wl_pay_time" property="wlPayTime" />
         <result column="offline_pay_flag" property="offlinePayFlag" />
@@ -73,8 +74,9 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, no, customer_id, customer_name, input_store_id, input_store_name, start_province, start_province_code, start_city, start_city_code, start_area, start_area_code, start_address, start_lng, start_lat, start_store_id, start_store_name, end_province, end_province_code, end_city, end_city_code, end_area, end_area_code, end_address, end_lng, end_lat, end_store_id, end_store_name, expect_start_date, expect_end_date, car_num, line_id, pick_type, pick_contact_name, pick_contact_phone, back_type, back_contact_name, back_contact_phone, hurry_days, source, create_time, create_user_name, create_user_id, check_time, check_salesman_name, check_salesman_id, state, remark, invoice_flag, invoice_type, pick_fee, trunk_fee, back_fee, insurance_fee, deposit_fee, agency_fee, advance_fee, total_fee, fee_share_type, customer_contract_id, customer_pay_type, wl_pay_state, wl_pay_time, offline_pay_flag, coupon_id
+        id, no, customer_id, customer_name, input_store_id, input_store_name, start_province, start_province_code, start_city, start_city_code, start_area, start_area_code, start_address, start_lng, start_lat, start_store_id, start_store_name, end_province, end_province_code, end_city, end_city_code, end_area, end_area_code, end_address, end_lng, end_lat, end_store_id, end_store_name, expect_start_date, expect_end_date, car_num, line_id, pick_type, pick_contact_name, pick_contact_phone, back_type, back_contact_name, back_contact_phone, hurry_days, source, create_time, create_user_name, create_user_id, check_time, check_user_name, check_user_id, state, remark, invoice_flag, invoice_type, pick_fee, trunk_fee, back_fee, insurance_fee, deposit_fee, agency_fee, coupon_offset_fee, total_fee, fee_share_type, customer_contract_id, pay_type, wl_pay_state, wl_pay_time, offline_pay_flag, coupon_id
     </sql>
+
 
     <!-- 通用查询订单结果列 -->
     <sql id="Base_Order_Column">

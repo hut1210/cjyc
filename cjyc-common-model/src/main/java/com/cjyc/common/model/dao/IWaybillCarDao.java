@@ -4,6 +4,7 @@ import com.cjyc.common.model.dto.web.WayBillCarrierDto;
 import com.cjyc.common.model.entity.WaybillCar;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.vo.web.WayBillCarrierVo;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -18,4 +19,7 @@ import java.util.List;
 public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
 
     List<WayBillCarrierDto> getWayBillCarrier(WayBillCarrierVo wayBillCarrierVo);
+
+    int saveBatch(@Param("list") List<WaybillCar> list);
+
 }

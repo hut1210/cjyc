@@ -2,10 +2,16 @@ package com.cjyc.customer.api.feign;
 
 import com.cjkj.common.constant.ServiceNameConstants;
 import com.cjkj.common.feign.fallback.UserServiceFallbackFactory;
-import com.cjyc.common.model.dto.sys.SysRoleDto;
+import com.cjkj.common.model.ResultData;
+import com.cjkj.usercenter.dto.common.AddRoleReq;
+import com.cjkj.usercenter.dto.common.AddRoleResp;
+import com.cjkj.usercenter.dto.common.SelectRoleResp;
+import com.cjkj.usercenter.dto.common.UpdateRoleReq;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -16,13 +22,66 @@ import java.util.List;
 @FeignClient(value = ServiceNameConstants.USER_SERVICE, fallbackFactory = UserServiceFallbackFactory.class, decode404 = true)
 public interface ISysRoleService {
 
+
     /**
-     * 根据用户ID查询
-     * TODO 替换正确的RequestMapping和参数
+     * 保存角色
      * @author JPG
-     * @since 2019/10/14 12:27
-     * @param userId
+     * @since 2019/10/21 9:43
+     * @param addRoleReq 参数
+     * @return ResultData<AddRoleResp>
      */
-    @GetMapping("/sys/role/select/{sysId}")
-    List<SysRoleDto> getListByUserId(@PathVariable(value = "sysId") Long userId);
+    @PostMapping("/feign/uc/addRole")
+    ResultData<AddRoleResp> save(@RequestBody AddRoleReq addRoleReq);
+
+    /**
+     * 保存角色
+     * @author JPG
+     * @since 2019/10/21 9:43
+     * @param updateRoleReq 参数
+     * @return ResultData
+     */
+    @PostMapping("/feign/uc/updateRole")
+    ResultData update(@RequestBody UpdateRoleReq updateRoleReq);
+
+
+    /**
+     * 查询角色信息：根据部门id查询多级组织下的所有角色
+     * @author JPG
+     * @since 2019/10/21 9:46
+     * @param deptId 组机机构ID
+     * @return ResultData<List<SelectRoleResp>>
+     */
+    @GetMapping("feign/uc/getMultiLevelRoles/{deptId}")
+    ResultData<List<SelectRoleResp>> getMultiLevelList(@PathVariable Integer deptId);
+
+    /**
+     * 查询角色信息：根据部门id查询多级组织下的所有角色
+     * @author JPG
+     * @since 2019/10/21 9:46
+     * @param deptId 部门ID
+     * @return ResultData<List<SelectRoleResp>>
+     */
+    @GetMapping("/feign/uc/getSingleLevelRoles/{deptId}")
+    ResultData<List<SelectRoleResp>> getSingleLevelList(@PathVariable Integer deptId);
+
+
+    /**
+     * 查询角色信息：根据用户id
+     * @author JPG
+     * @since 2019/10/21 9:46
+     * @param userId 用户ID
+     * @return ResultData<List<SelectRoleResp>>
+     */
+    @GetMapping("/feign/uc/getRoles/{userId}")
+    ResultData<List<SelectRoleResp>> getListByUserId(@PathVariable Integer userId);
+
+    /**
+     * 查询角色信息：根据用户id
+     * @author JPG
+     * @since 2019/10/21 9:46
+     * @param roleId 角色ID
+     * @return  ResultData<SelectRoleResp>
+     */
+    @PostMapping("/feign/uc/deleteRole/{roleId}")
+    ResultData<SelectRoleResp> delete(@PathVariable Integer roleId);
 }

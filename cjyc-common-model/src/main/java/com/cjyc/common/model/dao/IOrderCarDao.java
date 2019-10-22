@@ -81,5 +81,21 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
      */
     List<Map<String, Object>> findlineWaitDispatchCarCountList(@Param("paramsDto") OrderCarLineWaitDispatchCountListDto paramsDto, List<Long> bizScopeStoreIds);
 
+   /**
+    * 更新状态
+    * @author JPG
+    * @since 2019/10/18 15:22
+    * @param state
+    * @param orderCarId
+    */
+    int updateStateById(@Param("state") int state, @Param("orderCarId") Long orderCarId);
 
+    /**
+     * 批量更新状态
+     * @author JPG
+     * @since 2019/10/18 15:22
+     * @param state
+     * @param list
+     */
+    int updateStateBatchByIds(@Param("state") int state, List<Long> list);
 }

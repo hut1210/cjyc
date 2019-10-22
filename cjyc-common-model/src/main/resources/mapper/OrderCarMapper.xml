@@ -30,6 +30,23 @@
     <sql id="Base_Column_List">
         id, order_id, order_no, no, brand, model, plate_no, vin, valuation, now_store_id, now_area_code, state, description, pick_fee, trunk_fee, back_fee, insurance_fee, insurance_coverage_amount, agency_fee, wl_pay_state
     </sql>
+    <!--根据ID更新状态-->
+    <update id="updateStateById">
+        update w_order_car
+        set state = #{state}
+        where id = #{orderCarId}
+    </update>
+    <update id="updateStateBatchByIds">
+        update w_order_car
+        set state = #{state}
+        <where>
+            and id in
+            <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
+
+    </update>
 
     <!-- 通过订单编号查询车辆信息 -->
     <select id="getOrderCarByNo" resultType="com.cjyc.common.model.vo.customer.OrderCarCenterVo" parameterType="java.lang.String">

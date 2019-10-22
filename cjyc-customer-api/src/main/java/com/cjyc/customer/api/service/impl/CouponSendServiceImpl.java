@@ -1,7 +1,7 @@
 package com.cjyc.customer.api.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.cjyc.common.model.constant.PatternConstant;
+import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.dao.ICouponSendDao;
 import com.cjyc.common.model.entity.CouponSend;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
@@ -35,7 +35,7 @@ public class CouponSendServiceImpl extends ServiceImpl<ICouponSendDao, CouponSen
             if(sendVos != null && sendVos.size() > 0){
                 for(CouponSendVo vo : sendVos){
                     if(StringUtils.isBlank(vo.getIsForever())){
-                        vo.setPeriodDate(LocalDateTimeUtil.convertToLong(vo.getPeriodDate(), PatternConstant.SIMPLE_DATE_FORMAT).toString());
+                        vo.setPeriodDate(LocalDateTimeUtil.convertToLong(vo.getPeriodDate(), TimePatternConstant.SIMPLE_DATE_FORMAT).toString());
                     }
                 }
                 PageHelper.startPage(currentPage,pageSize);

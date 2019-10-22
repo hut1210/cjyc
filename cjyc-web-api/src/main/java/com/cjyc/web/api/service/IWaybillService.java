@@ -1,10 +1,10 @@
 package com.cjyc.web.api.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.cjyc.common.model.dto.web.waybill.CancelDispatchDto;
 import com.cjyc.common.model.dto.web.waybill.WaybillPickDispatchListDto;
 import com.cjyc.common.model.dto.web.waybill.WaybillTrunkDispatchListListDto;
 import com.cjyc.common.model.entity.Waybill;
-import com.cjyc.common.model.vo.BaseListTipVo;
 import com.cjyc.common.model.vo.BaseTipVo;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -20,12 +20,12 @@ import com.cjyc.common.model.vo.ResultVo;
 public interface IWaybillService extends IService<Waybill> {
 
     /**
-     * 提车调度
+     * 提送车调度
      * @author JPG
      * @since 2019/10/17 9:16
      * @param paramsDto
      */
-    ResultVo<ListVo<BaseTipVo>> pickDispatch(WaybillPickDispatchListDto paramsDto);
+    ResultVo pickAndBackDispatch(WaybillPickDispatchListDto paramsDto);
 
     /**
      * 干线调度
@@ -33,5 +33,7 @@ public interface IWaybillService extends IService<Waybill> {
      * @since 2019/10/17 9:16
      * @param paramsDto
      */
-    ResultVo<ListVo<BaseListTipVo>> trunkDispatch(WaybillTrunkDispatchListListDto paramsDto);
+    ResultVo trunkDispatch(WaybillTrunkDispatchListListDto paramsDto);
+
+    ResultVo cancelDispatch(CancelDispatchDto paramsDto);
 }

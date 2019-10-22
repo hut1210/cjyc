@@ -27,4 +27,5 @@
 *.iws
 *.iml
 *.ipr
+*/target/**
 

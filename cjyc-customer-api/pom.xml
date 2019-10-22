@@ -40,6 +40,10 @@
             <groupId>com.cjkj</groupId>
             <artifactId>cjkj-ribbon-spring-boot-starter</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.cjkj</groupId>
+            <artifactId>cjkj-usercenter-dto</artifactId>
+        </dependency>
         <!--本地jar-->
 
         <!--web-->

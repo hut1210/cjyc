@@ -2,14 +2,16 @@ package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.web.order.OrderCarLineWaitDispatchCountListDto;
 import com.cjyc.common.model.dto.web.order.OrderCarWaitDispatchListDto;
-import com.cjyc.common.model.enums.ResultEnum;
+import com.cjyc.common.model.entity.Admin;
+import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.BizScopeVo;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo;
-import com.cjyc.web.api.dto.OrderDto;
+import com.cjyc.web.api.dto.OrderCommitDto;
+import com.cjyc.web.api.service.IAdminService;
 import com.cjyc.web.api.service.IBizScopeService;
 import com.cjyc.web.api.service.IOrderService;
 import io.swagger.annotations.Api;
@@ -22,9 +24,8 @@ import javax.annotation.Resource;
 import java.util.Map;
 
 /**
- * @auther litan
- * @description: com.cjyc.web.api.controller
- * @date:2019/9/28
+ * 订单
+ * @author JPG
  */
 @RestController
 @Api(tags = "订单")
@@ -36,15 +37,41 @@ public class OrderController {
     private IOrderService orderService;
     @Resource
     private IBizScopeService bizScopeService;
+    @Resource
+    private IAdminService adminService;
 
     /**
-     * web端下单
+     * 提交订单
      */
-    @ApiOperation(value = "客户端下单接口", notes = "客户端下单", httpMethod = "POST")
-    @RequestMapping(value = "/commit", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultVo commit(@RequestBody OrderDto orderDto) {
-        boolean result = orderService.commitOrder(orderDto);
-        return result ? BaseResultUtil.success(orderDto) : BaseResultUtil.fail();
+    @ApiOperation(value = "客户端保存和提交接口")
+    @PostMapping(value = "/commit")
+    public ResultVo commit(@RequestBody OrderCommitDto orderCommitDto) {
+
+        //验证用户存不存在
+        Long userId = orderCommitDto.getCreateUserId();
+        Admin admin = adminService.getByUserId(userId);
+        if(admin == null){
+            return BaseResultUtil.fail("用户不存在");
+        }
+        orderCommitDto.setCreateUserName(admin.getName());
+
+        //验证业务中心
+        //验证匹配线路
+
+        //新增or更新
+        ResultVo resultVo = null;
+        Long orderId = orderCommitDto.getOrderId();
+        orderCommitDto.setState(OrderStateEnum.WAIT_CHECK.code);
+        if(orderId == null){
+            resultVo = orderService.save(orderCommitDto);
+        }else{
+
+            resultVo = orderService.update(orderCommitDto);
+        }
+
+        //添加物流日志
+        //发送推送信息
+        return resultVo;
     }
 
     /**
@@ -80,41 +107,5 @@ public class OrderController {
         BizScopeVo bizScope = bizScopeService.getBizScope(reqDto.getUserId());
         return orderService.waitDispatchCarList(reqDto, bizScope.getBizScopeStoreIds());
     }
-
-
-
-/*
-    *//**
-     * 测试分页
-     * *//*
-    @ApiOperation(value = "分页测试接口", notes = "分页测试", httpMethod = "POST")
-    @RequestMapping(value = "/testPageList", method = RequestMethod.POST)
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "pageNum", value = "当前页", required = true, dataType = "Integer", paramType = "query"),
-            @ApiImplicitParam(name = "pageSize", value = "条数", required = true, dataType = "Integer", paramType = "query")
-    })
-    public ResultVo testPageList(Integer pageNum, Integer pageSize){
-
-        PageInfo<Customer> customerPageInfo = customerServiceCom.pageList(pageNum,pageSize);
-        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),customerPageInfo);
-    }
-
-    *//**
-     * 下单测试--dto接收
-     * *//*
-    @ApiOperation(value = "下单测试接口", notes = "下单测试", httpMethod = "POST")
-    @RequestMapping(value = "/orderTest", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultVo orderTest(@RequestBody OrderDto orderDto) {
-        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),orderDto);
-    }
-
-    *//**
-     * 下单测试2--Map接收
-     * *//*
-    @ApiOperation(value = "下单测试接口", notes = "下单测试", httpMethod = "POST")
-    @RequestMapping(value = "/orderTest2", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultVo orderTest2(@RequestBody Map<String,Object> map) {
-        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),map);
-    }*/
 
 }

@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @ApiModel
 public class BaseTipVo {
+    @ApiModelProperty("返回信息序号")
+    private int index;
     @ApiModelProperty("返回信息编号")
     private String no;
     @ApiModelProperty("返回信息提示")
