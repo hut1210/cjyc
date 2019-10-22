@@ -62,4 +62,11 @@ public class DriverController {
         return BaseResultUtil.getPageVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),pageInfo);
     }
 
+    @ApiOperation(value = "根据司机userId进行审核通过/拒绝", notes = "根据司机userId进行审核通过/拒绝", httpMethod = "POST")
+    @RequestMapping(value = "/examineDriById/{id}", method = RequestMethod.POST)
+    public ResultVo examineDriById(@PathVariable Long userId){
+        boolean result = driverService.examineDriById(userId);
+        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg());
+    }
+
 }

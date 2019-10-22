@@ -31,4 +31,11 @@ public interface IDriverService {
      * @return
      */
     PageInfo<DriverVo> getDriverByTerm(SelectDriverDto dto);
+
+    /**
+     * 根据司机userId进行审核
+     * @param userId
+     * @return
+     */
+    boolean examineDriById(Long userId);
 }

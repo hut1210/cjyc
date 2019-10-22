@@ -10,6 +10,9 @@ public class DriverVo implements Serializable {
     @ApiModelProperty("司机id")
     private Long id;
 
+    @ApiModelProperty("司机userId")
+    private Long userId;
+
     @ApiModelProperty("司机姓名")
     private String realName;
 

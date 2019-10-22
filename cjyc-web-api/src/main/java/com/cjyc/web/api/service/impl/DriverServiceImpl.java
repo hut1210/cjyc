@@ -186,6 +186,17 @@ public class DriverServiceImpl implements IDriverService {
         return pageInfo;
     }
 
+    @Override
+    public boolean examineDriById(Long userId) {
+        try{
+
+        }catch (Exception e){
+            log.info("根据司机userId审核出现异常");
+            throw new CommonException(e.getMessage());
+        }
+        return false;
+    }
+
     /**
      * 根据省/直辖市code查区县code
      * @param proList

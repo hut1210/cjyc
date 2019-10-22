@@ -101,6 +101,7 @@
     <select id="getDriverByTerm" resultType="com.cjyc.common.model.vo.web.driver.DriverVo" parameterType="com.cjyc.common.model.dto.web.driver.SelectDriverDto">
             SELECT
         d.id AS id,
+        d.user_id AS userId,
         d.real_name AS realName,
         d.phone AS phone,
         d.id_card AS idCard,
