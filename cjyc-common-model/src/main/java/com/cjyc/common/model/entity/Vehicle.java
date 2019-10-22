@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-12
+ * @since 2019-10-21
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -66,6 +66,9 @@ public class Vehicle implements Serializable {
 
     @ApiModelProperty(value = "创建人ID")
     private Long createUserId;
+
+    @ApiModelProperty(value = "创建人姓名")
+    private String createName;
 
     @ApiModelProperty(value = "创建时间")
     private Long createTime;

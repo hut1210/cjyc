@@ -4,33 +4,40 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.Driver">
-        <id column="id" property="id"/>
-        <result column="user_id" property="userId"/>
-        <result column="name" property="name"/>
-        <result column="phone" property="phone"/>
-        <result column="emergency_phone" property="emergencyPhone"/>
-        <result column="type" property="type"/>
-        <result column="mode" property="mode"/>
-        <result column="id_card" property="idCard"/>
-        <result column="real_name" property="realName"/>
-        <result column="age" property="age"/>
-        <result column="sex" property="sex"/>
-        <result column="address" property="address"/>
-        <result column="id_card_front_img" property="idCardFrontImg"/>
-        <result column="id_card_back_img" property="idCardBackImg"/>
-        <result column="driver_licence_front_img" property="driverLicenceFrontImg"/>
-        <result column="driver_licence_back_img" property="driverLicenceBackImg"/>
-        <result column="driver_licence_expire" property="driverLicenceExpire"/>
-        <result column="remark" property="remark"/>
-        <result column="state" property="state"/>
-        <result column="deposit_pay_state" property="depositPayState"/>
-        <result column="business_state" property="businessState"/>
-        <result column="source" property="source"/>
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="name" property="name" />
+        <result column="phone" property="phone" />
+        <result column="emergency_phone" property="emergencyPhone" />
+        <result column="type" property="type" />
+        <result column="mode" property="mode" />
+        <result column="identity" property="identity" />
+        <result column="id_card" property="idCard" />
+        <result column="real_name" property="realName" />
+        <result column="age" property="age" />
+        <result column="sex" property="sex" />
+        <result column="address" property="address" />
+        <result column="id_card_front_img" property="idCardFrontImg" />
+        <result column="id_card_back_img" property="idCardBackImg" />
+        <result column="driver_licence_front_img" property="driverLicenceFrontImg" />
+        <result column="driver_licence_back_img" property="driverLicenceBackImg" />
+        <result column="driver_licence_expire" property="driverLicenceExpire" />
+        <result column="travel_licence_front_img" property="travelLicenceFrontImg" />
+        <result column="travel_licence_back_img" property="travelLicenceBackImg" />
+        <result column="taxi_licence_front_img" property="taxiLicenceFrontImg" />
+        <result column="taxi_licence_back_img" property="taxiLicenceBackImg" />
+        <result column="qualifi_cert_front_img" property="qualifiCertFrontImg" />
+        <result column="qualifi_cert_back_img" property="qualifiCertBackImg" />
+        <result column="remark" property="remark" />
+        <result column="state" property="state" />
+        <result column="deposit_pay_state" property="depositPayState" />
+        <result column="business_state" property="businessState" />
+        <result column="source" property="source" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, user_id, name, phone, emergency_phone, type, mode, id_card, real_name, age, sex, address, id_card_front_img, id_card_back_img, driver_licence_front_img, driver_licence_back_img, driver_licence_expire, remark, state, deposit_pay_state, business_state, source
+        id, user_id, name, phone, emergency_phone, type, mode, identity, id_card, real_name, age, sex, address, id_card_front_img, id_card_back_img, driver_licence_front_img, driver_licence_back_img, driver_licence_expire, travel_licence_front_img, travel_licence_back_img, taxi_licence_front_img, taxi_licence_back_img, qualifi_cert_front_img, qualifi_cert_back_img, remark, state, deposit_pay_state, business_state, source
     </sql>
     <select id="findList" resultType="com.cjyc.common.model.vo.web.user.DriverListVo">
         select

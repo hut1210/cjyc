@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="cjyc-common-model" />
+        <module name="cjyc-common-service" />
+        <module name="cjyc-customer-api" />
+        <module name="cjyc-driver-api" />
+        <module name="cjyc-salesman-api" />
+        <module name="cjyc-web-api" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="cjyc" target="1.8" />
+      <module name="cjyc-common-model" target="1.8" />
+      <module name="cjyc-common-service" target="1.8" />
+      <module name="cjyc-customer-api" target="1.8" />
+      <module name="cjyc-driver-api" target="1.8" />
+      <module name="cjyc-salesman-api" target="1.8" />
+      <module name="cjyc-web-api" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

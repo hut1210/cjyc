@@ -49,6 +49,9 @@ public class OrderServiceImpl implements IOrderService{
     @Resource
     private ICarSeriesDao iCarSeriesDao;
 
+    /**
+     * 客户端下单
+     * */
     @Override
     public boolean commitOrder(OrderDto orderDto) {
 
@@ -66,6 +69,12 @@ public class OrderServiceImpl implements IOrderService{
 
             //详单
         }else if(isSimple == 0){
+
+            //如果是预付款 则先记录预付金额，确认订单后修改为最终值
+            if(orderDto.getAdvanceFlag()==1){
+                order.setAdvanceFee(BigDecimal.valueOf(orderDto.getTotalFee()));
+            }
+
             //草稿
             if(saveType==0){
                 order.setState(0);//待提交
@@ -80,7 +89,9 @@ public class OrderServiceImpl implements IOrderService{
         order.setCreateTime(System.currentTimeMillis());
         order.setCreateUserName(orderDto.getCustomerName());
         //order.setCreateUserType(0);//创建人类型：0客户，1业务员
-        order.setCreateUserId(0L);
+        order.setCreateUserId(orderDto.getCustomerId());
+
+
         int count = orderDao.addOrder(order);
 
         //保存车辆信息
@@ -102,29 +113,35 @@ public class OrderServiceImpl implements IOrderService{
         return count > 0 ? true : false;
     }
 
+    /**
+     * 客户端修改草稿订单
+     * */
     @Override
     public boolean modify(OrderDto orderDto) {
         Order order = orderDao.selectById(orderDto.getOrderId());
-        BeanUtils.copyProperties(orderDto,order);
+        //根据状态判断 只能修改业务员还未确认的订单
+        if(order.getState() < 15){
+            BeanUtils.copyProperties(orderDto,order);
 
-        //删除之前的
-        QueryWrapper<OrderCar> wrapper = new QueryWrapper<>();
-        wrapper.eq("order_id",orderDto.getOrderId());
-        int delCount = iOrderCarDao.delete(wrapper);
+            //删除之前的
+            QueryWrapper<OrderCar> wrapper = new QueryWrapper<>();
+            wrapper.eq("order_id",orderDto.getOrderId());
+            int delCount = iOrderCarDao.delete(wrapper);
 
-        //保存车辆信息
-        List<OrderCarDto> carDtoList =  orderDto.getOrderCarDtoList();
-        if(delCount > 0){
-            for(OrderCarDto orderCarDto : carDtoList){
-                OrderCar orderCar = new OrderCar();
-                BeanUtils.copyProperties(orderCarDto,orderCar);
-                String carNo = incrementerDao.getIncrementer(NoConstant.CAR_PREFIX);
-                orderCar.setWlPayState(0);
-                orderCar.setOrderNo(order.getNo());
-                orderCar.setOrderId(order.getId());
-                orderCar.setNo(carNo);
+            //重新保存车辆信息
+            List<OrderCarDto> carDtoList =  orderDto.getOrderCarDtoList();
+            if(delCount > 0){
+                for(OrderCarDto orderCarDto : carDtoList){
+                    OrderCar orderCar = new OrderCar();
+                    BeanUtils.copyProperties(orderCarDto,orderCar);
+                    String carNo = incrementerDao.getIncrementer(NoConstant.CAR_PREFIX);
+                    orderCar.setWlPayState(0);
+                    orderCar.setOrderNo(order.getNo());
+                    orderCar.setOrderId(order.getId());
+                    orderCar.setNo(carNo);
 
-                iOrderCarDao.insert(orderCar);
+                    iOrderCarDao.insert(orderCar);
+                }
             }
         }
 

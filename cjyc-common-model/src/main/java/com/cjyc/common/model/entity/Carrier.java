@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-17
+ * @since 2019-10-18
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -49,8 +49,23 @@ public class Carrier implements Serializable {
     @ApiModelProperty(value = "法人身份证照片")
     private String legalIdcardImg;
 
-    @ApiModelProperty(value = "道路运输许可证照片")
-    private String transportLicenseImg;
+    @ApiModelProperty(value = "营业执照正面")
+    private String busLicenseFrontImg;
+
+    @ApiModelProperty(value = "营业执照反面")
+    private String busLicenseBackImg;
+
+    @ApiModelProperty(value = "道路运输许可证正面照片")
+    private String transportLicenseFrontImg;
+
+    @ApiModelProperty(value = "道路运输许可证反面照片")
+    private String transportLicenseBackImg;
+
+    @ApiModelProperty(value = "银行开户证明正面")
+    private String bankOpenFrontImg;
+
+    @ApiModelProperty(value = "银行开户证明反面")
+    private String bankOpenBackImg;
 
     @ApiModelProperty(value = "公司联系人")
     private String linkman;
@@ -84,6 +99,9 @@ public class Carrier implements Serializable {
 
     @ApiModelProperty(value = "营运状态：0营运中，1停运中")
     private Integer businessState;
+
+    @ApiModelProperty(value = "是否开发票 0：否  1：是")
+    private Integer isInvoice;
 
     @ApiModelProperty(value = "创建者姓名")
     private String createUser;

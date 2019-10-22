@@ -30,7 +30,7 @@ public class OrderDto implements Serializable {
     private Long orderId;
 
     @ApiModelProperty(value = "客户id",required = true)
-    private String customerId;
+    private Long customerId;
     @ApiModelProperty(value = "客户姓名",required = true)
     private String customerName;
 
@@ -90,6 +90,8 @@ public class OrderDto implements Serializable {
     private String remark;
     @ApiModelProperty(value = "是否开票：0否（默认根据设置），1是")
     private int invoiceFlag;
+    @ApiModelProperty(value = "是否预付款：0否（默认根据设置），1是")
+    private int advanceFlag;
     @ApiModelProperty(value = "发票类型：0无， 1-普通(个人) ，2增值普票(企业) ，3增值专用发票")
     private int invoiceType;
     @ApiModelProperty(value = "预估费用 单位：分")

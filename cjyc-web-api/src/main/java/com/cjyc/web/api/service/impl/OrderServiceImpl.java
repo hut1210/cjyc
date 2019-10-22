@@ -94,10 +94,31 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         order.setState(paramsDto.getState());
         order.setSource(paramsDto.getClientId());
         order.setCreateTime(System.currentTimeMillis());
+<<<<<<< HEAD
         orderDao.insert(order);
 
         for(){
 
+=======
+        order.setCreateUserName(orderDto.getSalesmanName());
+        order.setCreateUserId(orderDto.getSalesmanId());
+        int count = orderDao.addOrder(order);
+
+        //保存车辆信息
+        List<OrderCarDto> carDtoList =  orderDto.getOrderCarDtoList();
+        if(count > 0){
+            for(OrderCarDto orderCarDto : carDtoList){
+
+                OrderCar orderCar = new OrderCar();
+                BeanUtils.copyProperties(orderCarDto,orderCar);
+                String carNo = incrementerDao.getIncrementer(NoConstant.CAR_PREFIX);
+                orderCar.setOrderNo(orderNo);
+                orderCar.setOrderId(order.getId());
+                orderCar.setNo(carNo);
+                orderCar.setWlPayState(0);//应收状态：0未支付，1已支付
+                iOrderCarDao.insert(orderCar);
+            }
+>>>>>>> 6ed3d18cad2d9f5ccc05abc3121de7266d9974f7
         }
 /*        order.setCarNum();
         order.setPickFee();
