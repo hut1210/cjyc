@@ -220,7 +220,7 @@ public class DriverServiceImpl implements IDriverService {
         int j;
         try{
             //更新司机信息
-            com.cjyc.common.model.entity.Driver driver = driverDao.selectById(dto.getId());
+            Driver driver = driverDao.selectById(dto.getId());
             driver.setRealName(dto.getRealName());
             driver.setPhone(dto.getPhone());
             driver.setMode(dto.getMode());
