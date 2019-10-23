@@ -1,13 +1,16 @@
 package com.cjyc.web.api.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.cjyc.common.model.dto.web.order.OrderAllotDto;
 import com.cjyc.common.model.dto.web.order.OrderCarLineWaitDispatchCountListDto;
 import com.cjyc.common.model.dto.web.order.OrderCarWaitDispatchListDto;
+import com.cjyc.common.model.dto.web.order.OrderListDto;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo;
+import com.cjyc.common.model.vo.web.order.OrderVo;
 import com.cjyc.web.api.dto.OrderCommitDto;
 
 import java.util.List;
@@ -21,9 +24,7 @@ import java.util.Map;
 public interface IOrderService extends IService<Order> {
 
 
-    ResultVo save(OrderCommitDto orderCommitDto);
-
-    ResultVo update(OrderCommitDto orderCommitDto);
+    ResultVo saveAndUpdate(OrderCommitDto paramsDto);
 
 
     ResultVo<ListVo<Map<String, Object>>> waitDispatchCarCountList();
@@ -45,4 +46,9 @@ public interface IOrderService extends IService<Order> {
      */
     ResultVo<ListVo<Map<String, Object>>> lineWaitDispatchCarCountList(OrderCarLineWaitDispatchCountListDto reqDto, List<Long> bizScopeStoreIds);
 
+    OrderVo getVoById(Long orderId);
+
+    ResultVo allot(OrderAllotDto orderAllotDto);
+
+    ResultVo selectList(OrderListDto reqDto);
 }

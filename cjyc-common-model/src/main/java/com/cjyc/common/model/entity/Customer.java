@@ -31,7 +31,7 @@ public class Customer implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "user_id(查询架构组数据时使用)")
+    @ApiModelProperty(value = "user_id")
     private Long userId;
 
     @ApiModelProperty(value = "客户名称")

@@ -19,6 +19,8 @@ public class OrderCommitDto {
     @NotNull
     @ApiModelProperty(value = "1WEB管理后台, 2业务员APP, 3业务员小程序, 4业务员APP, 5业务员小程序, 6用户端APP, 7用户端小程序", required = true)
     private int clientId;
+    @ApiModelProperty(value = "操作人userid")
+    private Long userId;
     @ApiModelProperty(value = "用户ID")
     private Long orderId;
     @NotNull
@@ -26,7 +28,7 @@ public class OrderCommitDto {
     private int customerType;
     @NotNull
     @ApiModelProperty(value = "0-保存（预订单） 1-提交",required = true)
-    private int saveType;//0-保存（草稿） 1-下单
+    private int saveType;//0-保存（草稿） 1-提交，2提交并审核
     @ApiModelProperty(value = "客户id")
     private Long customerId;
     @ApiModelProperty(value = "客户姓名",required = true)
@@ -108,12 +110,15 @@ public class OrderCommitDto {
     @ApiModelProperty(value = "优惠券id")
     private Long couponId;//优惠券id
 
-    @ApiModelProperty(value = "实际总费用")
+    @NotNull
+    @ApiModelProperty(value = "实际总费用，韵车实际收益(未减去物流券)",required = true)
     private BigDecimal realTotalFee;
-    @ApiModelProperty(value = "物流券抵消金额")
+    @NotNull
+    @ApiModelProperty(value = "物流券抵消金额",required = true)
     private BigDecimal couponOffsetFee;
-    @ApiModelProperty(value = "实际总费用")
-    private BigDecimal totalFee;
+    @NotNull
+    @ApiModelProperty(value = "实际总物流费用，客户实际付款",required = true)
+    private BigDecimal wlTotalFee;
 
     @ApiModelProperty(value = "状态（不需要传）")
     private Integer state;

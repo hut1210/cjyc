@@ -1,7 +1,7 @@
 package com.cjyc.web.api.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.cjyc.common.model.constant.PatternConstant;
+import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.dao.IDriverVehicleConDao;
 import com.cjyc.common.model.dao.IVehicleDao;
 import com.cjyc.common.model.dao.IVehicleRunningDao;
@@ -113,7 +113,7 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
             List<VehicleVo> vehicleVos = iVehicleDao.getVehicleByTerm(dto);
             if(vehicleVos != null && vehicleVos.size() > 0){
                 for(VehicleVo vo : vehicleVos){
-                    vo.setCreateName(LocalDateTimeUtil.convertToString(Long.valueOf(vo.getCreateTime()), PatternConstant.COMPLEX_TIME_FORMAT));
+                    vo.setCreateName(LocalDateTimeUtil.convertToString(Long.valueOf(vo.getCreateTime()), TimePatternConstant.COMPLEX_TIME_FORMAT));
                 }
                 PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
                 pageInfo = new PageInfo<>(vehicleVos);
@@ -158,8 +158,8 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
             v.setOwnershipType(Integer.valueOf(dto.getOwnershipType()));
             v.setState(Integer.valueOf(SysEnum.ZERO.getValue()));
             v.setCreateUserId(Long.valueOf(dto.getUserId()));
-            v.setCreateTime(LocalDateTimeUtil.convertToLong(LocalDateTimeUtil.formatLDTNow(PatternConstant.COMPLEX_TIME_FORMAT),
-                    PatternConstant.COMPLEX_TIME_FORMAT));
+            v.setCreateTime(LocalDateTimeUtil.convertToLong(LocalDateTimeUtil.formatLDTNow(TimePatternConstant.COMPLEX_TIME_FORMAT),
+                    TimePatternConstant.COMPLEX_TIME_FORMAT));
         }catch (Exception e){
             log.info("封装车辆信息出现异常");
         }
@@ -174,8 +174,8 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
             vr.setCarryCarNum(Integer.valueOf(dto.getDefaultCarryNum()));
             vr.setState(Integer.valueOf(SysEnum.ONE.getValue()));
             vr.setRunningState(Integer.valueOf(SysEnum.ZERO.getValue()));
-            vr.setCreateTime(LocalDateTimeUtil.convertToLong(LocalDateTimeUtil.formatLDTNow(PatternConstant.COMPLEX_TIME_FORMAT),
-                    PatternConstant.COMPLEX_TIME_FORMAT));
+            vr.setCreateTime(LocalDateTimeUtil.convertToLong(LocalDateTimeUtil.formatLDTNow(TimePatternConstant.COMPLEX_TIME_FORMAT),
+                    TimePatternConstant.COMPLEX_TIME_FORMAT));
         }catch (Exception e){
             log.info("封装运力信息出现异常");
         }

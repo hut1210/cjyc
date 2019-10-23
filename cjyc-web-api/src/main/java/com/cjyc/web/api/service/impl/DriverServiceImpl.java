@@ -1,6 +1,6 @@
 package com.cjyc.web.api.service.impl;
 
-import com.cjyc.common.model.constant.PatternConstant;
+import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.driver.DriverDto;
 import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
@@ -105,8 +105,8 @@ public class DriverServiceImpl implements IDriverService {
                 carrier.setLinkmanPhone(dto.getPhone());
                 carrier.setMode(dto.getMode());
                 carrier.setType(Integer.parseInt(SysEnum.ONE.getValue()));
-                carrier.setCreateTime(LocalDateTimeUtil.convertToLong(LocalDateTimeUtil.formatLDTNow(PatternConstant.COMPLEX_TIME_FORMAT),
-                        PatternConstant.COMPLEX_TIME_FORMAT));
+                carrier.setCreateTime(LocalDateTimeUtil.convertToLong(LocalDateTimeUtil.formatLDTNow(TimePatternConstant.COMPLEX_TIME_FORMAT),
+                        TimePatternConstant.COMPLEX_TIME_FORMAT));
                 carrier.setCreateUserId(Long.parseLong(dto.getUserId()));
                 p = iCarrierDao.insert(carrier);
             }

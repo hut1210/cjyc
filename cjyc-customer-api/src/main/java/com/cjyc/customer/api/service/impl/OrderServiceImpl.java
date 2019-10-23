@@ -70,10 +70,6 @@ public class OrderServiceImpl implements IOrderService{
             //详单
         }else if(isSimple == 0){
 
-            //如果是预付款 则先记录预付金额，确认订单后修改为最终值
-            if(orderDto.getAdvanceFlag()==1){
-                order.setAdvanceFee(BigDecimal.valueOf(orderDto.getTotalFee()));
-            }
 
             //草稿
             if(saveType==0){

@@ -22,4 +22,6 @@ public interface IStoreDao extends BaseMapper<Store> {
      * @return
      */
     PageInfo<Map> getAllStore();
+
+    List<Store> findByAreaCode(String areaCode);
 }

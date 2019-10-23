@@ -2,6 +2,7 @@ package com.cjyc.web.api.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.poi.hpsf.Decimal;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -14,6 +15,9 @@ import java.math.BigDecimal;
 @Data
 public class OrderCarDto implements Serializable {
 
+
+    @ApiModelProperty(value = "id")
+    private String id;
     @ApiModelProperty(value = "品牌",required = true)
     private String brand;
     @ApiModelProperty(value = "型号",required = true)
@@ -31,7 +35,7 @@ public class OrderCarDto implements Serializable {
     @ApiModelProperty(value = "描述")
     private String description;
     @ApiModelProperty(value = "保费 单位：分")
-    private int insuranceFee;
+    private BigDecimal insuranceFee;
     @ApiModelProperty(value = "保额 单位：分")
     private int insuranceCoverageAmount;
 
