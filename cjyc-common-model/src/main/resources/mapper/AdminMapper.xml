@@ -37,7 +37,6 @@
         <include refid="Base_Column_List"/>
         from b_admin
         where user_id = #{userId}
-
     </select>
     <select id="findStoreBizScope" resultType="java.lang.Long">
         select

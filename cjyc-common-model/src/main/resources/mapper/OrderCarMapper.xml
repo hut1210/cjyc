@@ -12,6 +12,8 @@
         <result column="model" property="model" />
         <result column="plate_no" property="plateNo" />
         <result column="vin" property="vin" />
+        <result column="is_move" property="isMove" />
+        <result column="is_new" property="isNew" />
         <result column="valuation" property="valuation" />
         <result column="now_store_id" property="nowStoreId" />
         <result column="now_area_code" property="nowAreaCode" />
@@ -22,14 +24,50 @@
         <result column="back_fee" property="backFee" />
         <result column="insurance_fee" property="insuranceFee" />
         <result column="insurance_coverage_amount" property="insuranceCoverageAmount" />
+        <result column="coupon_offset_fee" property="couponOffsetFee" />
         <result column="agency_fee" property="agencyFee" />
+        <result column="total_fee" property="totalFee" />
         <result column="wl_pay_state" property="wlPayState" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, order_id, order_no, no, brand, model, plate_no, vin, valuation, now_store_id, now_area_code, state, description, pick_fee, trunk_fee, back_fee, insurance_fee, insurance_coverage_amount, agency_fee, wl_pay_state
+        id, order_id, order_no, no, brand, model, plate_no, vin, is_move, is_new, valuation, now_store_id, now_area_code, state, description, pick_fee, trunk_fee, back_fee, insurance_fee, insurance_coverage_amount, coupon_offset_fee, agency_fee, total_fee, wl_pay_state
     </sql>
+    <insert id="saveBatch">
+        insert into w_order_car
+        (order_id, order_no, no, brand, model, plate_no, vin, is_move, is_new, valuation, now_store_id, 
+        now_area_code, state, description, pick_fee, trunk_fee, back_fee, insurance_fee, 
+        insurance_coverage_amount, coupon_offset_fee, agency_fee, total_fee)
+        values 
+        <foreach collection="orderCarlist" index="index" item="item" separator=",">
+            (
+            #{item.orderId},
+            #{item.orderNo},
+            #{item.no},
+            #{item.brand},
+            #{item.model},
+            #{item.plateNo},
+            #{item.vin},
+            #{item.isMove},
+            #{item.isNew},
+            #{item.valuation},
+            #{item.nowStoreId},
+            #{item.nowAreaCode},
+            #{item.state},
+            #{item.description},
+            #{item.pickFee},
+            #{item.trunkFee},
+            #{item.backFee},
+            #{item.insuranceFee},
+            #{item.insuranceCoverageAmount},
+            #{item.couponOffsetFee},
+            #{item.agencyFee},
+            #{item.totalFee}
+            )
+        </foreach>
+
+    </insert>
     <!--根据ID更新状态-->
     <update id="updateStateById">
         update w_order_car
@@ -47,6 +85,10 @@
         </where>
 
     </update>
+    <delete id="deleteBatchByOrderId">
+        delete from w_order_car
+        where order_id = #{orderId}
+    </delete>
 
     <!-- 通过订单编号查询车辆信息 -->
     <select id="getOrderCarByNo" resultType="com.cjyc.common.model.vo.customer.OrderCarCenterVo" parameterType="java.lang.String">
@@ -252,6 +294,12 @@
     <select id="findlineWaitDispatchCarCountList" resultType="java.util.Map">
 
 
+    </select>
+    <select id="findByOrderId" resultType="com.cjyc.common.model.entity.OrderCar">
+        select
+        <include refid="Base_Column_List"/>
+        from w_order_car
+        where order_id = #{orderId}
     </select>
 
     <!--业务范围条件-->

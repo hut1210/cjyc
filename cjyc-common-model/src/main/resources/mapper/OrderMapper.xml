@@ -256,4 +256,144 @@
         </where>
         <include refid="Common_Order_By"/>
     </select>
+    <select id="findVoById" resultType="com.cjyc.common.model.vo.web.order.OrderVo">
+        select
+        <include refid="Base_Column_List"/>
+        from w_order
+        where id = #{orderId}
+    </select>
+    <select id="findListSelective" resultType="com.cjyc.common.model.entity.Order">
+        select
+        <include refid="Base_Column_List"/>
+        from w_order o
+        left join c_customer c on o.customer_id = c.id
+        <where>
+            <choose>
+                <when test="paramsDto.outterState == 1">
+                    and o.state = 0
+                </when>
+                <when test="paramsDto.outterState == 5">
+                    and o.state &lt;= 10 and o.state &gt; 0
+                </when>
+                <when test="paramsDto.outterState == 15">
+                    and o.state = 15
+                </when>
+                <when test="paramsDto.outterState == 25">
+                    and o.state = 25
+                </when>
+                <when test="paramsDto.outterState == 55">
+                    and o.state &gt; 25 and o.state &lt; 100
+                </when>
+                <when test="paramsDto.outterState == 100">
+                    and o.state = 100
+                </when>
+                <when test="paramsDto.outterState == 113">
+                    and o.state = 113
+                </when>
+                <when test="paramsDto.outterState == 114">
+                    and o.state = 114
+                </when>
+            </choose>
+
+            <if test="paramsDto.no != null and paramsDto.no != ''">
+                and o.no = #{paramsDto.no}
+            </if>
+            <if test="paramsDto.customerName != null and paramsDto.customerName != ''">
+                and c.customer_name = #{paramsDto.customerName}
+            </if>
+            <if test="paramsDto.customerType != null and paramsDto.customerType != ''">
+                and c.customer_type = #{paramsDto.customerType}
+            </if>
+            <if test="paramsDto.customerPhone != null and paramsDto.customerPhone != ''">
+                and c.customer_phone = #{paramsDto.customerPhone}
+            </if>
+            <if test="paramsDto.inputStoreId != null">
+                and o.input_store_id = #{paramsDto.inputStoreId}
+            </if>
+            <if test="paramsDto.startProvinceCode != null and paramsDto.startProvinceCode != ''">
+                and o.start_province_code = #{paramsDto.startProvinceCode}
+            </if>
+            <if test="paramsDto.startCityCode != null and paramsDto.startCityCode != ''">
+                and o.start_city_code = #{paramsDto.startCityCode}
+            </if>
+            <if test="paramsDto.startAreaCode != null and paramsDto.startAreaCode != ''">
+                and o.start_area_code = #{paramsDto.startAreaCode}
+            </if>
+            <if test="paramsDto.startStoreId != null">
+                and o.start_store_id = #{paramsDto.startStoreId}
+            </if>
+            <if test="paramsDto.endProvinceCode != null and paramsDto.endProvinceCode != ''">
+                and o.end_province_code = #{paramsDto.endProvinceCode}
+            </if>
+            <if test="paramsDto.endCityCode != null and paramsDto.endCityCode != ''">
+                and o.end_city_code = #{paramsDto.endCityCode}
+            </if>
+            <if test="paramsDto.endAreaCode != null and paramsDto.endAreaCode != ''">
+                and o.end_area_code = #{paramsDto.endAreaCode}
+            </if>
+            <if test="paramsDto.endStoreId != null">
+                and o.end_store_id = #{paramsDto.endStoreId}
+            </if>
+            <if test="paramsDto.beginExpectStartDate != null">
+                and o.expect_start_date &gt; #{paramsDto.beginExpectStartDate}
+            </if>
+            <if test="paramsDto.endExpectStartDate != null">
+                and o.expect_start_date &lt; #{paramsDto.endExpectStartDate}
+            </if>
+            <if test="paramsDto.beginExpectEndDate != null">
+                and o.expect_end_date &gt; #{paramsDto.beginExpectEndDate}
+            </if>
+            <if test="paramsDto.endExpectEndDate != null">
+                and o.expect_end_date &lt; #{paramsDto.endExpectEndDate}
+            </if>
+
+            <if test="paramsDto.pickContactName != null and paramsDto.pickContactName != ''">
+                and o.pick_contact_name = #{paramsDto.pickContactName}
+            </if>
+            <if test="paramsDto.pickContactPhone != null and paramsDto.pickContactPhone != ''">
+                and o.pick_contact_phone = #{paramsDto.pickContactPhone}
+            </if>
+            <if test="paramsDto.pickType != null">
+                and o.pick_type = #{paramsDto.pickType}
+            </if>
+            <if test="paramsDto.backType != null">
+                and o.back_type = #{paramsDto.backType}
+            </if>
+            <if test="paramsDto.backContactName != null and paramsDto.backContactName != ''">
+                and o.back_contact_name = #{paramsDto.backContactName}
+            </if>
+            <if test="paramsDto.backContactPhone != null and paramsDto.backContactPhone != ''">
+                and o.back_contact_phone = #{paramsDto.backContactPhone}
+            </if>
+            <if test="paramsDto.lineId != null">
+                and o.line_id = #{paramsDto.lineId}
+            </if>
+            <if test="paramsDto.source != null and paramsDto.source != ''">
+                and o.source = #{paramsDto.source}
+            </if>
+            <if test="paramsDto.beginCreateTime != null">
+                and o.create_time &gt; #{paramsDto.beginCreateTime}
+            </if>
+            <if test="paramsDto.endCreateTime != null">
+                and o.create_time &lt; #{paramsDto.endCreateTime}
+            </if>
+            <if test="paramsDto.createUserName != null and paramsDto.createUserName != ''">
+                and o.create_user_name = #{paramsDto.createUserName}
+            </if>
+            <if test="paramsDto.beginCheckTime != null">
+                and o.check_time &gt; #{paramsDto.beginCheckTime}
+            </if>
+            <if test="paramsDto.endCheckTime != null">
+                and o.check_time &lt; #{paramsDto.endCheckTime}
+            </if>
+            <if test="paramsDto.payType != null">
+                and o.pay_type = #{paramsDto.payType}
+            </if>
+            <if test="paramsDto.regionCode != null and paramsDto.regionCode != ''">
+                and city.region_code = #{paramsDto.regionCode}
+            </if>
+
+        </where>
+
+    </select>
 </mapper>

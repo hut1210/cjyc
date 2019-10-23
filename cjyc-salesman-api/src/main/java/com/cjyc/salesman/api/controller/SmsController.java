@@ -1,11 +1,13 @@
 package com.cjyc.salesman.api.controller;
 
 import com.cjkj.common.redis.template.StringRedisUtil;
+import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.dto.salesman.sms.CaptchaSendDto;
 import com.cjyc.common.model.dto.salesman.sms.CaptchaValidatedDto;
 import com.cjyc.common.model.enums.message.SmsMessageEnum;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.salesman.api.util.MiaoxinSmsUtil;
 import io.swagger.annotations.Api;
@@ -44,7 +46,7 @@ public class SmsController {
         //生成随机验证码
         String captcha = String.valueOf((int) ((Math.random() * 9 + 1) * Math.pow(10, 6 - 1)));
         //验证短信限制
-        String countKey = RedisKeys.getSmsCountKey(keyPrefix, phone);
+        String countKey = RedisKeys.getSmsCountKey(LocalDateTimeUtil.formatLDTNow(TimePatternConstant.SIMPLE_DATE), phone);
 
         //发送短信
         try {

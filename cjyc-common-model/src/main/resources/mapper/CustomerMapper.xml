@@ -95,5 +95,23 @@
         where phone = #{phone}
 
     </select>
+    <select id="findFuzzyList" resultType="com.cjyc.common.model.vo.web.customer.CustomerFuzzyListVo">
+        select
+            user_id as useId,
+            `name`,
+            alias,
+            contact_phone as contactPhone,
+            contact_man as contactMan,
+            contact_address as contactAddress
+        from c_customer
+        <where>
+            <if test="paramsDto.type != null">
+               and type = #{paramsDto.type}
+            </if>
+            <if test="paramsDto.info != null and paramsDto.info !=''">
+               and concat(name,alias,contact_phone,contact_man) like concat('%',#{paramsDto.info},'%')
+            </if>
+        </where>
+    </select>
 
 </mapper>

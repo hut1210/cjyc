@@ -1,7 +1,9 @@
 package com.cjyc.customer.api.service;
 
-import com.cjyc.common.model.entity.Customer;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.cjyc.common.model.dto.web.customer.CustomerfuzzyListDto;
+import com.cjyc.common.model.entity.Customer;
+import com.cjyc.common.model.vo.ResultVo;
 
 /**
  * <p>
@@ -13,4 +15,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ICustomerService extends IService<Customer> {
 
+    ResultVo fuzzyList(CustomerfuzzyListDto paramsDto);
 }
