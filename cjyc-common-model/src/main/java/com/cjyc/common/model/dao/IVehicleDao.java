@@ -1,8 +1,10 @@
 package com.cjyc.common.model.dao;
 
+import com.cjyc.common.model.dto.web.carrier.SeleVehicleDto;
 import com.cjyc.common.model.dto.web.vehicle.SelectVehicleDto;
 import com.cjyc.common.model.entity.Vehicle;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cjyc.common.model.vo.web.carrier.BaseVehicleVo;
 import com.cjyc.common.model.vo.web.vehicle.VehicleVo;
 import org.apache.ibatis.annotations.Param;
 
@@ -31,5 +33,12 @@ public interface IVehicleDao extends BaseMapper<Vehicle> {
      * @return
      */
     List<VehicleVo> getVehicleByTerm(SelectVehicleDto dto);
+
+    /**
+     * 根据承运商id条件查询车辆信息
+     * @param dto
+     * @return
+     */
+    List<BaseVehicleVo> getBaseVehicleByTerm(SeleVehicleDto dto);
 
 }

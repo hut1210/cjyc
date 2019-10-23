@@ -46,4 +46,12 @@
         where admin_id = #{adminId}
     </select>
 
+    <!-- 根据承运商id获取Admin -->
+    <select id="getByCarrierId" resultType="com.cjyc.common.model.entity.Admin" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from b_admin
+        where carrier_id = #{carrierId}
+    </select>
+
 </mapper>

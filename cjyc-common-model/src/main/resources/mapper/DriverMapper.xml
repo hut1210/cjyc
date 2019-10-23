@@ -174,4 +174,44 @@
         </where>
     </select>
 
+    <!--根据司机id/userId查看司机信息-->
+    <select id="getDriverById" resultType="com.cjyc.common.model.vo.web.driver.ShowDriverVo">
+      SELECT
+            d.real_name AS realName,
+            d.phone AS phone,
+            d.id_card_front_img AS idCardFrontImg,
+            d.id_card_back_img AS idCardBackImg,
+            d.driver_licence_front_img AS driverLicenceFrontImg,
+            d.driver_licence_back_img AS driverLicenceBackImg,
+            d.travel_licence_front_img AS travelLicenceFrontImg,
+            d.travel_licence_back_img AS travelLicenceBackImg,
+            d.taxi_licence_front_img AS taxiLicenceFrontImg,
+            d.taxi_licence_back_img AS taxiLicenceBackImg,
+            bank.card_name AS cardName,
+            bank.bank_name AS bankName,
+            bank.card_no AS cardNo,
+            veh.plate_no AS plateNo,
+            veh.default_carry_num AS defaultCarryNum,
+            ( CASE d.MODE WHEN 0 THEN '代驾' WHEN 1 THEN '干线司机' WHEN 2 THEN '拖车司机' WHEN 4 THEN '全支持' END ) AS MODE
+        FROM
+            d_driver d
+            JOIN d_driver_vehicle_con con ON con.driver_id = d.id
+            JOIN d_vehicle veh ON veh.id = con.vehicle_id
+            JOIN s_bank_card_bind bank ON bank.user_id = d.user_id
+        WHERE
+            d.id = #{id} and d.user_id = #{userId}
+    </select>
+
+    <!--根据承运商id查询司机信息-->
+    <select id="getDriverByDriverId" resultType="com.cjyc.common.model.entity.Driver" parameterType="java.lang.Long">
+        SELECT
+            dri.id AS id,
+            dri.phone AS phone
+        FROM
+            d_driver dri
+            JOIN d_carrier_driver_con cdc ON cdc.driver_id = dri.id
+            JOIN d_carrier carr ON carr.id = cdc.carrier_id
+        WHERE carr.id = #{carrierId}
+    </select>
+
 </mapper>

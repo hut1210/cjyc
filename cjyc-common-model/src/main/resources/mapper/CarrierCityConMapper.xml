@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cjyc.common.model.dao.ICarrierCityConDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.CarrierCityCon">
+        <id column="id" property="id" />
+        <result column="carrier_id" property="carrierId" />
+        <result column="country" property="country" />
+        <result column="large_area" property="largeArea" />
+        <result column="province" property="province" />
+        <result column="city" property="city" />
+        <result column="area" property="area" />
+        <result column="area_code" property="areaCode" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, carrier_id, country, large_area, province, city, area, area_code
+    </sql>
+
+    <!-- 根据司机id查询该承运商绑定的业务编码 -->
+    <select id="getCarrierCodeByDriverId" resultType="com.cjyc.common.model.entity.CarrierCityCon"
+                                            parameterType="java.lang.Long">
+        SELECT
+           <include refid="Base_Column_List"/>
+        FROM
+            d_carrier_city_con dccc
+            JOIN d_carrier dc ON dc.id = dccc.carrier_id
+            JOIN d_carrier_driver_con ddc ON ddc.carrier_id = dc.id
+            JOIN d_driver dd ON dd.id = ddc.driver_id
+        where dd.id = #{driverId}
+    </select>
+
+    <!-- 通过承运商id获取承运商业务范围 -->
+    <select id="getCarrierCodeByCarrierId" resultType="com.cjyc.common.model.entity.CarrierCityCon"
+            parameterType="java.lang.Long">
+        select
+            <include refid="Base_Column_List"/>
+        from d_carrier_city_con
+    </select>
+
+    <!-- 根据承运商id删除业务范围 -->
+    <delete id="deleteByCarrierId" parameterType="java.lang.Long">
+        delete from d_carrier_city_con where carrier_id = #{carrierId}
+    </delete>
+
+</mapper>

@@ -91,7 +91,7 @@ cjyc:
     description: 长久韵车司机端api接口文档
     version: 2.0.1
     basePackage: com.cjyc.driver.api.controller
-    groupName: CJYC-Driver-Api
+    groupName: CJYC-DriverDto-Api
     usePathMapping: false
 
   #短信

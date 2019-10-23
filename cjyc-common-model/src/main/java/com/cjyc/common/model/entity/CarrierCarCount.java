@@ -1,5 +1,6 @@
 package com.cjyc.common.model.entity;
 
+import java.math.BigDecimal;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -12,18 +13,18 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 司机与区县绑定
+ * 司机运输车辆统计表
  * </p>
  *
  * @author JPG
- * @since 2019-10-22
+ * @since 2019-10-23
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("d_carrier_city_con")
-@ApiModel(value="CarrierCityCon对象", description="司机与区县绑定")
-public class CarrierCityCon implements Serializable {
+@TableName("d_carrier_car_count")
+@ApiModel(value="CarrierCarCount对象", description="司机运输车辆统计表")
+public class CarrierCarCount implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -34,23 +35,14 @@ public class CarrierCityCon implements Serializable {
     @ApiModelProperty(value = "承运商ID")
     private Long carrierId;
 
-    @ApiModelProperty(value = "全国code")
-    private String country;
+    @ApiModelProperty(value = "司机ID")
+    private Long driverId;
 
-    @ApiModelProperty(value = "大区code")
-    private String largeArea;
+    @ApiModelProperty(value = "司机运输车辆数")
+    private Integer carNum;
 
-    @ApiModelProperty(value = "省/直辖市code")
-    private String province;
-
-    @ApiModelProperty(value = "城市code")
-    private String city;
-
-    @ApiModelProperty(value = "区县编码")
-    private String area;
-
-    @ApiModelProperty(value = "区县编码 0:全国")
-    private String areaCode;
+    @ApiModelProperty(value = "总收入/分")
+    private BigDecimal totalIncome;
 
 
 }

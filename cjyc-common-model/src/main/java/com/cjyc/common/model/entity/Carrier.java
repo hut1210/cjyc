@@ -46,6 +46,9 @@ public class Carrier implements Serializable {
     @ApiModelProperty(value = "法人姓名")
     private String legalName;
 
+    @ApiModelProperty(value = "法人身份证号")
+    private String legalIdCard;
+
     @ApiModelProperty(value = "法人身份证照片")
     private String legalIdcardImg;
 
@@ -88,7 +91,7 @@ public class Carrier implements Serializable {
     @ApiModelProperty(value = "结算方式：1时付，2账期")
     private Integer settleType;
 
-    @ApiModelProperty(value = "账期/月")
+    @ApiModelProperty(value = "账期/天")
     private Integer settlePeriod;
 
     @ApiModelProperty(value = "结算公司：0韵车，1otm，2掌控")

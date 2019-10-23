@@ -22,6 +22,13 @@ public interface IDriverVehicleConDao extends BaseMapper<DriverVehicleCon> {
     DriverVehicleCon getDriverVehicleCon(@Param("vehicleId") String vehicleId);
 
     /**
+     * 通过司机id获取司机与车辆绑定关系
+     * @param driverId
+     * @return
+     */
+    DriverVehicleCon getDriVehConByDriId(@Param("driverId") String driverId);
+
+    /**
      * 根据运力vehicleId删除司机与运力关系
      * @param vehicleId
      * @return

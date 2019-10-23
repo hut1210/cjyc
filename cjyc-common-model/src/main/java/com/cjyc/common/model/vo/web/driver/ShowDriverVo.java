@@ -1,4 +1,4 @@
-package com.cjyc.common.model.dto.web.driver;
+package com.cjyc.common.model.vo.web.driver;
 
 import com.cjyc.common.model.entity.BusinessCityCode;
 import io.swagger.annotations.ApiModelProperty;
@@ -7,10 +7,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 @Data
-public class DriverDto extends BusinessCityCode implements Serializable {
-
-    public interface SaveDriverDto {
-    }
+public class ShowDriverVo extends BusinessCityCode implements Serializable {
 
     @ApiModelProperty("司机id")
     private Long id;
@@ -18,17 +15,23 @@ public class DriverDto extends BusinessCityCode implements Serializable {
     @ApiModelProperty("司机userId")
     private Long userId;
 
-    @ApiModelProperty("当前登陆用户Id")
-    private Long currentUserId;
-
     @ApiModelProperty("司机姓名")
     private String realName;
 
-    @ApiModelProperty("司机手机号")
+    @ApiModelProperty("司机姓名")
     private String phone;
 
     @ApiModelProperty("承运方式：0 ：代驾 1：干线司机  2：拖车司机 4全支持")
-    private Integer mode;
+    private String mode;
+
+    @ApiModelProperty("持卡人")
+    private String cardName;
+
+    @ApiModelProperty("开户行")
+    private String bankName;
+
+    @ApiModelProperty("银行卡号")
+    private String cardNo;
 
     @ApiModelProperty("身份证正面")
     private String idCardFrontImg;
@@ -60,13 +63,9 @@ public class DriverDto extends BusinessCityCode implements Serializable {
     @ApiModelProperty("从业证反面")
     private String qualifiCertBackImg;
 
-    @ApiModelProperty("车辆信息vehicleId")
-    private Long vehicleId;
-
     @ApiModelProperty("车牌号")
     private String plateNo;
 
     @ApiModelProperty("车位数")
-    private Integer defaultCarryNum;
-
+    private String defaultCarryNum;
 }
