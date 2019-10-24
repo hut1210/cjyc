@@ -100,7 +100,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
             if(paramsDto.getCustomerType() == CustomerTypeEnum.INDIVIDUAL.code){
                 customer.setName(paramsDto.getCustomerName());
                 customer.setContactMan(paramsDto.getCustomerName());
-                customer.setPhone(paramsDto.getCustomerPhone());
+                customer.setContactPhone(paramsDto.getCustomerPhone());
                 customer.setType(CustomerTypeEnum.INDIVIDUAL.code);
                 //customer.setInitial()
                 customer.setState(1);
@@ -136,7 +136,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
 
 
         /**2、更新或保存车辆信息*/
-        List<CommitOrderCarDto> carDtoList =  paramsDto.getCommitOrderCarDtoList();
+        List<CommitOrderCarDto> carDtoList =  paramsDto.getOrderCarList();
         List<OrderCar> orderCarSavelist = new ArrayList<>();
 
         //费用统计变量

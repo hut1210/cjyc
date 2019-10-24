@@ -12,33 +12,42 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 城市信息表
+ * 城市表
  * </p>
  *
  * @author JPG
- * @since 2019-10-12
+ * @since 2019-10-24
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("s_city")
-@ApiModel(value="City对象", description="城市信息表")
+@ApiModel(value="City对象", description="城市表")
 public class City implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "地区编码（含大区、省、市、区）")
+    @ApiModelProperty(value = "编码")
     @TableId(value = "code", type = IdType.AUTO)
     private String code;
 
-    @ApiModelProperty(value = "上级城市编码")
-    private String parentCode;
-
-    @ApiModelProperty(value = "城市名称")
+    @ApiModelProperty(value = "名称")
     private String name;
 
-    @ApiModelProperty(value = "行政区级别： 0大区， 1省， 2市， 3区县")
-    private Integer level;
+    @ApiModelProperty(value = "级别")
+    private Boolean level;
+
+    @ApiModelProperty(value = "上级行政区编码")
+    private String parentCode;
+
+    @ApiModelProperty(value = "上级行政区名称")
+    private String parentName;
+
+    private String pinYin;
+
+    private String pinInitial;
+
+    private String pinAcronym;
 
     @ApiModelProperty(value = "经度")
     private String lng;
@@ -46,14 +55,8 @@ public class City implements Serializable {
     @ApiModelProperty(value = "纬度")
     private String lat;
 
-    @ApiModelProperty(value = "热门城市： 0否， 1是")
+    @ApiModelProperty(value = "热门城市：0否，1是")
     private Boolean hot;
-
-    @ApiModelProperty(value = "创建时间")
-    private Long createTime;
-
-    @ApiModelProperty(value = "更新时间")
-    private Long updateTime;
 
 
 }

@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-12
+ * @since 2019-10-24
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -51,6 +51,9 @@ public class CustomerPointDetail implements Serializable {
 
     @ApiModelProperty(value = "创建时间")
     private Long createTime;
+
+    @ApiModelProperty(value = "用户Id")
+    private Long customerId;
 
 
 }

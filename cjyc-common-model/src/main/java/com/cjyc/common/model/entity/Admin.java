@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-16
+ * @since 2019-10-24
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -34,9 +34,6 @@ public class Admin implements Serializable {
     @ApiModelProperty(value = "user_id(查询架构组数据时使用)")
     private Long userId;
 
-    @ApiModelProperty(value = "承运商ID")
-    private Long carrierId;
-
     @ApiModelProperty(value = "编号")
     private String no;
 
@@ -50,7 +47,7 @@ public class Admin implements Serializable {
     private String tel;
 
     @ApiModelProperty(value = "职位：1提送车业务员，2业务员，3调度员，4客服，81财务")
-    private Integer job;
+    private Integer type;
 
     @ApiModelProperty(value = "状态：0审核中，2在职，4取消审核，7已驳回，9已离职")
     private Integer state;
@@ -88,7 +85,10 @@ public class Admin implements Serializable {
     @ApiModelProperty(value = "资金账户ID")
     private Long accountId;
 
-    @ApiModelProperty(value = "业务范围类型:0业务中心范围，1行政区域范围")
+    @ApiModelProperty(value = "1Web，2App")
+    private String clientType;
+
+    @ApiModelProperty(value = "业务范围类型:0无数据权限，1业务中心数据权限，2行政区域数据权限")
     private Integer bizScope;
 
 

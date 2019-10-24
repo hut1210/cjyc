@@ -301,7 +301,7 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
                     taskDao.insert(task);
                 }
 
-                /**2、单运单，车辆循环*/
+                /**2、运单，车辆循环*/
                 List<WaybillCar> waybillCarList = new ArrayList<>();
                 List<TaskCar> taskCarList = new ArrayList<>();
                 List<Long> orderCarIdList = new ArrayList<>();
@@ -369,7 +369,9 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
                 orderCarDao.updateStateBatchByIds(OrderCarStateEnum.WAIT_PICK.code, orderCarIdList);
             }
         } finally {
-            redisUtil.del(lockSet.toArray(new String[0]));
+            for (String key : lockSet) {
+                redisLock.releaseLock(key);
+            }
         }
         return BaseResultUtil.success();
     }

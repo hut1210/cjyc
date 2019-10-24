@@ -32,8 +32,6 @@ import java.util.List;
 public class DriverServiceImpl implements IDriverService {
     @Resource
     private IDriverDao driverDao;
-    @Resource
-    private ISalemanDao salemanDao;
 
     @Resource
     private IDriverVehicleConDao iDriverVehicleConDao;
@@ -108,7 +106,7 @@ public class DriverServiceImpl implements IDriverService {
                 vr.setDriverId(driver.getId());
                 vr.setPlateNo(dto.getPlateNo());
                 vr.setCarryCarNum(dto.getDefaultCarryNum());
-                vr.setState(Integer.parseInt(SysEnum.ZERO.getValue()));
+                vr.setState(SysEnum.ZERO.getValue());
                 vr.setCreateTime(LocalDateTimeUtil.convertToLong(LocalDateTimeUtil.formatLDTNow(TimePatternConstant.COMPLEX_TIME_FORMAT),
                         TimePatternConstant.COMPLEX_TIME_FORMAT));
                 k = iVehicleRunningDao.insert(vr);
@@ -120,7 +118,7 @@ public class DriverServiceImpl implements IDriverService {
                 carrier.setLinkman(dto.getRealName());
                 carrier.setLinkmanPhone(dto.getPhone());
                 carrier.setMode(dto.getMode());
-                carrier.setType(Integer.parseInt(SysEnum.ONE.getValue()));
+                carrier.setType(SysEnum.ONE.getValue());
                 carrier.setCreateTime(LocalDateTimeUtil.convertToLong(LocalDateTimeUtil.formatLDTNow(TimePatternConstant.COMPLEX_TIME_FORMAT),
                         TimePatternConstant.COMPLEX_TIME_FORMAT));
                 carrier.setCreateUserId(dto.getCurrentUserId());
@@ -131,7 +129,7 @@ public class DriverServiceImpl implements IDriverService {
                 CarrierDriverCon cdc = new CarrierDriverCon();
                 cdc.setCarrierId(carrier.getId());
                 cdc.setDriverId(driver.getId());
-                cdc.setRole(Integer.parseInt(SysEnum.ZERO.getValue()));
+                cdc.setRole(SysEnum.ZERO.getValue());
                 m = iCarrierDriverConDao.insert(cdc);
             }
             if(m > 0){
@@ -177,7 +175,7 @@ public class DriverServiceImpl implements IDriverService {
                 iCarrierDao.updateById(carr);
                 //更新运力
                 VehicleRunning vr = iVehicleRunningDao.getVehiRunByDriverId(id);
-                vr.setState(Integer.parseInt(SysEnum.ONE.getValue()));
+                vr.setState(SysEnum.ONE.getValue());
                 return iVehicleRunningDao.updateById(vr) > 0 ? true : false;
             }else if(SysEnum.TWO.getValue().equals(sign)){
                 //审核拒绝

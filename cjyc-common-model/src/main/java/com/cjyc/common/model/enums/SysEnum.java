@@ -7,17 +7,21 @@ package com.cjyc.common.model.enums;
  */
 public enum SysEnum {
 
-    ZERO("0"), ONE("1"),TWO("2"),THREE("3"),FOUR("4"),FIVE("5"),
-    SIX("6"),SEVEN("7"),EIGHT("8"),NINE("9"),TEN("10");
+    ZERO(0), ONE(1),TWO(2),THREE(3),FOUR(4),FIVE(5),
+    SIX(5),SEVEN(7),EIGHT(8),NINE(9),TEN(10);
 
-    private String value;
+    private Integer value;
 
-    SysEnum(String value) {
+    SysEnum(Integer value) {
         this.value = value;
     }
 
-    public String getValue() {
+    public Integer getValue() {
         return value;
+    }
+
+    public String getStrValue() {
+        return value.toString();
     }
 
 }

@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-12
+ * @since 2019-10-24
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -27,6 +27,7 @@ public class Store implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @ApiModelProperty(value = "ID")
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 

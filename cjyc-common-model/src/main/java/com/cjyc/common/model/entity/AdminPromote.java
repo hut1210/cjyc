@@ -1,5 +1,6 @@
 package com.cjyc.common.model.entity;
 
+import java.math.BigDecimal;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -12,18 +13,18 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 业务员推广明细
+ * 业务员推广表
  * </p>
  *
  * @author JPG
- * @since 2019-10-12
+ * @since 2019-10-24
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("b_saleman_promote_detail")
-@ApiModel(value="SalemanPromoteDetail对象", description="业务员推广明细")
-public class SalemanPromoteDetail implements Serializable {
+@TableName("b_admin_promote")
+@ApiModel(value="AdminPromote对象", description="业务员推广表")
+public class AdminPromote implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -31,20 +32,23 @@ public class SalemanPromoteDetail implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "业务员ID")
+    @ApiModelProperty(value = "user_id")
     private Long userId;
 
-    @ApiModelProperty(value = "推广的用户ID")
-    private Long customerId;
+    @ApiModelProperty(value = "推广人数")
+    private Integer customerNum;
 
-    @ApiModelProperty(value = "状态：0用户未下单，1用户已下单")
-    private Integer state;
+    @ApiModelProperty(value = "有效推广人数")
+    private Integer customerNumValid;
 
-    @ApiModelProperty(value = "状态：0未结算，1结算中，2已结算")
-    private Integer settleState;
+    @ApiModelProperty(value = "总收益")
+    private BigDecimal incomeAmount;
 
-    @ApiModelProperty(value = "结算申请单号")
-    private String settleBillNo;
+    @ApiModelProperty(value = "结算中收益")
+    private BigDecimal settlingAmount;
+
+    @ApiModelProperty(value = "未结算收益")
+    private BigDecimal unsettleAmount;
 
 
 }
