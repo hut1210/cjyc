@@ -12,7 +12,6 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo;
 import com.cjyc.common.model.vo.web.order.OrderVo;
-import com.cjyc.common.model.dto.web.order.CommitOrderDto;
 import com.cjyc.web.api.service.IAdminService;
 import com.cjyc.web.api.service.IBizScopeService;
 import com.cjyc.web.api.service.IOrderService;
@@ -23,7 +22,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
 
@@ -47,9 +45,8 @@ public class OrderController {
 
     /**
      * 保存/提交/审核
-     * 下单时客户不存在自动生成还是无主数据
      */
-    @ApiOperation(value = "客户端保存和提交接口")
+    @ApiOperation(value = "订单保存/提交/审核")
     @PostMapping(value = "/save")
     public ResultVo saveOrUpdate(@RequestBody CommitOrderDto reqDto) {
 
@@ -150,6 +147,17 @@ public class OrderController {
     public ResultVo list(@RequestBody OrderListDto reqDto) {
         return orderService.list(reqDto);
     }
+
+    /**
+     * 订单车辆查询
+     */
+    @ApiOperation(value = "订单车辆查询")
+    @PostMapping(value = "/car/list")
+    public ResultVo carlist(@RequestBody OrderListDto reqDto) {
+        //return orderService.carlist(reqDto);
+        return null;
+    }
+
 
     /**
      * TODO 订单运输信息

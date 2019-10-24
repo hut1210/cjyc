@@ -55,7 +55,7 @@ public class CustomerServiceImpl implements ICustomerService{
         try{
             Customer customer = new Customer();
             customer.setName(customerDto.getName());
-            customer.setPhone(customerDto.getPhone());
+            customer.setContactPhone(customerDto.getPhone());
             customer.setIdCard(customerDto.getIdCard());
             customer.setIdCardFrontImg(customerDto.getIdCardFrontImg());
             customer.setIdCardBackImg(customerDto.getIdCardBackImg());
@@ -99,7 +99,7 @@ public class CustomerServiceImpl implements ICustomerService{
             Customer customer = iCustomerDao.selectById(customerDto.getId());
             if(null != customer){
                 customer.setName(customerDto.getName());
-                customer.setPhone(customerDto.getPhone());
+                customer.setContactPhone(customerDto.getPhone());
                 customer.setIdCard(customerDto.getIdCard());
                 customer.setIdCardFrontImg(customerDto.getIdCardFrontImg());
                 customer.setIdCardBackImg(customerDto.getIdCardBackImg());
@@ -146,7 +146,7 @@ public class CustomerServiceImpl implements ICustomerService{
             customer.setName(keyCustomerDto.getName());
             customer.setAlias(keyCustomerDto.getAlias());
             customer.setContactMan(keyCustomerDto.getContactMan());
-            customer.setPhone(keyCustomerDto.getPhone());
+            customer.setContactPhone(keyCustomerDto.getPhone());
             customer.setContactAddress(keyCustomerDto.getContactAddress());
             customer.setCustomerNature(keyCustomerDto.getCustomerNature());
             customer.setCompanyNature(keyCustomerDto.getCompanyNature());
@@ -233,7 +233,7 @@ public class CustomerServiceImpl implements ICustomerService{
                 sKeyCustomerDto.setName(customer.getName());
                 sKeyCustomerDto.setAlias(customer.getAlias());
                 sKeyCustomerDto.setContactMan(customer.getContactMan());
-                sKeyCustomerDto.setPhone(customer.getPhone());
+                sKeyCustomerDto.setPhone(customer.getContactPhone());
                 sKeyCustomerDto.setContactAddress(customer.getContactAddress());
                 sKeyCustomerDto.setCompanyNature(customer.getCompanyNature());
                 sKeyCustomerDto.setCompanyNature(customer.getCompanyNature());
@@ -264,7 +264,7 @@ public class CustomerServiceImpl implements ICustomerService{
                 customer.setName(keyCustomerDto.getName());
                 customer.setAlias(keyCustomerDto.getAlias());
                 customer.setContactMan(keyCustomerDto.getContactMan());
-                customer.setPhone(keyCustomerDto.getPhone());
+                customer.setContactPhone(keyCustomerDto.getPhone());
                 customer.setContactAddress(keyCustomerDto.getContactAddress());
                 customer.setCustomerNature(keyCustomerDto.getCustomerNature());
                 customer.setCompanyNature(keyCustomerDto.getCompanyNature());
@@ -310,10 +310,10 @@ public class CustomerServiceImpl implements ICustomerService{
     public int save(Customer customer) {
         //添加架构组数据
         AddUserReq addUserReq = new AddUserReq();
-        addUserReq.setAccount(customer.getPhone());
+        addUserReq.setAccount(customer.getContactPhone());
         addUserReq.setPassword(YmlProperty.get("cjkj.web.password"));
         addUserReq.setDeptId(Long.valueOf(YmlProperty.get("cjkj.dept_customer_id")));
-        addUserReq.setMobile(customer.getPhone());
+        addUserReq.setMobile(customer.getContactPhone());
         addUserReq.setName(customer.getName());
         ResultData<AddUserResp> resultData = sysUserService.save(addUserReq);
 

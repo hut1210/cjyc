@@ -106,7 +106,7 @@ public class LoginServiceImpl implements ILoginService {
 
         //添加用户
         Customer customer = new Customer();
-        customer.setPhone(phone);
+        customer.setContactPhone(phone);
         customer.setUserId(addUserResp.getUserId());
         customer.setType(CustomerTypeEnum.INDIVIDUAL.code);
         customer.setSource(CustomerSourceEnum.APP.code);

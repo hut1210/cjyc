@@ -6,7 +6,6 @@ import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
-import java.util.List;
 
 @Data
 public class CarrierDto extends BusinessCityCode implements Serializable {

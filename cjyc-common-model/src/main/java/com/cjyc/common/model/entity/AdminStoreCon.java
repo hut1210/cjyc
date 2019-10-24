@@ -12,7 +12,7 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 司机与运力关系
+ * 业务员业务范围表
  * </p>
  *
  * @author JPG
@@ -21,9 +21,9 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("d_driver_vehicle_con")
-@ApiModel(value="DriverVehicleCon对象", description="司机与运力关系")
-public class DriverVehicleCon implements Serializable {
+@TableName("b_admin_store_con")
+@ApiModel(value="AdminStoreCon对象", description="业务员业务范围表")
+public class AdminStoreCon implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -31,11 +31,11 @@ public class DriverVehicleCon implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "司机ID")
-    private Long driverId;
+    @ApiModelProperty(value = "管理员ID")
+    private Long adminId;
 
-    @ApiModelProperty(value = "运力ID")
-    private Long vehicleId;
+    @ApiModelProperty(value = "业务中心ID")
+    private Long storeId;
 
 
 }

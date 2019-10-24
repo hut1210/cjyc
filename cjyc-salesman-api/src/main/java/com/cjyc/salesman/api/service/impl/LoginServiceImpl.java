@@ -1,11 +1,9 @@
 package com.cjyc.salesman.api.service.impl;
 
 import com.cjkj.common.redis.template.StringRedisUtil;
+import com.cjyc.common.model.dao.IAdminDao;
 import com.cjyc.common.model.dto.salesman.login.LoginByPhoneDto;
 import com.cjyc.common.model.dto.salesman.login.LoginByUserNameDto;
-import com.cjyc.common.model.dto.sys.SysRoleDto;
-import com.cjyc.common.model.entity.Admin;
-import com.cjyc.common.model.entity.Saleman;
 import com.cjyc.common.model.enums.CaptchaTypeEnum;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -14,21 +12,16 @@ import com.cjyc.common.model.vo.salesman.login.SalemanLoginVo;
 import com.cjyc.salesman.api.feign.ISysRoleService;
 import com.cjyc.salesman.api.service.IAdminService;
 import com.cjyc.salesman.api.service.ILoginService;
-import com.cjyc.salesman.api.service.ISalemanService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.List;
 
 @Service
 @Slf4j
 public class LoginServiceImpl implements ILoginService {
 
-    @Resource
-    private ISalemanService salemanService;
     @Resource
     private IAdminService adminService;
     @Resource
@@ -52,9 +45,9 @@ public class LoginServiceImpl implements ILoginService {
         if(!captchaCached.equals(captcha)){
             return BaseResultUtil.fail("验证码错误");
         }
-
+/*
         //查询本地用户信息
-        Saleman saleman = salemanService.getByphone(phone);
+        Saleman saleman = salemanService.getByphone(contactPhone);
         if(saleman == null || saleman.getUserId() == null){
             return BaseResultUtil.fail("用户不存在");
         }
@@ -67,7 +60,8 @@ public class LoginServiceImpl implements ILoginService {
             List<SysRoleDto> roleList = sysRoleService.getListByUserId(saleman.getUserId());
             salemanLoginVo.setRoleList(roleList);
         }
-        return BaseResultUtil.success();
+        return BaseResultUtil.success();*/
+        return null;
     }
 
     @Override

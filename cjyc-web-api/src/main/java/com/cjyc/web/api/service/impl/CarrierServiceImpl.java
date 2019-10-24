@@ -69,26 +69,25 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, com.cjyc.common
         try{
             //添加承运商
             Carrier carrier = new Carrier();
-            carrier.setState(Integer.parseInt(SysEnum.ZERO.getValue()));
-            carrier.setType(Integer.parseInt(SysEnum.TWO.getValue()));
+            carrier.setState(SysEnum.ZERO.getValue());
+            carrier.setType(SysEnum.TWO.getValue());
             carrier = encapCarrier(carrier,dto);
             i = iCarrierDao.insert(carrier);
             Admin admin = null;
             if(i > 0){
                 //添加承运商主管理员
                 admin = new Admin();
-                admin.setCarrierId(carrier.getId());
                 admin.setName(dto.getLinkman());
                 admin.setPhone(dto.getLinkmanPhone());
-                admin.setState(Integer.parseInt(SysEnum.TWO.getValue()));
+                admin.setState(SysEnum.TWO.getValue());
                 k = iAdminDao.insert(admin);
             }
             if(k > 0){
                 //添加承运商司机管理员
                 driver = new Driver();
                 driver.setPhone(dto.getLinkmanPhone());
-                driver.setIdentity(Integer.parseInt(SysEnum.ONE.getValue()));
-                driver.setState(Integer.parseInt(SysEnum.TWO.getValue()));
+                driver.setIdentity(SysEnum.ONE.getValue());
+                driver.setState(SysEnum.TWO.getValue());
                 driver.setCreateUserId(dto.getUserId());
                 m = iDriverDao.insert(driver);
             }
@@ -97,7 +96,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, com.cjyc.common
                 CarrierDriverCon cdc = new CarrierDriverCon();
                 cdc.setDriverId(driver.getId());
                 cdc.setCarrierId(carrier.getId());
-                cdc.setRole(Integer.parseInt(SysEnum.ONE.getValue()));
+                cdc.setRole(SysEnum.ONE.getValue());
                 j = iCarrierDriverConDao.insert(cdc);
             }
             if(j > 0){
@@ -109,7 +108,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, com.cjyc.common
                 bcb.setBankName(dto.getBankName());
                 bcb.setIdCard(dto.getLegaIdCard());
                 bcb.setCardPhone(dto.getLinkmanPhone());
-                bcb.setState(Integer.parseInt(SysEnum.ONE.getValue()));
+                bcb.setState(SysEnum.ONE.getValue());
                 n = iBankCardBindDao.insert(bcb);
             }
             //业务范围
@@ -210,16 +209,16 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, com.cjyc.common
             com.cjyc.common.model.entity.Carrier carrier = iCarrierDao.selectById(id);
             //审核通过
             if(state.equals(SysEnum.ONE.getValue())){
-                carrier.setState(Integer.parseInt(SysEnum.TWO.getValue()));
+                carrier.setState(SysEnum.TWO.getValue());
             }else if(state.equals(SysEnum.TWO.getValue())){
                 //审核拒绝
-                carrier.setState(Integer.parseInt(SysEnum.FOUR.getValue()));
+                carrier.setState(SysEnum.FOUR.getValue());
             }else if(state.equals(SysEnum.THREE.getValue())){
                 //冻结
-                carrier.setState(Integer.parseInt(SysEnum.SEVEN.getValue()));
+                carrier.setState(SysEnum.SEVEN.getValue());
             }else if(state.equals(SysEnum.FOUR.getValue())){
                 //解冻
-                carrier.setState(Integer.parseInt(SysEnum.TWO.getValue()));
+                carrier.setState(SysEnum.TWO.getValue());
             }
             return iCarrierDao.updateById(carrier) > 0 ? true : false;
         }catch (Exception e){

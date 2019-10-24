@@ -71,15 +71,13 @@ public class OrderListDto extends BasePageDto {
     @ApiModelProperty(value = "目的地业务中心ID: -1不经过业务中心")
     private Long endStoreId;
 
-    @ApiModelProperty(value = "起始预计出发时间（提车日期）")
-    private Long beginExpectStartDate;
-    @ApiModelProperty(value = "截止预计出发时间（提车日期）")
-    private Long endExpectStartDate;
+    @ApiModelProperty(value = "日期类型：1指定提车日期，2预计到达时间，3创建时间，4确认时间，5完结时间")
+    private Long timeType;
+    @ApiModelProperty(value = "起始（提车日期）")
+    private Long beginTime;
+    @ApiModelProperty(value = "截止（提车日期）")
+    private Long endTime;
 
-    @ApiModelProperty(value = "起始预计到达时间")
-    private Long beginExpectEndDate;
-    @ApiModelProperty(value = "截止预计到达时间")
-    private Long endExpectEndDate;
 
 
     @ApiModelProperty(value = "提车方式:1 自送，2代驾上门，3拖车上门，4物流上门")
@@ -107,19 +105,11 @@ public class OrderListDto extends BasePageDto {
     @ApiModelProperty(value = "订单来源：1WEB管理后台, 2业务员APP, 3业务员小程序, 4业务员APP, 5业务员小程序, 6用户端APP, 7用户端小程序")
     private Integer source;
 
-    @ApiModelProperty(value = "起始创建时间")
-    private Long beginCreateTime;
-    @ApiModelProperty(value = "截止创建时间")
-    private Long endCreateTime;
 
     @ApiModelProperty(value = "创建人：客户/业务员")
     private String createUserName;
 
 
-    @ApiModelProperty(value = "起始确认时间")
-    private Long beginCheckTime;
-    @ApiModelProperty(value = "截止确认时间")
-    private Long endCheckTime;
 
     @ApiModelProperty(value = "客户付款方式：0到付（默认），1预付，2账期")
     private Integer payType;

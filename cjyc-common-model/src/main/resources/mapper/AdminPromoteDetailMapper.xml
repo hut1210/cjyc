@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.cjyc.common.model.dao.ISalemanPromoteDetailDao">
+<mapper namespace="com.cjyc.common.model.dao.IAdminPromoteDetailDao">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.SalemanPromoteDetail">
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.AdminPromoteDetail">
         <id column="id" property="id" />
         <result column="user_id" property="userId" />
         <result column="customer_id" property="customerId" />

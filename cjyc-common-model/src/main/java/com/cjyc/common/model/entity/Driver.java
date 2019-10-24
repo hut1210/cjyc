@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-21
+ * @since 2019-10-24
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -43,10 +43,10 @@ public class Driver implements Serializable {
     @ApiModelProperty(value = "紧急联系方式")
     private String emergencyPhone;
 
-    @ApiModelProperty(value = "类型：0业务员，1自营司机，2社会司机")
+    @ApiModelProperty(value = "类型：1自营司机，2社会司机")
     private Integer type;
 
-    @ApiModelProperty(value = "承运方式：0 ：代驾 1：干线司机  2：拖车司机 4全支持")
+    @ApiModelProperty(value = "承运方式：0 ：代驾 1：干线司机  2：拖车司机 ")
     private Integer mode;
 
     @ApiModelProperty(value = "司机身份 0：普通司机 1：管理员")

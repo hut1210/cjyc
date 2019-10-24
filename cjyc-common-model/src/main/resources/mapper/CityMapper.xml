@@ -5,19 +5,21 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.City">
         <id column="code" property="code" />
-        <result column="parent_code" property="parentCode" />
         <result column="name" property="name" />
         <result column="level" property="level" />
+        <result column="parent_code" property="parentCode" />
+        <result column="parent_name" property="parentName" />
+        <result column="pin_yin" property="pinYin" />
+        <result column="pin_initial" property="pinInitial" />
+        <result column="pin_acronym" property="pinAcronym" />
         <result column="lng" property="lng" />
         <result column="lat" property="lat" />
         <result column="hot" property="hot" />
-        <result column="create_time" property="createTime" />
-        <result column="update_time" property="updateTime" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        code, parent_code as parentCode, name, level, lng, lat, hot, create_time as createTime, update_time as updateTime
+        code, name, level, parent_code, parent_name, pin_yin, pin_initial, pin_acronym, lng, lat, hot
     </sql>
     <select id="findChildList" resultType="com.cjyc.common.model.entity.City">
         select

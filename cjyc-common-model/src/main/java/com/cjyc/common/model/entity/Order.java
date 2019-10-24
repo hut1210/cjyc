@@ -17,7 +17,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-22
+ * @since 2019-10-24
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -155,8 +155,14 @@ public class Order implements Serializable {
     @ApiModelProperty(value = "创建人：客户/业务员")
     private String createUserName;
 
-    @ApiModelProperty(value = "创建人类型：0客户，1业务员")
+    @ApiModelProperty(value = "创建人userid")
     private Long createUserId;
+
+    @ApiModelProperty(value = "被分配给业务员的名称")
+    private String allotToUserName;
+
+    @ApiModelProperty(value = "被分配给业务员的userid")
+    private Long allotToUserId;
 
     @ApiModelProperty(value = "确认时间")
     private Long checkTime;
@@ -164,7 +170,7 @@ public class Order implements Serializable {
     @ApiModelProperty(value = "确认人：业务员")
     private String checkUserName;
 
-    @ApiModelProperty(value = "确认人ID")
+    @ApiModelProperty(value = "确认人userid")
     private Long checkUserId;
 
     @ApiModelProperty(value = "订单状态：0待提交，2待分配，5待确认，10待复确认，15待预付款，25已确认，55运输中，88待付款，100已完成，111原返（待），112异常结束，113取消（待），114作废（待）")
@@ -191,17 +197,17 @@ public class Order implements Serializable {
     @ApiModelProperty(value = "应收保险费")
     private BigDecimal insuranceFee;
 
-    @ApiModelProperty(value = "应收订单定金（保留字段）")
-    private BigDecimal depositFee;
-
-    @ApiModelProperty(value = "代收中介费（为资源合伙人代收）")
-    private BigDecimal agencyFee;
-
     @ApiModelProperty(value = "物流券抵消金额")
     private BigDecimal couponOffsetFee;
 
-    @ApiModelProperty(value = "应收总价：提车费+干线费+送车费+保险费+中介费")
+    @ApiModelProperty(value = "代收中介费（为资源合伙人代收），计算值")
+    private BigDecimal agencyFee;
+
+    @ApiModelProperty(value = "应收总价：收车后客户应支付平台的费用，计算值")
     private BigDecimal totalFee;
+
+    @ApiModelProperty(value = "应收订单定金（保留字段）")
+    private BigDecimal depositFee;
 
     @ApiModelProperty(value = "车辆均摊费用（提车费/送车费/中转费）方式：0均分余数散列（默认），1不均分")
     private Integer feeShareType;
@@ -217,6 +223,9 @@ public class Order implements Serializable {
 
     @ApiModelProperty(value = "上次客户支付尾款时间")
     private Long wlPayTime;
+
+    @ApiModelProperty(value = "订单完结时间")
+    private Long finishTime;
 
     @ApiModelProperty(value = "线下收款标识：默认0（不允许），")
     private Integer offlinePayFlag;

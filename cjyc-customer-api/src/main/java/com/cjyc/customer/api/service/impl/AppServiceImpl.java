@@ -36,16 +36,16 @@ public class AppServiceImpl implements IAppService {
     @Override
     public boolean sendMessage(String phone) {
 
-//        int msgToday = msgLimitMap.isEmpty()? 0 : msgLimitMap.get(phone);
+//        int msgToday = msgLimitMap.isEmpty()? 0 : msgLimitMap.get(contactPhone);
 //
 //        //手机号合法且 未超出单日上限
-//        if(CommonUtil.valiPhoneNumber(phone) && msgDaylimit > msgToday){
+//        if(CommonUtil.valiPhoneNumber(contactPhone) && msgDaylimit > msgToday){
 //            //生成6位短信码
 //            String code = CommonUtil.randomNum(6);
 //
 //            try {
 //                //发送短信
-//                MiaoxinSmsUtil.send(phone, String.format(Constants.MSG_SEND_TEMP, code, msgExpires));
+//                MiaoxinSmsUtil.send(contactPhone, String.format(Constants.MSG_SEND_TEMP, code, msgExpires));
 //
 //                //msgExpires时间后删除短信码
 //                final Timer timer=new Timer();
@@ -53,16 +53,16 @@ public class AppServiceImpl implements IAppService {
 //                timer.schedule(new TimerTask() {
 //                    @Override
 //                    public void run() {
-//                        msgMap.remove(phone);
+//                        msgMap.remove(contactPhone);
 //                        timer.cancel();
 //                    }
 //                },msgExpires*60*1000);
 //
 //                //单日累计发送次数设值
-//                msgLimitMap.put(phone, msgToday+1);
+//                msgLimitMap.put(contactPhone, msgToday+1);
 //
 //                //保存验证码
-//                msgMap.put(phone,code);
+//                msgMap.put(contactPhone,code);
 //            }catch (Exception ex){
 //                ex.printStackTrace();
 //            }
@@ -95,10 +95,10 @@ public class AppServiceImpl implements IAppService {
 //        Map<String,Object> map = new HashMap<>();
 //
 //        //登录之后验证码失效
-//        msgMap.remove(phone);
+//        msgMap.remove(contactPhone);
 //
 //        //查询注册用户
-//        Customer customer = customerDao.selectByPhone(phone);
+//        Customer customer = customerDao.selectByPhone(contactPhone);
 //
 //        //登录
 //        if(customer != null){
@@ -112,10 +112,10 @@ public class AppServiceImpl implements IAppService {
 //            customer.setCustomerCode(newCustomerCode);
 //            String token = tokenService.createToken(customer.getCustomerCode());
 //            customer.setToken(token);
-//            customer.setPhone(phone);
+//            customer.setContactPhone(contactPhone);
 //            customer.setName("客户"+ CommonUtil.randomNum(10));//默认名称
 //            customer.setFirstLetter(PinyinUtil.getPinYinAcronym("客户"));
-//            customer.setPwd(phone);//默认密码是其手机号
+//            customer.setPwd(contactPhone);//默认密码是其手机号
 //            customer.setToken(token);
 //            int id = customerDao.insert(customer);
 //
@@ -138,7 +138,7 @@ public class AppServiceImpl implements IAppService {
     @Override
     public void logout(String customerCode, String token) {
         Customer customer = loginUserMap.get(token);
-        msgMap.remove(customer.getPhone());
+        msgMap.remove(customer.getContactPhone());
         loginUserMap.remove(token);
         tokenService.delToken(token);
     }

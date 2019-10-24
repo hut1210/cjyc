@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-18
+ * @since 2019-10-24
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -76,7 +76,7 @@ public class Carrier implements Serializable {
     @ApiModelProperty(value = "公司联系人手机号")
     private String linkmanPhone;
 
-    @ApiModelProperty(value = "承运方式：1代驾，2托运，3全支持")
+    @ApiModelProperty(value = "承运方式：1代驾，2托运，3干线 4全支持")
     private Integer mode;
 
     @ApiModelProperty(value = "管理员数量")

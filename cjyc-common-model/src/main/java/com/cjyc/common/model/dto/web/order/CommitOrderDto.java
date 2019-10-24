@@ -129,5 +129,5 @@ public class CommitOrderDto {
     private Integer state;
 
     /**车辆列表*/
-    private List<CommitOrderCarDto> commitOrderCarDtoList;
+    private List<CommitOrderCarDto> orderCarList;
 }
