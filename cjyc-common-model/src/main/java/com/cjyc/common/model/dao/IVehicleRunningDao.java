@@ -22,6 +22,13 @@ public interface IVehicleRunningDao extends BaseMapper<VehicleRunning> {
     VehicleRunning getVehiRunByVehiId(@Param("vehicleId") String vehicleId);
 
     /**
+     * 根据司机id查询运力信息
+     * @param driverId
+     * @return
+     */
+    VehicleRunning getVehiRunByDriverId(@Param("driverId") Long driverId);
+
+    /**
      * 根据运力vehicle_id删除运力信息
      * @param vehicleId
      * @return

@@ -41,9 +41,55 @@
         </choose>
     </select>
 
-    <!--根据城市编码code获取子code -->
-    <select id="getCodesList"  resultType="java.lang.String" parameterType="java.lang.String">
-        select code from s_city where parent_code = #{parentCode,jdbcType=VARCHAR}
+    <!--通过大区codes 获取区县codes -->
+    <select id="getAreaCodesByLarCode" resultType="java.lang.String">
+        SELECT
+            c4.CODE
+        FROM
+            s_city c1
+            JOIN s_city c2 ON c1.CODE = c2.parent_code
+            JOIN s_city c3 ON c2.CODE = c3.parent_code
+            JOIN s_city c4 ON c3.CODE = c4.parent_code
+        where c1.code in
+        <foreach collection="list" item="code" index="index" open="(" close=")" separator=",">
+            #{code}
+        </foreach>
+    </select>
+
+    <!--通过省/直辖市codes获取区县codes -->
+    <select id="getAreaCodesByProCode" resultType="java.lang.String">
+        SELECT
+            c3.CODE
+        FROM
+            s_city c1
+            JOIN s_city c2 ON c1.CODE = c2.parent_code
+            JOIN s_city c3 ON c2.CODE = c3.parent_code
+        where c1.code in
+        <foreach collection="list" item="code" index="index" open="(" close=")" separator=",">
+            #{code}
+        </foreach>
+    </select>
+
+    <!--通过城市codes获取区县codes -->
+    <select id="getAreaCodesByCityCode" resultType="java.lang.String">
+        SELECT
+        c2.CODE
+        FROM
+        s_city c1
+        JOIN s_city c2 ON c1.CODE = c2.parent_code
+        where c1.code in
+        <foreach collection="list" item="code" index="index" open="(" close=")" separator=",">
+            #{code}
+        </foreach>
+    </select>
+
+    <!--根据编码获取该编码和名称 -->
+    <select id="getCityAndName" resultType="com.cjyc.common.model.dto.BaseCityDto">
+      select  code as code,name as name  from s_city
+        where code in
+        <foreach collection="list" item="code" index="index" open="(" close=")" separator=",">
+            #{code}
+        </foreach>
     </select>
 
 </mapper>

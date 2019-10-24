@@ -24,4 +24,11 @@
         id, user_id, user_type, card_type, card_name, card_no, card_phone, id_card, bank_code, bank_name, description, state, create_time
     </sql>
 
+    <!-- 根据userId获取银行卡信息 -->
+    <select id="getBankCardBindByUserId" resultType="com.cjyc.common.model.entity.BankCardBind" parameterType="java.lang.Long">
+        select
+          <include refid="Base_Column_List"/>
+        from s_bank_card_bind where user_id = #{userId}
+    </select>
+
 </mapper>

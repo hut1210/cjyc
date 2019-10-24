@@ -1,7 +1,7 @@
 package com.cjyc.common.model.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.core.mapper.Mapper;
+import com.cjyc.common.model.dto.BaseCityDto;
 import com.cjyc.common.model.entity.City;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -29,10 +29,33 @@ public interface ICityDao extends BaseMapper<City> {
     List<Map<String,Object>> getList(@Param("cityCode") String cityCode);
 
     /**
-     * 根据城市编码code获取子级code
-     * @param parentCode
+     *  通过大区codes 获取区县codes
+     * @param code
      * @return
      */
-    List<String> getCodesList(@Param("parentCode") String parentCode);
+    List<String> getAreaCodesByLarCode(List<String> code);
+
+    /**
+     * 通过省/直辖市codes获取区县codes
+     * @param code
+     * @return
+     */
+    List<String> getAreaCodesByProCode(List<String> code);
+
+    /**
+     * 通过城市codes获取区县codes
+     * @param code
+     * @return
+     */
+    List<String> getAreaCodesByCityCode(List<String> code);
+
+    /**
+     * 根据编码获取该编码和名称
+     * @param code
+     * @return
+     */
+    List<BaseCityDto> getCityAndName(List<String> code);
+
+
 }
 

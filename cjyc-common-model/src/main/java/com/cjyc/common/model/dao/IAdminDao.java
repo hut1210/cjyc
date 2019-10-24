@@ -19,4 +19,11 @@ public interface IAdminDao extends BaseMapper<Admin> {
     Admin findByUserId(@Param("userId") Long userId);
 
     List<Long> findStoreBizScope(@Param("adminId") Long adminId);
+
+    /**
+     * 根据承运商id获取Admin
+     * @param carrierId
+     * @return
+     */
+    Admin getByCarrierId(@Param("carrierId") Long carrierId);
 }

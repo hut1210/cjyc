@@ -3,15 +3,15 @@ package com.cjyc.web.api.controller;
 import com.cjyc.common.model.dto.web.driver.DriverDto;
 import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
 import com.cjyc.common.model.dto.web.user.DriverListDto;
-import com.cjyc.common.model.dto.web.vehicle.SelectVehicleDto;
+import com.cjyc.common.model.entity.BusinessCityCode;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BasePageUtil;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.driver.DriverVo;
+import com.cjyc.common.model.vo.web.driver.ShowDriverVo;
 import com.cjyc.common.model.vo.web.user.DriverListVo;
-import com.cjyc.common.model.vo.web.vehicle.VehicleVo;
 import com.cjyc.web.api.service.IDriverService;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
@@ -67,12 +67,42 @@ public class DriverController {
     @ApiOperation(value = "根据司机userId进行审核通过/拒绝", notes = "根据司机userId进行审核通过/拒绝", httpMethod = "POST")
     @RequestMapping(value = "/examineDriById/{id}", method = RequestMethod.POST)
     public ResultVo examineDriById(@PathVariable @ApiParam(value = "用户id",required = true) Long id,
-                                   @PathVariable @ApiParam(value = "标志 1：审核通过 2：审核拒绝",required = true) String sign){
+                                   @PathVariable @ApiParam(value = "标志 1：审核通过 2：审核拒绝 3:冻结 4:解除",required = true) String sign){
         if(id == null || StringUtils.isBlank(sign)){
             BaseResultUtil.getVo(ResultEnum.MOBILE_PARAM_ERROR.getCode(),ResultEnum.MOBILE_PARAM_ERROR.getMsg());
         }
         boolean result = driverService.examineDriById(id,sign);
-        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg());
+        return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg())
+                : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
+    }
+
+    @ApiOperation(value = "根据司机userId/Id查看司机信息", notes = "根据司机userId/Id查看司机信息", httpMethod = "POST")
+    @RequestMapping(value = "/getDriverById/{id}/{userId}", method = RequestMethod.POST)
+    public ResultVo<ShowDriverVo> getDriverById(@PathVariable @ApiParam(value = "司机id",required = true) Long id,
+                                                @PathVariable @ApiParam(value = "司机UserId",required = true) Long userId){
+        if(id == null || userId == null){
+            BaseResultUtil.getVo(ResultEnum.MOBILE_PARAM_ERROR.getCode(),ResultEnum.MOBILE_PARAM_ERROR.getMsg());
+        }
+        ShowDriverVo showDriverVo = driverService.getDriverById(id,userId);
+        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),showDriverVo);
+    }
+
+    @ApiOperation(value = "根据司机Id查看司机业务范围", notes = "根据司机Id查看司机业务范围", httpMethod = "POST")
+    @RequestMapping(value = "/getDriverBusiById/{id}", method = RequestMethod.POST)
+    public ResultVo<BusinessCityCode> getDriverBusiById(@PathVariable @ApiParam(value = "司机id",required = true) Long id){
+        if(id == null){
+            BaseResultUtil.getVo(ResultEnum.MOBILE_PARAM_ERROR.getCode(),ResultEnum.MOBILE_PARAM_ERROR.getMsg());
+        }
+        BusinessCityCode businessCityCode = driverService.getDriverBusiById(id);
+        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),businessCityCode);
+    }
+
+    @ApiOperation(value = "根据司机Id更新司机信息", notes = "根据司机Id更新司机信息", httpMethod = "POST")
+    @RequestMapping(value = "/updDriverById/{id}", method = RequestMethod.POST)
+    public ResultVo updateDriver(@RequestBody DriverDto dto){
+        boolean result = driverService.updateDriver(dto);
+        return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg())
+                : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
     }
 
 }

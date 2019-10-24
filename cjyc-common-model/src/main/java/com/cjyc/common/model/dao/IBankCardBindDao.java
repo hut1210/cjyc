@@ -2,6 +2,7 @@ package com.cjyc.common.model.dao;
 
 import com.cjyc.common.model.entity.BankCardBind;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -12,5 +13,12 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @since 2019-09-29
  */
 public interface IBankCardBindDao extends BaseMapper<BankCardBind> {
+
+    /**
+     * 根据userId获取银行卡信息
+     * @param userId
+     * @return
+     */
+    BankCardBind getBankCardBindByUserId(@Param("userId") Long userId);
 
 }
