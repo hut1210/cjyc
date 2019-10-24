@@ -1,4 +1,4 @@
-package com.cjyc.common.service.interceptor;
+package com.cjyc.common.system.interceptor;
 
 /**
  * @author leo

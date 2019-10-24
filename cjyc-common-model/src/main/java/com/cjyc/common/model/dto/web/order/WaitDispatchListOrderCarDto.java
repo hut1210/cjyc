@@ -21,7 +21,7 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel
-public class OrderCarWaitDispatchListDto extends BasePageDto implements Serializable {
+public class WaitDispatchListOrderCarDto extends BasePageDto implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

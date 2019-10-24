@@ -5,9 +5,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * @auther litan
- * @description: com.cjyc.web.api.controller
- * @date:2019/9/28
+ * 任务
+ * @author JPG
  */
 @RestController
 @RequestMapping("/task")

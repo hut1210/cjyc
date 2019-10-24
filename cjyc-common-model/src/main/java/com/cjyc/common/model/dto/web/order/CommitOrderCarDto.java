@@ -1,23 +1,23 @@
-package com.cjyc.web.api.dto;
+package com.cjyc.common.model.dto.web.order;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.apache.poi.hpsf.Decimal;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
- * @auther litan
- * @description: 订单车辆入参实体类
- * @date:2019/10/8
+ * @author JPG
  */
 @Data
-public class OrderCarDto implements Serializable {
+@EqualsAndHashCode(callSuper = false)
+@Accessors(chain = true)
+@ApiModel
+public class CommitOrderCarDto implements Serializable {
 
-
-    @ApiModelProperty(value = "id")
-    private String id;
     @ApiModelProperty(value = "品牌",required = true)
     private String brand;
     @ApiModelProperty(value = "型号",required = true)

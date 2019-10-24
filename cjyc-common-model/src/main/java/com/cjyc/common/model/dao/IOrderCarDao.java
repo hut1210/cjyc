@@ -1,11 +1,11 @@
 package com.cjyc.common.model.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.cjyc.common.model.dto.web.order.OrderCarLineWaitDispatchCountListDto;
-import com.cjyc.common.model.dto.web.order.OrderCarWaitDispatchListDto;
+import com.cjyc.common.model.dto.web.order.ChangePriceOrderCarDto;
+import com.cjyc.common.model.dto.web.order.LineWaitDispatchCountListOrderCarDto;
+import com.cjyc.common.model.dto.web.order.WaitDispatchListOrderCarDto;
 import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.vo.customer.OrderCarCenterVo;
-import com.cjyc.common.model.vo.web.OrderCarVo;
 import com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo;
 import org.apache.ibatis.annotations.Param;
 
@@ -70,7 +70,7 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
      * @param paramsDto
      * @param bizScope
      */
-    List<OrderCarWaitDispatchVo> findWaitDispatchCarList(@Param("paramsDto") OrderCarWaitDispatchListDto paramsDto, @Param("bizScope") List<Long> bizScope);
+    List<OrderCarWaitDispatchVo> findWaitDispatchCarList(@Param("paramsDto") WaitDispatchListOrderCarDto paramsDto, @Param("bizScope") List<Long> bizScope);
 
     /**
      * 按线路统计待调度车辆（统计列表）
@@ -79,7 +79,7 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
      * @param paramsDto 参数条件
      * @param bizScopeStoreIds
      */
-    List<Map<String, Object>> findlineWaitDispatchCarCountList(@Param("paramsDto") OrderCarLineWaitDispatchCountListDto paramsDto, List<Long> bizScopeStoreIds);
+    List<Map<String, Object>> findlineWaitDispatchCarCountList(@Param("paramsDto") LineWaitDispatchCountListOrderCarDto paramsDto, List<Long> bizScopeStoreIds);
 
    /**
     * 更新状态
@@ -104,4 +104,6 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
     List<OrderCar> findByOrderId(Long orderId);
 
     int deleteBatchByOrderId(@Param("orderId") Long orderId);
+
+    List<ChangePriceOrderCarDto> findChangePriceDtoByOrderId(Long orderId);
 }

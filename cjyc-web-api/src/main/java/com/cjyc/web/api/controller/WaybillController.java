@@ -66,13 +66,13 @@ public class WaybillController {
     @ApiOperation("干线追加调度")
     @PostMapping("/trunk/dispatch/update")
     public ResultVo updateTrunkDispatch(@RequestBody WaybillTrunkDispatchListListDto reqDto) {
-        return waybillService.trunkDispatch(reqDto);
+        return null;
     }
 
 
 
     /**
-     * TODO 取消调度
+     * 取消调度
      *
      * @author JPG
      * @since 2019/10/15 11:53

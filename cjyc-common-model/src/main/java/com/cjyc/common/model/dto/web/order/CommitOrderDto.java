@@ -1,27 +1,30 @@
-package com.cjyc.web.api.dto;
+package com.cjyc.common.model.dto.web.order;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * @auther litan
- * @description: com.cjyc.web.api.dto
- * @date:2019/9/29
+ * @author JPG
  */
-@Data(staticConstructor = "getInstance")
-public class OrderCommitDto {
+@Data
+@EqualsAndHashCode(callSuper = false)
+@Accessors(chain = true)
+@ApiModel
+public class CommitOrderDto {
 
     @NotNull
     @ApiModelProperty(value = "1WEB管理后台, 2业务员APP, 3业务员小程序, 4业务员APP, 5业务员小程序, 6用户端APP, 7用户端小程序", required = true)
     private int clientId;
     @ApiModelProperty(value = "操作人userid")
     private Long userId;
-    @ApiModelProperty(value = "用户ID")
+    @ApiModelProperty(value = "订单ID")
     private Long orderId;
     @NotNull
     @ApiModelProperty(value = "1-c端 2-大客户 3-合伙人",required = true)
@@ -33,6 +36,8 @@ public class OrderCommitDto {
     private Long customerId;
     @ApiModelProperty(value = "客户姓名",required = true)
     private String customerName;
+    @ApiModelProperty(value = "客户姓名",required = true)
+    private String customerPhone;
 
 
     @ApiModelProperty(value = "始发地详细地址",required = true)
@@ -111,18 +116,18 @@ public class OrderCommitDto {
     private Long couponId;//优惠券id
 
     @NotNull
-    @ApiModelProperty(value = "实际总费用，韵车实际收益(未减去物流券)",required = true)
-    private BigDecimal realTotalFee;
+    @ApiModelProperty(value = "实际总收益费用，车辆合计费用（提车费+干线费+送车费+保险费）",required = true)
+    private BigDecimal realWlTotalFee;
     @NotNull
     @ApiModelProperty(value = "物流券抵消金额",required = true)
     private BigDecimal couponOffsetFee;
     @NotNull
-    @ApiModelProperty(value = "实际总物流费用，客户实际付款",required = true)
+    @ApiModelProperty(value = "实际总物流费用，客户实际需付(提车费+干线费+送车费+保险费+服务费)",required = true)
     private BigDecimal wlTotalFee;
 
     @ApiModelProperty(value = "状态（不需要传）")
     private Integer state;
 
     /**车辆列表*/
-    private List<OrderCarDto> orderCarDtoList;
+    private List<CommitOrderCarDto> commitOrderCarDtoList;
 }

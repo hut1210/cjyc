@@ -30,7 +30,7 @@ import java.util.List;
 
 /**
  * @auther litan
- * @description: com.cjyc.customer.api.service.impl
+ * @description: com.cjyc.customer.api.system.impl
  * @date:2019/10/8
  */
 @Service

@@ -1,7 +1,6 @@
-package com.cjyc.common.service.aspect;
+package com.cjyc.common.system.aspect;
 
-import com.cjkj.common.utils.IPUtil;
-import com.cjyc.common.service.service.ILogService;
+import com.cjyc.common.system.service.ISystemLogService;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
@@ -26,7 +25,7 @@ import java.util.UUID;
 public class OperationLogAspect {
 
     @Resource(name="logServiceImpl")
-    private ILogService logService;
+    private ISystemLogService logService;
 
     //保存线程共享变量，开始执行时间
     ThreadLocal<Long> startTime = new ThreadLocal<>();
@@ -70,7 +69,7 @@ public class OperationLogAspect {
         final String methodType = request.getMethod();  //请求类型
         final String url = request.getRequestURL().toString();
         final String uri = request.getRequestURI();
-        final String ip = IPUtil.getIpAddr(request);
+        //final String ip = IPUtil.getIpAddr(request);
         final String account = "13012297251";
         final String token = "token";
         final String clazz = joinPoint.getSignature().getDeclaringTypeName();

@@ -1,7 +1,10 @@
 package com.cjyc.web.api.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.cjkj.common.model.ResultData;
 import com.cjkj.common.utils.SnowflakeIdWorker;
+import com.cjkj.usercenter.dto.common.AddUserReq;
+import com.cjkj.usercenter.dto.common.AddUserResp;
 import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.dao.ICustomerContractDao;
 import com.cjyc.common.model.dao.ICustomerDao;
@@ -10,11 +13,13 @@ import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.entity.CustomerContract;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.dto.BasePageDto;
+import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.web.CustomerContractVo;
 import com.cjyc.common.model.vo.web.CustomerVo;
 import com.cjyc.common.model.vo.web.ListKeyCustomerVo;
 import com.cjyc.common.model.vo.web.ShowKeyCustomerVo;
 import com.cjyc.web.api.exception.CommonException;
+import com.cjyc.web.api.feign.ISysUserService;
 import com.cjyc.web.api.service.ICustomerService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -42,6 +47,8 @@ public class CustomerServiceImpl implements ICustomerService{
 
     @Resource
     private ICustomerContractDao iCustomerContractDao;
+    @Resource
+    private ISysUserService sysUserService;
 
     @Override
     public boolean saveCustomer(CustomerDto customerDto) {
@@ -297,6 +304,28 @@ public class CustomerServiceImpl implements ICustomerService{
             throw new CommonException(e.getMessage());
         }
         return pageInfo;
+    }
+
+    @Override
+    public int save(Customer customer) {
+        //添加架构组数据
+        AddUserReq addUserReq = new AddUserReq();
+        addUserReq.setAccount(customer.getPhone());
+        addUserReq.setPassword(YmlProperty.get("cjkj.web.password"));
+        addUserReq.setDeptId(Long.valueOf(YmlProperty.get("cjkj.dept_customer_id")));
+        addUserReq.setMobile(customer.getPhone());
+        addUserReq.setName(customer.getName());
+        ResultData<AddUserResp> resultData = sysUserService.save(addUserReq);
+
+        if(resultData == null || resultData.getData() == null || resultData.getData().getUserId() == null){
+            return 0;
+        }
+        return iCustomerDao.insert(customer);
+    }
+
+    @Override
+    public Customer selectById(Long customerId) {
+        return iCustomerDao.selectById(customerId);
     }
 
     /**

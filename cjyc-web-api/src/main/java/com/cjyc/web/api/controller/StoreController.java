@@ -3,7 +3,7 @@ package com.cjyc.web.api.controller;
 import com.cjyc.common.model.entity.Store;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.service.service.IStoreService;
+import com.cjyc.web.api.service.IStoreService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.MediaType;

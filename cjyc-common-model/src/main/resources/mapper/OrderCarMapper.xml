@@ -301,6 +301,21 @@
         from w_order_car
         where order_id = #{orderId}
     </select>
+    <select id="findChangePriceDtoByOrderId" resultType="com.cjyc.common.model.dto.web.order.ChangePriceOrderCarDto">
+        select
+            id,
+            no,
+            vin,
+            pick_fee as pickFee,
+            trunk_fee as trunkFee,
+            back_fee as backFee,
+            insurance_fee as insuranceFee,
+            coupon_offset_fee as couponOffsetFee,
+            agency_fee as agencyFee
+        FROM w_order_car
+        where order_id = #{orderId}
+
+    </select>
 
     <!--业务范围条件-->
     <sql id="and_bizScopeStoreIds">

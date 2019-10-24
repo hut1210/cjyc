@@ -104,4 +104,7 @@ public interface ICustomerService  {
      */
     PageInfo<ListKeyCustomerVo> findKeyCustomer(SelectKeyCustomerDto selectKeyCustomerDto);
 
+    int save(Customer customer);
+
+    Customer selectById(Long customerId);
 }

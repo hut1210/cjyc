@@ -32,6 +32,18 @@ public class GlobalExceptionHandler {
         return BaseResultUtil.getVo(ResultEnum.MOBILE_PARAM_ERROR.getCode(), e.getMessage());
     }
 
+    /**
+     * ParameterException需要读RequestBody时，必传参数未传时
+     * @param e
+     * @return
+     */
+    @ExceptionHandler({ServerException.class})
+    public ResultVo handleException(ServerException e){
+        log.error(e.getMessage(), e);
+        return BaseResultUtil.getVo(ResultEnum.API_INVOKE_ERROR.getCode(), e.getMessage());
+    }
+
+
 
     /**
      * HttpMessageNotReadableException 需要读RequestBody时，没有传值时

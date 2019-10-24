@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * @auther litan
- * @description: com.cjyc.salesman.api.service.impl
+ * @description: com.cjyc.salesman.api.system.impl
  * @date:2019/9/28
  */
 @Service

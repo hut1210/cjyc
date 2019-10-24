@@ -10,7 +10,7 @@ import com.github.pagehelper.PageInfo;
 
 /**
  * @auther litan
- * @description: com.cjyc.customer.api.service
+ * @description: com.cjyc.customer.api.system
  * @date:2019/10/8
  */
 public interface IOrderService {

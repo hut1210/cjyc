@@ -4,7 +4,7 @@ package com.cjyc.common.model.enums.order;
  * 订单保存方式
  * @author JPG
  */
-public enum OrderSaveType {
+public enum OrderSaveTypeEnum {
 
     /***/
     SAVE("保存",1),
@@ -14,7 +14,7 @@ public enum OrderSaveType {
     public String name;
     public int code;
 
-    OrderSaveType(String name, int code) {
+    OrderSaveTypeEnum(String name, int code) {
         this.name = name;
         this.code = code;
     }
