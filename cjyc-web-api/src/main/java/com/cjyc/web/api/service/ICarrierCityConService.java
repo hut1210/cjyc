@@ -18,4 +18,12 @@ public interface ICarrierCityConService extends IService<CarrierCityCon> {
      * @return
      */
     BusinessCityCode showCarrCityCon(CarrierCityCon ccc);
+
+    /**
+     * 更新承运商业务范围
+     * @param id
+     * @param bccd
+     * @return
+     */
+    boolean updateCarrCityCon(Long id,BusinessCityCode bccd);
 }

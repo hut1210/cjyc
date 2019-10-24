@@ -168,12 +168,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, com.cjyc.common
             }
             if(m > 0){
                 //承运商业务范围
-                int n = iCarrierCityConDao.deleteByCarrierId(dto.getId());
-                if(n > 0){
-                    CarrierCityCon ccc = iCarrierCityConService.encapCarrCityCon(dto);
-                    ccc.setCarrierId(dto.getId());
-                    return iCarrierCityConDao.insert(ccc) > 0 ? true : false;
-                }
+                iCarrierCityConService.updateCarrCityCon(dto.getId(),dto);
             }
         }catch (Exception e){
             log.info("更新承运商信息出现异常");

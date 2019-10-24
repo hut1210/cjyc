@@ -44,7 +44,7 @@
     <select id="getCarrierById" resultType="com.cjyc.common.model.entity.Carrier"
             parameterType="java.lang.Long">
           SELECT
-            carr.id,carr.state
+            carr.id as id,carr.state as state,carr.name as name,carr.linkman_phone as linkmanPhone
         FROM
             d_carrier carr
             JOIN d_carrier_driver_con con ON con.carrier_id = carr.id

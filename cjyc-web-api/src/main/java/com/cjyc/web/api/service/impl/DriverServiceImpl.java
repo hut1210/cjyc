@@ -218,6 +218,9 @@ public class DriverServiceImpl implements IDriverService {
     public boolean updateDriver(DriverDto dto) {
         int i;
         int j;
+        int m = 0;
+        int n = 0;
+        Carrier carrier = null;
         try{
             //更新司机信息
             Driver driver = driverDao.selectById(dto.getId());
@@ -244,8 +247,21 @@ public class DriverServiceImpl implements IDriverService {
                     vr.setVehicleId(dto.getVehicleId());
                     vr.setPlateNo(dto.getPlateNo());
                     vr.setCarryCarNum(dto.getDefaultCarryNum());
-                    return iVehicleRunningDao.updateById(vr) > 0 ? true : false;
+                    m =iVehicleRunningDao.updateById(vr);
                 }
+            }
+            //更新承运商信息
+            if(m > 0){
+                carrier = iCarrierDao.getCarrierById(dto.getId());
+                if(carrier != null){
+                    carrier.setName(dto.getRealName());
+                    carrier.setLinkmanPhone(dto.getPhone());
+                    n = iCarrierDao.updateById(carrier);
+                }
+            }
+            if(n > 0){
+                //更新承运商业务范围
+                iCarrierCityConService.updateCarrCityCon(carrier.getId(),dto);
             }
         }catch (Exception e){
             log.info("根据司机id更新司机信息出现异常");

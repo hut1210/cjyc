@@ -7,6 +7,7 @@ import com.cjyc.common.model.dto.BaseCityDto;
 import com.cjyc.common.model.entity.BusinessCityCode;
 import com.cjyc.common.model.entity.CarrierCityCon;
 import com.cjyc.common.model.enums.SysEnum;
+import com.cjyc.web.api.exception.CommonException;
 import com.cjyc.web.api.service.ICarrierCityConService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -27,6 +28,9 @@ public class ICarrierCityConServiceImpl extends ServiceImpl<ICarrierCityConDao, 
 
     @Resource
     private ICarrierCityConDao iCarrierCityConDao;
+
+    @Resource
+    private ICarrierCityConService iCarrierCityConService;
 
     /**
      * 建立承运商的业务范围
@@ -143,5 +147,21 @@ public class ICarrierCityConServiceImpl extends ServiceImpl<ICarrierCityConDao, 
         bcc.setCityList(cityList);
         bcc.setAreaList(areaList);
         return bcc;
+    }
+
+    @Override
+    public boolean updateCarrCityCon(Long id,BusinessCityCode bccd) {
+        try{
+            int h = iCarrierCityConDao.deleteByCarrierId(id);
+            if(h > 0){
+                CarrierCityCon ccc = iCarrierCityConService.encapCarrCityCon(bccd);
+                ccc.setCarrierId(id);
+                return iCarrierCityConDao.insert(ccc) > 0 ? true : false;
+            }
+        }catch (Exception e){
+            log.info("更新承运商业务范围出现异常");
+            throw new CommonException(e.getMessage());
+        }
+        return false;
     }
 }
