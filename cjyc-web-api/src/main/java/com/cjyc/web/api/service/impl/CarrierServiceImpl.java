@@ -6,7 +6,14 @@ import com.cjyc.common.model.dto.web.carrier.CarrierDto;
 import com.cjyc.common.model.dto.web.carrier.SeleCarrierDto;
 import com.cjyc.common.model.dto.web.carrier.SeleVehicleDto;
 import com.cjyc.common.model.entity.*;
-import com.cjyc.common.model.enums.SysEnum;
+import com.cjyc.common.model.enums.AdminStateEnum;
+import com.cjyc.common.model.enums.FlagEnum;
+import com.cjyc.common.model.enums.UseStateEnum;
+import com.cjyc.common.model.enums.transport.BusinessStateEnum;
+import com.cjyc.common.model.enums.transport.CarrierTypeEnum;
+import com.cjyc.common.model.enums.transport.DriverIdentityEnum;
+import com.cjyc.common.model.enums.transport.VerifyStateEnum;
+import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.web.carrier.BaseVehicleVo;
 import com.cjyc.common.model.vo.web.carrier.CarrierVo;
 import com.cjyc.common.model.vo.web.carrier.BaseCarrierVo;
@@ -23,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -69,8 +77,8 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, com.cjyc.common
         try{
             //添加承运商
             Carrier carrier = new Carrier();
-            carrier.setState(SysEnum.ZERO.getValue());
-            carrier.setType(SysEnum.TWO.getValue());
+            carrier.setState(VerifyStateEnum.BE_AUDITED.code);
+            carrier.setType(CarrierTypeEnum.ENTERPRISE.code);
             carrier = encapCarrier(carrier,dto);
             i = iCarrierDao.insert(carrier);
             Admin admin = null;
@@ -79,15 +87,18 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, com.cjyc.common
                 admin = new Admin();
                 admin.setName(dto.getLinkman());
                 admin.setPhone(dto.getLinkmanPhone());
-                admin.setState(SysEnum.TWO.getValue());
+                admin.setState(AdminStateEnum.CHECKED.code);
+                admin.setCreateTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
+                admin.setCheckUserId(dto.getUserId());
                 k = iAdminDao.insert(admin);
             }
             if(k > 0){
                 //添加承运商司机管理员
                 driver = new Driver();
                 driver.setPhone(dto.getLinkmanPhone());
-                driver.setIdentity(SysEnum.ONE.getValue());
-                driver.setState(SysEnum.TWO.getValue());
+                driver.setIdentity(DriverIdentityEnum.ADMIN.code);
+                driver.setState(VerifyStateEnum.AUDIT_PASS.code);
+                driver.setBusinessState(BusinessStateEnum.BUSINESS.code);
                 driver.setCreateUserId(dto.getUserId());
                 m = iDriverDao.insert(driver);
             }
@@ -96,7 +107,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, com.cjyc.common
                 CarrierDriverCon cdc = new CarrierDriverCon();
                 cdc.setDriverId(driver.getId());
                 cdc.setCarrierId(carrier.getId());
-                cdc.setRole(SysEnum.ONE.getValue());
+                cdc.setRole(DriverIdentityEnum.ADMIN.code);
                 j = iCarrierDriverConDao.insert(cdc);
             }
             if(j > 0){
@@ -108,7 +119,8 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, com.cjyc.common
                 bcb.setBankName(dto.getBankName());
                 bcb.setIdCard(dto.getLegaIdCard());
                 bcb.setCardPhone(dto.getLinkmanPhone());
-                bcb.setState(SysEnum.ONE.getValue());
+                bcb.setState(UseStateEnum.USABLE.code);
+                bcb.setCreateTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
                 n = iBankCardBindDao.insert(bcb);
             }
             //业务范围
@@ -203,22 +215,22 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, com.cjyc.common
     }
 
     @Override
-    public boolean verifyCarrierById(Long id, String state) {
+    public boolean verifyCarrierById(Long id, Integer state) {
         try{
             //审核状态 1:审核通过 2:审核拒绝 3：冻结 4:解除
-            com.cjyc.common.model.entity.Carrier carrier = iCarrierDao.selectById(id);
+            Carrier carrier = iCarrierDao.selectById(id);
             //审核通过
-            if(state.equals(SysEnum.ONE.getValue())){
-                carrier.setState(SysEnum.TWO.getValue());
-            }else if(state.equals(SysEnum.TWO.getValue())){
+            if(FlagEnum.AUDIT_PASS.code == state){
+                carrier.setState(VerifyStateEnum.AUDIT_PASS.code);
+            }else if(FlagEnum.AUDIT_REJECT.code == state){
                 //审核拒绝
-                carrier.setState(SysEnum.FOUR.getValue());
-            }else if(state.equals(SysEnum.THREE.getValue())){
+                carrier.setState(VerifyStateEnum.AUDIT_REJECT.code);
+            }else if(FlagEnum.FROZEN.code == state){
                 //冻结
-                carrier.setState(SysEnum.SEVEN.getValue());
-            }else if(state.equals(SysEnum.FOUR.getValue())){
+                carrier.setState(VerifyStateEnum.FROZEN.code);
+            }else if(FlagEnum.THAW.code == state){
                 //解冻
-                carrier.setState(SysEnum.TWO.getValue());
+                carrier.setState(VerifyStateEnum.AUDIT_PASS.code);
             }
             return iCarrierDao.updateById(carrier) > 0 ? true : false;
         }catch (Exception e){
@@ -287,6 +299,8 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, com.cjyc.common
         carrier.setTransportLicenseBackImg(dto.getTransportLicenseBackImg());
         carrier.setBankOpenFrontImg(dto.getBankOpenFrontImg());
         carrier.setBankOpenBackImg(dto.getBankOpenBackImg());
+        carrier.setCreateTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
+        carrier.setCreateUserId(dto.getUserId());
         return carrier;
     }
 }

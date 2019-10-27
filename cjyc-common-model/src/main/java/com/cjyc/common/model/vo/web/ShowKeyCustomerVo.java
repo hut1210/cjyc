@@ -12,26 +12,26 @@ public class ShowKeyCustomerVo implements Serializable {
     @ApiModelProperty(value = "大客户主键id")
     private Long id;
 
+    @ApiModelProperty("大客户userId")
+    private Long userId;
+
     @ApiModelProperty(value = "客户全称")
     private String name;
 
-    @ApiModelProperty(value = "客户简称")
-    private String alias;
+    @ApiModelProperty(value = "统一社会代码")
+    private String socialCreditCode;
 
-    @ApiModelProperty(value = "联系人")
+    @ApiModelProperty(value = "业务对接人")
     private String contactMan;
 
     @ApiModelProperty(value = "联系电话")
-    private String phone;
+    private String contactPhone;
 
     @ApiModelProperty(value = "客户地址")
     private String contactAddress;
 
-    @ApiModelProperty(value = "客户性质")
-    private String customerNature;
-
-    @ApiModelProperty(value = "公司性质/规模")
-    private String companyNature;
+    @ApiModelProperty(value = "客户性质  0：电商 1：租赁 2：金融公司 3：经销商 4：其他")
+    private Integer customerNature;
 
     @ApiModelProperty(value = "大客户合同")
     private List<CustomerContractVo> custContraVos;

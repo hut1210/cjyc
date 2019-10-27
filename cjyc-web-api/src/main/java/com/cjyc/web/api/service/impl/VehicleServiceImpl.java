@@ -10,7 +10,6 @@ import com.cjyc.common.model.dto.web.vehicle.VehicleDto;
 import com.cjyc.common.model.entity.DriverVehicleCon;
 import com.cjyc.common.model.entity.Vehicle;
 import com.cjyc.common.model.entity.VehicleRunning;
-import com.cjyc.common.model.enums.SysEnum;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.web.vehicle.VehicleVo;
 import com.cjyc.web.api.exception.CommonException;
@@ -113,7 +112,7 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
             List<VehicleVo> vehicleVos = iVehicleDao.getVehicleByTerm(dto);
             if(vehicleVos != null && vehicleVos.size() > 0){
                 for(VehicleVo vo : vehicleVos){
-                    vo.setCreateName(LocalDateTimeUtil.convertToString(Long.valueOf(vo.getCreateTime()), TimePatternConstant.COMPLEX_TIME_FORMAT));
+                    //vo.setCreateTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
                 }
                 PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
                 pageInfo = new PageInfo<>(vehicleVos);

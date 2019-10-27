@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 @Data
 public class CustomerContractVo implements Serializable {
@@ -17,7 +18,10 @@ public class CustomerContractVo implements Serializable {
     @ApiModelProperty(value = "合同性质  0：框式  1：制式")
     private Integer contactNature;
 
-    @ApiModelProperty(value = "账期 0：时付  1: 30天   2: 60天  3：90天  4：120天  5：150天")
+    @ApiModelProperty(value = "结算类型 0:账期 1：时付")
+    private Integer settleType;
+
+    @ApiModelProperty("账期/天")
     private Integer settlePeriod;
 
     @ApiModelProperty(value = "合同有效期")
@@ -42,10 +46,10 @@ public class CustomerContractVo implements Serializable {
     private Integer oneOffContract;
 
     @ApiModelProperty(value = "项目预计运量")
-    private Long proTraVolume;
+    private BigDecimal proTraVolume;
 
     @ApiModelProperty(value = "月度平均运量")
-    private Long avgMthTraVolume;
+    private BigDecimal avgMthTraVolume;
 
     @ApiModelProperty(value = "业务覆盖范围")
     private String busiCover;

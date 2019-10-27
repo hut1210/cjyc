@@ -1,7 +1,7 @@
 package com.cjyc.salesman.api.service.impl;
 
 import com.cjyc.common.model.entity.Customer;
-import com.cjyc.common.model.dao.ICustomerDao;
+import com.cjyc.common.model.dao.customerDao;
 import com.cjyc.salesman.api.service.ICustomerService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
@@ -15,6 +15,6 @@ import org.springframework.stereotype.Service;
  * @since 2019-10-09
  */
 @Service
-public class CustomerServiceImpl extends ServiceImpl<ICustomerDao, Customer> implements ICustomerService {
+public class CustomerServiceImpl extends ServiceImpl<customerDao, Customer> implements ICustomerService {
 
 }

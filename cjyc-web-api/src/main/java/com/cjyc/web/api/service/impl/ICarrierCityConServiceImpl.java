@@ -6,7 +6,6 @@ import com.cjyc.common.model.dao.ICityDao;
 import com.cjyc.common.model.dto.BaseCityDto;
 import com.cjyc.common.model.entity.BusinessCityCode;
 import com.cjyc.common.model.entity.CarrierCityCon;
-import com.cjyc.common.model.enums.SysEnum;
 import com.cjyc.web.api.exception.CommonException;
 import com.cjyc.web.api.service.ICarrierCityConService;
 import lombok.extern.slf4j.Slf4j;

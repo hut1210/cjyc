@@ -2,7 +2,7 @@ package com.cjyc.customer.api.service.impl;
 
 import com.cjyc.common.model.dto.web.customer.CustomerfuzzyListDto;
 import com.cjyc.common.model.entity.Customer;
-import com.cjyc.common.model.dao.ICustomerDao;
+import com.cjyc.common.model.dao.customerDao;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
@@ -22,9 +22,9 @@ import java.util.List;
  * @since 2019-10-18
  */
 @Service
-public class CustomerServiceImpl extends ServiceImpl<ICustomerDao, Customer> implements ICustomerService {
+public class CustomerServiceImpl extends ServiceImpl<customerDao, Customer> implements ICustomerService {
     @Resource
-    private ICustomerDao customerDao;
+    private customerDao customerDao;
 
     @Override
     public ResultVo fuzzyList(CustomerfuzzyListDto paramsDto) {

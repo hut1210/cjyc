@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-24
+ * @since 2019-10-26
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -57,6 +57,9 @@ public class BankCardBind implements Serializable {
 
     @ApiModelProperty(value = "开户银行名称")
     private String bankName;
+
+    @ApiModelProperty(value = "银行开户许可证")
+    private String bankLicence;
 
     @ApiModelProperty(value = "描述")
     private String description;

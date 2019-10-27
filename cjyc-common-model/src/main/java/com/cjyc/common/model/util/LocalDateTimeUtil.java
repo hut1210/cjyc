@@ -157,24 +157,14 @@ public class LocalDateTimeUtil {
     /**
      * 将日期格式的字符串转换为长整型
      *
-     * @param date
+     * @param dateStr
      * @param format
      * @return
      */
-    public static Long convertToLong(String date, String format) throws Exception {
-        SimpleDateFormat sf = new SimpleDateFormat(format);
-        return sf.parse(date).getTime();
+    public static Long convertToLong(String dateStr, String format) {
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern(format);
+        LocalDate date = LocalDate.parse(dateStr, fmt);
+        return date.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
 
-    /**
-     * 将长整型数字转换为日期格式的字符串
-     * @param time
-     * @param format
-     * @return
-     */
-    public static String convertToString(long time, String format) {
-            SimpleDateFormat sf = new SimpleDateFormat(format);
-            Date date = new Date(time);
-            return sf.format(date);
-    }
 }

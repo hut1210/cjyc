@@ -6,7 +6,6 @@ import com.cjyc.common.model.dto.BasePageDto;
 import com.cjyc.common.model.dto.web.coupon.CouponDto;
 import com.cjyc.common.model.dto.web.coupon.SeleCouponDto;
 import com.cjyc.common.model.entity.Coupon;
-import com.cjyc.common.model.enums.SysEnum;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.web.coupon.CouponVo;
 import com.cjyc.web.api.exception.CommonException;
@@ -100,10 +99,10 @@ public class CouponServiceImpl implements ICouponService {
                 coupon.setCutAmount(coupon.getCutAmount().divide(new BigDecimal(100)));
             }
             if(coupon.getStartPeriodDate() != null){
-                coupon.setStartPeriodDate(Long.valueOf(LocalDateTimeUtil.convertToString(coupon.getStartPeriodDate(), TimePatternConstant.SIMPLE_DATE_FORMAT)));
+               // coupon.setStartPeriodDate(LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(coupon.getStartPeriodDate()),TimePatternConstant.SIMPLE_DATE_FORMAT));
             }
             if(coupon.getEndPeriodDate() != null){
-                coupon.setEndPeriodDate(Long.valueOf(LocalDateTimeUtil.convertToString(coupon.getEndPeriodDate(), TimePatternConstant.SIMPLE_DATE_FORMAT)));
+                //coupon.setEndPeriodDate(Long.valueOf(LocalDateTimeUtil.convertToString(coupon.getEndPeriodDate(), TimePatternConstant.SIMPLE_DATE_FORMAT)));
             }
             return coupon;
         }catch (Exception e){
@@ -202,10 +201,10 @@ public class CouponServiceImpl implements ICouponService {
             if(couponVos != null && couponVos.size() > 0){
                 for(CouponVo vo : couponVos){
                     if(StringUtils.isBlank(vo.getIsForever())){
-                        vo.setStartPeriodDate(LocalDateTimeUtil.convertToString(Long.valueOf(vo.getStartPeriodDate()), TimePatternConstant.SIMPLE_DATE_FORMAT));
-                        vo.setEndPeriodDate(LocalDateTimeUtil.convertToString(Long.valueOf(vo.getEndPeriodDate()), TimePatternConstant.SIMPLE_DATE_FORMAT));
+                        //vo.setStartPeriodDate(LocalDateTimeUtil.convertToString(Long.valueOf(vo.getStartPeriodDate()), TimePatternConstant.SIMPLE_DATE_FORMAT));
+                        //vo.setEndPeriodDate(LocalDateTimeUtil.convertToString(Long.valueOf(vo.getEndPeriodDate()), TimePatternConstant.SIMPLE_DATE_FORMAT));
                     }
-                    vo.setCreateTime(LocalDateTimeUtil.convertToString(Long.valueOf(vo.getCreateTime()), TimePatternConstant.COMPLEX_TIME_FORMAT));
+                    //vo.setCreateTime(LocalDateTimeUtil.convertToString(Long.valueOf(vo.getCreateTime()), TimePatternConstant.COMPLEX_TIME_FORMAT));
                     if(StringUtils.isNotBlank(vo.getFullAmount())){
                         vo.setFullAmount(new BigDecimal(vo.getFullAmount()).divide(new BigDecimal(100)).toString());
                     }

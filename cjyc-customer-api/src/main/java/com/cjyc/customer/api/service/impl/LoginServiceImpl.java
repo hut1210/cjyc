@@ -6,7 +6,7 @@ import com.cjkj.usercenter.dto.common.AddUserReq;
 import com.cjkj.usercenter.dto.common.AddUserResp;
 import com.cjkj.usercenter.dto.common.auth.AuthLoginReq;
 import com.cjkj.usercenter.dto.common.auth.AuthLoginResp;
-import com.cjyc.common.model.dao.ICustomerDao;
+import com.cjyc.common.model.dao.customerDao;
 import com.cjyc.common.model.dto.salesman.login.LoginByPhoneDto;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.enums.*;
@@ -33,7 +33,7 @@ import javax.annotation.Resource;
 public class LoginServiceImpl implements ILoginService {
 
     @Resource
-    private ICustomerDao customerDao;
+    private customerDao customerDao;
     @Autowired
     private StringRedisUtil redisUtil;
     @Resource

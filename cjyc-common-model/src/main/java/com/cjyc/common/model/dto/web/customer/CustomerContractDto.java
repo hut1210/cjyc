@@ -1,11 +1,13 @@
-package com.cjyc.common.model.dto.web;
+package com.cjyc.common.model.dto.web.customer;
 
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiParam;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 @Data
 public class CustomerContractDto implements Serializable {
@@ -16,7 +18,8 @@ public class CustomerContractDto implements Serializable {
     public interface UpdateCustomerContractVo {
     }
 
-    @ApiModelProperty(value = "合同主键id")
+    @NotBlank(groups = {UpdateCustomerContractVo.class},message = "合同id不能为空")
+    @ApiModelProperty(value = "合同id",required = true)
     private Long id;
 
     @NotBlank(groups = {SaveCustomerContractVo.class},message = "合同编号不能为空")
@@ -29,9 +32,12 @@ public class CustomerContractDto implements Serializable {
     @ApiModelProperty(value = "合同性质 0：框式  1：制式",required = true)
     private Integer contactNature;
 
-    @NotNull(groups = {SaveCustomerContractVo.class},message = "账期不能为空")
-    @NotNull(groups = {UpdateCustomerContractVo.class},message = "账期不能为空")
-    @ApiModelProperty(value = "账期 0：时付  1: 30天   2: 60天  3：90天  4：120天  5：150天",required = true)
+    @NotNull(groups = {SaveCustomerContractVo.class},message = "结算类型不能为空")
+    @NotNull(groups = {UpdateCustomerContractVo.class},message = "结算类型不能为空")
+    @ApiModelProperty(value = "结算类型 0:账期 1：时付",required = true)
+    private Integer settleType;
+
+    @ApiModelProperty("账期/天")
     private Integer settlePeriod;
 
     @NotBlank(groups = {SaveCustomerContractVo.class},message = "合同有效期不能为空")
@@ -59,21 +65,11 @@ public class CustomerContractDto implements Serializable {
     @ApiModelProperty(value = "项目性质 0：新开  1：存量",required = true)
     private Integer projectNature;
 
-    @NotBlank(groups = {SaveCustomerContractVo.class},message = "项目签署日期不能为空")
-    @NotBlank(groups = {UpdateCustomerContractVo.class},message = "项目签署日期不能为空")
-    @ApiModelProperty(value = "项目签署日期",required = true)
-    private String dateOfProSign;
-
-    @NotNull(groups = {SaveCustomerContractVo.class},message = "一次性合同不能为空")
-    @NotNull(groups = {UpdateCustomerContractVo.class},message = "一次性合同不能为空")
-    @ApiModelProperty(value = "一次性合同 0：否   1：是",required = true)
-    private Integer oneOffContract;
-
     @ApiModelProperty(value = "项目预计运量")
-    private Long proTraVolume;
+    private BigDecimal proTraVolume;
 
     @ApiModelProperty(value = "月度平均运量")
-    private Long avgMthTraVolume;
+    private BigDecimal avgMthTraVolume;
 
     @ApiModelProperty(value = "业务覆盖范围")
     private String busiCover;

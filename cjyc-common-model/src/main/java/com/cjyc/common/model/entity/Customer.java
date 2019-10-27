@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-24
+ * @since 2019-10-27
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -49,14 +49,11 @@ public class Customer implements Serializable {
     @ApiModelProperty(value = "客户地址")
     private String contactAddress;
 
-    @ApiModelProperty(value = "客户性质")
-    private String customerNature;
+    @ApiModelProperty(value = "客户性质  0：电商 1：租赁 2：金融公司 3：经销商 4：其他")
+    private Integer customerNature;
 
-    @ApiModelProperty(value = "公司性质/规模")
-    private String companyNature;
-
-    @ApiModelProperty(value = "主营业务描述")
-    private String majorBusDes;
+    @ApiModelProperty(value = "统一社会信用代码")
+    private String socialCreditCode;
 
     @ApiModelProperty(value = "首字母")
     private String initial;

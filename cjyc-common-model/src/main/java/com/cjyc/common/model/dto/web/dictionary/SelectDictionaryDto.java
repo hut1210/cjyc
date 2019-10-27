@@ -1,4 +1,4 @@
-package com.cjyc.common.model.dto.web;
+package com.cjyc.common.model.dto.web.dictionary;
 
 import com.cjyc.common.model.dto.BasePageDto;
 import io.swagger.annotations.ApiModelProperty;

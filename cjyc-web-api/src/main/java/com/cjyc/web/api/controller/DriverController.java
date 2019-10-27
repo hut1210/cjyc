@@ -48,24 +48,24 @@ public class DriverController {
         return driverService.lineWaitDispatchCarCountList(reqDto);
     }
 
-    @ApiOperation(value = "新增散户司机", notes = "新增散户司机", httpMethod = "POST")
-    @RequestMapping(value = "/saveDriver", method = RequestMethod.POST)
+    @ApiOperation(value = "新增散户司机")
+    @PostMapping(value = "/saveDriver")
     public ResultVo saveDriver(@Validated({ DriverDto.SaveDriverDto.class }) @RequestBody DriverDto dto){
         boolean result = driverService.saveDriver(dto);
         return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg())
                 : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
     }
 
-    @ApiOperation(value = "根据查询条件查看司机信息", notes = "根据查询条件查看司机信息", httpMethod = "POST")
-    @RequestMapping(value = "/getDriverByTerm", method = RequestMethod.POST)
+    @ApiOperation(value = "根据查询条件查看司机信息")
+    @PostMapping(value = "/getDriverByTerm")
     public ResultVo<PageVo<DriverVo>> getDriverByTerm(@RequestBody SelectDriverDto dto){
         BasePageUtil.initPage(dto.getCurrentPage(),dto.getPageSize());
         PageInfo<DriverVo> pageInfo = driverService.getDriverByTerm(dto);
         return BaseResultUtil.getPageVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),pageInfo);
     }
 
-    @ApiOperation(value = "根据司机userId进行审核通过/拒绝", notes = "根据司机userId进行审核通过/拒绝", httpMethod = "POST")
-    @RequestMapping(value = "/examineDriById/{id}", method = RequestMethod.POST)
+    @ApiOperation(value = "根据司机userId进行审核通过/拒绝")
+    @PostMapping(value = "/examineDriById/{id}")
     public ResultVo examineDriById(@PathVariable @ApiParam(value = "用户id",required = true) Long id,
                                    @PathVariable @ApiParam(value = "标志 1：审核通过 2：审核拒绝 3:冻结 4:解除",required = true) String sign){
         if(id == null || StringUtils.isBlank(sign)){
@@ -76,8 +76,8 @@ public class DriverController {
                 : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
     }
 
-    @ApiOperation(value = "根据司机userId/Id查看司机信息", notes = "根据司机userId/Id查看司机信息", httpMethod = "POST")
-    @RequestMapping(value = "/getDriverById/{id}/{userId}", method = RequestMethod.POST)
+    @ApiOperation(value = "根据司机userId/Id查看司机信息")
+    @PostMapping(value = "/getDriverById/{id}/{userId}")
     public ResultVo<ShowDriverVo> getDriverById(@PathVariable @ApiParam(value = "司机id",required = true) Long id,
                                                 @PathVariable @ApiParam(value = "司机UserId",required = true) Long userId){
         if(id == null || userId == null){
@@ -87,8 +87,8 @@ public class DriverController {
         return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),showDriverVo);
     }
 
-    @ApiOperation(value = "根据司机Id查看司机业务范围", notes = "根据司机Id查看司机业务范围", httpMethod = "POST")
-    @RequestMapping(value = "/getDriverBusiById/{id}", method = RequestMethod.POST)
+    @ApiOperation(value = "根据司机Id查看司机业务范围")
+    @PostMapping(value = "/getDriverBusiById/{id}")
     public ResultVo<BusinessCityCode> getDriverBusiById(@PathVariable @ApiParam(value = "司机id",required = true) Long id){
         if(id == null){
             BaseResultUtil.getVo(ResultEnum.MOBILE_PARAM_ERROR.getCode(),ResultEnum.MOBILE_PARAM_ERROR.getMsg());
@@ -97,8 +97,8 @@ public class DriverController {
         return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),businessCityCode);
     }
 
-    @ApiOperation(value = "根据司机Id更新司机信息", notes = "根据司机Id更新司机信息", httpMethod = "POST")
-    @RequestMapping(value = "/updDriverById/{id}", method = RequestMethod.POST)
+    @ApiOperation(value = "根据司机Id更新司机信息")
+    @PostMapping(value = "/updDriverById/{id}")
     public ResultVo updateDriver(@RequestBody DriverDto dto){
         boolean result = driverService.updateDriver(dto);
         return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg())

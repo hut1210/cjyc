@@ -38,7 +38,7 @@ public class CouponSendServiceImpl implements ICouponSendService {
             List<CouponSendVo> couponSendVos = iCouponSendDao.seleCouponSendByTerm(dto);
             if(couponSendVos != null && couponSendVos.size() > 0){
                 for(CouponSendVo vo : couponSendVos){
-                    LocalDateTimeUtil.convertToString(Long.valueOf(vo.getUseTime()), TimePatternConstant.COMPLEX_TIME_FORMAT);
+                    LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(Long.valueOf(vo.getUseTime())),TimePatternConstant.COMPLEX_TIME_FORMAT);
                 }
                 PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
                 pageInfo = new PageInfo<>(couponSendVos);
@@ -56,7 +56,7 @@ public class CouponSendServiceImpl implements ICouponSendService {
             List<CouponSend> couponSends = iCouponSendDao.selectBatchIds(dto.getIds());
             if(couponSends != null && couponSends.size() > 0){
                 for(CouponSend vo : couponSends){
-                    LocalDateTimeUtil.convertToString(Long.valueOf(vo.getUseTime()), TimePatternConstant.COMPLEX_TIME_FORMAT);
+                    LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(Long.valueOf(vo.getUseTime())),TimePatternConstant.COMPLEX_TIME_FORMAT);
                 }
                 PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
                 pageInfo = new PageInfo<>(couponSends);

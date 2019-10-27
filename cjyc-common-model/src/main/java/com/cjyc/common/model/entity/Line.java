@@ -17,7 +17,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-24
+ * @since 2019-10-26
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -54,7 +54,7 @@ public class Line implements Serializable {
     private BigDecimal days;
 
     @ApiModelProperty(value = "状态:1启用 2停用")
-    private BigDecimal state;
+    private Boolean state;
 
     @ApiModelProperty(value = "默认物流费（上游），单位分")
     private BigDecimal defaultWlFee;
@@ -66,16 +66,16 @@ public class Line implements Serializable {
     private String remark;
 
     @ApiModelProperty(value = "创建时间")
-    private String createTime;
+    private Long createTime;
 
     @ApiModelProperty(value = "创建人ID")
     private Long createUserId;
 
-    @ApiModelProperty(value = "更新时间")
-    private String updateTime;
-
     @ApiModelProperty(value = "更新人ID")
     private Long updateUserId;
+
+    @ApiModelProperty(value = "更新时间")
+    private Long updateTime;
 
 
 }

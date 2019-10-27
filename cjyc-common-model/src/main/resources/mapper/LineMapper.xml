@@ -18,13 +18,13 @@
         <result column="remark" property="remark" />
         <result column="create_time" property="createTime" />
         <result column="create_user_id" property="createUserId" />
-        <result column="update_time" property="updateTime" />
         <result column="update_user_id" property="updateUserId" />
+        <result column="update_time" property="updateTime" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, code, name, from_code, to_code, level, kilometer, days, state, default_wl_fee, default_freight_fee, remark, create_time, create_user_id, update_time, update_user_id
+        id, code, name, from_code, to_code, level, kilometer, days, state, default_wl_fee, default_freight_fee, remark, create_time, create_user_id, update_user_id, update_time
     </sql>
 
     <!-- 通过城市编码查看上游运价 -->
@@ -39,6 +39,34 @@
                 and to_code = #{toCode}
             </if>
             and state = 1
+        </where>
+    </select>
+
+    <!-- 通过条件查询班线 -->
+    <select id="getLineByTerm" resultType="com.cjyc.common.model.vo.web.line.LineVo"
+                                parameterType="com.cjyc.common.model.dto.web.line.SelectLineDto">
+       SELECT
+        id AS id,
+        from_code AS startCityCode,
+        to_code AS endCityCode,
+        default_wl_fee AS defaultWlFee,
+        default_freight_fee AS defaultFreightFee,
+        kilometer AS kilometer,
+        days AS days,
+        remark AS remark,
+        create_time AS createTime
+    FROM
+        s_line
+        <where>
+            <if test="startCityCode != null and startCityCode.trim() != ''">
+                from_code = #{startCityCode}
+            </if>
+            <if test="linkman != null and linkman.trim() != ''">
+                and to_code = #{endCityCode}
+            </if>
+            <if test="lineCode != null and lineCode.trim() != ''">
+                and code = #{lineCode}
+            </if>
         </where>
     </select>
 

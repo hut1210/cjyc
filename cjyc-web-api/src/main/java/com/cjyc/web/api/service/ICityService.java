@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.dto.salesman.city.CityPageDto;
 import com.cjyc.common.model.entity.City;
+import com.cjyc.common.model.vo.ResultVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -45,4 +46,10 @@ public interface ICityService extends IService<City> {
      * @param code
      */
     List<City> selectChildList(String code);
+
+    /**
+     * 省城市树形结构
+     * @return
+     */
+    ResultVo provinceCityTree();
 }

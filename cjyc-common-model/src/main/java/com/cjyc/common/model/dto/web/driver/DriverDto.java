@@ -15,11 +15,8 @@ public class DriverDto extends BusinessCityCode implements Serializable {
     @ApiModelProperty("司机id")
     private Long id;
 
-    @ApiModelProperty("司机userId")
+    @ApiModelProperty("登陆用户userId")
     private Long userId;
-
-    @ApiModelProperty("当前登陆用户Id")
-    private Long currentUserId;
 
     @ApiModelProperty("司机姓名")
     private String realName;
@@ -27,7 +24,7 @@ public class DriverDto extends BusinessCityCode implements Serializable {
     @ApiModelProperty("司机手机号")
     private String phone;
 
-    @ApiModelProperty("承运方式：0 ：代驾 1：干线司机  2：拖车司机 4全支持")
+    @ApiModelProperty("承运方式/司机类型：0 ：代驾 1：干线司机  2：拖车司机 4全支持")
     private Integer mode;
 
     @ApiModelProperty("身份证正面")
