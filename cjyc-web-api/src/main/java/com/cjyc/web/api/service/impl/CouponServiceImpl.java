@@ -6,6 +6,7 @@ import com.cjyc.common.model.dto.BasePageDto;
 import com.cjyc.common.model.dto.web.coupon.CouponDto;
 import com.cjyc.common.model.dto.web.coupon.SeleCouponDto;
 import com.cjyc.common.model.entity.Coupon;
+import com.cjyc.common.model.enums.Coupon.CouponTypeEnum;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.web.coupon.CouponVo;
 import com.cjyc.web.api.exception.CommonException;
@@ -167,16 +168,16 @@ public class CouponServiceImpl implements ICouponService {
        try{
            coupon.setCouponName(dto.getCouponName());
            coupon.setCouponType(Integer.valueOf(dto.getCouponType()));
-           if(dto.getCouponType().equals(SysEnum.ZERO.getValue())){
-               coupon.setFullAmount(new BigDecimal(dto.getFullAmount()).multiply(new BigDecimal(100)));
-               coupon.setCutAmount(new BigDecimal(dto.getCutAmount()).multiply(new BigDecimal(100)));
-           }else if(dto.getCouponType().equals(SysEnum.THREE.getValue())){
-               coupon.setCutAmount(new BigDecimal(dto.getCutAmount()).multiply(new BigDecimal(100)));
-           }else if(dto.getCouponType().equals(SysEnum.FIVE.getValue())){
+           if(CouponTypeEnum.FULL_REDUCTION.code == dto.getCouponType()){
+               coupon.setFullAmount(dto.getFullAmount() == null ? BigDecimal.ZERO:dto.getFullAmount().multiply(new BigDecimal(100)));
+               coupon.setCutAmount(dto.getCutAmount().multiply(new BigDecimal(100)));
+           }else if(CouponTypeEnum.DIRECT_REDUCTION.code == dto.getCouponType()){
+               coupon.setCutAmount(dto.getCutAmount().multiply(new BigDecimal(100)));
+           }else if(CouponTypeEnum.DISCOUNT.code == dto.getCouponType()){
                coupon.setDiscount(dto.getDiscount());
            }
-           coupon.setGrantNum(Integer.valueOf(dto.getGrantNum()));
-           coupon.setSurplusAvailNum(Integer.valueOf(dto.getGrantNum()));
+           coupon.setGrantNum(dto.getGrantNum());
+           coupon.setSurplusAvailNum(dto.getGrantNum());
            if(!dto.getIsForever()){
                coupon.setStartPeriodDate(LocalDateTimeUtil.convertToLong(dto.getStartPeriodDate(), TimePatternConstant.SIMPLE_DATE_FORMAT));
                coupon.setEndPeriodDate(LocalDateTimeUtil.convertToLong(dto.getEndPeriodDate(), TimePatternConstant.SIMPLE_DATE_FORMAT));

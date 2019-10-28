@@ -7,6 +7,7 @@ import com.cjyc.common.model.dto.BasePageDto;
 import com.cjyc.common.model.dto.web.dictionary.DictionaryDto;
 import com.cjyc.common.model.dto.web.dictionary.SelectDictionaryDto;
 import com.cjyc.common.model.entity.Dictionary;
+import com.cjyc.common.model.enums.UseStateEnum;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.web.api.exception.CommonException;
 import com.cjyc.web.api.service.IDictionaryService;
@@ -42,9 +43,9 @@ public class DictionaryServiceImpl implements IDictionaryService {
             dic.setItemKey(dto.getItemKey());
             dic.setItemValue(dto.getItemValue());
             dic.setItemUnit(dto.getItemUnit());
-            dic.setFixedFlag(SysEnum.ZERO.getValue());
+            dic.setFixedFlag(UseStateEnum.BE_MODIFIED.code);
             dic.setRemark(dto.getRemark());
-            dic.setState(SysEnum.ONE.getValue());
+            dic.setState(UseStateEnum.USABLE.code);
             dic.setCreateTime(LocalDateTimeUtil.convertToLong(LocalDateTimeUtil.formatLDTNow(TimePatternConstant.COMPLEX_TIME_FORMAT), TimePatternConstant.COMPLEX_TIME_FORMAT));
             return iDictionaryDao.insert(dic) > 0 ? true:false;
         }catch (Exception e){

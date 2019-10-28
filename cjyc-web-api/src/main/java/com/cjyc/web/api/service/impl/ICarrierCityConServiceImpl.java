@@ -44,7 +44,7 @@ public class ICarrierCityConServiceImpl extends ServiceImpl<ICarrierCityConDao, 
         if(countryList != null && countryList.size() > 0){
             for(BaseCityDto city : countryList){
                 ccc.setCountry(city.getCode());
-                ccc.setAreaCode(SysEnum.ZERO.getValue().toString());
+                //ccc.setAreaCode(SysEnum.ZERO.getValue().toString());
             }
         }else {
             List<String> allList = new ArrayList<>();
@@ -111,7 +111,7 @@ public class ICarrierCityConServiceImpl extends ServiceImpl<ICarrierCityConDao, 
         List<BaseCityDto> cityList = null;
         List<BaseCityDto> areaList = null;
         //全国不为空
-        if(SysEnum.ZERO.getValue().equals(ccc.getAreaCode())){
+        if("0".equals(ccc.getAreaCode())){
             List<String> countryCodes = Arrays.asList(ccc.getCountry().split(","));
             countryList = iCityDao.getCityAndName(countryCodes);
         }else{

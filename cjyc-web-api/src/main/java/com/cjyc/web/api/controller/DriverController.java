@@ -67,11 +67,11 @@ public class DriverController {
     @ApiOperation(value = "根据司机userId进行审核通过/拒绝")
     @PostMapping(value = "/examineDriById/{id}")
     public ResultVo examineDriById(@PathVariable @ApiParam(value = "用户id",required = true) Long id,
-                                   @PathVariable @ApiParam(value = "标志 1：审核通过 2：审核拒绝 3:冻结 4:解除",required = true) String sign){
-        if(id == null || StringUtils.isBlank(sign)){
+                                   @PathVariable @ApiParam(value = "标志 3：审核通过 4：审核拒绝 5:冻结 6:解除",required = true) Integer flag){
+        if(id == null || flag == null){
             BaseResultUtil.getVo(ResultEnum.MOBILE_PARAM_ERROR.getCode(),ResultEnum.MOBILE_PARAM_ERROR.getMsg());
         }
-        boolean result = driverService.examineDriById(id,sign);
+        boolean result = driverService.examineDriById(id,flag);
         return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg())
                 : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
     }

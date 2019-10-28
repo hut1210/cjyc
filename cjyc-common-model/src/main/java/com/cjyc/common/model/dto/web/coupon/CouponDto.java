@@ -6,6 +6,7 @@ import lombok.Data;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 @Data
 public class CouponDto implements Serializable {
@@ -26,24 +27,24 @@ public class CouponDto implements Serializable {
     @NotBlank(groups = {CouponDto.UpaCouponDto.class},message = "优惠券名称不能为空")
     private String couponName;
 
-    @ApiModelProperty(value = "优惠券类型 0：满减  3：直减  5：折扣")
+    @ApiModelProperty(value = "优惠券类型 0：满减  1：直减  2：折扣")
     @NotBlank(groups = {CouponDto.SaveCouponDto.class},message = "优惠券类型不能为空")
     @NotBlank(groups = {CouponDto.UpaCouponDto.class},message = "优惠券类型不能为空")
-    private String couponType;
+    private Integer couponType;
 
     @ApiModelProperty(value = "满额价")
-    private String fullAmount;
+    private BigDecimal fullAmount;
 
     @ApiModelProperty(value = "减额值")
-    private String cutAmount;
+    private BigDecimal cutAmount;
 
     @ApiModelProperty(value = "折扣")
-    private String discount;
+    private BigDecimal discount;
 
     @ApiModelProperty(value = "发放张数")
     @NotBlank(groups = {CouponDto.SaveCouponDto.class},message = "发放张数不能为空")
     @NotBlank(groups = {CouponDto.UpaCouponDto.class},message = "发放张数不能为空")
-    private String grantNum;
+    private Integer grantNum;
 
     @ApiModelProperty(value = "是否永久  false：否  true：是")
     @NotNull(groups = {CouponDto.SaveCouponDto.class},message = "是否永久不能为空")
