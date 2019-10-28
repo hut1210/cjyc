@@ -17,7 +17,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-27
+ * @since 2019-10-28
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -32,8 +32,8 @@ public class CustomerContract implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "客户userId")
-    private Long customerUserId;
+    @ApiModelProperty(value = "大客户Id")
+    private Long customerId;
 
     @ApiModelProperty(value = "合同编号")
     private String contractNo;

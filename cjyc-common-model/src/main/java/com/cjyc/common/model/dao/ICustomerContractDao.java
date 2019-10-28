@@ -25,9 +25,9 @@ public interface ICustomerContractDao extends BaseMapper<CustomerContract> {
 
     /**
      * 根据大客户customerUserId查询合同
-     * @param customerUserId
+     * @param customerId
      * @return
      */
-    List<CustomerContractVo> getCustContractByCustUserId(@Param("customerUserId") Long customerUserId);
+    List<CustomerContractVo> getCustContractByCustId(@Param("customerId") Long customerId);
 
 }

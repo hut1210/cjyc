@@ -167,7 +167,7 @@ public class CustomerServiceImpl implements ICustomerService{
                 List<CustomerContractDto> customerConList = keyCustomerDto.getCustContraVos();
                 if(customerConList != null && customerConList.size() > 0){
                     for(CustomerContractDto vo : customerConList){
-                        int i = saveCustomerContract(customer.getUserId() , vo);
+                        int i = saveCustomerContract(customer.getId() , vo);
                         if(i > 0){
                             no ++;
                         }
@@ -230,7 +230,7 @@ public class CustomerServiceImpl implements ICustomerService{
                 sKeyCustomerDto.setContactAddress(customer.getContactAddress());
 
                 //根据customer_user_id查询大客户的合同
-                List<CustomerContractVo> contractVos = customerContractDao.getCustContractByCustUserId(customer.getUserId());
+                List<CustomerContractVo> contractVos = customerContractDao.getCustContractByCustId(customer.getId());
                 if(contractVos != null && contractVos.size() > 0){
                     for(CustomerContractVo vo : contractVos){
                         if(StringUtils.isNotBlank(vo.getContractLife())){
@@ -476,13 +476,13 @@ public class CustomerServiceImpl implements ICustomerService{
     }
     /**
      * 新增大客户合同
-     * @param userId  大客户userId
+     * @param id  大客户id
      * @param dto  合同
      */
-    private int saveCustomerContract(Long userId , CustomerContractDto dto){
+    private int saveCustomerContract(Long id , CustomerContractDto dto){
         try{
             CustomerContract custCont = new CustomerContract();
-            custCont.setCustomerUserId(userId);
+            custCont.setCustomerId(id);
             custCont.setContractNo(dto.getContractNo());
             custCont.setContactNature(dto.getContactNature());
             custCont.setContractLife(LocalDateTimeUtil.convertToLong(dto.getContractLife(),TimePatternConstant.SIMPLE_DATE_FORMAT));
