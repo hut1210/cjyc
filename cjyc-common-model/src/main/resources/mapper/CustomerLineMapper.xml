@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cjyc.common.model.dao.ICustomerLineDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.CustomerLine">
+        <id column="id" property="id" />
+        <result column="customer_id" property="customerId" />
+        <result column="line_code" property="lineCode" />
+        <result column="start_adress" property="startAdress" />
+        <result column="start_contact" property="startContact" />
+        <result column="start_contact_phone" property="startContactPhone" />
+        <result column="end_adress" property="endAdress" />
+        <result column="end_contact" property="endContact" />
+        <result column="end_contact_phone" property="endContactPhone" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, customer_id, line_code, start_adress, start_contact, start_contact_phone, end_adress, end_contact, end_contact_phone, create_time
+    </sql>
+
+</mapper>

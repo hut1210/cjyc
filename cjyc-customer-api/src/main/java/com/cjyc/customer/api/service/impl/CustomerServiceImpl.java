@@ -1,54 +1,35 @@
 package com.cjyc.customer.api.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.cjyc.customer.api.dao.CustomerMapper;
-import com.cjyc.customer.api.entity.Customer;
+import com.cjyc.common.model.dao.ICustomerDao;
+import com.cjyc.common.model.dto.web.customer.CustomerfuzzyListDto;
+import com.cjyc.common.model.entity.Customer;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.customer.CustomerFuzzyListVo;
 import com.cjyc.customer.api.service.ICustomerService;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.List;
 
-
 /**
- * Created by leo on 2019/7/23.
+ * <p>
+ * 客户表（登录用户端APP用户） 服务实现类
+ * </p>
+ *
+ * @author JPG
+ * @since 2019-10-18
  */
 @Service
-public class CustomerServiceImpl implements ICustomerService {
+public class CustomerServiceImpl extends ServiceImpl<ICustomerDao, Customer> implements ICustomerService {
+    @Resource
+    private ICustomerDao customerDao;
 
-    @Autowired
-    private CustomerMapper customerMapper;
-
-    /**
-     * 新增客户信息
-     *
-     * */
     @Override
-    public void addUser() {
-        Customer c = Customer.getInstance();
-        c.setToken("1111");
-        c.setOpenId("dfdf");
-        c.setAlias("sdfdf");
-        c.setName("oaofd");
-        c.setFirstLetter("F");
-        c.setPhone("123123132132");
-        c.setPwd("10000");
-        customerMapper.insert(c);
+    public ResultVo fuzzyList(CustomerfuzzyListDto paramsDto) {
+        List<CustomerFuzzyListVo> fuzzyList = customerDao.findFuzzyList(paramsDto);
+        return BaseResultUtil.success(fuzzyList);
     }
-
-    /**
-     * 测试分页
-     * @return
-     */
-    @Override
-    public PageInfo<Customer> pageList(Integer pageNum, Integer pageSize) {
-        PageHelper.startPage(pageNum, pageSize);
-        List<Customer> selectList = customerMapper.selectList(new QueryWrapper<>());
-        PageInfo<Customer> pageInfo = new PageInfo<>(selectList);
-        return pageInfo;
-    }
-
 
 }

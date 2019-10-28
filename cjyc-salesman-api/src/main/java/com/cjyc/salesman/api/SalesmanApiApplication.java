@@ -3,14 +3,18 @@ package com.cjyc.salesman.api;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
 /**
- * Created by DELL on 2019/9/27.
+ * 启动类
+ * @author JPG
+ * @since 2019/7/19 17:14
  */
 @SpringBootApplication
-@MapperScan("com.cjyc.salesman.api.dao")
-@ComponentScan("com.cjyc.common")
+@EnableDiscoveryClient
+@EnableFeignClients
+@MapperScan("com.cjyc.common.model.dao")
 public class SalesmanApiApplication {
     public static void main(String[] args) {
         SpringApplication.run(SalesmanApiApplication.class, args);

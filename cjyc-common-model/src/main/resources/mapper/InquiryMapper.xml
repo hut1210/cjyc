@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cjyc.common.model.dao.IInquiryDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.Inquiry">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="phone" property="phone" />
+        <result column="start_city" property="startCity" />
+        <result column="start_code" property="startCode" />
+        <result column="end_city" property="endCity" />
+        <result column="end_code" property="endCode" />
+        <result column="logistics_fee" property="logisticsFee" />
+        <result column="pick_fee" property="pickFee" />
+        <result column="back_fee" property="backFee" />
+        <result column="state" property="state" />
+        <result column="inquiry_time" property="inquiryTime" />
+        <result column="handle_time" property="handleTime" />
+        <result column="handle_user_id" property="handleUserId" />
+        <result column="handle_user_name" property="handleUserName" />
+        <result column="job_content" property="jobContent" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, name, phone, start_city, start_code, end_city, end_code, logistics_fee, pick_fee, back_fee, state, inquiry_time, handle_time, handle_user_id, handle_user_name, job_content
+    </sql>
+
+    <!-- 根据条件查询询价管理条目 -->
+    <select id="getAllInquiryByTerm" resultType="com.cjyc.common.model.vo.web.inquiry.InquiryVo"
+                                    parameterType="com.cjyc.common.model.dto.web.inquiry.SelectInquiryDto">
+     SELECT
+        id AS id ,inquiry_time AS inquiryTime,
+        logistics_fee AS logisticsFee,
+        start_city AS startCity,
+        end_city AS endCity,
+        NAME AS NAME,
+        phone AS phone,
+        handle_time AS handleTime,
+        handle_user_name AS handleUserName,
+        state AS state
+    FROM
+        s_inquiry
+        <where>
+            <if test="startStamp != 0">
+                   inquiry_time >= #{startStamp}
+            </if>
+            <if test="endStamp != 0 ">
+                and  inquiry_time &lt;= #{endStamp}
+            </if>
+            <if test="startCity != null  and startCity.trim() != ''">
+                and start_city like concat('%',#{startCity},'%')
+            </if>
+            <if test="endCity != null  and endCity.trim() != ''">
+                and  end_city like concat('%',#{endCity},'%')
+            </if>
+            <if test="state != null and state.trim() != ''">
+                and state = #{state}
+            </if>
+        </where>
+    </select>
+
+</mapper>

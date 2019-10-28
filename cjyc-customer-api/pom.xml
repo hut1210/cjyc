@@ -20,8 +20,7 @@
         <!-- 项目内部module -->
         <dependency>
             <groupId>com.cjyc</groupId>
-            <artifactId>cjyc-common</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <artifactId>cjyc-common-service</artifactId>
         </dependency>
 
         <!--公司jar-->
@@ -32,6 +31,18 @@
         <dependency>
             <groupId>com.cjkj</groupId>
             <artifactId>cjkj-common-spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.cjkj</groupId>
+            <artifactId>cjkj-redis-spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.cjkj</groupId>
+            <artifactId>cjkj-ribbon-spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.cjkj</groupId>
+            <artifactId>cjkj-usercenter-dto</artifactId>
         </dependency>
         <!--本地jar-->
 
@@ -50,6 +61,14 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-undertow</artifactId>
         </dependency>
+
+        <!--配置工具-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+
         <!--springcloud-->
         <!--<dependency>-->
         <!--<groupId>org.springframework.cloud</groupId>-->
@@ -58,14 +77,6 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
-        </dependency>
-        <!--        <dependency>
-                    <groupId>org.springframework.cloud</groupId>
-                    <artifactId>spring-cloud-starter-netflix-ribbon</artifactId>
-                </dependency>-->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
         <!--<dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -78,39 +89,14 @@
             <scope>test</scope>
         </dependency>
 
-        <!--mybatis-->
-        <dependency>
-            <groupId>tk.mybatis</groupId>
-            <artifactId>mapper-spring-boot-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-boot-starter</artifactId>
-            <version>3.0.3</version> <!-- ？指定版本号，否则启动报错 -->
-        </dependency>
-        <dependency>
-            <groupId>org.mybatis.spring.boot</groupId>
-            <artifactId>mybatis-spring-boot-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.github.pagehelper</groupId>
-            <artifactId>pagehelper-spring-boot-starter</artifactId>
-        </dependency>
-
         <!--nacos-->
         <!--<dependency>-->
         <!--<groupId>org.springframework.cloud</groupId>-->
         <!--<artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>-->
         <!--</dependency>-->
-        <!--<dependency>-->
-        <!--<groupId>org.springframework.cloud</groupId>-->
-        <!--<artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>-->
-        <!--</dependency>-->
-
-        <!--redis-->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
         </dependency>
 
         <!--mq-->
@@ -133,21 +119,11 @@
         <!--swagger-->
         <dependency>
             <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger2</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger-ui</artifactId>
         </dependency>
         <dependency>
             <groupId>com.github.xiaoymin</groupId>
             <artifactId>swagger-bootstrap-ui</artifactId>
-        </dependency>
-
-        <!--lombok-->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
         </dependency>
 
         <!--tools-->
@@ -161,14 +137,12 @@
         <dependency>
             <groupId>com.belerweb</groupId>
             <artifactId>pinyin4j</artifactId>
-            <version>2.5.0</version>
         </dependency>
 
         <!-- 极光推送 -->
         <dependency>
             <groupId>cn.jpush.api</groupId>
             <artifactId>jpush-client</artifactId>
-            <version>3.3.10</version>
         </dependency>
 
     </dependencies>

@@ -3,8 +3,9 @@ package com.cjyc.customer.api;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
  * 启动类
@@ -12,8 +13,10 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  * @Date 2019/7/19 17:14
  */
 @SpringBootApplication
-@MapperScan("com.cjyc.customer.api.dao")
-@ComponentScan("com.cjyc.common")
+@EnableDiscoveryClient
+@EnableFeignClients
+@MapperScan("com.cjyc.common.model.dao")
+@ComponentScan({"com.cjyc.customer.api", "com.cjyc.common.system"})
 public class CustomerApiApplication {
     public static void main(String[] args) {
         SpringApplication.run(CustomerApiApplication.class, args);

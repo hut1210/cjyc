@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cjyc.common.model.dao.ICarrierCarCountDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.CarrierCarCount">
+        <id column="id" property="id" />
+        <result column="carrier_id" property="carrierId" />
+        <result column="driver_id" property="driverId" />
+        <result column="car_num" property="carNum" />
+        <result column="total_income" property="totalIncome" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, carrier_id, driver_id, car_num, total_income
+    </sql>
+
+    <!-- 根据承运商id查询车数和总收入 -->
+    <select id="getCarIncomeByCarrId" resultType="java.util.HashMap" parameterType="java.lang.Long">
+        SELECT
+            sum( car_num ) AS carNum,
+            sum( total_income ) AS totalIncome
+        FROM
+            d_carrier_car_count
+        WHERE
+            carrier_id = #{carrierId}
+    </select>
+
+</mapper>

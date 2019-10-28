@@ -1,0 +1,407 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cjyc.common.model.dao.IOrderDao">
+
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.Order">
+        <id column="id" property="id" />
+        <result column="no" property="no" />
+        <result column="customer_id" property="customerId" />
+        <result column="customer_name" property="customerName" />
+        <result column="input_store_id" property="inputStoreId" />
+        <result column="input_store_name" property="inputStoreName" />
+        <result column="start_province" property="startProvince" />
+        <result column="start_province_code" property="startProvinceCode" />
+        <result column="start_city" property="startCity" />
+        <result column="start_city_code" property="startCityCode" />
+        <result column="start_area" property="startArea" />
+        <result column="start_area_code" property="startAreaCode" />
+        <result column="start_address" property="startAddress" />
+        <result column="start_lng" property="startLng" />
+        <result column="start_lat" property="startLat" />
+        <result column="start_store_id" property="startStoreId" />
+        <result column="start_store_name" property="startStoreName" />
+        <result column="end_province" property="endProvince" />
+        <result column="end_province_code" property="endProvinceCode" />
+        <result column="end_city" property="endCity" />
+        <result column="end_city_code" property="endCityCode" />
+        <result column="end_area" property="endArea" />
+        <result column="end_area_code" property="endAreaCode" />
+        <result column="end_address" property="endAddress" />
+        <result column="end_lng" property="endLng" />
+        <result column="end_lat" property="endLat" />
+        <result column="end_store_id" property="endStoreId" />
+        <result column="end_store_name" property="endStoreName" />
+        <result column="expect_start_date" property="expectStartDate" />
+        <result column="expect_end_date" property="expectEndDate" />
+        <result column="car_num" property="carNum" />
+        <result column="line_id" property="lineId" />
+        <result column="pick_type" property="pickType" />
+        <result column="pick_contact_name" property="pickContactName" />
+        <result column="pick_contact_phone" property="pickContactPhone" />
+        <result column="back_type" property="backType" />
+        <result column="back_contact_name" property="backContactName" />
+        <result column="back_contact_phone" property="backContactPhone" />
+        <result column="hurry_days" property="hurryDays" />
+        <result column="source" property="source" />
+        <result column="create_time" property="createTime" />
+        <result column="create_user_name" property="createUserName" />
+        <result column="create_user_id" property="createUserId" />
+        <result column="allot_to_user_name" property="allotToUserName" />
+        <result column="allot_to_user_id" property="allotToUserId" />
+        <result column="check_time" property="checkTime" />
+        <result column="check_user_name" property="checkUserName" />
+        <result column="check_user_id" property="checkUserId" />
+        <result column="state" property="state" />
+        <result column="remark" property="remark" />
+        <result column="invoice_flag" property="invoiceFlag" />
+        <result column="invoice_type" property="invoiceType" />
+        <result column="pick_fee" property="pickFee" />
+        <result column="trunk_fee" property="trunkFee" />
+        <result column="back_fee" property="backFee" />
+        <result column="insurance_fee" property="insuranceFee" />
+        <result column="coupon_offset_fee" property="couponOffsetFee" />
+        <result column="agency_fee" property="agencyFee" />
+        <result column="total_fee" property="totalFee" />
+        <result column="deposit_fee" property="depositFee" />
+        <result column="fee_share_type" property="feeShareType" />
+        <result column="customer_contract_id" property="customerContractId" />
+        <result column="pay_type" property="payType" />
+        <result column="wl_pay_state" property="wlPayState" />
+        <result column="wl_pay_time" property="wlPayTime" />
+        <result column="finish_time" property="finishTime" />
+        <result column="offline_pay_flag" property="offlinePayFlag" />
+        <result column="coupon_id" property="couponId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, no, customer_id, customer_name, input_store_id, input_store_name, start_province, start_province_code, start_city, start_city_code, start_area, start_area_code, start_address, start_lng, start_lat, start_store_id, start_store_name, end_province, end_province_code, end_city, end_city_code, end_area, end_area_code, end_address, end_lng, end_lat, end_store_id, end_store_name, expect_start_date, expect_end_date, car_num, line_id, pick_type, pick_contact_name, pick_contact_phone, back_type, back_contact_name, back_contact_phone, hurry_days, source, create_time, create_user_name, create_user_id, allot_to_user_name, allot_to_user_id, check_time, check_user_name, check_user_id, state, remark, invoice_flag, invoice_type, pick_fee, trunk_fee, back_fee, insurance_fee, coupon_offset_fee, agency_fee, total_fee, deposit_fee, fee_share_type, customer_contract_id, pay_type, wl_pay_state, wl_pay_time, finish_time, offline_pay_flag, coupon_id
+    </sql>
+
+    <!-- 通用查询订单结果列 -->
+    <sql id="Base_Order_Column">
+        no as no,start_city as startCity,end_city as endCity,car_num as carNum,
+         sum(round(ifnull(pick_fee/100,0),2)+
+            round(ifnull(trunk_fee/100,0),2)+
+            round(ifnull(back_fee/100,0),2)+
+            round(ifnull(insurance_fee/100,0),2)+
+            round(ifnull(deposit_fee/100,0),2)) as totalFee,
+        (case state
+         when  0  then '待下单'
+         when  2  then  '已下单'
+         when  5  then  '已下单'
+         when  15 then  '待付款'
+         when  25 then '待调度'
+         when  55  then '运输中'
+         when  88  then '运输中'
+         when  100 then '已支付'
+         when  111  then '原返'
+         when  113  then '已取消'
+         when  114  then '已作废'
+         end) as state
+    </sql>
+
+    <!-- 通用if条件 -->
+    <sql id="Common_Where_If">
+        <if test="key != null and key.trim() != ''">
+            no like #{key}
+        </if>
+        <if test="startDate != null  and startDate.trim() != ''">
+            and expect_start_date >= #{startDate}
+        </if>
+        <if test="endDate != null and endDate.trim() != ''">
+            and  expect_end_date &lt;= #{endDate}
+        </if>
+        <if test="startCityCode != null  and startCityCode.trim() != ''">
+            and start_city_code = #{startCityCode}
+        </if>
+        <if test="endCityCode != null and endCityCode.trim() != ''">
+            and  end_city_code = #{endCityCode}
+        </if>
+    </sql>
+
+    <!-- 通用排序条件 -->
+    <sql id="Common_Order_By">
+        order by create_time
+        <if test="sort != null and sort.trim() == 0">
+            desc
+        </if>
+        <if test="sort != null and sort.trim() == 1">
+            asc
+        </if>
+        <if test="sort != null and sort.trim() == 2">
+            desc
+        </if>
+    </sql>
+
+    <!-- 客户端新增订单-->
+    <insert id="addOrder" useGeneratedKeys="true" keyProperty="id" parameterType="com.cjyc.common.model.entity.Order">
+        insert into w_order (no, customer_id, customer_name, start_province, start_province_code, start_city, start_city_code, start_area, start_area_code, start_address, start_lng, start_lat, end_province, end_province_code, end_city, end_city_code, end_area, end_area_code, end_address, end_lng, end_lat, expect_start_date, expect_end_date, car_num, line_id, pick_type, pick_contact_name, pick_contact_phone, back_type, back_contact_name, back_contact_phone, hurry_days, source, create_time, create_user_name, create_user_type, state, remark, invoice_flag, invoice_type, pick_fee, trunk_fee, back_fee, insurance_fee, deposit_fee, agency_fee, total_fee, fee_share_type, customer_contract_id, customer_pay_type, wl_pay_state, wl_pay_time, offline_pay_flag)
+        values (#{no}, #{customerId}, #{customerName}, #{startProvince}, #{startProvinceCode}, #{startCity}, #{startCityCode}, #{startArea}, #{startAreaCode}, #{startAddress}, #{startLng}, #{startLat}, #{endProvince}, #{endProvinceCode}, #{endCity}, #{endCityCode}, #{endArea}, #{endAreaCode}, #{endAddress}, #{endLng}, #{endLat}, #{expectStartDate}, #{expectEndDate}, #{carNum}, #{lineId}, #{pickType}, #{pickContactName}, #{pickContactPhone}, #{backType}, #{backContactName}, #{backContactPhone}, #{hurryDays}, #{source}, #{createTime}, #{createUserName}, #{createUserType}, #{state}, #{remark}, #{invoiceFlag}, #{invoiceType}, #{pickFee}, #{trunkFee}, #{backFee}, #{insuranceFee}, #{depositFee}, #{agencyFee}, #{totalFee}, #{feeShareType}, #{customerContractId}, #{customerPayType}, #{wlPayState}, #{wlPayTime}, #{offlinePayFlag})
+    </insert>
+
+    <!-- 查询待确定订单信息 -->
+    <select id="getWaitConFirmOrders" resultType="com.cjyc.common.model.vo.customer.OrderCenterVo">
+        select
+          <include refid="Base_Order_Column" />
+        from w_order where state &lt;= 25
+    </select>
+
+    <!-- 查询运输中订单信息 -->
+    <select id="getTransOrders" resultType="com.cjyc.common.model.vo.customer.OrderCenterVo">
+        select
+           <include refid="Base_Order_Column" />
+        from w_order where state in ('55','88')
+    </select>
+
+    <!-- 查询已支付订单信息 -->
+    <select id="getPaidOrders" resultType="com.cjyc.common.model.vo.customer.OrderCenterVo">
+        select
+          <include refid="Base_Order_Column" />
+        from w_order where state = 100
+    </select>
+
+    <!-- 查询全部订单信息 -->
+    <select id="getAllOrders" resultType="com.cjyc.common.model.vo.customer.OrderCenterVo">
+        select
+          <include refid="Base_Order_Column" />
+        from w_order where state >= 2
+    </select>
+
+    <!-- 根据订单编号查看订单详情 -->
+    <select id="getOrderDetailByNo" resultType="com.cjyc.common.model.vo.customer.OrderDetailVo" parameterType="java.lang.String">
+        select no as orderNo,create_time as createTime,expect_start_date as expectStartDate,
+                pick_contact_name as pickContactName,pick_contact_phone as pickContactPhone,
+                (case pick_type
+                when  1 then '自送'
+                when  2 then '代驾上门'
+                when  3 then '拖车上门'
+                end) as pickType,start_address as startAddress,
+                back_contact_name as backContactName,back_contact_phone as backContactPhone,
+                (case back_type
+                when  1 then '自提'
+                when  2 then '代驾上门'
+                when  3 then '拖车上门'
+                end) as backType,end_address as endAddress,
+                round(ifnull(pick_fee/100,0),2) as pickFee,
+                round(ifnull(trunk_fee/100,0),2) as trunkFee,
+                round(ifnull(back_fee/100,0),2) as backFee,
+                round(ifnull(insurance_fee/100,0),2) as insuranceFee,
+                round(ifnull(deposit_fee/100,0),2) as depositFee,
+         sum(round(ifnull(pick_fee/100,0),2)+
+            round(ifnull(trunk_fee/100,0),2)+
+            round(ifnull(back_fee/100,0),2)+
+            round(ifnull(insurance_fee/100,0),2)+
+            round(ifnull(deposit_fee/100,0),2)) as totalFee,
+        (case state
+         when  0  then '待下单'
+         when  2  then  '已下单'
+         when  5  then  '已下单'
+         when  15 then  '待付款'
+         when  25 then '待调度'
+         when  55  then '运输中'
+         when  88  then '运输中'
+         when  100 then '已支付'
+         when  111  then '原返'
+         when  113  then '已取消'
+         when  114  then '已作废'
+         end) as state
+        from w_order where no = #{orderNo}
+    </select>
+
+    <!-- 通过条件查询待确认订单列表信息 -->
+    <select id="getConFirmOrdsByTerm" resultType="com.cjyc.common.model.vo.customer.OrderCenterVo" parameterType="com.cjyc.common.model.dto.customer.OrderConditionDto">
+        select
+            <include refid="Base_Order_Column" />
+        from w_order
+          <where>
+              <include refid="Common_Where_If"/>
+                and state &lt;= 25
+          </where>
+        <include refid="Common_Order_By"/>
+    </select>
+
+    <!-- 通过条件查询运输中订单列表信息 -->
+    <select id="getTransOrdsByTerm" resultType="com.cjyc.common.model.vo.customer.OrderCenterVo" parameterType="com.cjyc.common.model.dto.customer.OrderConditionDto">
+        select
+        <include refid="Base_Order_Column" />
+        from w_order
+        <where>
+            <include refid="Common_Where_If"/>
+            and state in ('55','88')
+        </where>
+        <include refid="Common_Order_By"/>
+    </select>
+
+    <!-- 通过条件查询已支付订单列表信息 -->
+    <select id="getPaidOrdsByTerm" resultType="com.cjyc.common.model.vo.customer.OrderCenterVo" parameterType="com.cjyc.common.model.dto.customer.OrderConditionDto">
+        select
+        <include refid="Base_Order_Column" />
+        from w_order
+        <where>
+            <include refid="Common_Where_If"/>
+            and state = 100
+        </where>
+        <include refid="Common_Order_By"/>
+    </select>
+
+    <!-- 通过条件查询全部订单列表信息 -->
+    <select id="getAllOrdsByTerm" resultType="com.cjyc.common.model.vo.customer.OrderCenterVo" parameterType="com.cjyc.common.model.dto.customer.OrderConditionDto">
+        select
+        <include refid="Base_Order_Column" />
+        from w_order
+        <where>
+            <include refid="Common_Where_If"/>
+            and  state >= 2
+        </where>
+        <include refid="Common_Order_By"/>
+    </select>
+    <select id="findVoById" resultType="com.cjyc.common.model.vo.web.order.OrderVo">
+        select
+        <include refid="Base_Column_List"/>
+        from w_order
+        where id = #{orderId}
+    </select>
+    <select id="findListSelective" resultType="com.cjyc.common.model.entity.Order">
+        select
+        <include refid="Base_Column_List"/>
+        from w_order o
+        left join c_customer c on o.customer_id = c.id
+        <where>
+            <choose>
+                <when test="paramsDto.outterState == 1">
+                    and o.state = 0
+                </when>
+                <when test="paramsDto.outterState == 5">
+                    and o.state &lt;= 10 and o.state &gt; 0
+                </when>
+                <when test="paramsDto.outterState == 15">
+                    and o.state = 15
+                </when>
+                <when test="paramsDto.outterState == 25">
+                    and o.state = 25
+                </when>
+                <when test="paramsDto.outterState == 55">
+                    and o.state &gt; 25 and o.state &lt; 100
+                </when>
+                <when test="paramsDto.outterState == 100">
+                    and o.state = 100
+                </when>
+                <when test="paramsDto.outterState == 113">
+                    and o.state = 113
+                </when>
+                <when test="paramsDto.outterState == 114">
+                    and o.state = 114
+                </when>
+            </choose>
+
+            <choose>
+                <when test="paramsDto">
+
+                </when>
+            </choose>
+
+            <if test="paramsDto.no != null and paramsDto.no != ''">
+                and o.no = #{paramsDto.no}
+            </if>
+            <if test="paramsDto.customerName != null and paramsDto.customerName != ''">
+                and c.customer_name = #{paramsDto.customerName}
+            </if>
+            <if test="paramsDto.customerType != null and paramsDto.customerType != ''">
+                and c.customer_type = #{paramsDto.customerType}
+            </if>
+            <if test="paramsDto.customerPhone != null and paramsDto.customerPhone != ''">
+                and c.customer_phone = #{paramsDto.customerPhone}
+            </if>
+            <if test="paramsDto.inputStoreId != null">
+                and o.input_store_id = #{paramsDto.inputStoreId}
+            </if>
+            <if test="paramsDto.startProvinceCode != null and paramsDto.startProvinceCode != ''">
+                and o.start_province_code = #{paramsDto.startProvinceCode}
+            </if>
+            <if test="paramsDto.startCityCode != null and paramsDto.startCityCode != ''">
+                and o.start_city_code = #{paramsDto.startCityCode}
+            </if>
+            <if test="paramsDto.startAreaCode != null and paramsDto.startAreaCode != ''">
+                and o.start_area_code = #{paramsDto.startAreaCode}
+            </if>
+            <if test="paramsDto.startStoreId != null">
+                and o.start_store_id = #{paramsDto.startStoreId}
+            </if>
+            <if test="paramsDto.endProvinceCode != null and paramsDto.endProvinceCode != ''">
+                and o.end_province_code = #{paramsDto.endProvinceCode}
+            </if>
+            <if test="paramsDto.endCityCode != null and paramsDto.endCityCode != ''">
+                and o.end_city_code = #{paramsDto.endCityCode}
+            </if>
+            <if test="paramsDto.endAreaCode != null and paramsDto.endAreaCode != ''">
+                and o.end_area_code = #{paramsDto.endAreaCode}
+            </if>
+            <if test="paramsDto.endStoreId != null">
+                and o.end_store_id = #{paramsDto.endStoreId}
+            </if>
+            <if test="paramsDto.beginExpectStartDate != null">
+                and o.expect_start_date &gt; #{paramsDto.beginExpectStartDate}
+            </if>
+            <if test="paramsDto.endExpectStartDate != null">
+                and o.expect_start_date &lt; #{paramsDto.endExpectStartDate}
+            </if>
+            <if test="paramsDto.beginExpectEndDate != null">
+                and o.expect_end_date &gt; #{paramsDto.beginExpectEndDate}
+            </if>
+            <if test="paramsDto.endExpectEndDate != null">
+                and o.expect_end_date &lt; #{paramsDto.endExpectEndDate}
+            </if>
+
+            <if test="paramsDto.pickContactName != null and paramsDto.pickContactName != ''">
+                and o.pick_contact_name = #{paramsDto.pickContactName}
+            </if>
+            <if test="paramsDto.pickContactPhone != null and paramsDto.pickContactPhone != ''">
+                and o.pick_contact_phone = #{paramsDto.pickContactPhone}
+            </if>
+            <if test="paramsDto.pickType != null">
+                and o.pick_type = #{paramsDto.pickType}
+            </if>
+            <if test="paramsDto.backType != null">
+                and o.back_type = #{paramsDto.backType}
+            </if>
+            <if test="paramsDto.backContactName != null and paramsDto.backContactName != ''">
+                and o.back_contact_name = #{paramsDto.backContactName}
+            </if>
+            <if test="paramsDto.backContactPhone != null and paramsDto.backContactPhone != ''">
+                and o.back_contact_phone = #{paramsDto.backContactPhone}
+            </if>
+            <if test="paramsDto.lineId != null">
+                and o.line_id = #{paramsDto.lineId}
+            </if>
+            <if test="paramsDto.source != null and paramsDto.source != ''">
+                and o.source = #{paramsDto.source}
+            </if>
+            <if test="paramsDto.beginCreateTime != null">
+                and o.create_time &gt; #{paramsDto.beginCreateTime}
+            </if>
+            <if test="paramsDto.endCreateTime != null">
+                and o.create_time &lt; #{paramsDto.endCreateTime}
+            </if>
+            <if test="paramsDto.createUserName != null and paramsDto.createUserName != ''">
+                and o.create_user_name = #{paramsDto.createUserName}
+            </if>
+            <if test="paramsDto.beginCheckTime != null">
+                and o.check_time &gt; #{paramsDto.beginCheckTime}
+            </if>
+            <if test="paramsDto.endCheckTime != null">
+                and o.check_time &lt; #{paramsDto.endCheckTime}
+            </if>
+            <if test="paramsDto.payType != null">
+                and o.pay_type = #{paramsDto.payType}
+            </if>
+            <if test="paramsDto.regionCode != null and paramsDto.regionCode != ''">
+                and city.region_code = #{paramsDto.regionCode}
+            </if>
+
+        </where>
+
+    </select>
+</mapper>

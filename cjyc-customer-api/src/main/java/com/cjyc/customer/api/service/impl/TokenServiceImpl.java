@@ -1,7 +1,6 @@
 package com.cjyc.customer.api.service.impl;
 
-import com.cjyc.common.redis.RedisUtil;
-import com.cjyc.common.until.EncryptUtils;
+import com.baomidou.mybatisplus.core.toolkit.EncryptUtils;
 import com.cjyc.customer.api.service.ITokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,14 +13,12 @@ import org.springframework.stereotype.Service;
 public class
 TokenServiceImpl implements ITokenService{
 
-    @Autowired
-    private RedisUtil redisUtil;
+//    @Autowired
+//    private RedisUtil redisUtil;
 
-    @Value("${token.expires}")
+    @Value("${cjyc.token.expires}")
     private int expires;
 
-    @Value("${salt.customer_salt}")
-    private String customerSalt;
 
     /**
      * 创建token
@@ -30,11 +27,12 @@ TokenServiceImpl implements ITokenService{
      */
     @Override
     public String createToken(String customerCode) throws Exception{
-        long now = System.currentTimeMillis();
-        String sign = EncryptUtils.MD5(customerCode + String.valueOf(now) + customerSalt);
-        String token = EncryptUtils.encodeUTF8(sign+","+String.valueOf(now));
-        redisUtil.set(token,customerCode,expires);
-        return token;
+//        long now = System.currentTimeMillis();
+//        String sign = EncryptUtils.MD5(customerCode + String.valueOf(now) + customerSalt);
+//        String token = EncryptUtils.encodeUTF8(sign+","+String.valueOf(now));
+//        redisUtil.set(token,customerCode,expires);
+//        return token;
+        return "";
     }
 
     /**
@@ -43,9 +41,9 @@ TokenServiceImpl implements ITokenService{
      */
     @Override
     public void refreshTokenTime(String token) {
-        if(redisUtil.hasKey(token)){
-            redisUtil.fresh(token,expires);
-        }
+//        if(redisUtil.hasKey(token)){
+//            redisUtil.fresh(token,expires);
+//        }
     }
 
     /**
@@ -54,7 +52,7 @@ TokenServiceImpl implements ITokenService{
      */
     @Override
     public void delToken(String token) {
-        redisUtil.del(token);
+        //redisUtil.del(token);
     }
 
     /**
@@ -64,9 +62,10 @@ TokenServiceImpl implements ITokenService{
      */
     @Override
     public String getCodeByToken(String token) {
-        if(redisUtil.hasKey(token)){
-            return (String)redisUtil.get(token);
-        }
+//        if(redisUtil.hasKey(token)){
+//            return (String)redisUtil.get(token);
+//        }
+//        return null;
         return null;
     }
 }

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cjyc.common.model.dao.IOrganizationDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.Organization">
+        <id column="id" property="id" />
+        <result column="no" property="no" />
+        <result column="name" property="name" />
+        <result column="type" property="type" />
+        <result column="linkman" property="linkman" />
+        <result column="linkman_phone" property="linkmanPhone" />
+        <result column="legal" property="legal" />
+        <result column="legal_phone" property="legalPhone" />
+        <result column="license_img" property="licenseImg" />
+        <result column="state" property="state" />
+        <result column="create_user_id" property="createUserId" />
+        <result column="create_time" property="createTime" />
+        <result column="check_user_id" property="checkUserId" />
+        <result column="check_time" property="checkTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, no, name, type, linkman, linkman_phone, legal, legal_phone, license_img, state, create_user_id, create_time, check_user_id, check_time
+    </sql>
+
+</mapper>

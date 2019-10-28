@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cjyc.common.model.dao.ITaskDao">
+
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.Task">
+        <id column="id" property="id" />
+        <result column="no" property="no" />
+        <result column="waybill_id" property="waybillId" />
+        <result column="waybill_no" property="waybillNo" />
+        <result column="car_num" property="carNum" />
+        <result column="state" property="state" />
+        <result column="driver_name" property="driverName" />
+        <result column="driver_id" property="driverId" />
+        <result column="load_car_num" property="loadCarNum" />
+        <result column="unload_car_num" property="unloadCarNum" />
+        <result column="vehicle_running_id" property="vehicleRunningId" />
+        <result column="remark" property="remark" />
+        <result column="create_user" property="createUser" />
+        <result column="create_user_id" property="createUserId" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, no, waybill_id, waybill_no, car_num, state, driver_name, driver_id, load_car_num, unload_car_num, vehicle_running_id, remark, create_user, create_user_id, create_time
+    </sql>
+    <update id="updateListByWaybillIds">
+        update w_task
+        set state = #{newState}
+        <where>
+            id in
+            <foreach collection="cancelWaybillIdList" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
+    </update>
+
+</mapper>

@@ -1,0 +1,164 @@
+
+#
+#local为本机环境(127.0.0.1)配置
+#
+
+server:
+  #服务端口
+  port: 9501
+  #服务baseURl
+  servlet:
+    context-path: /cjyc/web
+  #https访问
+#  ssl:
+#    key-store: classpath:server.jks
+#    key-store-password: Vf1@MFJkhRyOSxm2
+#    keyStoreType: JKS
+
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  ##静态资源本地位置(最后的/记得加)
+#  resources:
+#    static-locations: file:D:\\upload\\
+#  #静态资源过滤url
+#  mvc:
+#    static-path-pattern: /**
+
+  ##actuator管理
+  management:
+    endpoints:
+      enabled-by-default: true
+      web:
+        exposure:
+          include: '*'
+    endpoint:
+      health:
+        show-details: always
+
+  ##数据源
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://39.107.96.231:3306/ju_test?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    username: root
+    password: Qaz123$%^231#
+    #连接池
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 15
+      auto-commit: true
+      idle-timeout: 30000
+      pool-name: YuncheHikari
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      #connection-test-query: select 1
+
+  ##Mybatis
+  ##mybatis:
+    ##mapper-locations: classpath:mapper/*Mapper.xml
+    ##type-aliases-package: com.cjyc.customer.api.entity
+    #config-location : classpath:mybatis-config.xml
+
+  ##缓存
+  redis:
+    host: 39.107.96.231
+    port: 6379
+    password: Qaz123$%^Qaz123$%^Qaz123$%^Qaz123$%^Qaz123$%^
+    #Redis默认情况下有16个分片，这里配置具体使用的分片，默认是0
+    database: 0
+    timeout: 1000ms
+    #连接池，redis2.x默认连接池
+    lettuce:
+      pool:
+        #连接池最大连接数（使用负值表示没有限制） 默认 8
+        max-active: 32
+        #连接池最大阻塞等待时间（使用负值表示没有限制） 默认 -1
+        max-wait: 300ms
+        #连接池中的最大空闲连接 默认 8
+        max-idle: 16
+        #连接池中的最小空闲连接 默认 0
+        min-idle: 8
+
+
+##-----------------------------------logging-------------------------------------------
+##日志
+logging:
+  level:
+    #root: debug
+    com.cjyc.web.api: debug
+    com.cjyc.common.model.dao: debug
+
+##-----------------------------------cjyc-------------------------------------------
+cjkj:
+  dept_customer_id: 100000
+  dept_driver_id: 110000
+  customer:
+    password: cc8$wT^n4L#W4Fii #使用后不能修改
+  driver:
+    password: cc8$wT^n4L#W4Fii #使用后不能修改
+  salesman:
+    password: cc8$wT^n4L#W4Fii #使用后不能修改
+  web:
+    clientId: 1186108891007336449
+    clientSecret: acffa1064e9a629d3140e5b36be31bd3
+    grantType: password
+    password: ${cjkj.salesman.password} #使用后不能修改
+
+
+cjyc:
+  swagger:
+    enabled: true
+    title: Web端接口文档
+    description: 长久韵车web端api接口文档
+    version: 2.0.1
+    basePackage: com.cjyc.web.api.controller
+    groupName: CJYC-Web-Api
+    usePathMapping: false
+
+  #短信
+  sms:
+    ##短信时效(分钟)
+    expires: 5
+    ##单日最大发送条数
+    daylimit: 20
+    miaoxin:
+      enabled: true
+      server: http://www.51miaoxin.com
+      account: cjwlhy
+      secret: ba9jet8miibxepu4gb5q
+
+  #推送
+  push:
+    jiguang:
+      enabled: true
+      appKey: 8a4abf674ba61fc9c47d6616
+      masterSecret: 6fc93a75e2f813f4798e88ff
+
+  #支付
+  pay:
+    ping++:
+      businessCode: 200604000004527
+      apikey: sk_test_40WD00COyLKOKKCiD8vH04qL
+      customer:
+        appid: app_WHKWv9XDWTyPz1G8
+        webhooks: http://39.106.134.87:80/manycc/pingpay/webhooksNotice
+      driver:
+        appid: app_XzvvzPDmDm1GbTi1
+        webhooks: http://39.106.134.87:80/manycc/pingpay/webhooksNotice
+      salesman:
+        appid: app_LSm9WLS4SmLSSC48
+        webhooks: http://39.106.134.87:80/manycc/pingpay/webhooksNotice
+
+
+    ##SALT
+    #salt:
+    #customer: YCcustomersalt
+    #driver: YCdriversalt
+    #salesman: YCsalesmansalt
+
+  ##TOKEN
+  token:
+    ##过期时间（秒）
+    expires: 1800
+
+

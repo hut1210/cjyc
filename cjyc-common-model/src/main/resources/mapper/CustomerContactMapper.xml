@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cjyc.common.model.dao.ICustomerContactDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.CustomerContact">
+        <id column="id" property="id" />
+        <result column="customer_id" property="customerId" />
+        <result column="name" property="name" />
+        <result column="phone" property="phone" />
+        <result column="province" property="province" />
+        <result column="province_code" property="provinceCode" />
+        <result column="city" property="city" />
+        <result column="city_code" property="cityCode" />
+        <result column="area" property="area" />
+        <result column="area_code" property="areaCode" />
+        <result column="detail_addr" property="detailAddr" />
+        <result column="rewark" property="rewark" />
+        <result column="state" property="state" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, customer_id, name, phone, province, province_code, city, city_code, area, area_code, detail_addr, rewark, state
+    </sql>
+
+
+</mapper>

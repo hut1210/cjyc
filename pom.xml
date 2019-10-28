@@ -20,7 +20,8 @@
         <module>cjyc-customer-api</module>
         <module>cjyc-salesman-api</module>
         <module>cjyc-web-api</module>
-        <module>cjyc-common</module>
+        <module>cjyc-common-service</module>
+        <module>cjyc-common-model</module>
     </modules>
 
     <properties>
@@ -99,6 +100,11 @@
             </dependency>
             <dependency>
                 <groupId>com.cjkj</groupId>
+                <artifactId>cjkj-usercenter-dto</artifactId>
+                <version>1.5.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.cjkj</groupId>
                 <artifactId>cjkj-sentinel-spring-boot-starter</artifactId>
                 <version>${cjkj.sentinel.version}</version>
             </dependency>
@@ -110,13 +116,13 @@
             <!--本地-->
             <dependency>
                 <groupId>com.cjyc</groupId>
-                <artifactId>cjyc-system-service</artifactId>
-                <version>${version}</version>
+                <artifactId>cjyc-common-service</artifactId>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.cjyc</groupId>
-                <artifactId>cjyc-system-common</artifactId>
-                <version>${version}</version>
+                <artifactId>cjyc-common-model</artifactId>
+                <version>${project.version}</version>
             </dependency>
 
             <!--文档-->
@@ -193,6 +199,31 @@
                 <artifactId>commons-collections4</artifactId>
                 <version>4.1</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-pool2</artifactId>
+                <version>2.7.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-dbcp2</artifactId>
+                <version>2.7.0</version>
+            </dependency>
+
+            <!--pinyin4j-->
+            <dependency>
+                <groupId>com.belerweb</groupId>
+                <artifactId>pinyin4j</artifactId>
+                <version>2.5.0</version>
+            </dependency>
+
+            <!-- 极光推送 -->
+            <dependency>
+                <groupId>cn.jpush.api</groupId>
+                <artifactId>jpush-client</artifactId>
+                <version>3.3.10</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 

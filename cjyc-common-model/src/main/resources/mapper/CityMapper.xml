@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cjyc.common.model.dao.ICityDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.City">
+        <id column="code" property="code" />
+        <result column="name" property="name" />
+        <result column="level" property="level" />
+        <result column="parent_code" property="parentCode" />
+        <result column="parent_name" property="parentName" />
+        <result column="pin_yin" property="pinYin" />
+        <result column="pin_initial" property="pinInitial" />
+        <result column="pin_acronym" property="pinAcronym" />
+        <result column="lng" property="lng" />
+        <result column="lat" property="lat" />
+        <result column="hot" property="hot" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        code, name, level, parent_code, parent_name, pin_yin, pin_initial, pin_acronym, lng, lat, hot
+    </sql>
+    <select id="findChildList" resultType="com.cjyc.common.model.entity.City">
+        select
+        <include refid="Base_Column_List"/>
+        from s_city c1
+        join s_city c2 on c1.parent_code = c2.code
+        where c2.code = #{code,jdbcType=VARCHAR}
+    </select>
+
+    <select id="getList" resultType="hashmap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from s_city where 1=1
+        <choose>
+            <when test="cityCode != null and cityCode != ''">
+                and parent_code = #{cityCode}
+            </when>
+            <otherwise >
+                and level = 1
+            </otherwise>
+        </choose>
+    </select>
+
+    <!--通过大区codes 获取区县codes -->
+    <select id="getAreaCodesByLarCode" resultType="java.lang.String">
+        SELECT
+            c4.CODE
+        FROM
+            s_city c1
+            JOIN s_city c2 ON c1.CODE = c2.parent_code
+            JOIN s_city c3 ON c2.CODE = c3.parent_code
+            JOIN s_city c4 ON c3.CODE = c4.parent_code
+        where c1.code in
+        <foreach collection="list" item="code" index="index" open="(" close=")" separator=",">
+            #{code}
+        </foreach>
+    </select>
+
+    <!--通过省/直辖市codes获取区县codes -->
+    <select id="getAreaCodesByProCode" resultType="java.lang.String">
+        SELECT
+            c3.CODE
+        FROM
+            s_city c1
+            JOIN s_city c2 ON c1.CODE = c2.parent_code
+            JOIN s_city c3 ON c2.CODE = c3.parent_code
+        where c1.code in
+        <foreach collection="list" item="code" index="index" open="(" close=")" separator=",">
+            #{code}
+        </foreach>
+    </select>
+
+    <!--通过城市codes获取区县codes -->
+    <select id="getAreaCodesByCityCode" resultType="java.lang.String">
+        SELECT
+        c2.CODE
+        FROM
+        s_city c1
+        JOIN s_city c2 ON c1.CODE = c2.parent_code
+        where c1.code in
+        <foreach collection="list" item="code" index="index" open="(" close=")" separator=",">
+            #{code}
+        </foreach>
+    </select>
+
+    <!--根据编码获取该编码和名称 -->
+    <select id="getCityAndName" resultType="com.cjyc.common.model.dto.BaseCityDto">
+      select  code as code,name as name  from s_city
+        where code in
+        <foreach collection="list" item="code" index="index" open="(" close=")" separator=",">
+            #{code}
+        </foreach>
+    </select>
+
+    <!--通过城市编码查询上一级 -->
+    <select id="getProvinceCityByCode" resultType="com.cjyc.common.model.vo.web.city.ProvinceCityVo" parameterType="java.lang.String">
+        SELECT
+            c1.CODE AS cityCode,
+            c1.NAME AS cityName,
+            c2.CODE AS provinceCode,
+            c2.NAME AS provinceName
+        FROM
+            s_city c1
+            JOIN s_city c2 ON c2.CODE = c1.parent_code
+        WHERE c1.code = #{code}
+    </select>
+
+    <!--获取所有省/直辖市 -->
+    <select id="getAllProvince" resultType="java.util.HashMap">
+         select name,code from s_city where level = 1
+    </select>
+
+    <!--获取所有下一级城市 -->
+    <select id="getAllCity" resultType="java.util.HashMap" parameterType="java.lang.String">
+        select name,code from s_city where parent_code = #{code}
+    </select>
+
+</mapper>

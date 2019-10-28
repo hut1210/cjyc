@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cjyc.common.model.dao.IIncrementerDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.Incrementer">
+        <id column="id" property="id" />
+        <result column="date" property="date" />
+        <result column="prefix" property="prefix" />
+        <result column="number" property="number" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, date, prefix, number
+    </sql>
+
+    <!-- 公用方法 获取自增业务编号 statementType 声明指向的是什么类型，其中CALLABLE是执行存储过程和函数的-->
+    <select id="getIncrementer" parameterType="String" statementType="CALLABLE" resultType="String">
+        SELECT fuc_increamenter(#{preName}) FROM dual
+    </select>
+</mapper>

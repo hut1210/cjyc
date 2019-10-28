@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cjyc.common.model.dao.IVehicleRunningDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.VehicleRunning">
+        <id column="id" property="id" />
+        <result column="driver_id" property="driverId" />
+        <result column="vehicle_id" property="vehicleId" />
+        <result column="plate_no" property="plateNo" />
+        <result column="carry_car_num" property="carryCarNum" />
+        <result column="empty_car_num" property="emptyCarNum" />
+        <result column="state" property="state" />
+        <result column="running_state" property="runningState" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="beat_time" property="beatTime" />
+        <result column="lng" property="lng" />
+        <result column="lat" property="lat" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, driver_id, vehicle_id, plate_no, carry_car_num, empty_car_num, state, running_state, create_time, update_time, beat_time, lng, lat
+    </sql>
+
+    <!-- 根据运力vehicleId获取运力信息 -->
+    <select id="getVehiRunByVehiId" resultType="com.cjyc.common.model.entity.VehicleRunning" parameterType="java.lang.Long">
+        select
+           <include refid="Base_Column_List"/>
+        where vehicle_id = #{vehicleId}
+    </select>
+
+    <!-- 根据driverId获取运力信息 -->
+    <select id="getVehiRunByDriverId" resultType="com.cjyc.common.model.entity.VehicleRunning" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        where driver_id = #{driverId}
+    </select>
+
+    <!-- 根据运力vehicleId删除运力信息 -->
+    <delete id="delVehicleRunByVehId" parameterType="java.lang.Long">
+        delete from d_vehicle_running where vehicle_id = #{vehicleId}
+    </delete>
+
+</mapper>

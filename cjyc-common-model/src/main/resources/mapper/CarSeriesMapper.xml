@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cjyc.common.model.dao.ICarSeriesDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.CarSeries">
+        <id column="id" property="id" />
+        <result column="car_code" property="carCode" />
+        <result column="brand" property="brand" />
+        <result column="model" property="model" />
+        <result column="type" property="type" />
+        <result column="pin_initial" property="pinInitial" />
+        <result column="pin_acronym" property="pinAcronym" />
+        <result column="logo_img" property="logoImg" />
+        <result column="create_time" property="createTime" />
+        <result column="create_user_id" property="createUserId" />
+        <result column="update_time" property="updateTime" />
+        <result column="update_user_id" property="updateUserId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, car_code, brand, model, type, pin_initial, pin_acronym, logo_img, create_time, create_user_id, update_time, update_user_id
+    </sql>
+
+    <!-- 通过品牌和型号查询logo -->
+    <select id="getLogoImgByBraMod" resultType="java.lang.String" parameterType="java.lang.String">
+         select logo_img from s_car_series
+        <where>
+            <if test="brand != null and brand != ''">
+                brand = #{brand}
+            </if>
+            <if test="model != null and model != ''">
+                and  model = #{model}
+            </if>
+        </where>
+            limit 1
+    </select>
+
+    <!-- 品牌查询 -->
+    <select id="getBrand" resultType="java.lang.String" >
+        select brand from s_car_series
+        GROUP BY brand
+    </select>
+
+    <!-- 通过品牌查询型号 -->
+    <select id="getSeriesByBrand" resultType="java.lang.String" parameterType="java.lang.String">
+        select model from s_car_series
+        <where>
+            <if test="brand != null and brand != ''">
+                brand = #{brand}
+            </if>
+        </where>
+        ORDER BY brand
+    </select>
+</mapper>

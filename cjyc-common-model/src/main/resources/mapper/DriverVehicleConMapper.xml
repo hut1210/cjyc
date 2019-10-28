@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cjyc.common.model.dao.IDriverVehicleConDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.DriverVehicleCon">
+        <id column="id" property="id" />
+        <result column="driver_id" property="driverId" />
+        <result column="vehicle_id" property="vehicleId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, driver_id, vehicle_id
+    </sql>
+
+    <!-- 根据运力vehicleId查看运行运力信息 -->
+    <select id="getDriverVehicleCon" resultType="com.cjyc.common.model.entity.DriverVehicleCon" parameterType="java.lang.Long">
+      select
+        <include refid="Base_Column_List"/>
+        where vehicle_id = #{vehicleId}
+    </select>
+
+    <!-- 根据司机id查看司机与车辆绑定关系信息 -->
+    <select id="getDriVehConByDriId" resultType="com.cjyc.common.model.entity.DriverVehicleCon" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        where driver_id = #{driverId}
+    </select>
+
+    <!-- 根据运力vehicleId删除司机与运力关系 -->
+    <delete id="delDriverVehConByVehId" parameterType="java.lang.Long">
+        delete from d_driver_vehicle_con where vehicle_id = #{vehicleId}
+    </delete>
+
+</mapper>

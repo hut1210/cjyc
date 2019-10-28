@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cjyc.common.model.dao.IDriverDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.Driver">
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="name" property="name" />
+        <result column="phone" property="phone" />
+        <result column="emergency_phone" property="emergencyPhone" />
+        <result column="type" property="type" />
+        <result column="mode" property="mode" />
+        <result column="identity" property="identity" />
+        <result column="id_card" property="idCard" />
+        <result column="real_name" property="realName" />
+        <result column="age" property="age" />
+        <result column="sex" property="sex" />
+        <result column="address" property="address" />
+        <result column="id_card_front_img" property="idCardFrontImg" />
+        <result column="id_card_back_img" property="idCardBackImg" />
+        <result column="driver_licence_front_img" property="driverLicenceFrontImg" />
+        <result column="driver_licence_back_img" property="driverLicenceBackImg" />
+        <result column="driver_licence_expire" property="driverLicenceExpire" />
+        <result column="travel_licence_front_img" property="travelLicenceFrontImg" />
+        <result column="travel_licence_back_img" property="travelLicenceBackImg" />
+        <result column="taxi_licence_front_img" property="taxiLicenceFrontImg" />
+        <result column="taxi_licence_back_img" property="taxiLicenceBackImg" />
+        <result column="qualifi_cert_front_img" property="qualifiCertFrontImg" />
+        <result column="qualifi_cert_back_img" property="qualifiCertBackImg" />
+        <result column="remark" property="remark" />
+        <result column="state" property="state" />
+        <result column="deposit_pay_state" property="depositPayState" />
+        <result column="business_state" property="businessState" />
+        <result column="source" property="source" />
+        <result column="create_user_id" property="createUserId" />
+        <result column="create_name" property="createName" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_id, name, phone, emergency_phone, type, mode, identity, id_card, real_name, age, sex, address, id_card_front_img, id_card_back_img, driver_licence_front_img, driver_licence_back_img, driver_licence_expire, travel_licence_front_img, travel_licence_back_img, taxi_licence_front_img, taxi_licence_back_img, qualifi_cert_front_img, qualifi_cert_back_img, remark, state, deposit_pay_state, business_state, source, create_user_id, create_name
+    </sql>
+    <select id="findList" resultType="com.cjyc.common.model.vo.web.user.DriverListVo">
+        select
+        c.`name` as `carrierName`,
+        c.type as carrierType,
+        c.settle_type as settleType,
+        d.user_id as userId,
+        d.`name` as `name`,
+        d.real_name as realName,
+        d.phone as phone,
+        d.type as type,
+        d.`mode` as `mode`,
+        d.id_card as idCard,
+        r.plate_no as plateNo,
+        r.running_state as runningState
+        from d_carrier c
+        join d_carrier_driver_con con on con.carrier_id = c.id
+        join d_driver d on con.driver_id = d.id
+        LEFT JOIN d_vehicle_running r on d.id = r.driver_id
+        <where>
+            <choose>
+                <when test="paramsDto.queryType == 1">
+                    and d.type = 0
+                </when>
+                <when test="paramsDto.queryType == 2">
+                    and d.type != 0 and (d.mode = 1 or d.mode = 3)
+                </when>
+                <otherwise>
+                    and d.type != 0 and (d.mode = 2 or d.mode = 3)
+                </otherwise>
+            </choose>
+
+            <if test="paramsDto.name != null">
+                and d.name like CONCAT('%',#{name},'%')
+            </if>
+            <if test="paramsDto.name != null">
+                and d.real_name like CONCAT('%',#{name},'%')
+            </if>
+            <if test="paramsDto.idCard != null">
+                and r.id_card like CONCAT('%',#{idCard},'%')
+            </if>
+            <if test="paramsDto.plateNo != null">
+                and r.plate_no like CONCAT('%',#{plateNo},'%')
+            </if>
+        </where>
+    </select>
+    <!--根据承运商查询承运商唯一的司机-->
+    <select id="findTopByCarrierId" resultType="com.cjyc.common.model.entity.Driver">
+        select
+        <include refid="Base_Column_List"/>
+        from d_driver d
+        join d_carrier_driver_con con
+        where con.carrier_id = #{carrierId}
+        and d.
+        limit 1
+    </select>
+
+    <!--根据条件查询司机信息-->
+    <select id="getDriverByTerm" resultType="com.cjyc.common.model.vo.web.driver.DriverVo" parameterType="com.cjyc.common.model.dto.web.driver.SelectDriverDto">
+            SELECT
+        d.id AS id,
+        d.user_id AS userId,
+        d.real_name AS realName,
+        d.phone AS phone,
+        d.id_card AS idCard,
+        d.id_card_front_img AS idCardFrontImg,
+        d.id_card_back_img AS idCardBackImg,
+        d.driver_licence_front_img AS driverLicenceFrontImg,
+        d.travel_licence_front_img AS travelLicenceFrontImg,
+        d.taxi_licence_front_img AS taxiLicenceFrontImg,
+        d.qualifi_cert_front_img AS qualifiCertFrontImg,
+        ( CASE d.MODE WHEN 0 THEN '代驾' WHEN 1 THEN '干线司机' WHEN 2 THEN '拖车司机' WHEN 4 THEN '全支持' END ) AS MODE,
+        (
+    CASE
+        d.source
+        WHEN 1 THEN
+        'App注册'
+        WHEN 2 THEN
+        'Applet注册'
+        WHEN 3 THEN
+        '业务员创建'
+        WHEN 4 THEN
+        '承运商管理员创建'
+        WHEN 11 THEN
+        '掌控接口'
+        WHEN 12 THEN
+        'otm接口'
+    END
+        ) AS source,
+        ( CASE d.business_state WHEN 0 THEN '营运中' WHEN 1 THEN '停运中' END ) AS businessState,
+        ( CASE d.state WHEN 0 THEN '待审核' WHEN 2 THEN '审核通过' WHEN 4 THEN '已驳回' WHEN 7 THEN '已冻结' END ) AS state,
+        v.plate_no AS plateNo,
+        card.card_name AS cardName,
+        card.bank_name AS bankName,
+        card.card_no AS cardNo,
+        ( CASE carr.settle_type WHEN 1 THEN '时付' WHEN 2 THEN '账期' END ) AS settleType,
+        cou.car_num AS carNum,
+        cou.total_income AS totalIncome
+    FROM
+        d_driver d
+        LEFT JOIN d_carrier_driver_con driCon ON driCon.driver_id = d.id
+        LEFT JOIN d_carrier carr ON carr.id = driCon.carrier_id
+        LEFT JOIN s_bank_card_bind card ON card.user_id = d.user_id
+        LEFT JOIN d_driver_vehicle_con con ON con.driver_id = d.id
+        LEFT JOIN d_vehicle v ON v.id = con.vehicle_id
+        LEFT JOIN d_driver_car_count cou ON cou.driver_id = d.id
+        <where>
+            <if test="realName != null and realName.trim() != ''">
+                d.real_name like CONCAT('%',#{realName},'%')
+            </if>
+            <if test="phone != null and phone.trim() != ''">
+                and  d.phone = #{phone}
+            </if>
+            <if test="idCard != null and idCard.trim() != ''">
+                and  d.id_card = #{idCard}
+            </if>
+            <if test="plateNo != null and plateNo.trim() != ''">
+                and  v.plate_no = #{plateNo}
+            </if>
+            <if test="identity != null and identity != ''">
+                and  d.identity = #{identity}
+            </if>
+            <if test="businessState != null and businessState != ''">
+                and  d.business_state = #{businessState}
+            </if>
+            <if test="state != null and state != ''">
+                and  d.state = #{state}
+            </if>
+            <if test="mode != null and mode != ''">
+                and  d.mode = #{mode}
+            </if>
+        </where>
+    </select>
+
+    <!--根据司机id/userId查看司机信息-->
+    <select id="getDriverById" resultType="com.cjyc.common.model.vo.web.driver.ShowDriverVo">
+      SELECT
+            d.real_name AS realName,
+            d.phone AS phone,
+            d.id_card_front_img AS idCardFrontImg,
+            d.id_card_back_img AS idCardBackImg,
+            d.driver_licence_front_img AS driverLicenceFrontImg,
+            d.driver_licence_back_img AS driverLicenceBackImg,
+            d.travel_licence_front_img AS travelLicenceFrontImg,
+            d.travel_licence_back_img AS travelLicenceBackImg,
+            d.taxi_licence_front_img AS taxiLicenceFrontImg,
+            d.taxi_licence_back_img AS taxiLicenceBackImg,
+            bank.card_name AS cardName,
+            bank.bank_name AS bankName,
+            bank.card_no AS cardNo,
+            veh.plate_no AS plateNo,
+            veh.default_carry_num AS defaultCarryNum,
+            ( CASE d.MODE WHEN 0 THEN '代驾' WHEN 1 THEN '干线司机' WHEN 2 THEN '拖车司机' WHEN 4 THEN '全支持' END ) AS MODE
+        FROM
+            d_driver d
+            JOIN d_driver_vehicle_con con ON con.driver_id = d.id
+            JOIN d_vehicle veh ON veh.id = con.vehicle_id
+            JOIN s_bank_card_bind bank ON bank.user_id = d.user_id
+        WHERE
+            d.id = #{id} and d.user_id = #{userId}
+    </select>
+
+    <!--根据承运商id查询司机信息-->
+    <select id="getDriverByDriverId" resultType="com.cjyc.common.model.entity.Driver" parameterType="java.lang.Long">
+        SELECT
+            dri.id AS id,
+            dri.phone AS phone
+        FROM
+            d_driver dri
+            JOIN d_carrier_driver_con cdc ON cdc.driver_id = dri.id
+            JOIN d_carrier carr ON carr.id = cdc.carrier_id
+        WHERE carr.id = #{carrierId}
+    </select>
+
+</mapper>
