@@ -1,6 +1,5 @@
 package com.cjyc.common.model.entity;
 
-import java.math.BigDecimal;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -17,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-24
+ * @since 2019-10-25
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -35,32 +34,8 @@ public class TaskCar implements Serializable {
     @ApiModelProperty(value = "任务ID")
     private Long taskId;
 
-    @ApiModelProperty(value = "运单ID")
-    private Long waybillId;
-
     @ApiModelProperty(value = "运单车辆ID")
     private Long waybillCarId;
-
-    @ApiModelProperty(value = "订单车辆ID")
-    private Long orderCarId;
-
-    @ApiModelProperty(value = "任务车辆状态：1待装车，2已装车，4已卸车，9确认收车")
-    private Integer state;
-
-    @ApiModelProperty(value = "图片地址，逗号分隔")
-    private String photoImg;
-
-    @ApiModelProperty(value = "装车时间")
-    private Long loadTime;
-
-    @ApiModelProperty(value = "卸车时间")
-    private Long unloadTime;
-
-    @ApiModelProperty(value = "车辆运费")
-    private BigDecimal freightFee;
-
-    @ApiModelProperty(value = "创建时间")
-    private Long createTime;
 
 
 }

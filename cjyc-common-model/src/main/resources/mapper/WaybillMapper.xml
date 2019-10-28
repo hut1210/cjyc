@@ -56,7 +56,55 @@
                 #{item}
             </foreach>
         </where>
+    </select>
+    <select id="findHistoryList" resultType="com.cjyc.common.model.vo.web.waybill.HistoryListWaybillVo">
+        select
+            w.type as type,
+            wc.waybill_no as waybillNo,
+            wc.start_city_code as startCityCode,
+            wc.start_city_name as startCityName,
+            wc.end_city_code as endCityCode,
+            wc.end_city_name as endCityName,
+            wc.start_address as startAddress,
+            wc.end_address as endAddress,
+            w.carrier_id as carrierId,
+            w.carrier_name as carrierName,
+            t.driver_id as driverId,
+            t.driver_name as driverName,
+            t.driver_phone as driverPhone,
+            wc.pick_contact_name as pickContactName,
+            wc.pick_contact_phone as pickContactPhone,
+            wc.expect_start_time as expectStartTime,
+            wc.expect_end_time as expectEndTime,
+            tc.load_time as loadTime,
+            tc.unload_time as unloadTime
+        from w_order_car oc
+        left join w_waybill_car wc on wc.order_car_id = oc.id
+        left join w_waybill w on wc.waybill_id = w.id
+        left join w_task_car tc on tc.waybill_car_id = wc.id
+        left join w_task t on t.id = tc.task_id
+        <where>
+            wc.order_car_id = #{paramsDto.orderCarId}
+            and w.type = #{paramsDto.type}
+        </where>
+    </select>
+    <select id="findByOrderCarId" resultType="com.cjyc.common.model.entity.Waybill">
+        select
+        <include refid="Base_Column_List"/>
+        from w_waybill_car wc
+        join w_waybill w on wc.waybill_id = w.id
+        where wc.order_car_id = 1
+        GROUP BY w.id
 
+    </select>
+    <select id="findTrunkStateListByOrderCarId" resultType="java.lang.Integer">
+        select
+        w.state
+        from w_waybill_car wc
+        join w_waybill w on wc.waybill_id = w.id
+        where wc.order_car_id = #{orderCarId}
+        and w.type = 3
+        GROUP BY w.id
     </select>
 
 </mapper>

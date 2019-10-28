@@ -36,5 +36,10 @@
             </foreach>
         </where>
     </update>
+    <delete id="cancelBywaybillId">
+        update w_task
+        set state = #{newState}
+        where waybill_id = #{waybillId}
+    </delete>
 
 </mapper>

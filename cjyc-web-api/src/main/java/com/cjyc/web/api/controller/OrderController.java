@@ -2,10 +2,13 @@ package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.entity.Admin;
+import com.cjyc.common.model.entity.Order;
+import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.enums.AdminStateEnum;
 import com.cjyc.common.model.enums.order.OrderSaveTypeEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.BizScopeVo;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
@@ -22,6 +25,9 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -144,7 +150,7 @@ public class OrderController {
      */
     @ApiOperation(value = "订单查询")
     @PostMapping(value = "/list")
-    public ResultVo list(@RequestBody OrderListDto reqDto) {
+    public ResultVo<PageVo<Order>> list(@RequestBody ListOrderDto reqDto) {
         return orderService.list(reqDto);
     }
 
@@ -153,9 +159,8 @@ public class OrderController {
      */
     @ApiOperation(value = "订单车辆查询")
     @PostMapping(value = "/car/list")
-    public ResultVo carlist(@RequestBody OrderListDto reqDto) {
-        //return orderService.carlist(reqDto);
-        return null;
+    public ResultVo<PageVo<OrderCar>> carlist(@RequestBody ListOrderCarDto reqDto) {
+        return orderService.carlist(reqDto);
     }
 
 

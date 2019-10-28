@@ -1,15 +1,12 @@
 package com.cjyc.web.api.service;
 
-import com.cjyc.common.model.dto.BasePageDto;
-import com.cjyc.common.model.dto.web.coupon.CouponDto;
 import com.cjyc.common.model.dto.web.coupon.CouponSendDto;
 import com.cjyc.common.model.dto.web.coupon.SeleCouponSendDto;
 import com.cjyc.common.model.entity.CouponSend;
 import com.cjyc.common.model.vo.web.coupon.CouponSendVo;
-import com.cjyc.common.model.vo.web.coupon.CouponVo;
 import com.github.pagehelper.PageInfo;
 
-import java.util.List;
+import java.math.BigDecimal;
 
 /**
  *  @author: zj
@@ -31,4 +28,6 @@ public interface ICouponSendService {
      * @return
      */
    PageInfo<CouponSend> seleCouponSendByIds(CouponSendDto dto);
+
+    BigDecimal getAmountById(Long couponSendId, BigDecimal realWlTotalFee);
 }

@@ -1,14 +1,14 @@
 package com.cjyc.common.model.enums.waybill;
 
 /**
- * 调度类型枚举
+ * 运单类型枚举
  * @author JPG
  */
 public enum WaybillTypeEnum {
     /***/
-    PICK("提车任务", 1),
-    BACK("配送任务", 2),
-    TRUNK("干线任务", 8);
+    PICK("提车运单", 1),
+    TRUNK("干线运单", 2),
+    BACK("配送运单", 3);
 
     public String name;
     public int code;

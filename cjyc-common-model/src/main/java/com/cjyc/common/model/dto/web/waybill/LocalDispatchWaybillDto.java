@@ -26,7 +26,7 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel
-public class WaybillPickDispatchDto implements Serializable {
+public class LocalDispatchWaybillDto implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -45,21 +45,35 @@ public class WaybillPickDispatchDto implements Serializable {
     @ApiModelProperty(value = "预计提车日期", required = true)
     private Long expectPickTime;
 
-    @ApiModelProperty(value = "提车方式:1 自送，2上门", required = true)
-    private Integer pickType;
+    @ApiModelProperty(value = "取车方式:1上门，2 自送/自取")
+    private Integer takeType;
 
-    @ApiModelProperty(value = "提车联系人", required = true)
-    private String pickContactName;
+    @ApiModelProperty(value = "提车联系人")
+    private String loadLinkName;
 
-    @ApiModelProperty(value = "提车联系人电话", required = true)
-    private String pickContactPhone;
+    @ApiModelProperty(value = "提车联系人userid")
+    private Long loadLinkUserId;
 
+    @ApiModelProperty(value = "提车联系人电话")
+    private String loadLinkPhone;
+
+    @ApiModelProperty(value = "收车人名称")
+    private String unloadLinkName;
+
+    @ApiModelProperty(value = "收车联系人userId")
+    private Long unloadLinkUserId;
+
+    @ApiModelProperty(value = "收车人电话")
+    private String unloadLinkPhone;
 
     @ApiModelProperty(value = "承运商ID", required = true)
     private Long carrierId;
 
     @ApiModelProperty(value = "司机ID")
     private Long driverId;
+
+    @ApiModelProperty(value = "备注")
+    private String remark;
 
 
 }

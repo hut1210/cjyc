@@ -7,6 +7,7 @@ import com.cjyc.common.model.entity.Coupon;
 import com.cjyc.common.model.vo.web.coupon.CouponVo;
 import com.github.pagehelper.PageInfo;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -65,4 +66,5 @@ public interface ICouponService {
      * @return
      */
     PageInfo<CouponVo> getCouponByTerm(SeleCouponDto dto);
+
 }

@@ -1,10 +1,6 @@
 package com.cjyc.web.api.controller;
 
-import com.cjyc.common.model.dto.web.line.SortNodeDto;
 import com.cjyc.common.model.dto.web.line.SortNodeListDto;
-import com.cjyc.common.model.dto.web.waybill.WaybillPickDispatchListDto;
-import com.cjyc.common.model.vo.BaseTipVo;
-import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.web.api.service.ILineService;
 import io.swagger.annotations.Api;
@@ -17,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.List;
 
 /**
  * 线路

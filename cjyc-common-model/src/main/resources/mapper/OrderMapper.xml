@@ -269,6 +269,7 @@
         <include refid="Base_Column_List"/>
         from w_order o
         left join c_customer c on o.customer_id = c.id
+        left join s_store s on o.input_store_id = s.id
         <where>
             <choose>
                 <when test="paramsDto.outterState == 1">
@@ -298,10 +299,49 @@
             </choose>
 
             <choose>
-                <when test="paramsDto">
-
+                <!--1指定提车日期，2预计到达时间，3创建时间，4确认时间，5完结时间-->
+                <when test="paramsDto.timeType == 1">
+                    <if test="paramsDto.beginTime != null">
+                        and o.expect_start_date &gt; #{paramsDto.beginTime}
+                    </if>
+                    <if test="paramsDto.endTime != null">
+                        and o.expect_start_date &lt; #{paramsDto.endTime}
+                    </if>
+                </when>
+                <when test="paramsDto.timeType == 2">
+                    <if test="paramsDto.beginTime != null">
+                        and o.expect_end_date &gt; #{paramsDto.beginTime}
+                    </if>
+                    <if test="paramsDto.endTime != null">
+                        and o.expect_end_date &lt; #{paramsDto.endTime}
+                    </if>
+                </when>
+                <when test="paramsDto.timeType == 3">
+                    <if test="paramsDto.beginTime != null">
+                        and o.create_time &gt; #{paramsDto.beginTime}
+                    </if>
+                    <if test="paramsDto.endTime != null">
+                        and o.create_time &lt; #{paramsDto.endTime}
+                    </if>
+                </when>
+                <when test="paramsDto.timeType == 4">
+                    <if test="paramsDto.beginTime != null">
+                        and o.check_time &gt; #{paramsDto.beginTime}
+                    </if>
+                    <if test="paramsDto.endTime != null">
+                        and o.check_time &lt; #{paramsDto.endTime}
+                    </if>
+                </when>
+                <when test="paramsDto.timeType == 5">
+                    <if test="paramsDto.beginTime != null">
+                        and o.finish_time &gt; #{paramsDto.beginTime}
+                    </if>
+                    <if test="paramsDto.endTime != null">
+                        and o.finish_time &lt; #{paramsDto.endTime}
+                    </if>
                 </when>
             </choose>
+
 
             <if test="paramsDto.no != null and paramsDto.no != ''">
                 and o.no = #{paramsDto.no}
@@ -342,18 +382,6 @@
             <if test="paramsDto.endStoreId != null">
                 and o.end_store_id = #{paramsDto.endStoreId}
             </if>
-            <if test="paramsDto.beginExpectStartDate != null">
-                and o.expect_start_date &gt; #{paramsDto.beginExpectStartDate}
-            </if>
-            <if test="paramsDto.endExpectStartDate != null">
-                and o.expect_start_date &lt; #{paramsDto.endExpectStartDate}
-            </if>
-            <if test="paramsDto.beginExpectEndDate != null">
-                and o.expect_end_date &gt; #{paramsDto.beginExpectEndDate}
-            </if>
-            <if test="paramsDto.endExpectEndDate != null">
-                and o.expect_end_date &lt; #{paramsDto.endExpectEndDate}
-            </if>
 
             <if test="paramsDto.pickContactName != null and paramsDto.pickContactName != ''">
                 and o.pick_contact_name = #{paramsDto.pickContactName}
@@ -379,26 +407,15 @@
             <if test="paramsDto.source != null and paramsDto.source != ''">
                 and o.source = #{paramsDto.source}
             </if>
-            <if test="paramsDto.beginCreateTime != null">
-                and o.create_time &gt; #{paramsDto.beginCreateTime}
-            </if>
-            <if test="paramsDto.endCreateTime != null">
-                and o.create_time &lt; #{paramsDto.endCreateTime}
-            </if>
+
             <if test="paramsDto.createUserName != null and paramsDto.createUserName != ''">
                 and o.create_user_name = #{paramsDto.createUserName}
-            </if>
-            <if test="paramsDto.beginCheckTime != null">
-                and o.check_time &gt; #{paramsDto.beginCheckTime}
-            </if>
-            <if test="paramsDto.endCheckTime != null">
-                and o.check_time &lt; #{paramsDto.endCheckTime}
             </if>
             <if test="paramsDto.payType != null">
                 and o.pay_type = #{paramsDto.payType}
             </if>
             <if test="paramsDto.regionCode != null and paramsDto.regionCode != ''">
-                and city.region_code = #{paramsDto.regionCode}
+                and s.region_code = #{paramsDto.regionCode}
             </if>
 
         </where>

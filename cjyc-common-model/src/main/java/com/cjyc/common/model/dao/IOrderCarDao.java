@@ -3,6 +3,7 @@ package com.cjyc.common.model.dao;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.dto.web.order.ChangePriceOrderCarDto;
 import com.cjyc.common.model.dto.web.order.LineWaitDispatchCountListOrderCarDto;
+import com.cjyc.common.model.dto.web.order.ListOrderCarDto;
 import com.cjyc.common.model.dto.web.order.WaitDispatchListOrderCarDto;
 import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.vo.customer.OrderCarCenterVo;
@@ -90,6 +91,8 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
     */
     int updateStateById(@Param("state") int state, @Param("orderCarId") Long orderCarId);
 
+    int updatePickStateById(@Param("state") int state, Long orderCarId);
+    void updateBackStateById(@Param("state") int state, Long orderCarId);
     /**
      * 批量更新状态
      * @author JPG
@@ -98,6 +101,7 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
      * @param list
      */
     int updateStateBatchByIds(@Param("state") int state, List<Long> list);
+    void updateTrunkStateBatchByIds(@Param("state") int state, List<Long> list);
 
     int saveBatch(@Param("orderCarlist") List<OrderCar> orderCarlist);
 
@@ -106,4 +110,8 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
     int deleteBatchByOrderId(@Param("orderId") Long orderId);
 
     List<ChangePriceOrderCarDto> findChangePriceDtoByOrderId(Long orderId);
+
+    List<OrderCar> findListSelective(ListOrderCarDto paramsDto);
+
+    List<OrderCar> findListByWaybillId(Long waybillId);
 }

@@ -92,6 +92,9 @@ public class WaitDispatchListOrderCarDto extends BasePageDto implements Serializ
     @ApiModelProperty(value = "目的地业务中心ID: -1不经过业务中心,0无业务中心")
     private Long endStoreId;
 
+    @ApiModelProperty(value = "签收状态：0全部，1未签收，2已签收")
+    private Long signState;
+
     @ApiModelProperty(value = "品牌")
     private String brand;
 
