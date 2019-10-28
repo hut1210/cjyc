@@ -25,17 +25,17 @@ import java.util.Map;
 @RequestMapping(value = "/share",
         produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class ShareController {
-
+/*
     @Resource
     private ICustomerShareService shareService;
 
-    /**
+    *//**
      * 查询分享管理列表
      * @author litan
-     */
+     *//*
     @ApiOperation(value = "查询分享管理列表(分页)")
     @GetMapping(value = "/list")
     public ResultVo<PageVo<Map<String,Object>>> getShareList(@RequestBody CustomerShareDto reqDto) {
         return shareService.getShareList(reqDto);
-    }
+    }*/
 }

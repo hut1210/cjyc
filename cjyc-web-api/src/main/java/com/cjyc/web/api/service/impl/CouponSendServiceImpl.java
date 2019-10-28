@@ -105,7 +105,7 @@ public class CouponSendServiceImpl implements ICouponSendService {
             return coupon.getCutAmount();
         }
         if(coupon.getCouponType() == CouponTypeEnum.DISCOUNT_CUT.code){
-            return realWlTotalFee.multiply(new BigDecimal(coupon.getDiscount()));
+            return realWlTotalFee.multiply(new BigDecimal(coupon.getDiscount().toString()));
         }
         return BigDecimal.ZERO;
     }
