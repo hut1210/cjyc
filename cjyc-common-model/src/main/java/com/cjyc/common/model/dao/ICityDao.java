@@ -3,9 +3,12 @@ package com.cjyc.common.model.dao;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.dto.BaseCityDto;
 import com.cjyc.common.model.entity.City;
+import com.cjyc.common.model.vo.web.city.ProvinceCityVo;
+import io.swagger.annotations.ApiParam;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -56,6 +59,24 @@ public interface ICityDao extends BaseMapper<City> {
      */
     List<BaseCityDto> getCityAndName(List<String> code);
 
+    /**
+     * 通过城市编码查询上一级
+     * @param code
+     * @return
+     */
+    ProvinceCityVo getProvinceCityByCode(@Param("code") String code);
 
+    /**
+     * 获取所有省/直辖市
+     * @return
+     */
+    List<HashMap<String,String>> getAllProvince();
+
+    /**
+     * 获取下一级所有城市
+     * @param code
+     * @return
+     */
+    List<HashMap<String,String>> getAllCity(@ApiParam("code") String code);
 }
 

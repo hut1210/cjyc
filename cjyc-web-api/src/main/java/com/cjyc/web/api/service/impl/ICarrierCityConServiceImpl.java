@@ -6,7 +6,7 @@ import com.cjyc.common.model.dao.ICityDao;
 import com.cjyc.common.model.dto.BaseCityDto;
 import com.cjyc.common.model.entity.BusinessCityCode;
 import com.cjyc.common.model.entity.CarrierCityCon;
-import com.cjyc.common.model.enums.SysEnum;
+import com.cjyc.web.api.exception.CommonException;
 import com.cjyc.web.api.service.ICarrierCityConService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -28,6 +28,9 @@ public class ICarrierCityConServiceImpl extends ServiceImpl<ICarrierCityConDao, 
     @Resource
     private ICarrierCityConDao iCarrierCityConDao;
 
+    @Resource
+    private ICarrierCityConService iCarrierCityConService;
+
     /**
      * 建立承运商的业务范围
      * @return
@@ -41,7 +44,7 @@ public class ICarrierCityConServiceImpl extends ServiceImpl<ICarrierCityConDao, 
         if(countryList != null && countryList.size() > 0){
             for(BaseCityDto city : countryList){
                 ccc.setCountry(city.getCode());
-                ccc.setAreaCode(SysEnum.ZERO.getValue().toString());
+                //ccc.setAreaCode(SysEnum.ZERO.getValue().toString());
             }
         }else {
             List<String> allList = new ArrayList<>();
@@ -108,7 +111,7 @@ public class ICarrierCityConServiceImpl extends ServiceImpl<ICarrierCityConDao, 
         List<BaseCityDto> cityList = null;
         List<BaseCityDto> areaList = null;
         //全国不为空
-        if(SysEnum.ZERO.getValue().equals(ccc.getAreaCode())){
+        if("0".equals(ccc.getAreaCode())){
             List<String> countryCodes = Arrays.asList(ccc.getCountry().split(","));
             countryList = iCityDao.getCityAndName(countryCodes);
         }else{
@@ -143,5 +146,21 @@ public class ICarrierCityConServiceImpl extends ServiceImpl<ICarrierCityConDao, 
         bcc.setCityList(cityList);
         bcc.setAreaList(areaList);
         return bcc;
+    }
+
+    @Override
+    public boolean updateCarrCityCon(Long id,BusinessCityCode bccd) {
+        try{
+            int h = iCarrierCityConDao.deleteByCarrierId(id);
+            if(h > 0){
+                CarrierCityCon ccc = iCarrierCityConService.encapCarrCityCon(bccd);
+                ccc.setCarrierId(id);
+                return iCarrierCityConDao.insert(ccc) > 0 ? true : false;
+            }
+        }catch (Exception e){
+            log.info("更新承运商业务范围出现异常");
+            throw new CommonException(e.getMessage());
+        }
+        return false;
     }
 }

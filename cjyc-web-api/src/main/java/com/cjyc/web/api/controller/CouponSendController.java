@@ -23,21 +23,21 @@ import org.springframework.web.bind.annotation.*;
 public class CouponSendController {
 
     @Autowired
-    private ICouponSendService iCouponSendService;
+    private ICouponSendService couponSendService;
 
-    @ApiOperation(value = "根据条件筛选优惠券", notes = "根据条件筛选优惠券", httpMethod = "POST")
+    @ApiOperation(value = "根据条件筛选优惠券")
     @PostMapping(value = "/seleCouponSendByTerm")
     public ResultVo<PageVo<CouponSendVo>> seleCouponSendByTerm(@RequestBody SeleCouponSendDto dto){
         BasePageUtil.initPage(dto.getCurrentPage(),dto.getPageSize());
-        PageInfo<CouponSendVo> pageInfo = iCouponSendService.seleCouponSendByTerm(dto);
+        PageInfo<CouponSendVo> pageInfo = couponSendService.seleCouponSendByTerm(dto);
         return BaseResultUtil.getPageVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),pageInfo);
     }
 
-    @ApiOperation(value = "根据ids分页查询优惠券", notes = "根据ids分页查询优惠券", httpMethod = "POST")
+    @ApiOperation(value = "根据ids分页查询优惠券")
     @PostMapping(value = "/seleCouponSendByIds")
     public ResultVo<PageVo<CouponSend>> seleCouponSendByIds(@RequestBody CouponSendDto dto){
         BasePageUtil.initPage(dto.getCurrentPage(),dto.getPageSize());
-        PageInfo<CouponSend> pageInfo = iCouponSendService.seleCouponSendByIds(dto);
+        PageInfo<CouponSend> pageInfo = couponSendService.seleCouponSendByIds(dto);
         return BaseResultUtil.getPageVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),pageInfo);
     }
 

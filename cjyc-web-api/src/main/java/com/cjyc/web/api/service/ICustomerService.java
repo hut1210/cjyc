@@ -1,14 +1,12 @@
 package com.cjyc.web.api.service;
 
+import com.cjyc.common.model.dto.web.customer.*;
+import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.CustomerVo;
 import com.cjyc.common.model.vo.web.ListKeyCustomerVo;
 import com.cjyc.common.model.vo.web.ShowKeyCustomerVo;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.dto.BasePageDto;
-import com.cjyc.common.model.dto.web.CustomerDto;
-import com.cjyc.common.model.dto.web.KeyCustomerDto;
-import com.cjyc.common.model.dto.web.SelectCustomerDto;
-import com.cjyc.common.model.dto.web.SelectKeyCustomerDto;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;
@@ -26,20 +24,6 @@ public interface ICustomerService  {
      * @return
      */
     boolean saveCustomer(CustomerDto customerDto);
-
-    /**
-     *  分页查询所有移动端用户
-     * @param basePageDto
-     * @return
-     */
-    PageInfo<Customer> getAllCustomer(BasePageDto basePageDto);
-
-    /**
-     * 根据用户id查看移动端用户
-     * @param id
-     * @return
-     */
-    Customer showCustomerById(Long id);
 
     /**
      * 更新移动端用户
@@ -60,7 +44,7 @@ public interface ICustomerService  {
      * @param selectCustomerDto
      * @return
      */
-    PageInfo<CustomerVo> findCustomer(SelectCustomerDto selectCustomerDto);
+    PageInfo<CustomerVo> findCustomerByTerm(SelectCustomerDto selectCustomerDto);
 
     /**
      * 新增大客户&合同
@@ -75,13 +59,6 @@ public interface ICustomerService  {
      * @return
      */
     boolean delKeyCustomerByIds(List<Long> ids);
-
-    /**
-     * 分页查看所有大客户
-     * @param pageDto
-     * @return
-     */
-    PageInfo<ListKeyCustomerVo> getAllKeyCustomer(BasePageDto pageDto);
 
     /**
      * 根据大客户id查看大客户&合同
@@ -107,4 +84,19 @@ public interface ICustomerService  {
     int save(Customer customer);
 
     Customer selectById(Long customerId);
+
+    /**
+     * 新增大客户
+     * @param dto
+     * @return
+     */
+    ResultVo addOrUpdatePartner(PartnerDto dto);
+
+    /**
+     * 审核/删除
+     * @param id
+     * @param flag
+     * @return
+     */
+    ResultVo verifyOrDeletePartner(Long id,Integer flag);
 }

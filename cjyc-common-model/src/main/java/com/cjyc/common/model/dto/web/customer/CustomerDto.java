@@ -1,4 +1,4 @@
-package com.cjyc.common.model.dto.web;
+package com.cjyc.common.model.dto.web.customer;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -15,6 +15,11 @@ public class CustomerDto implements Serializable {
 
     public interface UpdateCustomerVo {
     }
+
+    @ApiModelProperty("当前登陆用户userId")
+    @NotNull(groups = {SaveCustomerVo.class},message = "当前登陆用户userId不能为空")
+    @NotNull(groups = {UpdateCustomerVo.class},message = "当前登陆用户userId不能为空")
+    private Long userId;
 
     @NotNull(groups = {UpdateCustomerVo.class},message = "id不能为空")
     @ApiModelProperty(value = "主键id",required = true)

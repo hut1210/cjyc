@@ -35,69 +35,69 @@ import javax.annotation.Resource;
 public class CarrierController {
 
     @Resource
-    private ICarrierService iCarrierService;
+    private ICarrierService carrierService;
 
-    @ApiOperation(value = "新增承运商", notes = "新增承运商", httpMethod = "POST")
-    @RequestMapping(value = "/saveCarrier", method = RequestMethod.POST)
+    @ApiOperation(value = "新增承运商")
+    @PostMapping(value = "/saveCarrier")
     public ResultVo saveCarrier(@Validated({ CarrierDto.SaveCarrierDto.class }) @RequestBody CarrierDto dto){
-        boolean result = iCarrierService.saveCarrier(dto);
+        boolean result = carrierService.saveCarrier(dto);
         return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg())
                 : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
     }
 
-    @ApiOperation(value = "更新承运商", notes = "更新承运商", httpMethod = "POST")
-    @RequestMapping(value = "/updateCarrier", method = RequestMethod.POST)
+    @ApiOperation(value = "更新承运商")
+    @PostMapping(value = "/updateCarrier")
     public ResultVo updateCarrier(@Validated({ CarrierDto.UpdateCarrierDto.class }) @RequestBody CarrierDto dto){
-        boolean result = iCarrierService.updateCarrier(dto);
+        boolean result = carrierService.updateCarrier(dto);
         return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg())
                 : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
     }
 
-    @ApiOperation(value = "根据条件查询承运商", notes = "根据条件查询承运商", httpMethod = "POST")
-    @RequestMapping(value = "/getCarrierByTerm", method = RequestMethod.POST)
+    @ApiOperation(value = "根据条件查询承运商")
+    @PostMapping(value = "/getCarrierByTerm")
     public ResultVo<PageVo<CarrierVo>> getCarrierByTerm(@RequestBody SeleCarrierDto dto){
         BasePageUtil.initPage(dto.getCurrentPage(),dto.getPageSize());
-        PageInfo<CarrierVo> pageInfo = iCarrierService.getCarrierByTerm(dto);
+        PageInfo<CarrierVo> pageInfo = carrierService.getCarrierByTerm(dto);
         return BaseResultUtil.getPageVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),pageInfo);
     }
 
-    @ApiOperation(value = "根据id审核承运商", notes = "根据id审核承运商", httpMethod = "POST")
+    @ApiOperation(value = "根据id审核承运商")
     @PostMapping(value = "/verifyCarrierById/{id}/{state}")
     public ResultVo verifyCarrierById(@PathVariable @ApiParam(value = "承运商id",required = true) Long id,
-                                     @PathVariable @ApiParam(value = "审核状态 1:审核通过 2:审核拒绝 3：冻结 4:解除",required = true) String state){
-        if(id == null || StringUtils.isBlank(state)){
+                                     @PathVariable @ApiParam(value = "审核状态 3:审核通过 4:审核拒绝 5：冻结 6:解除",required = true) Integer state){
+        if(id == null || state == null){
             return BaseResultUtil.getVo(ResultEnum.MOBILE_PARAM_ERROR.getCode(),ResultEnum.MOBILE_PARAM_ERROR.getMsg());
         }
-        boolean result = iCarrierService.verifyCarrierById(id,state);
+        boolean result = carrierService.verifyCarrierById(id,state);
         return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg())
                 : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
     }
 
-    @ApiOperation(value = "根据id查看基本承运商信息", notes = "根据id(修改)查看承运商", httpMethod = "POST")
+    @ApiOperation(value = "根据id查看基本承运商信息")
     @PostMapping(value = "/getBaseCarrierById/{id}")
     public ResultVo<BaseCarrierVo> getBaseCarrierById(@PathVariable @ApiParam(value = "承运商id",required = true) Long id){
         if(id == null){
             return BaseResultUtil.getVo(ResultEnum.MOBILE_PARAM_ERROR.getCode(),ResultEnum.MOBILE_PARAM_ERROR.getMsg());
         }
-        BaseCarrierVo vo = iCarrierService.getBaseCarrierById(id);
+        BaseCarrierVo vo = carrierService.getBaseCarrierById(id);
         return BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg(),vo);
     }
 
-    @ApiOperation(value = "根据条件查看车辆信息", notes = "根据条件查看车辆信息", httpMethod = "POST")
+    @ApiOperation(value = "根据条件查看车辆信息")
     @PostMapping(value = "/getBaseVehicleByTerm")
     public ResultVo<PageVo<BaseVehicleVo>> getBaseVehicleByTerm(@Validated({ SeleVehicleDto.SelectVehicleDto.class })@RequestBody SeleVehicleDto dto){
         BasePageUtil.initPage(dto.getCurrentPage(),dto.getPageSize());
-        PageInfo<BaseVehicleVo> pageInfo = iCarrierService.getBaseVehicleByTerm(dto);
+        PageInfo<BaseVehicleVo> pageInfo = carrierService.getBaseVehicleByTerm(dto);
         return BaseResultUtil.getPageVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg(),pageInfo);
     }
 
-    @ApiOperation(value = "根据承运商id查看承运商业务范围", notes = "根据承运商id查看承运商业务范围", httpMethod = "POST")
+    @ApiOperation(value = "根据承运商id查看承运商业务范围")
     @PostMapping(value = "/getCarrierBusiById/{id}")
     public ResultVo<BusinessCityCode> getCarrierBusiById(@PathVariable @ApiParam(value = "承运商id",required = true) Long id){
         if(id == null){
             return BaseResultUtil.getVo(ResultEnum.MOBILE_PARAM_ERROR.getCode(),ResultEnum.MOBILE_PARAM_ERROR.getMsg());
         }
-        BusinessCityCode businessCityCode = iCarrierService.getCarrierBusiById(id);
+        BusinessCityCode businessCityCode = carrierService.getCarrierBusiById(id);
         return BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg(),businessCityCode);
     }
 

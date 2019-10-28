@@ -14,6 +14,7 @@
         <result column="id_card" property="idCard" />
         <result column="bank_code" property="bankCode" />
         <result column="bank_name" property="bankName" />
+        <result column="bank_licence" property="bankLicence" />
         <result column="description" property="description" />
         <result column="state" property="state" />
         <result column="create_time" property="createTime" />
@@ -21,7 +22,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, user_id, user_type, card_type, card_name, card_no, card_phone, id_card, bank_code, bank_name, description, state, create_time
+        id, user_id, user_type, card_type, card_name, card_no, card_phone, id_card, bank_code, bank_name, bank_licence, description, state, create_time
     </sql>
 
     <!-- 根据userId获取银行卡信息 -->

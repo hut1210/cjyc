@@ -43,7 +43,7 @@ public interface ICarrierService {
      * @param state
      * @return
      */
-    boolean verifyCarrierById(Long id,String state);
+    boolean verifyCarrierById(Long id,Integer state);
 
     /**
      * 根据承运商id查看承运商信息

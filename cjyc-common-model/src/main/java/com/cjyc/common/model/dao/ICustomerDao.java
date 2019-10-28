@@ -1,16 +1,14 @@
 package com.cjyc.common.model.dao;
 
 import com.cjyc.common.model.dto.web.customer.CustomerfuzzyListDto;
-import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.CustomerVo;
-import com.cjyc.common.model.vo.web.ListKeyCustomerVo;
+import com.cjyc.common.model.dto.web.customer.SelectCustomerDto;
+import com.cjyc.common.model.dto.web.customer.SelectKeyCustomerDto;
 import com.cjyc.common.model.entity.Customer;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.cjyc.common.model.dto.web.SelectCustomerDto;
-import com.cjyc.common.model.dto.web.SelectKeyCustomerDto;
+import com.cjyc.common.model.vo.web.CustomerVo;
+import com.cjyc.common.model.vo.web.ListKeyCustomerVo;
 import com.cjyc.common.model.vo.web.customer.CustomerFuzzyListVo;
 import org.apache.ibatis.annotations.Param;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -20,9 +18,8 @@ import java.util.List;
  * </p>
  *
  * @author JPG
- * @since 2019-09-29
+ * @since 2019-10-26
  */
-@Repository
 public interface ICustomerDao extends BaseMapper<Customer> {
 
     /**

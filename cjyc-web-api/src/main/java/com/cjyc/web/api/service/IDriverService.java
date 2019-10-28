@@ -38,7 +38,7 @@ public interface IDriverService {
      * @param id
      * @return
      */
-    boolean examineDriById(Long id,String sign);
+    boolean examineDriById(Long id,Integer sign);
 
     /**
      * 根据司机id/userId查看司机信息

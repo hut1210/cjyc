@@ -1,7 +1,7 @@
 package com.cjyc.salesman.api.service.impl;
 
-import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.dao.ICustomerDao;
+import com.cjyc.common.model.entity.Customer;
 import com.cjyc.salesman.api.service.ICustomerService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;

@@ -1,8 +1,8 @@
 package com.cjyc.web.api.service;
 
 import com.cjyc.common.model.dto.BasePageDto;
-import com.cjyc.common.model.dto.web.DictionaryDto;
-import com.cjyc.common.model.dto.web.SelectDictionaryDto;
+import com.cjyc.common.model.dto.web.dictionary.DictionaryDto;
+import com.cjyc.common.model.dto.web.dictionary.SelectDictionaryDto;
 import com.cjyc.common.model.entity.Dictionary;
 import com.github.pagehelper.PageInfo;
 

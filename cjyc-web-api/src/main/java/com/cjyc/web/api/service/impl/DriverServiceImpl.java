@@ -6,7 +6,11 @@ import com.cjyc.common.model.dto.web.driver.DriverDto;
 import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
 import com.cjyc.common.model.dto.web.user.DriverListDto;
 import com.cjyc.common.model.entity.*;
-import com.cjyc.common.model.enums.SysEnum;
+import com.cjyc.common.model.enums.FlagEnum;
+import com.cjyc.common.model.enums.transport.CarrierTypeEnum;
+import com.cjyc.common.model.enums.transport.DriverIdentityEnum;
+import com.cjyc.common.model.enums.transport.VehicleStateEnum;
+import com.cjyc.common.model.enums.transport.VerifyStateEnum;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -24,6 +28,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -106,9 +111,8 @@ public class DriverServiceImpl implements IDriverService {
                 vr.setDriverId(driver.getId());
                 vr.setPlateNo(dto.getPlateNo());
                 vr.setCarryCarNum(dto.getDefaultCarryNum());
-                vr.setState(SysEnum.ZERO.getValue());
-                vr.setCreateTime(LocalDateTimeUtil.convertToLong(LocalDateTimeUtil.formatLDTNow(TimePatternConstant.COMPLEX_TIME_FORMAT),
-                        TimePatternConstant.COMPLEX_TIME_FORMAT));
+                vr.setState(VehicleStateEnum.EFFECTIVE.code);
+                vr.setCreateTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
                 k = iVehicleRunningDao.insert(vr);
             }
             if(k > 0 && n > 0){
@@ -118,10 +122,9 @@ public class DriverServiceImpl implements IDriverService {
                 carrier.setLinkman(dto.getRealName());
                 carrier.setLinkmanPhone(dto.getPhone());
                 carrier.setMode(dto.getMode());
-                carrier.setType(SysEnum.ONE.getValue());
-                carrier.setCreateTime(LocalDateTimeUtil.convertToLong(LocalDateTimeUtil.formatLDTNow(TimePatternConstant.COMPLEX_TIME_FORMAT),
-                        TimePatternConstant.COMPLEX_TIME_FORMAT));
-                carrier.setCreateUserId(dto.getCurrentUserId());
+                carrier.setType(CarrierTypeEnum.PERSONAL.code);
+                carrier.setCreateTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
+                carrier.setCreateUserId(dto.getUserId());
                 p = iCarrierDao.insert(carrier);
             }
             if(p > 0){
@@ -129,7 +132,7 @@ public class DriverServiceImpl implements IDriverService {
                 CarrierDriverCon cdc = new CarrierDriverCon();
                 cdc.setCarrierId(carrier.getId());
                 cdc.setDriverId(driver.getId());
-                cdc.setRole(SysEnum.ZERO.getValue());
+                cdc.setRole(DriverIdentityEnum.COMMON_DRIVER.code);
                 m = iCarrierDriverConDao.insert(cdc);
             }
             if(m > 0){
@@ -160,36 +163,36 @@ public class DriverServiceImpl implements IDriverService {
     }
 
     @Override
-    public boolean examineDriById(Long id,String sign) {
+    public boolean examineDriById(Long id,Integer flag) {
         try{
             //获取司机
             Driver driver = driverDao.selectById(id);
             //获取承运商
             Carrier carr = iCarrierDao.getCarrierById(id);
             //审核通过
-            if(SysEnum.ONE.getValue().equals(sign) || SysEnum.FOUR.getValue().equals(sign)){
-                driver.setState(Integer.valueOf(SysEnum.TWO.getValue()));
+            if(flag == FlagEnum.AUDIT_PASS.code){
+                driver.setState(VerifyStateEnum.AUDIT_PASS.code);
                 driverDao.updateById(driver);
                 //更新承运商
-                carr.setState(Integer.valueOf(SysEnum.TWO.getValue()));
+                carr.setState(VerifyStateEnum.AUDIT_PASS.code);
                 iCarrierDao.updateById(carr);
                 //更新运力
                 VehicleRunning vr = iVehicleRunningDao.getVehiRunByDriverId(id);
-                vr.setState(SysEnum.ONE.getValue());
+                vr.setState(VehicleStateEnum.EFFECTIVE.code);
                 return iVehicleRunningDao.updateById(vr) > 0 ? true : false;
-            }else if(SysEnum.TWO.getValue().equals(sign)){
+            }else if(flag == FlagEnum.AUDIT_REJECT.code){
                 //审核拒绝
-                driver.setState(Integer.valueOf(SysEnum.FOUR.getValue()));
+                driver.setState(VerifyStateEnum.AUDIT_REJECT.code);
                 driverDao.updateById(driver);
                 //更新承运商
-                carr.setState(Integer.valueOf(SysEnum.FOUR.getValue()));
+                carr.setState(VerifyStateEnum.AUDIT_REJECT.code);
                 return iCarrierDao.updateById(carr) > 0 ? true : false;
-            }else if(SysEnum.THREE.getValue().equals(sign)){
+            }else if(flag == FlagEnum.FROZEN.code){
                 //冻结
-                driver.setState(Integer.valueOf(SysEnum.SEVEN.getValue()));
+                driver.setState(VerifyStateEnum.FROZEN.code);
                 driverDao.updateById(driver);
                 //更新承运商
-                carr.setState(Integer.valueOf(SysEnum.SEVEN.getValue()));
+                carr.setState(VerifyStateEnum.FROZEN.code);
                 return iCarrierDao.updateById(carr) > 0 ? true:false;
             }
         }catch (Exception e){
@@ -216,6 +219,9 @@ public class DriverServiceImpl implements IDriverService {
     public boolean updateDriver(DriverDto dto) {
         int i;
         int j;
+        int m = 0;
+        int n = 0;
+        Carrier carrier = null;
         try{
             //更新司机信息
             Driver driver = driverDao.selectById(dto.getId());
@@ -242,8 +248,21 @@ public class DriverServiceImpl implements IDriverService {
                     vr.setVehicleId(dto.getVehicleId());
                     vr.setPlateNo(dto.getPlateNo());
                     vr.setCarryCarNum(dto.getDefaultCarryNum());
-                    return iVehicleRunningDao.updateById(vr) > 0 ? true : false;
+                    m =iVehicleRunningDao.updateById(vr);
                 }
+            }
+            //更新承运商信息
+            if(m > 0){
+                carrier = iCarrierDao.getCarrierById(dto.getId());
+                if(carrier != null){
+                    carrier.setName(dto.getRealName());
+                    carrier.setLinkmanPhone(dto.getPhone());
+                    n = iCarrierDao.updateById(carrier);
+                }
+            }
+            if(n > 0){
+                //更新承运商业务范围
+                iCarrierCityConService.updateCarrCityCon(carrier.getId(),dto);
             }
         }catch (Exception e){
             log.info("根据司机id更新司机信息出现异常");

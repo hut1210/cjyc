@@ -10,7 +10,9 @@ import com.cjyc.common.model.dto.web.vehicle.VehicleDto;
 import com.cjyc.common.model.entity.DriverVehicleCon;
 import com.cjyc.common.model.entity.Vehicle;
 import com.cjyc.common.model.entity.VehicleRunning;
-import com.cjyc.common.model.enums.SysEnum;
+import com.cjyc.common.model.enums.transport.BusinessStateEnum;
+import com.cjyc.common.model.enums.transport.VehicleStateEnum;
+import com.cjyc.common.model.enums.transport.VerifyStateEnum;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.web.vehicle.VehicleVo;
 import com.cjyc.web.api.exception.CommonException;
@@ -23,6 +25,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -113,7 +116,7 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
             List<VehicleVo> vehicleVos = iVehicleDao.getVehicleByTerm(dto);
             if(vehicleVos != null && vehicleVos.size() > 0){
                 for(VehicleVo vo : vehicleVos){
-                    vo.setCreateName(LocalDateTimeUtil.convertToString(Long.valueOf(vo.getCreateTime()), TimePatternConstant.COMPLEX_TIME_FORMAT));
+                    //vo.setCreateTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
                 }
                 PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
                 pageInfo = new PageInfo<>(vehicleVos);
@@ -156,10 +159,9 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
             v.setPlateNo(dto.getPlateNo());
             v.setDefaultCarryNum(Integer.valueOf(dto.getDefaultCarryNum()));
             v.setOwnershipType(Integer.valueOf(dto.getOwnershipType()));
-            v.setState(Integer.valueOf(SysEnum.ZERO.getValue()));
+            v.setState(VerifyStateEnum.BE_AUDITED.code);
             v.setCreateUserId(Long.valueOf(dto.getUserId()));
-            v.setCreateTime(LocalDateTimeUtil.convertToLong(LocalDateTimeUtil.formatLDTNow(TimePatternConstant.COMPLEX_TIME_FORMAT),
-                    TimePatternConstant.COMPLEX_TIME_FORMAT));
+            v.setCreateTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
         }catch (Exception e){
             log.info("封装车辆信息出现异常");
         }
@@ -168,12 +170,12 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
 
     private VehicleRunning encapVehicleRunning(VehicleRunning vr,VehicleDto dto,Vehicle vehicle){
         try{
-            vr.setDriverId(Long.valueOf(dto.getDriverId()));
+            vr.setDriverId(dto.getDriverId());
             vr.setVehicleId(vehicle.getId());
             vr.setPlateNo(dto.getPlateNo());
-            vr.setCarryCarNum(Integer.valueOf(dto.getDefaultCarryNum()));
-            vr.setState(Integer.valueOf(SysEnum.ONE.getValue()));
-            vr.setRunningState(Integer.valueOf(SysEnum.ZERO.getValue()));
+            vr.setCarryCarNum(dto.getDefaultCarryNum());
+            vr.setState(VehicleStateEnum.EFFECTIVE.code);
+            vr.setRunningState(BusinessStateEnum.OUTAGE.code);
             vr.setCreateTime(LocalDateTimeUtil.convertToLong(LocalDateTimeUtil.formatLDTNow(TimePatternConstant.COMPLEX_TIME_FORMAT),
                     TimePatternConstant.COMPLEX_TIME_FORMAT));
         }catch (Exception e){

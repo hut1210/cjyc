@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-24
+ * @since 2019-10-28
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -28,7 +28,7 @@ public class CarSeries implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     @ApiModelProperty(value = "车辆ID")
     private String carCode;
@@ -51,16 +51,16 @@ public class CarSeries implements Serializable {
     private String logoImg;
 
     @ApiModelProperty(value = "创建时间")
-    private String createTime;
+    private Long createTime;
 
     @ApiModelProperty(value = "创建人")
-    private String createUserId;
+    private Long createUserId;
 
     @ApiModelProperty(value = "最后修改时间")
-    private String updateTime;
+    private Long updateTime;
 
     @ApiModelProperty(value = "最后修改人")
-    private String updateUserId;
+    private Long updateUserId;
 
 
 }

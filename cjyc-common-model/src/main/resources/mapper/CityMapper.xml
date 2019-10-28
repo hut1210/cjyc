@@ -94,4 +94,27 @@
         </foreach>
     </select>
 
+    <!--通过城市编码查询上一级 -->
+    <select id="getProvinceCityByCode" resultType="com.cjyc.common.model.vo.web.city.ProvinceCityVo" parameterType="java.lang.String">
+        SELECT
+            c1.CODE AS cityCode,
+            c1.NAME AS cityName,
+            c2.CODE AS provinceCode,
+            c2.NAME AS provinceName
+        FROM
+            s_city c1
+            JOIN s_city c2 ON c2.CODE = c1.parent_code
+        WHERE c1.code = #{code}
+    </select>
+
+    <!--获取所有省/直辖市 -->
+    <select id="getAllProvince" resultType="java.util.HashMap">
+         select name,code from s_city where level = 1
+    </select>
+
+    <!--获取所有下一级城市 -->
+    <select id="getAllCity" resultType="java.util.HashMap" parameterType="java.lang.String">
+        select name,code from s_city where parent_code = #{code}
+    </select>
+
 </mapper>

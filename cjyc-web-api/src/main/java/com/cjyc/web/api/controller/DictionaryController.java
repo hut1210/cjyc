@@ -1,8 +1,8 @@
 package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.BasePageDto;
-import com.cjyc.common.model.dto.web.DictionaryDto;
-import com.cjyc.common.model.dto.web.SelectDictionaryDto;
+import com.cjyc.common.model.dto.web.dictionary.DictionaryDto;
+import com.cjyc.common.model.dto.web.dictionary.SelectDictionaryDto;
 import com.cjyc.common.model.entity.Dictionary;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BasePageUtil;
@@ -30,52 +30,52 @@ import java.util.List;
 public class DictionaryController {
 
     @Autowired
-    private IDictionaryService iDictionaryService;
+    private IDictionaryService dictionaryService;
 
-    @ApiOperation(value = "新增字典项", notes = "新增字典项", httpMethod = "POST")
+    @ApiOperation(value = "新增字典项")
     @PostMapping(value = "/saveDictionary")
     public ResultVo saveDictionary(@RequestBody DictionaryDto dictionaryDto){
-        boolean result = iDictionaryService.saveDictionary(dictionaryDto);
+        boolean result = dictionaryService.saveDictionary(dictionaryDto);
         return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg())
                 : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
     }
 
-    @ApiOperation(value = "根据主键id查看字典", notes = "根据主键id查看字典", httpMethod = "POST")
+    @ApiOperation(value = "根据主键id查看字典")
     @PostMapping(value = "/showDictionaryById/{id}")
     public ResultVo<Dictionary> showDictionaryById(@PathVariable Long id){
-        Dictionary dic = iDictionaryService.showDictionaryById(id);
+        Dictionary dic = dictionaryService.showDictionaryById(id);
         return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),dic);
 
     }
 
-    @ApiOperation(value = "根据ids删除字典项目", notes = "根据ids删除字典项目", httpMethod = "POST")
+    @ApiOperation(value = "根据ids删除字典项目")
     @PostMapping(value = "/delDictionaryByIds")
     public ResultVo delDictionaryByIds(@RequestBody List<Long> ids){
-        boolean result = iDictionaryService.delDictionaryByIds(ids);
+        boolean result = dictionaryService.delDictionaryByIds(ids);
         return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg())
                 : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
     }
 
-    @ApiOperation(value = "根据id更新字典项", notes = "根据id更新字典项", httpMethod = "POST")
+    @ApiOperation(value = "根据id更新字典项")
     @PostMapping(value = "/updDictionary")
     public ResultVo updDictionary(@RequestBody DictionaryDto dictionaryDto){
-        boolean result = iDictionaryService.updDictionaryById(dictionaryDto);
+        boolean result = dictionaryService.updDictionaryById(dictionaryDto);
         return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg())
                 : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
     }
 
-    @ApiOperation(value = "分页查询字典项", notes = "分页查询字典项", httpMethod = "POST")
+    @ApiOperation(value = "分页查询字典项")
     @PostMapping(value = "/getAllDictionary")
     public ResultVo<PageVo<Dictionary>> getAllDictionary(@RequestBody BasePageDto basePageDto){
         BasePageUtil.initPage(basePageDto.getCurrentPage(),basePageDto.getPageSize());
-        PageInfo<Dictionary> pageInfo = iDictionaryService.getAllDictionary(basePageDto);
+        PageInfo<Dictionary> pageInfo = dictionaryService.getAllDictionary(basePageDto);
         return BaseResultUtil.getPageVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),pageInfo);
     }
 
-    @ApiOperation(value = "根据条件查询字典项", notes = "根据条件查询字典项", httpMethod = "POST")
+    @ApiOperation(value = "根据条件查询字典项")
     @PostMapping(value = "/findDictionary")
     public ResultVo<PageVo<Dictionary>> findDictionary(@RequestBody SelectDictionaryDto dto){
-        PageInfo<Dictionary> pageInfo = iDictionaryService.findDictionary(dto);
+        PageInfo<Dictionary> pageInfo = dictionaryService.findDictionary(dto);
         return BaseResultUtil.getPageVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),pageInfo);
     }
 

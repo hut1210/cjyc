@@ -17,7 +17,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-24
+ * @since 2019-10-28
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -38,7 +38,7 @@ public class Coupon implements Serializable {
     @ApiModelProperty(value = "优惠券名称")
     private String couponName;
 
-    @ApiModelProperty(value = "优惠券类型 0：满减  3：直减  5：折扣")
+    @ApiModelProperty(value = "优惠券类型 0：满减  1：直减  2：折扣")
     private Integer couponType;
 
     @ApiModelProperty(value = "满额价")
@@ -48,7 +48,7 @@ public class Coupon implements Serializable {
     private BigDecimal cutAmount;
 
     @ApiModelProperty(value = "折扣")
-    private String discount;
+    private BigDecimal discount;
 
     @ApiModelProperty(value = "发放张数")
     private Integer grantNum;

@@ -25,7 +25,7 @@
     </sql>
 
     <!-- 根据运力vehicleId获取运力信息 -->
-    <select id="getVehiRunByVehiId" resultType="com.cjyc.common.model.entity.VehicleRunning" parameterType="java.lang.String">
+    <select id="getVehiRunByVehiId" resultType="com.cjyc.common.model.entity.VehicleRunning" parameterType="java.lang.Long">
         select
            <include refid="Base_Column_List"/>
         where vehicle_id = #{vehicleId}

@@ -1,8 +1,8 @@
 package com.cjyc.customer.api.service.impl;
 
+import com.cjyc.common.model.dao.ICustomerDao;
 import com.cjyc.common.model.dto.web.customer.CustomerfuzzyListDto;
 import com.cjyc.common.model.entity.Customer;
-import com.cjyc.common.model.dao.ICustomerDao;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
@@ -31,4 +31,5 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao, Customer> imp
         List<CustomerFuzzyListVo> fuzzyList = customerDao.findFuzzyList(paramsDto);
         return BaseResultUtil.success(fuzzyList);
     }
+
 }

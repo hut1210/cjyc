@@ -24,7 +24,7 @@ public interface ICustomerContractDao extends BaseMapper<CustomerContract> {
     int deleteContractByCustomerId(@Param("customerId") Long customerId);
 
     /**
-     * 根据大客户customerId查询合同
+     * 根据大客户customerUserId查询合同
      * @param customerId
      * @return
      */

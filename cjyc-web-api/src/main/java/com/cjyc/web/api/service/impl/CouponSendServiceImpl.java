@@ -25,9 +25,9 @@ import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * @author: zj
- * @Date: 2019/10/16 10:08
- * @Description:优惠券发放
+ *  @author: zj
+ *  @Date: 2019/10/16 10:08
+ *  @Description:优惠券发放
  */
 @Service
 @Slf4j
@@ -43,16 +43,16 @@ public class CouponSendServiceImpl implements ICouponSendService {
     @Override
     public PageInfo<CouponSendVo> seleCouponSendByTerm(SeleCouponSendDto dto) {
         PageInfo<CouponSendVo> pageInfo = new PageInfo<>();
-        try {
+        try{
             List<CouponSendVo> couponSendVos = iCouponSendDao.seleCouponSendByTerm(dto);
-            if (couponSendVos != null && couponSendVos.size() > 0) {
-                for (CouponSendVo vo : couponSendVos) {
-                    LocalDateTimeUtil.convertToString(Long.valueOf(vo.getUseTime()), TimePatternConstant.COMPLEX_TIME_FORMAT);
+            if(couponSendVos != null && couponSendVos.size() > 0){
+                for(CouponSendVo vo : couponSendVos){
+                    LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(Long.valueOf(vo.getUseTime())),TimePatternConstant.COMPLEX_TIME_FORMAT);
                 }
                 PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
                 pageInfo = new PageInfo<>(couponSendVos);
             }
-        } catch (Exception e) {
+        }catch (Exception e){
             log.info("查询发放优惠券出现异常");
         }
         return pageInfo;
@@ -61,16 +61,16 @@ public class CouponSendServiceImpl implements ICouponSendService {
     @Override
     public PageInfo<CouponSend> seleCouponSendByIds(CouponSendDto dto) {
         PageInfo<CouponSend> pageInfo = new PageInfo<>();
-        try {
+        try{
             List<CouponSend> couponSends = iCouponSendDao.selectBatchIds(dto.getIds());
-            if (couponSends != null && couponSends.size() > 0) {
-                for (CouponSend vo : couponSends) {
-                    LocalDateTimeUtil.convertToString(Long.valueOf(vo.getUseTime()), TimePatternConstant.COMPLEX_TIME_FORMAT);
+            if(couponSends != null && couponSends.size() > 0){
+                for(CouponSend vo : couponSends){
+                    LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(Long.valueOf(vo.getUseTime())),TimePatternConstant.COMPLEX_TIME_FORMAT);
                 }
                 PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
                 pageInfo = new PageInfo<>(couponSends);
             }
-        } catch (Exception e) {
+        }catch (Exception e){
             log.info("查询发放优惠券出现异常");
         }
         return pageInfo;

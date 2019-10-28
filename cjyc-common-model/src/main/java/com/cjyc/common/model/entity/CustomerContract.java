@@ -1,5 +1,6 @@
 package com.cjyc.common.model.entity;
 
+import java.math.BigDecimal;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -16,7 +17,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-24
+ * @since 2019-10-28
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -31,16 +32,19 @@ public class CustomerContract implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "客户ID")
+    @ApiModelProperty(value = "大客户Id")
     private Long customerId;
 
     @ApiModelProperty(value = "合同编号")
     private String contractNo;
 
-    @ApiModelProperty(value = "合同性质  0：框式  1：制式")
+    @ApiModelProperty(value = "合同性质  0：框架  1：单次")
     private Integer contactNature;
 
-    @ApiModelProperty(value = "账期 0：时付  1: 30天   2: 60天  3：90天  4：120天  5：150天")
+    @ApiModelProperty(value = "结算类型 0:账期 1：时付")
+    private Integer settleType;
+
+    @ApiModelProperty(value = "账期/天")
     private Integer settlePeriod;
 
     @ApiModelProperty(value = "合同有效期")
@@ -58,17 +62,11 @@ public class CustomerContract implements Serializable {
     @ApiModelProperty(value = "项目性质 0：新开  1：存量")
     private Integer projectNature;
 
-    @ApiModelProperty(value = "项目签署日期")
-    private Long dateOfProSign;
-
-    @ApiModelProperty(value = "一次性合同 0：否   1：是")
-    private Integer oneOffContract;
-
     @ApiModelProperty(value = "项目预计运量")
-    private Long proTraVolume;
+    private BigDecimal proTraVolume;
 
     @ApiModelProperty(value = "月度平均运量")
-    private Long avgMthTraVolume;
+    private BigDecimal avgMthTraVolume;
 
     @ApiModelProperty(value = "业务覆盖范围")
     private String busiCover;
