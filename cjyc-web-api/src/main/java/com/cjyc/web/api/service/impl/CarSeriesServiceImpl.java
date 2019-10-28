@@ -11,11 +11,9 @@ import com.cjyc.common.model.util.StringUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.web.api.service.ICarSeriesService;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.Array;
 import java.time.LocalDateTime;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,8 +26,12 @@ public class CarSeriesServiceImpl extends ServiceImpl<ICarSeriesDao,CarSeries> i
 
     @Override
     public ResultVo add(CarSeriesAddDto carSeriesAddDto) {
-        List<CarSeries> list = Arrays.asList();
-        String[] models = carSeriesAddDto.getModel().split(",");
+        List<CarSeries> list = new ArrayList<>(10);
+        String dtoModel = carSeriesAddDto.getModel();
+        if (dtoModel.contains("，")) {
+            dtoModel = dtoModel.replaceAll("，", ",");
+        }
+        String[] models = dtoModel.split(",");
         for (String model : models) {
             CarSeries carSeries = new CarSeries();
             carSeries.setCarCode(StringUtil.getUUID());
