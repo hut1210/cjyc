@@ -8,6 +8,7 @@ public enum WaybillStateEnum {
     /***/
     WAIT_ALLOT("待分配承运商（竞抢）",0),
     WAIT_ALLOT_CONFIRM("待承运商承接任务",15),
+    ALLOT_CONFIRM("已承接",20),
     TRANSPORTING("运输中",30),
     FINISHED("已完成",100),
     F_CANCEL("已取消",102),

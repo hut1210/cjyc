@@ -18,6 +18,9 @@
         <result column="now_store_id" property="nowStoreId" />
         <result column="now_area_code" property="nowAreaCode" />
         <result column="state" property="state" />
+        <result column="pick_state" property="pickState" />
+        <result column="trunk_state" property="trunkState" />
+        <result column="back_state" property="backState" />
         <result column="description" property="description" />
         <result column="pick_fee" property="pickFee" />
         <result column="trunk_fee" property="trunkFee" />
@@ -32,7 +35,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, order_id, order_no, no, brand, model, plate_no, vin, is_move, is_new, valuation, now_store_id, now_area_code, state, description, pick_fee, trunk_fee, back_fee, insurance_fee, insurance_coverage_amount, coupon_offset_fee, agency_fee, total_fee, wl_pay_state
+        id, order_id, order_no, no, brand, model, plate_no, vin, is_move, is_new, valuation, now_store_id, now_area_code, state, pick_state, trunk_state, back_state, description, pick_fee, trunk_fee, back_fee, insurance_fee, insurance_coverage_amount, coupon_offset_fee, agency_fee, total_fee, wl_pay_state
     </sql>
     <insert id="saveBatch">
         insert into w_order_car
@@ -74,6 +77,26 @@
         set state = #{state}
         where id = #{orderCarId}
     </update>
+    <update id="updatePickStateById">
+        update w_order_car
+        set pick_state = #{state}
+        <where>
+            and id in
+            <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
+    </update>
+    <update id="updateBackStateById">
+        update w_order_car
+        set back_state = #{state}
+        <where>
+            and id in
+            <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
+    </update>
     <update id="updateStateBatchByIds">
         update w_order_car
         set state = #{state}
@@ -84,6 +107,17 @@
             </foreach>
         </where>
 
+    </update>
+    <update id="updateTrunkStateBatchByIds">
+        update w_order_car
+        set trunk_state = #{state}
+        <where>
+            trunk_state != 3
+            and id in
+            <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
     </update>
     <delete id="deleteBatchByOrderId">
         delete from w_order_car
@@ -205,6 +239,21 @@
         from w_order o
         join w_order_car c on c.order_id = o.id
         <where>
+            <choose>
+                <when test="paramsDto.signState == 0">
+                    and 1 = 1
+                </when>
+                <when test="paramsDto.signState == 1">
+                    and o.state between 25 and 99
+                </when>
+                <when test="paramsDto.signState == 1">
+                    and o.state = 100
+                </when>
+                <otherwise>
+                    and 1 != 1
+                </otherwise>
+            </choose>
+
             <if test="paramsDto.startProvinceCode != null and paramsDto.startProvinceCode != ''" >
                 and o.start_province_code = #{paramsDto.startProvinceCode,jdbcType=VARCHAR},
             </if>
@@ -230,22 +279,20 @@
                 and o.end_store_id = #{paramsDto.endStoreId,jdbcType=BIGINT},
             </if>
             <if test="paramsDto.orderNo != null and paramsDto.orderNo != ''" >
-                and c.order_no = #{paramsDto.orderNo,jdbcType=VARCHAR},
+                and oc.order_no = #{paramsDto.orderNo,jdbcType=VARCHAR},
             </if>
             <if test="paramsDto.carNo != null and paramsDto.carNo != ''" >
-                and c.no = #{paramsDto.carNo,jdbcType=VARCHAR},
+                and oc.no = #{paramsDto.carNo,jdbcType=VARCHAR},
             </if>
             <if test="paramsDto.vin != null and paramsDto.vin != ''" >
-                and c.vin = #{paramsDto.vin,jdbcType=VARCHAR},
+                and oc.vin = #{paramsDto.vin,jdbcType=VARCHAR},
             </if>
-
             <if test="paramsDto.beginExpectStartDate != null" >
                 and o.expect_start_date &gt; #{paramsDto.beginExpectStartDate,jdbcType=BIGINT},
             </if>
             <if test="paramsDto.endExpectStartDate != null" >
                 and o.expect_start_date &lt; #{paramsDto.endExpectStartDate,jdbcType=BIGINT},
             </if>
-
             <if test="paramsDto.pickType != null" >
                 and o.pick_type = #{paramsDto.pickType,jdbcType=TINYINT},
             </if>
@@ -265,30 +312,22 @@
                 and o.back_contact_phone = #{paramsDto.backContactPhone,jdbcType=VARCHAR},
             </if>
             <if test="paramsDto.brand != null and paramsDto.brand != ''" >
-                and c.brand = #{paramsDto.brand,jdbcType=VARCHAR},
+                and oc.brand = #{paramsDto.brand,jdbcType=VARCHAR},
             </if>
             <if test="paramsDto.model != null and paramsDto.model != ''" >
-                and c.model = #{paramsDto.model,jdbcType=VARCHAR},
+                and oc.model = #{paramsDto.model,jdbcType=VARCHAR},
             </if>
             <if test="paramsDto.plateNo != null and paramsDto.plateNo != ''" >
-                and c.plate_no = #{paramsDto.plateNo,jdbcType=VARCHAR},
+                and oc.plate_no = #{paramsDto.plateNo,jdbcType=VARCHAR},
             </if>
             <if test="paramsDto.startStoreId != null" >
                 and o.start_store_id = #{paramsDto.startStoreId,jdbcType=BIGINT},
             </if>
             <if test="paramsDto.endStoreId != null" >
-                and end_store_id = #{paramsDto.endStoreId,jdbcType=BIGINT},
+                and o.end_store_id = #{paramsDto.endStoreId,jdbcType=BIGINT},
             </if>
             <include refid="and_bizScopeStoreIds"/>
-            <if test="bizScope != null">
-                and now_store_id in
-
-            </if>
-
-
-
         </where>
-
     </select>
     <!--按线路统计待调度车辆（统计列表）-->
     <select id="findlineWaitDispatchCarCountList" resultType="java.util.Map">
@@ -316,11 +355,197 @@
         where order_id = #{orderId}
 
     </select>
+    <select id="findListSelective" resultType="com.cjyc.common.model.entity.OrderCar">
+        select
+        <include refid="Base_Column_List"/>
+        from w_order o
+        left join w_order_car oc on oc.order_id = o.id
+        left join c_customer c on o.customer_id = c.id
+        left join s_store s on o.input_store_id = s.id
+        <where>
+            <choose>
+                <when test="paramsDto.outterState == 1">
+                    and o.state = 0
+                </when>
+                <when test="paramsDto.outterState == 5">
+                    and o.state &lt;= 10 and o.state &gt; 0
+                </when>
+                <when test="paramsDto.outterState == 15">
+                    and o.state = 15
+                </when>
+                <when test="paramsDto.outterState == 25">
+                    and o.state = 25
+                </when>
+                <when test="paramsDto.outterState == 55">
+                    and o.state &gt; 25 and o.state &lt; 100
+                </when>
+                <when test="paramsDto.outterState == 100">
+                    and o.state = 100
+                </when>
+                <when test="paramsDto.outterState == 113">
+                    and o.state = 113
+                </when>
+                <when test="paramsDto.outterState == 114">
+                    and o.state = 114
+                </when>
+            </choose>
+
+            <choose>
+                <!--1指定提车日期，2预计到达时间，3创建时间，4确认时间，5完结时间-->
+                <when test="paramsDto.timeType == 1">
+                    <if test="paramsDto.beginTime != null">
+                        and o.expect_start_date &gt; #{paramsDto.beginTime}
+                    </if>
+                    <if test="paramsDto.endTime != null">
+                        and o.expect_start_date &lt; #{paramsDto.endTime}
+                    </if>
+                </when>
+                <when test="paramsDto.timeType == 2">
+                    <if test="paramsDto.beginTime != null">
+                        and o.expect_end_date &gt; #{paramsDto.beginTime}
+                    </if>
+                    <if test="paramsDto.endTime != null">
+                        and o.expect_end_date &lt; #{paramsDto.endTime}
+                    </if>
+                </when>
+                <when test="paramsDto.timeType == 3">
+                    <if test="paramsDto.beginTime != null">
+                        and o.create_time &gt; #{paramsDto.beginTime}
+                    </if>
+                    <if test="paramsDto.endTime != null">
+                        and o.create_time &lt; #{paramsDto.endTime}
+                    </if>
+                </when>
+                <when test="paramsDto.timeType == 4">
+                    <if test="paramsDto.beginTime != null">
+                        and o.check_time &gt; #{paramsDto.beginTime}
+                    </if>
+                    <if test="paramsDto.endTime != null">
+                        and o.check_time &lt; #{paramsDto.endTime}
+                    </if>
+                </when>
+                <when test="paramsDto.timeType == 5">
+                    <if test="paramsDto.beginTime != null">
+                        and o.finish_time &gt; #{paramsDto.beginTime}
+                    </if>
+                    <if test="paramsDto.endTime != null">
+                        and o.finish_time &lt; #{paramsDto.endTime}
+                    </if>
+                </when>
+            </choose>
+
+
+            <if test="paramsDto.no != null and paramsDto.no != ''">
+                and o.no = #{paramsDto.no}
+            </if>
+            <if test="paramsDto.customerName != null and paramsDto.customerName != ''">
+                and c.customer_name = #{paramsDto.customerName}
+            </if>
+            <if test="paramsDto.customerType != null and paramsDto.customerType != ''">
+                and c.customer_type = #{paramsDto.customerType}
+            </if>
+            <if test="paramsDto.customerPhone != null and paramsDto.customerPhone != ''">
+                and c.customer_phone = #{paramsDto.customerPhone}
+            </if>
+            <if test="paramsDto.inputStoreId != null">
+                and o.input_store_id = #{paramsDto.inputStoreId}
+            </if>
+            <if test="paramsDto.startProvinceCode != null and paramsDto.startProvinceCode != ''">
+                and o.start_province_code = #{paramsDto.startProvinceCode}
+            </if>
+            <if test="paramsDto.startCityCode != null and paramsDto.startCityCode != ''">
+                and o.start_city_code = #{paramsDto.startCityCode}
+            </if>
+            <if test="paramsDto.startAreaCode != null and paramsDto.startAreaCode != ''">
+                and o.start_area_code = #{paramsDto.startAreaCode}
+            </if>
+            <if test="paramsDto.startStoreId != null">
+                and o.start_store_id = #{paramsDto.startStoreId}
+            </if>
+            <if test="paramsDto.endProvinceCode != null and paramsDto.endProvinceCode != ''">
+                and o.end_province_code = #{paramsDto.endProvinceCode}
+            </if>
+            <if test="paramsDto.endCityCode != null and paramsDto.endCityCode != ''">
+                and o.end_city_code = #{paramsDto.endCityCode}
+            </if>
+            <if test="paramsDto.endAreaCode != null and paramsDto.endAreaCode != ''">
+                and o.end_area_code = #{paramsDto.endAreaCode}
+            </if>
+            <if test="paramsDto.endStoreId != null">
+                and o.end_store_id = #{paramsDto.endStoreId}
+            </if>
+
+            <if test="paramsDto.pickContactName != null and paramsDto.pickContactName != ''">
+                and o.pick_contact_name = #{paramsDto.pickContactName}
+            </if>
+            <if test="paramsDto.pickContactPhone != null and paramsDto.pickContactPhone != ''">
+                and o.pick_contact_phone = #{paramsDto.pickContactPhone}
+            </if>
+            <if test="paramsDto.pickType != null">
+                and o.pick_type = #{paramsDto.pickType}
+            </if>
+            <if test="paramsDto.backType != null">
+                and o.back_type = #{paramsDto.backType}
+            </if>
+            <if test="paramsDto.backContactName != null and paramsDto.backContactName != ''">
+                and o.back_contact_name = #{paramsDto.backContactName}
+            </if>
+            <if test="paramsDto.backContactPhone != null and paramsDto.backContactPhone != ''">
+                and o.back_contact_phone = #{paramsDto.backContactPhone}
+            </if>
+            <if test="paramsDto.lineId != null">
+                and o.line_id = #{paramsDto.lineId}
+            </if>
+            <if test="paramsDto.source != null and paramsDto.source != ''">
+                and o.source = #{paramsDto.source}
+            </if>
+
+            <if test="paramsDto.createUserName != null and paramsDto.createUserName != ''">
+                and o.create_user_name = #{paramsDto.createUserName}
+            </if>
+            <if test="paramsDto.payType != null">
+                and o.pay_type = #{paramsDto.payType}
+            </if>
+            <if test="paramsDto.regionCode != null and paramsDto.regionCode != ''">
+                and s.region_code = #{paramsDto.regionCode}
+            </if>
+
+
+            <if test="paramsDto.isMove != null">
+                and oc.is_move = #{paramsDto.isMove}
+            </if>
+            <if test="paramsDto.isNew != null">
+                and oc.is_new = #{paramsDto.isNew}
+            </if>
+            <if test="paramsDto.carNo != null and paramsDto.carNo != ''">
+                and oc.no = #{paramsDto.carNo}
+            </if>
+            <if test="paramsDto.brand != null and paramsDto.brand != ''">
+                and oc.brand = #{paramsDto.brand}
+            </if>
+            <if test="paramsDto.model != null and paramsDto.model != ''">
+                and s.model = #{paramsDto.model}
+            </if>
+            <if test="paramsDto.plateNo != null and paramsDto.plateNo != ''">
+                and s.plate_no = #{paramsDto.plateNo}
+            </if>
+            <if test="paramsDto.vin != null and paramsDto.vin != ''">
+                and s.vin = #{paramsDto.vin}
+            </if>
+
+        </where>
+    </select>
+    <select id="findListByWaybillId" resultType="com.cjyc.common.model.entity.OrderCar">
+        select oc.*
+        from w_waybill_car wc
+        join w_order_car oc on wc.order_car_id = oc.id
+        where wc.waybill_id = #{waybillId}
+    </select>
 
     <!--业务范围条件-->
     <sql id="and_bizScopeStoreIds">
         <if test="bizScope != null">
-            and now_store_id in
+            and (now_store_id or wc.end_store_id ) in
             <foreach collection="bizScope" index="index" item="item" open="(" separator="," close=")">
                 #{item}
             </foreach>

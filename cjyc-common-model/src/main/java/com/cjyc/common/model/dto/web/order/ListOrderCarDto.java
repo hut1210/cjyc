@@ -11,7 +11,7 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel
-public class OrderListDto extends BasePageDto {
+public class ListOrderCarDto extends BasePageDto {
 
     /**
      0待提交    1预订单
@@ -32,7 +32,7 @@ public class OrderListDto extends BasePageDto {
     private Integer outterState;
 
     @ApiModelProperty(value = "订单编号")
-    private String no;
+    private String orderNo;
 
     @ApiModelProperty(value = "客户名称")
     private String customerName;
@@ -71,13 +71,13 @@ public class OrderListDto extends BasePageDto {
     @ApiModelProperty(value = "目的地业务中心ID: -1不经过业务中心")
     private Long endStoreId;
 
+
     @ApiModelProperty(value = "日期类型：1指定提车日期，2预计到达时间，3创建时间，4确认时间，5完结时间")
     private Long timeType;
     @ApiModelProperty(value = "起始（提车日期）")
     private Long beginTime;
     @ApiModelProperty(value = "截止（提车日期）")
     private Long endTime;
-
 
 
     @ApiModelProperty(value = "提车方式:1 自送，2代驾上门，3拖车上门，4物流上门")
@@ -105,7 +105,6 @@ public class OrderListDto extends BasePageDto {
     @ApiModelProperty(value = "订单来源：1WEB管理后台, 2业务员APP, 3业务员小程序, 4业务员APP, 5业务员小程序, 6用户端APP, 7用户端小程序")
     private Integer source;
 
-
     @ApiModelProperty(value = "创建人：客户/业务员")
     private String createUserName;
 
@@ -116,6 +115,23 @@ public class OrderListDto extends BasePageDto {
 
     @ApiModelProperty(value = "大区编码")
     private Integer regionCode;
+
+
+    @ApiModelProperty(value = "是否能动 0-否 1-是")
+    private Integer isMove;
+    @ApiModelProperty(value = "是否新车 0-否 1-是")
+    private Integer isNew;
+    @ApiModelProperty(value = "车辆编码")
+    private String carNo;
+    @ApiModelProperty(value = "品牌")
+    private String brand;
+    @ApiModelProperty(value = "型号")
+    private String model;
+    @ApiModelProperty(value = "车牌号")
+    private String plateNo;
+    @ApiModelProperty(value = "vin码")
+    private String vin;
+
 
 
 }

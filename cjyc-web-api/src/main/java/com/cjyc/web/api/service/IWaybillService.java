@@ -2,12 +2,14 @@ package com.cjyc.web.api.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.dto.web.waybill.CancelDispatchDto;
-import com.cjyc.common.model.dto.web.waybill.WaybillPickDispatchListDto;
-import com.cjyc.common.model.dto.web.waybill.WaybillTrunkDispatchListListDto;
+import com.cjyc.common.model.dto.web.waybill.HistoryListWaybillDto;
+import com.cjyc.common.model.dto.web.waybill.LocalDispatchListWaybillDto;
+import com.cjyc.common.model.dto.web.waybill.TrunkDispatchListShellWaybillDto;
 import com.cjyc.common.model.entity.Waybill;
-import com.cjyc.common.model.vo.BaseTipVo;
-import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.waybill.HistoryListWaybillVo;
+
+import java.util.List;
 
 /**
  * <p>
@@ -25,7 +27,7 @@ public interface IWaybillService extends IService<Waybill> {
      * @since 2019/10/17 9:16
      * @param paramsDto
      */
-    ResultVo pickAndBackDispatch(WaybillPickDispatchListDto paramsDto);
+    ResultVo localDispatch(LocalDispatchListWaybillDto paramsDto);
 
     /**
      * 干线调度
@@ -33,7 +35,9 @@ public interface IWaybillService extends IService<Waybill> {
      * @since 2019/10/17 9:16
      * @param paramsDto
      */
-    ResultVo trunkDispatch(WaybillTrunkDispatchListListDto paramsDto);
+    ResultVo trunkDispatch(TrunkDispatchListShellWaybillDto paramsDto);
 
     ResultVo cancelDispatch(CancelDispatchDto paramsDto);
+
+    ResultVo<List<HistoryListWaybillVo>> historyList(HistoryListWaybillDto reqDto);
 }

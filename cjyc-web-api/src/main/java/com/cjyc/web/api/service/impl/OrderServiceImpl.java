@@ -1,14 +1,12 @@
 package com.cjyc.web.api.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cjyc.common.model.dao.ICouponDao;
 import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IOrderChangeLogDao;
 import com.cjyc.common.model.dao.IOrderDao;
 import com.cjyc.common.model.dto.web.order.*;
-import com.cjyc.common.model.entity.Customer;
-import com.cjyc.common.model.entity.Order;
-import com.cjyc.common.model.entity.OrderCar;
-import com.cjyc.common.model.entity.OrderChangeLog;
+import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.PayModeEnum;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
@@ -23,9 +21,7 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo;
 import com.cjyc.common.model.vo.web.order.OrderVo;
 import com.cjyc.web.api.exception.ServerException;
-import com.cjyc.web.api.service.ICustomerService;
-import com.cjyc.web.api.service.IOrderService;
-import com.cjyc.web.api.service.ISendNoService;
+import com.cjyc.web.api.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.BeanUtils;
@@ -60,19 +56,22 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     private IOrderChangeLogDao orderChangeLogDao;
     @Resource
     private ICustomerService customerService;
+    @Resource
+    private ICouponSendService couponSendService;
 
     @Override
     public ResultVo saveAndUpdate(CommitOrderDto paramsDto) {
         //处理参数
         paramsDto.setWlTotalFee(paramsDto.getWlTotalFee() == null ? BigDecimal.ZERO : paramsDto.getWlTotalFee());
         paramsDto.setRealWlTotalFee(paramsDto.getRealWlTotalFee() == null ? BigDecimal.ZERO : paramsDto.getRealWlTotalFee());
-        paramsDto.setCouponOffsetFee(paramsDto.getCouponOffsetFee() == null ? BigDecimal.ZERO : paramsDto.getCouponOffsetFee());
         //获取参数
         Long orderId = paramsDto.getOrderId();
+        Long couponSendId = paramsDto.getCouponSendId();
 
         BigDecimal wlTotalFee = paramsDto.getWlTotalFee();
-        BigDecimal couponOffsetFee = paramsDto.getCouponOffsetFee();
         BigDecimal realWlTotalFee = paramsDto.getRealWlTotalFee();
+
+
 
 
         Order order = null;
@@ -113,22 +112,31 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
                 return BaseResultUtil.fail("企业客户/合伙人不存在");
             }
         }
-        /**1、组装订单数据*/
+        /**1、组装订单数据
+         *
+         */
+
         if(order.getNo() != null && paramsDto.getSaveType() == 2){
             //订单发号（审核的时候才会发号）
             order.setNo(sendNoService.getNo(SendNoTypeEnum.ORDER));
         }
         order.setState(paramsDto.getState());
         order.setSource(order.getSource() == null ? paramsDto.getClientId() : order.getSource());
-        order.setCouponOffsetFee(paramsDto.getCouponOffsetFee());
+        //计算优惠券，抵消金额
+        if(couponSendId != null){
+            BigDecimal couponAmount = couponSendService.getAmountById(couponSendId, paramsDto.getRealWlTotalFee());
+            order.setCouponOffsetFee(couponAmount);
+            //TODO 处理优惠券为使用状态，优惠券有且仅能验证一次，修改时怎么保证
+        }
         if(paramsDto.getCustomerType() == CustomerTypeEnum.COOPERATOR.code){
-            order.setAgencyFee(wlTotalFee.subtract(realWlTotalFee).add(couponOffsetFee));
+            order.setAgencyFee(wlTotalFee.subtract(realWlTotalFee).add(order.getCouponOffsetFee()));
             //合伙人：收车后客户应支付平台的钱->总物流费
             order.setTotalFee(wlTotalFee);
         }else{
             //其他客户：收车后客户应支付平台的钱->总物流费-优惠券
-            order.setTotalFee(wlTotalFee.subtract(couponOffsetFee));
+            order.setTotalFee(wlTotalFee.subtract(order.getCouponOffsetFee()));
         }
+
         order.setCreateTime(System.currentTimeMillis());
 
         //更新或插入订单
@@ -310,10 +318,22 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     }
 
     @Override
-    public ResultVo list(OrderListDto paramsDto) {
+    public ResultVo<PageVo<Order>> list(ListOrderDto paramsDto) {
         PageHelper.offsetPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
         List<Order> list =  orderDao.findListSelective(paramsDto);
         PageInfo<Order> pageInfo = new PageInfo<>(list);
+        if(paramsDto.getCurrentPage() > pageInfo.getPages()){
+            pageInfo.setList(null);
+        }
+
+        return BaseResultUtil.success(pageInfo);
+    }
+
+    @Override
+    public ResultVo<PageVo<OrderCar>> carlist(ListOrderCarDto paramsDto) {
+        PageHelper.offsetPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
+        List<OrderCar> list =  orderCarDao.findListSelective(paramsDto);
+        PageInfo<OrderCar> pageInfo = new PageInfo<>(list);
         if(paramsDto.getCurrentPage() > pageInfo.getPages()){
             pageInfo.setList(null);
         }
@@ -533,5 +553,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
 
         return BaseResultUtil.success();
     }
+
+
 
 }

@@ -1,19 +1,16 @@
 package com.cjyc.common.model.dao;
 
 import com.cjyc.common.model.dto.customer.OrderConditionDto;
-import com.cjyc.common.model.dto.web.order.OrderListDto;
+import com.cjyc.common.model.dto.web.order.ListOrderDto;
 import com.cjyc.common.model.entity.Order;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.vo.customer.OrderCenterVo;
 import com.cjyc.common.model.vo.customer.OrderDetailVo;
 import com.cjyc.common.model.vo.web.order.OrderVo;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -89,5 +86,5 @@ public interface IOrderDao extends BaseMapper<Order> {
 
     OrderVo findVoById(Long orderId);
 
-    List<Order> findListSelective(OrderListDto paramsDto);
+    List<Order> findListSelective(ListOrderDto paramsDto);
 }

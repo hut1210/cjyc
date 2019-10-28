@@ -24,4 +24,6 @@ public interface ITaskDao extends BaseMapper<Task> {
      * @param cancelWaybillIdList
      */
     int updateListByWaybillIds(@Param("newState") int newState, @Param("cancelWaybillIdList") List<Long> cancelWaybillIdList);
+
+    int cancelBywaybillId(@Param("newState") int newState, @Param("waybillId")Long waybillId);
 }

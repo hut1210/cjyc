@@ -2,64 +2,120 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.cjyc.common.model.dao.IWaybillCarDao">
 
-
-
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.WaybillCar">
         <id column="id" property="id" />
         <result column="waybill_id" property="waybillId" />
+        <result column="waybill_no" property="waybillNo" />
         <result column="order_car_id" property="orderCarId" />
+        <result column="order_car_no" property="orderCarNo" />
         <result column="freight_fee" property="freightFee" />
-        <result column="start_address" property="startAddress" />
-        <result column="end_address" property="endAddress" />
+        <result column="start_province" property="startProvince" />
+        <result column="start_province_code" property="startProvinceCode" />
+        <result column="start_city" property="startCity" />
+        <result column="start_city_code" property="startCityCode" />
+        <result column="start_area" property="startArea" />
         <result column="start_area_code" property="startAreaCode" />
+        <result column="start_address" property="startAddress" />
+        <result column="start_store_name" property="startStoreName" />
+        <result column="start_store_id" property="startStoreId" />
+        <result column="end_province" property="endProvince" />
+        <result column="end_province_code" property="endProvinceCode" />
+        <result column="end_city" property="endCity" />
+        <result column="end_city_code" property="endCityCode" />
+        <result column="end_area" property="endArea" />
         <result column="end_area_code" property="endAreaCode" />
+        <result column="end_address" property="endAddress" />
+        <result column="end_store_name" property="endStoreName" />
+        <result column="end_store_id" property="endStoreId" />
+        <result column="line_id" property="lineId" />
         <result column="state" property="state" />
-        <result column="expect_pick_time" property="expectPickTime" />
-        <result column="pick_type" property="pickType" />
-        <result column="pick_contact_name" property="pickContactName" />
-        <result column="pick_contact_phone" property="pickContactPhone" />
-        <result column="receive_contact_name" property="receiveContactName" />
-        <result column="receive_contact_phone" property="receiveContactPhone" />
+        <result column="expect_start_time" property="expectStartTime" />
+        <result column="expect_end_time" property="expectEndTime" />
+        <result column="take_type" property="takeType" />
+        <result column="load_link_name" property="loadLinkName" />
+        <result column="load_link_user_id" property="loadLinkUserId" />
+        <result column="load_link_phone" property="loadLinkPhone" />
+        <result column="load_photo_img" property="loadPhotoImg" />
+        <result column="load_time" property="loadTime" />
+        <result column="unload_link_name" property="unloadLinkName" />
+        <result column="unload_link_user_id" property="unloadLinkUserId" />
+        <result column="unload_link_phone" property="unloadLinkPhone" />
+        <result column="unload_photo_img" property="unloadPhotoImg" />
+        <result column="unload_time" property="unloadTime" />
+        <result column="create_time" property="createTime" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, waybill_id, order_car_id, freight_fee, start_address, end_address, start_area_code, end_area_code, state, expect_pick_time, pick_type, pick_contact_name, pick_contact_phone, receive_contact_name, receive_contact_phone
+        id, waybill_id, waybill_no, order_car_id, order_car_no, freight_fee, start_province, start_province_code, start_city, start_city_code, start_area, start_area_code, start_address, start_store_name, start_store_id, end_province, end_province_code, end_city, end_city_code, end_area, end_area_code, end_address, end_store_name, end_store_id, line_id, state, expect_start_time, expect_end_time, take_type, load_link_name, load_link_user_id, load_link_phone, load_photo_img, load_time, unload_link_name, unload_link_user_id, unload_link_phone, unload_photo_img, unload_time, create_time
     </sql>
 
 
     <insert id="saveBatch">
         insert into w_waybill_car
-            (waybill_id, order_car_id, freight_fee, start_address, end_address, start_area_code, end_area_code,
-            state, expect_pick_time, pick_type, pick_contact_name, pick_contact_phone)
+        (waybill_id, waybill_no, order_car_id, freight_fee, start_province, start_province_code, start_city,
+        start_city_code, start_area, start_area_code, start_address,start_store_name, start_store_id, end_province,
+        end_province_code, end_city,end_city_code, end_area, end_area_code, end_address,end_store_name,
+        end_store_id, line_id, state, expect_start_time, expect_end_time, take_type, load_link_name,
+        load_link_user_id, load_link_phone, unload_link_name, unload_link_user_id, unload_link_phone,
+        create_time)
         values
         <foreach collection="list" item="item" index="index" separator=",">
             (
-            #{item.waybillId},
-            #{item.orderCarId},
-            #{item.freightFee},
-            #{item.startAddress},
-            #{item.endAddress},
-            #{item.startAreaCode},
-            #{item.startAreaCode},
+            #{item.waybill_id},
+            #{item.waybill_no},
+            #{item.order_car_id},
+            #{item.freight_fee},
+            #{item.start_province},
+            #{item.start_province_code},
+            #{item.start_city},
+            #{item.start_city_code},
+            #{item.start_area},
+            #{item.start_area_code},
+            #{item.start_address},
+            #{item.start_store_name},
+            #{item.start_store_id},
+            #{item.end_province},
+            #{item.end_province_code},
+            #{item.end_city},
+            #{item.end_city_code},
+            #{item.end_area},
+            #{item.end_area_code},
+            #{item.end_address},
+            #{item.end_store_name},
+            #{item.end_store_id},
+            #{item.line_id},
             #{item.state},
-            #{item.expectPickTime},
-            #{item.pickType},
-            #{item.pickContactName},
-            #{item.pickContactPhone}
+            #{item.expect_start_time},
+            #{item.expect_end_time},
+            #{item.take_type},
+            #{item.load_link_name},
+            #{item.load_link_user_id},
+            #{item.load_link_phone},
+            #{item.unload_link_name},
+            #{item.unload_link_user_id},
+            #{item.unload_link_phone},
+            #{item.create_time},
             )
         </foreach>
 
     </insert>
 
-    <select id="getWayBillCarrier" parameterType="com.cjyc.common.model.vo.web.WayBillCarrierVo" resultType="com.cjyc.common.model.dto.web.WayBillCarrierDto">
-        select ww.waybill_no as waybillNo,ww.state as state,ww.type as type,woc.no as carNo,woc.vin as vin,woc.brand as brand,
-        woc.model as model,wwc.freight_fee as freightFee,wo.pick_type as pickType,wo.back_type as backType,dc.id as carrierId,
-        dc.name as carrierName,wo.expect_start_date as expectStartDate, wtc.load_time as loadTime,wtc.unload_time as unLoadTime,
-        wt.driver_name as driverName,wt.driver_id as driverId, dd.phone as phone,dvr.vehicle_no as vehicleNo,dd.id_card as idCard,
-        wo.start_address as startAddress,wo.end_address as endAddress,wo.no as orderNo,wo.pick_contact_name as pickContactName,
-        wo.pick_contact_phone as pickContactPhone,wo.back_contact_name as backContactName,wo.back_contact_phone as backContactPhone
+    <select id="getWayBillCarrier" parameterType="com.cjyc.common.model.vo.web.WayBillCarrierVo"
+            resultType="com.cjyc.common.model.dto.web.WayBillCarrierDto">
+        select ww.waybill_no as waybillNo,ww.state as state,ww.type as type,woc.no as carNo,woc.vin as vin,woc.brand as
+        brand,
+        woc.model as model,wwc.freight_fee as freightFee,wo.pick_type as pickType,wo.back_type as backType,dc.id as
+        carrierId,
+        dc.name as carrierName,wo.expect_start_date as expectStartDate, wtc.load_time as loadTime,wtc.unload_time as
+        unLoadTime,
+        wt.driver_name as driverName,wt.driver_id as driverId, dd.phone as phone,dvr.vehicle_no as vehicleNo,dd.id_card
+        as idCard,
+        wo.start_address as startAddress,wo.end_address as endAddress,wo.no as orderNo,wo.pick_contact_name as
+        pickContactName,
+        wo.pick_contact_phone as pickContactPhone,wo.back_contact_name as backContactName,wo.back_contact_phone as
+        backContactPhone
         from w_waybill_car wwc
         left join w_waybill ww on wwc.waybill_id=ww.id
         left join w_order_car woc on wwc.order_car_id=woc.id
@@ -74,16 +130,16 @@
             ww.waybill_no = #{wayBillNo}
         </if>
         <if test="carNo != null and carNo != ''">
-            and  woc.no = #{carNo}
+            and woc.no = #{carNo}
         </if>
         <if test="vin != null  and vin != ''">
-            and  woc.vin = #{vin}
+            and woc.vin = #{vin}
         </if>
         <if test="brand != null  and brand != ''">
             and woc.brand = #{brand}
         </if>
         <if test="model != null  and model != ''">
-            and  woc.model = #{model}
+            and woc.model = #{model}
         </if>
         <if test="dispatchType != null ">
             and ww.type = #{dispatchType}
@@ -93,7 +149,18 @@
         </if>-->
 
         <if test="carrierName != null  and carrierName != ''">
-            and  dc.name = #{model}
+            and dc.name = #{model}
         </if>
+    </select>
+    <select id="findVoByIds" resultType="com.cjyc.common.model.entity.WaybillCar">
+        select
+          <include refid="Base_Column_List"/>
+        from w_waybill_car wc
+        <where>
+            and wc.id in
+            <foreach collection="waybillCarIdList"  index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
     </select>
 </mapper>

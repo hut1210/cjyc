@@ -12,11 +12,17 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel
-public class WaybillPickDispatchListDto {
+public class LocalDispatchListWaybillDto {
 
     @ApiModelProperty(value = "用户userId", required = true)
-    private Long UserId;
+    private Long userId;
+
+    @ApiModelProperty(value = "用户userName", required = true)
+    private String userName;
+
+    @ApiModelProperty(value = "1提车运单，3送车运单", required = true)
+    private Long type;
 
     @ApiModelProperty(value = "调度内容", required = true)
-    private List<WaybillPickDispatchDto> list;
+    private List<LocalDispatchWaybillDto> list;
 }

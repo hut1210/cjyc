@@ -13,7 +13,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel
-public class WaybillTrunkDispatchListDto {
+public class TrunkDispatchListWaybillDto {
     @ApiModelProperty(value = "用户userId", required = true)
     private Long UserId;
 
@@ -39,5 +39,5 @@ public class WaybillTrunkDispatchListDto {
     private String remark;
 
     @ApiModelProperty(value = "调度内容", required = true)
-    private List<WaybillTrunkDispatchDto> list;
+    private List<TrunkDispatchWaybillDto> list;
 }

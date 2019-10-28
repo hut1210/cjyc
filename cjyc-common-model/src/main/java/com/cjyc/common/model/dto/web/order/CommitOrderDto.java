@@ -113,14 +113,11 @@ public class CommitOrderDto {
     private Integer payType;
 
     @ApiModelProperty(value = "优惠券id")
-    private Long couponId;//优惠券id
+    private Long couponSendId;//发放优惠券id
 
     @NotNull
     @ApiModelProperty(value = "实际总收益费用，车辆合计费用（提车费+干线费+送车费+保险费）",required = true)
     private BigDecimal realWlTotalFee;
-    @NotNull
-    @ApiModelProperty(value = "物流券抵消金额",required = true)
-    private BigDecimal couponOffsetFee;
     @NotNull
     @ApiModelProperty(value = "实际总物流费用，客户实际需付(提车费+干线费+送车费+保险费+服务费)",required = true)
     private BigDecimal wlTotalFee;

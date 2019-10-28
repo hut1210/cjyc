@@ -21,7 +21,7 @@ import java.math.BigDecimal;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel
-public class WaybillTrunkDispatchDto implements Serializable {
+public class TrunkDispatchWaybillDto implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -89,17 +89,26 @@ public class WaybillTrunkDispatchDto implements Serializable {
     @ApiModelProperty(value = "预计提车日期", required = true)
     private Long expectPickTime;
 
-    @ApiModelProperty(value = "提车联系人", required = true)
-    private String pickContactName;
+    @ApiModelProperty(value = "取车方式:1上门，2 自送/自取")
+    private Integer takeType;
 
-    @ApiModelProperty(value = "提车联系人电话", required = true)
-    private String pickContactPhone;
+    @ApiModelProperty(value = "提车联系人")
+    private String loadLinkName;
 
-    @ApiModelProperty(value = "收车联系人", required = true)
-    private String receiveContactName;
+    @ApiModelProperty(value = "提车联系人userid")
+    private Long loadLinkUserId;
 
-    @ApiModelProperty(value = "收车联系人电话", required = true)
-    private String receiveContactPhone;
+    @ApiModelProperty(value = "提车联系人电话")
+    private String loadLinkPhone;
+
+    @ApiModelProperty(value = "收车人名称")
+    private String unloadLinkName;
+
+    @ApiModelProperty(value = "收车联系人userId")
+    private Long unloadLinkUserId;
+
+    @ApiModelProperty(value = "收车人电话")
+    private String unloadLinkPhone;
 
     @ApiModelProperty(value = "运费", required = true)
     private BigDecimal freightFee;
