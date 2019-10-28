@@ -9,7 +9,6 @@ import com.cjyc.common.model.entity.Coupon;
 import com.cjyc.common.model.entity.CouponSend;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.coupon.CouponLifeTypeEnum;
-import com.cjyc.common.model.enums.coupon.CouponTypeEnum;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.web.coupon.CouponSendVo;
 import com.cjyc.web.api.service.ICouponSendService;
