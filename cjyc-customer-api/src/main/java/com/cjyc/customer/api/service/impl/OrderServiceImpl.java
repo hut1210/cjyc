@@ -21,10 +21,12 @@ import com.cjyc.customer.api.service.IOrderService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -198,8 +200,12 @@ public class OrderServiceImpl implements IOrderService{
         try{
             //根据订单编号查询订单详情
             detailVo = orderDao.getOrderDetailByNo(orderNo);
-            detailVo.setCreateTime(LocalDateTimeUtil.convertToString(Long.valueOf(detailVo.getCreateTime()), TimePatternConstant.DATE));
-            detailVo.setExpectStartDate(LocalDateTimeUtil.convertToString(Long.valueOf(detailVo.getExpectStartDate()), TimePatternConstant.DATE));
+            if(StringUtils.isNotBlank(detailVo.getCreateTime())){
+                detailVo.setCreateTime(LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(Long.valueOf(detailVo.getCreateTime())),TimePatternConstant.SIMPLE_DATE_FORMAT));
+            }
+            if(StringUtils.isNotBlank(detailVo.getExpectStartDate())){
+                detailVo.setExpectStartDate(LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(Long.valueOf(detailVo.getExpectStartDate())),TimePatternConstant.SIMPLE_DATE_FORMAT));
+            }
             //根据订单编号获取车辆信息
             List<OrderCarCenterVo> ordCarCenVos = encapOrderCarList(orderNo);
             detailVo.setOrderCarCenterVos(ordCarCenVos);
