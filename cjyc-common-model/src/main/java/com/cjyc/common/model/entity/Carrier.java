@@ -88,7 +88,7 @@ public class Carrier implements Serializable {
     @ApiModelProperty(value = "司机数量")
     private Integer driverNum;
 
-    @ApiModelProperty(value = "结算方式：1时付，2账期")
+    @ApiModelProperty(value = "结算方式：0时付，1账期")
     private Integer settleType;
 
     @ApiModelProperty(value = "账期/天")

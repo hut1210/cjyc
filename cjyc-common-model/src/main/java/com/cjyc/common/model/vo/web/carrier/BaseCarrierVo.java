@@ -1,6 +1,5 @@
 package com.cjyc.common.model.vo.web.carrier;
 
-import com.cjyc.common.model.entity.BusinessCityCode;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 

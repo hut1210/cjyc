@@ -3,7 +3,6 @@ package com.cjyc.web.api.controller;
 import com.cjyc.common.model.dto.web.driver.DriverDto;
 import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
 import com.cjyc.common.model.dto.web.user.DriverListDto;
-import com.cjyc.common.model.entity.BusinessCityCode;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BasePageUtil;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -17,7 +16,6 @@ import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -85,16 +83,6 @@ public class DriverController {
         }
         ShowDriverVo showDriverVo = driverService.getDriverById(id,userId);
         return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),showDriverVo);
-    }
-
-    @ApiOperation(value = "根据司机Id查看司机业务范围")
-    @PostMapping(value = "/getDriverBusiById/{id}")
-    public ResultVo<BusinessCityCode> getDriverBusiById(@PathVariable @ApiParam(value = "司机id",required = true) Long id){
-        if(id == null){
-            BaseResultUtil.getVo(ResultEnum.MOBILE_PARAM_ERROR.getCode(),ResultEnum.MOBILE_PARAM_ERROR.getMsg());
-        }
-        BusinessCityCode businessCityCode = driverService.getDriverBusiById(id);
-        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),businessCityCode);
     }
 
     @ApiOperation(value = "根据司机Id更新司机信息")

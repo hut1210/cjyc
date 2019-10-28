@@ -1,13 +1,13 @@
 package com.cjyc.common.model.dto.web.driver;
 
-import com.cjyc.common.model.entity.BusinessCityCode;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Data
-public class DriverDto extends BusinessCityCode implements Serializable {
+public class DriverDto implements Serializable {
 
     public interface SaveDriverDto {
     }
@@ -26,6 +26,9 @@ public class DriverDto extends BusinessCityCode implements Serializable {
 
     @ApiModelProperty("承运方式/司机类型：0 ：代驾 1：干线司机  2：拖车司机 4全支持")
     private Integer mode;
+
+    @ApiModelProperty("业务类型")
+    private List<String> codes;
 
     @ApiModelProperty("身份证正面")
     private String idCardFrontImg;

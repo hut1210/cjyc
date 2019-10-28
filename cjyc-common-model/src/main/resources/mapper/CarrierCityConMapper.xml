@@ -6,17 +6,12 @@
     <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.CarrierCityCon">
         <id column="id" property="id" />
         <result column="carrier_id" property="carrierId" />
-        <result column="country" property="country" />
-        <result column="large_area" property="largeArea" />
-        <result column="province" property="province" />
-        <result column="city" property="city" />
-        <result column="area" property="area" />
-        <result column="area_code" property="areaCode" />
+        <result column="city_code" property="cityCode" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, carrier_id, country, large_area, province, city, area, area_code
+        id, carrier_id, city_code
     </sql>
 
     <!-- 根据司机id查询该承运商绑定的业务编码 -->

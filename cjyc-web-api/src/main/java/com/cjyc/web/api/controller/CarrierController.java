@@ -3,7 +3,6 @@ package com.cjyc.web.api.controller;
 import com.cjyc.common.model.dto.web.carrier.CarrierDto;
 import com.cjyc.common.model.dto.web.carrier.SeleCarrierDto;
 import com.cjyc.common.model.dto.web.carrier.SeleVehicleDto;
-import com.cjyc.common.model.entity.BusinessCityCode;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BasePageUtil;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -17,7 +16,6 @@ import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -90,15 +88,4 @@ public class CarrierController {
         PageInfo<BaseVehicleVo> pageInfo = carrierService.getBaseVehicleByTerm(dto);
         return BaseResultUtil.getPageVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg(),pageInfo);
     }
-
-    @ApiOperation(value = "根据承运商id查看承运商业务范围")
-    @PostMapping(value = "/getCarrierBusiById/{id}")
-    public ResultVo<BusinessCityCode> getCarrierBusiById(@PathVariable @ApiParam(value = "承运商id",required = true) Long id){
-        if(id == null){
-            return BaseResultUtil.getVo(ResultEnum.MOBILE_PARAM_ERROR.getCode(),ResultEnum.MOBILE_PARAM_ERROR.getMsg());
-        }
-        BusinessCityCode businessCityCode = carrierService.getCarrierBusiById(id);
-        return BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg(),businessCityCode);
-    }
-
 }
