@@ -6,6 +6,7 @@ import com.cjyc.common.model.dto.BasePageDto;
 import com.cjyc.common.model.dto.web.coupon.CouponDto;
 import com.cjyc.common.model.dto.web.coupon.SeleCouponDto;
 import com.cjyc.common.model.entity.Coupon;
+import com.cjyc.common.model.enums.coupon.CouponTypeEnum;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.web.coupon.CouponVo;
 import com.cjyc.web.api.exception.CommonException;
