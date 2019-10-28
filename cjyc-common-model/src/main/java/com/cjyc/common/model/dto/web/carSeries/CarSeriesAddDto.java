@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
@@ -22,7 +23,7 @@ public class CarSeriesAddDto implements Serializable {
     @ApiModelProperty(value = "型号;添加多个时，用逗号(,)隔开",required = true)
     private String model;
 
-    @NotBlank(message = "创建人ID不能为空")
+    @NotNull(message = "创建人ID不能为空")
     @ApiModelProperty(value = "创建人ID",required = true)
     private Long createUserId;
 }
