@@ -58,4 +58,6 @@ public interface IDriverDao extends BaseMapper<Driver> {
      * @return
      */
     Driver getDriverByDriverId(@Param("carrierId") Long carrierId);
+
+    Driver findByUserId(Long userId);
 }

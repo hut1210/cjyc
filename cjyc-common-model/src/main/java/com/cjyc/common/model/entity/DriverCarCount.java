@@ -17,7 +17,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-26
+ * @since 2019-10-29
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -32,8 +32,8 @@ public class DriverCarCount implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "司机userId")
-    private Long driverUserId;
+    @ApiModelProperty(value = "司机ID")
+    private Long driverId;
 
     @ApiModelProperty(value = "司机运输车辆数")
     private Integer carNum;

@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-24
+ * @since 2019-10-29
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -103,7 +103,7 @@ public class Driver implements Serializable {
     @ApiModelProperty(value = "备注")
     private String remark;
 
-    @ApiModelProperty(value = "状态：0待审核，2审核通过，4已驳回(审核不通过)，7已冻结")
+    @ApiModelProperty(value = "状态：0待审核，2已审核，4取消，7已驳回，9已停用（CommonStateEnum）")
     private Integer state;
 
     @ApiModelProperty(value = "是否缴纳保证金：0否，1是")

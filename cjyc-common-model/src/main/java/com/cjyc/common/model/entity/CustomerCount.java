@@ -13,17 +13,17 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 
+ * 客户订单车辆统计表
  * </p>
  *
  * @author JPG
- * @since 2019-10-26
+ * @since 2019-10-29
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("c_customer_count")
-@ApiModel(value="CustomerCount对象", description="")
+@ApiModel(value="CustomerCount对象", description="客户订单车辆统计表")
 public class CustomerCount implements Serializable {
 
     private static final long serialVersionUID = 1L;

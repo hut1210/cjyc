@@ -34,6 +34,7 @@
     </sql>
 
 
+
     <select id="findByUserId" resultType="com.cjyc.common.model.entity.Admin">
         select
         <include refid="Base_Column_List"/>

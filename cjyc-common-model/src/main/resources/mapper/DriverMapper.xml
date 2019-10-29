@@ -41,6 +41,7 @@
     <sql id="Base_Column_List">
         id, user_id, name, phone, emergency_phone, type, mode, identity, id_card, real_name, age, sex, address, id_card_front_img, id_card_back_img, driver_licence_front_img, driver_licence_back_img, driver_licence_expire, travel_licence_front_img, travel_licence_back_img, taxi_licence_front_img, taxi_licence_back_img, qualifi_cert_front_img, qualifi_cert_back_img, remark, state, deposit_pay_state, business_state, source, create_user_id, create_name
     </sql>
+
     <select id="findList" resultType="com.cjyc.common.model.vo.web.user.DriverListVo">
         select
         c.`name` as `carrierName`,
@@ -212,6 +213,13 @@
             JOIN d_carrier_driver_con cdc ON cdc.driver_id = dri.id
             JOIN d_carrier carr ON carr.id = cdc.carrier_id
         WHERE carr.id = #{carrierId}
+    </select>
+    <select id="findByUserId" resultType="com.cjyc.common.model.entity.Driver">
+        select
+        <include refid="Base_Column_List"/>
+        from d_driver
+        where user_id = #{userId}
+
     </select>
 
 </mapper>

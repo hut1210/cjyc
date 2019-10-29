@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.cjyc.common.model.dao.ICarrierDao">
-
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.Carrier">
         <id column="id" property="id" />
+        <result column="dept_id" property="deptId" />
         <result column="name" property="name" />
         <result column="type" property="type" />
         <result column="register_name" property="registerName" />
@@ -20,10 +20,13 @@
         <result column="bank_open_back_img" property="bankOpenBackImg" />
         <result column="linkman" property="linkman" />
         <result column="linkman_phone" property="linkmanPhone" />
-        <result column="mode" property="mode" />
+        <result column="driver_mode" property="driverMode" />
+        <result column="trailer_mode" property="trailerMode" />
+        <result column="trunk_mode" property="trunkMode" />
         <result column="admin_num" property="adminNum" />
         <result column="default_admin_id" property="defaultAdminId" />
         <result column="driver_num" property="driverNum" />
+        <result column="running_driver_num" property="runningDriverNum" />
         <result column="settle_type" property="settleType" />
         <result column="settle_period" property="settlePeriod" />
         <result column="settle_corporation" property="settleCorporation" />
@@ -37,9 +40,8 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, name, type, register_name, register_phone, legal_name, legal_id_card, legal_idcard_img, bus_license_front_img, bus_license_back_img, transport_license_front_img, transport_license_back_img, bank_open_front_img, bank_open_back_img, linkman, linkman_phone, mode, admin_num, default_admin_id, driver_num, settle_type, settle_period, settle_corporation, state, business_state, is_invoice, create_user, create_user_id, create_time
+        id, dept_id, name, type, register_name, register_phone, legal_name, legal_id_card, legal_idcard_img, bus_license_front_img, bus_license_back_img, transport_license_front_img, transport_license_back_img, bank_open_front_img, bank_open_back_img, linkman, linkman_phone, driver_mode, trailer_mode, trunk_mode, admin_num, default_admin_id, driver_num, running_driver_num, settle_type, settle_period, settle_corporation, state, business_state, is_invoice, create_user, create_user_id, create_time
     </sql>
-
     <!-- 根据司机id查询承运商 -->
     <select id="getCarrierById" resultType="com.cjyc.common.model.entity.Carrier"
             parameterType="java.lang.Long">

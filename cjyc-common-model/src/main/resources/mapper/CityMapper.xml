@@ -116,5 +116,11 @@
     <select id="getAllCity" resultType="java.util.HashMap" parameterType="java.lang.String">
         select name,code from s_city where parent_code = #{code}
     </select>
+    <select id="findListByLevel" resultType="com.cjyc.common.model.vo.web.city.TreeCityVo">
+        select
+         `name`,`code`,level
+        from s_city
+        where level = #{level}
+    </select>
 
 </mapper>

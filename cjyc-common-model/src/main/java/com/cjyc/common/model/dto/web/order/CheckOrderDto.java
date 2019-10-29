@@ -8,15 +8,11 @@ import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotNull;
 
-/**
- * 入参
- * @author JPG
- */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel
-public class CancelOrderDto {
+public class CheckOrderDto {
 
     @NotNull
     @ApiModelProperty(value = "userId", required = true)
@@ -24,11 +20,9 @@ public class CancelOrderDto {
 
     @ApiModelProperty("userName")
     private String userName;
+
     @NotNull
     @ApiModelProperty(value = "订单ID", required = true)
     private Long orderId;
 
-    @ApiModelProperty(value = "原因",required = true)
-    private String reason;
 }
-

@@ -6,14 +6,11 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
-import java.util.List;
-
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel
-public class AllotTaskDto {
-
+public class LoadTaskDto {
     @ApiModelProperty(value = "用户userId",required = true)
     private Long userId;
 
@@ -21,12 +18,9 @@ public class AllotTaskDto {
     private String userName;
 
     @ApiModelProperty(value = "运单ID",required = true)
-    private Long waybillId;
+    private Long taskCarId;
 
-    @ApiModelProperty(value = "司机ID",required = true)
-    private Long driverId;
-
-    @ApiModelProperty(value = "运单车辆ID",required = true)
-    private List<Long> waybillCarIdList;
+    @ApiModelProperty(value = "图片地址，逗号分隔")
+    private String loadPhotoImg;
 
 }

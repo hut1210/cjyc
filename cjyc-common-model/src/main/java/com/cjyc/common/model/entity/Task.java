@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-24
+ * @since 2019-10-29
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -48,6 +48,9 @@ public class Task implements Serializable {
 
     @ApiModelProperty(value = "司机名称")
     private String driverName;
+
+    @ApiModelProperty(value = "司机电话")
+    private String driverPhone;
 
     @ApiModelProperty(value = "司机ID")
     private Long driverId;
