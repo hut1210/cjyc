@@ -55,4 +55,6 @@ public interface ICityService extends IService<City> {
      * @param treeCityDto
      */
     ResultVo<List<TreeCityVo>> getTree(TreeCityDto treeCityDto);
+
+    ResultVo provinceCityTree();
 }

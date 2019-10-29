@@ -7,12 +7,14 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.redis.template.StringRedisUtil;
 import com.cjyc.common.model.dao.ICityDao;
 import com.cjyc.common.model.dto.salesman.city.CityPageDto;
+import com.cjyc.common.model.dto.web.city.TreeCityDto;
 import com.cjyc.common.model.entity.City;
 import com.cjyc.common.model.enums.CityLevelEnum;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.city.CityTreeVo;
+import com.cjyc.common.model.vo.web.city.TreeCityVo;
 import com.cjyc.web.api.exception.CommonException;
 import com.cjyc.web.api.service.ICityService;
 import lombok.extern.slf4j.Slf4j;
@@ -73,6 +75,11 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
     @Override
     public List<City> selectChildList(String code) {
         return cityDao.findChildList(code);
+    }
+
+    @Override
+    public ResultVo<List<TreeCityVo>> getTree(TreeCityDto treeCityDto) {
+        return null;
     }
 
     @Override

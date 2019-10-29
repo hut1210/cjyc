@@ -114,7 +114,7 @@
             parent_code AS parentCode
         FROM
             s_city
-        where level = #{level}
+            where level = #{level}
     </select>
 
     <!--获取所有下一级城市 -->
@@ -128,11 +128,6 @@
         WHERE
             parent_code = #{code}
     </select>
-    <select id="findListByLevel" resultType="com.cjyc.common.model.vo.web.city.TreeCityVo">
-        select
-         `name`,`code`,level
-        from s_city
-        where level = #{level}
-    </select>
+
 
 </mapper>

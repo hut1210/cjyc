@@ -72,15 +72,13 @@ public interface ICityDao extends BaseMapper<City> {
      * 获取所有省/直辖市
      * @return
      */
-    List<HashMap<String,String>> getAllProvince();
+    List<CityTreeVo> getAllByLevel(Integer level);
 
     /**
      * 获取下一级所有城市
      * @param code
      * @return
      */
-    List<HashMap<String,String>> getAllCity(@ApiParam("code") String code);
-
-    List<TreeCityVo> findListByLevel(Integer level);
+    List<CityTreeVo> getAllCity(@ApiParam("code") String code);
 }
 
