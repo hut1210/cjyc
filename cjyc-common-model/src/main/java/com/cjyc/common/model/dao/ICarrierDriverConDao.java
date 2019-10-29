@@ -2,6 +2,9 @@ package com.cjyc.common.model.dao;
 
 import com.cjyc.common.model.entity.CarrierDriverCon;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +16,10 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface ICarrierDriverConDao extends BaseMapper<CarrierDriverCon> {
 
+    /**
+     * 根据承运商id获取司机ids
+     * @param carrierId
+     * @return
+     */
+    List<Long> getDriverIds(@Param("carrierId") Long carrierId);
 }

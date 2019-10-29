@@ -125,7 +125,6 @@ public class DriverServiceImpl implements IDriverService {
                 carrier.setName(dto.getRealName());
                 carrier.setLinkman(dto.getRealName());
                 carrier.setLinkmanPhone(dto.getPhone());
-                carrier.setMode(dto.getMode());
                 carrier.setType(CarrierTypeEnum.PERSONAL.code);
                 carrier.setSettleType(PayModeEnum.CURRENT.code);
                 carrier.setCreateTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
@@ -207,10 +206,15 @@ public class DriverServiceImpl implements IDriverService {
     }
 
     @Override
-    public ShowDriverVo getDriverById(Long id, Long userId) {
+    public ShowDriverVo getDriverById(Long driverId, Long userId) {
         try{
-            ShowDriverVo vo = driverDao.getDriverById(id,userId);
+            ShowDriverVo vo = driverDao.getDriverById(driverId,userId);
             if(vo != null){
+                //根据司机id获取该承运商id
+                Long carrierId = driverDao.getCarrIdByDriverId(driverId);
+                if(carrierId != null){
+                    vo.setMapCodes(carrierCityConService.getMapCodes(carrierId));
+                }
                 return vo;
             }
         }catch (Exception e){

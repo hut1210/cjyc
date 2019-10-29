@@ -4,22 +4,27 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.carrier.CarrierDto;
 import com.cjyc.common.model.dto.web.carrier.SeleCarrierDto;
-import com.cjyc.common.model.dto.web.carrier.SeleVehicleDto;
+import com.cjyc.common.model.dto.web.carrier.SeleVehicleDriverDto;
 import com.cjyc.common.model.entity.*;
-import com.cjyc.common.model.enums.AdminStateEnum;
 import com.cjyc.common.model.enums.FlagEnum;
+import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.UseStateEnum;
 import com.cjyc.common.model.enums.transport.*;
+import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
+import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.carrier.BaseDriverVo;
 import com.cjyc.common.model.vo.web.carrier.BaseVehicleVo;
 import com.cjyc.common.model.vo.web.carrier.CarrierVo;
 import com.cjyc.common.model.vo.web.carrier.BaseCarrierVo;
 import com.cjyc.web.api.exception.CommonException;
 import com.cjyc.web.api.service.ICarrierCityConService;
+import com.cjyc.web.api.service.ICarrierDriverConService;
 import com.cjyc.web.api.service.ICarrierService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -59,6 +64,9 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, com.cjyc.common
 
     @Resource
     private ICarrierCityConService carrierCityConService;
+
+    @Resource
+    private ICarrierDriverConService carrierDriverConService;
 
     @Override
     public boolean saveCarrier(CarrierDto dto) {
@@ -215,10 +223,11 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, com.cjyc.common
     }
 
     @Override
-    public BaseCarrierVo getBaseCarrierById(Long id) {
+    public BaseCarrierVo getBaseCarrierById(Long carrierId) {
         try{
-            BaseCarrierVo vo = carrierDao.showCarrierById(id);
+            BaseCarrierVo vo = carrierDao.showCarrierById(carrierId);
             if(vo != null){
+                vo.setMapCodes(carrierCityConService.getMapCodes(carrierId));
                 return vo;
             }
         }catch (Exception e){
@@ -228,7 +237,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, com.cjyc.common
     }
 
     @Override
-    public PageInfo<BaseVehicleVo> getBaseVehicleByTerm(SeleVehicleDto dto) {
+    public PageInfo<BaseVehicleVo> getBaseVehicleByTerm(SeleVehicleDriverDto dto) {
         PageInfo<BaseVehicleVo> pageInfo = null;
         try{
             List<BaseVehicleVo> baseVehicleVos = vehicleDao.getBaseVehicleByTerm(dto);
@@ -238,6 +247,26 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, com.cjyc.common
             log.info("根据条件查看车辆信息出现异常");
         }
         return pageInfo;
+    }
+
+    @Override
+    public ResultVo getBaseDriverByTerm(SeleVehicleDriverDto dto) {
+        PageInfo<BaseDriverVo> pageInfo = null;
+        try{
+            List<Long> idsList =  carrierDriverConService.getDriverIds(dto.getId());
+            if(!idsList.isEmpty() && !CollectionUtils.isEmpty(idsList)){
+                List<BaseDriverVo> driverVos = driverDao.getDriversByIds(idsList);
+                if(!driverVos.isEmpty() && CollectionUtils.isEmpty(driverVos)){
+                    PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
+                    pageInfo = new PageInfo<>(driverVos);
+                    return BaseResultUtil.getPageVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),pageInfo);
+                }
+            }
+        }catch (Exception e){
+            log.info("根据承运商id查看司机信息出现异常");
+            throw new CommonException(e.getMessage());
+        }
+        return BaseResultUtil.getPageVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg(),pageInfo);
     }
 
     /**
@@ -251,6 +280,9 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, com.cjyc.common
         carrier.setLegalName(dto.getLegalName());
         carrier.setLinkman(dto.getLinkman());
         carrier.setLinkmanPhone(dto.getLinkmanPhone());
+        carrier.setDriverMode(dto.getDriverMode());
+        carrier.setTrailerMode(dto.getTrailerMode());
+        carrier.setTrunkMode(dto.getTrunkMode());
         carrier.setSettleType(dto.getSettleType());
         carrier.setSettlePeriod(dto.getSettlePeriod());
         carrier.setIsInvoice(dto.getIsInvoice());

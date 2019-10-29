@@ -6,11 +6,15 @@ import com.cjyc.common.model.entity.CarrierCityCon;
 import com.cjyc.web.api.exception.CommonException;
 import com.cjyc.web.api.service.ICarrierCityConService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 @Service
@@ -56,5 +60,20 @@ public class CarrierCityConServiceImpl extends ServiceImpl<ICarrierCityConDao, C
             log.info("根据承运商id批量删除业务范围出现异常");
             throw new CommonException(e.getMessage());
         }
+    }
+
+    @Override
+    public List<LinkedHashMap> getMapCodes(Long carrierId) {
+        List<LinkedHashMap> mapCodes = null;
+        try{
+           mapCodes = carrierCityConDao.getMapCodes(carrierId);
+           if(!mapCodes.isEmpty() && !CollectionUtils.isEmpty(mapCodes)){
+                return mapCodes;
+           }
+        }catch (Exception e){
+            log.info("根据承运商id获取承运商业务范围出现异常");
+            throw new CommonException(e.getMessage());
+        }
+        return mapCodes;
     }
 }

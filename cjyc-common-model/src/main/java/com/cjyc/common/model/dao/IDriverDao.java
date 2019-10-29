@@ -4,9 +4,11 @@ import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
 import com.cjyc.common.model.dto.web.user.DriverListDto;
 import com.cjyc.common.model.entity.Driver;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cjyc.common.model.vo.web.carrier.BaseDriverVo;
 import com.cjyc.common.model.vo.web.driver.DriverVo;
 import com.cjyc.common.model.vo.web.driver.ShowDriverVo;
 import com.cjyc.common.model.vo.web.user.DriverListVo;
+import io.swagger.annotations.ApiParam;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -58,4 +60,18 @@ public interface IDriverDao extends BaseMapper<Driver> {
      * @return
      */
     Driver getDriverByDriverId(@Param("carrierId") Long carrierId);
+
+    /**
+     * 根据司机id获取承运商id
+     * @param driverId
+     * @return
+     */
+    Long getCarrIdByDriverId(@Param("driverId") Long driverId);
+
+    /**
+     * 根据司机ids获取司机信息
+     * @param driverIds
+     * @return
+     */
+    List<BaseDriverVo> getDriversByIds(List<Long> driverIds);
 }

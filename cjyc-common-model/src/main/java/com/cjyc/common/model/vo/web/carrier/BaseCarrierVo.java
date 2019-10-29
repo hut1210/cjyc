@@ -4,6 +4,9 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.LinkedHashMap;
+import java.util.List;
+
 @Data
 public class BaseCarrierVo implements Serializable {
 
@@ -14,7 +17,7 @@ public class BaseCarrierVo implements Serializable {
     private String name;
 
     @ApiModelProperty("是否开发票 0：否  1：是")
-    private String isInvoice;
+    private Integer isInvoice;
 
     @ApiModelProperty("法人姓名")
     private String legalName;
@@ -29,17 +32,25 @@ public class BaseCarrierVo implements Serializable {
     private String linkmanPhone;
 
     @ApiModelProperty("结算方式：1时付，2账期")
-    private String settleType;
+    private Integer settleType;
 
     @ApiModelProperty("账期/天")
-    private String settlePeriod;
+    private Integer settlePeriod;
 
+    @ApiModelProperty("承运商业务范围")
+    List<LinkedHashMap> mapCodes;
 
-    @ApiModelProperty("承运方式：1代驾，2托运，3干线 4全支持")
-    private String mode;
+    @ApiModelProperty("是否支持代驾  0 : 否  1 : 是")
+    private Integer driverMode;
+
+    @ApiModelProperty("是否支持拖车  0 ：否  1 ：是")
+    private Integer trailerMode;
+
+    @ApiModelProperty("是否支持干线  0：否 1：是")
+    private Integer trunkMode;
 
     @ApiModelProperty("卡类型:1公户，2私户")
-    private String cardType;
+    private Integer cardType;
 
     @ApiModelProperty("银行卡户主")
     private String cardName;

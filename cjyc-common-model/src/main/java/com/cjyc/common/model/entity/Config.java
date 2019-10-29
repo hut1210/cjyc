@@ -1,6 +1,5 @@
 package com.cjyc.common.model.entity;
 
-import java.math.BigDecimal;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -13,7 +12,7 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 司机运输车辆统计表
+ * 
  * </p>
  *
  * @author JPG
@@ -22,24 +21,30 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("d_driver_car_count")
-@ApiModel(value="DriverCarCount对象", description="司机运输车辆统计表")
-public class DriverCarCount implements Serializable {
+@TableName("s_config")
+@ApiModel(value="Config对象", description="")
+public class Config implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "ID")
+    @ApiModelProperty(value = "主键id")
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "司机ID")
-    private Long driverId;
+    @ApiModelProperty(value = "名称")
+    private String name;
 
-    @ApiModelProperty(value = "司机运输车辆数")
-    private Integer carNum;
+    @ApiModelProperty(value = "键")
+    private String itemKey;
 
-    @ApiModelProperty(value = "总收入/分")
-    private BigDecimal totalIncome;
+    @ApiModelProperty(value = "开关状态  0：关 1：开")
+    private Integer state;
+
+    @ApiModelProperty(value = "操作人userId")
+    private Long operateUserId;
+
+    @ApiModelProperty(value = "操作时间")
+    private Long operateTime;
 
 
 }

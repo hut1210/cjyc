@@ -40,4 +40,15 @@
         delete from d_carrier_city_con where carrier_id = #{carrierId}
     </delete>
 
+    <!-- 根据承运商id获取业务范围 -->
+    <select id="getMapCodes" resultType="java.util.Map" parameterType="java.lang.Long">
+          SELECT
+            c.NAME,
+            c.CODE
+        FROM
+            s_city c
+            JOIN d_carrier_city_con con ON c.CODE = con.city_code
+        where  con.carrier_id = #{carrierId}
+    </select>
+
 </mapper>

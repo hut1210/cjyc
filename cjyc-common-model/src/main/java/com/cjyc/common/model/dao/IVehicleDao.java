@@ -1,6 +1,6 @@
 package com.cjyc.common.model.dao;
 
-import com.cjyc.common.model.dto.web.carrier.SeleVehicleDto;
+import com.cjyc.common.model.dto.web.carrier.SeleVehicleDriverDto;
 import com.cjyc.common.model.dto.web.vehicle.SelectVehicleDto;
 import com.cjyc.common.model.entity.Vehicle;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -39,6 +39,6 @@ public interface IVehicleDao extends BaseMapper<Vehicle> {
      * @param dto
      * @return
      */
-    List<BaseVehicleVo> getBaseVehicleByTerm(SeleVehicleDto dto);
+    List<BaseVehicleVo> getBaseVehicleByTerm(SeleVehicleDriverDto dto);
 
 }

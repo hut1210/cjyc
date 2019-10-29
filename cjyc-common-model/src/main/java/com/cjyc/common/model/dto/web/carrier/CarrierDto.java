@@ -48,6 +48,15 @@ public class CarrierDto implements Serializable {
     @ApiModelProperty("业务范围")
     private List<String> codes;
 
+    @ApiModelProperty("是否支持代驾  0 : 否  1 : 是")
+    private Integer driverMode;
+
+    @ApiModelProperty("是否支持拖车  0 ：否  1 ：是")
+    private Integer trailerMode;
+
+    @ApiModelProperty("是否支持干线  0：否 1：是")
+    private Integer trunkMode;
+
     @ApiModelProperty("是否开发票 0：否  1：是")
     private Integer isInvoice;
 

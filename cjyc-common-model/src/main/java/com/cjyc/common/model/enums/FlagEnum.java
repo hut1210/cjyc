@@ -3,8 +3,9 @@ package com.cjyc.common.model.enums;
 public enum FlagEnum {
 
     //1：保存 2：更新
+    QUERY("查询", 0),
     ADD("保存", 1),
-    DUPDTATE("更新", 2),
+    UPDTATE("更新", 2),
     AUDIT_PASS("审核通过",3),
     AUDIT_REJECT("审核拒绝",4),
     FROZEN("冻结",5),

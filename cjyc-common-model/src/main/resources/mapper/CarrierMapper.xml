@@ -5,6 +5,7 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.Carrier">
         <id column="id" property="id" />
+        <result column="dept_id" property="deptId" />
         <result column="name" property="name" />
         <result column="type" property="type" />
         <result column="register_name" property="registerName" />
@@ -20,10 +21,13 @@
         <result column="bank_open_back_img" property="bankOpenBackImg" />
         <result column="linkman" property="linkman" />
         <result column="linkman_phone" property="linkmanPhone" />
-        <result column="mode" property="mode" />
+        <result column="driver_mode" property="driverMode" />
+        <result column="trailer_mode" property="trailerMode" />
+        <result column="trunk_mode" property="trunkMode" />
         <result column="admin_num" property="adminNum" />
         <result column="default_admin_id" property="defaultAdminId" />
         <result column="driver_num" property="driverNum" />
+        <result column="running_driver_num" property="runningDriverNum" />
         <result column="settle_type" property="settleType" />
         <result column="settle_period" property="settlePeriod" />
         <result column="settle_corporation" property="settleCorporation" />
@@ -37,7 +41,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, name, type, register_name, register_phone, legal_name, legal_id_card, legal_idcard_img, bus_license_front_img, bus_license_back_img, transport_license_front_img, transport_license_back_img, bank_open_front_img, bank_open_back_img, linkman, linkman_phone, mode, admin_num, default_admin_id, driver_num, settle_type, settle_period, settle_corporation, state, business_state, is_invoice, create_user, create_user_id, create_time
+        id, dept_id, name, type, register_name, register_phone, legal_name, legal_id_card, legal_idcard_img, bus_license_front_img, bus_license_back_img, transport_license_front_img, transport_license_back_img, bank_open_front_img, bank_open_back_img, linkman, linkman_phone, driver_mode, trailer_mode, trunk_mode, admin_num, default_admin_id, driver_num, running_driver_num, settle_type, settle_period, settle_corporation, state, business_state, is_invoice, create_user, create_user_id, create_time
     </sql>
 
     <!-- 根据司机id查询承运商 -->
@@ -67,11 +71,13 @@
         carr.transport_license_front_img AS transportLicenseFrontImg,
         carr.bank_open_front_img AS bankOpenFrontImg,
         carr.settle_period,
-        ( CASE carr.settle_type WHEN 1 THEN '时付' WHEN 2 THEN '账期' END ) AS settleType,
-        ( CASE carr.MODE WHEN 1 THEN '代驾' WHEN 2 THEN '托运' WHEN 3 THEN '干线' WHEN 4 THEN '全支持' END ) AS MODE,
-        ( CASE carr.is_invoice WHEN 0 THEN '否' WHEN 1 THEN '是' END ) AS isInvoice,
-        ( CASE carr.state WHEN 0 THEN '待审核' WHEN 2 THEN '已审核' WHEN 4 THEN '已驳回' WHEN 7 THEN '已冻结' END ) AS state,
-        ( CASE bind.card_type WHEN 1 THEN '公户' WHEN 2 THEN '私户' END ) AS cardType,
+        carr.settle_type AS settleType,
+        carr.driver_mode AS driverMode,
+        carr.trailer_mode AS trailerMode,
+        carr.trunk_mode AS trunkMode,
+        carr.is_invoice AS isInvoice,
+        carr.state AS state,
+        bind.card_type AS cardType,
         bind.card_name AS cardName,
         bind.bank_name AS bankName,
         bind.card_no AS cardNo
@@ -131,10 +137,12 @@
             carr.bank_open_front_img AS bankOpenFrontImg,
             carr.bank_open_back_img AS bankOpenBackImg,
             carr.settle_period,
-            ( CASE carr.settle_type WHEN 1 THEN '时付' WHEN 2 THEN '账期' END ) AS settleType,
-            ( CASE carr.MODE WHEN 1 THEN '代驾' WHEN 2 THEN '托运' WHEN 3 THEN '干线' WHEN 4 THEN '全支持' END ) AS MODE,
-            ( CASE carr.is_invoice WHEN 0 THEN '否' WHEN 1 THEN '是' END ) AS isInvoice,
-            ( CASE bcb.card_type WHEN 1 THEN '公户' WHEN 2 THEN '私户' END ) AS cardType,
+            carr.settle_type AS settleType,
+            carr.driver_mode AS driverMode,
+            carr.trailer_mode AS trailerMode,
+            carr.trunk_mode AS trunkMode,
+            carr.is_invoice AS isInvoice,
+            bcb.card_type AS cardType,
             bcb.card_name AS cardName,
             bcb.bank_name AS bankName,
             bcb.card_no AS cardNo

@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-24
+ * @since 2019-10-29
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -30,6 +30,9 @@ public class Carrier implements Serializable {
     @ApiModelProperty(value = "ID")
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
+
+    @ApiModelProperty(value = "机构ID")
+    private Long deptId;
 
     @ApiModelProperty(value = "公司名称")
     private String name;
@@ -76,8 +79,14 @@ public class Carrier implements Serializable {
     @ApiModelProperty(value = "公司联系人手机号")
     private String linkmanPhone;
 
-    @ApiModelProperty(value = "承运方式：1代驾，2托运，3干线 4全支持")
-    private Integer mode;
+    @ApiModelProperty(value = "是否支持代驾  0 : 否  1 : 是")
+    private Integer driverMode;
+
+    @ApiModelProperty(value = "是否支持拖车  0 ：否  1 ：是")
+    private Integer trailerMode;
+
+    @ApiModelProperty(value = "是否支持干线  0：否 1：是")
+    private Integer trunkMode;
 
     @ApiModelProperty(value = "管理员数量")
     private Integer adminNum;
@@ -88,6 +97,9 @@ public class Carrier implements Serializable {
     @ApiModelProperty(value = "司机数量")
     private Integer driverNum;
 
+    @ApiModelProperty(value = "运营中的司机数量")
+    private Integer runningDriverNum;
+
     @ApiModelProperty(value = "结算方式：0时付，1账期")
     private Integer settleType;
 
@@ -97,7 +109,7 @@ public class Carrier implements Serializable {
     @ApiModelProperty(value = "结算公司：0韵车，1otm，2掌控")
     private Integer settleCorporation;
 
-    @ApiModelProperty(value = "状态：0待审核，2已审核，4已驳回，7已冻结")
+    @ApiModelProperty(value = "状态：0待审核，2已审核，4取消，7已驳回，9已停用（CommonStateEnum）")
     private Integer state;
 
     @ApiModelProperty(value = "营运状态：0营运中，1停运中")

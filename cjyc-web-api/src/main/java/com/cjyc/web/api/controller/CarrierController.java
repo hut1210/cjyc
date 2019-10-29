@@ -2,12 +2,13 @@ package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.web.carrier.CarrierDto;
 import com.cjyc.common.model.dto.web.carrier.SeleCarrierDto;
-import com.cjyc.common.model.dto.web.carrier.SeleVehicleDto;
+import com.cjyc.common.model.dto.web.carrier.SeleVehicleDriverDto;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BasePageUtil;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.carrier.BaseDriverVo;
 import com.cjyc.common.model.vo.web.carrier.BaseVehicleVo;
 import com.cjyc.common.model.vo.web.carrier.CarrierVo;
 import com.cjyc.common.model.vo.web.carrier.BaseCarrierVo;
@@ -83,9 +84,16 @@ public class CarrierController {
 
     @ApiOperation(value = "根据条件查看车辆信息")
     @PostMapping(value = "/getBaseVehicleByTerm")
-    public ResultVo<PageVo<BaseVehicleVo>> getBaseVehicleByTerm(@Validated({ SeleVehicleDto.SelectVehicleDto.class })@RequestBody SeleVehicleDto dto){
+    public ResultVo<PageVo<BaseVehicleVo>> getBaseVehicleByTerm(@Validated({ SeleVehicleDriverDto.SelectVehicleDto.class })@RequestBody SeleVehicleDriverDto dto){
         BasePageUtil.initPage(dto.getCurrentPage(),dto.getPageSize());
         PageInfo<BaseVehicleVo> pageInfo = carrierService.getBaseVehicleByTerm(dto);
         return BaseResultUtil.getPageVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg(),pageInfo);
+    }
+
+    @ApiOperation(value = "根据条件查看承运商下司机信息")
+    @PostMapping(value = "/getBaseDriverByTerm")
+    public ResultVo getBaseDriverByTerm(@Validated({ SeleVehicleDriverDto.SelectVehicleDto.class })@RequestBody SeleVehicleDriverDto dto){
+        BasePageUtil.initPage(dto.getCurrentPage(),dto.getPageSize());
+        return carrierService.getBaseDriverByTerm(dto);
     }
 }
