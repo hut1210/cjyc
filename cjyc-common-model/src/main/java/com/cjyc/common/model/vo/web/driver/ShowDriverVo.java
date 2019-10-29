@@ -6,7 +6,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 @Data
-public class ShowDriverVo extends BusinessCityCode implements Serializable {
+public class ShowDriverVo implements Serializable {
 
     @ApiModelProperty("司机id")
     private Long id;
