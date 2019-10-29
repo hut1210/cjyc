@@ -1,10 +1,11 @@
-package com.cjyc.common.model.enums.Coupon;
+package com.cjyc.common.model.enums.coupon;
 
 public enum CouponTypeEnum {
 
-    FULL_REDUCTION("满减", 0),
-    DIRECT_REDUCTION("直减", 1),
-    DISCOUNT("折扣", 2);
+    /***/
+    FULL_CUT("满减", 0),
+    DIRECT_CUT("直减", 1),
+    DISCOUNT_CUT("折扣", 2);
 
     public String name;
     public int code;

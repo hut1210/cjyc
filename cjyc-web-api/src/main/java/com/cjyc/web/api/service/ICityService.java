@@ -54,5 +54,5 @@ public interface ICityService extends IService<City> {
      * @return
      * @param treeCityDto
      */
-    ResultVo<TreeCityVo> getTree(TreeCityDto treeCityDto);
+    ResultVo<List<TreeCityVo>> getTree(TreeCityDto treeCityDto);
 }

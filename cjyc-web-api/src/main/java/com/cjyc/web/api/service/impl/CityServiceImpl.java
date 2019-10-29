@@ -7,27 +7,20 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.redis.template.StringRedisUtil;
 import com.cjyc.common.model.dao.ICityDao;
 import com.cjyc.common.model.dto.salesman.city.CityPageDto;
-import com.cjyc.common.model.entity.City;
-import com.cjyc.common.model.enums.CityLevelEnum;
-import com.cjyc.common.model.enums.ResultEnum;
-import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.city.ProvinceCityTreeVo;
 import com.cjyc.common.model.dto.web.city.TreeCityDto;
+import com.cjyc.common.model.entity.City;
+import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.vo.ListVo;
+import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.city.TreeCityVo;
-import com.cjyc.common.model.vo.web.city.CityTreeVo;
-import com.cjyc.web.api.exception.CommonException;
 import com.cjyc.web.api.service.ICityService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -79,37 +72,9 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
     }
 
     @Override
-    public ResultVo<TreeCityVo> getTree(TreeCityDto paramsDto) {
-
-        getTree(paramsDto.getStartLevel(), paramsDto.getEndLevel());
-
-
-
-/*        List<ProvinceCityTreeVo> ptvos = new ArrayList<>();
-    public ResultVo provinceCityTree() {
-        List<CityTreeVo> ptvos = new ArrayList<>();
-        try{
-            //查询所有省/直辖市
-            List<CityTreeVo> provinceList = cityDao.getAllByLevel(CityLevelEnum.PROVINCE_LEVEL.getLevel());
-            if(!provinceList.isEmpty() && !CollectionUtils.isEmpty(provinceList)){
-                for(CityTreeVo vo : provinceList){
-                    CityTreeVo ptv = new CityTreeVo();
-                    ptv.setParentCode(vo.getParentCode());
-                    ptv.setCode(vo.getCode());
-                    ptv.setName(vo.getName());
-                    List<CityTreeVo> cityList = cityDao.getAllCity(vo.getCode());
-                    if(!cityList.isEmpty() && CollectionUtils.isEmpty(cityList)){
-                        ptv.setCityVos(cityList);
-                    }
-                    ptvos.add(ptv);
-                }
-                return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),ptvos);
-            }
-        }catch (Exception e){
-            log.info("查询省市树形结构出现异常");
-            throw new CommonException(e.getMessage());
-        }
-        return BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg(),ptvos);*/
+    public ResultVo<List<TreeCityVo>> getTree(TreeCityDto paramsDto) {
+        List<TreeCityVo> tree = getTree(paramsDto.getStartLevel(), paramsDto.getEndLevel());
+        return BaseResultUtil.success(tree);
     }
 
     private List<TreeCityVo> getTree(int startLevel, int endLevel) {
