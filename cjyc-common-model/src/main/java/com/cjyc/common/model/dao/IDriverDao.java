@@ -74,4 +74,6 @@ public interface IDriverDao extends BaseMapper<Driver> {
      * @return
      */
     List<BaseDriverVo> getDriversByIds(List<Long> driverIds);
+
+    Driver findByUserId(Long userId);
 }

@@ -83,6 +83,11 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
         return BaseResultUtil.success(tree);
     }
 
+    @Override
+    public ResultVo provinceCityTree() {
+        return null;
+    }
+
     private List<TreeCityVo> getTree(int startLevel, int endLevel) {
         if (startLevel <= -1 || startLevel > 5 || startLevel >= endLevel) {
             return null;
@@ -99,11 +104,8 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
             } else {
                 treeCityVo.setNext(getTree(startLevel, endLevel));
             }
-        }catch (Exception e){
-            log.info("查询省市树形结构出现异常");
-            throw new CommonException(e.getMessage());
         }
-        return BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg(),ptvos);
+        return list;
     }
 
     /**

@@ -53,6 +53,11 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
     }
 
     @Override
+    public List<Store> getByAreaCode(String areaCode) {
+        return null;
+    }
+
+    @Override
     public ResultVo queryPage(StoreQueryDto storeQueryDto) {
         List<Store> list = getStoreList(storeQueryDto);
         PageInfo<Store> pageInfo = new PageInfo<>(list);

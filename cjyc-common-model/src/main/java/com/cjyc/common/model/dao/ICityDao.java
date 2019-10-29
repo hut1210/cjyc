@@ -79,7 +79,7 @@ public interface ICityDao extends BaseMapper<City> {
      * @param code
      * @return
      */
-    List<HashMap<String,String>> getAllCity(@ApiParam("code") String code);
+    List<CityTreeVo> getAllCity(@ApiParam("code") String code);
 
     List<TreeCityVo> findListByLevel(Integer level);
 }
