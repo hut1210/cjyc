@@ -9,18 +9,24 @@ import com.cjyc.common.model.dao.ICityDao;
 import com.cjyc.common.model.dto.salesman.city.CityPageDto;
 import com.cjyc.common.model.dto.web.city.TreeCityDto;
 import com.cjyc.common.model.entity.City;
+import com.cjyc.common.model.enums.CityLevelEnum;
+import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.city.CityTreeVo;
 import com.cjyc.common.model.vo.web.city.TreeCityVo;
+import com.cjyc.web.api.exception.CommonException;
 import com.cjyc.web.api.service.ICityService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -40,13 +46,13 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
 
     @Autowired
     private StringRedisUtil redisUtil;
-    
+
     @Resource
     private ICityDao cityDao;
 
     @Override
     public City findById(String cityCode) {
-        return cityDao.selectById(cityCode);
+        return cityDao.findById(cityCode);
     }
 
     @Override
@@ -78,23 +84,40 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
     }
 
     private List<TreeCityVo> getTree(int startLevel, int endLevel) {
-        if (startLevel <= -1 || startLevel > 5 || startLevel > endLevel) {
+        if (startLevel <= -1 || startLevel > 5 || startLevel >= endLevel) {
             return null;
         }
         if (endLevel > 5) {
             return null;
         }
-        //List<TreeCityVo> list1 = cityDao.findTree(startLevel, endLevel);
+
         List<TreeCityVo> list = cityDao.findListByLevel(startLevel);
-        int newStartLevel  = startLevel + 1;
+        startLevel += 1;
         for (TreeCityVo treeCityVo : list) {
             if (startLevel >= endLevel) {
-                cityDao.findListByLevel(newStartLevel);
+                cityDao.findListByLevel(startLevel);
             } else {
-                treeCityVo.setNext(getTree(newStartLevel, endLevel));
+                treeCityVo.setNext(getTree(startLevel, endLevel));
+            }
+        }catch (Exception e){
+            log.info("查询省市树形结构出现异常");
+            throw new CommonException(e.getMessage());
+        }
+        return BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg(),ptvos);
+    }
+
+    /**
+     * 获取所有
+     * @param citys
+     */
+    private void recursionCity(List<CityTreeVo> citys) {
+        List<CityTreeVo> retList = null;
+        for (CityTreeVo c : citys) {
+            retList = cityDao.getAllCity(c.getCode());
+            if (!retList.isEmpty() && !CollectionUtils.isEmpty(retList)) {
+                c.setCityVos(retList);
             }
         }
-        return list;
     }
 
 }

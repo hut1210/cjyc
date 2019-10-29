@@ -1,33 +1,33 @@
 package com.cjyc.web.api.service.impl;
 
-import com.cjyc.common.model.constant.TimePatternConstant;
-import com.cjyc.common.model.dao.*;
-import com.cjyc.common.model.dto.web.driver.DriverDto;
-import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
-import com.cjyc.common.model.dto.web.user.DriverListDto;
-import com.cjyc.common.model.entity.*;
-import com.cjyc.common.model.enums.FlagEnum;
-import com.cjyc.common.model.enums.PayModeEnum;
-import com.cjyc.common.model.enums.transport.*;
-import com.cjyc.common.model.util.LocalDateTimeUtil;
-import com.cjyc.common.model.vo.PageVo;
-import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.driver.DriverVo;
-import com.cjyc.common.model.vo.web.driver.ShowDriverVo;
-import com.cjyc.common.model.vo.web.user.DriverListVo;
-import com.cjyc.web.api.exception.CommonException;
-import com.cjyc.web.api.service.ICarrierCityConService;
-import com.cjyc.web.api.service.IDriverService;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
+        import com.cjyc.common.model.constant.TimePatternConstant;
+        import com.cjyc.common.model.dao.*;
+        import com.cjyc.common.model.dto.web.driver.DriverDto;
+        import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
+        import com.cjyc.common.model.dto.web.user.DriverListDto;
+        import com.cjyc.common.model.entity.*;
+        import com.cjyc.common.model.enums.FlagEnum;
+        import com.cjyc.common.model.enums.PayModeEnum;
+        import com.cjyc.common.model.enums.transport.*;
+        import com.cjyc.common.model.util.LocalDateTimeUtil;
+        import com.cjyc.common.model.vo.PageVo;
+        import com.cjyc.common.model.vo.ResultVo;
+        import com.cjyc.common.model.vo.web.driver.DriverVo;
+        import com.cjyc.common.model.vo.web.driver.ShowDriverVo;
+        import com.cjyc.common.model.vo.web.user.DriverListVo;
+        import com.cjyc.web.api.exception.CommonException;
+        import com.cjyc.web.api.service.ICarrierCityConService;
+        import com.cjyc.web.api.service.IDriverService;
+        import com.github.pagehelper.PageHelper;
+        import com.github.pagehelper.PageInfo;
+        import lombok.extern.slf4j.Slf4j;
+        import org.springframework.stereotype.Service;
+        import org.springframework.transaction.annotation.Propagation;
+        import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
-import java.time.LocalDateTime;
-import java.util.List;
+        import javax.annotation.Resource;
+        import java.time.LocalDateTime;
+        import java.util.List;
 
 @Service
 @Slf4j

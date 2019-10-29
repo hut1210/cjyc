@@ -25,8 +25,9 @@ import java.util.Map;
 @Repository
 public interface ICityDao extends BaseMapper<City> {
 
+    City findById(@Param("cityCode") String cityCode);
 
-    //List<City> findList();
+    List<City> findList();
 
     List<City> findChildList(String code);
 
@@ -71,17 +72,15 @@ public interface ICityDao extends BaseMapper<City> {
      * 获取所有省/直辖市
      * @return
      */
-    //List<HashMap<String,String>> getAllProvince();
+    List<HashMap<String,String>> getAllProvince();
 
     /**
      * 获取下一级所有城市
      * @param code
      * @return
      */
-   List<CityTreeVo> getAllCity(@ApiParam("code") String code);
+    List<HashMap<String,String>> getAllCity(@ApiParam("code") String code);
 
     List<TreeCityVo> findListByLevel(Integer level);
-
-    List<TreeCityVo> findTree(int startLevel, int endLevel);
 }
 

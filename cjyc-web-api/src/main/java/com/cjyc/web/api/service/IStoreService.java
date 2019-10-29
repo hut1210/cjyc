@@ -1,8 +1,15 @@
 package com.cjyc.web.api.service;
 
+import com.cjyc.common.model.dto.web.store.StoreAddDto;
+import com.cjyc.common.model.dto.web.store.StoreQueryDto;
+import com.cjyc.common.model.dto.web.store.StoreUpdateDto;
 import com.cjyc.common.model.entity.Store;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.cjyc.common.model.vo.ResultVo;
+import com.github.pagehelper.PageInfo;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -15,5 +22,33 @@ import java.util.List;
  */
 public interface IStoreService extends IService<Store> {
 
-    List<Store> getByCityCode(String cityCode);
+    List<Store> getByAreaCode(String areaCode);
+
+    /**
+     * 分页查询
+     * @param storeQueryDto
+     * @return
+     */
+    ResultVo queryPage(StoreQueryDto storeQueryDto);
+
+    /**
+     * 新增
+     * @param storeAddDto
+     * @return
+     */
+    boolean add(StoreAddDto storeAddDto);
+
+    /**
+     * 修改
+     * @param storeUpdateDto
+     * @return
+     */
+    boolean modify(StoreUpdateDto storeUpdateDto);
+
+    /**
+     * 导出Excel
+     * @param request
+     * @param response
+     */
+    void exportExcel(HttpServletRequest request, HttpServletResponse response);
 }

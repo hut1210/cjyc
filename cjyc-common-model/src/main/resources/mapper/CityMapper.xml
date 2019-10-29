@@ -108,7 +108,7 @@
     </select>
 
     <!--获取所有省/直辖市 -->
-    <!--<select id="getAllByLevel" resultType="com.cjyc.common.model.vo.web.city.CityTreeVo" parameterType="java.lang.Integer">
+    <select id="getAllByLevel" resultType="com.cjyc.common.model.vo.web.city.CityTreeVo" parameterType="java.lang.Integer">
          SELECT NAME AS NAME,
             CODE AS CODE,
             parent_code AS parentCode
@@ -116,7 +116,7 @@
             s_city
         WHERE
             LEVEL = #{level}
-    </select>-->
+    </select>
 
     <!--获取所有下一级城市 -->
     <select id="getAllCity" resultType="com.cjyc.common.model.vo.web.city.CityTreeVo" parameterType="java.lang.String">
@@ -134,26 +134,6 @@
          `name`,`code`,level
         from s_city
         where level = #{level}
-    </select>
-
-
-    <resultMap id="TreeMap" type="com.cjyc.common.model.vo.web.city.TreeCityVo">
-        <id column="code" property="code" />
-        <result column="name" property="name" />
-        <result column="level" property="level" />
-        <collection property="next" ofType="com.cjyc.common.model.vo.web.city.TreeCityVo" select="findNext" column="code">
-            <id column="code" property="code" />
-            <result column="name" property="name" />
-            <result column="level" property="level" />
-        </collection>
-
-    </resultMap>
-
-    <select id="findNext" parameterType="map" resultType="com.cjyc.common.model.vo.web.city.TreeCityVo">
-        select
-        code,name,level
-        from s_city
-        where parent_code = #{code}
     </select>
 
 </mapper>

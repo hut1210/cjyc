@@ -13,9 +13,9 @@ import java.io.Serializable;
 @Data
 public class CarSeriesExportExcel implements Serializable {
     private static final long serialVersionUID = 5168864974104366624L;
-    @Excel(name = "品牌" ,orderNum = "0",width = 20)
+    @Excel(name = "品牌" ,orderNum = "0",width = 15)
     private String brand;
 
-    @Excel(name = "型号" ,orderNum = "1",width = 25)
+    @Excel(name = "型号" ,orderNum = "1",width = 15)
     private String model;
 }
