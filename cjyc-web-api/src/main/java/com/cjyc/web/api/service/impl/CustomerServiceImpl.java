@@ -358,7 +358,7 @@ public class CustomerServiceImpl implements ICustomerService{
                     bcb.setCreateTime(createTime);
                     j = bankCardBindDao.insert(bcb);
                 }
-            }else if(dto.getFlag() == FlagEnum.DUPDTATE.code){
+            }else if(dto.getFlag() == FlagEnum.UPDTATE.code){
                 //更新
                 customer = customerDao.selectById(dto.getId());
                 encapCustomer(customer,dto);

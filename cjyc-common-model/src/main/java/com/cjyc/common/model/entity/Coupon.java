@@ -17,7 +17,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-28
+ * @since 2019-10-29
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -74,7 +74,7 @@ public class Coupon implements Serializable {
     @ApiModelProperty(value = "优惠券有效结束时间")
     private Long endPeriodDate;
 
-    @ApiModelProperty(value = "优惠券审核状态 0：待审核  3：审核通过  5：审核不通过  7：已作废")
+    @ApiModelProperty(value = "优惠券审核状态： 0待审核，2已审核，4取消，7已驳回，9已停用（CommonStateEnum）")
     private Integer state;
 
     @ApiModelProperty(value = "创建时间")

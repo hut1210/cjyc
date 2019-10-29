@@ -108,13 +108,26 @@
     </select>
 
     <!--获取所有省/直辖市 -->
-    <select id="getAllProvince" resultType="java.util.HashMap">
-         select name,code from s_city where level = 1
+    <select id="getAllByLevel" resultType="com.cjyc.common.model.vo.web.city.CityTreeVo" parameterType="java.lang.Integer">
+         SELECT NAME AS NAME,
+            CODE AS CODE,
+            parent_code AS parentCode
+        FROM
+            s_city
+            where level = #{level}
     </select>
 
     <!--获取所有下一级城市 -->
-    <select id="getAllCity" resultType="java.util.HashMap" parameterType="java.lang.String">
-        select name,code from s_city where parent_code = #{code}
+    <select id="getAllCity" resultType="com.cjyc.common.model.vo.web.city.CityTreeVo" parameterType="java.lang.String">
+        SELECT
+            NAME AS NAME,
+            CODE AS CODE,
+            parent_code AS parentCode
+        FROM
+            s_city
+        WHERE
+            parent_code = #{code}
     </select>
+
 
 </mapper>

@@ -12,17 +12,17 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 韵车后台管理员表
+ * 业务员表
  * </p>
  *
  * @author JPG
- * @since 2019-10-24
+ * @since 2019-10-29
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("b_admin")
-@ApiModel(value="Admin对象", description="韵车后台管理员表")
+@ApiModel(value="Admin对象", description="业务员表")
 public class Admin implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -49,7 +49,7 @@ public class Admin implements Serializable {
     @ApiModelProperty(value = "职位：1提送车业务员，2业务员，3调度员，4客服，81财务")
     private Integer type;
 
-    @ApiModelProperty(value = "状态：0审核中，2在职，4取消审核，7已驳回，9已离职")
+    @ApiModelProperty(value = "状态：0待审核，2已审核，4取消，7已驳回，9已停用（CommonStateEnum）")
     private Integer state;
 
     @ApiModelProperty(value = "身份证号")

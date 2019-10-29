@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-28
+ * @since 2019-10-29
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -40,7 +40,7 @@ public class CarSeries implements Serializable {
     private String model;
 
     @ApiModelProperty(value = "分类： 1微型车，2小型车，3中型车，4大型车， 5其他车")
-    private Boolean type;
+    private Integer type;
 
     @ApiModelProperty(value = "拼音首字母")
     private String pinInitial;

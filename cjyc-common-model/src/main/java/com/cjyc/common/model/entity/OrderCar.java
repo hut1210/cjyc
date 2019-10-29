@@ -17,7 +17,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-24
+ * @since 2019-10-29
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -71,13 +71,13 @@ public class OrderCar implements Serializable {
     @ApiModelProperty(value = "状态：0待路由，5待提车调度，10待提车，15提车中（待交车），20待自送交车，25待干线调度<循环>（提车入库），35待干线提车<循环>，40干线中<循环>（待干线交车），45待配送调度（干线入库），50待配送提车，55配送中（待配送交车），70待自取提车，100已签收")
     private Integer state;
 
-    @ApiModelProperty(value = "提车状态：1待调度，2待装车，3运输中，7自送中，9已入库")
+    @ApiModelProperty(value = "提车状态(调度状态)：1待调度，2待装车，3运输中，7自送中，9已交付，10物流上门")
     private Integer pickState;
 
-    @ApiModelProperty(value = "干线状态：1待调度，2待装车，3运输中，9已入库")
+    @ApiModelProperty(value = "干线状态(调度状态)：1待调度，2待装车，3运输中，9已交付，10已完结")
     private Integer trunkState;
 
-    @ApiModelProperty(value = "送车状态：1待调度，2待装车，3运输中，7自提中，9已签收")
+    @ApiModelProperty(value = "送车状态(调度状态)：1待调度，2待装车，3运输中，7自提中，9已交付，10物流上门")
     private Integer backState;
 
     @ApiModelProperty(value = "车辆描述")

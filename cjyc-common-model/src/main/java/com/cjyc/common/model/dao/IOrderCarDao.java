@@ -111,7 +111,7 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
 
     List<ChangePriceOrderCarDto> findChangePriceDtoByOrderId(Long orderId);
 
-    List<OrderCar> findListSelective(ListOrderCarDto paramsDto);
+    List<OrderCar> findListSelective(@Param("paramsDto") ListOrderCarDto paramsDto);
 
     List<OrderCar> findListByWaybillId(Long waybillId);
 }

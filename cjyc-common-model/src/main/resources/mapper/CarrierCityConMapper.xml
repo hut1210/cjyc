@@ -6,17 +6,12 @@
     <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.CarrierCityCon">
         <id column="id" property="id" />
         <result column="carrier_id" property="carrierId" />
-        <result column="country" property="country" />
-        <result column="large_area" property="largeArea" />
-        <result column="province" property="province" />
-        <result column="city" property="city" />
-        <result column="area" property="area" />
-        <result column="area_code" property="areaCode" />
+        <result column="city_code" property="cityCode" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, carrier_id, country, large_area, province, city, area, area_code
+        id, carrier_id, city_code
     </sql>
 
     <!-- 根据司机id查询该承运商绑定的业务编码 -->
@@ -44,5 +39,16 @@
     <delete id="deleteByCarrierId" parameterType="java.lang.Long">
         delete from d_carrier_city_con where carrier_id = #{carrierId}
     </delete>
+
+    <!-- 根据承运商id获取业务范围 -->
+    <select id="getMapCodes" resultType="java.util.Map" parameterType="java.lang.Long">
+          SELECT
+            c.NAME,
+            c.CODE
+        FROM
+            s_city c
+            JOIN d_carrier_city_con con ON c.CODE = con.city_code
+        where  con.carrier_id = #{carrierId}
+    </select>
 
 </mapper>

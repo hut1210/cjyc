@@ -4,9 +4,11 @@ import com.cjyc.common.model.dto.BasePageDto;
 import com.cjyc.common.model.dto.web.dictionary.DictionaryDto;
 import com.cjyc.common.model.dto.web.dictionary.SelectDictionaryDto;
 import com.cjyc.common.model.entity.Dictionary;
+import com.cjyc.common.model.vo.ResultVo;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  *  @author: zj
@@ -56,4 +58,6 @@ public interface IDictionaryService {
      * @return
      */
     PageInfo<Dictionary> findDictionary(SelectDictionaryDto dto);
+
+    ResultVo<Map<String, Object>> getInsurance(int valuation);
 }

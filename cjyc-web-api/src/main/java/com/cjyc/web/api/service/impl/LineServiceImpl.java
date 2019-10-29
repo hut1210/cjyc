@@ -140,7 +140,7 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
                 line.setCreateTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
                 line.setCreateUserId(dto.getUserId());
                 no = lineDao.insert(line);
-            }else if(dto.getFlag() == FlagEnum.DUPDTATE.code){
+            }else if(dto.getFlag() == FlagEnum.UPDTATE.code){
                 //更新
                 line = lineDao.selectById(dto.getId());
                 if(line != null){

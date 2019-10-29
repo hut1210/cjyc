@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.dto.salesman.city.CityPageDto;
 import com.cjyc.common.model.entity.City;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.dto.web.city.TreeCityDto;
+import com.cjyc.common.model.vo.web.city.TreeCityVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -50,6 +52,9 @@ public interface ICityService extends IService<City> {
     /**
      * 省城市树形结构
      * @return
+     * @param treeCityDto
      */
+    ResultVo<List<TreeCityVo>> getTree(TreeCityDto treeCityDto);
+
     ResultVo provinceCityTree();
 }

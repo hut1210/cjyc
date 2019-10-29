@@ -4,6 +4,9 @@ import com.cjyc.common.model.entity.CarrierCityCon;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.LinkedHashMap;
+import java.util.List;
+
 /**
  * <p>
  * 司机与区县绑定 Mapper 接口
@@ -34,5 +37,12 @@ public interface ICarrierCityConDao extends BaseMapper<CarrierCityCon> {
      * @return
      */
     int deleteByCarrierId(@Param("carrierId") Long carrierId);
+
+    /**
+     * 根据承运商id获取承运商业务范围
+     * @param carrierId
+     * @return
+     */
+    List<LinkedHashMap> getMapCodes(@Param("carrierId") Long carrierId);
 
 }

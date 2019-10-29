@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-24
+ * @since 2019-10-29
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -37,7 +37,7 @@ public class CarrierDriverCon implements Serializable {
     @ApiModelProperty(value = "司机ID")
     private Long driverId;
 
-    @ApiModelProperty(value = "角色：0普通司机，1管理员，2超级管理员")
+    @ApiModelProperty(value = "角色：0个人司机，1下属司机，2管理员，3超级管理员")
     private Integer role;
 
 

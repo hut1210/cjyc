@@ -23,4 +23,12 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
     int saveBatch(@Param("list") List<WaybillCar> list);
 
     List<WaybillCar> findVoByIds(@Param("waybillCarIdList") List<Long> waybillCarIdList);
+
+    List<WaybillCar> findListByWaybillId(Long waybillId);
+
+    int updateForCancelDispatch(@Param("orderCarId") Long orderCarId, @Param("endStoreId") Long endStoreId, @Param("state") int state);
+
+    List<WaybillCar> findNextDispatch(@Param("orderCarId") Long orderCarId, @Param("endStoreId")Long endStoreId);
+
+    WaybillCar findByTaskCarId(Long taskCarId);
 }

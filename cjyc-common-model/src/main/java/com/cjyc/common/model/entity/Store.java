@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-24
+ * @since 2019-10-29
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -36,6 +36,12 @@ public class Store implements Serializable {
 
     @ApiModelProperty(value = "业务中心名称")
     private String name;
+
+    @ApiModelProperty(value = "归属大区")
+    private String region;
+
+    @ApiModelProperty(value = "归属大区编码")
+    private String regionCode;
 
     @ApiModelProperty(value = "省")
     private String province;
@@ -64,20 +70,20 @@ public class Store implements Serializable {
     @ApiModelProperty(value = "业务中心纬度")
     private String lat;
 
-    @ApiModelProperty(value = "状态：0待审核，2已开通，4已取消，7已驳回，9已停用")
+    @ApiModelProperty(value = "状态：0待审核，2已开通，4取消，7已驳回，9已停用（CommonStateEnum）")
     private Integer state;
 
     @ApiModelProperty(value = "创建人ID")
     private Long createUserId;
 
     @ApiModelProperty(value = "创建时间")
-    private String createTime;
+    private Long createTime;
 
     @ApiModelProperty(value = "更新人ID")
     private Long updateUserId;
 
     @ApiModelProperty(value = "更新时间")
-    private String updateTime;
+    private Long updateTime;
 
     @ApiModelProperty(value = "备注")
     private String remark;

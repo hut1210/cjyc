@@ -86,7 +86,7 @@ logging:
   level:
     #root: debug
     com.cjyc.web.api: debug
-    com.cjyc.common.model.dao: debug
+    com.cjyc.common.model: debug
 
 ##-----------------------------------cjyc-------------------------------------------
 cjkj:

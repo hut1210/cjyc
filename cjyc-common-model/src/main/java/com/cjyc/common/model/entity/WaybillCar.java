@@ -17,7 +17,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-26
+ * @since 2019-10-29
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -103,7 +103,7 @@ public class WaybillCar implements Serializable {
     @ApiModelProperty(value = "线路ID")
     private Long lineId;
 
-    @ApiModelProperty(value = "状态：0待指派，2已指派，5待装车，7已装车，9已卸车，90确认交车, 100确认收车")
+    @ApiModelProperty(value = "状态：0待指派，2已指派，5待装车，7已装车，9已卸车，90确认交车, 100确认收车, 113取消，114作废,")
     private Integer state;
 
     @ApiModelProperty(value = "预计提车日期")

@@ -81,14 +81,14 @@
 
     <!-- 根据承运商id条件查询车辆信息 -->
     <select id="getBaseVehicleByTerm" resultType="com.cjyc.common.model.vo.web.carrier.BaseVehicleVo"
-                parameterType="com.cjyc.common.model.dto.web.carrier.SeleVehicleDto">
+                parameterType="com.cjyc.common.model.dto.web.carrier.SeleVehicleDriverDto">
         SELECT
             veh.id AS id,
             veh.plate_no AS plateNo,
             veh.default_carry_num AS defaultCarryNum,
             dri.real_name AS realName,
             dri.phone AS phone,
-            ( CASE dri.MODE WHEN 0 THEN '代驾' WHEN 1 THEN '干线司机' WHEN 2 THEN '拖车司机' WHEN 4 THEN '全支持' END ) AS MODE
+            dri.MODE AS MODE
         FROM
             d_vehicle veh
             JOIN d_driver_vehicle_con con ON con.vehicle_id = veh.id

@@ -102,6 +102,7 @@
 
     </insert>
 
+
     <select id="getWayBillCarrier" parameterType="com.cjyc.common.model.vo.web.WayBillCarrierVo"
             resultType="com.cjyc.common.model.dto.web.WayBillCarrierDto">
         select ww.waybill_no as waybillNo,ww.state as state,ww.type as type,woc.no as carNo,woc.vin as vin,woc.brand as
@@ -163,4 +164,33 @@
             </foreach>
         </where>
     </select>
+    <select id="findListByWaybillId" resultType="com.cjyc.common.model.entity.WaybillCar">
+        select
+        <include refid="Base_Column_List"/>
+        from w_waybill_car
+        where waybill_id = #{waybillId}
+    </select>
+    <select id="findNextDispatch" resultType="com.cjyc.common.model.entity.WaybillCar">
+        select
+        <include refid="Base_Column_List"/>
+        where order_car_id = #{orderCarId}
+        and state &lt; 100
+        and start_store_id = #{endStoreId}
+    </select>
+    <update id="updateForCancelDispatch">
+        update w_waybill_car
+        set state = #{state}
+        where order_car_id = #{orderCarId}
+        and state &lt; 100
+        and start_store_id = #{endStoreId}
+    </update>
+
+    <select id="findByTaskCarId" resultType="com.cjyc.common.model.entity.WaybillCar">
+        select
+        wc.*
+        from w_waybill_car wc
+        join w_task_car tc on tc.waybill_car_id = wc.id
+        where tc.id = #{taskCarId}
+    </select>
+
 </mapper>

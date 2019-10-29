@@ -5,14 +5,14 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.DriverCarCount">
         <id column="id" property="id" />
-        <result column="driver_user_id" property="driverUserId" />
+        <result column="driver_id" property="driverId" />
         <result column="car_num" property="carNum" />
         <result column="total_income" property="totalIncome" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, driver_user_id, car_num, total_income
+        id, driver_id, car_num, total_income
     </sql>
 
 </mapper>

@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-24
+ * @since 2019-10-28
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -34,23 +34,8 @@ public class CarrierCityCon implements Serializable {
     @ApiModelProperty(value = "承运商ID")
     private Long carrierId;
 
-    @ApiModelProperty(value = "全国code")
-    private String country;
-
-    @ApiModelProperty(value = "大区code")
-    private String largeArea;
-
-    @ApiModelProperty(value = "省/直辖市code")
-    private String province;
-
-    @ApiModelProperty(value = "城市code")
-    private String city;
-
-    @ApiModelProperty(value = "区县编码")
-    private String area;
-
     @ApiModelProperty(value = "区县编码 0:全国")
-    private String areaCode;
+    private String cityCode;
 
 
 }

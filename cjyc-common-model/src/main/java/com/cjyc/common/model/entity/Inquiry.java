@@ -1,9 +1,9 @@
 package com.cjyc.common.model.entity;
 
 import java.math.BigDecimal;
-
-import com.baomidou.mybatisplus.annotation.*;
-
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -13,11 +13,11 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- *
+ * 
  * </p>
  *
  * @author JPG
- * @since 2019-10-25
+ * @since 2019-10-29
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -75,7 +75,6 @@ public class Inquiry implements Serializable {
     private String handleUserName;
 
     @ApiModelProperty(value = "工单内容")
-    @TableField(strategy = FieldStrategy.IGNORED)
     private String jobContent;
 
 

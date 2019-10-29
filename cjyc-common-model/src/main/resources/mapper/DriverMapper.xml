@@ -41,6 +41,7 @@
     <sql id="Base_Column_List">
         id, user_id, name, phone, emergency_phone, type, mode, identity, id_card, real_name, age, sex, address, id_card_front_img, id_card_back_img, driver_licence_front_img, driver_licence_back_img, driver_licence_expire, travel_licence_front_img, travel_licence_back_img, taxi_licence_front_img, taxi_licence_back_img, qualifi_cert_front_img, qualifi_cert_back_img, remark, state, deposit_pay_state, business_state, source, create_user_id, create_name
     </sql>
+
     <select id="findList" resultType="com.cjyc.common.model.vo.web.user.DriverListVo">
         select
         c.`name` as `carrierName`,
@@ -111,31 +112,15 @@
         d.travel_licence_front_img AS travelLicenceFrontImg,
         d.taxi_licence_front_img AS taxiLicenceFrontImg,
         d.qualifi_cert_front_img AS qualifiCertFrontImg,
-        ( CASE d.MODE WHEN 0 THEN '代驾' WHEN 1 THEN '干线司机' WHEN 2 THEN '拖车司机' WHEN 4 THEN '全支持' END ) AS MODE,
-        (
-    CASE
-        d.source
-        WHEN 1 THEN
-        'App注册'
-        WHEN 2 THEN
-        'Applet注册'
-        WHEN 3 THEN
-        '业务员创建'
-        WHEN 4 THEN
-        '承运商管理员创建'
-        WHEN 11 THEN
-        '掌控接口'
-        WHEN 12 THEN
-        'otm接口'
-    END
-        ) AS source,
-        ( CASE d.business_state WHEN 0 THEN '营运中' WHEN 1 THEN '停运中' END ) AS businessState,
-        ( CASE d.state WHEN 0 THEN '待审核' WHEN 2 THEN '审核通过' WHEN 4 THEN '已驳回' WHEN 7 THEN '已冻结' END ) AS state,
+        d.MODE AS MODE,
+        d.source AS source,
+        d.business_state AS businessState,
+        d.state AS state,
         v.plate_no AS plateNo,
         card.card_name AS cardName,
         card.bank_name AS bankName,
         card.card_no AS cardNo,
-        ( CASE carr.settle_type WHEN 1 THEN '时付' WHEN 2 THEN '账期' END ) AS settleType,
+        carr.settle_type AS settleType,
         cou.car_num AS carNum,
         cou.total_income AS totalIncome
     FROM
@@ -192,7 +177,7 @@
             bank.card_no AS cardNo,
             veh.plate_no AS plateNo,
             veh.default_carry_num AS defaultCarryNum,
-            ( CASE d.MODE WHEN 0 THEN '代驾' WHEN 1 THEN '干线司机' WHEN 2 THEN '拖车司机' WHEN 4 THEN '全支持' END ) AS MODE
+            d.MODE  AS MODE
         FROM
             d_driver d
             JOIN d_driver_vehicle_con con ON con.driver_id = d.id
@@ -212,6 +197,49 @@
             JOIN d_carrier_driver_con cdc ON cdc.driver_id = dri.id
             JOIN d_carrier carr ON carr.id = cdc.carrier_id
         WHERE carr.id = #{carrierId}
+    </select>
+    <select id="findByUserId" resultType="com.cjyc.common.model.entity.Driver">
+        select
+        <include refid="Base_Column_List"/>
+        from d_driver
+        where user_id = #{userId}
+
+    </select>
+
+    <!--根据司机id获取承运商id-->
+    <select id="getCarrIdByDriverId" resultType="java.lang.Long" parameterType="java.lang.Long">
+      SELECT
+            carr.id
+        FROM
+            d_carrier carr
+            JOIN d_carrier_driver_con cdc ON cdc.carrier_id = carr.id
+            JOIN d_driver driver ON cdc.driver_id = driver.id
+        WHERE
+            driver.id = #{driverId}
+    </select>
+
+    <!--根据司机ids获取司机信息-->
+    <select id="getDriversByIds" resultType="com.cjyc.common.model.vo.web.carrier.BaseDriverVo">
+          SELECT
+            dri.id AS id,
+            dri.realName AS realName,
+            dri.phone AS phone,
+            dri.MODE AS MODE,
+            dri.business_state AS businessState,
+            dri.state AS state,
+            dri.identity AS identity,
+            count.car_num AS carNum,
+            veh.plate_no AS plateNo,
+            veh.default_carry_num AS defaultCarryNum
+        FROM
+            d_driver dri
+            JOIN d_driver_vehicle_con dvc ON dri.id = dvc.driver_id
+            JOIN d_vehicle veh ON dvc.vehicle_id = veh.id
+            JOIN d_driver_car_count count ON dri.id = count.driver_id
+        WHERE dri.id in
+        <foreach collection="list" item="driverId" index="index" open="(" close=")" separator=",">
+            #{driverId}
+        </foreach>
     </select>
 
 </mapper>
