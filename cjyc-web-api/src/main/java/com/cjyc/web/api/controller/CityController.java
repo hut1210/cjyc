@@ -7,6 +7,8 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.city.ProvinceCityTreeVo;
+import com.cjyc.common.model.dto.web.city.TreeCityDto;
+import com.cjyc.common.model.vo.web.city.TreeCityVo;
 import com.cjyc.web.api.service.ICityService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -66,8 +68,8 @@ public class CityController {
     }
 
     @ApiOperation(value = "省城市树形结构", notes = "")
-    @PostMapping(value = "/provinceCityTree")
-    public ResultVo<List<ProvinceCityTreeVo>> provinceCityTree() {
-        return cityService.provinceCityTree();
+    @PostMapping(value = "/tree")
+    public ResultVo<List<TreeCityVo>> tree(@RequestBody TreeCityDto treeCityDto) {
+        return cityService.getTree(treeCityDto);
     }
 }

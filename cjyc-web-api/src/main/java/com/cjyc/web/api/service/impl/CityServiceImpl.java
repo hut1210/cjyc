@@ -13,6 +13,8 @@ import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.city.ProvinceCityTreeVo;
+import com.cjyc.common.model.dto.web.city.TreeCityDto;
+import com.cjyc.common.model.vo.web.city.TreeCityVo;
 import com.cjyc.web.api.service.ICityService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,10 +41,9 @@ import java.util.Map;
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
 public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICityService {
 
-
     @Autowired
     private StringRedisUtil redisUtil;
-    
+
     @Resource
     private ICityDao cityDao;
 
@@ -62,7 +63,7 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
         queryWarrper.eq("level", cityPageDto.getLevel());
         Page<City> page = new Page<>(cityPageDto.getCurrentPage(), cityPageDto.getPageSize());
         IPage<City> iPage = cityDao.selectPage(page, queryWarrper);
-        if(cityPageDto.getCurrentPage() > iPage.getPages()){
+        if (cityPageDto.getCurrentPage() > iPage.getPages()) {
             iPage.setRecords(null);
         }
         return iPage;
@@ -74,8 +75,13 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
     }
 
     @Override
-    public ResultVo provinceCityTree() {
-        List<ProvinceCityTreeVo> ptvos = new ArrayList<>();
+    public ResultVo<TreeCityVo> getTree(TreeCityDto paramsDto) {
+
+        getTree(paramsDto.getStartLevel(), paramsDto.getEndLevel());
+
+
+
+/*        List<ProvinceCityTreeVo> ptvos = new ArrayList<>();
         try{
             //查询所有省/直辖市
             List<HashMap<String,String>> mapList = cityDao.getAllProvince();
@@ -95,7 +101,27 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
         }catch (Exception e){
             log.info("查询省市树形结构出现异常");
         }
-        return BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg(),ptvos);
+        return BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg(),ptvos);*/
+    }
+
+    private List<TreeCityVo> getTree(int startLevel, int endLevel) {
+        if (startLevel <= -1 || startLevel > 5 || startLevel >= endLevel) {
+            return null;
+        }
+        if (endLevel > 5) {
+            return null;
+        }
+
+        List<TreeCityVo> list = cityDao.findListByLevel(startLevel);
+        startLevel += 1;
+        for (TreeCityVo treeCityVo : list) {
+            if (startLevel >= endLevel) {
+                cityDao.findListByLevel(startLevel);
+            } else {
+                treeCityVo.setNext(getTree(startLevel, endLevel));
+            }
+        }
+        return list;
     }
 
 }

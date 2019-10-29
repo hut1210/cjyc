@@ -3,24 +3,24 @@ package com.cjyc.web.api.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.redis.lock.RedisDistributedLock;
 import com.cjkj.common.redis.template.StringRedisUtil;
-import com.cjyc.common.model.dao.IDriverDao;
-import com.cjyc.common.model.dao.ITaskDao;
-import com.cjyc.common.model.dao.IWaybillCarDao;
-import com.cjyc.common.model.dao.IWaybillDao;
+import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.task.AllotTaskDto;
-import com.cjyc.common.model.entity.Driver;
-import com.cjyc.common.model.entity.Task;
-import com.cjyc.common.model.entity.Waybill;
-import com.cjyc.common.model.entity.WaybillCar;
+import com.cjyc.common.model.dto.web.task.LoadTaskDto;
+import com.cjyc.common.model.entity.*;
+import com.cjyc.common.model.enums.SendNoTypeEnum;
+import com.cjyc.common.model.enums.task.TaskStateEnum;
 import com.cjyc.common.model.enums.waybill.WaybillCarStateEnum;
 import com.cjyc.common.model.enums.waybill.WaybillStateEnum;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.web.api.exception.ServerException;
+import com.cjyc.web.api.service.ISendNoService;
 import com.cjyc.web.api.service.ITaskService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -45,13 +45,20 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
     @Resource
     private RedisDistributedLock redisLock;
     @Resource
+    private ISendNoService sendNoService;
+    @Resource
+    private ITaskDao taskDao;
+    @Resource
     private StringRedisUtil redisUtil;
+    @Resource
+    private ITaskCarDao taskCarDao;
+
 
     @Override
-    public ResultVo allot(AllotTaskDto reqDto) {
-        Long waybillId = reqDto.getWaybillId();
-        Long driverId = reqDto.getDriverId();
-        List<Long> waybillCarIdList = reqDto.getWaybillCarIdList();
+    public ResultVo allot(AllotTaskDto paramsDto) {
+        Long waybillId = paramsDto.getWaybillId();
+        Long driverId = paramsDto.getDriverId();
+        List<Long> waybillCarIdList = paramsDto.getWaybillCarIdList();
         Set<String> lockKeySet = new HashSet<>();
         try {
             //验证运单状态
@@ -72,6 +79,22 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                 return BaseResultUtil.fail("司机不在运营中");
             }
 
+            Task task = new Task();
+            task.setNo(sendNoService.getNo(SendNoTypeEnum.TASK));
+            task.setWaybillId(waybill.getId());
+            task.setWaybillNo(waybill.getNo());
+            task.setCarNum(paramsDto.getWaybillCarIdList().size());
+            task.setState(TaskStateEnum.WAIT_ALLOT_CONFIRM.code);
+            task.setDriverId(driver.getId());
+            task.setDriverPhone(driver.getPhone());
+            task.setDriverName(driver.getName());
+            task.setCreateTime(System.currentTimeMillis());
+            task.setCreateUser(paramsDto.getUserName());
+            task.setCreateUserId(paramsDto.getUserId());
+            taskDao.insert(task);
+
+            List<TaskCar> saveTaskCarList = new ArrayList<>();
+            int noCount = 0;
             for (WaybillCar waybillCar : list) {
                 if(waybillCar == null){
                     continue;
@@ -79,19 +102,26 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                 //加锁
                 String lockKey = RedisKeys.getAllotTaskKey(waybillCar.getOrderCarNo());
                 if(!redisLock.lock(lockKey, 20000, 100, 300)){
-                    return BaseResultUtil.fail("当前运单的状态，无法分配任务");
+                    throw new ServerException("当前运单的状态，无法分配任务");
                 }
                 lockKeySet.add(lockKey);
 
                 //验证运单车辆状态
                 if(waybillCar.getState() > WaybillCarStateEnum.WAIT_ALLOT.code){
-                    return BaseResultUtil.fail("当前运单车辆的状态，无法分配任务");
+                    throw new ServerException("当前运单车辆的状态，无法分配任务");
                 }
 
+                TaskCar taskCar = new TaskCar();
+                taskCar.setTaskId(task.getId());
+                taskCar.setWaybillCarId(waybillCar.getId());
+                taskCarDao.insert(taskCar);
+                noCount++;
             }
 
-            Task task = new Task();
-            //task.set
+            if(noCount != task.getCarNum()){
+                task.setCarNum(noCount);
+                taskDao.updateById(task);
+            }
 
         } finally {
             for (String key : lockKeySet) {
@@ -99,5 +129,22 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
             }
         }
         return null;
+    }
+
+    @Override
+    public ResultVo load(LoadTaskDto paramsDto) {
+        Long taskCarId = paramsDto.getTaskCarId();
+        WaybillCar waybillCar = waybillCarDao.findByTaskCarId(taskCarId);
+        if(waybillCar == null){
+            return BaseResultUtil.fail("运单车辆不存在");
+        }
+        if(waybillCar.getState() > WaybillCarStateEnum.LOADED.code){
+            return BaseResultUtil.fail("车辆已经装过车");
+        }
+        waybillCar.setState(WaybillCarStateEnum.LOADED.code);
+        waybillCar.setLoadPhotoImg(paramsDto.getLoadPhotoImg());
+        waybillCar.setLoadTime(System.currentTimeMillis());
+        waybillCarDao.updateById(waybillCar);
+        return BaseResultUtil.success();
     }
 }

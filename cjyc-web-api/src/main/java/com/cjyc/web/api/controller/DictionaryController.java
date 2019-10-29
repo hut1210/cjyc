@@ -13,10 +13,12 @@ import com.cjyc.web.api.service.IDictionaryService;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  *  @author: zj
@@ -28,6 +30,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/dictionary")
 public class DictionaryController {
+
+
 
     @Autowired
     private IDictionaryService dictionaryService;
@@ -78,5 +82,12 @@ public class DictionaryController {
         PageInfo<Dictionary> pageInfo = dictionaryService.findDictionary(dto);
         return BaseResultUtil.getPageVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),pageInfo);
     }
+
+    @ApiOperation(value = "根据估值获取保险费")
+    @PostMapping(value = "/insurance/get/{valuation}")
+    public ResultVo<Map<String, Object>> getInsurance(@ApiParam(value = "估值") @PathVariable int valuation){
+        return dictionaryService.getInsurance(valuation);
+    }
+
 
 }

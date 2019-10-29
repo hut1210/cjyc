@@ -1,6 +1,5 @@
 package com.cjyc.web.api.service.impl;
 
-import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.driver.DriverDto;
 import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
@@ -285,5 +284,9 @@ public class DriverServiceImpl implements IDriverService {
         return bcc;
     }
 
+    @Override
+    public Driver getByUserId(Long userId) {
+        return driverDao.findByUserId(userId);
+    }
 
 }

@@ -57,4 +57,6 @@ public interface IOrderService extends IService<Order> {
     ResultVo replenishInfo(ReplenishOrderDto paramsDto);
 
     ResultVo<PageVo<OrderCar>> carlist(ListOrderCarDto paramsDto);
+
+    ResultVo check(CheckOrderDto reqDto);
 }

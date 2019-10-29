@@ -139,9 +139,9 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
                 waybill.setNo(sendNoService.getNo(SendNoTypeEnum.ORDER));
                 waybill.setType(WaybillTypeEnum.PICK.code);
                 if (paramsDto.getUserId().equals(carrierId)) {
-                    waybill.setDispatchType(WaybillSourceEnum.SELF.code);
+                    waybill.setSource(WaybillSourceEnum.SELF.code);
                 } else {
-                    waybill.setDispatchType(WaybillSourceEnum.MANUAL.code);
+                    waybill.setSource(WaybillSourceEnum.MANUAL.code);
                 }
                 waybill.setCarrierId(carrierId);
                 waybill.setCarNum(1);
@@ -292,9 +292,9 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
                 waybill.setNo(sendNoService.getNo(SendNoTypeEnum.ORDER));
                 waybill.setType(WaybillTypeEnum.PICK.code);
                 if (userId.equals(carrierId)) {
-                    waybill.setDispatchType(WaybillSourceEnum.SELF.code);
+                    waybill.setSource(WaybillSourceEnum.SELF.code);
                 } else {
-                    waybill.setDispatchType(WaybillSourceEnum.MANUAL.code);
+                    waybill.setSource(WaybillSourceEnum.MANUAL.code);
                 }
                 waybill.setGuideLine(dtoList.getGuideLine());
                 waybill.setRecommendLine(dtoList.getRecommendLine());
@@ -461,6 +461,7 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
         waybillDao.updateById(waybill);
         //修改任务主单状态
         taskDao.cancelBywaybillId(TaskStateEnum.F_CANCEL.code, waybill.getId());
+
         //修改车辆状态
         List<OrderCar> list = orderCarDao.findListByWaybillId(waybill.getId());
         if (list == null || list.isEmpty()) {
@@ -470,59 +471,103 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
             if (orderCar == null) {
                 continue;
             }
-            //查询订单是否已经完结
-            Order order = orderDao.selectById(orderCar.getOrderId());
-            if (order == null || order.getState() >= OrderStateEnum.FINISHED.code) {
+            updateOrderCarDispatchState(waybill, orderCar);
+        }
+        //更新车辆下一环节调度单状态
+        List<WaybillCar> waybillCarlist = waybillCarDao.findListByWaybillId(waybill.getId());
+        for (WaybillCar waybillCar : waybillCarlist) {
+            if(waybillCar == null){
                 continue;
             }
-            //修改车辆状态
-            if (waybill.getType() == WaybillTypeEnum.PICK.code) {
-                //订单车辆状态
-                if (orderCar.getState() == OrderCarStateEnum.WAIT_PICK.code) {
-                    orderCar.setState(OrderCarStateEnum.WAIT_PICK_DISPATCH.code);
-                }
-                //订单车辆提车状态
-                orderCar.setPickState(OrderCarLocalStateEnum.WAIT_DISPATCH.code);
-            }
-            if (waybill.getType() == WaybillTypeEnum.BACK.code) {
-                //订单车辆状态
-                if (orderCar.getState() == OrderCarStateEnum.WAIT_BACK.code) {
-                    orderCar.setState(OrderCarStateEnum.WAIT_BACK_DISPATCH.code);
-                }
-                //订单车辆配送状态
-                orderCar.setBackState(OrderCarLocalStateEnum.WAIT_DISPATCH.code);
-            }
-            if (waybill.getType() == WaybillTypeEnum.BACK.code) {
-                int trunkState = OrderCarLocalStateEnum.WAIT_DISPATCH.code;
-                //根据订单车辆所有运单状态判断订单车辆干线状态
-                List<Integer> waybillStateList = waybillDao.findTrunkStateListByOrderCarId(orderCar.getId());
-                if (waybillStateList != null || !waybillStateList.isEmpty()) {
-                    if (waybillStateList.contains(WaybillStateEnum.FINISHED.code)) {
-                        trunkState = OrderCarTrunkStateEnum.NODE_FINISHED.code;
-                        if (orderCar.getNowStoreId().equals(order.getEndStoreId())
-                                || orderCar.getNowAreaCode().equals(order.getEndAreaCode())) {
-                            trunkState = OrderCarTrunkStateEnum.FINISHED.code;
-                        }
-                    }
-                    if (waybillStateList.contains(WaybillStateEnum.WAIT_ALLOT_CONFIRM.code)
-                            || waybillStateList.contains(WaybillStateEnum.ALLOT_CONFIRM.code)) {
-                        trunkState = OrderCarTrunkStateEnum.WAIT_LOAD.code;
-                    }
-                    if (waybillStateList.contains(WaybillStateEnum.TRANSPORTING.code)) {
-                        trunkState = OrderCarTrunkStateEnum.WAIT_UNLOAD.code;
-                    }
-                }
+            updateNextForCancelDispatch(waybillCar.getOrderCarId(), waybillCar.getEndStoreId());
 
-                //订单车辆状态
-                if (orderCar.getState() == OrderCarStateEnum.WAIT_TRUNK.code) {
-                    orderCar.setState(OrderCarStateEnum.WAIT_TRUNK_DISPATCH.code);
-                }
-                //订单车辆干线状态
-                orderCar.setTrunkState(trunkState);
 
-            }
-            orderCarDao.updateById(orderCar);
         }
+    }
+
+    /**
+     * 取消调度-修改后续调度调度车辆状态
+     * @param orderCarId
+     * @param endStoreId
+     */
+    private void updateNextForCancelDispatch(Long orderCarId, Long endStoreId) {
+        List<WaybillCar> nextWaybillCarList = waybillCarDao.findNextDispatch(orderCarId, endStoreId);
+        if(nextWaybillCarList != null || !nextWaybillCarList.isEmpty()){
+            waybillCarDao.updateForCancelDispatch(orderCarId, endStoreId, WaybillCarStateEnum.CANCEL_DISPATCH.code);
+            //TODO 修改运单车辆数
+            for (WaybillCar waybillCar : nextWaybillCarList) {
+                if(waybillCar == null){
+                    continue;
+                }
+                updateNextForCancelDispatch(orderCarId, waybillCar.getEndStoreId());
+            }
+            //TODO 给调度人和承运商发送变更消息
+        }
+
+
+        waybillCarDao.updateForCancelDispatch(orderCarId, endStoreId, WaybillCarStateEnum.CANCEL_DISPATCH.code);
+    }
+
+    /**
+     * 修改订单车辆调度状态
+     * @author JPG
+     * @since 2019/10/29 9:57
+     * @param waybill
+     * @param orderCar
+     */
+    private void updateOrderCarDispatchState(Waybill waybill, OrderCar orderCar) {
+        //查询订单是否已经完结
+        Order order = orderDao.selectById(orderCar.getOrderId());
+        if (order == null || order.getState() >= OrderStateEnum.FINISHED.code) {
+            return;
+        }
+        //修改车辆状态
+        if (waybill.getType() == WaybillTypeEnum.PICK.code) {
+            //订单车辆状态
+            if (orderCar.getState() == OrderCarStateEnum.WAIT_PICK.code) {
+                orderCar.setState(OrderCarStateEnum.WAIT_PICK_DISPATCH.code);
+            }
+            //订单车辆提车状态
+            orderCar.setPickState(OrderCarLocalStateEnum.WAIT_DISPATCH.code);
+        }
+        if (waybill.getType() == WaybillTypeEnum.BACK.code) {
+            //订单车辆状态
+            if (orderCar.getState() == OrderCarStateEnum.WAIT_BACK.code) {
+                orderCar.setState(OrderCarStateEnum.WAIT_BACK_DISPATCH.code);
+            }
+            //订单车辆配送状态
+            orderCar.setBackState(OrderCarLocalStateEnum.WAIT_DISPATCH.code);
+        }
+        if (waybill.getType() == WaybillTypeEnum.BACK.code) {
+            int trunkState = OrderCarLocalStateEnum.WAIT_DISPATCH.code;
+            //根据订单车辆所有运单状态判断订单车辆干线状态
+            List<Integer> waybillStateList = waybillDao.findTrunkStateListByOrderCarId(orderCar.getId());
+            if (waybillStateList != null || !waybillStateList.isEmpty()) {
+                if (waybillStateList.contains(WaybillStateEnum.FINISHED.code)) {
+                    trunkState = OrderCarTrunkStateEnum.NODE_FINISHED.code;
+                    if (orderCar.getNowStoreId().equals(order.getEndStoreId())
+                            || orderCar.getNowAreaCode().equals(order.getEndAreaCode())) {
+                        trunkState = OrderCarTrunkStateEnum.FINISHED.code;
+                    }
+                }
+                if (waybillStateList.contains(WaybillStateEnum.WAIT_ALLOT_CONFIRM.code)
+                        || waybillStateList.contains(WaybillStateEnum.ALLOT_CONFIRM.code)) {
+                    trunkState = OrderCarTrunkStateEnum.WAIT_LOAD.code;
+                }
+                if (waybillStateList.contains(WaybillStateEnum.TRANSPORTING.code)) {
+                    trunkState = OrderCarTrunkStateEnum.WAIT_UNLOAD.code;
+                }
+            }
+
+            //订单车辆状态
+            if (orderCar.getState() == OrderCarStateEnum.WAIT_TRUNK.code) {
+                orderCar.setState(OrderCarStateEnum.WAIT_TRUNK_DISPATCH.code);
+            }
+            //订单车辆干线状态
+            orderCar.setTrunkState(trunkState);
+
+        }
+        orderCarDao.updateById(orderCar);
     }
 
     @Override

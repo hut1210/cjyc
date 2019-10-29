@@ -17,7 +17,7 @@ import java.util.List;
  * @author JPG
  */
 @RestController
-@Api(tags = "订单")
+@Api(tags = "业务中心")
 @RequestMapping(value = "/store",
         produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class StoreController {
