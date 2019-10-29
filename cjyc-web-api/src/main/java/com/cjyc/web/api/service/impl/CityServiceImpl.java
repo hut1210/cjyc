@@ -44,7 +44,7 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
 
     @Autowired
     private StringRedisUtil redisUtil;
-    
+
     @Resource
     private ICityDao cityDao;
 
@@ -87,8 +87,10 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
                     ptv.setParentCode(vo.getParentCode());
                     ptv.setCode(vo.getCode());
                     ptv.setName(vo.getName());
+                    //得到城市
                     List<CityTreeVo> cityList = cityDao.getAllCity(vo.getCode());
-                    if(!cityList.isEmpty() && CollectionUtils.isEmpty(cityList)){
+                    if(!cityList.isEmpty() && !CollectionUtils.isEmpty(cityList)){
+                        recursionCity(cityList);
                         ptv.setCityVos(cityList);
                     }
                     ptvos.add(ptv);
@@ -100,6 +102,20 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
             throw new CommonException(e.getMessage());
         }
         return BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg(),ptvos);
+    }
+
+    /**
+     * 获取所有
+     * @param citys
+     */
+    private void recursionCity(List<CityTreeVo> citys) {
+        List<CityTreeVo> retList = null;
+        for (CityTreeVo c : citys) {
+            retList = cityDao.getAllCity(c.getCode());
+            if (!retList.isEmpty() && !CollectionUtils.isEmpty(retList)) {
+                c.setCityVos(retList);
+            }
+        }
     }
 
 }

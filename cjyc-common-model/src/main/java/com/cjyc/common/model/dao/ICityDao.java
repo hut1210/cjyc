@@ -68,8 +68,7 @@ public interface ICityDao extends BaseMapper<City> {
     ProvinceCityVo getProvinceCityByCode(@Param("code") String code);
 
     /**
-     * 获取该城市级别的编码名称
-     * @param level
+     * 获取所有省/直辖市
      * @return
      */
     List<CityTreeVo> getAllByLevel(Integer level);

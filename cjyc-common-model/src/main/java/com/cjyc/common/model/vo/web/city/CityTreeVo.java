@@ -19,6 +19,9 @@ public class CityTreeVo implements Serializable {
     @ApiModelProperty("城市名称")
     private String name;
 
+    @ApiModelProperty("城市级别")
+    private Integer level;
+
     @ApiModelProperty("子节点")
     private List<CityTreeVo> cityVos;
 

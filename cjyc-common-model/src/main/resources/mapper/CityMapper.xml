@@ -114,8 +114,7 @@
             parent_code AS parentCode
         FROM
             s_city
-        WHERE
-            LEVEL = #{level}
+        where level = #{level}
     </select>
 
     <!--获取所有下一级城市 -->
