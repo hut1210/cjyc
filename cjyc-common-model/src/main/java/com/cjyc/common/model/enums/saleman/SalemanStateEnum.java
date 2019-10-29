@@ -10,8 +10,9 @@ public enum SalemanStateEnum {
     /***/
     WAIT_CHECK("待审核",0),
     CHECKED("审核通过",2),
-    REJECTED("已驳回", 4),
-    LEAVE("已离职", 7);
+    CANCELED("取消审核", 4),
+    REJECTED("已驳回", 7),
+    LEAVE("已离职", 9);
 
     public String name;
     public int code;

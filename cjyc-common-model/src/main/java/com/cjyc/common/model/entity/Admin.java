@@ -91,5 +91,8 @@ public class Admin implements Serializable {
     @ApiModelProperty(value = "业务范围类型:0无数据权限，1业务中心数据权限，2行政区域数据权限")
     private Integer bizScope;
 
+    @ApiModelProperty(value = "业务范围描述信息")
+    private String bizDesc;
+
 
 }
