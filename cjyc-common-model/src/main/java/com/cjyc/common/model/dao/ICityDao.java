@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.dto.BaseCityDto;
 import com.cjyc.common.model.entity.City;
 import com.cjyc.common.model.vo.web.city.ProvinceCityVo;
-import com.cjyc.common.model.vo.web.city.TreeCityVo;
 import io.swagger.annotations.ApiParam;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -78,6 +77,7 @@ public interface ICityDao extends BaseMapper<City> {
      * @param code
      * @return
      */
+    List<CityTreeVo> getAllCity(@ApiParam("code") String code);
     List<HashMap<String,String>> getAllCity(@ApiParam("code") String code);
 
     List<TreeCityVo> findListByLevel(Integer level);

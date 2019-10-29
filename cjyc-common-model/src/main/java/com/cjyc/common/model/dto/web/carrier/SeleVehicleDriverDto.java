@@ -7,7 +7,7 @@ import lombok.Data;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 @Data
-public class SeleVehicleDto extends BasePageDto implements Serializable {
+public class SeleVehicleDriverDto extends BasePageDto implements Serializable {
 
     public interface SelectVehicleDto {
     }

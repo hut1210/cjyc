@@ -8,6 +8,9 @@ import java.io.Serializable;
 @Data
 public class SelectDriverDto extends BasePageDto implements Serializable {
 
+    @ApiModelProperty("登陆用户userId")
+    private Long userId;
+
     @ApiModelProperty("司机姓名")
     private String realName;
 

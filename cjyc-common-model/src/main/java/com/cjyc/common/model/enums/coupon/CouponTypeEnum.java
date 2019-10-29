@@ -9,6 +9,7 @@ public enum CouponTypeEnum {
     public String name;
     public int code;
 
+
     CouponTypeEnum(String name, int code) {
         this.name = name;
         this.code = code;

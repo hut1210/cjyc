@@ -2,8 +2,8 @@ package com.cjyc.web.api.service;
 
 import com.cjyc.common.model.dto.web.carrier.CarrierDto;
 import com.cjyc.common.model.dto.web.carrier.SeleCarrierDto;
-import com.cjyc.common.model.dto.web.carrier.SeleVehicleDto;
-import com.cjyc.common.model.entity.BusinessCityCode;
+import com.cjyc.common.model.dto.web.carrier.SeleVehicleDriverDto;
+import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.carrier.BaseVehicleVo;
 import com.cjyc.common.model.vo.web.carrier.CarrierVo;
 import com.cjyc.common.model.vo.web.carrier.BaseCarrierVo;
@@ -53,16 +53,16 @@ public interface ICarrierService {
     BaseCarrierVo getBaseCarrierById(Long id);
 
     /**
-     * 根据承运商id查看承运商业务范围
-     * @param id
-     * @return
-     */
-    BusinessCityCode getCarrierBusiById(Long id);
-
-    /**
      * 根据承运商id查看车辆信息
      * @param dto
      * @return
      */
-    PageInfo<BaseVehicleVo> getBaseVehicleByTerm(SeleVehicleDto dto);
+    PageInfo<BaseVehicleVo> getBaseVehicleByTerm(SeleVehicleDriverDto dto);
+
+    /**
+     * 根据承运商id查看司机信息
+     * @param dto
+     * @return
+     */
+    ResultVo getBaseDriverByTerm(SeleVehicleDriverDto dto);
 }

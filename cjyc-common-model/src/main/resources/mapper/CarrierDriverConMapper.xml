@@ -15,4 +15,14 @@
         id, carrier_id, driver_id, role
     </sql>
 
+    <!-- 根据承运商id获取司机ids -->
+    <select id="getDriverIds" resultType="java.lang.Long" parameterType="java.lang.Long">
+        SELECT
+            driver_id
+        FROM
+            d_carrier_driver_con
+        WHERE
+            carrier_id = #{carrierId}
+    </select>
+
 </mapper>

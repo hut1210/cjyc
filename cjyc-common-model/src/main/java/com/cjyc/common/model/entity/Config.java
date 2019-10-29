@@ -12,30 +12,39 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 司机与区县绑定
+ * 
  * </p>
  *
  * @author JPG
- * @since 2019-10-28
+ * @since 2019-10-29
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("d_carrier_city_con")
-@ApiModel(value="CarrierCityCon对象", description="司机与区县绑定")
-public class CarrierCityCon implements Serializable {
+@TableName("s_config")
+@ApiModel(value="Config对象", description="")
+public class Config implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "ID")
+    @ApiModelProperty(value = "主键id")
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "承运商ID")
-    private Long carrierId;
+    @ApiModelProperty(value = "名称")
+    private String name;
 
-    @ApiModelProperty(value = "区县编码 0:全国")
-    private String cityCode;
+    @ApiModelProperty(value = "键")
+    private String itemKey;
+
+    @ApiModelProperty(value = "开关状态  0：关 1：开")
+    private Integer state;
+
+    @ApiModelProperty(value = "操作人userId")
+    private Long operateUserId;
+
+    @ApiModelProperty(value = "操作时间")
+    private Long operateTime;
 
 
 }

@@ -8,6 +8,9 @@ import java.io.Serializable;
 @Data
 public class SeleCarrierDto extends BasePageDto implements Serializable {
 
+    @ApiModelProperty("登陆用户userId")
+    private Long userId;
+
     @ApiModelProperty("企业名称")
     private String name;
 

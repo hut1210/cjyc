@@ -1,13 +1,14 @@
 package com.cjyc.common.model.vo.web.driver;
 
-import com.cjyc.common.model.entity.BusinessCityCode;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 @Data
-public class ShowDriverVo extends BusinessCityCode implements Serializable {
+public class ShowDriverVo implements Serializable {
 
     @ApiModelProperty("司机id")
     private Long id;
@@ -22,7 +23,10 @@ public class ShowDriverVo extends BusinessCityCode implements Serializable {
     private String phone;
 
     @ApiModelProperty("承运方式：0 ：代驾 1：干线司机  2：拖车司机 4全支持")
-    private String mode;
+    private Integer mode;
+
+    @ApiModelProperty("司机业务范围")
+    private List<LinkedHashMap> mapCodes;
 
     @ApiModelProperty("持卡人")
     private String cardName;
