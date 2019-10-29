@@ -281,4 +281,22 @@ public class DriverServiceImpl implements IDriverService {
         return false;
     }
 
+    @Override
+    public BusinessCityCode getDriverBusiById(Long id) {
+        BusinessCityCode bcc = null;
+        try{
+            CarrierCityCon ccc = iCarrierCityConDao.getCarrierCodeByDriverId(id);
+            if(ccc != null){
+                bcc = iCarrierCityConService.showCarrCityCon(ccc);
+            }
+        }catch (Exception e){
+            log.info("根据司机id查看承运商业务范围出现异常");
+        }
+        return bcc;
+    }
+    @Override
+    public Driver getByUserId(Long userId) {
+        return driverDao.findByUserId(userId);
+    }
+
 }

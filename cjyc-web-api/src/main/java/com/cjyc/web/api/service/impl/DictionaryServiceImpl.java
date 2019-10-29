@@ -7,8 +7,11 @@ import com.cjyc.common.model.dto.BasePageDto;
 import com.cjyc.common.model.dto.web.dictionary.DictionaryDto;
 import com.cjyc.common.model.dto.web.dictionary.SelectDictionaryDto;
 import com.cjyc.common.model.entity.Dictionary;
+import com.cjyc.common.model.enums.DictionaryEnum;
 import com.cjyc.common.model.enums.UseStateEnum;
+import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
+import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.web.api.exception.CommonException;
 import com.cjyc.web.api.service.IDictionaryService;
 import com.github.pagehelper.PageHelper;
@@ -19,7 +22,9 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *  @author: zj
@@ -130,5 +135,36 @@ public class DictionaryServiceImpl implements IDictionaryService {
             log.info("根据id更新字典项出现异常");
         }
         return pageInfo;
+    }
+
+    @Override
+    public ResultVo<Map<String, Object>> getInsurance(int valuation) {
+        int add_insurance_amount = 0;
+        int add_insurance_fee = 0;
+
+        Integer baseAmount = 0;
+        Dictionary dictionary = findByEnum(DictionaryEnum.INSURANCE_AMOUNT);
+        if(dictionary != null || dictionary.getItemValue() != null){
+            baseAmount = Integer.valueOf(dictionary.getItemValue());
+        }
+
+        //追加保额等于估值-
+        if(valuation > baseAmount){
+            add_insurance_amount = valuation - baseAmount <= 0 ? 0 : valuation - baseAmount;
+        }
+        //追加保费
+        if(add_insurance_amount > 0){
+            add_insurance_fee = add_insurance_amount * 12 / 5 ;
+        }
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("add_insurance_amount", add_insurance_amount);
+        map.put("add_insurance_fee", add_insurance_fee);
+        return BaseResultUtil.success(map);
+    }
+
+
+    private Dictionary findByEnum(DictionaryEnum dictionaryEnum) {
+        return iDictionaryDao.findByItemKey(dictionaryEnum.item, dictionaryEnum.key);
     }
 }

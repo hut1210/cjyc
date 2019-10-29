@@ -8,28 +8,20 @@ import com.cjyc.common.model.enums.AdminStateEnum;
 import com.cjyc.common.model.enums.order.OrderSaveTypeEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.BizScopeVo;
-import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo;
 import com.cjyc.common.model.vo.web.order.OrderVo;
 import com.cjyc.web.api.service.IAdminService;
 import com.cjyc.web.api.service.IBizScopeService;
 import com.cjyc.web.api.service.IOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 订单
@@ -50,9 +42,10 @@ public class OrderController {
 
 
     /**
-     * 保存/提交/审核
+     * 保存/提交
+     * @author JPG
      */
-    @ApiOperation(value = "订单保存/提交/审核")
+    @ApiOperation(value = "订单保存/提交")
     @PostMapping(value = "/save")
     public ResultVo saveOrUpdate(@RequestBody CommitOrderDto reqDto) {
 
@@ -103,6 +96,7 @@ public class OrderController {
 
     /**
      * 完善订单信息
+     * @author JPG
      */
     @ApiOperation(value = "完善订单信息")
     @PostMapping(value = "/replenish/info/update")
@@ -110,9 +104,20 @@ public class OrderController {
         return orderService.replenishInfo(reqDto);
     }
 
+    /**
+     * 审核订单
+     * @author JPG
+     */
+    @ApiOperation(value = "审核订单")
+    @PostMapping(value = "/check")
+    public ResultVo check(@RequestBody CheckOrderDto reqDto) {
+        return orderService.check(reqDto);
+    }
+
 
     /**
      * 查询订单-根据ID
+     * @author JPG
      */
     @ApiOperation(value = "查询订单-根据ID")
     @PostMapping(value = "/get/{orderId}")
@@ -121,9 +126,30 @@ public class OrderController {
         return BaseResultUtil.success(orderVo);
     }
 
+    /**
+     * 查询订单列表
+     * @author JPG
+     */
+    @ApiOperation(value = "查询订单列表")
+    @PostMapping(value = "/list")
+    public ResultVo<PageVo<Order>> list(@RequestBody ListOrderDto reqDto) {
+        return orderService.list(reqDto);
+    }
+
+    /**
+     * 查询订单车辆列表
+     * @author JPG
+     */
+    @ApiOperation(value = "订单车辆查询")
+    @PostMapping(value = "/car/list")
+    public ResultVo<PageVo<OrderCar>> carlist(@RequestBody ListOrderCarDto reqDto) {
+        return orderService.carlist(reqDto);
+    }
+
 
     /**
      * 分配订单
+     * @author JPG
      */
     @ApiOperation(value = "分配订单")
     @PostMapping(value = "/allot")
@@ -145,35 +171,32 @@ public class OrderController {
 
 
 
-    /**
-     * 订单查询
-     */
-    @ApiOperation(value = "订单查询")
-    @PostMapping(value = "/list")
-    public ResultVo<PageVo<Order>> list(@RequestBody ListOrderDto reqDto) {
-        return orderService.list(reqDto);
-    }
-
-    /**
-     * 订单车辆查询
-     */
-    @ApiOperation(value = "订单车辆查询")
-    @PostMapping(value = "/car/list")
-    public ResultVo<PageVo<OrderCar>> carlist(@RequestBody ListOrderCarDto reqDto) {
-        return orderService.carlist(reqDto);
-    }
-
 
     /**
      * TODO 订单运输信息
      */
 
 
+    /**
+     * 订单改价
+     * @author JPG
+     */
+    @ApiOperation(value = "订单改价")
+    @PostMapping(value = "/change/price")
+    public ResultVo changePrice(@RequestBody ChangePriceOrderDto reqDto) {
+        //验证操作人
+        Admin admin = adminService.getByUserId(reqDto.getUserId());
+        if(admin == null || admin.getState() != AdminStateEnum.CHECKED.code){
+            return BaseResultUtil.fail("操作用户不存在或者已离职");
+        }
+        reqDto.setUserName(admin.getName());
+        return orderService.changePrice(reqDto);
+    }
+
 
     /**
      * 取消订单
      * @author JPG
-     * @since 2019/10/23 9:06
      */
     @ApiOperation(value = "取消订单")
     @PostMapping(value = "/cancel")
@@ -192,7 +215,6 @@ public class OrderController {
     /**
      * 作废订单
      * @author JPG
-     * @since 2019/10/23 9:06
      */
     @ApiOperation(value = "作废订单")
     @PostMapping(value = "/obsolete")
@@ -207,66 +229,6 @@ public class OrderController {
         return orderService.obsolete(reqDto);
     }
 
-    /**
-     * 订单改价
-     * @author JPG
-     * @since 2019/10/23 9:06
-     */
-    @ApiOperation(value = "订单改价")
-    @PostMapping(value = "/change/price")
-    public ResultVo changePrice(@RequestBody ChangePriceOrderDto reqDto) {
-        //验证操作人
-        Admin admin = adminService.getByUserId(reqDto.getUserId());
-        if(admin == null || admin.getState() != AdminStateEnum.CHECKED.code){
-            return BaseResultUtil.fail("操作用户不存在或者已离职");
-        }
-        reqDto.setUserName(admin.getName());
-        return orderService.changePrice(reqDto);
-    }
 
-
-
-
-
-
-
-
-
-
-
-
-    /**
-     * 按地级市查询待调度车辆统计（统计列表）
-     * @author JPG
-     */
-    @ApiOperation(value = "查询待调度车辆统计")
-    @GetMapping(value = "/car/wait/dispatch/count/list/{userId}")
-    public ResultVo<ListVo<Map<String, Object>>> waitDispatchCarCountList(@ApiParam(value = "userId", required = true)
-                                                                          @PathVariable Long userId) {
-        BizScopeVo bizScope = bizScopeService.getBizScope(userId);
-        return orderService.waitDispatchCarCountList();
-    }
-
-    /**
-     * 按线路统计待调度车辆（统计列表）
-     * @author JPG
-     */
-    @ApiOperation(value = "按线路统计待调度车辆（统计列表）")
-    @GetMapping(value = "/car/line/wait/dispatch/count/list")
-    public ResultVo<ListVo<Map<String, Object>>> lineWaitDispatchCarCountList(@RequestBody LineWaitDispatchCountListOrderCarDto reqDto) {
-        BizScopeVo bizScope = bizScopeService.getBizScope(reqDto.getUserId());
-        return orderService.lineWaitDispatchCarCountList(reqDto, bizScope.getBizScopeStoreIds());
-    }
-
-    /**
-     * 查询待调度车辆列表（数据列表）
-     * @author JPG
-     */
-    @ApiOperation(value = "查询待调度车辆列表")
-    @GetMapping(value = "/car/wait/dispatch/list")
-    public ResultVo<PageVo<OrderCarWaitDispatchVo>> waitDispatchCarList(@RequestBody WaitDispatchListOrderCarDto reqDto) {
-        BizScopeVo bizScope = bizScopeService.getBizScope(reqDto.getUserId());
-        return orderService.waitDispatchCarList(reqDto, bizScope.getBizScopeStoreIds());
-    }
 
 }

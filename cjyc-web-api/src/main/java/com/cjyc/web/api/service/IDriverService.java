@@ -3,6 +3,8 @@ package com.cjyc.web.api.service;
 import com.cjyc.common.model.dto.web.driver.DriverDto;
 import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
 import com.cjyc.common.model.dto.web.user.DriverListDto;
+import com.cjyc.common.model.entity.BusinessCityCode;
+import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.driver.DriverVo;
@@ -53,4 +55,14 @@ public interface IDriverService {
      * @return
      */
     boolean updateDriver(DriverDto dto);
+
+    /**
+     * 根据司机id查看该承运商业务范围
+     * @param id
+     * @return
+     */
+    BusinessCityCode getDriverBusiById(Long id);
+
+    Driver getByUserId(Long userId);
+
 }

@@ -17,7 +17,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-24
+ * @since 2019-10-29
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -40,6 +40,9 @@ public class Order implements Serializable {
 
     @ApiModelProperty(value = "客户名称")
     private String customerName;
+
+    @ApiModelProperty(value = "客户类型：1个人，2企业，3合伙人")
+    private Integer customerType;
 
     @ApiModelProperty(value = "订单所属业务中心ID")
     private Long inputStoreId;
@@ -231,7 +234,7 @@ public class Order implements Serializable {
     private Integer offlinePayFlag;
 
     @ApiModelProperty(value = "优惠券id")
-    private Long couponId;
+    private Long couponSendId;
 
 
 }

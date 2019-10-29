@@ -28,7 +28,7 @@ public class ListOrderDto extends BasePageDto {
      113取消（待）113已取消
      114作废（待）114已作废
      */
-    @ApiModelProperty(value = "订单状态：")
+    @ApiModelProperty(value = "订单状态：0全部订单，1预订单，5待确认，15待付款，25待调度，55运输中，100已交付，113已取消，114已作废")
     private Integer outterState;
 
     @ApiModelProperty(value = "订单编号")

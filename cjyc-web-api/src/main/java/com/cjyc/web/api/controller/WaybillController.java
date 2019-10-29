@@ -86,12 +86,12 @@ public class WaybillController {
 
 
     /**
-     * 取消调度
+     * 取消运单
      *
      * @author JPG
      * @since 2019/10/15 11:53
      */
-    @ApiOperation("取消调度")
+    @ApiOperation("取消运单")
     @PostMapping("/dispatch/cancel")
     public ResultVo<ListVo<BaseTipVo>> cancelDispatch(@RequestBody CancelDispatchDto reqDto) {
         return waybillService.cancelDispatch(reqDto);

@@ -5,6 +5,7 @@ import com.cjyc.common.model.dto.BaseCityDto;
 import com.cjyc.common.model.entity.City;
 import com.cjyc.common.model.vo.web.city.CityTreeVo;
 import com.cjyc.common.model.vo.web.city.ProvinceCityVo;
+import com.cjyc.common.model.vo.web.city.TreeCityVo;
 import io.swagger.annotations.ApiParam;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -71,13 +72,15 @@ public interface ICityDao extends BaseMapper<City> {
      * 获取所有省/直辖市
      * @return
      */
-    List<CityTreeVo> getAllByLevel(Integer level);
+    List<HashMap<String,String>> getAllProvince();
 
     /**
      * 获取下一级所有城市
      * @param code
      * @return
      */
-    List<CityTreeVo> getAllCity(@ApiParam("code") String code);
+    List<HashMap<String,String>> getAllCity(@ApiParam("code") String code);
+
+    List<TreeCityVo> findListByLevel(Integer level);
 }
 

@@ -20,5 +20,12 @@
     <sql id="Base_Column_List">
         id, name, item, item_key, item_value, item_unit, fixed_flag, remark, state, create_time
     </sql>
+    <select id="findByItemKey" resultType="com.cjyc.common.model.entity.Dictionary">
+        select
+        <include refid="Base_Column_List"/>
+        from s_dictionary
+        where item = #{item}
+        and item_key = #{key}
+    </select>
 
 </mapper>
