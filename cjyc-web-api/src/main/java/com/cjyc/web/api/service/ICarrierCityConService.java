@@ -9,9 +9,16 @@ public interface ICarrierCityConService extends IService<CarrierCityCon> {
 
     /**
      * 批量添加承运商业务范围
-     * @param id
+     * @param carrierId
      * @param codes
      * @return
      */
-    boolean batchSave(Long id, List<String> codes);
+    boolean batchSave(Long carrierId, List<String> codes);
+
+    /**
+     * 根据承运商id批量删除承运商业务范围
+     * @param carrierId
+     * @return
+     */
+    boolean batchDelete(Long carrierId);
 }

@@ -152,9 +152,9 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, com.cjyc.common
                 }
             }
             if(m > 0){
-                //承运商业务范围
-
-
+                //承运商业务范围,先批量删除，再添加
+                carrierCityConService.batchDelete(carrier.getId());
+                carrierCityConService.batchSave(carrier.getId(),dto.getCodes());
             }
         }catch (Exception e){
             log.info("更新承运商信息出现异常");

@@ -5,7 +5,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 @Data
-public class BaseCarrierVo extends BusinessCityCode implements Serializable {
+public class BaseCarrierVo implements Serializable {
 
     @ApiModelProperty("承运商id")
     private Long id;
@@ -33,6 +33,7 @@ public class BaseCarrierVo extends BusinessCityCode implements Serializable {
 
     @ApiModelProperty("账期/天")
     private String settlePeriod;
+
 
     @ApiModelProperty("承运方式：1代驾，2托运，3干线 4全支持")
     private String mode;

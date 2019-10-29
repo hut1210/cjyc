@@ -47,4 +47,14 @@ public class CarrierCityConServiceImpl extends ServiceImpl<ICarrierCityConDao, C
        }
         return false;
     }
+
+    @Override
+    public boolean batchDelete(Long carrierId) {
+        try{
+           return  carrierCityConDao.deleteByCarrierId(carrierId) > 0 ? true : false;
+        }catch (Exception e){
+            log.info("根据承运商id批量删除业务范围出现异常");
+            throw new CommonException(e.getMessage());
+        }
+    }
 }
