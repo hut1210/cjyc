@@ -285,9 +285,9 @@ public class DriverServiceImpl implements IDriverService {
     public BusinessCityCode getDriverBusiById(Long id) {
         BusinessCityCode bcc = null;
         try{
-            CarrierCityCon ccc = iCarrierCityConDao.getCarrierCodeByDriverId(id);
+            CarrierCityCon ccc = carrierCityConDao.getCarrierCodeByDriverId(id);
             if(ccc != null){
-                bcc = iCarrierCityConService.showCarrCityCon(ccc);
+                bcc = carrierCityConService.showCarrCityCon(ccc);
             }
         }catch (Exception e){
             log.info("根据司机id查看承运商业务范围出现异常");

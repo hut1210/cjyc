@@ -42,7 +42,7 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
 
     @Override
     public City findById(String cityCode) {
-        return cityDao.findById(cityCode);
+        return cityDao.selectById(cityCode);
     }
 
     @Override

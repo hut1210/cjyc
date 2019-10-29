@@ -21,6 +21,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -42,12 +43,37 @@ public class OrderController {
 
 
     /**
-     * 保存/提交
+     * 保存
      * @author JPG
      */
-    @ApiOperation(value = "订单保存/提交")
+    @ApiOperation(value = "订单保存")
     @PostMapping(value = "/save")
-    public ResultVo saveOrUpdate(@RequestBody CommitOrderDto reqDto) {
+    public ResultVo save(@RequestBody CommitOrderDto reqDto) {
+
+        //验证用户存不存在
+        Long userId = reqDto.getUserId();
+        Admin admin = adminService.getByUserId(userId);
+        if(admin == null){
+            return BaseResultUtil.fail("用户不存在");
+        }
+        reqDto.setCreateUserId(admin.getUserId());
+        reqDto.setCreateUserName(admin.getName());
+        reqDto.setState(OrderStateEnum.WAIT_SUBMIT.code);
+
+        ResultVo resultVo = orderService.save(reqDto);
+
+        //发送推送信息
+        return resultVo;
+    }
+
+
+    /**
+     * 提交
+     * @author JPG
+     */
+    @ApiOperation(value = "订单提交")
+    @PostMapping(value = "/commit")
+    public ResultVo commit(@RequestBody CommitOrderDto reqDto) {
 
         //验证用户存不存在
         Long userId = reqDto.getUserId();
@@ -71,7 +97,7 @@ public class OrderController {
             //验证业务中心
             //验证匹配线路
             //验证金额
-            if(reqDto.getWlTotalFee().compareTo(reqDto.getRealWlTotalFee()) > 0){
+            if(reqDto.getWlTotalFee()!= null && reqDto.getWlTotalFee().compareTo(reqDto.getRealWlTotalFee()) > 0){
                 return BaseResultUtil.fail("实收金额不能超过总的物流费");
             }
         }
@@ -85,7 +111,7 @@ public class OrderController {
             reqDto.setState(OrderStateEnum.WAIT_SUBMIT.code);
         }
 
-        ResultVo resultVo = orderService.saveAndUpdate(reqDto);
+        ResultVo resultVo = orderService.commit(reqDto);
 
         //添加物流日志
 

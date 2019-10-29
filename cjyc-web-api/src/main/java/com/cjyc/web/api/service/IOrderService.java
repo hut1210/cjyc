@@ -22,7 +22,7 @@ import java.util.Map;
 public interface IOrderService extends IService<Order> {
 
 
-    ResultVo saveAndUpdate(CommitOrderDto paramsDto);
+    ResultVo commit(CommitOrderDto paramsDto);
 
 
     ResultVo<ListVo<Map<String, Object>>> waitDispatchCarCountList();
@@ -59,4 +59,6 @@ public interface IOrderService extends IService<Order> {
     ResultVo<PageVo<OrderCar>> carlist(ListOrderCarDto paramsDto);
 
     ResultVo check(CheckOrderDto reqDto);
+
+    ResultVo save(CommitOrderDto reqDto);
 }

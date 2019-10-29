@@ -66,7 +66,7 @@ public class CityController {
         return BaseResultUtil.success(list);
     }
 
-    @ApiOperation(value = "省城市树形结构", notes = "")
+    @ApiOperation(value = "查询树形结构", notes = "")
     @PostMapping(value = "/tree")
     public ResultVo<List<TreeCityVo>> tree(@RequestBody TreeCityDto treeCityDto) {
         return cityService.getTree(treeCityDto);

@@ -27,7 +27,7 @@ public class PriceQueryController {
     @PostMapping(value = "/getLinePriceByCode/{fromCode}/{toCode}")
     public ResultVo getLinePriceByCode(@ApiParam(required = true) @PathVariable String fromCode,@ApiParam(required = true) @PathVariable String toCode){
         if(StringUtils.isBlank(fromCode) || StringUtils.isBlank(toCode)){
-            return BaseResultUtil.getVo(ResultEnum.MOBILE_HTTP_ILLEGAL.getCode(), ResultEnum.MOBILE_HTTP_ILLEGAL.getMsg());
+            return BaseResultUtil.getVo(ResultEnum.MOBILE_PARAM_ERROR.getCode(), ResultEnum.MOBILE_PARAM_ERROR.getMsg());
         }
         String price = iPriceQueryService.getLinePriceByCode(fromCode,toCode);
         return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),price);

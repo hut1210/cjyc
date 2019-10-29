@@ -6,6 +6,7 @@ import com.cjkj.common.redis.template.StringRedisUtil;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.task.AllotTaskDto;
 import com.cjyc.common.model.dto.web.task.LoadTaskDto;
+import com.cjyc.common.model.dto.web.task.UnLoadTaskDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
 import com.cjyc.common.model.enums.task.TaskStateEnum;
@@ -144,6 +145,22 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
         waybillCar.setState(WaybillCarStateEnum.LOADED.code);
         waybillCar.setLoadPhotoImg(paramsDto.getLoadPhotoImg());
         waybillCar.setLoadTime(System.currentTimeMillis());
+        waybillCarDao.updateById(waybillCar);
+        return BaseResultUtil.success();
+    }
+
+    @Override
+    public ResultVo unload(UnLoadTaskDto paramsDto) {
+        Long taskCarId = paramsDto.getTaskCarId();
+        WaybillCar waybillCar = waybillCarDao.findByTaskCarId(taskCarId);
+        if(waybillCar == null){
+            return BaseResultUtil.fail("运单车辆不存在");
+        }
+        if(waybillCar.getState() > WaybillCarStateEnum.UNLOADED.code){
+            return BaseResultUtil.fail("车辆已经卸过车");
+        }
+        waybillCar.setState(WaybillCarStateEnum.UNLOADED.code);
+        waybillCar.setUnloadTime(System.currentTimeMillis());
         waybillCarDao.updateById(waybillCar);
         return BaseResultUtil.success();
     }

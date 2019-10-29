@@ -17,11 +17,6 @@ import java.util.Map;
  */
 public interface IStoreDao extends BaseMapper<Store> {
 
-    /**
-     * 查询所有业务中心
-     * @return
-     */
-    PageInfo<Map> getAllStore();
 
-    List<Store> findByAreaCode(String areaCode);
+    List<Store> findByCityCode(String cityCode);
 }

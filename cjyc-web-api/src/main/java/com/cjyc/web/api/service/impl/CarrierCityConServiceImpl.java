@@ -2,6 +2,7 @@ package com.cjyc.web.api.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.dao.ICarrierCityConDao;
+import com.cjyc.common.model.entity.BusinessCityCode;
 import com.cjyc.common.model.entity.CarrierCityCon;
 import com.cjyc.web.api.exception.CommonException;
 import com.cjyc.web.api.service.ICarrierCityConService;
@@ -21,6 +22,8 @@ import java.util.List;
 @Slf4j
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
 public class CarrierCityConServiceImpl extends ServiceImpl<ICarrierCityConDao, CarrierCityCon> implements ICarrierCityConService {
+
+
 
     @Resource
     private ICarrierCityConDao carrierCityConDao;
@@ -75,5 +78,10 @@ public class CarrierCityConServiceImpl extends ServiceImpl<ICarrierCityConDao, C
             throw new CommonException(e.getMessage());
         }
         return mapCodes;
+    }
+
+    @Override
+    public BusinessCityCode showCarrCityCon(CarrierCityCon ccc) {
+        return null;
     }
 }

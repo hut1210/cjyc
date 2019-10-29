@@ -1,6 +1,7 @@
 package com.cjyc.web.api.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.cjyc.common.model.entity.BusinessCityCode;
 import com.cjyc.common.model.entity.CarrierCityCon;
 
 import java.util.LinkedHashMap;
@@ -29,4 +30,6 @@ public interface ICarrierCityConService extends IService<CarrierCityCon> {
      * @return
      */
     List<LinkedHashMap> getMapCodes(Long carrierId);
+
+    BusinessCityCode showCarrCityCon(CarrierCityCon ccc);
 }

@@ -24,7 +24,7 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
 
 
     @Override
-    public List<Store> getByAreaCode(String areaCode) {
-        return storeDao.findByAreaCode(areaCode);
+    public List<Store> getByCityCode(String cityCode) {
+        return storeDao.findByCityCode(cityCode);
     }
 }

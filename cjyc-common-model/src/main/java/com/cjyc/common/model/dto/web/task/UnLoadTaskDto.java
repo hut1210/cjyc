@@ -10,7 +10,7 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel
-public class LoadTaskDto {
+public class UnLoadTaskDto {
     @ApiModelProperty(value = "用户userId",required = true)
     private Long userId;
 
@@ -19,8 +19,4 @@ public class LoadTaskDto {
 
     @ApiModelProperty(value = "任务车辆ID",required = true)
     private Long taskCarId;
-
-    @ApiModelProperty(value = "图片地址，逗号分隔")
-    private String loadPhotoImg;
-
 }

@@ -66,7 +66,15 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     private ICouponSendService couponSendService;
 
     @Override
-    public ResultVo saveAndUpdate(CommitOrderDto paramsDto) {
+    public ResultVo save(CommitOrderDto reqDto) {
+
+
+
+
+        return null;
+    }
+    @Override
+    public ResultVo commit(CommitOrderDto paramsDto) {
         //处理参数
         paramsDto.setWlTotalFee(paramsDto.getWlTotalFee() == null ? BigDecimal.ZERO : paramsDto.getWlTotalFee());
         paramsDto.setRealWlTotalFee(paramsDto.getRealWlTotalFee() == null ? BigDecimal.ZERO : paramsDto.getRealWlTotalFee());
@@ -136,7 +144,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         } else {
             order.setAgencyFee(BigDecimal.ZERO);
             //其他客户：收车后客户应支付平台的钱->总物流费-优惠券
-            order.setTotalFee(wlTotalFee.subtract(order.getCouponOffsetFee()));
+            order.setTotalFee(wlTotalFee.subtract(order.getCouponOffsetFee() == null ? BigDecimal.ZERO : order.getCouponOffsetFee() ));
         }
 
         order.setCreateTime(System.currentTimeMillis());
@@ -187,11 +195,11 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
             orderCarSavelist.add(orderCar);
 
             //计算统计费用
-            totalPickFee = totalPickFee.add(orderCar.getPickFee());
-            totalTrunkFee = totalTrunkFee.add(orderCar.getPickFee());
-            totalBackFee = totalBackFee.add(orderCar.getBackFee());
-            totalInsuranceFee = totalInsuranceFee.add(orderCar.getInsuranceFee());
-            totalCouponOffsetFee = totalCouponOffsetFee.add(orderCar.getCouponOffsetFee());
+            totalPickFee = totalPickFee.add(orderCar.getPickFee() == null ? BigDecimal.ZERO : orderCar.getPickFee());
+            totalTrunkFee = totalTrunkFee.add(orderCar.getTrunkFee() == null ? BigDecimal.ZERO : orderCar.getTrunkFee());
+            totalBackFee = totalBackFee.add(orderCar.getBackFee() == null ? BigDecimal.ZERO : orderCar.getBackFee());
+            totalInsuranceFee = totalInsuranceFee.add(orderCar.getInsuranceFee() == null ? BigDecimal.ZERO : orderCar.getInsuranceFee());
+            totalCouponOffsetFee = totalCouponOffsetFee.add(orderCar.getCouponOffsetFee() == null ? BigDecimal.ZERO : orderCar.getCouponOffsetFee());
             //统计数量
             noCount++;
 
@@ -387,6 +395,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         orderDao.updateById(order);
         return BaseResultUtil.success();
     }
+
 
     /**
      * 验证订单属性

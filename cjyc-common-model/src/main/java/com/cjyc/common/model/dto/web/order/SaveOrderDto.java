@@ -18,21 +18,20 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel
-public class CommitOrderDto {
+public class SaveOrderDto {
 
     @NotNull
     @ApiModelProperty(value = "1WEB管理后台, 2业务员APP, 4司机APP, 6用户端APP, 7用户端小程序", required = true)
     private int clientId;
+    @NotNull
+    @ApiModelProperty(value = "1C端 2大客户 3-伙人",required = true)
+    private int customerType;
+
+
     @ApiModelProperty(value = "操作人userid")
     private Long userId;
     @ApiModelProperty(value = "订单ID")
     private Long orderId;
-    @NotNull
-    @ApiModelProperty(value = "1C端 2大客户 3-伙人",required = true)
-    private int customerType;
-    @NotNull
-    @ApiModelProperty(value = "0保存（预订单） 1提交， 2审核",required = true)
-    private int saveType;
     @ApiModelProperty(value = "客户id")
     private Long customerId;
     @NotBlank

@@ -15,5 +15,5 @@ import java.util.List;
  */
 public interface IStoreService extends IService<Store> {
 
-    List<Store> getByAreaCode(String areaCode);
+    List<Store> getByCityCode(String cityCode);
 }

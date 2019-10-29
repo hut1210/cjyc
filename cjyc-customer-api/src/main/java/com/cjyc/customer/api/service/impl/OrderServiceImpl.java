@@ -90,25 +90,8 @@ public class OrderServiceImpl implements IOrderService{
         order.setCreateUserId(orderDto.getCustomerId());
 
 
-        int count = orderDao.addOrder(order);
 
-        //保存车辆信息
-        List<OrderCarDto> carDtoList =  orderDto.getOrderCarDtoList();
-        if(count > 0){
-            for(OrderCarDto orderCarDto : carDtoList){
-                OrderCar orderCar = new OrderCar();
-                BeanUtils.copyProperties(orderCarDto,orderCar);
-                String carNo = incrementerDao.getIncrementer(NoConstant.CAR_PREFIX);
-
-                orderCar.setOrderNo(orderNo);
-                orderCar.setOrderId(order.getId());
-                orderCar.setNo(carNo);
-
-                iOrderCarDao.insert(orderCar);
-            }
-        }
-
-        return count > 0 ? true : false;
+        return true;
     }
 
     /**
@@ -150,7 +133,7 @@ public class OrderServiceImpl implements IOrderService{
     public PageInfo<OrderCenterVo> getWaitConFirmOrders(BasePageDto basePageDto) {
         try{
             //查询所有待确认订单信息
-            List<OrderCenterVo> ordCenVos = orderDao.getWaitConFirmOrders();
+            List<OrderCenterVo> ordCenVos =new ArrayList<>();
             return encapOrderList(ordCenVos,basePageDto);
         }catch (Exception e){
             log.info("获取待确认订单出现异常");
@@ -162,8 +145,8 @@ public class OrderServiceImpl implements IOrderService{
     public PageInfo<OrderCenterVo> getTransOrders(BasePageDto basePageDto) {
         try{
             //查询所有运输中订单信息
-            List<OrderCenterVo> ordCenVos = orderDao.getTransOrders();
-            return encapOrderList(ordCenVos,basePageDto);
+            //List<OrderCenterVo> ordCenVos = orderDao.getTransOrders();
+            //return encapOrderList(ordCenVos,basePageDto);
         }catch (Exception e){
             log.info("获取运输中订单出现异常");
         }
@@ -174,8 +157,8 @@ public class OrderServiceImpl implements IOrderService{
     public PageInfo<OrderCenterVo> getPaidOrders(BasePageDto basePageDto) {
         try{
             //查询所有已支付订单信息
-            List<OrderCenterVo> ordCenVos = orderDao.getPaidOrders();
-            return encapOrderList(ordCenVos,basePageDto);
+            //List<OrderCenterVo> ordCenVos = orderDao.getPaidOrders();
+           // return encapOrderList(ordCenVos,basePageDto);
         }catch (Exception e){
             log.info("获取已支付订单出现异常");
         }
@@ -186,8 +169,8 @@ public class OrderServiceImpl implements IOrderService{
     public PageInfo<OrderCenterVo> getAllOrders(BasePageDto basePageDto) {
         try{
             //查询全部订单信息
-            List<OrderCenterVo> ordCenVos = orderDao.getAllOrders();
-            return encapOrderList(ordCenVos,basePageDto);
+           // List<OrderCenterVo> ordCenVos = orderDao.getAllOrders();
+           // return encapOrderList(ordCenVos,basePageDto);
         }catch (Exception e){
             log.info("获取全部订单出现异常");
         }
@@ -199,7 +182,7 @@ public class OrderServiceImpl implements IOrderService{
         OrderDetailVo detailVo = null;
         try{
             //根据订单编号查询订单详情
-            detailVo = orderDao.getOrderDetailByNo(orderNo);
+           //detailVo = orderDao.getOrderDetailByNo(orderNo);
             if(StringUtils.isNotBlank(detailVo.getCreateTime())){
                 detailVo.setCreateTime(LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(Long.valueOf(detailVo.getCreateTime())),TimePatternConstant.SIMPLE_DATE_FORMAT));
             }
@@ -218,8 +201,8 @@ public class OrderServiceImpl implements IOrderService{
     @Override
     public PageInfo<OrderCenterVo> getConFirmOrdsByTerm(OrderConditionDto dto) {
         try{
-            List<OrderCenterVo> orderCenterVos = orderDao.getConFirmOrdsByTerm(dto);
-            return encapOrderByTermList(orderCenterVos,dto);
+            //List<OrderCenterVo> orderCenterVos = orderDao.getConFirmOrdsByTerm(dto);
+            //return encapOrderByTermList(orderCenterVos,dto);
         }catch (Exception e){
             log.info("根据条件筛选待确认订单出现异常");
         }
@@ -229,8 +212,8 @@ public class OrderServiceImpl implements IOrderService{
     @Override
     public PageInfo<OrderCenterVo> getTransOrdsByTerm(OrderConditionDto dto) {
         try{
-            List<OrderCenterVo> orderCenterVos = orderDao.getTransOrdsByTerm(dto);
-            return encapOrderByTermList(orderCenterVos,dto);
+            //List<OrderCenterVo> orderCenterVos = orderDao.getTransOrdsByTerm(dto);
+            //return encapOrderByTermList(orderCenterVos,dto);
         }catch (Exception e){
             log.info("根据条件筛选待确认订单出现异常");
         }
@@ -240,8 +223,8 @@ public class OrderServiceImpl implements IOrderService{
     @Override
     public PageInfo<OrderCenterVo> getPaidOrdsByTerm(OrderConditionDto dto) {
         try{
-            List<OrderCenterVo> orderCenterVos = orderDao.getPaidOrdsByTerm(dto);
-            return encapOrderByTermList(orderCenterVos,dto);
+            //List<OrderCenterVo> orderCenterVos = orderDao.getPaidOrdsByTerm(dto);
+           // return encapOrderByTermList(orderCenterVos,dto);
         }catch (Exception e){
             log.info("根据条件筛选待确认订单出现异常");
         }
@@ -251,8 +234,8 @@ public class OrderServiceImpl implements IOrderService{
     @Override
     public PageInfo<OrderCenterVo> getAllOrdsByTerm(OrderConditionDto dto) {
         try{
-            List<OrderCenterVo> orderCenterVos = orderDao.getAllOrdsByTerm(dto);
-            return encapOrderByTermList(orderCenterVos,dto);
+            //List<OrderCenterVo> orderCenterVos = orderDao.getAllOrdsByTerm(dto);
+            //return encapOrderByTermList(orderCenterVos,dto);
         }catch (Exception e){
             log.info("根据条件筛选待确认订单出现异常");
         }

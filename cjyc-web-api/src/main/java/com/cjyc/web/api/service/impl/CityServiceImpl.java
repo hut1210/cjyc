@@ -46,7 +46,7 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
 
     @Override
     public City findById(String cityCode) {
-        return cityDao.findById(cityCode);
+        return cityDao.selectById(cityCode);
     }
 
     @Override
@@ -78,20 +78,20 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
     }
 
     private List<TreeCityVo> getTree(int startLevel, int endLevel) {
-        if (startLevel <= -1 || startLevel > 5 || startLevel >= endLevel) {
+        if (startLevel <= -1 || startLevel > 5 || startLevel > endLevel) {
             return null;
         }
         if (endLevel > 5) {
             return null;
         }
-
+        //List<TreeCityVo> list1 = cityDao.findTree(startLevel, endLevel);
         List<TreeCityVo> list = cityDao.findListByLevel(startLevel);
-        startLevel += 1;
+        int newStartLevel  = startLevel + 1;
         for (TreeCityVo treeCityVo : list) {
             if (startLevel >= endLevel) {
-                cityDao.findListByLevel(startLevel);
+                cityDao.findListByLevel(newStartLevel);
             } else {
-                treeCityVo.setNext(getTree(startLevel, endLevel));
+                treeCityVo.setNext(getTree(newStartLevel, endLevel));
             }
         }
         return list;
