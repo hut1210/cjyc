@@ -8,6 +8,7 @@ import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.web.api.service.ICarSeriesService;
+import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -25,7 +25,6 @@ import javax.servlet.http.HttpServletResponse;
  * @Date 2019/10/28 15:58
  **/
 @Api(tags = "品牌车系管理")
-@CrossOrigin
 @RestController
 @RequestMapping("/carSeries")
 public class CarSeriesController {
@@ -48,7 +47,7 @@ public class CarSeriesController {
 
     @ApiOperation(value = "查询详情", notes = "\t 请求接口为/queryDetail/id格式")
     @PostMapping("/queryDetail/{id}")
-    public ResultVo queryDetail(@PathVariable Long id){
+    public ResultVo<CarSeries> queryDetail(@PathVariable Long id){
         return BaseResultUtil.success(carSeriesService.getById(id));
     }
 
@@ -61,7 +60,7 @@ public class CarSeriesController {
 
     @ApiOperation(value = "分页查询", notes = "\t 请求接口为json格式")
     @PostMapping("/queryPage")
-    public ResultVo queryPage(@RequestBody CarSeriesQueryDto carSeriesQueryDto){
+    public ResultVo<PageInfo<CarSeries>> queryPage(@RequestBody CarSeriesQueryDto carSeriesQueryDto){
         return carSeriesService.queryPage(carSeriesQueryDto);
     }
 

@@ -10,7 +10,6 @@ import com.cjyc.common.model.dto.web.carSeries.CarSeriesImportExcel;
 import com.cjyc.common.model.dto.web.carSeries.CarSeriesQueryDto;
 import com.cjyc.common.model.dto.web.carSeries.CarSeriesUpdateDto;
 import com.cjyc.common.model.entity.CarSeries;
-import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.StringUtil;
@@ -119,29 +118,35 @@ public class CarSeriesServiceImpl extends ServiceImpl<ICarSeriesDao,CarSeries> i
     @Override
     public void exportExcel(HttpServletRequest request, HttpServletResponse response) {
         // 获取参数
+        CarSeriesQueryDto carSeriesQueryDto = getCarSeriesQueryDto(request);
+        // 查询列表
+        List<CarSeries> list = getCarSeriesList(carSeriesQueryDto);
+
+        if (!CollectionUtils.isEmpty(list)) {
+            // 生成导出数据
+            List<CarSeriesExportExcel> exportExcelList = new ArrayList<>(10);
+            for (CarSeries carSeries : list) {
+                CarSeriesExportExcel carSeriesExportExcel = new CarSeriesExportExcel();
+                BeanUtils.copyProperties(carSeries, carSeriesExportExcel);
+                exportExcelList.add(carSeriesExportExcel);
+            }
+            String title = "品牌车系";
+            String sheetName = "品牌车系";
+            String fileName = "品牌车系表.xls";
+            try {
+                ExcelUtil.exportExcel(exportExcelList, title, sheetName, CarSeriesExportExcel.class, fileName, response);
+            } catch (IOException e) {
+                log.error("导出品牌车系异常:{}",e);
+            }
+        }
+    }
+
+    private CarSeriesQueryDto getCarSeriesQueryDto(HttpServletRequest request) {
         CarSeriesQueryDto carSeriesQueryDto = new CarSeriesQueryDto();
         carSeriesQueryDto.setCurrentPage(Integer.valueOf(request.getParameter("currentPage")));
         carSeriesQueryDto.setPageSize(Integer.valueOf(request.getParameter("pageSize")));
         carSeriesQueryDto.setBrand(request.getParameter("brand"));
         carSeriesQueryDto.setModel(request.getParameter("model"));
-        // 查询列表
-        List<CarSeries> list = getCarSeriesList(carSeriesQueryDto);
-        try {
-            if (!CollectionUtils.isEmpty(list)) {
-                // 生成导出数据
-                List<CarSeriesExportExcel> exportExcelList = new ArrayList<>(10);
-                for (CarSeries carSeries : list) {
-                    CarSeriesExportExcel carSeriesExportExcel = new CarSeriesExportExcel();
-                    BeanUtils.copyProperties(carSeries,carSeriesExportExcel);
-                    exportExcelList.add(carSeriesExportExcel);
-                }
-                String title = "品牌车系表";
-                String sheetName = "品牌车系表";
-                String fileName = "品牌车系表.xls";
-                ExcelUtil.exportExcel(exportExcelList,title,sheetName, CarSeriesExportExcel.class,fileName,response);
-            }
-        } catch (IOException e) {
-            log.error("导出品牌车系异常:{}",e);
-        }
+        return carSeriesQueryDto;
     }
 }
