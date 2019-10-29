@@ -1,7 +1,8 @@
 package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.web.carSeries.CarSeriesAddDto;
-import com.cjyc.common.model.dto.web.carrier.CarrierDto;
+import com.cjyc.common.model.dto.web.carSeries.CarSeriesQueryDto;
+import com.cjyc.common.model.dto.web.carSeries.CarSeriesUpdateDto;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
@@ -29,8 +30,28 @@ public class CarSeriesController {
 
     @ApiOperation(value = "新增", notes = "\t 请求接口为json格式")
     @PostMapping(value = "/add")
-    public ResultVo save(@RequestBody @Validated CarSeriesAddDto carSeriesAddDto){
+    public ResultVo add(@RequestBody @Validated CarSeriesAddDto carSeriesAddDto){
         return carSeriesService.add(carSeriesAddDto);
+    }
+
+    @ApiOperation(value = "删除", notes = "\t 请求接口为/delete/id格式;只支持单条删除")
+    @PostMapping(value = "/remove/{id}")
+    public ResultVo remove(@PathVariable Long id){
+        boolean result = carSeriesService.removeById(id);
+        return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg())
+                : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
+    }
+
+    @ApiOperation(value = "修改", notes = "\t 请求接口为json格式")
+    @PostMapping(value = "/modify")
+    public ResultVo modify(@RequestBody @Validated CarSeriesUpdateDto carSeriesUpdateDto){
+        return carSeriesService.modify(carSeriesUpdateDto);
+    }
+
+    @ApiOperation(value = "分页查询", notes = "\t 请求接口为json格式")
+    @PostMapping(value = "/queryPage")
+    public ResultVo queryPage(@RequestBody CarSeriesQueryDto carSeriesQueryDto){
+        return carSeriesService.queryPage(carSeriesQueryDto);
     }
 
 
