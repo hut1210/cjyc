@@ -25,7 +25,7 @@ import java.util.Map;
  *  @Date: 2019/10/12 9:46
  *  @Description: 韵车2.0字典维护
  */
-@Api(tags = "韵车2.0字典维护")
+@Api(tags = "字典")
 @CrossOrigin
 @RestController
 @RequestMapping("/dictionary")

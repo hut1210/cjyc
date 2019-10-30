@@ -28,6 +28,8 @@ public class SaveOrderDto {
     private Long userName;
     @ApiModelProperty(value = "0保存（预订单） 1提交， 2审核")
     private int saveType;
+    @ApiModelProperty(value = "物流券抵消金额")
+    private BigDecimal couponOffsetFee;
     /**车辆列表*/
     private List<SaveOrderCarDto> orderCarList;
 

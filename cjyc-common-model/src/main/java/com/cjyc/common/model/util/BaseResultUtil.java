@@ -6,6 +6,7 @@ import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.github.pagehelper.PageInfo;
+import org.apache.commons.lang3.StringUtils;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -150,7 +151,12 @@ public class BaseResultUtil<T> {
         if(totalRecords == null){
             if(countInfo != null){
                 try {
-                    totalRecords = countInfo.get("totalCount") == null ? null : (long)countInfo.get("totalCount");
+                    Object totalCount = countInfo.get("totalCount");
+                    if(totalCount == null || StringUtils.isBlank(totalCount.toString())){
+                        totalRecords = 0L;
+                    }else{
+                        totalRecords = Long.valueOf(totalCount.toString());
+                    }
                 }catch (Exception e){
                     e.printStackTrace();
                 }

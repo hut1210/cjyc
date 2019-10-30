@@ -72,7 +72,7 @@ public class CarSeriesController {
     }
 
     @ApiOperation(value = "导出Excel", notes = "\t 请求接口为/carSeries/exportExcel?currentPage=1&pageSize=6&brand=宝马&model=BM001")
-    @GetMapping("/exportExcel")
+    @PostMapping("/exportExcel")
     public void exportExcel(HttpServletRequest request, HttpServletResponse response){
         carSeriesService.exportExcel(request,response);
     }

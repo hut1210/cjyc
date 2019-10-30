@@ -10,6 +10,7 @@ import com.cjyc.common.model.vo.customer.OrderCarCenterVo;
 import com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo;
 import org.apache.ibatis.annotations.Param;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -114,4 +115,6 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
     List<OrderCar> findListSelective(@Param("paramsDto") ListOrderCarDto paramsDto);
 
     List<OrderCar> findListByWaybillId(Long waybillId);
+
+    BigDecimal getWLTotalFee(Long orderId);
 }

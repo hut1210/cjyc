@@ -18,6 +18,7 @@ import com.cjyc.web.api.service.IOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -70,7 +71,7 @@ public class OrderController {
      */
     @ApiOperation(value = "订单提交")
     @PostMapping(value = "/commit")
-    public ResultVo commit(@RequestBody CommitOrderDto reqDto) {
+    public ResultVo commit(@Validated @RequestBody CommitOrderDto reqDto) {
 
         //验证用户存不存在
         Long userId = reqDto.getUserId();

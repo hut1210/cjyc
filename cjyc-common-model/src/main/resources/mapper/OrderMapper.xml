@@ -123,9 +123,18 @@
 
     <select id="findVoById" resultType="com.cjyc.common.model.vo.web.order.OrderVo">
         select
-        <include refid="Base_Column_List"/>
-        from w_order
-        where id = #{orderId}
+        s1.detail_addr as inputStoreAddress,
+        s2.detail_addr as startStoreAddress,
+        s3.detail_addr as endStoreAddress,
+        cc.`name` as couponName,
+        w.*
+        from w_order w
+        left join s_store s1 on s1.id = w.input_store_id
+        left join s_store s2 on s2.id = w.start_store_id
+        left join s_store s3 on s3.id = w.end_store_id
+        left join c_coupon_send cs on cs.id = w.coupon_send_id
+        left join c_coupon cc on cc.id = cs.coupon_id
+        where w.id = #{orderId}
     </select>
     <select id="findListSelective" resultType="com.cjyc.common.model.entity.Order">
         select

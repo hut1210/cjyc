@@ -10,7 +10,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,14 +30,14 @@ public class OrganizationController {
 
 
     @ApiOperation(value = "根据ID获取组织机构本地信息", notes = "")
-    @GetMapping("/get/{id}")
+    @PostMapping("/get/{id}")
     public ResultVo<Organization> getById(@PathVariable long id){
         Organization organization = organizationService.getById(id);
         return BaseResultUtil.success(organization);
     }
 
     @ApiOperation(value = "根据ID获取组织机构本地信息", notes = "")
-    @GetMapping("/sys/role/list/{id}")
+    @PostMapping("/sys/role/list/{id}")
     public ResultVo<List<SysRoleEntity>> listRole(@PathVariable long id){
         List<SysRoleEntity> list= organizationService.getSysRoleList(id);
         return BaseResultUtil.success(list);

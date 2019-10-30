@@ -306,7 +306,7 @@ public class CustomerServiceImpl implements ICustomerService{
     @Override
     public int save(Customer customer) {
         //添加架构组数据
-        AddUserReq addUserReq = new AddUserReq();
+/*        AddUserReq addUserReq = new AddUserReq();
         addUserReq.setAccount(customer.getContactPhone());
         addUserReq.setPassword(YmlProperty.get("cjkj.web.password"));
         addUserReq.setDeptId(Long.valueOf(YmlProperty.get("cjkj.dept_customer_id")));
@@ -316,8 +316,8 @@ public class CustomerServiceImpl implements ICustomerService{
 
         if(resultData == null || resultData.getData() == null || resultData.getData().getUserId() == null){
             throw new ServerException("添加用户失败");
-        }
-        customer.setUserId(resultData.getData().getUserId());
+        }*/
+        //customer.setUserId(resultData.getData().getUserId());
         return customerDao.insert(customer);
     }
 

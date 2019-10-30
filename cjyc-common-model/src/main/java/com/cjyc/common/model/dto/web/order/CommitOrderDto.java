@@ -1,6 +1,5 @@
 package com.cjyc.common.model.dto.web.order;
 
-import com.cjyc.common.model.entity.Order;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -30,14 +29,10 @@ public class CommitOrderDto {
     @ApiModelProperty(value = "操作人")
     private Long userName;
     @NotNull
-    @ApiModelProperty(value = "0保存（预订单） 1提交， 2审核",required = true)
-    private int saveType;
-    @ApiModelProperty(value = "客户电话",required = true)
-    private Boolean createCustomerFlag = false;
+    @ApiModelProperty(value = "用户不存在，是否创建用户",required = true)
+    private Boolean createCustomerFlag;
     /**车辆列表*/
     private List<CommitOrderCarDto> orderCarList;
-
-
 
     @ApiModelProperty(value = "订单ID")
     private Long orderId;
@@ -129,7 +124,8 @@ public class CommitOrderDto {
     private Integer payType;
     @ApiModelProperty(value = "优惠券id")
     private Long couponSendId;
-
+    @ApiModelProperty(value = "物流券抵消金额")
+    private BigDecimal couponOffsetFee;
     @ApiModelProperty(value = "应收总价：收车后客户应支付平台的费用")
     private BigDecimal totalFee;
 

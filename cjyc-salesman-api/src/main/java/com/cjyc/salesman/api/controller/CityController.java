@@ -32,7 +32,7 @@ public class CityController {
     private ICityService cityService;
 
     @ApiOperation(value = "根据code查询城市", notes = " ")
-    @GetMapping(value = "/get/{code}")
+    @PostMapping(value = "/get/{code}")
     public ResultVo<City> get(@ApiParam(value = "城市编码", required = true)
                               @PathVariable String code) {
         City city = cityService.getById(code);
@@ -40,7 +40,7 @@ public class CityController {
     }
 
     @ApiOperation(value = "查询城市列表", notes = "")
-    @GetMapping(value = "/list/{level}")
+    @PostMapping(value = "/list/{level}")
     public ResultVo<Collection<City>> List(@ApiParam(value = "行政区级别：0大区，1省，2市，3区县", required = true)
                                            @PathVariable int level) {
         HashMap<String, Object> columnMap = new HashMap<>();
@@ -50,7 +50,7 @@ public class CityController {
     }
 
     @ApiOperation(value = "查询城市列表（分页）", notes = "")
-    @GetMapping(value = "/page")
+    @PostMapping(value = "/page")
     public ResultVo<PageVo<City>> page(@ApiParam(value = "查询条件", required = true)
                                        @Validated @RequestBody CityPageDto cityPageDto) {
         IPage<City> iPage = cityService.selectPage(cityPageDto);
@@ -58,7 +58,7 @@ public class CityController {
     }
 
     @ApiOperation(value = "查询下属城市列表", notes = "")
-    @GetMapping(value = "/child/list/{code}")
+    @PostMapping(value = "/child/list/{code}")
     public ResultVo<List<City>> childList(@ApiParam(value = "城市编码", required = true)
                                           @PathVariable String code) {
         List<City> list = cityService.selectChildList(code);

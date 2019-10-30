@@ -541,6 +541,12 @@
         join w_order_car oc on wc.order_car_id = oc.id
         where wc.waybill_id = #{waybillId}
     </select>
+    <select id="getWLTotalFee" resultType="java.math.BigDecimal">
+        select
+        (SUM(IFNULL(pick_fee,0)) + SUM(IFNULL(trunk_fee,0)) + SUM(IFNULL(back_fee,0)) + SUM(IFNULL(add_insurance_fee,0))) as wlTotalFee
+        from w_order_car
+        where order_id = #{orderId}
+    </select>
 
     <!--业务范围条件-->
     <sql id="and_bizScopeStoreIds">

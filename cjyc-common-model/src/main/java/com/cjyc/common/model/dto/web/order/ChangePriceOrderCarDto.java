@@ -18,10 +18,6 @@ public class ChangePriceOrderCarDto {
 
     @ApiModelProperty(value = "ID")
     private Long id;
-    @ApiModelProperty(value = "no")
-    private Long no;
-    @ApiModelProperty(value = "vin")
-    private Long vin;
 
     @ApiModelProperty(value = "车辆应收提车费")
     private BigDecimal pickFee;
@@ -33,14 +29,8 @@ public class ChangePriceOrderCarDto {
     private BigDecimal backFee;
 
     @ApiModelProperty(value = "车辆应收保险费")
-    private BigDecimal insuranceFee;
+    private BigDecimal addInsuranceFee;
 
-    @ApiModelProperty(value = "物流券抵消金额")
-    private BigDecimal couponOffsetFee;
-
-    @ApiModelProperty(value = "车辆代收中介费（为资源合伙人代收）")
-    private BigDecimal agencyFee;
-
-
-
+    @ApiModelProperty(value = "保额/万")
+    private Integer addInsuranceAmount;
 }

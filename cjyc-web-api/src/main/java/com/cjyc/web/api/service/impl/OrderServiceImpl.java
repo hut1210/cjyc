@@ -99,7 +99,10 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
 
         /**2、更新或保存车辆信息*/
         List<SaveOrderCarDto> carDtoList = paramsDto.getOrderCarList();
-        List<OrderCar> orderCarSavelist = new ArrayList<>();
+        if (carDtoList == null || carDtoList.isEmpty()) {
+            //没有车辆，结束
+            return BaseResultUtil.success();
+        }
 
         //费用统计变量
         //删除旧的车辆数据
@@ -120,13 +123,10 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
             orderCar.setOrderId(order.getId());
             orderCar.setNo(order.getNo() + "-" + noCount);
             orderCar.setState(OrderCarStateEnum.WAIT_ROUTE.code);
-            orderCarSavelist.add(orderCar);
             orderCarDao.insert(orderCar);
             //统计数量
             noCount++;
         }
-        order.setCarNum(noCount);
-
         return BaseResultUtil.success();
     }
 
@@ -146,7 +146,6 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
             //新建订单
             newOrderFlag = true;
             order = new Order();
-
         }
         BeanUtils.copyProperties(paramsDto, order);
         //创建用户
@@ -157,7 +156,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         if (customer == null) {
             customer = new Customer();
             if (paramsDto.getCustomerType() == CustomerTypeEnum.INDIVIDUAL.code) {
-                if(paramsDto.getCreateCustomerFlag()){
+                if (paramsDto.getCreateCustomerFlag()) {
                     customer.setName(paramsDto.getCustomerName());
                     customer.setContactMan(paramsDto.getCustomerName());
                     customer.setContactPhone(paramsDto.getCustomerPhone());
@@ -169,7 +168,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
                     customer.setCreateUserId(paramsDto.getUserId());
                     //添加
                     customerService.save(customer);
-                }else{
+                } else {
                     return BaseResultUtil.getVo(ResultEnum.CREATE_NEW_CUSTOMER.getCode(), ResultEnum.CREATE_NEW_CUSTOMER.getMsg());
                 }
             } else {
@@ -184,41 +183,31 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         }
         order.setState(OrderStateEnum.SUBMITTED.code);
         order.setSource(order.getSource() == null ? paramsDto.getClientId() : order.getSource());
-        //计算优惠券，抵消金额
-/*        if (couponSendId != null) {
-            BigDecimal couponAmount = couponSendService.getAmountById(couponSendId, paramsDto.getRealWlTotalFee());
-            order.setCouponOffsetFee(couponAmount);
-            //TODO 处理优惠券为使用状态，优惠券有且仅能验证一次，修改时怎么保证
-        }
-        if (paramsDto.getCustomerType() == CustomerTypeEnum.COOPERATOR.code) {
-            BigDecimal agency = wlTotalFee.subtract(realWlTotalFee).add(order.getCouponOffsetFee());
-            order.setAgencyFee(agency);
-            //合伙人：收车后客户应支付平台的钱->总物流费
-            order.setTotalFee(wlTotalFee);
-        } else {
-            order.setAgencyFee(BigDecimal.ZERO);
-            //其他客户：收车后客户应支付平台的钱->总物流费-优惠券
-            order.setTotalFee(wlTotalFee.subtract(order.getCouponOffsetFee() == null ? BigDecimal.ZERO : order.getCouponOffsetFee() ));
-        }*/
-
         order.setCreateTime(System.currentTimeMillis());
 
         //更新或插入订单
         int row = newOrderFlag ? orderDao.insert(order) : orderDao.updateById(order);
-        if(row <= 0){
+        if (row <= 0) {
             return BaseResultUtil.fail("订单未修改，提交失败");
         }
 
         /**2、更新或保存车辆信息*/
         List<CommitOrderCarDto> carDtoList = paramsDto.getOrderCarList();
-        List<OrderCar> orderCarSavelist = new ArrayList<>();
-
+        if (carDtoList == null || carDtoList.isEmpty()) {
+            throw new ParameterException("订单车辆不能为空");
+        }
+        //删除旧的车辆数据
+        if (!newOrderFlag) {
+            orderCarDao.deleteBatchByOrderId(order.getId());
+        }
         //费用统计变量
-        int noCount = 1;
+        int noCount = 0;
         for (CommitOrderCarDto dto : carDtoList) {
             if (dto == null) {
                 continue;
             }
+            //统计数量
+            noCount++;
             OrderCar orderCar = new OrderCar();
             //复制数据
             BeanUtils.copyProperties(dto, orderCar);
@@ -231,55 +220,73 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
             orderCar.setTrunkFee(dto.getTrunkFee() == null ? BigDecimal.ZERO : dto.getTrunkFee());
             orderCar.setBackFee(dto.getBackFee() == null ? BigDecimal.ZERO : dto.getBackFee());
             orderCar.setAddInsuranceFee(dto.getInsuranceFee() == null ? BigDecimal.ZERO : dto.getInsuranceFee());
-            orderCarSavelist.add(orderCar);
-            //统计数量
-            noCount++;
-
+            orderCarDao.insert(orderCar);
         }
         order.setCarNum(noCount);
-        //均摊优惠券费用
-/*        if (totalCouponOffsetFee != null && totalCouponOffsetFee.compareTo(BigDecimal.ZERO) > 0) {
-            shareCouponOffsetFee(order, orderCarSavelist, totalCouponOffsetFee, paramsDto.getCustomerType());
+        if (noCount == 0) {
+            throw new ParameterException("订单至少包含一辆车");
         }
-
-        //均摊服务费用
-        if (totalAgencyFee != null && totalAgencyFee.compareTo(BigDecimal.ZERO) > 0) {
-            shareAgencyFee(order, orderCarSavelist, totalAgencyFee, paramsDto.getCustomerType());
-        }*/
-
-        //删除旧的车辆数据
-        if (!newOrderFlag) {
-            orderCarDao.deleteBatchByOrderId(order.getId());
-        }
-        //批量保存车辆
-        orderCarDao.saveBatch(orderCarSavelist);
+        orderDao.updateById(order);
         return BaseResultUtil.success();
     }
+
     @Override
     public ResultVo check(CheckOrderDto reqDto) {
         Order order = orderDao.selectById(reqDto.getOrderId());
         if (order == null) {
             return BaseResultUtil.fail("订单不存在");
         }
-        if(order.getState() >= OrderStateEnum.CHECKED.code){
+        if (order.getState() <= OrderStateEnum.WAIT_SUBMIT.code) {
+            return BaseResultUtil.fail("订单未提交，无法审核");
+        }
+        if (order.getState() >= OrderStateEnum.CHECKED.code) {
             return BaseResultUtil.fail("订单已经审核过，无法审核");
         }
         //验证必要信息是否完全
         validateOrderFeild(order);
 
+        List<OrderCar> orderCarList = orderCarDao.findByOrderId(order.getId());
+        if (orderCarList == null || list().isEmpty()) {
+            return BaseResultUtil.fail("订单没有车辆");
+        }
+        //验证物流券费用
+        /*BigDecimal wlTotalFee = orderCarDao.getWLTotalFee(reqDto.getOrderId());
+        BigDecimal couponAmount = BigDecimal.ZERO;
+        if (order.getCouponSendId() != null) {
+            couponAmount = couponSendService.getAmountById(order.getCouponSendId(), wlTotalFee);
+        }
+        order.setCouponOffsetFee(couponAmount);*/
 
+        //均摊优惠券费用
+        BigDecimal totalCouponOffsetFee = order.getCouponOffsetFee() == null ? BigDecimal.ZERO : order.getCouponOffsetFee();
+        if (totalCouponOffsetFee.compareTo(BigDecimal.ZERO) > 0) {
+            shareCouponOffsetFee(order, orderCarList);
+        }
+
+        //均摊总费用
+        BigDecimal totalFee = order.getTotalFee() == null ? BigDecimal.ZERO : order.getTotalFee();
+        if (totalFee.compareTo(BigDecimal.ZERO) > 0) {
+            shareTotalFee(order, orderCarList);
+        }
+        for (OrderCar orderCar : orderCarList) {
+            orderCarDao.updateById(orderCar);
+        }
 
         order.setState(OrderStateEnum.CHECKED.code);
         orderDao.updateById(order);
+
+        //TODO 处理优惠券为使用状态，优惠券有且仅能验证一次，修改时怎么保证
+        //TODO 路由轨迹
+
         return BaseResultUtil.success();
     }
 
-
     /**
      * 验证订单属性
+     *
+     * @param order
      * @author JPG
      * @since 2019/10/29 9:16
-     * @param order
      */
     private void validateOrderFeild(Order order) {
         if (order.getId() == null || order.getNo() == null) {
@@ -314,36 +321,28 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         }
 
     }
+
     /**
      * 均摊服务费
      *
      * @param order
      * @param orderCarSavelist
-     * @param totalAgencyFee
      * @author JPG
      * @since 2019/10/29 8:30
      */
-    private void shareAgencyFee(Order order, List<OrderCar> orderCarSavelist, BigDecimal totalAgencyFee, int customerType) {
-        if (customerType != CustomerTypeEnum.COOPERATOR.code) {
-            return;
-        }
-        BigDecimal[] agencyFeeArray = totalAgencyFee.divideAndRemainder(new BigDecimal(order.getCarNum()));
-        BigDecimal agencyFeeAvg = agencyFeeArray[0];
-        BigDecimal agencyFeeRemainder = agencyFeeArray[1];
+    private void shareTotalFee(Order order, List<OrderCar> orderCarSavelist) {
+        BigDecimal totalFee = order.getTotalFee() == null ? BigDecimal.ZERO : order.getTotalFee();
+        BigDecimal[] totalFeeArray = totalFee.divideAndRemainder(new BigDecimal(order.getCarNum()));
+        BigDecimal totalFeeAvg = totalFeeArray[0];
+        BigDecimal totalFeeRemainder = totalFeeArray[1];
         for (OrderCar orderCar : orderCarSavelist) {
             //合伙人计算均摊服务费
-            if (agencyFeeRemainder.compareTo(BigDecimal.ZERO) > 0) {
-                orderCar.setAgencyFee(agencyFeeAvg.add(BigDecimal.ONE));
-                agencyFeeRemainder = agencyFeeRemainder.subtract(BigDecimal.ONE);
+            if (totalFeeRemainder.compareTo(BigDecimal.ZERO) > 0) {
+                orderCar.setTotalFee(totalFeeAvg.add(BigDecimal.ONE));
+                totalFeeRemainder = totalFeeRemainder.subtract(BigDecimal.ONE);
             } else {
-                orderCar.setAgencyFee(agencyFeeAvg);
+                orderCar.setTotalFee(totalFeeAvg);
             }
-            orderCar.setTotalFee(orderCar.getPickFee()
-                    .add(orderCar.getTrunkFee())
-                    .add(orderCar.getBackFee())
-                    .add(order.getAddInsuranceFee())
-                    .add(order.getAgencyFee()));
-
         }
     }
 
@@ -352,13 +351,12 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
      *
      * @param order
      * @param orderCarSavelist
-     * @param totalCouponOffsetFee
-     * @param customerType
      * @author JPG
      * @since 2019/10/29 8:27
      */
-    private void shareCouponOffsetFee(Order order, List<OrderCar> orderCarSavelist, BigDecimal totalCouponOffsetFee, int customerType) {
-        BigDecimal[] couponOffsetFeeArray = totalCouponOffsetFee.divideAndRemainder(new BigDecimal(order.getCarNum()));
+    private void shareCouponOffsetFee(Order order, List<OrderCar> orderCarSavelist) {
+        BigDecimal couponOffsetFee = order.getCouponOffsetFee() == null ? BigDecimal.ZERO : order.getCouponOffsetFee();
+        BigDecimal[] couponOffsetFeeArray = couponOffsetFee.divideAndRemainder(new BigDecimal(order.getCarNum()));
         BigDecimal couponOffsetFeeAvg = couponOffsetFeeArray[0];
         BigDecimal couponOffsetFeeRemainder = couponOffsetFeeArray[1];
         for (OrderCar orderCar : orderCarSavelist) {
@@ -367,15 +365,6 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
                 couponOffsetFeeRemainder = couponOffsetFeeRemainder.subtract(BigDecimal.ONE);
             } else {
                 orderCar.setCouponOffsetFee(couponOffsetFeeAvg);
-            }
-            orderCar.setTotalFee(orderCar.getPickFee()
-                    .add(orderCar.getTrunkFee())
-                    .add(orderCar.getBackFee())
-                    .add(order.getAddInsuranceFee()));
-            //不是合伙人
-            if (customerType != CustomerTypeEnum.COOPERATOR.code) {
-                orderCar.setTotalFee(orderCar.getTotalFee()
-                        .subtract(orderCar.getCouponOffsetFee()));
             }
         }
     }
@@ -461,8 +450,6 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         return BaseResultUtil.success(pageInfo);
     }
 
-
-
     @Override
     public ResultVo obsolete(CancelOrderDto paramsDto) {
         //作废订单
@@ -497,107 +484,59 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     @Override
     public ResultVo changePrice(ChangePriceOrderDto paramsDto) {
         //处理参数
-        paramsDto.setWlTotalFee(paramsDto.getWlTotalFee() == null ? BigDecimal.ZERO : paramsDto.getWlTotalFee());
-        paramsDto.setRealWlTotalFee(paramsDto.getRealWlTotalFee() == null ? BigDecimal.ZERO : paramsDto.getRealWlTotalFee());
-        paramsDto.setCouponOffsetFee(paramsDto.getCouponOffsetFee() == null ? BigDecimal.ZERO : paramsDto.getCouponOffsetFee());
         //获取参数
         Long orderId = paramsDto.getOrderId();
-        BigDecimal wlTotalFee = paramsDto.getWlTotalFee();
-        BigDecimal couponOffsetFee = paramsDto.getCouponOffsetFee();
-        BigDecimal realWlTotalFee = paramsDto.getRealWlTotalFee();
-
         Order order = orderDao.selectById(orderId);
-        /**1、组装订单数据*/
-        //查询客户类型
-        Customer customer = customerService.selectById(order.getCustomerId());
-        int customerType = CustomerTypeEnum.INDIVIDUAL.code;
-        if (customer == null) {
-            customerType = customer.getType();
-        }
-        if (customerType == CustomerTypeEnum.COOPERATOR.code) {
-            order.setAgencyFee(wlTotalFee.subtract(realWlTotalFee).add(couponOffsetFee));
-            //合伙人：收车后客户应支付平台的钱->总物流费
-            order.setTotalFee(wlTotalFee);
-        } else {
-            //其他客户：收车后客户应支付平台的钱->总物流费-优惠券
-            order.setTotalFee(wlTotalFee.subtract(couponOffsetFee));
-        }
-        order.setCreateTime(System.currentTimeMillis());
-
-        //更新或插入订单
-        orderDao.updateById(order);
 
         /**2、更新或保存车辆信息*/
         List<ChangePriceOrderCarDto> orderCarList = paramsDto.getOrderCarList();
         List<OrderCar> orderCarUpdatelist = new ArrayList<>();
 
         //费用统计变量
-        int noCount = 1;
-        BigDecimal totalAgencyFee = order.getAgencyFee();//均摊
-        BigDecimal totalCouponOffsetFee = order.getCouponOffsetFee();//均摊
-        BigDecimal totalPickFee = BigDecimal.ZERO;//求和
-        BigDecimal totalTrunkFee = BigDecimal.ZERO;//求和
-        BigDecimal totalBackFee = BigDecimal.ZERO;//求和
-        BigDecimal totalInsuranceFee = BigDecimal.ZERO;//求和
-        BigDecimal totalFee = BigDecimal.ZERO;//求和
-
+        int noCount = 0;
+        BigDecimal totalFee = BigDecimal.ZERO;
         for (ChangePriceOrderCarDto dto : orderCarList) {
             if (dto == null) {
                 continue;
             }
-            OrderCar orderCar = new OrderCar();
+            //统计数量
+            noCount++;
+            OrderCar orderCar = orderCarDao.selectById(dto.getId());
+            if(orderCar == null){
+                throw new ServerException("ID为{}的车辆，不存在", dto.getId());
+            }
             //填充数据
             orderCar.setPickFee(dto.getPickFee() == null ? BigDecimal.ZERO : dto.getPickFee());
             orderCar.setTrunkFee(dto.getTrunkFee() == null ? BigDecimal.ZERO : dto.getTrunkFee());
             orderCar.setBackFee(dto.getBackFee() == null ? BigDecimal.ZERO : dto.getBackFee());
-            orderCar.setAddInsuranceFee(dto.getInsuranceFee() == null ? BigDecimal.ZERO : dto.getInsuranceFee());
-            orderCar.setTotalFee(orderCar.getPickFee()
-                    .add(orderCar.getTrunkFee())
-                    .add(orderCar.getBackFee())
-                    .add(orderCar.getAddInsuranceFee()));
-
-            orderCarUpdatelist.add(orderCar);
-
-            //计算统计费用
-            totalPickFee = totalPickFee.add(orderCar.getPickFee());
-            totalTrunkFee = totalTrunkFee.add(orderCar.getPickFee());
-            totalBackFee = totalBackFee.add(orderCar.getBackFee());
-            totalInsuranceFee = totalInsuranceFee.add(orderCar.getAddInsuranceFee());
-            totalCouponOffsetFee = totalCouponOffsetFee.add(orderCar.getCouponOffsetFee());
-            //统计数量
-            noCount++;
-
-        }
-
-        order.setCarNum(noCount);
-        //均摊优惠券费用
-        if (totalCouponOffsetFee != null || totalCouponOffsetFee.compareTo(BigDecimal.ZERO) > 0) {
-            shareCouponOffsetFee(order, orderCarUpdatelist, totalCouponOffsetFee, customerType);
-        }
-
-        //均摊服务费用
-        if (totalAgencyFee != null && totalAgencyFee.compareTo(BigDecimal.ZERO) > 0 && customerType == CustomerTypeEnum.COOPERATOR.code) {
-            shareAgencyFee(order, orderCarUpdatelist, totalAgencyFee, customerType);
-        }
-
-        for (OrderCar orderCar : orderCarUpdatelist) {
+            orderCar.setAddInsuranceFee(dto.getAddInsuranceFee() == null ? BigDecimal.ZERO : dto.getAddInsuranceFee());
+            orderCar.setAddInsuranceAmount(dto.getAddInsuranceAmount() == null ? 0 : dto.getAddInsuranceAmount());
             orderCarDao.updateById(orderCar);
+
+            totalFee = orderCar.getPickFee()
+                            .add(orderCar.getTrunkFee()
+                            .add(orderCar.getBackFee())
+                            .add(orderCar.getAddInsuranceFee()));
         }
+
+
+        if(CustomerTypeEnum.COOPERATOR.code == order.getCustomerType()){
+            totalFee = paramsDto.getTotalFee();
+        }
+        order.setTotalFee(totalFee);
+        orderDao.updateById(order);
         return BaseResultUtil.success();
     }
 
     @Override
     public ResultVo replenishInfo(ReplenishOrderDto paramsDto) {
         Order order = orderDao.selectById(paramsDto.getUserId());
-        if (order == null || order.getState() > OrderStateEnum.CHECKED.code) {
+        if (order == null || order.getState() >= OrderStateEnum.TRANSPORTING.code) {
             return BaseResultUtil.fail("订单不允许修改");
         }
         List<ReplenishOrderCarDto> list = paramsDto.getOrderCarList();
         for (ReplenishOrderCarDto dto : list) {
             OrderCar orderCar = orderCarDao.selectById(dto.getId());
-            if (orderCar == null || orderCar.getState() > OrderStateEnum.WAIT_CHECK.code) {
-                throw new ServerException("当前订单车辆不允许修改");
-            }
             orderCar.setBrand(dto.getBrand());
             orderCar.setModel(dto.getModel());
             orderCar.setPlateNo(dto.getPlateNo());

@@ -34,6 +34,7 @@ public class StoreController {
 
     /**
      * 根据二级城市编码查询业务中心
+     * @author JPG
      */
     @ApiOperation(value = "根据二级城市编码查询业务中心")
     @PostMapping(value = "/get/{cityCode}")
@@ -77,7 +78,7 @@ public class StoreController {
 
     @ApiOperation(value = "导出Excel", notes = "\t 请求接口为/store/exportExcel?currentPage=1&pageSize=6" +
             "&name=业务中心名称&provinceCode=省编码&cityCode=市编码&areaCode=区编码")
-    @GetMapping("/exportExcel")
+    @PostMapping("/exportExcel")
     public void exportExcel(HttpServletRequest request, HttpServletResponse response){
         storeService.exportExcel(request,response);
     }

@@ -38,7 +38,7 @@ public class ListOrderDto extends BasePageDto {
     private String customerName;
 
     //客户表
-    @ApiModelProperty(value = "客户类型")
+    @ApiModelProperty(value = "客户类型: 0全部 1C端 2大客户 3-合伙人")
     private String customerType;
     //客户表
     @ApiModelProperty(value = "客户电话")
@@ -78,8 +78,6 @@ public class ListOrderDto extends BasePageDto {
     @ApiModelProperty(value = "截止（提车日期）")
     private Long endTime;
 
-
-
     @ApiModelProperty(value = "提车方式:1 自送，2代驾上门，3拖车上门，4物流上门")
     private Integer pickType;
 
@@ -102,7 +100,7 @@ public class ListOrderDto extends BasePageDto {
     @ApiModelProperty(value = "线路ID")
     private Long lineId;
 
-    @ApiModelProperty(value = "订单来源：1WEB管理后台, 2业务员APP, 3业务员小程序, 4业务员APP, 5业务员小程序, 6用户端APP, 7用户端小程序")
+    @ApiModelProperty(value = "订单来源：1WEB管理后台, 2业务员APP, 4司机APP, 6用户端APP, 7用户端小程序")
     private Integer source;
 
 
