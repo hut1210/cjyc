@@ -33,12 +33,12 @@ public class StoreController {
     private IStoreService storeService;
 
     /**
-     * 根据cityCode查询所属业务中心
+     * 根据二级城市编码查询业务中心
      */
-    @ApiOperation(value = "根据userId查询所属业务中心")
-    @PostMapping(value = "/get/{areaCode}")
-    public ResultVo<List<Store>> getByUserId(@PathVariable String areaCode) {
-        List<Store> list = storeService.getByAreaCode(areaCode);
+    @ApiOperation(value = "根据二级城市编码查询业务中心")
+    @PostMapping(value = "/get/{cityCode}")
+    public ResultVo<List<Store>> getByCityCode(@PathVariable String cityCode) {
+        List<Store> list = storeService.getByCityCode(cityCode);
         return BaseResultUtil.success(list);
     }
 

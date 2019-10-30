@@ -28,6 +28,7 @@ import com.cjyc.common.model.vo.web.CustomerVo;
 import com.cjyc.common.model.vo.web.ListKeyCustomerVo;
 import com.cjyc.common.model.vo.web.ShowKeyCustomerVo;
 import com.cjyc.web.api.exception.CommonException;
+import com.cjyc.web.api.exception.ServerException;
 import com.cjyc.web.api.feign.ISysUserService;
 import com.cjyc.web.api.service.ICustomerService;
 import com.github.pagehelper.PageHelper;
@@ -314,8 +315,9 @@ public class CustomerServiceImpl implements ICustomerService{
         ResultData<AddUserResp> resultData = sysUserService.save(addUserReq);
 
         if(resultData == null || resultData.getData() == null || resultData.getData().getUserId() == null){
-            return 0;
+            throw new ServerException("添加用户失败");
         }
+        customer.setUserId(resultData.getData().getUserId());
         return customerDao.insert(customer);
     }
 

@@ -1,5 +1,6 @@
 package com.cjyc.common.model.dto.web.order;
 
+import com.cjyc.common.model.entity.Order;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -23,87 +24,92 @@ public class CommitOrderDto {
     @NotNull
     @ApiModelProperty(value = "1WEB管理后台, 2业务员APP, 4司机APP, 6用户端APP, 7用户端小程序", required = true)
     private int clientId;
-    @ApiModelProperty(value = "操作人userid")
-    private Long userId;
-    @ApiModelProperty(value = "订单ID")
-    private Long orderId;
     @NotNull
-    @ApiModelProperty(value = "1C端 2大客户 3-伙人",required = true)
-    private int customerType;
+    @ApiModelProperty(value = "操作人userid", required = true)
+    private Long userId;
+    @ApiModelProperty(value = "操作人")
+    private Long userName;
     @NotNull
     @ApiModelProperty(value = "0保存（预订单） 1提交， 2审核",required = true)
     private int saveType;
+    @ApiModelProperty(value = "客户电话",required = true)
+    private Boolean createCustomerFlag = false;
+    /**车辆列表*/
+    private List<CommitOrderCarDto> orderCarList;
+
+
+
+    @ApiModelProperty(value = "订单ID")
+    private Long orderId;
+    @ApiModelProperty(value = "1C端 2大客户 3-伙人")
+    private int customerType;
     @ApiModelProperty(value = "客户id")
     private Long customerId;
-    @NotBlank
-    @ApiModelProperty(value = "客户姓名",required = true)
-    private String customerName;
-    @NotBlank
-    @ApiModelProperty(value = "客户电话",required = true)
+    @ApiModelProperty(value = "客户电话")
     private String customerPhone;
-
-
-    @ApiModelProperty(value = "省",required = true)
+    @NotBlank
+    @ApiModelProperty(value = "客户姓名")
+    private String customerName;
+    @ApiModelProperty(value = "省")
     private String startProvince;
-    @ApiModelProperty(value = "省编号",required = true)
+    @ApiModelProperty(value = "省编号")
     private String startProvinceCode;
-    @ApiModelProperty(value = "市",required = true)
+    @ApiModelProperty(value = "市")
     private String startCity;
-    @ApiModelProperty(value = "市编号",required = true)
+    @ApiModelProperty(value = "市编号")
     private String startCityCode;
-    @ApiModelProperty(value = "区",required = true)
+    @ApiModelProperty(value = "区")
     private String startArea;
-    @ApiModelProperty(value = "区编号",required = true)
+    @ApiModelProperty(value = "区编号")
     private String startAreaCode;
-    @ApiModelProperty(value = "始发地详细地址",required = true)
+    @ApiModelProperty(value = "始发地详细地址")
     private String startAddress;
     @ApiModelProperty(value = "出发地业务中心ID: -1不经过业务中心")
     private Long startStoreId;
     @ApiModelProperty(value = "出发地业务中心名称")
     private String startStoreName;
-
-    @ApiModelProperty(value = "省",required = true)
+    @ApiModelProperty(value = "省")
     private String endProvince;
-    @ApiModelProperty(value = "省编号",required = true)
+    @ApiModelProperty(value = "省编号")
     private String endProvinceCode;
-    @ApiModelProperty(value = "市",required = true)
+    @ApiModelProperty(value = "市")
     private String endCity;
-    @ApiModelProperty(value = "市编号",required = true)
+    @ApiModelProperty(value = "市编号")
     private String endCityCode;
-    @ApiModelProperty(value = "区",required = true)
+    @ApiModelProperty(value = "区")
     private String endArea;
-    @ApiModelProperty(value = "区编号",required = true)
+    @ApiModelProperty(value = "区编号")
     private String endAreaCode;
-    @ApiModelProperty(value = "目的地详细地址",required = true)
+    @ApiModelProperty(value = "目的地详细地址")
     private String endAddress;
     @ApiModelProperty(value = "目的地业务中心ID: -1不经过业务中心")
     private Long endStoreId;
-    @ApiModelProperty(value = "目的地业务中心名称",required = true)
+    @ApiModelProperty(value = "目的地业务中心名称")
     private String endStoreName;
 
     @ApiModelProperty(value = "订单所属业务中心ID")
     private Long inputStoreId;
     @ApiModelProperty(value = "订单所属业务中心名称")
     private String inputStoreName;
-    @ApiModelProperty(value = "期望提车日期",required = true)
+    @ApiModelProperty(value = "期望提车日期")
     private String expectStartDate;
-    @ApiModelProperty(value = "期望到达日期",required = true)
+    @ApiModelProperty(value = "期望到达日期")
     private String expectEndDate;
     @ApiModelProperty(value = "车辆总数")
     private Integer carNum;
     @ApiModelProperty(value = "线路ID")
     private Long lineId;
-    @ApiModelProperty(value = "提车方式:1 自送，2代驾上门，3拖车上门, 4.物流上门",required = true)
+    @ApiModelProperty(value = "提车方式:1 自送，2代驾上门，3拖车上门, 4.物流上门")
     private int pickType;
-    @ApiModelProperty(value = "发车联系人",required = true)
+    @ApiModelProperty(value = "发车联系人")
     private String pickContactName;
-    @ApiModelProperty(value = "发车联系人电话",required = true)
-    private String PickContactPhone;
-    @ApiModelProperty(value = "送车方式： 1 自提，2代驾上门，3拖车上门, 4.物流上门",required = true)
+    @ApiModelProperty(value = "发车联系人电话")
+    private String pickContactPhone;
+    @ApiModelProperty(value = "送车方式： 1 自提，2代驾上门，3拖车上门, 4.物流上门")
     private int backType;
-    @ApiModelProperty(value = "收车联系人",required = true)
+    @ApiModelProperty(value = "收车联系人")
     private String backContactName;
-    @ApiModelProperty(value = "收车联系人电话",required = true)
+    @ApiModelProperty(value = "收车联系人电话")
     private String backContactPhone;
     @ApiModelProperty(value = "是否开票：0否（默认根据设置），1是")
     private int invoiceFlag;
@@ -119,23 +125,16 @@ public class CommitOrderDto {
     private String createUserName;
     @ApiModelProperty(value = "创建人类型：0客户，1业务员")
     private Long createUserId;
-    @ApiModelProperty(value = "支付方式 0-到付，1-预付，2账期",required = true)
+    @ApiModelProperty(value = "支付方式 0-到付，1-预付，2账期")
     private Integer payType;
     @ApiModelProperty(value = "优惠券id")
     private Long couponSendId;
 
-
-
-    @NotNull
-    @ApiModelProperty(value = "实际总收益费用，车辆合计费用（提车费+干线费+送车费+保险费）",required = true)
-    private BigDecimal realWlTotalFee;
-    @NotNull
-    @ApiModelProperty(value = "实际总物流费用，客户实际需付(提车费+干线费+送车费+保险费+服务费)",required = true)
-    private BigDecimal wlTotalFee;
+    @ApiModelProperty(value = "应收总价：收车后客户应支付平台的费用")
+    private BigDecimal totalFee;
 
     @ApiModelProperty(value = "状态（不需要传）")
     private Integer state;
 
-    /**车辆列表*/
-    private List<CommitOrderCarDto> orderCarList;
+
 }
