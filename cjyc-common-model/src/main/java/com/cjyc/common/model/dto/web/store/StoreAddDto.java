@@ -16,7 +16,7 @@ import java.io.Serializable;
 public class StoreAddDto implements Serializable {
     private static final long serialVersionUID = -7690545988224110399L;
     @ApiModelProperty(value = "部门ID",required = true)
-    @NotBlank(message = "部门ID不能为空")
+    @NotNull(message = "部门ID不能为空")
     private Long deptId;
 
     @ApiModelProperty(value = "业务中心名称",required = true)
