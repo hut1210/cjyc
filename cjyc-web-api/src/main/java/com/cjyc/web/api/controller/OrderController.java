@@ -11,6 +11,7 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.BizScopeVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.order.ListOrderVo;
 import com.cjyc.common.model.vo.web.order.OrderVo;
 import com.cjyc.web.api.service.IAdminService;
 import com.cjyc.web.api.service.IBizScopeService;
@@ -133,7 +134,7 @@ public class OrderController {
      */
     @ApiOperation(value = "查询订单列表")
     @PostMapping(value = "/list")
-    public ResultVo<PageVo<Order>> list(@RequestBody ListOrderDto reqDto) {
+    public ResultVo<PageVo<ListOrderVo>> list(@RequestBody ListOrderDto reqDto) {
         return orderService.list(reqDto);
     }
 

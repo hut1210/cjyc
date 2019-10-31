@@ -108,12 +108,28 @@
         left join c_coupon cc on cc.id = cs.coupon_id
         where w.id = #{orderId}
     </select>
-    <select id="findListSelective" resultType="com.cjyc.common.model.entity.Order">
+    <select id="findListSelective" resultType="com.cjyc.common.model.vo.web.order.ListOrderVo">
         select
-        o.*
+        o.*,
+        CONCAT(start_province,start_city,start_area,start_address) as startFullAddress,
+        CONCAT(end_province,end_city,end_area,end_address) as endFullAddress,
+        (sum(IFNULL(oc.pick_fee,0)) + sum(IFNULL(oc.trunk_fee,0)) + sum(IFNULL(oc.back_fee,0)) +sum(IFNULL(oc.add_insurance_fee,0))) as wlTotalFee,
+        (case when o.customer_type =3 then(sum(IFNULL(oc.pick_fee,0)) + sum(IFNULL(oc.trunk_fee,0)) + sum(IFNULL(oc.back_fee,0)) +sum(IFNULL(oc.add_insurance_fee,0)) + IFNULL(o.coupon_offset_fee,0))
+        else 0 end
+        ) as totalAgencyFee,
+        s1.region as region,
+        s1.region_code as regionCode,
+        s1.detail_addr as inputStoreAddress,
+        s2.detail_addr as startStoreAddress,
+        s3.detail_addr as endStoreAddress,
+        ht.contract_no as contractNo,
+        ht.settle_period as settlePeriod
         from w_order o
-        left join c_customer c on o.customer_id = c.id
-        left join s_store s on o.input_store_id = s.id
+        join w_order_car oc on oc.order_id = o.id
+        left join s_store s1 on o.input_store_id = s1.id
+        left join s_store s2 on o.start_store_id = s2.id
+        left join s_store s3 on o.end_store_id = s3.id
+        left join c_customer_contract ht on ht.id = o.customer_contract_id
         <where>
             <choose>
                 <when test="paramsDto.outterState == 1">
@@ -185,8 +201,6 @@
                     </if>
                 </when>
             </choose>
-
-
             <if test="paramsDto.no != null and paramsDto.no != ''">
                 and o.no = #{paramsDto.no}
             </if>
@@ -194,10 +208,10 @@
                 and o.customer_name = #{paramsDto.customerName}
             </if>
             <if test="paramsDto.customerType != null and paramsDto.customerType != ''">
-                and c.type = #{paramsDto.customerType}
+                and o.customer_type = #{paramsDto.customerType}
             </if>
             <if test="paramsDto.customerPhone != null and paramsDto.customerPhone != ''">
-                and c.contact_phone = #{paramsDto.customerPhone}
+                and o.customer_phone = #{paramsDto.customerPhone}
             </if>
             <if test="paramsDto.inputStoreId != null">
                 and o.input_store_id = #{paramsDto.inputStoreId}
@@ -259,9 +273,10 @@
                 and o.pay_type = #{paramsDto.payType}
             </if>
             <if test="paramsDto.regionCode != null and paramsDto.regionCode != ''">
-                and s.region_code = #{paramsDto.regionCode}
+                and s1.region_code = #{paramsDto.regionCode}
             </if>
         </where>
+        group by o.id
     </select>
 
     <select id="selectPage" parameterType="com.cjyc.common.model.dto.customer.OrderConditionDto"

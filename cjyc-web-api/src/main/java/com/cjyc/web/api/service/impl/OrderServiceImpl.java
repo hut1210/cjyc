@@ -21,6 +21,7 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.order.ListOrderVo;
 import com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo;
 import com.cjyc.common.model.vo.web.order.OrderVo;
 import com.cjyc.web.api.exception.ParameterException;
@@ -444,10 +445,10 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     }
 
     @Override
-    public ResultVo<PageVo<Order>> list(ListOrderDto paramsDto) {
-        PageHelper.offsetPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
-        List<Order> list = orderDao.findListSelective(paramsDto);
-        PageInfo<Order> pageInfo = new PageInfo<>(list);
+    public ResultVo<PageVo<ListOrderVo>> list(ListOrderDto paramsDto) {
+        PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
+        List<ListOrderVo> list = orderDao.findListSelective(paramsDto);
+        PageInfo<ListOrderVo> pageInfo = new PageInfo<>(list);
         if (paramsDto.getCurrentPage() > pageInfo.getPages()) {
             pageInfo.setList(null);
         }
