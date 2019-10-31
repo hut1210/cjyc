@@ -1,5 +1,7 @@
 package com.cjyc.web.api.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjyc.common.model.dto.web.carSeries.CarSeriesAddDto;
 import com.cjyc.common.model.dto.web.carSeries.CarSeriesQueryDto;
 import com.cjyc.common.model.dto.web.carSeries.CarSeriesUpdateDto;
@@ -12,12 +14,18 @@ import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * @Description 品牌车系管理
@@ -49,6 +57,18 @@ public class CarSeriesController {
     @PostMapping("/queryDetail/{id}")
     public ResultVo<CarSeries> queryDetail(@PathVariable Long id){
         return BaseResultUtil.success(carSeriesService.getById(id));
+    }
+
+    @ApiOperation(value = "查询所有品牌", notes = "\t 无参数")
+    @PostMapping("/queryAll")
+    public ResultVo<List<CarSeries>> queryAll(){
+        return carSeriesService.queryAll();
+    }
+
+    @ApiOperation(value = "查询品牌下所有车系", notes = "\t 请求接口为/queryModel/brand格式")
+    @PostMapping("/queryModel/{brand}")
+    public ResultVo<List<CarSeries>> queryModel(@PathVariable String brand){
+        return BaseResultUtil.success(carSeriesService.list(new QueryWrapper<CarSeries>().lambda().eq(CarSeries::getBrand,brand)));
     }
 
     @ApiOperation(value = "修改", notes = "\t 请求接口为json格式")

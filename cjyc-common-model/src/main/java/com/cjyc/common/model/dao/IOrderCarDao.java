@@ -6,6 +6,7 @@ import com.cjyc.common.model.dto.web.order.LineWaitDispatchCountListOrderCarDto;
 import com.cjyc.common.model.dto.web.order.ListOrderCarDto;
 import com.cjyc.common.model.dto.web.order.WaitDispatchListOrderCarDto;
 import com.cjyc.common.model.entity.OrderCar;
+import com.cjyc.common.model.vo.customer.order.OrderCarCenterVo;
 import com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo;
 import org.apache.ibatis.annotations.Param;
 
@@ -93,7 +94,16 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
     BigDecimal getWLTotalFee(Long orderId);
 
     Map<String, Object> countTotalWaitDispatchCarByStartCity(@Param("paramsDto") LineWaitDispatchCountListOrderCarDto paramsDto);
-    
+
+    /**
+     * 根据条件查询车辆信息
+     * @param orderNo
+     * @param brand
+     * @param model
+     * @return
+     */
+    List<OrderCarCenterVo> selectByCondition(@Param("orderNo") String orderNo, @Param("brand") String brand, @Param("model") String model);
+
     /**
      * 根据订单号查询车辆数量
      * @param no

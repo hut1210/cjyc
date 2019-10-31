@@ -319,10 +319,10 @@
             <if test="endCityCode != null and endCityCode.trim() != ''">
                 and o.end_city_code = #{endCityCode}
             </if>
-            <if test="startDateMS != null">
+            <if test="startDateMS != null and startDateMS != 0">
                 and o.create_time &gt;= #{startDateMS}
             </if>
-            <if test="endDateMS != null">
+            <if test="endDateMS != null and endDateMS != 0">
                 and o.create_time &lt;= #{endDateMS}
             </if>
         </where>

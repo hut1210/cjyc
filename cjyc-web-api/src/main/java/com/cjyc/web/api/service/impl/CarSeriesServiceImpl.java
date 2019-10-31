@@ -30,7 +30,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * @Description 品牌车系业务接口实现类
@@ -139,6 +142,17 @@ public class CarSeriesServiceImpl extends ServiceImpl<ICarSeriesDao,CarSeries> i
                 log.error("导出品牌车系异常:{}",e);
             }
         }
+    }
+
+    @Override
+    public ResultVo<List<CarSeries>> queryAll() {
+        List<CarSeries> list = super.list();
+        // 去除重复的品牌
+        if (!CollectionUtils.isEmpty(list)) {
+            list = list.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(()
+                    ->new TreeSet<>(Comparator.comparing(CarSeries::getBrand))), ArrayList::new));
+        }
+        return BaseResultUtil.success(list);
     }
 
     private CarSeriesQueryDto getCarSeriesQueryDto(HttpServletRequest request) {

@@ -27,6 +27,9 @@ public class OrderCenterVo implements Serializable {
     @ApiModelProperty(value = "订单状态")
     private String state;
 
+    @ApiModelProperty(value = "品牌")
+    private String brand;
+
     private List<OrderCarCenterVo> orderCarCenterVos;
 
 }
