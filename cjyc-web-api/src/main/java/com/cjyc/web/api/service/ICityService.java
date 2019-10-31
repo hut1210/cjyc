@@ -57,9 +57,10 @@ public interface ICityService extends IService<City> {
     ResultVo<List<TreeCityVo>> getTree(TreeCityDto treeCityDto);
 
     /**
-     * 根据城市级别查询树形结构
-     * @param level
+     *  根据起始目的节点查询树形结构
+     * @param startLevel
+     * @param endLevel
      * @return
      */
-    ResultVo cityTree(Integer level);
+    ResultVo cityTree(Integer startLevel,Integer endLevel);
 }

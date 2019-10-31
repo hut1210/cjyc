@@ -18,13 +18,12 @@
         <result column="inquiry_time" property="inquiryTime" />
         <result column="handle_time" property="handleTime" />
         <result column="handle_user_id" property="handleUserId" />
-        <result column="handle_user_name" property="handleUserName" />
         <result column="job_content" property="jobContent" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, name, phone, start_city, start_code, end_city, end_code, logistics_fee, pick_fee, back_fee, state, inquiry_time, handle_time, handle_user_id, handle_user_name, job_content
+        id, name, phone, start_city, start_code, end_city, end_code, logistics_fee, pick_fee, back_fee, state, inquiry_time, handle_time, handle_user_id, job_content
     </sql>
 
     <!-- 根据条件查询询价管理条目 -->

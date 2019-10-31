@@ -69,12 +69,6 @@ public interface ICityDao extends BaseMapper<City> {
     ProvinceCityVo getProvinceCityByCode(@Param("code") String code);
 
     /**
-     * 获取所有省/直辖市
-     * @return
-     */
-    List<HashMap<String,String>> getAllProvince();
-
-    /**
      * 获取下一级所有城市
      * @param code
      * @return
@@ -85,9 +79,10 @@ public interface ICityDao extends BaseMapper<City> {
 
     /**
      * 根据城市级别查询树形结构
-     * @param level
+     * @param startLevel
+     * @param endLevel
      * @return
      */
-    List<CityTreeVo> getAllByLevel(@Param("level") Integer level);
+    List<CityTreeVo> getAllByLevel(@Param("startLevel") Integer startLevel,@Param("endLevel")Integer endLevel);
 }
 

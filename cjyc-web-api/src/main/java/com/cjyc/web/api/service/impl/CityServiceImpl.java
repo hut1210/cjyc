@@ -83,10 +83,10 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
     }
 
     @Override
-    public ResultVo cityTree(Integer level) {
+    public ResultVo cityTree(Integer startLevel,Integer endLevel) {
         List<CityTreeVo> nodeList = null;
         try{
-            List<CityTreeVo> cityTreeVos = cityDao.getAllByLevel(level);
+            List<CityTreeVo> cityTreeVos = cityDao.getAllByLevel(startLevel,endLevel);
             if(!CollectionUtils.isEmpty(cityTreeVos)){
                 nodeList = new ArrayList<>();
                 for(CityTreeVo nodeOne : cityTreeVos){
