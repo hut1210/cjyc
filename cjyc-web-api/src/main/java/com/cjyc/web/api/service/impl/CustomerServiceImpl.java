@@ -1,10 +1,5 @@
 package com.cjyc.web.api.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.cjkj.common.model.ResultData;
-import com.cjkj.common.utils.SnowflakeIdWorker;
-import com.cjkj.usercenter.dto.common.AddUserReq;
-import com.cjkj.usercenter.dto.common.AddUserResp;
 import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.customer.*;
@@ -18,8 +13,6 @@ import com.cjyc.common.model.enums.customer.CustomerStateEnum;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
-import com.cjyc.common.model.dto.BasePageDto;
-import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.CustomerContractVo;
 import com.cjyc.common.model.vo.web.CustomerVo;
@@ -27,7 +20,6 @@ import com.cjyc.common.model.vo.web.ListKeyCustomerVo;
 import com.cjyc.common.model.vo.web.ShowKeyCustomerVo;
 import com.cjyc.common.model.vo.web.customer.CustomerCouponVo;
 import com.cjyc.web.api.exception.CommonException;
-import com.cjyc.web.api.exception.ServerException;
 import com.cjyc.web.api.feign.ISysUserService;
 import com.cjyc.web.api.service.ICustomerService;
 import com.github.pagehelper.PageHelper;
