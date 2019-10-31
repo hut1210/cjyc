@@ -442,6 +442,23 @@ public class CustomerServiceImpl implements ICustomerService{
     }
 
     @Override
+    public ResultVo getCustContractByName(String name) {
+        //获取当前时间戳
+        Long now = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
+        try{
+            List<Map<String,Object>> contractMap = customerDao.getCustContractByName(name,now);
+            if(!CollectionUtils.isEmpty(contractMap)){
+                return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),contractMap);
+            }else{
+                return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),Collections.emptyList());
+            }
+        }catch (Exception e){
+            log.error("根据大客户名称获取有效期合同信息出现异常",e);
+            return BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg(),Collections.emptyList());
+        }
+    }
+
+    @Override
     public ResultVo getCustomerCouponByTerm(CustomerCouponDto dto) {
         PageInfo<CustomerCouponVo> pageInfo = null;
         try{

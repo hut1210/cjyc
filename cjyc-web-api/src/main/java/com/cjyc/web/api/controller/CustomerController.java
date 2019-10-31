@@ -124,6 +124,12 @@ public class CustomerController {
         return customerService.getAllCustomerByKey(keyword);
     }
 
+    @ApiOperation(value = "根据输入大客户名称获取大客户有效期合同")
+    @PostMapping(value = "/getCustContractByName/{name}")
+    public ResultVo getCustContractByName(@PathVariable @ApiParam(value = "大客户名称",required = true) String name){
+        return customerService.getCustContractByName(name);
+    }
+
     @ApiOperation(value = "查看客户优惠券")
     @PostMapping(value = "/getCouponByTerm")
     public ResultVo getCustomerCouponByTerm(CustomerCouponDto dto){
