@@ -427,7 +427,7 @@ public class CustomerServiceImpl implements ICustomerService{
 
     @Override
     public ResultVo getAllCustomerByKey(String keyword) {
-        List<Map<String,String>> customerList = null;
+        List<Map<String,Object>> customerList = null;
         try{
             customerList = customerDao.getAllCustomerByKey(keyword);
             if(!CollectionUtils.isEmpty(customerList)){
@@ -437,7 +437,7 @@ public class CustomerServiceImpl implements ICustomerService{
             }
         }catch (Exception e){
             log.error("根据用户名/手机号模糊查询用户信息出现异常",e);
-            throw new CommonException("根据用户名/手机号模糊查询用户信息出现异常");
+            return BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg(), Collections.emptyList());
         }
     }
 

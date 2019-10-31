@@ -52,7 +52,7 @@ public interface ICustomerDao extends BaseMapper<Customer> {
      * @param keyword
      * @return
      */
-    List<Map<String,String>> getAllCustomerByKey(@Param("keyword") String keyword);
+    List<Map<String,Object>> getAllCustomerByKey(@Param("keyword") String keyword);
 
     /**
      * 根据大客户名称查询有效期合同

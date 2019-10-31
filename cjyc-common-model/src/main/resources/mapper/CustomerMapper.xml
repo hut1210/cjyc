@@ -131,6 +131,7 @@
     <!-- 根据大客户名称查询有效期合同 -->
     <select id="getCustContractByName" resultType="java.util.Map">
           SELECT
+                contract.id as id,
                 contract.contract_no AS contractNo,
                 contract.settle_period AS settlePeriod
             FROM
