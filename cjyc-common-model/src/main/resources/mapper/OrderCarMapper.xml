@@ -552,4 +552,39 @@
             </foreach>
         </if>
     </sql>
+
+    <!--根据条件查询车辆信息-->
+    <select id="selectByCondition" resultType="com.cjyc.common.model.vo.customer.OrderCarCenterVo">
+        select
+            car.model as model,
+            car.plate_no as plateNo,
+            car.vin as vin
+        from
+            w_order_car car
+        <where>
+            <if test="orderNo != null and orderNo.trim() != ''">
+                and car.order_no = #{orderNo}
+            </if>
+            <if test="brand != null and brand.trim() != ''">
+                and car.brand = #{brand}
+            </if>
+            <if test="model != null and model.trim() != ''">
+                and car.model = #{model}
+            </if>
+        </where>
+        limit 0,1
+    </select>
+
+    <!--根据订单号查询车辆数量-->
+    <select id="selectCountByOrderNo" resultType="java.lang.Integer">
+        select
+            count(1) as carNum
+        from
+            w_order_car car
+        <where>
+            <if test="orderNo != null and orderNo.trim() != ''">
+                and car.order_no = #{orderNo}
+            </if>
+        </where>
+    </select>
 </mapper>

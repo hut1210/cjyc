@@ -1,5 +1,6 @@
 package com.cjyc.customer.api.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjyc.common.model.constant.NoConstant;
 import com.cjyc.common.model.constant.TimePatternConstant;
@@ -11,7 +12,14 @@ import com.cjyc.common.model.dto.BasePageDto;
 import com.cjyc.common.model.dto.customer.OrderConditionDto;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.entity.OrderCar;
+import com.cjyc.common.model.entity.Store;
+import com.cjyc.common.model.enums.order.OrderCarStateEnum;
+import com.cjyc.common.model.enums.order.OrderStateEnum;
+import com.cjyc.common.model.util.BasePageUtil;
+import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
+import com.cjyc.common.model.vo.PageVo;
+import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.OrderCarCenterVo;
 import com.cjyc.common.model.vo.customer.OrderCenterVo;
 import com.cjyc.common.model.vo.customer.OrderDetailVo;
@@ -24,11 +32,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @auther litan
@@ -240,6 +248,72 @@ public class OrderServiceImpl implements IOrderService{
             log.info("根据条件筛选待确认订单出现异常");
         }
         return null;
+    }
+
+    @Override
+    public ResultVo<PageVo<OrderCenterVo>> getPage(OrderConditionDto dto) {
+        BasePageUtil.initPage(dto.getCurrentPage(),dto.getPageSize());
+        // 分页
+        PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize(), true);
+        // 日期格式处理
+        String startDate = dto.getStartDate();
+        String endDate = dto.getEndDate();
+        if (!StringUtils.isBlank(startDate)) {
+            Long startLong = LocalDateTimeUtil.convertToLong(startDate, "yyyy/MM/dd");
+            dto.setStartDateMS(startLong);
+        }
+        if (!StringUtils.isBlank(endDate)) {
+            Long endLong = LocalDateTimeUtil.convertToLong(endDate, "yyyy/MM/dd");
+            dto.setEndDateMS(endLong);
+        }
+
+        List<OrderCenterVo> list = orderDao.selectPage(dto);
+        return BaseResultUtil.success(new PageInfo<>(list));
+    }
+
+    @Override
+    public ResultVo<Map<String, Object>> getOrderCount(Long customerId) {
+        Map<String,Object> map = new HashMap<>(4);
+        map.put("waitConfirm",0);
+        map.put("inTransitCount",0);
+        map.put("payCount",0);
+        map.put("allCount",0);
+        // 查询待确认订单数量
+        LambdaQueryWrapper<Order> queryWrapper = new QueryWrapper<Order>().lambda()
+                .eq(Order::getCustomerId,customerId)
+                .le(Order::getState, OrderStateEnum.CHECKED.code);
+        Integer waitConfirmCount = orderDao.selectCount(queryWrapper);
+        if (!Objects.isNull(waitConfirmCount)) {
+            map.put("waitConfirmCount",waitConfirmCount);
+        }
+
+        // 查询运输中订单数量
+        queryWrapper = new QueryWrapper<Order>().lambda()
+                .eq(Order::getCustomerId,customerId)
+                .gt(Order::getState,OrderStateEnum.CHECKED.code)
+                .lt(Order::getState,OrderStateEnum.FINISHED.code);
+        Integer inTransitCount = orderDao.selectCount(queryWrapper);
+        if (!Objects.isNull(inTransitCount)) {
+            map.put("inTransitCount",inTransitCount);
+        }
+
+        // 查询已交付订单数量
+        queryWrapper = new QueryWrapper<Order>().lambda()
+                .eq(Order::getCustomerId,customerId).eq(Order::getState,OrderStateEnum.FINISHED.code);
+        Integer payCount = orderDao.selectCount(queryWrapper);
+        if (!Objects.isNull(payCount)) {
+            map.put("payCount",payCount);
+        }
+
+        // 查询所有订单数量
+        queryWrapper = new QueryWrapper<Order>().lambda()
+                .eq(Order::getCustomerId,customerId)
+                .le(Order::getState,OrderStateEnum.FINISHED.code).or().eq(Order::getState,OrderStateEnum.F_CANCEL.code);
+        Integer allCount = orderDao.selectCount(queryWrapper);
+        if (!Objects.isNull(allCount)) {
+            map.put("allCount",allCount);
+        }
+        return BaseResultUtil.success(map);
     }
 
     /**
