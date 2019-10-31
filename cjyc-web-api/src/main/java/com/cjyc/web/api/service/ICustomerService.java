@@ -99,4 +99,8 @@ public interface ICustomerService  {
      * @return
      */
     ResultVo verifyOrDeletePartner(Long id,Integer flag);
+
+    Customer selectByPhone(String customerPhone);
+
+    int updateById(Customer customer);
 }

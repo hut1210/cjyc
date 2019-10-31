@@ -72,7 +72,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         Long orderId = paramsDto.getOrderId();
 
         Order order = null;
-        Boolean newOrderFlag = false;
+        boolean newOrderFlag = false;
         if (orderId != null) {
             //更新订单
             order = orderDao.selectById(orderId);
@@ -137,7 +137,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         Long orderId = paramsDto.getOrderId();
 
         Order order = null;
-        Boolean newOrderFlag = false;
+        boolean newOrderFlag = false;
         if (orderId != null) {
             //更新订单
             order = orderDao.selectById(orderId);
@@ -148,10 +148,18 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
             order = new Order();
         }
         BeanUtils.copyProperties(paramsDto, order);
-        //创建用户
+        //验证用户
         Customer customer = new Customer();
         if (paramsDto.getCustomerId() != null) {
             customer = customerService.selectById(paramsDto.getCustomerId());
+            if(customer == null){
+                customer = customerService.selectByPhone(paramsDto.getCustomerPhone());
+            }
+            if(customer != null && customer.getName().equals(paramsDto.getCustomerName())){
+                return BaseResultUtil.fail(ResultEnum.CREATE_NEW_CUSTOMER.getCode(),
+                        "客户手机号存在，名称不一致：新名称（{0}）旧名称（{1}），请返回订单重新选择客户",
+                        paramsDto.getCustomerName(),customer.getName());
+            }
         }
         if (customer == null) {
             customer = new Customer();
@@ -163,11 +171,13 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
                     customer.setType(CustomerTypeEnum.INDIVIDUAL.code);
                     //customer.setInitial()
                     customer.setState(1);
-                    customer.setPayMode(PayModeEnum.CURRENT.code);
+                    customer.setPayMode(PayModeEnum.COLLECT.code);
                     customer.setCreateTime(System.currentTimeMillis());
                     customer.setCreateUserId(paramsDto.getUserId());
                     //添加
                     customerService.save(customer);
+                    //订单中添加客户ID
+                    order.setCustomerId(customer.getId());
                 } else {
                     return BaseResultUtil.getVo(ResultEnum.CREATE_NEW_CUSTOMER.getCode(), ResultEnum.CREATE_NEW_CUSTOMER.getMsg());
                 }
@@ -234,20 +244,20 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     public ResultVo check(CheckOrderDto reqDto) {
         Order order = orderDao.selectById(reqDto.getOrderId());
         if (order == null) {
-            return BaseResultUtil.fail("订单不存在");
+            return BaseResultUtil.fail("[订单]-不存在");
         }
         if (order.getState() <= OrderStateEnum.WAIT_SUBMIT.code) {
-            return BaseResultUtil.fail("订单未提交，无法审核");
+            return BaseResultUtil.fail("[订单]-未提交，无法审核");
         }
         if (order.getState() >= OrderStateEnum.CHECKED.code) {
-            return BaseResultUtil.fail("订单已经审核过，无法审核");
+            return BaseResultUtil.fail("[订单]-已经审核过，无法审核");
         }
         //验证必要信息是否完全
         validateOrderFeild(order);
 
         List<OrderCar> orderCarList = orderCarDao.findByOrderId(order.getId());
         if (orderCarList == null || list().isEmpty()) {
-            return BaseResultUtil.fail("订单没有车辆");
+            return BaseResultUtil.fail("[订单车辆]-为空");
         }
         //验证物流券费用
         /*BigDecimal wlTotalFee = orderCarDao.getWLTotalFee(reqDto.getOrderId());
@@ -272,7 +282,12 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
             orderCarDao.updateById(orderCar);
         }
 
-        order.setState(OrderStateEnum.CHECKED.code);
+        //根据到付和预付置不同状态
+        if(order.getPayType() != PayModeEnum.PREPAID.code){
+            order.setState(OrderStateEnum.WAIT_PREPAY.code);
+        }else{
+            order.setState(OrderStateEnum.CHECKED.code);
+        }
         orderDao.updateById(order);
 
         //TODO 处理优惠券为使用状态，优惠券有且仅能验证一次，修改时怎么保证
@@ -290,10 +305,10 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
      */
     private void validateOrderFeild(Order order) {
         if (order.getId() == null || order.getNo() == null) {
-            throw new ParameterException("订单编号不能为空");
+            throw new ParameterException("[订单]-订单编号不能为空");
         }
         if (order.getCustomerId() == null) {
-            throw new ParameterException("客户不存在");
+            throw new ParameterException("[订单]-客户不存在");
         }
         if (order.getStartProvinceCode() == null
                 || order.getStartCityCode() == null
@@ -303,17 +318,14 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
                 || order.getEndCityCode() == null
                 || order.getEndAreaCode() == null
                 || order.getEndAddress() == null) {
-            throw new ParameterException("地址不完整");
-        }
-        if (order.getCustomerId() == null) {
-            throw new ParameterException("客户不存在");
+            throw new ParameterException("[订单]-地址不完整");
         }
         if (order.getCarNum() == null || order.getCarNum() <= 0) {
-            throw new ParameterException("车辆数不能小于一辆");
+            throw new ParameterException("[订单]-车辆数不能小于一辆");
         }
         if (order.getPickType() == null
                 || order.getPickContactPhone() == null) {
-            throw new ParameterException("提车联系人不能为空");
+            throw new ParameterException("[订单]-提车联系人不能为空");
         }
         if (order.getBackType() == null
                 || order.getBackContactPhone() == null) {
@@ -374,7 +386,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         List<Map<String, Object>> list = orderCarDao.countListWaitDispatchCar();
         //查询统计
         Map<String, Object> countInfo = null;
-        if (list != null || !list.isEmpty()) {
+        if (list != null && !list.isEmpty()) {
             countInfo = orderCarDao.countTotalWaitDispatchCar();
         }
         return BaseResultUtil.success(list, countInfo);
@@ -392,7 +404,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
 
         //查询统计
         Map<String, Object> countInfo = null;
-        if (list != null || !list.isEmpty()) {
+        if (list != null && !list.isEmpty()) {
             countInfo = orderCarDao.countTotalWaitDispatchCarByStartCity(paramsDto);
         }
         return BaseResultUtil.success(list, countInfo);
@@ -420,13 +432,13 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     }
 
     @Override
-    public ResultVo allot(AllotOrderDto orderAllotDto) {
-        Order order = orderDao.selectById(orderAllotDto.getOrderId());
+    public ResultVo allot(AllotOrderDto paramsDto) {
+        Order order = orderDao.selectById(paramsDto.getOrderId());
         if (order == null || order.getState() >= OrderStateEnum.WAIT_RECHECK.code) {
-            BaseResultUtil.fail("订单不允许修改");
+            return BaseResultUtil.fail("订单不允许修改");
         }
-        order.setAllotToUserId(orderAllotDto.getToUserId());
-        order.setAllotToUserName(orderAllotDto.getToUserName());
+        order.setAllotToUserId(paramsDto.getToUserId());
+        order.setAllotToUserName(paramsDto.getToUserName());
         orderDao.updateById(order);
         return BaseResultUtil.success();
     }
@@ -495,7 +507,6 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
 
         /**2、更新或保存车辆信息*/
         List<ChangePriceOrderCarDto> orderCarList = paramsDto.getOrderCarList();
-        List<OrderCar> orderCarUpdatelist = new ArrayList<>();
 
         //费用统计变量
         int noCount = 0;

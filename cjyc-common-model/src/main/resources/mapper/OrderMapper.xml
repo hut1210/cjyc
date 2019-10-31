@@ -138,7 +138,7 @@
     </select>
     <select id="findListSelective" resultType="com.cjyc.common.model.entity.Order">
         select
-        <include refid="Base_Column_List"/>
+        o.*
         from w_order o
         left join c_customer c on o.customer_id = c.id
         left join s_store s on o.input_store_id = s.id

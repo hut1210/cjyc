@@ -4,9 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.redis.lock.RedisDistributedLock;
 import com.cjkj.common.redis.template.StringRedisUtil;
 import com.cjyc.common.model.dao.*;
-import com.cjyc.common.model.dto.web.task.AllotTaskDto;
-import com.cjyc.common.model.dto.web.task.LoadTaskDto;
-import com.cjyc.common.model.dto.web.task.UnLoadTaskDto;
+import com.cjyc.common.model.dto.web.task.*;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
 import com.cjyc.common.model.enums.task.TaskStateEnum;
@@ -21,10 +19,7 @@ import com.cjyc.web.api.service.ITaskService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * <p>
@@ -146,22 +141,55 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
         waybillCar.setLoadPhotoImg(paramsDto.getLoadPhotoImg());
         waybillCar.setLoadTime(System.currentTimeMillis());
         waybillCarDao.updateById(waybillCar);
+
+        //TODO 给客户发送消息
+        //TODO 写物流轨迹
         return BaseResultUtil.success();
     }
 
     @Override
     public ResultVo unload(UnLoadTaskDto paramsDto) {
-        Long taskCarId = paramsDto.getTaskCarId();
-        WaybillCar waybillCar = waybillCarDao.findByTaskCarId(taskCarId);
-        if(waybillCar == null){
-            return BaseResultUtil.fail("运单车辆不存在");
+        Map<String, Object> failCarNoMap = new HashMap<>();
+
+        List<Long> taskCarIdList = paramsDto.getTaskCarIdList();
+        if (taskCarIdList == null || taskCarIdList.isEmpty()){
+            return BaseResultUtil.fail("车辆不能为空");
         }
-        if(waybillCar.getState() > WaybillCarStateEnum.UNLOADED.code){
-            return BaseResultUtil.fail("车辆已经卸过车");
+        for (Long taskCarId : taskCarIdList) {
+            if(taskCarId == null){
+                continue;
+            }
+            WaybillCar waybillCar = waybillCarDao.findByTaskCarId(taskCarId);
+            if(waybillCar == null){
+                failCarNoMap.put(waybillCar.getOrderCarNo(), "运单车辆不存在");
+                return BaseResultUtil.fail("运单车辆不存在");
+            }
+            if(waybillCar.getState() > WaybillCarStateEnum.UNLOADED.code){
+                return BaseResultUtil.fail("车辆已经卸过车");
+            }
+            waybillCar.setState(WaybillCarStateEnum.UNLOADED.code);
+            waybillCar.setUnloadTime(System.currentTimeMillis());
+            waybillCarDao.updateById(waybillCar);
+
+
         }
-        waybillCar.setState(WaybillCarStateEnum.UNLOADED.code);
-        waybillCar.setUnloadTime(System.currentTimeMillis());
-        waybillCarDao.updateById(waybillCar);
+
         return BaseResultUtil.success();
     }
+
+    @Override
+    public ResultVo inStore(InStoreTaskDto reqDto) {
+        return null;
+    }
+
+    @Override
+    public ResultVo outStore(OutStoreTaskDto reqDto) {
+        return null;
+    }
+
+    @Override
+    public ResultVo sign(SignTaskDto reqDto) {
+        return null;
+    }
+
 }

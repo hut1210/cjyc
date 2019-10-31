@@ -154,7 +154,7 @@ public class OrderController {
      */
     @ApiOperation(value = "分配订单")
     @PostMapping(value = "/allot")
-    public ResultVo allot(@RequestBody AllotOrderDto reqDto) {
+    public ResultVo allot(@Validated @RequestBody AllotOrderDto reqDto) {
         //验证操作人
         Admin admin = adminService.getByUserId(reqDto.getUserId());
         if(admin == null || admin.getState() != AdminStateEnum.CHECKED.code){

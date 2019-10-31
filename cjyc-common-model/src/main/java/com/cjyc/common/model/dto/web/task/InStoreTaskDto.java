@@ -12,7 +12,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel
-public class UnLoadTaskDto {
+public class InStoreTaskDto {
     @ApiModelProperty(value = "用户userId",required = true)
     private Long userId;
 

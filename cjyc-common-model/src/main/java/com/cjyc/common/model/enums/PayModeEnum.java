@@ -6,9 +6,10 @@ package com.cjyc.common.model.enums;
  */
 public enum PayModeEnum {
 
-    /**结算方式 0：时付  1：账期*/
-    CURRENT("时付", 0),
-    PERIOD("账期", 1);
+    /**结算方式 0到付（默认），1预付，2账期*/
+    COLLECT("到付", 0),
+    PREPAID("预付", 1),
+    PERIOD("账期", 2);
 
     public String name;
     public int code;

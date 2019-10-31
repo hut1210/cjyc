@@ -418,6 +418,16 @@ public class CustomerServiceImpl implements ICustomerService{
         return BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
     }
 
+    @Override
+    public Customer selectByPhone(String customerPhone) {
+        return customerDao.findByPhone(customerPhone);
+    }
+
+    @Override
+    public int updateById(Customer customer) {
+        return customerDao.updateById(customer);
+    }
+
     /**
      * 封装合伙人
      * @param customer

@@ -1,9 +1,6 @@
 package com.cjyc.web.api.controller;
 
-import com.cjyc.common.model.dto.web.task.AllotTaskDto;
-import com.cjyc.common.model.dto.web.task.LoadTaskDto;
-import com.cjyc.common.model.dto.web.task.UnLoadTaskDto;
-import com.cjyc.common.model.entity.Admin;
+import com.cjyc.common.model.dto.web.task.*;
 import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.enums.AdminStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -91,15 +88,45 @@ public class TaskController {
      * 确认入库
      */
     @ApiOperation(value = "确认入库")
-    @PostMapping(value = "/inhour")
-    public ResultVo uno(@RequestBody UnLoadTaskDto reqDto) {
+    @PostMapping(value = "/car/in/store")
+    public ResultVo inStore(@RequestBody InStoreTaskDto reqDto) {
         //验证用户
         Driver driver = driverService.getByUserId(reqDto.getUserId());
         if (driver == null || driver.getState() != AdminStateEnum.CHECKED.code) {
             return BaseResultUtil.fail("当前用户，不能执行操作");
         }
         reqDto.setUserName(driver.getName());
-        return taskService.unload(reqDto);
+        return taskService.inStore(reqDto);
+    }
+
+    /**
+     * 确认出库
+     */
+    @ApiOperation(value = "确认出库")
+    @PostMapping(value = "/car/out/store")
+    public ResultVo outStore(@RequestBody OutStoreTaskDto reqDto) {
+        //验证用户
+        Driver driver = driverService.getByUserId(reqDto.getUserId());
+        if (driver == null || driver.getState() != AdminStateEnum.CHECKED.code) {
+            return BaseResultUtil.fail("当前用户，不能执行操作");
+        }
+        reqDto.setUserName(driver.getName());
+        return taskService.outStore(reqDto);
+    }
+
+    /**
+     * 签收
+     */
+    @ApiOperation(value = "签收")
+    @PostMapping(value = "/sign")
+    public ResultVo sign(@RequestBody SignTaskDto reqDto) {
+        //验证用户
+        Driver driver = driverService.getByUserId(reqDto.getUserId());
+        if (driver == null || driver.getState() != AdminStateEnum.CHECKED.code) {
+            return BaseResultUtil.fail("当前用户，不能执行操作");
+        }
+        reqDto.setUserName(driver.getName());
+        return taskService.sign(reqDto);
     }
 
 
