@@ -44,7 +44,7 @@ public class DispatchController {
      */
     @ApiOperation(value = "查询待调度车辆统计")
     @PostMapping(value = "/wait/count/list/{userId}")
-    public ResultVo<ListVo<Map<String, Object>>> waitDispatchCarCountList(@ApiParam(value = "userId", required = true)
+    public ResultVo<ListVo<Map<String, Object>>> waitDispatchCarCountList(@ApiParam(value = "用户userId", required = true)
                                                                           @PathVariable Long userId) {
         //BizScopeVo bizScope = bizScopeService.getBizScope(userId);
         return orderService.waitDispatchCarCountList();

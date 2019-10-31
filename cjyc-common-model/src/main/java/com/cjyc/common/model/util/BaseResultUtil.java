@@ -149,12 +149,11 @@ public class BaseResultUtil<T> {
      */
     public static <T> ResultVo<ListVo<T>> getListVo(int code, String msg, List<T> list, Long totalRecords, Map<String, Object> countInfo){
         if(totalRecords == null){
+            totalRecords = 0L;
             if(countInfo != null){
                 try {
                     Object totalCount = countInfo.get("totalCount");
-                    if(totalCount == null || StringUtils.isBlank(totalCount.toString())){
-                        totalRecords = 0L;
-                    }else{
+                    if(totalCount != null && !StringUtils.isBlank(totalCount.toString())){
                         totalRecords = Long.valueOf(totalCount.toString());
                     }
                 }catch (Exception e){

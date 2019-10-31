@@ -379,6 +379,25 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         }
         return BaseResultUtil.success(list, countInfo);
     }
+    /**
+     * 按线路统计待调度车辆（统计列表）
+     *
+     * @author JPG
+     * @since 2019/10/16 10:04
+     */
+    @Override
+    public ResultVo<ListVo<Map<String, Object>>> lineWaitDispatchCarCountList(LineWaitDispatchCountListOrderCarDto paramsDto, List<Long> bizScopeStoreIds) {
+        //查询列表
+        List<Map<String, Object>> list = orderCarDao.findlineWaitDispatchCarCountList(paramsDto);
+
+        //查询统计
+        Map<String, Object> countInfo = null;
+        if (list != null || !list.isEmpty()) {
+            countInfo = orderCarDao.countTotalWaitDispatchCarByStartCity(paramsDto);
+        }
+        return BaseResultUtil.success(list, countInfo);
+    }
+
 
     @Override
     public ResultVo<PageVo<OrderCarWaitDispatchVo>> waitDispatchCarList(WaitDispatchListOrderCarDto paramsDto, List<Long> bizScope) {
@@ -391,20 +410,6 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         return BaseResultUtil.success(pageInfo);
     }
 
-    /**
-     * 按线路统计待调度车辆（统计列表）
-     *
-     * @author JPG
-     * @since 2019/10/16 10:04
-     */
-    @Override
-    public ResultVo<ListVo<Map<String, Object>>> lineWaitDispatchCarCountList(LineWaitDispatchCountListOrderCarDto paramsDto, List<Long> bizScopeStoreIds) {
-        //查询列表
-        List<Map<String, Object>> list = orderCarDao.findlineWaitDispatchCarCountList(paramsDto, bizScopeStoreIds);
-
-        //统计结果
-        return null;
-    }
 
     @Override
     public OrderVo getVoById(Long orderId) {
