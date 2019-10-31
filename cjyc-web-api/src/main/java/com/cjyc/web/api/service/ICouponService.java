@@ -1,14 +1,12 @@
 package com.cjyc.web.api.service;
 
-import com.cjyc.common.model.dto.BasePageDto;
+import com.cjyc.common.model.dto.web.OperateDto;
+import com.cjyc.common.model.dto.web.coupon.ConsumeCouponDto;
 import com.cjyc.common.model.dto.web.coupon.CouponDto;
 import com.cjyc.common.model.dto.web.coupon.SeleCouponDto;
-import com.cjyc.common.model.entity.Coupon;
+import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.coupon.CouponVo;
 import com.github.pagehelper.PageInfo;
-
-import java.math.BigDecimal;
-import java.util.List;
 
 /**
  *  @author: zj
@@ -25,35 +23,6 @@ public interface ICouponService {
     boolean saveCoupon(CouponDto dto);
 
     /**
-     * 分页查看所有优惠券
-     * @param dto
-     * @return
-     */
-    PageInfo<CouponVo> getAllCoupon(BasePageDto dto);
-
-    /**
-     * 根据ids作废优惠券
-     * @param ids
-     * @return
-     */
-    boolean abolishCouponByIds(List<Long> ids);
-
-    /**
-     * 根据优惠券主键id查询优惠券
-     * @param id
-     * @return
-     */
-    Coupon showCouponById(Long id);
-
-    /**
-     * 根据主键id审核优惠券
-     * @param id
-     * @param state
-     * @return
-     */
-    boolean verifyCouponById(Long id,String state);
-
-    /**
      * 根据更新优惠券
      * @param dto
      * @return
@@ -61,10 +30,24 @@ public interface ICouponService {
     boolean updateCoupon(CouponDto dto);
 
     /**
+     * 审核/作废优惠券
+     * @param dto
+     * @return
+     */
+    ResultVo operateCoupon(OperateDto dto);
+
+    /**
      * 根据条件筛选优惠券
      * @param dto
      * @return
      */
-    PageInfo<CouponVo> getCouponByTerm(SeleCouponDto dto);
+    ResultVo getCouponByTerm(SeleCouponDto dto);
+
+    /**
+     * 查看优惠券消耗明细
+     * @param dto
+     * @return
+     */
+    ResultVo getConsumeDetail(ConsumeCouponDto dto);
 
 }

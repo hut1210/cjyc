@@ -23,12 +23,16 @@ public enum ResultEnum {
     //MOBILE_HTTP_OFTEN(1009, "请求太过频繁"),
 
     /* 系统错误：2001-2999*/
-    API_INVOKE_ERROR(2001, "接口异常");
+    API_INVOKE_ERROR(2001, "接口异常"),
     //API_SYSTEM_BUSY(2002, "系统繁忙，请稍后重试"),
     //API_FORBID_VISIT(2003, "该接口禁止访问"),
     //API_ADDRESS_INVALID(2004, "接口地址无效"),
     //API_REQUEST_TIMEOUT(2005, "接口请求超时");
 
+
+
+    /**业务返回码*/
+    CREATE_NEW_CUSTOMER(9001, "个人用户不存在，是否保存为新用户");
     /**状态码*/
     private Integer code;
 

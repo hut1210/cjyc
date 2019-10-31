@@ -1,16 +1,10 @@
 package com.cjyc.web.api.controller;
 
-import com.cjyc.common.model.dto.web.config.ConfigDto;
-import com.cjyc.common.model.dto.web.coupon.CouponDto;
-import com.cjyc.common.model.enums.ResultEnum;
-import com.cjyc.common.model.util.BasePageUtil;
-import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.web.api.service.IConfigService;
+import com.cjyc.web.api.service.IDictionaryService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -27,18 +21,17 @@ import javax.annotation.Resource;
 public class ConfigController {
 
     @Resource
-    private IConfigService configService;
+    private IDictionaryService dictionaryService;
 
     @ApiOperation(value = "查询系统配置")
     @PostMapping(value = "/queryConfig")
-    public ResultVo queryConfig(@Validated({ ConfigDto.QueryConfigDto.class }) @RequestBody ConfigDto dto){
-        BasePageUtil.initPage(dto.getCurrentPage(),dto.getPageSize());
-        return configService.queryConfig(dto);
+    public ResultVo queryConfig(){
+        return dictionaryService.queryConfig();
     }
 
-    @ApiOperation(value = "更新系统配置")
+   @ApiOperation(value = "更新系统配置")
     @PostMapping(value = "/updateConfig")
-    public ResultVo updateConfig(@Validated({ ConfigDto.UpdateConfigDto.class }) @RequestBody ConfigDto dto){
-        return configService.updateConfig(dto);
+    public ResultVo updateConfig(OperateDto dto){
+        return dictionaryService.updateConfig(dto);
     }
 }

@@ -1,9 +1,6 @@
 package com.cjyc.web.api.controller;
 
-import com.cjyc.common.model.dto.web.task.AllotTaskDto;
-import com.cjyc.common.model.dto.web.task.LoadTaskDto;
-import com.cjyc.common.model.dto.web.task.UnLoadTaskDto;
-import com.cjyc.common.model.entity.Admin;
+import com.cjyc.common.model.dto.web.task.*;
 import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.enums.AdminStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -40,6 +37,7 @@ public class TaskController {
 
     /**
      * 分配任务
+     * @author JPG
      */
     @ApiOperation(value = "分配任务")
     @PostMapping(value = "/allot")
@@ -57,9 +55,10 @@ public class TaskController {
 
     /**
      * 装车
+     * @author JPG
      */
     @ApiOperation(value = "装车")
-    @PostMapping(value = "/load")
+    @PostMapping(value = "/car/load")
     public ResultVo load(@Validated @RequestBody LoadTaskDto reqDto) {
         //验证用户
         Driver driver = driverService.getByUserId(reqDto.getUserId());
@@ -73,9 +72,10 @@ public class TaskController {
 
     /**
      * 卸车
+     * @author JPG
      */
     @ApiOperation(value = "卸车")
-    @PostMapping(value = "/unload")
+    @PostMapping(value = "/car/unload")
     public ResultVo unload(@RequestBody UnLoadTaskDto reqDto) {
         //验证用户
         Driver driver = driverService.getByUserId(reqDto.getUserId());
@@ -89,17 +89,50 @@ public class TaskController {
 
     /**
      * 确认入库
+     * @author JPG
      */
     @ApiOperation(value = "确认入库")
-    @PostMapping(value = "/inhour")
-    public ResultVo uno(@RequestBody UnLoadTaskDto reqDto) {
+    @PostMapping(value = "/car/in/store")
+    public ResultVo inStore(@Validated @RequestBody InStoreTaskDto reqDto) {
         //验证用户
         Driver driver = driverService.getByUserId(reqDto.getUserId());
         if (driver == null || driver.getState() != AdminStateEnum.CHECKED.code) {
             return BaseResultUtil.fail("当前用户，不能执行操作");
         }
         reqDto.setUserName(driver.getName());
-        return taskService.unload(reqDto);
+        return taskService.inStore(reqDto);
+    }
+
+    /**
+     * 确认出库
+     * @author JPG
+     */
+    @ApiOperation(value = "确认出库")
+    @PostMapping(value = "/car/out/store")
+    public ResultVo outStore(@RequestBody OutStoreTaskDto reqDto) {
+        //验证用户
+        Driver driver = driverService.getByUserId(reqDto.getUserId());
+        if (driver == null || driver.getState() != AdminStateEnum.CHECKED.code) {
+            return BaseResultUtil.fail("当前用户，不能执行操作");
+        }
+        reqDto.setUserName(driver.getName());
+        return taskService.outStore(reqDto);
+    }
+
+    /**
+     * 签收
+     * @author JPG
+     */
+    @ApiOperation(value = "签收")
+    @PostMapping(value = "/sign")
+    public ResultVo sign(@RequestBody SignTaskDto reqDto) {
+        //验证用户
+        Driver driver = driverService.getByUserId(reqDto.getUserId());
+        if (driver == null || driver.getState() != AdminStateEnum.CHECKED.code) {
+            return BaseResultUtil.fail("当前用户，不能执行操作");
+        }
+        reqDto.setUserName(driver.getName());
+        return taskService.sign(reqDto);
     }
 
 

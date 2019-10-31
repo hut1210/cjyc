@@ -99,4 +99,29 @@ public interface ICustomerService  {
      * @return
      */
     ResultVo verifyOrDeletePartner(Long id,Integer flag);
+
+    Customer selectByPhone(String customerPhone);
+
+    int updateById(Customer customer);
+
+    /**
+     * 根据关键字(手机号/用户名称)模糊查询用户信息
+     * @param keyword
+     * @return
+     */
+    ResultVo getAllCustomerByKey(String keyword);
+
+    /**
+     * 通过大客户名称获取有效期合同
+     * @param name
+     * @return
+     */
+    ResultVo getCustContractByName(String name);
+
+    /**
+     * 查看客户优惠券
+     * @param dto
+     * @return
+     */
+    ResultVo getCustomerCouponByTerm(CustomerCouponDto dto);
 }

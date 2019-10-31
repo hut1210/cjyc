@@ -1,6 +1,7 @@
 package com.cjyc.web.api.service;
 
 import com.cjyc.common.model.dto.BasePageDto;
+import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.dictionary.DictionaryDto;
 import com.cjyc.common.model.dto.web.dictionary.SelectDictionaryDto;
 import com.cjyc.common.model.entity.Dictionary;
@@ -60,4 +61,17 @@ public interface IDictionaryService {
     PageInfo<Dictionary> findDictionary(SelectDictionaryDto dto);
 
     ResultVo<Map<String, Object>> getInsurance(int valuation);
+
+    /**
+     * 查询所有系统配置
+     * @return
+     */
+    ResultVo queryConfig();
+
+    /**
+     * 更新开关
+     * @param dto
+     * @return
+     */
+    ResultVo updateConfig(OperateDto dto);
 }

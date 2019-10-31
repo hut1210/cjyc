@@ -17,7 +17,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-29
+ * @since 2019-10-30
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -32,14 +32,11 @@ public class Coupon implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "优惠券编码")
-    private String couponNo;
+    @ApiModelProperty(value = "名称")
+    private String name;
 
-    @ApiModelProperty(value = "优惠券名称")
-    private String couponName;
-
-    @ApiModelProperty(value = "优惠券类型 0：满减  1：直减  2：折扣")
-    private Integer couponType;
+    @ApiModelProperty(value = "类型 0：满减  1：直减  2：折扣")
+    private Integer type;
 
     @ApiModelProperty(value = "满额价")
     private BigDecimal fullAmount;
@@ -53,25 +50,13 @@ public class Coupon implements Serializable {
     @ApiModelProperty(value = "发放张数")
     private Integer grantNum;
 
-    @ApiModelProperty(value = "领取张数")
-    private Integer receiveNum;
-
-    @ApiModelProperty(value = "消耗张数")
-    private Integer consumeNum;
-
-    @ApiModelProperty(value = "到期作废张数")
-    private Integer expireDeleNum;
-
-    @ApiModelProperty(value = "剩余可用张数")
-    private Integer surplusAvailNum;
-
     @ApiModelProperty(value = "是否永久  0：否  1：是")
     private Integer isForever;
 
-    @ApiModelProperty(value = "优惠券有效起始时间")
+    @ApiModelProperty(value = "有效起始时间")
     private Long startPeriodDate;
 
-    @ApiModelProperty(value = "优惠券有效结束时间")
+    @ApiModelProperty(value = "有效结束时间")
     private Long endPeriodDate;
 
     @ApiModelProperty(value = "优惠券审核状态： 0待审核，2已审核，4取消，7已驳回，9已停用（CommonStateEnum）")
@@ -80,11 +65,8 @@ public class Coupon implements Serializable {
     @ApiModelProperty(value = "创建时间")
     private Long createTime;
 
-    @ApiModelProperty(value = "创建人id")
+    @ApiModelProperty(value = "创建人")
     private Long createUserId;
-
-    @ApiModelProperty(value = "创建人姓名")
-    private String createUserName;
 
 
 }

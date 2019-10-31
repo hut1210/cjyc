@@ -126,7 +126,7 @@ public class DriverServiceImpl implements IDriverService {
                 carrier.setLinkman(dto.getRealName());
                 carrier.setLinkmanPhone(dto.getPhone());
                 carrier.setType(CarrierTypeEnum.PERSONAL.code);
-                carrier.setSettleType(PayModeEnum.CURRENT.code);
+                carrier.setSettleType(PayModeEnum.COLLECT.code);
                 carrier.setCreateTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
                 carrier.setCreateUserId(dto.getUserId());
                 p = carrierDao.insert(carrier);

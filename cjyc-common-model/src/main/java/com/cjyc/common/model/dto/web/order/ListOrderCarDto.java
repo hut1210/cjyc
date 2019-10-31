@@ -28,7 +28,7 @@ public class ListOrderCarDto extends BasePageDto {
      113取消（待）113已取消
      114作废（待）114已作废
      */
-    @ApiModelProperty(value = "订单状态：")
+    @ApiModelProperty(value = "订单状态：0全部订单，1预订单，5待确认，15待付款，25待调度，55运输中，100已交付，113已取消，114已作废")
     private Integer outterState;
 
     @ApiModelProperty(value = "订单编号")
@@ -102,7 +102,7 @@ public class ListOrderCarDto extends BasePageDto {
     @ApiModelProperty(value = "线路ID")
     private Long lineId;
 
-    @ApiModelProperty(value = "订单来源：1WEB管理后台, 2业务员APP, 3业务员小程序, 4业务员APP, 5业务员小程序, 6用户端APP, 7用户端小程序")
+    @ApiModelProperty(value = "订单来源：0全部订单，1预订单，5待确认，15待付款，25待调度，55运输中，100已交付，113已取消，114已作废")
     private Integer source;
 
     @ApiModelProperty(value = "创建人：客户/业务员")
@@ -112,11 +112,8 @@ public class ListOrderCarDto extends BasePageDto {
 
     @ApiModelProperty(value = "客户付款方式：0到付（默认），1预付，2账期")
     private Integer payType;
-
     @ApiModelProperty(value = "大区编码")
     private Integer regionCode;
-
-
     @ApiModelProperty(value = "是否能动 0-否 1-是")
     private Integer isMove;
     @ApiModelProperty(value = "是否新车 0-否 1-是")

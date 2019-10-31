@@ -17,7 +17,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-29
+ * @since 2019-10-31
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -32,8 +32,8 @@ public class CustomerPartner implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "合伙人userId")
-    private Long customerUserId;
+    @ApiModelProperty(value = "合伙人id")
+    private Long customerId;
 
     @ApiModelProperty(value = "是否一般纳税人 0：否  1：是")
     private Integer isTaxpayer;

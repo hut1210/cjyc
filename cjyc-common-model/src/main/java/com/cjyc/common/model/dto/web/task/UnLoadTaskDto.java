@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.util.List;
+
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
@@ -18,5 +20,5 @@ public class UnLoadTaskDto {
     private String userName;
 
     @ApiModelProperty(value = "任务车辆ID",required = true)
-    private Long taskCarId;
+    private List<Long> taskCarIdList;
 }

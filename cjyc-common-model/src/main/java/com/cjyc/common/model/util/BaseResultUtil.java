@@ -6,6 +6,7 @@ import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.github.pagehelper.PageInfo;
+import org.apache.commons.lang3.StringUtils;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -30,7 +31,12 @@ public class BaseResultUtil<T> {
     public static <T> ResultVo<T> success(){
         return getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg());
     }
-
+    public static <T> ResultVo<T> success(String msg, String... args){
+        return getVo(ResultEnum.SUCCESS.getCode(), MessageFormat.format(msg, args));
+    }
+    public static <T> ResultVo<T> success(int code, String msg, String... args){
+        return getVo(code, MessageFormat.format(msg, args));
+    }
     public static <T> ResultVo<T> success(T data){
         return getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(), data);
     }
@@ -76,6 +82,9 @@ public class BaseResultUtil<T> {
 
     public static <T> ResultVo<T> fail(String message, String... args){
         return getVo(ResultEnum.FAIL.getCode(), MessageFormat.format(message, args));
+    }
+    public static <T> ResultVo<T> fail(int code, String message, String... args){
+        return getVo(code, MessageFormat.format(message, args));
     }
 
     /**
@@ -148,9 +157,13 @@ public class BaseResultUtil<T> {
      */
     public static <T> ResultVo<ListVo<T>> getListVo(int code, String msg, List<T> list, Long totalRecords, Map<String, Object> countInfo){
         if(totalRecords == null){
+            totalRecords = 0L;
             if(countInfo != null){
                 try {
-                    totalRecords = countInfo.get("totalCount") == null ? null : (long)countInfo.get("totalCount");
+                    Object totalCount = countInfo.get("totalCount");
+                    if(totalCount != null && !StringUtils.isBlank(totalCount.toString())){
+                        totalRecords = Long.valueOf(totalCount.toString());
+                    }
                 }catch (Exception e){
                     e.printStackTrace();
                 }

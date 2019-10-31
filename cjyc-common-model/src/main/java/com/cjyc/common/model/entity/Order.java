@@ -17,7 +17,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-29
+ * @since 2019-10-30
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -40,6 +40,9 @@ public class Order implements Serializable {
 
     @ApiModelProperty(value = "客户名称")
     private String customerName;
+
+    @ApiModelProperty(value = "客户电话")
+    private String customerPhone;
 
     @ApiModelProperty(value = "客户类型：1个人，2企业，3合伙人")
     private Integer customerType;
@@ -197,8 +200,8 @@ public class Order implements Serializable {
     @ApiModelProperty(value = "应收配送费")
     private BigDecimal backFee;
 
-    @ApiModelProperty(value = "应收保险费")
-    private BigDecimal insuranceFee;
+    @ApiModelProperty(value = "应收追加保险费")
+    private BigDecimal addInsuranceFee;
 
     @ApiModelProperty(value = "物流券抵消金额")
     private BigDecimal couponOffsetFee;

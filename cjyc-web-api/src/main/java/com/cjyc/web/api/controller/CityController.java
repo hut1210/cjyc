@@ -7,6 +7,7 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.dto.web.city.TreeCityDto;
+import com.cjyc.common.model.vo.web.city.CityTreeVo;
 import com.cjyc.common.model.vo.web.city.TreeCityVo;
 import com.cjyc.web.api.service.ICityService;
 import io.swagger.annotations.Api;
@@ -33,7 +34,7 @@ public class CityController {
     private ICityService cityService;
 
     @ApiOperation(value = "根据code查询城市", notes = " ")
-    @GetMapping(value = "/get/{code}")
+    @PostMapping(value = "/get/{code}")
     public ResultVo<City> get(@ApiParam(value = "城市编码", required = true)
                               @PathVariable String code) {
         City city = cityService.getById(code);
@@ -41,7 +42,7 @@ public class CityController {
     }
 
     @ApiOperation(value = "查询城市列表", notes = "")
-    @GetMapping(value = "/list/{level}")
+    @PostMapping(value = "/list/{level}")
     public ResultVo<Collection<City>> List(@ApiParam(value = "行政区级别：0大区，1省，2市，3区县", required = true)
                                            @PathVariable int level) {
         HashMap<String, Object> columnMap = new HashMap<>();
@@ -51,7 +52,7 @@ public class CityController {
     }
 
     @ApiOperation(value = "查询城市列表（分页）", notes = "")
-    @GetMapping(value = "/page")
+    @PostMapping(value = "/page")
     public ResultVo<PageVo<City>> page(@ApiParam(value = "查询条件", required = true)
                                        @Validated @RequestBody CityPageDto cityPageDto) {
         IPage<City> iPage = cityService.selectPage(cityPageDto);
@@ -59,7 +60,7 @@ public class CityController {
     }
 
     @ApiOperation(value = "查询下属城市列表", notes = "")
-    @GetMapping(value = "/child/list/{code}")
+    @PostMapping(value = "/child/list/{code}")
     public ResultVo<List<City>> childList(@ApiParam(value = "城市编码", required = true)
                                           @PathVariable String code) {
         List<City> list = cityService.selectChildList(code);
@@ -70,5 +71,12 @@ public class CityController {
     @PostMapping(value = "/tree")
     public ResultVo<List<TreeCityVo>> tree(@RequestBody TreeCityDto treeCityDto) {
         return cityService.getTree(treeCityDto);
+    }
+
+    @ApiOperation(value = "查询树形结构", notes = "")
+    @PostMapping(value = "/cityTree/{startLevel}/{endLevel}")
+    public ResultVo<List<CityTreeVo>> cityTree(@PathVariable @ApiParam(value = "区域级别 最高级:-1 大区:0 省直辖市:1 城市:2 区县:3",required = true) Integer startLevel,
+                                               @PathVariable @ApiParam(value = "区域级别 最高级:-1 大区:0 省直辖市:1 城市:2 区县:3",required = true) Integer endLevel) {
+        return cityService.cityTree(startLevel,endLevel);
     }
 }

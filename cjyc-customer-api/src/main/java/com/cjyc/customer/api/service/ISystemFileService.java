@@ -9,9 +9,4 @@ import java.util.List;
  */
 public interface ISystemFileService {
 
-    /**
-     * 获取移动端用户所有banner图片
-     * @return
-     */
-    List<String> getAllBannerPhoto();
 }

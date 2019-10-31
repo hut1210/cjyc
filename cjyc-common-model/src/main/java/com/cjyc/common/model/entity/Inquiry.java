@@ -13,17 +13,17 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 
+ * 客户询价
  * </p>
  *
  * @author JPG
- * @since 2019-10-29
+ * @since 2019-10-31
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("s_inquiry")
-@ApiModel(value="Inquiry对象", description="")
+@ApiModel(value="Inquiry对象", description="客户询价")
 public class Inquiry implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -70,9 +70,6 @@ public class Inquiry implements Serializable {
 
     @ApiModelProperty(value = "处理人")
     private Long handleUserId;
-
-    @ApiModelProperty(value = "处理人姓名")
-    private String handleUserName;
 
     @ApiModelProperty(value = "工单内容")
     private String jobContent;

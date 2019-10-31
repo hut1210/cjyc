@@ -1,9 +1,9 @@
 package com.cjyc.web.api.controller;
 
-import com.cjyc.common.model.dto.BasePageDto;
+import com.cjyc.common.model.dto.web.OperateDto;
+import com.cjyc.common.model.dto.web.coupon.ConsumeCouponDto;
 import com.cjyc.common.model.dto.web.coupon.CouponDto;
 import com.cjyc.common.model.dto.web.coupon.SeleCouponDto;
-import com.cjyc.common.model.entity.Coupon;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BasePageUtil;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -14,13 +14,9 @@ import com.cjyc.web.api.service.ICouponService;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  *  @author: zj
@@ -44,47 +40,6 @@ public class CouponController {
                 : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
     }
 
-    @ApiOperation(value = "分页查看优惠券")
-    @PostMapping(value = "/getAllCoupon")
-    public ResultVo<PageVo<CouponVo>> getAllCoupon(@RequestBody BasePageDto basePageDto){
-        BasePageUtil.initPage(basePageDto.getCurrentPage(),basePageDto.getPageSize());
-        PageInfo<CouponVo> pageInfo = couponService.getAllCoupon(basePageDto);
-        return BaseResultUtil.getPageVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),pageInfo);
-    }
-
-    @ApiOperation(value = "根据ids作废优惠券")
-    @PostMapping(value = "/abolishCouponByIds")
-    public ResultVo abolishCouponByIds(@RequestBody List<Long> ids){
-        if(ids == null || ids.size() ==0){
-            return BaseResultUtil.getVo(ResultEnum.MOBILE_PARAM_ERROR.getCode(),ResultEnum.MOBILE_PARAM_ERROR.getMsg());
-        }
-        boolean result = couponService.abolishCouponByIds(ids);
-        return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg())
-                : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
-    }
-
-    @ApiOperation(value = "根据id查看优惠券")
-    @PostMapping(value = "/showCouponById/{id}")
-    public ResultVo<Coupon> showCouponById(@PathVariable @ApiParam(value = "主键id",required = true) Long id){
-        if(id == null){
-            return BaseResultUtil.getVo(ResultEnum.MOBILE_PARAM_ERROR.getCode(),ResultEnum.MOBILE_PARAM_ERROR.getMsg());
-        }
-        Coupon coupon = couponService.showCouponById(id);
-        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),coupon);
-    }
-
-    @ApiOperation(value = "根据id审核优惠券")
-    @PostMapping(value = "/verifyCouponById/{id}/{state}")
-    public ResultVo verifyCouponById(@PathVariable @ApiParam(value = "主键id",required = true) Long id,
-                                     @PathVariable @ApiParam(value = "审核状态 3：审核通过  5：审核不通过",required = true) String state){
-        if(id == null || StringUtils.isBlank(state)){
-            return BaseResultUtil.getVo(ResultEnum.MOBILE_PARAM_ERROR.getCode(),ResultEnum.MOBILE_PARAM_ERROR.getMsg());
-        }
-        boolean result = couponService.verifyCouponById(id,state);
-        return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg())
-                : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
-    }
-
     @ApiOperation(value = "更新优惠券")
     @PostMapping(value = "/updateCoupon")
     public ResultVo updateCoupon(@Validated({ CouponDto.UpaCouponDto.class }) @RequestBody CouponDto dto){
@@ -93,11 +48,24 @@ public class CouponController {
                 : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
     }
 
+    @ApiOperation(value = "审核/作废优惠券")
+    @PostMapping(value = "/operateCoupon")
+    public ResultVo operateCoupon(@RequestBody OperateDto dto){
+        return couponService.operateCoupon(dto);
+    }
+
     @ApiOperation(value = "根据条件筛选分页查询优惠券")
     @PostMapping(value = "/getCouponByTerm")
-    public ResultVo<PageVo<CouponVo>> getCouponByTerm(@RequestBody SeleCouponDto dto){
+    public ResultVo getCouponByTerm(@RequestBody SeleCouponDto dto){
         BasePageUtil.initPage(dto.getCurrentPage(),dto.getPageSize());
-        PageInfo<CouponVo> pageInfo = couponService.getCouponByTerm(dto);
-        return BaseResultUtil.getPageVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),pageInfo);
+        return couponService.getCouponByTerm(dto);
     }
+
+    @ApiOperation(value = "查询该优惠券消耗明细")
+    @PostMapping(value = "/getConsumeDetail")
+    public ResultVo getConsumeDetail(@RequestBody ConsumeCouponDto dto){
+        BasePageUtil.initPage(dto.getCurrentPage(),dto.getPageSize());
+        return couponService.getConsumeDetail(dto);
+    }
+
 }

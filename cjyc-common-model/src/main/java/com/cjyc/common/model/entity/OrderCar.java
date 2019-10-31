@@ -93,10 +93,10 @@ public class OrderCar implements Serializable {
     private BigDecimal backFee;
 
     @ApiModelProperty(value = "车辆应收保险费")
-    private BigDecimal insuranceFee;
+    private BigDecimal addInsuranceFee;
 
     @ApiModelProperty(value = "保额/万")
-    private Integer insuranceCoverageAmount;
+    private Integer addInsuranceAmount;
 
     @ApiModelProperty(value = "物流券抵消金额")
     private BigDecimal couponOffsetFee;

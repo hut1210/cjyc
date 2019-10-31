@@ -1,32 +1,24 @@
 package com.cjyc.web.api.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.cjkj.common.model.ResultData;
-import com.cjkj.common.utils.SnowflakeIdWorker;
-import com.cjkj.usercenter.dto.common.AddUserReq;
-import com.cjkj.usercenter.dto.common.AddUserResp;
 import com.cjyc.common.model.constant.TimePatternConstant;
-import com.cjyc.common.model.dao.IBankCardBindDao;
-import com.cjyc.common.model.dao.ICustomerContractDao;
-import com.cjyc.common.model.dao.ICustomerDao;
-import com.cjyc.common.model.dao.ICustomerPartnerDao;
+import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.customer.*;
 import com.cjyc.common.model.entity.BankCardBind;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.entity.CustomerContract;
 import com.cjyc.common.model.entity.CustomerPartner;
 import com.cjyc.common.model.enums.*;
+import com.cjyc.common.model.enums.coupon.CouponLifeTypeEnum;
 import com.cjyc.common.model.enums.customer.CustomerStateEnum;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
-import com.cjyc.common.model.dto.BasePageDto;
-import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.CustomerContractVo;
 import com.cjyc.common.model.vo.web.CustomerVo;
 import com.cjyc.common.model.vo.web.ListKeyCustomerVo;
 import com.cjyc.common.model.vo.web.ShowKeyCustomerVo;
+import com.cjyc.common.model.vo.web.customer.CustomerCouponVo;
 import com.cjyc.web.api.exception.CommonException;
 import com.cjyc.web.api.feign.ISysUserService;
 import com.cjyc.web.api.service.ICustomerService;
@@ -37,11 +29,14 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  *  @author: zj
@@ -66,6 +61,9 @@ public class CustomerServiceImpl implements ICustomerService{
 
     @Resource
     private IBankCardBindDao bankCardBindDao;
+
+    @Resource
+    private ICouponDao couponDao;
 
     @Override
     public boolean saveCustomer(CustomerDto customerDto) {
@@ -305,7 +303,7 @@ public class CustomerServiceImpl implements ICustomerService{
     @Override
     public int save(Customer customer) {
         //添加架构组数据
-        AddUserReq addUserReq = new AddUserReq();
+/*        AddUserReq addUserReq = new AddUserReq();
         addUserReq.setAccount(customer.getContactPhone());
         addUserReq.setPassword(YmlProperty.get("cjkj.web.password"));
         addUserReq.setDeptId(Long.valueOf(YmlProperty.get("cjkj.dept_customer_id")));
@@ -314,8 +312,9 @@ public class CustomerServiceImpl implements ICustomerService{
         ResultData<AddUserResp> resultData = sysUserService.save(addUserReq);
 
         if(resultData == null || resultData.getData() == null || resultData.getData().getUserId() == null){
-            return 0;
-        }
+            throw new ServerException("添加用户失败");
+        }*/
+        //customer.setUserId(resultData.getData().getUserId());
         return customerDao.insert(customer);
     }
 
@@ -345,7 +344,7 @@ public class CustomerServiceImpl implements ICustomerService{
                 if(n > 0){
                     //新增合伙人附加信息c_customer_partner
                     CustomerPartner cp = new CustomerPartner();
-                    cp.setCustomerUserId(customer.getUserId());
+                    cp.setCustomerId(customer.getId());
                     encapPartner(cp,dto);
                     m = customerPartnerDao.insert(cp);
                 }
@@ -414,6 +413,87 @@ public class CustomerServiceImpl implements ICustomerService{
             throw new CommonException("审核/删除合伙人出现异常");
         }
         return BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
+    }
+
+    @Override
+    public Customer selectByPhone(String customerPhone) {
+        return customerDao.findByPhone(customerPhone);
+    }
+
+    @Override
+    public int updateById(Customer customer) {
+        return customerDao.updateById(customer);
+    }
+
+    @Override
+    public ResultVo getAllCustomerByKey(String keyword) {
+        List<Map<String,Object>> customerList = null;
+        try{
+            customerList = customerDao.getAllCustomerByKey(keyword);
+            if(!CollectionUtils.isEmpty(customerList)){
+                return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),customerList);
+            }else{
+                return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(), Collections.emptyList());
+            }
+        }catch (Exception e){
+            log.error("根据用户名/手机号模糊查询用户信息出现异常",e);
+            return BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg(), Collections.emptyList());
+        }
+    }
+
+    @Override
+    public ResultVo getCustContractByName(String name) {
+        //获取当前时间戳
+        Long now = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
+        try{
+            List<Map<String,Object>> contractMap = customerDao.getCustContractByName(name,now);
+            if(!CollectionUtils.isEmpty(contractMap)){
+                return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),contractMap);
+            }else{
+                return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),Collections.emptyList());
+            }
+        }catch (Exception e){
+            log.error("根据大客户名称获取有效期合同信息出现异常",e);
+            return BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg(),Collections.emptyList());
+        }
+    }
+
+    @Override
+    public ResultVo getCustomerCouponByTerm(CustomerCouponDto dto) {
+        PageInfo<CustomerCouponVo> pageInfo = null;
+        try{
+            List<CustomerCouponVo> voList = couponDao.getCustomerCouponByTerm(dto);
+            if(!CollectionUtils.isEmpty(voList)){
+                for(CustomerCouponVo vo : voList){
+                    if(vo == null){
+                        continue;
+                    }
+                    vo.setFullAmount(vo.getFullAmount() == null ? BigDecimal.ZERO : vo.getFullAmount().divide(new BigDecimal(100)));
+                    vo.setCutAmount(vo.getCutAmount() == null ? BigDecimal.ZERO : vo.getCutAmount().divide(new BigDecimal(100)));
+                    if(CouponLifeTypeEnum.FOREVER.code != vo.getIsForever()){
+                        //有效期
+                        if(StringUtils.isNotBlank(vo.getStartPeriodDate())){
+                            vo.setStartPeriodDate(LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(Long.valueOf(vo.getStartPeriodDate())),TimePatternConstant.COMPLEX_TIME_FORMAT));
+                        }
+                        if(StringUtils.isNotBlank(vo.getEndPeriodDate())){
+                            vo.setEndPeriodDate(LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(Long.valueOf(vo.getEndPeriodDate())),TimePatternConstant.COMPLEX_TIME_FORMAT));
+                        }
+                    }
+                    //永久 没有有效期
+                    if(StringUtils.isNotBlank(vo.getReceiveTime())){
+                        vo.setReceiveTime(LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(Long.valueOf(vo.getReceiveTime())),TimePatternConstant.COMPLEX_TIME_FORMAT));
+                    }
+                }
+                PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
+                pageInfo = new PageInfo<>(voList);
+                return BaseResultUtil.getPageVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),pageInfo);
+            }else{
+                return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),Collections.emptyList());
+            }
+        }catch (Exception e){
+            log.error("查看用户优惠券信息出现异常",e);
+        }
+        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),Collections.emptyList());
     }
 
     /**

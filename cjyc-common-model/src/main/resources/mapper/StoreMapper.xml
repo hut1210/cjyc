@@ -35,5 +35,13 @@
         where city_code =#{cityCode}
         and state = 2
     </select>
+    <select id="findByAreaCode" resultType="com.cjyc.common.model.entity.Store">
+        select
+        <include refid="Base_Column_List"/>
+        from s_store
+        where area_code =#{areaCode}
+        and state = 2
+
+    </select>
 
 </mapper>

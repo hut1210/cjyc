@@ -43,10 +43,10 @@ public class DispatchController {
      * @author JPG
      */
     @ApiOperation(value = "查询待调度车辆统计")
-    @GetMapping(value = "/wait/count/list/{userId}")
-    public ResultVo<ListVo<Map<String, Object>>> waitDispatchCarCountList(@ApiParam(value = "userId", required = true)
+    @PostMapping(value = "/wait/count/list/{userId}")
+    public ResultVo<ListVo<Map<String, Object>>> waitDispatchCarCountList(@ApiParam(value = "用户userId", required = true)
                                                                           @PathVariable Long userId) {
-        BizScopeVo bizScope = bizScopeService.getBizScope(userId);
+        //BizScopeVo bizScope = bizScopeService.getBizScope(userId);
         return orderService.waitDispatchCarCountList();
     }
 
@@ -55,10 +55,10 @@ public class DispatchController {
      * @author JPG
      */
     @ApiOperation(value = "按线路统计待调度车辆（统计列表）")
-    @GetMapping(value = "/line/wait/count/list")
+    @PostMapping(value = "/line/wait/count/list")
     public ResultVo<ListVo<Map<String, Object>>> lineWaitDispatchCarCountList(@RequestBody LineWaitDispatchCountListOrderCarDto reqDto) {
-        BizScopeVo bizScope = bizScopeService.getBizScope(reqDto.getUserId());
-        return orderService.lineWaitDispatchCarCountList(reqDto, bizScope.getBizScopeStoreIds());
+        //BizScopeVo bizScope = bizScopeService.getBizScope(reqDto.getUserId());
+        return orderService.lineWaitDispatchCarCountList(reqDto,null);
     }
 
     /**
@@ -66,10 +66,10 @@ public class DispatchController {
      * @author JPG
      */
     @ApiOperation(value = "查询待调度车辆列表")
-    @GetMapping(value = "/wait/list")
+    @PostMapping(value = "/wait/list")
     public ResultVo<PageVo<OrderCarWaitDispatchVo>> waitDispatchCarList(@RequestBody WaitDispatchListOrderCarDto reqDto) {
-        BizScopeVo bizScope = bizScopeService.getBizScope(reqDto.getUserId());
-        return orderService.waitDispatchCarList(reqDto, bizScope.getBizScopeStoreIds());
+        //BizScopeVo bizScope = bizScopeService.getBizScope(reqDto.getUserId());
+        return orderService.waitDispatchCarList(reqDto, null);
     }
 
 }

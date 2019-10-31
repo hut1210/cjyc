@@ -11,6 +11,7 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.BizScopeVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.order.ListOrderVo;
 import com.cjyc.common.model.vo.web.order.OrderVo;
 import com.cjyc.web.api.service.IAdminService;
 import com.cjyc.web.api.service.IBizScopeService;
@@ -18,10 +19,10 @@ import com.cjyc.web.api.service.IOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -43,12 +44,12 @@ public class OrderController {
 
 
     /**
-     * 保存
+     * 保存,只保存无验证
      * @author JPG
      */
     @ApiOperation(value = "订单保存")
     @PostMapping(value = "/save")
-    public ResultVo save(@RequestBody CommitOrderDto reqDto) {
+    public ResultVo save(@RequestBody SaveOrderDto reqDto) {
 
         //验证用户存不存在
         Long userId = reqDto.getUserId();
@@ -58,22 +59,20 @@ public class OrderController {
         }
         reqDto.setCreateUserId(admin.getUserId());
         reqDto.setCreateUserName(admin.getName());
-        reqDto.setState(OrderStateEnum.WAIT_SUBMIT.code);
 
         ResultVo resultVo = orderService.save(reqDto);
-
         //发送推送信息
         return resultVo;
     }
 
 
     /**
-     * 提交
+     * 提交,只保存无验证
      * @author JPG
      */
     @ApiOperation(value = "订单提交")
     @PostMapping(value = "/commit")
-    public ResultVo commit(@RequestBody CommitOrderDto reqDto) {
+    public ResultVo commit(@Validated @RequestBody CommitOrderDto reqDto) {
 
         //验证用户存不存在
         Long userId = reqDto.getUserId();
@@ -84,36 +83,7 @@ public class OrderController {
         reqDto.setCreateUserId(admin.getUserId());
         reqDto.setCreateUserName(admin.getName());
 
-        //验证提交方式
-        int saveType = reqDto.getSaveType();
-        if(OrderSaveTypeEnum.SAVE.code != saveType){
-            //验证数据范围
-            BizScopeVo bizScope = bizScopeService.getBizScope(userId);
-            List<Long> bizScopeStoreIds = bizScope.getBizScopeStoreIds();
-            if(bizScopeStoreIds != null && !bizScopeStoreIds.contains(reqDto.getInputStoreId())){
-                return BaseResultUtil.fail("订单所属业务中中心不再权限范围内");
-            }
-            //验证角色权限
-            //验证业务中心
-            //验证匹配线路
-            //验证金额
-            if(reqDto.getWlTotalFee()!= null && reqDto.getWlTotalFee().compareTo(reqDto.getRealWlTotalFee()) > 0){
-                return BaseResultUtil.fail("实收金额不能超过总的物流费");
-            }
-        }
-
-        //订单状态
-        if(OrderSaveTypeEnum.CHECK.code == saveType){
-            reqDto.setState(OrderStateEnum.CHECKED.code);
-        }else if(OrderSaveTypeEnum.COMMIT.code == saveType){
-            reqDto.setState(OrderStateEnum.SUBMITTED.code);
-        }else{
-            reqDto.setState(OrderStateEnum.WAIT_SUBMIT.code);
-        }
-
         ResultVo resultVo = orderService.commit(reqDto);
-
-        //添加物流日志
 
         //发送推送信息
         return resultVo;
@@ -137,6 +107,12 @@ public class OrderController {
     @ApiOperation(value = "审核订单")
     @PostMapping(value = "/check")
     public ResultVo check(@RequestBody CheckOrderDto reqDto) {
+        //验证用户存不存在
+        Long userId = reqDto.getUserId();
+        Admin admin = adminService.getByUserId(userId);
+        if(admin == null){
+            return BaseResultUtil.fail("用户不存在");
+        }
         return orderService.check(reqDto);
     }
 
@@ -158,7 +134,7 @@ public class OrderController {
      */
     @ApiOperation(value = "查询订单列表")
     @PostMapping(value = "/list")
-    public ResultVo<PageVo<Order>> list(@RequestBody ListOrderDto reqDto) {
+    public ResultVo<PageVo<ListOrderVo>> list(@RequestBody ListOrderDto reqDto) {
         return orderService.list(reqDto);
     }
 
@@ -179,7 +155,7 @@ public class OrderController {
      */
     @ApiOperation(value = "分配订单")
     @PostMapping(value = "/allot")
-    public ResultVo allot(@RequestBody AllotOrderDto reqDto) {
+    public ResultVo allot(@Validated @RequestBody AllotOrderDto reqDto) {
         //验证操作人
         Admin admin = adminService.getByUserId(reqDto.getUserId());
         if(admin == null || admin.getState() != AdminStateEnum.CHECKED.code){

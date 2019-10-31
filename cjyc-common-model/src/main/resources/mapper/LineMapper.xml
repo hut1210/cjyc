@@ -28,7 +28,7 @@
     </sql>
 
     <!-- 通过城市编码查看上游运价 -->
-    <select id="getLinePriceByCode" resultType="java.lang.String" parameterType="java.lang.String">
+    <select id="getLinePriceByCode" resultType="java.lang.String" parameterType="com.cjyc.common.model.dto.customer.freightBill.TransportPriceDto">
         select default_wl_fee
         from s_line
         <where>

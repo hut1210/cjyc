@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * @Description 品牌车系业务接口
@@ -52,4 +53,10 @@ public interface ICarSeriesService extends IService<CarSeries> {
      * @param response
      */
     void exportExcel(HttpServletRequest request, HttpServletResponse response);
+
+    /**
+     * 查询所有品牌
+     * @return
+     */
+    ResultVo<List<CarSeries>> queryAll();
 }

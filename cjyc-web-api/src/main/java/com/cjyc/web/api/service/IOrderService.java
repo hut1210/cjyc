@@ -7,6 +7,7 @@ import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.order.ListOrderVo;
 import com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo;
 import com.cjyc.common.model.vo.web.order.OrderVo;
 import com.cjyc.common.model.dto.web.order.CommitOrderDto;
@@ -46,7 +47,7 @@ public interface IOrderService extends IService<Order> {
 
     ResultVo allot(AllotOrderDto paramsDto);
 
-    ResultVo<PageVo<Order>> list(ListOrderDto paramsDto);
+    ResultVo<PageVo<ListOrderVo>> list(ListOrderDto paramsDto);
 
     ResultVo cancel(CancelOrderDto paramsDto);
 
@@ -60,5 +61,5 @@ public interface IOrderService extends IService<Order> {
 
     ResultVo check(CheckOrderDto reqDto);
 
-    ResultVo save(CommitOrderDto reqDto);
+    ResultVo save(SaveOrderDto reqDto);
 }

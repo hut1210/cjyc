@@ -7,7 +7,7 @@ import com.cjkj.usercenter.dto.common.*;
 import com.cjkj.usercenter.dto.yc.SelectUsersByRoleReq;
 import com.cjkj.usercenter.dto.yc.SelectUsersByRoleResp;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -58,7 +58,7 @@ public interface ISysRoleService {
      * @param deptId 组机机构ID
      * @return ResultData<List<SelectRoleResp>>
      */
-    @GetMapping("feign/uc/getMultiLevelRoles/{deptId}")
+    @PostMapping("feign/uc/getMultiLevelRoles/{deptId}")
     ResultData<List<SelectRoleResp>> getMultiLevelList(@PathVariable Integer deptId);
 
     /**
@@ -68,7 +68,7 @@ public interface ISysRoleService {
      * @param deptId 部门ID
      * @return ResultData<List<SelectRoleResp>>
      */
-    @GetMapping("/feign/uc/getSingleLevelRoles/{deptId}")
+    @PostMapping("/feign/uc/getSingleLevelRoles/{deptId}")
     ResultData<List<SelectRoleResp>> getSingleLevelList(@PathVariable Integer deptId);
 
 
@@ -79,7 +79,7 @@ public interface ISysRoleService {
      * @param userId 用户ID
      * @return ResultData<List<SelectRoleResp>>
      */
-    @GetMapping("/feign/uc/getRoles/{userId}")
+    @PostMapping("/feign/uc/getRoles/{userId}")
     ResultData<List<SelectRoleResp>> getListByUserId(@PathVariable Integer userId);
 
     /**

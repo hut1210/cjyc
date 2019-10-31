@@ -1,13 +1,17 @@
 package com.cjyc.web.api.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.cjyc.common.model.constant.FieldConstant;
 import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.dao.IDictionaryDao;
 import com.cjyc.common.model.dto.BasePageDto;
+import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.dictionary.DictionaryDto;
 import com.cjyc.common.model.dto.web.dictionary.SelectDictionaryDto;
 import com.cjyc.common.model.entity.Dictionary;
 import com.cjyc.common.model.enums.DictionaryEnum;
+import com.cjyc.common.model.enums.FlagEnum;
+import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.UseStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
@@ -20,8 +24,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +44,7 @@ import java.util.Map;
 public class DictionaryServiceImpl implements IDictionaryService {
 
     @Resource
-    private IDictionaryDao iDictionaryDao;
+    private IDictionaryDao dictionaryDao;
 
     @Override
     public boolean saveDictionary(DictionaryDto dto) {
@@ -52,7 +59,7 @@ public class DictionaryServiceImpl implements IDictionaryService {
             dic.setRemark(dto.getRemark());
             dic.setState(UseStateEnum.USABLE.code);
             dic.setCreateTime(LocalDateTimeUtil.convertToLong(LocalDateTimeUtil.formatLDTNow(TimePatternConstant.COMPLEX_TIME_FORMAT), TimePatternConstant.COMPLEX_TIME_FORMAT));
-            return iDictionaryDao.insert(dic) > 0 ? true:false;
+            return dictionaryDao.insert(dic) > 0 ? true:false;
         }catch (Exception e){
             log.info("保存字典项出现异常");
             throw new CommonException(e.getMessage());
@@ -64,7 +71,7 @@ public class DictionaryServiceImpl implements IDictionaryService {
         Dictionary dic = null;
         try{
             if(id != null){
-                dic = iDictionaryDao.selectById(id);
+                dic = dictionaryDao.selectById(id);
             }
         }catch (Exception e){
             log.info("根据id查看字典项出现异常");
@@ -76,7 +83,7 @@ public class DictionaryServiceImpl implements IDictionaryService {
     public boolean delDictionaryByIds(List<Long> ids) {
         try{
             if(ids != null && ids.size() > 0){
-                return iDictionaryDao.deleteBatchIds(ids) > 0 ? true:false;
+                return dictionaryDao.deleteBatchIds(ids) > 0 ? true:false;
             }
         }catch (Exception e){
             log.info("根据ids批量删除字典项出现异常");
@@ -88,7 +95,7 @@ public class DictionaryServiceImpl implements IDictionaryService {
     @Override
     public boolean updDictionaryById(DictionaryDto dto) {
         try{
-            Dictionary dic = iDictionaryDao.selectById(dto.getId());
+            Dictionary dic = dictionaryDao.selectById(dto.getId());
             if(dic != null){
                 dic.setName(dto.getName());
                 dic.setItem(dto.getItem());
@@ -96,7 +103,7 @@ public class DictionaryServiceImpl implements IDictionaryService {
                 dic.setItemValue(dto.getItemValue());
                 dic.setItemUnit(dto.getItemUnit());
                 dic.setRemark(dto.getRemark());
-                return iDictionaryDao.updateById(dic) > 0 ? true:false;
+                return dictionaryDao.updateById(dic) > 0 ? true:false;
             }
         }catch (Exception e){
             log.info("根据id更新字典项出现异常");
@@ -110,7 +117,7 @@ public class DictionaryServiceImpl implements IDictionaryService {
         PageInfo<Dictionary> pageInfo = null;
         try{
             PageHelper.startPage(pageDto.getCurrentPage(), pageDto.getPageSize());
-            List<Dictionary> dictionaryList = iDictionaryDao.selectList(new QueryWrapper<>());
+            List<Dictionary> dictionaryList = dictionaryDao.selectList(new QueryWrapper<>());
             pageInfo = new PageInfo<>(dictionaryList);
         }catch (Exception e){
             log.info("根据id更新字典项出现异常");
@@ -129,7 +136,7 @@ public class DictionaryServiceImpl implements IDictionaryService {
                 dto.setPageSize(10);
             }
             PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
-            List<Dictionary> dictionaryList = iDictionaryDao.selectList(new QueryWrapper<Dictionary>().eq("name",dto.getName()));
+            List<Dictionary> dictionaryList = dictionaryDao.selectList(new QueryWrapper<Dictionary>().eq("name",dto.getName()));
             pageInfo = new PageInfo<>(dictionaryList);
         }catch (Exception e){
             log.info("根据id更新字典项出现异常");
@@ -143,7 +150,7 @@ public class DictionaryServiceImpl implements IDictionaryService {
         int add_insurance_fee = 0;
 
         Integer baseAmount = 0;
-        Dictionary dictionary = findByEnum(DictionaryEnum.INSURANCE_AMOUNT);
+        Dictionary dictionary = findByEnum(DictionaryEnum.INSURANCE_BASE_AMOUNT);
         if(dictionary != null || dictionary.getItemValue() != null){
             baseAmount = Integer.valueOf(dictionary.getItemValue());
         }
@@ -151,20 +158,73 @@ public class DictionaryServiceImpl implements IDictionaryService {
         //追加保额等于估值-
         if(valuation > baseAmount){
             add_insurance_amount = valuation - baseAmount <= 0 ? 0 : valuation - baseAmount;
+            //追加保费
+            if(valuation > 10 && valuation <= 15){
+                add_insurance_fee = 12;
+            }else if(valuation > 15 && valuation <= 30){
+                add_insurance_fee = 17;
+            }else if(valuation > 30 && valuation <= 45){
+                add_insurance_fee = 32;
+            }else if(valuation > 45 && valuation <= 60){
+                add_insurance_fee = 52;
+            }else if(valuation > 60 && valuation <= 90){
+                add_insurance_fee = 70;
+            }else{
+                add_insurance_fee = 2 * add_insurance_amount;
+            }
         }
-        //追加保费
-        if(add_insurance_amount > 0){
-            add_insurance_fee = add_insurance_amount * 12 / 5 ;
+        if(add_insurance_fee > 500){
+            add_insurance_fee = 500;
         }
-
         Map<String, Object> map = new HashMap<>();
         map.put("add_insurance_amount", add_insurance_amount);
         map.put("add_insurance_fee", add_insurance_fee);
         return BaseResultUtil.success(map);
     }
 
+    @Override
+    public ResultVo queryConfig() {
+        try{
+            List<Map<String,String>> mapList = dictionaryDao.getSystemConfig(FieldConstant.ITEM);
+            if(!CollectionUtils.isEmpty(mapList)){
+                return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),mapList);
+            }else{
+                return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),Collections.emptyList());
+            }
+        }catch (Exception e){
+            log.info("查询系统配置出现异常");
+            throw new CommonException(e.getMessage());
+        }
+    }
+
+    @Override
+    public ResultVo updateConfig(OperateDto dto) {
+        int n = 0;
+        try{
+            Dictionary dictionary = dictionaryDao.selectById(dto.getId());
+            if(dictionary != null){
+                if(FlagEnum.TURNOFF_SWITCH.code == dto.getState()){
+                    //关闭开关
+                    dto.setState(UseStateEnum.DISABLED.code);
+                }else if(FlagEnum.TURNONN_SWITCH.code == dto.getState()){
+                    //打开开关
+                    dto.setState(UseStateEnum.USABLE.code);
+                }
+                n = dictionaryDao.updateById(dictionary);
+            }
+            if(n > 0){
+                return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg());
+            }else{
+                return BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
+            }
+        }catch (Exception e){
+            log.info("更新系统配置出现异常");
+            throw new CommonException(e.getMessage());
+        }
+    }
+
 
     private Dictionary findByEnum(DictionaryEnum dictionaryEnum) {
-        return iDictionaryDao.findByItemKey(dictionaryEnum.item, dictionaryEnum.key);
+        return dictionaryDao.findByItemKey(dictionaryEnum.item, dictionaryEnum.key);
     }
 }

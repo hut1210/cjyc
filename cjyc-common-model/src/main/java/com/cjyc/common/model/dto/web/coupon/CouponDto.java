@@ -22,15 +22,20 @@ public class CouponDto implements Serializable {
     @NotNull(groups = {CouponDto.UpaCouponDto.class},message = "优惠券主键id不能为空")
     private Long id;
 
+    @ApiModelProperty(value = "登陆用户userId")
+    @NotNull(groups = {CouponDto.SaveCouponDto.class},message = "登陆用户userId不能为空")
+    @NotNull(groups = {CouponDto.UpaCouponDto.class},message = "登陆用户userId不能为空")
+    private Long userId;
+
     @ApiModelProperty(value = "优惠券名称")
     @NotBlank(groups = {CouponDto.SaveCouponDto.class},message = "优惠券名称不能为空")
     @NotBlank(groups = {CouponDto.UpaCouponDto.class},message = "优惠券名称不能为空")
-    private String couponName;
+    private String name;
 
     @ApiModelProperty(value = "优惠券类型 0：满减  1：直减  2：折扣")
     @NotBlank(groups = {CouponDto.SaveCouponDto.class},message = "优惠券类型不能为空")
     @NotBlank(groups = {CouponDto.UpaCouponDto.class},message = "优惠券类型不能为空")
-    private Integer couponType;
+    private Integer type;
 
     @ApiModelProperty(value = "满额价")
     private BigDecimal fullAmount;
@@ -46,10 +51,10 @@ public class CouponDto implements Serializable {
     @NotBlank(groups = {CouponDto.UpaCouponDto.class},message = "发放张数不能为空")
     private Integer grantNum;
 
-    @ApiModelProperty(value = "是否永久  false：否  true：是")
+    @ApiModelProperty(value = "是否永久  0：否  1：是")
     @NotNull(groups = {CouponDto.SaveCouponDto.class},message = "是否永久不能为空")
     @NotNull(groups = {CouponDto.UpaCouponDto.class},message = "是否永久不能为空")
-    private Boolean isForever;
+    private Integer isForever;
 
     @ApiModelProperty(value = "优惠券有效起始时间")
     private String startPeriodDate;

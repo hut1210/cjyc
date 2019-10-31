@@ -1,4 +1,4 @@
-package com.cjyc.common.model.vo.customer;
+package com.cjyc.common.model.vo.customer.order;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -6,7 +6,7 @@ import lombok.Data;
 import java.io.Serializable;
 @Data
 public class OrderCarCenterVo implements Serializable {
-
+    private static final long serialVersionUID = 3239344642824513783L;
     @ApiModelProperty(value = "估值/万")
     private String valuation;
 

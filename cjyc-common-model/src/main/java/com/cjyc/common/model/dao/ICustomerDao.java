@@ -11,6 +11,7 @@ import com.cjyc.common.model.vo.web.customer.CustomerFuzzyListVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -45,4 +46,19 @@ public interface ICustomerDao extends BaseMapper<Customer> {
     Customer findByPhone(@Param("phone") String phone);
 
     List<CustomerFuzzyListVo> findFuzzyList(@Param("paramsDto") CustomerfuzzyListDto paramsDto);
+
+    /**
+     * 根据用户名/手机号模糊匹配用户信息
+     * @param keyword
+     * @return
+     */
+    List<Map<String,Object>> getAllCustomerByKey(@Param("keyword") String keyword);
+
+    /**
+     * 根据大客户名称查询有效期合同
+     * @param name
+     * @param now
+     * @return
+     */
+    List<Map<String,Object>> getCustContractByName(@Param("name") String name,@Param("now") Long now);
 }
