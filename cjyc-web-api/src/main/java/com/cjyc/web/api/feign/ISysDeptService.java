@@ -45,7 +45,7 @@ public interface ISysDeptService {
      * @param deptId 组织机构ID
      */
     @PostMapping("/feign/uc/deleteDept/{deptId}")
-    ResultData update(@PathVariable String deptId);
+    ResultData update(@PathVariable(value="deptId") String deptId);
 
     /**
      * 查询机构信息
@@ -54,7 +54,7 @@ public interface ISysDeptService {
      * @param deptId 组织机构ID
      */
     @GetMapping("/feign/uc/getDept/{deptId}")
-    ResultData<SelectDeptResp> getDept(@PathVariable String deptId);
+    ResultData<SelectDeptResp> getDept(@PathVariable(value="deptId") String deptId);
 
     /**
      * 查询当前机构直接子列表信息
@@ -62,6 +62,6 @@ public interface ISysDeptService {
      * @return
      */
     @GetMapping("/feign/uc/getSingleLevelDeptList/{deptId}")
-    ResultData<List<SelectDeptResp>> getSingleLevelDeptList(@PathVariable Long deptId);
+    ResultData<List<SelectDeptResp>> getSingleLevelDeptList(@PathVariable(value="deptId") Long deptId);
 
 }

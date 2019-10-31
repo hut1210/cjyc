@@ -22,10 +22,11 @@ public interface ILineDao extends BaseMapper<Line> {
 
     /**
      * 根据城市编码查询运价
-     * @param dto
+     * @param fromCode
+     * @param toCode
      * @return
      */
-    String getLinePriceByCode(TransportPriceDto dto);
+    String getLinePriceByCode(@Param("fromCode") String fromCode,@Param("toCode") String toCode);
 
     /**
      * 根据条件查询班线

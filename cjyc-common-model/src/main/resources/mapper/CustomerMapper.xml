@@ -140,4 +140,11 @@
             WHERE
                 customer.NAME = #{name}  and contract.contract_life > #{now}
     </select>
+
+    <!-- 根据用户userId获取用户信息 -->
+    <select id="getCustomerByUserId" resultType="com.cjyc.common.model.entity.Customer" parameterType="java.lang.Long">
+        select
+          <include refid="Base_Column_List"/>
+        from c_customer where user_id = #{userId}
+    </select>
 </mapper>

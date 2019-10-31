@@ -13,6 +13,7 @@ import com.cjyc.common.model.vo.web.line.LineVo;
 import com.cjyc.web.api.service.ILineService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -64,5 +65,12 @@ public class LineController {
             return BaseResultUtil.getVo(ResultEnum.MOBILE_PARAM_ERROR.getCode(),ResultEnum.MOBILE_PARAM_ERROR.getMsg());
         }
         return lineService.deleteLineByIds(lines);
+    }
+
+    @ApiOperation(value = "根据班线查询物流费")
+    @PostMapping(value = "/getDefaultWlFeeByCode/{fromCode}/{toCode}")
+    public ResultVo getDefaultWlFeeByCode(@PathVariable @ApiParam(value = "起始地code",required = true) String fromCode,
+                                    @PathVariable @ApiParam(value = "目的地code",required = true) String toCode){
+        return lineService.getDefaultWlFeeByCode(fromCode,toCode);
     }
 }

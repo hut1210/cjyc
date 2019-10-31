@@ -32,6 +32,9 @@ public class Inquiry implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
+    @ApiModelProperty(value = "客户id")
+    private Long customerId;
+
     @ApiModelProperty(value = "客户姓名")
     private String name;
 

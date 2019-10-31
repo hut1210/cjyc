@@ -44,4 +44,12 @@ public interface ILineService extends IService<Line> {
      */
     ResultVo deleteLineByIds(List<Long> lineIds);
 
+    /**
+     * 根据起始目的地code查询物流费
+     * @param fromCode
+     * @param toCode
+     * @return
+     */
+    ResultVo getDefaultWlFeeByCode(String fromCode,String toCode);
+
 }

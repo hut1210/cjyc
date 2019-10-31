@@ -175,6 +175,23 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
         return BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
     }
 
+    @Override
+    public ResultVo getDefaultWlFeeByCode(String fromCode, String toCode) {
+        BigDecimal wlPrice = null;
+        try{
+            String defaultWlFee = lineDao.getLinePriceByCode(fromCode,toCode);
+            if(StringUtils.isNotBlank(defaultWlFee)) {
+                wlPrice = new BigDecimal(defaultWlFee).divide(new BigDecimal(100));
+            }else{
+                wlPrice = new BigDecimal(0);
+            }
+            return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),wlPrice);
+        }catch (Exception e){
+            log.info("根据城市编码查询班线价格出现异常");
+            return BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg(),BigDecimal.ZERO);
+        }
+    }
+
     /**
      * 封装班线line
      * @param line
