@@ -344,7 +344,7 @@ public class CustomerServiceImpl implements ICustomerService{
                 if(n > 0){
                     //新增合伙人附加信息c_customer_partner
                     CustomerPartner cp = new CustomerPartner();
-                    cp.setCustomerUserId(customer.getUserId());
+                    cp.setCustomerId(customer.getId());
                     encapPartner(cp,dto);
                     m = customerPartnerDao.insert(cp);
                 }

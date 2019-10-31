@@ -27,10 +27,4 @@ public class SystemFileController {
     @Resource
     private ISystemFileService iSystemFileService;
 
-    @ApiOperation(value = "移动端用户查看banner图", notes = "移动端用户查看banner图", httpMethod = "POST")
-    @PostMapping(value = "/getAllBannerPhoto")
-    public ResultVo getAllBannerPhoto(){
-       List<String> urlList = iSystemFileService.getAllBannerPhoto();
-        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),urlList);
-    }
 }
