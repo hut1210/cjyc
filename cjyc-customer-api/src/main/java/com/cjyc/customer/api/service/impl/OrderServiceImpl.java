@@ -128,9 +128,9 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
 
     @Override
     public ResultVo<PageVo<OrderCenterVo>> getPage(OrderConditionDto dto) {
-        BasePageUtil.initPage(dto.getCurrentPage(),dto.getPageSize());
+        BasePageUtil.initPage(dto);
         // 分页
-        PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize(), true);
+        PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
         // 日期格式处理
         String startDate = dto.getStartDate();
         String endDate = dto.getEndDate();
