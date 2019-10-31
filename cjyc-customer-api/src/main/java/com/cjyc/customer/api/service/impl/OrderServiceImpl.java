@@ -56,9 +56,6 @@ public class OrderServiceImpl implements IOrderService{
     @Resource
     private IOrderCarDao iOrderCarDao;
 
-    @Resource
-    private ICarSeriesDao iCarSeriesDao;
-
     /**
      * 客户端下单
      * */
@@ -138,119 +135,6 @@ public class OrderServiceImpl implements IOrderService{
     }
 
     @Override
-    public PageInfo<OrderCenterVo> getWaitConFirmOrders(BasePageDto basePageDto) {
-        try{
-            //查询所有待确认订单信息
-            List<OrderCenterVo> ordCenVos =new ArrayList<>();
-            return encapOrderList(ordCenVos,basePageDto);
-        }catch (Exception e){
-            log.info("获取待确认订单出现异常");
-        }
-        return null;
-    }
-
-    @Override
-    public PageInfo<OrderCenterVo> getTransOrders(BasePageDto basePageDto) {
-        try{
-            //查询所有运输中订单信息
-            //List<OrderCenterVo> ordCenVos = orderDao.getTransOrders();
-            //return encapOrderList(ordCenVos,basePageDto);
-        }catch (Exception e){
-            log.info("获取运输中订单出现异常");
-        }
-        return null;
-    }
-
-    @Override
-    public PageInfo<OrderCenterVo> getPaidOrders(BasePageDto basePageDto) {
-        try{
-            //查询所有已支付订单信息
-            //List<OrderCenterVo> ordCenVos = orderDao.getPaidOrders();
-           // return encapOrderList(ordCenVos,basePageDto);
-        }catch (Exception e){
-            log.info("获取已支付订单出现异常");
-        }
-        return null;
-    }
-
-    @Override
-    public PageInfo<OrderCenterVo> getAllOrders(BasePageDto basePageDto) {
-        try{
-            //查询全部订单信息
-           // List<OrderCenterVo> ordCenVos = orderDao.getAllOrders();
-           // return encapOrderList(ordCenVos,basePageDto);
-        }catch (Exception e){
-            log.info("获取全部订单出现异常");
-        }
-        return null;
-    }
-
-    @Override
-    public OrderDetailVo getOrderDetailByNo(String orderNo) {
-        OrderDetailVo detailVo = null;
-        try{
-            //根据订单编号查询订单详情
-           //detailVo = orderDao.getOrderDetailByNo(orderNo);
-            if(StringUtils.isNotBlank(detailVo.getCreateTime())){
-                detailVo.setCreateTime(LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(Long.valueOf(detailVo.getCreateTime())),TimePatternConstant.SIMPLE_DATE_FORMAT));
-            }
-            if(StringUtils.isNotBlank(detailVo.getExpectStartDate())){
-                detailVo.setExpectStartDate(LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(Long.valueOf(detailVo.getExpectStartDate())),TimePatternConstant.SIMPLE_DATE_FORMAT));
-            }
-            //根据订单编号获取车辆信息
-            List<OrderCarCenterVo> ordCarCenVos = encapOrderCarList(orderNo);
-            detailVo.setOrderCarCenterVos(ordCarCenVos);
-        }catch (Exception e){
-            log.info("获取订单详情出现异常");
-        }
-        return detailVo;
-    }
-
-    @Override
-    public PageInfo<OrderCenterVo> getConFirmOrdsByTerm(OrderConditionDto dto) {
-        try{
-            //List<OrderCenterVo> orderCenterVos = orderDao.getConFirmOrdsByTerm(dto);
-            //return encapOrderByTermList(orderCenterVos,dto);
-        }catch (Exception e){
-            log.info("根据条件筛选待确认订单出现异常");
-        }
-        return null;
-    }
-
-    @Override
-    public PageInfo<OrderCenterVo> getTransOrdsByTerm(OrderConditionDto dto) {
-        try{
-            //List<OrderCenterVo> orderCenterVos = orderDao.getTransOrdsByTerm(dto);
-            //return encapOrderByTermList(orderCenterVos,dto);
-        }catch (Exception e){
-            log.info("根据条件筛选待确认订单出现异常");
-        }
-        return null;
-    }
-
-    @Override
-    public PageInfo<OrderCenterVo> getPaidOrdsByTerm(OrderConditionDto dto) {
-        try{
-            //List<OrderCenterVo> orderCenterVos = orderDao.getPaidOrdsByTerm(dto);
-           // return encapOrderByTermList(orderCenterVos,dto);
-        }catch (Exception e){
-            log.info("根据条件筛选待确认订单出现异常");
-        }
-        return null;
-    }
-
-    @Override
-    public PageInfo<OrderCenterVo> getAllOrdsByTerm(OrderConditionDto dto) {
-        try{
-            //List<OrderCenterVo> orderCenterVos = orderDao.getAllOrdsByTerm(dto);
-            //return encapOrderByTermList(orderCenterVos,dto);
-        }catch (Exception e){
-            log.info("根据条件筛选待确认订单出现异常");
-        }
-        return null;
-    }
-
-    @Override
     public ResultVo<PageVo<OrderCenterVo>> getPage(OrderConditionDto dto) {
         BasePageUtil.initPage(dto.getCurrentPage(),dto.getPageSize());
         // 分页
@@ -314,69 +198,5 @@ public class OrderServiceImpl implements IOrderService{
             map.put("allCount",allCount);
         }
         return BaseResultUtil.success(map);
-    }
-
-    /**
-     * 通过条件封装筛选后的订单列表
-     * @return
-     */
-    private PageInfo<OrderCenterVo> encapOrderByTermList(List<OrderCenterVo> orderCenterVos,OrderConditionDto dto){
-        PageInfo<OrderCenterVo> pageInfo = new PageInfo<>();
-        List<OrderCarCenterVo> carCenterVos = null;
-        if(orderCenterVos.get(0) != null && orderCenterVos.size() >= 1){
-            for(OrderCenterVo order : orderCenterVos){
-                carCenterVos = encapOrderCarList(order.getNo(),dto.getStoreId(),dto.getBrand(),dto.getModel());
-                order.setOrderCarCenterVos(carCenterVos);
-            }
-            PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
-            pageInfo = new PageInfo<>(orderCenterVos);
-        }
-        return pageInfo;
-    }
-
-    /**
-     * 封装待确认/运输中/待支付/全部订单列表
-     * @param ordCenVos
-     * @param basePageDto
-     * @return
-     */
-    private PageInfo<OrderCenterVo> encapOrderList(List<OrderCenterVo> ordCenVos,BasePageDto basePageDto){
-        PageInfo<OrderCenterVo> pageInfo = new PageInfo<>();
-        try{
-            if(ordCenVos.get(0) != null && ordCenVos.size() >= 1){
-                for(OrderCenterVo order : ordCenVos){
-                    List<OrderCarCenterVo> ordCarCenVos = encapOrderCarList(order.getNo());
-                    order.setOrderCarCenterVos(ordCarCenVos);
-                }
-                PageHelper.startPage(basePageDto.getCurrentPage(), basePageDto.getPageSize());
-                pageInfo = new PageInfo<>(ordCenVos);
-            }
-        }catch (Exception e){
-            log.info("获取订单列表出现异常");
-        }
-        return pageInfo;
-    }
-
-    /**
-     * 通过订单编号封装车辆信息
-     * @param strs
-     * @return
-     */
-    private List<OrderCarCenterVo> encapOrderCarList(String... strs){
-        List<OrderCarCenterVo> ordCarCenVos = new ArrayList<>();
-        if(strs.length == 1){
-            //通过订单编号查询车辆信息
-            ordCarCenVos = iOrderCarDao.getOrderCarByNo(strs[0]);
-        }else if(strs.length == 4){
-            ordCarCenVos = iOrderCarDao.getOrderCarInfoByTerm(strs[0],strs[1],strs[2],strs[3]);
-        }
-        if(ordCarCenVos != null && ordCarCenVos.size() > 0){
-            //根据车牌和型号查logo
-            for(OrderCarCenterVo carCenterVo : ordCarCenVos){
-                String logoImg = iCarSeriesDao.getLogoImgByBraMod(carCenterVo.getBrand(),carCenterVo.getModel());
-                carCenterVo.setLogoImg(logoImg);
-            }
-        }
-        return ordCarCenVos;
     }
 }
