@@ -7,6 +7,7 @@ import com.cjyc.common.model.dto.web.order.ListOrderCarDto;
 import com.cjyc.common.model.dto.web.order.WaitDispatchListOrderCarDto;
 import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.vo.customer.OrderCarCenterVo;
+import com.cjyc.common.model.vo.web.OrderCarVo;
 import com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo;
 import org.apache.ibatis.annotations.Param;
 
@@ -134,4 +135,6 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
      * @return
      */
     Integer selectCountByOrderNo(@Param("orderNo") String no);
+
+    OrderCarVo findExtraById(Long orderCarId);
 }

@@ -37,6 +37,7 @@ public class TaskController {
 
     /**
      * 分配任务
+     * @author JPG
      */
     @ApiOperation(value = "分配任务")
     @PostMapping(value = "/allot")
@@ -54,9 +55,10 @@ public class TaskController {
 
     /**
      * 装车
+     * @author JPG
      */
     @ApiOperation(value = "装车")
-    @PostMapping(value = "/load")
+    @PostMapping(value = "/car/load")
     public ResultVo load(@Validated @RequestBody LoadTaskDto reqDto) {
         //验证用户
         Driver driver = driverService.getByUserId(reqDto.getUserId());
@@ -70,9 +72,10 @@ public class TaskController {
 
     /**
      * 卸车
+     * @author JPG
      */
     @ApiOperation(value = "卸车")
-    @PostMapping(value = "/unload")
+    @PostMapping(value = "/car/unload")
     public ResultVo unload(@RequestBody UnLoadTaskDto reqDto) {
         //验证用户
         Driver driver = driverService.getByUserId(reqDto.getUserId());
@@ -86,10 +89,11 @@ public class TaskController {
 
     /**
      * 确认入库
+     * @author JPG
      */
     @ApiOperation(value = "确认入库")
     @PostMapping(value = "/car/in/store")
-    public ResultVo inStore(@RequestBody InStoreTaskDto reqDto) {
+    public ResultVo inStore(@Validated @RequestBody InStoreTaskDto reqDto) {
         //验证用户
         Driver driver = driverService.getByUserId(reqDto.getUserId());
         if (driver == null || driver.getState() != AdminStateEnum.CHECKED.code) {
@@ -101,6 +105,7 @@ public class TaskController {
 
     /**
      * 确认出库
+     * @author JPG
      */
     @ApiOperation(value = "确认出库")
     @PostMapping(value = "/car/out/store")
@@ -116,6 +121,7 @@ public class TaskController {
 
     /**
      * 签收
+     * @author JPG
      */
     @ApiOperation(value = "签收")
     @PostMapping(value = "/sign")

@@ -127,10 +127,6 @@ public class BaseResultUtil<T> {
         return getVo(code, msg, null);
     }
 
-    public static<T> ResultVo<T> getVo(int code, String msg, String... args){
-        return getVo(code, MessageFormat.format(msg, args), null);
-    }
-
     /**
      * 获取ResultVo<T>
      * @author JPG
