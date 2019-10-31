@@ -107,9 +107,9 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
             }
         return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),nodeList);
     }catch (Exception e){
-            log.info("根据承运商id查看司机信息出现异常");
+            log.info("根据城市级别查询树形结构信息出现异常");
             throw new CommonException(e.getMessage());
-         }
+        }
  }
 
     private List<TreeCityVo> getTree(int startLevel, int endLevel) {
@@ -131,19 +131,4 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
         }
         return list;
     }
-
-    /**
-     * 获取所有
-     * @param citys
-     */
-    private void recursionCity(List<CityTreeVo> citys) {
-        List<CityTreeVo> retList = null;
-        for (CityTreeVo c : citys) {
-            retList = cityDao.getAllCity(c.getCode());
-            if (!retList.isEmpty() && !CollectionUtils.isEmpty(retList)) {
-                c.setCityVos(retList);
-            }
-        }
-    }
-
 }
