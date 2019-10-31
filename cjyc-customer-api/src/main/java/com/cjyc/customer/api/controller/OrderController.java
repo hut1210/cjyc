@@ -23,10 +23,9 @@ import java.util.Map;
  * Created by leo on 2019/7/25.
  */
 @RequestMapping("/order")
-@Api(tags = "订单",description = "订单相关接口")
+@Api(tags = "订单管理")
 @RestController
 public class OrderController {
-
     @Autowired
     IOrderService orderService;
 
@@ -65,8 +64,8 @@ public class OrderController {
     @ApiOperation(value = "取消订单和确认下单接口", notes = "取消订单传 113,确认下单传 2", httpMethod = "POST")
     @PostMapping(value = "/updateState/{orderNo}/{customerId}/{state}")
     public ResultVo updateState(@PathVariable String orderNo, @PathVariable Long customerId, @PathVariable Integer state){
-        boolean result = orderService.update(new UpdateWrapper<Order>().lambda().set(Order::getState,state).eq(Order::getNo,orderNo)
-                .eq(Order::getCustomerId,customerId));
+        boolean result = orderService.update(new UpdateWrapper<Order>().lambda().set(Order::getState,state)
+                .eq(Order::getNo,orderNo).eq(Order::getCustomerId,customerId));
         return result ? BaseResultUtil.success() : BaseResultUtil.fail();
     }
 

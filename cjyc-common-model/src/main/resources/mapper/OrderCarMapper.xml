@@ -558,6 +558,7 @@
         select
         car.model as model,
         car.plate_no as plateNo,
+        car.brand as brand,
         car.vin as vin
         from
         w_order_car car
