@@ -7,7 +7,7 @@ import com.cjkj.common.model.ResultData;
 import com.cjyc.common.model.dto.sys.SysUserDto;
 import com.cjyc.common.model.entity.sys.SysUserEntity;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,7 +28,7 @@ public interface ISysUserService {
      * @since 2019/10/10 12:52
      * @param userId 用户ID
      */
-    @GetMapping("/sys/user/get/{userId}")
+    @PostMapping("/sys/user/get/{userId}")
     ResultData<SysUserEntity> selectById(@PathVariable("userId") Long userId);
 
     /**
@@ -37,7 +37,7 @@ public interface ISysUserService {
      * @since 2019/10/10 12:58
      * @param username 用户名
      */
-    @GetMapping("/sys/user/getbyname/{username}")
+    @PostMapping("/sys/user/getbyname/{username}")
     ResultData<SysUserEntity> selectByUsername(@PathVariable("username") String username);
 
     /**
@@ -46,7 +46,7 @@ public interface ISysUserService {
      * @since 2019/10/10 13:00
      * @param sysUserDto 用户Dto
      */
-    @GetMapping("/sys/user/list")
+    @PostMapping("/sys/user/list")
     ResultData<IPage<SysUserEntity>> list(@RequestBody SysUserDto sysUserDto);
 
 
@@ -65,7 +65,7 @@ public interface ISysUserService {
      * @since 2019/10/10 12:56
      * @param userId 用户ID
      */
-    @GetMapping("/sys/user/getRoleTopDeptId/{userId}")
+    @PostMapping("/sys/user/getRoleTopDeptId/{userId}")
     ResultData<List<Long>> getRoleTopDeptId(@PathVariable("userId") Long userId);
 
     /**
@@ -74,7 +74,7 @@ public interface ISysUserService {
      * @since 2019/10/10 13:05
      * @param sysUserDto 用户Dto
      */
-    @GetMapping("/sys/user/listFilterDeptId")
+    @PostMapping("/sys/user/listFilterDeptId")
     ResultData<IPage<SysUserEntity>> listFilterDeptId(@RequestBody SysUserDto sysUserDto);
 
     /**
@@ -83,7 +83,7 @@ public interface ISysUserService {
      * @since 2019/10/10 13:09
      * @param sysUserDto 用户Dto
      */
-    @GetMapping("/sys/user/listForIts")
+    @PostMapping("/sys/user/listForIts")
     ResultData<IPage<SysUserEntity>> listForIts(@RequestBody SysUserDto sysUserDto);
 
     /**

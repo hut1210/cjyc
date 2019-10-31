@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -143,7 +144,7 @@ public class DictionaryServiceImpl implements IDictionaryService {
         int add_insurance_fee = 0;
 
         Integer baseAmount = 0;
-        Dictionary dictionary = findByEnum(DictionaryEnum.INSURANCE_AMOUNT);
+        Dictionary dictionary = findByEnum(DictionaryEnum.INSURANCE_BASE_AMOUNT);
         if(dictionary != null || dictionary.getItemValue() != null){
             baseAmount = Integer.valueOf(dictionary.getItemValue());
         }
@@ -151,12 +152,24 @@ public class DictionaryServiceImpl implements IDictionaryService {
         //追加保额等于估值-
         if(valuation > baseAmount){
             add_insurance_amount = valuation - baseAmount <= 0 ? 0 : valuation - baseAmount;
+            //追加保费
+            if(valuation > 10 && valuation <= 15){
+                add_insurance_fee = 12;
+            }else if(valuation > 15 && valuation <= 30){
+                add_insurance_fee = 17;
+            }else if(valuation > 30 && valuation <= 45){
+                add_insurance_fee = 32;
+            }else if(valuation > 45 && valuation <= 60){
+                add_insurance_fee = 52;
+            }else if(valuation > 60 && valuation <= 90){
+                add_insurance_fee = 70;
+            }else{
+                add_insurance_fee = 2 * add_insurance_amount;
+            }
         }
-        //追加保费
-        if(add_insurance_amount > 0){
-            add_insurance_fee = add_insurance_amount * 12 / 5 ;
+        if(add_insurance_fee > 500){
+            add_insurance_fee = 500;
         }
-
         Map<String, Object> map = new HashMap<>();
         map.put("add_insurance_amount", add_insurance_amount);
         map.put("add_insurance_fee", add_insurance_fee);

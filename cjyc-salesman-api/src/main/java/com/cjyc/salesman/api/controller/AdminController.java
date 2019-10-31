@@ -24,7 +24,7 @@ public class AdminController {
     private IAdminService adminService;
 
     @ApiOperation(value = "根据ID获取管理员本地信息", notes = "")
-    @GetMapping("/get/{id}")
+    @PostMapping("/get/{id}")
     public ResultVo<Admin> getById(@PathVariable long id) {
         Admin admin = adminService.getById(id);
         return BaseResultUtil.success(admin);
@@ -32,7 +32,7 @@ public class AdminController {
 
 
     @ApiOperation(value = "根据ID获取管理员本地信息", notes = "")
-    @GetMapping("/list")
+    @PostMapping("/list")
     public ResultVo<Admin> list(@PathVariable BasePageDto BasePageDto) {
         Admin admin = adminService.getById(BasePageDto);
         return BaseResultUtil.success(admin);

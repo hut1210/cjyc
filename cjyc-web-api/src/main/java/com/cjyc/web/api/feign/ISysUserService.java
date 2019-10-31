@@ -5,7 +5,7 @@ import com.cjkj.common.feign.fallback.UserServiceFallbackFactory;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.usercenter.dto.common.*;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -46,7 +46,7 @@ public interface ISysUserService {
      * @since 2019/10/21 9:38
      * @param account 参数
      */
-    @GetMapping("/feign/uc/getUser/{account}")
+    @PostMapping("/feign/uc/getUser/{account}")
     ResultData<AddUserResp> getByAccount(@PathVariable(value = "account") String account);
 
 
@@ -65,7 +65,7 @@ public interface ISysUserService {
      * @param deptId
      * @return
      */
-    @GetMapping("/feign/uc/getSingleLevelRoles/{deptId}")
+    @PostMapping("/feign/uc/getSingleLevelRoles/{deptId}")
     ResultData<List<SelectRoleResp>> getSingleLevelRolesByDeptId(@PathVariable("deptId")Long deptId);
 
     /**

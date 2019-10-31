@@ -16,6 +16,16 @@ import java.util.List;
 @ApiModel
 public class OrderVo extends Order {
 
+    /**其余参数继承order*/
+    @ApiModelProperty("出发业务中心地址")
+    private String startStoreAddress;
+    @ApiModelProperty("目的业务中心地址")
+    private String endStoreAddress;
+    @ApiModelProperty("所属业务中心地址")
+    private String inputStoreAddress;
+    @ApiModelProperty("所属业务中心地址")
+    private String couponName;
+
     @ApiModelProperty("车辆列表")
     private List<OrderCar> OrderCarList;
 }

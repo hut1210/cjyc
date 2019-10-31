@@ -10,6 +10,7 @@ import com.cjyc.common.model.vo.customer.OrderCarCenterVo;
 import com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo;
 import org.apache.ibatis.annotations.Param;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -78,9 +79,8 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
      * @author JPG
      * @since 2019/10/16 10:26
      * @param paramsDto 参数条件
-     * @param bizScopeStoreIds
      */
-    List<Map<String, Object>> findlineWaitDispatchCarCountList(@Param("paramsDto") LineWaitDispatchCountListOrderCarDto paramsDto, List<Long> bizScopeStoreIds);
+    List<Map<String, Object>> findlineWaitDispatchCarCountList(@Param("paramsDto") LineWaitDispatchCountListOrderCarDto paramsDto);
 
    /**
     * 更新状态
@@ -114,4 +114,8 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
     List<OrderCar> findListSelective(@Param("paramsDto") ListOrderCarDto paramsDto);
 
     List<OrderCar> findListByWaybillId(Long waybillId);
+
+    BigDecimal getWLTotalFee(Long orderId);
+
+    Map<String, Object> countTotalWaitDispatchCarByStartCity(@Param("paramsDto") LineWaitDispatchCountListOrderCarDto paramsDto);
 }

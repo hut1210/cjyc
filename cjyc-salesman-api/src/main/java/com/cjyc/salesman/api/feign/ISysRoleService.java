@@ -4,7 +4,7 @@ import com.cjkj.common.constant.ServiceNameConstants;
 import com.cjkj.common.feign.fallback.UserServiceFallbackFactory;
 import com.cjyc.common.model.dto.sys.SysRoleDto;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
@@ -23,6 +23,6 @@ public interface ISysRoleService {
      * @since 2019/10/14 12:27
      * @param userId
      */
-    @GetMapping("/sys/role/select/{sysId}")
+    @PostMapping("/sys/role/select/{sysId}")
     List<SysRoleDto> getListByUserId(@PathVariable(value = "sysId") Long userId);
 }

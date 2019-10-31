@@ -22,7 +22,7 @@ public class ListVo<T> implements Serializable {
     private static final long serialVersionUID = 2L;
 
     @ApiModelProperty(value = "<总记录数>")
-    private long totalRecords;
+    private Long totalRecords;
 
     @ApiModelProperty(value = "<内容>")
     private List<T> list;

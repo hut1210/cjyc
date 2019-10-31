@@ -41,7 +41,7 @@ public class DriverController {
      * @author JPG
      */
     @ApiOperation(value = "按线路统计待调度车辆（统计列表）")
-    @GetMapping(value = "/list")
+    @PostMapping(value = "/list")
     public ResultVo<PageVo<DriverListVo>> getDriverList(@RequestBody DriverListDto reqDto) {
         return driverService.lineWaitDispatchCarCountList(reqDto);
     }

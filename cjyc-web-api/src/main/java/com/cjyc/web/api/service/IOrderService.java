@@ -60,5 +60,5 @@ public interface IOrderService extends IService<Order> {
 
     ResultVo check(CheckOrderDto reqDto);
 
-    ResultVo save(CommitOrderDto reqDto);
+    ResultVo save(SaveOrderDto reqDto);
 }
