@@ -6,8 +6,6 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.customer.api.service.ISystemFileService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -30,7 +28,7 @@ public class SystemFileController {
     @ApiOperation(value = "移动端用户查看banner图", notes = "移动端用户查看banner图", httpMethod = "POST")
     @PostMapping(value = "/getAllBannerPhoto")
     public ResultVo getAllBannerPhoto(){
-       List<String> urlList = iSystemFileService.getAllBannerPhoto();
-        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),urlList);
+      // List<String> urlList = iSystemFileService.getAllBannerPhoto();
+       return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),null);
     }
 }
