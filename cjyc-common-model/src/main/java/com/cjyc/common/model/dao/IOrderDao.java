@@ -22,9 +22,6 @@ import java.util.List;
 @Repository
 public interface IOrderDao extends BaseMapper<Order> {
 
-
-
-
     OrderVo findVoById(Long orderId);
 
     List<Order> findListSelective(@Param("paramsDto") ListOrderDto paramsDto);
