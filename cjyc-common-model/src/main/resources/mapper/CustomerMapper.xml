@@ -113,6 +113,7 @@
         </where>
     </select>
 
+    <!-- 通过手机号/用户名模糊查询客户 -->
     <select id="getAllCustomerByKey" resultType="java.util.Map"
                                     parameterType="java.lang.String">
         select
@@ -127,4 +128,16 @@
         </where>
     </select>
 
+    <!-- 根据大客户名称查询有效期合同 -->
+    <select id="getCustContractByName" resultType="java.util.Map">
+          SELECT
+                contract.id as id,
+                contract.contract_no AS contractNo,
+                contract.settle_period AS settlePeriod
+            FROM
+                c_customer_contract contract
+                LEFT JOIN c_customer customer ON customer.id = contract.customer_id
+            WHERE
+                customer.NAME = #{name}  and contract.contract_life > #{now}
+    </select>
 </mapper>
