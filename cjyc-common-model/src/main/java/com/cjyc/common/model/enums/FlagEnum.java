@@ -11,7 +11,9 @@ public enum FlagEnum {
     FROZEN("冻结",5),
     THAW("解冻",6),
     DELETE("删除",7),
-    NULLIFY("作废",8);
+    NULLIFY("作废",8),
+    TURNOFF_SWITCH("关闭开关",9),
+    TURNONN_SWITCH("打开开关",10);
 
     public String name;
     public int code;

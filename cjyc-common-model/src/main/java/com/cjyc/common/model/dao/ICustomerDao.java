@@ -11,6 +11,7 @@ import com.cjyc.common.model.vo.web.customer.CustomerFuzzyListVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -51,5 +52,5 @@ public interface ICustomerDao extends BaseMapper<Customer> {
      * @param keyword
      * @return
      */
-    List<Customer> getAllCustomerByKey(@Param("keyword") String keyword);
+    List<Map<String,String>> getAllCustomerByKey(@Param("keyword") String keyword);
 }

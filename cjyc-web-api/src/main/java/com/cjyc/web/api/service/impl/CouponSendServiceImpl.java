@@ -95,16 +95,16 @@ public class CouponSendServiceImpl implements ICouponSendService {
             return BigDecimal.ZERO;
         }
 
-        if (coupon.getCouponType() == CouponTypeEnum.FULL_CUT.code) {
+        if (coupon.getType() == CouponTypeEnum.FULL_CUT.code) {
             if(realWlTotalFee.compareTo(coupon.getFullAmount()) < 0){
                 return BigDecimal.ZERO;
             }
             return coupon.getCutAmount();
         }
-        if(coupon.getCouponType() == CouponTypeEnum.DIRECT_CUT.code){
+        if(coupon.getType() == CouponTypeEnum.DIRECT_CUT.code){
             return coupon.getCutAmount();
         }
-        if(coupon.getCouponType() == CouponTypeEnum.DISCOUNT_CUT.code){
+        if(coupon.getType() == CouponTypeEnum.DISCOUNT_CUT.code){
             return realWlTotalFee.multiply(new BigDecimal(coupon.getDiscount().toString()));
         }
         return BigDecimal.ZERO;

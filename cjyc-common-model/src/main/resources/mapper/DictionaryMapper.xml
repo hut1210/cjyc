@@ -28,4 +28,16 @@
         and item_key = #{key}
     </select>
 
+    <!-- 获取系统配置项目 -->
+    <select id="getSystemConfig" resultType="java.util.Map" parameterType="java.lang.String">
+        SELECT
+            id as id,
+            NAME AS NAME ,
+            state AS state
+        FROM
+            s_dictionary
+        WHERE
+            item = #{item}
+    </select>
+
 </mapper>

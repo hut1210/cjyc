@@ -113,10 +113,12 @@
         </where>
     </select>
 
-    <select id="getAllCustomerByKey" resultType="com.cjyc.common.model.entity.Customer"
+    <select id="getAllCustomerByKey" resultType="java.util.Map"
                                     parameterType="java.lang.String">
         select
-            <include refid="Base_Column_List"/>
+            name as name,
+            contact_man as contactMan,
+            contract_phone as contractPhone
         from c_customer
         <where>
             <if test="keyword != null and keyword.trim() !=''">
