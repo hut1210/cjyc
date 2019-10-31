@@ -3,10 +3,9 @@ package com.cjyc.web.api.feign;
 import com.cjkj.common.constant.ServiceNameConstants;
 import com.cjkj.common.feign.fallback.UserServiceFallbackFactory;
 import com.cjkj.common.model.ResultData;
-import com.cjkj.usercenter.dto.common.AddRoleReq;
-import com.cjkj.usercenter.dto.common.AddRoleResp;
-import com.cjkj.usercenter.dto.common.SelectRoleResp;
-import com.cjkj.usercenter.dto.common.UpdateRoleReq;
+import com.cjkj.usercenter.dto.common.*;
+import com.cjkj.usercenter.dto.yc.SelectUsersByRoleReq;
+import com.cjkj.usercenter.dto.yc.SelectUsersByRoleResp;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,6 +31,14 @@ public interface ISysRoleService {
      */
     @PostMapping("/feign/uc/addRole")
     ResultData<AddRoleResp> save(@RequestBody AddRoleReq addRoleReq);
+
+    /**
+     * 批量保存角色信息
+     * @param batchRoleReq
+     * @return
+     */
+    @PostMapping("/feign/uc/addBatchRole")
+    ResultData saveBatch(@RequestBody AddBatchRoleReq batchRoleReq);
 
     /**
      * 保存角色
@@ -84,4 +91,20 @@ public interface ISysRoleService {
      */
     @PostMapping("/feign/uc/deleteRole/{roleId}")
     ResultData<SelectRoleResp> delete(@PathVariable Integer roleId);
+
+    /**
+     * 批量删除角色信息
+     * @param req
+     * @return
+     */
+    @PostMapping("/feign/uc/deleteBatchRole")
+    ResultData deleteBatch(@RequestBody DeleteBatchRoleReq req);
+
+    /**
+     * 获取角色关联用户列表信息
+     * @param req
+     * @return
+     */
+    @PostMapping("/feign/yc/getUsersByRoleId")
+    ResultData<List<SelectUsersByRoleResp>> getUsersByRoleId(@RequestBody SelectUsersByRoleReq req);
 }

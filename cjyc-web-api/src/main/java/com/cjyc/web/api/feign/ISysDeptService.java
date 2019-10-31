@@ -7,9 +7,12 @@ import com.cjkj.usercenter.dto.common.AddDeptReq;
 import com.cjkj.usercenter.dto.common.AddDeptResp;
 import com.cjkj.usercenter.dto.common.SelectDeptResp;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.List;
 
 /**
  * sys组织机构接口
@@ -50,9 +53,15 @@ public interface ISysDeptService {
      * @since 2019/10/21 9:38
      * @param deptId 组织机构ID
      */
-    @PostMapping("/feign/uc/getDept/{deptId}")
+    @GetMapping("/feign/uc/getDept/{deptId}")
     ResultData<SelectDeptResp> getDept(@PathVariable String deptId);
 
-
+    /**
+     * 查询当前机构直接子列表信息
+     * @param deptId
+     * @return
+     */
+    @GetMapping("/feign/uc/getSingleLevelDeptList/{deptId}")
+    ResultData<List<SelectDeptResp>> getSingleLevelDeptList(@PathVariable Long deptId);
 
 }

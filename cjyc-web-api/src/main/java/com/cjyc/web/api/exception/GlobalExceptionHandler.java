@@ -5,6 +5,9 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -103,5 +106,15 @@ public class GlobalExceptionHandler {
         return BaseResultUtil.getVo(ResultEnum.API_INVOKE_ERROR.getCode(), "未知错误");
     }
 
+    @ExceptionHandler(value = {MethodArgumentNotValidException.class})
+    public ResultVo handleException(MethodArgumentNotValidException e) {
+        log.error(e.getMessage(), e);
+        BindingResult bindingResult = e.getBindingResult();
+        StringBuilder sb = new StringBuilder("参数解析失败:");
+        for (FieldError fieldError : bindingResult.getFieldErrors()) {
+            sb.append(fieldError.getDefaultMessage() + ", ");
+        }
+        return BaseResultUtil.paramError(sb.substring(0, sb.length()-1));
+    }
 
 }
