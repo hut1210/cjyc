@@ -17,14 +17,15 @@ import com.cjyc.common.model.vo.web.city.TreeCityVo;
 import com.cjyc.web.api.exception.CommonException;
 import com.cjyc.web.api.service.ICityService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -86,7 +87,7 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
         List<CityTreeVo> nodeList = null;
         try{
             List<CityTreeVo> cityTreeVos = cityDao.getAllByLevel(level);
-            if(!cityTreeVos.isEmpty() && !CollectionUtils.isEmpty(cityTreeVos)){
+            if(!CollectionUtils.isEmpty(cityTreeVos)){
                 nodeList = new ArrayList<>();
                 for(CityTreeVo nodeOne : cityTreeVos){
                     boolean mark = false;
@@ -104,8 +105,10 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
                         nodeList.add(nodeOne);
                     }
                 }
+                return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),nodeList);
+            }else{
+                return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(), Collections.emptyList());
             }
-        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),nodeList);
     }catch (Exception e){
             log.info("根据城市级别查询树形结构信息出现异常");
             throw new CommonException(e.getMessage());
