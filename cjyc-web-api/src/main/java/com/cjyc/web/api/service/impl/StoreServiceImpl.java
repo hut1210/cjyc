@@ -72,7 +72,7 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
         Store store = new Store();
         BeanUtils.copyProperties(storeAddDto,store);
         store.setState(CommonStateEnum.WAIT_CHECK.code);
-        store.setCreateTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
+        store.setCreateTime(System.currentTimeMillis());
         return super.save(store);
     }
 
@@ -80,7 +80,7 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
     public boolean modify(StoreUpdateDto storeUpdateDto) {
         Store store = new Store();
         BeanUtils.copyProperties(storeUpdateDto,store);
-        store.setUpdateTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
+        store.setUpdateTime(System.currentTimeMillis());
         return super.updateById(store);
     }
 

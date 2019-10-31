@@ -111,7 +111,7 @@ public class LoginServiceImpl implements ILoginService {
         customer.setType(CustomerTypeEnum.INDIVIDUAL.code);
         customer.setSource(CustomerSourceEnum.APP.code);
         customer.setState(CustomerStateEnum.CHECKED.code);
-        customer.setPayMode(PayModeEnum.CURRENT.code);
+        customer.setPayMode(PayModeEnum.COLLECT.code);
         customer.setRegisterTime(currentTimeMillis);
         customer.setCreateTime(currentTimeMillis);
         customerDao.insert(customer);

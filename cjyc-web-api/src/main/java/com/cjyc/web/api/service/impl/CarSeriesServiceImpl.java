@@ -55,7 +55,7 @@ public class CarSeriesServiceImpl extends ServiceImpl<ICarSeriesDao,CarSeries> i
             carSeries.setBrand(carSeriesAddDto.getBrand());
             carSeries.setModel(model);
             carSeries.setLogoImg(StringUtil.getCarLogoURL(carSeriesAddDto.getBrand()));
-            carSeries.setCreateTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
+            carSeries.setCreateTime(System.currentTimeMillis());
             carSeries.setCreateUserId(carSeriesAddDto.getCreateUserId());
             list.add(carSeries);
         }
@@ -66,7 +66,7 @@ public class CarSeriesServiceImpl extends ServiceImpl<ICarSeriesDao,CarSeries> i
     public boolean modify(CarSeriesUpdateDto carSeriesUpdateDto) {
         CarSeries carSeries = new CarSeries();
         BeanUtils.copyProperties(carSeriesUpdateDto,carSeries);
-        carSeries.setUpdateTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
+        carSeries.setUpdateTime(System.currentTimeMillis());
         return super.updateById(carSeries);
     }
 
