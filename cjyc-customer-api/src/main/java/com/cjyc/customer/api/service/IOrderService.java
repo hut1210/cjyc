@@ -1,13 +1,10 @@
 package com.cjyc.customer.api.service;
 
-import com.cjyc.common.model.dto.BasePageDto;
 import com.cjyc.common.model.dto.customer.OrderConditionDto;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.customer.OrderCenterVo;
-import com.cjyc.common.model.vo.customer.OrderDetailVo;
+import com.cjyc.common.model.vo.customer.order.OrderCenterVo;
 import com.cjyc.customer.api.dto.OrderDto;
-import com.github.pagehelper.PageInfo;
 
 import java.util.Map;
 

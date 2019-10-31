@@ -3,26 +3,19 @@ package com.cjyc.customer.api.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjyc.common.model.constant.NoConstant;
-import com.cjyc.common.model.constant.TimePatternConstant;
-import com.cjyc.common.model.dao.ICarSeriesDao;
 import com.cjyc.common.model.dao.IIncrementerDao;
 import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IOrderDao;
-import com.cjyc.common.model.dto.BasePageDto;
 import com.cjyc.common.model.dto.customer.OrderConditionDto;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.entity.OrderCar;
-import com.cjyc.common.model.entity.Store;
-import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.util.BasePageUtil;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.customer.OrderCarCenterVo;
-import com.cjyc.common.model.vo.customer.OrderCenterVo;
-import com.cjyc.common.model.vo.customer.OrderDetailVo;
+import com.cjyc.common.model.vo.customer.order.OrderCenterVo;
 import com.cjyc.customer.api.dto.OrderCarDto;
 import com.cjyc.customer.api.dto.OrderDto;
 import com.cjyc.customer.api.service.IOrderService;
@@ -32,10 +25,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.time.LocalDateTime;
 import java.util.*;
 
 /**

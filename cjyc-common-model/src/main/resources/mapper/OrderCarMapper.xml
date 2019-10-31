@@ -124,10 +124,6 @@
         where order_id = #{orderId}
     </delete>
 
-    <!-- 通过订单编号查询车辆信息 -->
-    <select id="getOrderCarByNo" resultType="com.cjyc.common.model.vo.customer.OrderCarCenterVo" parameterType="java.lang.String">
-         select brand as brand ,model as model ,plate_no as plateNo,vin as vin from w_order_car where order_no = #{orderNo};
-    </select>
     <!--按地级城市统计待调度车辆数量-->
     <select id="countListWaitDispatchCar" resultType="java.util.Map">
         select count(0) as car_num, o.start_city_code as cityCode, o.start_city as cityName from w_order o
@@ -177,12 +173,12 @@
     </select>
 
     <!-- 通过主键查询车辆信息 -->
-    <select id="getOrderCarInfoById" resultType="com.cjyc.common.model.vo.customer.OrderCarCenterVo" parameterType="java.lang.Long">
+    <select id="getOrderCarInfoById" resultType="com.cjyc.common.model.vo.customer.order.OrderCarCenterVo" parameterType="java.lang.Long">
          select valuation as valuation,add_insurance_amount as insuredAmount,add_insurance_fee as addInsuranceFee,is_move as isMove, brand as brand ,model as model ,plate_no as plateNo,vin as vin from w_order_car where id = #{orderCarId};
     </select>
 
     <!-- 通过筛选条件查询车辆信息 -->
-    <select id="getOrderCarInfoByTerm" resultType="com.cjyc.common.model.vo.customer.OrderCarCenterVo" parameterType="java.lang.String">
+    <select id="getOrderCarInfoByTerm" resultType="com.cjyc.common.model.vo.customer.order.OrderCarCenterVo" parameterType="java.lang.String">
          select brand as brand ,model as model ,plate_no as plateNo,vin as vin from w_order_car
            <where>
                <if test="storeId != null and storeId != ''">
@@ -554,7 +550,7 @@
     </sql>
 
     <!--根据条件查询车辆信息-->
-    <select id="selectByCondition" resultType="com.cjyc.common.model.vo.customer.OrderCarCenterVo">
+    <select id="selectByCondition" resultType="com.cjyc.common.model.vo.customer.order.OrderCarCenterVo">
         select
             car.model as model,
             car.plate_no as plateNo,

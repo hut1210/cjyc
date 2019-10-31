@@ -5,7 +5,7 @@ import com.cjyc.common.model.dto.customer.OrderConditionDto;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.customer.OrderCenterVo;
+import com.cjyc.common.model.vo.customer.order.OrderCenterVo;
 import com.cjyc.customer.api.dto.OrderDto;
 import com.cjyc.customer.api.service.IOrderService;
 import io.swagger.annotations.Api;
