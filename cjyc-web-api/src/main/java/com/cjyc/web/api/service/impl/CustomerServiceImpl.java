@@ -6,16 +6,14 @@ import com.cjkj.common.utils.SnowflakeIdWorker;
 import com.cjkj.usercenter.dto.common.AddUserReq;
 import com.cjkj.usercenter.dto.common.AddUserResp;
 import com.cjyc.common.model.constant.TimePatternConstant;
-import com.cjyc.common.model.dao.IBankCardBindDao;
-import com.cjyc.common.model.dao.ICustomerContractDao;
-import com.cjyc.common.model.dao.ICustomerDao;
-import com.cjyc.common.model.dao.ICustomerPartnerDao;
+import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.customer.*;
 import com.cjyc.common.model.entity.BankCardBind;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.entity.CustomerContract;
 import com.cjyc.common.model.entity.CustomerPartner;
 import com.cjyc.common.model.enums.*;
+import com.cjyc.common.model.enums.coupon.CouponLifeTypeEnum;
 import com.cjyc.common.model.enums.customer.CustomerStateEnum;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -27,6 +25,7 @@ import com.cjyc.common.model.vo.web.CustomerContractVo;
 import com.cjyc.common.model.vo.web.CustomerVo;
 import com.cjyc.common.model.vo.web.ListKeyCustomerVo;
 import com.cjyc.common.model.vo.web.ShowKeyCustomerVo;
+import com.cjyc.common.model.vo.web.customer.CustomerCouponVo;
 import com.cjyc.web.api.exception.CommonException;
 import com.cjyc.web.api.exception.ServerException;
 import com.cjyc.web.api.feign.ISysUserService;
@@ -38,11 +37,14 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  *  @author: zj
@@ -67,6 +69,9 @@ public class CustomerServiceImpl implements ICustomerService{
 
     @Resource
     private IBankCardBindDao bankCardBindDao;
+
+    @Resource
+    private ICouponDao couponDao;
 
     @Override
     public boolean saveCustomer(CustomerDto customerDto) {
@@ -430,13 +435,13 @@ public class CustomerServiceImpl implements ICustomerService{
 
     @Override
     public ResultVo getAllCustomerByKey(String keyword) {
-        List<Customer> customerList = null;
+        List<Map<String,String>> customerList = null;
         try{
             customerList = customerDao.getAllCustomerByKey(keyword);
             if(!CollectionUtils.isEmpty(customerList)){
                 return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),customerList);
             }else{
-                return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),Collections.emptyList());
+                return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(), Collections.emptyList());
             }
         }catch (Exception e){
             log.error("根据用户名/手机号模糊查询用户信息出现异常",e);
