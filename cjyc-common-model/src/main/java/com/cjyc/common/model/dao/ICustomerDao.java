@@ -45,4 +45,11 @@ public interface ICustomerDao extends BaseMapper<Customer> {
     Customer findByPhone(@Param("phone") String phone);
 
     List<CustomerFuzzyListVo> findFuzzyList(@Param("paramsDto") CustomerfuzzyListDto paramsDto);
+
+    /**
+     * 根据用户名/手机号模糊匹配用户信息
+     * @param keyword
+     * @return
+     */
+    List<Customer> getAllCustomerByKey(@Param("keyword") String keyword);
 }

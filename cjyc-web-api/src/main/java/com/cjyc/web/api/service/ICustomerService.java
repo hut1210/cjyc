@@ -103,4 +103,18 @@ public interface ICustomerService  {
     Customer selectByPhone(String customerPhone);
 
     int updateById(Customer customer);
+
+    /**
+     * 根据关键字(手机号/用户名称)模糊查询用户信息
+     * @param keyword
+     * @return
+     */
+    ResultVo getAllCustomerByKey(String keyword);
+
+    /**
+     * 查看客户优惠券
+     * @param dto
+     * @return
+     */
+    ResultVo getCustomerCouponByTerm(CustomerCouponDto dto);
 }

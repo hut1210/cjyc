@@ -428,6 +428,60 @@ public class CustomerServiceImpl implements ICustomerService{
         return customerDao.updateById(customer);
     }
 
+    @Override
+    public ResultVo getAllCustomerByKey(String keyword) {
+        List<Customer> customerList = null;
+        try{
+            customerList = customerDao.getAllCustomerByKey(keyword);
+            if(!CollectionUtils.isEmpty(customerList)){
+                return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),customerList);
+            }else{
+                return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),Collections.emptyList());
+            }
+        }catch (Exception e){
+            log.error("根据用户名/手机号模糊查询用户信息出现异常",e);
+            throw new CommonException("根据用户名/手机号模糊查询用户信息出现异常");
+        }
+    }
+
+    @Override
+    public ResultVo getCustomerCouponByTerm(CustomerCouponDto dto) {
+        PageInfo<CustomerCouponVo> pageInfo = null;
+        try{
+            List<CustomerCouponVo> voList = couponDao.getCustomerCouponByTerm(dto);
+            if(!CollectionUtils.isEmpty(voList)){
+                for(CustomerCouponVo vo : voList){
+                    if(vo == null){
+                        continue;
+                    }
+                    vo.setFullAmount(vo.getFullAmount() == null ? BigDecimal.ZERO : vo.getFullAmount().divide(new BigDecimal(100)));
+                    vo.setCutAmount(vo.getCutAmount() == null ? BigDecimal.ZERO : vo.getCutAmount().divide(new BigDecimal(100)));
+                    if(CouponLifeTypeEnum.FOREVER.code != vo.getIsForever()){
+                        //有效期
+                        if(StringUtils.isNotBlank(vo.getStartPeriodDate())){
+                            vo.setStartPeriodDate(LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(Long.valueOf(vo.getStartPeriodDate())),TimePatternConstant.COMPLEX_TIME_FORMAT));
+                        }
+                        if(StringUtils.isNotBlank(vo.getEndPeriodDate())){
+                            vo.setEndPeriodDate(LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(Long.valueOf(vo.getEndPeriodDate())),TimePatternConstant.COMPLEX_TIME_FORMAT));
+                        }
+                    }
+                    //永久 没有有效期
+                    if(StringUtils.isNotBlank(vo.getReceiveTime())){
+                        vo.setReceiveTime(LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(Long.valueOf(vo.getReceiveTime())),TimePatternConstant.COMPLEX_TIME_FORMAT));
+                    }
+                }
+                PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
+                pageInfo = new PageInfo<>(voList);
+                return BaseResultUtil.getPageVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),pageInfo);
+            }else{
+                return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),Collections.emptyList());
+            }
+        }catch (Exception e){
+            log.error("查看用户优惠券信息出现异常",e);
+        }
+        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),Collections.emptyList());
+    }
+
     /**
      * 封装合伙人
      * @param customer

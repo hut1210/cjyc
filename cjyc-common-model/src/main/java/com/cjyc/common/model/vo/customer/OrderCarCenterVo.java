@@ -6,7 +6,7 @@ import lombok.Data;
 import java.io.Serializable;
 @Data
 public class OrderCarCenterVo implements Serializable {
-
+    private static final long serialVersionUID = 2197658410741153955L;
     @ApiModelProperty(value = "估值/万")
     private String valuation;
 

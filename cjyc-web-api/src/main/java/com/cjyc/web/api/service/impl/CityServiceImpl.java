@@ -9,7 +9,6 @@ import com.cjyc.common.model.dao.ICityDao;
 import com.cjyc.common.model.dto.salesman.city.CityPageDto;
 import com.cjyc.common.model.dto.web.city.TreeCityDto;
 import com.cjyc.common.model.entity.City;
-import com.cjyc.common.model.enums.CityLevelEnum;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
@@ -26,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -84,9 +82,35 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
     }
 
     @Override
-    public ResultVo provinceCityTree() {
-        return null;
-    }
+    public ResultVo cityTree(Integer level) {
+        List<CityTreeVo> nodeList = null;
+        try{
+            List<CityTreeVo> cityTreeVos = cityDao.getAllByLevel(level);
+            if(!cityTreeVos.isEmpty() && !CollectionUtils.isEmpty(cityTreeVos)){
+                nodeList = new ArrayList<>();
+                for(CityTreeVo nodeOne : cityTreeVos){
+                    boolean mark = false;
+                    for(CityTreeVo nodeTwo:cityTreeVos){
+                        if(nodeOne.getParentCode() != null && nodeOne.getParentCode().equals(nodeTwo.getCode())){
+                             mark = true;
+                            if(nodeTwo.getCityVos()==null){
+                                nodeTwo.setCityVos(new ArrayList<>());
+                            }
+                            nodeTwo.getCityVos().add(nodeOne);
+                            break;
+                        }
+                    }
+                    if(!mark){
+                        nodeList.add(nodeOne);
+                    }
+                }
+            }
+        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),nodeList);
+    }catch (Exception e){
+            log.info("根据承运商id查看司机信息出现异常");
+            throw new CommonException(e.getMessage());
+         }
+ }
 
     private List<TreeCityVo> getTree(int startLevel, int endLevel) {
         if (startLevel <= -1 || startLevel > 5 || startLevel >= endLevel) {

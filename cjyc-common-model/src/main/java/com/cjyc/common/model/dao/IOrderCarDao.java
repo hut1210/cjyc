@@ -118,4 +118,20 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
     BigDecimal getWLTotalFee(Long orderId);
 
     Map<String, Object> countTotalWaitDispatchCarByStartCity(@Param("paramsDto") LineWaitDispatchCountListOrderCarDto paramsDto);
+
+    /**
+     * 根据条件查询车辆信息
+     * @param orderNo
+     * @param brand
+     * @param model
+     * @return
+     */
+    List<OrderCarCenterVo> selectByCondition(@Param("orderNo") String orderNo,@Param("brand") String brand,@Param("model") String model);
+
+    /**
+     * 根据订单号查询车辆数量
+     * @param no
+     * @return
+     */
+    Integer selectCountByOrderNo(@Param("orderNo") String no);
 }

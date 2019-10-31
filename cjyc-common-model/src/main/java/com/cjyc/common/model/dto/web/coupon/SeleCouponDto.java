@@ -9,20 +9,23 @@ import java.io.Serializable;
 public class SeleCouponDto extends BasePageDto implements Serializable {
 
     @ApiModelProperty("优惠券名称")
-    private String couponName;
+    private String name;
 
-    @ApiModelProperty(value = "优惠券类型 0：满减  3：直减  5：折扣")
-    private String couponType;
+    @ApiModelProperty(value = "优惠券类型 0：满减  1：直减  2：折扣")
+    private Integer type;
 
-    @ApiModelProperty(value = "优惠券审核状态 0：待审核  3：审核通过  5：审核不通过  7：已作废")
-    private String state;
+    @ApiModelProperty(value = "优惠券审核状态 0待审核，2已审核，4取消，7已驳回，9已停用（CommonStateEnum）")
+    private Integer state;
 
     @ApiModelProperty(value = "创建开始时间")
-    private String startTime;
+    private Long startTime;
 
     @ApiModelProperty(value = "创建结束时间")
-    private String endTime;
+    private Long endTime;
 
     @ApiModelProperty(value = "创建人")
     private String createName;
+
+    @ApiModelProperty("创建人userId")
+    private Long createUserId;
 }

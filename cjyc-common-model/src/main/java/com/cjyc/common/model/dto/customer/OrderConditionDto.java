@@ -4,9 +4,17 @@ import com.cjyc.common.model.dto.BasePageDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 @Data
-public class OrderConditionDto extends BasePageDto implements Serializable {
+public class OrderConditionDto extends BasePageDto {
+    private static final long serialVersionUID = 399318965603713438L;
+    @ApiModelProperty("客户id")
+    @NotNull(message = "客户id不能为空")
+    private Long customerId;
+
+    @ApiModelProperty("订单状态 0:待确认,1:运输中,2:已交付,3:全部")
+    private Integer state;
 
     @ApiModelProperty("关键字")
     private String key;
@@ -34,4 +42,7 @@ public class OrderConditionDto extends BasePageDto implements Serializable {
 
     @ApiModelProperty("目的地编码")
     private String endCityCode;
+
+    private Long startDateMS;
+    private Long endDateMS;
 }

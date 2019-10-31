@@ -113,4 +113,16 @@
         </where>
     </select>
 
+    <select id="getAllCustomerByKey" resultType="com.cjyc.common.model.entity.Customer"
+                                    parameterType="java.lang.String">
+        select
+            <include refid="Base_Column_List"/>
+        from c_customer
+        <where>
+            <if test="keyword != null and keyword.trim() !=''">
+                and concat(name,contact_phone,contact_man) like concat('%',#{keyword},'%')
+            </if>
+        </where>
+    </select>
+
 </mapper>

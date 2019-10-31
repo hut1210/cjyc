@@ -19,6 +19,13 @@ import java.util.List;
 public interface ICouponSendDao extends BaseMapper<CouponSend> {
 
     /**
+     * 获取领取/消耗张数
+     * @param couponId
+     * @return
+     */
+    Integer getReceiveNum(@Param("couponId") Long couponId,@Param("isUse") Integer isUse);
+
+    /**
      * 根据条件查询发放优惠券
      * @param dto
      * @return

@@ -19,7 +19,10 @@ import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 
 /**
@@ -126,5 +129,18 @@ public class OrderController {
         PageInfo<OrderCenterVo> pageInfo = orderService.getAllOrdsByTerm(dto);
         return BaseResultUtil.getPageVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),pageInfo);
     }
+
+    @ApiOperation(value = "根据条件分页查询订单", notes = "根据条件分页查询订单", httpMethod = "POST")
+    @PostMapping(value = "/getPage")
+    public ResultVo<PageVo<OrderCenterVo>> getPage(@RequestBody @Validated OrderConditionDto dto){
+        return orderService.getPage(dto);
+    }
+
+    @ApiOperation(value = "查询各种订单状态下的订单数量", notes = "根据条件分页查询订单", httpMethod = "POST")
+    @PostMapping(value = "/getOrderCount/{customerId}")
+    public ResultVo<Map<String,Object>> getOrderCount(@PathVariable Long customerId){
+        return orderService.getOrderCount(customerId);
+    }
+
 
 }
