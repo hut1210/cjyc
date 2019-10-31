@@ -17,14 +17,15 @@ import com.cjyc.common.model.vo.web.city.TreeCityVo;
 import com.cjyc.web.api.exception.CommonException;
 import com.cjyc.web.api.service.ICityService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -82,11 +83,11 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
     }
 
     @Override
-    public ResultVo cityTree(Integer level) {
+    public ResultVo cityTree(Integer startLevel,Integer endLevel) {
         List<CityTreeVo> nodeList = null;
         try{
-            List<CityTreeVo> cityTreeVos = cityDao.getAllByLevel(level);
-            if(!cityTreeVos.isEmpty() && !CollectionUtils.isEmpty(cityTreeVos)){
+            List<CityTreeVo> cityTreeVos = cityDao.getAllByLevel(startLevel,endLevel);
+            if(!CollectionUtils.isEmpty(cityTreeVos)){
                 nodeList = new ArrayList<>();
                 for(CityTreeVo nodeOne : cityTreeVos){
                     boolean mark = false;
@@ -104,12 +105,14 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
                         nodeList.add(nodeOne);
                     }
                 }
+                return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),nodeList);
+            }else{
+                return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(), Collections.emptyList());
             }
-        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),nodeList);
     }catch (Exception e){
-            log.info("根据承运商id查看司机信息出现异常");
+            log.info("根据城市级别查询树形结构信息出现异常");
             throw new CommonException(e.getMessage());
-         }
+        }
  }
 
     private List<TreeCityVo> getTree(int startLevel, int endLevel) {
@@ -131,19 +134,4 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
         }
         return list;
     }
-
-    /**
-     * 获取所有
-     * @param citys
-     */
-    private void recursionCity(List<CityTreeVo> citys) {
-        List<CityTreeVo> retList = null;
-        for (CityTreeVo c : citys) {
-            retList = cityDao.getAllCity(c.getCode());
-            if (!retList.isEmpty() && !CollectionUtils.isEmpty(retList)) {
-                c.setCityVos(retList);
-            }
-        }
-    }
-
 }

@@ -1,5 +1,6 @@
 package com.cjyc.common.model.dao;
 
+import com.cjyc.common.model.dto.customer.freightBill.TransportPriceDto;
 import com.cjyc.common.model.dto.web.inquiry.SelectInquiryDto;
 import com.cjyc.common.model.entity.Line;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -21,11 +22,10 @@ public interface ILineDao extends BaseMapper<Line> {
 
     /**
      * 根据城市编码查询运价
-     * @param fromCode
-     * @param toCode
+     * @param dto
      * @return
      */
-    String getLinePriceByCode(@Param("fromCode") String fromCode,@Param("toCode") String toCode);
+    String getLinePriceByCode(TransportPriceDto dto);
 
     /**
      * 根据条件查询班线

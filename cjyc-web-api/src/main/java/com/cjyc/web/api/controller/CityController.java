@@ -74,8 +74,9 @@ public class CityController {
     }
 
     @ApiOperation(value = "查询树形结构", notes = "")
-    @PostMapping(value = "/cityTree/{level}")
-    public ResultVo<List<CityTreeVo>> cityTree(@PathVariable @ApiParam(value = "区域级别 最高级:-1 大区:0 省直辖市:1 城市:2 区县:3",required = true) Integer level) {
-        return cityService.cityTree(level);
+    @PostMapping(value = "/cityTree/{startLevel}/{endLevel}")
+    public ResultVo<List<CityTreeVo>> cityTree(@PathVariable @ApiParam(value = "区域级别 最高级:-1 大区:0 省直辖市:1 城市:2 区县:3",required = true) Integer startLevel,
+                                               @PathVariable @ApiParam(value = "区域级别 最高级:-1 大区:0 省直辖市:1 城市:2 区县:3",required = true) Integer endLevel) {
+        return cityService.cityTree(startLevel,endLevel);
     }
 }

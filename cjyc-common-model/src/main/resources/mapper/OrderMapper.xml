@@ -82,7 +82,7 @@
         id, no, customer_id, customer_name, customer_phone, customer_type, input_store_id, input_store_name, start_province, start_province_code, start_city, start_city_code, start_area, start_area_code, start_address, start_lng, start_lat, start_store_id, start_store_name, end_province, end_province_code, end_city, end_city_code, end_area, end_area_code, end_address, end_lng, end_lat, end_store_id, end_store_name, expect_start_date, expect_end_date, car_num, line_id, pick_type, pick_contact_name, pick_contact_phone, back_type, back_contact_name, back_contact_phone, hurry_days, source, create_time, create_user_name, create_user_id, allot_to_user_name, allot_to_user_id, check_time, check_user_name, check_user_id, state, remark, invoice_flag, invoice_type, pick_fee, trunk_fee, back_fee, add_insurance_fee, coupon_offset_fee, agency_fee, total_fee, deposit_fee, fee_share_type, customer_contract_id, pay_type, wl_pay_state, wl_pay_time, finish_time, offline_pay_flag, coupon_send_id
     </sql>
 
-    <resultMap id="VinResultMap" type="com.cjyc.common.model.vo.customer.OrderCenterVo">
+    <resultMap id="VinResultMap" type="com.cjyc.common.model.vo.customer.order.OrderCenterVo">
         <!--查询该订单号下的一条车辆信息-->
         <collection property="orderCarCenterVos" column="{orderNo = no,brand = brand,model = model}"
                     select="com.cjyc.common.model.dao.IOrderCarDao.selectByCondition">
@@ -92,45 +92,6 @@
                     select="com.cjyc.common.model.dao.IOrderCarDao.selectCountByOrderNo">
         </collection>
     </resultMap>
-
-    <!-- 通用查询订单结果列 -->
-    <sql id="Base_Order_Column">
-        no as no,start_city as startCity,end_city as endCity,car_num as carNum,
-         sum(round(ifnull(pick_fee/100,0),2)+
-            round(ifnull(trunk_fee/100,0),2)+
-            round(ifnull(back_fee/100,0),2)+
-            round(ifnull(add_insurance_fee/100,0),2)+
-            round(ifnull(deposit_fee/100,0),2)) as totalFee,
-        (case state
-         when  0  then '待下单'
-         when  2  then  '已下单'
-         when  5  then  '已下单'
-         when  15 then  '待付款'
-         when  25 then '待调度'
-         when  55  then '运输中'
-         when  88  then '运输中'
-         when  100 then '已支付'
-         when  111  then '原返'
-         when  113  then '已取消'
-         when  114  then '已作废'
-         end) as state
-    </sql>
-
-
-    <!-- 通用排序条件 -->
-    <sql id="Common_Order_By">
-        order by create_time
-        <if test="sort != null and sort.trim() == 0">
-            desc
-        </if>
-        <if test="sort != null and sort.trim() == 1">
-            asc
-        </if>
-        <if test="sort != null and sort.trim() == 2">
-            desc
-        </if>
-    </sql>
-
 
     <select id="findVoById" resultType="com.cjyc.common.model.vo.web.order.OrderVo">
         select
@@ -358,10 +319,10 @@
             <if test="endCityCode != null and endCityCode.trim() != ''">
                 and o.end_city_code = #{endCityCode}
             </if>
-            <if test="startDateMS != null">
+            <if test="startDateMS != null and startDateMS != 0">
                 and o.create_time &gt;= #{startDateMS}
             </if>
-            <if test="endDateMS != null">
+            <if test="endDateMS != null and endDateMS != 0">
                 and o.create_time &lt;= #{endDateMS}
             </if>
         </where>

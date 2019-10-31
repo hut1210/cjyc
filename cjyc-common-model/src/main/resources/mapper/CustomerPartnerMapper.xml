@@ -5,7 +5,7 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.CustomerPartner">
         <id column="id" property="id" />
-        <result column="customer_user_id" property="customerUserId" />
+        <result column="customer_id" property="customerId" />
         <result column="is_taxpayer" property="isTaxpayer" />
         <result column="is_invoice" property="isInvoice" />
         <result column="settle_type" property="settleType" />
@@ -22,7 +22,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, customer_user_id, is_taxpayer, is_invoice, settle_type, settle_period, business_license_front_img, business_license_back_img, legal_idCard_front_img, legal_idCard_back_img, linkman_idCard_front_img, linkman_idCard_back_img, authorization_front_img, authorization_back_img
+        id, customer_id, is_taxpayer, is_invoice, settle_type, settle_period, business_license_front_img, business_license_back_img, legal_idCard_front_img, legal_idCard_back_img, linkman_idCard_front_img, linkman_idCard_back_img, authorization_front_img, authorization_back_img
     </sql>
 
 

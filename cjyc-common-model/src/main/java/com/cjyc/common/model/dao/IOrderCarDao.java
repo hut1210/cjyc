@@ -6,7 +6,7 @@ import com.cjyc.common.model.dto.web.order.LineWaitDispatchCountListOrderCarDto;
 import com.cjyc.common.model.dto.web.order.ListOrderCarDto;
 import com.cjyc.common.model.dto.web.order.WaitDispatchListOrderCarDto;
 import com.cjyc.common.model.entity.OrderCar;
-import com.cjyc.common.model.vo.customer.OrderCarCenterVo;
+import com.cjyc.common.model.vo.customer.order.OrderCarCenterVo;
 import com.cjyc.common.model.vo.web.OrderCarVo;
 import com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo;
 import org.apache.ibatis.annotations.Param;
@@ -26,15 +26,6 @@ import java.util.Map;
 public interface IOrderCarDao extends BaseMapper<OrderCar> {
 
     /**
-     * 根据订单编号查询车辆信息
-     * @param orderNo
-     * @return
-     */
-    List<OrderCarCenterVo> getOrderCarByNo(@Param("orderNo") String orderNo);
-
-
-
-    /**
      * 按地级城市统计待调度车辆数量
      * @author JPG
      * @since 2019/10/15 14:12
@@ -49,21 +40,6 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
      * @param
      */
     Map<String, Object> countTotalWaitDispatchCar();
-    /**
-     * 根据车辆id获取指定车辆信息
-     * @param orderCarId
-     * @return
-     */
-    OrderCarCenterVo  getOrderCarInfoById(@Param("orderCarId") Long orderCarId);
-
-    /**
-     * 根据条件进行筛选车辆信息
-     * @param orderNo
-     * @param brand
-     * @param model
-     * @return
-     */
-    List<OrderCarCenterVo> getOrderCarInfoByTerm(@Param("orderNo") String orderNo,@Param("storeId") String storeId,@Param("brand") String brand,@Param("model") String model);
 
     /**
      * 查询待调度车辆列表
@@ -127,7 +103,7 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
      * @param model
      * @return
      */
-    List<OrderCarCenterVo> selectByCondition(@Param("orderNo") String orderNo,@Param("brand") String brand,@Param("model") String model);
+    List<OrderCarCenterVo> selectByCondition(@Param("orderNo") String orderNo, @Param("brand") String brand, @Param("model") String model);
 
     /**
      * 根据订单号查询车辆数量

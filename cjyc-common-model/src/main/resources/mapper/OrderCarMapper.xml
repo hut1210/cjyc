@@ -125,8 +125,7 @@
     </delete>
 
     <!-- 通过订单编号查询车辆信息 -->
-    <select id="getOrderCarByNo" resultType="com.cjyc.common.model.vo.customer.OrderCarCenterVo"
-            parameterType="java.lang.String">
+    <select id="getOrderCarByNo" resultType="com.cjyc.common.model.vo.customer.OrderCarCenterVo" parameterType="java.lang.String">
          select brand as brand ,model as model ,plate_no as plateNo,vin as vin from w_order_car where order_no = #{orderNo};
     </select>
     <!--按地级城市统计待调度车辆数量-->
@@ -178,27 +177,25 @@
     </select>
 
     <!-- 通过主键查询车辆信息 -->
-    <select id="getOrderCarInfoById" resultType="com.cjyc.common.model.vo.customer.OrderCarCenterVo"
-            parameterType="java.lang.Long">
+    <select id="getOrderCarInfoById" resultType="com.cjyc.common.model.vo.customer.OrderCarCenterVo" parameterType="java.lang.Long">
          select valuation as valuation,add_insurance_amount as insuredAmount,add_insurance_fee as addInsuranceFee,is_move as isMove, brand as brand ,model as model ,plate_no as plateNo,vin as vin from w_order_car where id = #{orderCarId};
     </select>
 
     <!-- 通过筛选条件查询车辆信息 -->
-    <select id="getOrderCarInfoByTerm" resultType="com.cjyc.common.model.vo.customer.OrderCarCenterVo"
-            parameterType="java.lang.String">
-        select brand as brand ,model as model ,plate_no as plateNo,vin as vin from w_order_car
-        <where>
-            <if test="storeId != null and storeId != ''">
-                and now_store_id = #{storeId}
-            </if>
-            <if test="brand != null and brand != ''">
-                and brand = #{brand}
-            </if>
-            <if test="model != null and model != ''">
-                and model = #{model}
-            </if>
-            and order_no = #{orderNo}
-        </where>
+    <select id="getOrderCarInfoByTerm" resultType="com.cjyc.common.model.vo.customer.OrderCarCenterVo" parameterType="java.lang.String">
+         select brand as brand ,model as model ,plate_no as plateNo,vin as vin from w_order_car
+           <where>
+               <if test="storeId != null and storeId != ''">
+                   and  now_store_id = #{storeId}
+               </if>
+               <if test="brand != null and brand != ''">
+                   and  brand = #{brand}
+               </if>
+               <if test="model != null and model != ''">
+                   and  model = #{model}
+               </if>
+                   and order_no = #{orderNo}
+           </where>
 
     </select>
     <!--查询待调度车辆列表-->
