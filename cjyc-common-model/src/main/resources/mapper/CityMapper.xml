@@ -109,13 +109,13 @@
 
     <!--获取所有省/直辖市 -->
     <select id="getAllByLevel" resultType="com.cjyc.common.model.vo.web.city.CityTreeVo" parameterType="java.lang.Integer">
-         SELECT NAME AS NAME,
+         SELECT
+            NAME AS NAME,
             CODE AS CODE,
             parent_code AS parentCode
         FROM
             s_city
-        WHERE
-            LEVEL = #{level}
+        where level >= #{level}
     </select>
 
     <!--获取所有下一级城市 -->

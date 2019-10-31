@@ -1,6 +1,5 @@
 package com.cjyc.common.model.entity;
 
-import java.math.BigDecimal;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -17,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-29
+ * @since 2019-10-30
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -35,19 +34,13 @@ public class CouponSend implements Serializable {
     @ApiModelProperty(value = "优惠券id")
     private Long couponId;
 
-    @ApiModelProperty(value = "客户userId")
-    private Long userId;
-
-    @ApiModelProperty(value = "客户名称")
-    private String customerName;
-
-    @ApiModelProperty(value = "订单编号")
-    private String orderNo;
+    @ApiModelProperty(value = "客户id")
+    private Long customerId;
 
     @ApiModelProperty(value = "优惠券编码")
     private String couponNo;
 
-    @ApiModelProperty(value = "是否已使用 0：领取未使用  1：已使用")
+    @ApiModelProperty(value = "是否已使用 0：未使用  1：已使用")
     private Integer isUse;
 
     @ApiModelProperty(value = "优惠券领取时间")
@@ -55,12 +48,6 @@ public class CouponSend implements Serializable {
 
     @ApiModelProperty(value = "优惠券使用时间")
     private Long useTime;
-
-    @ApiModelProperty(value = "折扣金额")
-    private BigDecimal discountAmount;
-
-    @ApiModelProperty(value = "最终订单金额")
-    private BigDecimal finalOrderAmount;
 
 
 }

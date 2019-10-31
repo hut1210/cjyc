@@ -5,56 +5,40 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.Coupon">
         <id column="id" property="id" />
-        <result column="coupon_no" property="couponNo" />
-        <result column="coupon_name" property="couponName" />
-        <result column="coupon_type" property="couponType" />
+        <result column="name" property="name" />
+        <result column="type" property="type" />
         <result column="full_amount" property="fullAmount" />
         <result column="cut_amount" property="cutAmount" />
         <result column="discount" property="discount" />
         <result column="grant_num" property="grantNum" />
-        <result column="receive_num" property="receiveNum" />
-        <result column="consume_num" property="consumeNum" />
-        <result column="expire_dele_num" property="expireDeleNum" />
-        <result column="surplus_avail_num" property="surplusAvailNum" />
         <result column="is_forever" property="isForever" />
         <result column="start_period_date" property="startPeriodDate" />
         <result column="end_period_date" property="endPeriodDate" />
         <result column="state" property="state" />
         <result column="create_time" property="createTime" />
         <result column="create_user_id" property="createUserId" />
-        <result column="create_user_name" property="createUserName" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, coupon_no, coupon_name, coupon_type, full_amount, cut_amount, discount, grant_num, receive_num, consume_num, expire_dele_num, surplus_avail_num, is_forever, start_period_date, end_period_date, state, create_time, create_user_id, create_user_name
+        id, name, type, full_amount, cut_amount, discount, grant_num, is_forever, start_period_date, end_period_date, state, create_time, create_user_id
     </sql>
 
     <!-- 通用查询结果列 -->
     <sql id="Query_Column_List">
-        id as id ,coupon_name as couponName,grant_num as grantNum,receive_num as receiveNum,consume_num as consumeNum,
-                expire_dele_num as expireDeleNum,surplus_avail_num as surplusAvailNum,start_period_date as startPeriodDate,end_period_date as endPeriodDate,
-                create_time as createTime,full_amount as fullAmount,cut_amount as cutAmount,discount as discount,
-                (case coupon_type when 0 then '满减'
-                                   when 3 then '直减'
-                                   when 5 then '折扣'
-                                   end) as couponType,
-                (case state  when  0  then '待审核'
-                              when  3  then '审核通过'
-                              when  5  then '审核不通过'
-                              when  7  then '已作废'
-                              end) as state,
-                (case is_forever when 0 then ''
-                                  when 1 then '永久'
-                                  end) as isForever
+        id AS id,
+        NAME AS NAME,
+        grant_num AS grantNum,
+        start_period_date AS startPeriodDate,
+        end_period_date AS endPeriodDate,
+        create_time AS createTime,
+        full_amount AS fullAmount,
+        cut_amount AS cutAmount,
+        discount AS discount,
+        type AS type,
+        state AS state,
+        is_forever AS isForever
     </sql>
-
-    <!-- 查询所有优惠券 -->
-    <select id="getAllCoupon" resultType="com.cjyc.common.model.vo.web.coupon.CouponVo">
-        select
-        <include refid="Query_Column_List"/>
-            from c_coupon
-    </select>
 
     <!-- 根据筛选条件查询优惠券 -->
     <select id="getCouponByTerm" resultType="com.cjyc.common.model.vo.web.coupon.CouponVo"
@@ -63,24 +47,95 @@
         <include refid="Query_Column_List"/>
           from c_coupon
         <where>
-            <if test="couponName != null and couponName.trim() != ''">
-                coupon_name like CONCAT('%',#{couponName},'%')
+            <if test="name != null and name.trim() != ''">
+                name like CONCAT('%',#{name},'%')
             </if>
-            <if test="couponType != null and couponType.trim() != ''">
-                and  coupon_type = #{couponType}
+            <if test="type != null">
+                and type = #{type}
             </if>
-            <if test="state != null and state.trim() != ''">
-                and  state =  #{state}
+            <if test="state != null">
+                and state =  #{state}
             </if>
-            <if test="startTime != null and startTime.trim() != ''">
+            <if test="startTime != null">
                 and  create_time >=  #{startTime}
             </if>
-            <if test="endTime != null and endTime.trim() != ''">
+            <if test="endTime != null">
                 and  create_time &lt;= #{endTime}
             </if>
-            <if test="createName != null and createName.trim() != ''">
-                and  create_user_name like CONCAT('%',#{createName},'%')
+            <if test="createUserId != null">
+                and  create_user_id = #{createUserId}
             </if>
+        </where>
+    </select>
+
+    <!-- 查询优惠券消耗明细 -->
+    <select id="getConsumeDetail" resultType="com.cjyc.common.model.vo.web.coupon.ConsumeCouponVo"
+                            parameterType="com.cjyc.common.model.dto.web.coupon.ConsumeCouponDto">
+          SELECT
+            send.coupon_no AS couponNo,
+            send.use_time AS useTime,
+            ORDER.customer_name AS customerName,
+            ORDER.NO AS orderNo,
+            ORDER.coupon_offset_fee AS couponOffsetFee,
+            (
+            ifnull( SUM( ORDER.pick_fee + ORDER.trunk_fee + ORDER.back_fee + ORDER.add_insurance_fee ), 0 ) - ifnull( ORDER.coupon_offset_fee, 0 )
+
+        ) AS finalOrderAmount
+        FROM
+            c_coupon coupon
+            JOIN c_coupon_send send ON send.coupon_id = coupon.id
+            JOIN w_order ORDER ON ORDER.coupon_send_id = send.id
+        <where>
+            <if test="couponNo != null and couponNo.trim() != ''">
+                send.coupon_no = #{couponNo}
+            </if>
+            <if test="customerName != null and customerName.trim() != ''">
+                and order.customer_name = #{customerName}
+            </if>
+            <if test="orderNo != null and orderNo.trim() != ''">
+                and order.no =  #{orderNo}
+            </if>
+            <if test="startUseDate != null">
+                and  send.use_time >=  #{startUseDate}
+            </if>
+            <if test="endUseDate != null">
+                and  send.use_time &lt;= #{endUseDate}
+            </if>
+                and coupon.id = #{id}
+        </where>
+    </select>
+
+    <!-- 查询客户优惠券 -->
+    <select id="getCustomerCouponByTerm" resultType="com.cjyc.common.model.vo.web.customer.CustomerCouponVo"
+                                        parameterType="com.cjyc.common.model.dto.web.customer.CustomerCouponDto">
+        SELECT
+            send.coupon_no AS couponNo,
+            coupon.type AS type,
+            coupon.full_amount AS fullAmount,
+            coupon.cut_amount AS cutAmount,
+            coupon.discount AS discount,
+            coupon.is_forever AS isForever,
+            coupon.start_period_date AS startPeriodDate,
+            coupon.end_period_date AS endPeriodDate,
+            send.receive_time AS receiveTime
+        FROM
+            c_coupon coupon
+            JOIN c_coupon_send send ON send.coupon_id = coupon.id
+            JOIN c_customer customer ON customer.id = send.customer_id
+        <where>
+            <if test="type != null">
+                coupon.type = #{type}
+            </if>
+            <if test="isUse != null ">
+                and send.is_use = #{isUse}
+            </if>
+            <if test="startPeriodTime != null">
+                and  cooupon.start_period_date >=  #{startPeriodTime}
+            </if>
+            <if test="endPeriodTime != null">
+                and  cooupon.end_period_date &lt;= #{endPeriodTime}
+            </if>
+            and customer.id = #{id}
         </where>
     </select>
 

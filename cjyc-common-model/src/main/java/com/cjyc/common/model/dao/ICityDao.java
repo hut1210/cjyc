@@ -82,5 +82,12 @@ public interface ICityDao extends BaseMapper<City> {
     List<CityTreeVo> getAllCity(@ApiParam("code") String code);
 
     List<TreeCityVo> findListByLevel(Integer level);
+
+    /**
+     * 根据城市级别查询树形结构
+     * @param level
+     * @return
+     */
+    List<CityTreeVo> getAllByLevel(@Param("level") Integer level);
 }
 
