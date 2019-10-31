@@ -1,7 +1,12 @@
 package com.cjyc.customer.api.controller;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.cjyc.common.model.dto.customer.OrderConditionDto;
+import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -10,6 +15,7 @@ import com.cjyc.customer.api.dto.OrderDto;
 import com.cjyc.customer.api.service.IOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import net.sf.jsqlparser.statement.update.Update;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -59,6 +65,14 @@ public class OrderController {
     @PostMapping(value = "/getOrderCount/{customerId}")
     public ResultVo<Map<String,Object>> getOrderCount(@PathVariable Long customerId){
         return orderService.getOrderCount(customerId);
+    }
+
+    @ApiOperation(value = "取消订单和确认下单接口", notes = "取消订单传 113,确认下单传 2", httpMethod = "POST")
+    @PostMapping(value = "/updateState/{orderNo}/{customerId}/{state}")
+    public ResultVo updateState(@PathVariable String orderNo, @PathVariable Long customerId, @PathVariable Integer state){
+        boolean result = orderService.update(new UpdateWrapper<Order>().lambda().set(Order::getState,state).eq(Order::getNo,orderNo)
+                .eq(Order::getCustomerId,customerId));
+        return result ? BaseResultUtil.success() : BaseResultUtil.fail();
     }
 
 

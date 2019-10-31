@@ -1,6 +1,8 @@
 package com.cjyc.customer.api.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.dto.customer.OrderConditionDto;
+import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterVo;
@@ -13,7 +15,7 @@ import java.util.Map;
  * @description: com.cjyc.customer.api.system
  * @date:2019/10/8
  */
-public interface IOrderService {
+public interface IOrderService extends IService<Order> {
 
     /**
      * 客户下单

@@ -30,6 +30,7 @@ public class OrderCenterVo implements Serializable {
     @ApiModelProperty(value = "品牌")
     private String brand;
 
+    @ApiModelProperty(value = "车辆信息列表")
     private List<OrderCarCenterVo> orderCarCenterVos;
 
 }

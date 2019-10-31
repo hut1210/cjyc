@@ -2,6 +2,7 @@ package com.cjyc.customer.api.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.constant.NoConstant;
 import com.cjyc.common.model.dao.IIncrementerDao;
 import com.cjyc.common.model.dao.IOrderCarDao;
@@ -36,7 +37,7 @@ import java.util.*;
  */
 @Service
 @Slf4j
-public class OrderServiceImpl implements IOrderService{
+public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IOrderService{
 
     @Resource
     private IOrderDao orderDao;
@@ -143,7 +144,7 @@ public class OrderServiceImpl implements IOrderService{
         }
 
         List<OrderCenterVo> list = orderDao.selectPage(dto);
-        return BaseResultUtil.success(new PageInfo<>(list));
+        return BaseResultUtil.success(new PageInfo<>(list == null ? new ArrayList<>(0) : list));
     }
 
     @Override
