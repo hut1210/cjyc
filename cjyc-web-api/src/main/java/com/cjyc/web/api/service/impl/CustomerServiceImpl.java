@@ -1,5 +1,11 @@
 package com.cjyc.web.api.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.cjkj.common.model.ResultData;
+import com.cjkj.common.model.ReturnMsg;
+import com.cjkj.usercenter.dto.common.AddUserReq;
+import com.cjkj.usercenter.dto.common.AddUserResp;
+import com.cjkj.usercenter.dto.common.UpdateUserReq;
 import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.customer.*;
@@ -26,7 +32,6 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
