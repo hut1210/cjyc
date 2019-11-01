@@ -17,7 +17,6 @@ public class CustomerDto implements Serializable {
     }
 
     @ApiModelProperty("当前登陆用户userId")
-    @NotNull(groups = {SaveCustomerVo.class},message = "当前登陆用户userId不能为空")
     @NotNull(groups = {UpdateCustomerVo.class},message = "当前登陆用户userId不能为空")
     private Long userId;
 
