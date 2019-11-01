@@ -35,7 +35,7 @@ public class City implements Serializable {
     private String name;
 
     @ApiModelProperty(value = "级别")
-    private Boolean level;
+    private Integer level;
 
     @ApiModelProperty(value = "上级行政区编码")
     private String parentCode;
