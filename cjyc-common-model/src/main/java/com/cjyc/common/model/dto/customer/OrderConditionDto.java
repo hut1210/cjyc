@@ -18,7 +18,7 @@ public class OrderConditionDto extends BasePageDto {
     private Long customerId;
 
     @ApiModelProperty("订单状态 0:待确认,1:运输中,2:已交付,3:全部")
-    @NotNull(groups = {QueryPage.class, QueryUpdateAndDetail.class},message = "订单状态不能为空")
+    @NotNull(groups = {QueryPage.class},message = "订单状态不能为空")
     private Integer state;
 
     @ApiModelProperty("订单号")
