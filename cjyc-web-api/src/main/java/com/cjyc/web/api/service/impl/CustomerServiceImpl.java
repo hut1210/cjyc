@@ -1,11 +1,5 @@
 package com.cjyc.web.api.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.cjkj.common.model.ResultData;
-import com.cjkj.common.model.ReturnMsg;
-import com.cjkj.usercenter.dto.common.AddUserReq;
-import com.cjkj.usercenter.dto.common.AddUserResp;
-import com.cjkj.usercenter.dto.common.UpdateUserReq;
 import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.customer.*;
@@ -22,8 +16,10 @@ import com.cjyc.common.model.vo.web.CustomerContractVo;
 import com.cjyc.common.model.vo.web.CustomerVo;
 import com.cjyc.common.model.vo.web.ListKeyCustomerVo;
 import com.cjyc.common.model.vo.web.ShowKeyCustomerVo;
+import com.cjyc.common.model.vo.web.coupon.CustomerCouponSendVo;
 import com.cjyc.common.model.vo.web.customer.CustomerCouponVo;
 import com.cjyc.web.api.exception.CommonException;
+import com.cjyc.web.api.exception.ServerException;
 import com.cjyc.web.api.feign.ISysUserService;
 import com.cjyc.web.api.service.ICustomerService;
 import com.github.pagehelper.PageHelper;
@@ -39,6 +35,7 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -69,6 +66,9 @@ public class CustomerServiceImpl implements ICustomerService{
 
     @Resource
     private ICouponDao couponDao;
+
+    @Resource
+    private ICouponSendDao couponSendDao;
 
     @Resource
     private IAdminDao adminDao;
@@ -335,7 +335,7 @@ public class CustomerServiceImpl implements ICustomerService{
     @Override
     public int save(Customer customer) {
         //添加架构组数据
-/*        AddUserReq addUserReq = new AddUserReq();
+        AddUserReq addUserReq = new AddUserReq();
         addUserReq.setAccount(customer.getContactPhone());
         addUserReq.setPassword(YmlProperty.get("cjkj.web.password"));
         addUserReq.setDeptId(Long.valueOf(YmlProperty.get("cjkj.dept_customer_id")));
@@ -345,7 +345,7 @@ public class CustomerServiceImpl implements ICustomerService{
 
         if(resultData == null || resultData.getData() == null || resultData.getData().getUserId() == null){
             throw new ServerException("添加用户失败");
-        }*/
+        }
         //customer.setUserId(resultData.getData().getUserId());
         return customerDao.insert(customer);
     }
@@ -459,18 +459,8 @@ public class CustomerServiceImpl implements ICustomerService{
 
     @Override
     public ResultVo getAllCustomerByKey(String keyword) {
-        List<Map<String,Object>> customerList = null;
-        try{
-            customerList = customerDao.getAllCustomerByKey(keyword);
-            if(!CollectionUtils.isEmpty(customerList)){
-                return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),customerList);
-            }else{
-                return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(), Collections.emptyList());
-            }
-        }catch (Exception e){
-            log.error("根据用户名/手机号模糊查询用户信息出现异常",e);
-            return BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg(), Collections.emptyList());
-        }
+        List<Map<String,Object>> customerList = customerDao.getAllCustomerByKey(keyword);
+        return BaseResultUtil.success(customerList);
     }
 
     @Override
@@ -526,6 +516,41 @@ public class CustomerServiceImpl implements ICustomerService{
             log.error("查看用户优惠券信息出现异常",e);
         }
         return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),Collections.emptyList());
+    }
+
+    @Override
+    public ResultVo getCouponByPhone(String contactPhone) {
+        try{
+            Customer customer = customerDao.findByPhone(contactPhone);
+            if(customer != null){
+                //根据客户id查看发放的优惠券
+                List<CustomerCouponSendVo> sendVoList = null;
+                List<CustomerCouponSendVo> couponVos = couponSendDao.getCustomerCoupon(customer.getId());
+                Long now = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
+                if(!CollectionUtils.isEmpty(couponVos)){
+                    sendVoList = new ArrayList<>();
+                    for(CustomerCouponSendVo sendVo : couponVos){
+                        if(sendVo.getEndPeriodDate() != null){
+                            if((sendVo.getEndPeriodDate() - now) > 0){
+                                sendVoList.add(sendVo);
+                            }
+                        }else{
+                            sendVoList.add(sendVo);
+                        }
+                    }
+                    if(!CollectionUtils.isEmpty(sendVoList)){
+                        return BaseResultUtil.success(sendVoList == null ? Collections.emptyList():sendVoList);
+                    }
+                }else{
+                    return BaseResultUtil.success(Collections.emptyList());
+                }
+            }else{
+                return BaseResultUtil.success(Collections.emptyList());
+            }
+        }catch (Exception e){
+            log.error("根据手机号查看优惠券信息出现异常",e);
+        }
+        return BaseResultUtil.fail("根据手机号查询优惠券出现异常");
     }
 
     /**

@@ -17,6 +17,9 @@ public class LoadTaskDto {
     @ApiModelProperty(value = "用户userName")
     private String userName;
 
+    @ApiModelProperty(value = "装车方式：1客户家提车，2业务中心提车，3司机交接提车",required = true)
+    private Long loadType;
+
     @ApiModelProperty(value = "任务车辆ID",required = true)
     private Long taskCarId;
 

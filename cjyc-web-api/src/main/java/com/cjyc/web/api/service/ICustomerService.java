@@ -124,4 +124,11 @@ public interface ICustomerService  {
      * @return
      */
     ResultVo getCustomerCouponByTerm(CustomerCouponDto dto);
+
+    /**
+     * 根据手机号查询该用户的优惠券
+     * @param phone
+     * @return
+     */
+    ResultVo getCouponByPhone(String phone);
 }

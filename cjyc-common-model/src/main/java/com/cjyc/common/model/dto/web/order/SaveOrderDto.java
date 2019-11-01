@@ -46,7 +46,7 @@ public class SaveOrderDto {
     @NotBlank
     @ApiModelProperty(value = "客户姓名")
     private String customerName;
-    @ApiModelProperty(value = "省")
+  /*  @ApiModelProperty(value = "省")
     private String startProvince;
     @ApiModelProperty(value = "省编号")
     private String startProvinceCode;
@@ -55,7 +55,7 @@ public class SaveOrderDto {
     @ApiModelProperty(value = "市编号")
     private String startCityCode;
     @ApiModelProperty(value = "区")
-    private String startArea;
+    private String startArea;*/
     @ApiModelProperty(value = "区编号")
     private String startAreaCode;
     @ApiModelProperty(value = "始发地详细地址")
@@ -64,7 +64,7 @@ public class SaveOrderDto {
     private Long startStoreId;
     @ApiModelProperty(value = "出发地业务中心名称")
     private String startStoreName;
-    @ApiModelProperty(value = "省")
+  /*  @ApiModelProperty(value = "省")
     private String endProvince;
     @ApiModelProperty(value = "省编号")
     private String endProvinceCode;
@@ -73,7 +73,7 @@ public class SaveOrderDto {
     @ApiModelProperty(value = "市编号")
     private String endCityCode;
     @ApiModelProperty(value = "区")
-    private String endArea;
+    private String endArea;*/
     @ApiModelProperty(value = "区编号")
     private String endAreaCode;
     @ApiModelProperty(value = "目的地详细地址")

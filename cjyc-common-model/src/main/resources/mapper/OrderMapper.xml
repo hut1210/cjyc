@@ -84,12 +84,8 @@
 
     <resultMap id="VinResultMap" type="com.cjyc.common.model.vo.customer.order.OrderCenterVo">
         <!--查询该订单号下的一条车辆信息-->
-        <collection property="orderCarCenterVos" column="{orderNo = no,brand = brand,model = model}"
+        <collection property="orderCarCenterVoList" column="{orderNo = no,brand = brand,model = model}"
                     select="com.cjyc.common.model.dao.IOrderCarDao.selectByCondition">
-        </collection>
-        <!--查询该订单号下的车辆数量-->
-        <collection property="carNum" column="{orderNo = no}"
-                    select="com.cjyc.common.model.dao.IOrderCarDao.selectCountByOrderNo">
         </collection>
     </resultMap>
 
@@ -111,6 +107,17 @@
     <select id="findListSelective" resultType="com.cjyc.common.model.vo.web.order.ListOrderVo">
         select
         o.*,
+        (case
+        when o.state = 0 then '预订单'
+        when o.state &gt; 0 and o.state &lt; 15 then '待确认'
+        when o.state = 15 then '待付款'
+        when o.state = 25 then '待调度'
+        when o.state = 55 then '运输中'
+        when o.state = 100 then '已交付'
+        when o.state = 113 then '已取消'
+        when o.state = 114 then '已作废'
+        end
+        ) as outterState,
         CONCAT(start_province,start_city,start_area,start_address) as startFullAddress,
         CONCAT(end_province,end_city,end_area,end_address) as endFullAddress,
         (sum(IFNULL(oc.pick_fee,0)) + sum(IFNULL(oc.trunk_fee,0)) + sum(IFNULL(oc.back_fee,0)) +sum(IFNULL(oc.add_insurance_fee,0))) as wlTotalFee,
@@ -132,6 +139,9 @@
         left join c_customer_contract ht on ht.id = o.customer_contract_id
         <where>
             <choose>
+                <when test="paramsDto.outterState == 0">
+                    and o.state > 0
+                </when>
                 <when test="paramsDto.outterState == 1">
                     and o.state = 0
                 </when>
@@ -156,6 +166,9 @@
                 <when test="paramsDto.outterState == 114">
                     and o.state = 114
                 </when>
+                <otherwise>
+                    and 1 != 1
+                </otherwise>
             </choose>
 
             <choose>
@@ -279,7 +292,7 @@
         group by o.id
     </select>
 
-    <select id="selectPage" parameterType="com.cjyc.common.model.dto.customer.OrderConditionDto"
+    <select id="selectPage" parameterType="com.cjyc.common.model.dto.customer.order.OrderQueryDto"
             resultMap="VinResultMap">
         select
             o.no as no,
@@ -287,6 +300,7 @@
             o.start_city as startCity,
             o.end_city as endCity,
             o.total_fee as totalFee,
+            o.car_num as carNum,
             #{brand} as brand,
             #{model} as model
         from

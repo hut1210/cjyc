@@ -1,6 +1,7 @@
 package com.cjyc.web.api.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cjyc.common.model.dao.ICityDao;
 import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IOrderChangeLogDao;
 import com.cjyc.common.model.dao.IOrderDao;
@@ -21,6 +22,8 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.city.FullCityVo;
+import com.cjyc.common.model.vo.web.order.ListOrderCarVo;
 import com.cjyc.common.model.vo.web.order.ListOrderVo;
 import com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo;
 import com.cjyc.common.model.vo.web.order.OrderVo;
@@ -38,7 +41,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -65,6 +67,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     @Resource
     private ICustomerService customerService;
     @Resource
+    private ICityDao cityDao;
+    @Resource
     private ICouponSendService couponSendService;
 
     @Override
@@ -85,6 +89,16 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
 
         }
         BeanUtils.copyProperties(paramsDto, order);
+        //查询三级城市
+        FullCityVo startFullCityVo = cityDao.findFullCityVo(paramsDto.getStartAreaCode());
+        if(startFullCityVo != null){
+            BeanUtils.copyProperties(startFullCityVo, order);
+        }
+        FullCityVo endFullCityVo = cityDao.findFullCityVo(paramsDto.getEndAreaCode());
+        if(endFullCityVo != null){
+            BeanUtils.copyProperties(endFullCityVo, order);
+        }
+
 
         /**1、组装订单数据
          */
@@ -149,6 +163,15 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
             order = new Order();
         }
         BeanUtils.copyProperties(paramsDto, order);
+        //查询三级城市
+        FullCityVo startFullCityVo = cityDao.findFullCityVo(paramsDto.getStartAreaCode());
+        if(startFullCityVo != null){
+            BeanUtils.copyProperties(startFullCityVo, order);
+        }
+        FullCityVo endFullCityVo = cityDao.findFullCityVo(paramsDto.getEndAreaCode());
+        if(endFullCityVo != null){
+            BeanUtils.copyProperties(endFullCityVo, order);
+        }
         //验证用户
         Customer customer = new Customer();
         if (paramsDto.getCustomerId() != null) {
@@ -457,10 +480,10 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     }
 
     @Override
-    public ResultVo<PageVo<OrderCar>> carlist(ListOrderCarDto paramsDto) {
+    public ResultVo<PageVo<ListOrderCarVo>> carlist(ListOrderCarDto paramsDto) {
         PageHelper.offsetPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
-        List<OrderCar> list = orderCarDao.findListSelective(paramsDto);
-        PageInfo<OrderCar> pageInfo = new PageInfo<>(list);
+        List<ListOrderCarVo> list = orderCarDao.findListSelective(paramsDto);
+        PageInfo<ListOrderCarVo> pageInfo = new PageInfo<>(list);
         if (paramsDto.getCurrentPage() > pageInfo.getPages()) {
             pageInfo.setList(null);
         }

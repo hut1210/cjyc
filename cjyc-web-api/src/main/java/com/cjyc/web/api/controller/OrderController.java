@@ -11,6 +11,7 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.BizScopeVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.order.ListOrderCarVo;
 import com.cjyc.common.model.vo.web.order.ListOrderVo;
 import com.cjyc.common.model.vo.web.order.OrderVo;
 import com.cjyc.web.api.service.IAdminService;
@@ -67,7 +68,7 @@ public class OrderController {
 
 
     /**
-     * 提交,只保存无验证
+     * 提交
      * @author JPG
      */
     @ApiOperation(value = "订单提交")
@@ -144,7 +145,7 @@ public class OrderController {
      */
     @ApiOperation(value = "订单车辆查询")
     @PostMapping(value = "/car/list")
-    public ResultVo<PageVo<OrderCar>> carlist(@RequestBody ListOrderCarDto reqDto) {
+    public ResultVo<PageVo<ListOrderCarVo>> carlist(@RequestBody ListOrderCarDto reqDto) {
         return orderService.carlist(reqDto);
     }
 

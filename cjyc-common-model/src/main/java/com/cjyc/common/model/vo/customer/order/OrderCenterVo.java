@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -27,9 +28,28 @@ public class OrderCenterVo implements Serializable {
     @ApiModelProperty(value = "订单状态")
     private String state;
 
-    @ApiModelProperty(value = "品牌")
-    private String brand;
+    @ApiModelProperty(value = "车辆信息列表")
+    private List<OrderCarCenterVo> orderCarCenterVoList;
 
-    private List<OrderCarCenterVo> orderCarCenterVos;
-
+    public String getNo() {
+        return no == null ? "" : no;
+    }
+    public String getStartCity() {
+        return startCity == null ? "" : startCity;
+    }
+    public String getEndCity() {
+        return endCity == null ? "" : endCity;
+    }
+    public String getState() {
+        return state == null ? "-1" : state;
+    }
+    public String getTotalFee() {
+        return totalFee == null ? "0.00" : totalFee;
+    }
+    public Integer getCarNum() {
+        return carNum == null ? 0 : carNum;
+    }
+    public List<OrderCarCenterVo> getOrderCarCenterVoList() {
+        return orderCarCenterVoList == null ? new ArrayList<>(0) : orderCarCenterVoList;
+    }
 }

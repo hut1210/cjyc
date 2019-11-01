@@ -1,8 +1,12 @@
 package com.cjyc.customer.api.service;
 
-import com.cjyc.common.model.dto.customer.OrderConditionDto;
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.cjyc.common.model.dto.customer.order.OrderQueryDto;
+import com.cjyc.common.model.dto.customer.order.OrderUpdateDto;
+import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.customer.order.OrderCenterDetailVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterVo;
 import com.cjyc.customer.api.dto.OrderDto;
 
@@ -13,7 +17,7 @@ import java.util.Map;
  * @description: com.cjyc.customer.api.system
  * @date:2019/10/8
  */
-public interface IOrderService {
+public interface IOrderService extends IService<Order> {
 
     /**
      * 客户下单
@@ -32,7 +36,7 @@ public interface IOrderService {
      * @param dto
      * @return
      */
-    ResultVo<PageVo<OrderCenterVo>> getPage(OrderConditionDto dto);
+    ResultVo<PageVo<OrderCenterVo>> getPage(OrderQueryDto dto);
 
     /**
      * 根据客户id查询订单数量
@@ -40,4 +44,18 @@ public interface IOrderService {
      * @return
      */
     ResultVo<Map<String, Object>> getOrderCount(Long customerId);
+
+    /**
+     * 根据条件查询各种状态下的订单明细
+     * @param dto
+     * @return
+     */
+    ResultVo<OrderCenterDetailVo> getDetail(OrderUpdateDto dto);
+
+    /**
+     * 确认收车
+     * @param dto
+     * @return
+     */
+    ResultVo confirmPickCar(OrderUpdateDto dto);
 }

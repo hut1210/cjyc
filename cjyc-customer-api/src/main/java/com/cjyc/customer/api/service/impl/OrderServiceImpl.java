@@ -2,19 +2,26 @@ package com.cjyc.customer.api.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.constant.NoConstant;
 import com.cjyc.common.model.dao.IIncrementerDao;
 import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IOrderDao;
-import com.cjyc.common.model.dto.customer.OrderConditionDto;
+import com.cjyc.common.model.dto.customer.order.OrderQueryDto;
+import com.cjyc.common.model.dto.customer.order.OrderUpdateDto;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.entity.OrderCar;
+import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.util.BasePageUtil;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.customer.order.OrderCarCenterVo;
+import com.cjyc.common.model.vo.customer.order.OrderCenterDetailVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterVo;
 import com.cjyc.customer.api.dto.OrderCarDto;
 import com.cjyc.customer.api.dto.OrderDto;
@@ -25,8 +32,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import javax.validation.constraints.NotEmpty;
 import java.util.*;
 
 /**
@@ -36,7 +45,7 @@ import java.util.*;
  */
 @Service
 @Slf4j
-public class OrderServiceImpl implements IOrderService{
+public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IOrderService{
 
     @Resource
     private IOrderDao orderDao;
@@ -45,7 +54,7 @@ public class OrderServiceImpl implements IOrderService{
     private IIncrementerDao incrementerDao;
 
     @Resource
-    private IOrderCarDao iOrderCarDao;
+    private IOrderCarDao orderCarDao;
 
     /**
      * 客户端下单
@@ -103,7 +112,7 @@ public class OrderServiceImpl implements IOrderService{
             //删除之前的
             QueryWrapper<OrderCar> wrapper = new QueryWrapper<>();
             wrapper.eq("order_id",orderDto.getOrderId());
-            int delCount = iOrderCarDao.delete(wrapper);
+            int delCount = orderCarDao.delete(wrapper);
 
             //重新保存车辆信息
             List<OrderCarDto> carDtoList =  orderDto.getOrderCarDtoList();
@@ -117,7 +126,7 @@ public class OrderServiceImpl implements IOrderService{
                     orderCar.setOrderId(order.getId());
                     orderCar.setNo(carNo);
 
-                    iOrderCarDao.insert(orderCar);
+                    orderCarDao.insert(orderCar);
                 }
             }
         }
@@ -126,10 +135,10 @@ public class OrderServiceImpl implements IOrderService{
     }
 
     @Override
-    public ResultVo<PageVo<OrderCenterVo>> getPage(OrderConditionDto dto) {
-        BasePageUtil.initPage(dto.getCurrentPage(),dto.getPageSize());
+    public ResultVo<PageVo<OrderCenterVo>> getPage(OrderQueryDto dto) {
+        BasePageUtil.initPage(dto);
         // 分页
-        PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize(), true);
+        PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
         // 日期格式处理
         String startDate = dto.getStartDate();
         String endDate = dto.getEndDate();
@@ -143,7 +152,7 @@ public class OrderServiceImpl implements IOrderService{
         }
 
         List<OrderCenterVo> list = orderDao.selectPage(dto);
-        return BaseResultUtil.success(new PageInfo<>(list));
+        return BaseResultUtil.success(new PageInfo<>(list == null ? new ArrayList<>(0) : list));
     }
 
     @Override
@@ -189,5 +198,62 @@ public class OrderServiceImpl implements IOrderService{
             map.put("allCount",allCount);
         }
         return BaseResultUtil.success(map);
+    }
+
+    @Override
+    public ResultVo<OrderCenterDetailVo> getDetail(OrderUpdateDto dto) {
+        OrderCenterDetailVo detailVo = new OrderCenterDetailVo();
+        // 查询订单信息
+        LambdaQueryWrapper<Order> queryOrderWrapper = new QueryWrapper<Order>().lambda()
+                .eq(Order::getCustomerId,dto.getCustomerId()).eq(Order::getNo,dto.getOrderNo());
+        Order order = super.getOne(queryOrderWrapper);
+        BeanUtils.copyProperties(order,detailVo);
+        // 查询车辆信息
+        LambdaQueryWrapper<OrderCar> queryCarWrapper = new QueryWrapper<OrderCar>().lambda().eq(OrderCar::getOrderNo,dto.getOrderNo());
+        List<OrderCar> orderCarList = orderCarDao.selectList(queryCarWrapper);
+        List<OrderCarCenterVo> orderCarCenterVoList = new ArrayList<>(10);
+        List<OrderCarCenterVo> orderCarFinishPayList = new ArrayList<>(10);
+        if (!CollectionUtils.isEmpty(orderCarList)) {
+            for (OrderCar orderCar : orderCarList) {
+                OrderCarCenterVo orderCarCenter = new OrderCarCenterVo();
+                BeanUtils.copyProperties(orderCar,orderCarCenter);
+                if (OrderCarStateEnum.SIGNED.code == orderCar.getState()) {
+                    // 运输中订单车辆信息
+                    orderCarFinishPayList.add(orderCarCenter);
+                } else {
+                    // 待确认，已交付，运输中，全部订单车辆信息
+                    orderCarCenterVoList.add(orderCarCenter);
+                }
+            }
+        }
+        detailVo.setOrderCarCenterVoList(orderCarCenterVoList);
+        detailVo.setOrderCarFinishPayList(orderCarFinishPayList);
+        return BaseResultUtil.success(detailVo);
+    }
+
+    @Override
+    public ResultVo confirmPickCar(OrderUpdateDto dto) {
+        // 修改车辆状态
+        OrderCar orderCar = new OrderCar();
+        orderCar.setState(OrderCarStateEnum.SIGNED.code);
+        for (Long id : dto.getCarIdList()) {
+            orderCar.setId(id);
+            int i = orderCarDao.updateById(orderCar);
+            if (i == 0) {
+                return BaseResultUtil.fail();
+            }
+        }
+
+        // 修改订单状态
+        LambdaQueryWrapper<OrderCar> queryWrapper = new QueryWrapper<OrderCar>().lambda()
+                .eq(OrderCar::getOrderNo, dto.getOrderNo()).ne(OrderCar::getState,OrderCarStateEnum.SIGNED.code);
+        if (CollectionUtils.isEmpty(orderCarDao.selectList(queryWrapper))) {
+            // 说明已经全部确认收车，更新总订单状态为已交付
+            LambdaUpdateWrapper<Order> updateWrapper = new UpdateWrapper<Order>().lambda().set(Order::getState, OrderStateEnum.FINISHED.code)
+                    .eq(Order::getNo, dto.getOrderNo()).eq(Order::getCustomerId, dto.getCustomerId());
+            boolean result = super.update(updateWrapper);
+            return result ? BaseResultUtil.success() : BaseResultUtil.fail();
+        }
+        return BaseResultUtil.success();
     }
 }

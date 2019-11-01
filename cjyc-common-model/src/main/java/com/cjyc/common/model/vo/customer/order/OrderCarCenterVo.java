@@ -7,6 +7,9 @@ import java.io.Serializable;
 @Data
 public class OrderCarCenterVo implements Serializable {
     private static final long serialVersionUID = 3239344642824513783L;
+    @ApiModelProperty(value = "车辆id")
+    private Long id;
+
     @ApiModelProperty(value = "估值/万")
     private String valuation;
 
@@ -34,4 +37,19 @@ public class OrderCarCenterVo implements Serializable {
     @ApiModelProperty(value = "是否能动 0-否 1-是")
     private String isMove;
 
+    public String getLogoImg() {
+        return logoImg == null ? "" : logoImg;
+    }
+
+    public String getModel() {
+        return model == null ? "" : model;
+    }
+
+    public String getPlateNo() {
+        return plateNo == null ? "" : plateNo;
+    }
+
+    public String getVin() {
+        return vin == null ? "" : vin;
+    }
 }

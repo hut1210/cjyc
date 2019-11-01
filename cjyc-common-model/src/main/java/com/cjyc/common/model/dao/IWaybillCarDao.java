@@ -31,4 +31,8 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
     List<WaybillCar> findNextDispatch(@Param("orderCarId") Long orderCarId, @Param("endStoreId")Long endStoreId);
 
     WaybillCar findByTaskCarId(Long taskCarId);
+
+    WaybillCar findByStartStoreAndOrderCar(@Param("orderCarId") Long orderCarId,@Param("inStoreId") Long inStoreId);
+
+    int countByStartCityAndOrderCar(@Param("cityCode") String cityCode, @Param("inStoreId") Long inStoreId);
 }

@@ -4,6 +4,8 @@ import com.cjyc.common.model.dto.web.coupon.SeleCouponSendDto;
 import com.cjyc.common.model.entity.CouponSend;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.vo.web.coupon.CouponSendVo;
+import com.cjyc.common.model.vo.web.coupon.CustomerCouponSendVo;
+import com.cjyc.common.model.vo.web.customer.CustomerCouponVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -38,4 +40,11 @@ public interface ICouponSendDao extends BaseMapper<CouponSend> {
      * @return
      */
     List<com.cjyc.common.model.vo.customer.couponSend.CouponSendVo> getCouponSendByUserId(@Param("userId") Long userId);
+
+    /**
+     * 根据客户id获取优惠券
+     * @param customerId
+     * @return
+     */
+    List<CustomerCouponSendVo> getCustomerCoupon(@Param("customerId") Long customerId);
 }

@@ -1,5 +1,9 @@
 package com.cjyc.customer.api.service;
 
+import com.cjyc.common.model.entity.Dictionary;
+import com.cjyc.common.model.vo.ResultVo;
+
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -18,4 +22,10 @@ public interface IAppService {
 
     void logout(String customerCode, String token);
 
+    /**
+     * 查询APP端首页轮播图
+     * @param systemPicture
+     * @return
+     */
+    ResultVo<List<Dictionary>> getSysPicture(String systemPicture);
 }

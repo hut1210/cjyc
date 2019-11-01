@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.dto.BaseCityDto;
 import com.cjyc.common.model.entity.City;
 import com.cjyc.common.model.vo.web.city.CityTreeVo;
+import com.cjyc.common.model.vo.web.city.FullCityVo;
 import com.cjyc.common.model.vo.web.city.ProvinceCityVo;
 import com.cjyc.common.model.vo.web.city.TreeCityVo;
 import io.swagger.annotations.ApiParam;
@@ -34,46 +35,11 @@ public interface ICityDao extends BaseMapper<City> {
     List<Map<String,Object>> getList(@Param("cityCode") String cityCode);
 
     /**
-     *  通过大区codes 获取区县codes
-     * @param code
-     * @return
-     */
-    List<String> getAreaCodesByLarCode(List<String> code);
-
-    /**
-     * 通过省/直辖市codes获取区县codes
-     * @param code
-     * @return
-     */
-    List<String> getAreaCodesByProCode(List<String> code);
-
-    /**
-     * 通过城市codes获取区县codes
-     * @param code
-     * @return
-     */
-    List<String> getAreaCodesByCityCode(List<String> code);
-
-    /**
-     * 根据编码获取该编码和名称
-     * @param code
-     * @return
-     */
-    List<BaseCityDto> getCityAndName(List<String> code);
-
-    /**
      * 通过城市编码查询上一级
      * @param code
      * @return
      */
     ProvinceCityVo getProvinceCityByCode(@Param("code") String code);
-
-    /**
-     * 获取下一级所有城市
-     * @param code
-     * @return
-     */
-    List<CityTreeVo> getAllCity(@ApiParam("code") String code);
 
     List<TreeCityVo> findListByLevel(Integer level);
 
@@ -84,5 +50,14 @@ public interface ICityDao extends BaseMapper<City> {
      * @return
      */
     List<CityTreeVo> getAllByLevel(@Param("startLevel") Integer startLevel,@Param("endLevel")Integer endLevel);
+
+    FullCityVo findFullCityVo(String areaCode);
+
+    /**
+     * 根据关键字获取省/城市集合
+     * @param name
+     * @return
+     */
+    List<City> getCityTreeByKeyword(@Param("name") String name);
 }
 

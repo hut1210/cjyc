@@ -2,6 +2,7 @@ package com.cjyc.customer.api.service;
 
 
 import com.cjyc.common.model.dto.customer.freightBill.TransportPriceDto;
+import com.cjyc.common.model.vo.ResultVo;
 
 /**
  *  @author: zj
@@ -15,5 +16,5 @@ public interface ITransportPriceService {
      * @param dto
      * @return
      */
-    String getLinePriceByCode(TransportPriceDto dto);
+    ResultVo getLinePriceByCode(TransportPriceDto dto);
 }

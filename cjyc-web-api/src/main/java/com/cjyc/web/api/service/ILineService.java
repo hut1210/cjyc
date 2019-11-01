@@ -2,6 +2,7 @@ package com.cjyc.web.api.service;
 
 import com.cjyc.common.model.dto.web.inquiry.SelectInquiryDto;
 import com.cjyc.common.model.dto.web.line.AddAndUpdateLineDto;
+import com.cjyc.common.model.dto.web.line.ListLineDto;
 import com.cjyc.common.model.dto.web.line.SortNodeListDto;
 import com.cjyc.common.model.entity.Line;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -44,4 +45,13 @@ public interface ILineService extends IService<Line> {
      */
     ResultVo deleteLineByIds(List<Long> lineIds);
 
+    /**
+     * 根据起始目的地code查询物流费
+     * @param fromCode
+     * @param toCode
+     * @return
+     */
+    ResultVo getDefaultWlFeeByCode(String fromCode,String toCode);
+
+    ResultVo<List<Line>> listByTwoCity(ListLineDto reqDto);
 }

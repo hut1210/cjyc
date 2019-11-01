@@ -1,5 +1,11 @@
 package com.cjyc.customer.api.service.impl;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.cjyc.common.model.dao.IDictionaryDao;
 import com.cjyc.common.model.entity.Customer;
+import com.cjyc.common.model.entity.Dictionary;
+import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.customer.api.service.IAppService;
 import com.cjyc.customer.api.service.ITokenService;
 import org.apache.commons.lang.StringUtils;
@@ -17,6 +23,8 @@ public class AppServiceImpl implements IAppService {
 
     @Autowired
     private ITokenService tokenService;
+    @Autowired
+    private IDictionaryDao dictionaryDao;
 //    @Autowired
 //    private CustomerDao customerDao;
 
@@ -141,6 +149,14 @@ public class AppServiceImpl implements IAppService {
         msgMap.remove(customer.getContactPhone());
         loginUserMap.remove(token);
         tokenService.delToken(token);
+    }
+
+    @Override
+    public ResultVo<List<Dictionary>> getSysPicture(String systemPicture) {
+        LambdaQueryWrapper<Dictionary> queryWrapper = new QueryWrapper<Dictionary>().lambda()
+                .eq(Dictionary::getItem,systemPicture).eq(Dictionary::getState,1);
+        List<Dictionary> dictionaryList = dictionaryDao.selectList(queryWrapper);
+        return BaseResultUtil.success(dictionaryList);
     }
 
 }

@@ -1,6 +1,8 @@
 package com.cjyc.customer.api.controller;
 
 import com.cjyc.common.model.annotations.OperationLogNav;
+import com.cjyc.common.model.constant.FieldConstant;
+import com.cjyc.common.model.entity.Dictionary;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
@@ -10,10 +12,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -131,5 +130,11 @@ public class AppController {
         //todo 隐私协议h5地址
         String agreementHtml = "";
         return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),"获取成功",agreementHtml);
+    }
+
+    @ApiOperation(value = "查询首页轮播图", notes = "无参数", httpMethod = "POST")
+    @PostMapping(value = "/getSysPicture")
+    public ResultVo<List<Dictionary>> getSysPicture(){
+        return appService.getSysPicture(FieldConstant.SYSTEM_PICTURE);
     }
 }

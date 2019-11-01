@@ -26,7 +26,6 @@ public class TransportPriceController {
     @ApiOperation(value = "查看运价查询")
     @PostMapping(value = "/getLinePriceByCode")
     public ResultVo getLinePriceByCode(@RequestBody TransportPriceDto dto){
-        String price = iPriceQueryService.getLinePriceByCode(dto);
-        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),price);
+        return iPriceQueryService.getLinePriceByCode(dto);
     }
 }

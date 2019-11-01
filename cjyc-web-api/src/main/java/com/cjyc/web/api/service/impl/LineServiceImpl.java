@@ -8,6 +8,7 @@ import com.cjyc.common.model.dao.ILineDao;
 import com.cjyc.common.model.dao.ILineNodeDao;
 import com.cjyc.common.model.dto.web.inquiry.SelectInquiryDto;
 import com.cjyc.common.model.dto.web.line.AddAndUpdateLineDto;
+import com.cjyc.common.model.dto.web.line.ListLineDto;
 import com.cjyc.common.model.dto.web.line.SortNodeDto;
 import com.cjyc.common.model.dto.web.line.SortNodeListDto;
 import com.cjyc.common.model.entity.Line;
@@ -173,6 +174,29 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
             throw new CommonException(e.getMessage());
         }
         return BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
+    }
+
+    @Override
+    public ResultVo getDefaultWlFeeByCode(String fromCode, String toCode) {
+        BigDecimal wlPrice = null;
+        try{
+            String defaultWlFee = lineDao.getLinePriceByCode(fromCode,toCode);
+            if(StringUtils.isNotBlank(defaultWlFee)) {
+                wlPrice = new BigDecimal(defaultWlFee).divide(new BigDecimal(100));
+            }else{
+                wlPrice = new BigDecimal(0);
+            }
+            return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),wlPrice);
+        }catch (Exception e){
+            log.info("根据城市编码查询班线价格出现异常");
+            return BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg(),BigDecimal.ZERO);
+        }
+    }
+
+    @Override
+    public ResultVo<List<Line>> listByTwoCity(ListLineDto paramsDto) {
+        List<Line> list = lineDao.findListByTwoCity(paramsDto);
+        return BaseResultUtil.success(list);
     }
 
     /**

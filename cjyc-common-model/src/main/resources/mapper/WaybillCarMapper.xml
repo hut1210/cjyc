@@ -192,5 +192,26 @@
         join w_task_car tc on tc.waybill_car_id = wc.id
         where tc.id = #{taskCarId}
     </select>
+    <select id="findByStartStoreAndOrderCar" resultType="com.cjyc.common.model.entity.WaybillCar">
+        select
+        <include refid="Base_Column_List"/>
+        from w_waybill w
+        join w_waybill_car wc on wc.waybill_id = w.id
+        where w.state &lt; 100
+        and wc.state &lt;= 5
+        and wc.order_car_id = #{orderCarId}
+        and wc.start_store_id = #{inStoreId}
+
+    </select>
+    <select id="countByStartCityAndOrderCar" resultType="java.lang.Integer">
+        select
+        count(0)
+        from w_waybill w
+        join w_waybill_car wc on wc.waybill_id = w.id
+        where w.state &lt; 100
+        and wc.state &lt;= 5
+        and wc.order_car_id = #{orderCarId}
+        and and wc.start_city = #{cityCode}
+    </select>
 
 </mapper>

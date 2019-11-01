@@ -27,8 +27,9 @@
         id, code, name, from_code, to_code, level, kilometer, days, state, default_wl_fee, default_freight_fee, remark, create_time, create_user_id, update_user_id, update_time
     </sql>
 
+
     <!-- 通过城市编码查看上游运价 -->
-    <select id="getLinePriceByCode" resultType="java.lang.String" parameterType="com.cjyc.common.model.dto.customer.freightBill.TransportPriceDto">
+    <select id="getLinePriceByCode" resultType="java.lang.String">
         select default_wl_fee
         from s_line
         <where>
@@ -68,6 +69,13 @@
                 and code = #{lineCode}
             </if>
         </where>
+    </select>
+    <select id="findListByTwoCity" resultType="com.cjyc.common.model.entity.Line">
+        select
+        <include refid="Base_Column_List"/>
+        from s_line
+        where from_code = #{paramsDto.startCityCode}
+        and to_code = #{paramsDto.endCityCode}
     </select>
 
 </mapper>

@@ -2,19 +2,23 @@ package com.cjyc.common.model.enums.waybill;
 
 /**
  * 运单车辆状态
+ *
  * @author JPG
  */
 public enum WaybillCarStateEnum {
-    /***/
 
-    WAIT_ALLOT("待指派",0),
-    ALLOTED("已指派",2),
-    WAIT_LOAD("待装车",5),
-    LOADED("已装车",7),
-    UNLOADED("已卸车",9),
-    APPLY_CONFIRM("确认交车",90),
-    CONFIRMED("确认收车",100),
-    CANCEL_DISPATCH("确认收车",110);
+    /**
+     * 0待指派，2已指派，5待装车，15待装车交接，45已装车，70已卸车，90确认交车, 100确认收车, 105待重连
+     */
+    WAIT_ALLOT("待指派", 0),
+    ALLOTED("已指派", 2),
+    WAIT_LOAD("待装车", 5),
+    WAIT_LOAD_TURN("待装车交接", 15),
+    LOADED("已装车", 45),
+    UNLOADED("已卸车", 70),
+    APPLY_CONFIRM("确认交车", 90),
+    CONFIRMED("确认收车", 100),
+    CANCEL_DISPATCH("待重连", 105);
 
     public String name;
     public int code;

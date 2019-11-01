@@ -2,8 +2,10 @@ package com.cjyc.common.model.dao;
 
 import com.cjyc.common.model.dto.customer.freightBill.TransportPriceDto;
 import com.cjyc.common.model.dto.web.inquiry.SelectInquiryDto;
+import com.cjyc.common.model.dto.web.line.ListLineDto;
 import com.cjyc.common.model.entity.Line;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.line.LineVo;
 import io.swagger.annotations.ApiParam;
 import org.apache.ibatis.annotations.Param;
@@ -22,10 +24,11 @@ public interface ILineDao extends BaseMapper<Line> {
 
     /**
      * 根据城市编码查询运价
-     * @param dto
+     * @param fromCode
+     * @param toCode
      * @return
      */
-    String getLinePriceByCode(TransportPriceDto dto);
+    String getLinePriceByCode(@Param("fromCode") String fromCode,@Param("toCode") String toCode);
 
     /**
      * 根据条件查询班线
@@ -34,4 +37,5 @@ public interface ILineDao extends BaseMapper<Line> {
      */
     List<LineVo> getLineByTerm(SelectInquiryDto dto);
 
+    List<Line> findListByTwoCity(@Param("paramsDto") ListLineDto paramsDto);
 }

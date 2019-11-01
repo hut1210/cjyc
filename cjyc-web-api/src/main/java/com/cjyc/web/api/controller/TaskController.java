@@ -1,6 +1,7 @@
 package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.web.task.*;
+import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.enums.AdminStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -95,11 +96,11 @@ public class TaskController {
     @PostMapping(value = "/car/in/store")
     public ResultVo inStore(@Validated @RequestBody InStoreTaskDto reqDto) {
         //验证用户
-        Driver driver = driverService.getByUserId(reqDto.getUserId());
-        if (driver == null || driver.getState() != AdminStateEnum.CHECKED.code) {
-            return BaseResultUtil.fail("当前用户，不能执行操作");
+        Admin admin = adminService.getByUserId(reqDto.getUserId());
+        if (admin == null || admin.getState() != AdminStateEnum.CHECKED.code) {
+            return BaseResultUtil.fail("当前业务员，不在职");
         }
-        reqDto.setUserName(driver.getName());
+        reqDto.setUserName(admin.getName());
         return taskService.inStore(reqDto);
     }
 
@@ -111,27 +112,59 @@ public class TaskController {
     @PostMapping(value = "/car/out/store")
     public ResultVo outStore(@RequestBody OutStoreTaskDto reqDto) {
         //验证用户
-        Driver driver = driverService.getByUserId(reqDto.getUserId());
-        if (driver == null || driver.getState() != AdminStateEnum.CHECKED.code) {
-            return BaseResultUtil.fail("当前用户，不能执行操作");
+        Admin admin = adminService.getByUserId(reqDto.getUserId());
+        if (admin == null || admin.getState() != AdminStateEnum.CHECKED.code) {
+            return BaseResultUtil.fail("当前业务员，不在职");
         }
-        reqDto.setUserName(driver.getName());
+        reqDto.setUserName(admin.getName());
         return taskService.outStore(reqDto);
     }
 
     /**
-     * 签收
+     * 签收-业务员
      * @author JPG
      */
     @ApiOperation(value = "签收")
-    @PostMapping(value = "/sign")
-    public ResultVo sign(@RequestBody SignTaskDto reqDto) {
+    @PostMapping(value = "/car/admin/sign")
+    public ResultVo adminSign(@RequestBody SignTaskDto reqDto) {
         //验证用户
-        Driver driver = driverService.getByUserId(reqDto.getUserId());
-        if (driver == null || driver.getState() != AdminStateEnum.CHECKED.code) {
-            return BaseResultUtil.fail("当前用户，不能执行操作");
+        Admin admin = adminService.getByUserId(reqDto.getUserId());
+        if (admin == null || admin.getState() != AdminStateEnum.CHECKED.code) {
+            return BaseResultUtil.fail("当前业务员，不在职");
         }
-        reqDto.setUserName(driver.getName());
+        reqDto.setUserName(admin.getName());
+        return taskService.sign(reqDto);
+    }
+
+    /**
+     * 签收-司机
+     * @author JPG
+     */
+    @ApiOperation(value = "签收")
+    @PostMapping(value = "/car/driver/sign")
+    public ResultVo driverSign(@RequestBody SignTaskDto reqDto) {
+        //验证用户
+        Admin admin = adminService.getByUserId(reqDto.getUserId());
+        if (admin == null || admin.getState() != AdminStateEnum.CHECKED.code) {
+            return BaseResultUtil.fail("当前业务员，不在职");
+        }
+        reqDto.setUserName(admin.getName());
+        return taskService.sign(reqDto);
+    }
+
+    /**
+     * 签收-客户
+     * @author JPG
+     */
+    @ApiOperation(value = "签收")
+    @PostMapping(value = "/car//sign")
+    public ResultVo customerSign(@RequestBody SignTaskDto reqDto) {
+        //验证用户
+        Admin admin = adminService.getByUserId(reqDto.getUserId());
+        if (admin == null || admin.getState() != AdminStateEnum.CHECKED.code) {
+            return BaseResultUtil.fail("当前业务员，不在职");
+        }
+        reqDto.setUserName(admin.getName());
         return taskService.sign(reqDto);
     }
 

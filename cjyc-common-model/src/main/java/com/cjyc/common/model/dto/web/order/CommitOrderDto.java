@@ -20,15 +20,15 @@ import java.util.List;
 @ApiModel
 public class CommitOrderDto {
 
-    @NotNull
+    @NotNull(message = "clientId不能为空")
     @ApiModelProperty(value = "1WEB管理后台, 2业务员APP, 4司机APP, 6用户端APP, 7用户端小程序", required = true)
     private int clientId;
-    @NotNull
+    @NotNull(message = "userId不能为空")
     @ApiModelProperty(value = "操作人userid", required = true)
     private Long userId;
     @ApiModelProperty(value = "操作人")
     private Long userName;
-    @NotNull
+    @NotNull(message = "createCustomerFlag不能为空")
     @ApiModelProperty(value = "用户不存在，是否创建用户",required = true)
     private Boolean createCustomerFlag;
     /**车辆列表*/
@@ -45,16 +45,7 @@ public class CommitOrderDto {
     @NotBlank
     @ApiModelProperty(value = "客户姓名")
     private String customerName;
-    @ApiModelProperty(value = "省")
-    private String startProvince;
-    @ApiModelProperty(value = "省编号")
-    private String startProvinceCode;
-    @ApiModelProperty(value = "市")
-    private String startCity;
-    @ApiModelProperty(value = "市编号")
-    private String startCityCode;
-    @ApiModelProperty(value = "区")
-    private String startArea;
+
     @ApiModelProperty(value = "区编号")
     private String startAreaCode;
     @ApiModelProperty(value = "始发地详细地址")
@@ -63,16 +54,7 @@ public class CommitOrderDto {
     private Long startStoreId;
     @ApiModelProperty(value = "出发地业务中心名称")
     private String startStoreName;
-    @ApiModelProperty(value = "省")
-    private String endProvince;
-    @ApiModelProperty(value = "省编号")
-    private String endProvinceCode;
-    @ApiModelProperty(value = "市")
-    private String endCity;
-    @ApiModelProperty(value = "市编号")
-    private String endCityCode;
-    @ApiModelProperty(value = "区")
-    private String endArea;
+
     @ApiModelProperty(value = "区编号")
     private String endAreaCode;
     @ApiModelProperty(value = "目的地详细地址")

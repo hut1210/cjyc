@@ -135,4 +135,10 @@ public class CustomerController {
     public ResultVo getCustomerCouponByTerm(CustomerCouponDto dto){
         return customerService.getCustomerCouponByTerm(dto);
     }
+
+    @ApiOperation(value = "根据手机号查看客户优惠券")
+    @PostMapping(value = "/getCouponByPhone/{phone}")
+    public ResultVo getCouponByPhone(@PathVariable @ApiParam(value = "客户手机号",required = true) String phone){
+        return customerService.getCouponByPhone(phone);
+    }
 }
