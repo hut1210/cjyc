@@ -87,11 +87,11 @@
                 and type = 2
         </where>
     </select>
-    <select id="findByPhone" resultType="com.cjyc.common.model.entity.Customer">
+    <select id="findByPhone" resultType="com.cjyc.common.model.entity.Customer" parameterType="java.lang.String">
         select
         <include refid="Base_Column_List"/>
         from c_customer
-        where phone = #{phone}
+        where contact_phone = #{phone}
 
     </select>
     <select id="findFuzzyList" resultType="com.cjyc.common.model.vo.web.customer.CustomerFuzzyListVo">

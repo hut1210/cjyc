@@ -84,36 +84,60 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
 
     @Override
     public ResultVo cityTree(Integer startLevel,Integer endLevel) {
-        List<CityTreeVo> nodeList = null;
         try{
-            List<CityTreeVo> cityTreeVos = cityDao.getAllByLevel(startLevel,endLevel);
-            if(!CollectionUtils.isEmpty(cityTreeVos)){
-                nodeList = new ArrayList<>();
-                for(CityTreeVo nodeOne : cityTreeVos){
-                    boolean mark = false;
-                    for(CityTreeVo nodeTwo:cityTreeVos){
-                        if(nodeOne.getParentCode() != null && nodeOne.getParentCode().equals(nodeTwo.getCode())){
-                             mark = true;
-                            if(nodeTwo.getCityVos()==null){
-                                nodeTwo.setCityVos(new ArrayList<>());
-                            }
-                            nodeTwo.getCityVos().add(nodeOne);
-                            break;
-                        }
-                    }
-                    if(!mark){
-                        nodeList.add(nodeOne);
-                    }
+                List<CityTreeVo> cityTreeVos = cityDao.getAllByLevel(startLevel,endLevel);
+                if(!CollectionUtils.isEmpty(cityTreeVos)){
+                    List<CityTreeVo> nodeList = encapTree(cityTreeVos);
+                    return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),nodeList);
+                }else{
+                    return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(), Collections.emptyList());
                 }
-                return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),nodeList);
-            }else{
-                return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(), Collections.emptyList());
-            }
-    }catch (Exception e){
+        }catch (Exception e){
             log.info("根据城市级别查询树形结构信息出现异常");
             throw new CommonException(e.getMessage());
-        }
+    }
  }
+
+    @Override
+    public ResultVo<List<CityTreeVo>> getCityTreeByKeyword(String keyword) {
+        try{
+            List<City> cityList = cityDao.getCityTreeByKeyword(keyword);
+            if(!CollectionUtils.isEmpty(cityList)){
+
+            }
+        }catch (Exception e){
+            log.info("根据关键字查询省/城市树形结构信息出现异常");
+            throw new CommonException(e.getMessage());
+        }
+        return null;
+    }
+
+    /**
+     * 封装树形结构
+     * @param cityTreeVos
+     * @return
+     */
+    private List<CityTreeVo> encapTree(List<CityTreeVo> cityTreeVos){
+        List<CityTreeVo> nodeList = new ArrayList<>();
+        for(CityTreeVo nodeOne : cityTreeVos){
+            boolean mark = false;
+            for(CityTreeVo nodeTwo:cityTreeVos){
+                if(nodeOne.getParentCode() != null && nodeOne.getParentCode().equals(nodeTwo.getCode())){
+                    mark = true;
+                    if(nodeTwo.getCityVos()==null){
+                        nodeTwo.setCityVos(new ArrayList<>());
+                    }
+                    nodeTwo.getCityVos().add(nodeOne);
+                    break;
+                }
+            }
+            if(!mark){
+                nodeList.add(nodeOne);
+            }
+        }
+        return nodeList;
+    }
+
 
     private List<TreeCityVo> getTree(int startLevel, int endLevel) {
         if (startLevel <= -1 || startLevel > 5 || startLevel >= endLevel) {

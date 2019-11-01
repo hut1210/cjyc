@@ -79,4 +79,23 @@
                and c.state=3
         </where>
     </select>
+
+    <!-- 根据用户编号查询所属自己的优惠券 -->
+    <select id="getCustomerCoupon" resultType="com.cjyc.common.model.vo.web.coupon.CustomerCouponSendVo"
+                                    parameterType="java.lang.Long">
+        SELECT
+            send.id AS couponSendId,
+            coupon.NAME AS NAME,
+            coupon.type AS type,
+            coupon.full_amount AS fullAmount,
+            coupon.cut_amount AS cutAmount,
+            coupon.discount AS discount,
+            coupon.end_period_date AS endPeriodDate
+        FROM
+            c_coupon coupon
+            JOIN c_coupon_send send ON send.coupon_id = coupon.id
+         where
+            send.customer_id = #{customerId} and send.is_use = 0
+
+    </select>
 </mapper>

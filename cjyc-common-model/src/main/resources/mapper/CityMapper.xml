@@ -67,6 +67,13 @@
         where level >= #{startLevel} and level &lt;= #{endLevel}
     </select>
 
+    <!--根据关键字获取省/城市集合 -->
+    <select id="getCityTreeByKeyword" resultType="com.cjyc.common.model.entity.City" parameterType="java.lang.String">
+        select
+          <include refid="Base_Column_List"/>
+        from s_city  where name concat(concat('%',#{name}),'%')
+    </select>
+
     <select id="findListByLevel" resultType="com.cjyc.common.model.vo.web.city.TreeCityVo">
         select
          `name`,`code`,level
