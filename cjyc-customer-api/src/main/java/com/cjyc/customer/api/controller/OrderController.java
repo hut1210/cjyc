@@ -6,6 +6,7 @@ import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.customer.order.OrderCenterDetailVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterVo;
 import com.cjyc.customer.api.dto.OrderDto;
 import com.cjyc.customer.api.service.IOrderService;
@@ -63,8 +64,8 @@ public class OrderController {
 
     @ApiOperation(value = "取消订单和确认下单", notes = "：参数orderNo(订单号)，customerId(客户ID)，" +
             "state:(订单状态)取消订单传 113,确认下单传 2", httpMethod = "POST")
-    @PostMapping(value = "/updateState")
-    public ResultVo updateState(@RequestBody @Validated({OrderConditionDto.QueryUpdateAndDetail.class}) OrderConditionDto dto){
+    @PostMapping(value = "/cancelAndPlaceOrder")
+    public ResultVo cancelAndPlaceOrder(@RequestBody @Validated({OrderConditionDto.QueryUpdateAndDetail.class}) OrderConditionDto dto){
         boolean result = orderService.update(new UpdateWrapper<Order>().lambda().set(Order::getState,dto.getState())
                 .eq(Order::getNo,dto.getOrderNo()).eq(Order::getCustomerId,dto.getCustomerId()));
         return result ? BaseResultUtil.success() : BaseResultUtil.fail();
@@ -72,7 +73,7 @@ public class OrderController {
 
     @ApiOperation(value = "查询订单明细", notes = "根据条件查询订单明细：参数orderNo(订单号)，customerId(客户ID)", httpMethod = "POST")
     @PostMapping(value = "/getDetail")
-    public ResultVo getDetail(@RequestBody @Validated({OrderConditionDto.QueryUpdateAndDetail.class}) OrderConditionDto dto){
+    public ResultVo<OrderCenterDetailVo> getDetail(@RequestBody @Validated({OrderConditionDto.QueryUpdateAndDetail.class}) OrderConditionDto dto){
         return orderService.getDetail(dto);
     }
 

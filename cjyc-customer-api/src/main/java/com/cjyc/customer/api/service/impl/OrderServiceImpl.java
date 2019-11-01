@@ -197,7 +197,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
     }
 
     @Override
-    public ResultVo getDetail(OrderConditionDto dto) {
+    public ResultVo<OrderCenterDetailVo> getDetail(OrderConditionDto dto) {
         OrderCenterDetailVo detailVo = new OrderCenterDetailVo();
         // 查询订单信息
         LambdaQueryWrapper<Order> queryOrderWrapper = new QueryWrapper<Order>().lambda()

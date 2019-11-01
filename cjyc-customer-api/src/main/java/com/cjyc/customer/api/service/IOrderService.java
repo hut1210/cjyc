@@ -5,6 +5,7 @@ import com.cjyc.common.model.dto.customer.OrderConditionDto;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.customer.order.OrderCenterDetailVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterVo;
 import com.cjyc.customer.api.dto.OrderDto;
 
@@ -48,5 +49,5 @@ public interface IOrderService extends IService<Order> {
      * @param dto
      * @return
      */
-    ResultVo getDetail(OrderConditionDto dto);
+    ResultVo<OrderCenterDetailVo> getDetail(OrderConditionDto dto);
 }
