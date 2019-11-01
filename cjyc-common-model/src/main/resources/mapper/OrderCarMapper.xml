@@ -576,18 +576,6 @@
         limit 0,1
     </select>
 
-    <!--根据订单号查询车辆数量-->
-    <select id="selectCountByOrderNo" resultType="java.lang.Integer">
-        select
-        count(1) as carNum
-        from
-        w_order_car car
-        <where>
-            <if test="orderNo != null and orderNo.trim() != ''">
-                and car.order_no = #{orderNo}
-            </if>
-        </where>
-    </select>
     <select id="findExtraById" resultType="com.cjyc.common.model.vo.web.OrderCarVo">
         select
           o.customer_id as customerId,

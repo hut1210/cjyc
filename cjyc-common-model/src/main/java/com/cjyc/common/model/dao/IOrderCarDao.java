@@ -105,12 +105,5 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
      */
     List<OrderCarCenterVo> selectByCondition(@Param("orderNo") String orderNo, @Param("brand") String brand, @Param("model") String model);
 
-    /**
-     * 根据订单号查询车辆数量
-     * @param no
-     * @return
-     */
-    Integer selectCountByOrderNo(@Param("orderNo") String no);
-
     OrderCarVo findExtraById(Long orderCarId);
 }

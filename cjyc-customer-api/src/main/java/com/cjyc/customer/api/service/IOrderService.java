@@ -42,4 +42,11 @@ public interface IOrderService extends IService<Order> {
      * @return
      */
     ResultVo<Map<String, Object>> getOrderCount(Long customerId);
+
+    /**
+     * 根据条件查询各种状态下的订单明细
+     * @param dto
+     * @return
+     */
+    ResultVo getDetail(OrderConditionDto dto);
 }
