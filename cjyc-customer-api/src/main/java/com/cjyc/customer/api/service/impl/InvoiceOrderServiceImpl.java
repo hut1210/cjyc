@@ -1,6 +1,7 @@
 package com.cjyc.customer.api.service.impl;
 
 import com.cjyc.common.model.dao.IOrderDao;
+import com.cjyc.common.model.dto.customer.invoice.InvoiceOrderQueryDto;
 import com.cjyc.common.model.entity.InvoiceOrder;
 import com.cjyc.common.model.dao.IInvoiceOrderDao;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -25,20 +26,13 @@ import javax.annotation.Resource;
 @Slf4j
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
 public class InvoiceOrderServiceImpl extends ServiceImpl<IInvoiceOrderDao, InvoiceOrder> implements IInvoiceOrderService {
-
     @Resource
     private IOrderDao orderDao;
-
     @Resource
     private IInvoiceOrderDao invoiceOrderDao;
 
     @Override
-    public ResultVo getUnbilledOrder(Long userId) {
-        try{
-
-        }catch (Exception e){
-
-        }
+    public ResultVo getUnInvoiceList(InvoiceOrderQueryDto dto) {
         return null;
     }
 }
