@@ -65,4 +65,11 @@ public interface ICarrierService {
      * @return
      */
     ResultVo getBaseDriverByTerm(SeleVehicleDriverDto dto);
+
+    /**
+     * 重置承运商超级管理员密码
+     * @param id
+     * @return
+     */
+    ResultVo resetPwd(Long id);
 }

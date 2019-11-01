@@ -19,11 +19,11 @@ spring:
   main:
     allow-bean-definition-overriding: true
   ##静态资源本地位置(最后的/记得加)
-#  resources:
-#    static-locations: file:D:\\upload\\
-#  #静态资源过滤url
-#  mvc:
-#    static-path-pattern: /**
+  #  resources:
+  #    static-locations: file:D:\\upload\\
+  #  #静态资源过滤url
+  #  mvc:
+  #    static-path-pattern: /**
 
   ##actuator管理
   management:
@@ -53,8 +53,8 @@ spring:
       connection-timeout: 30000
       #connection-test-query: select 1
 
-  ##Mybatis
-  ##mybatis:
+    ##Mybatis
+    ##mybatis:
     ##mapper-locations: classpath:mapper/*Mapper.xml
     ##type-aliases-package: com.cjyc.customer.api.entity
     #config-location : classpath:mybatis-config.xml
@@ -86,12 +86,13 @@ logging:
   level:
     #root: debug
     com.cjyc.web.api: debug
-    com.cjyc.common.model: debug
+    com.cjyc.common.model.dao: debug
 
 ##-----------------------------------cjyc-------------------------------------------
 cjkj:
   dept_customer_id: 100000
   dept_driver_id: 110000
+  dept_admin_id: 120000
   customer:
     password: cc8$wT^n4L#W4Fii #使用后不能修改
   driver:
@@ -103,6 +104,10 @@ cjkj:
     clientSecret: acffa1064e9a629d3140e5b36be31bd3
     grantType: password
     password: ${cjkj.salesman.password} #使用后不能修改
+  carries_menu_ids: >
+    1166601727922446337,
+    1166601979446468610,
+    1169434673131659265
 
 
 cjyc:
@@ -160,5 +165,3 @@ cjyc:
   token:
     ##过期时间（秒）
     expires: 1800
-
-

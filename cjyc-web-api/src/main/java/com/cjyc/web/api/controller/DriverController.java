@@ -63,7 +63,7 @@ public class DriverController {
     }
 
     @ApiOperation(value = "根据司机userId进行审核通过/拒绝")
-    @PostMapping(value = "/examineDriById/{id}")
+    @PostMapping(value = "/examineDriById/{id}/{flag}")
     public ResultVo examineDriById(@PathVariable @ApiParam(value = "用户id",required = true) Long id,
                                    @PathVariable @ApiParam(value = "标志 3：审核通过 4：审核拒绝 5:冻结 6:解除",required = true) Integer flag){
         if(id == null || flag == null){
@@ -91,6 +91,15 @@ public class DriverController {
         boolean result = driverService.updateDriver(dto);
         return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg())
                 : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
+    }
+
+    @ApiOperation(value = "冻结/解除司机冻结状态")
+    @PostMapping(value = "/resetState/{id}/{flag}")
+    public ResultVo resetState(@ApiParam(name = "id", value = "司机表示", required = true)
+                               @PathVariable Long id,
+                               @ApiParam(name = "flag", value = "冻结/解除状态 1：冻结 2：解除", required = true)
+                               @PathVariable Integer flag){
+        return driverService.resetState(id, flag);
     }
 
 }

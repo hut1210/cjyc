@@ -6,6 +6,8 @@ import com.cjkj.common.model.ResultData;
 import com.cjkj.usercenter.dto.common.AddDeptReq;
 import com.cjkj.usercenter.dto.common.AddDeptResp;
 import com.cjkj.usercenter.dto.common.SelectDeptResp;
+import com.cjkj.usercenter.dto.yc.AddDeptAndUserReq;
+import com.cjkj.usercenter.dto.yc.AddDeptAndUserResp;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,6 +31,14 @@ public interface ISysDeptService {
      */
     @PostMapping("/feign/uc/addDept")
     ResultData<AddDeptResp> save(@RequestBody AddDeptReq addDeptReq);
+
+    /**
+     * 保存组织机构及用户信息
+     * @param addDeptAndUserReq
+     * @return
+     */
+    @PostMapping("/feign/yc/addDeptAndUser")
+    ResultData<AddDeptAndUserResp> saveDeptAndUser(@RequestBody AddDeptAndUserReq addDeptAndUserReq);
 
     /**
      * 修改组织机构

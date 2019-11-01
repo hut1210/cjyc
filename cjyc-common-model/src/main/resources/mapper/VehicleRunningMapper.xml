@@ -28,6 +28,7 @@
     <select id="getVehiRunByVehiId" resultType="com.cjyc.common.model.entity.VehicleRunning" parameterType="java.lang.Long">
         select
            <include refid="Base_Column_List"/>
+        from d_vehicle_running
         where vehicle_id = #{vehicleId}
     </select>
 
@@ -35,6 +36,7 @@
     <select id="getVehiRunByDriverId" resultType="com.cjyc.common.model.entity.VehicleRunning" parameterType="java.lang.Long">
         select
         <include refid="Base_Column_List"/>
+        from d_vehicle_running
         where driver_id = #{driverId}
     </select>
 

@@ -15,6 +15,7 @@ import com.cjyc.common.model.entity.Role;
 import com.cjyc.common.model.enums.role.RoleLevelEnum;
 import com.cjyc.common.model.enums.role.RoleRangeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.role.AdminListVo;
 import com.cjyc.web.api.feign.ISysDeptService;
@@ -41,7 +42,7 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
     /**
      * 社会车辆事业部机构ID, 因为是初始化数据，所以此ID为固定值
      */
-    private static final Long BIZ_TOP_DEPT_ID = 120000L;
+    private static final Long BIZ_TOP_DEPT_ID = Long.parseLong(YmlProperty.get("cjkj.dept_admin_id"));
 
     @Autowired
     private ISysRoleService sysRoleService;
