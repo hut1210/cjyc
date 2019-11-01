@@ -1,7 +1,8 @@
 package com.cjyc.customer.api.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.cjyc.common.model.dto.customer.OrderConditionDto;
+import com.cjyc.common.model.dto.customer.order.OrderQueryDto;
+import com.cjyc.common.model.dto.customer.order.OrderUpdateDto;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -35,7 +36,7 @@ public interface IOrderService extends IService<Order> {
      * @param dto
      * @return
      */
-    ResultVo<PageVo<OrderCenterVo>> getPage(OrderConditionDto dto);
+    ResultVo<PageVo<OrderCenterVo>> getPage(OrderQueryDto dto);
 
     /**
      * 根据客户id查询订单数量
@@ -49,5 +50,12 @@ public interface IOrderService extends IService<Order> {
      * @param dto
      * @return
      */
-    ResultVo<OrderCenterDetailVo> getDetail(OrderConditionDto dto);
+    ResultVo<OrderCenterDetailVo> getDetail(OrderUpdateDto dto);
+
+    /**
+     * 确认收车
+     * @param dto
+     * @return
+     */
+    ResultVo confirmPickCar(OrderUpdateDto dto);
 }

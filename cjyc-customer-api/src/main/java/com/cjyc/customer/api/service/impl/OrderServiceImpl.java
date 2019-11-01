@@ -2,12 +2,15 @@ package com.cjyc.customer.api.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.constant.NoConstant;
 import com.cjyc.common.model.dao.IIncrementerDao;
 import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IOrderDao;
-import com.cjyc.common.model.dto.customer.OrderConditionDto;
+import com.cjyc.common.model.dto.customer.order.OrderQueryDto;
+import com.cjyc.common.model.dto.customer.order.OrderUpdateDto;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
@@ -32,6 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import javax.validation.constraints.NotEmpty;
 import java.util.*;
 
 /**
@@ -131,7 +135,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
     }
 
     @Override
-    public ResultVo<PageVo<OrderCenterVo>> getPage(OrderConditionDto dto) {
+    public ResultVo<PageVo<OrderCenterVo>> getPage(OrderQueryDto dto) {
         BasePageUtil.initPage(dto);
         // 分页
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
@@ -197,7 +201,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
     }
 
     @Override
-    public ResultVo<OrderCenterDetailVo> getDetail(OrderConditionDto dto) {
+    public ResultVo<OrderCenterDetailVo> getDetail(OrderUpdateDto dto) {
         OrderCenterDetailVo detailVo = new OrderCenterDetailVo();
         // 查询订单信息
         LambdaQueryWrapper<Order> queryOrderWrapper = new QueryWrapper<Order>().lambda()
@@ -225,5 +229,31 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         detailVo.setOrderCarCenterVoList(orderCarCenterVoList);
         detailVo.setOrderCarFinishPayList(orderCarFinishPayList);
         return BaseResultUtil.success(detailVo);
+    }
+
+    @Override
+    public ResultVo confirmPickCar(OrderUpdateDto dto) {
+        // 修改车辆状态
+        OrderCar orderCar = new OrderCar();
+        orderCar.setState(OrderCarStateEnum.SIGNED.code);
+        for (Long id : dto.getCarIdList()) {
+            orderCar.setId(id);
+            int i = orderCarDao.updateById(orderCar);
+            if (i == 0) {
+                return BaseResultUtil.fail();
+            }
+        }
+
+        // 修改订单状态
+        LambdaQueryWrapper<OrderCar> queryWrapper = new QueryWrapper<OrderCar>().lambda()
+                .eq(OrderCar::getOrderNo, dto.getOrderNo()).ne(OrderCar::getState,OrderCarStateEnum.SIGNED.code);
+        if (CollectionUtils.isEmpty(orderCarDao.selectList(queryWrapper))) {
+            // 说明已经全部确认收车，更新总订单状态为已交付
+            LambdaUpdateWrapper<Order> updateWrapper = new UpdateWrapper<Order>().lambda().set(Order::getState, OrderStateEnum.FINISHED.code)
+                    .eq(Order::getNo, dto.getOrderNo()).eq(Order::getCustomerId, dto.getCustomerId());
+            boolean result = super.update(updateWrapper);
+            return result ? BaseResultUtil.success() : BaseResultUtil.fail();
+        }
+        return BaseResultUtil.success();
     }
 }

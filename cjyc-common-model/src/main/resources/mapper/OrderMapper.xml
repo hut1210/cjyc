@@ -292,7 +292,7 @@
         group by o.id
     </select>
 
-    <select id="selectPage" parameterType="com.cjyc.common.model.dto.customer.OrderConditionDto"
+    <select id="selectPage" parameterType="com.cjyc.common.model.dto.customer.order.OrderQueryDto"
             resultMap="VinResultMap">
         select
             o.no as no,

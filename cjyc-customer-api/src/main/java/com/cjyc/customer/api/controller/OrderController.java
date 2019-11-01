@@ -1,8 +1,10 @@
 package com.cjyc.customer.api.controller;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.cjyc.common.model.dto.customer.OrderConditionDto;
+import com.cjyc.common.model.dto.customer.order.OrderQueryDto;
+import com.cjyc.common.model.dto.customer.order.OrderUpdateDto;
 import com.cjyc.common.model.entity.Order;
+import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -52,7 +54,7 @@ public class OrderController {
 
     @ApiOperation(value = "分页查询", notes = "根据条件分页查询订单", httpMethod = "POST")
     @PostMapping(value = "/getPage")
-    public ResultVo<PageVo<OrderCenterVo>> getPage(@RequestBody @Validated({OrderConditionDto.QueryPage.class}) OrderConditionDto dto){
+    public ResultVo<PageVo<OrderCenterVo>> getPage(@RequestBody @Validated OrderQueryDto dto){
         return orderService.getPage(dto);
     }
 
@@ -62,19 +64,32 @@ public class OrderController {
         return orderService.getOrderCount(customerId);
     }
 
-    @ApiOperation(value = "取消订单和确认下单", notes = "：参数orderNo(订单号)，customerId(客户ID)，" +
-            "state:(订单状态)取消订单传 113,确认下单传 2", httpMethod = "POST")
-    @PostMapping(value = "/cancelAndPlaceOrder")
-    public ResultVo cancelAndPlaceOrder(@RequestBody @Validated({OrderConditionDto.QueryUpdateAndDetail.class}) OrderConditionDto dto){
-        boolean result = orderService.update(new UpdateWrapper<Order>().lambda().set(Order::getState,dto.getState())
+    @ApiOperation(value = "取消订单", notes = "：参数orderNo(订单号),customerId(客户ID)",httpMethod = "POST")
+    @PostMapping(value = "/cancelOrder")
+    public ResultVo cancelOrder(@RequestBody @Validated({OrderUpdateDto.CancelAndPlaceOrder.class}) OrderUpdateDto dto){
+        boolean result = orderService.update(new UpdateWrapper<Order>().lambda().set(Order::getState, OrderStateEnum.F_CANCEL.code)
                 .eq(Order::getNo,dto.getOrderNo()).eq(Order::getCustomerId,dto.getCustomerId()));
         return result ? BaseResultUtil.success() : BaseResultUtil.fail();
     }
 
-    @ApiOperation(value = "查询订单明细", notes = "根据条件查询订单明细：参数orderNo(订单号)，customerId(客户ID)", httpMethod = "POST")
+    @ApiOperation(value = "确认下单", notes = "：参数orderNo(订单号),customerId(客户ID)", httpMethod = "POST")
+    @PostMapping(value = "/placeOrder")
+    public ResultVo placeOrder(@RequestBody @Validated({OrderUpdateDto.CancelAndPlaceOrder.class}) OrderUpdateDto dto){
+        boolean result = orderService.update(new UpdateWrapper<Order>().lambda().set(Order::getState,OrderStateEnum.SUBMITTED.code)
+                .eq(Order::getNo,dto.getOrderNo()).eq(Order::getCustomerId,dto.getCustomerId()));
+        return result ? BaseResultUtil.success() : BaseResultUtil.fail();
+    }
+
+    @ApiOperation(value = "查询订单明细", notes = "根据条件查询订单明细：参数orderNo(订单号),customerId(客户ID)", httpMethod = "POST")
     @PostMapping(value = "/getDetail")
-    public ResultVo<OrderCenterDetailVo> getDetail(@RequestBody @Validated({OrderConditionDto.QueryUpdateAndDetail.class}) OrderConditionDto dto){
+    public ResultVo<OrderCenterDetailVo> getDetail(@RequestBody @Validated({OrderUpdateDto.GetDetail.class}) OrderUpdateDto dto){
         return orderService.getDetail(dto);
+    }
+
+    @ApiOperation(value = "确认收车", notes = "：参数orderNo(订单号),customerId(客户ID),carIdList:车辆id列表", httpMethod = "POST")
+    @PostMapping(value = "/confirmPickCar")
+    public ResultVo confirmPickCar(@RequestBody @Validated({OrderUpdateDto.ConfirmPickCar.class}) OrderUpdateDto dto){
+        return orderService.confirmPickCar(dto);
     }
 
 
