@@ -7,10 +7,10 @@ import java.io.Serializable;
 
 public class BasePageDto implements Serializable {
 
-    @ApiModelProperty(value = "当前页",required = true)
+    @ApiModelProperty(value = "当前页")
     private Integer currentPage;
 
-    @ApiModelProperty(value = "每页条数",required = true)
+    @ApiModelProperty(value = "每页条数")
     private Integer pageSize;
 
     public Integer getCurrentPage() {

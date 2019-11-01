@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cjyc.common.model.dao.IInvoiceOrderDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.InvoiceOrder">
+        <id column="id" property="id" />
+        <result column="invoice_id" property="invoiceId" />
+        <result column="customer_id" property="customerId" />
+        <result column="customer_name" property="customerName" />
+        <result column="order_no" property="orderNo" />
+        <result column="apply_time" property="applyTime" />
+        <result column="Invoice_time" property="invoiceTime" />
+        <result column="amount" property="amount" />
+        <result column="Invoice_no" property="invoiceNo" />
+        <result column="operation_name" property="operationName" />
+        <result column="state" property="state" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, invoice_id, customer_id, customer_name, order_no, apply_time, Invoice_time, amount, Invoice_no, operation_name, state
+    </sql>
+
+</mapper>

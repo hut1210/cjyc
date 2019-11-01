@@ -5,6 +5,7 @@ import com.cjyc.common.model.dto.customer.OrderConditionDto;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.customer.order.OrderCenterDetailVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterVo;
 import com.cjyc.customer.api.dto.OrderDto;
 
@@ -42,4 +43,11 @@ public interface IOrderService extends IService<Order> {
      * @return
      */
     ResultVo<Map<String, Object>> getOrderCount(Long customerId);
+
+    /**
+     * 根据条件查询各种状态下的订单明细
+     * @param dto
+     * @return
+     */
+    ResultVo<OrderCenterDetailVo> getDetail(OrderConditionDto dto);
 }

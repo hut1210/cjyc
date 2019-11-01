@@ -22,6 +22,7 @@ import com.cjyc.common.model.vo.web.CustomerContractVo;
 import com.cjyc.common.model.vo.web.CustomerVo;
 import com.cjyc.common.model.vo.web.ListKeyCustomerVo;
 import com.cjyc.common.model.vo.web.ShowKeyCustomerVo;
+import com.cjyc.common.model.vo.web.coupon.CustomerCouponSendVo;
 import com.cjyc.common.model.vo.web.customer.CustomerCouponVo;
 import com.cjyc.web.api.exception.CommonException;
 import com.cjyc.web.api.exception.ServerException;
@@ -39,6 +40,7 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -69,6 +71,9 @@ public class CustomerServiceImpl implements ICustomerService{
 
     @Resource
     private ICouponDao couponDao;
+
+    @Resource
+    private ICouponSendDao couponSendDao;
 
     @Override
     public boolean saveCustomer(CustomerDto customerDto) {
@@ -489,6 +494,41 @@ public class CustomerServiceImpl implements ICustomerService{
             log.error("查看用户优惠券信息出现异常",e);
         }
         return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),Collections.emptyList());
+    }
+
+    @Override
+    public ResultVo getCouponByPhone(String contactPhone) {
+        try{
+            Customer customer = customerDao.findByPhone(contactPhone);
+            if(customer != null){
+                //根据客户id查看发放的优惠券
+                List<CustomerCouponSendVo> sendVoList = null;
+                List<CustomerCouponSendVo> couponVos = couponSendDao.getCustomerCoupon(customer.getId());
+                Long now = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
+                if(!CollectionUtils.isEmpty(couponVos)){
+                    sendVoList = new ArrayList<>();
+                    for(CustomerCouponSendVo sendVo : couponVos){
+                        if(sendVo.getEndPeriodDate() != null){
+                            if((sendVo.getEndPeriodDate() - now) > 0){
+                                sendVoList.add(sendVo);
+                            }
+                        }else{
+                            sendVoList.add(sendVo);
+                        }
+                    }
+                    if(!CollectionUtils.isEmpty(sendVoList)){
+                        return BaseResultUtil.success(sendVoList == null ? Collections.emptyList():sendVoList);
+                    }
+                }else{
+                    return BaseResultUtil.success(Collections.emptyList());
+                }
+            }else{
+                return BaseResultUtil.success(Collections.emptyList());
+            }
+        }catch (Exception e){
+            log.error("根据手机号查看优惠券信息出现异常",e);
+        }
+        return BaseResultUtil.fail("根据手机号查询优惠券出现异常");
     }
 
     /**

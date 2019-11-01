@@ -79,4 +79,11 @@ public class CityController {
                                                @PathVariable @ApiParam(value = "区域级别 最高级:-1 大区:0 省直辖市:1 城市:2 区县:3",required = true) Integer endLevel) {
         return cityService.cityTree(startLevel,endLevel);
     }
+
+    @ApiOperation(value = "根据关键字模糊搜索省/城市")
+    @PostMapping(value = "/getCityTreeByKeyword/{keyword}")
+    public ResultVo<List<CityTreeVo>> getCityTreeByKeyword(@PathVariable @ApiParam(value = "省直辖市/城市名称",required = true) String keyword) {
+        return cityService.getCityTreeByKeyword(keyword);
+    }
+
 }

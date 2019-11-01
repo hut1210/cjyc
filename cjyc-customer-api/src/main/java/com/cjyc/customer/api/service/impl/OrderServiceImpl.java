@@ -10,12 +10,15 @@ import com.cjyc.common.model.dao.IOrderDao;
 import com.cjyc.common.model.dto.customer.OrderConditionDto;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.entity.OrderCar;
+import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.util.BasePageUtil;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.customer.order.OrderCarCenterVo;
+import com.cjyc.common.model.vo.customer.order.OrderCenterDetailVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterVo;
 import com.cjyc.customer.api.dto.OrderCarDto;
 import com.cjyc.customer.api.dto.OrderDto;
@@ -26,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -46,7 +50,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
     private IIncrementerDao incrementerDao;
 
     @Resource
-    private IOrderCarDao iOrderCarDao;
+    private IOrderCarDao orderCarDao;
 
     /**
      * 客户端下单
@@ -104,7 +108,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
             //删除之前的
             QueryWrapper<OrderCar> wrapper = new QueryWrapper<>();
             wrapper.eq("order_id",orderDto.getOrderId());
-            int delCount = iOrderCarDao.delete(wrapper);
+            int delCount = orderCarDao.delete(wrapper);
 
             //重新保存车辆信息
             List<OrderCarDto> carDtoList =  orderDto.getOrderCarDtoList();
@@ -118,7 +122,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
                     orderCar.setOrderId(order.getId());
                     orderCar.setNo(carNo);
 
-                    iOrderCarDao.insert(orderCar);
+                    orderCarDao.insert(orderCar);
                 }
             }
         }
@@ -190,5 +194,36 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
             map.put("allCount",allCount);
         }
         return BaseResultUtil.success(map);
+    }
+
+    @Override
+    public ResultVo<OrderCenterDetailVo> getDetail(OrderConditionDto dto) {
+        OrderCenterDetailVo detailVo = new OrderCenterDetailVo();
+        // 查询订单信息
+        LambdaQueryWrapper<Order> queryOrderWrapper = new QueryWrapper<Order>().lambda()
+                .eq(Order::getCustomerId,dto.getCustomerId()).eq(Order::getNo,dto.getOrderNo());
+        Order order = super.getOne(queryOrderWrapper);
+        BeanUtils.copyProperties(order,detailVo);
+        // 查询车辆信息
+        LambdaQueryWrapper<OrderCar> queryCarWrapper = new QueryWrapper<OrderCar>().lambda().eq(OrderCar::getOrderNo,dto.getOrderNo());
+        List<OrderCar> orderCarList = orderCarDao.selectList(queryCarWrapper);
+        List<OrderCarCenterVo> orderCarCenterVoList = new ArrayList<>(10);
+        List<OrderCarCenterVo> orderCarFinishPayList = new ArrayList<>(10);
+        if (!CollectionUtils.isEmpty(orderCarList)) {
+            for (OrderCar orderCar : orderCarList) {
+                OrderCarCenterVo orderCarCenter = new OrderCarCenterVo();
+                BeanUtils.copyProperties(orderCar,orderCarCenter);
+                if (OrderCarStateEnum.SIGNED.code == orderCar.getState()) {
+                    // 运输中订单车辆信息
+                    orderCarFinishPayList.add(orderCarCenter);
+                } else {
+                    // 待确认，已交付，运输中，全部订单车辆信息
+                    orderCarCenterVoList.add(orderCarCenter);
+                }
+            }
+        }
+        detailVo.setOrderCarCenterVoList(orderCarCenterVoList);
+        detailVo.setOrderCarFinishPayList(orderCarFinishPayList);
+        return BaseResultUtil.success(detailVo);
     }
 }

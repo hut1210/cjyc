@@ -14,7 +14,7 @@ import javax.annotation.Resource;
 @Api(tags = "订单明细（车辆信息）")
 @CrossOrigin
 @RestController
-@RequestMapping("/orderCarController")
+@RequestMapping("/orderCar")
 public class OrderCarController {
 
     @Resource

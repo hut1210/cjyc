@@ -1,5 +1,6 @@
 package com.cjyc.common.model.dao;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.cjyc.common.model.entity.Dictionary;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;

@@ -6,6 +6,7 @@ import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.customer.order.OrderCenterDetailVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterVo;
 import com.cjyc.customer.api.dto.OrderDto;
 import com.cjyc.customer.api.service.IOrderService;
@@ -23,10 +24,9 @@ import java.util.Map;
  * Created by leo on 2019/7/25.
  */
 @RequestMapping("/order")
-@Api(tags = "订单",description = "订单相关接口")
+@Api(tags = "订单管理")
 @RestController
 public class OrderController {
-
     @Autowired
     IOrderService orderService;
 
@@ -50,24 +50,31 @@ public class OrderController {
         return result ? BaseResultUtil.success(orderDto) : BaseResultUtil.fail();
     }
 
-    @ApiOperation(value = "根据条件分页查询订单", notes = "根据条件分页查询订单", httpMethod = "POST")
+    @ApiOperation(value = "分页查询", notes = "根据条件分页查询订单", httpMethod = "POST")
     @PostMapping(value = "/getPage")
-    public ResultVo<PageVo<OrderCenterVo>> getPage(@RequestBody @Validated OrderConditionDto dto){
+    public ResultVo<PageVo<OrderCenterVo>> getPage(@RequestBody @Validated({OrderConditionDto.QueryPage.class}) OrderConditionDto dto){
         return orderService.getPage(dto);
     }
 
-    @ApiOperation(value = "查询各种订单状态下的订单数量", notes = "根据条件分页查询订单", httpMethod = "POST")
+    @ApiOperation(value = "查询订单数量", notes = "查询各种订单状态下的订单数量", httpMethod = "POST")
     @PostMapping(value = "/getOrderCount/{customerId}")
     public ResultVo<Map<String,Object>> getOrderCount(@PathVariable Long customerId){
         return orderService.getOrderCount(customerId);
     }
 
-    @ApiOperation(value = "取消订单和确认下单接口", notes = "取消订单传 113,确认下单传 2", httpMethod = "POST")
-    @PostMapping(value = "/updateState/{orderNo}/{customerId}/{state}")
-    public ResultVo updateState(@PathVariable String orderNo, @PathVariable Long customerId, @PathVariable Integer state){
-        boolean result = orderService.update(new UpdateWrapper<Order>().lambda().set(Order::getState,state).eq(Order::getNo,orderNo)
-                .eq(Order::getCustomerId,customerId));
+    @ApiOperation(value = "取消订单和确认下单", notes = "：参数orderNo(订单号)，customerId(客户ID)，" +
+            "state:(订单状态)取消订单传 113,确认下单传 2", httpMethod = "POST")
+    @PostMapping(value = "/cancelAndPlaceOrder")
+    public ResultVo cancelAndPlaceOrder(@RequestBody @Validated({OrderConditionDto.QueryUpdateAndDetail.class}) OrderConditionDto dto){
+        boolean result = orderService.update(new UpdateWrapper<Order>().lambda().set(Order::getState,dto.getState())
+                .eq(Order::getNo,dto.getOrderNo()).eq(Order::getCustomerId,dto.getCustomerId()));
         return result ? BaseResultUtil.success() : BaseResultUtil.fail();
+    }
+
+    @ApiOperation(value = "查询订单明细", notes = "根据条件查询订单明细：参数orderNo(订单号)，customerId(客户ID)", httpMethod = "POST")
+    @PostMapping(value = "/getDetail")
+    public ResultVo<OrderCenterDetailVo> getDetail(@RequestBody @Validated({OrderConditionDto.QueryUpdateAndDetail.class}) OrderConditionDto dto){
+        return orderService.getDetail(dto);
     }
 
 

@@ -6,6 +6,7 @@ import com.cjyc.common.model.dto.salesman.city.CityPageDto;
 import com.cjyc.common.model.entity.City;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.dto.web.city.TreeCityDto;
+import com.cjyc.common.model.vo.web.city.CityTreeVo;
 import com.cjyc.common.model.vo.web.city.TreeCityVo;
 import org.apache.ibatis.annotations.Param;
 
@@ -62,5 +63,12 @@ public interface ICityService extends IService<City> {
      * @param endLevel
      * @return
      */
-    ResultVo cityTree(Integer startLevel,Integer endLevel);
+    ResultVo<List<CityTreeVo>> cityTree(Integer startLevel, Integer endLevel);
+
+    /**
+     * 根据关键字搜索省城市树形结构
+     * @param keyword
+     * @return
+     */
+    ResultVo<List<CityTreeVo>> getCityTreeByKeyword(String keyword);
 }

@@ -52,5 +52,12 @@ public interface ICityDao extends BaseMapper<City> {
     List<CityTreeVo> getAllByLevel(@Param("startLevel") Integer startLevel,@Param("endLevel")Integer endLevel);
 
     FullCityVo findFullCityVo(String areaCode);
+
+    /**
+     * 根据关键字获取省/城市集合
+     * @param name
+     * @return
+     */
+    List<City> getCityTreeByKeyword(@Param("name") String name);
 }
 
