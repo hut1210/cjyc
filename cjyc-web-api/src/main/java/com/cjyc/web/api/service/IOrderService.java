@@ -3,10 +3,10 @@ package com.cjyc.web.api.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.entity.Order;
-import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.order.ListOrderCarVo;
 import com.cjyc.common.model.vo.web.order.ListOrderVo;
 import com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo;
 import com.cjyc.common.model.vo.web.order.OrderVo;
@@ -57,7 +57,7 @@ public interface IOrderService extends IService<Order> {
 
     ResultVo replenishInfo(ReplenishOrderDto paramsDto);
 
-    ResultVo<PageVo<OrderCar>> carlist(ListOrderCarDto paramsDto);
+    ResultVo<PageVo<ListOrderCarVo>> carlist(ListOrderCarDto paramsDto);
 
     ResultVo check(CheckOrderDto reqDto);
 

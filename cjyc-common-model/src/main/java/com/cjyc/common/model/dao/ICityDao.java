@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.dto.BaseCityDto;
 import com.cjyc.common.model.entity.City;
 import com.cjyc.common.model.vo.web.city.CityTreeVo;
+import com.cjyc.common.model.vo.web.city.FullCityVo;
 import com.cjyc.common.model.vo.web.city.ProvinceCityVo;
 import com.cjyc.common.model.vo.web.city.TreeCityVo;
 import io.swagger.annotations.ApiParam;
@@ -49,5 +50,7 @@ public interface ICityDao extends BaseMapper<City> {
      * @return
      */
     List<CityTreeVo> getAllByLevel(@Param("startLevel") Integer startLevel,@Param("endLevel")Integer endLevel);
+
+    FullCityVo findFullCityVo(String areaCode);
 }
 

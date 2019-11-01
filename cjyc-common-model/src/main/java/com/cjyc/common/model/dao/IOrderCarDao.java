@@ -8,6 +8,7 @@ import com.cjyc.common.model.dto.web.order.WaitDispatchListOrderCarDto;
 import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.vo.customer.order.OrderCarCenterVo;
 import com.cjyc.common.model.vo.web.OrderCarVo;
+import com.cjyc.common.model.vo.web.order.ListOrderCarVo;
 import com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo;
 import org.apache.ibatis.annotations.Param;
 
@@ -88,7 +89,7 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
 
     List<ChangePriceOrderCarDto> findChangePriceDtoByOrderId(Long orderId);
 
-    List<OrderCar> findListSelective(@Param("paramsDto") ListOrderCarDto paramsDto);
+    List<ListOrderCarVo> findListSelective(@Param("paramsDto") ListOrderCarDto paramsDto);
 
     List<OrderCar> findListByWaybillId(Long waybillId);
 

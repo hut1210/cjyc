@@ -7,7 +7,6 @@ import com.cjkj.usercenter.dto.common.*;
 import com.cjkj.usercenter.dto.yc.SelectUsersByRoleReq;
 import com.cjkj.usercenter.dto.yc.SelectUsersByRoleResp;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

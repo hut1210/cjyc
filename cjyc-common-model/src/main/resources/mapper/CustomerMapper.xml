@@ -119,7 +119,7 @@
         select
             name as name,
             contact_man as contactMan,
-            contract_phone as contractPhone
+            contact_phone AS contactPhone
         from c_customer
         <where>
             <if test="keyword != null and keyword.trim() !=''">

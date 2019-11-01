@@ -8,6 +8,7 @@ import com.cjyc.common.model.dao.ILineDao;
 import com.cjyc.common.model.dao.ILineNodeDao;
 import com.cjyc.common.model.dto.web.inquiry.SelectInquiryDto;
 import com.cjyc.common.model.dto.web.line.AddAndUpdateLineDto;
+import com.cjyc.common.model.dto.web.line.ListLineDto;
 import com.cjyc.common.model.dto.web.line.SortNodeDto;
 import com.cjyc.common.model.dto.web.line.SortNodeListDto;
 import com.cjyc.common.model.entity.Line;
@@ -190,6 +191,12 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
             log.info("根据城市编码查询班线价格出现异常");
             return BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg(),BigDecimal.ZERO);
         }
+    }
+
+    @Override
+    public ResultVo<List<Line>> listByTwoCity(ListLineDto paramsDto) {
+        List<Line> list = lineDao.findListByTwoCity(paramsDto);
+        return BaseResultUtil.success(list);
     }
 
     /**

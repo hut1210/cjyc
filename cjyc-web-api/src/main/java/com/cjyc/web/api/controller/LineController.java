@@ -2,8 +2,9 @@ package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.web.inquiry.SelectInquiryDto;
 import com.cjyc.common.model.dto.web.line.AddAndUpdateLineDto;
-import com.cjyc.common.model.dto.web.line.SortNodeDto;
+import com.cjyc.common.model.dto.web.line.ListLineDto;
 import com.cjyc.common.model.dto.web.line.SortNodeListDto;
+import com.cjyc.common.model.entity.Line;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BasePageUtil;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -45,6 +46,17 @@ public class LineController {
         return lineService.sortNode(reqDto);
     }
 
+    /**
+     * 起始城市目的城市查询线路
+     * @author JPG
+     * @since 2019/10/15 11:53
+     */
+    @ApiOperation("起始城市目的城市查询线路")
+    @PostMapping("/two/city/list")
+    public ResultVo<List<Line>> listByTwoCity(@Validated @RequestBody ListLineDto reqDto) {
+        return lineService.listByTwoCity(reqDto);
+    }
+
     @ApiOperation(value = "根据条件查询班线")
     @PostMapping(value = "/getLineByTerm")
     public ResultVo<PageVo<LineVo>> getLineByTerm(@RequestBody SelectInquiryDto dto){
@@ -73,4 +85,7 @@ public class LineController {
                                     @PathVariable @ApiParam(value = "目的地code",required = true) String toCode){
         return lineService.getDefaultWlFeeByCode(fromCode,toCode);
     }
+
+
+
 }

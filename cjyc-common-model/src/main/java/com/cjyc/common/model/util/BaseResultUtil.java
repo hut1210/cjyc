@@ -80,6 +80,9 @@ public class BaseResultUtil<T> {
         return getVo(ResultEnum.FAIL.getCode(), message);
     }
 
+    public static <T> ResultVo<T> fail(T data){
+        return getVo(ResultEnum.FAIL.getCode(), ResultEnum.FAIL.getMsg(), data);
+    }
     public static <T> ResultVo<T> fail(String message, String... args){
         return getVo(ResultEnum.FAIL.getCode(), MessageFormat.format(message, args));
     }
