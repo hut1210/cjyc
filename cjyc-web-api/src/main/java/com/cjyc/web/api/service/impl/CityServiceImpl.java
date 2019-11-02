@@ -24,10 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -84,32 +81,26 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
 
     @Override
     public ResultVo cityTree(Integer startLevel,Integer endLevel) {
-        try{
-                List<CityTreeVo> cityTreeVos = cityDao.getAllByLevel(startLevel,endLevel);
-                if(!CollectionUtils.isEmpty(cityTreeVos)){
-                    List<CityTreeVo> nodeList = encapTree(cityTreeVos);
-                    return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),nodeList);
-                }else{
-                    return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(), Collections.emptyList());
-                }
-        }catch (Exception e){
-            log.info("根据城市级别查询树形结构信息出现异常");
-            throw new CommonException(e.getMessage());
+        List<CityTreeVo> cityTreeVos = cityDao.getAllByLevel(startLevel,endLevel);
+        List<CityTreeVo> nodeList = encapTree(cityTreeVos);
+        return BaseResultUtil.success(nodeList != null ? nodeList:Collections.emptyList());
     }
- }
 
     @Override
     public ResultVo<List<CityTreeVo>> getCityTreeByKeyword(String keyword) {
-        try{
-            List<City> cityList = cityDao.getCityTreeByKeyword(keyword);
-            if(!CollectionUtils.isEmpty(cityList)){
-
-            }
-        }catch (Exception e){
-            log.info("根据关键字查询省/城市树形结构信息出现异常");
-            throw new CommonException(e.getMessage());
+        List<City> cityList = cityDao.getCityTreeByKeyword(keyword);
+        Set<String> codeSet = new HashSet<>();
+        List<CityTreeVo> cityTreeVos = null;
+        List<CityTreeVo> nodeList = null;
+        for(City city : cityList){
+            codeSet.add(city.getCode());
+            codeSet.add(city.getParentCode());
         }
-        return null;
+        if(!CollectionUtils.isEmpty(codeSet)){
+            cityTreeVos = cityDao.getCityByCodes(codeSet);
+            nodeList = encapTree(cityTreeVos);
+        }
+        return BaseResultUtil.success(nodeList != null ? nodeList:Collections.emptyList());
     }
 
     /**
@@ -122,7 +113,7 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
         for(CityTreeVo nodeOne : cityTreeVos){
             boolean mark = false;
             for(CityTreeVo nodeTwo:cityTreeVos){
-                if(nodeOne.getParentCode() != null && nodeOne.getParentCode().equals(nodeTwo.getCode())){
+                if(nodeOne.getParentCode().equals(nodeTwo.getCode())){
                     mark = true;
                     if(nodeTwo.getCityVos()==null){
                         nodeTwo.setCityVos(new ArrayList<>());

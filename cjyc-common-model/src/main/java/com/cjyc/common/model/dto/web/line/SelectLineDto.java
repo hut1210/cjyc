@@ -12,10 +12,10 @@ public class SelectLineDto extends BasePageDto implements Serializable {
     private Long userId;
 
     @ApiModelProperty("起始城市编码")
-    private String startCityCode;
+    private String fromCityCode;
 
     @ApiModelProperty("目的地城市编码")
-    private String endCityCode;
+    private String toCityCode;
 
     @ApiModelProperty("线路编码")
     private String lineCode;

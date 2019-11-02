@@ -10,10 +10,12 @@ import com.cjyc.common.model.vo.web.city.TreeCityVo;
 import io.swagger.annotations.ApiParam;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * <p>
@@ -59,5 +61,19 @@ public interface ICityDao extends BaseMapper<City> {
      * @return
      */
     List<City> getCityTreeByKeyword(@Param("name") String name);
+
+    /**
+     * 根据城市编码获取省市集合
+     * @param codeSet
+     * @return
+     */
+    List<CityTreeVo> getCityByCodes(@Param("codeSet") Set<String> codeSet);
+
+    /**
+     * 根据城市名称获取城市code
+     * @param name
+     * @return
+     */
+    String getCodeByName(@Param("name") String name);
 }
 

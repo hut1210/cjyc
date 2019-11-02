@@ -17,7 +17,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-31
+ * @since 2019-11-02
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -45,7 +45,7 @@ public class Line implements Serializable {
     private String toCode;
 
     @ApiModelProperty(value = "级别：2市级，3区级")
-    private Boolean level;
+    private Integer level;
 
     @ApiModelProperty(value = "总理程(KM)")
     private BigDecimal kilometer;
@@ -54,7 +54,7 @@ public class Line implements Serializable {
     private BigDecimal days;
 
     @ApiModelProperty(value = "状态:1启用 2停用")
-    private Boolean state;
+    private Integer state;
 
     @ApiModelProperty(value = "默认物流费（上游），单位分")
     private BigDecimal defaultWlFee;

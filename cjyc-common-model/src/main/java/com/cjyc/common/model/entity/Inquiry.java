@@ -17,7 +17,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-31
+ * @since 2019-11-01
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -42,16 +42,16 @@ public class Inquiry implements Serializable {
     private String phone;
 
     @ApiModelProperty(value = "始发地")
-    private String startCity;
+    private String fromCity;
 
     @ApiModelProperty(value = "始发地编码")
-    private String startCode;
+    private String fromCode;
 
     @ApiModelProperty(value = "目的地")
-    private String endCity;
+    private String toCity;
 
     @ApiModelProperty(value = "目的地编码")
-    private String endCode;
+    private String toCode;
 
     @ApiModelProperty(value = "运费(上游物流费)(分)")
     private BigDecimal logisticsFee;

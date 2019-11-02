@@ -18,13 +18,13 @@ public class SelectInquiryDto extends BasePageDto implements Serializable {
     private String endDate;
 
     @ApiModelProperty("始发地")
-    private String startCity;
+    private String fromCity;
 
     @ApiModelProperty("目的地")
-    private String endCity;
+    private String toCity;
 
     @ApiModelProperty("处理状态 1：未处理  2：已处理")
-    private String state;
+    private Integer state;
 
     @ApiModelProperty("询价开始时间戳")
     private Long startStamp;

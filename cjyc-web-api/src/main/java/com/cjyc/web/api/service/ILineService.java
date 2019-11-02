@@ -1,15 +1,19 @@
 package com.cjyc.web.api.service;
 
 import com.cjyc.common.model.dto.web.inquiry.SelectInquiryDto;
-import com.cjyc.common.model.dto.web.line.AddAndUpdateLineDto;
+import com.cjyc.common.model.dto.web.line.AddOrUpdateLineDto;
 import com.cjyc.common.model.dto.web.line.ListLineDto;
+import com.cjyc.common.model.dto.web.line.SelectLineDto;
 import com.cjyc.common.model.dto.web.line.SortNodeListDto;
 import com.cjyc.common.model.entity.Line;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.line.LineVo;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -29,21 +33,14 @@ public interface ILineService extends IService<Line> {
      * @param dto
      * @return
      */
-    ResultVo<PageVo<LineVo>> getLineByTerm(SelectInquiryDto dto);
+    ResultVo<PageVo<LineVo>> getPageLineByTerm(SelectLineDto dto);
 
     /**
      * 新增/更新班线
      * @param dto
      * @return
      */
-    ResultVo addAndUpdateLine(AddAndUpdateLineDto dto);
-
-    /**
-     * 批量删除班线
-     * @param lineIds
-     * @return
-     */
-    ResultVo deleteLineByIds(List<Long> lineIds);
+    ResultVo addAndUpdateLine(AddOrUpdateLineDto dto);
 
     /**
      * 根据起始目的地code查询物流费
@@ -54,4 +51,18 @@ public interface ILineService extends IService<Line> {
     ResultVo getDefaultWlFeeByCode(String fromCode,String toCode);
 
     ResultVo<List<Line>> listByTwoCity(ListLineDto reqDto);
+
+    /**
+     * 班线导入到excel中
+     * @param request
+     * @param response
+     */
+    void exportExcel(HttpServletRequest request, HttpServletResponse response);
+
+    /**
+     * 导入Excel文件
+     * @param file
+     * @return
+     */
+    boolean importExcel(MultipartFile file, Long userId);
 }
