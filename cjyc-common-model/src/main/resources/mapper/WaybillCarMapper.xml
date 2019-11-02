@@ -2,6 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.cjyc.common.model.dao.IWaybillCarDao">
 
+
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.WaybillCar">
         <id column="id" property="id" />
@@ -36,19 +37,22 @@
         <result column="load_link_name" property="loadLinkName" />
         <result column="load_link_user_id" property="loadLinkUserId" />
         <result column="load_link_phone" property="loadLinkPhone" />
+        <result column="load_turn_type" property="loadTurnType" />
         <result column="load_photo_img" property="loadPhotoImg" />
         <result column="load_time" property="loadTime" />
         <result column="unload_link_name" property="unloadLinkName" />
         <result column="unload_link_user_id" property="unloadLinkUserId" />
         <result column="unload_link_phone" property="unloadLinkPhone" />
+        <result column="unload_turn_type" property="unloadTurnType" />
         <result column="unload_photo_img" property="unloadPhotoImg" />
         <result column="unload_time" property="unloadTime" />
+        <result column="sort" property="sort" />
         <result column="create_time" property="createTime" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, waybill_id, waybill_no, order_car_id, order_car_no, freight_fee, start_province, start_province_code, start_city, start_city_code, start_area, start_area_code, start_address, start_store_name, start_store_id, end_province, end_province_code, end_city, end_city_code, end_area, end_area_code, end_address, end_store_name, end_store_id, line_id, state, expect_start_time, expect_end_time, take_type, load_link_name, load_link_user_id, load_link_phone, load_photo_img, load_time, unload_link_name, unload_link_user_id, unload_link_phone, unload_photo_img, unload_time, create_time
+        id, waybill_id, waybill_no, order_car_id, order_car_no, freight_fee, start_province, start_province_code, start_city, start_city_code, start_area, start_area_code, start_address, start_store_name, start_store_id, end_province, end_province_code, end_city, end_city_code, end_area, end_area_code, end_address, end_store_name, end_store_id, line_id, state, expect_start_time, expect_end_time, take_type, load_link_name, load_link_user_id, load_link_phone, load_turn_type, load_photo_img, load_time, unload_link_name, unload_link_user_id, unload_link_phone, unload_turn_type, unload_photo_img, unload_time, sort, create_time
     </sql>
 
 
@@ -185,6 +189,12 @@
         and start_store_id = #{endStoreId}
     </update>
 
+    <update id="updateStateById">
+        update w_waybill_car
+        set state = #{state}
+        where id = #{id}
+    </update>
+
     <select id="findByTaskCarId" resultType="com.cjyc.common.model.entity.WaybillCar">
         select
         wc.*
@@ -212,6 +222,194 @@
         and wc.state &lt;= 5
         and wc.order_car_id = #{orderCarId}
         and and wc.start_city = #{cityCode}
+    </select>
+    <select id="findUnConnectCar" resultType="com.cjyc.common.model.entity.WaybillCar">
+        select
+        <include refid="Base_Column_List"/>
+        from w_waybill_car
+        where start_city_code = #{cityCode}
+        and state = 105
+    </select>
+    <select id="findLastTrunkWaybillCar" resultType="com.cjyc.common.model.entity.WaybillCar">
+        select
+        *
+        from w_waybill w
+        join w_waybill_car wc on wc.waybill_id = w.id
+        where w.state &lt;= 100
+        and order_car_id = #{orderCarId}
+        and type = 3
+        and wc.end_city_code = #{cityCode}
+        order by wc.id desc
+        limit 1
+
+    </select>
+    <select id="findLastPrevByArea" resultType="com.cjyc.common.model.entity.WaybillCar">
+        select
+        wc.*
+        from w_waybill w
+        join w_waybill_car wc on wc.waybill_id = w.id
+        where wc.order_car_id = #{orderCarId}
+        and w.state &lt;= 100
+        and wc.end_area_code in
+        <foreach collection="areaList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        order by wc.id desc
+        limit 1
+
+    </select>
+    <select id="findLastNextByCity" resultType="com.cjyc.common.model.entity.WaybillCar">
+        select
+        wc.*
+        from w_waybill w
+        join w_waybill_car wc on wc.waybill_id = w.id
+        where wc.order_car_id = #{orderCarId}
+        and w.state &lt;= 100
+        and wc.end_area_code in
+        <foreach collection="areaList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        order by wc.id desc
+        limit 1
+    </select>
+    <select id="countForValidateRepeatTrunkDisPatch" resultType="java.lang.Integer">
+        select
+        count(0)
+        from w_waybill w
+        join w_waybill_car wc on wc.waybill_id = w.id
+        where w.state &lt; 100
+        and wc.start_area_code in
+        <foreach collection="areaList" index="index" item="item" open="(" separator="," close=",">
+            #{item}
+        </foreach>
+    </select>
+    <select id="findListLocal" resultType="com.cjyc.common.model.vo.web.waybill.LocalListWaybillCarVo">
+        select
+            (case
+            when wc.state = 0 then '待指派'
+            when wc.state = 2 then '已指派'
+            when wc.state = 5 then '待装车'
+            when wc.state = 15 then '待装车确认'
+            when wc.state = 45 then '已装车'
+            when wc.state = 70 then '已卸车'
+            when wc.state = 90 then '确认交车'
+            when wc.state = 100 then '确认收车'
+            end
+            ) as outterState,
+            w.carrier_id as carrierId,
+            w.carrier_type as carrierType,
+            w.carrier_name as carrierName,
+            w.create_time as createTime,
+            w.create_user as createUser,
+            w.create_user_id as createUserId,
+            oc.brand as brand,
+            oc.model as model,
+            oc.plate_no as plateNo,
+            oc.vin as vin,
+            t.driver_name as driverName,
+            t.driver_phone as driverPhone,
+            t.driver_id as driverId,
+            t.vehicle_plate_no as vehiclePlateNo,
+            wc.*
+        from w_waybill w
+        join w_waybill_car wc on wc.waybill_id = w.id
+        join w_order_car oc on wc.order_car_id = oc.id
+        left join w_task_car tc on tc.waybill_car_id = wc.id
+        left join w_task t on tc.task_id = t.id
+        <where>
+            and
+            <if test="paramsDto.brand != null and paramsDto.brand != ''">
+                and oc.brand = #{paramsDto.brand}
+            </if>
+            <if test="paramsDto.model != null and paramsDto.model != ''">
+                and oc.model = #{paramsDto.model}
+            </if>
+            <if test="paramsDto.plateNo != null and paramsDto.plateNo != ''">
+                and oc.plate_no = #{paramsDto.plateNo}
+            </if>
+            <if test="paramsDto.vin != null and paramsDto.vin != ''">
+                and oc.vin = #{paramsDto.vin}
+            </if>
+            <if test="paramsDto.type != null and paramsDto.type != 0">
+                and w.type = #{paramsDto.type}
+            </if>
+            <if test="paramsDto.carrierType != null">
+                and w.carrier_type = #{paramsDto.carrierType}
+            </if>
+            <if test="paramsDto.waybillNo != null and paramsDto.waybillNo != ''">
+                and wc.waybill_no = #{paramsDto.waybillNo}
+            </if>
+            <if test="paramsDto.orderCarNo != null and paramsDto.orderCarNo != ''">
+                and wc.order_car_no = #{paramsDto.orderCarNo}
+            </if>
+            <if test="paramsDto.startProvinceCode != null and paramsDto.startProvinceCode != ''">
+                and wc.start_province_code = #{paramsDto.startProvinceCode}
+            </if>
+            <if test="paramsDto.startCityCode != null and paramsDto.startCityCode != ''">
+                and wc.start_city_code = #{paramsDto.startCityCode}
+            </if>
+            <if test="paramsDto.startAreaCode != null and paramsDto.startAreaCode != ''">
+                and wc.start_area_code = #{paramsDto.startAreaCode}
+            </if>
+            <if test="paramsDto.storeId != null">
+                and wc.start_store_id = #{paramsDto.storeId}
+            </if>
+            <if test="paramsDto.endProvinceCode != null and paramsDto.endProvinceCode != ''">
+                and wc.end_province_code = #{paramsDto.endProvinceCode}
+            </if>
+            <if test="paramsDto.endCityCode != null and paramsDto.endCityCode != ''">
+                and wc.end_city_code = #{paramsDto.endCityCode}
+            </if>
+            <if test="paramsDto.endAreaCode != null and paramsDto.endAreaCode != ''">
+                and wc.end_area_code = #{paramsDto.endAreaCode}
+            </if>
+            <if test="paramsDto.storeId != null">
+                and wc.end_store_id = #{paramsDto.storeId}
+            </if>
+            <if test="paramsDto.beginExpectStartTime != null">
+                and wc.expect_start_time &gt;= #{paramsDto.beginExpectStartTime}
+            </if>
+            <if test="paramsDto.endExpectStartTime != null">
+                and wc.expect_start_time &lt;= #{paramsDto.endExpectStartTime}
+            </if>
+
+            <if test="paramsDto.takeType != null and paramsDto.takeType != 0">
+                and wc.take_type = #{paramsDto.takeType}
+            </if>
+            <if test="paramsDto.loadLinkName != null and paramsDto.loadLinkName != ''">
+                and wc.load_link_name = #{paramsDto.loadLinkName}
+            </if>
+            <if test="paramsDto.loadLinkUserId != null and paramsDto.loadLinkUserId != ''">
+                and wc.load_link_user_id = #{paramsDto.loadLinkUserId}
+            </if>
+            <if test="paramsDto.loadLinkPhone != null and paramsDto.loadLinkPhone != ''">
+                and wc.load_link_phone = #{paramsDto.loadLinkPhone}
+            </if>
+            <if test="paramsDto.beginLoadTime != null">
+                and wc.load_time &gt;= #{paramsDto.beginLoadTime}
+            </if>
+            <if test="paramsDto.endLoadTime != null">
+                and wc.load_time &lt;= #{paramsDto.endLoadTime}
+            </if>
+            <if test="paramsDto.unloadLinkName != null and paramsDto.unloadLinkName != ''">
+                and wc.unload_link_name = #{paramsDto.unloadLinkName}
+            </if>
+            <if test="paramsDto.unloadLinkUserId != null and paramsDto.unloadLinkUserId != ''">
+                and wc.unload_link_user_id = #{paramsDto.unloadLinkUserId}
+            </if>
+            <if test="paramsDto.unloadLinkPhone != null and paramsDto.unloadLinkPhone != ''">
+                and wc.unload_link_phone = #{paramsDto.unloadLinkPhone}
+            </if>
+            <if test="paramsDto.beginUnloadTime != null">
+                and wc.unload_Time &gt;= #{paramsDto.beginUnloadTime}
+            </if>
+            <if test="paramsDto.endUnloadTime != null">
+                and wc.unload_time &lt;= #{paramsDto.endUnloadTime}
+            </if>
+
+        </where>
+
+
     </select>
 
 </mapper>

@@ -13,7 +13,7 @@ public enum WaybillCarStateEnum {
     WAIT_ALLOT("待指派", 0),
     ALLOTED("已指派", 2),
     WAIT_LOAD("待装车", 5),
-    WAIT_LOAD_TURN("待装车交接", 15),
+    WAIT_LOAD_TURN("待装车交接,待确认出库", 15),
     LOADED("已装车", 45),
     UNLOADED("已卸车", 70),
     APPLY_CONFIRM("确认交车", 90),

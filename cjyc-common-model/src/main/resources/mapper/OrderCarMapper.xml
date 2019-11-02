@@ -80,22 +80,17 @@
     <update id="updatePickStateById">
         update w_order_car
         set pick_state = #{state}
-        <where>
-            and id in
-            <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
-                #{item}
-            </foreach>
-        </where>
+        where id = #{orderCarId}
     </update>
     <update id="updateBackStateById">
         update w_order_car
         set back_state = #{state}
-        <where>
-            and id in
-            <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
-                #{item}
-            </foreach>
-        </where>
+        where id = #{orderCarId}
+    </update>
+    <update id="updateTrunkStateById">
+        update w_order_car
+        set trunk_state = #{state}
+        where id = #{orderCarId}
     </update>
     <update id="updateStateBatchByIds">
         update w_order_car
@@ -119,6 +114,12 @@
             </foreach>
         </where>
     </update>
+    <update id="updateStateForLoad">
+        update w_order_car
+        set state = #{orderCarState}
+        where id = #{orderCarId}
+    </update>
+
     <delete id="deleteBatchByOrderId">
         delete from w_order_car
         where order_id = #{orderId}
@@ -637,5 +638,17 @@
         from w_order_car oc
         join w_order o on o.id = oc.order_id
         where oc.id = #{orderCarId}
+    </select>
+    <select id="findByIds" resultType="com.cjyc.common.model.entity.OrderCar">
+        select
+        <include refid="Base_Column_List"/>
+        from w_order_car
+        <where>
+            id in
+            <foreach collection="orderCarIdList" index="index" item = "item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
+
     </select>
 </mapper>

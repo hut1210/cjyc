@@ -17,7 +17,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-29
+ * @since 2019-11-02
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -35,7 +35,7 @@ public class Waybill implements Serializable {
     @ApiModelProperty(value = "运单编号")
     private String no;
 
-    @ApiModelProperty(value = "运单类型：1提车运单，2干线运单，3送车运单，")
+    @ApiModelProperty(value = "运单类型：1提车运单，2干线运单，3送车运单")
     private Integer type;
 
     @ApiModelProperty(value = "调度类型：1自己处理，2人工调度")
@@ -50,12 +50,15 @@ public class Waybill implements Serializable {
     @ApiModelProperty(value = "承运商ID")
     private Long carrierId;
 
+    @ApiModelProperty(value = "承运商类型：0承运商，1业务员，2客户自己")
+    private Integer carrierType;
+    @ApiModelProperty(value = "承运商名称")
     private String carrierName;
 
     @ApiModelProperty(value = "车数量")
     private Integer carNum;
 
-    @ApiModelProperty(value = "运单状态：0待分配承运商（竞抢），15待承运商承接任务，30运输中，100已完成，102已撤回，103已拒接，111超时关闭")
+    @ApiModelProperty(value = "运单状态：0待分配承运商（竞抢），15待承运商承接任务，55运输中，100已完成，111超时关闭，113已取消，115已拒接")
     private Integer state;
 
     @ApiModelProperty(value = "运单总运费")

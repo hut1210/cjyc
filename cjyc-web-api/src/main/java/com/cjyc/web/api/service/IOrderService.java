@@ -6,10 +6,7 @@ import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.order.ListOrderCarVo;
-import com.cjyc.common.model.vo.web.order.ListOrderVo;
-import com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo;
-import com.cjyc.common.model.vo.web.order.OrderVo;
+import com.cjyc.common.model.vo.web.order.*;
 import com.cjyc.common.model.dto.web.order.CommitOrderDto;
 
 import java.util.List;
@@ -62,4 +59,6 @@ public interface IOrderService extends IService<Order> {
     ResultVo check(CheckOrderDto reqDto);
 
     ResultVo save(SaveOrderDto reqDto);
+
+    ResultVo<List<CarFromToGetVo>> getCarFromTo(CarFromToGetDto reqDto);
 }

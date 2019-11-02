@@ -1,16 +1,14 @@
 package com.cjyc.web.api.controller;
 
-import com.cjyc.common.model.dto.web.waybill.CancelDispatchDto;
-import com.cjyc.common.model.dto.web.waybill.HistoryListWaybillDto;
-import com.cjyc.common.model.dto.web.waybill.LocalDispatchListWaybillDto;
-import com.cjyc.common.model.dto.web.waybill.TrunkDispatchListShellWaybillDto;
+import com.cjyc.common.model.dto.web.waybill.*;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.enums.AdminStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.BaseTipVo;
 import com.cjyc.common.model.vo.ListVo;
+import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.waybill.HistoryListWaybillVo;
+import com.cjyc.common.model.vo.web.waybill.*;
 import com.cjyc.web.api.service.IAdminService;
 import com.cjyc.web.api.service.IWaybillService;
 import io.swagger.annotations.Api;
@@ -107,6 +105,49 @@ public class WaybillController {
     public ResultVo<List<HistoryListWaybillVo>> carHistoryList(@RequestBody HistoryListWaybillDto reqDto) {
         return waybillService.historyList(reqDto);
     }
+
+
+    /**
+     * 查询同城运单列表
+     */
+    @ApiOperation(value = "查询同城运单列表")
+    @PostMapping(value = "/local/list")
+    public ResultVo<PageVo<LocalListWaybillCarVo>> localList(@RequestBody LocalListWaybillCarDto reqDto) {
+        return waybillService.Locallist(reqDto);
+    }
+
+    /**
+     * 查询干线运单列表
+     */
+    @ApiOperation(value = "查询干线运单列表")
+    @PostMapping(value = "/trunk/list")
+    public ResultVo<PageVo<TrunkListWaybillVo>> trunklist(@RequestBody TrunkListWaybillDto reqDto) {
+        return waybillService.trunklist(reqDto);
+    }
+
+
+    /**
+     * 查询干线运单列表
+     */
+    @ApiOperation(value = "查询干线运单列表")
+    @PostMapping(value = "/trunk/car/list")
+    public ResultVo<PageVo<TrunkListWaybillCarVo>> trunklist(@RequestBody TrunkListWaybillCarDto reqDto) {
+        return waybillService.trunkCarlist(reqDto);
+    }
+
+    /**
+     * 我的运单-承运商
+     */
+    @ApiOperation(value = "我的运单-承运商")
+    @PostMapping(value = "/cys/list")
+    public ResultVo<List<CysWaybillVo>> cysList(@RequestBody CysWaybillDto reqDto) {
+        return waybillService.cysList(reqDto);
+    }
+
+
+
+
+
 
 
 

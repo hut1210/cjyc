@@ -1,7 +1,10 @@
 package com.cjyc.common.model.dao;
 
+import com.cjyc.common.model.entity.City;
 import com.cjyc.common.model.entity.StoreCityCon;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+
+import java.util.List;
 
 /**
  * <p>

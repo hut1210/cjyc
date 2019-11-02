@@ -1,9 +1,11 @@
 package com.cjyc.common.model.dao;
 
 import com.cjyc.common.model.dto.web.WayBillCarrierDto;
+import com.cjyc.common.model.dto.web.waybill.LocalListWaybillCarDto;
 import com.cjyc.common.model.entity.WaybillCar;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.vo.web.WayBillCarrierVo;
+import com.cjyc.common.model.vo.web.waybill.LocalListWaybillCarVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -35,4 +37,18 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
     WaybillCar findByStartStoreAndOrderCar(@Param("orderCarId") Long orderCarId,@Param("inStoreId") Long inStoreId);
 
     int countByStartCityAndOrderCar(@Param("cityCode") String cityCode, @Param("inStoreId") Long inStoreId);
+
+    int updateStateById(@Param("state") int state, @Param("id") Long id);
+
+    WaybillCar findUnConnectCar(String cityCode);
+
+    WaybillCar findLastTrunkWaybillCar(@Param("cityCode") String cityCode,@Param("orderCarId") Long orderCarId);
+
+    WaybillCar findLastPrevByArea(@Param("orderCarId") Long orderCarId, @Param("areaList") List<String> areaList);
+
+    WaybillCar findLastNextByCity(@Param("orderCarId") Long orderCarId, @Param("areaList") List<String> areaList);
+
+    int countForValidateRepeatTrunkDisPatch(@Param("areaList") List<String> areaList);
+
+    List<LocalListWaybillCarVo> findListLocal(LocalListWaybillCarDto paramsDto);
 }

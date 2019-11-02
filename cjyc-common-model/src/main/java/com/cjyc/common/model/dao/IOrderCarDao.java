@@ -69,8 +69,8 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
     */
     int updateStateById(@Param("state") int state, @Param("orderCarId") Long orderCarId);
 
-    int updatePickStateById(@Param("state") int state, Long orderCarId);
-    void updateBackStateById(@Param("state") int state, Long orderCarId);
+    int updatePickStateById(@Param("state") int state, @Param("orderCarId") Long orderCarId);
+    void updateBackStateById(@Param("state") int state, @Param("orderCarId") Long orderCarId);
     /**
      * 批量更新状态
      * @author JPG
@@ -107,4 +107,10 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
     List<OrderCarCenterVo> selectByCondition(@Param("orderNo") String orderNo, @Param("brand") String brand, @Param("model") String model);
 
     OrderCarVo findExtraById(Long orderCarId);
+
+    int updateStateForLoad(@Param("orderCarState") int orderCarState, @Param("orderCarId") Long orderCarId);
+
+    int updateTrunkStateById(Long id);
+
+    List<OrderCar> findByIds(@Param("orderCarIdList") List<Long> orderCarIdList);
 }

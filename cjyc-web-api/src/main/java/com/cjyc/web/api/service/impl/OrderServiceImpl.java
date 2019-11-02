@@ -1,15 +1,9 @@
 package com.cjyc.web.api.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.cjyc.common.model.dao.ICityDao;
-import com.cjyc.common.model.dao.IOrderCarDao;
-import com.cjyc.common.model.dao.IOrderChangeLogDao;
-import com.cjyc.common.model.dao.IOrderDao;
+import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.order.*;
-import com.cjyc.common.model.entity.Customer;
-import com.cjyc.common.model.entity.Order;
-import com.cjyc.common.model.entity.OrderCar;
-import com.cjyc.common.model.entity.OrderChangeLog;
+import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.PayModeEnum;
 import com.cjyc.common.model.enums.ResultEnum;
@@ -23,10 +17,7 @@ import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.city.FullCityVo;
-import com.cjyc.common.model.vo.web.order.ListOrderCarVo;
-import com.cjyc.common.model.vo.web.order.ListOrderVo;
-import com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo;
-import com.cjyc.common.model.vo.web.order.OrderVo;
+import com.cjyc.common.model.vo.web.order.*;
 import com.cjyc.web.api.exception.ParameterException;
 import com.cjyc.web.api.exception.ServerException;
 import com.cjyc.web.api.service.ICouponSendService;
@@ -41,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -69,7 +61,11 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     @Resource
     private ICityDao cityDao;
     @Resource
+    private IWaybillCarDao waybillCarDao;
+    @Resource
     private ICouponSendService couponSendService;
+    @Resource
+    private IStoreDao storeDao;
 
     @Override
     public ResultVo save(SaveOrderDto paramsDto) {
@@ -91,14 +87,9 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         BeanUtils.copyProperties(paramsDto, order);
         //查询三级城市
         FullCityVo startFullCityVo = cityDao.findFullCityVo(paramsDto.getStartAreaCode());
-        if(startFullCityVo != null){
-            BeanUtils.copyProperties(startFullCityVo, order);
-        }
+        copyOrderStartCity(startFullCityVo, order);
         FullCityVo endFullCityVo = cityDao.findFullCityVo(paramsDto.getEndAreaCode());
-        if(endFullCityVo != null){
-            BeanUtils.copyProperties(endFullCityVo, order);
-        }
-
+        copyOrderEndCity(startFullCityVo, order);
 
         /**1、组装订单数据
          */
@@ -146,6 +137,78 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     }
 
     @Override
+    public ResultVo<List<CarFromToGetVo>> getCarFromTo(CarFromToGetDto reqDto) {
+        
+        List<CarFromToGetVo> resList = new ArrayList<>();
+        Store store = storeDao.selectById(reqDto.getStoreId());
+        //业务范围
+        List<String> areaBizScope = storeDao.findAreaBizScope(store.getId());
+
+        List<OrderCar> list = orderCarDao.findByIds(reqDto.getOrderCarIdList());
+        if(list == null || list.isEmpty()){
+            return BaseResultUtil.success();
+        }
+        for (OrderCar orderCar : list) {
+            if(orderCar == null){
+                continue;
+            }
+            CarFromToGetVo carFromToGetVo = new CarFromToGetVo();
+            BeanUtils.copyProperties(orderCar, carFromToGetVo);
+
+            //查询waybillcar最后一条记录
+            WaybillCar prevWaybillCar = waybillCarDao.findLastPrevByArea(orderCar.getId(), areaBizScope);
+            copyStartAddress(prevWaybillCar, carFromToGetVo);
+            WaybillCar nextWaybillCar = waybillCarDao.findLastNextByCity(orderCar.getId(), areaBizScope);
+            copyEndAddress(nextWaybillCar, carFromToGetVo);
+
+            Store sSto = storeDao.selectById(prevWaybillCar.getEndStoreId());
+            carFromToGetVo.setStartStoreAddress(getStoreAddress(sSto));
+            Store eSto = storeDao.selectById(nextWaybillCar.getStartStoreId());
+            carFromToGetVo.setStartStoreAddress(getStoreAddress(eSto));
+            resList.add(carFromToGetVo);
+
+        }
+
+        return BaseResultUtil.success(resList);
+    }
+
+    private String getStoreAddress(Store sSto) {
+        return (sSto.getProvince() == null ? "" : sSto.getProvince()) +
+                (sSto.getCity() == null ? "" : sSto.getCity()) +
+                (sSto.getAreaCode() == null ? "" : sSto.getAreaCode()) +
+                (sSto.getDetailAddr() == null ? "" : sSto.getDetailAddr());
+    }
+
+    private void copyStartAddress(WaybillCar prevWaybillCar, CarFromToGetVo carFromToGetVo) {
+        if(prevWaybillCar == null){
+            return;
+        }
+        carFromToGetVo.setStartProvince(prevWaybillCar.getEndProvince());
+        carFromToGetVo.setStartProvinceCode(prevWaybillCar.getEndProvinceCode());
+        carFromToGetVo.setStartCity(prevWaybillCar.getEndCity());
+        carFromToGetVo.setStartCityCode(prevWaybillCar.getEndCityCode());
+        carFromToGetVo.setStartArea(prevWaybillCar.getEndArea());
+        carFromToGetVo.setStartAreaCode(prevWaybillCar.getEndAreaCode());
+        carFromToGetVo.setStartAddress(prevWaybillCar.getEndAddress());
+        carFromToGetVo.setStartStoreId(prevWaybillCar.getEndStoreId());
+        carFromToGetVo.setStartStoreName(prevWaybillCar.getEndStoreName());
+    }
+    private void copyEndAddress(WaybillCar nextWaybillCar, CarFromToGetVo carFromToGetVo) {
+        if(nextWaybillCar == null){
+            return;
+        }
+        carFromToGetVo.setEndProvince(nextWaybillCar.getStartProvince());
+        carFromToGetVo.setEndProvinceCode(nextWaybillCar.getStartProvinceCode());
+        carFromToGetVo.setEndCity(nextWaybillCar.getStartCity());
+        carFromToGetVo.setEndCityCode(nextWaybillCar.getStartCityCode());
+        carFromToGetVo.setEndArea(nextWaybillCar.getStartArea());
+        carFromToGetVo.setEndAreaCode(nextWaybillCar.getStartAreaCode());
+        carFromToGetVo.setEndAddress(nextWaybillCar.getStartAddress());
+        carFromToGetVo.setEndStoreId(nextWaybillCar.getStartStoreId());
+        carFromToGetVo.setEndStoreName(nextWaybillCar.getStartStoreName());
+    }
+
+    @Override
     public ResultVo commit(CommitOrderDto paramsDto) {
         //处理参数
         //获取参数
@@ -165,13 +228,10 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         BeanUtils.copyProperties(paramsDto, order);
         //查询三级城市
         FullCityVo startFullCityVo = cityDao.findFullCityVo(paramsDto.getStartAreaCode());
-        if(startFullCityVo != null){
-            BeanUtils.copyProperties(startFullCityVo, order);
-        }
+        copyOrderStartCity(startFullCityVo, order);
         FullCityVo endFullCityVo = cityDao.findFullCityVo(paramsDto.getEndAreaCode());
-        if(endFullCityVo != null){
-            BeanUtils.copyProperties(endFullCityVo, order);
-        }
+        copyOrderEndCity(startFullCityVo, order);
+
         //验证用户
         Customer customer = new Customer();
         if (paramsDto.getCustomerId() != null) {
@@ -253,7 +313,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
             orderCar.setPickFee(dto.getPickFee() == null ? BigDecimal.ZERO : dto.getPickFee());
             orderCar.setTrunkFee(dto.getTrunkFee() == null ? BigDecimal.ZERO : dto.getTrunkFee());
             orderCar.setBackFee(dto.getBackFee() == null ? BigDecimal.ZERO : dto.getBackFee());
-            orderCar.setAddInsuranceFee(dto.getInsuranceFee() == null ? BigDecimal.ZERO : dto.getInsuranceFee());
+            orderCar.setAddInsuranceFee(dto.getAddInsuranceFee() == null ? BigDecimal.ZERO : dto.getAddInsuranceFee());
             orderCarDao.insert(orderCar);
         }
         order.setCarNum(noCount);
@@ -262,6 +322,29 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         }
         orderDao.updateById(order);
         return BaseResultUtil.success();
+    }
+
+    private void copyOrderStartCity(FullCityVo vo, Order order) {
+        if(vo != null){
+            return;
+        }
+        order.setStartProvince(vo.getProvince());
+        order.setStartProvinceCode(vo.getProvinceCode());
+        order.setStartCity(vo.getCity());
+        order.setStartCityCode(vo.getCityCode());
+        order.setStartArea(vo.getArea());
+        order.setStartAreaCode(vo.getAreaCode());
+    }
+    private void copyOrderEndCity(FullCityVo vo, Order order) {
+        if(vo != null){
+            return;
+        }
+        order.setEndProvince(vo.getProvince());
+        order.setEndProvinceCode(vo.getProvinceCode());
+        order.setEndCity(vo.getCity());
+        order.setEndCityCode(vo.getCityCode());
+        order.setEndArea(vo.getArea());
+        order.setEndAreaCode(vo.getAreaCode());
     }
 
     @Override
@@ -475,8 +558,10 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         if (paramsDto.getCurrentPage() > pageInfo.getPages()) {
             pageInfo.setList(null);
         }
+        //查询统计
+        Map<String, Object> countInfo = orderDao.countForAllTab();
 
-        return BaseResultUtil.success(pageInfo);
+        return BaseResultUtil.success(pageInfo, countInfo);
     }
 
     @Override

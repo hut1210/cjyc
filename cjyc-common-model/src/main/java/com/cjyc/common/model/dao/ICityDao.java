@@ -1,17 +1,14 @@
 package com.cjyc.common.model.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.cjyc.common.model.dto.BaseCityDto;
 import com.cjyc.common.model.entity.City;
 import com.cjyc.common.model.vo.web.city.CityTreeVo;
 import com.cjyc.common.model.vo.web.city.FullCityVo;
 import com.cjyc.common.model.vo.web.city.ProvinceCityVo;
 import com.cjyc.common.model.vo.web.city.TreeCityVo;
-import io.swagger.annotations.ApiParam;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,10 +22,6 @@ import java.util.Map;
  */
 @Repository
 public interface ICityDao extends BaseMapper<City> {
-
-    City findById(@Param("cityCode") String cityCode);
-
-    List<City> findList();
 
     List<City> findChildList(String code);
 
@@ -59,5 +52,6 @@ public interface ICityDao extends BaseMapper<City> {
      * @return
      */
     List<City> getCityTreeByKeyword(@Param("name") String name);
+
 }
 

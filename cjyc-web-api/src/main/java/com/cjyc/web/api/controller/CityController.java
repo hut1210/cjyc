@@ -6,9 +6,7 @@ import com.cjyc.common.model.entity.City;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.dto.web.city.TreeCityDto;
 import com.cjyc.common.model.vo.web.city.CityTreeVo;
-import com.cjyc.common.model.vo.web.city.TreeCityVo;
 import com.cjyc.web.api.service.ICityService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -65,12 +63,6 @@ public class CityController {
                                           @PathVariable String code) {
         List<City> list = cityService.selectChildList(code);
         return BaseResultUtil.success(list);
-    }
-
-    @ApiOperation(value = "查询树形结构", notes = "")
-    @PostMapping(value = "/tree")
-    public ResultVo<List<TreeCityVo>> tree(@RequestBody TreeCityDto treeCityDto) {
-        return cityService.getTree(treeCityDto);
     }
 
     @ApiOperation(value = "查询树形结构", notes = "")

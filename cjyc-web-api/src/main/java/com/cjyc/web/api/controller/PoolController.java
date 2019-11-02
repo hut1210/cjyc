@@ -1,12 +1,15 @@
 package com.cjyc.web.api.controller;
 
+import com.cjyc.common.model.dto.web.order.CarFromToGetDto;
 import com.cjyc.common.model.dto.web.order.LineWaitDispatchCountListOrderCarDto;
 import com.cjyc.common.model.dto.web.order.WaitDispatchListOrderCarDto;
 import com.cjyc.common.model.vo.BizScopeVo;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.order.CarFromToGetVo;
 import com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo;
+import com.cjyc.common.model.vo.web.waybill.HistoryListWaybillVo;
 import com.cjyc.web.api.service.IAdminService;
 import com.cjyc.web.api.service.IBizScopeService;
 import com.cjyc.web.api.service.IOrderService;
@@ -17,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.Map;
 
 
@@ -28,7 +32,7 @@ import java.util.Map;
 @Api(tags = "调度池")
 @RequestMapping(value = "/dispatch",
         produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-public class DispatchController {
+public class PoolController {
 
 
     @Resource
@@ -46,7 +50,6 @@ public class DispatchController {
     @PostMapping(value = "/wait/count/list/{userId}")
     public ResultVo<ListVo<Map<String, Object>>> waitDispatchCarCountList(@ApiParam(value = "用户userId", required = true)
                                                                           @PathVariable Long userId) {
-        //BizScopeVo bizScope = bizScopeService.getBizScope(userId);
         return orderService.waitDispatchCarCountList();
     }
 
@@ -57,7 +60,6 @@ public class DispatchController {
     @ApiOperation(value = "按线路统计待调度车辆（统计列表）")
     @PostMapping(value = "/line/wait/count/list")
     public ResultVo<ListVo<Map<String, Object>>> lineWaitDispatchCarCountList(@RequestBody LineWaitDispatchCountListOrderCarDto reqDto) {
-        //BizScopeVo bizScope = bizScopeService.getBizScope(reqDto.getUserId());
         return orderService.lineWaitDispatchCarCountList(reqDto,null);
     }
 
@@ -68,8 +70,21 @@ public class DispatchController {
     @ApiOperation(value = "查询待调度车辆列表")
     @PostMapping(value = "/wait/list")
     public ResultVo<PageVo<OrderCarWaitDispatchVo>> waitDispatchCarList(@RequestBody WaitDispatchListOrderCarDto reqDto) {
-        //BizScopeVo bizScope = bizScopeService.getBizScope(reqDto.getUserId());
         return orderService.waitDispatchCarList(reqDto, null);
     }
+
+
+
+    /**
+     * 根据订单车辆ID查询可调度起始地和目的地
+     */
+    @ApiOperation(value = "根据订单车辆ID查询可调度起始地和目的地")
+    @PostMapping(value = "/car/from/to/get")
+    public ResultVo<List<CarFromToGetVo>> getCarFromTo(@RequestBody CarFromToGetDto reqDto) {
+        return orderService.getCarFromTo(reqDto);
+    }
+
+
+
 
 }

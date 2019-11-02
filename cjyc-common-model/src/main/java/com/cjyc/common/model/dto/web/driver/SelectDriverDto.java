@@ -1,11 +1,17 @@
 package com.cjyc.common.model.dto.web.driver;
 
 import com.cjyc.common.model.dto.BasePageDto;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 @Data
+@EqualsAndHashCode(callSuper = false)
+@Accessors(chain = true)
+@ApiModel
 public class SelectDriverDto extends BasePageDto implements Serializable {
 
     @ApiModelProperty("登陆用户userId")

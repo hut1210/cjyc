@@ -15,7 +15,7 @@ import java.util.List;
 @ApiModel
 public class TrunkDispatchListWaybillDto {
     @ApiModelProperty(value = "用户userId", required = true)
-    private Long UserId;
+    private Long userId;
 
     @ApiModelProperty(value = "指导线路", required = true)
     private String guideLine;

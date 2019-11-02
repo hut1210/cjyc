@@ -120,24 +120,10 @@ public class TaskController {
         return taskService.outStore(reqDto);
     }
 
-    /**
-     * 签收-业务员
-     * @author JPG
-     */
-    @ApiOperation(value = "签收")
-    @PostMapping(value = "/car/admin/sign")
-    public ResultVo adminSign(@RequestBody SignTaskDto reqDto) {
-        //验证用户
-        Admin admin = adminService.getByUserId(reqDto.getUserId());
-        if (admin == null || admin.getState() != AdminStateEnum.CHECKED.code) {
-            return BaseResultUtil.fail("当前业务员，不在职");
-        }
-        reqDto.setUserName(admin.getName());
-        return taskService.sign(reqDto);
-    }
+
 
     /**
-     * 签收-司机
+     * 交接-司机
      * @author JPG
      */
     @ApiOperation(value = "签收")
@@ -151,27 +137,6 @@ public class TaskController {
         reqDto.setUserName(admin.getName());
         return taskService.sign(reqDto);
     }
-
-    /**
-     * 签收-客户
-     * @author JPG
-     */
-    @ApiOperation(value = "签收")
-    @PostMapping(value = "/car//sign")
-    public ResultVo customerSign(@RequestBody SignTaskDto reqDto) {
-        //验证用户
-        Admin admin = adminService.getByUserId(reqDto.getUserId());
-        if (admin == null || admin.getState() != AdminStateEnum.CHECKED.code) {
-            return BaseResultUtil.fail("当前业务员，不在职");
-        }
-        reqDto.setUserName(admin.getName());
-        return taskService.sign(reqDto);
-    }
-
-
-
-
-
 
 
 
