@@ -1,6 +1,7 @@
 package com.cjyc.customer.api.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.cjyc.common.model.dto.customer.invoice.CustomerInvoiceAddDto;
 import com.cjyc.common.model.dto.customer.invoice.InvoiceOrderQueryDto;
 import com.cjyc.common.model.entity.CustomerInvoice;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -26,7 +27,6 @@ import javax.annotation.Resource;
  *  @Description:用户端发票
  */
 @Api(tags = "发票管理")
-@CrossOrigin
 @RestController
 @RequestMapping("/invoice")
 public class InvoiceController {
@@ -38,16 +38,22 @@ public class InvoiceController {
     private IOrderService orderService;
 
     @ApiOperation(value = "分页查询用户未开发票的订单")
-    @PostMapping(value = "/getUnInvoiceList")
+    @PostMapping("/getUnInvoiceList")
     public ResultVo<PageInfo<InvoiceOrderVo>> getUnInvoiceOrderList(@RequestBody @Validated InvoiceOrderQueryDto dto){
         return orderService.getUnInvoiceOrderList(dto);
     }
 
     @ApiOperation(value = "查询开票信息")
-    @PostMapping(value = "/getInvoiceInfo/{userId}")
+    @PostMapping("/getInvoiceInfo/{userId}")
     public ResultVo<CustomerInvoice> getInvoiceInfo(@PathVariable Long userId){
         CustomerInvoice invoice = customerInvoiceService.getOne(new QueryWrapper<CustomerInvoice>().lambda().eq(CustomerInvoice::getCustomerId, userId));
         return BaseResultUtil.success(invoice);
+    }
+
+    @ApiOperation(value = "新增发票信息")
+    @PostMapping("/add")
+    public ResultVo add(@RequestBody @Validated CustomerInvoiceAddDto dto){
+        return customerInvoiceService.add(dto);
     }
 
 }

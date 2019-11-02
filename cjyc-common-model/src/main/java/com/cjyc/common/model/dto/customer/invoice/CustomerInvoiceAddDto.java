@@ -1,47 +1,38 @@
-package com.cjyc.common.model.entity;
+package com.cjyc.common.model.dto.customer.invoice;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import java.io.Serializable;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import java.io.Serializable;
 
 /**
- * <p>
- * 发票信息表
- * </p>
- *
- * @author JPG
- * @since 2019-10-29
- */
+ * @Description 发票新增新增实体
+ * @Author LiuXingXiang
+ * @Date 2019/11/2 14:05
+ **/
 @Data
-@EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
-@TableName("c_customer_invoice")
-@ApiModel(value="CustomerInvoice对象", description="发票信息表")
-public class CustomerInvoice implements Serializable {
-    private static final long serialVersionUID = 1L;
-    @ApiModelProperty(value = "ID")
-    @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
-
+public class CustomerInvoiceAddDto implements Serializable {
+    private static final long serialVersionUID = -1287100314798602403L;
     @ApiModelProperty(value = "客户ID")
     private Long customerId;
 
     @ApiModelProperty(value = "发票类型 1-普通(个人) ，2-增值普票(企业) ，3-增值专用发票'")
-    private Integer type;
+    @NotNull(message = "发票类型不能为空")
+    @Pattern(regexp = "[1|2|3]",message = "发票类型只能是1,2,3中的一位数")
+    private String type;
 
     @ApiModelProperty(value = "发票抬头")
     private String title;
 
     @ApiModelProperty(value = "姓名")
+    @NotBlank(message = "客户名称不能为空")
     private String name;
 
     @ApiModelProperty(value = "纳税人识别号")
+    @NotBlank(message = "纳税人识别号")
     private String taxCode;
 
     @ApiModelProperty(value = "地址")
@@ -60,11 +51,15 @@ public class CustomerInvoice implements Serializable {
     private Integer defaultFlag;
 
     @ApiModelProperty(value = "收票人")
+    @NotBlank(message = "收票人")
     private String pickupPerson;
 
     @ApiModelProperty(value = "收票电话")
+    @NotBlank(message = "收票电话")
+    @Pattern(regexp = "1[3|4|5|7|8][0-9]\\d{8}",message = "电话号码格式不对")
     private String pickupPhone;
 
     @ApiModelProperty(value = "收票地址")
+    @NotBlank(message = "收票地址")
     private String pickupAddress;
 }

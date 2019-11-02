@@ -15,11 +15,15 @@
         <result column="bank_name" property="bankName" />
         <result column="bank_account" property="bankAccount" />
         <result column="default_flag" property="defaultFlag" />
+        <result column="pickup_person" property="pickupPerson" />
+        <result column="pickup_phone" property="pickupPhone" />
+        <result column="pickup_address" property="pickupAddress" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, customer_id, type, title, name, tax_code, invoice_address, tel, bank_name, bank_account, default_flag
+        id, customer_id, type, title, name, tax_code, invoice_address, tel, bank_name,
+        bank_account, default_flag,pickupPerson,pickupPhone,pickupAddress
     </sql>
 
 </mapper>
