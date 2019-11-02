@@ -31,5 +31,5 @@ public class OrderUpdateDto implements Serializable {
 
     @ApiModelProperty("客户id")
     @NotNull(groups = {ConfirmPickCar.class,GetDetail.class,CancelAndPlaceOrder.class},message = "客户id不能为空" )
-    private Long customerId;
+    private Long userId;
 }

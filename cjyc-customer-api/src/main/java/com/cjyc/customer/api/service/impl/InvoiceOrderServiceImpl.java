@@ -30,9 +30,4 @@ public class InvoiceOrderServiceImpl extends ServiceImpl<IInvoiceOrderDao, Invoi
     private IOrderDao orderDao;
     @Resource
     private IInvoiceOrderDao invoiceOrderDao;
-
-    @Override
-    public ResultVo getUnInvoiceList(InvoiceOrderQueryDto dto) {
-        return null;
-    }
 }

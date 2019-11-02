@@ -15,10 +15,4 @@ import com.cjyc.common.model.vo.ResultVo;
  */
 public interface IInvoiceOrderService extends IService<InvoiceOrder> {
 
-    /**
-     * 分页查询未开发票的订单
-     * @param dto
-     * @return
-     */
-    ResultVo getUnInvoiceList(InvoiceOrderQueryDto dto);
 }

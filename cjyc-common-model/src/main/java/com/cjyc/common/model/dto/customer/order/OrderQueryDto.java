@@ -13,7 +13,7 @@ public class OrderQueryDto extends BasePageDto {
     private static final long serialVersionUID = 399318965603713438L;
     @ApiModelProperty("客户id")
     @NotNull(message = "客户id不能为空" )
-    private Long customerId;
+    private Long userId;
 
     @ApiModelProperty("订单状态 查询分页参数0:待确认,1:运输中,2:已交付,3:全部")
     @NotNull(message = "订单状态不能为空")

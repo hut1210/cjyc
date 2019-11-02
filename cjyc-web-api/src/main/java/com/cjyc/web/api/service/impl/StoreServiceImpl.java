@@ -12,6 +12,7 @@ import com.cjyc.common.model.entity.Store;
 import com.cjyc.common.model.dao.IStoreDao;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.enums.CommonStateEnum;
+import com.cjyc.common.model.util.BasePageUtil;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.ResultVo;
@@ -58,12 +59,10 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
     }
 
     @Override
-    public ResultVo queryPage(StoreQueryDto storeQueryDto) {
-        List<Store> list = getStoreList(storeQueryDto);
+    public ResultVo queryPage(StoreQueryDto dto) {
+        BasePageUtil.initPage(dto);
+        List<Store> list = getStoreList(dto);
         PageInfo<Store> pageInfo = new PageInfo<>(list);
-        if (storeQueryDto.getCurrentPage() > pageInfo.getPages()) {
-            pageInfo.setList(null);
-        }
         return BaseResultUtil.success(pageInfo);
     }
 
