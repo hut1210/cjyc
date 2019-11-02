@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
  * @Date 2019/11/1 17:29
  **/
 @Data
-public class InvoiceOrderQueryDto extends BasePageDto {
+public class InvoiceApplyQueryDto extends BasePageDto {
     private static final long serialVersionUID = -1473863706963518462L;
     @ApiModelProperty(value = "客户userId")
     @NotNull(message = "客户userId不能为空")

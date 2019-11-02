@@ -17,5 +17,5 @@ public interface ICustomerInvoiceService extends IService<CustomerInvoice> {
      * @param dto
      * @return
      */
-    ResultVo add(CustomerInvoiceAddDto dto);
+    ResultVo applyInvoice(CustomerInvoiceAddDto dto) throws Exception;
 }
