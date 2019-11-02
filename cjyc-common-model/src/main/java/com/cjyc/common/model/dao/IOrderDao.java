@@ -1,7 +1,7 @@
 package com.cjyc.common.model.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.cjyc.common.model.dto.customer.OrderConditionDto;
+import com.cjyc.common.model.dto.customer.order.OrderQueryDto;
 import com.cjyc.common.model.dto.web.order.ListOrderDto;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.vo.customer.order.OrderCenterVo;
@@ -38,4 +38,5 @@ public interface IOrderDao extends BaseMapper<Order> {
     int updateStateForLoad(@Param("orderState") int orderState, @Param("orderCarId") Long orderCarId);
 
     Map<String, Object> countForAllTab();
+    List<OrderCenterVo> selectPage(OrderQueryDto dto);
 }

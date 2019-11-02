@@ -65,4 +65,12 @@ public interface IDriverService {
 
     Driver getByUserId(Long userId);
 
+    /**
+     * 冻结/解除司机状态
+     * @param id
+     * @param flag
+     * @return
+     */
+    ResultVo resetState(Long id, Integer flag);
+
 }

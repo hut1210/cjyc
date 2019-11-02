@@ -96,4 +96,12 @@ public class CarrierController {
         BasePageUtil.initPage(dto.getCurrentPage(),dto.getPageSize());
         return carrierService.getBaseDriverByTerm(dto);
     }
+
+    @PostMapping("/resetPwd/{id}")
+    @ApiOperation(value = "承运商机构超级管理员账户重置密码")
+    public ResultVo resetPwd(@ApiParam(name = "id", value = "机构标识", required = true)
+                             @PathVariable Long id) {
+        //重置机构超级管理员用户密码
+        return carrierService.resetPwd(id);
+    }
 }

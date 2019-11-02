@@ -1,15 +1,15 @@
 package com.cjyc.web.api.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjkj.common.model.ResultData;
+import com.cjkj.common.model.ReturnMsg;
 import com.cjkj.usercenter.dto.common.AddUserReq;
 import com.cjkj.usercenter.dto.common.AddUserResp;
+import com.cjkj.usercenter.dto.common.UpdateUserReq;
 import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.customer.*;
-import com.cjyc.common.model.entity.BankCardBind;
-import com.cjyc.common.model.entity.Customer;
-import com.cjyc.common.model.entity.CustomerContract;
-import com.cjyc.common.model.entity.CustomerPartner;
+import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.coupon.CouponLifeTypeEnum;
 import com.cjyc.common.model.enums.customer.CustomerStateEnum;
@@ -75,6 +75,12 @@ public class CustomerServiceImpl implements ICustomerService{
     @Resource
     private ICouponSendDao couponSendDao;
 
+    @Resource
+    private IAdminDao adminDao;
+
+    @Resource
+    private IDriverDao driverDao;
+
     @Override
     public boolean saveCustomer(CustomerDto customerDto) {
         try{
@@ -90,8 +96,20 @@ public class CustomerServiceImpl implements ICustomerService{
             customer.setState(CustomerStateEnum.CHECKED.code);
             customer.setCreateTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
             customer.setCreateUserId(customerDto.getUserId());
+            //用户手机号在C端不能重复
+            List<Customer> existList = customerDao.selectList(new QueryWrapper<Customer>()
+                    .eq("contact_phone", customer.getContactPhone()));
+            if (!CollectionUtils.isEmpty(existList)) {
+                log.error("手机号已存在，请检查");
+                return false;
+            }
             //注册时间
-
+            //新增个人用户信息到物流平台
+            ResultData<Long> rd = addCustomerToPlatform(customer);
+            if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+                throw new CommonException(rd.getMsg());
+            }
+            customer.setUserId(rd.getData());
             return customerDao.insert(customer)> 0 ? true : false;
         }catch (Exception e){
             log.error("新增用户出现异常",e);
@@ -104,6 +122,15 @@ public class CustomerServiceImpl implements ICustomerService{
         try{
             Customer customer = customerDao.selectById(customerDto.getId());
             if(null != customer){
+                ResultData<Boolean> updateRd = updateCustomerToPlatform(customer, customerDto);
+                if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
+                    log.error("修改用户信息失败，原因：" + updateRd.getMsg());
+                    return false;
+                }
+                if (updateRd.getData()) {
+                    //需要同步手机号信息
+                    syncPhone(customer.getContactPhone(), customerDto.getPhone());
+                }
                 customer.setName(customerDto.getName());
                 customer.setContactPhone(customerDto.getPhone());
                 customer.setIdCard(customerDto.getIdCard());
@@ -656,4 +683,112 @@ public class CustomerServiceImpl implements ICustomerService{
         return 0;
     }
 
+    /**
+     * 将C端客户保存到物流平台
+     * @param customer
+     * @return
+     */
+    private ResultData<Long> addCustomerToPlatform(Customer customer) {
+        ResultData<AddUserResp> accountRd =
+                sysUserService.getByAccount(customer.getContactPhone());
+        if (!ReturnMsg.SUCCESS.getCode().equals(accountRd.getCode())) {
+            return ResultData.failed("获取用户信息失败，原因：" + accountRd.getMsg());
+        }
+        if (accountRd.getData() != null) {
+            //存在，则直接返回已有用户userId信息
+            return ResultData.ok(accountRd.getData().getUserId());
+        }
+        //不存在，需要重新添加
+        AddUserReq user = new AddUserReq();
+        user.setName(customer.getName());
+        user.setAccount(customer.getContactPhone());
+        user.setMobile(customer.getContactPhone());
+        user.setDeptId(Long.parseLong(YmlProperty.get("cjkj.dept_customer_id")));
+        user.setPassword(YmlProperty.get("cjkj.salesman.password"));
+        ResultData<AddUserResp> saveRd = sysUserService.save(user);
+        if (!ReturnMsg.SUCCESS.getCode().equals(saveRd.getCode())) {
+            return ResultData.failed("保存客户信息失败，原因：" + saveRd.getMsg());
+        }
+        return ResultData.ok(saveRd.getData().getUserId());
+    }
+
+    /**
+     * 修改账号信息到物流平台：
+     *  修改物流平台账号信息：如果修改账号则将要修改的账号不能存在否则修改失败
+     * @param customer
+     * @param dto
+     * @return
+     */
+    private ResultData<Boolean> updateCustomerToPlatform(Customer customer, CustomerDto dto) {
+        String oldPhone = customer.getContactPhone();
+        String newPhone = dto.getPhone();
+        if (!oldPhone.equals(newPhone)) {
+            //新旧账号不相同需要替换手机号
+            //先查询韵车是否存在newPhone 相同账号，存在则不允许修改
+            if (validPhoneExits(newPhone)) {
+                return ResultData.failed("用户账号不允许修改，预修改账号：" + newPhone + " 已存在");
+            }
+            ResultData<AddUserResp> accountRd = sysUserService.getByAccount(newPhone);
+            if (!ReturnMsg.SUCCESS.getCode().equals(accountRd.getCode())) {
+                return ResultData.failed("用户信息获取失败，原因：" + accountRd.getMsg());
+            }
+            if (accountRd.getData() != null) {
+                return ResultData.failed("用户账号不允许修改，预修改账号：" + newPhone + " 已存在");
+            }
+            UpdateUserReq user = new UpdateUserReq();
+            user.setUserId(customer.getUserId());
+            user.setAccount(newPhone);
+            user.setMobile(newPhone);
+            ResultData rd = sysUserService.updateUser(user);
+            if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+                return ResultData.failed("用户信息修改失败，原因：" + rd.getMsg());
+            }
+            return ResultData.ok(true);
+        }
+        return ResultData.ok(false);
+    }
+
+    /**
+     * 验证手机号在韵车所有用户中是否存在
+     * @param phone
+     * @return
+     */
+    private boolean validPhoneExits(String phone) {
+        List<Admin> adminList = adminDao.selectList(new QueryWrapper<Admin>()
+                .eq("phone", phone));
+        if (!CollectionUtils.isEmpty(adminList)) {
+            return true;
+        }
+        List<Driver> driverList = driverDao.selectList(new QueryWrapper<Driver>()
+                .eq("phone", phone));
+        if (!CollectionUtils.isEmpty(driverList)) {
+            return true;
+        }
+        List<Customer> customerList = customerDao.selectList(new QueryWrapper<Customer>()
+                .eq("contact_phone", phone));
+        if (!CollectionUtils.isEmpty(customerList)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 将手机号同步到系统用户及司机用户
+     * @param oldPhone
+     * @param newPhone
+     */
+    private void syncPhone(String oldPhone, String newPhone) {
+        Admin admin = adminDao.selectOne(new QueryWrapper<Admin>()
+                .eq("phone", oldPhone));
+        if (null != admin) {
+            admin.setPhone(newPhone);
+            adminDao.updateById(admin);
+        }
+        Driver driver = driverDao.selectOne(new QueryWrapper<Driver>()
+                .eq("phone", oldPhone));
+        if (null != driver) {
+            driver.setPhone(newPhone);
+            driverDao.updateById(driver);
+        }
+    }
 }

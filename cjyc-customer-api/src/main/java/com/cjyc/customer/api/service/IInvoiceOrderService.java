@@ -1,5 +1,6 @@
 package com.cjyc.customer.api.service;
 
+import com.cjyc.common.model.dto.customer.invoice.InvoiceOrderQueryDto;
 import com.cjyc.common.model.entity.InvoiceOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.vo.ResultVo;
@@ -13,12 +14,5 @@ import com.cjyc.common.model.vo.ResultVo;
  * @since 2019-10-31
  */
 public interface IInvoiceOrderService extends IService<InvoiceOrder> {
-
-    /**
-     * 获取用户未开票的订单
-     * @param userId
-     * @return
-     */
-    ResultVo getUnbilledOrder(Long userId);
 
 }

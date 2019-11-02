@@ -1,6 +1,11 @@
 package com.cjyc.web.api.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cjkj.common.model.ResultData;
+import com.cjkj.common.model.ReturnMsg;
+import com.cjkj.usercenter.dto.yc.AddDeptAndUserReq;
+import com.cjkj.usercenter.dto.yc.AddDeptAndUserResp;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.carrier.CarrierDto;
 import com.cjyc.common.model.dto.web.carrier.SeleCarrierDto;
@@ -12,12 +17,15 @@ import com.cjyc.common.model.enums.UseStateEnum;
 import com.cjyc.common.model.enums.transport.*;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
+import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.carrier.BaseDriverVo;
 import com.cjyc.common.model.vo.web.carrier.BaseVehicleVo;
 import com.cjyc.common.model.vo.web.carrier.CarrierVo;
 import com.cjyc.common.model.vo.web.carrier.BaseCarrierVo;
 import com.cjyc.web.api.exception.CommonException;
+import com.cjyc.web.api.feign.ISysDeptService;
+import com.cjyc.web.api.feign.ISysUserService;
 import com.cjyc.web.api.service.ICarrierCityConService;
 import com.cjyc.web.api.service.ICarrierDriverConService;
 import com.cjyc.web.api.service.ICarrierService;
@@ -26,6 +34,8 @@ import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -68,6 +79,15 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, com.cjyc.common
     @Resource
     private ICarrierDriverConService carrierDriverConService;
 
+    @Autowired
+    private ISysDeptService sysDeptService;
+
+    @Autowired
+    private ISysUserService sysUserService;
+
+    @Value("${cjkj.carries_menu_ids}")
+    private Long[] menuIds;
+
     @Override
     public boolean saveCarrier(CarrierDto dto) {
         int i ;
@@ -83,7 +103,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, com.cjyc.common
             carrier.setType(CarrierTypeEnum.ENTERPRISE.code);
             carrier = encapCarrier(carrier,dto);
             i = carrierDao.insert(carrier);
-            if(k > 0){
+            if(i > 0){
                 //添加承运商司机管理员
                 driver = new Driver();
                 driver.setPhone(dto.getLinkmanPhone());
@@ -99,7 +119,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, com.cjyc.common
                 CarrierDriverCon cdc = new CarrierDriverCon();
                 cdc.setDriverId(driver.getId());
                 cdc.setCarrierId(carrier.getId());
-                cdc.setRole(DriverIdentityEnum.ADMIN.code);
+                cdc.setRole(DriverIdentityEnum.SUPERADMIN.code);
                 j = carrierDriverConDao.insert(cdc);
             }
             if(j > 0){
@@ -197,6 +217,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, com.cjyc.common
         return pageInfo;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public boolean verifyCarrierById(Long id, Integer state) {
         try{
@@ -204,6 +225,14 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, com.cjyc.common
             Carrier carrier = carrierDao.selectById(id);
             //审核通过
             if(FlagEnum.AUDIT_PASS.code == state){
+                //审核通过将承运商信息同步到物流平台
+                ResultData<AddDeptAndUserResp> rd = saveCarrierToPlatform(carrier);
+                if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+                    throw new CommonException("承运商机构添加失败");
+                }
+                //更新司机userID信息
+                updateDriver(rd.getData().getUserId(), carrier.getId());
+                carrier.setDeptId(rd.getData().getDeptId());
                 carrier.setState(VerifyStateEnum.AUDIT_PASS.code);
             }else if(FlagEnum.AUDIT_REJECT.code == state){
                 //审核拒绝
@@ -267,6 +296,70 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, com.cjyc.common
             throw new CommonException(e.getMessage());
         }
         return BaseResultUtil.getPageVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg(),pageInfo);
+    }
+
+    @Override
+    public ResultVo resetPwd(Long id) {
+        CarrierDriverCon driverCon = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>()
+                .eq("carrier_id", id)
+                .eq("role", DriverIdentityEnum.SUPERADMIN.code));
+        if (driverCon != null) {
+            Driver driver = driverDao.selectById(driverCon.getDriverId());
+            if (driver != null) {
+                ResultData rd =
+                        sysUserService.resetPwd(driver.getUserId(), YmlProperty.get("cjkj.salesman.password"));
+                if (ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+                    return BaseResultUtil.success();
+                }else {
+                    return BaseResultUtil.fail(rd.getMsg());
+                }
+            }
+        }
+        return BaseResultUtil.fail("用户信息有误，请检查");
+    }
+
+    /**
+     * 将承运商相关信息保存到物流平台
+     * @param carrier 承运商信息
+     * @return
+     */
+    private ResultData<AddDeptAndUserResp> saveCarrierToPlatform(Carrier carrier) {
+        if (null == carrier) {
+            return ResultData.failed("承运商信息错误，请检查");
+        }
+        AddDeptAndUserReq deptReq = new AddDeptAndUserReq();
+        deptReq.setName(carrier.getName());
+        deptReq.setLegalPerson(carrier.getLegalName());
+        deptReq.setDeptPerson(carrier.getLinkman());
+        deptReq.setTelephone(carrier.getLinkmanPhone());
+        deptReq.setPassword(YmlProperty.get("cjkj.salesman.password"));
+        if (menuIds != null && menuIds.length > 0) {
+            deptReq.setMenuIdList(Arrays.asList(menuIds));
+        }
+        ResultData<AddDeptAndUserResp> rd = sysDeptService.saveDeptAndUser(deptReq);
+        return rd;
+    }
+
+    /**
+     * 保存司机及承运商-司机关联关系
+     * @param userId
+     * @param carrierId
+     */
+    private void updateDriver(Long userId, Long carrierId) {
+        List<CarrierDriverCon> conList = carrierDriverConDao.selectList(new QueryWrapper<CarrierDriverCon>()
+                .eq("carrier_id", carrierId)
+                .eq("role", DriverIdentityEnum.SUPERADMIN.code));
+        Long driverId = null;
+        if (!CollectionUtils.isEmpty(conList)) {
+            driverId = conList.get(0).getDriverId();
+        }
+        if (driverId != null) {
+            Driver driver = driverDao.selectById(driverId);
+            if (driver != null) {
+                driver.setUserId(userId);
+                driverDao.updateById(driver);
+            }
+        }
     }
 
     /**
