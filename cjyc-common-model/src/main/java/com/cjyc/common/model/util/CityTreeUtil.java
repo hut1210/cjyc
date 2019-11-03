@@ -8,7 +8,7 @@ import java.util.List;
 public class CityTreeUtil {
 
     /**
-     * 封装树形结构
+     * 封装树形结构 List集合转成树形结构
      * @param cityTreeVos
      * @return
      */
