@@ -9,12 +9,11 @@ import com.cjyc.common.model.dao.ICityDao;
 import com.cjyc.common.model.dto.salesman.city.CityPageDto;
 import com.cjyc.common.model.dto.web.city.TreeCityDto;
 import com.cjyc.common.model.entity.City;
-import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.CityTreeUtil;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.city.CityTreeVo;
+import com.cjyc.common.model.vo.CityTreeVo;
 import com.cjyc.common.model.vo.web.city.TreeCityVo;
-import com.cjyc.web.api.exception.CommonException;
 import com.cjyc.web.api.service.ICityService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,7 +81,7 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
     @Override
     public ResultVo cityTree(Integer startLevel,Integer endLevel) {
         List<CityTreeVo> cityTreeVos = cityDao.getAllByLevel(startLevel,endLevel);
-        List<CityTreeVo> nodeList = encapTree(cityTreeVos);
+        List<CityTreeVo> nodeList = CityTreeUtil.encapTree(cityTreeVos);
         return BaseResultUtil.success(nodeList != null ? nodeList:Collections.emptyList());
     }
 
@@ -98,37 +97,10 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
         }
         if(!CollectionUtils.isEmpty(codeSet)){
             cityTreeVos = cityDao.getCityByCodes(codeSet);
-            nodeList = encapTree(cityTreeVos);
+            nodeList = CityTreeUtil.encapTree(cityTreeVos);
         }
         return BaseResultUtil.success(nodeList != null ? nodeList:Collections.emptyList());
     }
-
-    /**
-     * 封装树形结构
-     * @param cityTreeVos
-     * @return
-     */
-    private List<CityTreeVo> encapTree(List<CityTreeVo> cityTreeVos){
-        List<CityTreeVo> nodeList = new ArrayList<>();
-        for(CityTreeVo nodeOne : cityTreeVos){
-            boolean mark = false;
-            for(CityTreeVo nodeTwo:cityTreeVos){
-                if(nodeOne.getParentCode().equals(nodeTwo.getCode())){
-                    mark = true;
-                    if(nodeTwo.getCityVos()==null){
-                        nodeTwo.setCityVos(new ArrayList<>());
-                    }
-                    nodeTwo.getCityVos().add(nodeOne);
-                    break;
-                }
-            }
-            if(!mark){
-                nodeList.add(nodeOne);
-            }
-        }
-        return nodeList;
-    }
-
 
     private List<TreeCityVo> getTree(int startLevel, int endLevel) {
         if (startLevel <= -1 || startLevel > 5 || startLevel >= endLevel) {

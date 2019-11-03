@@ -8,6 +8,7 @@ import java.io.Serializable;
 @Data
 public class OperateDto implements Serializable {
 
+    private static final long serialVersionUID = -1877805036648143698L;
     @ApiModelProperty("操作人userId")
     @NotNull(message ="操作人userId不能为空")
     private Long userId;
@@ -18,6 +19,6 @@ public class OperateDto implements Serializable {
 
     @ApiModelProperty("操作标志 3：审核通过 4：审核拒绝 5：冻结 6：解冻 7：删除 8：作废 9:关闭开关 10：打开开关")
     @NotNull(message = "操作标志不能为空")
-    private Integer state;
+    private Integer flag;
 
 }

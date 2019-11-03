@@ -29,4 +29,11 @@ public interface ICarSeriesDao extends BaseMapper<CarSeries> {
     List<String> getBrand();
 
     List<String> getSeriesByBrand(@Param("brand") String brand);
+
+    /**
+     * 根据关键字查询品牌车系
+     * @param keyword
+     * @return
+     */
+    List<CarSeries> getCarSeries(@Param("keyword") String keyword);
 }

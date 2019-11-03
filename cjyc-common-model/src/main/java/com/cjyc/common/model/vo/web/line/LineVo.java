@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 @Data
 public class LineVo implements Serializable {
 
+    private static final long serialVersionUID = -5565506994979750717L;
     @ApiModelProperty("班线id")
     private Long id;
 

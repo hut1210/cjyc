@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 @Data
 public class InquiryVo implements Serializable {
 
+    private static final long serialVersionUID = -6669376069175092381L;
     @ApiModelProperty("询价id")
     private Long id;
 

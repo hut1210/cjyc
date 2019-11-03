@@ -35,23 +35,21 @@ public class CouponController {
     @ApiOperation(value = "优惠券新增")
     @PostMapping(value = "/saveCoupon")
     public ResultVo saveCoupon(@Validated({ CouponDto.SaveCouponDto.class }) @RequestBody CouponDto dto){
-        boolean result = couponService.saveCoupon(dto);
-        return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg())
-                : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
+        return couponService.saveCoupon(dto);
     }
 
     @ApiOperation(value = "更新优惠券")
     @PostMapping(value = "/updateCoupon")
     public ResultVo updateCoupon(@Validated({ CouponDto.UpaCouponDto.class }) @RequestBody CouponDto dto){
         boolean result = couponService.updateCoupon(dto);
-        return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg())
-                : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
+        return result ? BaseResultUtil.success() : BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
 
     @ApiOperation(value = "审核/作废优惠券")
     @PostMapping(value = "/operateCoupon")
-    public ResultVo operateCoupon(@RequestBody OperateDto dto){
-        return couponService.operateCoupon(dto);
+    public ResultVo operateCoupon(@RequestBody OperateDto dto) {
+        boolean result = couponService.operateCoupon(dto);
+        return result ? BaseResultUtil.success() : BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
 
     @ApiOperation(value = "根据条件筛选分页查询优惠券")

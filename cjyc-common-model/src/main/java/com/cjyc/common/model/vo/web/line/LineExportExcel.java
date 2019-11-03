@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 @Data
 public class LineExportExcel implements Serializable {
 
+    private static final long serialVersionUID = 5003126840391965287L;
     @Excel(name = "始发省" ,orderNum = "0",width = 15)
     private String fromProvince;
 

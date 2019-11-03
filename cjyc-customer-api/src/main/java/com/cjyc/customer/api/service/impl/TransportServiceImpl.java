@@ -29,7 +29,6 @@ import java.time.LocalDateTime;
  */
 @Service
 @Slf4j
-@Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
 public class TransportServiceImpl implements ITransportService {
 
     @Resource

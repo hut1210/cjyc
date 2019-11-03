@@ -1,15 +1,15 @@
-package com.cjyc.common.model.vo.web.city;
+package com.cjyc.common.model.vo;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
 
 @Data
 public class CityTreeVo implements Serializable {
 
+    private static final long serialVersionUID = -3585390982612085010L;
     @ApiModelProperty("城市父编码")
     private String parentCode;
 

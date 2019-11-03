@@ -7,7 +7,7 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.dto.web.city.TreeCityDto;
-import com.cjyc.common.model.vo.web.city.CityTreeVo;
+import com.cjyc.common.model.vo.CityTreeVo;
 import com.cjyc.common.model.vo.web.city.TreeCityVo;
 import com.cjyc.web.api.service.ICityService;
 import io.swagger.annotations.Api;

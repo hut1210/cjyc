@@ -1,6 +1,6 @@
 package com.cjyc.customer.api.service;
 
-import com.cjyc.common.model.dto.customer.invoice.InvoiceOrderQueryDto;
+import com.cjyc.common.model.dto.customer.invoice.InvoiceApplyQueryDto;
 import com.cjyc.common.model.entity.CustomerLine;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.vo.ResultVo;
@@ -16,10 +16,10 @@ import com.cjyc.common.model.vo.ResultVo;
 public interface ICustomerLineService extends IService<CustomerLine> {
 
     /**
-     *
+     * 查询用户历史线路
      * @param dto
      * @return
      */
-    ResultVo getCustomerLine(InvoiceOrderQueryDto dto);
+    ResultVo queryLinePage(InvoiceApplyQueryDto dto);
 
 }

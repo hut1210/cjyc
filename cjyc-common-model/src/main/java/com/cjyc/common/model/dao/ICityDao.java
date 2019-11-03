@@ -1,18 +1,15 @@
 package com.cjyc.common.model.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.cjyc.common.model.dto.BaseCityDto;
 import com.cjyc.common.model.entity.City;
-import com.cjyc.common.model.vo.web.city.CityTreeVo;
+import com.cjyc.common.model.vo.CityTreeVo;
 import com.cjyc.common.model.vo.web.city.FullCityVo;
 import com.cjyc.common.model.vo.web.city.ProvinceCityVo;
 import com.cjyc.common.model.vo.web.city.TreeCityVo;
-import io.swagger.annotations.ApiParam;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.bind.annotation.PathVariable;
 
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -75,5 +72,18 @@ public interface ICityDao extends BaseMapper<City> {
      * @return
      */
     String getCodeByName(@Param("name") String name);
+
+    /**
+     * 根据关键字查询城市
+     * @param keyword
+     * @return
+     */
+    List<City> getCityCodes(@Param("keyword") String keyword);
+
+    /**
+     * 获取热门城市
+     * @return
+     */
+    List<Map<String,Object>> getHotCity();
 }
 

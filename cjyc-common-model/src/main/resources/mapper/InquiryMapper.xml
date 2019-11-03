@@ -43,10 +43,10 @@
     FROM
         s_inquiry
         <where>
-            <if test="startStamp != 0">
+            <if test="startStamp != null">
                    inquiry_time >= #{startStamp}
             </if>
-            <if test="endStamp != 0 ">
+            <if test="endStamp != null ">
                 and  inquiry_time &lt;= #{endStamp}
             </if>
             <if test="fromCity != null  and fromCity.trim() != ''">
@@ -58,6 +58,7 @@
             <if test="state != null">
                 and state = #{state}
             </if>
+            and inquiry_time &lt;= #{hourAgo}
         </where>
     </select>
 

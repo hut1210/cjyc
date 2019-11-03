@@ -1,6 +1,7 @@
 package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.BasePageDto;
+import com.cjyc.common.model.dto.web.inquiry.HandleInquiryDto;
 import com.cjyc.common.model.dto.web.inquiry.SelectInquiryDto;
 import com.cjyc.common.model.entity.Dictionary;
 import com.cjyc.common.model.enums.ResultEnum;
@@ -36,17 +37,14 @@ public class InquiryController  {
     @PostMapping(value = "/getAllInquiryByTerm")
     public ResultVo<PageVo<InquiryVo>> getAllInquiryByTerm(@RequestBody SelectInquiryDto dto){
         BasePageUtil.initPage(dto.getCurrentPage(),dto.getPageSize());
-        PageInfo<InquiryVo> pageInfo = inquiryService.getAllInquiryByTerm(dto);
-        return BaseResultUtil.getPageVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),pageInfo);
+        return inquiryService.getAllInquiryByTerm(dto);
     }
 
-    @ApiOperation(value = "根据id添加工单")
-    @PostMapping(value = "/addJobContentById/{inquiryId}/{jobContent}")
-    public ResultVo addJobContentById(@PathVariable @ApiParam(value = "询价条目id",required = true) Long inquiryId,
-                                      @PathVariable @ApiParam(value = "内容",required = true) String jobContent){
-        boolean result= inquiryService.addJobContentById(inquiryId,jobContent);
-        return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg())
-                : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
+    @ApiOperation(value = "处理工单")
+    @PostMapping(value = "/handleInquiry")
+    public ResultVo handleInquiry(@RequestBody HandleInquiryDto dto){
+        boolean result= inquiryService.handleInquiry(dto);
+        return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
 
 }
