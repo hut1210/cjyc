@@ -27,7 +27,7 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
 
     @Override
     public ResultVo queryCity(KeywordDto dto) {
-        List<Object> cityList = new ArrayList<>();
+        List<Object> cityList = new ArrayList<>(15);
         //获取热门城市
         List<Map<String,Object>> hotCity = cityDao.getHotCity();
         List<CityTreeVo> cityTreeVos = null;
@@ -35,7 +35,7 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
         if(StringUtils.isNotBlank(dto.getKeyword())){
             //获取关键字所在的省市code
             List<City> cityCodes = cityDao.getCityCodes(dto.getKeyword());
-            Set<String> codes = new HashSet<>();
+            Set<String> codes = new HashSet<>(15);
             if(!CollectionUtils.isEmpty(cityCodes)){
                 for(City city : cityCodes){
                     codes.add(city.getCode());
