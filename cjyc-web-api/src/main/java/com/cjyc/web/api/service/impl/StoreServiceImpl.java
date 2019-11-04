@@ -2,11 +2,20 @@ package com.cjyc.web.api.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.cjkj.common.model.ResultData;
+import com.cjkj.common.model.ReturnMsg;
 import com.cjkj.common.utils.ExcelUtil;
+import com.cjkj.usercenter.dto.common.AddDeptReq;
+import com.cjkj.usercenter.dto.common.AddDeptResp;
+import com.cjkj.usercenter.dto.common.SelectDeptResp;
+import com.cjkj.usercenter.dto.common.UpdateDeptReq;
+import com.cjkj.usercenter.dto.yc.SelectUsersByRoleResp;
+import com.cjyc.common.model.dao.IAdminDao;
 import com.cjyc.common.model.dto.web.carSeries.CarSeriesQueryDto;
 import com.cjyc.common.model.dto.web.store.StoreAddDto;
 import com.cjyc.common.model.dto.web.store.StoreQueryDto;
 import com.cjyc.common.model.dto.web.store.StoreUpdateDto;
+import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.CarSeries;
 import com.cjyc.common.model.entity.Store;
 import com.cjyc.common.model.dao.IStoreDao;
@@ -18,11 +27,14 @@ import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.store.StoreExportExcel;
 import com.cjyc.common.model.vo.web.carSeries.CarSeriesExportExcel;
+import com.cjyc.web.api.feign.ISysDeptService;
+import com.cjyc.web.api.feign.ISysUserService;
 import com.cjyc.web.api.service.IStoreService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -48,6 +60,15 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
     @Resource
     private IStoreDao storeDao;
 
+    @Autowired
+    private ISysDeptService sysDeptService;
+
+    @Autowired
+    private ISysUserService sysUserService;
+
+    @Resource
+    private IAdminDao adminDao;
+
     @Override
     public List<Store> getByCityCode(String cityCode) {
         return storeDao.findByCityCode(cityCode);
@@ -72,6 +93,13 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
         BeanUtils.copyProperties(storeAddDto,store);
         store.setState(CommonStateEnum.WAIT_CHECK.code);
         store.setCreateTime(System.currentTimeMillis());
+        //将业务中心信息添加到物流平台
+        ResultData<Long> saveRd = addBizCenterToPlatform(store);
+        if (!ReturnMsg.SUCCESS.getCode().equals(saveRd.getCode())) {
+            log.error("保存业务中心失败，原因：" + saveRd.getMsg());
+            return false;
+        }
+        store.setDeptId(saveRd.getData());
         return super.save(store);
     }
 
@@ -80,6 +108,12 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
         Store store = new Store();
         BeanUtils.copyProperties(storeUpdateDto,store);
         store.setUpdateTime(System.currentTimeMillis());
+        //修改业务中心信息
+        ResultData rd = updateBizCenterToPlatform(store);
+        if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+            log.error("修改业务中心失败，原因：" + rd.getMsg());
+            return false;
+        }
         return super.updateById(store);
     }
 
@@ -109,6 +143,33 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
         }
     }
 
+    @Override
+    public ResultVo<List<Admin>> listAdminsByStoreId(Long storeId) {
+        //业务中心列表获取
+        Store store = baseMapper.selectById(storeId);
+        if (null == store) {
+            return BaseResultUtil.fail("业务中心获取错误, 根据id：" + storeId + "未获取到信息");
+        }
+        ResultData<List<SelectUsersByRoleResp>> usersRd =
+                sysUserService.getUsersByDeptId(store.getDeptId());
+        if (!ReturnMsg.SUCCESS.getCode().equals(usersRd.getCode())) {
+            return BaseResultUtil.fail("查询用户列表信息失败，原因：" + usersRd.getMsg());
+        }
+        if (CollectionUtils.isEmpty(usersRd.getData())) {
+            return BaseResultUtil.success();
+        }
+        List<Admin> adminList = new ArrayList<>();
+        usersRd.getData().stream().forEach(u -> {
+            Admin admin = adminDao.selectOne(new QueryWrapper<Admin>()
+                    .eq("phone", u.getAccount()));
+            if (null != admin) {
+                admin.setBizDesc(u.getRoles());
+                adminList.add(admin);
+            }
+        });
+        return BaseResultUtil.success(adminList);
+    }
+
     private StoreQueryDto getStoreQueryDto(HttpServletRequest request) {
         StoreQueryDto storeQueryDto = new StoreQueryDto();
         storeQueryDto.setCurrentPage(Integer.valueOf(request.getParameter("currentPage")));
@@ -130,5 +191,52 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
         return super.list(queryWrapper);
     }
 
+    /**
+     * 将业务中心添加到物流平台
+     * @param store
+     * @return
+     */
+    private ResultData<Long> addBizCenterToPlatform(Store store) {
+        ResultData<SelectDeptResp> deptRd = sysDeptService.getDeptByCityCode(store.getCityCode());
+        if (!ReturnMsg.SUCCESS.getCode().equals(deptRd.getCode())) {
+            return ResultData.failed("根据城市编码查询机构信息错误，原因：" + deptRd.getMsg());
+        }
+        Long parentId = deptRd.getData().getDeptId();
+        AddDeptReq deptReq = new AddDeptReq();
+        deptReq.setName(store.getName());
+        deptReq.setParentId(parentId);
+        ResultData<AddDeptResp> saveRd = sysDeptService.save(deptReq);
+        if (!ReturnMsg.SUCCESS.getCode().equals(saveRd.getCode())) {
+            return ResultData.failed("保存业务中心失败，原因：" + saveRd.getMsg());
+        }
+        return ResultData.ok(saveRd.getData().getDeptId());
+    }
 
+    /**
+     * 修改业务中心信息
+     * @param store
+     * @return
+     */
+    private ResultData updateBizCenterToPlatform(Store store) {
+        //1.验证cityCode是否变更
+        Store originalStore = storeDao.selectById(store.getId());
+        if (null == originalStore) {
+            return ResultData.failed("根据业务中心id：" + store.getId() + ", 未查询到机构信息");
+        }
+        Long parentDeptId = null;
+        if (!store.getCityCode().equals(originalStore.getCityCode())) {
+            //上级机构变更，物流平台需要变更部门
+            ResultData<SelectDeptResp> deptRd =
+                    sysDeptService.getDeptByCityCode(store.getCityCode());
+            if (!ReturnMsg.SUCCESS.getCode().equals(deptRd.getCode())) {
+                return ResultData.failed("查询机构信息错误，原因: " + deptRd.getMsg());
+            }
+            parentDeptId = deptRd.getData().getDeptId();
+        }
+        UpdateDeptReq deptReq = new UpdateDeptReq();
+        deptReq.setDeptId(originalStore.getDeptId());
+        deptReq.setName(store.getName());
+        deptReq.setParentId(parentDeptId);
+        return sysDeptService.update(deptReq);
+    }
 }

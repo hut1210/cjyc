@@ -97,9 +97,7 @@ public class CustomerServiceImpl implements ICustomerService{
             customer.setCreateTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
             customer.setCreateUserId(customerDto.getUserId());
             //用户手机号在C端不能重复
-            List<Customer> existList = customerDao.selectList(new QueryWrapper<Customer>()
-                    .eq("contact_phone", customer.getContactPhone()));
-            if (!CollectionUtils.isEmpty(existList)) {
+            if (phoneExistsInCustomer(customer.getContactPhone())) {
                 log.error("手机号已存在，请检查");
                 return false;
             }
@@ -122,7 +120,7 @@ public class CustomerServiceImpl implements ICustomerService{
         try{
             Customer customer = customerDao.selectById(customerDto.getId());
             if(null != customer){
-                ResultData<Boolean> updateRd = updateCustomerToPlatform(customer, customerDto);
+                ResultData<Boolean> updateRd = updateCustomerToPlatform(customer, customerDto.getPhone());
                 if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
                     log.error("修改用户信息失败，原因：" + updateRd.getMsg());
                     return false;
@@ -195,6 +193,17 @@ public class CustomerServiceImpl implements ICustomerService{
             customer.setCreateTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
             customer.setCreateUserId(keyCustomerDto.getUserId());
             //
+            //客户端信息不能重复
+            if (phoneExistsInCustomer(keyCustomerDto.getContactPhone())) {
+                return false;
+            }
+            //保存大客户信息到物流平台
+            ResultData<Long> rd = addCustomerToPlatform(customer);
+            if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+                log.error("保存大客户信息失败，原因：" + rd.getMsg());
+                return false;
+            }
+            customer.setUserId(rd.getData());
             int num = customerDao.insert(customer);
             if(num > 0){
                 //合同集合
@@ -212,11 +221,11 @@ public class CustomerServiceImpl implements ICustomerService{
                     }
                 }
             }
+            return true;
         }catch (Exception e){
             log.error("新增大客户&合同出现异常",e);
             throw new CommonException("新增大客户&合同出现异常");
         }
-        return false;
     }
 
     @Override
@@ -292,6 +301,16 @@ public class CustomerServiceImpl implements ICustomerService{
         try{
             Customer customer = customerDao.selectById(keyCustomerDto.getId());
             if(null != customer){
+                //判断手机号是否存在
+                ResultData<Boolean> updateRd = updateCustomerToPlatform(customer, keyCustomerDto.getContactPhone());
+                if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
+                    log.error("修改用户信息失败，原因：" + updateRd.getMsg());
+                    return false;
+                }
+                if (updateRd.getData()) {
+                    //需要同步手机号信息
+                    syncPhone(customer.getContactPhone(), keyCustomerDto.getContactPhone());
+                }
                 customer.setName(keyCustomerDto.getName());
                 customer.setContactMan(keyCustomerDto.getContactMan());
                 customer.setContactPhone(keyCustomerDto.getContactPhone());
@@ -313,6 +332,7 @@ public class CustomerServiceImpl implements ICustomerService{
                         }
                     }
                 }
+                return true;
             }
         }catch (Exception e){
             log.error("更新大客户&合同出现异常",e);
@@ -377,6 +397,17 @@ public class CustomerServiceImpl implements ICustomerService{
                 customer.setState(CommonStateEnum.WAIT_CHECK.code);
                 customer.setCreateTime(createTime);
                 customer.setCreateUserId(dto.getUserId());
+                //用户手机号在C端不能重复
+                if (phoneExistsInCustomer(customer.getContactPhone())) {
+                    log.error("手机号已存在，请检查");
+                    return BaseResultUtil.fail("手机号已存在，请检查");
+                }
+                //新增用户信息到物流平台
+                ResultData<Long> rd = addCustomerToPlatform(customer);
+                if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+                    throw new CommonException(rd.getMsg());
+                }
+                customer.setUserId(rd.getData());
                 n = customerDao.insert(customer);
                 if(n > 0){
                     //新增合伙人附加信息c_customer_partner
@@ -397,6 +428,16 @@ public class CustomerServiceImpl implements ICustomerService{
             }else if(dto.getFlag() == FlagEnum.UPDTATE.code){
                 //更新
                 customer = customerDao.selectById(dto.getId());
+                //判断手机号是否存在
+                ResultData<Boolean> updateRd = updateCustomerToPlatform(customer, dto.getContactPhone());
+                if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
+                    log.error("修改用户信息失败，原因：" + updateRd.getMsg());
+                    return BaseResultUtil.fail("修改用户信息失败，原因：" + updateRd.getMsg());
+                }
+                if (updateRd.getData()) {
+                    //需要同步手机号信息
+                    syncPhone(customer.getContactPhone(), dto.getContactPhone());
+                }
                 encapCustomer(customer,dto);
                 n = customerDao.updateById(customer);
                 if(n > 0){
@@ -699,12 +740,11 @@ public class CustomerServiceImpl implements ICustomerService{
      * 修改账号信息到物流平台：
      *  修改物流平台账号信息：如果修改账号则将要修改的账号不能存在否则修改失败
      * @param customer
-     * @param dto
+     * @param newPhone
      * @return
      */
-    private ResultData<Boolean> updateCustomerToPlatform(Customer customer, CustomerDto dto) {
+    private ResultData<Boolean> updateCustomerToPlatform(Customer customer, String newPhone) {
         String oldPhone = customer.getContactPhone();
-        String newPhone = dto.getPhone();
         if (!oldPhone.equals(newPhone)) {
             //新旧账号不相同需要替换手机号
             //先查询韵车是否存在newPhone 相同账号，存在则不允许修改
@@ -773,5 +813,20 @@ public class CustomerServiceImpl implements ICustomerService{
             driver.setPhone(newPhone);
             driverDao.updateById(driver);
         }
+    }
+
+    /**
+     * 校验：手机号是否在Customer中存在
+     * @param phone
+     * @return
+     */
+    private boolean phoneExistsInCustomer(String phone) {
+        List<Customer> existList = customerDao.selectList(new QueryWrapper<Customer>()
+                .eq("contact_phone", phone));
+        if (!CollectionUtils.isEmpty(existList)) {
+            log.error("手机号已存在，请检查");
+            return true;
+        }
+        return false;
     }
 }

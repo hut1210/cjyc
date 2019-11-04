@@ -3,6 +3,7 @@ package com.cjyc.web.api.service;
 import com.cjyc.common.model.dto.web.store.StoreAddDto;
 import com.cjyc.common.model.dto.web.store.StoreQueryDto;
 import com.cjyc.common.model.dto.web.store.StoreUpdateDto;
+import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Store;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.vo.ResultVo;
@@ -52,4 +53,11 @@ public interface IStoreService extends IService<Store> {
      * @param response
      */
     void exportExcel(HttpServletRequest request, HttpServletResponse response);
+
+    /**
+     * 根据业务中心id获取此机构下所有关联用户列表
+     * @param storeId
+     * @return
+     */
+    ResultVo<List<Admin>> listAdminsByStoreId(Long storeId);
 }
