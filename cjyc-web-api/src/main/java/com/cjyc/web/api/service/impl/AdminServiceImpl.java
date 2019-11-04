@@ -7,6 +7,7 @@ import com.cjyc.web.api.service.IAdminService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * <p>
@@ -24,5 +25,10 @@ public class AdminServiceImpl extends ServiceImpl<IAdminDao, Admin> implements I
     @Override
     public Admin getByUserId(Long userId) {
         return adminDao.findByUserId(userId);
+    }
+
+    @Override
+    public List<Admin> listByStore(Long storeId) {
+        return null;
     }
 }

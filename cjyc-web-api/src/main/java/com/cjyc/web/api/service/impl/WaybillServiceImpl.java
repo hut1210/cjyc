@@ -679,8 +679,29 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
     }
 
     @Override
-    public ResultVo<PageVo<TrunkListWaybillCarVo>> trunkCarlist(TrunkListWaybillCarDto reqDto) {
+    public ResultVo<PageVo<TrunkListWaybillCarVo>> trunkCarlist(TrunkListWaybillCarDto paramsDto) {
+        PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
+        List<TrunkListWaybillCarVo> list = waybillCarDao.findListTrunk(paramsDto);
+        PageInfo<TrunkListWaybillCarVo> pageInfo = new PageInfo<>(list);
+        if(paramsDto.getCurrentPage() > pageInfo.getPages()){
+            pageInfo.setList(null);
+        }
+        return BaseResultUtil.success(pageInfo);
+    }
+
+    @Override
+    public ResultVo<GetWaybillVo> get(Long id) {
+
+        Waybill waybill = waybillDao.selectById(id);
+        List<WaybillCar> listCar = waybillCarDao.findListByWaybillId(id);
         return null;
+    }
+
+    @Override
+    public ResultVo<List<GetWaybillCarVo> > getCarByType(Long orderCarId, Integer waybillType) {
+       List<GetWaybillCarVo> list =waybillCarDao.findVoByType(orderCarId, waybillType);
+
+        return BaseResultUtil.success(list);
     }
 
 }

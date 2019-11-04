@@ -45,7 +45,7 @@ import java.util.Map;
  * @since 2019-10-09
  */
 @Service
-@Transactional(rollbackFor = ServerException.class)
+@Transactional(rollbackFor = RuntimeException.class)
 public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements IOrderService {
 
     @Resource
@@ -66,6 +66,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     private ICouponSendService couponSendService;
     @Resource
     private IStoreDao storeDao;
+
 
     @Override
     public ResultVo save(SaveOrderDto paramsDto) {
@@ -89,11 +90,11 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         FullCityVo startFullCityVo = cityDao.findFullCityVo(paramsDto.getStartAreaCode());
         copyOrderStartCity(startFullCityVo, order);
         FullCityVo endFullCityVo = cityDao.findFullCityVo(paramsDto.getEndAreaCode());
-        copyOrderEndCity(startFullCityVo, order);
+        copyOrderEndCity(endFullCityVo, order);
 
         /**1、组装订单数据
          */
-        if (order.getNo() == null) {
+        if (newOrderFlag) {
             order.setNo(sendNoService.getNo(SendNoTypeEnum.ORDER));
         }
         order.setState(OrderStateEnum.WAIT_SUBMIT.code);
@@ -171,6 +172,19 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
 
         return BaseResultUtil.success(resList);
     }
+
+    @Override
+    public List<ListOrderChangeLogVo> getChangeLogVoById(ListOrderChangeLogDto paramsDto) {
+        return orderChangeLogDao.findList(paramsDto);
+    }
+
+    @Override
+    public List<TransportInfoOrderCarVo> getTransportInfoVoById(Long orderId) {
+        List<TransportInfoOrderCarVo> list = orderCarDao.findTransportStateByOrderId(orderId);
+        return list;
+    }
+
+
 
     private String getStoreAddress(Store sSto) {
         return (sSto.getProvince() == null ? "" : sSto.getProvince()) +
@@ -272,9 +286,30 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         /**1、组装订单数据
          *
          */
-        if (order.getNo() == null) {
+        if (newOrderFlag) {
             order.setNo(sendNoService.getNo(SendNoTypeEnum.ORDER));
         }
+        //计算所属业务中心ID
+        if(paramsDto.getStartStoreId() > 0){
+            order.setStartBelongStoreId(paramsDto.getStartStoreId());
+        }else{
+            //查询地址所属业务中心
+            Store startBelongStore = storeDao.findOneBelongByAreaCode(order.getStartAreaCode());
+            if(startBelongStore != null){
+                order.setStartBelongStoreId(startBelongStore.getId());
+            }
+        }
+        if(paramsDto.getEndStoreId() > 0){
+            order.setStartBelongStoreId(paramsDto.getEndStoreId());
+        }else{
+            //查询地址所属业务中心
+            Store endBelongStore = storeDao.findOneBelongByAreaCode(order.getEndAreaCode());
+            if(endBelongStore != null){
+                order.setStartBelongStoreId(endBelongStore.getId());
+            }
+        }
+
+
         order.setState(OrderStateEnum.SUBMITTED.code);
         order.setSource(order.getSource() == null ? paramsDto.getClientId() : order.getSource());
         order.setCreateTime(System.currentTimeMillis());
@@ -325,7 +360,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     }
 
     private void copyOrderStartCity(FullCityVo vo, Order order) {
-        if(vo != null){
+        if(vo == null){
             return;
         }
         order.setStartProvince(vo.getProvince());
@@ -336,7 +371,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         order.setStartAreaCode(vo.getAreaCode());
     }
     private void copyOrderEndCity(FullCityVo vo, Order order) {
-        if(vo != null){
+        if(vo == null){
             return;
         }
         order.setEndProvince(vo.getProvince());
@@ -360,7 +395,34 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
             return BaseResultUtil.fail("[订单]-已经审核过，无法审核");
         }
         //验证必要信息是否完全
-        validateOrderFeild(order);
+        //validateOrderFeild(order);
+        if (order.getId() == null || order.getNo() == null) {
+            throw new ParameterException("[订单]-订单编号不能为空");
+        }
+        if (order.getCustomerId() == null) {
+            throw new ParameterException("[订单]-客户不存在");
+        }
+        if (order.getStartProvinceCode() == null
+                || order.getStartCityCode() == null
+                || order.getStartAreaCode() == null
+                || order.getStartAddress() == null
+                || order.getEndProvinceCode() == null
+                || order.getEndCityCode() == null
+                || order.getEndAreaCode() == null
+                || order.getEndAddress() == null) {
+            throw new ParameterException("[订单]-地址不完整");
+        }
+        if (order.getCarNum() == null || order.getCarNum() <= 0) {
+            throw new ParameterException("[订单]-车辆数不能小于一辆");
+        }
+        if (order.getPickType() == null
+                || order.getPickContactPhone() == null) {
+            throw new ParameterException("[订单]-提车联系人不能为空");
+        }
+        if (order.getBackType() == null
+                || order.getBackContactPhone() == null) {
+            throw new ParameterException("收车联系人不能为空");
+        }
 
         List<OrderCar> orderCarList = orderCarDao.findByOrderId(order.getId());
         if (orderCarList == null || list().isEmpty()) {
@@ -402,7 +464,38 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
 
         return BaseResultUtil.success();
     }
-
+    @Override
+    public ResultVo reject(RejectOrderDto paramsDto) {
+        Order order = orderDao.selectById(paramsDto.getOrderId());
+        if (order == null) {
+            return BaseResultUtil.fail("[订单]-不存在");
+        }
+        Integer oldState = order.getState();
+        if (oldState <= OrderStateEnum.WAIT_SUBMIT.code) {
+            return BaseResultUtil.fail("[订单]-未提交，无法驳回");
+        }
+        if (oldState > OrderStateEnum.CHECKED.code) {
+            return BaseResultUtil.fail("[订单]-已经运输无法驳回");
+        }
+        orderDao.updateStateById(OrderStateEnum.WAIT_SUBMIT.code, order.getId());
+        //记录驳回信息
+        //添加操作日志
+        OrderChangeLog orderChangeLog = new OrderChangeLog();
+        orderChangeLog.setOrderId(order.getId());
+        orderChangeLog.setOrderNo(order.getNo());
+        orderChangeLog.setName(OrderChangeTypeEnum.REJECT.name);
+        orderChangeLog.setType(OrderChangeTypeEnum.REJECT.code);
+        orderChangeLog.setOldContent(oldState.toString());
+        orderChangeLog.setNewContent(String.valueOf(OrderStateEnum.WAIT_SUBMIT.code));
+        orderChangeLog.setReason(paramsDto.getReason());
+        orderChangeLog.setState(CommonStateEnum.CHECKED.code);
+        orderChangeLog.setCreateTime(System.currentTimeMillis());
+        orderChangeLog.setCreateUser(paramsDto.getUserName());
+        orderChangeLog.setCreateUserId(paramsDto.getUserId());
+        orderChangeLogDao.insert(orderChangeLog);
+        //TODO 发送消息给创建人
+        return BaseResultUtil.success();
+    }
     /**
      * 验证订单属性
      *
@@ -411,33 +504,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
      * @since 2019/10/29 9:16
      */
     private void validateOrderFeild(Order order) {
-        if (order.getId() == null || order.getNo() == null) {
-            throw new ParameterException("[订单]-订单编号不能为空");
-        }
-        if (order.getCustomerId() == null) {
-            throw new ParameterException("[订单]-客户不存在");
-        }
-        if (order.getStartProvinceCode() == null
-                || order.getStartCityCode() == null
-                || order.getStartAreaCode() == null
-                || order.getStartAddress() == null
-                || order.getEndProvinceCode() == null
-                || order.getEndCityCode() == null
-                || order.getEndAreaCode() == null
-                || order.getEndAddress() == null) {
-            throw new ParameterException("[订单]-地址不完整");
-        }
-        if (order.getCarNum() == null || order.getCarNum() <= 0) {
-            throw new ParameterException("[订单]-车辆数不能小于一辆");
-        }
-        if (order.getPickType() == null
-                || order.getPickContactPhone() == null) {
-            throw new ParameterException("[订单]-提车联系人不能为空");
-        }
-        if (order.getBackType() == null
-                || order.getBackContactPhone() == null) {
-            throw new ParameterException("收车联系人不能为空");
-        }
+
 
     }
 
@@ -566,7 +633,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
 
     @Override
     public ResultVo<PageVo<ListOrderCarVo>> carlist(ListOrderCarDto paramsDto) {
-        PageHelper.offsetPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
+        PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
         List<ListOrderCarVo> list = orderCarDao.findListSelective(paramsDto);
         PageInfo<ListOrderCarVo> pageInfo = new PageInfo<>(list);
         if (paramsDto.getCurrentPage() > pageInfo.getPages()) {
@@ -655,7 +722,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
 
     @Override
     public ResultVo replenishInfo(ReplenishOrderDto paramsDto) {
-        Order order = orderDao.selectById(paramsDto.getUserId());
+        Order order = orderDao.selectById(paramsDto.getOrderId());
         if (order == null || order.getState() >= OrderStateEnum.TRANSPORTING.code) {
             return BaseResultUtil.fail("订单不允许修改");
         }

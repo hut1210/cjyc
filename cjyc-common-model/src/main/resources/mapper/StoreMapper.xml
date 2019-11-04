@@ -49,5 +49,21 @@
         from s_store_city_con
         where store_id = #{id}
     </select>
+    <select id="findBelongByAreaCode" resultType="com.cjyc.common.model.entity.Store">
+        select
+        <include refid="Base_Column_List"/>
+        from s_store_city_con con
+        join s_store s on con.store_id = s.id
+        where con.area_code = #{areaCode}
+    </select>
+    <select id="findOneBelongByAreaCode" resultType="com.cjyc.common.model.entity.Store">
+        select
+        <include refid="Base_Column_List"/>
+        from s_store_city_con con
+        join s_store s on con.store_id = s.id
+        where con.area_code = #{areaCode}
+        limit 1
+
+    </select>
 
 </mapper>

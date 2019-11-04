@@ -17,7 +17,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-11-02
+ * @since 2019-11-04
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -74,6 +74,9 @@ public class WaybillCar implements Serializable {
     @ApiModelProperty(value = "出发地业务中心ID")
     private Long startStoreId;
 
+    @ApiModelProperty(value = "起始地所属业务中心ID")
+    private Long startBelongStoreId;
+
     @ApiModelProperty(value = "省")
     private String endProvince;
 
@@ -100,6 +103,9 @@ public class WaybillCar implements Serializable {
 
     @ApiModelProperty(value = "目的地业务中心ID")
     private Long endStoreId;
+
+    @ApiModelProperty(value = "目的地所属业务中心ID")
+    private Long endBelongStoreId;
 
     @ApiModelProperty(value = "线路ID")
     private Long lineId;

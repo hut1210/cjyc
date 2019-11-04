@@ -26,4 +26,5 @@ public interface IAdminDao extends BaseMapper<Admin> {
      * @return
      */
     Admin getByCarrierId(@Param("carrierId") Long carrierId);
+
 }

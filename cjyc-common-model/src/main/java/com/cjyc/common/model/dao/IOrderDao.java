@@ -9,6 +9,7 @@ import com.cjyc.common.model.vo.web.order.ListOrderVo;
 import com.cjyc.common.model.vo.web.order.OrderVo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 import java.util.Map;
@@ -38,4 +39,6 @@ public interface IOrderDao extends BaseMapper<Order> {
     int updateStateForLoad(@Param("orderState") int orderState, @Param("orderCarId") Long orderCarId);
 
     Map<String, Object> countForAllTab();
+
+    int updateStateById(@Param("state") int state, @Param("id") Long id);
 }

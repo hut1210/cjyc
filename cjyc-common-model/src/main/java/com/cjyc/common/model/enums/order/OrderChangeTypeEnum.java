@@ -8,6 +8,7 @@ public enum OrderChangeTypeEnum {
 
     /***/
     CHANGE_FEE("订单改价", 1),
+    REJECT("驳回订单", 3),
     CANCEL("取消订单", 4),
     OBSOLETE("作废订单", 7);
 

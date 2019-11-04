@@ -26,6 +26,15 @@
     <sql id="Base_Column_List">
         id, order_id, order_no, name, type, old_content, new_content, reason, state, create_time, create_user, create_user_id, check_time, check_user, check_user_id
     </sql>
+    <select id="findList" resultType="com.cjyc.common.model.vo.web.order.ListOrderChangeLogVo">
+        select
+        o.total_fee,
+        ocl.*
+        from w_order o
+        join w_order_change_log ocl on ocl.order_id = o.id
+        where o.id = #{paramsDto.orderId}
+        and ocl.type = #{paramsDto.type}
+    </select>
 
 
 </mapper>

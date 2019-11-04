@@ -61,4 +61,10 @@ public interface IOrderService extends IService<Order> {
     ResultVo save(SaveOrderDto reqDto);
 
     ResultVo<List<CarFromToGetVo>> getCarFromTo(CarFromToGetDto reqDto);
+
+    List<ListOrderChangeLogVo> getChangeLogVoById(ListOrderChangeLogDto reqDto);
+
+    List<TransportInfoOrderCarVo> getTransportInfoVoById(Long orderId);
+
+    ResultVo reject(RejectOrderDto reqDto);
 }

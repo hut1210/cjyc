@@ -13,12 +13,10 @@ import com.cjyc.web.api.service.IAdminService;
 import com.cjyc.web.api.service.IWaybillService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -102,7 +100,7 @@ public class WaybillController {
      */
     @ApiOperation(value = "根据订单车辆ID查询历史运单")
     @PostMapping(value = "/car/history/list")
-    public ResultVo<List<HistoryListWaybillVo>> carHistoryList(@RequestBody HistoryListWaybillDto reqDto) {
+    public ResultVo<List<HistoryListWaybillVo>> getCarHistoryList(@RequestBody HistoryListWaybillDto reqDto) {
         return waybillService.historyList(reqDto);
     }
 
@@ -112,7 +110,7 @@ public class WaybillController {
      */
     @ApiOperation(value = "查询同城运单列表")
     @PostMapping(value = "/local/list")
-    public ResultVo<PageVo<LocalListWaybillCarVo>> localList(@RequestBody LocalListWaybillCarDto reqDto) {
+    public ResultVo<PageVo<LocalListWaybillCarVo>> getLocalList(@RequestBody LocalListWaybillCarDto reqDto) {
         return waybillService.Locallist(reqDto);
     }
 
@@ -121,19 +119,40 @@ public class WaybillController {
      */
     @ApiOperation(value = "查询干线运单列表")
     @PostMapping(value = "/trunk/list")
-    public ResultVo<PageVo<TrunkListWaybillVo>> trunklist(@RequestBody TrunkListWaybillDto reqDto) {
+    public ResultVo<PageVo<TrunkListWaybillVo>> getTrunklist(@RequestBody TrunkListWaybillDto reqDto) {
         return waybillService.trunklist(reqDto);
     }
 
 
     /**
-     * 查询干线运单列表
+     * 查询干线运单车辆列表
      */
-    @ApiOperation(value = "查询干线运单列表")
+    @ApiOperation(value = "查询干线运单车辆列表")
     @PostMapping(value = "/trunk/car/list")
-    public ResultVo<PageVo<TrunkListWaybillCarVo>> trunklist(@RequestBody TrunkListWaybillCarDto reqDto) {
+    public ResultVo<PageVo<TrunkListWaybillCarVo>> getCarTrunklist(@RequestBody TrunkListWaybillCarDto reqDto) {
         return waybillService.trunkCarlist(reqDto);
     }
+
+    /**
+     * 查询干线运单车辆列表
+     */
+    @ApiOperation(value = "查询干线运单车辆列表")
+    @PostMapping(value = "/get/{waybillId}")
+    public ResultVo<GetWaybillVo> get(@ApiParam(value = "运单ID") @PathVariable Long waybillId) {
+        return waybillService.get(waybillId);
+    }
+
+    /**
+     * 分类查询车辆运单
+     */
+    @ApiOperation(value = "分类查询车辆运单")
+    @PostMapping(value = "/car/get/{orderCarId}/{waybillType}")
+    public ResultVo<List<GetWaybillCarVo>> getByType(@ApiParam(value = "运单ID") @PathVariable Long orderCarId,
+    @ApiParam(value = "运单类型") @PathVariable Integer waybillType) {
+        return waybillService.getCarByType(orderCarId, waybillType);
+    }
+
+
 
     /**
      * 我的运单-承运商

@@ -1,12 +1,9 @@
 package com.cjyc.common.model.dao;
 
-import com.cjyc.common.model.entity.City;
-import com.cjyc.common.model.entity.Store;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.github.pagehelper.PageInfo;
+import com.cjyc.common.model.entity.Store;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -24,4 +21,8 @@ public interface IStoreDao extends BaseMapper<Store> {
     List<Store> findByAreaCode(String areaCode);
 
     List<String> findAreaBizScope(Long id);
+
+    List<Store> findBelongByAreaCode(String areaCode);
+
+    Store findOneBelongByAreaCode(String areaCode);
 }

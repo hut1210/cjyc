@@ -2,18 +2,11 @@ package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.entity.Admin;
-import com.cjyc.common.model.entity.Order;
-import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.enums.AdminStateEnum;
-import com.cjyc.common.model.enums.order.OrderSaveTypeEnum;
-import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.vo.BizScopeVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.order.ListOrderCarVo;
-import com.cjyc.common.model.vo.web.order.ListOrderVo;
-import com.cjyc.common.model.vo.web.order.OrderVo;
+import com.cjyc.common.model.vo.web.order.*;
 import com.cjyc.web.api.service.IAdminService;
 import com.cjyc.web.api.service.IBizScopeService;
 import com.cjyc.web.api.service.IOrderService;
@@ -117,6 +110,24 @@ public class OrderController {
         return orderService.check(reqDto);
     }
 
+    /**
+     * 驳回订单
+     * @author JPG
+     */
+    @ApiOperation(value = "驳回订单")
+    @PostMapping(value = "/reject")
+    public ResultVo reject(@RequestBody RejectOrderDto reqDto) {
+        //验证用户存不存在
+        Long userId = reqDto.getUserId();
+        Admin admin = adminService.getByUserId(userId);
+        if(admin == null){
+            return BaseResultUtil.fail("用户不存在");
+        }
+        return orderService.reject(reqDto);
+    }
+
+
+
 
     /**
      * 查询订单-根据ID
@@ -127,6 +138,18 @@ public class OrderController {
     public ResultVo<OrderVo> get(@PathVariable Long orderId) {
         OrderVo orderVo = orderService.getVoById(orderId);
         return BaseResultUtil.success(orderVo);
+    }
+
+
+    /**
+     * 查询订单取消记录-根据ID
+     * @author JPG
+     */
+    @ApiOperation(value = "查询订单取消记录-根据ID")
+    @PostMapping(value = "/change/log/list")
+    public ResultVo<List<ListOrderChangeLogVo>> get(@RequestBody ListOrderChangeLogDto reqDto) {
+        List<ListOrderChangeLogVo> list = orderService.getChangeLogVoById(reqDto);
+        return BaseResultUtil.success(list);
     }
 
     /**
@@ -148,6 +171,17 @@ public class OrderController {
     public ResultVo<PageVo<ListOrderCarVo>> carlist(@RequestBody ListOrderCarDto reqDto) {
         return orderService.carlist(reqDto);
     }
+    /**
+     * 查询订单车辆运输状态-根据ID
+     * @author JPG
+     */
+    @ApiOperation(value = "查询订单车辆运输状态-根据ID")
+    @PostMapping(value = "/detail/info/{orderId}")
+    public ResultVo<List<TransportInfoOrderCarVo>> detailInfo(@PathVariable Long orderId) {
+        List<TransportInfoOrderCarVo> list = orderService.getTransportInfoVoById(orderId);
+        return BaseResultUtil.success(list);
+    }
+
 
 
     /**
