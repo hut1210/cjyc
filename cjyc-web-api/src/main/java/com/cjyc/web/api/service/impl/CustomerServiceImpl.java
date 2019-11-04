@@ -1,6 +1,7 @@
 package com.cjyc.web.api.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
 import com.cjkj.usercenter.dto.common.AddUserReq;
@@ -32,6 +33,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,8 +54,7 @@ import java.util.Map;
  */
 @Service
 @Slf4j
-@Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
-public class CustomerServiceImpl implements ICustomerService{
+public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> implements ICustomerService{
 
     @Resource
     private ICustomerDao customerDao;
@@ -81,102 +82,78 @@ public class CustomerServiceImpl implements ICustomerService{
     @Resource
     private IDriverDao driverDao;
 
+    @Resource
+    private ICustomerCountDao customerCountDao;
+
     @Override
-    public boolean saveCustomer(CustomerDto customerDto) {
-        try{
-            Customer customer = new Customer();
-            customer.setName(customerDto.getName());
-            customer.setAlias(customerDto.getName());
-            customer.setContactMan(customerDto.getName());
-            customer.setContactPhone(customerDto.getPhone());
-            customer.setIdCard(customerDto.getIdCard());
-            customer.setIdCardFrontImg(customerDto.getIdCardFrontImg());
-            customer.setIdCardBackImg(customerDto.getIdCardBackImg());
-            customer.setType(CustomerTypeEnum.INDIVIDUAL.code);
-            customer.setState(CustomerStateEnum.CHECKED.code);
-            customer.setCreateTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
-            customer.setCreateUserId(customerDto.getUserId());
-            //用户手机号在C端不能重复
-            List<Customer> existList = customerDao.selectList(new QueryWrapper<Customer>()
-                    .eq("contact_phone", customer.getContactPhone()));
-            if (!CollectionUtils.isEmpty(existList)) {
-                log.error("手机号已存在，请检查");
+    public boolean saveCustomer(CustomerDto dto) {
+        Long now = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
+        Customer customer = new Customer();
+        BeanUtils.copyProperties(dto,customer);
+        customer.setContactMan(dto.getName());
+        customer.setType(CustomerTypeEnum.INDIVIDUAL.code);
+        customer.setState(CustomerStateEnum.CHECKED.code);
+        customer.setPayMode(PayModeEnum.PREPAID.code);
+        customer.setCreateTime(now);
+        customer.setRegisterTime(now);
+        customer.setCreateUserId(dto.getUserId());
+        //用户手机号在C端不能重复
+        List<Customer> existList = customerDao.selectList(new QueryWrapper<Customer>()
+                .eq("contact_phone", customer.getContactPhone()));
+        if (!CollectionUtils.isEmpty(existList)) {
+            log.error("手机号已存在，请检查");
+            return false;
+        }
+        //注册时间
+        //新增个人用户信息到物流平台
+        ResultData<Long> rd = addCustomerToPlatform(customer);
+        if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+            throw new CommonException(rd.getMsg());
+        }
+        customer.setUserId(rd.getData());
+        return super.save(customer);
+    }
+
+    @Override
+    public boolean modifyCustomer(CustomerDto dto) {
+        Customer customer = customerDao.selectById(dto.getId());
+        if(null != customer){
+            ResultData<Boolean> updateRd = updateCustomerToPlatform(customer, dto);
+            if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
+                log.error("修改用户信息失败，原因：" + updateRd.getMsg());
                 return false;
             }
-            //注册时间
-            //新增个人用户信息到物流平台
-            ResultData<Long> rd = addCustomerToPlatform(customer);
-            if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
-                throw new CommonException(rd.getMsg());
+            if (updateRd.getData()) {
+                //需要同步手机号信息
+                syncPhone(customer.getContactPhone(), dto.getContactPhone());
             }
-            customer.setUserId(rd.getData());
-            return customerDao.insert(customer)> 0 ? true : false;
-        }catch (Exception e){
-            log.error("新增用户出现异常",e);
-            throw new CommonException(e.getMessage());
+            customer.setName(dto.getName());
+            customer.setContactMan(dto.getName());
+            customer.setContactPhone(dto.getContactPhone());
+            customer.setIdCard(dto.getIdCard());
+            customer.setIdCardFrontImg(dto.getIdCardFrontImg());
+            customer.setIdCardBackImg(dto.getIdCardBackImg());
         }
+        return customerDao.updateById(customer) > 0 ? true : false;
     }
 
     @Override
-    public boolean updateCustomer(CustomerDto customerDto) {
-        try{
-            Customer customer = customerDao.selectById(customerDto.getId());
-            if(null != customer){
-                ResultData<Boolean> updateRd = updateCustomerToPlatform(customer, customerDto);
-                if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
-                    log.error("修改用户信息失败，原因：" + updateRd.getMsg());
-                    return false;
-                }
-                if (updateRd.getData()) {
-                    //需要同步手机号信息
-                    syncPhone(customer.getContactPhone(), customerDto.getPhone());
-                }
-                customer.setName(customerDto.getName());
-                customer.setContactPhone(customerDto.getPhone());
-                customer.setIdCard(customerDto.getIdCard());
-                customer.setIdCardFrontImg(customerDto.getIdCardFrontImg());
-                customer.setIdCardBackImg(customerDto.getIdCardBackImg());
-                return customerDao.updateById(customer) > 0 ? true : false;
-            }
-        }catch (Exception e){
-            log.error("更新用户出现异常",e);
-            throw new CommonException(e.getMessage());
-        }
-        return false;
-    }
-
-    @Override
-    public boolean delCustomerByIds(List<Long> ids) {
-        try{
-            if(ids != null && ids.size() > 0){
-                return customerDao.deleteBatchIds(ids) > 0 ? true:false;
-            }
-        }catch (Exception e){
-            log.error("删除用户出现异常",e);
-            throw new CommonException(e.getMessage());
-        }
-        return false;
-    }
-
-    @Override
-    public PageInfo<CustomerVo> findCustomerByTerm(SelectCustomerDto customerDto) {
+    public ResultVo<CustomerVo> findCustomerByTerm(SelectCustomerDto customerDto) {
         PageInfo<CustomerVo> pageInfo = null;
-        try{
-            List<CustomerVo> customerVos = customerDao.findCustomer(customerDto);
-            if(customerVos != null && customerVos.size() > 0){
-                for(CustomerVo vo : customerVos){
-                    if(StringUtils.isNotBlank(vo.getRegisterTime())){
-                        Long registerTime = Long.parseLong(vo.getRegisterTime());
-                        vo.setRegisterTime(LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(registerTime),TimePatternConstant.COMPLEX_TIME_FORMAT));
-                    }
+        PageHelper.startPage(customerDto.getCurrentPage(), customerDto.getPageSize());
+        List<CustomerVo> customerVos = customerDao.findCustomer(customerDto);
+        if(!CollectionUtils.isEmpty(customerVos)){
+            for(CustomerVo vo : customerVos){
+                Map<String,Object> map = customerCountDao.count(vo.getUserId());
+
+                if(StringUtils.isNotBlank(vo.getRegisterTime())){
+                    Long registerTime = Long.parseLong(vo.getRegisterTime());
+                    vo.setRegisterTime(LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(registerTime),TimePatternConstant.COMPLEX_TIME_FORMAT));
                 }
-                PageHelper.startPage(customerDto.getCurrentPage(), customerDto.getPageSize());
-                pageInfo = new PageInfo<>(customerVos);
             }
-        }catch (Exception e){
-            log.error("根据条件查询用户出现异常",e);
+            pageInfo = new PageInfo<>(customerVos);
         }
-        return pageInfo;
+        return BaseResultUtil.success(pageInfo == null ? new PageInfo<>(Collections.EMPTY_LIST):pageInfo);
     }
 
     @Override
@@ -338,7 +315,7 @@ public class CustomerServiceImpl implements ICustomerService{
     }
 
     @Override
-    public int save(Customer customer) {
+    public boolean save(Customer customer) {
         //添加架构组数据
         AddUserReq addUserReq = new AddUserReq();
         addUserReq.setAccount(customer.getContactPhone());
@@ -352,7 +329,7 @@ public class CustomerServiceImpl implements ICustomerService{
             throw new ServerException("添加用户失败");
         }
         //customer.setUserId(resultData.getData().getUserId());
-        return customerDao.insert(customer);
+        return super.save(customer);
     }
 
     @Override
@@ -458,8 +435,8 @@ public class CustomerServiceImpl implements ICustomerService{
     }
 
     @Override
-    public int updateById(Customer customer) {
-        return customerDao.updateById(customer);
+    public boolean updateById(Customer customer) {
+        return super.updateById(customer);
     }
 
     @Override
@@ -704,7 +681,7 @@ public class CustomerServiceImpl implements ICustomerService{
      */
     private ResultData<Boolean> updateCustomerToPlatform(Customer customer, CustomerDto dto) {
         String oldPhone = customer.getContactPhone();
-        String newPhone = dto.getPhone();
+        String newPhone = dto.getContactPhone();
         if (!oldPhone.equals(newPhone)) {
             //新旧账号不相同需要替换手机号
             //先查询韵车是否存在newPhone 相同账号，存在则不允许修改

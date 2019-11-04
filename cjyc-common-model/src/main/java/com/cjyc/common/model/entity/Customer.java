@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-29
+ * @since 2019-11-04
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -76,7 +76,7 @@ public class Customer implements Serializable {
     @ApiModelProperty(value = "类型：1个人，2企业（大客户）3-合伙人")
     private Integer type;
 
-    @ApiModelProperty(value = "账号来源：1App注册，2Applet注册，3业务员创建，4企业管理员创建，5合伙人创建")
+    @ApiModelProperty(value = "账号来源：1：App注册，2：Applet注册，3：韵车后台 4：升级创建")
     private Integer source;
 
     @ApiModelProperty(value = "公司ID")

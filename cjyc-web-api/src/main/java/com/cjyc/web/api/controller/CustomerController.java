@@ -38,32 +38,28 @@ public class CustomerController {
     @PostMapping(value = "/saveCustomer")
     public ResultVo saveCustomer(@Validated({ CustomerDto.SaveCustomerVo.class }) @RequestBody CustomerDto customerDto){
         boolean result = customerService.saveCustomer(customerDto);
-        return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg())
-                : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
+        return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
 
     @ApiOperation(value = "更新移动端用户")
-    @PostMapping(value = "/updateCustomer")
-    public ResultVo updateCustomer(@Validated({ CustomerDto.UpdateCustomerVo.class }) @RequestBody CustomerDto customerDto){
-        boolean result = customerService.updateCustomer(customerDto);
-        return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg())
-                : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
+    @PostMapping(value = "/modifyCustomer")
+    public ResultVo modifyCustomer(@Validated({ CustomerDto.UpdateCustomerVo.class }) @RequestBody CustomerDto customerDto){
+        boolean result = customerService.modifyCustomer(customerDto);
+        return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
 
     @ApiOperation(value = "根据id删除移动端用户")
-    @PostMapping(value = "/delCustomerByIds")
-    public ResultVo delCustomerByIds(@RequestBody List<Long> ids){
-        boolean result = customerService.delCustomerByIds(ids);
-        return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg())
-                : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
+    @PostMapping(value = "/removeCustomer/{id}")
+    public ResultVo removeCustomer(@PathVariable Long id){
+        boolean result = customerService.removeById(id);
+        return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
 
     @ApiOperation(value = "根据条件查询移动端用户")
     @PostMapping(value = "/findCustomerByTerm")
     public ResultVo<PageVo<CustomerVo>> findCustomerByTerm(@RequestBody SelectCustomerDto dto){
         BasePageUtil.initPage(dto.getCurrentPage(),dto.getPageSize());
-        PageInfo<CustomerVo> pageInfo = customerService.findCustomerByTerm(dto);
-        return BaseResultUtil.getPageVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),pageInfo);
+        return customerService.findCustomerByTerm(dto);
     }
 
     @ApiOperation(value = "新增大客户&合同")

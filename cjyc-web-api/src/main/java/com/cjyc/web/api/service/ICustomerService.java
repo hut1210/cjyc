@@ -1,5 +1,6 @@
 package com.cjyc.web.api.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.dto.web.customer.*;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.CustomerVo;
@@ -16,7 +17,7 @@ import java.util.List;
  *  @Date: 2019/9/29 15:01
  *  @Description: 用户接口
  */
-public interface ICustomerService  {
+public interface ICustomerService  extends IService<Customer> {
 
     /**
      *  新增移动端用户
@@ -30,21 +31,14 @@ public interface ICustomerService  {
      * @param customerDto
      * @return
      */
-    boolean updateCustomer(CustomerDto customerDto);
-
-    /**
-     * 根据id删除移动端用户
-     * @param ids
-     * @return
-     */
-    boolean delCustomerByIds(List<Long> ids);
+    boolean modifyCustomer(CustomerDto customerDto);
 
     /**
      * 根据条件查询移动端用户
      * @param selectCustomerDto
      * @return
      */
-    PageInfo<CustomerVo> findCustomerByTerm(SelectCustomerDto selectCustomerDto);
+    ResultVo findCustomerByTerm(SelectCustomerDto selectCustomerDto);
 
     /**
      * 新增大客户&合同
@@ -81,7 +75,7 @@ public interface ICustomerService  {
      */
     PageInfo<ListKeyCustomerVo> findKeyCustomer(SelectKeyCustomerDto selectKeyCustomerDto);
 
-    int save(Customer customer);
+    boolean save(Customer customer);
 
     Customer selectById(Long customerId);
 
@@ -102,7 +96,7 @@ public interface ICustomerService  {
 
     Customer selectByPhone(String customerPhone);
 
-    int updateById(Customer customer);
+    boolean updateById(Customer customer);
 
     /**
      * 根据关键字(手机号/用户名称)模糊查询用户信息

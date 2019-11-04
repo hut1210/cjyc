@@ -37,18 +37,26 @@
     </sql>
     <!-- 通过手机号，姓名，身份证号查询 -->
     <select id="findCustomer" resultType="com.cjyc.common.model.vo.web.CustomerVo" parameterType="com.cjyc.common.model.dto.web.customer.SelectCustomerDto">
-        select id as id,user_id as userId, phone as phone,contact_man as contactMan,id_card as idCard,id_card_front_img as idCardFrontImg,
-                id_card_back_img as idCardBackImg,register_time as registerTime
-        from c_customer
+        SELECT
+            id AS id,
+            user_id AS userId,
+            phone AS phone,
+            contact_man AS contactMan,
+            id_card AS idCard,
+            id_card_front_img AS idCardFrontImg,
+            id_card_back_img AS idCardBackImg,
+            register_time AS registerTime
+        FROM
+          c_customer
         <where>
             <if test="phone != null and phone.trim() != ''">
                    phone = #{phone}
             </if>
             <if test="name != null  and name.trim() != ''">
-                and   name = #{name}
+                and  name = #{name}
             </if>
             <if test="idCard != null and idCard.trim() != ''">
-                and   id_card = #{idCard}
+                and  id_card = #{idCard}
             </if>
                 and type = 1
         </where>

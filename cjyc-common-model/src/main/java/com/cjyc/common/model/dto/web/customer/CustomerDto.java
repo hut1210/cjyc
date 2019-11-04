@@ -32,7 +32,7 @@ public class CustomerDto implements Serializable {
     @NotBlank(groups = {SaveCustomerVo.class},message = "手机号不能为空")
     @NotBlank(groups = {UpdateCustomerVo.class},message = "手机号不能为空")
     @ApiModelProperty(value = "手机号",required = true)
-    private String phone;
+    private String contactPhone;
 
     @ApiModelProperty(value = "身份证号")
     private String idCard;

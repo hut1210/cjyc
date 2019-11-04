@@ -1,6 +1,5 @@
 package com.cjyc.common.model.entity;
 
-import java.math.BigDecimal;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -17,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-29
+ * @since 2019-11-04
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -35,14 +34,8 @@ public class CustomerCount implements Serializable {
     @ApiModelProperty(value = "客户userId")
     private Long customerUserId;
 
-    @ApiModelProperty(value = "下单量")
-    private Integer orderNum;
-
-    @ApiModelProperty(value = "总运量（台）")
-    private Integer orderCarNum;
-
-    @ApiModelProperty(value = "订单总金额（分）")
-    private BigDecimal orderTotalCost;
+    @ApiModelProperty(value = "订单编号")
+    private String orderNo;
 
 
 }
