@@ -13,6 +13,7 @@ import com.cjyc.customer.api.service.IOrderService;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +24,7 @@ import javax.annotation.Resource;
  *  @Date: 2019/10/31 19:31
  *  @Description:用户端发票
  */
+@Slf4j
 @Api(tags = "发票管理")
 @RestController
 @RequestMapping("/invoice")
@@ -49,8 +51,15 @@ public class InvoiceController {
 
     @ApiOperation(value = "确认开票")
     @PostMapping("/applyInvoice")
-    public ResultVo applyInvoice(@RequestBody @Validated CustomerInvoiceAddDto dto) throws Exception {
-        return customerInvoiceService.applyInvoice(dto);
+    public ResultVo applyInvoice(@RequestBody @Validated CustomerInvoiceAddDto dto){
+        ResultVo resultVo = null;
+        try {
+            resultVo = customerInvoiceService.applyInvoice(dto);
+        } catch (Exception e) {
+            log.error("确认开票异常:{}",e);
+            resultVo = BaseResultUtil.fail("开票失败");
+        }
+        return resultVo;
     }
 
 }
