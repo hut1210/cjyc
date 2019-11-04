@@ -4,6 +4,7 @@ import com.cjkj.common.constant.ServiceNameConstants;
 import com.cjkj.common.feign.fallback.UserServiceFallbackFactory;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.usercenter.dto.common.*;
+import com.cjkj.usercenter.dto.yc.SelectUsersByRoleResp;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -63,7 +64,7 @@ public interface ISysUserService {
      * @param deptId
      * @return
      */
-    @PostMapping("/feign/uc/getSingleLevelRoles/{deptId}")
+    @GetMapping("/feign/uc/getSingleLevelRoles/{deptId}")
     ResultData<List<SelectRoleResp>> getSingleLevelRolesByDeptId(@PathVariable("deptId")Long deptId);
 
     /**
@@ -82,4 +83,12 @@ public interface ISysUserService {
      */
     @PostMapping("/feign/uc/resetPwd/{userId}/{newPwd}")
     ResultData resetPwd(@PathVariable("userId")Long userId, @PathVariable("newPwd")String newPwd);
+
+    /**
+     * 根据机构id获取用户信息列表
+     * @param deptId
+     * @return
+     */
+    @GetMapping("/feign/yc/getUsersByDeptId/{deptId}")
+    ResultData<List<SelectUsersByRoleResp>> getUsersByDeptId(@PathVariable(value = "deptId") Long deptId);
 }

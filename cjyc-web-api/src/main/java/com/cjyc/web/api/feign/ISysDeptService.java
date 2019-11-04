@@ -6,6 +6,7 @@ import com.cjkj.common.model.ResultData;
 import com.cjkj.usercenter.dto.common.AddDeptReq;
 import com.cjkj.usercenter.dto.common.AddDeptResp;
 import com.cjkj.usercenter.dto.common.SelectDeptResp;
+import com.cjkj.usercenter.dto.common.UpdateDeptReq;
 import com.cjkj.usercenter.dto.yc.AddDeptAndUserReq;
 import com.cjkj.usercenter.dto.yc.AddDeptAndUserResp;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -41,13 +42,20 @@ public interface ISysDeptService {
     ResultData<AddDeptAndUserResp> saveDeptAndUser(@RequestBody AddDeptAndUserReq addDeptAndUserReq);
 
     /**
+     * 根据城市编码获取机构信息
+     * @param cityCode
+     * @return
+     */
+    @GetMapping("/feign/yc/getDeptByCityCode/{cityCode}")
+    ResultData<SelectDeptResp> getDeptByCityCode(@PathVariable(value = "cityCode")String cityCode);
+    /**
      * 修改组织机构
      * @author JPG
      * @since 2019/10/21 9:38
-     * @param addDeptReq 参数
+     * @param updateDeptReq 参数
      */
     @PostMapping("/feign/uc/updateDept")
-    ResultData update(@RequestBody AddDeptReq addDeptReq);
+    ResultData update(@RequestBody UpdateDeptReq updateDeptReq);
 
     /**
      * 修改组织机构
@@ -55,7 +63,7 @@ public interface ISysDeptService {
      * @param deptId 组织机构ID
      */
     @PostMapping("/feign/uc/deleteDept/{deptId}")
-    ResultData update(@PathVariable(value="deptId") String deptId);
+    ResultData delete(@PathVariable(value="deptId") Long deptId);
 
     /**
      * 查询机构信息
