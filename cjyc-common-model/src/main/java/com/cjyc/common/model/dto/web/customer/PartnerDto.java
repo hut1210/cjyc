@@ -16,11 +16,11 @@ public class PartnerDto implements Serializable {
     private Integer flag;
 
     @ApiModelProperty("大客户id")
-    @NotNull(groups = {PartnerDto.SaveOrUpdatePartnerDto.class},message = "大客户id不能为空")
+//    @NotNull(groups = {PartnerDto.SaveOrUpdatePartnerDto.class},message = "大客户id不能为空")
     private Long id;
 
     @ApiModelProperty("登陆用户userId")
-    @NotNull(groups = {PartnerDto.SaveOrUpdatePartnerDto.class},message = "登陆用户userId不能为空")
+//    @NotNull(groups = {PartnerDto.SaveOrUpdatePartnerDto.class},message = "登陆用户userId不能为空")
     private Long userId;
 
     @ApiModelProperty("合伙人名称")
@@ -49,14 +49,14 @@ public class PartnerDto implements Serializable {
     private int isInvoice;
 
     @ApiModelProperty("结算方式：1时付，2账期")
-    @NotBlank(groups = {PartnerDto.SaveOrUpdatePartnerDto.class},message = "结算方式不能为空")
+    @NotNull(groups = {PartnerDto.SaveOrUpdatePartnerDto.class},message = "结算方式不能为空")
     private int settleType;
 
     @ApiModelProperty("账期/天")
     private int settlePeriod;
 
     @ApiModelProperty("卡类型:1公户，2私户")
-    @NotBlank(groups = {PartnerDto.SaveOrUpdatePartnerDto.class},message = "卡类型不能为空")
+    @NotNull(groups = {PartnerDto.SaveOrUpdatePartnerDto.class},message = "卡类型不能为空")
     private int cardType;
 
     @ApiModelProperty("对公开户名称/对私开户行名称")
