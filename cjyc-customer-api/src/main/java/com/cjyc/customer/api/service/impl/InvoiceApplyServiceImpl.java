@@ -107,7 +107,6 @@ public class InvoiceApplyServiceImpl extends SuperServiceImpl<IInvoiceApplyDao, 
         invoiceApply.setApplyTime(System.currentTimeMillis());
         invoiceApply.setCustomerId(dto.getUserId());
         invoiceApply.setCustomerName(dto.getName());
-        invoiceApply.setOperationName(dto.getName());
         invoiceApply.setState(FieldConstant.INVOICE_APPLY_IN);
         return invoiceApply;
     }
