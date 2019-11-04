@@ -61,5 +61,5 @@ public interface ICityService extends IService<City> {
      * @param keyword
      * @return
      */
-    ResultVo<List<CityTreeVo>> getCityTreeByKeyword(String keyword);
+    ResultVo<List<CityTreeVo>> keywordCityTree(String keyword);
 }

@@ -57,27 +57,19 @@
     </select>
 
     <!-- 根据用户编号查询所属自己的优惠券 -->
-    <select id="getCouponSendByUserId" resultType="com.cjyc.common.model.vo.customer.couponSend.CouponSendVo"
+    <select id="getCustomerCouponById" resultType="com.cjyc.common.model.vo.customer.coupon.CustomerCouponVo"
             parameterType="java.lang.Long">
-        select c.coupon_name as couponName,
-              (case c.coupon_type when 0 then '满减券'
-                                   when 3 then '直减券'
-                                   when 5 then  '折扣券'
-              end) as couponType,
-              c.end_period_date as periodDate,
-              (case c.is_forever when 0 then ''
-                                  when 1 then '永久'
-              end) as isForever,
-             (case send.is_use when 0 then '未使用'
-                                when 1 then '已使用'
-              end) as isUse
-          from c_coupon c left join c_coupon_send send on c.id = send.coupon_id
-        <where>
-            <if test="userId != null">
-                send.user_id = #{userId}
-            </if>
-               and c.state=3
-        </where>
+      SELECT
+            c.NAME AS NAME,
+            c.type AS type,
+            c.end_period_date AS endPeriodDate,
+            c.is_forever AS isForever,
+            send.is_use AS isUse
+        FROM
+            c_coupon c
+            LEFT JOIN c_coupon_send send ON c.id = send.coupon_id
+        WHERE
+            c.state = 2
     </select>
 
     <!-- 根据用户编号查询所属自己的优惠券 -->

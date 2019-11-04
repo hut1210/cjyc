@@ -73,9 +73,9 @@ public class CityController {
     }
 
     @ApiOperation(value = "根据关键字模糊搜索省/城市")
-    @PostMapping(value = "/getCityTreeByKeyword/{keyword}")
-    public ResultVo<List<CityTreeVo>> getCityTreeByKeyword(@PathVariable @ApiParam(value = "省直辖市/城市名称",required = true) String keyword) {
-        return cityService.getCityTreeByKeyword(keyword);
+    @PostMapping(value = "/keywordCityTree/{keyword}")
+    public ResultVo<List<CityTreeVo>> keywordCityTree(@PathVariable @ApiParam(value = "省直辖市/城市名称",required = true) String keyword) {
+        return cityService.keywordCityTree(keyword);
     }
 
 }
