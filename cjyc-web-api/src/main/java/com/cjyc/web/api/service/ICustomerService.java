@@ -112,11 +112,11 @@ public interface ICustomerService  {
     ResultVo getAllCustomerByKey(String keyword);
 
     /**
-     * 通过大客户名称获取有效期合同
-     * @param name
+     * 通过大客户userId获取有效期合同
+     * @param userId
      * @return
      */
-    ResultVo getCustContractByName(String name);
+    ResultVo getCustContractByUserId(Long userId);
 
     /**
      * 查看客户优惠券
@@ -127,8 +127,8 @@ public interface ICustomerService  {
 
     /**
      * 根据手机号查询该用户的优惠券
-     * @param phone
+     * @param userId
      * @return
      */
-    ResultVo getCouponByPhone(String phone);
+    ResultVo getCouponByUserId(Long userId);
 }

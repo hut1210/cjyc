@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -14,18 +13,18 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 
+ * 发票申请信息表
  * </p>
  *
  * @author JPG
- * @since 2019-10-31
+ * @since 2019-11-02
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("w_invoice_order")
-@ApiModel(value="InvoiceOrder对象", description="")
-public class InvoiceOrder implements Serializable {
+@TableName("c_invoice_apply")
+@ApiModel(value="InvoiceApply对象", description="发票申请信息表")
+public class InvoiceApply implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -42,21 +41,16 @@ public class InvoiceOrder implements Serializable {
     @ApiModelProperty(value = "申请人名称")
     private String customerName;
 
-    @ApiModelProperty(value = "订单编号")
-    private String orderNo;
-
     @ApiModelProperty(value = "申请时间")
     private Long applyTime;
 
     @ApiModelProperty(value = "开票时间")
-    @TableField("Invoice_time")
     private Long invoiceTime;
 
     @ApiModelProperty(value = "开票金额")
     private BigDecimal amount;
 
     @ApiModelProperty(value = "发票号")
-    @TableField("Invoice_no")
     private String invoiceNo;
 
     @ApiModelProperty(value = "开票人姓名")

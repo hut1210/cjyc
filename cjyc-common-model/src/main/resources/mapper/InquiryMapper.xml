@@ -8,10 +8,10 @@
         <result column="customer_id" property="customerId" />
         <result column="name" property="name" />
         <result column="phone" property="phone" />
-        <result column="start_city" property="startCity" />
-        <result column="start_code" property="startCode" />
-        <result column="end_city" property="endCity" />
-        <result column="end_code" property="endCode" />
+        <result column="from_city" property="fromCity" />
+        <result column="from_code" property="fromCode" />
+        <result column="to_city" property="toCity" />
+        <result column="to_code" property="toCode" />
         <result column="logistics_fee" property="logisticsFee" />
         <result column="pick_fee" property="pickFee" />
         <result column="back_fee" property="backFee" />
@@ -24,7 +24,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, customer_id, name, phone, start_city, start_code, end_city, end_code, logistics_fee, pick_fee, back_fee, state, inquiry_time, handle_time, handle_user_id, job_content
+        id, customer_id, name, phone, from_city, from_code, to_city, to_code, logistics_fee, pick_fee, back_fee, state, inquiry_time, handle_time, handle_user_id, job_content
     </sql>
 
     <!-- 根据条件查询询价管理条目 -->
@@ -33,8 +33,8 @@
      SELECT
         id AS id ,inquiry_time AS inquiryTime,
         logistics_fee AS logisticsFee,
-        start_city AS startCity,
-        end_city AS endCity,
+        from_city AS fromCity,
+        to_city AS toCity,
         NAME AS NAME,
         phone AS phone,
         handle_time AS handleTime,
@@ -43,21 +43,22 @@
     FROM
         s_inquiry
         <where>
-            <if test="startStamp != 0">
+            <if test="startStamp != null">
                    inquiry_time >= #{startStamp}
             </if>
-            <if test="endStamp != 0 ">
+            <if test="endStamp != null ">
                 and  inquiry_time &lt;= #{endStamp}
             </if>
-            <if test="startCity != null  and startCity.trim() != ''">
-                and start_city like concat('%',#{startCity},'%')
+            <if test="fromCity != null  and fromCity.trim() != ''">
+                and from_city like concat('%',#{fromCity},'%')
             </if>
-            <if test="endCity != null  and endCity.trim() != ''">
-                and  end_city like concat('%',#{endCity},'%')
+            <if test="toCity != null  and toCity.trim() != ''">
+                and  to_city like concat('%',#{toCity},'%')
             </if>
-            <if test="state != null and state.trim() != ''">
+            <if test="state != null">
                 and state = #{state}
             </if>
+            and inquiry_time &lt;= #{hourAgo}
         </where>
     </select>
 

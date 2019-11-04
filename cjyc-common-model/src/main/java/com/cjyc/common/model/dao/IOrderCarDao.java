@@ -6,6 +6,7 @@ import com.cjyc.common.model.dto.web.order.LineWaitDispatchCountListOrderCarDto;
 import com.cjyc.common.model.dto.web.order.ListOrderCarDto;
 import com.cjyc.common.model.dto.web.order.WaitDispatchListOrderCarDto;
 import com.cjyc.common.model.entity.OrderCar;
+import com.cjyc.common.model.vo.customer.invoice.InvoiceOrderVo;
 import com.cjyc.common.model.vo.customer.order.OrderCarCenterVo;
 import com.cjyc.common.model.vo.web.OrderCarVo;
 import com.cjyc.common.model.vo.web.order.ListOrderCarVo;
@@ -107,4 +108,11 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
     List<OrderCarCenterVo> selectByCondition(@Param("orderNo") String orderNo, @Param("brand") String brand, @Param("model") String model);
 
     OrderCarVo findExtraById(Long orderCarId);
+
+    /**
+     * 查询未开发票订单列表
+     * @param userId
+     * @return
+     */
+    List<InvoiceOrderVo> selectUnInvoiceOrderList(Long userId);
 }

@@ -24,9 +24,7 @@ import lombok.experimental.Accessors;
 @TableName("c_customer_invoice")
 @ApiModel(value="CustomerInvoice对象", description="发票信息表")
 public class CustomerInvoice implements Serializable {
-
     private static final long serialVersionUID = 1L;
-
     @ApiModelProperty(value = "ID")
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
@@ -61,5 +59,12 @@ public class CustomerInvoice implements Serializable {
     @ApiModelProperty(value = "默认标识")
     private Integer defaultFlag;
 
+    @ApiModelProperty(value = "收票人")
+    private String pickupPerson;
 
+    @ApiModelProperty(value = "收票电话")
+    private String pickupPhone;
+
+    @ApiModelProperty(value = "收票地址")
+    private String pickupAddress;
 }

@@ -29,8 +29,9 @@
 
 
     <!-- 通过城市编码查看上游运价 -->
-    <select id="getLinePriceByCode" resultType="java.lang.String">
-        select default_wl_fee
+    <select id="getLinePriceByCode" resultType="com.cjyc.common.model.entity.Line">
+        select
+          <include refid="Base_Column_List"/>
         from s_line
         <where>
             <if test="fromCode != null and fromCode != ''">
@@ -39,7 +40,7 @@
             <if test="toCode != null  and toCode != ''">
                 and to_code = #{toCode}
             </if>
-            and state = 1
+            and state = 1 limit 1
         </where>
     </select>
 
@@ -48,8 +49,8 @@
                                 parameterType="com.cjyc.common.model.dto.web.line.SelectLineDto">
        SELECT
         id AS id,
-        from_code AS startCityCode,
-        to_code AS endCityCode,
+        from_code AS fromCityCode,
+        to_code AS toCityCode,
         default_wl_fee AS defaultWlFee,
         default_freight_fee AS defaultFreightFee,
         kilometer AS kilometer,
@@ -59,11 +60,11 @@
     FROM
         s_line
         <where>
-            <if test="startCityCode != null and startCityCode.trim() != ''">
-                from_code = #{startCityCode}
+            <if test="fromCityCode != null and fromCityCode.trim() != ''">
+                from_code = #{fromCityCode}
             </if>
-            <if test="linkman != null and linkman.trim() != ''">
-                and to_code = #{endCityCode}
+            <if test="toCityCode != null and toCityCode.trim() != ''">
+                and to_code = #{toCityCode}
             </if>
             <if test="lineCode != null and lineCode.trim() != ''">
                 and code = #{lineCode}

@@ -20,7 +20,7 @@ public interface ICouponService {
      * @param dto
      * @return
      */
-    boolean saveCoupon(CouponDto dto);
+    ResultVo saveCoupon(CouponDto dto);
 
     /**
      * 根据更新优惠券
@@ -34,7 +34,7 @@ public interface ICouponService {
      * @param dto
      * @return
      */
-    ResultVo operateCoupon(OperateDto dto);
+    boolean operateCoupon(OperateDto dto);
 
     /**
      * 根据条件筛选优惠券

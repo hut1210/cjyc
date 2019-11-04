@@ -7,7 +7,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 @Data
-public class TransportPriceDto implements Serializable {
+public class TransportDto implements Serializable {
 
     @ApiModelProperty("用户userId")
     @NotNull(message = "登陆用户userId不能为空")

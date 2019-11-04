@@ -1,11 +1,11 @@
 package com.cjyc.customer.api.service.impl;
 
+import com.cjkj.common.service.impl.SuperServiceImpl;
+import com.cjyc.common.model.dao.IInvoiceApplyDao;
 import com.cjyc.common.model.dao.IOrderDao;
-import com.cjyc.common.model.entity.InvoiceOrder;
-import com.cjyc.common.model.dao.IInvoiceOrderDao;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.customer.api.service.IInvoiceOrderService;
+import com.cjyc.common.model.entity.InvoiceApply;
+import com.cjyc.customer.api.service.IInvoiceApplyService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -24,21 +24,14 @@ import javax.annotation.Resource;
 @Service
 @Slf4j
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
-public class InvoiceOrderServiceImpl extends ServiceImpl<IInvoiceOrderDao, InvoiceOrder> implements IInvoiceOrderService {
-
+public class InvoiceApplyServiceImpl extends SuperServiceImpl<IInvoiceApplyDao, InvoiceApply> implements IInvoiceApplyService {
     @Resource
     private IOrderDao orderDao;
-
     @Resource
-    private IInvoiceOrderDao invoiceOrderDao;
+    private IInvoiceApplyDao invoiceApplyDao;
 
     @Override
-    public ResultVo getUnbilledOrder(Long userId) {
-        try{
-
-        }catch (Exception e){
-
-        }
-        return null;
+    public String addAndReturnId(InvoiceApply invoiceApply) {
+        return super.saveAndReturnId(invoiceApply);
     }
 }

@@ -6,7 +6,7 @@ import com.cjyc.common.model.dto.salesman.city.CityPageDto;
 import com.cjyc.common.model.entity.City;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.dto.web.city.TreeCityDto;
-import com.cjyc.common.model.vo.web.city.CityTreeVo;
+import com.cjyc.common.model.vo.CityTreeVo;
 import com.cjyc.common.model.vo.web.city.TreeCityVo;
 import org.apache.ibatis.annotations.Param;
 

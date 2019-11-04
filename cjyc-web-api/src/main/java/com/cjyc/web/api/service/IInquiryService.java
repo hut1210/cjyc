@@ -1,8 +1,10 @@
 package com.cjyc.web.api.service;
 
+import com.cjyc.common.model.dto.web.inquiry.HandleInquiryDto;
 import com.cjyc.common.model.dto.web.inquiry.SelectInquiryDto;
 import com.cjyc.common.model.entity.Inquiry;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.inquiry.InquiryVo;
 import com.github.pagehelper.PageInfo;
 
@@ -21,13 +23,13 @@ public interface IInquiryService extends IService<Inquiry> {
      * @param dto
      * @return
      */
-    PageInfo<InquiryVo> getAllInquiryByTerm(SelectInquiryDto dto);
+    ResultVo getAllInquiryByTerm(SelectInquiryDto dto);
 
     /**
-     * 根据询价id新增工单
-     * @param inquiryId
+     * 处理工单
+     * @param dto
      * @return
      */
-    boolean addJobContentById(Long inquiryId,String jobContent);
+    boolean handleInquiry(HandleInquiryDto dto);
 
 }

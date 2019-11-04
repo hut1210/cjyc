@@ -33,8 +33,8 @@ public class CouponDto implements Serializable {
     private String name;
 
     @ApiModelProperty(value = "优惠券类型 0：满减  1：直减  2：折扣")
-    @NotBlank(groups = {CouponDto.SaveCouponDto.class},message = "优惠券类型不能为空")
-    @NotBlank(groups = {CouponDto.UpaCouponDto.class},message = "优惠券类型不能为空")
+    @NotNull(groups = {CouponDto.SaveCouponDto.class},message = "优惠券类型不能为空")
+    @NotNull(groups = {CouponDto.UpaCouponDto.class},message = "优惠券类型不能为空")
     private Integer type;
 
     @ApiModelProperty(value = "满额价")
@@ -47,8 +47,8 @@ public class CouponDto implements Serializable {
     private BigDecimal discount;
 
     @ApiModelProperty(value = "发放张数")
-    @NotBlank(groups = {CouponDto.SaveCouponDto.class},message = "发放张数不能为空")
-    @NotBlank(groups = {CouponDto.UpaCouponDto.class},message = "发放张数不能为空")
+    @NotNull(groups = {CouponDto.SaveCouponDto.class},message = "发放张数不能为空")
+    @NotNull(groups = {CouponDto.UpaCouponDto.class},message = "发放张数不能为空")
     private Integer grantNum;
 
     @ApiModelProperty(value = "是否永久  0：否  1：是")

@@ -506,24 +506,15 @@ public class CustomerServiceImpl implements ICustomerService{
     @Override
     public ResultVo getAllCustomerByKey(String keyword) {
         List<Map<String,Object>> customerList = customerDao.getAllCustomerByKey(keyword);
-        return BaseResultUtil.success(customerList);
+        return BaseResultUtil.success(customerList == null ? Collections.EMPTY_LIST:customerList);
     }
 
     @Override
-    public ResultVo getCustContractByName(String name) {
+    public ResultVo getCustContractByUserId(Long userId) {
         //获取当前时间戳
         Long now = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
-        try{
-            List<Map<String,Object>> contractMap = customerDao.getCustContractByName(name,now);
-            if(!CollectionUtils.isEmpty(contractMap)){
-                return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),contractMap);
-            }else{
-                return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),Collections.emptyList());
-            }
-        }catch (Exception e){
-            log.error("根据大客户名称获取有效期合同信息出现异常",e);
-            return BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg(),Collections.emptyList());
-        }
+        List<Map<String,Object>> contractList = customerDao.getCustContractByUserId(userId,now);
+        return BaseResultUtil.success(contractList == null ? Collections.EMPTY_LIST:contractList);
     }
 
     @Override
@@ -565,38 +556,30 @@ public class CustomerServiceImpl implements ICustomerService{
     }
 
     @Override
-    public ResultVo getCouponByPhone(String contactPhone) {
-        try{
-            Customer customer = customerDao.findByPhone(contactPhone);
-            if(customer != null){
-                //根据客户id查看发放的优惠券
-                List<CustomerCouponSendVo> sendVoList = null;
-                List<CustomerCouponSendVo> couponVos = couponSendDao.getCustomerCoupon(customer.getId());
-                Long now = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
-                if(!CollectionUtils.isEmpty(couponVos)){
-                    sendVoList = new ArrayList<>();
-                    for(CustomerCouponSendVo sendVo : couponVos){
-                        if(sendVo.getEndPeriodDate() != null){
-                            if((sendVo.getEndPeriodDate() - now) > 0){
-                                sendVoList.add(sendVo);
-                            }
-                        }else{
+    public ResultVo getCouponByUserId(Long userId) {
+        Customer customer = customerDao.getCustomerByUserId(userId);
+        List<CustomerCouponSendVo> sendVoList = null;
+        if(customer != null){
+            //根据客户id查看发放的优惠券
+            List<CustomerCouponSendVo> couponVos = couponSendDao.getCustomerCoupon(customer.getId());
+            Long now = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
+            if(!CollectionUtils.isEmpty(couponVos)){
+                sendVoList = new ArrayList<>();
+                for(CustomerCouponSendVo sendVo : couponVos){
+                    if(sendVo == null){
+                        continue;
+                    }
+                    if(sendVo.getEndPeriodDate() != null){
+                        if((sendVo.getEndPeriodDate() - now) > 0){
                             sendVoList.add(sendVo);
                         }
+                    }else{
+                        sendVoList.add(sendVo);
                     }
-                    if(!CollectionUtils.isEmpty(sendVoList)){
-                        return BaseResultUtil.success(sendVoList == null ? Collections.emptyList():sendVoList);
-                    }
-                }else{
-                    return BaseResultUtil.success(Collections.emptyList());
                 }
-            }else{
-                return BaseResultUtil.success(Collections.emptyList());
             }
-        }catch (Exception e){
-            log.error("根据手机号查看优惠券信息出现异常",e);
         }
-        return BaseResultUtil.fail("根据手机号查询优惠券出现异常");
+        return BaseResultUtil.success(sendVoList == null ? Collections.EMPTY_LIST:sendVoList);
     }
 
     /**

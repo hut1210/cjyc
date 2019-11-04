@@ -638,4 +638,23 @@
         join w_order o on o.id = oc.order_id
         where oc.id = #{orderCarId}
     </select>
+
+    <!--查询未开发票订单列表-->
+    <select id="selectUnInvoiceOrderList" resultType="com.cjyc.common.model.vo.customer.invoice.InvoiceOrderVo">
+        select
+            o.no as orderNo,
+            o.start_city as startCity,
+            o.end_city as endCity,
+            o.total_fee as totalFee,
+            o.finish_time as finishTime
+        from
+            w_order o
+            left join w_invoice_order invoice on o.no=invoice.order_no and o.customer_id=invoice.customer_id
+        where
+            o.customer_id=#{userId}
+            and invoice.id is null
+            and o.invoice_flag = 1
+            and o.state = 100
+        order by o.finish_time desc
+    </select>
 </mapper>

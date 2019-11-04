@@ -9,6 +9,7 @@ import com.cjyc.common.model.constant.NoConstant;
 import com.cjyc.common.model.dao.IIncrementerDao;
 import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IOrderDao;
+import com.cjyc.common.model.dto.customer.invoice.InvoiceApplyQueryDto;
 import com.cjyc.common.model.dto.customer.order.OrderQueryDto;
 import com.cjyc.common.model.dto.customer.order.OrderUpdateDto;
 import com.cjyc.common.model.entity.Order;
@@ -20,6 +21,7 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.customer.invoice.InvoiceOrderVo;
 import com.cjyc.common.model.vo.customer.order.OrderCarCenterVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterDetailVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterVo;
@@ -35,7 +37,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import javax.validation.constraints.NotEmpty;
 import java.util.*;
 
 /**
@@ -156,7 +157,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
     }
 
     @Override
-    public ResultVo<Map<String, Object>> getOrderCount(Long customerId) {
+    public ResultVo<Map<String, Object>> getOrderCount(Long userId) {
         Map<String,Object> map = new HashMap<>(4);
         map.put("waitConfirm",0);
         map.put("inTransitCount",0);
@@ -164,7 +165,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         map.put("allCount",0);
         // 查询待确认订单数量
         LambdaQueryWrapper<Order> queryWrapper = new QueryWrapper<Order>().lambda()
-                .eq(Order::getCustomerId,customerId)
+                .eq(Order::getCustomerId,userId)
                 .le(Order::getState, OrderStateEnum.CHECKED.code);
         Integer waitConfirmCount = orderDao.selectCount(queryWrapper);
         if (!Objects.isNull(waitConfirmCount)) {
@@ -173,7 +174,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
 
         // 查询运输中订单数量
         queryWrapper = new QueryWrapper<Order>().lambda()
-                .eq(Order::getCustomerId,customerId)
+                .eq(Order::getCustomerId,userId)
                 .gt(Order::getState,OrderStateEnum.CHECKED.code)
                 .lt(Order::getState,OrderStateEnum.FINISHED.code);
         Integer inTransitCount = orderDao.selectCount(queryWrapper);
@@ -183,7 +184,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
 
         // 查询已交付订单数量
         queryWrapper = new QueryWrapper<Order>().lambda()
-                .eq(Order::getCustomerId,customerId).eq(Order::getState,OrderStateEnum.FINISHED.code);
+                .eq(Order::getCustomerId,userId).eq(Order::getState,OrderStateEnum.FINISHED.code);
         Integer payCount = orderDao.selectCount(queryWrapper);
         if (!Objects.isNull(payCount)) {
             map.put("payCount",payCount);
@@ -191,7 +192,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
 
         // 查询所有订单数量
         queryWrapper = new QueryWrapper<Order>().lambda()
-                .eq(Order::getCustomerId,customerId)
+                .eq(Order::getCustomerId,userId)
                 .le(Order::getState,OrderStateEnum.FINISHED.code).or().eq(Order::getState,OrderStateEnum.F_CANCEL.code);
         Integer allCount = orderDao.selectCount(queryWrapper);
         if (!Objects.isNull(allCount)) {
@@ -205,7 +206,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         OrderCenterDetailVo detailVo = new OrderCenterDetailVo();
         // 查询订单信息
         LambdaQueryWrapper<Order> queryOrderWrapper = new QueryWrapper<Order>().lambda()
-                .eq(Order::getCustomerId,dto.getCustomerId()).eq(Order::getNo,dto.getOrderNo());
+                .eq(Order::getCustomerId,dto.getUserId()).eq(Order::getNo,dto.getOrderNo());
         Order order = super.getOne(queryOrderWrapper);
         BeanUtils.copyProperties(order,detailVo);
         // 查询车辆信息
@@ -250,10 +251,19 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         if (CollectionUtils.isEmpty(orderCarDao.selectList(queryWrapper))) {
             // 说明已经全部确认收车，更新总订单状态为已交付
             LambdaUpdateWrapper<Order> updateWrapper = new UpdateWrapper<Order>().lambda().set(Order::getState, OrderStateEnum.FINISHED.code)
-                    .eq(Order::getNo, dto.getOrderNo()).eq(Order::getCustomerId, dto.getCustomerId());
+                    .eq(Order::getNo, dto.getOrderNo()).eq(Order::getCustomerId, dto.getUserId());
             boolean result = super.update(updateWrapper);
             return result ? BaseResultUtil.success() : BaseResultUtil.fail();
         }
         return BaseResultUtil.success();
+    }
+
+    @Override
+    public ResultVo getUnInvoiceOrderList(InvoiceApplyQueryDto dto) {
+        BasePageUtil.initPage(dto);
+        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
+        List<InvoiceOrderVo> list = orderCarDao.selectUnInvoiceOrderList(dto.getUserId());
+        PageInfo<InvoiceOrderVo> pageInfo = new PageInfo<>(list);
+        return BaseResultUtil.success(pageInfo);
     }
 }

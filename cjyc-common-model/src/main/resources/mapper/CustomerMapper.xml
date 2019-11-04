@@ -117,6 +117,7 @@
     <select id="getAllCustomerByKey" resultType="java.util.Map"
                                     parameterType="java.lang.String">
         select
+            user_id as userId,
             name as name,
             contact_man as contactMan,
             contact_phone AS contactPhone
@@ -128,8 +129,8 @@
         </where>
     </select>
 
-    <!-- 根据大客户名称查询有效期合同 -->
-    <select id="getCustContractByName" resultType="java.util.Map">
+    <!-- 根据大客户UserId查询有效期合同 -->
+    <select id="getCustContractByUserId" resultType="java.util.Map">
           SELECT
                 contract.id as id,
                 contract.contract_no AS contractNo,
@@ -138,7 +139,7 @@
                 c_customer_contract contract
                 LEFT JOIN c_customer customer ON customer.id = contract.customer_id
             WHERE
-                customer.NAME = #{name}  and contract.contract_life > #{now}
+                customer.user_id = #{userId}  and contract.contract_life > #{now}
     </select>
 
     <!-- 根据用户userId获取用户信息 -->

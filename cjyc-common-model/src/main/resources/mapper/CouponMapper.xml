@@ -74,26 +74,26 @@
           SELECT
             send.coupon_no AS couponNo,
             send.use_time AS useTime,
-            ORDER.customer_name AS customerName,
-            ORDER.NO AS orderNo,
-            ORDER.coupon_offset_fee AS couponOffsetFee,
+            o.customer_name AS customerName,
+            o.NO AS orderNo,
+            o.coupon_offset_fee AS couponOffsetFee,
             (
-            ifnull( SUM( ORDER.pick_fee + ORDER.trunk_fee + ORDER.back_fee + ORDER.add_insurance_fee ), 0 ) - ifnull( ORDER.coupon_offset_fee, 0 )
+            ifnull( SUM( o.pick_fee + o.trunk_fee + o.back_fee + o.add_insurance_fee ), 0 ) - ifnull( o.coupon_offset_fee, 0 )
 
         ) AS finalOrderAmount
         FROM
             c_coupon coupon
             JOIN c_coupon_send send ON send.coupon_id = coupon.id
-            JOIN w_order ORDER ON ORDER.coupon_send_id = send.id
+            JOIN w_order o ON o.coupon_send_id = send.id
         <where>
             <if test="couponNo != null and couponNo.trim() != ''">
                 send.coupon_no = #{couponNo}
             </if>
             <if test="customerName != null and customerName.trim() != ''">
-                and order.customer_name = #{customerName}
+                and o.customer_name = #{customerName}
             </if>
             <if test="orderNo != null and orderNo.trim() != ''">
-                and order.no =  #{orderNo}
+                and o.no =  #{orderNo}
             </if>
             <if test="startUseDate != null">
                 and  send.use_time >=  #{startUseDate}

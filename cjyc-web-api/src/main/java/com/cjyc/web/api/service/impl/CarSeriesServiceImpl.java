@@ -10,6 +10,7 @@ import com.cjyc.common.model.dto.web.carSeries.CarSeriesImportExcel;
 import com.cjyc.common.model.dto.web.carSeries.CarSeriesQueryDto;
 import com.cjyc.common.model.dto.web.carSeries.CarSeriesUpdateDto;
 import com.cjyc.common.model.entity.CarSeries;
+import com.cjyc.common.model.util.BasePageUtil;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.StringUtil;
@@ -75,11 +76,9 @@ public class CarSeriesServiceImpl extends ServiceImpl<ICarSeriesDao,CarSeries> i
 
     @Override
     public ResultVo queryPage(CarSeriesQueryDto carSeriesQueryDto) {
+        BasePageUtil.initPage(carSeriesQueryDto);
         List<CarSeries> list = getCarSeriesList(carSeriesQueryDto);
         PageInfo<CarSeries> pageInfo = new PageInfo<>(list);
-        if (carSeriesQueryDto.getCurrentPage() > pageInfo.getPages()) {
-            pageInfo.setList(null);
-        }
         return BaseResultUtil.success(pageInfo);
     }
 
