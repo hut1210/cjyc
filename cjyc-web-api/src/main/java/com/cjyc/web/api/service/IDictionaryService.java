@@ -19,46 +19,18 @@ import java.util.Map;
 public interface IDictionaryService {
 
     /**
-     * 保存韵车2.0字典
-     * @param dictionaryDto
-     * @return
-     */
-    boolean saveDictionary(DictionaryDto dictionaryDto);
-
-    /**
-     * 根据主键id查看字典
-     * @param id
-     * @return
-     */
-    Dictionary showDictionaryById(Long id);
-
-    /**
-     * 根据ids批量删除字典项
-     * @param ids
-     * @return
-     */
-    boolean delDictionaryByIds(List<Long> ids);
-
-    /**
      * 根据字典项id更新
      * @param dictionaryDto
      * @return
      */
-    boolean updDictionaryById(DictionaryDto dictionaryDto);
-
-    /**
-     * 分页查询字典项
-     * @param pageDto
-     * @return
-     */
-    PageInfo<Dictionary> getAllDictionary(BasePageDto pageDto);
+    boolean modify(DictionaryDto dictionaryDto);
 
     /**
      * 根据条件查询字典项
      * @param dto
      * @return
      */
-    PageInfo<Dictionary> findDictionary(SelectDictionaryDto dto);
+    ResultVo queryPage(SelectDictionaryDto dto);
 
     ResultVo<Map<String, Object>> getInsurance(int valuation);
 
@@ -73,5 +45,5 @@ public interface IDictionaryService {
      * @param dto
      * @return
      */
-    ResultVo updateConfig(OperateDto dto);
+    boolean updateConfig(OperateDto dto);
 }

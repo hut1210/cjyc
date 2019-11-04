@@ -9,32 +9,33 @@ import java.math.BigDecimal;
 @Data
 public class LineVo implements Serializable {
 
+    private static final long serialVersionUID = -5565506994979750717L;
     @ApiModelProperty("班线id")
     private Long id;
 
     @ApiModelProperty("起始省编码")
-    private String startProvinceCode;
+    private String fromProvinceCode;
 
     @ApiModelProperty("起始省")
-    private String startProvince;
+    private String fromProvince;
 
     @ApiModelProperty("起始城市编码")
-    private String startCityCode;
+    private String fromCityCode;
 
     @ApiModelProperty("起始城市")
-    private String startCity;
+    private String fromCity;
 
     @ApiModelProperty("目的省编码")
-    private String endProvinceCode;
+    private String toProvinceCode;
 
     @ApiModelProperty("目的省")
-    private String endProvince;
+    private String toProvince;
 
     @ApiModelProperty("目的城市编码")
-    private String endCityCode;
+    private String toCityCode;
 
     @ApiModelProperty("目的城市")
-    private String endCity;
+    private String toCity;
 
     @ApiModelProperty("上游运费(元)")
     private BigDecimal defaultWlFee;
@@ -43,10 +44,10 @@ public class LineVo implements Serializable {
     private BigDecimal defaultFreightFee;
 
     @ApiModelProperty("总里程")
-    private String kilometer;
+    private BigDecimal kilometer;
 
     @ApiModelProperty("总耗时(天)")
-    private int days;
+    private Integer days;
 
     @ApiModelProperty("备注")
     private String remark;

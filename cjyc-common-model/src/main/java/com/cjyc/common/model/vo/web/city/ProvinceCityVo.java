@@ -7,6 +7,7 @@ import java.io.Serializable;
 @Data
 public class ProvinceCityVo implements Serializable {
 
+    private static final long serialVersionUID = -6727514795514383864L;
     @ApiModelProperty("省/直辖市名称")
     private String provinceName;
 

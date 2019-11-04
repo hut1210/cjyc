@@ -53,4 +53,16 @@
         </where>
         ORDER BY brand
     </select>
+
+    <!-- 通过关键字查询品牌车系 -->
+    <select id="getCarSeries" resultType="com.cjyc.common.model.entity.CarSeries" parameterType="java.lang.String">
+        select
+           brand,model,logo_img
+        from s_car_series
+        <where>
+            <if test="keyword != null and keyword.trim() != ''">
+               and concat(brand,model) like concat('%',#{keyword},'%')
+            </if>
+        </where>
+    </select>
 </mapper>

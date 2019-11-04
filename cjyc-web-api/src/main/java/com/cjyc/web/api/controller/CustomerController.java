@@ -124,10 +124,10 @@ public class CustomerController {
         return customerService.getAllCustomerByKey(keyword);
     }
 
-    @ApiOperation(value = "根据输入大客户名称获取大客户有效期合同")
-    @PostMapping(value = "/getCustContractByName/{name}")
-    public ResultVo getCustContractByName(@PathVariable @ApiParam(value = "大客户名称",required = true) String name){
-        return customerService.getCustContractByName(name);
+    @ApiOperation(value = "根据输入大客户userId获取大客户有效期合同")
+    @PostMapping(value = "/getCustContractByUserId/{userId}")
+    public ResultVo getCustContractByUserId(@PathVariable @ApiParam(value = "大客户userId",required = true) Long userId){
+        return customerService.getCustContractByUserId(userId);
     }
 
     @ApiOperation(value = "查看客户优惠券")
@@ -136,9 +136,9 @@ public class CustomerController {
         return customerService.getCustomerCouponByTerm(dto);
     }
 
-    @ApiOperation(value = "根据手机号查看客户优惠券")
-    @PostMapping(value = "/getCouponByPhone/{phone}")
-    public ResultVo getCouponByPhone(@PathVariable @ApiParam(value = "客户手机号",required = true) String phone){
-        return customerService.getCouponByPhone(phone);
+    @ApiOperation(value = "根据userId查看客户优惠券")
+    @PostMapping(value = "/getCouponByUserId/{userId}")
+    public ResultVo getCouponByUserId(@PathVariable @ApiParam(value = "客户userId",required = true) Long userId){
+        return customerService.getCouponByUserId(userId);
     }
 }

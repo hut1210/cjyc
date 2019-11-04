@@ -56,7 +56,7 @@
     </select>
 
     <!--获取树形结构 -->
-    <select id="getAllByLevel" resultType="com.cjyc.common.model.vo.web.city.CityTreeVo" parameterType="java.lang.Integer">
+    <select id="getAllByLevel" resultType="com.cjyc.common.model.vo.CityTreeVo" parameterType="java.lang.Integer">
          SELECT
             NAME AS NAME,
             CODE AS CODE,
@@ -70,7 +70,53 @@
     <select id="getCityTreeByKeyword" resultType="com.cjyc.common.model.entity.City" parameterType="java.lang.String">
         select
           <include refid="Base_Column_List"/>
-        from s_city  where name concat(concat('%',#{name}),'%')
+        from s_city  where name like concat('%',#{name},'%')
+    </select>
+
+    <!--根据城市编码获取省市集合 -->
+    <select id="getCityByCodes" resultType="com.cjyc.common.model.vo.CityTreeVo">
+        SELECT
+            NAME AS NAME,
+            CODE AS CODE,
+            parent_code AS parentCode
+            FROM
+        s_city where code in
+        <foreach collection="codeSet" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+          and level in (1,2)
+    </select>
+
+    <!--根据城市名称模糊匹配查询城市code -->
+    <select id="getCodeByName" resultType="java.lang.String" parameterType="java.lang.String">
+        select code from s_city where name like concat('%',#{name},'%') and level = 2
+    </select>
+
+    <!--根据关键字查询城市编码 -->
+    <select id="getCityCodes" resultType="com.cjyc.common.model.entity.City"  parameterType="java.lang.String">
+        select
+          code as code,
+          parent_code as parentCode
+        from s_city
+        <where>
+            <if test="keyword != null and keyword.trim() != ''">
+                and (
+                NAME LIKE concat( '%', #{keyword}, '%' )
+                OR pin_yin LIKE concat( '%', #{keyword}, '%' )
+                OR pin_initial LIKE concat( '%', #{keyword}, '%' )
+                )
+            </if>
+            and level = 2
+        </where>
+    </select>
+
+    <!--获取热门城市 -->
+    <select id="getHotCity" resultType="java.util.HashMap">
+        select
+          code as code,
+          name as name
+        from s_city
+        where hot = 1
     </select>
 
     <select id="findListByLevel" resultType="com.cjyc.common.model.vo.web.city.TreeCityVo">

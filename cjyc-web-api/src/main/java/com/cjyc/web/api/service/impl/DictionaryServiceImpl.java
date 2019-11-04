@@ -1,6 +1,7 @@
 package com.cjyc.web.api.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.constant.FieldConstant;
 import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.dao.IDictionaryDao;
@@ -21,6 +22,8 @@ import com.cjyc.web.api.service.IDictionaryService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,108 +43,26 @@ import java.util.Map;
  */
 @Service
 @Slf4j
-@Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
-public class DictionaryServiceImpl implements IDictionaryService {
+public class DictionaryServiceImpl extends ServiceImpl<IDictionaryDao,Dictionary> implements IDictionaryService {
 
     @Resource
     private IDictionaryDao dictionaryDao;
 
     @Override
-    public boolean saveDictionary(DictionaryDto dto) {
-        try{
-            Dictionary dic = new Dictionary();
-            dic.setName(dto.getName());
-            dic.setItem(dto.getItem());
-            dic.setItemKey(dto.getItemKey());
-            dic.setItemValue(dto.getItemValue());
-            dic.setItemUnit(dto.getItemUnit());
-            dic.setFixedFlag(UseStateEnum.BE_MODIFIED.code);
-            dic.setRemark(dto.getRemark());
-            dic.setState(UseStateEnum.USABLE.code);
-            dic.setCreateTime(LocalDateTimeUtil.convertToLong(LocalDateTimeUtil.formatLDTNow(TimePatternConstant.COMPLEX_TIME_FORMAT), TimePatternConstant.COMPLEX_TIME_FORMAT));
-            return dictionaryDao.insert(dic) > 0 ? true:false;
-        }catch (Exception e){
-            log.info("保存字典项出现异常");
-            throw new CommonException(e.getMessage());
-        }
+    public boolean modify(DictionaryDto dto) {
+        Dictionary dictionary = new Dictionary();
+        BeanUtils.copyProperties(dto,dictionary);
+        return super.updateById(dictionary);
     }
 
     @Override
-    public Dictionary showDictionaryById(Long id) {
-        Dictionary dic = null;
-        try{
-            if(id != null){
-                dic = dictionaryDao.selectById(id);
-            }
-        }catch (Exception e){
-            log.info("根据id查看字典项出现异常");
-        }
-        return dic;
-    }
-
-    @Override
-    public boolean delDictionaryByIds(List<Long> ids) {
-        try{
-            if(ids != null && ids.size() > 0){
-                return dictionaryDao.deleteBatchIds(ids) > 0 ? true:false;
-            }
-        }catch (Exception e){
-            log.info("根据ids批量删除字典项出现异常");
-            throw new CommonException(e.getMessage());
-        }
-        return false;
-    }
-
-    @Override
-    public boolean updDictionaryById(DictionaryDto dto) {
-        try{
-            Dictionary dic = dictionaryDao.selectById(dto.getId());
-            if(dic != null){
-                dic.setName(dto.getName());
-                dic.setItem(dto.getItem());
-                dic.setItemKey(dto.getItemKey());
-                dic.setItemValue(dto.getItemValue());
-                dic.setItemUnit(dto.getItemUnit());
-                dic.setRemark(dto.getRemark());
-                return dictionaryDao.updateById(dic) > 0 ? true:false;
-            }
-        }catch (Exception e){
-            log.info("根据id更新字典项出现异常");
-            throw new CommonException(e.getMessage());
-        }
-        return false;
-    }
-
-    @Override
-    public PageInfo<Dictionary> getAllDictionary(BasePageDto pageDto) {
-        PageInfo<Dictionary> pageInfo = null;
-        try{
-            PageHelper.startPage(pageDto.getCurrentPage(), pageDto.getPageSize());
-            List<Dictionary> dictionaryList = dictionaryDao.selectList(new QueryWrapper<>());
-            pageInfo = new PageInfo<>(dictionaryList);
-        }catch (Exception e){
-            log.info("根据id更新字典项出现异常");
-        }
-        return pageInfo;
-    }
-
-    @Override
-    public PageInfo<Dictionary> findDictionary(SelectDictionaryDto dto) {
-        PageInfo<Dictionary> pageInfo = null;
-        try{
-            if(dto.getCurrentPage() == null || dto.getCurrentPage() < 1){
-                dto.setCurrentPage(1);
-            }
-            if(dto.getPageSize() == null || dto.getPageSize() < 1){
-                dto.setPageSize(10);
-            }
-            PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
-            List<Dictionary> dictionaryList = dictionaryDao.selectList(new QueryWrapper<Dictionary>().eq("name",dto.getName()));
-            pageInfo = new PageInfo<>(dictionaryList);
-        }catch (Exception e){
-            log.info("根据id更新字典项出现异常");
-        }
-        return pageInfo;
+    public ResultVo queryPage(SelectDictionaryDto dto) {
+        PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
+        List<Dictionary> dictionaryList = dictionaryDao.selectList(new QueryWrapper<Dictionary>().lambda().
+                eq(StringUtils.isNotBlank(dto.getName()),Dictionary::getName,dto.getName()));
+        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
+        PageInfo<Dictionary> pageInfo = new PageInfo<>(dictionaryList);
+        return BaseResultUtil.success(pageInfo == null ? new PageInfo<>():pageInfo);
     }
 
     @Override
@@ -184,43 +105,23 @@ public class DictionaryServiceImpl implements IDictionaryService {
 
     @Override
     public ResultVo queryConfig() {
-        try{
-            List<Map<String,String>> mapList = dictionaryDao.getSystemConfig(FieldConstant.ITEM);
-            if(!CollectionUtils.isEmpty(mapList)){
-                return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),mapList);
-            }else{
-                return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),Collections.emptyList());
-            }
-        }catch (Exception e){
-            log.info("查询系统配置出现异常");
-            throw new CommonException(e.getMessage());
-        }
+        List<Map<String,String>> mapList = dictionaryDao.getSystemConfig(FieldConstant.ITEM);
+        return BaseResultUtil.success(mapList == null ? Collections.EMPTY_LIST:mapList);
     }
 
     @Override
-    public ResultVo updateConfig(OperateDto dto) {
-        int n = 0;
-        try{
-            Dictionary dictionary = dictionaryDao.selectById(dto.getId());
-            if(dictionary != null){
-                if(FlagEnum.TURNOFF_SWITCH.code == dto.getState()){
-                    //关闭开关
-                    dto.setState(UseStateEnum.DISABLED.code);
-                }else if(FlagEnum.TURNONN_SWITCH.code == dto.getState()){
-                    //打开开关
-                    dto.setState(UseStateEnum.USABLE.code);
-                }
-                n = dictionaryDao.updateById(dictionary);
+    public boolean updateConfig(OperateDto dto) {
+        Dictionary dictionary = dictionaryDao.selectById(dto.getId());
+        if(dictionary != null){
+            if(FlagEnum.TURNOFF_SWITCH.code == dto.getFlag()){
+                //关闭开关
+                dictionary.setState(UseStateEnum.DISABLED.code);
+            }else if(FlagEnum.TURNONN_SWITCH.code == dto.getFlag()){
+                //打开开关
+                dictionary.setState(UseStateEnum.USABLE.code);
             }
-            if(n > 0){
-                return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg());
-            }else{
-                return BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
-            }
-        }catch (Exception e){
-            log.info("更新系统配置出现异常");
-            throw new CommonException(e.getMessage());
         }
+        return dictionaryDao.updateById(dictionary) > 0 ? true:false;
     }
 
 

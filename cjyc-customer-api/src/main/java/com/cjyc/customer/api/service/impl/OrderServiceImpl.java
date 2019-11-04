@@ -9,10 +9,9 @@ import com.cjyc.common.model.constant.NoConstant;
 import com.cjyc.common.model.dao.IIncrementerDao;
 import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IOrderDao;
-import com.cjyc.common.model.dto.customer.invoice.InvoiceOrderQueryDto;
+import com.cjyc.common.model.dto.customer.invoice.InvoiceApplyQueryDto;
 import com.cjyc.common.model.dto.customer.order.OrderQueryDto;
 import com.cjyc.common.model.dto.customer.order.OrderUpdateDto;
-import com.cjyc.common.model.entity.CarSeries;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
@@ -38,7 +37,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import javax.validation.constraints.NotEmpty;
 import java.util.*;
 
 /**
@@ -261,7 +259,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
     }
 
     @Override
-    public ResultVo getUnInvoiceOrderList(InvoiceOrderQueryDto dto) {
+    public ResultVo getUnInvoiceOrderList(InvoiceApplyQueryDto dto) {
         BasePageUtil.initPage(dto);
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<InvoiceOrderVo> list = orderCarDao.selectUnInvoiceOrderList(dto.getUserId());

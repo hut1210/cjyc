@@ -1,6 +1,8 @@
 package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.web.OperateDto;
+import com.cjyc.common.model.enums.ResultEnum;
+import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.web.api.service.IDictionaryService;
 import io.swagger.annotations.Api;
@@ -31,7 +33,8 @@ public class ConfigController {
 
    @ApiOperation(value = "更新系统配置")
     @PostMapping(value = "/updateConfig")
-    public ResultVo updateConfig(OperateDto dto){
-        return dictionaryService.updateConfig(dto);
+    public ResultVo updateConfig(@RequestBody OperateDto dto){
+        boolean result = dictionaryService.updateConfig(dto);
+        return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
 }

@@ -44,7 +44,7 @@ public interface ISysUserService {
      * @param account 参数
      */
     @PostMapping("/feign/uc/getUser/{account}")
-    ResultData<AddUserResp> getByAccount(@PathVariable String account);
+    ResultData<AddUserResp> getByAccount(@PathVariable(value="account") String account);
 
 
 
