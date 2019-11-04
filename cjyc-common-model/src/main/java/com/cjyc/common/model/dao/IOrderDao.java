@@ -33,10 +33,9 @@ public interface IOrderDao extends BaseMapper<Order> {
      * @param dto
      * @return
      */
-    List<OrderCenterVo> selectPage(OrderConditionDto dto);
+    List<OrderCenterVo> selectPage(OrderQueryDto dto);
 
     int updateStateForLoad(@Param("orderState") int orderState, @Param("orderCarId") Long orderCarId);
 
     Map<String, Object> countForAllTab();
-    List<OrderCenterVo> selectPage(OrderQueryDto dto);
 }
