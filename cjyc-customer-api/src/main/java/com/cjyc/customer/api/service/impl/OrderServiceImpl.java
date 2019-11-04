@@ -47,7 +47,6 @@ import java.util.*;
 @Service
 @Slf4j
 public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IOrderService{
-
     @Resource
     private IOrderDao orderDao;
 
@@ -259,10 +258,17 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
     }
 
     @Override
-    public ResultVo getUnInvoiceOrderList(InvoiceApplyQueryDto dto) {
-        BasePageUtil.initPage(dto);
+    public ResultVo getUnInvoicePage(InvoiceApplyQueryDto dto) {
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<InvoiceOrderVo> list = orderCarDao.selectUnInvoiceOrderList(dto.getUserId());
+        PageInfo<InvoiceOrderVo> pageInfo = new PageInfo<>(list);
+        return BaseResultUtil.success(pageInfo);
+    }
+
+    @Override
+    public ResultVo getInvoiceApplyOrderPage(InvoiceApplyQueryDto dto) {
+        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
+        List<InvoiceOrderVo> list = orderCarDao.selectInvoiceOrderList(dto);
         PageInfo<InvoiceOrderVo> pageInfo = new PageInfo<>(list);
         return BaseResultUtil.success(pageInfo);
     }

@@ -65,5 +65,12 @@ public interface IOrderService extends IService<Order> {
      * @param dto
      * @return
      */
-    ResultVo getUnInvoiceOrderList(InvoiceApplyQueryDto dto);
+    ResultVo getUnInvoicePage(InvoiceApplyQueryDto dto);
+
+    /**
+     * 查询发票申请信息订单明细
+     * @param dto
+     * @return
+     */
+    ResultVo getInvoiceApplyOrderPage(InvoiceApplyQueryDto dto);
 }

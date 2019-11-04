@@ -36,10 +36,22 @@ public class InvoiceController {
     @Resource
     private IOrderService orderService;
 
+    @ApiOperation(value = "分页查询已申请发票信息")
+    @PostMapping("/getInvoiceApplyPage")
+    public ResultVo getInvoiceApplyPage(@RequestBody @Validated({InvoiceApplyQueryDto.InvoiceOrderAndInvoiceApplyQuery.class}) InvoiceApplyQueryDto dto){
+        return invoiceApplyService.getInvoiceApplyPage(dto);
+    }
+
+    @ApiOperation(value = "分页查询已申请发票订单明细")
+    @PostMapping("/getInvoiceApplyOrderPage")
+    public ResultVo<PageInfo<InvoiceOrderVo>> getInvoiceApplyOrderPage(@RequestBody @Validated({InvoiceApplyQueryDto.InvoiceApplyOrderQuery.class}) InvoiceApplyQueryDto dto){
+        return orderService.getInvoiceApplyOrderPage(dto);
+    }
+
     @ApiOperation(value = "分页查询用户未开发票的订单")
-    @PostMapping("/getUnInvoiceList")
-    public ResultVo<PageInfo<InvoiceOrderVo>> getUnInvoiceOrderList(@RequestBody @Validated InvoiceApplyQueryDto dto){
-        return orderService.getUnInvoiceOrderList(dto);
+    @PostMapping("/getUnInvoicePage")
+    public ResultVo<PageInfo<InvoiceOrderVo>> getUnInvoicePage(@RequestBody @Validated({InvoiceApplyQueryDto.InvoiceOrderAndInvoiceApplyQuery.class}) InvoiceApplyQueryDto dto){
+        return orderService.getUnInvoicePage(dto);
     }
 
     @ApiOperation(value = "查询开票信息")
@@ -54,7 +66,7 @@ public class InvoiceController {
     public ResultVo applyInvoice(@RequestBody @Validated CustomerInvoiceAddDto dto){
         ResultVo resultVo = null;
         try {
-            resultVo = customerInvoiceService.applyInvoice(dto);
+            resultVo = invoiceApplyService.applyInvoice(dto);
         } catch (Exception e) {
             log.error("确认开票异常:{}",e);
             resultVo = BaseResultUtil.fail("开票失败");

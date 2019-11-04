@@ -1,6 +1,7 @@
 package com.cjyc.common.model.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cjyc.common.model.dto.customer.invoice.InvoiceApplyQueryDto;
 import com.cjyc.common.model.dto.web.order.ChangePriceOrderCarDto;
 import com.cjyc.common.model.dto.web.order.LineWaitDispatchCountListOrderCarDto;
 import com.cjyc.common.model.dto.web.order.ListOrderCarDto;
@@ -121,4 +122,11 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
      * @return
      */
     List<InvoiceOrderVo> selectUnInvoiceOrderList(Long userId);
+
+    /**
+     * 查询发票申请信息订单明细
+     * @param dto
+     * @return
+     */
+    List<InvoiceOrderVo> selectInvoiceOrderList(InvoiceApplyQueryDto dto);
 }
