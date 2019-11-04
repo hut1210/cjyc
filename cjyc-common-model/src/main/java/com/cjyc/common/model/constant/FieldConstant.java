@@ -22,4 +22,8 @@ public class FieldConstant {
      * 发票已开
      */
     public static final int INVOICE_FINISH = 2;
+    /**
+     * 开票失败
+     */
+    public static final int INVOICE_FAIL = 3;
 }

@@ -654,25 +654,30 @@
 
     <!--查询未开发票订单列表-->
     <select id="selectUnInvoiceOrderList" resultType="com.cjyc.common.model.vo.customer.invoice.InvoiceOrderVo">
-        select
-            o.no as orderNo,
-            o.start_city as startCity,
-            o.end_city as endCity,
-            o.total_fee as totalFee,
-            o.finish_time as finishTime
-        from
+        SELECT
+            o.NO AS orderNo,
+            o.start_city AS startCity,
+            o.end_city AS endCity,
+            o.total_fee AS totalFee,
+            o.finish_time AS finishTime
+        FROM
             w_order o
-            left join
-            (select apply.customer_id,con.id,con.order_no
-            from c_invoice_apply apply
-            left join c_invoice_order_con con apply.id=con.invoice_apply_id and apply.state in(1,2)) t
-            on o.no=t.order_no and o.customer_id=t.customer_id
-
-        where
-            o.customer_id=#{userId}
-            and t.id is null
-            and o.invoice_flag = 1
-            and o.state = 100
-        order by o.finish_time desc
+            LEFT JOIN (
+        SELECT
+            apply.customer_id,
+            con.id,
+            con.order_no
+        FROM
+            c_invoice_apply apply
+            LEFT JOIN c_invoice_order_con con on apply.id = con.invoice_apply_id
+            AND apply.state IN ( 1, 2 )
+            ) t ON o.NO = t.order_no AND o.customer_id = t.customer_id
+        WHERE
+            o.customer_id = #{userId}
+            AND t.id IS NULL
+            AND o.invoice_flag = 1
+            AND o.state = 100
+        ORDER BY
+            o.finish_time DESC
     </select>
 </mapper>
