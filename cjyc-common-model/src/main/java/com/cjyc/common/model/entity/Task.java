@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-29
+ * @since 2019-11-01
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -43,7 +43,7 @@ public class Task implements Serializable {
     @ApiModelProperty(value = "车辆数")
     private Integer carNum;
 
-    @ApiModelProperty(value = "任务状态：0待承接，5待装车，10运输中，100已完成，102已取消，103已拒接")
+    @ApiModelProperty(value = "任务状态：0待承接，5待装车，55运输中，100已完成，113已取消，115已拒接")
     private Integer state;
 
     @ApiModelProperty(value = "司机名称")
@@ -52,7 +52,7 @@ public class Task implements Serializable {
     @ApiModelProperty(value = "司机电话")
     private String driverPhone;
 
-    @ApiModelProperty(value = "司机ID")
+    @ApiModelProperty(value = "司机ID(userId)")
     private Long driverId;
 
     @ApiModelProperty(value = "装车数量")
@@ -63,6 +63,9 @@ public class Task implements Serializable {
 
     @ApiModelProperty(value = "实时运力ID")
     private Long vehicleRunningId;
+
+    @ApiModelProperty(value = "运力车牌号")
+    private String vehiclePlateNo;
 
     @ApiModelProperty(value = "备注")
     private String remark;

@@ -43,5 +43,11 @@
         and state = 2
 
     </select>
+    <select id="findAreaBizScope" resultType="java.lang.String">
+        select
+        area_code
+        from s_store_city_con
+        where store_id = #{id}
+    </select>
 
 </mapper>

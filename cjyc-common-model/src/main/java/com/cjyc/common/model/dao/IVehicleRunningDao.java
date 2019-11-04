@@ -35,4 +35,5 @@ public interface IVehicleRunningDao extends BaseMapper<VehicleRunning> {
      */
     int delVehicleRunByVehId(@Param("vehicleId") Long vehicleId);
 
+    VehicleRunning findByDriverId(Long driverId);
 }

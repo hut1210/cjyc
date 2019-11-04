@@ -14,7 +14,14 @@ import javax.validation.constraints.NotNull;
 @Data
 public class InvoiceApplyQueryDto extends BasePageDto {
     private static final long serialVersionUID = -1473863706963518462L;
+    public interface InvoiceApplyOrderQuery{}
+    public interface InvoiceOrderAndInvoiceApplyQuery{}
+
     @ApiModelProperty(value = "客户userId")
-    @NotNull(message = "客户userId不能为空")
+    @NotNull(groups = {InvoiceOrderAndInvoiceApplyQuery.class},message = "客户userId不能为空")
     private Long userId;
+
+    @ApiModelProperty(value = "发票申请ID")
+    @NotNull(groups = {InvoiceApplyOrderQuery.class},message = "发票申请ID不能为空")
+    private Long invoiceApplyId;
 }

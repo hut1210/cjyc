@@ -43,21 +43,21 @@ public class PartnerDto implements Serializable {
     private String contactAddress;
 
     @ApiModelProperty("是否一般纳税人 0：否  1：是")
-    private int isTaxpayer;
+    private Integer isTaxpayer;
 
     @ApiModelProperty("是否可以开票 0：否 1：是")
-    private int isInvoice;
+    private Integer isInvoice;
 
-    @ApiModelProperty("结算方式：1时付，2账期")
-    @NotNull(groups = {PartnerDto.SaveOrUpdatePartnerDto.class},message = "结算方式不能为空")
-    private int settleType;
+    @ApiModelProperty("结算方式：0:时付，1:账期")
+    @NotBlank(groups = {PartnerDto.SaveOrUpdatePartnerDto.class},message = "结算方式不能为空")
+    private Integer settleType;
 
     @ApiModelProperty("账期/天")
-    private int settlePeriod;
+    private Integer settlePeriod;
 
     @ApiModelProperty("卡类型:1公户，2私户")
-    @NotNull(groups = {PartnerDto.SaveOrUpdatePartnerDto.class},message = "卡类型不能为空")
-    private int cardType;
+    @NotBlank(groups = {PartnerDto.SaveOrUpdatePartnerDto.class},message = "卡类型不能为空")
+    private Integer cardType;
 
     @ApiModelProperty("对公开户名称/对私开户行名称")
     @NotBlank(groups = {PartnerDto.SaveOrUpdatePartnerDto.class},message = "对公开户名称/对私开户行名称不能为空")

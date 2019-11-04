@@ -21,9 +21,9 @@ public interface ITaskService extends IService<Task> {
 
     ResultVo unload(UnLoadTaskDto paramsDto);
 
-    ResultVo inStore(InStoreTaskDto reqDto);
+    ResultVo inStore(InStoreTaskDto paramsDto);
 
-    ResultVo outStore(OutStoreTaskDto reqDto);
+    ResultVo outStore(OutStoreTaskDto paramsDto);
 
-    ResultVo sign(SignTaskDto reqDto);
+    ResultVo sign(SignTaskDto paramsDto);
 }

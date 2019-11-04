@@ -20,8 +20,8 @@ public class LocalDispatchListWaybillDto {
     @ApiModelProperty(value = "用户userName", required = true)
     private String userName;
 
-    @ApiModelProperty(value = "1提车运单，3送车运单", required = true)
-    private Long type;
+    @ApiModelProperty(value = "运单类型：1提车运单，2自送运单，3干线运单，4送车运单，5自提运单", required = true)
+    private Integer type;
 
     @ApiModelProperty(value = "调度内容", required = true)
     private List<LocalDispatchWaybillDto> list;

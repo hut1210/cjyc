@@ -13,6 +13,7 @@ import com.cjyc.customer.api.service.IOrderService;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +24,7 @@ import javax.annotation.Resource;
  *  @Date: 2019/10/31 19:31
  *  @Description:用户端发票
  */
+@Slf4j
 @Api(tags = "发票管理")
 @RestController
 @RequestMapping("/invoice")
@@ -34,10 +36,22 @@ public class InvoiceController {
     @Resource
     private IOrderService orderService;
 
+    @ApiOperation(value = "分页查询已申请发票信息")
+    @PostMapping("/getInvoiceApplyPage")
+    public ResultVo getInvoiceApplyPage(@RequestBody @Validated({InvoiceApplyQueryDto.InvoiceOrderAndInvoiceApplyQuery.class}) InvoiceApplyQueryDto dto){
+        return invoiceApplyService.getInvoiceApplyPage(dto);
+    }
+
+    @ApiOperation(value = "分页查询已申请发票订单明细")
+    @PostMapping("/getInvoiceApplyOrderPage")
+    public ResultVo<PageInfo<InvoiceOrderVo>> getInvoiceApplyOrderPage(@RequestBody @Validated({InvoiceApplyQueryDto.InvoiceApplyOrderQuery.class}) InvoiceApplyQueryDto dto){
+        return orderService.getInvoiceApplyOrderPage(dto);
+    }
+
     @ApiOperation(value = "分页查询用户未开发票的订单")
-    @PostMapping("/getUnInvoiceList")
-    public ResultVo<PageInfo<InvoiceOrderVo>> getUnInvoiceOrderList(@RequestBody @Validated InvoiceApplyQueryDto dto){
-        return orderService.getUnInvoiceOrderList(dto);
+    @PostMapping("/getUnInvoicePage")
+    public ResultVo<PageInfo<InvoiceOrderVo>> getUnInvoicePage(@RequestBody @Validated({InvoiceApplyQueryDto.InvoiceOrderAndInvoiceApplyQuery.class}) InvoiceApplyQueryDto dto){
+        return orderService.getUnInvoicePage(dto);
     }
 
     @ApiOperation(value = "查询开票信息")
@@ -49,8 +63,15 @@ public class InvoiceController {
 
     @ApiOperation(value = "确认开票")
     @PostMapping("/applyInvoice")
-    public ResultVo applyInvoice(@RequestBody @Validated CustomerInvoiceAddDto dto) throws Exception {
-        return customerInvoiceService.applyInvoice(dto);
+    public ResultVo applyInvoice(@RequestBody @Validated CustomerInvoiceAddDto dto){
+        ResultVo resultVo = null;
+        try {
+            resultVo = invoiceApplyService.applyInvoice(dto);
+        } catch (Exception e) {
+            log.error("确认开票异常:{}",e);
+            resultVo = BaseResultUtil.fail("开票失败");
+        }
+        return resultVo;
     }
 
 }

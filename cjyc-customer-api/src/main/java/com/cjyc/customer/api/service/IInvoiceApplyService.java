@@ -1,7 +1,10 @@
 package com.cjyc.customer.api.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.cjyc.common.model.dto.customer.invoice.CustomerInvoiceAddDto;
+import com.cjyc.common.model.dto.customer.invoice.InvoiceApplyQueryDto;
 import com.cjyc.common.model.entity.InvoiceApply;
+import com.cjyc.common.model.vo.ResultVo;
 
 /**
  * <p>
@@ -14,9 +17,15 @@ import com.cjyc.common.model.entity.InvoiceApply;
 public interface IInvoiceApplyService extends IService<InvoiceApply> {
 
     /**
-     * 信息发票申请信息，返回id
-     * @param invoiceApply
+     * 查询已申请发票信息
+     * @param dto
      * @return
      */
-    String addAndReturnId(InvoiceApply invoiceApply);
+    ResultVo getInvoiceApplyPage(InvoiceApplyQueryDto dto);
+    /**
+     * 新增发票信息
+     * @param dto
+     * @return
+     */
+    ResultVo applyInvoice(CustomerInvoiceAddDto dto) throws Exception;
 }

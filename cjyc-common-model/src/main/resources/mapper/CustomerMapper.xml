@@ -124,7 +124,9 @@
         from c_customer
         <where>
             <if test="keyword != null and keyword.trim() !=''">
-                and concat(name,contact_phone,contact_man) like concat('%',#{keyword},'%')
+                and (name like concat('%',#{keyword},'%') or
+                     contact_phone like concat('%',#{keyword},'%') or
+                     contact_man like concat('%',#{keyword},'%'))
             </if>
         </where>
     </select>

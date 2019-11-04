@@ -1,5 +1,7 @@
 package com.cjyc.common.model.dto.web.waybill;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -25,69 +27,52 @@ public class TrunkDispatchWaybillDto implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @ApiModelProperty(value = "运单ID")
+    private Long waybillId;
+    @ApiModelProperty(value = "运单编号")
+    private String waybillNo;
 
-    @ApiModelProperty(value = "车辆ID", required = true)
+    @ApiModelProperty(value = "订单车辆ID")
     private Long orderCarId;
-    @ApiModelProperty(value = "车辆编号", required = true)
+
+    @ApiModelProperty(value = "车辆编号")
     private String orderCarNo;
 
-    @ApiModelProperty(value = "省")
-    private String startProvince;
+    @ApiModelProperty(value = "运费")
+    private BigDecimal freightFee;
 
-    @ApiModelProperty(value = "省编号")
-    private String startProvinceCode;
-
-    @ApiModelProperty(value = "市")
-    private String startCity;
-
-    @ApiModelProperty(value = "市编号")
-    private String startCityCode;
-
-    @ApiModelProperty(value = "区")
-    private String startArea;
-
-    @ApiModelProperty(value = "区编号")
+    @ApiModelProperty(value = "区县编码")
     private String startAreaCode;
 
-    @ApiModelProperty(value = "出发地详细地址")
-    private String startDetailAddr;
-
-    @ApiModelProperty(value = "出发地业务中心ID: -1不经过业务中心")
-    private Long startStoreId;
+    @ApiModelProperty(value = "装车地址")
+    private String startAddress;
 
     @ApiModelProperty(value = "出发地业务中心名称")
     private String startStoreName;
 
-    @ApiModelProperty(value = "省")
-    private String endProvince;
+    @ApiModelProperty(value = "出发地业务中心ID")
+    private Long startStoreId;
 
-    @ApiModelProperty(value = "省编号")
-    private String endProvinceCode;
-
-    @ApiModelProperty(value = "市")
-    private String endCity;
-
-    @ApiModelProperty(value = "市编号")
-    private String endCityCode;
-
-    @ApiModelProperty(value = "区")
-    private String endArea;
-
-    @ApiModelProperty(value = "区编号")
+      @ApiModelProperty(value = "区县编码")
     private String endAreaCode;
 
-    @ApiModelProperty(value = "目的地详细地址")
-    private String endDetailAddr;
-
-    @ApiModelProperty(value = "目的地业务中心ID: -1不经过业务中心")
-    private Long endStoreId;
+    @ApiModelProperty(value = "卸车地址")
+    private String endAddress;
 
     @ApiModelProperty(value = "目的地业务中心名称")
     private String endStoreName;
 
+    @ApiModelProperty(value = "目的地业务中心ID")
+    private Long endStoreId;
 
-    @ApiModelProperty(value = "预计提车日期", required = true)
-    private Long expectPickTime;
+    @ApiModelProperty(value = "线路ID")
+    private Long lineId;
+
+    @ApiModelProperty(value = "预计提车日期")
+    private Long expectStartTime;
+
+    @ApiModelProperty(value = "预计到达时间")
+    private Long expectEndTime;
 
     @ApiModelProperty(value = "取车方式:1上门，2 自送/自取")
     private Integer takeType;
@@ -101,6 +86,9 @@ public class TrunkDispatchWaybillDto implements Serializable {
     @ApiModelProperty(value = "提车联系人电话")
     private String loadLinkPhone;
 
+    @ApiModelProperty(value = "装车交接类型：1客户家，2中途交接，3业务中心")
+    private Integer loadTurnType;
+
     @ApiModelProperty(value = "收车人名称")
     private String unloadLinkName;
 
@@ -110,7 +98,8 @@ public class TrunkDispatchWaybillDto implements Serializable {
     @ApiModelProperty(value = "收车人电话")
     private String unloadLinkPhone;
 
-    @ApiModelProperty(value = "运费", required = true)
-    private BigDecimal freightFee;
+    @ApiModelProperty(value = "卸车交接类型：1客户家，2中途交接，3业务中心")
+    private Integer unloadTurnType;
+
 
 }

@@ -4,10 +4,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.dto.salesman.city.CityPageDto;
 import com.cjyc.common.model.entity.City;
-import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.dto.web.city.TreeCityDto;
 import com.cjyc.common.model.vo.CityTreeVo;
-import com.cjyc.common.model.vo.web.city.TreeCityVo;
+import com.cjyc.common.model.vo.ResultVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -51,13 +49,6 @@ public interface ICityService extends IService<City> {
     List<City> selectChildList(String code);
 
     /**
-     * 省城市树形结构
-     * @return
-     * @param treeCityDto
-     */
-    ResultVo<List<TreeCityVo>> getTree(TreeCityDto treeCityDto);
-
-    /**
      *  根据起始目的节点查询树形结构
      * @param startLevel
      * @param endLevel
@@ -70,5 +61,5 @@ public interface ICityService extends IService<City> {
      * @param keyword
      * @return
      */
-    ResultVo<List<CityTreeVo>> getCityTreeByKeyword(String keyword);
+    ResultVo<List<CityTreeVo>> keywordCityTree(String keyword);
 }

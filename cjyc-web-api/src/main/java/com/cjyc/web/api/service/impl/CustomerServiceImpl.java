@@ -570,7 +570,7 @@ public class CustomerServiceImpl implements ICustomerService{
                         continue;
                     }
                     if(sendVo.getEndPeriodDate() != null){
-                        if((sendVo.getEndPeriodDate() - now) > 0){
+                        if(sendVo.getEndPeriodDate() >now){
                             sendVoList.add(sendVo);
                         }
                     }else{

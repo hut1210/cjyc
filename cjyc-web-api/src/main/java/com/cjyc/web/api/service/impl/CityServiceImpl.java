@@ -7,13 +7,13 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.redis.template.StringRedisUtil;
 import com.cjyc.common.model.dao.ICityDao;
 import com.cjyc.common.model.dto.salesman.city.CityPageDto;
-import com.cjyc.common.model.dto.web.city.TreeCityDto;
 import com.cjyc.common.model.entity.City;
+import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.CityTreeUtil;
-import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.CityTreeVo;
-import com.cjyc.common.model.vo.web.city.TreeCityVo;
+import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.web.api.exception.CommonException;
 import com.cjyc.web.api.service.ICityService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +38,6 @@ import java.util.*;
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
 public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICityService {
 
-
     @Autowired
     private StringRedisUtil redisUtil;
 
@@ -47,7 +46,7 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
 
     @Override
     public City findById(String cityCode) {
-        return cityDao.findById(cityCode);
+        return cityDao.selectById(cityCode);
     }
 
     @Override
@@ -61,7 +60,7 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
         queryWarrper.eq("level", cityPageDto.getLevel());
         Page<City> page = new Page<>(cityPageDto.getCurrentPage(), cityPageDto.getPageSize());
         IPage<City> iPage = cityDao.selectPage(page, queryWarrper);
-        if(cityPageDto.getCurrentPage() > iPage.getPages()){
+        if (cityPageDto.getCurrentPage() > iPage.getPages()) {
             iPage.setRecords(null);
         }
         return iPage;
@@ -73,22 +72,19 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
     }
 
     @Override
-    public ResultVo<List<TreeCityVo>> getTree(TreeCityDto paramsDto) {
-        List<TreeCityVo> tree = getTree(paramsDto.getStartLevel(), paramsDto.getEndLevel());
-        return BaseResultUtil.success(tree);
+    public ResultVo cityTree(Integer rootLevel, Integer minLeafLevel) {
+        List<CityTreeVo> cityTreeVos = cityDao.getAllByLevel(rootLevel, minLeafLevel);
+        List<CityTreeVo> nodeList = null;
+        if (!CollectionUtils.isEmpty(cityTreeVos)) {
+            nodeList = CityTreeUtil.encapTree(cityTreeVos);
+        }
+        return BaseResultUtil.success(nodeList == null ? Collections.EMPTY_LIST : nodeList);
     }
 
     @Override
-    public ResultVo cityTree(Integer startLevel,Integer endLevel) {
-        List<CityTreeVo> cityTreeVos = cityDao.getAllByLevel(startLevel,endLevel);
-        List<CityTreeVo> nodeList = CityTreeUtil.encapTree(cityTreeVos);
-        return BaseResultUtil.success(nodeList != null ? nodeList:Collections.emptyList());
-    }
-
-    @Override
-    public ResultVo<List<CityTreeVo>> getCityTreeByKeyword(String keyword) {
+    public ResultVo<List<CityTreeVo>> keywordCityTree(String keyword) {
         List<City> cityList = cityDao.getCityTreeByKeyword(keyword);
-        Set<String> codeSet = new HashSet<>();
+        Set<String> codeSet = new HashSet<>(16);
         List<CityTreeVo> cityTreeVos = null;
         List<CityTreeVo> nodeList = null;
         for(City city : cityList){
@@ -100,25 +96,5 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
             nodeList = CityTreeUtil.encapTree(cityTreeVos);
         }
         return BaseResultUtil.success(nodeList != null ? nodeList:Collections.emptyList());
-    }
-
-    private List<TreeCityVo> getTree(int startLevel, int endLevel) {
-        if (startLevel <= -1 || startLevel > 5 || startLevel >= endLevel) {
-            return null;
-        }
-        if (endLevel > 5) {
-            return null;
-        }
-
-        List<TreeCityVo> list = cityDao.findListByLevel(startLevel);
-        startLevel += 1;
-        for (TreeCityVo treeCityVo : list) {
-            if (startLevel >= endLevel) {
-                cityDao.findListByLevel(startLevel);
-            } else {
-                treeCityVo.setNext(getTree(startLevel, endLevel));
-            }
-        }
-        return list;
     }
 }

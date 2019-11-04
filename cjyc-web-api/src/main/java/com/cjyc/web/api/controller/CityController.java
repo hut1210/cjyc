@@ -4,11 +4,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.cjyc.common.model.dto.salesman.city.CityPageDto;
 import com.cjyc.common.model.entity.City;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.vo.CityTreeVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.dto.web.city.TreeCityDto;
-import com.cjyc.common.model.vo.CityTreeVo;
-import com.cjyc.common.model.vo.web.city.TreeCityVo;
 import com.cjyc.web.api.service.ICityService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -68,12 +66,6 @@ public class CityController {
     }
 
     @ApiOperation(value = "查询树形结构", notes = "")
-    @PostMapping(value = "/tree")
-    public ResultVo<List<TreeCityVo>> tree(@RequestBody TreeCityDto treeCityDto) {
-        return cityService.getTree(treeCityDto);
-    }
-
-    @ApiOperation(value = "查询树形结构", notes = "")
     @PostMapping(value = "/cityTree/{startLevel}/{endLevel}")
     public ResultVo<List<CityTreeVo>> cityTree(@PathVariable @ApiParam(value = "区域级别 最高级:-1 大区:0 省直辖市:1 城市:2 区县:3",required = true) Integer startLevel,
                                                @PathVariable @ApiParam(value = "区域级别 最高级:-1 大区:0 省直辖市:1 城市:2 区县:3",required = true) Integer endLevel) {
@@ -81,9 +73,9 @@ public class CityController {
     }
 
     @ApiOperation(value = "根据关键字模糊搜索省/城市")
-    @PostMapping(value = "/getCityTreeByKeyword/{keyword}")
-    public ResultVo<List<CityTreeVo>> getCityTreeByKeyword(@PathVariable @ApiParam(value = "省直辖市/城市名称",required = true) String keyword) {
-        return cityService.getCityTreeByKeyword(keyword);
+    @PostMapping(value = "/keywordCityTree/{keyword}")
+    public ResultVo<List<CityTreeVo>> keywordCityTree(@PathVariable @ApiParam(value = "省直辖市/城市名称",required = true) String keyword) {
+        return cityService.keywordCityTree(keyword);
     }
 
 }

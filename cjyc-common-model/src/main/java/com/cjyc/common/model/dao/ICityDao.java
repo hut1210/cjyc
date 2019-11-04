@@ -25,10 +25,6 @@ import java.util.Set;
 @Repository
 public interface ICityDao extends BaseMapper<City> {
 
-    City findById(@Param("cityCode") String cityCode);
-
-    List<City> findList();
-
     List<City> findChildList(String code);
 
     List<Map<String,Object>> getList(@Param("cityCode") String cityCode);

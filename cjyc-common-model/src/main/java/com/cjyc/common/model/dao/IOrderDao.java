@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -33,4 +34,8 @@ public interface IOrderDao extends BaseMapper<Order> {
      * @return
      */
     List<OrderCenterVo> selectPage(OrderQueryDto dto);
+
+    int updateStateForLoad(@Param("orderState") int orderState, @Param("orderCarId") Long orderCarId);
+
+    Map<String, Object> countForAllTab();
 }

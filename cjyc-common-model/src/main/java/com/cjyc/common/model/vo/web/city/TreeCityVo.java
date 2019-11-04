@@ -1,11 +1,9 @@
 package com.cjyc.common.model.vo.web.city;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
 
 @Data
@@ -17,10 +15,12 @@ public class TreeCityVo<T> implements Serializable {
     @ApiModelProperty("名称")
     private String name;
 
-    @ApiModelProperty("名称")
-    private String level;
+    @ApiModelProperty("编码")
+    private String parentCode;
 
-    @TableField(exist = false)
+    @ApiModelProperty("名称")
+    private Integer level;
+
     @ApiModelProperty("下属城市")
     List<T> next;
 }

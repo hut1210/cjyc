@@ -9,8 +9,8 @@ import lombok.Data;
 public class TreeCityDto {
 
     @ApiModelProperty("根节点级别：-1中国，0大区，1省，2市，3区")
-    private Integer startLevel = 0;
+    private Integer rootLevel = 0;
 
     @ApiModelProperty("最小叶子节点级别")
-    private Integer endLevel= 2;
+    private Integer minLeafLevel= 2;
 }

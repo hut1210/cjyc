@@ -17,7 +17,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-29
+ * @since 2019-11-02
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -35,6 +35,7 @@ public class WaybillCar implements Serializable {
     @ApiModelProperty(value = "运单ID")
     private Long waybillId;
 
+    @ApiModelProperty(value = "运单编号")
     private String waybillNo;
 
     @ApiModelProperty(value = "订单车辆ID")
@@ -103,7 +104,7 @@ public class WaybillCar implements Serializable {
     @ApiModelProperty(value = "线路ID")
     private Long lineId;
 
-    @ApiModelProperty(value = "状态：0待指派，2已指派，5待装车，7已装车，9已卸车，90确认交车, 100确认收车, 113取消，114作废,")
+    @ApiModelProperty(value = "运单车辆状态：0待指派，2已指派，5待装车，15待装车确认，45已装车，70已卸车，90确认交车, 100确认收车, 105待重连，120已重连")
     private Integer state;
 
     @ApiModelProperty(value = "预计提车日期")
@@ -124,6 +125,9 @@ public class WaybillCar implements Serializable {
     @ApiModelProperty(value = "提车联系人电话")
     private String loadLinkPhone;
 
+    @ApiModelProperty(value = "装车交接类型：1客户家，2中途交接，3业务中心")
+    private Integer loadTurnType;
+
     @ApiModelProperty(value = "图片地址，逗号分隔")
     private String loadPhotoImg;
 
@@ -139,11 +143,16 @@ public class WaybillCar implements Serializable {
     @ApiModelProperty(value = "收车人电话")
     private String unloadLinkPhone;
 
+    @ApiModelProperty(value = "卸车交接类型：1客户指定地，2中途交接，3业务中心")
+    private Integer unloadTurnType;
+
     @ApiModelProperty(value = "图片地址，逗号分隔")
     private String unloadPhotoImg;
 
     @ApiModelProperty(value = "实际完成卸车时间")
     private Long unloadTime;
+
+    private Integer sort;
 
     @ApiModelProperty(value = "创建时间")
     private Long createTime;

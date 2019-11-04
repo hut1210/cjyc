@@ -39,6 +39,12 @@
         from d_vehicle_running
         where driver_id = #{driverId}
     </select>
+    <select id="findByDriverId" resultType="com.cjyc.common.model.entity.VehicleRunning">
+        select
+        <include refid="Base_Column_List"/>
+        where driver_id = #{driverId}
+        and state = 1
+    </select>
 
     <!-- 根据运力vehicleId删除运力信息 -->
     <delete id="delVehicleRunByVehId" parameterType="java.lang.Long">
