@@ -83,12 +83,13 @@ public class ICustomerInvoiceServiceImpl extends SuperServiceImpl<ICustomerInvoi
         InvoiceApply invoiceApply = new InvoiceApply();
         BigDecimal amount = new BigDecimal(0);
         for (OrderAmountDto orderAmountDto : dto.getOrderAmountList()) {
-            amount.add(orderAmountDto.getAmount());
+            amount = amount.add(orderAmountDto.getAmount());
         }
         invoiceApply.setAmount(amount);
         invoiceApply.setApplyTime(System.currentTimeMillis());
         invoiceApply.setCustomerId(dto.getUserId());
         invoiceApply.setCustomerName(dto.getName());
+        invoiceApply.setOperationName(dto.getName());
         invoiceApply.setState(FieldConstant.INVOICE_APPLY_IN);
         return invoiceApply;
     }
