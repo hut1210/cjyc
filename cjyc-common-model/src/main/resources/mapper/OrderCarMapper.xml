@@ -662,10 +662,15 @@
             o.finish_time as finishTime
         from
             w_order o
-            left join w_invoice_order invoice on o.no=invoice.order_no and o.customer_id=invoice.customer_id
+            left join
+            (select apply.customer_id,con.id,con.order_no
+            from c_invoice_apply apply
+            left join c_invoice_order_con con apply.id=con.invoice_apply_id and apply.state in(1,2)) t
+            on o.no=t.order_no and o.customer_id=t.customer_id
+
         where
             o.customer_id=#{userId}
-            and invoice.id is null
+            and t.id is null
             and o.invoice_flag = 1
             and o.state = 100
         order by o.finish_time desc
