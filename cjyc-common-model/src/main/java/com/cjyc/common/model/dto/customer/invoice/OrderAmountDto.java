@@ -2,7 +2,6 @@ package com.cjyc.common.model.dto.customer.invoice;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotBlank;
@@ -16,7 +15,6 @@ import java.math.BigDecimal;
  * @Date 2019/11/2 15:44
  **/
 @Data
-@Validated
 public class OrderAmountDto implements Serializable {
     private static final long serialVersionUID = -2927137879452233207L;
     @ApiModelProperty(value = "开票金额")
