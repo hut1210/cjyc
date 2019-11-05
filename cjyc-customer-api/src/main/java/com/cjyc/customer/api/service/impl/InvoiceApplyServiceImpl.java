@@ -75,13 +75,13 @@ public class InvoiceApplyServiceImpl extends SuperServiceImpl<IInvoiceApplyDao, 
             invoiceId = dto.getId();
             boolean update = customerInvoiceService.updateById(invoice);
             if (!update) {
-                return BaseResultUtil.fail();
+                return BaseResultUtil.fail("开票失败");
             }
         } else {
             String returnId = customerInvoiceService.addAndReturnId(invoice);
             invoiceId = Long.valueOf(returnId);
             if (StringUtils.isEmpty(returnId)) {
-                return BaseResultUtil.fail();
+                return BaseResultUtil.fail("开票失败");
             }
         }
         // 保存开票申请信息
@@ -96,10 +96,7 @@ public class InvoiceApplyServiceImpl extends SuperServiceImpl<IInvoiceApplyDao, 
         invoiceOrderCon.setInvoiceApplyId(Long.valueOf(returnId));
         for (OrderAmountDto orderAmountDto : dto.getOrderAmountList()) {
             invoiceOrderCon.setOrderNo(orderAmountDto.getOrderNo());
-            int i = invoiceOrderConDao.insert(invoiceOrderCon);
-            if (i != 1) {
-                throw new Exception("保存开票订单异常");
-            }
+            invoiceOrderConDao.insert(invoiceOrderCon);
         }
         return BaseResultUtil.success();
     }
