@@ -23,4 +23,7 @@ public class CustomerPartnerDto extends BasePageDto implements Serializable {
 
     @ApiModelProperty("是否可以开票 0：否 1：是")
     private Integer isInvoice;
+
+    @ApiModelProperty("结算方式：0时付，1账期")
+    private Integer settleType;
 }

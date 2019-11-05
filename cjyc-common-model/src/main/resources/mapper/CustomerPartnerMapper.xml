@@ -34,4 +34,9 @@
       from c_customer_partner
     </select>
 
+    <!-- 根据合伙人id删除合伙人附加信息 -->
+    <delete id="removeByCustomerId" parameterType="java.lang.Long">
+        delete from c_customer_partner where customer_id = #{customerId}
+    </delete>
+
 </mapper>

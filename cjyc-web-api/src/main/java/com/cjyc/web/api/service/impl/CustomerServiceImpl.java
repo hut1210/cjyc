@@ -166,9 +166,15 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         if(!CollectionUtils.isEmpty(customerVos)){
             for(CustomerVo vo : customerVos){
                 CustomerCountVo count = customerCountDao.count(vo.getUserId());
-                vo.setTotalOrder(count.getTotalOrder() == null ? 0:count.getTotalOrder());
-                vo.setTotalCar(count.getTotalCar() == null ? 0:count.getTotalCar());
-                vo.setTotalAmount(count.getTotalAmount() == null ? BigDecimal.ZERO:count.getTotalAmount().divide(new BigDecimal(100)));
+                Admin admin = adminDao.findByUserId(vo.getCreateUserId());
+                if(admin != null){
+                    vo.setCreateUserName(StringUtils.isNotBlank(admin.getName()) == true ? admin.getName():"");
+                }
+                if(count != null){
+                    vo.setTotalOrder(count.getTotalOrder() == null ? 0:count.getTotalOrder());
+                    vo.setTotalCar(count.getTotalCar() == null ? 0:count.getTotalCar());
+                    vo.setTotalAmount(count.getTotalAmount() == null ? BigDecimal.ZERO:count.getTotalAmount().divide(new BigDecimal(100)));
+                }
                 if(StringUtils.isNotBlank(vo.getRegisterTime())){
                     Long registerTime = Long.parseLong(vo.getRegisterTime());
                     vo.setRegisterTime(LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(registerTime),TimePatternConstant.COMPLEX_TIME_FORMAT));
@@ -300,9 +306,15 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         if(!CollectionUtils.isEmpty(keyCustomerList)){
             for(ListKeyCustomerVo vo : keyCustomerList){
                 CustomerCountVo count = customerCountDao.count(vo.getUserId());
-                vo.setTotalOrder(count.getTotalOrder() == null ? 0:count.getTotalOrder());
-                vo.setTotalCar(count.getTotalCar() == null ? 0:count.getTotalCar());
-                vo.setTotalAmount(count.getTotalAmount() == null ? BigDecimal.ZERO:count.getTotalAmount());
+                Admin admin = adminDao.findByUserId(vo.getCreateUserId());
+                if(admin != null){
+                    vo.setCreateUserName(StringUtils.isNotBlank(admin.getName()) == true ? admin.getName():"");
+                }
+                if(count != null){
+                    vo.setTotalOrder(count.getTotalOrder() == null ? 0:count.getTotalOrder());
+                    vo.setTotalCar(count.getTotalCar() == null ? 0:count.getTotalCar());
+                    vo.setTotalAmount(count.getTotalAmount() == null ? BigDecimal.ZERO:count.getTotalAmount());
+                }
                 if(StringUtils.isNotBlank(vo.getRegisterTime())){
                     vo.setRegisterTime(LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(Long.valueOf(vo.getRegisterTime())),TimePatternConstant.COMPLEX_TIME_FORMAT));
                 }
@@ -336,7 +348,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     }
 
     @Override
-    public ResultVo savePartner(PartnerDto dto) {
+    public boolean savePartner(PartnerDto dto) {
         boolean result = false;
         Long now = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
         //新增c_customer
@@ -368,22 +380,37 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         if(!result){
             throw new CommonException("新增合伙人失败");
         }
+        return encapPartner(dto,customer,now);
+    }
 
-        //新增合伙人附加信息c_customer_partner
-        CustomerPartner cp = new CustomerPartner();
-        BeanUtils.copyProperties(dto,cp);
-        cp.setCustomerId(customer.getId());
-        customerPartnerDao.insert(cp);
-
-        //新增绑定银行卡信息s_bank_card_bind
-        BankCardBind bcb = new BankCardBind();
-        BeanUtils.copyProperties(dto,bcb);
-        bcb.setUserId(customer.getUserId());
-        bcb.setUserType(UserTypeEnum.CUSTOMER.code);
-        bcb.setState(UseStateEnum.USABLE.code);
-        bcb.setCreateTime(now);
-        bankCardBindDao.insert(bcb);
-        return BaseResultUtil.success();
+    @Override
+    public boolean modifyPartner(PartnerDto dto) {
+        boolean result = false;
+        Long now = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
+        Customer customer = customerDao.selectById(dto.getId());
+        if(customer != null){
+            //判断手机号是否存在
+           /* ResultData<Boolean> updateRd = updateCustomerToPlatform(customer, dto.getContactPhone());
+            if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
+                log.error("修改用户信息失败，原因：" + updateRd.getMsg());
+                return BaseResultUtil.fail("修改用户信息失败，原因：" + updateRd.getMsg());
+            }
+            if (updateRd.getData()) {
+                //需要同步手机号信息
+                syncPhone(customer.getContactPhone(), dto.getContactPhone());
+            }*/
+           BeanUtils.copyProperties(dto,customer);
+           result = super.updateById(customer);
+            if(!result){
+                throw new CommonException("新增合伙人失败");
+            }
+            //删除合伙人附加信息
+            customerPartnerDao.removeByCustomerId(customer.getId());
+            //删除合伙人银行卡信息
+            bankCardBindDao.removeBandCarBind(customer.getUserId(),UserTypeEnum.CUSTOMER.code);
+            return encapPartner(dto,customer,now);
+        }
+        return false;
     }
 
     @Override
@@ -412,9 +439,15 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         if(!CollectionUtils.isEmpty(partnerVos)){
             for(CustomerPartnerVo partnerVo : partnerVos){
                 CustomerCountVo count = customerCountDao.count(partnerVo.getUserId());
-                partnerVo.setTotalOrder(count.getTotalOrder() == null ? 0:count.getTotalOrder());
-                partnerVo.setTotalCar(count.getTotalCar() == null ? 0:count.getTotalCar());
-                partnerVo.setTotalAmount(count.getTotalAmount() == null ? BigDecimal.ZERO:count.getTotalAmount());
+                Admin admin = adminDao.findByUserId(partnerVo.getCreateUserId());
+                if(admin != null){
+                    partnerVo.setCreateUserName(StringUtils.isNotBlank(admin.getName()) == true ? admin.getName():"");
+                }
+                if(count != null){
+                    partnerVo.setTotalOrder(count.getTotalOrder() == null ? 0:count.getTotalOrder());
+                    partnerVo.setTotalCar(count.getTotalCar() == null ? 0:count.getTotalCar());
+                    partnerVo.setTotalAmount(count.getTotalAmount() == null ? BigDecimal.ZERO:count.getTotalAmount());
+                }
             }
         }
         PageInfo<CustomerPartnerVo> pageInfo = new PageInfo<>(partnerVos);
@@ -508,6 +541,29 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             }
         }
         return BaseResultUtil.success(sendVoList == null ? Collections.EMPTY_LIST:sendVoList);
+    }
+
+    private boolean encapPartner(PartnerDto dto,Customer customer,Long now){
+        //新增合伙人附加信息c_customer_partner
+        CustomerPartner cp = new CustomerPartner();
+        BeanUtils.copyProperties(dto,cp);
+        cp.setCustomerId(customer.getId());
+        int n = customerPartnerDao.insert(cp);
+        if(n <= 0){
+            throw new CommonException("新增合伙人附加信息失败");
+        }
+        //新增绑定银行卡信息s_bank_card_bind
+        BankCardBind bcb = new BankCardBind();
+        BeanUtils.copyProperties(dto,bcb);
+        bcb.setUserId(customer.getUserId());
+        bcb.setUserType(UserTypeEnum.CUSTOMER.code);
+        bcb.setState(UseStateEnum.USABLE.code);
+        bcb.setCreateTime(now);
+        int m = bankCardBindDao.insert(bcb);
+        if(m <= 0){
+            throw new CommonException("新增合伙人银行卡信息失败");
+        }
+        return true;
     }
 
     /**

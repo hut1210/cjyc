@@ -36,6 +36,15 @@ public class CustomerVo implements Serializable {
     @ApiModelProperty(value = "注册时间")
     private String registerTime;
 
+    @ApiModelProperty("账号来源：1：App注册，2：Applet注册，3：韵车后台 4：升级创建")
+    private Integer source;
+
+    @ApiModelProperty("注册操作人")
+    private String createUserName;
+
+    @ApiModelProperty("注册操作人userId")
+    private Long createUserId;
+
     @ApiModelProperty("总单量")
     private Integer totalOrder;
 

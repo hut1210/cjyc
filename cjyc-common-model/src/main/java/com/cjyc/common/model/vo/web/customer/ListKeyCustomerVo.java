@@ -27,8 +27,11 @@ public class ListKeyCustomerVo implements Serializable {
     @ApiModelProperty(value = "联系电话")
     private String contactPhone;
 
-    @ApiModelProperty(value = "客户性质  0：电商 1：租赁 2：金融公司 3：经销商 4：其他")
+    @ApiModelProperty(value = "客户类型  0：电商 1：租赁 2：金融公司 3：经销商 4：其他")
     private String customerNature;
+
+    @ApiModelProperty("账号来源：1：App注册，2：Applet注册，3：韵车后台 4：升级创建")
+    private Integer source;
 
     @ApiModelProperty("总单量")
     private Integer totalOrder;
@@ -41,4 +44,10 @@ public class ListKeyCustomerVo implements Serializable {
 
     @ApiModelProperty(value = "注册时间")
     private String registerTime;
+
+    @ApiModelProperty("创建人userId")
+    private Long createUserId;
+
+    @ApiModelProperty("创建人名称")
+    private String createUserName;
 }

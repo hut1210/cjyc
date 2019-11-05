@@ -91,7 +91,14 @@ public interface ICustomerService  extends IService<Customer> {
      * @param dto
      * @return
      */
-    ResultVo savePartner(PartnerDto dto);
+    boolean savePartner(PartnerDto dto);
+
+    /**
+     * 更新合伙人
+     * @param dto
+     * @return
+     */
+    boolean modifyPartner(PartnerDto dto);
 
     /**
      * 审核/删除

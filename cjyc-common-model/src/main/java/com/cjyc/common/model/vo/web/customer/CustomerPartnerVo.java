@@ -57,4 +57,10 @@ public class CustomerPartnerVo implements Serializable {
 
     @ApiModelProperty("注册时间")
     private String registerTime;
+
+    @ApiModelProperty("创建人userId")
+    private Long createUserId;
+
+    @ApiModelProperty("创建人名称")
+    private String createUserName;
 }
