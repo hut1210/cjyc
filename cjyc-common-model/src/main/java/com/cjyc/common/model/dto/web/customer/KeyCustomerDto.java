@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
@@ -18,8 +19,7 @@ public class KeyCustomerDto implements Serializable {
     public interface UpdateKeyCustomerVo {
     }
 
-//    @NotNull(groups = {SaveKeyCustomerVo.class},message = "登陆用户userId不能为空")
-    @NotNull(groups = {UpdateKeyCustomerVo.class},message = "登陆用户userId不能为空")
+    @NotNull(groups = {SaveKeyCustomerVo.class},message = "登陆用户userId不能为空")
     @ApiModelProperty(value = "登陆用户userId")
     private Long userId;
 
@@ -50,9 +50,10 @@ public class KeyCustomerDto implements Serializable {
     @ApiModelProperty(value = "客户地址")
     private String contactAddress;
 
-    @ApiModelProperty(value = "客户性质 1：租赁 2：金融公司 3：经销商 4：其他")
+    @ApiModelProperty(value = "客户性质  0：电商 1：租赁 2：金融公司 3：经销商 4：其他")
     private Integer customerNature;
 
     @ApiModelProperty(value = "大客户合同")
+    @NotEmpty(message = "合同不能为空")
     private List<CustomerContractDto> custContraVos;
 }

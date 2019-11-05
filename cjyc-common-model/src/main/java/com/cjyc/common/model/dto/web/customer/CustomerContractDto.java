@@ -34,7 +34,7 @@ public class CustomerContractDto implements Serializable {
 
     @NotNull(groups = {SaveCustomerContractVo.class},message = "结算类型不能为空")
     @NotNull(groups = {UpdateCustomerContractVo.class},message = "结算类型不能为空")
-    @ApiModelProperty(value = "结算类型 0:账期 1：时付",required = true)
+    @ApiModelProperty(value = "结算类型 0:时付 1：账期",required = true)
     private Integer settleType;
 
     @ApiModelProperty("账期/天")

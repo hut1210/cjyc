@@ -1,13 +1,12 @@
 package com.cjyc.common.model.dao;
 
+import com.cjyc.common.model.dto.web.customer.CustomerPartnerDto;
 import com.cjyc.common.model.dto.web.customer.CustomerfuzzyListDto;
 import com.cjyc.common.model.dto.web.customer.SelectCustomerDto;
 import com.cjyc.common.model.dto.web.customer.SelectKeyCustomerDto;
 import com.cjyc.common.model.entity.Customer;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.cjyc.common.model.vo.web.CustomerVo;
-import com.cjyc.common.model.vo.web.ListKeyCustomerVo;
-import com.cjyc.common.model.vo.web.customer.CustomerFuzzyListVo;
+import com.cjyc.common.model.vo.web.customer.*;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -42,6 +41,13 @@ public interface ICustomerDao extends BaseMapper<Customer> {
      * @return
      */
     List<ListKeyCustomerVo> findKeyCustomter(SelectKeyCustomerDto keyCustomerVo);
+
+    /**
+     * 根据条件查询合伙人
+     * @param dto
+     * @return
+     */
+    List<CustomerPartnerVo> getPartnerByTerm(CustomerPartnerDto dto);
 
     Customer findByPhone(@Param("phone") String phone);
 

@@ -6,14 +6,27 @@
     <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.CustomerCount">
         <id column="id" property="id" />
         <result column="customer_user_id" property="customerUserId" />
-        <result column="order_num" property="orderNum" />
-        <result column="order_car_num" property="orderCarNum" />
-        <result column="order_total_cost" property="orderTotalCost" />
+        <result column="order_no" property="orderNo" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, customer_user_id, order_num, order_car_num, order_total_cost
+        id, customer_user_id, order_no
     </sql>
+
+    <!-- 根据用户userId统计用户下单量，运车量，总金额-->
+    <select id="count" resultType="com.cjyc.common.model.vo.web.customer.CustomerCountVo" parameterType="java.lang.Long">
+        SELECT
+            count( o.NO ) AS totalOrder,
+            sum( o.car_num ) AS totalCar,
+            IFNULL( SUM( o.total_fee ), 0 ) AS totalAmount
+        FROM
+            w_order o
+            JOIN c_customer_count c ON c.order_no = o.NO
+        WHERE
+            c.customer_user_id = #{userId}
+            AND o.state = 100
+            group by c.customer_user_id
+    </select>
 
 </mapper>

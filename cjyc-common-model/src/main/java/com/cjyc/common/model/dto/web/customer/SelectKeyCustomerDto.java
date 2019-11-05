@@ -9,8 +9,8 @@ import java.io.Serializable;
 @Data
 public class SelectKeyCustomerDto extends BasePageDto implements Serializable {
 
-    @ApiModelProperty(value = "大客户主键id")
-    private Long id;
+    @ApiModelProperty(value = "大客户编号")
+    private String customerNo;
 
     @ApiModelProperty(value = "大客户全称")
     private String name;
@@ -22,9 +22,12 @@ public class SelectKeyCustomerDto extends BasePageDto implements Serializable {
     private String contactMan;
 
     @ApiModelProperty(value = "联系电话")
-    private String phone;
+    private String contactPhone;
 
     @ApiModelProperty(value = "创建人")
-    private String createUserId;
+    private String createUserName;
+
+    @ApiModelProperty(value = "创建人userId,不必传")
+    private Long createUserId;
 
 }

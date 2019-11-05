@@ -4,13 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjyc.common.model.dto.customer.invoice.CustomerInvoiceAddDto;
 import com.cjyc.common.model.dto.customer.invoice.InvoiceApplyQueryDto;
 import com.cjyc.common.model.entity.CustomerInvoice;
+import com.cjyc.common.model.entity.InvoiceApply;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.invoice.InvoiceOrderVo;
 import com.cjyc.customer.api.service.ICustomerInvoiceService;
 import com.cjyc.customer.api.service.IInvoiceApplyService;
 import com.cjyc.customer.api.service.IOrderService;
-import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  *  @author: zj
@@ -38,19 +40,19 @@ public class InvoiceController {
 
     @ApiOperation(value = "分页查询已申请发票信息")
     @PostMapping("/getInvoiceApplyPage")
-    public ResultVo getInvoiceApplyPage(@RequestBody @Validated({InvoiceApplyQueryDto.InvoiceOrderAndInvoiceApplyQuery.class}) InvoiceApplyQueryDto dto){
+    public ResultVo<PageVo<List<InvoiceApply>>> getInvoiceApplyPage(@RequestBody @Validated({InvoiceApplyQueryDto.InvoiceOrderAndInvoiceApplyQuery.class}) InvoiceApplyQueryDto dto){
         return invoiceApplyService.getInvoiceApplyPage(dto);
     }
 
     @ApiOperation(value = "分页查询已申请发票订单明细")
     @PostMapping("/getInvoiceApplyOrderPage")
-    public ResultVo<PageInfo<InvoiceOrderVo>> getInvoiceApplyOrderPage(@RequestBody @Validated({InvoiceApplyQueryDto.InvoiceApplyOrderQuery.class}) InvoiceApplyQueryDto dto){
+    public ResultVo<PageVo<InvoiceOrderVo>> getInvoiceApplyOrderPage(@RequestBody @Validated({InvoiceApplyQueryDto.InvoiceApplyOrderQuery.class}) InvoiceApplyQueryDto dto){
         return orderService.getInvoiceApplyOrderPage(dto);
     }
 
     @ApiOperation(value = "分页查询用户未开发票的订单")
     @PostMapping("/getUnInvoicePage")
-    public ResultVo<PageInfo<InvoiceOrderVo>> getUnInvoicePage(@RequestBody @Validated({InvoiceApplyQueryDto.InvoiceOrderAndInvoiceApplyQuery.class}) InvoiceApplyQueryDto dto){
+    public ResultVo<PageVo<InvoiceOrderVo>> getUnInvoicePage(@RequestBody @Validated({InvoiceApplyQueryDto.InvoiceOrderAndInvoiceApplyQuery.class}) InvoiceApplyQueryDto dto){
         return orderService.getUnInvoicePage(dto);
     }
 

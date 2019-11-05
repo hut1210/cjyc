@@ -3,9 +3,10 @@ package com.cjyc.web.api.controller;
 import com.cjyc.common.model.dto.web.customer.*;
 import com.cjyc.common.model.util.BasePageUtil;
 import com.cjyc.common.model.vo.PageVo;
-import com.cjyc.common.model.vo.web.CustomerVo;
-import com.cjyc.common.model.vo.web.ListKeyCustomerVo;
-import com.cjyc.common.model.vo.web.ShowKeyCustomerVo;
+import com.cjyc.common.model.vo.web.customer.CustomerCountVo;
+import com.cjyc.common.model.vo.web.customer.CustomerVo;
+import com.cjyc.common.model.vo.web.customer.ListKeyCustomerVo;
+import com.cjyc.common.model.vo.web.customer.ShowKeyCustomerVo;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
@@ -38,85 +39,86 @@ public class CustomerController {
     @PostMapping(value = "/saveCustomer")
     public ResultVo saveCustomer(@Validated({ CustomerDto.SaveCustomerVo.class }) @RequestBody CustomerDto customerDto){
         boolean result = customerService.saveCustomer(customerDto);
-        return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg())
-                : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
+        return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
 
     @ApiOperation(value = "更新移动端用户")
-    @PostMapping(value = "/updateCustomer")
-    public ResultVo updateCustomer(@Validated({ CustomerDto.UpdateCustomerVo.class }) @RequestBody CustomerDto customerDto){
-        boolean result = customerService.updateCustomer(customerDto);
-        return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg())
-                : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
+    @PostMapping(value = "/modifyCustomer")
+    public ResultVo modifyCustomer(@Validated({ CustomerDto.UpdateCustomerVo.class }) @RequestBody CustomerDto customerDto){
+        boolean result = customerService.modifyCustomer(customerDto);
+        return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
 
     @ApiOperation(value = "根据id删除移动端用户")
-    @PostMapping(value = "/delCustomerByIds")
-    public ResultVo delCustomerByIds(@RequestBody List<Long> ids){
-        boolean result = customerService.delCustomerByIds(ids);
-        return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg())
-                : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
+    @PostMapping(value = "/removeCustomer/{id}")
+    public ResultVo removeCustomer(@PathVariable Long id){
+        boolean result = customerService.removeById(id);
+        return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
 
     @ApiOperation(value = "根据条件查询移动端用户")
-    @PostMapping(value = "/findCustomerByTerm")
-    public ResultVo<PageVo<CustomerVo>> findCustomerByTerm(@RequestBody SelectCustomerDto dto){
-        BasePageUtil.initPage(dto.getCurrentPage(),dto.getPageSize());
-        PageInfo<CustomerVo> pageInfo = customerService.findCustomerByTerm(dto);
-        return BaseResultUtil.getPageVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),pageInfo);
+    @PostMapping(value = "/findCustomer")
+    public ResultVo<PageVo<CustomerVo>> findCustomer(@RequestBody SelectCustomerDto dto){
+        BasePageUtil.initPage(dto);
+        return customerService.findCustomer(dto);
     }
 
     @ApiOperation(value = "新增大客户&合同")
-    @PostMapping(value = "/saveKeyCustAndContract")
-    public ResultVo saveKeyCustAndContract(@Validated({ KeyCustomerDto.SaveKeyCustomerVo.class }) @RequestBody KeyCustomerDto keyCustomerDto){
-        boolean result =  customerService.saveKeyCustAndContract(keyCustomerDto);
-        return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg())
-                : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
+    @PostMapping(value = "/saveKeyCustomer")
+    public ResultVo saveKeyCustomer(@Validated({ KeyCustomerDto.SaveKeyCustomerVo.class }) @RequestBody KeyCustomerDto dto){
+        boolean result =  customerService.saveKeyCustomer(dto);
+        return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
 
-    @ApiOperation(value = "根据ids删除大用户")
-    @PostMapping(value = "/delKeyCustomerByIds")
-    public ResultVo delKeyCustomerByIds(@RequestBody List<Long> ids){
-        boolean result = customerService.delKeyCustomerByIds(ids);
-        return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg())
-                : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
+    @ApiOperation(value = "根据id删除/审核大用户")
+    @PostMapping(value = "/removeKeyCustomer/{id}/{flag}")
+    public ResultVo verifyKeyCustomer(@PathVariable @ApiParam(value = "大客户id",required = true) Long id,
+                                      @PathVariable @ApiParam(value = "3：审核通过 4：审核拒绝 7:删除",required = true) Integer flag){
+        boolean result = customerService.verifyKeyCustomer(id,flag);
+        return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
 
-    @ApiOperation(value = "大客户id查看大客户&合同", notes = "大客户id查看大客户&合同", httpMethod = "POST")
-    @PostMapping(value = "/showKeyCustomerById/{id}")
-    public ResultVo<ShowKeyCustomerVo> showKeyCustomerById(@PathVariable Long id){
-        ShowKeyCustomerVo dto = customerService.showKeyCustomerById(id);
-        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),dto);
+    @ApiOperation(value = "大客户id查看大客户&合同")
+    @PostMapping(value = "/showKeyCustomer/{id}")
+    public ResultVo showKeyCustomer(@PathVariable Long id){
+        return customerService.showKeyCustomer(id);
     }
 
     @ApiOperation(value = "更新大客户&合同")
-    @PostMapping(value = "/updateKeyCustomer")
-    public ResultVo updateKeyCustomer(@Validated({ KeyCustomerDto.UpdateKeyCustomerVo.class }) @RequestBody KeyCustomerDto customerDto){
-        boolean result = customerService.updateKeyCustomer(customerDto);
-        return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg())
-                : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
+    @PostMapping(value = "/modifyKeyCustomer")
+    public ResultVo modifyKeyCustomer(@Validated({ KeyCustomerDto.UpdateKeyCustomerVo.class }) @RequestBody KeyCustomerDto customerDto){
+        boolean result = customerService.modifyKeyCustomer(customerDto);
+        return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
 
     @ApiOperation(value = "根据条件查询大客户")
     @PostMapping(value = "/findKeyCustomer")
-    public ResultVo<PageVo<ListKeyCustomerVo>> findKeyCustomer(@RequestBody SelectKeyCustomerDto dto){
-        BasePageUtil.initPage(dto.getCurrentPage(),dto.getPageSize());
-        PageInfo<ListKeyCustomerVo> pageInfo = customerService.findKeyCustomer(dto);
-        return BaseResultUtil.getPageVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),pageInfo);
+    public ResultVo findKeyCustomer(@RequestBody SelectKeyCustomerDto dto){
+        BasePageUtil.initPage(dto);
+        return customerService.findKeyCustomer(dto);
     }
 
-    @ApiOperation(value = "新增/更新合伙人")
-    @PostMapping(value = "/addOrUpdatePartner")
-    public ResultVo addOrUpdatePartner(@Validated({ PartnerDto.SaveOrUpdatePartnerDto.class }) @RequestBody PartnerDto dto){
-        return customerService.addOrUpdatePartner(dto);
+    @ApiOperation(value = "新增合伙人")
+    @PostMapping(value = "/savePartner")
+    public ResultVo savePartner(@Validated({ PartnerDto.SavePartnerDto.class }) @RequestBody PartnerDto dto){
+        return customerService.savePartner(dto);
     }
 
     @ApiOperation(value = "审核/删除合伙人")
-    @PostMapping(value = "/verifyOrDeletePartner/{id}/{flag}")
-    public ResultVo verifyOrDeletePartner(@PathVariable @ApiParam(value = "合伙人id",required = true) Long id,
-                                          @PathVariable @ApiParam(value = "标志 3：审核通过 7：删除",required = true) Integer flag){
-        return customerService.verifyOrDeletePartner(id,flag);
+    @PostMapping(value = "/verifyPartner/{id}/{flag}")
+    public ResultVo verifyPartner(@PathVariable @ApiParam(value = "合伙人id",required = true) Long id,
+                                          @PathVariable @ApiParam(value = "标志 3：审核通过 4：审核拒绝 7：删除",required = true) Integer flag){
+        boolean result =  customerService.verifyPartner(id,flag);
+        return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
+
+    @ApiOperation(value = "根据条件分页查看合伙人")
+    @PostMapping(value = "/findPartner")
+    public ResultVo findPartner(CustomerPartnerDto dto){
+        BasePageUtil.initPage(dto);
+        return customerService.findPartner(dto);
+    }
+
 
     @ApiOperation(value = "根据输入手机号/用户名称模糊查询用户信息")
     @PostMapping(value = "/getAllCustomerByKey/{keyword}")

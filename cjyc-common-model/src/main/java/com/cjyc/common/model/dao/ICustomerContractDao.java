@@ -1,6 +1,6 @@
 package com.cjyc.common.model.dao;
 
-import com.cjyc.common.model.vo.web.CustomerContractVo;
+import com.cjyc.common.model.vo.web.customer.CustomerContractVo;
 import com.cjyc.common.model.entity.CustomerContract;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
@@ -21,7 +21,7 @@ public interface ICustomerContractDao extends BaseMapper<CustomerContract> {
      * 根据大客户customerId删除合同
      * @param customerId
      */
-    int deleteContractByCustomerId(@Param("customerId") Long customerId);
+    int removeKeyContract(@Param("customerId") Long customerId);
 
     /**
      * 根据大客户customerUserId查询合同

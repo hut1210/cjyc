@@ -5,7 +5,6 @@ import com.cjkj.common.service.impl.SuperServiceImpl;
 import com.cjyc.common.model.constant.FieldConstant;
 import com.cjyc.common.model.dao.IInvoiceApplyDao;
 import com.cjyc.common.model.dao.IInvoiceOrderConDao;
-import com.cjyc.common.model.dao.IOrderDao;
 import com.cjyc.common.model.dto.customer.invoice.CustomerInvoiceAddDto;
 import com.cjyc.common.model.dto.customer.invoice.InvoiceApplyQueryDto;
 import com.cjyc.common.model.dto.customer.invoice.OrderAmountDto;
@@ -28,6 +27,7 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * <p>
@@ -57,6 +57,14 @@ public class InvoiceApplyServiceImpl extends SuperServiceImpl<IInvoiceApplyDao, 
     @Override
     @Transactional
     public ResultVo applyInvoice(CustomerInvoiceAddDto dto) throws Exception {
+        // 开票订单号校验
+        for (OrderAmountDto orderAmountDto : dto.getOrderAmountList()) {
+            InvoiceOrderCon invoiceOrderCon = invoiceOrderConDao.selectOne(new QueryWrapper<InvoiceOrderCon>().lambda()
+                    .eq(InvoiceOrderCon::getOrderNo, orderAmountDto.getOrderNo()));
+            if (!Objects.isNull(invoiceOrderCon)) {
+                return BaseResultUtil.fail("订单号"+invoiceOrderCon.getOrderNo()+"已开过发票");
+            }
+        }
         // 保存开票信息
         CustomerInvoice invoice = new CustomerInvoice();
         BeanUtils.copyProperties(dto,invoice);
@@ -67,16 +75,15 @@ public class InvoiceApplyServiceImpl extends SuperServiceImpl<IInvoiceApplyDao, 
             invoiceId = dto.getId();
             boolean update = customerInvoiceService.updateById(invoice);
             if (!update) {
-                return BaseResultUtil.fail();
+                return BaseResultUtil.fail("开票失败");
             }
         } else {
             String returnId = customerInvoiceService.addAndReturnId(invoice);
             invoiceId = Long.valueOf(returnId);
             if (StringUtils.isEmpty(returnId)) {
-                return BaseResultUtil.fail();
+                return BaseResultUtil.fail("开票失败");
             }
         }
-
         // 保存开票申请信息
         InvoiceApply invoiceApply = getInvoiceApply(dto);
         invoiceApply.setInvoiceId(invoiceId);
@@ -89,10 +96,7 @@ public class InvoiceApplyServiceImpl extends SuperServiceImpl<IInvoiceApplyDao, 
         invoiceOrderCon.setInvoiceApplyId(Long.valueOf(returnId));
         for (OrderAmountDto orderAmountDto : dto.getOrderAmountList()) {
             invoiceOrderCon.setOrderNo(orderAmountDto.getOrderNo());
-            int i = invoiceOrderConDao.insert(invoiceOrderCon);
-            if (i != 1) {
-                throw new Exception("保存开票订单异常");
-            }
+            invoiceOrderConDao.insert(invoiceOrderCon);
         }
         return BaseResultUtil.success();
     }
