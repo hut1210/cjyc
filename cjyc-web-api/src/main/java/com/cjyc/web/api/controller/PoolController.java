@@ -3,15 +3,12 @@ package com.cjyc.web.api.controller;
 import com.cjyc.common.model.dto.web.order.CarFromToGetDto;
 import com.cjyc.common.model.dto.web.order.LineWaitDispatchCountListOrderCarDto;
 import com.cjyc.common.model.dto.web.order.WaitDispatchListOrderCarDto;
-import com.cjyc.common.model.vo.BizScopeVo;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.order.CarFromToGetVo;
 import com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo;
-import com.cjyc.common.model.vo.web.waybill.HistoryListWaybillVo;
 import com.cjyc.web.api.service.IAdminService;
-import com.cjyc.web.api.service.IBizScopeService;
 import com.cjyc.web.api.service.IOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -37,10 +34,7 @@ public class PoolController {
 
     @Resource
     private IOrderService orderService;
-    @Resource
-    private IBizScopeService bizScopeService;
-    @Resource
-    private IAdminService adminService;
+
 
     /**
      * 按地级市查询待调度车辆统计（统计列表）

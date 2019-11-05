@@ -17,5 +17,4 @@ public interface IAdminService extends IService<Admin> {
 
     Admin getByUserId(Long userId);
 
-    List<Admin> listByStore(Long storeId);
 }

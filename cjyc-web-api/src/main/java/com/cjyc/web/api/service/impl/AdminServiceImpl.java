@@ -27,8 +27,4 @@ public class AdminServiceImpl extends ServiceImpl<IAdminDao, Admin> implements I
         return adminDao.findByUserId(userId);
     }
 
-    @Override
-    public List<Admin> listByStore(Long storeId) {
-        return null;
-    }
 }

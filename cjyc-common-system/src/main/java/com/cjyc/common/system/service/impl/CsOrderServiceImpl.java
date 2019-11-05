@@ -2,10 +2,7 @@ package com.cjyc.common.system.service.impl;
 
 import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IOrderDao;
-import com.cjyc.common.model.dto.web.order.CommitOrderCarDto;
-import com.cjyc.common.model.dto.web.order.CommitOrderDto;
-import com.cjyc.common.model.dto.web.order.SaveOrderCarDto;
-import com.cjyc.common.model.dto.web.order.SaveOrderDto;
+import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.entity.OrderCar;
@@ -259,6 +256,99 @@ public class CsOrderServiceImpl implements ICsOrderService {
     }
 
     /**
+     * 审核订单
+     *
+     * @param reqDto
+     * @author JPG
+     * @since 2019/11/5 15:03
+     */
+    @Override
+    public ResultVo check(CheckOrderDto reqDto) {
+        Order order = orderDao.selectById(reqDto.getOrderId());
+        if (order == null) {
+            return BaseResultUtil.fail("[订单]-不存在");
+        }
+        if (order.getState() <= OrderStateEnum.WAIT_SUBMIT.code) {
+            return BaseResultUtil.fail("[订单]-未提交，无法审核");
+        }
+        if (order.getState() >= OrderStateEnum.CHECKED.code) {
+            return BaseResultUtil.fail("[订单]-已经审核过，无法审核");
+        }
+        //验证必要信息是否完全
+        //validateOrderFeild(order);
+        if (order.getId() == null || order.getNo() == null) {
+            throw new ParameterException("[订单]-订单编号不能为空");
+        }
+        if (order.getCustomerId() == null) {
+            throw new ParameterException("[订单]-客户不存在");
+        }
+        if (order.getStartProvinceCode() == null
+                || order.getStartCityCode() == null
+                || order.getStartAreaCode() == null
+                || order.getStartAddress() == null
+                || order.getEndProvinceCode() == null
+                || order.getEndCityCode() == null
+                || order.getEndAreaCode() == null
+                || order.getEndAddress() == null) {
+            throw new ParameterException("[订单]-地址不完整");
+        }
+        if (order.getCarNum() == null || order.getCarNum() <= 0) {
+            throw new ParameterException("[订单]-车辆数不能小于一辆");
+        }
+        if (order.getPickType() == null
+                || order.getPickContactPhone() == null) {
+            throw new ParameterException("[订单]-提车联系人不能为空");
+        }
+        if (order.getBackType() == null
+                || order.getBackContactPhone() == null) {
+            throw new ParameterException("收车联系人不能为空");
+        }
+
+        List<OrderCar> orderCarList = orderCarDao.findByOrderId(order.getId());
+        if (orderCarList == null || orderCarList.isEmpty()) {
+            return BaseResultUtil.fail("[订单车辆]-为空");
+        }
+        //验证物流券费用
+        /*BigDecimal wlTotalFee = orderCarDao.getWLTotalFee(reqDto.getOrderId());
+        BigDecimal couponAmount = BigDecimal.ZERO;
+        if (order.getCouponSendId() != null) {
+            couponAmount = couponSendService.getAmountById(order.getCouponSendId(), wlTotalFee);
+        }
+        order.setCouponOffsetFee(couponAmount);*/
+
+        //均摊优惠券费用
+        BigDecimal totalCouponOffsetFee = order.getCouponOffsetFee() == null ? BigDecimal.ZERO : order.getCouponOffsetFee();
+        if (totalCouponOffsetFee.compareTo(BigDecimal.ZERO) > 0) {
+            shareCouponOffsetFee(order, orderCarList);
+        }
+
+        //均摊总费用
+        BigDecimal totalFee = order.getTotalFee() == null ? BigDecimal.ZERO : order.getTotalFee();
+        if (totalFee.compareTo(BigDecimal.ZERO) > 0) {
+            shareTotalFee(order, orderCarList);
+        }
+        for (OrderCar orderCar : orderCarList) {
+            orderCarDao.updateById(orderCar);
+        }
+
+        //根据到付和预付置不同状态
+        if(order.getPayType() != PayModeEnum.PREPAID.code){
+            order.setState(OrderStateEnum.WAIT_PREPAY.code);
+        }else{
+            order.setState(OrderStateEnum.CHECKED.code);
+        }
+        orderDao.updateById(order);
+
+        //TODO 处理优惠券为使用状态，优惠券有且仅能验证一次，修改时怎么保证
+        //TODO 路由轨迹
+
+        return BaseResultUtil.success();
+    }
+
+
+
+
+    /**
      * 拷贝订单开始城市
      * @author JPG
      * @since 2019/11/5 9:06
@@ -294,7 +384,52 @@ public class CsOrderServiceImpl implements ICsOrderService {
         order.setEndArea(vo.getArea());
         order.setEndAreaCode(vo.getAreaCode());
     }
+    /**
+     * 均摊服务费
+     *
+     * @param order
+     * @param orderCarSavelist
+     * @author JPG
+     * @since 2019/10/29 8:30
+     */
+    private void shareTotalFee(Order order, List<OrderCar> orderCarSavelist) {
+        BigDecimal totalFee = order.getTotalFee() == null ? BigDecimal.ZERO : order.getTotalFee();
+        BigDecimal[] totalFeeArray = totalFee.divideAndRemainder(new BigDecimal(order.getCarNum()));
+        BigDecimal totalFeeAvg = totalFeeArray[0];
+        BigDecimal totalFeeRemainder = totalFeeArray[1];
+        for (OrderCar orderCar : orderCarSavelist) {
+            //合伙人计算均摊服务费
+            if (totalFeeRemainder.compareTo(BigDecimal.ZERO) > 0) {
+                orderCar.setTotalFee(totalFeeAvg.add(BigDecimal.ONE));
+                totalFeeRemainder = totalFeeRemainder.subtract(BigDecimal.ONE);
+            } else {
+                orderCar.setTotalFee(totalFeeAvg);
+            }
+        }
+    }
 
+    /**
+     * 均摊优惠券
+     *
+     * @param order
+     * @param orderCarSavelist
+     * @author JPG
+     * @since 2019/10/29 8:27
+     */
+    private void shareCouponOffsetFee(Order order, List<OrderCar> orderCarSavelist) {
+        BigDecimal couponOffsetFee = order.getCouponOffsetFee() == null ? BigDecimal.ZERO : order.getCouponOffsetFee();
+        BigDecimal[] couponOffsetFeeArray = couponOffsetFee.divideAndRemainder(new BigDecimal(order.getCarNum()));
+        BigDecimal couponOffsetFeeAvg = couponOffsetFeeArray[0];
+        BigDecimal couponOffsetFeeRemainder = couponOffsetFeeArray[1];
+        for (OrderCar orderCar : orderCarSavelist) {
+            if (couponOffsetFeeRemainder.compareTo(BigDecimal.ZERO) > 0) {
+                orderCar.setCouponOffsetFee(couponOffsetFeeAvg.add(BigDecimal.ONE));
+                couponOffsetFeeRemainder = couponOffsetFeeRemainder.subtract(BigDecimal.ONE);
+            } else {
+                orderCar.setCouponOffsetFee(couponOffsetFeeAvg);
+            }
+        }
+    }
 
 
 }
