@@ -7,9 +7,13 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 @Data
-public class PartnerDto implements Serializable {
+public class ApplyPartnerDto implements Serializable {
 
     private static final long serialVersionUID = 8991222858674030585L;
+
+    @ApiModelProperty("用户id")
+    @NotNull(message = "用户id不能为空")
+    private Long id;
 
     @ApiModelProperty("用户userId")
     @NotNull(message = "用户userId不能为空")
@@ -81,16 +85,20 @@ public class PartnerDto implements Serializable {
     private String businessLicenseBackImg;
 
     @ApiModelProperty("法人身份证复印件正面")
-    private String legalIdCardFrontImg;
+    @NotBlank(message = "法人身份证复印件正面不能为空")
+    private String legalIdcardFrontImg;
 
     @ApiModelProperty("法人身份证复印件反面")
-    private String legalIdCardBackImg;
+    @NotBlank(message = "法人身份证复印件反面不能为空")
+    private String legalIdcardBackImg;
 
     @ApiModelProperty("联系人身份证正面")
-    private String linkmanIdCardFrontImg;
+    @NotBlank(message = "联系人身份证正面不能为空")
+    private String linkmanIdcardFrontImg;
 
     @ApiModelProperty("联系人身份证反面")
-    private String linkmanIdCardBackImg;
+    @NotBlank(message = "联系人身份证反面不能为空")
+    private String linkmanIdcardBackImg;
 
     @ApiModelProperty("授权书正面")
     private String authorizationFrontImg;

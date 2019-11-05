@@ -1,6 +1,6 @@
 package com.cjyc.customer.api.service;
 
-import com.cjyc.common.model.dto.web.customer.PartnerDto;
+import com.cjyc.common.model.dto.customer.partner.ApplyPartnerDto;
 import com.cjyc.common.model.vo.ResultVo;
 
 public interface IApplyPartnerService {
@@ -10,5 +10,5 @@ public interface IApplyPartnerService {
      * @param dto
      * @return
      */
-    ResultVo applyPartner(PartnerDto dto);
+    ResultVo applyPartner(ApplyPartnerDto dto);
 }

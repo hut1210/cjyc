@@ -1,14 +1,10 @@
 package com.cjyc.web.api.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.customer.*;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.customer.ListKeyCustomerVo;
-import com.cjyc.common.model.vo.web.customer.ShowKeyCustomerVo;
 import com.cjyc.common.model.entity.Customer;
-import com.github.pagehelper.PageInfo;
-
-import java.util.List;
 
 /**
  *  @author: zj
@@ -32,13 +28,6 @@ public interface ICustomerService  extends IService<Customer> {
     boolean modifyCustomer(CustomerDto dto);
 
     /**
-     * 根据id假删除用户
-     * @param id
-     * @return
-     */
-    boolean removeById(Long id);
-
-    /**
      * 根据条件查询移动端用户
      * @param dto
      * @return
@@ -53,12 +42,11 @@ public interface ICustomerService  extends IService<Customer> {
     boolean saveKeyCustomer(KeyCustomerDto dto);
 
     /**
-     * 根据id审核大客户
-     * @param id
-     * @param flag
+     *  审核/删除大客户
+     * @param  dto
      * @return
      */
-    boolean verifyKeyCustomer(Long id,Integer flag);
+    boolean verifyCustomer(OperateDto dto);
 
     /**
      * 根据大客户id查看大客户&合同
@@ -91,23 +79,14 @@ public interface ICustomerService  extends IService<Customer> {
      * @param dto
      * @return
      */
-    boolean savePartner(PartnerDto dto);
+    ResultVo savePartner(PartnerDto dto);
 
     /**
      * 更新合伙人
      * @param dto
      * @return
      */
-    boolean modifyPartner(PartnerDto dto);
-
-    /**
-     * 审核/删除
-     * @param id
-     * @param flag
-     * @return
-     */
-    boolean verifyPartner(Long id,Integer flag);
-
+    ResultVo modifyPartner(PartnerDto dto);
     /**
      * 根据条件分页查看合伙人
      * @param dto

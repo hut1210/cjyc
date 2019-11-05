@@ -50,7 +50,7 @@ import java.util.Map;
 @Service
 @Slf4j
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
-public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, com.cjyc.common.model.entity.Carrier> implements ICarrierService {
+public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implements ICarrierService {
 
     @Resource
     private ICarrierDao carrierDao;

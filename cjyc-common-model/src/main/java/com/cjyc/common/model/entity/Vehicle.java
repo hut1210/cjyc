@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-29
+ * @since 2019-11-05
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -49,9 +49,6 @@ public class Vehicle implements Serializable {
     @ApiModelProperty(value = "行车记录仪：0没有，1已安装")
     private Integer tachographFlag;
 
-    @ApiModelProperty(value = "状态：0待审核，2已审核，4已驳回，7已停用")
-    private Integer state;
-
     @ApiModelProperty(value = "行驶证")
     private String drivingLicense;
 
@@ -66,9 +63,6 @@ public class Vehicle implements Serializable {
 
     @ApiModelProperty(value = "创建人ID")
     private Long createUserId;
-
-    @ApiModelProperty(value = "创建人姓名")
-    private String createName;
 
     @ApiModelProperty(value = "创建时间")
     private Long createTime;
