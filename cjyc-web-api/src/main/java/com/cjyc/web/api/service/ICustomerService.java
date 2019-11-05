@@ -3,11 +3,9 @@ package com.cjyc.web.api.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.dto.web.customer.*;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.CustomerVo;
-import com.cjyc.common.model.vo.web.ListKeyCustomerVo;
-import com.cjyc.common.model.vo.web.ShowKeyCustomerVo;
+import com.cjyc.common.model.vo.web.customer.ListKeyCustomerVo;
+import com.cjyc.common.model.vo.web.customer.ShowKeyCustomerVo;
 import com.cjyc.common.model.entity.Customer;
-import com.cjyc.common.model.dto.BasePageDto;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;
@@ -21,70 +19,79 @@ public interface ICustomerService  extends IService<Customer> {
 
     /**
      *  新增移动端用户
-     * @param customerDto
+     * @param dto
      * @return
      */
-    boolean saveCustomer(CustomerDto customerDto);
+    boolean saveCustomer(CustomerDto dto);
 
     /**
      * 更新移动端用户
-     * @param customerDto
+     * @param dto
      * @return
      */
-    boolean modifyCustomer(CustomerDto customerDto);
+    boolean modifyCustomer(CustomerDto dto);
+
+    /**
+     * 根据id假删除用户
+     * @param id
+     * @return
+     */
+    boolean removeById(Long id);
 
     /**
      * 根据条件查询移动端用户
-     * @param selectCustomerDto
+     * @param dto
      * @return
      */
-    ResultVo findCustomerByTerm(SelectCustomerDto selectCustomerDto);
+    ResultVo findCustomer(SelectCustomerDto dto);
 
     /**
      * 新增大客户&合同
-     * @param keyCustomerDto
+     * @param dto
      * @return
      */
-    boolean saveKeyCustAndContract(KeyCustomerDto keyCustomerDto);
+    boolean saveKeyCustomer(KeyCustomerDto dto);
 
     /**
-     * 根据ids删除大客户
-     * @param ids
+     * 根据id审核大客户
+     * @param id
+     * @param flag
      * @return
      */
-    boolean delKeyCustomerByIds(List<Long> ids);
+    boolean verifyKeyCustomer(Long id,Integer flag);
 
     /**
      * 根据大客户id查看大客户&合同
      * @param id
      * @return
      */
-    ShowKeyCustomerVo showKeyCustomerById(Long id);
+    ResultVo showKeyCustomer(Long id);
 
     /**
      * 更新大客户&合同
      * @param keyCustomerDto
      * @return
      */
-    boolean updateKeyCustomer(KeyCustomerDto keyCustomerDto);
+    boolean modifyKeyCustomer(KeyCustomerDto keyCustomerDto);
 
     /**
      * 根据条件查询大客户信息
-     * @param selectKeyCustomerDto
+     * @param dto
      * @return
      */
-    PageInfo<ListKeyCustomerVo> findKeyCustomer(SelectKeyCustomerDto selectKeyCustomerDto);
+    ResultVo findKeyCustomer(SelectKeyCustomerDto dto);
 
+    @Override
     boolean save(Customer customer);
 
     Customer selectById(Long customerId);
 
     /**
-     * 新增大客户
+     * 新增合伙人
      * @param dto
      * @return
      */
-    ResultVo addOrUpdatePartner(PartnerDto dto);
+    ResultVo savePartner(PartnerDto dto);
 
     /**
      * 审核/删除
@@ -92,10 +99,18 @@ public interface ICustomerService  extends IService<Customer> {
      * @param flag
      * @return
      */
-    ResultVo verifyOrDeletePartner(Long id,Integer flag);
+    boolean verifyPartner(Long id,Integer flag);
+
+    /**
+     * 根据条件分页查看合伙人
+     * @param dto
+     * @return
+     */
+    ResultVo findPartner(CustomerPartnerDto dto);
 
     Customer selectByPhone(String customerPhone);
 
+    @Override
     boolean updateById(Customer customer);
 
     /**
@@ -120,7 +135,7 @@ public interface ICustomerService  extends IService<Customer> {
     ResultVo getCustomerCouponByTerm(CustomerCouponDto dto);
 
     /**
-     * 根据手机号查询该用户的优惠券
+     * 根据userId查询该用户的优惠券
      * @param userId
      * @return
      */

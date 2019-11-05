@@ -8,6 +8,7 @@ public enum SendNoTypeEnum {
     ORDER("订单编号","D"),
     WAYBILL("运单编号","Y"),
     TASK("任务编号","R"),
+    CUSTOMER("客户编号","C"),
     COUPON("任务编号","Q");
 
     public String name ;

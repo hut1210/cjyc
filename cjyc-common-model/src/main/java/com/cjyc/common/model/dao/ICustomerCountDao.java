@@ -2,6 +2,7 @@ package com.cjyc.common.model.dao;
 
 import com.cjyc.common.model.entity.CustomerCount;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cjyc.common.model.vo.web.customer.CustomerCountVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Map;
@@ -21,6 +22,6 @@ public interface ICustomerCountDao extends BaseMapper<CustomerCount> {
      * @param userId
      * @return
      */
-    Map<String,Object> count(@Param("userId") Long userId);
+    CustomerCountVo count(@Param("userId") Long userId);
 
 }

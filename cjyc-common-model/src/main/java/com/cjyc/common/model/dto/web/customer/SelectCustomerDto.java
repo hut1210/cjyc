@@ -18,7 +18,7 @@ public class SelectCustomerDto extends BasePageDto implements Serializable {
     private Long userId;
 
     @ApiModelProperty(value = "手机号(账号)")
-    private String phone;
+    private String contactPhone;
 
     @ApiModelProperty(value = "姓名")
     private String name;

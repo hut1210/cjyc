@@ -13,26 +13,26 @@ import com.cjyc.common.model.dto.web.customer.*;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.coupon.CouponLifeTypeEnum;
+import com.cjyc.common.model.enums.customer.CustomerPayEnum;
+import com.cjyc.common.model.enums.customer.CustomerSourceEnum;
 import com.cjyc.common.model.enums.customer.CustomerStateEnum;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.CustomerContractVo;
-import com.cjyc.common.model.vo.web.CustomerVo;
-import com.cjyc.common.model.vo.web.ListKeyCustomerVo;
-import com.cjyc.common.model.vo.web.ShowKeyCustomerVo;
+import com.cjyc.common.model.vo.web.customer.*;
 import com.cjyc.common.model.vo.web.coupon.CustomerCouponSendVo;
-import com.cjyc.common.model.vo.web.customer.CustomerCouponVo;
 import com.cjyc.web.api.exception.CommonException;
 import com.cjyc.web.api.exception.ServerException;
 import com.cjyc.web.api.feign.ISysUserService;
+import com.cjyc.web.api.service.ICustomerContractService;
 import com.cjyc.web.api.service.ICustomerService;
+import com.cjyc.web.api.service.ISendNoService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -61,6 +61,10 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
 
     @Resource
     private ICustomerContractDao customerContractDao;
+
+    @Resource
+    private ICustomerContractService customerContractService;
+
     @Resource
     private ISysUserService sysUserService;
 
@@ -85,22 +89,28 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     @Resource
     private ICustomerCountDao customerCountDao;
 
+    @Resource
+    private ISendNoService sendNoService;
+
     @Override
     public boolean saveCustomer(CustomerDto dto) {
         Long now = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
         Customer customer = new Customer();
         BeanUtils.copyProperties(dto,customer);
+        customer.setUserId(6666L);
+        customer.setCustomerNo(sendNoService.getNo(SendNoTypeEnum.CUSTOMER));
+        customer.setAlias(dto.getName());
+        customer.setIsDelete(DeleteStateEnum.NO_DELETE.code);
         customer.setContactMan(dto.getName());
         customer.setType(CustomerTypeEnum.INDIVIDUAL.code);
         customer.setState(CustomerStateEnum.CHECKED.code);
-        customer.setPayMode(PayModeEnum.PREPAID.code);
+        customer.setPayMode(CustomerPayEnum.TIME_PAY.code);
+        customer.setSource(CustomerSourceEnum.WEB.code);
         customer.setCreateTime(now);
         customer.setRegisterTime(now);
         customer.setCreateUserId(dto.getUserId());
         //用户手机号在C端不能重复
-        List<Customer> existList = customerDao.selectList(new QueryWrapper<Customer>()
-                .eq("contact_phone", customer.getContactPhone()));
-        if (!CollectionUtils.isEmpty(existList)) {
+        /*if (phoneExistsInCustomer(customer.getContactPhone())) {
             log.error("手机号已存在，请检查");
             return false;
         }
@@ -110,230 +120,196 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
             throw new CommonException(rd.getMsg());
         }
-        customer.setUserId(rd.getData());
+        customer.setUserId(rd.getData());*/
         return super.save(customer);
     }
 
+
     @Override
-    public boolean modifyCustomer(CustomerDto dto) {
-        Customer customer = customerDao.selectById(dto.getId());
+    public boolean modifyCustomer(CustomerDto customerDto) {
+        Customer customer = customerDao.selectById(customerDto.getId());
         if(null != customer){
-            ResultData<Boolean> updateRd = updateCustomerToPlatform(customer, dto);
+            /*ResultData<Boolean> updateRd = updateCustomerToPlatform(customer, customerDto.getContactPhone());
             if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
                 log.error("修改用户信息失败，原因：" + updateRd.getMsg());
                 return false;
             }
             if (updateRd.getData()) {
                 //需要同步手机号信息
-                syncPhone(customer.getContactPhone(), dto.getContactPhone());
-            }
-            customer.setName(dto.getName());
-            customer.setContactMan(dto.getName());
-            customer.setContactPhone(dto.getContactPhone());
-            customer.setIdCard(dto.getIdCard());
-            customer.setIdCardFrontImg(dto.getIdCardFrontImg());
-            customer.setIdCardBackImg(dto.getIdCardBackImg());
+                syncPhone(customer.getContactPhone(), customerDto.getContactPhone());
+            }*/
+            customer.setName(customerDto.getName());
+            customer.setAlias(customerDto.getName());
+            customer.setContactMan(customerDto.getName());
+            customer.setContactPhone(customerDto.getContactPhone());
+            customer.setIdCard(customerDto.getIdCard());
+            customer.setIdCardFrontImg(customerDto.getIdCardFrontImg());
+            customer.setIdCardBackImg(customerDto.getIdCardBackImg());
         }
-        return customerDao.updateById(customer) > 0 ? true : false;
+        return super.updateById(customer);
     }
 
     @Override
-    public ResultVo<CustomerVo> findCustomerByTerm(SelectCustomerDto customerDto) {
-        PageInfo<CustomerVo> pageInfo = null;
+    public boolean removeById(Long id) {
+        Customer customer = customerDao.selectById(id);
+        if(customer != null){
+            customer.setIsDelete(DeleteStateEnum.YES_DELETE.code);
+            return super.updateById(customer);
+        }
+        return false;
+    }
+
+    @Override
+    public ResultVo findCustomer(SelectCustomerDto customerDto) {
         PageHelper.startPage(customerDto.getCurrentPage(), customerDto.getPageSize());
         List<CustomerVo> customerVos = customerDao.findCustomer(customerDto);
         if(!CollectionUtils.isEmpty(customerVos)){
             for(CustomerVo vo : customerVos){
-                Map<String,Object> map = customerCountDao.count(vo.getUserId());
-
+                CustomerCountVo count = customerCountDao.count(vo.getUserId());
+                vo.setTotalOrder(count.getTotalOrder() == null ? 0:count.getTotalOrder());
+                vo.setTotalCar(count.getTotalCar() == null ? 0:count.getTotalCar());
+                vo.setTotalAmount(count.getTotalAmount() == null ? BigDecimal.ZERO:count.getTotalAmount().divide(new BigDecimal(100)));
                 if(StringUtils.isNotBlank(vo.getRegisterTime())){
                     Long registerTime = Long.parseLong(vo.getRegisterTime());
                     vo.setRegisterTime(LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(registerTime),TimePatternConstant.COMPLEX_TIME_FORMAT));
                 }
             }
-            pageInfo = new PageInfo<>(customerVos);
         }
-        return BaseResultUtil.success(pageInfo == null ? new PageInfo<>(Collections.EMPTY_LIST):pageInfo);
+        PageInfo<CustomerVo> pageInfo =  new PageInfo<>(customerVos);
+        return BaseResultUtil.success(pageInfo);
     }
 
     @Override
-    public boolean saveKeyCustAndContract(KeyCustomerDto keyCustomerDto) {
-        try{
-            //新增大客户
-            Customer customer = new Customer();
+    public boolean saveKeyCustomer(KeyCustomerDto keyCustomerDto) {
+        //新增大客户
+        Long now = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
+        Customer customer = new Customer();
+        BeanUtils.copyProperties(keyCustomerDto,customer);
+        customer.setUserId(3333L);
+        customer.setCustomerNo(sendNoService.getNo(SendNoTypeEnum.CUSTOMER));
+        customer.setAlias(keyCustomerDto.getName());
+        customer.setIsDelete(DeleteStateEnum.NO_DELETE.code);
+        customer.setType(CustomerTypeEnum.ENTERPRISE.code);
+        customer.setState(CustomerStateEnum.WAIT_LOGIN.code);
+        customer.setSource(CustomerSourceEnum.WEB.code);
+        customer.setRegisterTime(now);
+        customer.setCreateTime(now);
+        customer.setCreateUserId(keyCustomerDto.getUserId());
+        //
+        //客户端信息不能重复
+        /*if (phoneExistsInCustomer(keyCustomerDto.getContactPhone())) {
+            return false;
+        }
+        //保存大客户信息到物流平台
+        ResultData<Long> rd = addCustomerToPlatform(customer);
+        if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+            log.error("保存大客户信息失败，原因：" + rd.getMsg());
+            return false;
+        }
+        customer.setUserId(rd.getData());*/
+        super.save(customer);
+        //合同集合
+        List<CustomerContractDto> customerConList = keyCustomerDto.getCustContraVos();
+        List<CustomerContract> list = encapCustomerContract(customer.getId(),customerConList);
+        return customerContractService.saveBatch(list);
+    }
+
+    @Override
+    public boolean verifyKeyCustomer(Long id,Integer flag) {
+        Customer customer = customerDao.selectById(id);
+        if(customer != null){
+            if(FlagEnum.DELETE.code == flag){
+               //假删除
+                customer.setIsDelete(DeleteStateEnum.YES_DELETE.code);
+            }else if(FlagEnum.AUDIT_PASS.code == flag){
+                //审核通过
+                customer.setState(CustomerStateEnum.CHECKED.code);
+            }else if(FlagEnum.AUDIT_REJECT.code == flag){
+                //审核拒绝
+                customer.setState(CustomerStateEnum.REJECT.code);
+            }
+            return super.updateById(customer);
+        }
+        return false;
+    }
+
+    @Override
+    public ResultVo showKeyCustomer(Long id) {
+        ShowKeyCustomerVo sKeyCustomerDto = new ShowKeyCustomerVo();
+        //根据主键id查询大客户
+        Customer customer = customerDao.selectById(id);
+        if(customer != null){
+            BeanUtils.copyProperties(customer,sKeyCustomerDto);
+        }
+        //根据customer_user_id查询大客户的合同
+        List<CustomerContractVo> contractVos = customerContractDao.getCustContractByCustId(customer.getId());
+        if(!CollectionUtils.isEmpty(contractVos)){
+            for(CustomerContractVo vo : contractVos){
+                if(StringUtils.isNotBlank(vo.getContractLife())){
+                    vo.setContractLife(LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(Long.parseLong(vo.getContractLife())),TimePatternConstant.SIMPLE_DATE_FORMAT));
+                }
+                if(StringUtils.isNotBlank(vo.getProjectEstabTime())){
+                    vo.setProjectEstabTime(LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(Long.parseLong(vo.getProjectEstabTime())),TimePatternConstant.SIMPLE_DATE_FORMAT));
+                }
+                vo.setProTraVolume(vo.getProTraVolume() == null ? BigDecimal.ZERO:vo.getProTraVolume());
+                vo.setAvgMthTraVolume(vo.getAvgMthTraVolume() == null ? BigDecimal.ZERO:vo.getAvgMthTraVolume());
+            }
+            sKeyCustomerDto.setCustContraVos(contractVos);
+        }
+        return BaseResultUtil.success(sKeyCustomerDto == null ? new SelectKeyCustomerDto():sKeyCustomerDto);
+    }
+
+    @Override
+    public boolean modifyKeyCustomer(KeyCustomerDto keyCustomerDto) {
+        Customer customer = customerDao.selectById(keyCustomerDto.getId());
+        if(null != customer){
+            //判断手机号是否存在
+            /*ResultData<Boolean> updateRd = updateCustomerToPlatform(customer, keyCustomerDto.getContactPhone());
+            if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
+                log.error("修改用户信息失败，原因：" + updateRd.getMsg());
+                return false;
+            }
+            if (updateRd.getData()) {
+                //需要同步手机号信息
+                syncPhone(customer.getContactPhone(), keyCustomerDto.getContactPhone());
+            }*/
             customer.setName(keyCustomerDto.getName());
+            customer.setAlias(keyCustomerDto.getName());
             customer.setContactMan(keyCustomerDto.getContactMan());
+            customer.setSocialCreditCode(keyCustomerDto.getSocialCreditCode());
             customer.setContactPhone(keyCustomerDto.getContactPhone());
             customer.setContactAddress(keyCustomerDto.getContactAddress());
             customer.setCustomerNature(keyCustomerDto.getCustomerNature());
-            customer.setType(CustomerTypeEnum.ENTERPRISE.code);
-            customer.setSocialCreditCode(keyCustomerDto.getSocialCreditCode());
-            customer.setState(CustomerStateEnum.WAIT_LOGIN.code);
-            customer.setCreateTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
-            customer.setCreateUserId(keyCustomerDto.getUserId());
-            //
-            //客户端信息不能重复
-            if (phoneExistsInCustomer(keyCustomerDto.getContactPhone())) {
-                return false;
+            customerDao.updateById(customer);
+            List<CustomerContractDto> contractDtos = keyCustomerDto.getCustContraVos();
+            List<CustomerContract> list = null;
+            if(!CollectionUtils.isEmpty(contractDtos)){
+                //批量删除
+                customerContractDao.removeKeyContract(keyCustomerDto.getId());
+                list = encapCustomerContract(customer.getId(),contractDtos);
+                return customerContractService.saveBatch(list);
             }
-            //保存大客户信息到物流平台
-            ResultData<Long> rd = addCustomerToPlatform(customer);
-            if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
-                log.error("保存大客户信息失败，原因：" + rd.getMsg());
-                return false;
-            }
-            customer.setUserId(rd.getData());
-            int num = customerDao.insert(customer);
-            if(num > 0){
-                //合同集合
-                int no = 0;
-                List<CustomerContractDto> customerConList = keyCustomerDto.getCustContraVos();
-                if(customerConList != null && customerConList.size() > 0){
-                    for(CustomerContractDto vo : customerConList){
-                        int i = saveCustomerContract(customer.getId() , vo);
-                        if(i > 0){
-                            no ++;
-                        }
-                    }
-                    if(no == customerConList.size()){
-                        return true;
-                    }
-                }
-            }
-            return true;
-        }catch (Exception e){
-            log.error("新增大客户&合同出现异常",e);
-            throw new CommonException("新增大客户&合同出现异常");
         }
+        return true;
     }
 
     @Override
-    public boolean delKeyCustomerByIds(List<Long> ids) {
-        int num ;
-        int no = 0;
-        try{
-            if( null != ids && ids.size() > 0){
-                num = customerDao.deleteBatchIds(ids);
-                if(num > 0){
-                    //循环删除大客户合同
-                    for(Long custid : ids){
-                        int i = customerContractDao.deleteContractByCustomerId(custid);
-                        if(i > 0){
-                            no ++;
-                        }
-                    }
-                    if(no == ids.size()){
-                        return true;
-                    }
+    public ResultVo findKeyCustomer(SelectKeyCustomerDto keyCustomerDto) {
+        PageHelper.startPage(keyCustomerDto.getCurrentPage(), keyCustomerDto.getPageSize());
+        List<ListKeyCustomerVo> keyCustomerList = customerDao.findKeyCustomter(keyCustomerDto);
+        if(!CollectionUtils.isEmpty(keyCustomerList)){
+            for(ListKeyCustomerVo vo : keyCustomerList){
+                CustomerCountVo count = customerCountDao.count(vo.getUserId());
+                vo.setTotalOrder(count.getTotalOrder() == null ? 0:count.getTotalOrder());
+                vo.setTotalCar(count.getTotalCar() == null ? 0:count.getTotalCar());
+                vo.setTotalAmount(count.getTotalAmount() == null ? BigDecimal.ZERO:count.getTotalAmount());
+                if(StringUtils.isNotBlank(vo.getRegisterTime())){
+                    vo.setRegisterTime(LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(Long.valueOf(vo.getRegisterTime())),TimePatternConstant.COMPLEX_TIME_FORMAT));
                 }
             }
-        }catch (Exception e){
-            log.error("删除大客户出现异常",e);
-            throw new CommonException(e.getMessage());
         }
-        return false;
-    }
-
-    @Override
-    public ShowKeyCustomerVo showKeyCustomerById(Long id) {
-        ShowKeyCustomerVo sKeyCustomerDto = new ShowKeyCustomerVo();
-        try{
-            if(id != null){
-                //根据主键id查询大客户
-                Customer customer = customerDao.selectById(id);
-                if(customer == null){
-                    return sKeyCustomerDto;
-                }
-                sKeyCustomerDto.setId(customer.getId());
-                sKeyCustomerDto.setUserId(customer.getUserId());
-                sKeyCustomerDto.setName(customer.getName());
-                sKeyCustomerDto.setSocialCreditCode(customer.getSocialCreditCode());
-                sKeyCustomerDto.setContactMan(customer.getContactMan());
-                sKeyCustomerDto.setContactPhone(customer.getContactPhone());
-                sKeyCustomerDto.setContactAddress(customer.getContactAddress());
-
-                //根据customer_user_id查询大客户的合同
-                List<CustomerContractVo> contractVos = customerContractDao.getCustContractByCustId(customer.getId());
-                if(contractVos != null && contractVos.size() > 0){
-                    for(CustomerContractVo vo : contractVos){
-                        if(StringUtils.isNotBlank(vo.getContractLife())){
-                            vo.setContractLife(LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(Long.parseLong(vo.getContractLife())),TimePatternConstant.SIMPLE_DATE_FORMAT));
-                        }
-                        if(StringUtils.isNotBlank(vo.getProjectEstabTime())){
-                            vo.setProjectEstabTime(LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(Long.parseLong(vo.getProjectEstabTime())),TimePatternConstant.SIMPLE_DATE_FORMAT));
-                        }
-                        vo.setProTraVolume(vo.getProTraVolume() == null ? BigDecimal.ZERO:vo.getProTraVolume());
-                        vo.setAvgMthTraVolume(vo.getAvgMthTraVolume() == null ? BigDecimal.ZERO:vo.getAvgMthTraVolume());
-                    }
-                    sKeyCustomerDto.setCustContraVos(contractVos);
-                }
-            }
-        }catch (Exception e){
-            log.error("查看大客户出现异常",e);
-            throw new CommonException(e.getMessage());
-        }
-        return sKeyCustomerDto;
-    }
-
-    @Override
-    public boolean updateKeyCustomer(KeyCustomerDto keyCustomerDto) {
-        try{
-            Customer customer = customerDao.selectById(keyCustomerDto.getId());
-            if(null != customer){
-                //判断手机号是否存在
-                ResultData<Boolean> updateRd = updateCustomerToPlatform(customer, keyCustomerDto.getContactPhone());
-                if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
-                    log.error("修改用户信息失败，原因：" + updateRd.getMsg());
-                    return false;
-                }
-                if (updateRd.getData()) {
-                    //需要同步手机号信息
-                    syncPhone(customer.getContactPhone(), keyCustomerDto.getContactPhone());
-                }
-                customer.setName(keyCustomerDto.getName());
-                customer.setContactMan(keyCustomerDto.getContactMan());
-                customer.setContactPhone(keyCustomerDto.getContactPhone());
-                customer.setContactAddress(keyCustomerDto.getContactAddress());
-                customer.setCustomerNature(keyCustomerDto.getCustomerNature());
-                int num = customerDao.updateById(customer);
-                if(num > 0){
-                    int no = 0;
-                    List<CustomerContractDto> contractVos = keyCustomerDto.getCustContraVos();
-                    if(null != contractVos && contractVos.size() > 0){
-                        for(CustomerContractDto vo : contractVos){
-                            int i = updateCustomerContractById(vo);
-                            if(i > 0){
-                                no ++;
-                            }
-                        }
-                        if(no == contractVos.size()){
-                            return true;
-                        }
-                    }
-                }
-                return true;
-            }
-        }catch (Exception e){
-            log.error("更新大客户&合同出现异常",e);
-            throw new CommonException(e.getMessage());
-        }
-        return false;
-    }
-
-    @Override
-    public PageInfo<ListKeyCustomerVo> findKeyCustomer(SelectKeyCustomerDto keyCustomerDto) {
-        PageInfo<ListKeyCustomerVo> pageInfo = null;
-        try{
-            List<ListKeyCustomerVo> keyCustomerList = customerDao.findKeyCustomter(keyCustomerDto);
-            if(keyCustomerList != null && keyCustomerList.size() > 0){
-                PageHelper.startPage(keyCustomerDto.getCurrentPage(), keyCustomerDto.getPageSize());
-                pageInfo = new PageInfo<>(keyCustomerList);
-            }
-        }catch (Exception e){
-            log.error("根据条件查询大客户出现异常",e);
-            throw new CommonException(e.getMessage());
-        }
-        return pageInfo;
+        PageInfo<ListKeyCustomerVo> pageInfo = new PageInfo<>(keyCustomerList);
+        return BaseResultUtil.success(pageInfo);
     }
 
     @Override
@@ -360,116 +336,89 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     }
 
     @Override
-    public ResultVo addOrUpdatePartner(PartnerDto dto) {
-        int n;
-        int m = 0;
-        int j = 0;
-        Customer customer = null;
-        Long createTime = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
-        try{
-
-            if(dto.getFlag() == FlagEnum.ADD.code){
-                //新增c_customer
-                customer = new Customer();
-                encapCustomer(customer,dto);
-                customer.setType(CustomerTypeEnum.COOPERATOR.code);
-                customer.setState(CommonStateEnum.WAIT_CHECK.code);
-                customer.setCreateTime(createTime);
-                customer.setCreateUserId(dto.getUserId());
-                //用户手机号在C端不能重复
-                if (phoneExistsInCustomer(customer.getContactPhone())) {
-                    log.error("手机号已存在，请检查");
-                    return BaseResultUtil.fail("手机号已存在，请检查");
-                }
-                //新增用户信息到物流平台
-                ResultData<Long> rd = addCustomerToPlatform(customer);
-                if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
-                    throw new CommonException(rd.getMsg());
-                }
-                customer.setUserId(rd.getData());
-                n = customerDao.insert(customer);
-                if(n > 0){
-                    //新增合伙人附加信息c_customer_partner
-                    CustomerPartner cp = new CustomerPartner();
-                    cp.setCustomerId(customer.getId());
-                    encapPartner(cp,dto);
-                    m = customerPartnerDao.insert(cp);
-                }
-                if(m > 0){
-                    //新增绑定银行卡信息s_bank_card_bind
-                    BankCardBind bcb = new BankCardBind();
-                    bcb.setUserId(customer.getUserId());
-                    encapBankCarBind(bcb,dto);
-                    bcb.setState(UseStateEnum.USABLE.code);
-                    bcb.setCreateTime(createTime);
-                    j = bankCardBindDao.insert(bcb);
-                }
-            }else if(dto.getFlag() == FlagEnum.UPDTATE.code){
-                //更新
-                customer = customerDao.selectById(dto.getId());
-                //判断手机号是否存在
-                ResultData<Boolean> updateRd = updateCustomerToPlatform(customer, dto.getContactPhone());
-                if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
-                    log.error("修改用户信息失败，原因：" + updateRd.getMsg());
-                    return BaseResultUtil.fail("修改用户信息失败，原因：" + updateRd.getMsg());
-                }
-                if (updateRd.getData()) {
-                    //需要同步手机号信息
-                    syncPhone(customer.getContactPhone(), dto.getContactPhone());
-                }
-                encapCustomer(customer,dto);
-                n = customerDao.updateById(customer);
-                if(n > 0){
-                    //更新合伙人附带信息
-                  CustomerPartner cp = customerPartnerDao.getPartnerByUserId(customer.getUserId());
-                  encapPartner(cp,dto);
-                  m = customerPartnerDao.updateById(cp);
-                }
-                if(m > 0){
-                    //更新绑定银行卡信息
-                    BankCardBind bcb = bankCardBindDao.getBankCardBindByUserId(dto.getUserId());
-                    encapBankCarBind(bcb,dto);
-                    j = bankCardBindDao.updateById(bcb);
-                }
-            }
-            if(j > 0){
-                return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg());
-            }
-        }catch (Exception e){
-            log.error("新增/更新合伙人出现异常",e);
-            throw new CommonException("新增/更新合伙人出现异常");
+    public ResultVo savePartner(PartnerDto dto) {
+        boolean result = false;
+        Long now = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
+        //新增c_customer
+        Customer customer = new Customer();
+        BeanUtils.copyProperties(dto,customer);
+        customer.setUserId(6666L);
+        customer.setAlias(dto.getName());
+        customer.setCustomerNo(sendNoService.getNo(SendNoTypeEnum.CUSTOMER));
+        customer.setIsDelete(DeleteStateEnum.NO_DELETE.code);
+        customer.setSource(CustomerSourceEnum.WEB.code);
+        customer.setType(CustomerTypeEnum.COOPERATOR.code);
+        customer.setState(CommonStateEnum.WAIT_CHECK.code);
+        customer.setCreateTime(now);
+        customer.setRegisterTime(now);
+        customer.setCreateUserId(dto.getUserId());
+        //用户手机号在C端不能重复
+        /*if (phoneExistsInCustomer(customer.getContactPhone())) {
+            log.error("手机号已存在，请检查");
+            return BaseResultUtil.fail("手机号已存在，请检查");
         }
-        return BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
+        //新增用户信息到物流平台
+        ResultData<Long> rd = addCustomerToPlatform(customer);
+        if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+            throw new CommonException(rd.getMsg());
+        }
+        customer.setUserId(rd.getData());
+        */
+        result = super.save(customer);
+        if(!result){
+            throw new CommonException("新增合伙人失败");
+        }
+
+        //新增合伙人附加信息c_customer_partner
+        CustomerPartner cp = new CustomerPartner();
+        BeanUtils.copyProperties(dto,cp);
+        cp.setCustomerId(customer.getId());
+        customerPartnerDao.insert(cp);
+
+        //新增绑定银行卡信息s_bank_card_bind
+        BankCardBind bcb = new BankCardBind();
+        BeanUtils.copyProperties(dto,bcb);
+        bcb.setUserId(customer.getUserId());
+        bcb.setUserType(UserTypeEnum.CUSTOMER.code);
+        bcb.setState(UseStateEnum.USABLE.code);
+        bcb.setCreateTime(now);
+        bankCardBindDao.insert(bcb);
+        return BaseResultUtil.success();
     }
 
     @Override
-    public ResultVo verifyOrDeletePartner(Long id, Integer flag) {
-        int n = 0;
-        try{
-            if(id == null || flag == null){
-                return BaseResultUtil.getVo(ResultEnum.MOBILE_PARAM_ERROR.getCode(),ResultEnum.MOBILE_PARAM_ERROR.getMsg());
-            }
-            Customer customer = customerDao.selectById(id);
-            //审核
+    public boolean verifyPartner(Long id, Integer flag) {
+        Customer customer = customerDao.selectById(id);
+        if(customer != null){
             if(FlagEnum.AUDIT_PASS.code == flag){
-                if(customer != null){
-                    customer.setState(CommonStateEnum.CHECKED.code);
-                    n = customerDao.updateById(customer);
-                }
+                //审核通过
+                customer.setState(CustomerStateEnum.CHECKED.code);
+            }else if(FlagEnum.AUDIT_REJECT.code == flag){
+                //审核拒绝
+                customer.setState(CustomerStateEnum.REJECT.code);
             }else if(FlagEnum.DELETE.code == flag){
-                if(customer != null){
-                    //删除
-                    n =customerDao.deleteById(id);
-                }
+                //假删除
+                customer.setState(DeleteStateEnum.YES_DELETE.code);
             }
-            if(n > 0){
-                return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg());
-            }
-        }catch (Exception e){
-            log.error("审核/删除合伙人出现异常",e);
-            throw new CommonException("审核/删除合伙人出现异常");
+            return super.updateById(customer);
         }
-        return BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
+        return false;
+    }
+
+    @Override
+    public ResultVo findPartner(CustomerPartnerDto dto) {
+        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
+        List<CustomerPartnerVo> partnerVos = customerDao.getPartnerByTerm(dto);
+        if(!CollectionUtils.isEmpty(partnerVos)){
+            for(CustomerPartnerVo partnerVo : partnerVos){
+                CustomerCountVo count = customerCountDao.count(partnerVo.getUserId());
+                partnerVo.setTotalOrder(count.getTotalOrder() == null ? 0:count.getTotalOrder());
+                partnerVo.setTotalCar(count.getTotalCar() == null ? 0:count.getTotalCar());
+                partnerVo.setTotalAmount(count.getTotalAmount() == null ? BigDecimal.ZERO:count.getTotalAmount());
+            }
+        }
+        PageInfo<CustomerPartnerVo> pageInfo = new PageInfo<>(partnerVos);
+        return BaseResultUtil.success(pageInfo == null ? new PageInfo<>():pageInfo);
     }
 
     @Override
@@ -562,128 +511,29 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     }
 
     /**
-     * 封装合伙人
-     * @param customer
-     * @param dto
+     * 封装大客户合同
+     * @param customerId
+     * @param customerConList
      * @return
      */
-    private Customer encapCustomer(Customer customer,PartnerDto dto){
-        customer.setName(dto.getName());
-        customer.setContactMan(dto.getContactMan());
-        customer.setContactPhone(dto.getContactPhone());
-        customer.setContactAddress(dto.getContactAddress());
-        return customer;
-    }
-
-    /**
-     * 封装合伙人信息
-     * @param cp
-     * @param dto
-     * @return
-     */
-    private CustomerPartner encapPartner(CustomerPartner cp,PartnerDto dto){
-        cp.setIsTaxpayer(dto.getIsTaxpayer());
-        cp.setIsInvoice(dto.getIsInvoice());
-        cp.setSettleType(dto.getSettleType());
-        cp.setSettlePeriod(dto.getSettlePeriod());
-        cp.setBusinessLicenseFrontImg(dto.getBusinessLicenseFrontImg());
-        cp.setBusinessLicenseBackImg(dto.getBusinessLicenseBackImg());
-        cp.setLegalIdcardFrontImg(dto.getLegalIdCardFrontImg());
-        cp.setLegalIdcardBackImg(dto.getLegalIdCardBackImg());
-        cp.setLinkmanIdcardFrontImg(dto.getLinkmanIdCardFrontImg());
-        cp.setLinkmanIdcardBackImg(dto.getLinkmanIdCardBackImg());
-        cp.setAuthorizationFrontImg(dto.getAuthorizationFrontImg());
-        cp.setAuthorizationBackImg(dto.getAuthorizationBackImg());
-        return cp;
-    }
-
-    /**
-     * 封装合伙人信息
-     * @param bcb
-     * @param dto
-     * @return
-     */
-    private BankCardBind encapBankCarBind(BankCardBind bcb,PartnerDto dto){
-        if(dto.getCardType() == CardTypeEnum.PUBLIC.code){
-            //对公
-            bcb.setBankLicence(dto.getBankLicence());
-        }else if(dto.getCardType() == CardTypeEnum.PRIVATE.code){
-            //对私
-            bcb.setIdCard(dto.getIdCard());
-        }
-        bcb.setCardType(dto.getCardType());
-        bcb.setCardNo(dto.getCardNo());
-        bcb.setCardName(dto.getCardName());
-        bcb.setBankName(dto.getBankName());
-        bcb.setCardPhone(dto.getContactPhone());
-        bcb.setDescription(dto.getDescription());
-        return bcb;
-    }
-    /**
-     * 新增大客户合同
-     * @param id  大客户id
-     * @param dto  合同
-     */
-    private int saveCustomerContract(Long id , CustomerContractDto dto){
-        try{
-            CustomerContract custCont = new CustomerContract();
-            custCont.setCustomerId(id);
-            custCont.setContractNo(dto.getContractNo());
-            custCont.setContactNature(dto.getContactNature());
-            custCont.setContractLife(LocalDateTimeUtil.convertToLong(dto.getContractLife(),TimePatternConstant.SIMPLE_DATE_FORMAT));
-            custCont.setProjectName(dto.getProjectName());
-            custCont.setProjectLevel(dto.getProjectLevel());
-            custCont.setMajorProduct(dto.getMajorProduct());
-            custCont.setProjectNature(dto.getProjectNature());
-            custCont.setProTraVolume(dto.getProTraVolume());
-            custCont.setAvgMthTraVolume(dto.getAvgMthTraVolume());
-            custCont.setBusiCover(dto.getBusiCover());
-            custCont.setFixedRoute(dto.getFixedRoute());
-            custCont.setProjectDeper(dto.getProjectDeper());
-            custCont.setProjectLeader(dto.getProjectLeader());
-            custCont.setLeaderPhone(dto.getLeaderPhone());
-            custCont.setProjectStatus(dto.getProjectStatus());
-            custCont.setProjectTeamPer(dto.getProjectTeamPer());
-            custCont.setProjectEstabTime(LocalDateTimeUtil.convertToLong(dto.getProjectEstabTime(),TimePatternConstant.SIMPLE_DATE_FORMAT));
-            custCont.setMajorKpi(dto.getMajorKpi());
-            return customerContractDao.insert(custCont);
-        }catch (Exception e){
-            log.error("新增合同出现异常",e);
-            throw new CommonException("新增合同出现异常");
-        }
-    }
-
-    private int updateCustomerContractById(CustomerContractDto dto){
-        try{
-            CustomerContract contract = customerContractDao.selectById(dto.getId());
-            if(null != contract){
-                contract.setContractNo(dto.getContractNo());
-                contract.setContactNature(dto.getContactNature());
-                contract.setSettleType(dto.getSettleType());
-                contract.setSettlePeriod(dto.getSettlePeriod());
-                contract.setContractLife(LocalDateTimeUtil.convertToLong(dto.getProjectEstabTime(), TimePatternConstant.SIMPLE_DATE_FORMAT));
-                contract.setProjectName(dto.getProjectName());
-                contract.setProjectLevel(dto.getProjectLevel());
-                contract.setMajorProduct(dto.getMajorProduct());
-                contract.setProjectNature(dto.getProjectNature());
-                contract.setProTraVolume(dto.getProTraVolume());
-                contract.setAvgMthTraVolume(dto.getAvgMthTraVolume());
-                contract.setBusiCover(dto.getBusiCover());
-                contract.setFixedRoute(dto.getFixedRoute());
-                contract.setProjectDeper(dto.getProjectDeper());
-                contract.setProjectLeader(dto.getProjectLeader());
-                contract.setLeaderPhone(dto.getLeaderPhone());
-                contract.setProjectStatus(dto.getProjectStatus());
-                contract.setProjectTeamPer(dto.getProjectTeamPer());
-                contract.setProjectEstabTime(LocalDateTimeUtil.convertToLong(dto.getProjectEstabTime(), TimePatternConstant.SIMPLE_DATE_FORMAT));
-                contract.setMajorKpi(dto.getMajorKpi());
-                return customerContractDao.updateById(contract);
+    private List<CustomerContract> encapCustomerContract(Long customerId,List<CustomerContractDto> customerConList){
+        List<CustomerContract> list = null;
+        if(!CollectionUtils.isEmpty(customerConList)){
+            list = new ArrayList<>(10);
+            for(CustomerContractDto dto : customerConList){
+                CustomerContract custCont = new CustomerContract();
+                BeanUtils.copyProperties(dto,custCont);
+                custCont.setCustomerId(customerId);
+                if(StringUtils.isNotBlank(dto.getContractLife())){
+                    custCont.setContractLife(LocalDateTimeUtil.convertToLong(dto.getContractLife(),TimePatternConstant.SIMPLE_DATE_FORMAT));
+                }
+                if(StringUtils.isNotBlank(dto.getProjectEstabTime())){
+                    custCont.setProjectEstabTime(LocalDateTimeUtil.convertToLong(dto.getProjectEstabTime(),TimePatternConstant.SIMPLE_DATE_FORMAT));
+                }
+                list.add(custCont);
             }
-        }catch (Exception e){
-            log.error("更新合同出现异常",e);
-            throw new CommonException("更新合同出现异常");
         }
-        return 0;
+        return list;
     }
 
     /**
@@ -724,7 +574,6 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
      */
     private ResultData<Boolean> updateCustomerToPlatform(Customer customer, String newPhone) {
         String oldPhone = customer.getContactPhone();
-        String newPhone = dto.getContactPhone();
         if (!oldPhone.equals(newPhone)) {
             //新旧账号不相同需要替换手机号
             //先查询韵车是否存在newPhone 相同账号，存在则不允许修改

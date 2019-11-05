@@ -1,4 +1,4 @@
-package com.cjyc.common.model.vo.web;
+package com.cjyc.common.model.vo.web.customer;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -15,8 +15,11 @@ public class CustomerVo implements Serializable {
     @ApiModelProperty(value = "用户userId")
     private Long userId;
 
+    @ApiModelProperty("C端客户编号")
+    private String customerNo;
+
     @ApiModelProperty(value = "账号（手机号）")
-    private String phone;
+    private String contactPhone;
 
     @ApiModelProperty(value = "联系人/姓名")
     private String contactMan;

@@ -17,7 +17,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-29
+ * @since 2019-11-05
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -41,7 +41,7 @@ public class CustomerContract implements Serializable {
     @ApiModelProperty(value = "合同性质  0：框架  1：单次")
     private Integer contactNature;
 
-    @ApiModelProperty(value = "结算类型 0:账期 1：时付")
+    @ApiModelProperty(value = "结算类型 0:时付 1：账期")
     private Integer settleType;
 
     @ApiModelProperty(value = "账期/天")

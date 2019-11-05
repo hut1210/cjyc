@@ -10,6 +10,7 @@ public enum CustomerStateEnum {
     WAIT_LOGIN("待审核", 0),
     WAIT_CHECK("未登录",1),
     CHECKED("已审核", 2),
+    REJECT("审核拒绝", 3),
     FROZEN("已冻结", 7);
 
     public String name;

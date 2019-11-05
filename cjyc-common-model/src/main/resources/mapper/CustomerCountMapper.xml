@@ -15,17 +15,18 @@
     </sql>
 
     <!-- 根据用户userId统计用户下单量，运车量，总金额-->
-    <select id="count" resultType="java.util.Map" parameterType="java.lang.Long">
+    <select id="count" resultType="com.cjyc.common.model.vo.web.customer.CustomerCountVo" parameterType="java.lang.Long">
         SELECT
-            sum( o.NO ) AS totalOrder,
+            count( o.NO ) AS totalOrder,
             sum( o.car_num ) AS totalCar,
             IFNULL( SUM( o.total_fee ), 0 ) AS totalAmount
         FROM
             w_order o
             JOIN c_customer_count c ON c.order_no = o.NO
         WHERE
-            c.user_id = #{userId}
+            c.customer_user_id = #{userId}
             AND o.state = 100
+            group by c.customer_user_id
     </select>
 
 </mapper>
