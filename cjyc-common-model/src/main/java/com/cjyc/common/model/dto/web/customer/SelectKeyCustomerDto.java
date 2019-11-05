@@ -24,6 +24,9 @@ public class SelectKeyCustomerDto extends BasePageDto implements Serializable {
     @ApiModelProperty(value = "联系电话")
     private String contactPhone;
 
+    @ApiModelProperty("客户类型  0：电商 1：租赁 2：金融公司 3：经销商 4：其他")
+    private Integer customerNature;
+
     @ApiModelProperty(value = "创建人")
     private String createUserName;
 

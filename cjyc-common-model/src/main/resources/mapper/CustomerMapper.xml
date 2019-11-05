@@ -47,9 +47,11 @@
             contact_phone AS contactPhone,
             contact_man AS contactMan,
             id_card AS idCard,
+            source AS source,
             id_card_front_img AS idCardFrontImg,
             id_card_back_img AS idCardBackImg,
-            register_time AS registerTime
+            register_time AS registerTime,
+            create_user_id as createUserId
         FROM
           c_customer
         <where>
@@ -92,10 +94,12 @@
             customer_no as customerNo,
             NAME AS NAME,
             alias AS alias,
+            source as source,
             contact_man AS contactMan,
             contact_phone AS contactPhone,
             customer_nature AS customerNature,
-            register_time AS registerTime
+            register_time AS registerTime,
+            create_user_id as createUserId
         from c_customer
         <where>
             <if test="customerNo != null and customerNo.trim() != ''">
@@ -115,6 +119,9 @@
             </if>
             <if test="createUserId != null ">
                 and create_user_id = #{createUserId}
+            </if>
+            <if test="createUserId != null ">
+                and customer_nature = #{customerNature}
             </if>
                 and type = 2 and is_delete = 0
         </where>
@@ -136,7 +143,8 @@
             p.settle_period AS settlePeriod,
             b.description AS description,
             c.source AS source,
-            c.register_time AS registerTime
+            c.register_time AS registerTime,
+            c.create_user_id as createUserId
         FROM
             c_customer c
             JOIN c_customer_partner p ON p.customer_id = c.id

@@ -101,7 +101,15 @@ public class CustomerController {
     @ApiOperation(value = "新增合伙人")
     @PostMapping(value = "/savePartner")
     public ResultVo savePartner(@Validated({ PartnerDto.SavePartnerDto.class }) @RequestBody PartnerDto dto){
-        return customerService.savePartner(dto);
+        boolean result = customerService.savePartner(dto);
+        return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
+    }
+
+    @ApiOperation(value = "更新合伙人")
+    @PostMapping(value = "/modifyPartner")
+    public ResultVo modifyPartner(@Validated({ PartnerDto.updatePartnerDto.class }) @RequestBody PartnerDto dto){
+        boolean result =  customerService.modifyPartner(dto);
+        return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
 
     @ApiOperation(value = "审核/删除合伙人")
@@ -114,11 +122,10 @@ public class CustomerController {
 
     @ApiOperation(value = "根据条件分页查看合伙人")
     @PostMapping(value = "/findPartner")
-    public ResultVo findPartner(CustomerPartnerDto dto){
+    public ResultVo findPartner(@RequestBody CustomerPartnerDto dto){
         BasePageUtil.initPage(dto);
         return customerService.findPartner(dto);
     }
-
 
     @ApiOperation(value = "根据输入手机号/用户名称模糊查询用户信息")
     @PostMapping(value = "/getAllCustomerByKey/{keyword}")

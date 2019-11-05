@@ -13,10 +13,6 @@ public class SelectCustomerDto extends BasePageDto implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty("登陆用户userId")
-    @NotNull(message = "当前登陆用户userId不能为空")
-    private Long userId;
-
     @ApiModelProperty(value = "手机号(账号)")
     private String contactPhone;
 

@@ -21,4 +21,11 @@ public interface ICustomerPartnerDao extends BaseMapper<CustomerPartner> {
      */
     CustomerPartner getPartnerByUserId(@Param("userId") Long userId);
 
+    /**
+     * 根据合伙人id删除合伙人附加信息
+     * @param customerId
+     * @return
+     */
+    int removeByCustomerId(@Param("customerId") Long customerId);
+
 }

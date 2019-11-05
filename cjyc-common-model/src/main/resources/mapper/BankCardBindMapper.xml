@@ -32,4 +32,9 @@
         from s_bank_card_bind where user_id = #{userId}
     </select>
 
+    <!-- 根据用户userId和用户类型删除银行卡信息-->
+    <delete id="removeBandCarBind">
+        delete from s_bank_card_bind where user_id = #{userId} and user_type = #{userType}
+    </delete>
+
 </mapper>
