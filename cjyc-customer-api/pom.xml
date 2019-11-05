@@ -20,7 +20,7 @@
         <!-- 项目内部module -->
         <dependency>
             <groupId>com.cjyc</groupId>
-            <artifactId>cjyc-common-model</artifactId>
+            <artifactId>cjyc-common-system</artifactId>
         </dependency>
 
         <!--公司jar-->

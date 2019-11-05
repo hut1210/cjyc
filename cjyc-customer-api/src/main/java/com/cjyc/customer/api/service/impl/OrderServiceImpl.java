@@ -5,13 +5,13 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.cjyc.common.model.constant.NoConstant;
-import com.cjyc.common.model.dao.IIncrementerDao;
 import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IOrderDao;
 import com.cjyc.common.model.dto.customer.invoice.InvoiceApplyQueryDto;
 import com.cjyc.common.model.dto.customer.order.OrderQueryDto;
 import com.cjyc.common.model.dto.customer.order.OrderUpdateDto;
+import com.cjyc.common.model.dto.web.order.CommitOrderDto;
+import com.cjyc.common.model.dto.web.order.SaveOrderDto;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
@@ -25,8 +25,7 @@ import com.cjyc.common.model.vo.customer.invoice.InvoiceOrderVo;
 import com.cjyc.common.model.vo.customer.order.OrderCarCenterVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterDetailVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterVo;
-import com.cjyc.customer.api.dto.OrderCarDto;
-import com.cjyc.customer.api.dto.OrderDto;
+import com.cjyc.common.system.service.ICsOrderService;
 import com.cjyc.customer.api.service.IOrderService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -49,89 +48,39 @@ import java.util.*;
 public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IOrderService{
     @Resource
     private IOrderDao orderDao;
-
     @Resource
-    private IIncrementerDao incrementerDao;
-
+    private ICsOrderService comOrderService;
     @Resource
     private IOrderCarDao orderCarDao;
 
+
     /**
-     * 客户端下单
-     * */
+     * 保存订单
+     *
+     * @param reqDto
+     * @author JPG
+     * @since 2019/11/5 8:39
+     */
     @Override
-    public boolean commitOrder(OrderDto orderDto) {
+    public ResultVo save(SaveOrderDto reqDto) {
+        return comOrderService.save(reqDto, OrderStateEnum.WAIT_SUBMIT);
+    }
 
-        int isSimple = orderDto.getIsSimple();
-        int saveType = orderDto.getSaveType();
-
-        Order order = new Order();
-        BeanUtils.copyProperties(orderDto,order);
-
-        //获取订单业务编号
-        String orderNo = incrementerDao.getIncrementer(NoConstant.ORDER_PREFIX);
-        order.setNo(orderNo);
-        //简单
-        if(isSimple == 1){
-
-            //详单
-        }else if(isSimple == 0){
-
-
-            //草稿
-            if(saveType==0){
-                order.setState(0);//待提交
-                //正式下单
-            }else if(saveType==1){
-                order.setState(1);//待分配
-            }
-        }
-
-        order.setSource(1);
-        order.setCarNum(orderDto.getOrderCarDtoList().size());
-        order.setCreateTime(System.currentTimeMillis());
-        order.setCreateUserName(orderDto.getCustomerName());
-        //order.setCreateUserType(0);//创建人类型：0客户，1业务员
-        order.setCreateUserId(orderDto.getCustomerId());
-
-
-
-        return true;
+    @Override
+    public ResultVo submit(SaveOrderDto reqDto) {
+        return comOrderService.save(reqDto, OrderStateEnum.SUBMITTED);
     }
 
     /**
-     * 客户端修改草稿订单
-     * */
+     * 提交订单
+     *
+     * @param reqDto
+     * @author JPG
+     * @since 2019/11/5 8:46
+     */
     @Override
-    public boolean modify(OrderDto orderDto) {
-        Order order = orderDao.selectById(orderDto.getOrderId());
-        //根据状态判断 只能修改业务员还未确认的订单
-        if(order.getState() < 15){
-            BeanUtils.copyProperties(orderDto,order);
-
-            //删除之前的
-            QueryWrapper<OrderCar> wrapper = new QueryWrapper<>();
-            wrapper.eq("order_id",orderDto.getOrderId());
-            int delCount = orderCarDao.delete(wrapper);
-
-            //重新保存车辆信息
-            List<OrderCarDto> carDtoList =  orderDto.getOrderCarDtoList();
-            if(delCount > 0){
-                for(OrderCarDto orderCarDto : carDtoList){
-                    OrderCar orderCar = new OrderCar();
-                    BeanUtils.copyProperties(orderCarDto,orderCar);
-                    String carNo = incrementerDao.getIncrementer(NoConstant.CAR_PREFIX);
-                    orderCar.setWlPayState(0);
-                    orderCar.setOrderNo(order.getNo());
-                    orderCar.setOrderId(order.getId());
-                    orderCar.setNo(carNo);
-
-                    orderCarDao.insert(orderCar);
-                }
-            }
-        }
-
-        return false;
+    public ResultVo commit(CommitOrderDto reqDto) {
+        return comOrderService.commit(reqDto);
     }
 
     @Override
@@ -272,4 +221,6 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         PageInfo<InvoiceOrderVo> pageInfo = new PageInfo<>(list);
         return BaseResultUtil.success(pageInfo);
     }
+
+
 }

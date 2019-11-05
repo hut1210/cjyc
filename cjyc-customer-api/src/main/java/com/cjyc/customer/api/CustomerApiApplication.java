@@ -9,14 +9,14 @@ import org.springframework.context.annotation.ComponentScan;
 
 /**
  * 启动类
- * @Author JPG
- * @Date 2019/7/19 17:14
+ * @author JPG
+ * @date 2019/7/19 17:14
  */
 @SpringBootApplication
 @EnableDiscoveryClient
-@EnableFeignClients
+@EnableFeignClients({"com.cjyc.customer.api.feign", "com.cjyc.common.system.feign"})
 @MapperScan("com.cjyc.common.model.dao")
-@ComponentScan({"com.cjyc.customer.api", "com.cjyc.common.system"})
+@ComponentScan({"com.cjyc"})
 public class CustomerApiApplication {
     public static void main(String[] args) {
         SpringApplication.run(CustomerApiApplication.class, args);

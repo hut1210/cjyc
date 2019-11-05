@@ -125,7 +125,7 @@
         from s_city
         where level = #{level}
     </select>
-    <select id="findFullCityVo" resultType="com.cjyc.common.model.vo.web.city.FullCityVo">
+    <select id="findFullCityVo" resultType="com.cjyc.common.model.vo.web.city.FullCity">
         select
         c1.`name` as area,
         c1.code as areaCode,
@@ -138,5 +138,60 @@
         where c1.code = #{areaCode}
 
     </select>
+    <select id="find5LevelFullCity" resultType="com.cjyc.common.model.vo.web.city.FullCity">
+        select
+            c1.`name` as area,
+            c1.code as areaCode,
+            c2.`name` as city,
+            c2.`code` as cityCode,
+            c3.`name` as city,
+            c3.`code` as cityCode,
+            c4.`name` as city,
+            c4.`code` as cityCode,
+            c4.parent_name as province,
+            c4.parent_code as provinceCode
+        from s_city c1
+        join s_city c2 on c1.parent_code = c2.`code`
+        join s_city c3 on c2.parent_code = c3.`code`
+        join s_city c4 on c3.parent_code = c4.`code`
+        where c1.code = #{areaCode}
+    </select>
+    <select id="find4LevelFullCity" resultType="com.cjyc.common.model.vo.web.city.FullCity">
+        select
+            c1.`name` as area,
+            c1.code as areaCode,
+            c2.`name` as city,
+            c2.`code` as cityCode,
+            c3.`name` as city,
+            c3.`code` as cityCode,
+            c3.parent_name as province,
+            c3.parent_code as provinceCode
+        from s_city c1
+        join s_city c2 on c1.parent_code = c2.`code`
+        join s_city c3 on c2.parent_code = c3.`code`
+        where c1.code = #{areaCode}
+    </select>
+    <select id="findFullCity" resultType="com.cjyc.common.model.vo.web.city.FullCity">
+        select
+            c1.`name` as area,
+            c1.code as areaCode,
+            c2.`name` as city,
+            c2.`code` as cityCode,
+            c2.parent_name as province,
+            c2.parent_code as provinceCode
+        from s_city c1
+        join s_city c2 on c1.parent_code = c2.`code`
+        where c1.code = #{areaCode}
+    </select>
+    <select id="find2LevelFullCity" resultType="com.cjyc.common.model.vo.web.city.FullCity">
+        select
+            c1.`name` as area,
+            c1.code as areaCode,
+            c1.parent_name as province,
+            c1.parent_code as provinceCode
+        from s_city c1
+        where c1.code = #{areaCode}
+    </select>
+
 
 </mapper>

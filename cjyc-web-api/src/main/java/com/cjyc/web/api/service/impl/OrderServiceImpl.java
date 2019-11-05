@@ -16,7 +16,7 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.city.FullCityVo;
+import com.cjyc.common.model.vo.web.city.FullCity;
 import com.cjyc.common.model.vo.web.order.*;
 import com.cjyc.web.api.exception.ParameterException;
 import com.cjyc.web.api.exception.ServerException;
@@ -87,10 +87,10 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         }
         BeanUtils.copyProperties(paramsDto, order);
         //查询三级城市
-        FullCityVo startFullCityVo = cityDao.findFullCityVo(paramsDto.getStartAreaCode());
-        copyOrderStartCity(startFullCityVo, order);
-        FullCityVo endFullCityVo = cityDao.findFullCityVo(paramsDto.getEndAreaCode());
-        copyOrderEndCity(endFullCityVo, order);
+        FullCity startFullCity = cityDao.findFullCityVo(paramsDto.getStartAreaCode());
+        copyOrderStartCity(startFullCity, order);
+        FullCity endFullCity = cityDao.findFullCityVo(paramsDto.getEndAreaCode());
+        copyOrderEndCity(endFullCity, order);
 
         /**1、组装订单数据
          */
@@ -241,10 +241,10 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         }
         BeanUtils.copyProperties(paramsDto, order);
         //查询三级城市
-        FullCityVo startFullCityVo = cityDao.findFullCityVo(paramsDto.getStartAreaCode());
-        copyOrderStartCity(startFullCityVo, order);
-        FullCityVo endFullCityVo = cityDao.findFullCityVo(paramsDto.getEndAreaCode());
-        copyOrderEndCity(startFullCityVo, order);
+        FullCity startFullCity = cityDao.findFullCityVo(paramsDto.getStartAreaCode());
+        copyOrderStartCity(startFullCity, order);
+        FullCity endFullCity = cityDao.findFullCityVo(paramsDto.getEndAreaCode());
+        copyOrderEndCity(startFullCity, order);
 
         //验证用户
         Customer customer = new Customer();
@@ -359,7 +359,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         return BaseResultUtil.success();
     }
 
-    private void copyOrderStartCity(FullCityVo vo, Order order) {
+    private void copyOrderStartCity(FullCity vo, Order order) {
         if(vo == null){
             return;
         }
@@ -370,7 +370,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         order.setStartArea(vo.getArea());
         order.setStartAreaCode(vo.getAreaCode());
     }
-    private void copyOrderEndCity(FullCityVo vo, Order order) {
+    private void copyOrderEndCity(FullCity vo, Order order) {
         if(vo == null){
             return;
         }

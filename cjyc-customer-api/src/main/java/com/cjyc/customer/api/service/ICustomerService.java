@@ -16,4 +16,6 @@ import com.cjyc.common.model.vo.ResultVo;
 public interface ICustomerService extends IService<Customer> {
 
     ResultVo fuzzyList(CustomerfuzzyListDto paramsDto);
+
+    Customer getByUserId(Long userId);
 }

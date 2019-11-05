@@ -12,7 +12,7 @@ import org.springframework.context.annotation.ComponentScan;
  */
 @SpringBootApplication
 @EnableDiscoveryClient
-@EnableFeignClients
+@EnableFeignClients({"com.cjyc.web.api.feign","com.cjyc.common.system.feign"})
 @MapperScan("com.cjyc.common.model.dao")
 @ComponentScan({"com.cjyc.web.api","com.cjkj.common.redis"})
 public class WebApiApplication {

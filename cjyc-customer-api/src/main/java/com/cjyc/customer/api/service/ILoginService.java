@@ -4,6 +4,10 @@ import com.cjyc.common.model.dto.salesman.login.LoginByPhoneDto;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.login.CustomerLoginVo;
 
+/**
+ * 登录
+ * @author JPG
+ */
 public interface ILoginService {
     /**
      * 手机号验证码登录
@@ -11,6 +15,6 @@ public interface ILoginService {
      * @since 2019/10/12 17:34
      * @param captchaValidatedDto
      */
-    ResultVo<CustomerLoginVo> loginByCaptcha(LoginByPhoneDto captchaValidatedDto);
+    ResultVo<CustomerLoginVo> loginByPhone(LoginByPhoneDto captchaValidatedDto);
 
 }

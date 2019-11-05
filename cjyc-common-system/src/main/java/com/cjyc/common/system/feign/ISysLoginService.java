@@ -1,4 +1,4 @@
-package com.cjyc.customer.api.feign;
+package com.cjyc.common.system.feign;
 
 import com.cjkj.common.feign.fallback.UserServiceFallbackFactory;
 import com.cjkj.common.model.ResultData;

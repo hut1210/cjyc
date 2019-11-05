@@ -1,5 +1,7 @@
 package com.cjyc.common.model.keys;
 
+import com.cjyc.common.model.entity.Customer;
+
 /**
  * RedisKey
  * @author JPG
@@ -31,6 +33,8 @@ public class RedisKeys {
     private final static String DISPATCH_CAR_LOCK_KEY = "dispatch:car:lock";
     private final static String ALLOT_CAR_LOCK_KEY = "allot:car:lock";
 
+    private final static String USER_KEY = "user";
+
     /**---------------salesman-------------------------------------------------------------------*/
     /**验证码*/
     private final static String CAPTCHA_KEY = "cjyc:sale";
@@ -52,5 +56,9 @@ public class RedisKeys {
 
     public static String getAllotTaskKey(String orderCarNo) {
         return PROJECT_PREFIX + I + ALLOT_CAR_LOCK_KEY + I + orderCarNo;
+    }
+
+    public static String getUserKey(Long userId) {
+        return PROJECT_PREFIX + I + USER_KEY + I + userId;
     }
 }

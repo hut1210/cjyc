@@ -3,6 +3,9 @@ package com.cjyc.customer.api.controller;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.cjyc.common.model.dto.customer.order.OrderQueryDto;
 import com.cjyc.common.model.dto.customer.order.OrderUpdateDto;
+import com.cjyc.common.model.dto.web.order.CommitOrderDto;
+import com.cjyc.common.model.dto.web.order.SaveOrderDto;
+import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -10,15 +13,15 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterDetailVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterVo;
-import com.cjyc.customer.api.dto.OrderDto;
+import com.cjyc.common.system.service.ICsCustomerService;
 import com.cjyc.customer.api.service.IOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.Map;
 
 
@@ -31,26 +34,67 @@ import java.util.Map;
 public class OrderController {
     @Autowired
     IOrderService orderService;
-
+    @Resource
+    private ICsCustomerService comCustomerService;
     /**
-     * 客户端下单
-     * */
-    @ApiOperation(value = "客户端下单接口", notes = "客户端下单", httpMethod = "POST")
-    @RequestMapping(value = "/commit", method = RequestMethod.POST,  consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultVo commit(@RequestBody OrderDto orderDto) {
-        boolean result = orderService.commitOrder(orderDto);
-        return result ? BaseResultUtil.success(orderDto) : BaseResultUtil.fail();
+     * 保存,只保存无验证
+     * @author JPG
+     */
+    @ApiOperation(value = "订单保存")
+    @PostMapping(value = "/save")
+    public ResultVo save(@RequestBody SaveOrderDto reqDto) {
+
+        //验证用户存不存在
+        Customer customer = comCustomerService.getByUserId(reqDto.getUserId(), true);
+        if(customer == null){
+            return BaseResultUtil.fail("用户不存在");
+        }
+        reqDto.setCreateUserId(customer.getUserId());
+        reqDto.setCreateUserName(customer.getName());
+
+        //发送推送信息
+        return orderService.save(reqDto);
     }
 
     /**
-     * 客户修改订单接口
-     * */
-    @ApiOperation(value = "客户修改订单接口", notes = "客户修改订单接口", httpMethod = "POST")
-    @RequestMapping(value = "/modify", method = RequestMethod.POST,  consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultVo modify(@RequestBody OrderDto orderDto) {
-        boolean result = orderService.modify(orderDto);
-        return result ? BaseResultUtil.success(orderDto) : BaseResultUtil.fail();
+     * 订单提交-客户
+     * @author JPG
+     */
+    @ApiOperation(value = "订单提交-客户")
+    @PostMapping(value = "/submit")
+    public ResultVo submit(@Validated @RequestBody SaveOrderDto reqDto) {
+
+        //验证用户存不存在
+        Customer admin = comCustomerService.getByUserId(reqDto.getUserId(), true);
+        if(admin == null){
+            return BaseResultUtil.fail("用户不存在");
+        }
+        reqDto.setCreateUserId(admin.getUserId());
+        reqDto.setCreateUserName(admin.getName());
+
+        //发送推送信息
+        return orderService.submit(reqDto);
     }
+    /**
+     * 订单提交-业务员
+     * @author JPG
+     */
+    @ApiOperation(value = "订单提交-业务员")
+    @PostMapping(value = "/commit")
+    public ResultVo commit(@Validated @RequestBody CommitOrderDto reqDto) {
+
+        //验证用户存不存在
+        Customer admin = comCustomerService.getByUserId(reqDto.getUserId(), true);
+        if(admin == null){
+            return BaseResultUtil.fail("用户不存在");
+        }
+        reqDto.setCreateUserId(admin.getUserId());
+        reqDto.setCreateUserName(admin.getName());
+
+        //发送推送信息
+        return orderService.commit(reqDto);
+    }
+
 
     @ApiOperation(value = "分页查询", notes = "根据条件分页查询订单", httpMethod = "POST")
     @PostMapping(value = "/getPage")

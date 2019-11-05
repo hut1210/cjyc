@@ -3,13 +3,12 @@ package com.cjyc.common.model.dao;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.entity.City;
 import com.cjyc.common.model.vo.CityTreeVo;
-import com.cjyc.common.model.vo.web.city.FullCityVo;
+import com.cjyc.common.model.vo.web.city.FullCity;
 import com.cjyc.common.model.vo.web.city.ProvinceCityVo;
 import com.cjyc.common.model.vo.web.city.TreeCityVo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,7 +45,7 @@ public interface ICityDao extends BaseMapper<City> {
      */
     List<CityTreeVo> getAllByLevel(@Param("startLevel") Integer startLevel,@Param("endLevel")Integer endLevel);
 
-    FullCityVo findFullCityVo(String areaCode);
+    FullCity findFullCityVo(String areaCode);
 
     /**
      * 根据关键字获取省/城市集合
@@ -81,5 +80,16 @@ public interface ICityDao extends BaseMapper<City> {
      * @return
      */
     List<Map<String,Object>> getHotCity();
+
+    /**
+     * 查询多级城市实体
+     * @author JPG
+     * @since 2019/11/5 9:52
+     * @param areaCode
+     */
+    FullCity find5LevelFullCity(String areaCode);
+    FullCity find4LevelFullCity(String areaCode);
+    FullCity findFullCity(String areaCode);
+    FullCity find2LevelFullCity(String areaCode);
 }
 

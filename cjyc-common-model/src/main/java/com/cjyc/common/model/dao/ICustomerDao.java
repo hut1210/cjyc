@@ -68,4 +68,6 @@ public interface ICustomerDao extends BaseMapper<Customer> {
      * @return
      */
     Customer getCustomerByUserId(@Param("userId") Long userId);
+
+    Customer findByUserId(Long userId);
 }

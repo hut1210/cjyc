@@ -18,7 +18,7 @@ import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.city.FullCityVo;
+import com.cjyc.common.model.vo.web.city.FullCity;
 import com.cjyc.common.model.vo.web.waybill.*;
 import com.cjyc.web.api.exception.ParameterException;
 import com.cjyc.web.api.exception.ServerException;
@@ -219,10 +219,10 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
                 waybillCar.setFreightFee(paramsDto.getType() == WaybillTypeEnum.PICK.code ? orderCar.getPickFee() : orderCar.getPickFee());
                 waybillCar.setSort(1);
                 //地址赋值
-                FullCityVo startFullCityVo = cityDao.findFullCityVo(dto.getStartAreaCode());
-                copyWaybillStartCity(startFullCityVo, waybillCar);
-                FullCityVo endFullCityVo = cityDao.findFullCityVo(dto.getEndAreaCode());
-                copyWaybillEndCity(endFullCityVo, waybillCar);
+                FullCity startFullCity = cityDao.findFullCityVo(dto.getStartAreaCode());
+                copyWaybillStartCity(startFullCity, waybillCar);
+                FullCity endFullCity = cityDao.findFullCityVo(dto.getEndAreaCode());
+                copyWaybillEndCity(endFullCity, waybillCar);
                 //运单车辆状态
                 waybillCar.setState(WaybillCarStateEnum.WAIT_ALLOT.code);
                 if (isAllotDriver) {
@@ -433,8 +433,8 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
                     //查询上段sort
                     waybillCar.setSort(sort);
                     //地址赋值
-                    FullCityVo sVo = cityDao.findFullCityVo(dto.getStartAreaCode());
-                    FullCityVo eVo = cityDao.findFullCityVo(dto.getEndAreaCode());
+                    FullCity sVo = cityDao.findFullCityVo(dto.getStartAreaCode());
+                    FullCity eVo = cityDao.findFullCityVo(dto.getEndAreaCode());
                     copyWaybillStartCity(sVo, waybillCar);
                     copyWaybillEndCity(eVo, waybillCar);
                     waybillCar.setState(WaybillCarStateEnum.WAIT_ALLOT.code);
@@ -468,7 +468,7 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
         return BaseResultUtil.success();
     }
 
-    private void copyWaybillStartCity(FullCityVo vo, WaybillCar waybillCar) {
+    private void copyWaybillStartCity(FullCity vo, WaybillCar waybillCar) {
         if (vo == null) {
             return;
         }
@@ -480,7 +480,7 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
         waybillCar.setStartAreaCode(vo.getAreaCode());
     }
 
-    private void copyWaybillEndCity(FullCityVo vo, WaybillCar waybillCar) {
+    private void copyWaybillEndCity(FullCity vo, WaybillCar waybillCar) {
         if (vo == null) {
             return;
         }

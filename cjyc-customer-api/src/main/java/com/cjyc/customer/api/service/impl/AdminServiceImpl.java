@@ -3,7 +3,9 @@ package com.cjyc.customer.api.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.dao.IAdminDao;
 import com.cjyc.common.model.entity.Admin;
+import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.customer.api.service.IAdminService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -20,6 +22,8 @@ import javax.annotation.Resource;
 public class AdminServiceImpl extends ServiceImpl<IAdminDao, Admin> implements IAdminService {
     @Resource
     private IAdminDao adminDao;
+    @Resource
+    private ISysUserService sysUserService;
 
     @Override
     public Admin getByUserId(Long userId) {
