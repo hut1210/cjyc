@@ -3,6 +3,7 @@ package com.cjyc.web.api.controller;
 import com.cjyc.common.model.dto.web.invoice.InvoiceDetailAndConfirmDto;
 import com.cjyc.common.model.dto.web.invoice.InvoiceQueryDto;
 import com.cjyc.common.model.entity.InvoiceApply;
+import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.invoice.InvoiceDetailVo;
 import com.cjyc.web.api.service.IInvoiceApplyService;
@@ -34,13 +35,13 @@ public class InvoiceApplyController {
 
     @ApiOperation(value = "分页查询发票申请信息列表")
     @PostMapping("/getInvoicePage")
-    public ResultVo<ResultVo<List<InvoiceApply>>> getInvoiceApplyPage(@RequestBody InvoiceQueryDto dto){
+    public ResultVo<PageVo<List<InvoiceApply>>> getInvoiceApplyPage(@RequestBody InvoiceQueryDto dto){
         return invoiceApplyService.getInvoiceApplyPage(dto);
     }
 
     @ApiOperation(value = "查看明细")
     @PostMapping("/getDetail")
-    public ResultVo<ResultVo<InvoiceDetailVo>> getDetail(@RequestBody @Validated({InvoiceDetailAndConfirmDto.GetDetail.class}) InvoiceDetailAndConfirmDto dto){
+    public ResultVo<InvoiceDetailVo> getDetail(@RequestBody @Validated({InvoiceDetailAndConfirmDto.GetDetail.class}) InvoiceDetailAndConfirmDto dto){
         return invoiceApplyService.getDetail(dto);
     }
 

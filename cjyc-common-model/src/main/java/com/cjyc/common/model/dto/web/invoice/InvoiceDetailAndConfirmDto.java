@@ -29,4 +29,8 @@ public class InvoiceDetailAndConfirmDto implements Serializable {
     @ApiModelProperty(value = "发票号")
     @NotBlank(groups = {ConfirmInvoice.class},message = "发票号不能为空")
     private String invoiceNo;
+
+    @ApiModelProperty(value = "操作人名称")
+    @NotBlank(groups = {ConfirmInvoice.class},message = "操作人名称不能为空")
+    private String operationName;
 }

@@ -96,8 +96,10 @@ public class InvoiceApplyServiceImpl extends ServiceImpl<IInvoiceApplyDao, Invoi
         detailVo.setAmount(Objects.isNull(invoice) ? new BigDecimal(0) : invoice.getAmount());
 
         // 根据发票信息ID查询客户发票信息
-        CustomerInvoice customerInvoice = customerInvoiceDao.selectById(invoice.getInvoiceId());
-        detailVo.setCustomerInvoice(customerInvoice);
+        if (!Objects.isNull(invoice)) {
+            CustomerInvoice customerInvoice = customerInvoiceDao.selectById(invoice.getInvoiceId());
+            detailVo.setCustomerInvoice(customerInvoice);
+        }
 
         // 根据发票申请ID查询该发票下的订单号
         List<InvoiceOrderCon> invoiceOrderConList = invoiceOrderConDao.selectList(new QueryWrapper<InvoiceOrderCon>().lambda()
@@ -121,9 +123,16 @@ public class InvoiceApplyServiceImpl extends ServiceImpl<IInvoiceApplyDao, Invoi
 
     @Override
     public ResultVo confirmInvoice(InvoiceDetailAndConfirmDto dto) {
+        // 验证是否已经开过票
+        InvoiceApply invoiceApply = super.getById(dto.getInvoiceApplyId());
+        if (!Objects.isNull(invoiceApply) && FieldConstant.INVOICE_FINISH == invoiceApply.getState()) {
+            return BaseResultUtil.fail("该发票单已开过票,不能重复开票哦");
+        }
         LambdaUpdateWrapper<InvoiceApply> updateWrapper = new UpdateWrapper<InvoiceApply>().lambda()
                 .set(InvoiceApply::getInvoiceNo, dto.getInvoiceNo())
                 .set(InvoiceApply::getState, FieldConstant.INVOICE_FINISH)
+                .set(InvoiceApply::getInvoiceTime, System.currentTimeMillis())
+                .set(InvoiceApply::getOperationName, dto.getOperationName())
                 .eq(InvoiceApply::getId, dto.getInvoiceApplyId())
                 .eq(InvoiceApply::getCustomerId, dto.getUserId());
         boolean result = super.update(updateWrapper);
