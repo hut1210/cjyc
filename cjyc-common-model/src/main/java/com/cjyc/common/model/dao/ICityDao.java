@@ -9,7 +9,6 @@ import com.cjyc.common.model.vo.web.city.TreeCityVo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -81,5 +80,11 @@ public interface ICityDao extends BaseMapper<City> {
      * @return
      */
     List<Map<String,Object>> getHotCity();
+
+    /**
+     * 分页查询城市信息
+     * @return
+     */
+    List<FullCityVo> selectCityPage();
 }
 

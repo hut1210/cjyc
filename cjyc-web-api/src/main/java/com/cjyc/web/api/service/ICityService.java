@@ -3,6 +3,7 @@ package com.cjyc.web.api.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.dto.salesman.city.CityPageDto;
+import com.cjyc.common.model.dto.web.city.CityQueryDto;
 import com.cjyc.common.model.entity.City;
 import com.cjyc.common.model.vo.CityTreeVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -62,4 +63,11 @@ public interface ICityService extends IService<City> {
      * @return
      */
     ResultVo<List<CityTreeVo>> keywordCityTree(String keyword);
+
+    /**
+     * 分页查询省，城市，区
+     * @param dto
+     * @return
+     */
+    ResultVo getCityPage(CityQueryDto dto);
 }

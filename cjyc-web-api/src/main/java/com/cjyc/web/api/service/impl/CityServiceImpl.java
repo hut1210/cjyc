@@ -7,14 +7,17 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.redis.template.StringRedisUtil;
 import com.cjyc.common.model.dao.ICityDao;
 import com.cjyc.common.model.dto.salesman.city.CityPageDto;
+import com.cjyc.common.model.dto.web.city.CityQueryDto;
 import com.cjyc.common.model.entity.City;
-import com.cjyc.common.model.enums.ResultEnum;
+import com.cjyc.common.model.util.BasePageUtil;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.CityTreeUtil;
 import com.cjyc.common.model.vo.CityTreeVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.web.api.exception.CommonException;
+import com.cjyc.common.model.vo.web.city.FullCityVo;
 import com.cjyc.web.api.service.ICityService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -97,4 +100,14 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
         }
         return BaseResultUtil.success(nodeList != null ? nodeList:Collections.emptyList());
     }
+
+    @Override
+    public ResultVo getCityPage(CityQueryDto dto) {
+        BasePageUtil.initPage(dto);
+        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
+        List<FullCityVo> list = cityDao.selectCityPage();
+        PageInfo pageInfo = new PageInfo(list);
+        return BaseResultUtil.success(pageInfo);
+    }
 }
+
