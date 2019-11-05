@@ -1,8 +1,9 @@
 package com.cjyc.web.api.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.cjyc.common.model.dto.web.invoice.InvoiceDetailAndConfirmDto;
 import com.cjyc.common.model.dto.web.invoice.InvoiceQueryDto;
 import com.cjyc.common.model.entity.InvoiceApply;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.vo.ResultVo;
 
 /**
@@ -16,7 +17,7 @@ import com.cjyc.common.model.vo.ResultVo;
 public interface IInvoiceApplyService extends IService<InvoiceApply> {
 
     /**
-     *
+     * 分页查询发票申请列表
      * @param dto
      * @return
      */
@@ -24,9 +25,15 @@ public interface IInvoiceApplyService extends IService<InvoiceApply> {
 
     /**
      * 查询发票信息明细
-     * @param userId
-     * @param invoiceApplyId
+     * @param dto
      * @return
      */
-    ResultVo getDetail(Long userId, Long invoiceApplyId);
+    ResultVo getDetail(InvoiceDetailAndConfirmDto dto);
+
+    /**
+     * 确认开票
+     * @param dto
+     * @return
+     */
+    ResultVo confirmInvoice(InvoiceDetailAndConfirmDto dto);
 }

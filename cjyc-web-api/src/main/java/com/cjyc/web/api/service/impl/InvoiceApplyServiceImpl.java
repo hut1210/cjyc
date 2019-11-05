@@ -2,24 +2,32 @@ package com.cjyc.web.api.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cjyc.common.model.constant.FieldConstant;
 import com.cjyc.common.model.dao.ICustomerInvoiceDao;
 import com.cjyc.common.model.dao.IInvoiceApplyDao;
 import com.cjyc.common.model.dao.IInvoiceOrderConDao;
 import com.cjyc.common.model.dao.IOrderDao;
 import com.cjyc.common.model.dto.customer.invoice.OrderAmountDto;
+import com.cjyc.common.model.dto.web.invoice.InvoiceDetailAndConfirmDto;
 import com.cjyc.common.model.dto.web.invoice.InvoiceQueryDto;
 import com.cjyc.common.model.entity.CustomerInvoice;
 import com.cjyc.common.model.entity.InvoiceApply;
 import com.cjyc.common.model.entity.InvoiceOrderCon;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.invoice.InvoiceDetailVo;
 import com.cjyc.web.api.service.IInvoiceApplyService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -45,16 +53,44 @@ public class InvoiceApplyServiceImpl extends ServiceImpl<IInvoiceApplyDao, Invoi
 
     @Override
     public ResultVo getInvoiceApplyPage(InvoiceQueryDto dto) {
+        LambdaQueryWrapper<InvoiceApply> queryWrapper = getInvoiceApplyLambdaQueryWrapper(dto);
+        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
+        List<InvoiceApply> list = super.list(queryWrapper);
+        PageInfo pageInfo = new PageInfo(list);
+        return BaseResultUtil.success(pageInfo);
+    }
 
-        return null;
+    private LambdaQueryWrapper<InvoiceApply> getInvoiceApplyLambdaQueryWrapper(InvoiceQueryDto dto) {
+        LambdaQueryWrapper<InvoiceApply> queryWrapper = new QueryWrapper<InvoiceApply>().lambda()
+                .like(!StringUtils.isEmpty(dto.getCustomerName()),InvoiceApply::getCustomerName,dto.getCustomerName())
+                .like(!StringUtils.isEmpty(dto.getInvoiceNo()),InvoiceApply::getInvoiceNo,dto.getInvoiceNo())
+                .like(!StringUtils.isEmpty(dto.getOperationName()),InvoiceApply::getOperationName,dto.getOperationName())
+                .eq(!StringUtils.isEmpty(dto.getState()),InvoiceApply::getState,dto.getState());
+        if (!Objects.isNull(dto.getApplyTimeStart())) {
+            Long applyTimeStart = LocalDateTimeUtil.getMillisByLDT(LocalDateTimeUtil.convertDateToLDT(dto.getApplyTimeStart()));
+            queryWrapper = queryWrapper.ge(InvoiceApply::getApplyTime,applyTimeStart);
+        }
+        if (!Objects.isNull(dto.getApplyTimeEnd())) {
+            Long applyTimeEnd = LocalDateTimeUtil.getMillisByLDT(LocalDateTimeUtil.convertDateToLDT(dto.getApplyTimeEnd()));
+            queryWrapper = queryWrapper.le(InvoiceApply::getApplyTime,applyTimeEnd);
+        }
+        if (!Objects.isNull(dto.getInvoiceTimeStart())) {
+            Long invoiceTimeStart = LocalDateTimeUtil.getMillisByLDT(LocalDateTimeUtil.convertDateToLDT(dto.getInvoiceTimeStart()));
+            queryWrapper = queryWrapper.ge(InvoiceApply::getInvoiceTime,invoiceTimeStart);
+        }
+        if (!Objects.isNull(dto.getInvoiceTimeEnd())) {
+            Long invoiceTimeEnd = LocalDateTimeUtil.getMillisByLDT(LocalDateTimeUtil.convertDateToLDT(dto.getInvoiceTimeEnd()));
+            queryWrapper = queryWrapper.le(InvoiceApply::getInvoiceTime,invoiceTimeEnd);
+        }
+        return queryWrapper;
     }
 
     @Override
-    public ResultVo getDetail(Long userId, Long invoiceApplyId) {
+    public ResultVo getDetail(InvoiceDetailAndConfirmDto dto) {
         InvoiceDetailVo detailVo = new InvoiceDetailVo();
         // 根据客户ID，主键ID查询发票申请信息
         LambdaQueryWrapper<InvoiceApply> queryWrapper = new QueryWrapper<InvoiceApply>().lambda()
-                .eq(InvoiceApply::getCustomerId, userId).eq(InvoiceApply::getId, invoiceApplyId)
+                .eq(InvoiceApply::getCustomerId, dto.getUserId()).eq(InvoiceApply::getId, dto.getInvoiceApplyId())
                 .select(InvoiceApply::getAmount,InvoiceApply::getInvoiceId);
         InvoiceApply invoice = super.getOne(queryWrapper);
         detailVo.setAmount(Objects.isNull(invoice) ? new BigDecimal(0) : invoice.getAmount());
@@ -65,7 +101,7 @@ public class InvoiceApplyServiceImpl extends ServiceImpl<IInvoiceApplyDao, Invoi
 
         // 根据发票申请ID查询该发票下的订单号
         List<InvoiceOrderCon> invoiceOrderConList = invoiceOrderConDao.selectList(new QueryWrapper<InvoiceOrderCon>().lambda()
-                .eq(InvoiceOrderCon::getInvoiceApplyId, invoiceApplyId));
+                .eq(InvoiceOrderCon::getInvoiceApplyId, dto.getInvoiceApplyId()));
 
         // 根据订单号查询订单金额
         List<OrderAmountDto> orderAmountList = new ArrayList<>(10);
@@ -73,13 +109,24 @@ public class InvoiceApplyServiceImpl extends ServiceImpl<IInvoiceApplyDao, Invoi
             for (InvoiceOrderCon invoiceOrderCon : invoiceOrderConList) {
                 String orderNo = invoiceOrderCon.getOrderNo();
                 Order order = orderDao.selectOne(new QueryWrapper<Order>().lambda().eq(Order::getNo, orderNo).select(Order::getTotalFee));
-                OrderAmountDto dto = new OrderAmountDto();
-                dto.setOrderNo(orderNo);
-                dto.setAmount(Objects.isNull(order) ? new BigDecimal(0) : order.getTotalFee());
-                orderAmountList.add(dto);
+                OrderAmountDto amountDto = new OrderAmountDto();
+                amountDto.setOrderNo(orderNo);
+                amountDto.setAmount(Objects.isNull(order) ? new BigDecimal(0) : order.getTotalFee());
+                orderAmountList.add(amountDto);
             }
         }
         detailVo.setOrderAmountList(orderAmountList);
         return BaseResultUtil.success(detailVo);
+    }
+
+    @Override
+    public ResultVo confirmInvoice(InvoiceDetailAndConfirmDto dto) {
+        LambdaUpdateWrapper<InvoiceApply> updateWrapper = new UpdateWrapper<InvoiceApply>().lambda()
+                .set(InvoiceApply::getInvoiceNo, dto.getInvoiceNo())
+                .set(InvoiceApply::getState, FieldConstant.INVOICE_FINISH)
+                .eq(InvoiceApply::getId, dto.getInvoiceApplyId())
+                .eq(InvoiceApply::getCustomerId, dto.getUserId());
+        boolean result = super.update(updateWrapper);
+        return result ? BaseResultUtil.success() : BaseResultUtil.fail();
     }
 }

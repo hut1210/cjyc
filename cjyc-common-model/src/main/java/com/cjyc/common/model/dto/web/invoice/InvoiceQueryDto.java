@@ -4,7 +4,7 @@ import com.cjyc.common.model.dto.BasePageDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * @Description 发票申请信息查询实体
@@ -14,23 +14,20 @@ import java.math.BigDecimal;
 @Data
 public class InvoiceQueryDto extends BasePageDto {
     private static final long serialVersionUID = -6634711928020419453L;
-    @ApiModelProperty(value = "发票ID")
-    private Long invoiceId;
-
-    @ApiModelProperty(value = "客户ID")
-    private Long customerId;
-
     @ApiModelProperty(value = "申请人名称")
     private String customerName;
 
-    @ApiModelProperty(value = "申请时间")
-    private Long applyTime;
+    @ApiModelProperty(value = "申请时间开始")
+    private Date applyTimeStart;
 
-    @ApiModelProperty(value = "开票时间")
-    private Long invoiceTime;
+    @ApiModelProperty(value = "申请时间结束")
+    private Date applyTimeEnd;
 
-    @ApiModelProperty(value = "开票金额")
-    private BigDecimal amount;
+    @ApiModelProperty(value = "开票时间开始")
+    private Date invoiceTimeStart;
+
+    @ApiModelProperty(value = "开票时间结束")
+    private Date invoiceTimeEnd;
 
     @ApiModelProperty(value = "发票号")
     private String invoiceNo;
