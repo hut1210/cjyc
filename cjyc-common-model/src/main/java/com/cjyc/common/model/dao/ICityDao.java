@@ -2,6 +2,7 @@ package com.cjyc.common.model.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.dto.web.city.CityQueryDto;
+import com.cjyc.common.model.dto.web.city.StoreAreaQueryDto;
 import com.cjyc.common.model.entity.City;
 import com.cjyc.common.model.entity.defined.FullCity;
 import com.cjyc.common.model.vo.CityTreeVo;
@@ -101,5 +102,14 @@ public interface ICityDao extends BaseMapper<City> {
      * @return java.util.List<com.cjyc.common.model.entity.defined.FullCity>
      */
     List<FullCity> selectCityPage(CityQueryDto dto);
+
+    /**
+     * 功能描述: 根据业务中心ID查询当前业务中心覆盖区
+     * @author liuxingxiang
+     * @date 2019/11/6
+     * @param dto
+     * @return java.util.List<com.cjyc.common.model.entity.defined.FullCity>
+     */
+    List<FullCity> selectStoreAreaList(StoreAreaQueryDto dto);
 }
 

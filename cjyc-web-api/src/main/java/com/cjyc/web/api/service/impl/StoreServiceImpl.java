@@ -2,6 +2,7 @@ package com.cjyc.web.api.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
 import com.cjkj.common.utils.ExcelUtil;
@@ -11,13 +12,17 @@ import com.cjkj.usercenter.dto.common.SelectDeptResp;
 import com.cjkj.usercenter.dto.common.UpdateDeptReq;
 import com.cjkj.usercenter.dto.yc.SelectUsersByRoleResp;
 import com.cjyc.common.model.dao.IAdminDao;
+import com.cjyc.common.model.dao.ICityDao;
+import com.cjyc.common.model.dao.IStoreCityConDao;
+import com.cjyc.common.model.dao.IStoreDao;
+import com.cjyc.common.model.dto.web.city.StoreAreaQueryDto;
 import com.cjyc.common.model.dto.web.store.StoreAddDto;
 import com.cjyc.common.model.dto.web.store.StoreQueryDto;
 import com.cjyc.common.model.dto.web.store.StoreUpdateDto;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Store;
-import com.cjyc.common.model.dao.IStoreDao;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cjyc.common.model.entity.StoreCityCon;
+import com.cjyc.common.model.entity.defined.FullCity;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.util.BasePageUtil;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -38,9 +43,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * <p>
@@ -54,15 +57,16 @@ import java.util.Objects;
 public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements IStoreService {
     @Resource
     private IStoreDao storeDao;
-
     @Autowired
     private ISysDeptService sysDeptService;
-
     @Autowired
     private ISysUserService sysUserService;
-
     @Resource
     private IAdminDao adminDao;
+    @Resource
+    private IStoreCityConDao storeCityConDao;
+    @Resource
+    private ICityDao cityDao;
 
     @Override
     public List<Store> getByCityCode(String cityCode) {
@@ -171,6 +175,25 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
             }
         });
         return BaseResultUtil.success(adminList);
+    }
+
+    @Override
+    public ResultVo getStoreAreaList(StoreAreaQueryDto dto) {
+        Map<String,Object> map = new HashMap<>(16);
+
+        // 根据业务中心ID查询区编码
+        List<StoreCityCon> storeCityConList = storeCityConDao.selectList(new QueryWrapper<StoreCityCon>().lambda()
+                .eq(StoreCityCon::getStoreId, dto.getStoreId())
+                .eq(!StringUtils.isEmpty(dto.getAreaCode()),StoreCityCon::getAreaCode,dto.getAreaCode()));
+        List<FullCity> returnList = new ArrayList<>(10);
+        if (!CollectionUtils.isEmpty(storeCityConList)) {
+            for (StoreCityCon storeCityCon : storeCityConList) {
+                dto.setAreaCode(storeCityCon.getAreaCode());
+                List<FullCity> list = cityDao.selectStoreAreaList(dto);
+                returnList.addAll(list);
+            }
+        }
+        return BaseResultUtil.success(returnList);
     }
 
     private StoreQueryDto getStoreQueryDto(HttpServletRequest request) {
