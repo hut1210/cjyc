@@ -26,7 +26,7 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.customer.*;
 import com.cjyc.common.model.vo.web.coupon.CustomerCouponSendVo;
 import com.cjyc.web.api.exception.CommonException;
-import com.cjyc.web.api.feign.ISysUserService;
+import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.web.api.service.ICustomerContractService;
 import com.cjyc.web.api.service.ICustomerService;
 import com.cjyc.web.api.service.ISendNoService;
@@ -36,8 +36,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
@@ -605,10 +603,6 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         String oldPhone = customer.getContactPhone();
         if (!oldPhone.equals(newPhone)) {
             //新旧账号不相同需要替换手机号
-            //先查询韵车是否存在newPhone 相同账号，存在则不允许修改
-            if (validPhoneExits(newPhone)) {
-                return ResultData.failed("用户账号不允许修改，预修改账号：" + newPhone + " 已存在");
-            }
             ResultData<AddUserResp> accountRd = sysUserService.getByAccount(newPhone);
             if (!ReturnMsg.SUCCESS.getCode().equals(accountRd.getCode())) {
                 return ResultData.failed("用户信息获取失败，原因：" + accountRd.getMsg());
@@ -627,30 +621,6 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             return ResultData.ok(true);
         }
         return ResultData.ok(false);
-    }
-
-    /**
-     * 验证手机号在韵车所有用户中是否存在
-     * @param phone
-     * @return
-     */
-    private boolean validPhoneExits(String phone) {
-        List<Admin> adminList = adminDao.selectList(new QueryWrapper<Admin>()
-                .eq("phone", phone));
-        if (!CollectionUtils.isEmpty(adminList)) {
-            return true;
-        }
-        List<Driver> driverList = driverDao.selectList(new QueryWrapper<Driver>()
-                .eq("phone", phone));
-        if (!CollectionUtils.isEmpty(driverList)) {
-            return true;
-        }
-        List<Customer> customerList = customerDao.selectList(new QueryWrapper<Customer>()
-                .eq("contact_phone", phone));
-        if (!CollectionUtils.isEmpty(customerList)) {
-            return true;
-        }
-        return false;
     }
 
     /**

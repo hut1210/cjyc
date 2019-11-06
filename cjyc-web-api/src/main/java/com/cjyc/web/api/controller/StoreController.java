@@ -2,6 +2,7 @@ package com.cjyc.web.api.controller;
 
 import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
+import com.cjyc.common.model.dto.web.city.StoreAreaQueryDto;
 import com.cjyc.common.model.dto.web.store.StoreAddDto;
 import com.cjyc.common.model.dto.web.store.StoreQueryDto;
 import com.cjyc.common.model.dto.web.store.StoreUpdateDto;
@@ -10,21 +11,19 @@ import com.cjyc.common.model.entity.Store;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.web.api.feign.ISysDeptService;
+import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.web.api.service.IStoreService;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.sql.PreparedStatement;
 import java.util.List;
 
 /**
@@ -106,5 +105,11 @@ public class StoreController {
             @ApiParam(name = "storeId", value = "业务中心标识", required = true)
             @PathVariable Long storeId){
         return storeService.listAdminsByStoreId(storeId);
+    }
+
+    @ApiOperation(value = "根据业务中心ID查询当前业务中心覆盖区")
+    @PostMapping("/getStoreAreaList")
+    public ResultVo getStoreAreaList(@RequestBody @Validated StoreAreaQueryDto dto) {
+        return storeService.getStoreAreaList(dto);
     }
 }

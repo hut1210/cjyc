@@ -1,13 +1,13 @@
 package com.cjyc.web.api.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.cjyc.common.model.dto.web.city.StoreAreaQueryDto;
 import com.cjyc.common.model.dto.web.store.StoreAddDto;
 import com.cjyc.common.model.dto.web.store.StoreQueryDto;
 import com.cjyc.common.model.dto.web.store.StoreUpdateDto;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Store;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.vo.ResultVo;
-import com.github.pagehelper.PageInfo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -60,4 +60,13 @@ public interface IStoreService extends IService<Store> {
      * @return
      */
     ResultVo<List<Admin>> listAdminsByStoreId(Long storeId);
+
+    /**
+     * 功能描述: 根据业务中心ID查询当前业务中心覆盖区
+     * @author liuxingxiang
+     * @date 2019/11/6
+     * @param dto
+     * @return com.cjyc.common.model.vo.ResultVo
+     */
+    ResultVo getStoreAreaList(StoreAreaQueryDto dto);
 }

@@ -11,11 +11,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -49,6 +48,12 @@ public class InvoiceApplyController {
     @PostMapping("/confirmInvoice")
     public ResultVo confirmInvoice(@RequestBody @Validated({InvoiceDetailAndConfirmDto.ConfirmInvoice.class}) InvoiceDetailAndConfirmDto dto){
         return invoiceApplyService.confirmInvoice(dto);
+    }
+
+    @ApiOperation(value = "导出Excel")
+    @GetMapping("/exportExcel")
+    public void exportExcel(HttpServletRequest request, HttpServletResponse response){
+        invoiceApplyService.exportExcel(request,response);
     }
 
 }

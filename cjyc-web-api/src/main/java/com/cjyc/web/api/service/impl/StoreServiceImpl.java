@@ -2,6 +2,7 @@ package com.cjyc.web.api.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
 import com.cjkj.common.utils.ExcelUtil;
@@ -11,28 +12,27 @@ import com.cjkj.usercenter.dto.common.SelectDeptResp;
 import com.cjkj.usercenter.dto.common.UpdateDeptReq;
 import com.cjkj.usercenter.dto.yc.SelectUsersByRoleResp;
 import com.cjyc.common.model.dao.IAdminDao;
-import com.cjyc.common.model.dto.web.carSeries.CarSeriesQueryDto;
+import com.cjyc.common.model.dao.ICityDao;
+import com.cjyc.common.model.dao.IStoreCityConDao;
+import com.cjyc.common.model.dao.IStoreDao;
+import com.cjyc.common.model.dto.web.city.StoreAreaQueryDto;
 import com.cjyc.common.model.dto.web.store.StoreAddDto;
 import com.cjyc.common.model.dto.web.store.StoreQueryDto;
 import com.cjyc.common.model.dto.web.store.StoreUpdateDto;
 import com.cjyc.common.model.entity.Admin;
-import com.cjyc.common.model.entity.CarSeries;
 import com.cjyc.common.model.entity.Store;
-import com.cjyc.common.model.dao.IStoreDao;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cjyc.common.model.entity.StoreCityCon;
+import com.cjyc.common.model.entity.defined.FullCity;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.util.BasePageUtil;
 import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.store.StoreExportExcel;
-import com.cjyc.common.model.vo.web.carSeries.CarSeriesExportExcel;
-import com.cjyc.web.api.feign.ISysDeptService;
-import com.cjyc.web.api.feign.ISysUserService;
+import com.cjyc.common.system.feign.ISysDeptService;
+import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.web.api.service.IStoreService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,9 +43,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * <p>
@@ -59,15 +57,16 @@ import java.util.List;
 public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements IStoreService {
     @Resource
     private IStoreDao storeDao;
-
     @Autowired
     private ISysDeptService sysDeptService;
-
     @Autowired
     private ISysUserService sysUserService;
-
     @Resource
     private IAdminDao adminDao;
+    @Resource
+    private IStoreCityConDao storeCityConDao;
+    @Resource
+    private ICityDao cityDao;
 
     @Override
     public List<Store> getByCityCode(String cityCode) {
@@ -93,13 +92,17 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
         BeanUtils.copyProperties(storeAddDto,store);
         store.setState(CommonStateEnum.WAIT_CHECK.code);
         store.setCreateTime(System.currentTimeMillis());
+        Admin admin = adminDao.selectOne(new QueryWrapper<Admin>().lambda().eq(Admin::getUserId, storeAddDto.getCreateUserId()).select(Admin::getName));
+        if (!Objects.isNull(admin)) {
+            store.setOperationName(admin.getName());
+        }
         //将业务中心信息添加到物流平台
         ResultData<Long> saveRd = addBizCenterToPlatform(store);
         if (!ReturnMsg.SUCCESS.getCode().equals(saveRd.getCode())) {
             log.error("保存业务中心失败，原因：" + saveRd.getMsg());
             return false;
         }
-        store.setDeptId(saveRd.getData());
+        store.setId(saveRd.getData());
         return super.save(store);
     }
 
@@ -108,6 +111,10 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
         Store store = new Store();
         BeanUtils.copyProperties(storeUpdateDto,store);
         store.setUpdateTime(System.currentTimeMillis());
+        Admin admin = adminDao.selectOne(new QueryWrapper<Admin>().lambda().eq(Admin::getUserId, storeUpdateDto.getUpdateUserId()).select(Admin::getName));
+        if (!Objects.isNull(admin)) {
+            store.setOperationName(admin.getName());
+        }
         //修改业务中心信息
         ResultData rd = updateBizCenterToPlatform(store);
         if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
@@ -168,6 +175,25 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
             }
         });
         return BaseResultUtil.success(adminList);
+    }
+
+    @Override
+    public ResultVo getStoreAreaList(StoreAreaQueryDto dto) {
+        Map<String,Object> map = new HashMap<>(16);
+
+        // 根据业务中心ID查询区编码
+        List<StoreCityCon> storeCityConList = storeCityConDao.selectList(new QueryWrapper<StoreCityCon>().lambda()
+                .eq(StoreCityCon::getStoreId, dto.getStoreId())
+                .eq(!StringUtils.isEmpty(dto.getAreaCode()),StoreCityCon::getAreaCode,dto.getAreaCode()));
+        List<FullCity> returnList = new ArrayList<>(10);
+        if (!CollectionUtils.isEmpty(storeCityConList)) {
+            for (StoreCityCon storeCityCon : storeCityConList) {
+                dto.setAreaCode(storeCityCon.getAreaCode());
+                List<FullCity> list = cityDao.selectStoreAreaList(dto);
+                returnList.addAll(list);
+            }
+        }
+        return BaseResultUtil.success(returnList);
     }
 
     private StoreQueryDto getStoreQueryDto(HttpServletRequest request) {

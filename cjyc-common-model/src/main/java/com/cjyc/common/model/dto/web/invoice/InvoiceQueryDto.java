@@ -4,8 +4,6 @@ import com.cjyc.common.model.dto.BasePageDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.util.Date;
-
 /**
  * @Description 发票申请信息查询实体
  * @Author LiuXingXiang
@@ -18,16 +16,16 @@ public class InvoiceQueryDto extends BasePageDto {
     private String customerName;
 
     @ApiModelProperty(value = "申请时间开始")
-    private Date applyTimeStart;
+    private Long applyTimeStart;
 
     @ApiModelProperty(value = "申请时间结束")
-    private Date applyTimeEnd;
+    private Long applyTimeEnd;
 
     @ApiModelProperty(value = "开票时间开始")
-    private Date invoiceTimeStart;
+    private Long invoiceTimeStart;
 
     @ApiModelProperty(value = "开票时间结束")
-    private Date invoiceTimeEnd;
+    private Long invoiceTimeEnd;
 
     @ApiModelProperty(value = "发票号")
     private String invoiceNo;

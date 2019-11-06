@@ -3,18 +3,15 @@ package com.cjyc.web.api.controller;
 import com.cjkj.common.constant.SecurityConstants;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.usercenter.dto.common.AddUserResp;
-import com.cjyc.common.model.dto.web.order.CommitOrderDto;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.admin.CacheAdminVo;
 import com.cjyc.common.system.service.ICsAdminService;
-import com.cjyc.web.api.feign.ISysUserService;
-import com.cjyc.web.api.service.IAdminService;
+import com.cjyc.common.system.feign.ISysUserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.MediaType;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -44,7 +41,7 @@ public class AdminController {
     @ApiOperation(value = "校验用户并获取缓存数据")
     @PostMapping(value = "/validate/{roleId}")
     public ResultVo<CacheAdminVo> validateUser(@RequestHeader(SecurityConstants.USER_HEADER) String account,
-                                 @PathVariable Long roleId) {
+                                 @PathVariable Integer roleId) {
         ResultData<AddUserResp> resultData = sysUserService.getByAccount(account);
         if (resultData == null || resultData.getData() == null || resultData.getData().getUserId() == null) {
             return BaseResultUtil.fail("用户不存在");

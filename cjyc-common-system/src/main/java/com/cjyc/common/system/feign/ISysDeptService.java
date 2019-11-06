@@ -47,7 +47,7 @@ public interface ISysDeptService {
      * @return
      */
     @GetMapping("/feign/yc/getDeptByCityCode/{cityCode}")
-    ResultData<SelectDeptResp> getDeptByCityCode(@PathVariable(value = "cityCode") String cityCode);
+    ResultData<SelectDeptResp> getDeptByCityCode(@PathVariable(value = "cityCode")String cityCode);
     /**
      * 修改组织机构
      * @author JPG
@@ -63,7 +63,7 @@ public interface ISysDeptService {
      * @param deptId 组织机构ID
      */
     @PostMapping("/feign/uc/deleteDept/{deptId}")
-    ResultData delete(@PathVariable(value = "deptId") Long deptId);
+    ResultData delete(@PathVariable(value="deptId") Long deptId);
 
     /**
      * 查询机构信息
@@ -72,7 +72,7 @@ public interface ISysDeptService {
      * @param deptId 组织机构ID
      */
     @GetMapping("/feign/uc/getDept/{deptId}")
-    ResultData<SelectDeptResp> getDept(@PathVariable(value = "deptId") String deptId);
+    ResultData<SelectDeptResp> getDept(@PathVariable(value="deptId") String deptId);
 
     /**
      * 查询当前机构直接子列表信息
@@ -80,6 +80,6 @@ public interface ISysDeptService {
      * @return
      */
     @GetMapping("/feign/uc/getSingleLevelDeptList/{deptId}")
-    ResultData<List<SelectDeptResp>> getSingleLevelDeptList(@PathVariable(value = "deptId") Long deptId);
+    ResultData<List<SelectDeptResp>> getSingleLevelDeptList(@PathVariable(value="deptId") Long deptId);
 
 }

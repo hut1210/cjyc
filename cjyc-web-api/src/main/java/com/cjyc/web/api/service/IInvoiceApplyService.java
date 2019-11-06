@@ -6,6 +6,9 @@ import com.cjyc.common.model.dto.web.invoice.InvoiceQueryDto;
 import com.cjyc.common.model.entity.InvoiceApply;
 import com.cjyc.common.model.vo.ResultVo;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * <p>
  * 发票申请信息表 服务类
@@ -36,4 +39,14 @@ public interface IInvoiceApplyService extends IService<InvoiceApply> {
      * @return
      */
     ResultVo confirmInvoice(InvoiceDetailAndConfirmDto dto);
+
+    /**
+     * 功能描述: 导出Excel
+     * @author liuxingxiang
+     * @date 2019/11/6
+     * @param request
+     * @param response
+     * @return void
+     */
+    void exportExcel(HttpServletRequest request, HttpServletResponse response);
 }

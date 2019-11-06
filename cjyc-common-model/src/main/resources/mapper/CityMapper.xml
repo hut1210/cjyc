@@ -193,7 +193,6 @@
         where c1.code = #{areaCode}
     </select>
 
-
     <!--分页查询城市信息-->
     <select id="selectCityPage" parameterType="com.cjyc.common.model.dto.web.city.CityQueryDto"
             resultType="com.cjyc.common.model.entity.defined.FullCity">
@@ -243,6 +242,43 @@
             </if>
             <if test="areaCode != null and areaCode.trim() != ''">
                 and c4.code=#{areaCode}
+            </if>
+        </where>
+    </select>
+
+    <!--根据业务中心ID查询当前业务中心覆盖区-->
+    <select id="selectStoreAreaList" parameterType="com.cjyc.common.model.dto.web.city.StoreAreaQueryDto"
+            resultType="com.cjyc.common.model.entity.defined.FullCity">
+        SELECT
+            t1.provinceCode,
+            t1.province,
+            t1.cityCode,
+            t1.city,
+            c3.CODE AS areaCode,
+            c3.NAME AS area
+            FROM
+            (
+            SELECT
+            c1.CODE AS provinceCode,
+            c1.`name` AS province,
+            c2.CODE AS cityCode,
+            c2.NAME AS city
+            FROM
+            s_city c1
+            JOIN s_city c2 ON c1.CODE = c2.parent_code
+            WHERE
+            c1.LEVEL = 1
+            ) t1
+            JOIN s_city c3 ON t1.cityCode = c3.parent_code
+        <where>
+            <if test="provinceCode != null and provinceCode.trim() != ''">
+                and t1.provinceCode=#{provinceCode}
+            </if>
+            <if test="cityCode != null and cityCode.trim() != ''">
+                and t1.cityCode=#{cityCode}
+            </if>
+            <if test="areaCode != null and areaCode.trim() != ''">
+                and c3.code=#{areaCode}
             </if>
         </where>
     </select>
