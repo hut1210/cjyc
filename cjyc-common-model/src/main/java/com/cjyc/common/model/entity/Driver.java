@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-29
+ * @since 2019-11-06
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -46,7 +46,7 @@ public class Driver implements Serializable {
     @ApiModelProperty(value = "类型：1自营司机，2社会司机")
     private Integer type;
 
-    @ApiModelProperty(value = "承运方式：0 ：代驾 1：干线司机  2：拖车司机 ")
+    @ApiModelProperty(value = "承运方式：2 : 代驾  3 : 干线   4：拖车")
     private Integer mode;
 
     @ApiModelProperty(value = "司机身份 0：普通司机 1：管理员")
@@ -79,9 +79,6 @@ public class Driver implements Serializable {
     @ApiModelProperty(value = "驾驶证反面")
     private String driverLicenceBackImg;
 
-    @ApiModelProperty(value = "驾驶证过期时间")
-    private String driverLicenceExpire;
-
     @ApiModelProperty(value = "行驶证正面")
     private String travelLicenceFrontImg;
 
@@ -103,7 +100,7 @@ public class Driver implements Serializable {
     @ApiModelProperty(value = "备注")
     private String remark;
 
-    @ApiModelProperty(value = "状态：0待审核，2已审核，4取消，7已驳回，9已停用（CommonStateEnum）")
+    @ApiModelProperty(value = "状态：0待审核，2已审核，4取消，5冻结  7已驳回，9已停用（CommonStateEnum）")
     private Integer state;
 
     @ApiModelProperty(value = "是否缴纳保证金：0否，1是")
@@ -115,11 +112,17 @@ public class Driver implements Serializable {
     @ApiModelProperty(value = "账号来源：1App注册，2Applet注册，3业务员创建，4承运商管理员创建，11掌控接口，12otm接口")
     private Integer source;
 
-    @ApiModelProperty(value = "创建人ID")
+    @ApiModelProperty(value = "创建时间")
+    private Long createTime;
+
+    @ApiModelProperty(value = "创建人userId")
     private Long createUserId;
 
-    @ApiModelProperty(value = "创建人姓名")
-    private String createName;
+    @ApiModelProperty(value = "审核时间")
+    private Long checkTime;
+
+    @ApiModelProperty(value = "审核人userId")
+    private Long checkUserId;
 
 
 }

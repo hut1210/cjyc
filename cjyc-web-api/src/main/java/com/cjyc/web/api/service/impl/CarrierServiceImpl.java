@@ -11,9 +11,7 @@ import com.cjyc.common.model.dto.web.carrier.CarrierDto;
 import com.cjyc.common.model.dto.web.carrier.SeleCarrierDto;
 import com.cjyc.common.model.dto.web.carrier.SeleVehicleDriverDto;
 import com.cjyc.common.model.entity.*;
-import com.cjyc.common.model.enums.FlagEnum;
-import com.cjyc.common.model.enums.ResultEnum;
-import com.cjyc.common.model.enums.UseStateEnum;
+import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.transport.*;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
@@ -34,6 +32,7 @@ import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -88,63 +87,50 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     @Value("${cjkj.carries_menu_ids}")
     private Long[] menuIds;
 
+    private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
+
     @Override
     public boolean saveCarrier(CarrierDto dto) {
-        int i ;
-        int j = 0;
-        int k = 0;
-        int m = 0;
-        int n = 0;
-        Driver driver = null;
-        try{
-            //添加承运商
-            Carrier carrier = new Carrier();
-            carrier.setState(VerifyStateEnum.BE_AUDITED.code);
-            carrier.setType(CarrierTypeEnum.ENTERPRISE.code);
-            carrier = encapCarrier(carrier,dto);
-            i = carrierDao.insert(carrier);
-            if(i > 0){
-                //添加承运商司机管理员
-                driver = new Driver();
-                driver.setPhone(dto.getLinkmanPhone());
-                driver.setIdentity(DriverIdentityEnum.ADMIN.code);
-                driver.setState(VerifyStateEnum.AUDIT_PASS.code);
-                driver.setBusinessState(BusinessStateEnum.BUSINESS.code);
-                driver.setSource(DriverSourceEnum.SALEMAN_WEB.code);
-                driver.setCreateUserId(dto.getUserId());
-                m = driverDao.insert(driver);
-            }
-            if(m > 0){
-                //承运商与司机绑定关系
-                CarrierDriverCon cdc = new CarrierDriverCon();
-                cdc.setDriverId(driver.getId());
-                cdc.setCarrierId(carrier.getId());
-                cdc.setRole(DriverIdentityEnum.SUPERADMIN.code);
-                j = carrierDriverConDao.insert(cdc);
-            }
-            if(j > 0){
-                //保存银行卡信息
-                BankCardBind bcb = new BankCardBind();
-                bcb.setUserId(driver.getUserId());
-                bcb.setCardType(dto.getCardType());
-                bcb.setCardNo(dto.getCardNo());
-                bcb.setBankName(dto.getBankName());
-                bcb.setIdCard(dto.getLegaIdCard());
-                bcb.setCardPhone(dto.getLinkmanPhone());
-                bcb.setState(UseStateEnum.USABLE.code);
-                bcb.setCreateTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
-                n = bankCardBindDao.insert(bcb);
-            }
-            //业务范围
-            if(n > 0){
-                //添加承运商业务范围
-                return carrierCityConService.batchSave(carrier.getId(),dto.getCodes());
-            }
-        }catch (Exception e){
-            log.info("新增承运商信息出现异常");
-            throw new CommonException(e.getMessage());
-        }
-        return false;
+        //添加承运商
+        Carrier carrier = new Carrier();
+        BeanUtils.copyProperties(dto,carrier);
+        carrier.setState(CommonStateEnum.WAIT_CHECK.code);
+        carrier.setType(CarrierTypeEnum.ENTERPRISE.code);
+        carrier.setBusinessState(BusinessStateEnum.BUSINESS.code);
+        carrier.setCreateUserId(dto.getUserId());
+        carrier.setCreateTime(NOW);
+        super.save(carrier);
+
+        //添加承运商司机管理员
+        Driver driver = new Driver();
+        driver.setPhone(dto.getLinkmanPhone());
+        driver.setIdentity(DriverIdentityEnum.ADMIN.code);
+        driver.setState(CommonStateEnum.CHECKED.code);
+        driver.setBusinessState(BusinessStateEnum.BUSINESS.code);
+        driver.setSource(DriverSourceEnum.SALEMAN_WEB.code);
+        driver.setCreateUserId(dto.getUserId());
+        driver.setIdCard(dto.getLegaIdCard());
+        driver.setRealName(dto.getLinkman());
+        driverDao.insert(driver);
+
+        //承运商与司机绑定关系
+        CarrierDriverCon cdc = new CarrierDriverCon();
+        cdc.setDriverId(driver.getId());
+        cdc.setCarrierId(carrier.getId());
+        cdc.setRole(DriverIdentityEnum.SUPERADMIN.code);
+        carrierDriverConDao.insert(cdc);
+
+        //保存银行卡信息
+        BankCardBind bcb = new BankCardBind();
+        BeanUtils.copyProperties(dto,bcb);
+        bcb.setUserId(driver.getUserId());
+        bcb.setUserType(UserTypeEnum.DRIVER.code);
+        bcb.setIdCard(dto.getLegaIdCard());
+        bcb.setState(UseStateEnum.USABLE.code);
+        bcb.setCreateTime(NOW);
+        bankCardBindDao.insert(bcb);
+        //添加承运商业务范围
+        return carrierCityConService.batchSave(carrier.getId(),dto.getCodes());
     }
 
     @Override
@@ -157,7 +143,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         try{
             //更新承运商
             Carrier carrier = carrierDao.selectById(dto.getId());
-            carrier = encapCarrier(carrier,dto);
+            //carrier = encapCarrier(carrier,dto);
             i = carrierDao.updateById(carrier);
             if(j > 0){
                 //更新承运商司机管理员
@@ -233,16 +219,16 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
                 //更新司机userID信息
                 updateDriver(rd.getData().getUserId(), carrier.getId());
                 carrier.setDeptId(rd.getData().getDeptId());
-                carrier.setState(VerifyStateEnum.AUDIT_PASS.code);
+                carrier.setState(CommonStateEnum.CHECKED.code);
             }else if(FlagEnum.AUDIT_REJECT.code == state){
                 //审核拒绝
-                carrier.setState(VerifyStateEnum.AUDIT_REJECT.code);
+                carrier.setState(CommonStateEnum.REJECT.code);
             }else if(FlagEnum.FROZEN.code == state){
                 //冻结
-                carrier.setState(VerifyStateEnum.FROZEN.code);
+                carrier.setState(CommonStateEnum.FROZEN.code);
             }else if(FlagEnum.THAW.code == state){
                 //解冻
-                carrier.setState(VerifyStateEnum.AUDIT_PASS.code);
+                carrier.setState(CommonStateEnum.CHECKED.code);
             }
             return carrierDao.updateById(carrier) > 0 ? true : false;
         }catch (Exception e){
@@ -362,31 +348,4 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         }
     }
 
-    /**
-     * 封装承运商
-     * @param carrier
-     * @return
-     */
-    private Carrier encapCarrier(Carrier carrier,CarrierDto dto){
-        carrier.setName(dto.getName());
-        carrier.setLegalIdCard(dto.getLegaIdCard());
-        carrier.setLegalName(dto.getLegalName());
-        carrier.setLinkman(dto.getLinkman());
-        carrier.setLinkmanPhone(dto.getLinkmanPhone());
-        carrier.setDriverMode(dto.getDriverMode());
-        carrier.setTrailerMode(dto.getTrailerMode());
-        carrier.setTrunkMode(dto.getTrunkMode());
-        carrier.setSettleType(dto.getSettleType());
-        carrier.setSettlePeriod(dto.getSettlePeriod());
-        carrier.setIsInvoice(dto.getIsInvoice());
-        carrier.setBusLicenseFrontImg(dto.getBusLicenseFrontImg());
-        carrier.setBusLicenseBackImg(dto.getBusLicenseBackImg());
-        carrier.setTransportLicenseFrontImg(dto.getTransportLicenseFrontImg());
-        carrier.setTransportLicenseBackImg(dto.getTransportLicenseBackImg());
-        carrier.setBankOpenFrontImg(dto.getBankOpenFrontImg());
-        carrier.setBankOpenBackImg(dto.getBankOpenBackImg());
-        carrier.setCreateTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
-        carrier.setCreateUserId(dto.getUserId());
-        return carrier;
-    }
 }

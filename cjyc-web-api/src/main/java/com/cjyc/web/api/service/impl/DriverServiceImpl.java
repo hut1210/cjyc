@@ -104,7 +104,7 @@ public class DriverServiceImpl implements IDriverService {
             driver.setPhone(dto.getPhone());
             driver.setMode(dto.getMode());
             driver.setIdentity(DriverIdentityEnum.SUB_DRIVER.code);
-            driver.setState(VerifyStateEnum.BE_AUDITED.code);
+            //driver.setState(VerifyStateEnum.BE_AUDITED.code);
             driver.setBusinessState(BusinessStateEnum.OUTAGE.code);
             driver.setSource(DriverSourceEnum.SALEMAN_WEB.code);
             driver.setIdCardFrontImg(dto.getIdCardFrontImg());
@@ -195,10 +195,10 @@ public class DriverServiceImpl implements IDriverService {
                     throw new CommonException("司机信息保存失败，原因：" + saveRd.getMsg());
                 }
                 driver.setUserId(saveRd.getData());
-                driver.setState(VerifyStateEnum.AUDIT_PASS.code);
+                //driver.setState(VerifyStateEnum.AUDIT_PASS.code);
                 driverDao.updateById(driver);
                 //更新承运商
-                carr.setState(VerifyStateEnum.AUDIT_PASS.code);
+                //carr.setState(VerifyStateEnum.AUDIT_PASS.code);
                 carrierDao.updateById(carr);
                 //更新运力
                 VehicleRunning vr = vehicleRunningDao.getVehiRunByDriverId(id);
@@ -206,17 +206,17 @@ public class DriverServiceImpl implements IDriverService {
                 return vehicleRunningDao.updateById(vr) > 0 ? true : false;
             }else if(flag == FlagEnum.AUDIT_REJECT.code){
                 //审核拒绝
-                driver.setState(VerifyStateEnum.AUDIT_REJECT.code);
+               //driver.setState(VerifyStateEnum.AUDIT_REJECT.code);
                 driverDao.updateById(driver);
                 //更新承运商
-                carr.setState(VerifyStateEnum.AUDIT_REJECT.code);
+                //carr.setState(VerifyStateEnum.AUDIT_REJECT.code);
                 return carrierDao.updateById(carr) > 0 ? true : false;
             }else if(flag == FlagEnum.FROZEN.code){
                 //冻结
-                driver.setState(VerifyStateEnum.FROZEN.code);
+               // driver.setState(VerifyStateEnum.FROZEN.code);
                 driverDao.updateById(driver);
                 //更新承运商
-                carr.setState(VerifyStateEnum.FROZEN.code);
+                //carr.setState(VerifyStateEnum.FROZEN.code);
                 return carrierDao.updateById(carr) > 0 ? true:false;
             }
         }catch (Exception e){

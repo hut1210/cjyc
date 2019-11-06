@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-29
+ * @since 2019-11-06
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -40,20 +40,20 @@ public class Carrier implements Serializable {
     @ApiModelProperty(value = "承运商类型：1个人承运商，2企业承运商")
     private Integer type;
 
-    @ApiModelProperty(value = "注册名称")
-    private String registerName;
-
-    @ApiModelProperty(value = "注册电话")
-    private String registerPhone;
-
     @ApiModelProperty(value = "法人姓名")
     private String legalName;
 
     @ApiModelProperty(value = "法人身份证号")
     private String legalIdCard;
 
-    @ApiModelProperty(value = "法人身份证照片")
-    private String legalIdcardImg;
+    @ApiModelProperty(value = "公司联系人")
+    private String linkman;
+
+    @ApiModelProperty(value = "公司联系人手机号")
+    private String linkmanPhone;
+
+    @ApiModelProperty(value = "承运方式：2 : 代驾  3 : 干线   4：拖车   5：代驾+干线  6：代驾+拖车  7：干线+拖车  9：代驾+干线+拖车")
+    private Integer mode;
 
     @ApiModelProperty(value = "营业执照正面")
     private String busLicenseFrontImg;
@@ -72,21 +72,6 @@ public class Carrier implements Serializable {
 
     @ApiModelProperty(value = "银行开户证明反面")
     private String bankOpenBackImg;
-
-    @ApiModelProperty(value = "公司联系人")
-    private String linkman;
-
-    @ApiModelProperty(value = "公司联系人手机号")
-    private String linkmanPhone;
-
-    @ApiModelProperty(value = "是否支持代驾  0 : 否  1 : 是")
-    private Integer driverMode;
-
-    @ApiModelProperty(value = "是否支持拖车  0 ：否  1 ：是")
-    private Integer trailerMode;
-
-    @ApiModelProperty(value = "是否支持干线  0：否 1：是")
-    private Integer trunkMode;
 
     @ApiModelProperty(value = "管理员数量")
     private Integer adminNum;
@@ -109,7 +94,7 @@ public class Carrier implements Serializable {
     @ApiModelProperty(value = "结算公司：0韵车，1otm，2掌控")
     private Integer settleCorporation;
 
-    @ApiModelProperty(value = "状态：0待审核，2已审核，4取消，7已驳回，9已停用（CommonStateEnum）")
+    @ApiModelProperty(value = "状态：0待审核，2已审核，4取消，5冻结， 7已驳回，9已停用（CommonStateEnum）")
     private Integer state;
 
     @ApiModelProperty(value = "营运状态：0营运中，1停运中")
@@ -118,14 +103,17 @@ public class Carrier implements Serializable {
     @ApiModelProperty(value = "是否开发票 0：否  1：是")
     private Integer isInvoice;
 
-    @ApiModelProperty(value = "创建者姓名")
-    private String createUser;
-
-    @ApiModelProperty(value = "创建者ID")
+    @ApiModelProperty(value = "创建者userId")
     private Long createUserId;
 
     @ApiModelProperty(value = "创建时间")
     private Long createTime;
+
+    @ApiModelProperty(value = "审核时间")
+    private Long checkTime;
+
+    @ApiModelProperty(value = "审核人userId")
+    private Long checkUserId;
 
 
 }

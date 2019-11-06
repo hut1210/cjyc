@@ -6,6 +6,7 @@ public enum CommonStateEnum {
     WAIT_CHECK("待审核", 0),
     CHECKED("已审核", 2),
     CANCEL("已取消", 4),
+    FROZEN("冻结", 5),
     REJECT("已驳回", 7),
     DISABLED("已停用", 9);
 

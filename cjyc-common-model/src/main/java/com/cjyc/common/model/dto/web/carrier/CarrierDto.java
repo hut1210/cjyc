@@ -10,6 +10,8 @@ import java.util.List;
 @Data
 public class CarrierDto implements Serializable {
 
+    private static final long serialVersionUID = 8035192987370988017L;
+
     public interface SaveCarrierDto {
     }
 
@@ -20,12 +22,15 @@ public class CarrierDto implements Serializable {
     @NotBlank(groups = {CarrierDto.UpdateCarrierDto.class},message = "承运商id不能为空")
     private Long id;
 
-    @ApiModelProperty("登录人id")
-    @NotBlank(groups = {CarrierDto.SaveCarrierDto.class},message = "登录人id不能为空")
+    @ApiModelProperty("当前登陆用户userId")
+    @NotBlank(groups = {CarrierDto.SaveCarrierDto.class},message = "当前登陆用户userId不能为空")
     private Long userId;
 
     @ApiModelProperty("企业名称")
     private String name;
+
+    @ApiModelProperty("是否开发票 0：否  1：是")
+    private Integer isInvoice;
 
     @ApiModelProperty("法人姓名")
     private String legalName;
@@ -36,7 +41,7 @@ public class CarrierDto implements Serializable {
     @ApiModelProperty("联系人姓名")
     private String linkman;
 
-    @ApiModelProperty("承运商手机号")
+    @ApiModelProperty("联系人手机号(作为登陆账号)")
     private String linkmanPhone;
 
     @ApiModelProperty("结算类型 0:时付，1:账期")
@@ -48,17 +53,8 @@ public class CarrierDto implements Serializable {
     @ApiModelProperty("业务范围")
     private List<String> codes;
 
-    @ApiModelProperty("是否支持代驾  0 : 否  1 : 是")
-    private Integer driverMode;
-
-    @ApiModelProperty("是否支持拖车  0 ：否  1 ：是")
-    private Integer trailerMode;
-
-    @ApiModelProperty("是否支持干线  0：否 1：是")
-    private Integer trunkMode;
-
-    @ApiModelProperty("是否开发票 0：否  1：是")
-    private Integer isInvoice;
+    @ApiModelProperty("承运方式：2 : 代驾 3 : 干线 4：拖车  5：代驾+干线  6：代驾+拖车  7：干线+拖车  9：代驾+干线+拖车")
+    private Integer mode;
 
     @ApiModelProperty("卡类型:1公户，2私户")
     private Integer cardType;

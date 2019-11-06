@@ -21,7 +21,6 @@
         <result column="id_card_back_img" property="idCardBackImg" />
         <result column="driver_licence_front_img" property="driverLicenceFrontImg" />
         <result column="driver_licence_back_img" property="driverLicenceBackImg" />
-        <result column="driver_licence_expire" property="driverLicenceExpire" />
         <result column="travel_licence_front_img" property="travelLicenceFrontImg" />
         <result column="travel_licence_back_img" property="travelLicenceBackImg" />
         <result column="taxi_licence_front_img" property="taxiLicenceFrontImg" />
@@ -33,13 +32,15 @@
         <result column="deposit_pay_state" property="depositPayState" />
         <result column="business_state" property="businessState" />
         <result column="source" property="source" />
+        <result column="create_time" property="createTime" />
         <result column="create_user_id" property="createUserId" />
-        <result column="create_name" property="createName" />
+        <result column="check_time" property="checkTime" />
+        <result column="check_user_id" property="checkUserId" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, user_id, name, phone, emergency_phone, type, mode, identity, id_card, real_name, age, sex, address, id_card_front_img, id_card_back_img, driver_licence_front_img, driver_licence_back_img, driver_licence_expire, travel_licence_front_img, travel_licence_back_img, taxi_licence_front_img, taxi_licence_back_img, qualifi_cert_front_img, qualifi_cert_back_img, remark, state, deposit_pay_state, business_state, source, create_user_id, create_name
+        id, user_id, name, phone, emergency_phone, type, mode, identity, id_card, real_name, age, sex, address, id_card_front_img, id_card_back_img, driver_licence_front_img, driver_licence_back_img, travel_licence_front_img, travel_licence_back_img, taxi_licence_front_img, taxi_licence_back_img, qualifi_cert_front_img, qualifi_cert_back_img, remark, state, deposit_pay_state, business_state, source, create_time, create_user_id, check_time, check_user_id
     </sql>
 
     <select id="findList" resultType="com.cjyc.common.model.vo.web.user.DriverListVo">
