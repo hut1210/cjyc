@@ -93,7 +93,7 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
             log.error("保存业务中心失败，原因：" + saveRd.getMsg());
             return false;
         }
-        store.setDeptId(saveRd.getData());
+        store.setId(saveRd.getData());
         return super.save(store);
     }
 
