@@ -6,10 +6,8 @@ import com.cjkj.common.model.ResultData;
 import com.cjkj.usercenter.dto.common.*;
 import com.cjkj.usercenter.dto.yc.SelectUsersByRoleResp;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -67,7 +65,7 @@ public interface ISysUserService {
      * @return
      */
     @GetMapping("/feign/uc/getSingleLevelRoles/{deptId}")
-    ResultData<List<SelectRoleResp>> getSingleLevelRolesByDeptId(@PathVariable("deptId") Long deptId);
+    ResultData<List<SelectRoleResp>> getSingleLevelRolesByDeptId(@PathVariable("deptId")Long deptId);
 
     /**
      * 用户信息更新
@@ -84,7 +82,7 @@ public interface ISysUserService {
      * @return
      */
     @PostMapping("/feign/uc/resetPwd/{userId}/{newPwd}")
-    ResultData resetPwd(@PathVariable("userId") Long userId, @PathVariable("newPwd") String newPwd);
+    ResultData resetPwd(@PathVariable("userId")Long userId, @PathVariable("newPwd")String newPwd);
 
     /**
      * 根据机构id获取用户信息列表

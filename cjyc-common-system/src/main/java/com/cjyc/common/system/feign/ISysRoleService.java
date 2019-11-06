@@ -20,6 +20,14 @@ import java.util.List;
 @FeignClient(value = ServiceNameConstants.USER_SERVICE, fallbackFactory = UserServiceFallbackFactory.class, decode404 = true)
 public interface ISysRoleService {
 
+    /**
+     * 根据角色id查询角色信息
+     * @author JPG
+     * @since 2019/11/6 11:47
+     * @param id
+     */
+    @PostMapping("/feign/uc/getRole/{id}")
+    ResultData<SelectRoleResp> getById(@PathVariable Integer id);
 
     /**
      * 保存角色
@@ -58,7 +66,7 @@ public interface ISysRoleService {
      * @return ResultData<List<SelectRoleResp>>
      */
     @PostMapping("feign/uc/getMultiLevelRoles/{deptId}")
-    ResultData<List<SelectRoleResp>> getMultiLevelList(@PathVariable(value = "deptId") Integer deptId);
+    ResultData<List<SelectRoleResp>> getMultiLevelList(@PathVariable(value="deptId") Integer deptId);
 
     /**
      * 查询角色信息：根据部门id查询多级组织下的所有角色
@@ -68,7 +76,7 @@ public interface ISysRoleService {
      * @return ResultData<List<SelectRoleResp>>
      */
     @PostMapping("/feign/uc/getSingleLevelRoles/{deptId}")
-    ResultData<List<SelectRoleResp>> getSingleLevelList(@PathVariable(value = "deptId") Integer deptId);
+    ResultData<List<SelectRoleResp>> getSingleLevelList(@PathVariable(value="deptId") Integer deptId);
 
 
     /**
@@ -79,7 +87,7 @@ public interface ISysRoleService {
      * @return ResultData<List<SelectRoleResp>>
      */
     @PostMapping("/feign/uc/getRoles/{userId}")
-    ResultData<List<SelectRoleResp>> getListByUserId(@PathVariable(value = "userId") Integer userId);
+    ResultData<List<SelectRoleResp>> getListByUserId(@PathVariable(value="userId") Integer userId);
 
     /**
      * 查询角色信息：根据用户id
@@ -89,7 +97,7 @@ public interface ISysRoleService {
      * @return  ResultData<SelectRoleResp>
      */
     @PostMapping("/feign/uc/deleteRole/{roleId}")
-    ResultData<SelectRoleResp> delete(@PathVariable(value = "roleId") Integer roleId);
+    ResultData<SelectRoleResp> delete(@PathVariable(value="roleId") Integer roleId);
 
     /**
      * 批量删除角色信息

@@ -16,7 +16,7 @@ import com.cjyc.common.model.enums.saleman.SalemanStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.web.api.feign.ISysUserService;
+import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.web.api.service.ISalesmanService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;

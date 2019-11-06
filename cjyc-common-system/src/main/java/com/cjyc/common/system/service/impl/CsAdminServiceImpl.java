@@ -1,8 +1,10 @@
 package com.cjyc.common.system.service.impl;
 
+import com.cjkj.common.model.ResultData;
+import com.cjkj.usercenter.dto.common.SelectRoleResp;
 import com.cjyc.common.model.dao.IAdminDao;
+import com.cjyc.common.model.dao.IStoreDao;
 import com.cjyc.common.model.entity.Admin;
-import com.cjyc.common.model.enums.AdminStateEnum;
 import com.cjyc.common.model.vo.web.admin.CacheAdminVo;
 import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.service.ICsAdminService;
@@ -22,6 +24,8 @@ public class CsAdminServiceImpl implements ICsAdminService {
     private IAdminDao adminDao;
     @Resource
     private ISysRoleService sysRoleService;
+    @Resource
+    private IStoreDao storeDao;
     /**
      * @param userId
      * @param isSearchCache
@@ -46,16 +50,23 @@ public class CsAdminServiceImpl implements ICsAdminService {
     }
 
     @Override
-    public CacheAdminVo getCacheData(Long userId, Long roleId) {
+    public CacheAdminVo getCacheData(Long userId, Integer roleId) {
         CacheAdminVo cacheAdminVo = new CacheAdminVo();
         Admin admin = adminDao.findByUserId(userId);
         if(admin == null){
             return null;
         }
         BeanUtils.copyProperties(admin, cacheAdminVo);
-        //查询角色所属部门ID
+        //查询角色信息
+        ResultData<SelectRoleResp> resultData = sysRoleService.getById(roleId);
+        if(resultData == null || resultData.getData() == null || resultData.getData().getRoleId() == null){
+            return null;
+        }
+        //查询部门信息
+
 
         //根据部门ID查询业务中心ID
+        //storeDao.findListByDeptId();
 
         return null;
     }

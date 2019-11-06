@@ -1,4 +1,4 @@
-package com.cjyc.web.api.constant;
+package com.cjyc.common.model.constant;
 
 /**
  * feign调用服务相关信息

@@ -22,5 +22,5 @@ public interface ICsAdminService {
      */
     List<Admin> getListByStoreId(Long storeId);
 
-    CacheAdminVo getCacheData(Long userId, Long roleId);
+    CacheAdminVo getCacheData(Long userId, Integer roleId);
 }

@@ -1,9 +1,9 @@
-package com.cjyc.web.api.feign.fallback;
+package com.cjyc.common.system.feign.fallback;
 
 import com.cjkj.common.model.ResultData;
 import com.cjkj.usercenter.dto.common.auth.AuthLoginReq;
 import com.cjkj.usercenter.dto.common.auth.AuthLoginResp;
-import com.cjyc.web.api.feign.ISysLoginService;
+import com.cjyc.common.system.feign.ISysLoginService;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
