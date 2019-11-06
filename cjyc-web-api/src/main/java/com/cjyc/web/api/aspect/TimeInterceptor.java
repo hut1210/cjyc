@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class TimeInterceptor {
-    @Around(value = "execution (* com.cjyc.web.api.service..*.*(..))")
+    //@Around(value = "execution (* com.cjyc.web.api.service..*.*(..))")
     public Object timeAround(ProceedingJoinPoint joinPoint) {
         // 定义返回对象、得到方法需要的参数  
         Object obj = null;
@@ -29,7 +29,7 @@ public class TimeInterceptor {
         } catch (Throwable e) {
             log.error("统计方法执行耗时环绕通知出错", e);
         }
-        // 获取执行的方法名  
+        // 获取执行的方法名
         long endTime = System.currentTimeMillis();
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         String methodName = signature.getDeclaringTypeName() + "." + signature.getName();

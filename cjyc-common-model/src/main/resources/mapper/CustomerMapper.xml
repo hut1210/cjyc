@@ -174,7 +174,6 @@
         <include refid="Base_Column_List"/>
         from c_customer
         where contact_phone = #{phone}
-
     </select>
     <select id="findFuzzyList" resultType="com.cjyc.common.model.vo.web.customer.CustomerFuzzyListVo">
         select
@@ -231,5 +230,11 @@
         select
           <include refid="Base_Column_List"/>
         from c_customer where user_id = #{userId}
+    </select>
+    <select id="findByUserId" resultType="com.cjyc.common.model.entity.Customer">
+        select
+        <include refid="Base_Column_List"/>
+        from c_customer
+        where user_id = #{userId}
     </select>
 </mapper>

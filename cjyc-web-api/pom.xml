@@ -20,7 +20,7 @@
         <!-- 项目内部module -->
         <dependency>
             <groupId>com.cjyc</groupId>
-            <artifactId>cjyc-common-model</artifactId>
+            <artifactId>cjyc-common-system</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
@@ -63,10 +63,6 @@
         <!--<groupId>org.springframework.cloud</groupId>-->
         <!--<artifactId>spring-cloud-starter</artifactId>-->
         <!--</dependency>-->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
-        </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
@@ -150,24 +146,6 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>
-
-        <!-- 新Swagger2-ui 开始 使用于本地启用swagger，测试环境上将此注释掉，使用架构组的swagger-->
-        <dependency>
-            <groupId>com.github.xiaoymin</groupId>
-            <artifactId>swagger-bootstrap-ui</artifactId>
-            <version>1.9.2</version>
-        </dependency>
-        <dependency>
-            <groupId>io.swagger</groupId>
-            <artifactId>swagger-annotations</artifactId>
-            <version>1.5.21</version>
-        </dependency>
-        <dependency>
-            <groupId>io.swagger</groupId>
-            <artifactId>swagger-models</artifactId>
-            <version>1.5.21</version>
-        </dependency>
-        <!-- 新Swagger2-ui 结束-->
 
     </dependencies>
 

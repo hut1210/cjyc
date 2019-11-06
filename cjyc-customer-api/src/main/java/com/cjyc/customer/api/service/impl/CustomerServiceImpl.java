@@ -32,4 +32,9 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao, Customer> imp
         return BaseResultUtil.success(fuzzyList);
     }
 
+    @Override
+    public Customer getByUserId(Long userId) {
+        return customerDao.findByUserId(userId);
+    }
+
 }

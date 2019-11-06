@@ -46,4 +46,8 @@ public interface IWaybillService extends IService<Waybill> {
     ResultVo<PageVo<TrunkListWaybillVo>> trunklist(TrunkListWaybillDto reqDto);
 
     ResultVo<PageVo<TrunkListWaybillCarVo>> trunkCarlist(TrunkListWaybillCarDto reqDto);
+
+    ResultVo<GetWaybillVo> get(Long id);
+
+    ResultVo<List<GetWaybillCarVo>> getCarByType(Long orderCarId, Integer waybillType);
 }

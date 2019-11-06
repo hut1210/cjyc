@@ -24,6 +24,7 @@
         <result column="start_lat" property="startLat" />
         <result column="start_store_id" property="startStoreId" />
         <result column="start_store_name" property="startStoreName" />
+        <result column="start_belong_store_id" property="startBelongStoreId" />
         <result column="end_province" property="endProvince" />
         <result column="end_province_code" property="endProvinceCode" />
         <result column="end_city" property="endCity" />
@@ -35,6 +36,7 @@
         <result column="end_lat" property="endLat" />
         <result column="end_store_id" property="endStoreId" />
         <result column="end_store_name" property="endStoreName" />
+        <result column="end_belong_store_id" property="endBelongStoreId" />
         <result column="expect_start_date" property="expectStartDate" />
         <result column="expect_end_date" property="expectEndDate" />
         <result column="car_num" property="carNum" />
@@ -79,13 +81,19 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, no, customer_id, customer_name, customer_phone, customer_type, input_store_id, input_store_name, start_province, start_province_code, start_city, start_city_code, start_area, start_area_code, start_address, start_lng, start_lat, start_store_id, start_store_name, end_province, end_province_code, end_city, end_city_code, end_area, end_area_code, end_address, end_lng, end_lat, end_store_id, end_store_name, expect_start_date, expect_end_date, car_num, line_id, pick_type, pick_contact_name, pick_contact_phone, back_type, back_contact_name, back_contact_phone, hurry_days, source, create_time, create_user_name, create_user_id, allot_to_user_name, allot_to_user_id, check_time, check_user_name, check_user_id, state, remark, invoice_flag, invoice_type, pick_fee, trunk_fee, back_fee, add_insurance_fee, coupon_offset_fee, agency_fee, total_fee, deposit_fee, fee_share_type, customer_contract_id, pay_type, wl_pay_state, wl_pay_time, finish_time, offline_pay_flag, coupon_send_id
+        id, no, customer_id, customer_name, customer_phone, customer_type, input_store_id, input_store_name, start_province, start_province_code, start_city, start_city_code, start_area, start_area_code, start_address, start_lng, start_lat, start_store_id, start_store_name, start_belong_store_id, end_province, end_province_code, end_city, end_city_code, end_area, end_area_code, end_address, end_lng, end_lat, end_store_id, end_store_name, end_belong_store_id, expect_start_date, expect_end_date, car_num, line_id, pick_type, pick_contact_name, pick_contact_phone, back_type, back_contact_name, back_contact_phone, hurry_days, source, create_time, create_user_name, create_user_id, allot_to_user_name, allot_to_user_id, check_time, check_user_name, check_user_id, state, remark, invoice_flag, invoice_type, pick_fee, trunk_fee, back_fee, add_insurance_fee, coupon_offset_fee, agency_fee, total_fee, deposit_fee, fee_share_type, customer_contract_id, pay_type, wl_pay_state, wl_pay_time, finish_time, offline_pay_flag, coupon_send_id
     </sql>
+
     <update id="updateStateForLoad">
         update w_order w join w_order_car wc on w.id = wc.order_id
         set w.state = #{orderState}
         where wc.id = #{orderCarId}
         and w.state = 25
+    </update>
+    <update id="updateStateById">
+        update w_order
+        set state = #{state}
+        where id = ${id}
     </update>
 
     <resultMap id="VinResultMap" type="com.cjyc.common.model.vo.customer.order.OrderCenterVo">

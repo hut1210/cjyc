@@ -2,20 +2,13 @@ package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.entity.Admin;
-import com.cjyc.common.model.entity.Order;
-import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.enums.AdminStateEnum;
-import com.cjyc.common.model.enums.order.OrderSaveTypeEnum;
-import com.cjyc.common.model.enums.order.OrderStateEnum;
+import com.cjyc.common.model.exception.ParameterException;
 import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.vo.BizScopeVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.order.ListOrderCarVo;
-import com.cjyc.common.model.vo.web.order.ListOrderVo;
-import com.cjyc.common.model.vo.web.order.OrderVo;
-import com.cjyc.web.api.service.IAdminService;
-import com.cjyc.web.api.service.IBizScopeService;
+import com.cjyc.common.model.vo.web.order.*;
+import com.cjyc.common.system.service.ICsAdminService;
 import com.cjyc.web.api.service.IOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -38,10 +31,9 @@ public class OrderController {
 
     @Resource
     private IOrderService orderService;
+
     @Resource
-    private IBizScopeService bizScopeService;
-    @Resource
-    private IAdminService adminService;
+    private ICsAdminService csAdminService;
 
 
     /**
@@ -54,7 +46,7 @@ public class OrderController {
 
         //验证用户存不存在
         Long userId = reqDto.getUserId();
-        Admin admin = adminService.getByUserId(userId);
+        Admin admin = csAdminService.getByUserId(userId, true);
         if(admin == null){
             return BaseResultUtil.fail("用户不存在");
         }
@@ -77,9 +69,9 @@ public class OrderController {
 
         //验证用户存不存在
         Long userId = reqDto.getUserId();
-        Admin admin = adminService.getByUserId(userId);
+        Admin admin = csAdminService.getByUserId(userId, true);
         if(admin == null){
-            return BaseResultUtil.fail("用户不存在");
+            throw new ParameterException("用户不存在");
         }
         reqDto.setCreateUserId(admin.getUserId());
         reqDto.setCreateUserName(admin.getName());
@@ -89,7 +81,6 @@ public class OrderController {
         //发送推送信息
         return resultVo;
     }
-
 
     /**
      * 完善订单信息
@@ -110,12 +101,30 @@ public class OrderController {
     public ResultVo check(@RequestBody CheckOrderDto reqDto) {
         //验证用户存不存在
         Long userId = reqDto.getUserId();
-        Admin admin = adminService.getByUserId(userId);
+        Admin admin = csAdminService.getByUserId(userId, true);
         if(admin == null){
             return BaseResultUtil.fail("用户不存在");
         }
         return orderService.check(reqDto);
     }
+
+    /**
+     * 驳回订单
+     * @author JPG
+     */
+    @ApiOperation(value = "驳回订单")
+    @PostMapping(value = "/reject")
+    public ResultVo reject(@RequestBody RejectOrderDto reqDto) {
+        //验证用户存不存在
+        Long userId = reqDto.getUserId();
+        Admin admin = csAdminService.getByUserId(userId,true);
+        if(admin == null){
+            return BaseResultUtil.fail("用户不存在");
+        }
+        return orderService.reject(reqDto);
+    }
+
+
 
 
     /**
@@ -127,6 +136,18 @@ public class OrderController {
     public ResultVo<OrderVo> get(@PathVariable Long orderId) {
         OrderVo orderVo = orderService.getVoById(orderId);
         return BaseResultUtil.success(orderVo);
+    }
+
+
+    /**
+     * 查询订单取消记录-根据ID
+     * @author JPG
+     */
+    @ApiOperation(value = "查询订单取消记录-根据ID")
+    @PostMapping(value = "/change/log/list")
+    public ResultVo<List<ListOrderChangeLogVo>> get(@RequestBody ListOrderChangeLogDto reqDto) {
+        List<ListOrderChangeLogVo> list = orderService.getChangeLogVoById(reqDto);
+        return BaseResultUtil.success(list);
     }
 
     /**
@@ -148,6 +169,17 @@ public class OrderController {
     public ResultVo<PageVo<ListOrderCarVo>> carlist(@RequestBody ListOrderCarDto reqDto) {
         return orderService.carlist(reqDto);
     }
+    /**
+     * 查询订单车辆运输状态-根据ID
+     * @author JPG
+     */
+    @ApiOperation(value = "查询订单车辆运输状态-根据ID")
+    @PostMapping(value = "/detail/info/{orderId}")
+    public ResultVo<List<TransportInfoOrderCarVo>> detailInfo(@PathVariable Long orderId) {
+        List<TransportInfoOrderCarVo> list = orderService.getTransportInfoVoById(orderId);
+        return BaseResultUtil.success(list);
+    }
+
 
 
     /**
@@ -158,13 +190,13 @@ public class OrderController {
     @PostMapping(value = "/allot")
     public ResultVo allot(@Validated @RequestBody AllotOrderDto reqDto) {
         //验证操作人
-        Admin admin = adminService.getByUserId(reqDto.getUserId());
+        Admin admin = csAdminService.getByUserId(reqDto.getUserId(),true);
         if(admin == null || admin.getState() != AdminStateEnum.CHECKED.code){
             return BaseResultUtil.fail("操作用户不存在或者已离职");
         }
         reqDto.setUserName(admin.getName());
         //验证被分配人
-        Admin toAdmin = adminService.getByUserId(reqDto.getToUserId());
+        Admin toAdmin = csAdminService.getByUserId(reqDto.getToUserId(),true);
         if(toAdmin == null){
             return BaseResultUtil.fail("目标业务员不存在");
         }
@@ -188,7 +220,7 @@ public class OrderController {
     @PostMapping(value = "/change/price")
     public ResultVo changePrice(@RequestBody ChangePriceOrderDto reqDto) {
         //验证操作人
-        Admin admin = adminService.getByUserId(reqDto.getUserId());
+        Admin admin = csAdminService.getByUserId(reqDto.getUserId(),true);
         if(admin == null || admin.getState() != AdminStateEnum.CHECKED.code){
             return BaseResultUtil.fail("操作用户不存在或者已离职");
         }
@@ -205,7 +237,7 @@ public class OrderController {
     @PostMapping(value = "/cancel")
     public ResultVo cancel(@RequestBody CancelOrderDto reqDto) {
         //验证操作人
-        Admin admin = adminService.getByUserId(reqDto.getUserId());
+        Admin admin = csAdminService.getByUserId(reqDto.getUserId(),true);
         if(admin == null || admin.getState() != AdminStateEnum.CHECKED.code){
             return BaseResultUtil.fail("操作用户不存在或者已离职");
         }
@@ -223,7 +255,7 @@ public class OrderController {
     @PostMapping(value = "/obsolete")
     public ResultVo obsolete(@RequestBody CancelOrderDto reqDto) {
         //验证操作人
-        Admin admin = adminService.getByUserId(reqDto.getUserId());
+        Admin admin = csAdminService.getByUserId(reqDto.getUserId(),true);
         if(admin == null || admin.getState() != AdminStateEnum.CHECKED.code){
             return BaseResultUtil.fail("操作用户不存在或者已离职");
         }

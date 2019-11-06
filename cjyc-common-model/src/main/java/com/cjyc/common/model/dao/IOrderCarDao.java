@@ -12,6 +12,7 @@ import com.cjyc.common.model.vo.customer.order.OrderCarCenterVo;
 import com.cjyc.common.model.vo.web.OrderCarVo;
 import com.cjyc.common.model.vo.web.order.ListOrderCarVo;
 import com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo;
+import com.cjyc.common.model.vo.web.order.TransportInfoOrderCarVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.math.BigDecimal;
@@ -129,4 +130,6 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
      * @return
      */
     List<InvoiceOrderVo> selectInvoiceOrderList(InvoiceApplyQueryDto dto);
+
+    List<TransportInfoOrderCarVo> findTransportStateByOrderId(Long orderId);
 }

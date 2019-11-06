@@ -20,8 +20,8 @@
         <module>cjyc-customer-api</module>
         <module>cjyc-salesman-api</module>
         <module>cjyc-web-api</module>
-        <module>cjyc-common-service</module>
         <module>cjyc-common-model</module>
+        <module>cjyc-common-system</module>
     </modules>
 
     <properties>
@@ -116,7 +116,7 @@
             <!--本地-->
             <dependency>
                 <groupId>com.cjyc</groupId>
-                <artifactId>cjyc-common-service</artifactId>
+                <artifactId>cjyc-common-system</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

@@ -1,9 +1,10 @@
 package com.cjyc.common.model.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cjyc.common.model.dto.web.city.CityQueryDto;
 import com.cjyc.common.model.entity.City;
+import com.cjyc.common.model.entity.defined.FullCity;
 import com.cjyc.common.model.vo.CityTreeVo;
-import com.cjyc.common.model.vo.web.city.FullCityVo;
 import com.cjyc.common.model.vo.web.city.ProvinceCityVo;
 import com.cjyc.common.model.vo.web.city.TreeCityVo;
 import org.apache.ibatis.annotations.Param;
@@ -45,7 +46,7 @@ public interface ICityDao extends BaseMapper<City> {
      */
     List<CityTreeVo> getAllByLevel(@Param("startLevel") Integer startLevel,@Param("endLevel")Integer endLevel);
 
-    FullCityVo findFullCityVo(String areaCode);
+    FullCity findFullCityVo(String areaCode);
 
     /**
      * 根据关键字获取省/城市集合
@@ -82,9 +83,23 @@ public interface ICityDao extends BaseMapper<City> {
     List<Map<String,Object>> getHotCity();
 
     /**
-     * 分页查询城市信息
-     * @return
+     * 查询多级城市实体
+     * @author JPG
+     * @since 2019/11/5 9:52
+     * @param areaCode
      */
-    List<FullCityVo> selectCityPage();
+    FullCity find5LevelFullCity(String areaCode);
+    FullCity find4LevelFullCity(String areaCode);
+    FullCity findFullCity(String areaCode);
+    FullCity find2LevelFullCity(String areaCode);
+
+    /**
+     * 功能描述: 分页查询城市信息
+     * @author liuxingxiang
+     * @date 2019/11/6
+     * @param dto
+     * @return java.util.List<com.cjyc.common.model.entity.defined.FullCity>
+     */
+    List<FullCity> selectCityPage(CityQueryDto dto);
 }
 

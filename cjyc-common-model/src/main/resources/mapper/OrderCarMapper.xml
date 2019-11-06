@@ -364,6 +364,31 @@
         when o.state = 114 then '已作废'
         end
         ) as outterState,
+
+        (case
+        when oc.pick_state = 7 then 7
+        when oc.pick_state = 10 then 10
+        else (case
+        when oc.state &lt;= 5 then 1
+        when oc.state = 10 then 2
+        when oc.state = 15 then 3
+        when oc.state &gt; 25 then 5 end)end ) as pickTransportState,
+        (case
+        when oc.trunk_state = 5 then 5
+        when oc.trunk_state = 10 then 10
+        else (case
+        when oc.state &lt;= 25 then 1
+        when oc.state = 35 then 2
+        when oc.state = 40 then 3
+        when oc.state &gt; 40 then 3 end)end ) as trunkTransportState,
+        (case when back_state = 7 then 7
+        when oc.back_state = 10 then 10
+        else (case
+        when oc.state &lt;= 45 then 1
+        when oc.state = 50 then 2
+        when oc.state = 55 then 3
+        when oc.state &gt;= 100 then 5 end)end ) as backTransportState,
+
         s1.region as region,
         s1.region_code as regionCode,
         s1.detail_addr as inputStoreAddress,
@@ -701,5 +726,40 @@
             AND o.state = 100
         ORDER BY
             o.finish_time DESC
+    </select>
+    <select id="findTransportStateByOrderId"
+            resultType="com.cjyc.common.model.vo.web.order.TransportInfoOrderCarVo">
+
+        /*提：1待调度，2待提车，3待交车，5已完成，7自送，10物流上门
+        干：1待调度，2待提车，3待交车，5已完成, 10无干线
+        送：1待调度，2待提车，3待交车，5已完成，7自提，10物流上门*/
+
+        select
+        (case
+        when pick_state = 7 then 7
+        when  pick_state = 10 then 10
+        else (case
+        when state &lt;= 5 then 1
+        when state = 10 then 2
+        when state = 15 then 3
+        when state &gt; 25 then 5 end)end ) as pickTransportState,
+        (case
+        when trunk_state = 5 then 5
+        when trunk_state = 10 then 10
+        else (case
+        when state &lt;= 25 then 1
+        when state = 35 then 2
+        when state = 40 then 3
+        when state &gt; 40 then 3 end)end ) as trunkTransportState,
+        (case when back_state = 7 then 7
+        when back_state = 10 then 10
+        else (case
+        when state &lt;= 45 then 1
+        when state = 50 then 2
+        when state = 55 then 3
+        when state &gt;= 100 then 5 end)end ) as backTransportState,
+        wc.*
+        from w_order_car wc
+        where wc.order_id = 1
     </select>
 </mapper>

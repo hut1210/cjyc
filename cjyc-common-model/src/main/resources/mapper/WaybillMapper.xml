@@ -24,12 +24,14 @@
         <result column="create_time" property="createTime" />
         <result column="create_user" property="createUser" />
         <result column="create_user_id" property="createUserId" />
+        <result column="input_store_id" property="inputStoreId" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, no, type, source, guide_line, recommend_line, carrier_id, carrier_type, carrier_name, car_num, state, freight_fee, freight_pay_state, freight_pay_time, freight_pay_billno, fixed_freight_fee, remark, create_time, create_user, create_user_id
+        id, no, type, source, guide_line, recommend_line, carrier_id, carrier_type, carrier_name, car_num, state, freight_fee, freight_pay_state, freight_pay_time, freight_pay_billno, fixed_freight_fee, remark, create_time, create_user, create_user_id, input_store_id
     </sql>
+
     <update id="updateStateBatchByNos">
         update w_waybill
         set state = #{state}
@@ -119,9 +121,23 @@
         and w.type = #{waybillType}
     </select>
     <select id="findListTrunk" resultType="com.cjyc.common.model.vo.web.waybill.TrunkListWaybillVo">
-
+        select
+            w.no as no,
+            w.guide_line as guideLine,
+            w.car_num as carNum,
+            w.carrier_id as carrierId,
+            w.carrier_name as carrierName,
+            w.create_time as waybillCreateTime,
+            t.driver_id as driverId,
+            t.driver_name as driverName,
+            t.driver_phone as driverPhone,
+            t.vehicle_plate_no as vehiclePlateNo,
+            t.create_time as taskCreateTime,
+            vr.empty_car_num as emptyCarNum,
+            vr.carry_car_num as carryCarNum
+        from w_waybill w
+        left join w_task t on t.waybill_id = w.id
+        LEFT JOIN d_vehicle_running vr on vr.id = t.vehicle_running_id
 
     </select>
-
-
 </mapper>

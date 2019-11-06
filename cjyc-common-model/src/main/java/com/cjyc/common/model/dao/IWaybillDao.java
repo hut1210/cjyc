@@ -4,6 +4,7 @@ import com.cjyc.common.model.dto.web.waybill.HistoryListWaybillDto;
 import com.cjyc.common.model.dto.web.waybill.TrunkListWaybillDto;
 import com.cjyc.common.model.entity.Waybill;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cjyc.common.model.vo.web.waybill.GetWaybillVo;
 import com.cjyc.common.model.vo.web.waybill.HistoryListWaybillVo;
 import com.cjyc.common.model.vo.web.waybill.TrunkListWaybillVo;
 import org.apache.ibatis.annotations.Param;
@@ -48,4 +49,5 @@ public interface IWaybillDao extends BaseMapper<Waybill> {
     int countWaybill(@Param("orderCarId") Long orderCarId, @Param("waybillType") int waybillType);
 
     List<TrunkListWaybillVo> findListTrunk(TrunkListWaybillDto paramsDto);
+
 }

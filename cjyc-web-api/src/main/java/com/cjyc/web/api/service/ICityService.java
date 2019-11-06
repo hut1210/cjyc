@@ -65,9 +65,11 @@ public interface ICityService extends IService<City> {
     ResultVo<List<CityTreeVo>> keywordCityTree(String keyword);
 
     /**
-     * 分页查询省，城市，区
+     * 功能描述: 分页查询省，城市，区
+     * @author liuxingxiang
+     * @date 2019/11/6
      * @param dto
-     * @return
+     * @return com.cjyc.common.model.vo.ResultVo
      */
     ResultVo getCityPage(CityQueryDto dto);
 }

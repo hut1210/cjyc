@@ -17,7 +17,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-30
+ * @since 2019-11-04
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -85,6 +85,8 @@ public class Order implements Serializable {
 
     @ApiModelProperty(value = "出发地业务中心名称")
     private String startStoreName;
+    @ApiModelProperty(value = "出发地业务所属中心名称")
+    private Long startBelongStoreId;
 
     @ApiModelProperty(value = "省")
     private String endProvince;
@@ -119,6 +121,8 @@ public class Order implements Serializable {
     @ApiModelProperty(value = "目的地业务中心名称")
     private String endStoreName;
 
+    private Long endBelongStoreId;
+
     @ApiModelProperty(value = "预计出发时间（提车日期）")
     private Long expectStartDate;
 
@@ -152,7 +156,7 @@ public class Order implements Serializable {
     @ApiModelProperty(value = "加急")
     private Integer hurryDays;
 
-    @ApiModelProperty(value = "订单来源：1WEB管理后台, 2业务员APP, 3业务员小程序, 4业务员APP, 5业务员小程序, 6用户端APP, 7用户端小程序")
+    @ApiModelProperty(value = "订单来源：1WEB管理后台, 2业务员APP, 4司机APP, 6用户端APP, 7用户端小程序")
     private Integer source;
 
     @ApiModelProperty(value = "创建时间")
