@@ -1,10 +1,11 @@
 package com.cjyc.common.model.vo.store;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
-import io.swagger.annotations.ApiModelProperty;
+import com.cjyc.common.model.util.LocalDateTimeUtil;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * @Description 业务中心导出数据实体
@@ -31,4 +32,21 @@ public class StoreExportExcel implements Serializable {
 
     @Excel(name = "详细地址" ,orderNum = "5",width = 25)
     private String detailAddr;
+
+    @Excel(name = "操作人" ,orderNum = "6",width = 15)
+    private String operationName;
+
+    private Long updateTime;
+    @Excel(name = "更新时间" ,orderNum = "7",width = 15)
+    private String updateTimeStr;
+
+    @Excel(name = "备注" ,orderNum = "8",width = 15)
+    private String remark;
+
+    public String getUpdateTimeStr() {
+        if (!Objects.isNull(updateTime)) {
+            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(updateTime),"yyyy/MM/dd");
+        }
+        return "";
+    }
 }

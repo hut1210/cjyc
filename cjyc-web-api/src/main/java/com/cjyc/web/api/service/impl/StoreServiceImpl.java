@@ -40,6 +40,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * <p>
@@ -87,6 +88,10 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
         BeanUtils.copyProperties(storeAddDto,store);
         store.setState(CommonStateEnum.WAIT_CHECK.code);
         store.setCreateTime(System.currentTimeMillis());
+        Admin admin = adminDao.selectOne(new QueryWrapper<Admin>().lambda().eq(Admin::getUserId, storeAddDto.getCreateUserId()).select(Admin::getName));
+        if (!Objects.isNull(admin)) {
+            store.setOperationName(admin.getName());
+        }
         //将业务中心信息添加到物流平台
         ResultData<Long> saveRd = addBizCenterToPlatform(store);
         if (!ReturnMsg.SUCCESS.getCode().equals(saveRd.getCode())) {
@@ -102,6 +107,10 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
         Store store = new Store();
         BeanUtils.copyProperties(storeUpdateDto,store);
         store.setUpdateTime(System.currentTimeMillis());
+        Admin admin = adminDao.selectOne(new QueryWrapper<Admin>().lambda().eq(Admin::getUserId, storeUpdateDto.getUpdateUserId()).select(Admin::getName));
+        if (!Objects.isNull(admin)) {
+            store.setOperationName(admin.getName());
+        }
         //修改业务中心信息
         ResultData rd = updateBizCenterToPlatform(store);
         if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {

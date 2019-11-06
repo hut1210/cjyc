@@ -80,8 +80,8 @@ public class Store implements Serializable {
     @ApiModelProperty(value = "创建时间")
     private Long createTime;
 
-    @ApiModelProperty(value = "更新人ID")
-    private Long updateUserId;
+    @ApiModelProperty(value = "操作人")
+    private String operationName;
 
     @ApiModelProperty(value = "更新时间")
     private Long updateTime;
