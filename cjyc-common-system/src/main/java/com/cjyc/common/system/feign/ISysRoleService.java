@@ -27,7 +27,7 @@ public interface ISysRoleService {
      * @param id
      */
     @PostMapping("/feign/uc/getRole/{id}")
-    ResultData<SelectRoleResp> getById(@PathVariable Integer id);
+    ResultData<SelectRoleResp> getById(@PathVariable Long id);
 
     /**
      * 保存角色
@@ -66,7 +66,7 @@ public interface ISysRoleService {
      * @return ResultData<List<SelectRoleResp>>
      */
     @PostMapping("feign/uc/getMultiLevelRoles/{deptId}")
-    ResultData<List<SelectRoleResp>> getMultiLevelList(@PathVariable(value="deptId") Integer deptId);
+    ResultData<List<SelectRoleResp>> getMultiLevelList(@PathVariable(value="deptId") Long deptId);
 
     /**
      * 查询角色信息：根据部门id查询多级组织下的所有角色
@@ -76,7 +76,7 @@ public interface ISysRoleService {
      * @return ResultData<List<SelectRoleResp>>
      */
     @PostMapping("/feign/uc/getSingleLevelRoles/{deptId}")
-    ResultData<List<SelectRoleResp>> getSingleLevelList(@PathVariable(value="deptId") Integer deptId);
+    ResultData<List<SelectRoleResp>> getSingleLevelList(@PathVariable(value="deptId") Long deptId);
 
 
     /**
@@ -97,7 +97,7 @@ public interface ISysRoleService {
      * @return  ResultData<SelectRoleResp>
      */
     @PostMapping("/feign/uc/deleteRole/{roleId}")
-    ResultData<SelectRoleResp> delete(@PathVariable(value="roleId") Integer roleId);
+    ResultData<SelectRoleResp> delete(@PathVariable(value="roleId") Long roleId);
 
     /**
      * 批量删除角色信息

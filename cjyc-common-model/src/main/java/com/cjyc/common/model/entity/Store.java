@@ -37,12 +37,6 @@ public class Store implements Serializable {
     @ApiModelProperty(value = "业务中心名称")
     private String name;
 
-    @ApiModelProperty(value = "归属大区")
-    private String region;
-
-    @ApiModelProperty(value = "归属大区编码")
-    private String regionCode;
-
     @ApiModelProperty(value = "省")
     private String province;
 

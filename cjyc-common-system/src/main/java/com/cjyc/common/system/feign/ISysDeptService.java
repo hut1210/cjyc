@@ -72,7 +72,7 @@ public interface ISysDeptService {
      * @param deptId 组织机构ID
      */
     @GetMapping("/feign/uc/getDept/{deptId}")
-    ResultData<SelectDeptResp> getDept(@PathVariable(value="deptId") String deptId);
+    ResultData<SelectDeptResp> getById(@PathVariable(value="deptId") Long deptId);
 
     /**
      * 查询当前机构直接子列表信息

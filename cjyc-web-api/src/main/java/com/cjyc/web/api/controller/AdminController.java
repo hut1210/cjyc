@@ -41,7 +41,7 @@ public class AdminController {
     @ApiOperation(value = "校验用户并获取缓存数据")
     @PostMapping(value = "/validate/{roleId}")
     public ResultVo<CacheAdminVo> validateUser(@RequestHeader(SecurityConstants.USER_HEADER) String account,
-                                 @PathVariable Integer roleId) {
+                                 @PathVariable Long roleId) {
         ResultData<AddUserResp> resultData = sysUserService.getByAccount(account);
         if (resultData == null || resultData.getData() == null || resultData.getData().getUserId() == null) {
             return BaseResultUtil.fail("用户不存在");

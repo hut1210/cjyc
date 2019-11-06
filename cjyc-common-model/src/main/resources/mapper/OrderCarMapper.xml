@@ -351,6 +351,9 @@
 
     </select>
     <select id="findListSelective" resultType="com.cjyc.common.model.vo.web.order.ListOrderCarVo">
+        <!--提：1待调度，2待提车，3待交车，5已完成，21自送待调度，23自送待交车，25自送已交付，100物流上门
+        干：1待调度，2待提车，3待交车，5已完成, 100无干线
+        送：1待调度，2待提车，3待交车，5已完成，21自提待调度，23自提待交车，25自提已交付，100物流上门*/-->
         select
         oc.*,
         (case
@@ -366,31 +369,44 @@
         ) as outterState,
 
         (case
-        when oc.pick_state = 7 then 7
-        when oc.pick_state = 10 then 10
-        else (case
+        when oc.pick_mode = 3 then 100
+        when oc.pick_mode = 2 then
+        (case
+        when oc.state &lt;= 5 then 21
+        when oc.state = 15 then 23
+        when oc.state &gt;= 25 then 25 end)
+        else
+        (case
         when oc.state &lt;= 5 then 1
         when oc.state = 10 then 2
         when oc.state = 15 then 3
-        when oc.state &gt; 25 then 5 end)end ) as pickTransportState,
+        when oc.state &gt;= 25 then 5 end)end ) as pickTransportState,
+
         (case
+        when oc.trunk_state = 10 then 100
         when oc.trunk_state = 5 then 5
-        when oc.trunk_state = 10 then 10
         else (case
-        when oc.state &lt;= 25 then 1
+        when oc.state &lt;= 25 and oc.trunk_state = 1 then 1
+        when oc.state &lt;= 25 and oc.trunk_state > 1 then 2
         when oc.state = 35 then 2
         when oc.state = 40 then 3
-        when oc.state &gt; 40 then 3 end)end ) as trunkTransportState,
-        (case when back_state = 7 then 7
-        when oc.back_state = 10 then 10
+        when oc.state &gt; 40 then 5 end)end ) as trunkTransportState,
+
+        (case
+        when oc.back_mode = 3 then 100
+        when oc.back_mode = 2 then (case
+        when oc.state = 45 then 21
+        when oc.state = 55 then 23
+        when oc.state &gt;= 100 then 25 end)
         else (case
-        when oc.state &lt;= 45 then 1
+        when oc.state &lt;= 45 and oc.back_state = 1 then 1
+        when oc.state &lt;= 45 and oc.back_state > 1 then 2
         when oc.state = 50 then 2
         when oc.state = 55 then 3
         when oc.state &gt;= 100 then 5 end)end ) as backTransportState,
 
-        s1.region as region,
-        s1.region_code as regionCode,
+        ct1.parent_name as region,
+        ct1.parent_code as regionCode,
         s1.detail_addr as inputStoreAddress,
         s2.detail_addr as startStoreAddress,
         s3.detail_addr as endStoreAddress,
@@ -401,6 +417,7 @@
         left join s_store s1 on o.input_store_id = s1.id
         left join s_store s2 on o.start_store_id = s2.id
         left join s_store s3 on o.end_store_id = s3.id
+        left join s_city ct1 on s1.province_code = ct1.code
         left join c_customer_contract ht on ht.id = o.customer_contract_id
         <where>
             <choose>
@@ -482,10 +499,10 @@
                 and o.customer_name = #{paramsDto.customerName}
             </if>
             <if test="paramsDto.customerType != null and paramsDto.customerType != ''">
-                and c.type = #{paramsDto.customerType}
+                and o.customer_type = #{paramsDto.customerType}
             </if>
             <if test="paramsDto.customerPhone != null and paramsDto.customerPhone != ''">
-                and c.contact_phone = #{paramsDto.customerPhone}
+                and o.customer_phone = #{paramsDto.customerPhone}
             </if>
             <if test="paramsDto.inputStoreId != null">
                 and o.input_store_id = #{paramsDto.inputStoreId}
@@ -547,7 +564,7 @@
                 and o.pay_type = #{paramsDto.payType}
             </if>
             <if test="paramsDto.regionCode != null and paramsDto.regionCode != ''">
-                and s.region_code = #{paramsDto.regionCode}
+                and ct1.paren = #{paramsDto.regionCode}
             </if>
 
 
@@ -730,34 +747,47 @@
     <select id="findTransportStateByOrderId"
             resultType="com.cjyc.common.model.vo.web.order.TransportInfoOrderCarVo">
 
-        /*提：1待调度，2待提车，3待交车，5已完成，7自送，10物流上门
-        干：1待调度，2待提车，3待交车，5已完成, 10无干线
-        送：1待调度，2待提车，3待交车，5已完成，7自提，10物流上门*/
+        <!--提：1待调度，2待提车，3待交车，5已完成，21自送待调度，23自送待交车，25自送已交付，100物流上门
+        干：1待调度，2待提车，3待交车，5已完成, 100无干线
+        送：1待调度，2待提车，3待交车，5已完成，21自提待调度，23自提待交车，25自提已交付，100物流上门*/-->
 
         select
         (case
-        when pick_state = 7 then 7
-        when  pick_state = 10 then 10
-        else (case
-        when state &lt;= 5 then 1
-        when state = 10 then 2
-        when state = 15 then 3
-        when state &gt; 25 then 5 end)end ) as pickTransportState,
+        when oc.pick_mode = 3 then 100
+        when oc.pick_mode = 2 then
         (case
-        when trunk_state = 5 then 5
-        when trunk_state = 10 then 10
+        when oc.state &lt;= 5 then 21
+        when oc.state = 15 then 23
+        when oc.state &gt;= 25 then 25 end)
+        else
+        (case
+        when oc.state &lt;= 5 then 1
+        when oc.state = 10 then 2
+        when oc.state = 15 then 3
+        when oc.state &gt;= 25 then 5 end)end ) as pickTransportState,
+
+        (case
+        when oc.trunk_state = 10 then 100
+        when oc.trunk_state = 5 then 5
         else (case
-        when state &lt;= 25 then 1
-        when state = 35 then 2
-        when state = 40 then 3
-        when state &gt; 40 then 3 end)end ) as trunkTransportState,
-        (case when back_state = 7 then 7
-        when back_state = 10 then 10
+        when oc.state &lt;= 25 and oc.trunk_state = 1 then 1
+        when oc.state &lt;= 25 and oc.trunk_state > 1 then 2
+        when oc.state = 35 then 2
+        when oc.state = 40 then 3
+        when oc.state &gt; 40 then 5 end)end ) as trunkTransportState,
+
+        (case
+        when oc.back_mode = 3 then 100
+        when oc.back_mode = 2 then (case
+        when oc.state = 45 then 21
+        when oc.state = 55 then 23
+        when oc.state &gt;= 100 then 25 end)
         else (case
-        when state &lt;= 45 then 1
-        when state = 50 then 2
-        when state = 55 then 3
-        when state &gt;= 100 then 5 end)end ) as backTransportState,
+        when oc.state &lt;= 45 and oc.back_state = 1 then 1
+        when oc.state &lt;= 45 and oc.back_state > 1 then 2
+        when oc.state = 50 then 2
+        when oc.state = 55 then 3
+        when oc.state &gt;= 100 then 5 end)end ) as backTransportState,
         wc.*
         from w_order_car wc
         where wc.order_id = 1

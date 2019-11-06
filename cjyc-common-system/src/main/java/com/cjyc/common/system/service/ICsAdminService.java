@@ -22,5 +22,12 @@ public interface ICsAdminService {
      */
     List<Admin> getListByStoreId(Long storeId);
 
-    CacheAdminVo getCacheData(Long userId, Integer roleId);
+    /**
+     * 获取缓存数据
+     * @author JPG
+     * @since 2019/11/6 12:30
+     * @param userId
+     * @param roleId
+     */
+    CacheAdminVo getCacheData(Long userId, Long roleId);
 }

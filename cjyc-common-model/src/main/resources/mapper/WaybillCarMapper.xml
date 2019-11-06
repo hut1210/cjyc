@@ -588,6 +588,7 @@
         join w_order_car oc on wc.order_car_id = oc.id
         left join w_task_car tc on tc.waybill_car_id = wc.id
         left join w_task t on tc.task_id = t.id
+        order by wc.id
 
     </select>
 

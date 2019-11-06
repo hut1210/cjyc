@@ -53,7 +53,7 @@ public class LoginServiceImpl implements ILoginService {
         String phone = paramsDto.getPhone();
         String captcha = paramsDto.getCaptcha();
         //校验验证码
-        String key = RedisKeys.getSalesmanCaptchaKeyByPhone(phone, CaptchaTypeEnum.LOGIN.code);
+        String key = RedisKeys.getCaptchaKey(phone, CaptchaTypeEnum.LOGIN.code);
         String captchaCached = redisUtil.getStrValue(key);
         if(captchaCached == null){
             return BaseResultUtil.fail("请重新获取验证码");

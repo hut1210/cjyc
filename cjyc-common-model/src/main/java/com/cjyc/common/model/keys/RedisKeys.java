@@ -1,6 +1,7 @@
 package com.cjyc.common.model.keys;
 
-import com.cjyc.common.model.entity.Customer;
+import com.cjyc.common.model.enums.CaptchaTypeEnum;
+import com.cjyc.common.model.enums.ClientEnum;
 
 /**
  * RedisKey
@@ -35,6 +36,8 @@ public class RedisKeys {
 
     private final static String USER_KEY = "user";
 
+    private final static String USER_BIZ_SCOPE_KEY = "user:biz:scope";
+
     /**---------------salesman-------------------------------------------------------------------*/
     /**验证码*/
     private final static String CAPTCHA_KEY = "cjyc:sale";
@@ -42,8 +45,8 @@ public class RedisKeys {
 
 
     /**---------------customer-------------------------------------------------------------------*/
-    public static String getSalesmanCaptchaKeyByPhone(String phone, int type) {
-        return SALESMAN_PREFIX + I + CAPTCHA_KEY + I + type + I + phone;
+    public static String getCaptchaKey(ClientEnum clientEnum, String phone, CaptchaTypeEnum captchaTypeEnum) {
+        return getPreixByCilent(clientEnum) + I + CAPTCHA_KEY + I + captchaTypeEnum.code + I + phone;
     }
 
     public static String getSmsCountKey(String date, String phone) {
@@ -60,5 +63,30 @@ public class RedisKeys {
 
     public static String getUserKey(Long userId) {
         return PROJECT_PREFIX + I + USER_KEY + I + userId;
+    }
+
+    public static String getUserBizScopeKey(ClientEnum clientEnum, Long userId) {
+        return getPreixByCilent(clientEnum) + I + USER_KEY + I + userId;
+    }
+
+    /**
+     * 根据客户端判断前缀
+     * @param clientEnum
+     * @return
+     */
+    private static String getPreixByCilent(ClientEnum clientEnum) {
+        String prefix;
+        if(clientEnum == ClientEnum.WEB_SERVER){
+            prefix = WEB_PREFIX;
+        }else if(clientEnum == ClientEnum.APP_SALESMAN){
+            prefix = SALESMAN_PREFIX;
+        }else if(clientEnum == ClientEnum.APP_DRIVER){
+            prefix = DRIVER_PREFIX;
+        }else if(clientEnum == ClientEnum.APP_CUSTOMER || clientEnum == ClientEnum.APPLET_CUSTOMER){
+            prefix = CUSTOMER_PREFIX;
+        }else{
+            prefix = PROJECT_PREFIX;
+        }
+        return prefix;
     }
 }

@@ -143,12 +143,12 @@ public class WaybillController {
     }
 
     /**
-     * 分类查询车辆运单
+     * 分类根据车辆ID查询车辆运单
      */
-    @ApiOperation(value = "分类查询车辆运单")
+    @ApiOperation(value = "分类根据车辆ID查询车辆运单")
     @PostMapping(value = "/car/get/{orderCarId}/{waybillType}")
-    public ResultVo<List<GetWaybillCarVo>> getByType(@ApiParam(value = "运单ID") @PathVariable Long orderCarId,
-    @ApiParam(value = "运单类型") @PathVariable Integer waybillType) {
+    public ResultVo<List<GetWaybillCarVo>> getByType(@ApiParam(value = "运单车辆ID") @PathVariable Long orderCarId,
+    @ApiParam(value = "运单类型：1提车运单，2干线运单，3送车运单") @PathVariable Integer waybillType) {
         return waybillService.getCarByType(orderCarId, waybillType);
     }
 

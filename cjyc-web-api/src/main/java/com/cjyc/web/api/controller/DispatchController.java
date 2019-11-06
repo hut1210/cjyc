@@ -29,7 +29,7 @@ import java.util.Map;
 @Api(tags = "调度池")
 @RequestMapping(value = "/dispatch",
         produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-public class PoolController {
+public class DispatchController {
 
 
     @Resource

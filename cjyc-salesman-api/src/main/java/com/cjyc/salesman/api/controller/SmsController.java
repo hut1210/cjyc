@@ -58,7 +58,7 @@ public class SmsController {
             return BaseResultUtil.fail("短信验证码发送失败");
         }
         //放入缓存
-        String key = RedisKeys.getSalesmanCaptchaKeyByPhone(phone, type);
+        String key = RedisKeys.getCaptchaKey(phone, type);
         redisUtil.set(key, captcha, expires);
         redisUtil.incr(countKey);
         return BaseResultUtil.success();
@@ -71,7 +71,7 @@ public class SmsController {
         @NotNull String captcha = reqDto.getCaptcha();
         int type = reqDto.getType();
 
-        String key = RedisKeys.getSalesmanCaptchaKeyByPhone(phone, type);
+        String key = RedisKeys.getCaptchaKey(phone, type);
         String captchaCached = redisUtil.getStrValue(key);
         if(StringUtils.isBlank(captchaCached)){
             return BaseResultUtil.fail("请重新获取校验码");
