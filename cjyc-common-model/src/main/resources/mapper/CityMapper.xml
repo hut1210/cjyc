@@ -193,7 +193,6 @@
         where c1.code = #{areaCode}
     </select>
 
-
     <!--分页查询城市信息-->
     <select id="selectCityPage" parameterType="com.cjyc.common.model.dto.web.city.CityQueryDto"
             resultType="com.cjyc.common.model.entity.defined.FullCity">
