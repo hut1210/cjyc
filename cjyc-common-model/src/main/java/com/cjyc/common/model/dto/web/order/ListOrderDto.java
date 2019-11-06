@@ -37,10 +37,10 @@ public class ListOrderDto extends BasePageDto {
     @ApiModelProperty(value = "客户名称")
     private String customerName;
 
-    //客户表
-    @ApiModelProperty(value = "客户类型: 0全部 1C端 2大客户 3-合伙人")
+    /**客户表*/
+    @ApiModelProperty(value = "客户类型: 0全部 1C端 2大客户 3-合伙人 5(2+3)大客户和合伙人")
     private String customerType;
-    //客户表
+    /**客户表*/
     @ApiModelProperty(value = "客户电话")
     private String customerPhone;
 

@@ -1,20 +1,22 @@
 package com.cjyc.common.system.service.impl;
 
 import com.cjyc.common.model.dao.IOrderCarDao;
+import com.cjyc.common.model.dao.IOrderCarLogDao;
+import com.cjyc.common.model.dao.IOrderChangeLogDao;
 import com.cjyc.common.model.dao.IOrderDao;
 import com.cjyc.common.model.dto.web.order.*;
-import com.cjyc.common.model.entity.Customer;
-import com.cjyc.common.model.entity.Order;
-import com.cjyc.common.model.entity.OrderCar;
-import com.cjyc.common.model.entity.Store;
+import com.cjyc.common.model.entity.*;
+import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.PayModeEnum;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
 import com.cjyc.common.model.enums.city.CityLevelEnum;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
+import com.cjyc.common.model.enums.order.OrderChangeTypeEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.exception.ParameterException;
+import com.cjyc.common.model.exception.ServerException;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.city.FullCity;
@@ -47,6 +49,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
     private ICsCustomerService csCustomerService;
     @Resource
     private ICsStoreService csStoreService;
+    @Resource
+    private ICsOrderChangeLogService orderChangeLogService;
 
 
     @Override
@@ -120,7 +124,6 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
     @Override
     public ResultVo commit(CommitOrderDto paramsDto) {
-        //处理参数
         //获取参数
         Long orderId = paramsDto.getOrderId();
 
@@ -345,8 +348,174 @@ public class CsOrderServiceImpl implements ICsOrderService {
         return BaseResultUtil.success();
     }
 
+    /**
+     * 分配订单
+     *
+     * @param paramsDto
+     * @author JPG
+     * @since 2019/11/5 16:05
+     */
+    @Override
+    public ResultVo allot(AllotOrderDto paramsDto) {
+        Order order = orderDao.selectById(paramsDto.getOrderId());
+        if (order == null || order.getState() >= OrderStateEnum.WAIT_RECHECK.code) {
+            return BaseResultUtil.fail("订单不允许修改");
+        }
+        order.setAllotToUserId(paramsDto.getToUserId());
+        order.setAllotToUserName(paramsDto.getToUserName());
+        orderDao.updateById(order);
+        return BaseResultUtil.success();
+    }
 
+    /**
+     * 驳回订单
+     *
+     * @param paramsDto
+     * @author JPG
+     * @since 2019/11/5 16:07
+     */
+    @Override
+    public ResultVo reject(RejectOrderDto paramsDto) {
+        Order order = orderDao.selectById(paramsDto.getOrderId());
+        if (order == null) {
+            return BaseResultUtil.fail("[订单]-不存在");
+        }
+        Integer oldState = order.getState();
+        if (oldState <= OrderStateEnum.WAIT_SUBMIT.code) {
+            return BaseResultUtil.fail("[订单]-未提交，无法驳回");
+        }
+        if (oldState > OrderStateEnum.CHECKED.code) {
+            return BaseResultUtil.fail("[订单]-已经运输无法驳回");
+        }
+        orderDao.updateStateById(OrderStateEnum.WAIT_SUBMIT.code, order.getId());
+        //添加操作日志
+        orderChangeLogService.save(order, OrderChangeTypeEnum.REJECT,
+                new Object[]{oldState, OrderStateEnum.WAIT_SUBMIT.code, paramsDto.getReason()},
+                new Object[]{paramsDto.getUserId(), paramsDto.getUserName()});
+        //TODO 发送消息给创建人
+        return BaseResultUtil.success();
+    }
 
+    /**
+     * 取消订单
+     * @author JPG
+     * @since 2019/11/5 16:32
+     * @param paramsDto
+     */
+    @Override
+    public ResultVo cancel(CancelOrderDto paramsDto) {
+        //取消订单
+        Order order = orderDao.selectById(paramsDto.getOrderId());
+        if (order == null) {
+            return BaseResultUtil.fail("订单不存在");
+        }
+        if (order.getState() >= OrderStateEnum.CHECKED.code) {
+            return BaseResultUtil.fail("当前订单状态不允许取消");
+        }
+        Integer oldState = order.getState();
+        order.setState(OrderStateEnum.F_CANCEL.code);
+        orderDao.updateById(order);
+
+        //添加操作日志
+        orderChangeLogService.save(order, OrderChangeTypeEnum.CANCEL,
+                new Object[]{oldState, OrderStateEnum.F_CANCEL.code, paramsDto.getReason()},
+                new Object[]{paramsDto.getUserId(), paramsDto.getUserName()});
+        //TODO 发送消息
+        return BaseResultUtil.success();
+    }
+
+    @Override
+    public ResultVo obsolete(CancelOrderDto paramsDto) {
+        //作废订单
+        Order order = orderDao.selectById(paramsDto.getOrderId());
+        if (order == null) {
+            return BaseResultUtil.fail("订单不存在");
+        }
+        if (order.getState() > OrderStateEnum.CHECKED.code) {
+            return BaseResultUtil.fail("当前订单状态不允许作废");
+        }
+        Integer oldState = order.getState();
+        order.setState(OrderStateEnum.F_OBSOLETE.code);
+        orderDao.updateById(order);
+
+        //添加操作日志
+        orderChangeLogService.save(order, OrderChangeTypeEnum.OBSOLETE,
+                new Object[]{oldState, OrderStateEnum.F_OBSOLETE.code, paramsDto.getReason()},
+                new Object[]{paramsDto.getUserId(), paramsDto.getUserName()});
+
+        return BaseResultUtil.success();
+    }
+
+    @Override
+    public ResultVo changePrice(ChangePriceOrderDto paramsDto) {
+        //获取参数
+        Long orderId = paramsDto.getOrderId();
+        Order order = orderDao.selectById(orderId);
+
+        /**2、更新或保存车辆信息*/
+        List<ChangePriceOrderCarDto> orderCarList = paramsDto.getOrderCarList();
+
+        //费用统计变量
+        int noCount = 0;
+        BigDecimal totalFee = BigDecimal.ZERO;
+        for (ChangePriceOrderCarDto dto : orderCarList) {
+            if (dto == null) {
+                continue;
+            }
+            //统计数量
+            noCount++;
+            OrderCar orderCar = orderCarDao.selectById(dto.getId());
+            if(orderCar == null){
+                throw new ServerException("ID为{}的车辆，不存在", dto.getId());
+            }
+            //填充数据
+            orderCar.setPickFee(dto.getPickFee() == null ? BigDecimal.ZERO : dto.getPickFee());
+            orderCar.setTrunkFee(dto.getTrunkFee() == null ? BigDecimal.ZERO : dto.getTrunkFee());
+            orderCar.setBackFee(dto.getBackFee() == null ? BigDecimal.ZERO : dto.getBackFee());
+            orderCar.setAddInsuranceFee(dto.getAddInsuranceFee() == null ? BigDecimal.ZERO : dto.getAddInsuranceFee());
+            orderCar.setAddInsuranceAmount(dto.getAddInsuranceAmount() == null ? 0 : dto.getAddInsuranceAmount());
+            orderCarDao.updateById(orderCar);
+
+            totalFee = orderCar.getPickFee()
+                    .add(orderCar.getTrunkFee()
+                            .add(orderCar.getBackFee())
+                            .add(orderCar.getAddInsuranceFee()));
+        }
+        if(CustomerTypeEnum.COOPERATOR.code == order.getCustomerType()){
+            totalFee = paramsDto.getTotalFee();
+        }
+        order.setTotalFee(totalFee);
+        orderDao.updateById(order);
+
+        //TODO 日志
+        return BaseResultUtil.success();
+    }
+
+    /**
+     * 完善订单信息
+     *
+     * @param paramsDto
+     * @author JPG
+     * @since 2019/11/5 16:51
+     */
+    @Override
+    public ResultVo replenishInfo(ReplenishOrderDto paramsDto) {
+        Order order = orderDao.selectById(paramsDto.getOrderId());
+        if (order == null || order.getState() >= OrderStateEnum.TRANSPORTING.code) {
+            return BaseResultUtil.fail("订单不允许修改");
+        }
+        List<ReplenishOrderCarDto> list = paramsDto.getOrderCarList();
+        for (ReplenishOrderCarDto dto : list) {
+            OrderCar orderCar = orderCarDao.selectById(dto.getId());
+            orderCar.setBrand(dto.getBrand());
+            orderCar.setModel(dto.getModel());
+            orderCar.setPlateNo(dto.getPlateNo());
+            orderCar.setVin(dto.getVin());
+            orderCarDao.updateById(orderCar);
+        }
+        // TODO 日志
+        return BaseResultUtil.success();
+    }
 
     /**
      * 拷贝订单开始城市

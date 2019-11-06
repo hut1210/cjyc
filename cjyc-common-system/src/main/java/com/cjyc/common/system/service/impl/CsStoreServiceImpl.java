@@ -36,4 +36,28 @@ public class CsStoreServiceImpl implements ICsStoreService {
     public List<Store> findBelongByAreaCode(String areaCode) {
         return storeDao.findBelongByAreaCode(areaCode);
     }
+
+    /**
+     * 根据ID查询业务中心
+     *
+     * @param storeId
+     * @param isSearchCache
+     * @author JPG
+     * @since 2019/11/5 17:26
+     */
+    @Override
+    public Store getById(Long storeId, boolean isSearchCache) {
+        return storeDao.selectById(storeId);
+    }
+
+    /**
+     * 根据ID查询业务中心覆盖范围
+     *
+     * @param storeId
+     * @return
+     */
+    @Override
+    public List<String> findAreaBizScope(Long storeId) {
+        return storeDao.findAreaBizScope(storeId);
+    }
 }

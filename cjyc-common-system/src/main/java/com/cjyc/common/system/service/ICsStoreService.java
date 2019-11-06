@@ -23,4 +23,20 @@ public interface ICsStoreService {
      * @param areaCode
      */
     List<Store> findBelongByAreaCode(String areaCode);
+
+    /**
+     * 根据ID查询业务中心
+     * @author JPG
+     * @since 2019/11/5 17:26
+     * @param storeId
+     * @param isSearchCache
+     */
+    Store getById(Long storeId, boolean isSearchCache);
+
+    /**
+     * 根据ID查询业务中心覆盖范围
+     * @param storeId
+     * @return
+     */
+    List<String> findAreaBizScope(Long storeId);
 }
