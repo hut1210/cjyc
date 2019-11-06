@@ -109,7 +109,19 @@ public class StoreController {
 
     @ApiOperation(value = "根据业务中心ID查询当前业务中心覆盖区")
     @PostMapping("/getStoreAreaList")
-    public ResultVo getStoreAreaList(@RequestBody @Validated StoreAreaQueryDto dto) {
+    public ResultVo getStoreAreaList(@RequestBody @Validated({StoreAreaQueryDto.GetStoreAreaList.class}) StoreAreaQueryDto dto) {
         return storeService.getStoreAreaList(dto);
+    }
+
+    @ApiOperation(value = "新增前业务中心覆盖区域")
+    @PostMapping("/addCoveredArea")
+    public ResultVo addCoveredArea(@RequestBody @Validated({StoreAreaQueryDto.AddAndRemoveCoveredArea.class}) StoreAreaQueryDto dto) {
+        return storeService.addCoveredArea(dto);
+    }
+
+    @ApiOperation(value = "删除当前业务中心覆盖区域")
+    @PostMapping("/removeCoveredArea")
+    public ResultVo removeCoveredArea(@RequestBody @Validated({StoreAreaQueryDto.AddAndRemoveCoveredArea.class}) StoreAreaQueryDto dto) {
+        return storeService.removeCoveredArea(dto);
     }
 }
