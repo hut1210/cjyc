@@ -69,4 +69,22 @@ public interface IStoreService extends IService<Store> {
      * @return com.cjyc.common.model.vo.ResultVo
      */
     ResultVo getStoreAreaList(StoreAreaQueryDto dto);
+
+    /**
+     * 功能描述: 给当前业务中心新增区域
+     * @author liuxingxiang
+     * @date 2019/11/6
+     * @param dto
+     * @return com.cjyc.common.model.vo.ResultVo
+     */
+    ResultVo addCoveredArea(StoreAreaQueryDto dto);
+
+    /**
+     * 功能描述: 给当前业务中心新增区域
+     * @author liuxingxiang
+     * @date 2019/11/6
+     * @param dto
+     * @return com.cjyc.common.model.vo.ResultVo
+     */
+    ResultVo removeCoveredArea(StoreAreaQueryDto dto);
 }

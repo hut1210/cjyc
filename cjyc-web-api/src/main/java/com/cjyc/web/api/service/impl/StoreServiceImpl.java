@@ -2,6 +2,8 @@ package com.cjyc.web.api.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
@@ -15,6 +17,7 @@ import com.cjyc.common.model.dao.IAdminDao;
 import com.cjyc.common.model.dao.ICityDao;
 import com.cjyc.common.model.dao.IStoreCityConDao;
 import com.cjyc.common.model.dao.IStoreDao;
+import com.cjyc.common.model.dto.web.city.CityQueryDto;
 import com.cjyc.common.model.dto.web.city.StoreAreaQueryDto;
 import com.cjyc.common.model.dto.web.store.StoreAddDto;
 import com.cjyc.common.model.dto.web.store.StoreQueryDto;
@@ -180,20 +183,61 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
     @Override
     public ResultVo getStoreAreaList(StoreAreaQueryDto dto) {
         Map<String,Object> map = new HashMap<>(16);
-
         // 根据业务中心ID查询区编码
         List<StoreCityCon> storeCityConList = storeCityConDao.selectList(new QueryWrapper<StoreCityCon>().lambda()
                 .eq(StoreCityCon::getStoreId, dto.getStoreId())
                 .eq(!StringUtils.isEmpty(dto.getAreaCode()),StoreCityCon::getAreaCode,dto.getAreaCode()));
-        List<FullCity> returnList = new ArrayList<>(10);
+        // 查询当前业务中心覆盖区域
+        List<FullCity> coveredAreaList = new ArrayList<>(10);
         if (!CollectionUtils.isEmpty(storeCityConList)) {
             for (StoreCityCon storeCityCon : storeCityConList) {
                 dto.setAreaCode(storeCityCon.getAreaCode());
                 List<FullCity> list = cityDao.selectStoreAreaList(dto);
-                returnList.addAll(list);
+                coveredAreaList.addAll(list);
             }
         }
-        return BaseResultUtil.success(returnList);
+        // 查询当前业务中心未覆盖的区域
+        List<FullCity> fullCityList = cityDao.selectCityPage(new CityQueryDto());
+        // 取出未覆盖的区域
+        List<StoreCityCon> cityConList = storeCityConDao.selectList(new QueryWrapper<StoreCityCon>());
+        if (!CollectionUtils.isEmpty(cityConList)) {
+            for (StoreCityCon coveredArea : cityConList) {
+                for (FullCity fullCity : fullCityList) {
+                    if (fullCity.getAreaCode().equals(coveredArea.getAreaCode())) {
+                        fullCityList.remove(fullCity);
+                        break;
+                    }
+                }
+            }
+        }
+
+        map.put("coveredAreaList",coveredAreaList);
+        map.put("fullCityList",fullCityList);
+        return BaseResultUtil.success(map);
+    }
+
+    @Override
+    public ResultVo addCoveredArea(StoreAreaQueryDto dto) {
+        StoreCityCon storeCityCon = new StoreCityCon();
+        storeCityCon.setStoreId(dto.getStoreId());
+        for (String areaCode : dto.getAreaCodeList()) {
+            storeCityCon.setAreaCode(areaCode);
+            storeCityConDao.insert(storeCityCon);
+        }
+        return BaseResultUtil.success();
+    }
+
+    @Override
+    public ResultVo removeCoveredArea(StoreAreaQueryDto dto) {
+        LambdaUpdateWrapper<StoreCityCon> updateWrapper = new UpdateWrapper<StoreCityCon>().lambda();
+        for (String areaCode : dto.getAreaCodeList()) {
+            updateWrapper = updateWrapper.eq(StoreCityCon::getStoreId,dto.getStoreId()).eq(StoreCityCon::getAreaCode,areaCode);
+            int i = storeCityConDao.delete(updateWrapper);
+            if (i == 0) {
+                return BaseResultUtil.fail();
+            }
+        }
+        return BaseResultUtil.success();
     }
 
     private StoreQueryDto getStoreQueryDto(HttpServletRequest request) {
