@@ -105,7 +105,7 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
     public ResultVo getCityPage(CityQueryDto dto) {
         BasePageUtil.initPage(dto);
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        List<FullCity> list = cityDao.selectCityPage();
+        List<FullCity> list = cityDao.selectCityPage(dto);
         PageInfo pageInfo = new PageInfo(list);
         return BaseResultUtil.success(pageInfo);
     }

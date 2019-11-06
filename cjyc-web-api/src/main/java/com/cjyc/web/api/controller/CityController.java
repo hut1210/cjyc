@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.cjyc.common.model.dto.salesman.city.CityPageDto;
 import com.cjyc.common.model.dto.web.city.CityQueryDto;
 import com.cjyc.common.model.entity.City;
+import com.cjyc.common.model.entity.defined.FullCity;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.CityTreeVo;
 import com.cjyc.common.model.vo.PageVo;
@@ -81,7 +82,7 @@ public class CityController {
 
     @ApiOperation(value = "分页查询城市列表")
     @PostMapping("/getCityPage")
-    public ResultVo getCityPage(@RequestBody CityQueryDto dto) {
+    public ResultVo<PageVo<List<FullCity>>> getCityPage(@RequestBody CityQueryDto dto) {
         return cityService.getCityPage(dto);
     }
 

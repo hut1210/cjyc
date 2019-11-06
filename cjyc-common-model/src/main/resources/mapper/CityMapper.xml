@@ -208,29 +208,43 @@
             c4.NAME AS area
         FROM
             (
-        SELECT
-            t1.regionCode,
-            t1.region,
-            t1.provinceCode,
-            t1.province,
-            c3.CODE AS cityCode,
-            c3.NAME AS city
-        FROM
-            (
-        SELECT
-            c1.CODE AS regionCode,
-            c1.`name` AS region,
-            c2.`code` AS provinceCode,
-            c2.`name` AS province
-        FROM
-            s_city c1
-            JOIN s_city c2 ON c1.CODE = c2.parent_code
-        WHERE
-            c1.LEVEL = 0
-            ) t1
-            JOIN s_city c3 ON t1.provinceCode = c3.parent_code
-            ) t2
-            JOIN s_city c4 ON t2.cityCode = c4.parent_code
+            SELECT
+                t1.regionCode,
+                t1.region,
+                t1.provinceCode,
+                t1.province,
+                c3.CODE AS cityCode,
+                c3.NAME AS city
+            FROM
+                (
+            SELECT
+                c1.CODE AS regionCode,
+                c1.`name` AS region,
+                c2.`code` AS provinceCode,
+                c2.`name` AS province
+            FROM
+                s_city c1
+                JOIN s_city c2 ON c1.CODE = c2.parent_code
+            WHERE
+                c1.LEVEL = 0
+                ) t1
+                JOIN s_city c3 ON t1.provinceCode = c3.parent_code
+                ) t2
+                JOIN s_city c4 ON t2.cityCode = c4.parent_code
+        <where>
+            <if test="regionCode != null and regionCode.trim() != ''">
+                and t2.regionCode=#{regionCode}
+            </if>
+            <if test="provinceCode != null and provinceCode.trim() != ''">
+                and t2.provinceCode=#{provinceCode}
+            </if>
+            <if test="cityCode != null and cityCode.trim() != ''">
+                and t2.cityCode=#{cityCode}
+            </if>
+            <if test="areaCode != null and areaCode.trim() != ''">
+                and c4.code=#{areaCode}
+            </if>
+        </where>
     </select>
 
 </mapper>
