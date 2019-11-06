@@ -30,13 +30,14 @@
         <result column="is_invoice" property="isInvoice" />
         <result column="create_user_id" property="createUserId" />
         <result column="create_time" property="createTime" />
-        <result column="check_time" property="checkTime" />
-        <result column="check_user_id" property="checkUserId" />
+        <result column="operate_user_id" property="operateUserId" />
+        <result column="operate_time" property="operateTime" />
+        <result column="operate_name" property="operateName" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, dept_id, name, type, legal_name, legal_id_card, linkman, linkman_phone, mode, bus_license_front_img, bus_license_back_img, transport_license_front_img, transport_license_back_img, bank_open_front_img, bank_open_back_img, admin_num, default_admin_id, driver_num, running_driver_num, settle_type, settle_period, settle_corporation, state, business_state, is_invoice, create_user_id, create_time, check_time, check_user_id
+        id, dept_id, name, type, legal_name, legal_id_card, linkman, linkman_phone, mode, bus_license_front_img, bus_license_back_img, transport_license_front_img, transport_license_back_img, bank_open_front_img, bank_open_back_img, admin_num, default_admin_id, driver_num, running_driver_num, settle_type, settle_period, settle_corporation, state, business_state, is_invoice, create_user_id, create_time, operate_user_id, operate_time, operate_name
     </sql>
 
     <!-- 根据司机id查询承运商 -->
@@ -56,31 +57,34 @@
     <select id="getCarrierByTerm" resultType="com.cjyc.common.model.vo.web.carrier.CarrierVo"
                                 parameterType="com.cjyc.common.model.dto.web.carrier.SeleCarrierDto">
         SELECT
-        carr.id AS id,
-        carr.NAME AS NAME,
-        carr.linkman AS linkman,
-        carr.linkman_phone AS linkmanPhone,
-        carr.legal_name AS legalName,
-        carr.legal_id_card AS legalIdCard,
-        carr.bus_license_front_img AS busLicenseFrontImg,
-        carr.transport_license_front_img AS transportLicenseFrontImg,
-        carr.bank_open_front_img AS bankOpenFrontImg,
-        carr.settle_period,
-        carr.settle_type AS settleType,
-        carr.driver_mode AS driverMode,
-        carr.trailer_mode AS trailerMode,
-        carr.trunk_mode AS trunkMode,
-        carr.is_invoice AS isInvoice,
-        carr.state AS state,
-        bind.card_type AS cardType,
-        bind.card_name AS cardName,
-        bind.bank_name AS bankName,
-        bind.card_no AS cardNo
-    FROM
-        d_carrier carr
-        JOIN d_carrier_driver_con con ON con.carrier_id = carr.id
-        JOIN d_driver dri ON dri.id = con.driver_id
-        JOIN s_bank_card_bind bind ON bind.user_id = dri.user_id
+            carr.id AS id,
+            carr.dept_id AS deptId,
+            carr.NAME AS NAME,
+            carr.linkman AS linkman,
+            carr.linkman_phone AS linkmanPhone,
+            carr.legal_name AS legalName,
+            carr.legal_id_card AS legalIdCard,
+            carr.settle_type AS settleType,
+            carr.settle_period AS settlePeriod,
+            carr.bus_license_front_img AS busLicenseFrontImg,
+            carr.bus_license_back_img AS busLicenseBackImg,
+            carr.transport_license_front_img AS transportLicenseFrontImg,
+            carr.transport_license_Back_img AS transportLicenseBackImg,
+            carr.bank_open_front_img AS bankOpenFrontImg,
+            carr.bank_open_Back_img AS bankOpenBackImg,
+            carr.MODE AS MODE,
+            carr.is_invoice AS isInvoice,
+            carr.state AS state,
+            carr.operate_name AS operateName,
+            bind.card_type AS cardType,
+            bind.card_name AS cardName,
+            bind.bank_name AS bankName,
+            bind.card_no AS cardNo
+        FROM
+            d_carrier carr
+            JOIN d_carrier_driver_con con ON con.carrier_id = carr.id
+            JOIN d_driver dri ON dri.id = con.driver_id
+            JOIN s_bank_card_bind bind ON bind.user_id = dri.user_id
         <where>
             <if test="name != null and name.trim() != ''">
                 carr.name like CONCAT('%',#{name},'%')
@@ -94,23 +98,23 @@
             <if test="cardNo != null and cardNo.trim() != ''">
                 and  bind.card_no = #{cardNo}
             </if>
-            <if test="legalName != null and legalName != ''">
+            <if test="legalName != null and legalName.trim() != ''">
                 and  carr.legal_name = #{legalName}
             </if>
-            <if test="legalIdCard != null and legalIdCard != ''">
+            <if test="legalIdCard != null and legalIdCard.trim() != ''">
                 and  carr.legal_id_card = #{legalIdCard}
             </if>
-            <if test="isInvoice != null and isInvoice != ''">
+            <if test="isInvoice != null">
                 and  carr.is_invoice = #{isInvoice}
             </if>
-            <if test="settleType != null and settleType != ''">
+            <if test="settleType != null">
                 and  carr.settle_type = #{settleType}
             </if>
-            <if test="state != null and state != ''">
+            <if test="state != null">
                 and  carr.state = #{state}
             </if>
-            <if test="createUser != null and createUser != ''">
-                and  carr.create_user = #{createUser}
+            <if test="operateName != null and operateName.trim() != ''">
+                and  carr.operate_name like CONCAT('%',#{operateName},'%')
             </if>
         </where>
     </select>
@@ -133,9 +137,7 @@
             carr.bank_open_back_img AS bankOpenBackImg,
             carr.settle_period,
             carr.settle_type AS settleType,
-            carr.driver_mode AS driverMode,
-            carr.trailer_mode AS trailerMode,
-            carr.trunk_mode AS trunkMode,
+            carr.mode as mode,
             carr.is_invoice AS isInvoice,
             bcb.card_type AS cardType,
             bcb.card_name AS cardName,

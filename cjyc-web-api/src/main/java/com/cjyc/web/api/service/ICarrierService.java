@@ -1,5 +1,6 @@
 package com.cjyc.web.api.service;
 
+import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.carrier.CarrierDto;
 import com.cjyc.common.model.dto.web.carrier.SeleCarrierDto;
 import com.cjyc.common.model.dto.web.carrier.SeleVehicleDriverDto;
@@ -28,29 +29,28 @@ public interface ICarrierService {
      * @param dto
      * @return
      */
-    boolean updateCarrier(CarrierDto dto);
+    boolean modifyCarrier(CarrierDto dto);
 
     /**
      * 根据条件查询承运商
      * @param dto
      * @return
      */
-    PageInfo<CarrierVo> getCarrierByTerm(SeleCarrierDto dto);
+    ResultVo findCarrier(SeleCarrierDto dto);
 
     /**
      * 根据承运商id进行审核通过/拒绝/冻结
-     * @param id
-     * @param state
+     * @param dto
      * @return
      */
-    boolean verifyCarrierById(Long id,Integer state);
+    boolean verifyCarrier(OperateDto dto);
 
     /**
      * 根据承运商id查看承运商信息
      * @param id
      * @return
      */
-    BaseCarrierVo getBaseCarrierById(Long id);
+    ResultVo showBaseCarrier(Long id);
 
     /**
      * 根据承运商id查看车辆信息

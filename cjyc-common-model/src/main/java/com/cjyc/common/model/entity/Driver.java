@@ -118,11 +118,14 @@ public class Driver implements Serializable {
     @ApiModelProperty(value = "创建人userId")
     private Long createUserId;
 
-    @ApiModelProperty(value = "审核时间")
-    private Long checkTime;
+    @ApiModelProperty(value = "操作时间")
+    private Long operateTime;
 
-    @ApiModelProperty(value = "审核人userId")
-    private Long checkUserId;
+    @ApiModelProperty(value = "操作人userId")
+    private Long operateUserId;
+
+    @ApiModelProperty(value = "操作人名称")
+    private String operateName;
 
 
 }
