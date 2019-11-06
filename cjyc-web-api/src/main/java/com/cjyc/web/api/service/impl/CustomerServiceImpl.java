@@ -98,6 +98,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         Long now = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
         Customer customer = new Customer();
         BeanUtils.copyProperties(dto,customer);
+        customer.setUserId(9999L);
         customer.setCustomerNo(sendNoService.getNo(SendNoTypeEnum.CUSTOMER));
         customer.setAlias(dto.getName());
         customer.setIsDelete(DeleteStateEnum.NO_DELETE.code);
@@ -110,7 +111,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         customer.setRegisterTime(now);
         customer.setCreateUserId(dto.getUserId());
         //用户手机号在C端不能重复
-        if (phoneExistsInCustomer(customer.getContactPhone())) {
+        /*if (phoneExistsInCustomer(customer.getContactPhone())) {
             log.error("手机号已存在，请检查");
             return false;
         }
@@ -120,7 +121,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
             throw new CommonException(rd.getMsg());
         }
-        customer.setUserId(rd.getData());
+        customer.setUserId(rd.getData());*/
         return super.save(customer);
     }
 
@@ -129,7 +130,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     public boolean modifyCustomer(CustomerDto customerDto) {
         Customer customer = customerDao.selectById(customerDto.getId());
         if(null != customer){
-            ResultData<Boolean> updateRd = updateCustomerToPlatform(customer, customerDto.getContactPhone());
+            /*ResultData<Boolean> updateRd = updateCustomerToPlatform(customer, customerDto.getContactPhone());
             if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
                 log.error("修改用户信息失败，原因：" + updateRd.getMsg());
                 return false;
@@ -137,7 +138,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             if (updateRd.getData()) {
                 //需要同步手机号信息
                 syncPhone(customer.getContactPhone(), customerDto.getContactPhone());
-            }
+            }*/
             customer.setName(customerDto.getName());
             customer.setAlias(customerDto.getName());
             customer.setContactMan(customerDto.getName());
@@ -181,6 +182,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         Long now = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
         Customer customer = new Customer();
         BeanUtils.copyProperties(keyCustomerDto,customer);
+        customer.setUserId(6666L);
         customer.setCustomerNo(sendNoService.getNo(SendNoTypeEnum.CUSTOMER));
         customer.setAlias(keyCustomerDto.getName());
         customer.setIsDelete(DeleteStateEnum.NO_DELETE.code);
@@ -192,7 +194,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         customer.setCreateUserId(keyCustomerDto.getUserId());
         //
         //客户端信息不能重复
-        if (phoneExistsInCustomer(keyCustomerDto.getContactPhone())) {
+        /*if (phoneExistsInCustomer(keyCustomerDto.getContactPhone())) {
             return false;
         }
         //保存大客户信息到物流平台
@@ -201,7 +203,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             log.error("保存大客户信息失败，原因：" + rd.getMsg());
             return false;
         }
-        customer.setUserId(rd.getData());
+        customer.setUserId(rd.getData());*/
         super.save(customer);
         //合同集合
         List<CustomerContractDto> customerConList = keyCustomerDto.getCustContraVos();
@@ -265,7 +267,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         Customer customer = customerDao.selectById(keyCustomerDto.getId());
         if(null != customer){
             //判断手机号是否存在
-            ResultData<Boolean> updateRd = updateCustomerToPlatform(customer, keyCustomerDto.getContactPhone());
+           /* ResultData<Boolean> updateRd = updateCustomerToPlatform(customer, keyCustomerDto.getContactPhone());
             if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
                 log.error("修改用户信息失败，原因：" + updateRd.getMsg());
                 return false;
@@ -273,7 +275,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             if (updateRd.getData()) {
                 //需要同步手机号信息
                 syncPhone(customer.getContactPhone(), keyCustomerDto.getContactPhone());
-            }
+            }*/
             customer.setName(keyCustomerDto.getName());
             customer.setAlias(keyCustomerDto.getName());
             customer.setContactMan(keyCustomerDto.getContactMan());
@@ -355,6 +357,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         //新增c_customer
         Customer customer = new Customer();
         BeanUtils.copyProperties(dto,customer);
+        customer.setUserId(8888L);
         customer.setAlias(dto.getName());
         customer.setCustomerNo(sendNoService.getNo(SendNoTypeEnum.CUSTOMER));
         customer.setIsDelete(DeleteStateEnum.NO_DELETE.code);
@@ -365,7 +368,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         customer.setRegisterTime(now);
         customer.setCreateUserId(dto.getUserId());
         //用户手机号在C端不能重复
-        if (phoneExistsInCustomer(customer.getContactPhone())) {
+        /*if (phoneExistsInCustomer(customer.getContactPhone())) {
             log.error("手机号已存在，请检查");
             return BaseResultUtil.fail("手机号已存在，请检查");
         }
@@ -374,7 +377,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
             throw new CommonException(rd.getMsg());
         }
-        customer.setUserId(rd.getData());
+        customer.setUserId(rd.getData());*/
 
         result = super.save(customer);
         if(!result){
@@ -391,7 +394,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         Customer customer = customerDao.selectById(dto.getId());
         if(customer != null){
             //判断手机号是否存在
-            ResultData<Boolean> updateRd = updateCustomerToPlatform(customer, dto.getContactPhone());
+            /*ResultData<Boolean> updateRd = updateCustomerToPlatform(customer, dto.getContactPhone());
             if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
                 log.error("修改用户信息失败，原因：" + updateRd.getMsg());
                 return BaseResultUtil.fail("修改用户信息失败，原因：" + updateRd.getMsg());
@@ -399,7 +402,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             if (updateRd.getData()) {
                 //需要同步手机号信息
                 syncPhone(customer.getContactPhone(), dto.getContactPhone());
-            }
+            }*/
            BeanUtils.copyProperties(dto,customer);
            customer.setAlias(dto.getName());
            result = super.updateById(customer);
