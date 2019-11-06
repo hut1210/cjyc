@@ -4,8 +4,12 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
+import com.cjkj.usercenter.dto.common.AddUserResp;
+import com.cjkj.usercenter.dto.common.UpdateDeptReq;
+import com.cjkj.usercenter.dto.common.UpdateUserReq;
 import com.cjkj.usercenter.dto.yc.AddDeptAndUserReq;
 import com.cjkj.usercenter.dto.yc.AddDeptAndUserResp;
+import com.cjkj.usercenter.dto.yc.UpdateDeptManagerReq;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.carrier.CarrierDto;
@@ -154,6 +158,13 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         //更新承运商
         Carrier carrier = new Carrier();
         BeanUtils.copyProperties(dto,carrier);
+        //更新到物流平台
+        Carrier origCarrier = carrierDao.selectById(dto.getId());
+        ResultData rd = updateCarrierToPlatform(origCarrier, dto);
+        if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+            log.error(rd.getMsg());
+            return false;
+        }
         Admin admin = adminDao.selectOne(new QueryWrapper<Admin>().lambda().eq(Admin::getUserId, dto.getUserId()).select(Admin::getName));
         if(admin != null){
             carrier.setOperateName(admin.getName());
@@ -161,25 +172,25 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         carrier.setOperateTime(NOW);
         carrier.setOperateUserId(dto.getUserId());
         super.updateById(carrier);
-        //更新承运商司机管理员
-        Driver driver = driverDao.getDriverByDriverId(dto.getId());
-        if(driver != null){
-            driver.setPhone(dto.getLinkmanPhone());
-            driver.setName(dto.getName());
-            driver.setRealName(dto.getLinkman());
-            driver.setIdCard(dto.getLegalIdCard());
-            driverDao.updateById(driver);
-        }
+        //更新承运商司机管理员：司机更新用途？
+//        Driver driver = driverDao.getDriverByDriverId(dto.getId());
+//        if(driver != null){
+//            driver.setPhone(dto.getLinkmanPhone());
+//            driver.setName(dto.getName());
+//            driver.setRealName(dto.getLinkman());
+//            driver.setIdCard(dto.getLegalIdCard());
+//            driverDao.updateById(driver);
+//        }
         //更新银行卡信息
-        BankCardBind bcb = bankCardBindDao.getBankCardBindByUserId(driver.getUserId());
-        if(bcb != null){
-            bcb.setCardType(dto.getCardType());
-            bcb.setCardNo(dto.getCardNo());
-            bcb.setBankName(dto.getBankName());
-            bcb.setIdCard(dto.getLegalIdCard());
-            bcb.setCardPhone(dto.getLinkmanPhone());
-            bankCardBindDao.updateById(bcb);
-        }
+//        BankCardBind bcb = bankCardBindDao.getBankCardBindByUserId(driver.getUserId());
+//        if(bcb != null){
+//            bcb.setCardType(dto.getCardType());
+//            bcb.setCardNo(dto.getCardNo());
+//            bcb.setBankName(dto.getBankName());
+//            bcb.setIdCard(dto.getLegalIdCard());
+//            bcb.setCardPhone(dto.getLinkmanPhone());
+//            bankCardBindDao.updateById(bcb);
+//        }
         //承运商业务范围,先批量删除，再添加
         carrierCityConService.batchDelete(carrier.getId());
         return carrierCityConService.batchSave(carrier.getId(),dto.getCodes());
@@ -216,6 +227,12 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             }
             //更新司机userID信息
             updateDriver(rd.getData().getUserId(), carrier.getId());
+            //更新司机-承运商关系表
+            CarrierDriverCon cdc = new CarrierDriverCon();
+            cdc.setDriverId(rd.getData().getUserId());
+            carrierDriverConDao.update(cdc, new QueryWrapper<CarrierDriverCon>()
+                    .eq("carrier_id", dto.getId())
+                    .eq("role", DriverIdentityEnum.SUPERADMIN.code));
             //更新绑定银行卡信息
             updateBank(rd.getData().getUserId(),carrier.getLegalIdCard());
             carrier.setDeptId(rd.getData().getDeptId());
@@ -364,6 +381,88 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
                 bankCardBindDao.updateById(bcb);
             }
         }
+    }
+
+    /**
+     * 更新承运商信息
+     * @param carrier
+     * @param dto
+     * @return
+     */
+    private ResultData updateCarrierToPlatform(Carrier carrier, CarrierDto dto) {
+        //1.判断 carrier不为空 且 deptId 不为空（物流平台存在此机构)
+        if (null != carrier) {
+            if (carrier.getDeptId() != null && carrier.getDeptId() > 0L) {
+                if (!carrier.getLinkmanPhone().equals(dto.getLinkmanPhone())) {
+                    //需要变更联系人
+                    //1.新联系人是否在物流平台
+                    ResultData<AddUserResp> accountRd = sysUserService.getByAccount(dto.getLinkmanPhone());
+                    if (!ReturnMsg.SUCCESS.getCode().equals(accountRd.getCode())) {
+                        return ResultData.failed("查询用户信息失败，原因：" + accountRd.getMsg());
+                    }
+                    CarrierDriverCon origCdCon = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>()
+                            .eq("carrier_id", carrier.getId())
+                            .eq("role", DriverIdentityEnum.SUPERADMIN.code));
+                    if (null == origCdCon) {
+                        return ResultData.failed("数据异常，此承运商下无机构管理员");
+                    }
+                    if (accountRd.getData() != null) {
+                        //2.如果存在：需要做用户角色关系管理及新用户校验
+                        //2.1 新用户必须是此承运商司机
+                        CarrierDriverCon cdCon = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>()
+                                .eq("carrier_id", carrier.getId())
+                                .eq("driver_id", accountRd.getData().getUserId()));
+                        if (null == cdCon) {
+                            return ResultData.failed("新用户不属于此承运商");
+                        }
+                        //2.2 更新承运商信息及更换机构管理员
+                        UpdateDeptManagerReq managerReq = new UpdateDeptManagerReq();
+                        managerReq.setDeptId(carrier.getDeptId());
+                        managerReq.setInitUserId(origCdCon.getDriverId());
+                        managerReq.setNewUserId(accountRd.getData().getUserId());
+                        ResultData rd = sysDeptService.updateDeptManager(managerReq);
+                        if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+                            return ResultData.failed("变更机构管理员失败，原因：" + rd.getMsg());
+                        }else {
+                            //将原司机-承运商关系设置为普通角色
+                            CarrierDriverCon carrierDriverCon = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>()
+                                    .eq("carrier_id", dto.getId())
+                                    .eq("role", DriverIdentityEnum.SUPERADMIN.code));
+                            if (carrierDriverCon != null) {
+                                carrierDriverCon.setRole(DriverIdentityEnum.SUB_DRIVER.code);
+                                carrierDriverConDao.updateById(carrierDriverCon);
+                            }
+                            //新司机-承运商关系设置为管理员
+                            cdCon.setRole(DriverIdentityEnum.SUPERADMIN.code);
+                            carrierDriverConDao.updateById(cdCon);
+                        }
+                    }else {
+                        //3.如果不存在，直接将联系人手机号及姓名更新即可
+                        UpdateUserReq userReq = new UpdateUserReq();
+                        userReq.setUserId(origCdCon.getDriverId());
+                        userReq.setAccount(dto.getLinkmanPhone());
+                        userReq.setMobile(dto.getLinkmanPhone());
+                        userReq.setName(dto.getLinkman());
+                        ResultData updateRd = sysUserService.update(userReq);
+                        if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
+                            return ResultData.failed("更新管理员信息错误，原因：" + updateRd.getMsg());
+                        }
+                    }
+                }
+
+                //将企业名称、法人姓名信息更新即可
+                if (!carrier.getName().equals(dto.getName())
+                        || !carrier.getLegalName().equals(dto.getLegalName())) {
+                    UpdateDeptReq deptReq = new UpdateDeptReq();
+                    deptReq.setDeptId(carrier.getDeptId());
+                    deptReq.setLegalPerson(carrier.getLegalName());
+                    return sysDeptService.update(deptReq);
+                }
+                return ResultData.ok("成功");
+            }
+            return ResultData.ok("数据未同步到物流平台，不需要变更");
+        }
+        return ResultData.ok("无变更：数据不存在");
     }
 
 }

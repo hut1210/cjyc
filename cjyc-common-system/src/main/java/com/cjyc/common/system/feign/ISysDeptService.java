@@ -9,6 +9,7 @@ import com.cjkj.usercenter.dto.common.SelectDeptResp;
 import com.cjkj.usercenter.dto.common.UpdateDeptReq;
 import com.cjkj.usercenter.dto.yc.AddDeptAndUserReq;
 import com.cjkj.usercenter.dto.yc.AddDeptAndUserResp;
+import com.cjkj.usercenter.dto.yc.UpdateDeptManagerReq;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -82,4 +83,11 @@ public interface ISysDeptService {
     @GetMapping("/feign/uc/getSingleLevelDeptList/{deptId}")
     ResultData<List<SelectDeptResp>> getSingleLevelDeptList(@PathVariable(value="deptId") Long deptId);
 
+    /**
+     * 韵车机构管理员变更(用户)
+     * @param req
+     * @return
+     */
+    @GetMapping("/feign/yc/updateDeptManager")
+    ResultData updateDeptManager(@RequestBody UpdateDeptManagerReq req);
 }
