@@ -5,6 +5,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
 
@@ -19,31 +22,40 @@ public class DriverDto implements Serializable {
     @ApiModelProperty("司机id")
     private Long id;
 
-    @ApiModelProperty("登陆用户userId")
+    @ApiModelProperty("当前登陆用户userId")
+    @NotNull(message = "当前登陆用户userId不能为空")
     private Long userId;
 
     @ApiModelProperty("司机姓名")
+    @NotBlank(message = "司机姓名不能为空")
     private String realName;
 
     @ApiModelProperty("司机手机号")
+    @NotBlank(message = "司机手机号不能为空")
     private String phone;
 
-    @ApiModelProperty("承运方式/司机类型：0 ：代驾 1：干线司机  2：拖车司机 4全支持")
+    @ApiModelProperty("承运方式：2 : 代驾  3 : 干线   4：拖车")
+    @NotNull(message = "承运方式不能为空")
     private Integer mode;
 
     @ApiModelProperty("业务类型")
+    @NotEmpty(message = "业务类型不能为空")
     private List<String> codes;
 
     @ApiModelProperty("身份证正面")
+    @NotBlank(message = "身份证正面不能为空")
     private String idCardFrontImg;
 
     @ApiModelProperty("身份证反面")
+    @NotBlank(message = "身份证反面不能为空")
     private String idCardBackImg;
 
     @ApiModelProperty("驾驶证正面")
+    @NotBlank(message = "驾驶证正面不能为空")
     private String driverLicenceFrontImg;
 
     @ApiModelProperty("驾驶证反面")
+    @NotBlank(message = "驾驶证反面不能为空")
     private String driverLicenceBackImg;
 
     @ApiModelProperty("行驶证正面")

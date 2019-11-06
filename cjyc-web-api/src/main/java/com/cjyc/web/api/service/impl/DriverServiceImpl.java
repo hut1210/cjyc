@@ -1,5 +1,7 @@
 package com.cjyc.web.api.service.impl;
 
+        import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+        import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
         import com.cjkj.common.model.ResultData;
         import com.cjkj.common.model.ReturnMsg;
         import com.cjkj.usercenter.dto.common.AddUserReq;
@@ -10,6 +12,7 @@ package com.cjyc.web.api.service.impl;
         import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
         import com.cjyc.common.model.dto.web.user.DriverListDto;
         import com.cjyc.common.model.entity.*;
+        import com.cjyc.common.model.enums.CommonStateEnum;
         import com.cjyc.common.model.enums.FlagEnum;
         import com.cjyc.common.model.enums.PayModeEnum;
         import com.cjyc.common.model.enums.saleman.SalemanStateEnum;
@@ -29,6 +32,8 @@ package com.cjyc.web.api.service.impl;
         import com.github.pagehelper.PageHelper;
         import com.github.pagehelper.PageInfo;
         import lombok.extern.slf4j.Slf4j;
+        import org.apache.commons.lang3.StringUtils;
+        import org.springframework.beans.BeanUtils;
         import org.springframework.beans.factory.annotation.Autowired;
         import org.springframework.stereotype.Service;
         import org.springframework.transaction.annotation.Propagation;
@@ -40,8 +45,11 @@ package com.cjyc.web.api.service.impl;
 
 @Service
 @Slf4j
-@Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
-public class DriverServiceImpl implements IDriverService {
+public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implements IDriverService {
+
+    @Resource
+    private IAdminDao adminDao;
+
     @Resource
     private IDriverDao driverDao;
 
@@ -72,6 +80,8 @@ public class DriverServiceImpl implements IDriverService {
     @Autowired
     private ISysUserService sysUserService;
 
+    private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
+
     /**
      * 查询司机列表
      *
@@ -87,80 +97,59 @@ public class DriverServiceImpl implements IDriverService {
 
     @Override
     public boolean saveDriver(DriverDto dto) {
-        int i ;
-        int k = 0;
-        int n = 0;
-        int p = 0;
-        int m = 0;
-        Driver driver = null;
-        Carrier carrier = null;
-        try{
-            //保存散户司机
-            driver = new Driver();
-            driver.setRealName(dto.getRealName());
-            driver.setName(dto.getRealName());
-            driver.setPhone(dto.getPhone());
-            driver.setMode(dto.getMode());
-            driver.setIdentity(DriverIdentityEnum.SUB_DRIVER.code);
-            //driver.setState(VerifyStateEnum.BE_AUDITED.code);
-            driver.setBusinessState(BusinessStateEnum.OUTAGE.code);
-            driver.setSource(DriverSourceEnum.SALEMAN_WEB.code);
-            driver.setIdCardFrontImg(dto.getIdCardFrontImg());
-            driver.setIdCardBackImg(dto.getIdCardBackImg());
-            driver.setDriverLicenceFrontImg(dto.getDriverLicenceFrontImg());
-            driver.setDriverLicenceBackImg(dto.getDriverLicenceBackImg());
-            driver.setTravelLicenceFrontImg(dto.getTravelLicenceFrontImg());
-            driver.setTravelLicenceBackImg(dto.getTravelLicenceBackImg());
-            driver.setTaxiLicenceFrontImg(dto.getTaxiLicenceFrontImg());
-            driver.setTaxiLicenceBackImg(dto.getTaxiLicenceBackImg());
-            driver.setCreateUserId(dto.getUserId());
-            i = driverDao.insert(driver);
-            if(i > 0){
-                //保存司机与车辆关系
-                DriverVehicleCon dvc = new DriverVehicleCon();
-                dvc.setDriverId(driver.getId());
-                dvc.setVehicleId(dto.getVehicleId());
-                n = driverVehicleConDao.insert(dvc);
-                //保存运力信息
-                VehicleRunning vr = new VehicleRunning();
-                vr.setVehicleId(dto.getVehicleId());
-                vr.setDriverId(driver.getId());
-                vr.setPlateNo(dto.getPlateNo());
-                vr.setCarryCarNum(dto.getDefaultCarryNum());
-                vr.setState(VehicleStateEnum.INVALID.code);
-                vr.setRunningState(BusinessStateEnum.OUTAGE.code);
-                vr.setCreateTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
-                k = vehicleRunningDao.insert(vr);
-            }
-            if(k > 0 && n > 0){
-                //保存个人承运商
-                carrier = new Carrier();
-                carrier.setName(dto.getRealName());
-                carrier.setLinkman(dto.getRealName());
-                carrier.setLinkmanPhone(dto.getPhone());
-                carrier.setType(CarrierTypeEnum.PERSONAL.code);
-                carrier.setSettleType(PayModeEnum.COLLECT.code);
-                carrier.setCreateTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
-                carrier.setCreateUserId(dto.getUserId());
-                p = carrierDao.insert(carrier);
-            }
-            if(p > 0){
-                //保存司机与承运商关系
-                CarrierDriverCon cdc = new CarrierDriverCon();
-                cdc.setCarrierId(carrier.getId());
-                cdc.setDriverId(driver.getId());
-                cdc.setRole(DriverIdentityEnum.SUB_DRIVER.code);
-                m = carrierDriverConDao.insert(cdc);
-            }
-            if(m > 0){
-                //添加承运商业务范围
-                return carrierCityConService.batchSave(carrier.getId(),dto.getCodes());
-            }
-        }catch (Exception e){
-            log.info("新增散户司机出现异常");
-            throw new CommonException(e.getMessage());
+        //保存散户司机
+        Driver driver = new Driver();
+        BeanUtils.copyProperties(dto,driver);
+        driver.setName(dto.getRealName());
+        driver.setIdentity(DriverIdentityEnum.PERSONAL_DRIVER.code);
+        driver.setBusinessState(BusinessStateEnum.OUTAGE.code);
+        driver.setSource(DriverSourceEnum.SALEMAN_WEB.code);
+        driver.setState(CommonStateEnum.WAIT_CHECK.code);
+        driver.setCreateTime(NOW);
+        driver.setCreateUserId(dto.getUserId());
+        driver.setOperateUserId(dto.getUserId());
+        driver.setOperateTime(NOW);
+        Admin admin = adminDao.selectOne(new QueryWrapper<Admin>().lambda().eq(Admin::getUserId, dto.getUserId()).select(Admin::getName));
+        if(admin != null){
+            driver.setOperateName(admin.getName());
         }
-        return false;
+        super.save(driver);
+        if(StringUtils.isNotBlank(dto.getPlateNo())){
+            //保存司机与车辆关系
+            DriverVehicleCon dvc = new DriverVehicleCon();
+            dvc.setDriverId(driver.getId());
+            dvc.setVehicleId(dto.getVehicleId());
+            driverVehicleConDao.insert(dvc);
+            //保存运力信息
+            VehicleRunning vr = new VehicleRunning();
+            vr.setVehicleId(dto.getVehicleId());
+            vr.setDriverId(driver.getId());
+            vr.setPlateNo(dto.getPlateNo());
+            vr.setCarryCarNum(dto.getDefaultCarryNum());
+            vr.setState(VehicleStateEnum.INVALID.code);
+            vr.setRunningState(BusinessStateEnum.OUTAGE.code);
+            vr.setCreateTime(NOW);
+            vehicleRunningDao.insert(vr);
+        }
+        //保存个人承运商
+        Carrier carrier = new Carrier();
+        carrier.setName(dto.getRealName());
+        carrier.setLinkman(dto.getRealName());
+        carrier.setLinkmanPhone(dto.getPhone());
+        carrier.setType(CarrierTypeEnum.PERSONAL.code);
+        carrier.setSettleType(PayModeEnum.COLLECT.code);
+        carrier.setCreateTime(NOW);
+        carrier.setCreateUserId(dto.getUserId());
+        carrierDao.insert(carrier);
+        //保存司机与承运商关系
+        CarrierDriverCon cdc = new CarrierDriverCon();
+        cdc.setCarrierId(carrier.getId());
+        cdc.setDriverId(driver.getId());
+        cdc.setRole(DriverIdentityEnum.SUB_DRIVER.code);
+        carrierDriverConDao.insert(cdc);
+        //添加承运商业务范围
+        carrierCityConService.batchSave(carrier.getId(),dto.getCodes());
+        return true;
     }
 
     @Override
@@ -383,5 +372,23 @@ public class DriverServiceImpl implements IDriverService {
         user.setAccount(driver.getPhone());
         user.setMobile(driver.getPhone());
         return sysUserService.updateUser(user);
+    }
+
+
+    private List test(){
+        //查询个人所有车辆
+        List<Vehicle> vehicles = vehicleDao.selectList(new QueryWrapper<Vehicle>().lambda().eq(Vehicle::getOwnershipType, ""));
+        //查询已经绑定的车辆
+        List<DriverVehicleCon> driverVehicleCons = driverVehicleConDao.selectList(new QueryWrapper<DriverVehicleCon>());
+        //去除已绑定车辆
+        for (DriverVehicleCon driverVehicleCon : driverVehicleCons) {
+            for (Vehicle vehicle : vehicles) {
+                if(driverVehicleCon.getVehicleId().equals(vehicle.getId())){
+                    vehicles.remove(vehicle);
+                    break;
+                }
+            }
+        }
+        return vehicles;
     }
 }

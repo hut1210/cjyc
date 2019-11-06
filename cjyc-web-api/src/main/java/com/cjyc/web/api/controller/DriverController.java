@@ -50,8 +50,7 @@ public class DriverController {
     @PostMapping(value = "/saveDriver")
     public ResultVo saveDriver(@Validated({ DriverDto.SaveDriverDto.class }) @RequestBody DriverDto dto){
         boolean result = driverService.saveDriver(dto);
-        return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg())
-                : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
+        return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
 
     @ApiOperation(value = "根据查询条件查看司机信息")
@@ -101,5 +100,6 @@ public class DriverController {
                                @PathVariable Integer flag){
         return driverService.resetState(id, flag);
     }
+
 
 }

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cjkj.common.utils.ExcelUtil;
 import com.cjyc.common.model.constant.FieldConstant;
 import com.cjyc.common.model.dao.ICustomerInvoiceDao;
 import com.cjyc.common.model.dao.IInvoiceApplyDao;
@@ -18,17 +19,21 @@ import com.cjyc.common.model.entity.InvoiceApply;
 import com.cjyc.common.model.entity.InvoiceOrderCon;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.invoice.InvoiceApplyExportExcel;
 import com.cjyc.common.model.vo.web.invoice.InvoiceDetailVo;
 import com.cjyc.web.api.service.IInvoiceApplyService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,11 +58,15 @@ public class InvoiceApplyServiceImpl extends ServiceImpl<IInvoiceApplyDao, Invoi
 
     @Override
     public ResultVo getInvoiceApplyPage(InvoiceQueryDto dto) {
-        LambdaQueryWrapper<InvoiceApply> queryWrapper = getInvoiceApplyLambdaQueryWrapper(dto);
-        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        List<InvoiceApply> list = super.list(queryWrapper);
+        List<InvoiceApply> list = getInvoiceApplyList(dto);
         PageInfo pageInfo = new PageInfo(list);
         return BaseResultUtil.success(pageInfo);
+    }
+
+    private List<InvoiceApply> getInvoiceApplyList(InvoiceQueryDto dto) {
+        LambdaQueryWrapper<InvoiceApply> queryWrapper = getInvoiceApplyLambdaQueryWrapper(dto);
+        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
+        return super.list(queryWrapper);
     }
 
     private LambdaQueryWrapper<InvoiceApply> getInvoiceApplyLambdaQueryWrapper(InvoiceQueryDto dto) {
@@ -67,20 +76,16 @@ public class InvoiceApplyServiceImpl extends ServiceImpl<IInvoiceApplyDao, Invoi
                 .like(!StringUtils.isEmpty(dto.getOperationName()),InvoiceApply::getOperationName,dto.getOperationName())
                 .eq(!StringUtils.isEmpty(dto.getState()),InvoiceApply::getState,dto.getState());
         if (!Objects.isNull(dto.getApplyTimeStart())) {
-            Long applyTimeStart = LocalDateTimeUtil.getMillisByLDT(LocalDateTimeUtil.convertDateToLDT(dto.getApplyTimeStart()));
-            queryWrapper = queryWrapper.ge(InvoiceApply::getApplyTime,applyTimeStart);
+            queryWrapper = queryWrapper.ge(InvoiceApply::getApplyTime,dto.getApplyTimeStart());
         }
         if (!Objects.isNull(dto.getApplyTimeEnd())) {
-            Long applyTimeEnd = LocalDateTimeUtil.getMillisByLDT(LocalDateTimeUtil.convertDateToLDT(dto.getApplyTimeEnd()));
-            queryWrapper = queryWrapper.le(InvoiceApply::getApplyTime,applyTimeEnd);
+            queryWrapper = queryWrapper.le(InvoiceApply::getApplyTime,dto.getApplyTimeEnd());
         }
         if (!Objects.isNull(dto.getInvoiceTimeStart())) {
-            Long invoiceTimeStart = LocalDateTimeUtil.getMillisByLDT(LocalDateTimeUtil.convertDateToLDT(dto.getInvoiceTimeStart()));
-            queryWrapper = queryWrapper.ge(InvoiceApply::getInvoiceTime,invoiceTimeStart);
+            queryWrapper = queryWrapper.ge(InvoiceApply::getInvoiceTime,dto.getInvoiceTimeStart());
         }
         if (!Objects.isNull(dto.getInvoiceTimeEnd())) {
-            Long invoiceTimeEnd = LocalDateTimeUtil.getMillisByLDT(LocalDateTimeUtil.convertDateToLDT(dto.getInvoiceTimeEnd()));
-            queryWrapper = queryWrapper.le(InvoiceApply::getInvoiceTime,invoiceTimeEnd);
+            queryWrapper = queryWrapper.le(InvoiceApply::getInvoiceTime,dto.getInvoiceTimeEnd());
         }
         return queryWrapper;
     }
@@ -137,5 +142,52 @@ public class InvoiceApplyServiceImpl extends ServiceImpl<IInvoiceApplyDao, Invoi
                 .eq(InvoiceApply::getCustomerId, dto.getUserId());
         boolean result = super.update(updateWrapper);
         return result ? BaseResultUtil.success() : BaseResultUtil.fail();
+    }
+
+    @Override
+    public void exportExcel(HttpServletRequest request, HttpServletResponse response) {
+        // 获取参数，封装参数
+        InvoiceQueryDto dto = getInvoiceQueryDto(request);
+        // 查询列表
+        List<InvoiceApply> list = getInvoiceApplyList(dto);
+        if (!CollectionUtils.isEmpty(list)) {
+            // 生成导出数据
+            List<InvoiceApplyExportExcel> exportExcelList = new ArrayList<>(10);
+            for (InvoiceApply invoiceApply : list) {
+                InvoiceApplyExportExcel invoiceApplyExportExcel = new InvoiceApplyExportExcel();
+                BeanUtils.copyProperties(invoiceApply, invoiceApplyExportExcel);
+                exportExcelList.add(invoiceApplyExportExcel);
+            }
+            String title = "发票申请记录";
+            String sheetName = "发票申请记录";
+            String fileName = "发票申请记录表.xls";
+            try {
+                ExcelUtil.exportExcel(exportExcelList, title, sheetName, InvoiceApplyExportExcel.class, fileName, response);
+            } catch (IOException e) {
+                log.error("发票申请记录表异常:{}",e);
+            }
+        }
+    }
+
+    private InvoiceQueryDto getInvoiceQueryDto(HttpServletRequest request) {
+        InvoiceQueryDto dto = new InvoiceQueryDto();
+        String state = request.getParameter("state");
+        String applyTimeStart = request.getParameter("applyTimeStart");
+        String applyTimeEnd = request.getParameter("applyTimeEnd");
+        String invoiceTimeStart = request.getParameter("invoiceTimeStart");
+        String invoiceTimeEnd = request.getParameter("invoiceTimeEnd");
+        String currentPage = request.getParameter("currentPage");
+        String pageSize = request.getParameter("pageSize");
+        dto.setCustomerName(request.getParameter("customerName"));
+        dto.setInvoiceNo(request.getParameter("invoiceNo"));
+        dto.setOperationName(request.getParameter("operationName"));
+        dto.setState(StringUtils.isEmpty(state) ? null : Integer.valueOf(state));
+        dto.setApplyTimeStart(StringUtils.isEmpty(applyTimeStart) ? null : Long.valueOf(applyTimeStart));
+        dto.setApplyTimeEnd(StringUtils.isEmpty(applyTimeEnd) ? null : Long.valueOf(applyTimeEnd));
+        dto.setInvoiceTimeStart(StringUtils.isEmpty(invoiceTimeStart) ? null : Long.valueOf(invoiceTimeStart));
+        dto.setInvoiceTimeEnd(StringUtils.isEmpty(invoiceTimeEnd) ? null : Long.valueOf(invoiceTimeEnd));
+        dto.setCurrentPage(StringUtils.isEmpty(currentPage) ? null : Integer.valueOf(currentPage));
+        dto.setPageSize(StringUtils.isEmpty(pageSize) ? null : Integer.valueOf(pageSize));
+        return dto;
     }
 }

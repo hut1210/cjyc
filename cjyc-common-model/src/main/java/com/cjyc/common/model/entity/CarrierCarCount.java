@@ -32,17 +32,14 @@ public class CarrierCarCount implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "承运商ID")
-    private Long carrierId;
-
     @ApiModelProperty(value = "司机ID")
     private Long driverId;
 
     @ApiModelProperty(value = "司机运输车辆数")
     private Integer carNum;
 
-    @ApiModelProperty(value = "总收入/分")
-    private BigDecimal totalIncome;
+    @ApiModelProperty(value = "收入/分")
+    private BigDecimal income;
 
 
 }

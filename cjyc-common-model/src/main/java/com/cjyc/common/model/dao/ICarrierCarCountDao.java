@@ -17,10 +17,10 @@ import java.util.Map;
 public interface ICarrierCarCountDao extends BaseMapper<CarrierCarCount> {
 
     /**
-     * 根据承运商id查询车数和总收入
+     * 根据承运商id查询该承运商的运车数和总收入
      * @param carrierId
      * @return
      */
-    Map getCarIncomeByCarrId(@Param("carrierId") Long carrierId);
+    CarrierCarCount count(@Param("carrierId") Long carrierId);
 
 }

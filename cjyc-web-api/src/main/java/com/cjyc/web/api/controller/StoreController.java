@@ -2,6 +2,7 @@ package com.cjyc.web.api.controller;
 
 import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
+import com.cjyc.common.model.dto.web.city.StoreAreaQueryDto;
 import com.cjyc.common.model.dto.web.store.StoreAddDto;
 import com.cjyc.common.model.dto.web.store.StoreQueryDto;
 import com.cjyc.common.model.dto.web.store.StoreUpdateDto;
@@ -104,5 +105,11 @@ public class StoreController {
             @ApiParam(name = "storeId", value = "业务中心标识", required = true)
             @PathVariable Long storeId){
         return storeService.listAdminsByStoreId(storeId);
+    }
+
+    @ApiOperation(value = "根据业务中心ID查询当前业务中心覆盖区")
+    @PostMapping("/getStoreAreaList")
+    public ResultVo getStoreAreaList(@RequestBody @Validated StoreAreaQueryDto dto) {
+        return storeService.getStoreAreaList(dto);
     }
 }

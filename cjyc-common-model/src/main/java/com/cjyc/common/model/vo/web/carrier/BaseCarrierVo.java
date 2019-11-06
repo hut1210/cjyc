@@ -40,14 +40,8 @@ public class BaseCarrierVo implements Serializable {
     @ApiModelProperty("承运商业务范围")
     List<LinkedHashMap> mapCodes;
 
-    @ApiModelProperty("是否支持代驾  0 : 否  1 : 是")
-    private Integer driverMode;
-
-    @ApiModelProperty("是否支持拖车  0 ：否  1 ：是")
-    private Integer trailerMode;
-
-    @ApiModelProperty("是否支持干线  0：否 1：是")
-    private Integer trunkMode;
+    @ApiModelProperty("承运方式：2 : 代驾  3 : 干线   4：拖车   5：代驾+干线  6：代驾+拖车  7：干线+拖车  9：代驾+干线+拖车")
+    private Integer mode;
 
     @ApiModelProperty("卡类型:1公户，2私户")
     private Integer cardType;

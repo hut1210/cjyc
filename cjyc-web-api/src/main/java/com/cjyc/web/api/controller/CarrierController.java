@@ -1,5 +1,6 @@
 package com.cjyc.web.api.controller;
 
+import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.carrier.CarrierDto;
 import com.cjyc.common.model.dto.web.carrier.SeleCarrierDto;
 import com.cjyc.common.model.dto.web.carrier.SeleVehicleDriverDto;
@@ -44,41 +45,30 @@ public class CarrierController {
     }
 
     @ApiOperation(value = "更新承运商")
-    @PostMapping(value = "/updateCarrier")
-    public ResultVo updateCarrier(@Validated({ CarrierDto.UpdateCarrierDto.class }) @RequestBody CarrierDto dto){
-        boolean result = carrierService.updateCarrier(dto);
-        return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg())
-                : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
+    @PostMapping(value = "/modifyCarrier")
+    public ResultVo modifyCarrier(@Validated({ CarrierDto.UpdateCarrierDto.class }) @RequestBody CarrierDto dto){
+        boolean result = carrierService.modifyCarrier(dto);
+        return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
 
     @ApiOperation(value = "根据条件查询承运商")
-    @PostMapping(value = "/getCarrierByTerm")
-    public ResultVo<PageVo<CarrierVo>> getCarrierByTerm(@RequestBody SeleCarrierDto dto){
-        BasePageUtil.initPage(dto.getCurrentPage(),dto.getPageSize());
-        PageInfo<CarrierVo> pageInfo = carrierService.getCarrierByTerm(dto);
-        return BaseResultUtil.getPageVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),pageInfo);
+    @PostMapping(value = "/findCarrier")
+    public ResultVo<PageVo<CarrierVo>> findCarrier(@RequestBody SeleCarrierDto dto){
+        BasePageUtil.initPage(dto);
+        return carrierService.findCarrier(dto);
     }
 
-    @ApiOperation(value = "根据id审核承运商")
-    @PostMapping(value = "/verifyCarrierById/{id}/{state}")
-    public ResultVo verifyCarrierById(@PathVariable @ApiParam(value = "承运商id",required = true) Long id,
-                                     @PathVariable @ApiParam(value = "审核状态 3:审核通过 4:审核拒绝 5：冻结 6:解除",required = true) Integer state){
-        if(id == null || state == null){
-            return BaseResultUtil.getVo(ResultEnum.MOBILE_PARAM_ERROR.getCode(),ResultEnum.MOBILE_PARAM_ERROR.getMsg());
-        }
-        boolean result = carrierService.verifyCarrierById(id,state);
-        return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg())
-                : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
+    @ApiOperation(value = "根据id审核/冻结/解冻承运商")
+    @PostMapping(value = "/verifyCarrier")
+    public ResultVo verifyCarrier(@RequestBody OperateDto dto){
+        boolean result = carrierService.verifyCarrier(dto);
+        return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
 
     @ApiOperation(value = "根据id查看基本承运商信息")
-    @PostMapping(value = "/getBaseCarrierById/{id}")
-    public ResultVo<BaseCarrierVo> getBaseCarrierById(@PathVariable @ApiParam(value = "承运商id",required = true) Long id){
-        if(id == null){
-            return BaseResultUtil.getVo(ResultEnum.MOBILE_PARAM_ERROR.getCode(),ResultEnum.MOBILE_PARAM_ERROR.getMsg());
-        }
-        BaseCarrierVo vo = carrierService.getBaseCarrierById(id);
-        return BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg(),vo);
+    @PostMapping(value = "/showBaseCarrier/{id}")
+    public ResultVo<BaseCarrierVo> showBaseCarrier(@PathVariable @ApiParam(value = "承运商id",required = true) Long id){
+        return carrierService.showBaseCarrier(id);
     }
 
     @ApiOperation(value = "根据条件查看车辆信息")

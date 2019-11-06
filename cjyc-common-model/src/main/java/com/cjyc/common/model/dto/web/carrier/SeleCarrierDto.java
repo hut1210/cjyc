@@ -8,9 +8,6 @@ import java.io.Serializable;
 @Data
 public class SeleCarrierDto extends BasePageDto implements Serializable {
 
-    @ApiModelProperty("登陆用户userId")
-    private Long userId;
-
     @ApiModelProperty("企业名称")
     private String name;
 
@@ -32,13 +29,13 @@ public class SeleCarrierDto extends BasePageDto implements Serializable {
     @ApiModelProperty("是否开发票 0：否  1：是")
     private Integer isInvoice;
 
-    @ApiModelProperty("结算方式：1时付，2账期")
+    @ApiModelProperty("结算方式：0:时付，1:账期")
     private Integer settleType;
 
-    @ApiModelProperty("状态：0待审核，2已审核，4已驳回，7已冻结")
+    @ApiModelProperty("状态：0待审核，2已审核，4取消，5冻结，7已驳回，9已停用（CommonStateEnum）")
     private Integer state;
 
-    @ApiModelProperty("创建人")
-    private String createUser;
+    @ApiModelProperty("操作人")
+    private String operateName;
 
 }

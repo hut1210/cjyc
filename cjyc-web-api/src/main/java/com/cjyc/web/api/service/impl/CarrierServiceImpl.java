@@ -7,6 +7,7 @@ import com.cjkj.common.model.ReturnMsg;
 import com.cjkj.usercenter.dto.yc.AddDeptAndUserReq;
 import com.cjkj.usercenter.dto.yc.AddDeptAndUserResp;
 import com.cjyc.common.model.dao.*;
+import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.carrier.CarrierDto;
 import com.cjyc.common.model.dto.web.carrier.SeleCarrierDto;
 import com.cjyc.common.model.dto.web.carrier.SeleVehicleDriverDto;
@@ -30,26 +31,27 @@ import com.cjyc.web.api.service.ICarrierService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @Slf4j
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
 public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implements ICarrierService {
+
+    @Resource
+    private IAdminDao adminDao;
 
     @Resource
     private ICarrierDao carrierDao;
@@ -99,18 +101,31 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         carrier.setBusinessState(BusinessStateEnum.BUSINESS.code);
         carrier.setCreateUserId(dto.getUserId());
         carrier.setCreateTime(NOW);
+        carrier.setOperateUserId(dto.getUserId());
+        carrier.setOperateTime(NOW);
+        Admin admin = adminDao.selectOne(new QueryWrapper<Admin>().lambda().eq(Admin::getUserId, dto.getUserId()).select(Admin::getName));
+        if(admin != null){
+            carrier.setOperateName(admin.getName());
+        }
         super.save(carrier);
 
         //添加承运商司机管理员
         Driver driver = new Driver();
+        driver.setName(dto.getName());
         driver.setPhone(dto.getLinkmanPhone());
         driver.setIdentity(DriverIdentityEnum.ADMIN.code);
         driver.setState(CommonStateEnum.CHECKED.code);
         driver.setBusinessState(BusinessStateEnum.BUSINESS.code);
         driver.setSource(DriverSourceEnum.SALEMAN_WEB.code);
-        driver.setCreateUserId(dto.getUserId());
-        driver.setIdCard(dto.getLegaIdCard());
+        driver.setIdCard(dto.getLegalIdCard());
         driver.setRealName(dto.getLinkman());
+        driver.setCreateUserId(dto.getUserId());
+        driver.setCreateTime(NOW);
+        if(admin != null){
+            driver.setOperateName(admin.getName());
+        }
+        driver.setOperateTime(NOW);
+        driver.setOperateUserId(dto.getUserId());
         driverDao.insert(driver);
 
         //承运商与司机绑定关系
@@ -125,130 +140,112 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         BeanUtils.copyProperties(dto,bcb);
         bcb.setUserId(driver.getUserId());
         bcb.setUserType(UserTypeEnum.DRIVER.code);
-        bcb.setIdCard(dto.getLegaIdCard());
+        bcb.setIdCard(dto.getLegalIdCard());
         bcb.setState(UseStateEnum.USABLE.code);
         bcb.setCreateTime(NOW);
+        bcb.setCardPhone(dto.getLinkmanPhone());
         bankCardBindDao.insert(bcb);
         //添加承运商业务范围
         return carrierCityConService.batchSave(carrier.getId(),dto.getCodes());
     }
 
     @Override
-    public boolean updateCarrier(CarrierDto dto) {
-        int i ;
-        int j = 0;
-        int k = 0;
-        int m = 0;
-        Admin admin = null;
-        try{
-            //更新承运商
-            Carrier carrier = carrierDao.selectById(dto.getId());
-            //carrier = encapCarrier(carrier,dto);
-            i = carrierDao.updateById(carrier);
-            if(j > 0){
-                //更新承运商司机管理员
-                Driver driver = driverDao.getDriverByDriverId(dto.getId());
-                if(driver != null){
-                    driver.setPhone(dto.getLinkmanPhone());
-                    k = driverDao.updateById(driver);
-                }
-            }
-            if(k > 0){
-                //更新银行卡信息
-                BankCardBind bcb = bankCardBindDao.getBankCardBindByUserId(admin.getUserId());
-                if(bcb != null){
-                    bcb.setCardType(dto.getCardType());
-                    bcb.setCardNo(dto.getCardNo());
-                    bcb.setBankName(dto.getBankName());
-                    bcb.setIdCard(dto.getLegaIdCard());
-                    bcb.setCardPhone(dto.getLinkmanPhone());
-                    m = bankCardBindDao.updateById(bcb);
-                }
-            }
-            if(m > 0){
-                //承运商业务范围,先批量删除，再添加
-                carrierCityConService.batchDelete(carrier.getId());
-                carrierCityConService.batchSave(carrier.getId(),dto.getCodes());
-            }
-        }catch (Exception e){
-            log.info("更新承运商信息出现异常");
-            throw new CommonException(e.getMessage());
+    public boolean modifyCarrier(CarrierDto dto) {
+        //更新承运商
+        Carrier carrier = new Carrier();
+        BeanUtils.copyProperties(dto,carrier);
+        Admin admin = adminDao.selectOne(new QueryWrapper<Admin>().lambda().eq(Admin::getUserId, dto.getUserId()).select(Admin::getName));
+        if(admin != null){
+            carrier.setOperateName(admin.getName());
         }
-        return false;
+        carrier.setOperateTime(NOW);
+        carrier.setOperateUserId(dto.getUserId());
+        super.updateById(carrier);
+        //更新承运商司机管理员
+        Driver driver = driverDao.getDriverByDriverId(dto.getId());
+        if(driver != null){
+            driver.setPhone(dto.getLinkmanPhone());
+            driver.setName(dto.getName());
+            driver.setRealName(dto.getLinkman());
+            driver.setIdCard(dto.getLegalIdCard());
+            driverDao.updateById(driver);
+        }
+        //更新银行卡信息
+        BankCardBind bcb = bankCardBindDao.getBankCardBindByUserId(driver.getUserId());
+        if(bcb != null){
+            bcb.setCardType(dto.getCardType());
+            bcb.setCardNo(dto.getCardNo());
+            bcb.setBankName(dto.getBankName());
+            bcb.setIdCard(dto.getLegalIdCard());
+            bcb.setCardPhone(dto.getLinkmanPhone());
+            bankCardBindDao.updateById(bcb);
+        }
+        //承运商业务范围,先批量删除，再添加
+        carrierCityConService.batchDelete(carrier.getId());
+        return carrierCityConService.batchSave(carrier.getId(),dto.getCodes());
     }
 
     @Override
-    public PageInfo<CarrierVo> getCarrierByTerm(SeleCarrierDto dto) {
-        PageInfo<CarrierVo> pageInfo = null;
-        try{
-            List<CarrierVo> carrierVos = carrierDao.getCarrierByTerm(dto);
-            if(carrierVos != null && carrierVos.size() > 0){
-                for(CarrierVo vo : carrierVos){
-                    Map<String,String> map = carrierCarCountDao.getCarIncomeByCarrId(vo.getId());
-                    if(!map.isEmpty()){
-                        if(StringUtils.isNotBlank(map.get("carNum"))){
-                            vo.setCarNum(Integer.parseInt(map.get("carNum")));
-                        }
-                        if(StringUtils.isNotBlank(map.get("totalIncome"))){
-                           vo.setTotalIncome(new BigDecimal(map.get("totalIncome")).divide(new BigDecimal(100)));
-                        }
-                    }
+    public ResultVo findCarrier(SeleCarrierDto dto) {
+        PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
+        List<CarrierVo> carrierVos = carrierDao.getCarrierByTerm(dto);
+        if(!CollectionUtils.isEmpty(carrierVos)){
+            for(CarrierVo vo : carrierVos){
+                CarrierCarCount count = carrierCarCountDao.count(vo.getId());
+                if(count != null){
+                    vo.setCarNum(count.getCarNum() == null ? 0:count.getCarNum());
+                    vo.setTotalIncome(count.getIncome() == null ? BigDecimal.ZERO:count.getIncome().divide(new BigDecimal(100)));
                 }
-                PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
-                pageInfo = new PageInfo<>(carrierVos);
             }
-        }catch (Exception e){
-            log.info("根据条件查询承运商信息出现异常");
         }
-        return pageInfo;
+        PageInfo<CarrierVo> pageInfo =  new PageInfo<>(carrierVos);
+        return BaseResultUtil.success(pageInfo);
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public boolean verifyCarrierById(Long id, Integer state) {
-        try{
-            //审核状态 1:审核通过 2:审核拒绝 3：冻结 4:解除
-            Carrier carrier = carrierDao.selectById(id);
-            //审核通过
-            if(FlagEnum.AUDIT_PASS.code == state){
-                //审核通过将承运商信息同步到物流平台
-                ResultData<AddDeptAndUserResp> rd = saveCarrierToPlatform(carrier);
-                if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
-                    throw new CommonException("承运商机构添加失败");
-                }
-                //更新司机userID信息
-                updateDriver(rd.getData().getUserId(), carrier.getId());
-                carrier.setDeptId(rd.getData().getDeptId());
-                carrier.setState(CommonStateEnum.CHECKED.code);
-            }else if(FlagEnum.AUDIT_REJECT.code == state){
-                //审核拒绝
-                carrier.setState(CommonStateEnum.REJECT.code);
-            }else if(FlagEnum.FROZEN.code == state){
-                //冻结
-                carrier.setState(CommonStateEnum.FROZEN.code);
-            }else if(FlagEnum.THAW.code == state){
-                //解冻
-                carrier.setState(CommonStateEnum.CHECKED.code);
+    public boolean verifyCarrier(OperateDto dto) {
+        //审核状态 1:审核通过 2:审核拒绝 3：冻结 4:解除
+        Carrier carrier = carrierDao.selectById(dto.getId());
+        //审核通过
+        if(FlagEnum.AUDIT_PASS.code == dto.getFlag()){
+            //审核通过将承运商信息同步到物流平台
+            ResultData<AddDeptAndUserResp> rd = saveCarrierToPlatform(carrier);
+            if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+                throw new CommonException("承运商机构添加失败");
             }
-            return carrierDao.updateById(carrier) > 0 ? true : false;
-        }catch (Exception e){
-            log.info("审核承运商信息出现异常");
-            throw new CommonException(e.getMessage());
+            //更新司机userID信息
+            updateDriver(rd.getData().getUserId(), carrier.getId());
+            //更新绑定银行卡信息
+            updateBank(rd.getData().getUserId(),carrier.getLegalIdCard());
+            carrier.setDeptId(rd.getData().getDeptId());
+            carrier.setState(CommonStateEnum.CHECKED.code);
+        }else if(FlagEnum.AUDIT_REJECT.code == dto.getFlag()){
+            //审核拒绝
+            carrier.setState(CommonStateEnum.REJECT.code);
+        }else if(FlagEnum.FROZEN.code == dto.getFlag()){
+            //冻结
+            carrier.setState(CommonStateEnum.FROZEN.code);
+        }else if(FlagEnum.THAW.code == dto.getFlag()){
+            //解冻
+            carrier.setState(CommonStateEnum.CHECKED.code);
         }
+        carrier.setOperateTime(NOW);
+        carrier.setOperateUserId(dto.getUserId());
+        Admin admin = adminDao.selectOne(new QueryWrapper<Admin>().lambda().eq(Admin::getUserId, dto.getUserId()).select(Admin::getName));
+        if(admin != null){
+            carrier.setOperateName(admin.getName());
+        }
+        return super.updateById(carrier);
     }
 
     @Override
-    public BaseCarrierVo getBaseCarrierById(Long carrierId) {
-        try{
-            BaseCarrierVo vo = carrierDao.showCarrierById(carrierId);
-            if(vo != null){
-                vo.setMapCodes(carrierCityConService.getMapCodes(carrierId));
-                return vo;
-            }
-        }catch (Exception e){
-            log.info("根据承运商id查看承运商信息出现异常");
+    public ResultVo showBaseCarrier(Long carrierId) {
+        BaseCarrierVo vo = carrierDao.showCarrierById(carrierId);
+        if(vo != null){
+            vo.setMapCodes(carrierCityConService.getMapCodes(carrierId));
         }
-        return null;
+        return BaseResultUtil.success(vo);
     }
 
     @Override
@@ -344,6 +341,27 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             if (driver != null) {
                 driver.setUserId(userId);
                 driverDao.updateById(driver);
+            }
+        }
+    }
+
+    /**
+     * 根据承运商身份证号更新userId
+     * @param userId
+     * @param idCard
+     */
+    private void updateBank(Long userId, String idCard){
+        List<BankCardBind> bankList = bankCardBindDao.selectList(new QueryWrapper<BankCardBind>()
+                .eq("id_card", idCard));
+        Long bankId = null;
+        if (!CollectionUtils.isEmpty(bankList)) {
+            bankId = bankList.get(0).getId();
+        }
+        if (bankId != null) {
+            BankCardBind bcb = bankCardBindDao.selectById(bankId);
+            if (bcb != null) {
+                bcb.setUserId(userId);
+                bankCardBindDao.updateById(bcb);
             }
         }
     }
