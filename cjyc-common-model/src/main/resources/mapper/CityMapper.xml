@@ -125,7 +125,7 @@
         from s_city
         where level = #{level}
     </select>
-    <select id="findFullCityVo" resultType="com.cjyc.common.model.vo.web.city.FullCity">
+    <select id="findFullCityVo" resultType="com.cjyc.common.model.entity.defined.FullCity">
         select
         c1.`name` as area,
         c1.code as areaCode,
@@ -138,7 +138,7 @@
         where c1.code = #{areaCode}
 
     </select>
-    <select id="find5LevelFullCity" resultType="com.cjyc.common.model.vo.web.city.FullCity">
+    <select id="find5LevelFullCity" resultType="com.cjyc.common.model.entity.defined.FullCity">
         select
             c1.`name` as area,
             c1.code as areaCode,
@@ -156,7 +156,7 @@
         join s_city c4 on c3.parent_code = c4.`code`
         where c1.code = #{areaCode}
     </select>
-    <select id="find4LevelFullCity" resultType="com.cjyc.common.model.vo.web.city.FullCity">
+    <select id="find4LevelFullCity" resultType="com.cjyc.common.model.entity.defined.FullCity">
         select
             c1.`name` as area,
             c1.code as areaCode,
@@ -171,7 +171,7 @@
         join s_city c3 on c2.parent_code = c3.`code`
         where c1.code = #{areaCode}
     </select>
-    <select id="findFullCity" resultType="com.cjyc.common.model.vo.web.city.FullCity">
+    <select id="findFullCity" resultType="com.cjyc.common.model.entity.defined.FullCity">
         select
             c1.`name` as area,
             c1.code as areaCode,
@@ -183,7 +183,7 @@
         join s_city c2 on c1.parent_code = c2.`code`
         where c1.code = #{areaCode}
     </select>
-    <select id="find2LevelFullCity" resultType="com.cjyc.common.model.vo.web.city.FullCity">
+    <select id="find2LevelFullCity" resultType="com.cjyc.common.model.entity.defined.FullCity">
         select
             c1.`name` as area,
             c1.code as areaCode,
@@ -193,5 +193,44 @@
         where c1.code = #{areaCode}
     </select>
 
+
+    <!--分页查询城市信息-->
+    <select id="selectCityPage" parameterType="com.cjyc.common.model.dto.web.city.CityQueryDto"
+            resultType="com.cjyc.common.model.entity.defined.FullCity">
+        SELECT
+            t2.regionCode,
+            t2.region,
+            t2.provinceCode,
+            t2.province,
+            t2.cityCode,
+            t2.city,
+            c4.CODE AS areaCode,
+            c4.NAME AS area
+        FROM
+            (
+        SELECT
+            t1.regionCode,
+            t1.region,
+            t1.provinceCode,
+            t1.province,
+            c3.CODE AS cityCode,
+            c3.NAME AS city
+        FROM
+            (
+        SELECT
+            c1.CODE AS regionCode,
+            c1.`name` AS region,
+            c2.`code` AS provinceCode,
+            c2.`name` AS province
+        FROM
+            s_city c1
+            JOIN s_city c2 ON c1.CODE = c2.parent_code
+        WHERE
+            c1.LEVEL = 0
+            ) t1
+            JOIN s_city c3 ON t1.provinceCode = c3.parent_code
+            ) t2
+            JOIN s_city c4 ON t2.cityCode = c4.parent_code
+    </select>
 
 </mapper>

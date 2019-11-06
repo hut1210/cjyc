@@ -18,7 +18,7 @@ import com.cjyc.common.model.exception.ServerException;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.city.FullCity;
+import com.cjyc.common.model.entity.defined.FullCity;
 import com.cjyc.common.system.service.ICsSendNoService;
 import com.cjyc.common.system.service.ICsStoreService;
 import com.cjyc.common.system.service.ICsWaybillService;

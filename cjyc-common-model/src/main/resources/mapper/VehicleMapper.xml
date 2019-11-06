@@ -11,19 +11,17 @@
         <result column="ownership_type" property="ownershipType" />
         <result column="position_sensor_flag" property="positionSensorFlag" />
         <result column="tachograph_flag" property="tachographFlag" />
-        <result column="state" property="state" />
         <result column="driving_license" property="drivingLicense" />
         <result column="driving_license_left_img" property="drivingLicenseLeftImg" />
         <result column="driving_license_right_img" property="drivingLicenseRightImg" />
         <result column="driving_license_expire" property="drivingLicenseExpire" />
         <result column="create_user_id" property="createUserId" />
-        <result column="create_name" property="createName" />
         <result column="create_time" property="createTime" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, plate_no, vin, default_carry_num, ownership_type, position_sensor_flag, tachograph_flag, state, driving_license, driving_license_left_img, driving_license_right_img, driving_license_expire, create_user_id, create_name, create_time
+        id, plate_no, vin, default_carry_num, ownership_type, position_sensor_flag, tachograph_flag, driving_license, driving_license_left_img, driving_license_right_img, driving_license_expire, create_user_id, create_time
     </sql>
 
     <!-- 根据车辆id查看车辆信息 -->

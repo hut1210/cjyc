@@ -3,7 +3,7 @@ package com.cjyc.common.model.dao;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.entity.City;
 import com.cjyc.common.model.vo.CityTreeVo;
-import com.cjyc.common.model.vo.web.city.FullCity;
+import com.cjyc.common.model.entity.defined.FullCity;
 import com.cjyc.common.model.vo.web.city.ProvinceCityVo;
 import com.cjyc.common.model.vo.web.city.TreeCityVo;
 import org.apache.ibatis.annotations.Param;
@@ -91,5 +91,11 @@ public interface ICityDao extends BaseMapper<City> {
     FullCity find4LevelFullCity(String areaCode);
     FullCity findFullCity(String areaCode);
     FullCity find2LevelFullCity(String areaCode);
+
+    /**
+     * 分页查询城市信息
+     * @return
+     */
+    List<FullCity> selectCityPage();
 }
 

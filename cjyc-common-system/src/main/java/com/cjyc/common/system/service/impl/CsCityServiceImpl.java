@@ -2,7 +2,7 @@ package com.cjyc.common.system.service.impl;
 
 import com.cjyc.common.model.dao.ICityDao;
 import com.cjyc.common.model.enums.city.CityLevelEnum;
-import com.cjyc.common.model.vo.web.city.FullCity;
+import com.cjyc.common.model.entity.defined.FullCity;
 import com.cjyc.common.system.service.ICsCityService;
 import org.springframework.stereotype.Service;
 

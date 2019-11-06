@@ -95,22 +95,22 @@ public class PartnerDto implements Serializable {
     @ApiModelProperty("法人身份证复印件正面")
     @NotBlank(groups = {PartnerDto.SavePartnerDto.class},message = "法人身份证复印件正面不能为空")
     @NotBlank(groups = {PartnerDto.updatePartnerDto.class},message = "法人身份证复印件正面不能为空")
-    private String legalIdCardFrontImg;
+    private String legalIdcardFrontImg;
 
     @ApiModelProperty("法人身份证复印件反面")
     @NotBlank(groups = {PartnerDto.SavePartnerDto.class},message = "法人身份证复印件反面不能为空")
     @NotBlank(groups = {PartnerDto.updatePartnerDto.class},message = "法人身份证复印件反面不能为空")
-    private String legalIdCardBackImg;
+    private String legalIdcardBackImg;
 
     @ApiModelProperty("联系人身份证正面")
     @NotBlank(groups = {PartnerDto.SavePartnerDto.class},message = "联系人身份证正面不能为空")
     @NotBlank(groups = {PartnerDto.updatePartnerDto.class},message = "联系人身份证正面不能为空")
-    private String linkmanIdCardFrontImg;
+    private String linkmanIdcardFrontImg;
 
     @ApiModelProperty("联系人身份证反面")
     @NotBlank(groups = {PartnerDto.SavePartnerDto.class},message = "联系人身份证反面不能为空")
     @NotBlank(groups = {PartnerDto.updatePartnerDto.class},message = "联系人身份证反面不能为空")
-    private String linkmanIdCardBackImg;
+    private String linkmanIdcardBackImg;
 
     @ApiModelProperty("授权书正面")
     private String authorizationFrontImg;

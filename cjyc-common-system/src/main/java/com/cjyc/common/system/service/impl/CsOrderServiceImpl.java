@@ -1,12 +1,9 @@
 package com.cjyc.common.system.service.impl;
 
 import com.cjyc.common.model.dao.IOrderCarDao;
-import com.cjyc.common.model.dao.IOrderCarLogDao;
-import com.cjyc.common.model.dao.IOrderChangeLogDao;
 import com.cjyc.common.model.dao.IOrderDao;
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.entity.*;
-import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.PayModeEnum;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
@@ -19,7 +16,7 @@ import com.cjyc.common.model.exception.ParameterException;
 import com.cjyc.common.model.exception.ServerException;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.city.FullCity;
+import com.cjyc.common.model.entity.defined.FullCity;
 import com.cjyc.common.system.service.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;

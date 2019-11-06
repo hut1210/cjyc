@@ -1,7 +1,7 @@
 package com.cjyc.common.system.service;
 
 import com.cjyc.common.model.enums.city.CityLevelEnum;
-import com.cjyc.common.model.vo.web.city.FullCity;
+import com.cjyc.common.model.entity.defined.FullCity;
 
 /**
  * 城市公用业务类

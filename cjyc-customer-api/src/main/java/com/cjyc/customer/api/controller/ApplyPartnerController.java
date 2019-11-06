@@ -1,7 +1,6 @@
 package com.cjyc.customer.api.controller;
 
-import com.cjyc.common.model.dto.KeywordDto;
-import com.cjyc.common.model.dto.web.customer.PartnerDto;
+import com.cjyc.common.model.dto.customer.partner.ApplyPartnerDto;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.customer.api.service.IApplyPartnerService;
 import io.swagger.annotations.Api;
@@ -26,7 +25,7 @@ public class ApplyPartnerController {
 
     @ApiOperation(value = "申请合伙人")
     @PostMapping(value = "/applyPartner")
-    public ResultVo applyPartner(@RequestBody PartnerDto dto) {
+    public ResultVo applyPartner(@RequestBody ApplyPartnerDto dto) {
         return applyPartnerService.applyPartner(dto);
     }
 }

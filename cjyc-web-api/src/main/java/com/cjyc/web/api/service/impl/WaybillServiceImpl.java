@@ -7,36 +7,20 @@ import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.waybill.CysWaybillDto;
 import com.cjyc.common.model.dto.web.waybill.*;
 import com.cjyc.common.model.entity.*;
-import com.cjyc.common.model.enums.*;
-import com.cjyc.common.model.enums.order.OrderCarLocalStateEnum;
-import com.cjyc.common.model.enums.order.OrderCarStateEnum;
-import com.cjyc.common.model.enums.order.OrderCarTrunkStateEnum;
-import com.cjyc.common.model.enums.order.OrderStateEnum;
-import com.cjyc.common.model.enums.task.TaskStateEnum;
-import com.cjyc.common.model.enums.waybill.*;
-import com.cjyc.common.model.exception.ParameterException;
-import com.cjyc.common.model.exception.ServerException;
-import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.city.FullCity;
 import com.cjyc.common.model.vo.web.waybill.*;
 import com.cjyc.common.system.service.ICsWaybillService;
 import com.cjyc.web.api.service.ISendNoService;
 import com.cjyc.web.api.service.IWaybillService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * <p>

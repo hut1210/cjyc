@@ -39,12 +39,6 @@ public class CustomerContractVo implements Serializable {
     @ApiModelProperty(value = "项目性质 0：新开  1：存量")
     private Integer projectNature;
 
-    @ApiModelProperty(value = "项目签署日期")
-    private String dateOfProSign;
-
-    @ApiModelProperty(value = "一次性合同 0：否   1：是")
-    private Integer oneOffContract;
-
     @ApiModelProperty(value = "项目预计运量")
     private BigDecimal proTraVolume;
 

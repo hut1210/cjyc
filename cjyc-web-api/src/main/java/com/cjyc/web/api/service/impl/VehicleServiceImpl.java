@@ -11,6 +11,7 @@ import com.cjyc.common.model.entity.DriverVehicleCon;
 import com.cjyc.common.model.entity.Vehicle;
 import com.cjyc.common.model.entity.VehicleRunning;
 import com.cjyc.common.model.enums.transport.BusinessStateEnum;
+import com.cjyc.common.model.enums.transport.VehicleOwnerEnum;
 import com.cjyc.common.model.enums.transport.VehicleStateEnum;
 import com.cjyc.common.model.enums.transport.VerifyStateEnum;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
@@ -20,6 +21,7 @@ import com.cjyc.web.api.service.IVehicleService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +32,6 @@ import java.util.List;
 
 @Service
 @Slf4j
-@Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
 public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implements IVehicleService {
 
     @Resource
@@ -44,143 +45,12 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
 
     @Override
     public boolean saveVehicle(VehicleDto dto) {
-        try{
-            //保存运输车辆信息
-            Vehicle vehicle = new Vehicle();
-            vehicle = encapVehicle(vehicle,dto);
-            int i = iVehicleDao.insert(vehicle);
-            if(i > 0){
-                //保存运行运力池
-                VehicleRunning vr = new VehicleRunning();
-                vr = encapVehicleRunning(vr,dto,vehicle);
-                int num = iVehicleRunningDao.insert(vr);
-                if(num > 0){
-                    //保存司机与运力关系
-                    DriverVehicleCon dvc = new DriverVehicleCon();
-                    dvc.setDriverId(Long.valueOf(dto.getDriverId()));
-                    dvc.setVehicleId(vr.getVehicleId());
-                   return iDriverVehicleConDao.insert(dvc) > 0 ? true:false;
-                }
-            }
-        }catch (Exception e){
-            log.info("新增车辆信息出现异常");
-            throw new CommonException(e.getMessage());
-        }
-        return false;
+        Vehicle vehicle = new Vehicle();
+        BeanUtils.copyProperties(dto,vehicle);
+        vehicle.setOwnershipType(VehicleOwnerEnum.PERSONAL.code);
+        vehicle.setCreateUserId(dto.getUserId());
+        vehicle.setCreateTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
+        return super.save(vehicle);
     }
 
-    @Override
-    public VehicleVo showVehicle(Long vehicleId) {
-        try{
-            VehicleVo vehicleVo = iVehicleDao.getVehicleById(vehicleId);
-            if(vehicleVo != null){
-                return vehicleVo;
-            }
-        }catch (Exception e){
-            log.info("根据id查看车辆信息出现异常");
-        }
-        return null;
-    }
-
-    @Override
-    public boolean updateVehicle(VehicleDto dto) {
-        try{
-            //更新车辆信息
-            Vehicle vehicle = iVehicleDao.selectById(dto.getId());
-            vehicle = encapVehicle(vehicle,dto);
-            int i = iVehicleDao.updateById(vehicle);
-            if(i > 0){
-                //更新运行运力池
-                VehicleRunning vr = iVehicleRunningDao.getVehiRunByVehiId(dto.getId());
-                vr = encapVehicleRunning(vr,dto,vehicle);
-                int num = iVehicleRunningDao.updateById(vr);
-                if(num > 0){
-                    //更新司机与运力关系
-                    DriverVehicleCon dvc = iDriverVehicleConDao.getDriverVehicleCon(dto.getId());
-                    dvc.setDriverId(Long.valueOf(dto.getDriverId()));
-                    dvc.setVehicleId(Long.valueOf(dto.getId()));
-                    return iDriverVehicleConDao.updateById(dvc) > 0 ? true:false;
-                }
-            }
-        }catch (Exception e){
-            log.info("根据车辆id更新车辆信息出现异常");
-            throw new CommonException(e.getMessage());
-        }
-        return false;
-    }
-
-    @Override
-    public PageInfo<VehicleVo> getVehicleByTerm(SelectVehicleDto dto) {
-        PageInfo<VehicleVo> pageInfo = null;
-        try{
-            List<VehicleVo> vehicleVos = iVehicleDao.getVehicleByTerm(dto);
-            if(vehicleVos != null && vehicleVos.size() > 0){
-                for(VehicleVo vo : vehicleVos){
-                    //vo.setCreateTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
-                }
-                PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
-                pageInfo = new PageInfo<>(vehicleVos);
-            }
-        }catch (Exception e){
-            log.info("根据条件查询车辆信息出现异常");
-        }
-        return pageInfo;
-    }
-
-    @Override
-    public boolean delVehicleByIds(List<Long> ids) {
-        int i = 0;
-        int j = 0;
-        try{
-            //删除车辆与绑定信息
-            for(Long id : ids){
-                i = iVehicleRunningDao.delVehicleRunByVehId(id);
-                j = iDriverVehicleConDao.delDriverVehConByVehId(id);
-            }
-            //删除车辆信息
-            if(i == j && i == ids.size() && j == ids.size()){
-               return iVehicleDao.deleteBatchIds(ids) == ids.size() ? true : false;
-            }
-        }catch (Exception e){
-            log.info("根据车辆ids删除车辆信息出现异常");
-            throw new CommonException(e.getMessage());
-        }
-        return false;
-    }
-
-    /**
-     * 封装车辆信息
-     * @param v
-     * @param dto
-     * @return
-     */
-    private Vehicle encapVehicle(Vehicle v,VehicleDto dto){
-        try{
-            v.setPlateNo(dto.getPlateNo());
-            v.setDefaultCarryNum(Integer.valueOf(dto.getDefaultCarryNum()));
-            v.setOwnershipType(Integer.valueOf(dto.getOwnershipType()));
-            v.setState(VerifyStateEnum.BE_AUDITED.code);
-            v.setCreateUserId(Long.valueOf(dto.getUserId()));
-            v.setCreateTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
-        }catch (Exception e){
-            log.info("封装车辆信息出现异常");
-        }
-        return v;
-    }
-
-    private VehicleRunning encapVehicleRunning(VehicleRunning vr,VehicleDto dto,Vehicle vehicle){
-        try{
-            vr.setDriverId(dto.getDriverId());
-            vr.setVehicleId(vehicle.getId());
-            vr.setPlateNo(dto.getPlateNo());
-            vr.setCarryCarNum(dto.getDefaultCarryNum());
-            vr.setState(VehicleStateEnum.EFFECTIVE.code);
-            vr.setRunningState(BusinessStateEnum.OUTAGE.code);
-            vr.setCreateTime(LocalDateTimeUtil.convertToLong(LocalDateTimeUtil.formatLDTNow(TimePatternConstant.COMPLEX_TIME_FORMAT),
-                    TimePatternConstant.COMPLEX_TIME_FORMAT));
-        }catch (Exception e){
-            log.info("封装运力信息出现异常");
-        }
-        return vr;
-    }
 }
