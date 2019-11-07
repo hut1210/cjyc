@@ -103,13 +103,13 @@ public class Carrier implements Serializable {
     @ApiModelProperty(value = "是否开发票 0：否  1：是")
     private Integer isInvoice;
 
-    @ApiModelProperty(value = "创建者userId")
+    @ApiModelProperty(value = "创建者id")
     private Long createUserId;
 
     @ApiModelProperty(value = "创建时间")
     private Long createTime;
 
-    @ApiModelProperty(value = "操作人userId")
+    @ApiModelProperty(value = "操作人id")
     private Long operateUserId;
 
     @ApiModelProperty(value = "操作时间")
