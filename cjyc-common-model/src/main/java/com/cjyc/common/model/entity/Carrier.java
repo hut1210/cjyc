@@ -110,13 +110,10 @@ public class Carrier implements Serializable {
     private Long createTime;
 
     @ApiModelProperty(value = "操作人id")
-    private Long operateUserId;
+    private Long checkUserId;
 
     @ApiModelProperty(value = "操作时间")
-    private Long operateTime;
-
-    @ApiModelProperty(value = "操作人")
-    private String operateName;
+    private Long checkTime;
 
 
 }

@@ -97,11 +97,11 @@ public class Customer implements Serializable {
     @ApiModelProperty(value = "注册时间，用户自己注册APP或者首次登陆操作APP时间")
     private Long registerTime;
 
-    @ApiModelProperty(value = "注册操作人")
-    private String registerUserName;
+    @ApiModelProperty(value = "创建操作人id")
+    private Long createUserId;
 
-    @ApiModelProperty(value = "注册操作人id")
-    private Long registerUserId;
+    @ApiModelProperty(value = "创建时间")
+    private Long createTime;
 
     @ApiModelProperty(value = "审核时间")
     private Long checkTime;

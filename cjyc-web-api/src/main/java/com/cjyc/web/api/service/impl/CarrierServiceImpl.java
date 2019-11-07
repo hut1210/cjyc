@@ -105,11 +105,11 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         carrier.setBusinessState(BusinessStateEnum.BUSINESS.code);
         carrier.setCreateUserId(dto.getUserId());
         carrier.setCreateTime(NOW);
-        carrier.setOperateUserId(dto.getUserId());
-        carrier.setOperateTime(NOW);
+        //carrier.setOperateUserId(dto.getUserId());
+        //carrier.setOperateTime(NOW);
         Admin admin = adminDao.selectOne(new QueryWrapper<Admin>().lambda().eq(Admin::getUserId, dto.getUserId()).select(Admin::getName));
         if(admin != null){
-            carrier.setOperateName(admin.getName());
+            //carrier.setOperateName(admin.getName());
         }
         super.save(carrier);
 
@@ -126,10 +126,10 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         driver.setCreateUserId(dto.getUserId());
         driver.setCreateTime(NOW);
         if(admin != null){
-            driver.setOperateName(admin.getName());
+            //driver.setOperateName(admin.getName());
         }
-        driver.setOperateTime(NOW);
-        driver.setOperateUserId(dto.getUserId());
+        //driver.setOperateTime(NOW);
+        //driver.setOperateUserId(dto.getUserId());
         driverDao.insert(driver);
 
         //承运商与司机绑定关系
@@ -168,10 +168,10 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         }
         Admin admin = adminDao.selectOne(new QueryWrapper<Admin>().lambda().eq(Admin::getUserId, dto.getUserId()).select(Admin::getName));
         if(admin != null){
-            carrier.setOperateName(admin.getName());
+            //carrier.setOperateName(admin.getName());
         }
-        carrier.setOperateTime(NOW);
-        carrier.setOperateUserId(dto.getUserId());
+        //carrier.setOperateTime(NOW);
+        //carrier.setOperateUserId(dto.getUserId());
         super.updateById(carrier);
         //更新承运商司机管理员：司机更新用途？
         if(origCarrier.getDeptId() == null){
@@ -248,11 +248,11 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             //解冻
             carrier.setState(CommonStateEnum.CHECKED.code);
         }
-        carrier.setOperateTime(NOW);
-        carrier.setOperateUserId(dto.getUserId());
+        //carrier.setOperateTime(NOW);
+        //carrier.setOperateUserId(dto.getUserId());
         Admin admin = adminDao.selectOne(new QueryWrapper<Admin>().lambda().eq(Admin::getUserId, dto.getUserId()).select(Admin::getName));
         if(admin != null){
-            carrier.setOperateName(admin.getName());
+           // carrier.setOperateName(admin.getName());
         }
         return super.updateById(carrier);
     }

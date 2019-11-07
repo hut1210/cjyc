@@ -30,14 +30,13 @@
         <result column="is_invoice" property="isInvoice" />
         <result column="create_user_id" property="createUserId" />
         <result column="create_time" property="createTime" />
-        <result column="operate_user_id" property="operateUserId" />
-        <result column="operate_time" property="operateTime" />
-        <result column="operate_name" property="operateName" />
+        <result column="check_user_id" property="checkUserId" />
+        <result column="check_time" property="checkTime" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, dept_id, name, type, legal_name, legal_id_card, linkman, linkman_phone, mode, bus_license_front_img, bus_license_back_img, transport_license_front_img, transport_license_back_img, bank_open_front_img, bank_open_back_img, admin_num, default_admin_id, driver_num, running_driver_num, settle_type, settle_period, settle_corporation, state, business_state, is_invoice, create_user_id, create_time, operate_user_id, operate_time, operate_name
+        id, dept_id, name, type, legal_name, legal_id_card, linkman, linkman_phone, mode, bus_license_front_img, bus_license_back_img, transport_license_front_img, transport_license_back_img, bank_open_front_img, bank_open_back_img, admin_num, default_admin_id, driver_num, running_driver_num, settle_type, settle_period, settle_corporation, state, business_state, is_invoice, create_user_id, create_time, check_user_id, check_time
     </sql>
 
     <!-- 根据司机id查询承运商 -->

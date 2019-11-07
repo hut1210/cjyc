@@ -114,11 +114,11 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         driver.setState(CommonStateEnum.WAIT_CHECK.code);
         driver.setCreateTime(NOW);
         driver.setCreateUserId(dto.getUserId());
-        driver.setOperateUserId(dto.getUserId());
-        driver.setOperateTime(NOW);
+        //driver.setOperateUserId(dto.getUserId());
+        //driver.setOperateTime(NOW);
         Admin admin = adminDao.selectOne(new QueryWrapper<Admin>().lambda().eq(Admin::getUserId, dto.getUserId()).select(Admin::getName));
         if(admin != null){
-            driver.setOperateName(admin.getName());
+            //driver.setOperateName(admin.getName());
         }
         super.save(driver);
         if(StringUtils.isNotBlank(dto.getPlateNo())){
@@ -147,10 +147,10 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         carrier.setSettleType(0);
         carrier.setCreateTime(NOW);
         carrier.setCreateUserId(dto.getUserId());
-        carrier.setOperateUserId(dto.getUserId());
-        carrier.setOperateTime(NOW);
+        //carrier.setOperateUserId(dto.getUserId());
+        //carrier.setOperateTime(NOW);
         if(admin != null){
-            carrier.setOperateName(admin.getName());
+            //carrier.setOperateName(admin.getName());
         }
         carrierDao.insert(carrier);
 
@@ -222,13 +222,13 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         }
         Admin admin = adminDao.selectOne(new QueryWrapper<Admin>().lambda().eq(Admin::getUserId, dto.getUserId()).select(Admin::getName));
         if(admin != null){
-            driver.setOperateName(admin.getName());
-            carr.setOperateName(admin.getName());
+            //driver.setOperateName(admin.getName());
+            //carr.setOperateName(admin.getName());
         }
-        driver.setOperateTime(NOW);
-        driver.setOperateUserId(dto.getUserId());
-        carr.setOperateTime(NOW);
-        carr.setOperateUserId(dto.getUserId());
+        //driver.setOperateTime(NOW);
+        //driver.setOperateUserId(dto.getUserId());
+       // carr.setOperateTime(NOW);
+        //carr.setOperateUserId(dto.getUserId());
         int n = driverDao.updateById(driver);
         int m = carrierDao.updateById(carr);
         if(n >= 1 && m >= 1){
@@ -262,11 +262,11 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         }
         BeanUtils.copyProperties(dto,driver);
         driver.setUserId(driver.getUserId());
-        driver.setOperateUserId(dto.getUserId());
-        driver.setOperateTime(NOW);
+        //driver.setOperateUserId(dto.getUserId());
+        //driver.setOperateTime(NOW);
         Admin admin = adminDao.selectOne(new QueryWrapper<Admin>().lambda().eq(Admin::getUserId, dto.getUserId()).select(Admin::getName));
         if(admin != null){
-            driver.setOperateName(admin.getName());
+           // driver.setOperateName(admin.getName());
         }
         super.updateById(driver);
 

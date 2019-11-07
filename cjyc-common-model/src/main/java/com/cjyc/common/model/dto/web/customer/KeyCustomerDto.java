@@ -19,13 +19,13 @@ public class KeyCustomerDto implements Serializable {
     public interface UpdateKeyCustomerVo {
     }
 
-    @NotNull(groups = {SaveKeyCustomerVo.class},message = "登陆用户userId不能为空")
-    @ApiModelProperty(value = "登陆用户userId")
-    private Long userId;
+    @NotNull(groups = {SaveKeyCustomerVo.class},message = "登陆用户id不能为空")
+    @ApiModelProperty(value = "登陆用户id(adminId)")
+    private Long adminId;
 
-    @ApiModelProperty(value = "大客户主键id")
-    @NotNull(groups = {UpdateKeyCustomerVo.class},message = "大客户主键id不能为空")
-    private Long id;
+    @ApiModelProperty(value = "大客户主键id(customerId)")
+    @NotNull(groups = {UpdateKeyCustomerVo.class},message = "大客户主键id(customerId)不能为空")
+    private Long customerId;
 
      @NotBlank(groups = {SaveKeyCustomerVo.class},message = "客户全称不能为空")
      @NotBlank(groups = {UpdateKeyCustomerVo.class},message = "客户全称不能为空")
