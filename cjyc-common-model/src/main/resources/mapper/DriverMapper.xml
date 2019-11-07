@@ -102,37 +102,36 @@
 
     <!--根据条件查询司机信息-->
     <select id="getDriverByTerm" resultType="com.cjyc.common.model.vo.web.driver.DriverVo" parameterType="com.cjyc.common.model.dto.web.driver.SelectDriverDto">
-            SELECT
-        d.id AS id,
-        d.user_id AS userId,
-        d.real_name AS realName,
-        d.phone AS phone,
-        d.id_card AS idCard,
-        d.id_card_front_img AS idCardFrontImg,
-        d.id_card_back_img AS idCardBackImg,
-        d.driver_licence_front_img AS driverLicenceFrontImg,
-        d.travel_licence_front_img AS travelLicenceFrontImg,
-        d.taxi_licence_front_img AS taxiLicenceFrontImg,
-        d.qualifi_cert_front_img AS qualifiCertFrontImg,
-        d.MODE AS MODE,
-        d.source AS source,
-        d.business_state AS businessState,
-        d.state AS state,
-        v.plate_no AS plateNo,
-        card.card_name AS cardName,
-        card.bank_name AS bankName,
-        card.card_no AS cardNo,
-        carr.settle_type AS settleType,
-        cou.car_num AS carNum,
-        cou.total_income AS totalIncome
-    FROM
-        d_driver d
-        LEFT JOIN d_carrier_driver_con driCon ON driCon.driver_id = d.id
-        LEFT JOIN d_carrier carr ON carr.id = driCon.carrier_id
-        LEFT JOIN s_bank_card_bind card ON card.user_id = d.user_id
-        LEFT JOIN d_driver_vehicle_con con ON con.driver_id = d.id
-        LEFT JOIN d_vehicle v ON v.id = con.vehicle_id
-        LEFT JOIN d_driver_car_count cou ON cou.driver_id = d.id
+        SELECT
+            carr.id AS carrierId,
+            d.id AS id,
+            d.user_id AS userId,
+            d.real_name AS realName,
+            d.phone AS phone,
+            d.MODE AS MODE,
+            carr.settle_type AS settleType,
+            v.plate_no AS plateNo,
+            card.card_name AS cardName,
+            card.bank_name AS bankName,
+            card.card_no AS cardNo,
+            d.id_card_front_img AS idCardFrontImg,
+            d.id_card_back_img AS idCardBackImg,
+            d.driver_licence_front_img AS driverLicenceFrontImg,
+            d.travel_licence_front_img AS travelLicenceFrontImg,
+            d.taxi_licence_front_img AS taxiLicenceFrontImg,
+            d.qualifi_cert_front_img AS qualifiCertFrontImg,
+            d.source AS source,
+            d.business_state AS businessState,
+            d.state AS state,
+            d.operate_name as operateName
+            FROM
+            d_driver d
+            LEFT JOIN d_carrier_driver_con driCon ON driCon.driver_id = d.id
+            LEFT JOIN d_carrier carr ON carr.id = driCon.carrier_id
+            LEFT JOIN s_bank_card_bind card ON card.user_id = d.user_id
+            LEFT JOIN d_driver_vehicle_con con ON con.driver_id = d.id
+            LEFT JOIN d_vehicle v ON v.id = con.vehicle_id
+
         <where>
             <if test="realName != null and realName.trim() != ''">
                 d.real_name like CONCAT('%',#{realName},'%')
@@ -146,26 +145,30 @@
             <if test="plateNo != null and plateNo.trim() != ''">
                 and  v.plate_no = #{plateNo}
             </if>
-            <if test="identity != null and identity != ''">
+            <if test="identity != null">
                 and  d.identity = #{identity}
             </if>
-            <if test="businessState != null and businessState != ''">
+            <if test="businessState != null">
                 and  d.business_state = #{businessState}
             </if>
-            <if test="state != null and state != ''">
+            <if test="state != null">
                 and  d.state = #{state}
             </if>
-            <if test="mode != null and mode != ''">
+            <if test="mode != null">
                 and  d.mode = #{mode}
             </if>
+            and d.type = 2 and d.identity = 0
         </where>
     </select>
 
     <!--根据司机id/userId查看司机信息-->
     <select id="getDriverById" resultType="com.cjyc.common.model.vo.web.driver.ShowDriverVo">
-      SELECT
+        SELECT
+            d.id AS id,
+            d.user_id AS userId,
             d.real_name AS realName,
             d.phone AS phone,
+            d.MODE AS MODE,
             d.id_card_front_img AS idCardFrontImg,
             d.id_card_back_img AS idCardBackImg,
             d.driver_licence_front_img AS driverLicenceFrontImg,
@@ -174,12 +177,14 @@
             d.travel_licence_back_img AS travelLicenceBackImg,
             d.taxi_licence_front_img AS taxiLicenceFrontImg,
             d.taxi_licence_back_img AS taxiLicenceBackImg,
+            d.qualifi_cert_front_img AS qualifiCertFrontImg,
+            d.qualifi_cert_back_img AS qualifiCertBackImg,
             bank.card_name AS cardName,
             bank.bank_name AS bankName,
             bank.card_no AS cardNo,
+            veh.id AS vehicleId,
             veh.plate_no AS plateNo,
-            veh.default_carry_num AS defaultCarryNum,
-            d.MODE  AS MODE
+            veh.default_carry_num AS defaultCarryNum
         FROM
             d_driver d
             JOIN d_driver_vehicle_con con ON con.driver_id = d.id
@@ -200,9 +205,9 @@
             dri.phone AS phone
         FROM
             d_driver dri
-            JOIN d_carrier_driver_con cdc ON cdc.driver_id = dri.id
+            JOIN d_carrier_driver_con cdc ON cdc.driver_id = dri.user_id
             JOIN d_carrier carr ON carr.id = cdc.carrier_id
-        WHERE carr.id = #{carrierId}
+        WHERE carr.id = #{carrierId} and cdc.role = 3
     </select>
     <select id="findByUserId" resultType="com.cjyc.common.model.entity.Driver">
         select

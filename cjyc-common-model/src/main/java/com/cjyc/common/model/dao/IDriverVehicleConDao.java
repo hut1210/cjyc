@@ -35,4 +35,11 @@ public interface IDriverVehicleConDao extends BaseMapper<DriverVehicleCon> {
      */
     int delDriverVehConByVehId(@Param("vehicleId") Long vehicleId);
 
+    /**
+     * 根据车辆id删除与司机绑定关系
+     * @param vehicleId
+     * @return
+     */
+    int removeCon(@Param("vehicleId") Long vehicleId);
+
 }

@@ -8,6 +8,7 @@ package com.cjyc.web.api.service.impl;
         import com.cjkj.usercenter.dto.common.AddUserResp;
         import com.cjkj.usercenter.dto.common.UpdateUserReq;
         import com.cjyc.common.model.dao.*;
+        import com.cjyc.common.model.dto.web.OperateDto;
         import com.cjyc.common.model.dto.web.driver.DriverDto;
         import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
         import com.cjyc.common.model.dto.web.user.DriverListDto;
@@ -38,8 +39,11 @@ package com.cjyc.web.api.service.impl;
         import org.springframework.stereotype.Service;
         import org.springframework.transaction.annotation.Propagation;
         import org.springframework.transaction.annotation.Transactional;
+        import org.springframework.util.CollectionUtils;
+        import org.springframework.web.bind.annotation.RequestBody;
 
         import javax.annotation.Resource;
+        import java.math.BigDecimal;
         import java.time.LocalDateTime;
         import java.util.List;
 
@@ -73,6 +77,9 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
 
     @Resource
     private ICarrierCityConDao carrierCityConDao;
+
+    @Resource
+    private ICarrierCarCountDao carrierCarCountDao;
 
     @Resource
     private ICarrierCityConService carrierCityConService;
@@ -137,176 +144,163 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         carrier.setLinkman(dto.getRealName());
         carrier.setLinkmanPhone(dto.getPhone());
         carrier.setType(CarrierTypeEnum.PERSONAL.code);
-        carrier.setSettleType(PayModeEnum.COLLECT.code);
+        carrier.setSettleType(0);
         carrier.setCreateTime(NOW);
         carrier.setCreateUserId(dto.getUserId());
+        carrier.setOperateUserId(dto.getUserId());
+        carrier.setOperateTime(NOW);
+        if(admin != null){
+            carrier.setOperateName(admin.getName());
+        }
         carrierDao.insert(carrier);
+
         //保存司机与承运商关系
         CarrierDriverCon cdc = new CarrierDriverCon();
         cdc.setCarrierId(carrier.getId());
         cdc.setDriverId(driver.getId());
-        cdc.setRole(DriverIdentityEnum.SUB_DRIVER.code);
+        cdc.setRole(DriverIdentityEnum.PERSONAL_DRIVER.code);
         carrierDriverConDao.insert(cdc);
         //添加承运商业务范围
-        carrierCityConService.batchSave(carrier.getId(),dto.getCodes());
-        return true;
+        return carrierCityConService.batchSave(carrier.getId(),dto.getCodes());
     }
 
     @Override
-    public PageInfo<DriverVo> getDriverByTerm(SelectDriverDto dto) {
-        PageInfo<DriverVo> pageInfo = null;
-        try{
-            List<DriverVo> driverVos = driverDao.getDriverByTerm(dto);
-            if(driverVos != null && driverVos.size() > 0){
-                PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
-                pageInfo = new PageInfo<>(driverVos);
-            }
-        }catch (Exception e){
-            log.info("根据条件查询司机出现异常");
-        }
-        return pageInfo;
-    }
-
-    @Override
-    public boolean examineDriById(Long id,Integer flag) {
-        try{
-            //获取司机
-            Driver driver = driverDao.selectById(id);
-            //获取承运商
-            Carrier carr = carrierDao.getCarrierById(id);
-            //审核通过
-            if(flag == FlagEnum.AUDIT_PASS.code){
-                //保存司机用户到平台，返回用户id
-                ResultData<Long> saveRd = saveDriverToPlatform(driver);
-                if (!ReturnMsg.SUCCESS.getCode().equals(saveRd.getCode())) {
-                    throw new CommonException("司机信息保存失败，原因：" + saveRd.getMsg());
+    public ResultVo findDriver(SelectDriverDto dto) {
+        PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
+        List<DriverVo> driverVos = driverDao.getDriverByTerm(dto);
+        if(!CollectionUtils.isEmpty(driverVos)){
+            for(DriverVo vo : driverVos){
+                CarrierCarCount count = carrierCarCountDao.count(vo.getId());
+                if(count != null){
+                    vo.setCarNum(count.getCarNum() == null ? 0:count.getCarNum());
+                    vo.setTotalIncome(count.getIncome() == null ? BigDecimal.ZERO:count.getIncome().divide(new BigDecimal(100)));
                 }
-                driver.setUserId(saveRd.getData());
-                //driver.setState(VerifyStateEnum.AUDIT_PASS.code);
-                driverDao.updateById(driver);
-                //更新承运商
-                //carr.setState(VerifyStateEnum.AUDIT_PASS.code);
-                carrierDao.updateById(carr);
-                //更新运力
-                VehicleRunning vr = vehicleRunningDao.getVehiRunByDriverId(id);
+            }
+        }
+        PageInfo<DriverVo> pageInfo = new PageInfo<>(driverVos);
+        return BaseResultUtil.success(pageInfo);
+    }
+
+    @Override
+    public boolean verifyDriver(OperateDto dto) {
+        //获取司机
+        Driver driver = driverDao.selectById(dto.getId());
+        //获取承运商
+        Carrier carr = carrierDao.getCarrierById(dto.getId());
+        //审核通过
+        if(dto.getFlag() == FlagEnum.AUDIT_PASS.code){
+            //保存司机用户到平台，返回用户id
+            ResultData<Long> saveRd = saveDriverToPlatform(driver);
+            if (!ReturnMsg.SUCCESS.getCode().equals(saveRd.getCode())) {
+                throw new CommonException("司机信息保存失败，原因：" + saveRd.getMsg());
+            }
+            driver.setUserId(saveRd.getData());
+            driver.setState(CommonStateEnum.CHECKED.code);
+            //更新承运商
+            carr.setState(CommonStateEnum.CHECKED.code);
+            //更新运力
+            VehicleRunning vr = vehicleRunningDao.getVehiRunByDriverId(dto.getId());
+            if(vr != null){
                 vr.setState(VehicleStateEnum.EFFECTIVE.code);
                 return vehicleRunningDao.updateById(vr) > 0 ? true : false;
-            }else if(flag == FlagEnum.AUDIT_REJECT.code){
-                //审核拒绝
-               //driver.setState(VerifyStateEnum.AUDIT_REJECT.code);
-                driverDao.updateById(driver);
-                //更新承运商
-                //carr.setState(VerifyStateEnum.AUDIT_REJECT.code);
-                return carrierDao.updateById(carr) > 0 ? true : false;
-            }else if(flag == FlagEnum.FROZEN.code){
-                //冻结
-               // driver.setState(VerifyStateEnum.FROZEN.code);
-                driverDao.updateById(driver);
-                //更新承运商
-                //carr.setState(VerifyStateEnum.FROZEN.code);
-                return carrierDao.updateById(carr) > 0 ? true:false;
             }
-        }catch (Exception e){
-            log.info("根据司机userId审核出现异常");
-            throw new CommonException(e.getMessage());
+        }else if(dto.getFlag() == FlagEnum.AUDIT_REJECT.code){
+            //审核拒绝
+            driver.setState(CommonStateEnum.REJECT.code);
+            //更新承运商
+            carr.setState(CommonStateEnum.REJECT.code);
+        }else if(dto.getFlag() == FlagEnum.FROZEN.code){
+            //冻结
+            driver.setState(CommonStateEnum.FROZEN.code);
+            //更新承运商
+            carr.setState(CommonStateEnum.FROZEN.code);
+        }else if(dto.getFlag() == FlagEnum.THAW.code){
+            //解除
+            driver.setState(CommonStateEnum.CHECKED.code);
+            //更新承运商
+            carr.setState(CommonStateEnum.CHECKED.code);
         }
-        return false;
+        Admin admin = adminDao.selectOne(new QueryWrapper<Admin>().lambda().eq(Admin::getUserId, dto.getUserId()).select(Admin::getName));
+        if(admin != null){
+            driver.setOperateName(admin.getName());
+            carr.setOperateName(admin.getName());
+        }
+        driver.setOperateTime(NOW);
+        driver.setOperateUserId(dto.getUserId());
+        carr.setOperateTime(NOW);
+        carr.setOperateUserId(dto.getUserId());
+        int n = driverDao.updateById(driver);
+        int m = carrierDao.updateById(carr);
+        if(n >= 1 && m >= 1){
+            return true;
+        }else {
+            return false;
+        }
     }
 
     @Override
-    public ShowDriverVo getDriverById(Long driverId, Long userId) {
-        try{
-            ShowDriverVo vo = driverDao.getDriverById(driverId,userId);
-            if(vo != null){
-                //根据司机id获取该承运商id
-                Long carrierId = driverDao.getCarrIdByDriverId(driverId);
-                if(carrierId != null){
-                    vo.setMapCodes(carrierCityConService.getMapCodes(carrierId));
-                }
-                return vo;
+    public ResultVo showDriver(Long driverId, Long userId) {
+        ShowDriverVo vo = driverDao.getDriverById(driverId,userId);
+        if(vo != null){
+            //根据司机id获取该承运商id
+            Long carrierId = driverDao.getCarrIdByDriverId(driverId);
+            if(carrierId != null){
+                vo.setMapCodes(carrierCityConService.getMapCodes(carrierId));
             }
-        }catch (Exception e){
-            log.info("根据司机id/userId查看司机信息出现异常");
         }
-        return null;
+        return BaseResultUtil.success(vo);
     }
 
     @Override
-    public boolean updateDriver(DriverDto dto) {
-        int i;
-        int j;
-        int m = 0;
-        int n = 0;
-        Carrier carrier = null;
-        try{
-            //更新司机信息
-            Driver driver = driverDao.selectById(dto.getId());
-            //修改司机信息
-            ResultData rd = updateUserToPlatform(driver);
-            if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
-                throw new CommonException("司机信息同步失败，原因：" + rd.getMsg());
-            }
-            driver.setRealName(dto.getRealName());
-            driver.setPhone(dto.getPhone());
-            driver.setMode(dto.getMode());
-            driver.setIdCardFrontImg(dto.getIdCardFrontImg());
-            driver.setIdCardBackImg(dto.getIdCardBackImg());
-            driver.setDriverLicenceFrontImg(dto.getDriverLicenceFrontImg());
-            driver.setDriverLicenceBackImg(dto.getDriverLicenceBackImg());
-            driver.setTravelLicenceFrontImg(dto.getTravelLicenceFrontImg());
-            driver.setTravelLicenceBackImg(dto.getTravelLicenceBackImg());
-            driver.setTaxiLicenceFrontImg(dto.getTaxiLicenceFrontImg());
-            driver.setTaxiLicenceBackImg(dto.getTaxiLicenceBackImg());
-            i = driverDao.updateById(driver);
-            if(i > 0){
-                //更新绑定车辆信息
-                DriverVehicleCon dvc = driverVehicleConDao.getDriVehConByDriId(dto.getId().toString());
-                dvc.setVehicleId(dto.getVehicleId());
-                j = driverVehicleConDao.updateById(dvc);
-                if(j > 0){
-                    //更新运力池信息
-                    VehicleRunning vr = vehicleRunningDao.getVehiRunByDriverId(dto.getId());
-                    vr.setVehicleId(dto.getVehicleId());
-                    vr.setPlateNo(dto.getPlateNo());
-                    vr.setCarryCarNum(dto.getDefaultCarryNum());
-                    m =vehicleRunningDao.updateById(vr);
-                }
-            }
-            //更新承运商信息
-            if(m > 0){
-                carrier = carrierDao.getCarrierById(dto.getId());
-                if(carrier != null){
-                    carrier.setName(dto.getRealName());
-                    carrier.setLinkmanPhone(dto.getPhone());
-                    n = carrierDao.updateById(carrier);
-                }
-            }
-            if(n > 0){
-                //更新承运商业务范围
-                //承运商业务范围,先批量删除，再添加
-                carrierCityConService.batchDelete(carrier.getId());
-                carrierCityConService.batchSave(carrier.getId(),dto.getCodes());
-            }
-        }catch (Exception e){
-            log.info("根据司机id更新司机信息出现异常");
-            throw new CommonException(e.getMessage());
+    public boolean modifyDriver(DriverDto dto) {
+        //更新司机信息
+        Driver driver = driverDao.selectById(dto.getId());
+        //修改司机信息
+        ResultData rd = updateUserToPlatform(driver);
+        if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+            throw new CommonException("司机信息同步失败，原因：" + rd.getMsg());
         }
-        return false;
+        BeanUtils.copyProperties(dto,driver);
+        driver.setUserId(driver.getUserId());
+        driver.setOperateUserId(dto.getUserId());
+        driver.setOperateTime(NOW);
+        Admin admin = adminDao.selectOne(new QueryWrapper<Admin>().lambda().eq(Admin::getUserId, dto.getUserId()).select(Admin::getName));
+        if(admin != null){
+            driver.setOperateName(admin.getName());
+        }
+        super.updateById(driver);
+
+        //更新绑定车辆信息
+        DriverVehicleCon dvc = driverVehicleConDao.getDriVehConByDriId(dto.getId().toString());
+        if(dvc != null){
+            dvc.setVehicleId(dto.getVehicleId());
+            driverVehicleConDao.updateById(dvc);
+        }
+
+        //更新运力池信息
+        VehicleRunning vr = vehicleRunningDao.getVehiRunByDriverId(dto.getId());
+        if(vr != null){
+            vr.setVehicleId(dto.getVehicleId());
+            vr.setPlateNo(dto.getPlateNo());
+            vr.setCarryCarNum(dto.getDefaultCarryNum());
+            vehicleRunningDao.updateById(vr);
+        }
+
+        //更新承运商信息
+        Carrier carrier = carrierDao.getCarrierById(dto.getId());
+        if(carrier != null){
+            carrier.setName(dto.getRealName());
+            carrier.setLinkman(dto.getRealName());
+            carrier.setLinkmanPhone(dto.getPhone());
+            carrierDao.updateById(carrier);
+        }
+
+        //更新承运商业务范围
+        //承运商业务范围,先批量删除，再添加
+        carrierCityConService.batchDelete(carrier.getId());
+        return carrierCityConService.batchSave(carrier.getId(),dto.getCodes());
     }
 
-    @Override
-    public BusinessCityCode getDriverBusiById(Long id) {
-        BusinessCityCode bcc = null;
-        try{
-            CarrierCityCon ccc = carrierCityConDao.getCarrierCodeByDriverId(id);
-            if(ccc != null){
-                bcc = carrierCityConService.showCarrCityCon(ccc);
-            }
-        }catch (Exception e){
-            log.info("根据司机id查看承运商业务范围出现异常");
-        }
-        return bcc;
-    }
     @Override
     public Driver getByUserId(Long userId) {
         return driverDao.findByUserId(userId);

@@ -1,16 +1,26 @@
 package com.cjyc.common.model.vo.web.driver;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+
 @Data
 public class DriverVo implements Serializable {
 
+    @ApiModelProperty("承运商id")
+    @JsonSerialize(using= ToStringSerializer.class)
+    private Long carrierId;
+
     @ApiModelProperty("司机id")
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long id;
 
     @ApiModelProperty("司机userId")
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long userId;
 
     @ApiModelProperty("司机姓名")
@@ -22,7 +32,7 @@ public class DriverVo implements Serializable {
     @ApiModelProperty("承运方式：0 ：代驾 1：干线司机  2：拖车司机 4全支持")
     private String mode;
 
-    @ApiModelProperty("结算方式：1时付，2账期")
+    @ApiModelProperty("结算方式：0时付，1账期")
     private String settleType;
 
     @ApiModelProperty("账期/天")
@@ -65,8 +75,11 @@ public class DriverVo implements Serializable {
     private Integer carNum;
 
     @ApiModelProperty("总收入")
-    private String totalIncome;
+    private BigDecimal totalIncome;
 
     @ApiModelProperty("状态：0待审核，2审核通过，4已驳回(审核不通过)，7已冻结")
     private String state;
+
+    @ApiModelProperty("操作人")
+    private String operateName;
 }

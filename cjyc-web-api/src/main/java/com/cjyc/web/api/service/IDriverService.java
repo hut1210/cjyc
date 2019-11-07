@@ -1,5 +1,6 @@
 package com.cjyc.web.api.service;
 
+import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.driver.DriverDto;
 import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
 import com.cjyc.common.model.dto.web.user.DriverListDto;
@@ -32,14 +33,14 @@ public interface IDriverService {
      * @param dto
      * @return
      */
-    PageInfo<DriverVo> getDriverByTerm(SelectDriverDto dto);
+    ResultVo findDriver(SelectDriverDto dto);
 
     /**
      * 根据司机userId进行审核
-     * @param id
+     * @param dto
      * @return
      */
-    boolean examineDriById(Long id,Integer sign);
+    boolean verifyDriver(OperateDto dto);
 
     /**
      * 根据司机id/userId查看司机信息
@@ -47,21 +48,14 @@ public interface IDriverService {
      * @param userId
      * @return
      */
-    ShowDriverVo getDriverById(Long id, Long userId);
+    ResultVo showDriver(Long id, Long userId);
 
     /**
      * 根据司机id更新司机信息
      * @param dto
      * @return
      */
-    boolean updateDriver(DriverDto dto);
-
-    /**
-     * 根据司机id查看该承运商业务范围
-     * @param id
-     * @return
-     */
-    BusinessCityCode getDriverBusiById(Long id);
+    boolean modifyDriver(DriverDto dto);
 
     Driver getByUserId(Long userId);
 

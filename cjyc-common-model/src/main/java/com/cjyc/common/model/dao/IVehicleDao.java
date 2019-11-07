@@ -41,4 +41,11 @@ public interface IVehicleDao extends BaseMapper<Vehicle> {
      */
     List<BaseVehicleVo> getBaseVehicleByTerm(SeleVehicleDriverDto dto);
 
+    /**
+     * 根据条件查询车辆信息
+     * @param dto
+     * @return
+     */
+    List<VehicleVo> findVehicle(SelectVehicleDto dto);
+
 }

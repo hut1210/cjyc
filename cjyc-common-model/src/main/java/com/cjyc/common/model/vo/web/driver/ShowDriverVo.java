@@ -1,5 +1,7 @@
 package com.cjyc.common.model.vo.web.driver;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -10,10 +12,14 @@ import java.util.List;
 @Data
 public class ShowDriverVo implements Serializable {
 
+    private static final long serialVersionUID = -4902283401893145744L;
+
     @ApiModelProperty("司机id")
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long id;
 
     @ApiModelProperty("司机userId")
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long userId;
 
     @ApiModelProperty("司机姓名")
@@ -22,7 +28,7 @@ public class ShowDriverVo implements Serializable {
     @ApiModelProperty("司机姓名")
     private String phone;
 
-    @ApiModelProperty("承运方式：0 ：代驾 1：干线司机  2：拖车司机 4全支持")
+    @ApiModelProperty("承运方式：2 : 代驾  3 : 干线   4：拖车")
     private Integer mode;
 
     @ApiModelProperty("司机业务范围")
@@ -66,6 +72,10 @@ public class ShowDriverVo implements Serializable {
 
     @ApiModelProperty("从业证反面")
     private String qualifiCertBackImg;
+
+    @ApiModelProperty("车辆id")
+    @JsonSerialize(using= ToStringSerializer.class)
+    private Long vehicleId;
 
     @ApiModelProperty("车牌号")
     private String plateNo;

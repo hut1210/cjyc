@@ -47,8 +47,8 @@
     </select>
 
     <!-- 根据运力vehicleId删除运力信息 -->
-    <delete id="delVehicleRunByVehId" parameterType="java.lang.Long">
-        delete from d_vehicle_running where vehicle_id = #{vehicleId}
+    <delete id="removeRun" parameterType="java.lang.Long">
+        update  d_vehicle_running set state = 0 where vehicle_id = #{vehicleId}
     </delete>
 
 </mapper>

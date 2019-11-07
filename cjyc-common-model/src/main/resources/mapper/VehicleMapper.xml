@@ -96,4 +96,35 @@
         WHERE
 	carr.id = #{id}
     </select>
+
+    <!-- 查询司机与车辆绑定信息 -->
+    <select id="findVehicle" resultType="com.cjyc.common.model.vo.web.vehicle.VehicleVo"
+                            parameterType="com.cjyc.common.model.dto.web.vehicle.SelectVehicleDto">
+
+        SELECT
+            veh.plate_no AS plateNo,
+            veh.default_carry_num AS defaultCarryNum,
+            d.real_name AS realName,
+            d.phone AS phone,
+            d.operate_time AS operateTime,
+            d.operate_name AS operateName
+        FROM
+            d_vehicle veh
+            JOIN d_driver_vehicle_con con ON con.vehicle_id = veh.id
+            JOIN d_driver d ON con.driver_id = d.id
+        <where>
+            <if test="plateNo != null and plateNo.trim() != ''">
+                con.plate_no = #{plateNo}
+            </if>
+            <if test="realName != null  and realName.trim() != ''">
+                and  d.real_name = #{realName}
+            </if>
+            <if test="phone != null and phone.trim() != ''">
+                and  d.phone = #{phone}
+            </if>
+            and veh.ownership_type = 1
+            AND d.type = 2
+            AND d.state = 2
+        </where>
+    </select>
 </mapper>

@@ -160,7 +160,8 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         BeanUtils.copyProperties(dto,carrier);
         //更新到物流平台
         Carrier origCarrier = carrierDao.selectById(dto.getId());
-        ResultData rd = updateCarrierToPlatform(origCarrier, dto);
+        //审核通过的
+        ResultData<Long> rd = updateCarrierToPlatform(origCarrier, dto);
         if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
             log.error(rd.getMsg());
             return false;
@@ -173,14 +174,20 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         carrier.setOperateUserId(dto.getUserId());
         super.updateById(carrier);
         //更新承运商司机管理员：司机更新用途？
-//        Driver driver = driverDao.getDriverByDriverId(dto.getId());
-//        if(driver != null){
-//            driver.setPhone(dto.getLinkmanPhone());
-//            driver.setName(dto.getName());
-//            driver.setRealName(dto.getLinkman());
-//            driver.setIdCard(dto.getLegalIdCard());
-//            driverDao.updateById(driver);
-//        }
+        if(origCarrier.getDeptId() == null){
+            Driver driver = driverDao.getDriverByDriverId(dto.getId());
+            if(driver != null){
+                driver.setPhone(dto.getLinkmanPhone());
+                driver.setName(dto.getName());
+                driver.setRealName(dto.getLinkman());
+                driver.setIdCard(dto.getLegalIdCard());
+                driverDao.updateById(driver);
+            }
+        }
+        if(rd.getData() != null){
+            //
+        }
+
         //更新银行卡信息
 //        BankCardBind bcb = bankCardBindDao.getBankCardBindByUserId(driver.getUserId());
 //        if(bcb != null){
@@ -389,8 +396,9 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
      * @param dto
      * @return
      */
-    private ResultData updateCarrierToPlatform(Carrier carrier, CarrierDto dto) {
+    private ResultData<Long> updateCarrierToPlatform(Carrier carrier, CarrierDto dto) {
         //1.判断 carrier不为空 且 deptId 不为空（物流平台存在此机构)
+        Long userId = null;
         if (null != carrier) {
             if (carrier.getDeptId() != null && carrier.getDeptId() > 0L) {
                 if (!carrier.getLinkmanPhone().equals(dto.getLinkmanPhone())) {
@@ -436,6 +444,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
                             cdCon.setRole(DriverIdentityEnum.SUPERADMIN.code);
                             carrierDriverConDao.updateById(cdCon);
                         }
+                        userId = accountRd.getData().getUserId();
                     }else {
                         //3.如果不存在，直接将联系人手机号及姓名更新即可
                         UpdateUserReq userReq = new UpdateUserReq();
@@ -446,6 +455,17 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
                         ResultData updateRd = sysUserService.update(userReq);
                         if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
                             return ResultData.failed("更新管理员信息错误，原因：" + updateRd.getMsg());
+                        }else {
+                            CarrierDriverCon carrierDriverCon = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>()
+                                    .eq("carrier_id", dto.getId())
+                                    .eq("role", DriverIdentityEnum.SUPERADMIN.code));
+                            Driver driver = driverDao.selectOne(new QueryWrapper<Driver>()
+                                    .eq("user_id", carrierDriverCon.getDriverId()));
+                            driver.setName(dto.getLinkman());
+                            driver.setRealName(dto.getLinkman());
+                            driver.setPhone(dto.getLinkmanPhone());
+                            driverDao.updateById(driver);
+                            userId = driver.getUserId();
                         }
                     }
                 }
@@ -458,7 +478,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
                     deptReq.setLegalPerson(carrier.getLegalName());
                     return sysDeptService.update(deptReq);
                 }
-                return ResultData.ok("成功");
+                return ResultData.ok(userId, "成功");
             }
             return ResultData.ok("数据未同步到物流平台，不需要变更");
         }
