@@ -222,6 +222,10 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
         storeCityCon.setStoreId(dto.getStoreId());
         for (String areaCode : dto.getAreaCodeList()) {
             storeCityCon.setAreaCode(areaCode);
+            StoreCityCon result = storeCityConDao.selectOne(new QueryWrapper<StoreCityCon>().lambda().eq(StoreCityCon::getAreaCode, areaCode));
+            if (!Objects.isNull(result)) {
+                continue;
+            }
             storeCityConDao.insert(storeCityCon);
         }
         return BaseResultUtil.success();
@@ -233,9 +237,6 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
         for (String areaCode : dto.getAreaCodeList()) {
             updateWrapper = updateWrapper.eq(StoreCityCon::getStoreId,dto.getStoreId()).eq(StoreCityCon::getAreaCode,areaCode);
             int i = storeCityConDao.delete(updateWrapper);
-            if (i == 0) {
-                return BaseResultUtil.fail();
-            }
         }
         return BaseResultUtil.success();
     }
