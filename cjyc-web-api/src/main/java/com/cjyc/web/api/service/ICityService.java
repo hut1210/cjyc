@@ -72,4 +72,13 @@ public interface ICityService extends IService<City> {
      * @return com.cjyc.common.model.vo.ResultVo
      */
     ResultVo getCityPage(CityQueryDto dto);
+
+    /**
+     * 功能描述: 根据省名称查询省份信息
+     * @author liuxingxiang
+     * @date 2019/11/7
+     * @param name
+     * @return com.cjyc.common.model.vo.ResultVo<java.util.List<com.cjyc.common.model.entity.City>>
+     */
+    ResultVo<List<City>> getProvinceList(String name);
 }

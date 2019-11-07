@@ -2,6 +2,7 @@ package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.web.city.RegionAddDto;
 import com.cjyc.common.model.dto.web.city.RegionQueryDto;
+import com.cjyc.common.model.dto.web.city.RegionUpdateDto;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -45,6 +46,19 @@ public class RegionController {
         } catch (Exception e) {
             log.error("新增大区异常:{}",e);
             resultVo = BaseResultUtil.fail("新增大区失败");
+        }
+        return resultVo;
+    }
+
+    @ApiOperation(value = "修改大区")
+    @PostMapping("/modifyRegion")
+    public ResultVo modifyRegion(@RequestBody @Validated RegionUpdateDto dto){
+        ResultVo resultVo = null;
+        try {
+            resultVo = regionService.modifyRegion(dto);
+        } catch (Exception e) {
+            log.error("修改大区异常:{}",e);
+            resultVo = BaseResultUtil.fail("修改大区失败");
         }
         return resultVo;
     }

@@ -2,6 +2,7 @@ package com.cjyc.web.api.service;
 
 import com.cjyc.common.model.dto.web.city.RegionAddDto;
 import com.cjyc.common.model.dto.web.city.RegionQueryDto;
+import com.cjyc.common.model.dto.web.city.RegionUpdateDto;
 import com.cjyc.common.model.vo.ResultVo;
 
 /**
@@ -27,4 +28,13 @@ public interface IRegionService {
      * @return com.cjyc.common.model.vo.ResultVo
      */
     ResultVo addRegion(RegionAddDto dto) throws Exception;
+
+    /**
+     * 功能描述: 修改大区
+     * @author liuxingxiang
+     * @date 2019/11/7
+     * @param dto
+     * @return com.cjyc.common.model.vo.ResultVo
+     */
+    ResultVo modifyRegion(RegionUpdateDto dto) throws Exception;
 }
