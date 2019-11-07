@@ -474,6 +474,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
                         || !carrier.getLegalName().equals(dto.getLegalName())) {
                     UpdateDeptReq deptReq = new UpdateDeptReq();
                     deptReq.setDeptId(carrier.getDeptId());
+                    deptReq.setName(dto.getName());
                     deptReq.setLegalPerson(carrier.getLegalName());
                     return sysDeptService.update(deptReq);
                 }
