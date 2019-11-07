@@ -752,44 +752,62 @@
         送：1待调度，2待提车，3待交车，5已完成，21自提待调度，23自提待交车，25自提已交付，100物流上门*/-->
 
         select
-        (case
-        when oc.pick_mode = 3 then 100
-        when oc.pick_mode = 2 then
-        (case
-        when oc.state &lt;= 5 then 21
-        when oc.state = 15 then 23
-        when oc.state &gt;= 25 then 25 end)
-        else
-        (case
-        when oc.state &lt;= 5 then 1
-        when oc.state = 10 then 2
-        when oc.state = 15 then 3
-        when oc.state &gt;= 25 then 5 end)end ) as pickTransportState,
+            (case
+            when oc.pick_mode = 3 then 100
+            when oc.pick_mode = 2 then
+            (case
+            when oc.state &lt;= 5 then 21
+            when oc.state = 15 then 23
+            when oc.state &gt;= 25 then 25 end)
+            else
+            (case
+            when oc.state &lt;= 5 then 1
+            when oc.state = 10 then 2
+            when oc.state = 15 then 3
+            when oc.state &gt;= 25 then 5 end)end ) as pickTransportState,
 
-        (case
-        when oc.trunk_state = 10 then 100
-        when oc.trunk_state = 5 then 5
-        else (case
-        when oc.state &lt;= 25 and oc.trunk_state = 1 then 1
-        when oc.state &lt;= 25 and oc.trunk_state > 1 then 2
-        when oc.state = 35 then 2
-        when oc.state = 40 then 3
-        when oc.state &gt; 40 then 5 end)end ) as trunkTransportState,
+            (case
+            when oc.trunk_state = 10 then 100
+            when oc.trunk_state = 5 then 5
+            else (case
+            when oc.state &lt;= 25 and oc.trunk_state = 1 then 1
+            when oc.state &lt;= 25 and oc.trunk_state > 1 then 2
+            when oc.state = 35 then 2
+            when oc.state = 40 then 3
+            when oc.state &gt; 40 then 5 end)end ) as trunkTransportState,
 
-        (case
-        when oc.back_mode = 3 then 100
-        when oc.back_mode = 2 then (case
-        when oc.state = 45 then 21
-        when oc.state = 55 then 23
-        when oc.state &gt;= 100 then 25 end)
-        else (case
-        when oc.state &lt;= 45 and oc.back_state = 1 then 1
-        when oc.state &lt;= 45 and oc.back_state > 1 then 2
-        when oc.state = 50 then 2
-        when oc.state = 55 then 3
-        when oc.state &gt;= 100 then 5 end)end ) as backTransportState,
-        wc.*
-        from w_order_car wc
-        where wc.order_id = 1
+            (case
+            when oc.back_mode = 3 then 100
+            when oc.back_mode = 2 then (case
+            when oc.state = 45 then 21
+            when oc.state = 55 then 23
+            when oc.state &gt;= 100 then 25 end)
+            else (case
+            when oc.state &lt;= 45 and oc.back_state = 1 then 1
+            when oc.state &lt;= 45 and oc.back_state > 1 then 2
+            when oc.state = 50 then 2
+            when oc.state = 55 then 3
+            when oc.state &gt;= 100 then 5 end)end ) as backTransportState,
+            oc.*,
+            t.state,
+            t.driver_id as driverId,
+            CONCAT(t.driver_name," ",t.driver_phone," ",t.vehicle_plate_no) as nowDriver,
+            s.city as nowCity
+        from w_order_car oc
+        left join s_store s on s.id = oc.now_store_id
+        left join (
+                select
+                wc.order_car_id as order_car_id,
+                wc.state as state,
+                t.driver_id as driver_id,
+                t.driver_name as driver_name,
+                t.driver_phone as driver_phone,
+                t.vehicle_plate_no as vehicle_plate_no
+                from w_waybill_car wc
+                left join w_task_car tc on tc.waybill_car_id = wc.id
+                left join w_task t on t.id = tc.task_id
+                where wc.state BETWEEN 15 and 90
+                ) as t on t.order_car_id = oc.id
+        where oc.order_id = #{orderId}
     </select>
 </mapper>

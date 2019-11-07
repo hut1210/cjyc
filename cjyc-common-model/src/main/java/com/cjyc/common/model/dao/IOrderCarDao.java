@@ -131,5 +131,11 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
      */
     List<InvoiceOrderVo> selectInvoiceOrderList(InvoiceApplyQueryDto dto);
 
+    /**
+     * 查询车辆运输信息
+     * @author JPG
+     * @since 2019/11/6 18:40
+     * @param orderId
+     */
     List<TransportInfoOrderCarVo> findTransportStateByOrderId(Long orderId);
 }

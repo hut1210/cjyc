@@ -29,7 +29,7 @@ public class Store implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "ID")
-    @TableId(value = "id", type = IdType.NONE)
+    @TableId(value = "id", type = IdType.ID_WORKER)
     private Long id;
 
     @ApiModelProperty(value = "部门ID（架构组sys_dept表）")
