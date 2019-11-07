@@ -234,12 +234,6 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             }
             //更新司机userID信息
             updateDriver(rd.getData().getUserId(), carrier.getId());
-            //更新司机-承运商关系表
-            CarrierDriverCon cdc = new CarrierDriverCon();
-            cdc.setDriverId(rd.getData().getUserId());
-            carrierDriverConDao.update(cdc, new QueryWrapper<CarrierDriverCon>()
-                    .eq("carrier_id", dto.getId())
-                    .eq("role", DriverIdentityEnum.SUPERADMIN.code));
             //更新绑定银行卡信息
             updateBank(rd.getData().getUserId(),carrier.getLegalIdCard());
             carrier.setDeptId(rd.getData().getDeptId());
@@ -417,9 +411,15 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
                     if (accountRd.getData() != null) {
                         //2.如果存在：需要做用户角色关系管理及新用户校验
                         //2.1 新用户必须是此承运商司机
+                        Driver driver = driverDao.selectOne(new QueryWrapper<Driver>()
+                                .eq("user_id", accountRd.getData().getUserId()));
+                        if (null == driver) {
+                            return ResultData.failed("司机数据查询错误，根据user_id: " + accountRd.getData().getUserId() +
+                                    "未查询到司机信息");
+                        }
                         CarrierDriverCon cdCon = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>()
                                 .eq("carrier_id", carrier.getId())
-                                .eq("driver_id", accountRd.getData().getUserId()));
+                                .eq("driver_id", driver.getId()));
                         if (null == cdCon) {
                             return ResultData.failed("新用户不属于此承运商");
                         }
@@ -459,8 +459,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
                             CarrierDriverCon carrierDriverCon = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>()
                                     .eq("carrier_id", dto.getId())
                                     .eq("role", DriverIdentityEnum.SUPERADMIN.code));
-                            Driver driver = driverDao.selectOne(new QueryWrapper<Driver>()
-                                    .eq("user_id", carrierDriverCon.getDriverId()));
+                            Driver driver = driverDao.selectById(carrierDriverCon.getDriverId());
                             driver.setName(dto.getLinkman());
                             driver.setRealName(dto.getLinkman());
                             driver.setPhone(dto.getLinkmanPhone());
