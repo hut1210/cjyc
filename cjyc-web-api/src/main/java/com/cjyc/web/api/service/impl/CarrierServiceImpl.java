@@ -140,13 +140,13 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         BeanUtils.copyProperties(dto,carrier);
         carrier.setId(dto.getCarrierId());
         //更新到物流平台
-       /* Carrier origCarrier = carrierDao.selectById(dto.getCarrierId());
+        Carrier origCarrier = carrierDao.selectById(dto.getCarrierId());
         //审核通过的
         ResultData<Long> rd = updateCarrierToPlatform(origCarrier, dto);
         if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
             log.error(rd.getMsg());
             return false;
-        }*/
+        }
         super.updateById(carrier);
         //更新承运商司机管理员：司机更新用途？
         Driver driver = driverDao.getDriverByCarrierId(dto.getCarrierId());
@@ -191,13 +191,13 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         //审核通过
         if(FlagEnum.AUDIT_PASS.code == dto.getFlag()){
             //审核通过将承运商信息同步到物流平台
-            /*ResultData<AddDeptAndUserResp> rd = saveCarrierToPlatform(carrier);
+            ResultData<AddDeptAndUserResp> rd = saveCarrierToPlatform(carrier);
             if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
                 throw new CommonException("承运商机构添加失败");
             }
             //更新司机userID信息
             updateDriver(rd.getData().getUserId(), carrier.getId());
-            carrier.setDeptId(rd.getData().getDeptId());*/
+            carrier.setDeptId(rd.getData().getDeptId());
             carrier.setState(CommonStateEnum.CHECKED.code);
             carrier.setCheckUserId(dto.getLoginId());
             carrier.setCheckTime(NOW);
@@ -437,5 +437,4 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         }
         return ResultData.ok("无变更：数据不存在");
     }
-
 }

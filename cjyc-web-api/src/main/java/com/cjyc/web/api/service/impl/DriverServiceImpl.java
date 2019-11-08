@@ -74,9 +74,6 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
     private ICarrierDriverConDao carrierDriverConDao;
 
     @Resource
-    private ICarrierCityConDao carrierCityConDao;
-
-    @Resource
     private ICarrierCarCountDao carrierCarCountDao;
 
     @Resource
@@ -171,11 +168,11 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         //审核通过
         if(dto.getFlag() == FlagEnum.AUDIT_PASS.code){
             //保存司机用户到平台，返回用户id
-           /* ResultData<Long> saveRd = saveDriverToPlatform(driver);
+            ResultData<Long> saveRd = saveDriverToPlatform(driver);
             if (!ReturnMsg.SUCCESS.getCode().equals(saveRd.getCode())) {
                 throw new CommonException("司机信息保存失败，原因：" + saveRd.getMsg());
             }
-            driver.setUserId(saveRd.getData());*/
+            driver.setUserId(saveRd.getData());
             driver.setState(CommonStateEnum.CHECKED.code);
             //更新承运商
             carr.setState(CommonStateEnum.CHECKED.code);
@@ -228,10 +225,10 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         //更新司机信息
         Driver driver = driverDao.selectById(dto.getDriverId());
         //修改司机信息
-       /* ResultData rd = updateUserToPlatform(driver);
+       ResultData rd = updateUserToPlatform(driver);
         if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
             throw new CommonException("司机信息同步失败，原因：" + rd.getMsg());
-        }*/
+        }
         BeanUtils.copyProperties(dto,driver);
         driver.setId(dto.getDriverId());
         super.updateById(driver);
