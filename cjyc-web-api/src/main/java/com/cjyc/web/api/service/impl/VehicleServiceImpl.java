@@ -5,19 +5,15 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.dao.IDriverVehicleConDao;
 import com.cjyc.common.model.dao.IVehicleDao;
 import com.cjyc.common.model.dao.IVehicleRunningDao;
-import com.cjyc.common.model.dto.web.OperateDto;
-import com.cjyc.common.model.dto.web.vehicle.DriverVehicleConDto;
+import com.cjyc.common.model.dto.web.vehicle.ModifyCarryNumDto;
+import com.cjyc.common.model.dto.web.vehicle.RemoveVehicleDto;
 import com.cjyc.common.model.dto.web.vehicle.SelectVehicleDto;
 import com.cjyc.common.model.dto.web.vehicle.VehicleDto;
-import com.cjyc.common.model.entity.CarrierCarCount;
-import com.cjyc.common.model.entity.DriverVehicleCon;
 import com.cjyc.common.model.entity.Vehicle;
-import com.cjyc.common.model.enums.FlagEnum;
 import com.cjyc.common.model.enums.transport.VehicleOwnerEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.driver.DriverVo;
 import com.cjyc.common.model.vo.web.vehicle.VehicleVo;
 import com.cjyc.web.api.service.IVehicleService;
 import com.github.pagehelper.PageHelper;
@@ -25,10 +21,8 @@ import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -45,14 +39,22 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
     @Resource
     private IDriverVehicleConDao driverVehicleConDao;
 
+    private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
+
     @Override
-    public boolean saveVehicle(VehicleDto dto) {
+    public ResultVo saveVehicle(VehicleDto dto) {
+        //判断车辆是否已有
+        Vehicle veh = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda().eq(Vehicle::getPlateNo,dto.getPlateNo()));
+        if(veh != null){
+            return BaseResultUtil.fail("该车辆已存在");
+        }
         Vehicle vehicle = new Vehicle();
         BeanUtils.copyProperties(dto,vehicle);
         vehicle.setOwnershipType(VehicleOwnerEnum.PERSONAL.code);
-        vehicle.setCreateUserId(dto.getUserId());
-        vehicle.setCreateTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
-        return super.save(vehicle);
+        vehicle.setCreateUserId(dto.getLoginId());
+        vehicle.setCreateTime(NOW);
+        super.save(vehicle);
+        return BaseResultUtil.success();
     }
 
     @Override
@@ -64,31 +66,23 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
     }
 
     @Override
-    public ResultVo verifyVehicle(OperateDto dto) {
-        if(FlagEnum.DELETE.code == dto.getFlag()){
+    public ResultVo removeVehicle(RemoveVehicleDto dto) {
+        if(dto.getDriverId() != null){
+            //车辆与司机有绑定关系
             //删除与司机关系
-            driverVehicleConDao.removeCon(dto.getId());
-            vehicleRunningDao.removeRun(dto.getId());
+            driverVehicleConDao.removeCon(dto.getDriverId());
+            vehicleRunningDao.removeRun(dto.getDriverId());
         }
+        vehicleDao.deleteById(dto.getVehicleId());
         return BaseResultUtil.success();
     }
 
     @Override
-    public ResultVo modifyVehicle(DriverVehicleConDto dto) {
-        //判断车辆是否存在
-        Vehicle vehicle = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda().eq(Vehicle::getPlateNo, dto.getPlateNo()));
-        if(vehicle == null){
-            return BaseResultUtil.fail("该车辆不存在");
-        }
-        if(!vehicle.getId().equals(dto.getId())){
-            //该车辆与之前车辆不相同
-            //更新车辆与司机绑定关系
-            DriverVehicleCon con = driverVehicleConDao.selectOne(new QueryWrapper<DriverVehicleCon>().lambda().eq(DriverVehicleCon::getVehicleId, vehicle.getId()));
-            if(con != null){
-               // con.setVehicleId()
-            }
-        }
-        return null;
+    public ResultVo modifyVehicle(ModifyCarryNumDto dto) {
+        Vehicle vehicle = vehicleDao.selectById(dto.getVehicleId());
+        vehicle.setDefaultCarryNum(dto.getDefauleCarryNum());
+        vehicleDao.updateById(vehicle);
+        return BaseResultUtil.success();
     }
 
 }

@@ -22,7 +22,7 @@ public interface ICarrierService {
      * @param dto
      * @return
      */
-    boolean saveCarrier(CarrierDto dto);
+    ResultVo saveCarrier(CarrierDto dto);
 
     /**
      * 更新承运商
@@ -46,25 +46,25 @@ public interface ICarrierService {
     boolean verifyCarrier(OperateDto dto);
 
     /**
-     * 根据承运商id查看承运商信息
-     * @param id
+     * 根据承运商carrierId查看承运商信息
+     * @param carrierId
      * @return
      */
-    ResultVo showBaseCarrier(Long id);
+    ResultVo showBaseCarrier(Long carrierId);
 
     /**
      * 根据承运商id查看车辆信息
      * @param dto
      * @return
      */
-    PageInfo<BaseVehicleVo> getBaseVehicleByTerm(SeleVehicleDriverDto dto);
+    ResultVo findBaseVehicle(SeleVehicleDriverDto dto);
 
     /**
      * 根据承运商id查看司机信息
      * @param dto
      * @return
      */
-    ResultVo getBaseDriverByTerm(SeleVehicleDriverDto dto);
+    ResultVo findBaseDriver(SeleVehicleDriverDto dto);
 
     /**
      * 重置承运商超级管理员密码

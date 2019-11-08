@@ -1,5 +1,7 @@
 package com.cjyc.common.model.vo.web.carrier;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -7,7 +9,8 @@ import java.io.Serializable;
 @Data
 public class BaseDriverVo implements Serializable {
 
-    @ApiModelProperty("司机id")
+    @ApiModelProperty("司机id(driverId)")
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long driverId;
 
     @ApiModelProperty("司机姓名")
@@ -22,7 +25,7 @@ public class BaseDriverVo implements Serializable {
     @ApiModelProperty("营运状态：0营运中，1停运中")
     private Integer businessState;
 
-    @ApiModelProperty("状态：0待审核，2已审核，4取消，7已驳回，9已停用（CommonStateEnum）")
+    @ApiModelProperty("状态：0待审核，2已审核，4取消，5冻结  7已驳回，9已停用（CommonStateEnum）")
     private Integer state;
 
     @ApiModelProperty("司机身份 0：普通司机 1：管理员")

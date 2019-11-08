@@ -33,8 +33,7 @@ public class CustomerController {
     @ApiOperation(value = "新增移动端用户")
     @PostMapping(value = "/saveCustomer")
     public ResultVo saveCustomer(@Validated({ CustomerDto.SaveCustomerVo.class }) @RequestBody CustomerDto customerDto){
-        boolean result = customerService.saveCustomer(customerDto);
-        return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
+        return customerService.saveCustomer(customerDto);
     }
 
     @ApiOperation(value = "更新移动端用户")

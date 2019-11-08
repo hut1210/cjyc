@@ -22,7 +22,7 @@
     </select>
 
     <!-- 根据司机id查看司机与车辆绑定关系信息 -->
-    <select id="getDriVehConByDriId" resultType="com.cjyc.common.model.entity.DriverVehicleCon" parameterType="java.lang.String">
+    <select id="getDriVehConByDriId" resultType="com.cjyc.common.model.entity.DriverVehicleCon" parameterType="java.lang.Long">
         select
         <include refid="Base_Column_List"/>
         where driver_id = #{driverId}
@@ -30,7 +30,7 @@
 
     <!-- 根据运力vehicleId删除司机与运力关系 -->
     <delete id="removeCon" parameterType="java.lang.Long">
-        delete from d_driver_vehicle_con where vehicle_id = #{vehicleId}
+        delete from d_driver_vehicle_con where driver_id = #{driverId}
     </delete>
 
 </mapper>

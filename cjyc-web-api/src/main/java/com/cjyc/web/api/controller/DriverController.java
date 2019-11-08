@@ -1,5 +1,6 @@
 package com.cjyc.web.api.controller;
 
+import com.cjyc.common.model.dto.KeywordDto;
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.driver.DriverDto;
 import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
@@ -50,8 +51,7 @@ public class DriverController {
     @ApiOperation(value = "新增散户司机")
     @PostMapping(value = "/saveDriver")
     public ResultVo saveDriver(@Validated({ DriverDto.SaveDriverDto.class }) @RequestBody DriverDto dto){
-        boolean result = driverService.saveDriver(dto);
-        return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
+        return driverService.saveDriver(dto);
     }
 
     @ApiOperation(value = "根据查询条件查看司机信息")
@@ -68,15 +68,14 @@ public class DriverController {
         return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
 
-    @ApiOperation(value = "根据司机userId/Id查看司机信息")
-    @PostMapping(value = "/showDriver/{id}/{userId}")
-    public ResultVo<ShowDriverVo> showDriver(@PathVariable @ApiParam(value = "司机id",required = true) Long id,
-                                             @PathVariable @ApiParam(value = "司机UserId",required = true) Long userId){
-        return driverService.showDriver(id,userId);
+    @ApiOperation(value = "根据司机id(driverId)查看司机信息")
+    @PostMapping(value = "/showDriver/{driverId}")
+    public ResultVo<ShowDriverVo> showDriver(@PathVariable @ApiParam(value = "司机id",required = true) Long driverId){
+        return driverService.showDriver(driverId);
     }
 
     @ApiOperation(value = "根据司机Id更新司机信息")
-    @PostMapping(value = "/modifyDriver/{id}")
+    @PostMapping(value = "/modifyDriver")
     public ResultVo modifyDriver(@RequestBody DriverDto dto){
         boolean result = driverService.modifyDriver(dto);
         return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
@@ -91,5 +90,10 @@ public class DriverController {
         return driverService.resetState(id, flag);
     }
 
+    @ApiOperation(value = "查询没有被绑定的社会车辆信息")
+    @PostMapping(value = "/findFreeVehicle")
+    public ResultVo findFreeVehicle(@RequestBody KeywordDto dto){
+        return driverService.findFreeVehicle(dto);
+    }
 
 }

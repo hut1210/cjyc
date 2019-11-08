@@ -21,10 +21,10 @@ public interface ICarrierDao extends BaseMapper<Carrier> {
 
     /**
      * 根据司机id查询承运商id
-     * @param id
+     * @param driverId
      * @return
      */
-    Carrier getCarrierById(@Param("id") Long id);
+    Carrier getCarrierById(@Param("driverId") Long driverId);
 
     /**
      * 根据条件查询承运商

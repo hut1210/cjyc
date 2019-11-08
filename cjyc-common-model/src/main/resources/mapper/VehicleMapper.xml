@@ -81,7 +81,7 @@
     <select id="getBaseVehicleByTerm" resultType="com.cjyc.common.model.vo.web.carrier.BaseVehicleVo"
                 parameterType="com.cjyc.common.model.dto.web.carrier.SeleVehicleDriverDto">
         SELECT
-            veh.id AS id,
+            veh.id AS vehicleId,
             veh.plate_no AS plateNo,
             veh.default_carry_num AS defaultCarryNum,
             dri.real_name AS realName,
@@ -89,12 +89,12 @@
             dri.MODE AS MODE
         FROM
             d_vehicle veh
-            JOIN d_driver_vehicle_con con ON con.vehicle_id = veh.id
-            JOIN d_driver dri ON dri.id = con.driver_id
-            JOIN d_carrier_driver_con cdc on cdc.driver_id = dri.id
-            JOIN d_carrier carr ON carr.id = cdc.carrier_id
+            left JOIN d_driver_vehicle_con con ON con.vehicle_id = veh.id
+            left JOIN d_driver dri ON dri.id = con.driver_id
+            left JOIN d_carrier_driver_con cdc on cdc.driver_id = dri.id
+            left JOIN d_carrier carr ON carr.id = cdc.carrier_id
         WHERE
-	carr.id = #{id}
+	carr.id = #{carrierId}
     </select>
 
     <!-- 查询司机与车辆绑定信息 -->
@@ -102,29 +102,50 @@
                             parameterType="com.cjyc.common.model.dto.web.vehicle.SelectVehicleDto">
 
         SELECT
+            veh.id AS vehicleId,
+            d.id AS driverId,
             veh.plate_no AS plateNo,
             veh.default_carry_num AS defaultCarryNum,
             d.real_name AS realName,
             d.phone AS phone,
-            d.operate_time AS operateTime,
-            d.operate_name AS operateName
+            d.check_time AS checkTime,
+            admin.NAME AS checkName
         FROM
             d_vehicle veh
-            JOIN d_driver_vehicle_con con ON con.vehicle_id = veh.id
-            JOIN d_driver d ON con.driver_id = d.id
+            LEFT JOIN d_driver_vehicle_con con ON con.vehicle_id = veh.id
+            LEFT JOIN d_driver d ON d.id = con.driver_id
+            LEFT JOIN b_admin admin ON admin.id = d.check_user_id
         <where>
             <if test="plateNo != null and plateNo.trim() != ''">
                 con.plate_no = #{plateNo}
             </if>
-            <if test="realName != null  and realName.trim() != ''">
+            <if test="realName != null and realName.trim() != ''">
                 and  d.real_name = #{realName}
             </if>
             <if test="phone != null and phone.trim() != ''">
                 and  d.phone = #{phone}
             </if>
             and veh.ownership_type = 1
+            and d.identity = 0
             AND d.type = 2
             AND d.state = 2
+        </where>
+    </select>
+
+    <!-- 模糊匹配查询空闲社会车辆 -->
+    <select id="findFreeVehicle" resultType="com.cjyc.common.model.vo.web.vehicle.FreeVehicleVo"
+                                parameterType="java.lang.String">
+        SELECT
+            id AS id,
+            plate_no AS plateNo,
+            default_carry_num AS defaultCarryNum
+        FROM
+            d_vehicle
+        <where>
+            <if test="plateNo != null and plateNo.trim() != ''">
+                 plate_no like concat('%',#{plateNo},'%')
+            </if>
+            and ownership_type = 1
         </where>
     </select>
 </mapper>

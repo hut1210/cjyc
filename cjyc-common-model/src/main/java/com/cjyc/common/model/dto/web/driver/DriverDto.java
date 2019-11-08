@@ -19,12 +19,12 @@ public class DriverDto implements Serializable {
     public interface SaveDriverDto {
     }
 
-    @ApiModelProperty("司机id")
-    private Long id;
+    @ApiModelProperty("司机id(driverId)")
+    private Long driverId;
 
-    @ApiModelProperty("当前登陆用户userId")
-    @NotNull(message = "当前登陆用户userId不能为空")
-    private Long userId;
+    @ApiModelProperty("当前登陆用户id(loginId)")
+    @NotNull(message = "当前登陆用户id(loginId)不能为空")
+    private Long loginId;
 
     @ApiModelProperty("司机姓名")
     @NotBlank(message = "司机姓名不能为空")

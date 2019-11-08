@@ -18,7 +18,7 @@ public interface ICustomerService  extends IService<Customer> {
      * @param dto
      * @return
      */
-    boolean saveCustomer(CustomerDto dto);
+    ResultVo saveCustomer(CustomerDto dto);
 
     /**
      * 更新移动端用户

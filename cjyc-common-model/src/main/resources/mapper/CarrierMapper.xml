@@ -42,14 +42,17 @@
     <!-- 根据司机id查询承运商 -->
     <select id="getCarrierById" resultType="com.cjyc.common.model.entity.Carrier"
             parameterType="java.lang.Long">
-          SELECT
-            carr.id as id,carr.state as state,carr.name as name,carr.linkman_phone as linkmanPhone
+         SELECT
+            carr.id AS id,
+            carr.state AS state,
+            carr.NAME AS NAME,
+            carr.linkman_phone AS linkmanPhone
         FROM
             d_carrier carr
-            JOIN d_carrier_driver_con con ON con.carrier_id = carr.id
-            JOIN d_driver dri ON dri.id = con.driver_id
+            left JOIN d_carrier_driver_con con ON con.carrier_id = carr.id
+            left JOIN d_driver dri ON dri.id = con.driver_id
         WHERE
-            dri.id = #{id}
+            dri.id = #{driverId}
     </select>
 
     <!-- 根据条件查询承运商 -->
@@ -74,16 +77,17 @@
             carr.MODE AS MODE,
             carr.is_invoice AS isInvoice,
             carr.state AS state,
-            carr.operate_name AS operateName,
             bind.card_type AS cardType,
             bind.card_name AS cardName,
             bind.bank_name AS bankName,
-            bind.card_no AS cardNo
+            bind.card_no AS cardNo,
+            admin.NAME AS operateName
         FROM
             d_carrier carr
-            JOIN d_carrier_driver_con con ON con.carrier_id = carr.id
-            JOIN d_driver dri ON dri.id = con.driver_id
-            JOIN s_bank_card_bind bind ON bind.user_id = dri.user_id
+        LEFT JOIN d_carrier_driver_con con ON con.carrier_id = carr.id
+        LEFT JOIN d_driver dri ON dri.id = con.driver_id
+        LEFT JOIN s_bank_card_bind bind ON bind.user_id = carr.id
+        LEFT JOIN b_admin admin ON admin.id = carr.check_user_id
         <where>
             <if test="name != null and name.trim() != ''">
                 carr.name like CONCAT('%',#{name},'%')
@@ -113,7 +117,7 @@
                 and  carr.state = #{state}
             </if>
             <if test="operateName != null and operateName.trim() != ''">
-                and  carr.operate_name like CONCAT('%',#{operateName},'%')
+                and  admin.name like CONCAT('%',#{operateName},'%')
             </if>
         </where>
     </select>
@@ -144,9 +148,9 @@
             bcb.card_no AS cardNo
         FROM
             d_carrier carr
-            JOIN d_carrier_driver_con cdc ON cdc.carrier_id = carr.id
-            JOIN d_driver dri ON dri.id = cdc.driver_id
-            JOIN s_bank_card_bind bcb ON bcb.user_id = dri.user_id
+            left JOIN d_carrier_driver_con cdc ON cdc.carrier_id = carr.id
+            left JOIN d_driver dri ON dri.id = cdc.driver_id
+            left JOIN s_bank_card_bind bcb ON bcb.user_id = carr.id
     </select>
 
 

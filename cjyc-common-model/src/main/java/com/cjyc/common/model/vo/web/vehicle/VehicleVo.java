@@ -11,9 +11,13 @@ public class VehicleVo implements Serializable {
 
     private static final long serialVersionUID = -2252247630872394365L;
 
-    @ApiModelProperty(value = "运输车辆主键id")
+    @ApiModelProperty(value = "车辆主键id(vehicleId)")
     @JsonSerialize(using= ToStringSerializer.class)
-    private Long id;
+    private Long vehicleId;
+
+    @ApiModelProperty(value = "司机id(driverId)")
+    @JsonSerialize(using= ToStringSerializer.class)
+    private Long driverId;
 
     @ApiModelProperty(value = "车牌号")
     private String plateNo;
@@ -28,8 +32,8 @@ public class VehicleVo implements Serializable {
     private String phone;
 
     @ApiModelProperty("最后操作时间")
-    private String operateTime;
+    private String checkTime;
 
     @ApiModelProperty("最后操作人")
-    private String operateName;
+    private String checkName;
 }

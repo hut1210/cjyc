@@ -47,19 +47,18 @@ public interface IDriverDao extends BaseMapper<Driver> {
     List<DriverVo> getDriverByTerm(SelectDriverDto dto);
 
     /**
-     * 根据司机id/userId查看司机信息
-     * @param id
-     * @param userId
+     * 根据司机id查看司机信息
+     * @param driverId
      * @return
      */
-    ShowDriverVo getDriverById(@Param("id") Long id,@Param("userId") Long userId);
+    ShowDriverVo getDriverById(@Param("driverId") Long driverId);
 
     /**
      * 根据承运商id查询司机信息
      * @param carrierId
      * @return
      */
-    Driver getDriverByDriverId(@Param("carrierId") Long carrierId);
+    Driver getDriverByCarrierId(@Param("carrierId") Long carrierId);
 
     /**
      * 根据司机id获取承运商id

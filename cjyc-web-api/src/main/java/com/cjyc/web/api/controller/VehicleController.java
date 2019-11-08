@@ -1,11 +1,9 @@
 package com.cjyc.web.api.controller;
 
-import com.cjyc.common.model.dto.web.OperateDto;
-import com.cjyc.common.model.dto.web.vehicle.DriverVehicleConDto;
+import com.cjyc.common.model.dto.web.vehicle.ModifyCarryNumDto;
+import com.cjyc.common.model.dto.web.vehicle.RemoveVehicleDto;
 import com.cjyc.common.model.dto.web.vehicle.SelectVehicleDto;
 import com.cjyc.common.model.dto.web.vehicle.VehicleDto;
-import com.cjyc.common.model.enums.ResultEnum;
-import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.web.api.service.IVehicleService;
 import io.swagger.annotations.Api;
@@ -31,8 +29,7 @@ public class VehicleController {
     @ApiOperation(value = "新增运输车辆")
     @PostMapping(value = "/saveVehicle")
     public ResultVo saveVehicle(@RequestBody VehicleDto dto){
-        boolean result = vehicleService.saveVehicle(dto);
-        return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
+        return vehicleService.saveVehicle(dto);
     }
 
     @ApiOperation(value = "根据条件查询运输车辆信息")
@@ -41,15 +38,15 @@ public class VehicleController {
         return vehicleService.findVehicle(dto);
     }
 
-    @ApiOperation(value = "删除车辆与司机关系")
-    @PostMapping(value = "/verifyVehicle")
-    public ResultVo verifyVehicle(@RequestBody OperateDto dto){
-        return vehicleService.verifyVehicle(dto);
+    @ApiOperation(value = "删除(如果车辆与司机绑定关系则先解除关系后删除车辆，如果没有绑定关系则直接删除车辆)")
+    @PostMapping(value = "/removeVehicle")
+    public ResultVo removeVehicle(@RequestBody RemoveVehicleDto dto){
+        return vehicleService.removeVehicle(dto);
     }
 
     @ApiOperation(value = "修改车辆与司机关系")
     @PostMapping(value = "/modifyVehicle")
-    public ResultVo modifyVehicle(@RequestBody DriverVehicleConDto dto){
+    public ResultVo modifyVehicle(@RequestBody ModifyCarryNumDto dto){
         return vehicleService.modifyVehicle(dto);
     }
 

@@ -18,10 +18,6 @@ public class ShowDriverVo implements Serializable {
     @JsonSerialize(using= ToStringSerializer.class)
     private Long id;
 
-    @ApiModelProperty("司机userId")
-    @JsonSerialize(using= ToStringSerializer.class)
-    private Long userId;
-
     @ApiModelProperty("司机姓名")
     private String realName;
 

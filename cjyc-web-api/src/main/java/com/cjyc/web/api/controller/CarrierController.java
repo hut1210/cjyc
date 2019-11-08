@@ -9,12 +9,10 @@ import com.cjyc.common.model.util.BasePageUtil;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.carrier.BaseDriverVo;
 import com.cjyc.common.model.vo.web.carrier.BaseVehicleVo;
 import com.cjyc.common.model.vo.web.carrier.CarrierVo;
 import com.cjyc.common.model.vo.web.carrier.BaseCarrierVo;
 import com.cjyc.web.api.service.ICarrierService;
-import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -40,8 +38,7 @@ public class CarrierController {
     @ApiOperation(value = "新增承运商")
     @PostMapping(value = "/saveCarrier")
     public ResultVo saveCarrier(@Validated({ CarrierDto.SaveCarrierDto.class }) @RequestBody CarrierDto dto){
-        boolean result = carrierService.saveCarrier(dto);
-        return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
+        return carrierService.saveCarrier(dto);
     }
 
     @ApiOperation(value = "更新承运商")
@@ -65,25 +62,24 @@ public class CarrierController {
         return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
 
-    @ApiOperation(value = "根据id查看基本承运商信息")
-    @PostMapping(value = "/showBaseCarrier/{id}")
-    public ResultVo<BaseCarrierVo> showBaseCarrier(@PathVariable @ApiParam(value = "承运商id",required = true) Long id){
-        return carrierService.showBaseCarrier(id);
+    @ApiOperation(value = "根据carrierId查看基本承运商信息")
+    @PostMapping(value = "/showBaseCarrier/{carrierId}")
+    public ResultVo<BaseCarrierVo> showBaseCarrier(@PathVariable @ApiParam(value = "承运商id",required = true) Long carrierId){
+        return carrierService.showBaseCarrier(carrierId);
     }
 
-    @ApiOperation(value = "根据条件查看车辆信息")
-    @PostMapping(value = "/getBaseVehicleByTerm")
-    public ResultVo<PageVo<BaseVehicleVo>> getBaseVehicleByTerm(@Validated({ SeleVehicleDriverDto.SelectVehicleDto.class })@RequestBody SeleVehicleDriverDto dto){
-        BasePageUtil.initPage(dto.getCurrentPage(),dto.getPageSize());
-        PageInfo<BaseVehicleVo> pageInfo = carrierService.getBaseVehicleByTerm(dto);
-        return BaseResultUtil.getPageVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg(),pageInfo);
+    @ApiOperation(value = "根据条件查看该承运商下车辆信息")
+    @PostMapping(value = "/findBaseVehicle")
+    public ResultVo<PageVo<BaseVehicleVo>> findBaseVehicle(@Validated({ SeleVehicleDriverDto.SelectVehicleDto.class })@RequestBody SeleVehicleDriverDto dto){
+        BasePageUtil.initPage(dto);
+        return carrierService.findBaseVehicle(dto);
     }
 
     @ApiOperation(value = "根据条件查看承运商下司机信息")
-    @PostMapping(value = "/getBaseDriverByTerm")
-    public ResultVo getBaseDriverByTerm(@Validated({ SeleVehicleDriverDto.SelectVehicleDto.class })@RequestBody SeleVehicleDriverDto dto){
-        BasePageUtil.initPage(dto.getCurrentPage(),dto.getPageSize());
-        return carrierService.getBaseDriverByTerm(dto);
+    @PostMapping(value = "/findBaseDriver")
+    public ResultVo findBaseDriver(@Validated({ SeleVehicleDriverDto.SelectVehicleDto.class })@RequestBody SeleVehicleDriverDto dto){
+        BasePageUtil.initPage(dto);
+        return carrierService.findBaseDriver(dto);
     }
 
     @PostMapping("/resetPwd/{id}")

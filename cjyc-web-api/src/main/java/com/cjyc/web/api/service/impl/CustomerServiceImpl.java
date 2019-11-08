@@ -94,7 +94,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
     @Override
-    public boolean saveCustomer(CustomerDto dto) {
+    public ResultVo saveCustomer(CustomerDto dto) {
         Customer customer = new Customer();
         BeanUtils.copyProperties(dto,customer);
         customer.setCustomerNo(sendNoService.getNo(SendNoTypeEnum.CUSTOMER));
@@ -111,7 +111,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         //用户手机号在C端不能重复
        if (phoneExistsInCustomer(customer.getContactPhone())) {
             log.error("手机号已存在，请检查");
-            return false;
+            return BaseResultUtil.fail("手机号已存在，请检查");
         }
         //注册时间
         //新增个人用户信息到物流平台
@@ -120,7 +120,8 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             throw new CommonException(rd.getMsg());
         }
         customer.setUserId(rd.getData());
-        return super.save(customer);
+        super.save(customer);
+        return BaseResultUtil.success();
     }
 
 
@@ -401,7 +402,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             //删除合伙人附加信息
             customerPartnerDao.removeByCustomerId(customer.getId());
             //删除合伙人银行卡信息
-            bankCardBindDao.removeBandCarBind(customer.getUserId(),UserTypeEnum.CUSTOMER.code);
+            bankCardBindDao.removeBandCarBind(customer.getId());
             encapPartner(dto,customer,now);
         }
         return BaseResultUtil.success();
