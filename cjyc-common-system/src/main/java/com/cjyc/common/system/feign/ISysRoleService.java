@@ -3,10 +3,12 @@ package com.cjyc.common.system.feign;
 import com.cjkj.common.constant.ServiceNameConstants;
 import com.cjkj.common.feign.fallback.UserServiceFallbackFactory;
 import com.cjkj.common.model.ResultData;
+import com.cjkj.usercenter.dto.asc.MenuResp;
 import com.cjkj.usercenter.dto.common.*;
 import com.cjkj.usercenter.dto.yc.SelectUsersByRoleReq;
 import com.cjkj.usercenter.dto.yc.SelectUsersByRoleResp;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -114,4 +116,11 @@ public interface ISysRoleService {
      */
     @PostMapping("/feign/yc/getUsersByRoleId")
     ResultData<List<SelectUsersByRoleResp>> getUsersByRoleId(@RequestBody SelectUsersByRoleReq req);
+
+    /**
+     * 获取韵车系统资源列表
+     * @return
+     */
+    @GetMapping("/feign/yc/getMenuList")
+    ResultData<List<MenuResp>> getMenuList();
 }
