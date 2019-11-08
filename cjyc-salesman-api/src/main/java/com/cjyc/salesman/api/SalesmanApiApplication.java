@@ -13,7 +13,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  */
 @SpringBootApplication
 @EnableDiscoveryClient
-@EnableFeignClients
+@EnableFeignClients({"com.cjyc.common.system.feign"})
 @MapperScan("com.cjyc.common.model.dao")
 public class SalesmanApiApplication {
     public static void main(String[] args) {
