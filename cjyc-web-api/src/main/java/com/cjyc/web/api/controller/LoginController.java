@@ -18,6 +18,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -32,13 +33,20 @@ public class LoginController {
     @Autowired
     private ISysUserService sysUserService;
 
+    @Value("${cjkj.web.clientId}")
+    private String clientId;
+    @Value("${cjkj.web.clientSecret}")
+    private String clientSecret;
+    @Value("${cjkj.web.grantType}")
+    private String grantType;
+
     @ApiOperation(value = "用户名密码登录：针对传统标准的用户名密码流程")
     @PostMapping("/pwdLogin")
     public ResultVo<AuthLoginResp> pwdLogin(@Valid @RequestBody LoginByUserNameDto dto) {
         AuthLoginReq req = new AuthLoginReq();
-        req.setClientId(YmlProperty.get("cjkj.web.clientId"));
-        req.setClientSecret(YmlProperty.get("cjkj.web.clientSecret"));
-        req.setGrantType(YmlProperty.get("cjkj.web.grantType"));
+        req.setClientId(clientId);
+        req.setClientSecret(clientSecret);
+        req.setGrantType(grantType);
         req.setUsername(dto.getUsername());
         req.setPassword(dto.getPassword());
         ResultData<AuthLoginResp> rd = sysLoginService.getAuthentication(req);
@@ -54,9 +62,9 @@ public class LoginController {
             @ApiParam(name = "account", value = "账号", required = true)
             @PathVariable String account) {
         AuthLoginReq req = new AuthLoginReq();
-        req.setClientId(YmlProperty.get("cjkj.web.clientId"));
-        req.setClientSecret(YmlProperty.get("cjkj.web.clientSecret"));
-        req.setGrantType(YmlProperty.get("cjkj.web.grantType"));
+        req.setClientId(clientId);
+        req.setClientSecret(clientSecret);
+        req.setGrantType(grantType);
         req.setPassword(YmlProperty.get("cjkj.web.password"));
         req.setUsername(account);
         ResultData<AuthLoginResp> rd = sysLoginService.getAuthentication(req);
