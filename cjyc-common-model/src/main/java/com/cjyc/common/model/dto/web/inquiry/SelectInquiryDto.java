@@ -13,8 +13,8 @@ import java.io.Serializable;
 public class SelectInquiryDto extends BasePageDto implements Serializable {
 
     private static final long serialVersionUID = -5463698523193022010L;
-    @ApiModelProperty("登陆用户userId")
-    private Long userId;
+    @ApiModelProperty("登陆用户id(loginId)")
+    private Long loginId;
 
     @ApiModelProperty("询价开始日期")
     private String startDate;

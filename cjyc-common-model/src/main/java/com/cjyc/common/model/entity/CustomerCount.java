@@ -31,8 +31,8 @@ public class CustomerCount implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "客户userId")
-    private Long customerUserId;
+    @ApiModelProperty(value = "客户ID")
+    private Long customerId;
 
     @ApiModelProperty(value = "订单编号")
     private String orderNo;

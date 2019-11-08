@@ -34,10 +34,10 @@ public class InquiryController  {
     private IInquiryService inquiryService;
 
     @ApiOperation(value = "根据条件分页查询询价条目")
-    @PostMapping(value = "/getAllInquiryByTerm")
-    public ResultVo<PageVo<InquiryVo>> getAllInquiryByTerm(@RequestBody SelectInquiryDto dto){
-        BasePageUtil.initPage(dto.getCurrentPage(),dto.getPageSize());
-        return inquiryService.getAllInquiryByTerm(dto);
+    @PostMapping(value = "/findInquiry")
+    public ResultVo<PageVo<InquiryVo>> findInquiry(@RequestBody SelectInquiryDto dto){
+        BasePageUtil.initPage(dto);
+        return inquiryService.findInquiry(dto);
     }
 
     @ApiOperation(value = "处理工单")

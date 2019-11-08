@@ -220,7 +220,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
             //更新承运商
             carr.setState(CommonStateEnum.CHECKED.code);
         }
-        Admin admin = adminDao.selectOne(new QueryWrapper<Admin>().lambda().eq(Admin::getUserId, dto.getUserId()).select(Admin::getName));
+        Admin admin = adminDao.selectOne(new QueryWrapper<Admin>().lambda().eq(Admin::getId, dto.getLoginId()).select(Admin::getName));
         if(admin != null){
             //driver.setOperateName(admin.getName());
             //carr.setOperateName(admin.getName());

@@ -250,7 +250,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         }
         //carrier.setOperateTime(NOW);
         //carrier.setOperateUserId(dto.getUserId());
-        Admin admin = adminDao.selectOne(new QueryWrapper<Admin>().lambda().eq(Admin::getUserId, dto.getUserId()).select(Admin::getName));
+        Admin admin = adminDao.selectOne(new QueryWrapper<Admin>().lambda().eq(Admin::getId, dto.getLoginId()).select(Admin::getName));
         if(admin != null){
            // carrier.setOperateName(admin.getName());
         }

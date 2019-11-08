@@ -23,7 +23,7 @@ public interface IInquiryService extends IService<Inquiry> {
      * @param dto
      * @return
      */
-    ResultVo getAllInquiryByTerm(SelectInquiryDto dto);
+    ResultVo findInquiry(SelectInquiryDto dto);
 
     /**
      * 处理工单

@@ -1,5 +1,7 @@
 package com.cjyc.common.model.vo.web.customer;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -10,9 +12,11 @@ import java.math.BigDecimal;
 public class CustomerVo implements Serializable {
 
     @ApiModelProperty(value = "用户id")
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long id;
 
     @ApiModelProperty(value = "用户userId")
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long userId;
 
     @ApiModelProperty("C端客户编号")
@@ -33,11 +37,11 @@ public class CustomerVo implements Serializable {
     @ApiModelProperty(value = "身份证反面（国徽）")
     private String idCardBackImg;
 
-    @ApiModelProperty(value = "注册时间")
-    private String registerTime;
-
     @ApiModelProperty("账号来源：1：App注册，2：Applet注册，3：韵车后台 4：升级创建")
     private Integer source;
+
+    @ApiModelProperty("注册时间")
+    private String createTime;
 
     @ApiModelProperty("注册操作人")
     private String createUserName;

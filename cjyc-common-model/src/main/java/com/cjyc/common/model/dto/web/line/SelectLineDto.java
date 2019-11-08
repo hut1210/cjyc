@@ -8,8 +8,8 @@ import java.io.Serializable;
 @Data
 public class SelectLineDto extends BasePageDto implements Serializable {
 
-    @ApiModelProperty("登录人userId")
-    private Long userId;
+    @ApiModelProperty("登录人id(loginId)")
+    private Long loginId;
 
     @ApiModelProperty("起始城市编码")
     private String fromCityCode;

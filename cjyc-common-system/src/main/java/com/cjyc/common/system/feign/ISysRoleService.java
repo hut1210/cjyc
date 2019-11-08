@@ -27,7 +27,7 @@ public interface ISysRoleService {
      * @param id
      */
     @PostMapping("/feign/uc/getRole/{id}")
-    ResultData<SelectRoleResp> getById(@PathVariable Long id);
+    ResultData<SelectRoleResp> getById(@PathVariable(value="id") Long id);
 
     /**
      * 保存角色

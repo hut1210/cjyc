@@ -106,13 +106,10 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         customer.setPayMode(CustomerPayEnum.TIME_PAY.code);
         customer.setSource(CustomerSourceEnum.WEB.code);
         customer.setRegisterTime(NOW);
-        //customer.setRegisterUserId(dto.getAdminId());
-        Admin admin = adminDao.selectById(dto.getAdminId());
-        if(admin != null){
-            //customer.setRegisterUserName(admin.getName());
-        }
+        customer.setCreateUserId(dto.getLoginId());
+        customer.setCreateTime(NOW);
         //用户手机号在C端不能重复
-        if (phoneExistsInCustomer(customer.getContactPhone())) {
+       if (phoneExistsInCustomer(customer.getContactPhone())) {
             log.error("手机号已存在，请检查");
             return false;
         }
@@ -128,37 +125,37 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
 
 
     @Override
-    public boolean modifyCustomer(CustomerDto customerDto) {
-        Customer customer = customerDao.selectById(customerDto.getCustomerId());
+    public boolean modifyCustomer(CustomerDto dto) {
+        Customer customer = customerDao.selectById(dto.getCustomerId());
         if(null != customer){
-            ResultData<Boolean> updateRd = updateCustomerToPlatform(customer, customerDto.getContactPhone());
+            ResultData<Boolean> updateRd = updateCustomerToPlatform(customer, dto.getContactPhone());
             if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
                 log.error("修改用户信息失败，原因：" + updateRd.getMsg());
                 return false;
             }
             if (updateRd.getData()) {
                 //需要同步手机号信息
-                syncPhone(customer.getContactPhone(), customerDto.getContactPhone());
+                syncPhone(customer.getContactPhone(), dto.getContactPhone());
             }
-            customer.setName(customerDto.getName());
-            customer.setAlias(customerDto.getName());
-            customer.setContactMan(customerDto.getName());
-            customer.setContactPhone(customerDto.getContactPhone());
-            customer.setIdCard(customerDto.getIdCard());
-            customer.setIdCardFrontImg(customerDto.getIdCardFrontImg());
-            customer.setIdCardBackImg(customerDto.getIdCardBackImg());
+            customer.setName(dto.getName());
+            customer.setAlias(dto.getName());
+            customer.setContactMan(dto.getName());
+            customer.setContactPhone(dto.getContactPhone());
+            customer.setIdCard(dto.getIdCard());
+            customer.setIdCardFrontImg(dto.getIdCardFrontImg());
+            customer.setIdCardBackImg(dto.getIdCardBackImg());
         }
         return super.updateById(customer);
     }
 
     @Override
-    public ResultVo findCustomer(SelectCustomerDto customerDto) {
-        PageHelper.startPage(customerDto.getCurrentPage(), customerDto.getPageSize());
-        List<CustomerVo> customerVos = customerDao.findCustomer(customerDto);
+    public ResultVo findCustomer(SelectCustomerDto dto) {
+        PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
+        List<CustomerVo> customerVos = customerDao.findCustomer(dto);
         if(!CollectionUtils.isEmpty(customerVos)){
             for(CustomerVo vo : customerVos){
-                CustomerCountVo count = customerCountDao.count(vo.getUserId());
-                Admin admin = adminDao.findByUserId(vo.getCreateUserId());
+                CustomerCountVo count = customerCountDao.count(vo.getId());
+                Admin admin = adminDao.selectById(vo.getCreateUserId());
                 if(admin != null){
                     vo.setCreateUserName(StringUtils.isNotBlank(admin.getName()) == true ? admin.getName():"");
                 }
@@ -167,9 +164,9 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                     vo.setTotalCar(count.getTotalCar() == null ? 0:count.getTotalCar());
                     vo.setTotalAmount(count.getTotalAmount() == null ? BigDecimal.ZERO:count.getTotalAmount().divide(new BigDecimal(100)));
                 }
-                if(StringUtils.isNotBlank(vo.getRegisterTime())){
-                    Long registerTime = Long.parseLong(vo.getRegisterTime());
-                    vo.setRegisterTime(LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(registerTime),TimePatternConstant.COMPLEX_TIME_FORMAT));
+                if(StringUtils.isNotBlank(vo.getCreateTime())){
+                    Long createTime = Long.parseLong(vo.getCreateTime());
+                    vo.setCreateTime(LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(createTime),TimePatternConstant.COMPLEX_TIME_FORMAT));
                 }
             }
         }
@@ -189,12 +186,8 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         customer.setState(CustomerStateEnum.WAIT_LOGIN.code);
         customer.setSource(CustomerSourceEnum.WEB.code);
         customer.setRegisterTime(NOW);
-        //customer.setRegisterUserId(dto.getAdminId());
-        Admin admin = adminDao.selectById(dto.getAdminId());
-        if(admin != null){
-            //customer.setRegisterUserName(admin.getName());
-        }
-        //
+        customer.setCreateTime(NOW);
+        customer.setCreateUserId(dto.getLoginId());
         //客户端信息不能重复
         if (phoneExistsInCustomer(dto.getContactPhone())) {
             return false;
@@ -225,12 +218,12 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                 //审核通过
                 customer.setState(CustomerStateEnum.CHECKED.code);
                 customer.setCheckTime(now);
-                customer.setCheckUserId(dto.getUserId());
+                customer.setCheckUserId(dto.getLoginId());
             }else if(FlagEnum.AUDIT_REJECT.code == dto.getFlag()){
                 //审核拒绝
                 customer.setState(CustomerStateEnum.REJECT.code);
                 customer.setCheckTime(now);
-                customer.setCheckUserId(dto.getUserId());
+                customer.setCheckUserId(dto.getLoginId());
             }
             return super.updateById(customer);
         }
@@ -238,10 +231,10 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     }
 
     @Override
-    public ResultVo showKeyCustomer(Long id) {
+    public ResultVo showKeyCustomer(Long customerId) {
         ShowKeyCustomerVo sKeyCustomerDto = new ShowKeyCustomerVo();
         //根据主键id查询大客户
-        Customer customer = customerDao.selectById(id);
+        Customer customer = customerDao.selectById(customerId);
         if(customer != null){
             BeanUtils.copyProperties(customer,sKeyCustomerDto);
         }
@@ -310,18 +303,14 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         List<ListKeyCustomerVo> keyCustomerList = customerDao.findKeyCustomter(dto);
         if(!CollectionUtils.isEmpty(keyCustomerList)){
             for(ListKeyCustomerVo vo : keyCustomerList){
-                CustomerCountVo count = customerCountDao.count(vo.getUserId());
-                Admin admin = adminDao.findByUserId(vo.getCreateUserId());
-                if(admin != null){
-                    vo.setCreateUserName(StringUtils.isNotBlank(admin.getName()) == true ? admin.getName():"");
-                }
+                CustomerCountVo count = customerCountDao.count(vo.getId());
                 if(count != null){
                     vo.setTotalOrder(count.getTotalOrder() == null ? 0:count.getTotalOrder());
                     vo.setTotalCar(count.getTotalCar() == null ? 0:count.getTotalCar());
                     vo.setTotalAmount(count.getTotalAmount() == null ? BigDecimal.ZERO:count.getTotalAmount().divide(new BigDecimal(100)));
                 }
-                if(StringUtils.isNotBlank(vo.getRegisterTime())){
-                    vo.setRegisterTime(LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(Long.valueOf(vo.getRegisterTime())),TimePatternConstant.COMPLEX_TIME_FORMAT));
+                if(StringUtils.isNotBlank(vo.getCreateTime())){
+                    vo.setCreateTime(LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(Long.valueOf(vo.getCreateTime())),TimePatternConstant.COMPLEX_TIME_FORMAT));
                 }
             }
         }
@@ -354,8 +343,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
 
     @Override
     public ResultVo savePartner(PartnerDto dto) {
-        boolean result = false;
-
+        boolean result = true;
         //新增c_customer
         Customer customer = new Customer();
         BeanUtils.copyProperties(dto,customer);
@@ -366,11 +354,8 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         customer.setType(CustomerTypeEnum.COOPERATOR.code);
         customer.setState(CommonStateEnum.WAIT_CHECK.code);
         customer.setRegisterTime(NOW);
-        //customer.setRegisterUserId(dto.getAdminId());
-        Admin admin = adminDao.selectById(dto.getAdminId());
-        if(admin != null){
-            //customer.setRegisterUserName(admin.getName());
-        }
+        customer.setCreateTime(NOW);
+        customer.setCreateUserId(dto.getLoginId());
         //用户手机号在C端不能重复
         if (phoneExistsInCustomer(customer.getContactPhone())) {
             log.error("手机号已存在，请检查");
@@ -393,7 +378,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
 
     @Override
     public ResultVo modifyPartner(PartnerDto dto) {
-        boolean result = false;
+        boolean result = true;
         Long now = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
         Customer customer = customerDao.selectById(dto.getCustomerId());
         if(customer != null){
@@ -461,10 +446,10 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     }
 
     @Override
-    public ResultVo getCustContractByUserId(Long userId) {
+    public ResultVo getContractByCustomerId(Long customerId) {
         //获取当前时间戳
         Long now = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
-        List<Map<String,Object>> contractList = customerDao.getCustContractByUserId(userId,now);
+        List<Map<String,Object>> contractList = customerDao.getContractByCustomerId(customerId,now);
         return BaseResultUtil.success(contractList == null ? Collections.EMPTY_LIST:contractList);
     }
 
@@ -496,26 +481,19 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     }
 
     @Override
-    public ResultVo getCouponByUserId(Long userId) {
-        Customer customer = customerDao.getCustomerByUserId(userId);
+    public ResultVo getCouponByCustomerId(Long customerId) {
         List<CustomerCouponSendVo> sendVoList = null;
-        if(customer != null){
-            //根据客户id查看发放的优惠券
-            List<CustomerCouponSendVo> couponVos = couponSendDao.getCustomerCoupon(customer.getId());
-            Long now = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
-            if(!CollectionUtils.isEmpty(couponVos)){
-                sendVoList = new ArrayList<>();
-                for(CustomerCouponSendVo sendVo : couponVos){
-                    if(sendVo == null){
-                        continue;
-                    }
-                    if(sendVo.getEndPeriodDate() != null){
-                        if(sendVo.getEndPeriodDate() >now){
-                            sendVoList.add(sendVo);
-                        }
-                    }else{
+        //根据客户id查看发放的优惠券
+        List<CustomerCouponSendVo> couponVos = couponSendDao.getCustomerCoupon(customerId);
+        if(!CollectionUtils.isEmpty(couponVos)){
+            sendVoList = new ArrayList<>();
+            for(CustomerCouponSendVo sendVo : couponVos){
+                if(sendVo.getEndPeriodDate() != null){
+                    if(sendVo.getEndPeriodDate() > NOW){
                         sendVoList.add(sendVo);
                     }
+                }else{
+                    sendVoList.add(sendVo);
                 }
             }
         }

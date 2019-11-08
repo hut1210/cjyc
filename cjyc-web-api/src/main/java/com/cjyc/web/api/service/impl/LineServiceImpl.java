@@ -89,11 +89,10 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
     }
 
     @Override
-    public ResultVo<PageVo<LineVo>> getPageLineByTerm(SelectLineDto dto) {
-        PageInfo<LineVo> pageInfo = null;
+    public ResultVo<PageVo<LineVo>> findPageLine(SelectLineDto dto) {
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
         List<LineVo> lineVos = queryAllByTerm(dto);
-        pageInfo = new PageInfo<>(lineVos);
+        PageInfo<LineVo> pageInfo = new PageInfo<>(lineVos);
         return BaseResultUtil.success(pageInfo == null ? new PageInfo<>():pageInfo);
     }
 

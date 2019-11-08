@@ -28,7 +28,7 @@
     </sql>
 
     <!-- 根据条件查询询价管理条目 -->
-    <select id="getAllInquiryByTerm" resultType="com.cjyc.common.model.vo.web.inquiry.InquiryVo"
+    <select id="findInquiry" resultType="com.cjyc.common.model.vo.web.inquiry.InquiryVo"
                                     parameterType="com.cjyc.common.model.dto.web.inquiry.SelectInquiryDto">
      SELECT
         id AS id ,inquiry_time AS inquiryTime,

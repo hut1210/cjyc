@@ -61,19 +61,12 @@ public interface ICustomerDao extends BaseMapper<Customer> {
     List<Map<String,Object>> getAllCustomerByKey(@Param("keyword") String keyword);
 
     /**
-     * 根据大客户userId查询有效期合同
-     * @param userId
+     * 根据大客户customerId查询有效期合同
+     * @param customerId
      * @param now
      * @return
      */
-    List<Map<String,Object>> getCustContractByUserId(@Param("userId") Long userId,@Param("now") Long now);
-
-    /**
-     * 根据用户userId获取用户信息
-     * @param userId
-     * @return
-     */
-    Customer getCustomerByUserId(@Param("userId") Long userId);
+    List<Map<String,Object>> getContractByCustomerId(@Param("customerId") Long customerId,@Param("now") Long now);
 
     Customer findByUserId(Long userId);
 }

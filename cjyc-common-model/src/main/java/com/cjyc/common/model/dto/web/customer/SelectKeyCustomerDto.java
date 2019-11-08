@@ -29,8 +29,4 @@ public class SelectKeyCustomerDto extends BasePageDto implements Serializable {
 
     @ApiModelProperty(value = "创建人")
     private String createUserName;
-
-    @ApiModelProperty(value = "创建人userId,不必传")
-    private Long createUserId;
-
 }

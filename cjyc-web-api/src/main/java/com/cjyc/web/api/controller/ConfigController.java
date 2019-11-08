@@ -32,9 +32,9 @@ public class ConfigController {
     }
 
    @ApiOperation(value = "更新系统配置")
-    @PostMapping(value = "/updateConfig")
-    public ResultVo updateConfig(@RequestBody OperateDto dto){
-        boolean result = dictionaryService.updateConfig(dto);
+    @PostMapping(value = "/modifyConfig")
+    public ResultVo modifyConfig(@RequestBody OperateDto dto){
+        boolean result = dictionaryService.modifyConfig(dto);
         return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
 }

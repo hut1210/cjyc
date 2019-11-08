@@ -1,6 +1,5 @@
 package com.cjyc.web.api.controller;
 
-import com.cjyc.common.model.dto.web.inquiry.SelectInquiryDto;
 import com.cjyc.common.model.dto.web.line.AddOrUpdateLineDto;
 import com.cjyc.common.model.dto.web.line.ListLineDto;
 import com.cjyc.common.model.dto.web.line.SelectLineDto;
@@ -62,10 +61,10 @@ public class LineController {
     }
 
     @ApiOperation(value = "根据条件查询班线")
-    @PostMapping(value = "/getPageLineByTerm")
-    public ResultVo<PageVo<LineVo>> getPageLineByTerm(@RequestBody SelectLineDto dto){
-        BasePageUtil.initPage(dto.getCurrentPage(),dto.getPageSize());
-        return lineService.getPageLineByTerm(dto);
+    @PostMapping(value = "/findPageLine")
+    public ResultVo<PageVo<LineVo>> findPageLine(@RequestBody SelectLineDto dto){
+        BasePageUtil.initPage(dto);
+        return lineService.findPageLine(dto);
     }
 
     @ApiOperation(value = "新增/更新班线")

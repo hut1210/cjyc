@@ -22,6 +22,6 @@ public interface IInquiryDao extends BaseMapper<Inquiry> {
      * @param dto
      * @return
      */
-    List<InquiryVo> getAllInquiryByTerm(SelectInquiryDto dto);
+    List<InquiryVo> findInquiry(SelectInquiryDto dto);
 
 }
