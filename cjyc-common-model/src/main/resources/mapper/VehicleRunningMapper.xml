@@ -9,7 +9,7 @@
         <result column="vehicle_id" property="vehicleId" />
         <result column="plate_no" property="plateNo" />
         <result column="carry_car_num" property="carryCarNum" />
-        <result column="empty_car_num" property="emptyCarNum" />
+        <result column="occupied_car_num" property="occupiedCarNum" />
         <result column="state" property="state" />
         <result column="running_state" property="runningState" />
         <result column="create_time" property="createTime" />
@@ -21,8 +21,9 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, driver_id, vehicle_id, plate_no, carry_car_num, empty_car_num, state, running_state, create_time, update_time, beat_time, lng, lat
+        id, driver_id, vehicle_id, plate_no, carry_car_num, occupied_car_num, state, running_state, create_time, update_time, beat_time, lng, lat
     </sql>
+
 
     <!-- 根据运力vehicleId获取运力信息 -->
     <select id="getVehiRunByVehiId" resultType="com.cjyc.common.model.entity.VehicleRunning" parameterType="java.lang.Long">

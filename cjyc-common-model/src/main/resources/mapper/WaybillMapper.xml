@@ -26,6 +26,50 @@
         <result column="create_user_id" property="createUserId" />
         <result column="input_store_id" property="inputStoreId" />
     </resultMap>
+    <resultMap id="TrunkListResultMap" type="com.cjyc.common.model.vo.web.waybill.TrunkListWaybillVo">
+        <id column="id" property="id" />
+        <result column="no" property="no" />
+        <result column="type" property="type" />
+        <result column="source" property="source" />
+        <result column="guide_line" property="guideLine" />
+        <result column="recommend_line" property="recommendLine" />
+        <result column="carrier_id" property="carrierId" />
+        <result column="carrier_type" property="carrierType" />
+        <result column="carrier_name" property="carrierName" />
+        <result column="car_num" property="carNum" />
+        <result column="state" property="state" />
+        <result column="freight_fee" property="freightFee" />
+        <result column="freight_pay_state" property="freightPayState" />
+        <result column="freight_pay_time" property="freightPayTime" />
+        <result column="freight_pay_billno" property="freightPayBillno" />
+        <result column="fixed_freight_fee" property="fixedFreightFee" />
+        <result column="remark" property="remark" />
+        <result column="create_time" property="createTime" />
+        <result column="create_user" property="createUser" />
+        <result column="create_user_id" property="createUserId" />
+        <result column="input_store_id" property="inputStoreId" />
+        <collection property="child" ofType="com.cjyc.common.model.vo.web.waybill.TrunkListTaskVo" javaType="java.util.List">
+            <id column="id" property="id" />
+            <result column="no" property="no" />
+            <result column="waybill_id" property="waybillId" />
+            <result column="waybill_no" property="waybillNo" />
+            <result column="car_num" property="carNum" />
+            <result column="state" property="state" />
+            <result column="driver_name" property="driverName" />
+            <result column="driver_phone" property="driverPhone" />
+            <result column="driver_id" property="driverId" />
+            <result column="load_car_num" property="loadCarNum" />
+            <result column="unload_car_num" property="unloadCarNum" />
+            <result column="vehicle_running_id" property="vehicleRunningId" />
+            <result column="vehicle_plate_no" property="vehiclePlateNo" />
+            <result column="remark" property="remark" />
+            <result column="create_user" property="createUser" />
+            <result column="create_user_id" property="createUserId" />
+            <result column="create_time" property="createTime" />
+            <result column="carry_car_num" property="carryCarNum" />
+            <result column="empty_car_num" property="emptyCarNum" />
+        </collection>
+    </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
@@ -120,24 +164,285 @@
         and wc.order_car_id = #{orderCarId}
         and w.type = #{waybillType}
     </select>
+
     <select id="findListTrunk" resultType="com.cjyc.common.model.vo.web.waybill.TrunkListWaybillVo">
         select
-            w.no as no,
-            w.guide_line as guideLine,
-            w.car_num as carNum,
-            w.carrier_id as carrierId,
-            w.carrier_name as carrierName,
-            w.create_time as waybillCreateTime,
-            t.driver_id as driverId,
-            t.driver_name as driverName,
-            t.driver_phone as driverPhone,
-            t.vehicle_plate_no as vehiclePlateNo,
-            t.create_time as taskCreateTime,
-            vr.empty_car_num as emptyCarNum,
-            vr.carry_car_num as carryCarNum
-        from w_waybill w
+        w.*,
+        t.*,
+        vr.carry_car_num as carryCarNum,
+        vr.occupied_car_num as occupiedCarNum
+        from
+        (select * from w_waybill wb where EXISTS
+        (select * from w_task task
+        <where>
+            wb.id = task.waybill_id
+            <if test="paramsDto.driverName != null and paramsDto.driverName != ''">
+                and task.driver_name  = #{paramsDto.driverName}
+            </if>
+            <if test="paramsDto.driverPhone != null and paramsDto.driverPhone != ''">
+                and task.driver_phone  = #{paramsDto.driverPhone}
+            </if>
+            <if test="paramsDto.vehiclePlateNo != null and paramsDto.vehiclePlateNo != ''">
+                and task.vehicle_plate_no  = #{paramsDto.vehiclePlateNo}
+            </if>
+        </where>
+        )
+        ) as w
         left join w_task t on t.waybill_id = w.id
-        LEFT JOIN d_vehicle_running vr on vr.id = t.vehicle_running_id
+        left join d_vehicle_running vr on vr.id = t.vehicle_running_id
+        <where>
+            <if test="paramsDto.waybillNo != null and paramsDto.waybillNo != ''">
+                and w.no  = #{paramsDto.waybillNo}
+            </if>
+            <if test="paramsDto.guideLine != null and paramsDto.guideLine != ''">
+                and w.guide_line  = #{paramsDto.guideLine}
+            </if>
+            <if test="paramsDto.carrierName != null and paramsDto.carrierName != ''">
+                and w.carrier_name  = #{paramsDto.carrierName}
+            </if>
+            <if test="paramsDto.beginCreateTime != null">
+                and w.create_time  &gt; #{paramsDto.beginCreateTime}
+            </if>
+            <if test="paramsDto.endCreateTime != null">
+                and w.create_time  &lt;= #{paramsDto.endCreateTime}
+            </if>
+            <if test="paramsDto.driverName != null and paramsDto.driverName != ''">
+                and t.driver_name  = #{paramsDto.driverName}
+            </if>
+            <if test="paramsDto.driverPhone != null and paramsDto.driverPhone != ''">
+                and t.driver_phone  = #{paramsDto.driverPhone}
+            </if>
+            <if test="paramsDto.vehiclePlateNo != null and paramsDto.vehiclePlateNo != ''">
+                and t.vehicle_plate_no  = #{paramsDto.vehiclePlateNo}
+            </if>
+        </where>
+    </select>
+
+    <select id="findVoById" resultType="com.cjyc.common.model.vo.web.waybill.WaybillVo">
+        select
+        <include refid="Base_Column_List"/>
+        from w_waybill
+        where id = #{id}
 
     </select>
+    <select id="findListTrunkWithCar" resultType="com.cjyc.common.model.vo.web.waybill.TrunkCarListWaybillVo">
+        select
+            (case
+            when wc.state &lt;= 15 then '待提车'
+            when wc.state &gt; 15 and wc.state &lt; 100 then '已提车'
+            when wc.state = 100 then '已交付'
+            end
+            ) as outterState,
+            w.carrier_id as carrierId,
+            w.carrier_type as carrierType,
+            w.carrier_name as carrierName,
+            w.create_time as createTime,
+            w.create_user as createUser,
+            w.create_user_id as createUserId,
+            oc.brand as brand,
+            oc.model as model,
+            oc.plate_no as plateNo,
+            oc.vin as vin,
+            t.driver_name as driverName,
+            t.driver_phone as driverPhone,
+            t.driver_id as driverId,
+            t.vehicle_plate_no as vehiclePlateNo,
+            wc.*
+        from (
+        select * from w_waybill
+        limit ${(paramsDto.currentPage - 1) * paramsDto.pageSize}, #{paramsDto.pageSize}
+        ) as w
+        join w_waybill_car wc on wc.waybill_id = w.id
+        join w_order_car oc on wc.order_car_id = oc.id
+        left join w_task_car tc on tc.waybill_car_id = wc.id
+        left join w_task t on tc.task_id = t.id
+        <where>
+            <if test="paramsDto.brand != null and paramsDto.brand != ''">
+                and oc.brand = #{paramsDto.brand}
+            </if>
+            <if test="paramsDto.model != null and paramsDto.model != ''">
+                and oc.model = #{paramsDto.model}
+            </if>
+            <if test="paramsDto.plateNo != null and paramsDto.plateNo != ''">
+                and oc.plate_no = #{paramsDto.plateNo}
+            </if>
+            <if test="paramsDto.vin != null and paramsDto.vin != ''">
+                and oc.vin = #{paramsDto.vin}
+            </if>
+            <if test="paramsDto.carrierName != null and paramsDto.carrierName != ''">
+                and w.carrier_name = #{paramsDto.carrierName}
+            </if>
+            <if test="paramsDto.driverName != null and paramsDto.driverName != ''">
+                and t.driver_name = #{paramsDto.driverName}
+            </if>
+            <if test="paramsDto.driverPhone != null and paramsDto.driverPhone != ''">
+                and t.driver_phone = #{paramsDto.driverPhone}
+            </if>
+            <if test="paramsDto.vehiclePlateNo != null and paramsDto.vehiclePlateNo != ''">
+                and t.vehicle_plate_no = #{paramsDto.vehiclePlateNo}
+            </if>
+            <if test="paramsDto.outterState != null and paramsDto.outterState != ''">
+                and wc.outter_state = #{paramsDto.outterState}
+            </if>
+            <if test="paramsDto.waybillNo != null and paramsDto.waybillNo != ''">
+                and wc.waybill_no = #{paramsDto.waybillNo}
+            </if>
+            <if test="paramsDto.orderCarNo != null and paramsDto.orderCarNo != ''">
+                and wc.order_car_no = #{paramsDto.orderCarNo}
+            </if>
+            <if test="paramsDto.startProvinceCode != null and paramsDto.startProvinceCode != ''">
+                and wc.start_province_code = #{paramsDto.startProvinceCode}
+            </if>
+            <if test="paramsDto.startCityCode != null and paramsDto.startCityCode != ''">
+                and wc.start_city_code = #{paramsDto.startCityCode}
+            </if>
+            <if test="paramsDto.startAreaCode != null and paramsDto.startAreaCode != ''">
+                and wc.start_area_code = #{paramsDto.startAreaCode}
+            </if>
+            <if test="paramsDto.startAddress != null and paramsDto.startAddress != ''">
+                and wc.start_address = #{paramsDto.startAddress}
+            </if>
+            <if test="paramsDto.startStoreId != null and paramsDto.startStoreId != ''">
+                and wc.start_store_id = #{paramsDto.startStoreId}
+            </if>
+            <if test="paramsDto.endProvinceCode != null and paramsDto.endProvinceCode != ''">
+                and wc.end_province_code = #{paramsDto.endProvinceCode}
+            </if>
+            <if test="paramsDto.endCityCode != null and paramsDto.endCityCode != ''">
+                and wc.end_city_code = #{paramsDto.endCityCode}
+            </if>
+            <if test="paramsDto.endAreaCode != null and paramsDto.endAreaCode != ''">
+                and wc.end_area_code = #{paramsDto.endAreaCode}
+            </if>
+            <if test="paramsDto.endAddress != null and paramsDto.endAddress != ''">
+                and wc.end_address = #{paramsDto.endAddress}
+            </if>
+            <if test="paramsDto.endStoreId != null and paramsDto.endStoreId != ''">
+                and wc.end_store_id = #{paramsDto.endStoreId}
+            </if>
+            <if test="paramsDto.beginExpectStartTime != null and paramsDto.beginExpectStartTime != ''">
+                and wc.expect_start_time &gt;= #{paramsDto.beginExpectStartTime}
+            </if>
+            <if test="paramsDto.endExpectStartTime != null and paramsDto.endExpectStartTime != ''">
+                and wc.expect_start_time &lt;= #{paramsDto.endExpectStartTime}
+            </if>
+            <if test="paramsDto.beginExpectEndTime != null">
+                and wc.expect_end_time &gt;= #{paramsDto.beginExpectEndTime}
+            </if>
+            <if test="paramsDto.endExpectEndTime != null and paramsDto.endExpectEndTime != ''">
+                and wc.expect_end_time &lt;= #{paramsDto.endExpectEndTime}
+            </if>
+            <if test="paramsDto.loadLinkName != null and paramsDto.loadLinkName != ''">
+                and wc.load_link_name = #{paramsDto.loadLinkName}
+            </if>
+            <if test="paramsDto.loadLinkPhone != null and paramsDto.loadLinkPhone != ''">
+                and wc.load_link_phone = #{paramsDto.loadLinkPhone}
+            </if>
+            <if test="paramsDto.beginLoadTime != null">
+                and wc.load_time &gt;= #{paramsDto.beginLoadTime}
+            </if>
+            <if test="paramsDto.endLoadTime != null">
+                and wc.load_time &lt;= #{paramsDto.endLoadTime}
+            </if>
+            <if test="paramsDto.unloadLinkName != null and paramsDto.unloadLinkName != ''">
+                and wc.unload_link_name = #{paramsDto.unloadLinkName}
+            </if>
+            <if test="paramsDto.unloadLinkUserId != null">
+                and wc.unload_link_user_id = #{paramsDto.unloadLinkUserId}
+            </if>
+            <if test="paramsDto.unloadLinkPhone != null and paramsDto.unloadLinkPhone != ''">
+                and wc.unload_link_phone = #{paramsDto.unloadLinkPhone}
+            </if>
+            <if test="paramsDto.beginUnloadTime != null">
+                and wc.unload_time &gt;= #{paramsDto.beginUnloadTime}
+            </if>
+            <if test="paramsDto.endUnloadTime != null">
+                and wc.unload_time &lt;= #{paramsDto.endUnloadTime}
+            </if>
+            <if test="paramsDto.beginCreateTime != null">
+                and wc.create_time &gt;= #{paramsDto.beginCreateTime}
+            </if>
+            <if test="paramsDto.endCreateTime != null">
+                and wc.create_time &lt;= #{paramsDto.endCreateTime}
+            </if>
+
+        </where>
+    </select>
+    <select id="findMainListTrunk" resultType="com.cjyc.common.model.vo.web.waybill.TrunkMainListWaybillVo">
+        select
+        w.*,
+        (case when w.carrier_type = 1 then t.driver_id end) as driverId,
+        (case when w.carrier_type = 1 then t.driver_name end) as driverName,
+        (case when w.carrier_type = 1 then t.driver_phone end) as driverPhone,
+        (case when w.carrier_type = 1 then vr.plate_no end) as plateNo,
+        (case when w.carrier_type = 1 then vr.carry_car_num end) as carryCarNum,
+        (case when w.carrier_type = 1 then vr.occupied_car_num end) as occupiedCarNum
+        from w_waybill w
+        LEFT JOIN w_task t on w.id = t.waybill_id
+        left join d_vehicle_running vr on vr.driver_id = t.driver_id
+        <where>
+            w.type = 2
+            <if test="paramsDto.waybillNo != null and paramsDto.waybillNo != ''">
+                and w.no  = #{paramsDto.waybillNo}
+            </if>
+            <if test="paramsDto.guideLine != null and paramsDto.guideLine != ''">
+                and w.guide_line  = #{paramsDto.guideLine}
+            </if>
+            <if test="paramsDto.carrierName != null and paramsDto.carrierName != ''">
+                and w.carrier_name  = #{paramsDto.carrierName}
+            </if>
+            <if test="paramsDto.beginCreateTime != null">
+                and w.create_time  &gt; #{paramsDto.beginCreateTime}
+            </if>
+            <if test="paramsDto.endCreateTime != null">
+                and w.create_time  &lt;= #{paramsDto.endCreateTime}
+            </if>
+        </where>
+        group by w.id
+
+    </select>
+    <select id="findSubListTrunk" resultType="com.cjyc.common.model.vo.web.waybill.TrunkSubListWaybillVo">
+        select
+        w.*,
+        t.no as taskNo,
+        t.car_num as taskCarNum,
+        (case when w.carrier_type = 1 then t.driver_id end) as driverId,
+        (case when w.carrier_type = 1 then t.driver_name end) as driverName,
+        (case when w.carrier_type = 1 then t.driver_phone end) as driverPhone,
+        (case when w.carrier_type = 1 then vr.plate_no end) as plateNo,
+        (case when w.carrier_type = 1 then vr.carry_car_num end) as carryCarNum,
+        (case when w.carrier_type = 1 then vr.occupied_car_num end) as occupiedCarNum
+        from w_waybill w
+        JOIN w_task t on w.id = t.waybill_id
+        left join d_vehicle_running vr on vr.driver_id = t.driver_id
+        <where>
+            w.type = 2
+            <if test="paramsDto.waybillNo != null and paramsDto.waybillNo != ''">
+                and w.no  = #{paramsDto.waybillNo}
+            </if>
+            <if test="paramsDto.guideLine != null and paramsDto.guideLine != ''">
+                and w.guide_line  = #{paramsDto.guideLine}
+            </if>
+            <if test="paramsDto.carrierName != null and paramsDto.carrierName != ''">
+                and w.carrier_name  = #{paramsDto.carrierName}
+            </if>
+            <if test="paramsDto.driverName != null and paramsDto.driverName != ''">
+                and t.driver_name  = #{paramsDto.driverName}
+            </if>
+            <if test="paramsDto.driverPhone != null and paramsDto.driverPhone != ''">
+                and t.driver_phone  = #{paramsDto.driverPhone}
+            </if>
+            <if test="paramsDto.vehiclePlateNo != null and paramsDto.vehiclePlateNo != ''">
+                and t.vehicle_plate_no  = #{paramsDto.vehiclePlateNo}
+            </if>
+            <if test="paramsDto.beginCreateTime != null">
+                and t.create_time  &gt; #{paramsDto.beginCreateTime}
+            </if>
+            <if test="paramsDto.endCreateTime != null">
+                and t.create_time  &lt;= #{paramsDto.endCreateTime}
+            </if>
+        </where>
+        group by w.id
+    </select>
+
 </mapper>

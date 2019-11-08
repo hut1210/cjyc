@@ -10,6 +10,8 @@ import com.cjkj.usercenter.dto.common.UpdateDeptReq;
 import com.cjkj.usercenter.dto.yc.AddDeptAndUserReq;
 import com.cjkj.usercenter.dto.yc.AddDeptAndUserResp;
 import com.cjkj.usercenter.dto.yc.UpdateDeptManagerReq;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -90,4 +92,14 @@ public interface ISysDeptService {
      */
     @GetMapping("/feign/yc/updateDeptManager")
     ResultData updateDeptManager(@RequestBody UpdateDeptManagerReq req);
+
+    /**
+     * 根据id查询此机构的后代机构列表
+     *
+     * @param deptId
+     * @author JPG
+     * @since 2019/11/7 13:45
+     */
+    @GetMapping("/getMultiLevelDeptList/{deptId}")
+    ResultData<List<SelectDeptResp>> getMultiLevelDeptList(@PathVariable(value = "deptId") Long deptId);
 }

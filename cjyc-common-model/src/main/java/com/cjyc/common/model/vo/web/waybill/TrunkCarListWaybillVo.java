@@ -6,8 +6,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class TrunkListWaybillVo extends Waybill {
+public class TrunkCarListWaybillVo extends Waybill {
 
-    private List<TrunkListTaskVo> child;
-
+    private List<TrunkCarListWaybillCarVo> child;
 }

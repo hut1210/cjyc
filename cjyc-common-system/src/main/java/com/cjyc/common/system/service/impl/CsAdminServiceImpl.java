@@ -6,8 +6,6 @@ import com.cjkj.usercenter.dto.common.SelectDeptResp;
 import com.cjkj.usercenter.dto.common.SelectRoleResp;
 import com.cjyc.common.model.dao.IAdminDao;
 import com.cjyc.common.model.entity.Admin;
-import com.cjyc.common.model.enums.ClientEnum;
-import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.vo.web.admin.CacheAdminVo;
 import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysRoleService;
@@ -28,10 +26,6 @@ import java.util.List;
 public class CsAdminServiceImpl implements ICsAdminService {
     @Resource
     private IAdminDao adminDao;
-    @Resource
-    private ISysRoleService sysRoleService;
-    @Resource
-    private ISysDeptService sysDeptService;
     @Resource
     private ICsSysService csSysService;
     @Resource
@@ -68,27 +62,8 @@ public class CsAdminServiceImpl implements ICsAdminService {
             return null;
         }
         BeanUtils.copyProperties(admin, cacheAdminVo);
-        //查询角色信息
-        ResultData<SelectRoleResp> resultData = sysRoleService.getById(roleId);
-        if (resultData == null
-                || resultData.getData() == null
-                || resultData.getData().getRoleId() == null
-                || resultData.getData().getDeptId() == null) {
-            return null;
-        }
-        //查询部门信息
-        ResultData<SelectDeptResp> resultDeptData = sysDeptService.getById(resultData.getData().getDeptId());
-        if (resultDeptData == null
-                || resultDeptData.getData() == null) {
-            return null;
-        }
 
-        //根据部门ID查询业务中心ID
-        List<Long> storeIds = csSysService.getStoreIdsByDeptId(resultData.getData().getDeptId());
-
-        //TODO 缓存业务范围
-        String key = RedisKeys.getUserBizScopeKey(ClientEnum.WEB_SERVER, userId);
-        //redisUtil.
-        return null;
+        String bizScope = csSysService.getBizScopeByRoleId(roleId, true);
+        return cacheAdminVo;
     }
 }

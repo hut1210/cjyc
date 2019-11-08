@@ -11,11 +11,29 @@ public enum CaptchaTypeEnum {
     FORGET_SAFE_PWD("忘记安全密码", 3),
     UPDATE_BANK_CAR("修改银行卡", 4);
 
-    public String name;
-    public int code;
+    private String name;
+    private int code;
 
     CaptchaTypeEnum(String name, int code) {
         this.name = name;
         this.code = code;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getCode() {
+        return code;
+    }
+
+    public static CaptchaTypeEnum valueOf(int code) {
+        for (CaptchaTypeEnum codeEnum : values()) {
+            if (codeEnum.code == code) {
+                return codeEnum;
+            }
+        }
+        throw new IllegalArgumentException("No matching constant for [" + code + "]");
+    }
+
 }

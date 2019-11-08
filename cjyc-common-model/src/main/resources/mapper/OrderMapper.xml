@@ -269,14 +269,15 @@
 
     <select id="countForAllTab" resultType="java.util.Map">
         select
-        sum(case when o.state &gt; 0 then 1 else 0 end ) as totalCount,
-        sum(case when o.state = 0 then 1 else 0 end ) as waitCommitCount,
-        sum(case when o.state &gt; 0 and o.state &lt; 15 then 1 else 0 end ) as waitCheckCount,
-        sum(case when o.state = 15 then 1 else 0 end ) as waitPrePayCount,
-        sum(case when o.state = 25 then 1 else 0 end ) as waitDispatchCount,
-        sum(case when o.state = 55 then 1 else 0 end ) as transportingCount,
-        sum(case when o.state = 113 then 1 else 0 end ) as cancelCount,
-        sum(case when o.state = 114 then 1 else 0 end ) as obsoleteCount
+        sum(case when o.state &gt; 0 then 1 else 0 end ) as totalCount,<!--全部订单-->
+        sum(case when o.state = 0 then 1 else 0 end ) as waitCommitCount,<!--待提交-->
+        sum(case when o.state &gt; 0 and o.state &lt; 15 then 1 else 0 end ) as waitCheckCount,<!--待确认-->
+        sum(case when o.state = 15 then 1 else 0 end ) as waitPrePayCount,<!--带预付款-->
+        sum(case when o.state = 25 then 1 else 0 end ) as waitDispatchCount,<!--待调度-->
+        sum(case when o.state = 55 then 1 else 0 end ) as transportingCount,<!--运输中-->
+        sum(case when o.state = 100 then 1 else 0 end ) as finishedCount,<!--运输中-->
+        sum(case when o.state = 113 then 1 else 0 end ) as cancelCount,<!--已取消-->
+        sum(case when o.state = 114 then 1 else 0 end ) as obsoleteCount<!--已作废-->
         from w_order o
     </select>
 

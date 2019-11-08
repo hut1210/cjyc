@@ -265,17 +265,68 @@ public class CsOrderServiceImpl implements ICsOrderService {
     @Override
     public ResultVo check(CheckOrderDto reqDto) {
         Order order = orderDao.selectById(reqDto.getOrderId());
+        //验证必要信息是否完全
+        validateOrderFeild(order);
+
+        List<OrderCar> orderCarList = orderCarDao.findByOrderId(order.getId());
+        if (orderCarList == null || orderCarList.isEmpty()) {
+            return BaseResultUtil.fail("[订单车辆]-为空");
+        }
+
+        //验证物流券费用
+        /*BigDecimal wlTotalFee = orderCarDao.getWLTotalFee(reqDto.getOrderId());
+        BigDecimal couponAmount = BigDecimal.ZERO;
+        if (order.getCouponSendId() != null) {
+            couponAmount = couponSendService.getAmountById(order.getCouponSendId(), wlTotalFee);
+        }
+        order.setCouponOffsetFee(couponAmount);*/
+
+        //均摊优惠券费用
+        BigDecimal totalCouponOffsetFee = order.getCouponOffsetFee() == null ? BigDecimal.ZERO : order.getCouponOffsetFee();
+        if (totalCouponOffsetFee.compareTo(BigDecimal.ZERO) > 0) {
+            shareCouponOffsetFee(order, orderCarList);
+        }
+
+        //均摊总费用
+        BigDecimal totalFee = order.getTotalFee() == null ? BigDecimal.ZERO : order.getTotalFee();
+        if (totalFee.compareTo(BigDecimal.ZERO) > 0) {
+            shareTotalFee(order, orderCarList);
+        }
+        for (OrderCar orderCar : orderCarList) {
+            orderCarDao.updateById(orderCar);
+        }
+
+        //根据到付和预付置不同状态
+        if(order.getPayType() != PayModeEnum.PREPAID.code){
+            order.setState(OrderStateEnum.WAIT_PREPAY.code);
+            //TODO 支付通知
+        }else{
+            order.setState(OrderStateEnum.CHECKED.code);
+        }
+        orderDao.updateById(order);
+
+        //TODO 处理优惠券为使用状态，优惠券有且仅能验证一次，修改时怎么保证
+        //TODO 路由轨迹
+
+        return BaseResultUtil.success();
+    }
+
+    /**
+     * 验证订单必要信息
+     * @author JPG
+     * @since 2019/11/6 19:45
+     * @param order
+     */
+    private void validateOrderFeild(Order order) {
         if (order == null) {
-            return BaseResultUtil.fail("[订单]-不存在");
+            throw new ParameterException("[订单]-不存在");
         }
         if (order.getState() <= OrderStateEnum.WAIT_SUBMIT.code) {
-            return BaseResultUtil.fail("[订单]-未提交，无法审核");
+            throw new ParameterException("[订单]-未提交，无法审核");
         }
         if (order.getState() >= OrderStateEnum.CHECKED.code) {
-            return BaseResultUtil.fail("[订单]-已经审核过，无法审核");
+            throw new ParameterException("[订单]-已经审核过，无法审核");
         }
-        //验证必要信息是否完全
-        //validateOrderFeild(order);
         if (order.getId() == null || order.getNo() == null) {
             throw new ParameterException("[订单]-订单编号不能为空");
         }
@@ -304,45 +355,6 @@ public class CsOrderServiceImpl implements ICsOrderService {
             throw new ParameterException("收车联系人不能为空");
         }
 
-        List<OrderCar> orderCarList = orderCarDao.findByOrderId(order.getId());
-        if (orderCarList == null || orderCarList.isEmpty()) {
-            return BaseResultUtil.fail("[订单车辆]-为空");
-        }
-        //验证物流券费用
-        /*BigDecimal wlTotalFee = orderCarDao.getWLTotalFee(reqDto.getOrderId());
-        BigDecimal couponAmount = BigDecimal.ZERO;
-        if (order.getCouponSendId() != null) {
-            couponAmount = couponSendService.getAmountById(order.getCouponSendId(), wlTotalFee);
-        }
-        order.setCouponOffsetFee(couponAmount);*/
-
-        //均摊优惠券费用
-        BigDecimal totalCouponOffsetFee = order.getCouponOffsetFee() == null ? BigDecimal.ZERO : order.getCouponOffsetFee();
-        if (totalCouponOffsetFee.compareTo(BigDecimal.ZERO) > 0) {
-            shareCouponOffsetFee(order, orderCarList);
-        }
-
-        //均摊总费用
-        BigDecimal totalFee = order.getTotalFee() == null ? BigDecimal.ZERO : order.getTotalFee();
-        if (totalFee.compareTo(BigDecimal.ZERO) > 0) {
-            shareTotalFee(order, orderCarList);
-        }
-        for (OrderCar orderCar : orderCarList) {
-            orderCarDao.updateById(orderCar);
-        }
-
-        //根据到付和预付置不同状态
-        if(order.getPayType() != PayModeEnum.PREPAID.code){
-            order.setState(OrderStateEnum.WAIT_PREPAY.code);
-        }else{
-            order.setState(OrderStateEnum.CHECKED.code);
-        }
-        orderDao.updateById(order);
-
-        //TODO 处理优惠券为使用状态，优惠券有且仅能验证一次，修改时怎么保证
-        //TODO 路由轨迹
-
-        return BaseResultUtil.success();
     }
 
     /**

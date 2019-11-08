@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-29
+ * @since 2019-11-08
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -43,8 +43,8 @@ public class VehicleRunning implements Serializable {
     @ApiModelProperty(value = "承运数")
     private Integer carryCarNum;
 
-    @ApiModelProperty(value = "空车位")
-    private Integer emptyCarNum;
+    @ApiModelProperty(value = "非空车位")
+    private Integer occupiedCarNum;
 
     @ApiModelProperty(value = "状态：0无效，1有效")
     private Integer state;

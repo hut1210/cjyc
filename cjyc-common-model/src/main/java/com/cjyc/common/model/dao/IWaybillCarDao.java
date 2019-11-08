@@ -6,9 +6,9 @@ import com.cjyc.common.model.dto.web.waybill.TrunkListWaybillCarDto;
 import com.cjyc.common.model.entity.WaybillCar;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.vo.web.WayBillCarrierVo;
-import com.cjyc.common.model.vo.web.waybill.GetWaybillCarVo;
+import com.cjyc.common.model.vo.web.waybill.TrunkDetailWaybillCarVo;
 import com.cjyc.common.model.vo.web.waybill.LocalListWaybillCarVo;
-import com.cjyc.common.model.vo.web.waybill.TrunkListWaybillCarVo;
+import com.cjyc.common.model.vo.web.waybill.TrunkCarListWaybillCarVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -55,7 +55,9 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
 
     List<LocalListWaybillCarVo> findListLocal(LocalListWaybillCarDto paramsDto);
 
-    List<TrunkListWaybillCarVo> findListTrunk(TrunkListWaybillCarDto paramsDto);
+    List<TrunkCarListWaybillCarVo> findCarListTrunk(TrunkListWaybillCarDto paramsDto);
 
-    List<GetWaybillCarVo> findVoByType(@Param("orderCarId") Long orderCarId, @Param("waybillType") Integer waybillType);
+    List<TrunkDetailWaybillCarVo> findVoByType(@Param("orderCarId") Long orderCarId, @Param("waybillType") Integer waybillType);
+
+    List<TrunkDetailWaybillCarVo> findForTrunkDetail(Long waybillId);
 }

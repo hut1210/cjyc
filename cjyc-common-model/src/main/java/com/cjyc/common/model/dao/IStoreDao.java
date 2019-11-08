@@ -25,4 +25,8 @@ public interface IStoreDao extends BaseMapper<Store> {
     List<Store> findBelongByAreaCode(String areaCode);
 
     Store findOneBelongByAreaCode(String areaCode);
+
+    List<Store> findAll();
+
+    List<Long> findAllDeptId();
 }

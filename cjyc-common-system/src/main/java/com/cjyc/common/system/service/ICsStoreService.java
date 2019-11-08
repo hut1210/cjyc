@@ -39,4 +39,20 @@ public interface ICsStoreService {
      * @return
      */
     List<String> findAreaBizScope(Long storeId);
+
+    /**
+     * 查询所有业务中心
+     * @author JPG
+     * @since 2019/11/7 13:21
+     * @param
+     */
+    List<Store> getAll();
+    /**
+     * 查询所有业务中心dept_id
+     * @author JPG
+     * @since 2019/11/7 13:21
+     * @param
+     */
+    List<Long> getAllDeptId();
+
 }

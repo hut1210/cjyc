@@ -44,7 +44,7 @@ public class WaybillController {
      */
     @ApiOperation("提送车调度")
     @PostMapping("/local/dispatch")
-    public ResultVo LocalDispatch(@RequestBody LocalDispatchListWaybillDto reqDto) {
+    public ResultVo localDispatch(@RequestBody LocalDispatchListWaybillDto reqDto) {
         //验证用户
         Admin admin = adminService.getByUserId(reqDto.getUserId());
         if (admin == null || admin.getState() != AdminStateEnum.CHECKED.code) {
@@ -52,6 +52,18 @@ public class WaybillController {
         }
         reqDto.setUserName(admin.getName());
         return waybillService.localDispatch(reqDto);
+    }
+
+    /**
+     * TODO 干线追加调度
+     *
+     * @author JPG
+     * @since 2019/10/15 11:53
+     */
+    @ApiOperation("同城修改调度")
+    @PostMapping("/local/dispatch/update")
+    public ResultVo updateLocalDispatch(@RequestBody TrunkDispatchListShellWaybillDto reqDto) {
+        return null;
     }
 
 
@@ -73,7 +85,7 @@ public class WaybillController {
      * @author JPG
      * @since 2019/10/15 11:53
      */
-    @ApiOperation("干线追加调度")
+    @ApiOperation("干线修改调度")
     @PostMapping("/trunk/dispatch/update")
     public ResultVo updateTrunkDispatch(@RequestBody TrunkDispatchListShellWaybillDto reqDto) {
         return null;
@@ -111,12 +123,32 @@ public class WaybillController {
     @ApiOperation(value = "查询同城运单列表")
     @PostMapping(value = "/local/list")
     public ResultVo<PageVo<LocalListWaybillCarVo>> getLocalList(@RequestBody LocalListWaybillCarDto reqDto) {
-        return waybillService.Locallist(reqDto);
+        return waybillService.locallist(reqDto);
     }
 
     /**
      * 查询干线运单列表
      */
+    @ApiOperation(value = "查询干线主运单列表")
+    @PostMapping(value = "/trunk/main/list")
+    public ResultVo<PageVo<TrunkMainListWaybillVo>> getTrunkMainList(@RequestBody TrunkMainListWaybillDto reqDto) {
+        return waybillService.getTrunkMainList(reqDto);
+    }
+
+    /**
+     * 查询干线运单列表
+     */
+    @ApiOperation(value = "查询干线子运单（任务）列表")
+    @PostMapping(value = "/trunk/sub/list")
+    public ResultVo<PageVo<TrunkSubListWaybillVo>> getTrunkSubList(@RequestBody TrunkSubListWaybillDto reqDto) {
+        return waybillService.getTrunkSubList(reqDto);
+    }
+
+
+    /**
+     * 查询干线运单主单列表
+     */
+    @Deprecated
     @ApiOperation(value = "查询干线运单列表")
     @PostMapping(value = "/trunk/list")
     public ResultVo<PageVo<TrunkListWaybillVo>> getTrunklist(@RequestBody TrunkListWaybillDto reqDto) {
@@ -124,12 +156,13 @@ public class WaybillController {
     }
 
 
+
     /**
      * 查询干线运单车辆列表
      */
     @ApiOperation(value = "查询干线运单车辆列表")
     @PostMapping(value = "/trunk/car/list")
-    public ResultVo<PageVo<TrunkListWaybillCarVo>> getCarTrunklist(@RequestBody TrunkListWaybillCarDto reqDto) {
+    public ResultVo<PageVo<TrunkCarListWaybillCarVo>> getCarTrunklist(@RequestBody TrunkListWaybillCarDto reqDto) {
         return waybillService.trunkCarlist(reqDto);
     }
 
@@ -138,8 +171,8 @@ public class WaybillController {
      */
     @ApiOperation(value = "查询干线运单车辆列表")
     @PostMapping(value = "/get/{waybillId}")
-    public ResultVo<GetWaybillVo> get(@ApiParam(value = "运单ID") @PathVariable Long waybillId) {
-        return waybillService.get(waybillId);
+    public ResultVo<WaybillVo> getForTrunkDetail(@ApiParam(value = "运单ID") @PathVariable Long waybillId) {
+        return waybillService.getForTrunkDetail(waybillId);
     }
 
     /**
@@ -147,10 +180,23 @@ public class WaybillController {
      */
     @ApiOperation(value = "分类根据车辆ID查询车辆运单")
     @PostMapping(value = "/car/get/{orderCarId}/{waybillType}")
-    public ResultVo<List<GetWaybillCarVo>> getByType(@ApiParam(value = "运单车辆ID") @PathVariable Long orderCarId,
-    @ApiParam(value = "运单类型：1提车运单，2干线运单，3送车运单") @PathVariable Integer waybillType) {
+    public ResultVo<List<TrunkDetailWaybillCarVo>> getByType(@ApiParam(value = "运单车辆ID") @PathVariable Long orderCarId,
+                                                             @ApiParam(value = "运单类型：1提车运单，2干线运单，3送车运单") @PathVariable Integer waybillType) {
         return waybillService.getCarByType(orderCarId, waybillType);
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -162,6 +208,9 @@ public class WaybillController {
     public ResultVo<List<CysWaybillVo>> cysList(@RequestBody CysWaybillDto reqDto) {
         return waybillService.cysList(reqDto);
     }
+
+
+
 
 
 

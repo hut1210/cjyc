@@ -3,6 +3,8 @@ package com.cjyc.common.system.service;
 import com.cjyc.common.model.dto.web.waybill.CancelDispatchDto;
 import com.cjyc.common.model.dto.web.waybill.LocalDispatchListWaybillDto;
 import com.cjyc.common.model.dto.web.waybill.TrunkDispatchListShellWaybillDto;
+import com.cjyc.common.model.vo.BaseTipVo;
+import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.ResultVo;
 
 /**
@@ -32,5 +34,5 @@ public interface ICsWaybillService {
      * @since 2019/11/5 17:33
      * @param paramsDto
      */
-    ResultVo cancelDispatch(CancelDispatchDto paramsDto);
+    ResultVo<ListVo<BaseTipVo>> cancelDispatch(CancelDispatchDto paramsDto);
 }

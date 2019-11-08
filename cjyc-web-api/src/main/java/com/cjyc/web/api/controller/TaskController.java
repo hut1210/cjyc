@@ -1,11 +1,14 @@
 package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.web.task.*;
+import com.cjyc.common.model.dto.web.waybill.TrunkMainListWaybillDto;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.enums.AdminStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.waybill.TrunkMainListWaybillVo;
 import com.cjyc.web.api.service.IAdminService;
 import com.cjyc.web.api.service.IDriverService;
 import com.cjyc.web.api.service.ITaskService;
@@ -137,6 +140,7 @@ public class TaskController {
         reqDto.setUserName(admin.getName());
         return taskService.sign(reqDto);
     }
+
 
 
 

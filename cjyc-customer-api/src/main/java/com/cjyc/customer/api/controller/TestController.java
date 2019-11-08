@@ -33,7 +33,7 @@ public class TestController {
 
     @ApiOperation(value = "测试", notes = " ")
     @PostMapping("/get/{id}")
-    public ResultData<SelectRoleResp> get(@PathVariable Integer id){
+    public ResultData<SelectRoleResp> get(@PathVariable Long id){
         ResultData<SelectRoleResp> resultData = sysRoleService.getById(id);
         System.out.println(JSON.toJSONString(resultData));
 

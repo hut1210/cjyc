@@ -60,4 +60,14 @@ public class CsStoreServiceImpl implements ICsStoreService {
     public List<String> findAreaBizScope(Long storeId) {
         return storeDao.findAreaBizScope(storeId);
     }
+
+    @Override
+    public List<Store> getAll() {
+        return storeDao.findAll();
+    }
+
+    @Override
+    public List<Long> getAllDeptId() {
+        return storeDao.findAllDeptId();
+    }
 }

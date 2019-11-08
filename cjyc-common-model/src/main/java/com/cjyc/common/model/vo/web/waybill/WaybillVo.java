@@ -7,9 +7,11 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class GetWaybillVo extends Waybill {
+public class WaybillVo extends Waybill {
+
+
 
     @ApiModelProperty("车辆列表")
-    private List<GetWaybillCarVo> list;
+    private List<TrunkDetailWaybillCarVo> list;
 
 }

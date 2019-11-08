@@ -3,6 +3,8 @@ package com.cjyc.web.api.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.dto.web.waybill.*;
 import com.cjyc.common.model.entity.Waybill;
+import com.cjyc.common.model.vo.BaseTipVo;
+import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.waybill.*;
@@ -35,19 +37,23 @@ public interface IWaybillService extends IService<Waybill> {
      */
     ResultVo trunkDispatch(TrunkDispatchListShellWaybillDto paramsDto);
 
-    ResultVo cancelDispatch(CancelDispatchDto paramsDto);
+    ResultVo<ListVo<BaseTipVo>> cancelDispatch(CancelDispatchDto paramsDto);
 
     ResultVo<List<HistoryListWaybillVo>> historyList(HistoryListWaybillDto reqDto);
 
     ResultVo<List<CysWaybillVo>> cysList(CysWaybillDto reqDto);
 
-    ResultVo<PageVo<LocalListWaybillCarVo>> Locallist(LocalListWaybillCarDto reqDto);
+    ResultVo<PageVo<LocalListWaybillCarVo>> locallist(LocalListWaybillCarDto reqDto);
 
     ResultVo<PageVo<TrunkListWaybillVo>> trunklist(TrunkListWaybillDto reqDto);
 
-    ResultVo<PageVo<TrunkListWaybillCarVo>> trunkCarlist(TrunkListWaybillCarDto reqDto);
+    ResultVo<PageVo<TrunkCarListWaybillCarVo>> trunkCarlist(TrunkListWaybillCarDto reqDto);
 
-    ResultVo<GetWaybillVo> get(Long id);
+    ResultVo<WaybillVo> getForTrunkDetail(Long id);
 
-    ResultVo<List<GetWaybillCarVo>> getCarByType(Long orderCarId, Integer waybillType);
+    ResultVo<List<TrunkDetailWaybillCarVo>> getCarByType(Long orderCarId, Integer waybillType);
+
+    ResultVo<PageVo<TrunkMainListWaybillVo>> getTrunkMainList(TrunkMainListWaybillDto reqDto);
+
+    ResultVo<PageVo<TrunkSubListWaybillVo>> getTrunkSubList(TrunkSubListWaybillDto reqDto);
 }

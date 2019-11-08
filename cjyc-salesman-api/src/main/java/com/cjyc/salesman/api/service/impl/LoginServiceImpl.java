@@ -4,6 +4,7 @@ import com.cjkj.common.redis.template.StringRedisUtil;
 import com.cjyc.common.model.dto.salesman.login.LoginByPhoneDto;
 import com.cjyc.common.model.dto.salesman.login.LoginByUserNameDto;
 import com.cjyc.common.model.enums.CaptchaTypeEnum;
+import com.cjyc.common.model.enums.ClientEnum;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
@@ -36,7 +37,7 @@ public class LoginServiceImpl implements ILoginService {
         String phone = paramsDto.getPhone();
         String captcha = paramsDto.getCaptcha();
         //校验验证码
-        String key = RedisKeys.getCaptchaKey(phone, CaptchaTypeEnum.LOGIN.code);
+        String key = RedisKeys.getCaptchaKey(ClientEnum.WEB_SERVER, phone, CaptchaTypeEnum.LOGIN);
         String captchaCached = redisUtil.getStrValue(key);
         if(captchaCached == null){
             return BaseResultUtil.fail("请重新获取验证码");

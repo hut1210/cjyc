@@ -7,15 +7,17 @@ package com.cjyc.common.model.enums;
 public enum BizScopeEnum {
 
     /***/
-    NONE("无数据权限", 0),
-    STORE("业务中心数据权限", 1),
-    CITY("行政区划数据权限", 2);
+    NONE("无数据权限", "-1"),
+    CHINA("全国数据权限", "0"),
+    STORE("业务中心数据权限", "1");
 
     public String name;
-    public int code;
+    public String value;
 
-    BizScopeEnum(String name, int code) {
+    BizScopeEnum(String name, String value) {
         this.name = name;
-        this.code = code;
+        this.value = value;
     }
+
 }
+

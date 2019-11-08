@@ -1,15 +1,13 @@
 package com.cjyc.common.model.dao;
 
-import com.cjyc.common.model.dto.web.waybill.HistoryListWaybillDto;
-import com.cjyc.common.model.dto.web.waybill.TrunkListWaybillDto;
+import com.cjyc.common.model.dto.web.waybill.*;
 import com.cjyc.common.model.entity.Waybill;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.cjyc.common.model.vo.web.waybill.GetWaybillVo;
-import com.cjyc.common.model.vo.web.waybill.HistoryListWaybillVo;
-import com.cjyc.common.model.vo.web.waybill.TrunkListWaybillVo;
+import com.cjyc.common.model.vo.web.waybill.*;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -48,6 +46,13 @@ public interface IWaybillDao extends BaseMapper<Waybill> {
 
     int countWaybill(@Param("orderCarId") Long orderCarId, @Param("waybillType") int waybillType);
 
-    List<TrunkListWaybillVo> findListTrunk(TrunkListWaybillDto paramsDto);
+    List<TrunkListWaybillVo> findListTrunk(@Param("paramsDto") TrunkListWaybillDto paramsDto);
 
+    WaybillVo findVoById(Long id);
+
+    List<TrunkCarListWaybillVo> findListTrunkWithCar(@Param("paramsDto")TrunkListWaybillCarDto paramsDto);
+
+    List<TrunkMainListWaybillVo> findMainListTrunk(@Param("paramsDto") TrunkMainListWaybillDto paramsDto);
+
+    List<TrunkSubListWaybillVo> findSubListTrunk(@Param("paramsDto")TrunkSubListWaybillDto paramsDto);
 }

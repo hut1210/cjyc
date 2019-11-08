@@ -65,5 +65,15 @@
         limit 1
 
     </select>
+    <select id="findAll" resultType="com.cjyc.common.model.entity.Store">
+        select
+        <include refid="Base_Column_List"/>
+        from s_store
+    </select>
+    <select id="findAllDeptId" resultType="java.lang.Long">
+        select
+        dept_id
+        from s_store
+    </select>
 
 </mapper>

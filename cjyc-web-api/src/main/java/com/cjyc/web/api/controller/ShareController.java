@@ -34,7 +34,7 @@ public class ShareController {
      * @author litan
      *//*
     @ApiOperation(value = "查询分享管理列表(分页)")
-    @PostMapping(value = "/Locallist")
+    @PostMapping(value = "/locallist")
     public ResultVo<PageVo<Map<String,Object>>> getShareList(@RequestBody CustomerShareDto reqDto) {
         return shareService.getShareList(reqDto);
     }*/

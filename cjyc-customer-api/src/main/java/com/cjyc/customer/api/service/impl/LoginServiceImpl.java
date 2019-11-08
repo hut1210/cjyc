@@ -8,6 +8,7 @@ import com.cjyc.common.model.dao.ICustomerDao;
 import com.cjyc.common.model.dto.salesman.login.LoginByPhoneDto;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.enums.CaptchaTypeEnum;
+import com.cjyc.common.model.enums.ClientEnum;
 import com.cjyc.common.model.enums.PayModeEnum;
 import com.cjyc.common.model.enums.customer.CustomerSourceEnum;
 import com.cjyc.common.model.enums.customer.CustomerStateEnum;
@@ -53,7 +54,7 @@ public class LoginServiceImpl implements ILoginService {
         String phone = paramsDto.getPhone();
         String captcha = paramsDto.getCaptcha();
         //校验验证码
-        String key = RedisKeys.getCaptchaKey(phone, CaptchaTypeEnum.LOGIN.code);
+        String key = RedisKeys.getCaptchaKey(ClientEnum.APP_CUSTOMER, phone, CaptchaTypeEnum.LOGIN);
         String captchaCached = redisUtil.getStrValue(key);
         if(captchaCached == null){
             return BaseResultUtil.fail("请重新获取验证码");

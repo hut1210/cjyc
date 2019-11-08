@@ -4,6 +4,8 @@ import com.cjkj.common.redis.template.StringRedisUtil;
 import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.dto.salesman.sms.CaptchaSendDto;
 import com.cjyc.common.model.dto.salesman.sms.CaptchaValidatedDto;
+import com.cjyc.common.model.enums.CaptchaTypeEnum;
+import com.cjyc.common.model.enums.ClientEnum;
 import com.cjyc.common.model.enums.message.SmsMessageEnum;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -58,7 +60,7 @@ public class SmsController {
             return BaseResultUtil.fail("短信验证码发送失败");
         }
         //放入缓存
-        String key = RedisKeys.getCaptchaKey(phone, type);
+        String key = RedisKeys.getCaptchaKey(ClientEnum.WEB_SERVER, phone, CaptchaTypeEnum.valueOf(type));
         redisUtil.set(key, captcha, expires);
         redisUtil.incr(countKey);
         return BaseResultUtil.success();
@@ -71,7 +73,7 @@ public class SmsController {
         @NotNull String captcha = reqDto.getCaptcha();
         int type = reqDto.getType();
 
-        String key = RedisKeys.getCaptchaKey(phone, type);
+        String key = RedisKeys.getCaptchaKey(ClientEnum.WEB_SERVER, phone, CaptchaTypeEnum.valueOf(type));
         String captchaCached = redisUtil.getStrValue(key);
         if(StringUtils.isBlank(captchaCached)){
             return BaseResultUtil.fail("请重新获取校验码");

@@ -45,13 +45,9 @@ public class OrderController {
     public ResultVo save(@RequestBody SaveOrderDto reqDto) {
 
         //验证用户存不存在
-        Long userId = reqDto.getUserId();
-        Admin admin = csAdminService.getByUserId(userId, true);
-        if(admin == null){
-            return BaseResultUtil.fail("用户不存在");
-        }
-        reqDto.setCreateUserId(admin.getUserId());
-        reqDto.setCreateUserName(admin.getName());
+        String name = validateAdmin(reqDto.getUserId());
+        reqDto.setCreateUserId(reqDto.getUserId());
+        reqDto.setCreateUserName(name);
 
         ResultVo resultVo = orderService.save(reqDto);
         //发送推送信息
@@ -189,18 +185,11 @@ public class OrderController {
     @ApiOperation(value = "分配订单")
     @PostMapping(value = "/allot")
     public ResultVo allot(@Validated @RequestBody AllotOrderDto reqDto) {
-        //验证操作人
-        Admin admin = csAdminService.getByUserId(reqDto.getUserId(),true);
-        if(admin == null || admin.getState() != AdminStateEnum.CHECKED.code){
-            return BaseResultUtil.fail("操作用户不存在或者已离职");
-        }
-        reqDto.setUserName(admin.getName());
-        //验证被分配人
-        Admin toAdmin = csAdminService.getByUserId(reqDto.getToUserId(),true);
-        if(toAdmin == null){
-            return BaseResultUtil.fail("目标业务员不存在");
-        }
-        reqDto.setToUserName(toAdmin.getName());
+        String name = validateAdmin(reqDto.getUserId());
+        reqDto.setUserName(name);
+        String toUserName = validateAdmin(reqDto.getToUserId());
+        reqDto.setUserName(name);
+        reqDto.setToUserName(toUserName);
         return orderService.allot(reqDto);
     }
 
@@ -219,12 +208,8 @@ public class OrderController {
     @ApiOperation(value = "订单改价")
     @PostMapping(value = "/change/price")
     public ResultVo changePrice(@RequestBody ChangePriceOrderDto reqDto) {
-        //验证操作人
-        Admin admin = csAdminService.getByUserId(reqDto.getUserId(),true);
-        if(admin == null || admin.getState() != AdminStateEnum.CHECKED.code){
-            return BaseResultUtil.fail("操作用户不存在或者已离职");
-        }
-        reqDto.setUserName(admin.getName());
+        String name = validateAdmin(reqDto.getUserId());
+        reqDto.setUserName(name);
         return orderService.changePrice(reqDto);
     }
 
@@ -236,13 +221,8 @@ public class OrderController {
     @ApiOperation(value = "取消订单")
     @PostMapping(value = "/cancel")
     public ResultVo cancel(@RequestBody CancelOrderDto reqDto) {
-        //验证操作人
-        Admin admin = csAdminService.getByUserId(reqDto.getUserId(),true);
-        if(admin == null || admin.getState() != AdminStateEnum.CHECKED.code){
-            return BaseResultUtil.fail("操作用户不存在或者已离职");
-        }
-        reqDto.setUserName(admin.getName());
-
+        String name = validateAdmin(reqDto.getUserId());
+        reqDto.setUserName(name);
         return orderService.cancel(reqDto);
     }
 
@@ -254,16 +234,20 @@ public class OrderController {
     @ApiOperation(value = "作废订单")
     @PostMapping(value = "/obsolete")
     public ResultVo obsolete(@RequestBody CancelOrderDto reqDto) {
-        //验证操作人
-        Admin admin = csAdminService.getByUserId(reqDto.getUserId(),true);
-        if(admin == null || admin.getState() != AdminStateEnum.CHECKED.code){
-            return BaseResultUtil.fail("操作用户不存在或者已离职");
-        }
-        reqDto.setUserName(admin.getName());
+
+        String name = validateAdmin(reqDto.getUserId());
+        reqDto.setUserName(name);
 
         return orderService.obsolete(reqDto);
     }
 
-
+    private String validateAdmin(Long userId) {
+        //验证操作人
+        Admin admin = csAdminService.getByUserId(userId,true);
+        if(admin == null || admin.getState() != AdminStateEnum.CHECKED.code){
+            throw new ParameterException("操作用户不存在或者已离职");
+        }
+        return admin.getName();
+    }
 
 }

@@ -36,7 +36,7 @@ public class RedisKeys {
 
     private final static String USER_KEY = "user";
 
-    private final static String USER_BIZ_SCOPE_KEY = "user:biz:scope";
+    private final static String ROLE_BIZ_SCOPE_KEY = "role:biz:scope";
 
     /**---------------salesman-------------------------------------------------------------------*/
     /**验证码*/
@@ -46,7 +46,7 @@ public class RedisKeys {
 
     /**---------------customer-------------------------------------------------------------------*/
     public static String getCaptchaKey(ClientEnum clientEnum, String phone, CaptchaTypeEnum captchaTypeEnum) {
-        return getPreixByCilent(clientEnum) + I + CAPTCHA_KEY + I + captchaTypeEnum.code + I + phone;
+        return getPreixByCilent(clientEnum) + I + CAPTCHA_KEY + I + captchaTypeEnum.getCode() + I + phone;
     }
 
     public static String getSmsCountKey(String date, String phone) {
@@ -65,8 +65,8 @@ public class RedisKeys {
         return PROJECT_PREFIX + I + USER_KEY + I + userId;
     }
 
-    public static String getUserBizScopeKey(ClientEnum clientEnum, Long userId) {
-        return getPreixByCilent(clientEnum) + I + USER_KEY + I + userId;
+    public static String getRoleBizScopeKey(ClientEnum clientEnum, Long roleId) {
+        return getPreixByCilent(clientEnum) + I + ROLE_BIZ_SCOPE_KEY + I + roleId;
     }
 
     /**
