@@ -20,13 +20,13 @@ public class CarrierDto implements Serializable {
     public interface UpdateCarrierDto {
     }
 
-    @ApiModelProperty("承运商id")
-    @NotNull(groups = {CarrierDto.UpdateCarrierDto.class},message = "承运商id不能为空")
-    private Long id;
+    @ApiModelProperty("承运商id(carrierId)")
+    @NotNull(groups = {CarrierDto.UpdateCarrierDto.class},message = "承运商id(carrierId)不能为空")
+    private Long carrierId;
 
-    @ApiModelProperty("当前登陆用户userId")
-    @NotNull(groups = {CarrierDto.SaveCarrierDto.class},message = "当前登陆用户userId不能为空")
-    private Long userId;
+    @ApiModelProperty("当前登陆用户id(loginId)")
+    @NotNull(groups = {CarrierDto.SaveCarrierDto.class},message = "当前登陆用户id(loginId)不能为空")
+    private Long loginId;
 
     @ApiModelProperty("企业名称")
     @NotBlank(message = "企业名称不能为空")

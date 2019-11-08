@@ -86,4 +86,10 @@ public class CityController {
         return cityService.getCityPage(dto);
     }
 
+    @ApiOperation(value = "根据省名称查询省份信息")
+    @PostMapping("/getProvinceList/{name}")
+    public ResultVo<List<City>> getProvinceList(@PathVariable String name) {
+        return cityService.getProvinceList(name);
+    }
+
 }

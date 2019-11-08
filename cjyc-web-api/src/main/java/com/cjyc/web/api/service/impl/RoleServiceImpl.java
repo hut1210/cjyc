@@ -3,10 +3,7 @@ package com.cjyc.web.api.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
-import com.cjkj.usercenter.dto.common.AddBatchRoleReq;
-import com.cjkj.usercenter.dto.common.AddRoleReq;
-import com.cjkj.usercenter.dto.common.DeleteBatchRoleReq;
-import com.cjkj.usercenter.dto.common.SelectDeptResp;
+import com.cjkj.usercenter.dto.common.*;
 import com.cjkj.usercenter.dto.yc.SelectUsersByRoleReq;
 import com.cjkj.usercenter.dto.yc.SelectUsersByRoleResp;
 import com.cjyc.common.model.dao.IRoleDao;
@@ -356,32 +353,8 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
      */
     private List<Long> getProvinceGovIdList() {
         //大区信息
-        ResultData<List<SelectDeptResp>> deptListRd =
-                sysDeptService.getSingleLevelDeptList(BIZ_TOP_DEPT_ID);
-        if (!ReturnMsg.SUCCESS.getCode().equals(deptListRd.getCode())) {
-            return null;
-        }
-        if (CollectionUtils.isEmpty(deptListRd.getData())) {
-            return null;
-        }
-        List<Long> idList = new ArrayList<>();
-        AtomicBoolean hasError = new AtomicBoolean(false);
-        deptListRd.getData().stream().forEach(g -> {
-            ResultData<List<SelectDeptResp>> rsListRd =
-                    sysDeptService.getSingleLevelDeptList(g.getDeptId());
-            if (!isResultDataSuccess(rsListRd)) {
-                hasError.set(true);
-                return;
-            }
-            if (!CollectionUtils.isEmpty(rsListRd.getData())) {
-                idList.addAll(rsListRd.getData().stream()
-                        .map(d -> d.getDeptId()).collect(Collectors.toList()));
-            }
-        });
-        if (hasError.get()) {
-            return null;
-        }
-        return idList;
+        List<Long> regionIdList = getRegionGovIdList();
+        return batchQuery(regionIdList);
     }
 
     /**
@@ -390,27 +363,7 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
      */
     private List<Long> getCityGovIdList() {
         List<Long> provinceGovIds = getProvinceGovIdList();
-        if (CollectionUtils.isEmpty(provinceGovIds)) {
-            return null;
-        }
-        List<Long> cityGovIdList = new ArrayList<>();
-        AtomicBoolean hasError = new AtomicBoolean(false);
-        provinceGovIds.stream().forEach(pid -> {
-            ResultData<List<SelectDeptResp>> rsListRd =
-                    sysDeptService.getSingleLevelDeptList(pid);
-            if (!isResultDataSuccess(rsListRd)) {
-                hasError.set(true);
-                return;
-            }
-            if (!CollectionUtils.isEmpty(rsListRd.getData())) {
-                cityGovIdList.addAll(rsListRd.getData().stream()
-                        .map(d -> d.getDeptId()).collect(Collectors.toList()));
-            }
-        });
-        if (hasError.get()) {
-            return null;
-        }
-        return cityGovIdList;
+        return batchQuery(provinceGovIds);
     }
 
     /**
@@ -419,27 +372,7 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
      */
     private List<Long> getBizCenterGovIdList() {
         List<Long> cityGovIds = getCityGovIdList();
-        if (CollectionUtils.isEmpty(cityGovIds)) {
-            return null;
-        }
-        List<Long> bizCenterGovIdList = new ArrayList<>();
-        AtomicBoolean hasError = new AtomicBoolean(false);
-        cityGovIds.stream().forEach(cid -> {
-            ResultData<List<SelectDeptResp>> rsListRd =
-                    sysDeptService.getSingleLevelDeptList(cid);
-            if (!isResultDataSuccess(rsListRd)) {
-                hasError.set(true);
-                return;
-            }
-            if (!CollectionUtils.isEmpty(rsListRd.getData())) {
-                bizCenterGovIdList.addAll(rsListRd.getData().stream()
-                        .map(d -> d.getDeptId()).collect(Collectors.toList()));
-            }
-        });
-        if (hasError.get()) {
-            return null;
-        }
-        return bizCenterGovIdList;
+        return batchQuery(cityGovIds);
     }
 
     /**
@@ -449,5 +382,29 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
      */
     private boolean isResultDataSuccess(ResultData rd) {
         return ReturnMsg.SUCCESS.getCode().equals(rd.getCode())?true: false;
+    }
+
+    /**
+     * 根据父id列表查询子机构列表信息
+     * @param parentIdList
+     * @return
+     */
+    private List<Long> batchQuery(List<Long> parentIdList) {
+        if (CollectionUtils.isEmpty(parentIdList)) {
+            return null;
+        }
+        List<Long> idList = new ArrayList<>();
+        SelectDeptListByParentIdsReq req = new SelectDeptListByParentIdsReq();
+        req.setParentIdList(parentIdList);
+        ResultData<List<SelectDeptResp>> rd = sysDeptService.getSonDeptsByParentIds(req);
+        if (!isResultDataSuccess(rd)) {
+            return null;
+        }else {
+            if (!CollectionUtils.isEmpty(rd.getData())) {
+                idList.addAll(rd.getData().stream()
+                        .map(d -> d.getDeptId()).collect(Collectors.toList()));
+            }
+        }
+        return idList;
     }
 }

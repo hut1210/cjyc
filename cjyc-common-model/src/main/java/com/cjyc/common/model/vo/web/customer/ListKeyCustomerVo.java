@@ -43,10 +43,7 @@ public class ListKeyCustomerVo implements Serializable {
     private BigDecimal totalAmount;
 
     @ApiModelProperty(value = "注册时间")
-    private String registerTime;
-
-    @ApiModelProperty("创建人userId")
-    private Long createUserId;
+    private String createTime;
 
     @ApiModelProperty("创建人名称")
     private String createUserName;

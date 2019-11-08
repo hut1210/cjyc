@@ -3,10 +3,7 @@ package com.cjyc.common.system.feign;
 import com.cjkj.common.constant.ServiceNameConstants;
 import com.cjkj.common.feign.fallback.UserServiceFallbackFactory;
 import com.cjkj.common.model.ResultData;
-import com.cjkj.usercenter.dto.common.AddDeptReq;
-import com.cjkj.usercenter.dto.common.AddDeptResp;
-import com.cjkj.usercenter.dto.common.SelectDeptResp;
-import com.cjkj.usercenter.dto.common.UpdateDeptReq;
+import com.cjkj.usercenter.dto.common.*;
 import com.cjkj.usercenter.dto.yc.AddDeptAndUserReq;
 import com.cjkj.usercenter.dto.yc.AddDeptAndUserResp;
 import com.cjkj.usercenter.dto.yc.UpdateDeptManagerReq;
@@ -102,4 +99,12 @@ public interface ISysDeptService {
      */
     @GetMapping("/getMultiLevelDeptList/{deptId}")
     ResultData<List<SelectDeptResp>> getMultiLevelDeptList(@PathVariable(value = "deptId") Long deptId);
+
+    /**
+     * 根据父机构id列表获取子机构列表信息
+     * @param req
+     * @return
+     */
+    @PostMapping("/feign/uc/getSonDeptsByParentIds")
+    ResultData<List<SelectDeptResp>> getSonDeptsByParentIds(SelectDeptListByParentIdsReq req);
 }

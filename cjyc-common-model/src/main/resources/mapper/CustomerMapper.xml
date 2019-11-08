@@ -27,15 +27,15 @@
         <result column="pay_mode" property="payMode" />
         <result column="is_delete" property="isDelete" />
         <result column="register_time" property="registerTime" />
-        <result column="create_time" property="createTime" />
         <result column="create_user_id" property="createUserId" />
+        <result column="create_time" property="createTime" />
         <result column="check_time" property="checkTime" />
         <result column="check_user_id" property="checkUserId" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, user_id, customer_no, name, alias, contact_man, contact_phone, contact_address, customer_nature, social_credit_code, initial, photo_img, sex, id_card, id_card_front_img, id_card_back_img, type, source, company_id, state, pay_mode, is_delete, register_time, create_time, create_user_id, check_time, check_user_id
+        id, user_id, customer_no, name, alias, contact_man, contact_phone, contact_address, customer_nature, social_credit_code, initial, photo_img, sex, id_card, id_card_front_img, id_card_back_img, type, source, company_id, state, pay_mode, is_delete, register_time, create_user_id, create_time, check_time, check_user_id
     </sql>
 
     <!-- 通过手机号，姓名，身份证号查询 -->
@@ -50,7 +50,7 @@
             source AS source,
             id_card_front_img AS idCardFrontImg,
             id_card_back_img AS idCardBackImg,
-            register_time AS registerTime,
+            create_time AS createTime,
             create_user_id as createUserId
         FROM
           c_customer
@@ -87,43 +87,45 @@
     </select>
 
     <!-- 通过客户编号，客户全称，客户简称等条件查询 -->
-    <select id="findKeyCustomter" resultType="com.cjyc.common.model.vo.web.customer.ListKeyCustomerVo" parameterType="com.cjyc.common.model.dto.web.customer.SelectKeyCustomerDto">
+    <select id="findKeyCustomter" resultType="com.cjyc.common.model.vo.web.customer.ListKeyCustomerVo"
+            parameterType="com.cjyc.common.model.dto.web.customer.SelectKeyCustomerDto">
         select
-            id AS id,
-            user_id as userId,
-            customer_no as customerNo,
-            NAME AS NAME,
-            alias AS alias,
-            source as source,
-            contact_man AS contactMan,
-            contact_phone AS contactPhone,
-            customer_nature AS customerNature,
-            register_time AS registerTime,
-            create_user_id as createUserId
-        from c_customer
+            c.id AS id,
+            c.user_id as userId,
+            c.customer_no as customerNo,
+            c.NAME AS NAME,
+            c.alias AS alias,
+            c.source as source,
+            c.contact_man AS contactMan,
+            c.contact_phone AS contactPhone,
+            c.customer_nature AS customerNature,
+            c.create_time AS createTime,
+            admin.name as createUserName
+            from c_customer c
+            left join b_admin admin on admin.id = c.create_user_id
         <where>
             <if test="customerNo != null and customerNo.trim() != ''">
-                customer_no = #{customerNo}
+                c.customer_no = #{customerNo}
             </if>
             <if test="name != null and name.trim() != ''">
-                and  name = #{name}
+                and  c.name = #{name}
             </if>
             <if test="alias != null  and alias.trim() != ''">
-                and  alias = #{alias}
+                and  c.alias = #{alias}
             </if>
             <if test="contactMan != null  and contactMan.trim() != ''">
-                and contact_man = #{contactMan}
+                and c.contact_man = #{contactMan}
             </if>
             <if test="contactPhone != null  and contactPhone.trim() != ''">
-                and  contact_phone = #{contactPhone}
+                and  c.contact_phone = #{contactPhone}
             </if>
-            <if test="createUserId != null ">
-                and create_user_id = #{createUserId}
+            <if test="createUserName != null and createUserName.trim() != ''">
+                and admin.name like concat('%',#{createUserName},'%')
             </if>
-            <if test="createUserId != null ">
-                and customer_nature = #{customerNature}
+            <if test="customerNature != null ">
+                and c.customer_nature = #{customerNature}
             </if>
-                and type = 2 and is_delete = 0
+                and c.type = 2 and c.is_delete = 0
         </where>
     </select>
 
@@ -213,7 +215,7 @@
     </select>
 
     <!-- 根据大客户UserId查询有效期合同 -->
-    <select id="getCustContractByUserId" resultType="java.util.Map">
+    <select id="getContractByCustomerId" resultType="java.util.Map">
           SELECT
                 contract.id as id,
                 contract.contract_no AS contractNo,
@@ -222,15 +224,9 @@
                 c_customer_contract contract
                 LEFT JOIN c_customer customer ON customer.id = contract.customer_id
             WHERE
-                customer.user_id = #{userId}  and contract.contract_life > #{now}
+                customer.id = #{customerId}  and contract.contract_life > #{now}
     </select>
 
-    <!-- 根据用户userId获取用户信息 -->
-    <select id="getCustomerByUserId" resultType="com.cjyc.common.model.entity.Customer" parameterType="java.lang.Long">
-        select
-          <include refid="Base_Column_List"/>
-        from c_customer where user_id = #{userId}
-    </select>
     <select id="findByUserId" resultType="com.cjyc.common.model.entity.Customer">
         select
         <include refid="Base_Column_List"/>

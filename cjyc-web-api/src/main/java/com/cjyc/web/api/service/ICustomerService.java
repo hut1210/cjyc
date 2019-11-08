@@ -18,7 +18,7 @@ public interface ICustomerService  extends IService<Customer> {
      * @param dto
      * @return
      */
-    boolean saveCustomer(CustomerDto dto);
+    ResultVo saveCustomer(CustomerDto dto);
 
     /**
      * 更新移动端用户
@@ -50,10 +50,10 @@ public interface ICustomerService  extends IService<Customer> {
 
     /**
      * 根据大客户id查看大客户&合同
-     * @param id
+     * @param customerId
      * @return
      */
-    ResultVo showKeyCustomer(Long id);
+    ResultVo showKeyCustomer(Long customerId);
 
     /**
      * 更新大客户&合同
@@ -107,11 +107,11 @@ public interface ICustomerService  extends IService<Customer> {
     ResultVo getAllCustomerByKey(String keyword);
 
     /**
-     * 通过大客户userId获取有效期合同
-     * @param userId
+     * 通过大客户customerId获取有效期合同
+     * @param customerId
      * @return
      */
-    ResultVo getCustContractByUserId(Long userId);
+    ResultVo getContractByCustomerId(Long customerId);
 
     /**
      * 查看客户优惠券
@@ -121,9 +121,9 @@ public interface ICustomerService  extends IService<Customer> {
     ResultVo getCustomerCouponByTerm(CustomerCouponDto dto);
 
     /**
-     * 根据userId查询该用户的优惠券
-     * @param userId
+     * 根据customerId查询该用户的优惠券
+     * @param customerId
      * @return
      */
-    ResultVo getCouponByUserId(Long userId);
+    ResultVo getCouponByCustomerId(Long customerId);
 }

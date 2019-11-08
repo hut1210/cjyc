@@ -10,19 +10,21 @@ import java.io.Serializable;
 @Data
 public class CustomerDto implements Serializable {
 
+    private static final long serialVersionUID = -8088522140001277467L;
+
     public interface SaveCustomerVo {
     }
 
     public interface UpdateCustomerVo {
     }
 
-    @ApiModelProperty("当前登陆用户userId")
-    @NotNull(groups = {UpdateCustomerVo.class},message = "当前登陆用户userId不能为空")
-    private Long userId;
+    @ApiModelProperty("当前登陆用户id(loginId)")
+    @NotNull(groups = {UpdateCustomerVo.class},message = "当前登陆用户id(loginId)不能为空")
+    private Long loginId;
 
-    @NotNull(groups = {UpdateCustomerVo.class},message = "id不能为空")
-    @ApiModelProperty(value = "主键id",required = true)
-    private Long id;
+    @NotNull(groups = {UpdateCustomerVo.class},message = "C端用户id不能为空")
+    @ApiModelProperty(value = "C端用户id(主键id)",required = true)
+    private Long customerId;
 
     @NotBlank(groups = {SaveCustomerVo.class},message = "客户名称不能为空")
     @NotBlank(groups = {UpdateCustomerVo.class},message = "客户名称不能为空")

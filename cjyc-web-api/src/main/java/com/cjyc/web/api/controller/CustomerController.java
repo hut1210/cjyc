@@ -33,8 +33,7 @@ public class CustomerController {
     @ApiOperation(value = "新增移动端用户")
     @PostMapping(value = "/saveCustomer")
     public ResultVo saveCustomer(@Validated({ CustomerDto.SaveCustomerVo.class }) @RequestBody CustomerDto customerDto){
-        boolean result = customerService.saveCustomer(customerDto);
-        return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
+        return customerService.saveCustomer(customerDto);
     }
 
     @ApiOperation(value = "更新移动端用户")
@@ -58,17 +57,17 @@ public class CustomerController {
         return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
 
-    @ApiOperation(value = "根据id/userId删除/审核大用户")
+    @ApiOperation(value = "根据主键id/当前登陆用户loginId删除/审核用户")
     @PostMapping(value = "/verifyCustomer")
     public ResultVo verifyCustomer(@RequestBody OperateDto dto){
         boolean result = customerService.verifyCustomer(dto);
         return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
 
-    @ApiOperation(value = "大客户id查看大客户&合同")
-    @PostMapping(value = "/showKeyCustomer/{id}")
-    public ResultVo showKeyCustomer(@PathVariable Long id){
-        return customerService.showKeyCustomer(id);
+    @ApiOperation(value = "大客户customerId查看大客户&合同")
+    @PostMapping(value = "/showKeyCustomer/{customerId}")
+    public ResultVo showKeyCustomer(@PathVariable Long customerId){
+        return customerService.showKeyCustomer(customerId);
     }
 
     @ApiOperation(value = "更新大客户&合同")
@@ -110,10 +109,10 @@ public class CustomerController {
         return customerService.getAllCustomerByKey(keyword);
     }
 
-    @ApiOperation(value = "根据输入大客户userId获取大客户有效期合同")
-    @PostMapping(value = "/getCustContractByUserId/{userId}")
-    public ResultVo getCustContractByUserId(@PathVariable @ApiParam(value = "大客户userId",required = true) Long userId){
-        return customerService.getCustContractByUserId(userId);
+    @ApiOperation(value = "根据输入大客户id(customerId)获取大客户有效期合同")
+    @PostMapping(value = "/getContractByCustomerId/{customerId}")
+    public ResultVo getContractByCustomerId(@PathVariable @ApiParam(value = "大客户id",required = true) Long customerId){
+        return customerService.getContractByCustomerId(customerId);
     }
 
     @ApiOperation(value = "查看客户优惠券")
@@ -122,9 +121,9 @@ public class CustomerController {
         return customerService.getCustomerCouponByTerm(dto);
     }
 
-    @ApiOperation(value = "根据userId查看客户优惠券")
-    @PostMapping(value = "/getCouponByUserId/{userId}")
-    public ResultVo getCouponByUserId(@PathVariable @ApiParam(value = "客户userId",required = true) Long userId){
-        return customerService.getCouponByUserId(userId);
+    @ApiOperation(value = "根据customerId查看客户优惠券")
+    @PostMapping(value = "/getCouponByCustomerId/{customerId}")
+    public ResultVo getCouponByCustomerId(@PathVariable @ApiParam(value = "客户customerId",required = true) Long customerId){
+        return customerService.getCouponByCustomerId(customerId);
     }
 }

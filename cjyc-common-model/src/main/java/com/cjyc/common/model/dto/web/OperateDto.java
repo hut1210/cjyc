@@ -9,9 +9,9 @@ import java.io.Serializable;
 public class OperateDto implements Serializable {
 
     private static final long serialVersionUID = -1877805036648143698L;
-    @ApiModelProperty("操作人userId")
-    @NotNull(message ="操作人userId不能为空")
-    private Long userId;
+    @ApiModelProperty("操作人id(loginId)")
+    @NotNull(message ="操作人id(loginId)不能为空")
+    private Long loginId;
 
     @ApiModelProperty("主键id")
     @NotNull(message = "主键id不能为空")

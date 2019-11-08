@@ -135,7 +135,7 @@
             <if test="endPeriodTime != null">
                 and  cooupon.end_period_date &lt;= #{endPeriodTime}
             </if>
-            and customer.id = #{id}
+            and customer.id = #{customerId}
         </where>
     </select>
 

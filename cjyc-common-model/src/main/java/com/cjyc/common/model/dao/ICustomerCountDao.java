@@ -19,9 +19,9 @@ public interface ICustomerCountDao extends BaseMapper<CustomerCount> {
 
     /**
      * 统计用户下单量，运车量，总金额
-     * @param userId
+     * @param customerId
      * @return
      */
-    CustomerCountVo count(@Param("userId") Long userId);
+    CustomerCountVo count(@Param("customerId") Long customerId);
 
 }

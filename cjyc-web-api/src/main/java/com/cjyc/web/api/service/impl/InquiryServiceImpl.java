@@ -45,7 +45,7 @@ public class InquiryServiceImpl extends ServiceImpl<IInquiryDao, Inquiry> implem
     private IInquiryDao inquiryDao;
 
     @Override
-    public ResultVo getAllInquiryByTerm(SelectInquiryDto dto) {
+    public ResultVo findInquiry(SelectInquiryDto dto) {
         PageInfo<InquiryVo> pageInfo = null;
         //日期转Long
         if(StringUtils.isNotBlank(dto.getStartDate())){
@@ -60,7 +60,7 @@ public class InquiryServiceImpl extends ServiceImpl<IInquiryDao, Inquiry> implem
                 ChronoUnit.HOURS));
         dto.setHourAgo(hourAgo);
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
-        List<InquiryVo> inquiryVos = inquiryDao.getAllInquiryByTerm(dto);
+        List<InquiryVo> inquiryVos = inquiryDao.findInquiry(dto);
         if(!CollectionUtils.isEmpty(inquiryVos)){
             for(InquiryVo vo : inquiryVos){
                 vo.setHandleTime(StringUtils.isBlank(vo.getHandleTime()) ? "":LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(Long.parseLong(vo.getHandleTime())), TimePatternConstant.COMPLEX_TIME_FORMAT));

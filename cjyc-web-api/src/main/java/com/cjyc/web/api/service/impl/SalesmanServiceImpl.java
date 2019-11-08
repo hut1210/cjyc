@@ -174,7 +174,7 @@ public class SalesmanServiceImpl extends ServiceImpl<IAdminDao, Admin> implement
         packUpdateUserCommonInfo(updateUser, dto);
         ResultData rd = sysUserService.update(updateUser);
         if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())){
-            return BaseResultUtil.fail("用户信息更新失败");
+            return BaseResultUtil.fail("用户信息更新失败, 原因：" + rd.getMsg());
         }
         this.saveOrUpdate(admin);
         return BaseResultUtil.success();

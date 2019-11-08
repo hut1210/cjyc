@@ -5,6 +5,7 @@ import com.cjyc.common.model.dto.web.vehicle.SelectVehicleDto;
 import com.cjyc.common.model.entity.Vehicle;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.vo.web.carrier.BaseVehicleVo;
+import com.cjyc.common.model.vo.web.vehicle.FreeVehicleVo;
 import com.cjyc.common.model.vo.web.vehicle.VehicleVo;
 import org.apache.ibatis.annotations.Param;
 
@@ -40,5 +41,19 @@ public interface IVehicleDao extends BaseMapper<Vehicle> {
      * @return
      */
     List<BaseVehicleVo> getBaseVehicleByTerm(SeleVehicleDriverDto dto);
+
+    /**
+     * 根据条件查询车辆信息
+     * @param dto
+     * @return
+     */
+    List<VehicleVo> findVehicle(SelectVehicleDto dto);
+
+    /**
+     * 模糊匹配查询空闲社会车辆
+     * @param plateNo
+     * @return
+     */
+    List<FreeVehicleVo> findFreeVehicle(@Param("plateNo") String plateNo);
 
 }

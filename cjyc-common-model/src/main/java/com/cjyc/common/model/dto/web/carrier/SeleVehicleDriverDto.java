@@ -16,9 +16,9 @@ public class SeleVehicleDriverDto extends BasePageDto implements Serializable {
     public interface SelectVehicleDto {
     }
 
-    @ApiModelProperty("承运商id")
-    @NotNull(groups = {SelectVehicleDto.class},message = "承运商id不能为空")
-    private Long id;
+    @ApiModelProperty("承运商id(carrierId)")
+    @NotNull(groups = {SelectVehicleDto.class},message = "承运商id(carrierId)不能为空")
+    private Long carrierId;
 
     @ApiModelProperty("车牌号")
     private String plateNo;

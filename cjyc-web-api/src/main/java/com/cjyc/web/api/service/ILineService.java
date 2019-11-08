@@ -33,7 +33,7 @@ public interface ILineService extends IService<Line> {
      * @param dto
      * @return
      */
-    ResultVo<PageVo<LineVo>> getPageLineByTerm(SelectLineDto dto);
+    ResultVo<PageVo<LineVo>> findPageLine(SelectLineDto dto);
 
     /**
      * 新增/更新班线

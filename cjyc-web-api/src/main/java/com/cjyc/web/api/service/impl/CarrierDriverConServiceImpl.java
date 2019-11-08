@@ -32,11 +32,6 @@ public class CarrierDriverConServiceImpl extends ServiceImpl<ICarrierDriverConDa
 
     @Override
     public List<Long> getDriverIds(Long carrierId) {
-        try{
-            return carrierDriverConDao.getDriverIds(carrierId);
-        }catch (Exception e){
-            log.info("根据承运商id获取司机ids信息出现异常");
-            throw new CommonException(e.getMessage());
-        }
+        return carrierDriverConDao.getDriverIds(carrierId);
     }
 }

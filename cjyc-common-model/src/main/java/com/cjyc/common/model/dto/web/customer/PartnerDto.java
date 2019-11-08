@@ -15,14 +15,14 @@ public class PartnerDto implements Serializable {
     public interface updatePartnerDto {
     }
 
-    @ApiModelProperty("大客户id")
-    @NotNull(groups = {PartnerDto.updatePartnerDto.class},message = "大客户id不能为空")
-    private Long id;
+    @ApiModelProperty("大客户id(customerId)")
+    @NotNull(groups = {PartnerDto.updatePartnerDto.class},message = "大客户id(customerId)不能为空")
+    private Long customerId;
 
-    @ApiModelProperty("登陆用户userId")
-    @NotNull(groups = {PartnerDto.SavePartnerDto.class},message = "登陆用户userId不能为空")
-    @NotNull(groups = {PartnerDto.updatePartnerDto.class},message = "登陆用户userId不能为空")
-    private Long userId;
+    @ApiModelProperty("登陆用户id(loginId)")
+    @NotNull(groups = {PartnerDto.SavePartnerDto.class},message = "登陆用户id(loginId)不能为空")
+    @NotNull(groups = {PartnerDto.updatePartnerDto.class},message = "登陆用户id(loginId)不能为空")
+    private Long loginId;
 
     @ApiModelProperty("合伙人名称")
     @NotBlank(groups = {PartnerDto.SavePartnerDto.class},message = "合伙人名称不能为空")

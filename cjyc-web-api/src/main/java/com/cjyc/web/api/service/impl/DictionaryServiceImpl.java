@@ -60,7 +60,6 @@ public class DictionaryServiceImpl extends ServiceImpl<IDictionaryDao,Dictionary
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
         List<Dictionary> dictionaryList = dictionaryDao.selectList(new QueryWrapper<Dictionary>().lambda().
                 eq(StringUtils.isNotBlank(dto.getName()),Dictionary::getName,dto.getName()));
-        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         PageInfo<Dictionary> pageInfo = new PageInfo<>(dictionaryList);
         return BaseResultUtil.success(pageInfo == null ? new PageInfo<>():pageInfo);
     }
@@ -110,7 +109,7 @@ public class DictionaryServiceImpl extends ServiceImpl<IDictionaryDao,Dictionary
     }
 
     @Override
-    public boolean updateConfig(OperateDto dto) {
+    public boolean modifyConfig(OperateDto dto) {
         Dictionary dictionary = dictionaryDao.selectById(dto.getId());
         if(dictionary != null){
             if(FlagEnum.TURNOFF_SWITCH.code == dto.getFlag()){

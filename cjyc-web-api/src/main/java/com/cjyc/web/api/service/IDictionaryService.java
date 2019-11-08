@@ -45,5 +45,5 @@ public interface IDictionaryService {
      * @param dto
      * @return
      */
-    boolean updateConfig(OperateDto dto);
+    boolean modifyConfig(OperateDto dto);
 }

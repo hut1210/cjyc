@@ -1,5 +1,7 @@
 package com.cjyc.web.api.controller;
 
+import com.cjyc.common.model.dto.KeywordDto;
+import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.driver.DriverDto;
 import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
 import com.cjyc.common.model.dto.web.user.DriverListDto;
@@ -49,47 +51,34 @@ public class DriverController {
     @ApiOperation(value = "新增散户司机")
     @PostMapping(value = "/saveDriver")
     public ResultVo saveDriver(@Validated({ DriverDto.SaveDriverDto.class }) @RequestBody DriverDto dto){
-        boolean result = driverService.saveDriver(dto);
-        return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
+        return driverService.saveDriver(dto);
     }
 
     @ApiOperation(value = "根据查询条件查看司机信息")
-    @PostMapping(value = "/getDriverByTerm")
-    public ResultVo<PageVo<DriverVo>> getDriverByTerm(@RequestBody SelectDriverDto dto){
-        BasePageUtil.initPage(dto.getCurrentPage(),dto.getPageSize());
-        PageInfo<DriverVo> pageInfo = driverService.getDriverByTerm(dto);
-        return BaseResultUtil.getPageVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),pageInfo);
+    @PostMapping(value = "/findDriver")
+    public ResultVo<PageVo<DriverVo>> findDriver(@RequestBody SelectDriverDto dto){
+        BasePageUtil.initPage(dto);
+        return driverService.findDriver(dto);
     }
 
-    @ApiOperation(value = "根据司机userId进行审核通过/拒绝")
-    @PostMapping(value = "/examineDriById/{id}/{flag}")
-    public ResultVo examineDriById(@PathVariable @ApiParam(value = "用户id",required = true) Long id,
-                                   @PathVariable @ApiParam(value = "标志 3：审核通过 4：审核拒绝 5:冻结 6:解除",required = true) Integer flag){
-        if(id == null || flag == null){
-            BaseResultUtil.getVo(ResultEnum.MOBILE_PARAM_ERROR.getCode(),ResultEnum.MOBILE_PARAM_ERROR.getMsg());
-        }
-        boolean result = driverService.examineDriById(id,flag);
-        return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg())
-                : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
+    @ApiOperation(value = "根据id进行审核通过/拒绝/冻结解冻")
+    @PostMapping(value = "/verifyDriver")
+    public ResultVo verifyDriver(@RequestBody OperateDto dto){
+        boolean result = driverService.verifyDriver(dto);
+        return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
 
-    @ApiOperation(value = "根据司机userId/Id查看司机信息")
-    @PostMapping(value = "/getDriverById/{id}/{userId}")
-    public ResultVo<ShowDriverVo> getDriverById(@PathVariable @ApiParam(value = "司机id",required = true) Long id,
-                                                @PathVariable @ApiParam(value = "司机UserId",required = true) Long userId){
-        if(id == null || userId == null){
-            BaseResultUtil.getVo(ResultEnum.MOBILE_PARAM_ERROR.getCode(),ResultEnum.MOBILE_PARAM_ERROR.getMsg());
-        }
-        ShowDriverVo showDriverVo = driverService.getDriverById(id,userId);
-        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),showDriverVo);
+    @ApiOperation(value = "根据司机id(driverId)查看司机信息")
+    @PostMapping(value = "/showDriver/{driverId}")
+    public ResultVo<ShowDriverVo> showDriver(@PathVariable @ApiParam(value = "司机id",required = true) Long driverId){
+        return driverService.showDriver(driverId);
     }
 
     @ApiOperation(value = "根据司机Id更新司机信息")
-    @PostMapping(value = "/updDriverById/{id}")
-    public ResultVo updateDriver(@RequestBody DriverDto dto){
-        boolean result = driverService.updateDriver(dto);
-        return result ? BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg())
-                : BaseResultUtil.getVo(ResultEnum.FAIL.getCode(),ResultEnum.FAIL.getMsg());
+    @PostMapping(value = "/modifyDriver")
+    public ResultVo modifyDriver(@RequestBody DriverDto dto){
+        boolean result = driverService.modifyDriver(dto);
+        return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
 
     @ApiOperation(value = "冻结/解除司机冻结状态")
@@ -101,5 +90,10 @@ public class DriverController {
         return driverService.resetState(id, flag);
     }
 
+    @ApiOperation(value = "查询没有被绑定的社会车辆信息")
+    @PostMapping(value = "/findFreeVehicle")
+    public ResultVo findFreeVehicle(@RequestBody KeywordDto dto){
+        return driverService.findFreeVehicle(dto);
+    }
 
 }

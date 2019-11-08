@@ -1,5 +1,7 @@
 package com.cjyc.web.api.service;
 
+import com.cjyc.common.model.dto.KeywordDto;
+import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.driver.DriverDto;
 import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
 import com.cjyc.common.model.dto.web.user.DriverListDto;
@@ -25,43 +27,35 @@ public interface IDriverService {
      * @param dto
      * @return
      */
-    boolean saveDriver(DriverDto dto);
+    ResultVo saveDriver(DriverDto dto);
 
     /**
      * 根据条件查询司机信息
      * @param dto
      * @return
      */
-    PageInfo<DriverVo> getDriverByTerm(SelectDriverDto dto);
+    ResultVo findDriver(SelectDriverDto dto);
 
     /**
      * 根据司机userId进行审核
-     * @param id
+     * @param dto
      * @return
      */
-    boolean examineDriById(Long id,Integer sign);
+    boolean verifyDriver(OperateDto dto);
 
     /**
-     * 根据司机id/userId查看司机信息
-     * @param id
-     * @param userId
+     * 根据司机id查看司机信息
+     * @param driverId
      * @return
      */
-    ShowDriverVo getDriverById(Long id, Long userId);
+    ResultVo showDriver(Long driverId);
 
     /**
      * 根据司机id更新司机信息
      * @param dto
      * @return
      */
-    boolean updateDriver(DriverDto dto);
-
-    /**
-     * 根据司机id查看该承运商业务范围
-     * @param id
-     * @return
-     */
-    BusinessCityCode getDriverBusiById(Long id);
+    boolean modifyDriver(DriverDto dto);
 
     Driver getByUserId(Long userId);
 
@@ -72,5 +66,12 @@ public interface IDriverService {
      * @return
      */
     ResultVo resetState(Long id, Integer flag);
+
+    /**
+     * 根据车牌号模糊匹配空闲的社会车辆
+     * @param dto
+     * @return
+     */
+    ResultVo findFreeVehicle(KeywordDto dto);
 
 }

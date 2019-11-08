@@ -9,9 +9,9 @@ import java.io.Serializable;
 @Data
 public class VehicleDto implements Serializable {
 
-    @ApiModelProperty("当前登陆用户userId")
-    @NotNull(message = "当前登陆用户userId不能为空")
-    private Long userId;
+    @ApiModelProperty("当前登陆用户id(loginId)")
+    @NotNull(message = "当前登陆用户id(loginId)不能为空")
+    private Long loginId;
 
     @ApiModelProperty("车牌号")
     @NotBlank(message = "车牌号不能为空")

@@ -43,8 +43,9 @@
     <!-- 根据承运商id获取业务范围 -->
     <select id="getMapCodes" resultType="java.util.Map" parameterType="java.lang.Long">
           SELECT
-            c.NAME,
-            c.CODE
+            c.parent_code as parentCode,
+            c.NAME as name,
+            c.CODE as code
         FROM
             s_city c
             JOIN d_carrier_city_con con ON c.CODE = con.city_code

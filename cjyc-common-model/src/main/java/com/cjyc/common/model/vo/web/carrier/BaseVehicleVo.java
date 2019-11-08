@@ -1,5 +1,7 @@
 package com.cjyc.common.model.vo.web.carrier;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -7,8 +9,9 @@ import java.io.Serializable;
 @Data
 public class BaseVehicleVo implements Serializable {
 
-    @ApiModelProperty("车辆id")
-    private Long id;
+    @ApiModelProperty("车辆id(vehicleId)")
+    @JsonSerialize(using= ToStringSerializer.class)
+    private Long vehicleId;
 
     @ApiModelProperty("车牌号")
     private String plateNo;

@@ -1,5 +1,6 @@
 package com.cjyc.web.api.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -108,6 +110,16 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
         List<FullCity> list = cityDao.selectCityPage(dto);
         PageInfo pageInfo = new PageInfo(list);
         return BaseResultUtil.success(pageInfo);
+    }
+
+    @Override
+    public ResultVo<List<City>> getProvinceList(String name) {
+        // 000008 未覆盖大区编码,只查询未被覆盖的省
+        LambdaQueryWrapper<City> queryWrapper = new QueryWrapper<City>().lambda().eq(City::getLevel, 1)
+                .like(!StringUtils.isEmpty(name), City::getName, name).isNull(City::getParentCode)
+                .or().eq(City::getParentCode, "000008").like(!StringUtils.isEmpty(name), City::getName, name);
+        List<City> list = super.list(queryWrapper);
+        return BaseResultUtil.success(list);
     }
 }
 
