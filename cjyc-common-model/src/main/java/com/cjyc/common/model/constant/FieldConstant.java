@@ -26,4 +26,34 @@ public class FieldConstant {
      * 开票失败
      */
     public static final int INVOICE_FAIL = 3;
+
+    /*******城市级别******/
+    /**
+     * 大区级别
+     */
+    public static final int REGION_LEVEL = 0;
+    /**
+     * 省级别
+     */
+    public static final int PROVINCE_LEVEL = 1;
+
+    /*******中国编码和名称******/
+    /**
+     * 中国编码
+     */
+    public static final String CHINA_CODE = "000000";
+    /**
+     * 中国名称
+     */
+    public static final String CHINA_NAME = "中国";
+
+    /*******未覆盖大区编号和名称******/
+    /**
+     * 未覆盖大区编码
+     */
+    public static final String NOT_REGION_CODE = "000008";
+    /**
+     * 未覆盖大区名称
+     */
+    public static final String NOT_REGION_NAME = "未覆盖大区";
 }

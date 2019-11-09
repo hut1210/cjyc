@@ -1,6 +1,7 @@
 package com.cjyc.web.api.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.cjyc.common.model.dto.KeywordDto;
 import com.cjyc.common.model.dto.salesman.city.CityPageDto;
 import com.cjyc.common.model.dto.web.city.CityQueryDto;
 import com.cjyc.common.model.entity.City;
@@ -87,9 +88,9 @@ public class CityController {
     }
 
     @ApiOperation(value = "根据省名称查询省份信息")
-    @PostMapping("/getProvinceList/{name}")
-    public ResultVo<List<City>> getProvinceList(@PathVariable String name) {
-        return cityService.getProvinceList(name);
+    @PostMapping("/getProvinceList")
+    public ResultVo<List<City>> getProvinceList(@RequestBody KeywordDto dto) {
+        return cityService.getProvinceList(dto);
     }
 
 }

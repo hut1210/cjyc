@@ -35,4 +35,14 @@ public class NoConstant {
      * 车辆编号前缀
      */
     public static final String CAR_PREFIX = "C";
+
+    /**
+     * 大区起始编号
+     */
+    public static final String REGION_CODE_START = "000001";
+    /**
+     * 大区编号前缀
+     */
+    public static final String REGION_CODE_PREFIX = "0";
+
 }

@@ -6,16 +6,18 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.redis.template.StringRedisUtil;
+import com.cjyc.common.model.constant.FieldConstant;
 import com.cjyc.common.model.dao.ICityDao;
+import com.cjyc.common.model.dto.KeywordDto;
 import com.cjyc.common.model.dto.salesman.city.CityPageDto;
 import com.cjyc.common.model.dto.web.city.CityQueryDto;
 import com.cjyc.common.model.entity.City;
+import com.cjyc.common.model.entity.defined.FullCity;
 import com.cjyc.common.model.util.BasePageUtil;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.CityTreeUtil;
 import com.cjyc.common.model.vo.CityTreeVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.entity.defined.FullCity;
 import com.cjyc.web.api.service.ICityService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -113,11 +115,12 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
     }
 
     @Override
-    public ResultVo<List<City>> getProvinceList(String name) {
+    public ResultVo<List<City>> getProvinceList(KeywordDto dto) {
         // 000008 未覆盖大区编码,只查询未被覆盖的省
-        LambdaQueryWrapper<City> queryWrapper = new QueryWrapper<City>().lambda().eq(City::getLevel, 1)
-                .like(!StringUtils.isEmpty(name), City::getName, name).isNull(City::getParentCode)
-                .or().eq(City::getParentCode, "000008").like(!StringUtils.isEmpty(name), City::getName, name);
+        LambdaQueryWrapper<City> queryWrapper = new QueryWrapper<City>().lambda().eq(City::getLevel, FieldConstant.PROVINCE_LEVEL)
+                .like(!StringUtils.isEmpty(dto.getKeyword()), City::getName, dto.getKeyword())
+                .and(i ->i.isNull(City::getParentCode).or().eq(City::getParentCode,""))
+                .or(i ->i.eq(City::getParentCode, FieldConstant.NOT_REGION_CODE).like(!StringUtils.isEmpty(dto.getKeyword()), City::getName, dto.getKeyword()));
         List<City> list = super.list(queryWrapper);
         return BaseResultUtil.success(list);
     }

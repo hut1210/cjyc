@@ -2,6 +2,7 @@ package com.cjyc.web.api.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.cjyc.common.model.dto.KeywordDto;
 import com.cjyc.common.model.dto.salesman.city.CityPageDto;
 import com.cjyc.common.model.dto.web.city.CityQueryDto;
 import com.cjyc.common.model.entity.City;
@@ -77,8 +78,8 @@ public interface ICityService extends IService<City> {
      * 功能描述: 根据省名称查询省份信息
      * @author liuxingxiang
      * @date 2019/11/7
-     * @param name
+     * @param dto
      * @return com.cjyc.common.model.vo.ResultVo<java.util.List<com.cjyc.common.model.entity.City>>
      */
-    ResultVo<List<City>> getProvinceList(String name);
+    ResultVo<List<City>> getProvinceList(KeywordDto dto);
 }

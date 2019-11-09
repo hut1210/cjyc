@@ -9,6 +9,8 @@ import com.cjkj.usercenter.dto.common.AddDeptReq;
 import com.cjkj.usercenter.dto.common.AddDeptResp;
 import com.cjkj.usercenter.dto.common.SelectDeptResp;
 import com.cjkj.usercenter.dto.common.UpdateDeptReq;
+import com.cjyc.common.model.constant.FieldConstant;
+import com.cjyc.common.model.constant.NoConstant;
 import com.cjyc.common.model.dao.ICityDao;
 import com.cjyc.common.model.dto.web.city.RegionAddDto;
 import com.cjyc.common.model.dto.web.city.RegionQueryDto;
@@ -23,6 +25,7 @@ import com.cjyc.web.api.service.ICityService;
 import com.cjyc.web.api.service.IRegionService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -52,7 +55,7 @@ public class RegionServiceImpl implements IRegionService {
         // 分页查询大区信息
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         LambdaQueryWrapper<City> queryWrapper = new QueryWrapper<City>().lambda()
-                .eq(City::getLevel, 0).like(!StringUtils.isEmpty(dto.getRegionName()), City::getName, dto.getRegionName());
+                .eq(City::getLevel, FieldConstant.REGION_LEVEL).like(!StringUtils.isEmpty(dto.getRegionName()), City::getName, dto.getRegionName());
         List<City> cityList = cityDao.selectList(queryWrapper);
         // 根据大区编码查询覆盖省数量
         List<RegionVo> list = new ArrayList<>(10);
@@ -75,8 +78,9 @@ public class RegionServiceImpl implements IRegionService {
     @Override
     public ResultVo addRegion(RegionAddDto dto) throws Exception {
         // 查询大区编码
-        LambdaQueryWrapper<City> queryWrapper = new QueryWrapper<City>().lambda().eq(City::getLevel, 0);
-        List<City> cityList = cityDao.selectList(queryWrapper);
+        LambdaQueryWrapper<City> queryWrapper = new QueryWrapper<City>().lambda().eq(City::getLevel, FieldConstant.REGION_LEVEL);
+        List<City> cityList = cityService.list(queryWrapper);
+
         // 根据编码规则生成新增的大区编码
         String code = getRegionCode(cityList);
 
@@ -84,10 +88,10 @@ public class RegionServiceImpl implements IRegionService {
         City region = new City();
         region.setCode(code);
         region.setName(dto.getRegionName());
-        region.setLevel(0);
-        region.setParentCode("000000");
-        region.setParentName("中国");
-        cityDao.insert(region);
+        region.setLevel(FieldConstant.REGION_LEVEL);
+        region.setParentCode(FieldConstant.CHINA_CODE);
+        region.setParentName(FieldConstant.CHINA_NAME);
+        cityService.save(region);
 
         // 给新增大区添加覆盖省份
         List<String> provinceCodeList = dto.getProvinceCodeList();
@@ -98,7 +102,10 @@ public class RegionServiceImpl implements IRegionService {
             LambdaUpdateWrapper<City> updateWrapper = new UpdateWrapper<City>().lambda();
             for (String provinceCode : provinceCodeList) {
                 updateWrapper = updateWrapper.eq(City::getCode,provinceCode);
-                cityDao.update(province,updateWrapper);
+                boolean res = cityService.update(province, updateWrapper);
+                if (!res) {
+                    throw new Exception("给新增大区添加覆盖省份异常");
+                }
             }
         }
 
@@ -107,7 +114,7 @@ public class RegionServiceImpl implements IRegionService {
         addDeptReq.setName(dto.getRegionName());
         addDeptReq.setParentId(Long.parseLong(YmlProperty.get("cjkj.dept_admin_id")));
         ResultData<AddDeptResp> result = sysDeptService.save(addDeptReq);
-        if (result != null && "200".equals(result.getCode())) {
+        if (result != null && String.valueOf(HttpStatus.SC_OK).equals(result.getCode())) {
             if (result.getData() != null) {
                 if (result.getData().getDeptId() == null) {
                     throw new Exception("调用物流平台保存大区失败");
@@ -126,7 +133,7 @@ public class RegionServiceImpl implements IRegionService {
                 updateDeptReq.setDeptId(Long.parseLong(provinceCode));
                 updateDeptReq.setParentId(result.getData().getDeptId());
                 ResultData resultData = sysDeptService.update(updateDeptReq);
-                if (resultData == null || !"200".equals(resultData.getCode())) {
+                if (resultData == null || !String.valueOf(HttpStatus.SC_OK).equals(resultData.getCode())) {
                     throw new Exception("调用物流平台修改机构信息异常");
                 }
             }
@@ -138,7 +145,7 @@ public class RegionServiceImpl implements IRegionService {
     public ResultVo modifyRegion(RegionUpdateDto dto) throws Exception {
         // 查询当前大区已覆盖省
         LambdaQueryWrapper<City> queryWrapper = new QueryWrapper<City>().lambda()
-                .eq(City::getLevel, 1).eq(City::getParentCode,dto.getRegionCode());
+                .eq(City::getLevel, FieldConstant.PROVINCE_LEVEL).eq(City::getParentCode,dto.getRegionCode());
         List<City> oldCityList = cityDao.selectList(queryWrapper);
         List<String> provinceCodeList = dto.getProvinceCodeList();
         String code = null;
@@ -157,10 +164,10 @@ public class RegionServiceImpl implements IRegionService {
         // 将被删除的覆盖省挂在未覆盖大区下
         if (!CollectionUtils.isEmpty(oldCityList)) {
             LambdaUpdateWrapper<City> updateWrapper = new UpdateWrapper<City>().lambda()
-                    .set(City::getParentCode,"000008").set(City::getParentName,"未覆盖大区");
+                    .set(City::getParentCode,FieldConstant.NOT_REGION_CODE).set(City::getParentName,FieldConstant.NOT_REGION_NAME);
             for (City oldCity : oldCityList) {
                 // 更新大区覆盖省
-                updateWrapper = updateWrapper.eq(City::getCode,oldCity.getCode()).eq(City::getLevel,1);
+                updateWrapper = updateWrapper.eq(City::getCode,oldCity.getCode()).eq(City::getLevel,FieldConstant.PROVINCE_LEVEL);
                 boolean result = cityService.update(updateWrapper);
                 if (!result) {
                     throw new Exception("更新大区覆盖省失败");
@@ -171,20 +178,20 @@ public class RegionServiceImpl implements IRegionService {
                 updateDeptReq.setDeptId(Long.parseLong(oldCity.getCode()));
                 updateDeptReq.setParentId(Long.parseLong(YmlProperty.get("cjkj.dept_admin_id")));
                 ResultData resultData = sysDeptService.update(updateDeptReq);
-                if (resultData == null || !"200".equals(resultData.getCode())) {
+                if (resultData == null || !String.valueOf(HttpStatus.SC_OK).equals(resultData.getCode())) {
                     throw new Exception("调用物流平台修改机构信息异常");
                 }
             }
         }
 
         // 新增覆盖省
-        LambdaUpdateWrapper<City> updateWrapper1 = new UpdateWrapper<City>().lambda()
+        LambdaUpdateWrapper<City> updateProvince = new UpdateWrapper<City>().lambda()
                 .set(City::getParentCode,dto.getRegionCode()).set(City::getParentName,dto.getRegionName());
         if (CollectionUtils.isEmpty(provinceCodeList)) {
             Long parentId = null;
             if (code != null) {
                 ResultData<SelectDeptResp> result = sysDeptService.getById(Long.parseLong(code));
-                if (result != null && "200".equals(result.getCode())) {
+                if (result != null && String.valueOf(HttpStatus.SC_OK).equals(result.getCode())) {
                     SelectDeptResp data = result.getData();
                     if (data != null) {
                         parentId = data.getParentId();
@@ -197,9 +204,9 @@ public class RegionServiceImpl implements IRegionService {
             }
             for (String provinceCode : provinceCodeList) {
                 // 更新大区覆盖省
-                updateWrapper1 = updateWrapper1.eq(City::getCode,provinceCode).eq(City::getLevel,1);
-                boolean result1 = cityService.update(updateWrapper1);
-                if (!result1) {
+                updateProvince = updateProvince.eq(City::getCode,provinceCode).eq(City::getLevel,FieldConstant.PROVINCE_LEVEL);
+                boolean res = cityService.update(updateProvince);
+                if (!res) {
                     throw new Exception("更新大区覆盖省失败");
                 }
 
@@ -208,7 +215,7 @@ public class RegionServiceImpl implements IRegionService {
                 updateDeptReq.setDeptId(Long.parseLong(provinceCode));
                 updateDeptReq.setParentId(parentId);// 物流平台大区机构编码
                 ResultData resultData = sysDeptService.update(updateDeptReq);
-                if (!"200".equals(resultData.getCode())) {
+                if (resultData == null || !String.valueOf(HttpStatus.SC_OK).equals(resultData.getCode())) {
                     throw new Exception("调用物流平台修改机构信息异常");
                 }
             }
@@ -230,17 +237,17 @@ public class RegionServiceImpl implements IRegionService {
             Integer value = list.get(list.size() - 1);
             String str = String.valueOf(value + 1);
             for(int i = 1;i < codeLength;i++) {
-                regionCode.append("0");
+                regionCode.append(NoConstant.REGION_CODE_PREFIX);
                 if (i == codeLength - str.length()) {
                     regionCode.append(str);
                     break;
                 }
             }
             if (regionCode.length() != codeLength) {
-                regionCode.append(YmlProperty.get("cjkj.region_code"));
+                regionCode.append(NoConstant.REGION_CODE_START);
             }
         } else {
-            regionCode.append("00000"+YmlProperty.get("cjkj.region_code"));
+            regionCode.append(NoConstant.REGION_CODE_START);
         }
         return regionCode.toString();
     }

@@ -96,7 +96,6 @@ cjkj:
   dept_customer_id: 100000
   dept_driver_id: 110000
   dept_admin_id: 120000
-  region_code: 1
   customer:
     password: cc8$wT^n4L#W4Fii #使用后不能修改
   driver:
