@@ -1,9 +1,7 @@
 package com.cjyc.web.api.controller;
 
-import com.cjyc.common.model.dto.web.vehicle.ModifyCarryNumDto;
-import com.cjyc.common.model.dto.web.vehicle.RemoveVehicleDto;
-import com.cjyc.common.model.dto.web.vehicle.SelectVehicleDto;
-import com.cjyc.common.model.dto.web.vehicle.VehicleDto;
+import com.cjyc.common.model.dto.KeywordDto;
+import com.cjyc.common.model.dto.web.vehicle.*;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.web.api.service.IVehicleService;
 import io.swagger.annotations.Api;
@@ -49,5 +47,12 @@ public class VehicleController {
     public ResultVo modifyVehicle(@RequestBody ModifyCarryNumDto dto){
         return vehicleService.modifyVehicle(dto);
     }
+
+    @ApiOperation(value = "查询没有被绑定的车辆信息")
+    @PostMapping(value = "/findFreeVehicle")
+    public ResultVo findFreeVehicle(@RequestBody FreeVehicleDto dto){
+        return vehicleService.findFreeVehicle(dto);
+    }
+
 
 }

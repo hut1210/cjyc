@@ -22,20 +22,6 @@ import java.util.List;
 public interface IVehicleDao extends BaseMapper<Vehicle> {
 
     /**
-     * 根据车辆编号id获取车辆信息
-     * @param vehicleId
-     * @return
-     */
-    VehicleVo getVehicleById(@Param("vehicleId") Long vehicleId);
-
-    /**
-     * 根据条件查询车辆信息
-     * @param dto
-     * @return
-     */
-    List<VehicleVo> getVehicleByTerm(SelectVehicleDto dto);
-
-    /**
      * 根据承运商id条件查询车辆信息
      * @param dto
      * @return
@@ -54,6 +40,6 @@ public interface IVehicleDao extends BaseMapper<Vehicle> {
      * @param plateNo
      * @return
      */
-    List<FreeVehicleVo> findFreeVehicle(@Param("plateNo") String plateNo);
+    List<FreeVehicleVo> findFreeVehicle(@Param("plateNo") String plateNo,@Param("carrierId") Long carrierId);
 
 }

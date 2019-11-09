@@ -9,9 +9,9 @@ import java.io.Serializable;
 @Data
 public class TransportDto implements Serializable {
 
-    @ApiModelProperty("用户userId")
-    @NotNull(message = "登陆用户userId不能为空")
-    private Long userId;
+    @ApiModelProperty("用户id(lgoinId)")
+    @NotNull(message = "登陆用户id(lgoinId)不能为空")
+    private Long lgoinId;
 
     @ApiModelProperty("起始地code")
     @NotBlank(message = "起始地code不能为空")

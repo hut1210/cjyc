@@ -67,11 +67,4 @@ public interface IDriverService {
      */
     ResultVo resetState(Long id, Integer flag);
 
-    /**
-     * 根据车牌号模糊匹配空闲的社会车辆
-     * @param dto
-     * @return
-     */
-    ResultVo findFreeVehicle(KeywordDto dto);
-
 }

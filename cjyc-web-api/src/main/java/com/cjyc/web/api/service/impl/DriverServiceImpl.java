@@ -108,6 +108,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         Driver driver = new Driver();
         BeanUtils.copyProperties(dto,driver);
         driver.setName(dto.getRealName());
+        driver.setType(DriverTypeEnum.SOCIETY.code);
         driver.setIdentity(DriverIdentityEnum.PERSONAL_DRIVER.code);
         driver.setBusinessState(BusinessStateEnum.OUTAGE.code);
         driver.setSource(DriverSourceEnum.SALEMAN_WEB.code);
@@ -291,25 +292,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         return BaseResultUtil.success();
     }
 
-    @Override
-    public ResultVo findFreeVehicle(KeywordDto dto) {
-        //查询个人所有车辆
-        /*List<Vehicle> vehicles = vehicleDao.selectList(new QueryWrapper<Vehicle>().lambda().eq(Vehicle::getOwnershipType, VehicleOwnerEnum.PERSONAL.code)
-                                            .like(!StringUtils.isNotBlank(dto.getKeyword()),Vehicle::getPlateNo,dto.getKeyword()).select(Vehicle::getId,Vehicle::getPlateNo,Vehicle::getDefaultCarryNum));*/
-        List<FreeVehicleVo> freeVehicleVos = vehicleDao.findFreeVehicle(dto.getKeyword());
-        //查询已经绑定的车辆
-        List<DriverVehicleCon> driverVehicleCons = driverVehicleConDao.selectList(new QueryWrapper<DriverVehicleCon>().lambda().select(DriverVehicleCon::getVehicleId));
-        //去除已绑定车辆
-        for (DriverVehicleCon driverVehicleCon : driverVehicleCons) {
-            for (FreeVehicleVo vo : freeVehicleVos) {
-                if(driverVehicleCon.getVehicleId().equals(vo.getId())){
-                    freeVehicleVos.remove(vo);
-                    break;
-                }
-            }
-        }
-       return BaseResultUtil.success(freeVehicleVos);
-    }
+
 
     /**
      * 司机与车辆绑定关系

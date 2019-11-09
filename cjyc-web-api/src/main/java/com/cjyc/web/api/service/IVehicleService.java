@@ -1,9 +1,7 @@
 package com.cjyc.web.api.service;
 
-import com.cjyc.common.model.dto.web.vehicle.ModifyCarryNumDto;
-import com.cjyc.common.model.dto.web.vehicle.RemoveVehicleDto;
-import com.cjyc.common.model.dto.web.vehicle.SelectVehicleDto;
-import com.cjyc.common.model.dto.web.vehicle.VehicleDto;
+import com.cjyc.common.model.dto.KeywordDto;
+import com.cjyc.common.model.dto.web.vehicle.*;
 import com.cjyc.common.model.vo.ResultVo;
 
 /**
@@ -40,5 +38,12 @@ public interface IVehicleService {
      * @return
      */
     ResultVo modifyVehicle(ModifyCarryNumDto dto);
+
+    /**
+     * 根据车牌号模糊匹配空闲的社会车辆
+     * @param dto
+     * @return
+     */
+    ResultVo findFreeVehicle(FreeVehicleDto dto);
 
 }

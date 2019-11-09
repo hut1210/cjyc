@@ -5,15 +5,15 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.dao.IDriverVehicleConDao;
 import com.cjyc.common.model.dao.IVehicleDao;
 import com.cjyc.common.model.dao.IVehicleRunningDao;
-import com.cjyc.common.model.dto.web.vehicle.ModifyCarryNumDto;
-import com.cjyc.common.model.dto.web.vehicle.RemoveVehicleDto;
-import com.cjyc.common.model.dto.web.vehicle.SelectVehicleDto;
-import com.cjyc.common.model.dto.web.vehicle.VehicleDto;
+import com.cjyc.common.model.dto.KeywordDto;
+import com.cjyc.common.model.dto.web.vehicle.*;
+import com.cjyc.common.model.entity.DriverVehicleCon;
 import com.cjyc.common.model.entity.Vehicle;
 import com.cjyc.common.model.enums.transport.VehicleOwnerEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.vehicle.FreeVehicleVo;
 import com.cjyc.common.model.vo.web.vehicle.VehicleVo;
 import com.cjyc.web.api.service.IVehicleService;
 import com.github.pagehelper.PageHelper;
@@ -83,6 +83,26 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
         vehicle.setDefaultCarryNum(dto.getDefauleCarryNum());
         vehicleDao.updateById(vehicle);
         return BaseResultUtil.success();
+    }
+
+    @Override
+    public ResultVo findFreeVehicle(FreeVehicleDto dto) {
+        //查询个人所有车辆
+        /*List<Vehicle> vehicles = vehicleDao.selectList(new QueryWrapper<Vehicle>().lambda().eq(Vehicle::getOwnershipType, VehicleOwnerEnum.PERSONAL.code)
+                                            .like(!StringUtils.isNotBlank(dto.getKeyword()),Vehicle::getPlateNo,dto.getKeyword()).select(Vehicle::getId,Vehicle::getPlateNo,Vehicle::getDefaultCarryNum));*/
+        List<FreeVehicleVo> freeVehicleVos = vehicleDao.findFreeVehicle(dto.getPlateNo(),dto.getCarrierId());
+        //查询已经绑定的车辆
+        List<DriverVehicleCon> driverVehicleCons = driverVehicleConDao.selectList(new QueryWrapper<DriverVehicleCon>().lambda().select(DriverVehicleCon::getVehicleId));
+        //去除已绑定车辆
+        for (DriverVehicleCon driverVehicleCon : driverVehicleCons) {
+            for (FreeVehicleVo vo : freeVehicleVos) {
+                if(driverVehicleCon.getVehicleId().equals(vo.getId())){
+                    freeVehicleVos.remove(vo);
+                    break;
+                }
+            }
+        }
+        return BaseResultUtil.success(freeVehicleVos);
     }
 
 }

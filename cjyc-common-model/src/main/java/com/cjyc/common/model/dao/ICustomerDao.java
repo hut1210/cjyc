@@ -23,6 +23,12 @@ import java.util.Map;
 public interface ICustomerDao extends BaseMapper<Customer> {
 
     /**
+     * 根据用户userId查询用户
+     * @param userId
+     * @return
+     */
+    Customer getCustomerByUserId(@Param("userId") Long userId);
+    /**
      * 根据手机号，姓名，身份证号查询移动端用户
      * @param customerVo
      * @return

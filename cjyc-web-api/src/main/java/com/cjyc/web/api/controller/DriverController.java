@@ -76,7 +76,7 @@ public class DriverController {
 
     @ApiOperation(value = "根据司机Id更新司机信息")
     @PostMapping(value = "/modifyDriver")
-    public ResultVo modifyDriver(@RequestBody DriverDto dto){
+    public ResultVo modifyDriver(@Validated({ DriverDto.UpdateDriverDto.class }) @RequestBody DriverDto dto){
         boolean result = driverService.modifyDriver(dto);
         return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
@@ -89,11 +89,4 @@ public class DriverController {
                                @PathVariable Integer flag){
         return driverService.resetState(id, flag);
     }
-
-    @ApiOperation(value = "查询没有被绑定的社会车辆信息")
-    @PostMapping(value = "/findFreeVehicle")
-    public ResultVo findFreeVehicle(@RequestBody KeywordDto dto){
-        return driverService.findFreeVehicle(dto);
-    }
-
 }

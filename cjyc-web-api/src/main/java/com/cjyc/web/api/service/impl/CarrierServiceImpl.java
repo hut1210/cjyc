@@ -51,7 +51,6 @@ import java.util.List;
 
 @Service
 @Slf4j
-@Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
 public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implements ICarrierService {
 
     @Resource

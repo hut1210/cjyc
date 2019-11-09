@@ -31,6 +31,9 @@ public class Vehicle implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
+    @ApiModelProperty(value = "承运商id")
+    private Long carrierId;
+
     @ApiModelProperty(value = "车牌号")
     private String plateNo;
 

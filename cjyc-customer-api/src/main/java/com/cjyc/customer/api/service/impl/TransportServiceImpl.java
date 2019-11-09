@@ -53,7 +53,7 @@ public class TransportServiceImpl implements ITransportService {
             //添加用户询价记录
             Inquiry inquiry = new Inquiry();
             //根据用户userId查询用户
-            Customer customer = customerDao.getCustomerByUserId(dto.getUserId());
+            Customer customer = customerDao.selectById(dto.getLgoinId());
             if (customer != null) {
                 BeanUtils.copyProperties(dto, inquiry);
                 inquiry.setName(customer.getContactMan());

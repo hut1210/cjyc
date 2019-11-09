@@ -52,7 +52,6 @@ import java.util.*;
  */
 @Service
 @Slf4j
-@Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
 public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILineService {
 
     @Resource
@@ -109,7 +108,7 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
             addLine = encapLine(addLine,dto);
             addLine.setLevel(CityLevelEnum.CITY_LEVEL.getLevel());
             addLine.setCreateTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
-            addLine.setCreateUserId(dto.getUserId());
+            addLine.setCreateUserId(dto.getLoginId());
             lineDao.insert(addLine);
         }else if(dto.getFlag() == FlagEnum.UPDTATE.code){
             //更新
@@ -117,11 +116,11 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
             if(line != null){
                 line = encapLine(line,dto);
                 line.setUpdateTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
-                line.setUpdateUserId(dto.getUserId());
+                line.setUpdateUserId(dto.getLoginId());
                 lineDao.updateById(line);
             }
         }
-      return BaseResultUtil.success("新增/更新成功");
+      return BaseResultUtil.success();
  }
 
     @Override
