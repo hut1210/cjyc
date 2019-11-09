@@ -44,7 +44,7 @@ public class RegionController {
         try {
             resultVo = regionService.addRegion(dto);
         } catch (Exception e) {
-            log.error("新增大区异常:{}",e);
+            log.error("新增大区异常",e);
             resultVo = BaseResultUtil.fail("新增大区失败");
         }
         return resultVo;
@@ -57,7 +57,7 @@ public class RegionController {
         try {
             resultVo = regionService.modifyRegion(dto);
         } catch (Exception e) {
-            log.error("修改大区异常:{}",e);
+            log.error("修改大区异常",e);
             resultVo = BaseResultUtil.fail("修改大区失败");
         }
         return resultVo;
