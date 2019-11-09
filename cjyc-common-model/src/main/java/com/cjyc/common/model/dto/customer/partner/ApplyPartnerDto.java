@@ -11,9 +11,9 @@ public class ApplyPartnerDto implements Serializable {
 
     private static final long serialVersionUID = 8991222858674030585L;
 
-    @ApiModelProperty("用户id")
-    @NotNull(message = "用户id不能为空")
-    private Long id;
+    @ApiModelProperty("用户id(loginId)")
+    @NotNull(message = "用户id(loginId)不能为空")
+    private Long loginId;
 
     @ApiModelProperty("用户userId")
     @NotNull(message = "用户userId不能为空")

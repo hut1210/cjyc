@@ -40,6 +40,7 @@ public class ApplyPartnerServiceImpl extends ServiceImpl<ICustomerDao, Customer>
         Long now = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
         Customer customer = new Customer();
         BeanUtils.copyProperties(dto,customer);
+        customer.setId(dto.getLoginId());
         customer.setAlias(dto.getName());
         customer.setType(CustomerTypeEnum.COOPERATOR.code);
         customer.setSource(CustomerSourceEnum.UPGRADE.code);
