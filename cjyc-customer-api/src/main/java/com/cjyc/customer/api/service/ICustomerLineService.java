@@ -1,5 +1,6 @@
 package com.cjyc.customer.api.service;
 
+import com.cjyc.common.model.dto.CommonDto;
 import com.cjyc.common.model.dto.customer.invoice.InvoiceApplyQueryDto;
 import com.cjyc.common.model.entity.CustomerLine;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -20,6 +21,6 @@ public interface ICustomerLineService extends IService<CustomerLine> {
      * @param dto
      * @return
      */
-    ResultVo queryLinePage(InvoiceApplyQueryDto dto);
+    ResultVo queryLinePage(CommonDto dto);
 
 }

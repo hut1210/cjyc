@@ -1,5 +1,6 @@
 package com.cjyc.customer.api.controller;
 
+import com.cjyc.common.model.dto.CommonDto;
 import com.cjyc.common.model.dto.customer.invoice.InvoiceApplyQueryDto;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.customer.api.service.ICustomerLineService;
@@ -25,7 +26,7 @@ public class CustomerLineController {
 
     @ApiOperation(value = "查看用户历史线路")
     @PostMapping(value = "/queryLinePage")
-    public ResultVo queryLinePage(@RequestBody InvoiceApplyQueryDto dto){
+    public ResultVo queryLinePage(@RequestBody CommonDto dto){
         return customerLineService.queryLinePage(dto);
     }
 }

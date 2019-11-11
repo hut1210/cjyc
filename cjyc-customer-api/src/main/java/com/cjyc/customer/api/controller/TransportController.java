@@ -1,5 +1,6 @@
 package com.cjyc.customer.api.controller;
 
+import com.cjyc.common.model.dto.customer.freightBill.LineDto;
 import com.cjyc.common.model.dto.customer.freightBill.TransportDto;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.customer.api.service.ITransportService;
@@ -22,16 +23,15 @@ public class TransportController {
     private ITransportService transportService;
 
     @ApiOperation(value = "查看班线是否存在")
-    @PostMapping(value = "/getLine/{fromCode}/{toCode}")
-    public ResultVo getLine(@PathVariable @ApiParam(value = "起始城市code",required = true) String fromCode,
-                            @PathVariable @ApiParam(value = "目的城市code",required = true) String toCode){
-        return transportService.getLine(fromCode,toCode);
+    @PostMapping(value = "/existLine")
+    public ResultVo existLine(@RequestBody LineDto dto){
+        return transportService.existLine(dto);
     }
 
     @ApiOperation(value = "查看运价查询")
-    @PostMapping(value = "/getLinePriceByCode")
-    public ResultVo getLinePriceByCode(@RequestBody TransportDto dto){
-        return transportService.getLinePriceByCode(dto);
+    @PostMapping(value = "/linePriceByCode")
+    public ResultVo linePriceByCode(@RequestBody TransportDto dto){
+        return transportService.linePriceByCode(dto);
     }
 
 }

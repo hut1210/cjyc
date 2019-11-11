@@ -9,6 +9,8 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.CityTreeUtil;
 import com.cjyc.common.model.vo.CityTreeVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.customer.city.CityVo;
+import com.cjyc.common.model.vo.customer.city.HotCityVo;
 import com.cjyc.customer.api.service.ICityService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -27,9 +29,9 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
 
     @Override
     public ResultVo queryCity(KeywordDto dto) {
-        List<Object> cityList = new ArrayList<>(15);
+        CityVo cityvo = new CityVo();
         //获取热门城市
-        List<Map<String,Object>> hotCity = cityDao.getHotCity();
+        List<HotCityVo> hotCity = cityDao.getHotCity();
         List<CityTreeVo> cityTreeVos = null;
         //获取省市code
         if(StringUtils.isNotBlank(dto.getKeyword())){
@@ -51,10 +53,10 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
         }
         if(!CollectionUtils.isEmpty(cityTreeVos)){
             List<CityTreeVo> citys = CityTreeUtil.encapTree(cityTreeVos);
-            cityList.add(hotCity);
-            cityList.add(citys);
+            cityvo.setHotCityVos(hotCity);
+            cityvo.setCityTreeVos(citys);
         }
-        return BaseResultUtil.success(cityList == null ? Collections.EMPTY_LIST:cityList);
+        return BaseResultUtil.success(cityvo);
     }
 
 }

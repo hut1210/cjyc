@@ -1,5 +1,6 @@
 package com.cjyc.customer.api.controller;
 
+import com.cjyc.common.model.dto.CommonDto;
 import com.cjyc.common.model.dto.customer.invoice.InvoiceApplyQueryDto;
 import com.cjyc.common.model.util.BasePageUtil;
 import com.cjyc.common.model.vo.PageVo;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
  *  @Date: 2019/10/17 9:09
  *  @Description:用户端优惠券
  */
-@Api(tags = "优惠券")
+@Api(tags = "客户优惠券")
 @CrossOrigin
 @RestController
 @RequestMapping("/coupon")
@@ -27,7 +28,7 @@ public class CustomerCouponController {
 
     @ApiOperation(value = "客户优惠券")
     @PostMapping(value = "/customerCoupon")
-    public ResultVo<PageVo<CustomerCouponVo>> customerCoupon(@RequestBody InvoiceApplyQueryDto dto){
+    public ResultVo<PageVo<CustomerCouponVo>> customerCoupon(@RequestBody CommonDto dto){
         BasePageUtil.initPage(dto);
         return couponSendService.customerCoupon(dto);
     }

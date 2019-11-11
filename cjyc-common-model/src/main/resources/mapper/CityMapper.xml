@@ -111,7 +111,7 @@
     </select>
 
     <!--获取热门城市 -->
-    <select id="getHotCity" resultType="java.util.HashMap">
+    <select id="getHotCity" resultType="com.cjyc.common.model.vo.customer.city.HotCityVo">
         select
           code as code,
           name as name

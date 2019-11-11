@@ -1,6 +1,7 @@
 package com.cjyc.customer.api.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.cjyc.common.model.dto.CommonDto;
 import com.cjyc.common.model.dto.customer.invoice.InvoiceApplyQueryDto;
 import com.cjyc.common.model.entity.CouponSend;
 import com.cjyc.common.model.vo.ResultVo;
@@ -14,5 +15,5 @@ public interface ICustomerCouponService extends IService<CouponSend> {
      * @param dto
      * @return
      */
-    ResultVo customerCoupon(InvoiceApplyQueryDto dto);
+    ResultVo customerCoupon(CommonDto dto);
 }

@@ -15,10 +15,6 @@ public class ApplyPartnerDto implements Serializable {
     @NotNull(message = "用户id(loginId)不能为空")
     private Long loginId;
 
-    @ApiModelProperty("用户userId")
-    @NotNull(message = "用户userId不能为空")
-    private Long userId;
-
     @ApiModelProperty("合伙人名称")
     @NotBlank(message = "合伙人名称不能为空")
     private String name;
@@ -26,10 +22,6 @@ public class ApplyPartnerDto implements Serializable {
     @ApiModelProperty("联系人")
     @NotBlank(message = "联系人不能为空")
     private String contactMan;
-
-    @ApiModelProperty("联系人手机号")
-    @NotBlank(message = "联系人手机号不能为空")
-    private String contactPhone;
 
     @ApiModelProperty("统一社会信用代码")
     private String socialCreditCode;

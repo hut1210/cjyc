@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.dao.ICouponSendDao;
 import com.cjyc.common.model.dao.ICustomerDao;
+import com.cjyc.common.model.dto.CommonDto;
 import com.cjyc.common.model.dto.customer.invoice.InvoiceApplyQueryDto;
 import com.cjyc.common.model.entity.CouponSend;
 import com.cjyc.common.model.entity.Customer;
@@ -41,10 +42,10 @@ public class CustomerCouponServiceImpl extends ServiceImpl<ICouponSendDao, Coupo
     private ICustomerDao customerDao;
 
     @Override
-    public ResultVo customerCoupon(InvoiceApplyQueryDto dto) {
+    public ResultVo customerCoupon(CommonDto dto) {
         PageInfo<CustomerCouponVo> pageInfo = null;
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        Customer customer = customerDao.findByUserId(dto.getUserId());
+        Customer customer = customerDao.selectById(dto.getLoginId());
         if(customer != null){
             List<CustomerCouponVo> sendVos = couponSendDao.getCustomerCouponById(customer.getId());
             Long now = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());

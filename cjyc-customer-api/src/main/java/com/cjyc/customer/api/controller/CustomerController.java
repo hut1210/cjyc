@@ -27,8 +27,6 @@ public class CustomerController {
     @Resource
     private ICustomerService customerService;
 
-
-
     /**
      * 模糊查询用户
      * @author JPG

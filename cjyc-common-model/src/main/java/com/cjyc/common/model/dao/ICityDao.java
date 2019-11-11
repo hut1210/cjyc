@@ -6,6 +6,7 @@ import com.cjyc.common.model.dto.web.city.StoreAreaQueryDto;
 import com.cjyc.common.model.entity.City;
 import com.cjyc.common.model.entity.defined.FullCity;
 import com.cjyc.common.model.vo.CityTreeVo;
+import com.cjyc.common.model.vo.customer.city.HotCityVo;
 import com.cjyc.common.model.vo.web.city.ProvinceCityVo;
 import com.cjyc.common.model.vo.web.city.TreeCityVo;
 import org.apache.ibatis.annotations.Param;
@@ -81,7 +82,7 @@ public interface ICityDao extends BaseMapper<City> {
      * 获取热门城市
      * @return
      */
-    List<Map<String,Object>> getHotCity();
+    List<HotCityVo> getHotCity();
 
     /**
      * 查询多级城市实体

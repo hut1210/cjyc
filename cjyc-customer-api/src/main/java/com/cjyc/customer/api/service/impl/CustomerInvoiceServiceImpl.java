@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
  * @Date 2019/11/2 10:24
  **/
 @Service
-public class ICustomerInvoiceServiceImpl extends SuperServiceImpl<ICustomerInvoiceDao, CustomerInvoice> implements ICustomerInvoiceService {
+public class CustomerInvoiceServiceImpl extends SuperServiceImpl<ICustomerInvoiceDao, CustomerInvoice> implements ICustomerInvoiceService {
 
     @Override
     public String addAndReturnId(CustomerInvoice invoice) {

@@ -35,12 +35,14 @@ public class ApplyPartnerServiceImpl extends ServiceImpl<ICustomerDao, Customer>
     @Resource
     private IBankCardBindDao bankCardBindDao;
 
+    private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
+
     @Override
     public ResultVo applyPartner(ApplyPartnerDto dto) {
-        Long now = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
         Customer customer = new Customer();
         BeanUtils.copyProperties(dto,customer);
         customer.setId(dto.getLoginId());
+        customer.setName(dto.getName());
         customer.setAlias(dto.getName());
         customer.setType(CustomerTypeEnum.COOPERATOR.code);
         customer.setSource(CustomerSourceEnum.UPGRADE.code);
@@ -54,9 +56,10 @@ public class ApplyPartnerServiceImpl extends ServiceImpl<ICustomerDao, Customer>
         //创建合伙人银行信息
         BankCardBind bcb = new BankCardBind();
         BeanUtils.copyProperties(dto,bcb);
+        bcb.setUserId(dto.getLoginId());
         bcb.setUserType(UserTypeEnum.CUSTOMER.code);
         bcb.setState(UseStateEnum.USABLE.code);
-        bcb.setCreateTime(now);
+        bcb.setCreateTime(NOW);
         bankCardBindDao.insert(bcb);
         return BaseResultUtil.success();
     }

@@ -3,6 +3,7 @@ package com.cjyc.customer.api.service.impl;
 import com.cjyc.common.model.dao.ICustomerDao;
 import com.cjyc.common.model.dao.IInquiryDao;
 import com.cjyc.common.model.dao.ILineDao;
+import com.cjyc.common.model.dto.customer.freightBill.LineDto;
 import com.cjyc.common.model.dto.customer.freightBill.TransportDto;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.entity.Inquiry;
@@ -41,13 +42,13 @@ public class TransportServiceImpl implements ITransportService {
     private IInquiryDao inquiryDao;
 
     @Override
-    public ResultVo getLine(String fromCode, String toCode) {
-        Line line = lineDao.getLinePriceByCode(fromCode, toCode);
+    public ResultVo existLine(LineDto dto) {
+        Line line = lineDao.getLinePriceByCode(dto.getFromCode(),dto.getToCode());
         return BaseResultUtil.success(line == null ? "该线路不存在":"存在");
     }
 
     @Override
-    public ResultVo getLinePriceByCode(TransportDto dto) {
+    public ResultVo linePriceByCode(TransportDto dto) {
         Line line = lineDao.getLinePriceByCode(dto.getFromCode(), dto.getToCode());
         if (line.getDefaultWlFee() != null) {
             //添加用户询价记录

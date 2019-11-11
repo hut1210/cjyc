@@ -7,6 +7,7 @@ import com.cjyc.common.model.entity.CarSeries;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.CarSeries.CarSeriesVo;
+import com.cjyc.common.model.vo.customer.CarSeries.CarVo;
 import com.cjyc.common.model.vo.customer.CarSeries.ModelVo;
 import com.cjyc.customer.api.service.ICarSeriesService;
 import lombok.extern.slf4j.Slf4j;
@@ -18,13 +19,14 @@ import java.util.*;
 
 @Service
 @Slf4j
-public class ICarSeriesServiceImpl extends ServiceImpl<ICarSeriesDao, CarSeries> implements ICarSeriesService {
+public class CarSeriesServiceImpl extends ServiceImpl<ICarSeriesDao, CarSeries> implements ICarSeriesService {
 
     @Resource
     private ICarSeriesDao carSeriesDao;
 
     @Override
     public ResultVo queryCarSeries(KeywordDto dto) {
+        CarVo carVo = new CarVo();
         List<CarSeries> carSeries =  carSeriesDao.getCarSeries(dto.getKeyword());
         List<CarSeriesVo> carSeriesList = new ArrayList<>();
         CarSeriesVo carSeriesVo = null;
@@ -51,8 +53,9 @@ public class ICarSeriesServiceImpl extends ServiceImpl<ICarSeriesDao, CarSeries>
                    carSeriesVo.setModelVos(modelVos);
                    carSeriesList.add(carSeriesVo);
                }
+               carVo.setCarSeriesVos(carSeriesList);
            }
        }
-        return BaseResultUtil.success(carSeriesList == null ? Collections.EMPTY_LIST:carSeriesList);
+        return BaseResultUtil.success(carVo);
     }
 }
