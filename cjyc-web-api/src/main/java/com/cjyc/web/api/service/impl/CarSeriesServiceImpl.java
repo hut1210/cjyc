@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.utils.ExcelUtil;
 import com.cjyc.common.model.dao.ICarSeriesDao;
-import com.cjyc.common.model.dao.ICarrierDao;
 import com.cjyc.common.model.dto.web.carSeries.CarSeriesAddDto;
 import com.cjyc.common.model.dto.web.carSeries.CarSeriesImportExcel;
 import com.cjyc.common.model.dto.web.carSeries.CarSeriesQueryDto;
@@ -21,7 +20,6 @@ import com.cjyc.common.model.vo.web.carSeries.CarSeriesTree;
 import com.cjyc.web.api.service.ICarSeriesService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.sun.org.apache.regexp.internal.RE;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -159,11 +157,6 @@ public class CarSeriesServiceImpl extends ServiceImpl<ICarSeriesDao,CarSeries> i
                     ->new TreeSet<>(Comparator.comparing(CarSeries::getBrand))), ArrayList::new));
         }
         return BaseResultUtil.success(list);
-    }
-
-    @Override
-    public ResultVo<List<CarSeriesTree>> tree() {
-        return BaseResultUtil.success(carSeriesDao.findTree());
     }
 
     private CarSeriesQueryDto getCarSeriesQueryDto(HttpServletRequest request) {

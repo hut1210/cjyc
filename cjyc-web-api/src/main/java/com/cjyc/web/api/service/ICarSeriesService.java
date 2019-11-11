@@ -61,6 +61,4 @@ public interface ICarSeriesService extends IService<CarSeries> {
      */
     ResultVo<List<CarSeries>> queryAll();
 
-    ResultVo<List<CarSeriesTree>> tree();
-
 }
