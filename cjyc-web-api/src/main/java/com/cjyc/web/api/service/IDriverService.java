@@ -55,7 +55,7 @@ public interface IDriverService {
      * @param dto
      * @return
      */
-    boolean modifyDriver(DriverDto dto);
+    ResultVo modifyDriver(DriverDto dto);
 
     Driver getByUserId(Long userId);
 

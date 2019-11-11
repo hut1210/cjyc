@@ -66,9 +66,15 @@ public class MimeCarrierController {
     }
 
     @ApiOperation(value = "修改车辆与司机绑定信息")
-    @PostMapping(value = "/modifyVehicleDriver")
-    public ResultVo modifyVehicleDriver(ModifyMyCarDto dto){
-        return mimeCarrierService.modifyVehicleDriver(dto);
+    @PostMapping(value = "/modifyVehicle")
+    public ResultVo modifyVehicle(ModifyMyCarDto dto){
+        return mimeCarrierService.modifyVehicle(dto);
+    }
+
+    @ApiOperation(value = "修改司机绑定信息")
+    @PostMapping(value = "/modifyDriver")
+    public ResultVo modifyDriver(ModifyMyDriverDto dto){
+        return mimeCarrierService.modifyDriver(dto);
     }
 
 }

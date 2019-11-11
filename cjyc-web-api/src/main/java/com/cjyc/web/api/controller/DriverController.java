@@ -74,11 +74,10 @@ public class DriverController {
         return driverService.showDriver(driverId);
     }
 
-    @ApiOperation(value = "根据司机Id更新司机信息")
+    @ApiOperation(value = "更新司机信息")
     @PostMapping(value = "/modifyDriver")
     public ResultVo modifyDriver(@Validated({ DriverDto.UpdateDriverDto.class }) @RequestBody DriverDto dto){
-        boolean result = driverService.modifyDriver(dto);
-        return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
+        return driverService.modifyDriver(dto);
     }
 
     @ApiOperation(value = "冻结/解除司机冻结状态")

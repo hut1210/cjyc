@@ -17,6 +17,7 @@ import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.FlagEnum;
 import com.cjyc.common.model.enums.saleman.SalemanStateEnum;
+import com.cjyc.common.model.enums.task.TaskStateEnum;
 import com.cjyc.common.model.enums.transport.*;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
@@ -77,6 +78,9 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
     private ICarrierCarCountDao carrierCarCountDao;
 
     @Resource
+    private ITaskDao taskDao;
+
+    @Resource
     private ICarrierCityConService carrierCityConService;
 
     @Autowired
@@ -101,9 +105,9 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
     public ResultVo saveDriver(DriverDto dto) {
         //判断散户司机是否已存在
         Driver dri = driverDao.selectOne(new QueryWrapper<Driver>().lambda().eq(Driver::getPhone,dto.getPhone())
-                                            .or().eq(Driver::getIdCard,dto.getIdCard()));
+                .or().eq(Driver::getIdCard,dto.getIdCard()));
         if(dri != null){
-            return BaseResultUtil.fail("该司机已存在");
+            return BaseResultUtil.fail("该司机已存在,请检查");
         }
         //保存散户司机
         Driver driver = new Driver();
@@ -223,9 +227,23 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
     }
 
     @Override
-    public boolean modifyDriver(DriverDto dto) {
+    public ResultVo modifyDriver(DriverDto dto) {
+        //判断散户司机是否已存在
+        Driver dri = driverDao.selectOne(new QueryWrapper<Driver>().lambda().eq(Driver::getPhone,dto.getPhone())
+                .or().eq(Driver::getIdCard,dto.getIdCard()));
+        if(dri != null && !dri.getId().equals(dto.getDriverId())){
+            return BaseResultUtil.fail("该司机已存在,请检查");
+        }
+        //获取运力信息
+        VehicleRunning vRun = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda().eq(VehicleRunning::getDriverId,dto.getDriverId()));
+        if(vRun != null){
+            Task task = taskDao.selectOne(new QueryWrapper<Task>().lambda().eq(Task::getVehicleRunningId,vRun.getId()));
+            if(task != null && task.getState() == TaskStateEnum.TRANSPORTING.code){
+                return BaseResultUtil.fail("该运力正在运输中，不可修改");
+            }
+        }
         //更新司机信息
-        Driver driver = driverDao.selectById(dto.getDriverId());
+       Driver driver = driverDao.selectById(dto.getDriverId());
         //修改司机信息
        ResultData rd = updateUserToPlatform(driver);
         if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
@@ -237,7 +255,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
 
         //车牌号不为空 & 之前司机绑定不为空 & 车牌号与之前不同
         DriverVehicleCon dvc = driverVehicleConDao.getDriVehConByDriId(dto.getDriverId());
-        if(StringUtils.isNotBlank(dto.getPlateNo()) && dvc != null && !dvc.getVehicleId().equals(dto.getVehicleId())){
+        if(StringUtils.isNotBlank(dto.getPlateNo()) && dvc != null){
             //更新绑定车辆信息
             dvc.setVehicleId(dto.getVehicleId());
             driverVehicleConDao.updateById(dvc);
@@ -246,7 +264,6 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
             if(vr != null){
                 vr.setVehicleId(dto.getVehicleId());
                 vr.setPlateNo(dto.getPlateNo());
-                vr.setCarryCarNum(dto.getDefaultCarryNum());
                 vehicleRunningDao.updateById(vr);
             }
         }else if(StringUtils.isBlank(dto.getPlateNo()) && dvc != null){
@@ -270,7 +287,8 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         //更新承运商业务范围
         //承运商业务范围,先批量删除，再添加
         carrierCityConService.batchDelete(carrier.getId());
-        return carrierCityConService.batchSave(carrier.getId(),dto.getCodes());
+        carrierCityConService.batchSave(carrier.getId(),dto.getCodes());
+        return BaseResultUtil.success();
     }
 
     @Override

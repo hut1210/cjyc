@@ -8,6 +8,7 @@ import com.cjyc.common.model.dto.web.mimeCarrier.*;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.FlagEnum;
+import com.cjyc.common.model.enums.task.TaskStateEnum;
 import com.cjyc.common.model.enums.transport.*;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
@@ -51,6 +52,9 @@ public class MimeCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
     @Resource
     private IVehicleDao vehicleDao;
 
+    @Resource
+    private ITaskDao taskDao;
+
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
     @Override
@@ -59,7 +63,7 @@ public class MimeCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
                                             .eq(Driver::getPhone,dto.getPhone()).or()
                                             .eq(Driver::getIdCard,dto.getIdCard()));
         if(dri != null){
-            return BaseResultUtil.fail("该账号已添加,请重新输入");
+            return BaseResultUtil.fail("该司机已添加,请检查");
         }
         //保存司机
         Driver driver = new Driver();
@@ -243,7 +247,7 @@ public class MimeCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
     }
 
     @Override
-    public ResultVo modifyVehicleDriver(ModifyMyCarDto dto) {
+    public ResultVo modifyVehicle(ModifyMyCarDto dto) {
         DriverVehicleCon dvc = driverVehicleConDao.selectOne(new QueryWrapper<DriverVehicleCon>().lambda().eq(DriverVehicleCon::getVehicleId,dto.getVehicleId()));
         if((dvc != null && dto.getDriverId().equals(dvc.getDriverId()))
             || (dvc == null && dto.getDriverId() == null)){
@@ -271,6 +275,46 @@ public class MimeCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
                 vr.setState(VehicleStateEnum.EFFECTIVE.code);
                 vr.setRunningState(BusinessStateEnum.OUTAGE.code);
                 vr.setCreateTime(NOW);
+            }
+        }
+        return BaseResultUtil.success();
+    }
+
+    @Override
+    public ResultVo modifyDriver(ModifyMyDriverDto dto) {
+        //判断司机是否已存在
+        Driver dri = driverDao.selectOne(new QueryWrapper<Driver>().lambda().eq(Driver::getPhone,dto.getPhone())
+                .or().eq(Driver::getIdCard,dto.getIdCard()));
+        if(dri != null && !dri.getId().equals(dto.getDriverId())){
+            return BaseResultUtil.fail("该司机已存在,请检查");
+        }
+        VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda().eq(VehicleRunning::getDriverId,dto.getDriverId()));
+        if(vr != null){
+            Task task = taskDao.selectOne(new QueryWrapper<Task>().lambda().eq(Task::getVehicleRunningId,vr.getId()));
+            if(task != null && task.getState() == TaskStateEnum.TRANSPORTING.code){
+                return BaseResultUtil.fail("该运力正在运输中，不可修改");
+            }
+            DriverVehicleCon dvc = driverVehicleConDao.selectOne(new QueryWrapper<DriverVehicleCon>().lambda().eq(DriverVehicleCon::getDriverId,dto.getDriverId()));
+            //更新司机信息
+            dri.setName(dto.getRealName());
+            dri.setRealName(dto.getRealName());
+            dri.setPhone(dto.getPhone());
+            dri.setIdCard(dto.getIdCard());
+            dri.setMode(dto.getMode());
+            dri.setIdCardFrontImg(dto.getIdCardFrontImg());
+            dri.setIdCardBackImg(dto.getIdCardBackImg());
+            driverDao.updateById(dri);
+            if(StringUtils.isNotBlank(dto.getPlateNo())){
+                //更新司机与车辆绑定关系
+                dvc.setVehicleId(dvc.getVehicleId());
+                driverVehicleConDao.updateById(dvc);
+                //更新运力信息
+                vr.setVehicleId(dto.getVehicleId());
+                vehicleRunningDao.updateById(vr);
+            }else if(StringUtils.isBlank(dto.getPlateNo())){
+                //为空删除绑定关系
+                driverVehicleConDao.removeCon(dto.getDriverId());
+                vehicleRunningDao.removeRun(dto.getDriverId());
             }
         }
         return BaseResultUtil.success();

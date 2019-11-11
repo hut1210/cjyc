@@ -52,9 +52,16 @@ public interface IMimeCarrierService extends IService<Carrier> {
     ResultVo findFreeDriver(Long carrierId,String realName);
 
     /**
-     * 修改该承运商下的车辆与司机绑定那个关系
+     * 修改该承运商下的车辆与司机绑定关系
      * @param dto
      * @return
      */
-    ResultVo modifyVehicleDriver(ModifyMyCarDto dto);
+    ResultVo modifyVehicle(ModifyMyCarDto dto);
+
+    /**
+     * 修改承运商下的司机与车辆绑定关系
+     * @param dto
+     * @return
+     */
+    ResultVo modifyDriver(ModifyMyDriverDto dto);
 }
