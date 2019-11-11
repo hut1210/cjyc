@@ -76,7 +76,7 @@ public class RegionServiceImpl implements IRegionService {
         return BaseResultUtil.success(new PageInfo(list));
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public ResultVo addRegion(RegionAddDto dto) throws Exception {
         // 查询所有大区编码
@@ -105,10 +105,10 @@ public class RegionServiceImpl implements IRegionService {
         // 更新省份的上级大区
         List<RegionCityDto> provinceList = dto.getProvinceList();
         if (!CollectionUtils.isEmpty(provinceList)) {
-            LambdaUpdateWrapper<City> updateWrapper = new UpdateWrapper<City>().lambda()
-                    .set(City::getParentCode,regionCode).set(City::getParentName,dto.getRegionName());
             for (RegionCityDto province : provinceList) {
-                updateWrapper = updateWrapper.eq(City::getCode,province.getCode()).eq(City::getLevel,FieldConstant.PROVINCE_LEVEL);
+                LambdaUpdateWrapper<City> updateWrapper = new UpdateWrapper<City>().lambda()
+                        .set(City::getParentCode,regionCode).set(City::getParentName,dto.getRegionName())
+                        .eq(City::getCode,province.getCode()).eq(City::getLevel,FieldConstant.PROVINCE_LEVEL);
                 boolean res = cityService.update(updateWrapper);
                 if (!res) {
                     throw new Exception("更新省份大区编码异常");
@@ -165,7 +165,7 @@ public class RegionServiceImpl implements IRegionService {
         }
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public ResultVo modifyRegion(RegionUpdateDto dto) throws Exception {
         // 查询当前大区已覆盖省
@@ -190,11 +190,13 @@ public class RegionServiceImpl implements IRegionService {
                 throw new Exception("调用物流平台-查询大区信息异常");
             }
 
-            LambdaUpdateWrapper<City> updateProvince = new UpdateWrapper<City>().lambda()
-                    .set(City::getParentCode,dto.getRegionCode()).set(City::getParentName,dto.getRegionName());
             for (RegionCityDto province : provinceList) {
                 // 更新大区覆盖省
-                updateProvince = updateProvince.eq(City::getCode,province.getCode()).eq(City::getLevel, FieldConstant.PROVINCE_LEVEL);
+                LambdaUpdateWrapper<City> updateProvince = new UpdateWrapper<City>().lambda()
+                        .set(City::getParentCode,dto.getRegionCode())
+                        .set(City::getParentName,dto.getRegionName())
+                        .eq(City::getCode,province.getCode())
+                        .eq(City::getLevel, FieldConstant.PROVINCE_LEVEL);
                 boolean updateRes = cityService.update(updateProvince);
                 if (!updateRes) {
                     throw new Exception("更新大区覆盖省失败");
@@ -248,11 +250,13 @@ public class RegionServiceImpl implements IRegionService {
 
     private void updateOldProvinceList(List<City> oldCityList) throws Exception {
         if (!CollectionUtils.isEmpty(oldCityList)) {
-            LambdaUpdateWrapper<City> updateWrapper = new UpdateWrapper<City>().lambda()
-                    .set(City::getParentCode, FieldConstant.NOT_REGION_CODE).set(City::getParentName,FieldConstant.NOT_REGION_NAME);
             for (City oldCity : oldCityList) {
                 // 更新省份上一级编码为未覆盖大区编码
-                updateWrapper = updateWrapper.eq(City::getCode,oldCity.getCode()).eq(City::getLevel,FieldConstant.PROVINCE_LEVEL);
+                LambdaUpdateWrapper<City> updateWrapper = new UpdateWrapper<City>().lambda()
+                        .set(City::getParentCode, FieldConstant.NOT_REGION_CODE)
+                        .set(City::getParentName,FieldConstant.NOT_REGION_NAME)
+                        .eq(City::getCode,oldCity.getCode())
+                        .eq(City::getLevel,FieldConstant.PROVINCE_LEVEL);
                 boolean result = cityService.update(updateWrapper);
                 if (!result) {
                     throw new Exception("更新大区覆盖省失败");
