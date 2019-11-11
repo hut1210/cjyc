@@ -95,9 +95,4 @@ public class CarSeriesController {
         carSeriesService.exportExcel(request,response);
     }
 
-    @ApiOperation(value = "tree")
-    @GetMapping("/tree")
-    public ResultVo<List<CarSeriesTree>> tree(){
-       return BaseResultUtil.success(csCarSeriesService.tree(true));
-    }
 }
