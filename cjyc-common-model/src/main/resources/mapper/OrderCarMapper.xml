@@ -131,7 +131,7 @@
     </select>
     <!--按地级城市统计待调度车辆数量-->
     <select id="countListWaitDispatchCar" resultType="java.util.Map">
-        select count(0) as car_num, o.start_city_code as cityCode, o.start_city as cityName from w_order o
+        select count(0) as car_num, IFNULL(o.start_city_code,'-1') as cityCode, IFNULL(o.start_city, '无城市') as cityName from w_order o
         join w_order_car c on o.id = c.order_id
         where o.state BETWEEN 25 and 100
         and c.state &lt; 5 or c.state = 25 or c.state = 45
@@ -202,35 +202,28 @@
     <!--查询待调度车辆列表-->
     <select id="findWaitDispatchCarList" resultType="com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo">
         select
-/*        o.source as source,
+        o.source as source,
         o.start_store_id as startStoreId,
         o.start_store_name as startStoreName,
         o.end_store_id as endStoreId,
         o.end_store_name as endStoreName,
-        o.state as state,
         o.start_city as startCity,
         o.end_city as endCity,
         o.create_time as createTime,
         o.create_user_name as createUserName,
         o.create_user_id as createUserId,
-        o.create_time as createTime,
-        o.create_user_name as createUserName,
-        o.create_user_id as createUserId,
         o.check_time as checkTime,
         o.check_user_name as checkUserName,
-        o.check_user_id as checkUserId,*/
-        concat(s1.province, s1.city, s1.area, s1.detail_addr) as start_store_full_address,
-        concat(s2.province, s2.city, s2.area, s2.detail_addr) as end_store_full_address,
-        ct1.parent_name as now_city_name,
-        o.*,
+        o.check_user_id as checkUserId,
+        concat(s1.province, s1.city, s1.area, s1.detail_addr) as startStoreFullAddress,
+        concat(s2.province, s2.city, s2.area, s2.detail_addr) as endStoreFullAddress,
+        ct1.parent_name as nowCityName,
         oc.*
         from w_order o
         join w_order_car oc on oc.order_id = o.id
         LEFT JOIN s_store s1 on s1.id = o.start_store_id
         LEFT JOIN s_store s2 on s2.id = o.end_store_id
         LEFT JOIN s_city ct1 on oc.now_area_code = ct1.code
-        from w_order o
-        join w_order_car oc on oc.order_id = o.id
 
         <where>
             <choose>

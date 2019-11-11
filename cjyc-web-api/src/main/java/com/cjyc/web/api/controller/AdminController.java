@@ -58,7 +58,7 @@ public class AdminController {
      */
     @ApiOperation(value = "查询业务中心业务员")
     @PostMapping(value = "/list/{storeId}")
-    public ResultVo listByStore(@PathVariable Long storeId) {
+    public ResultVo<List<Admin>> listByStore(@PathVariable Long storeId) {
 
         List<Admin> list = csAdminService.getListByStoreId(storeId);
         //发送推送信息

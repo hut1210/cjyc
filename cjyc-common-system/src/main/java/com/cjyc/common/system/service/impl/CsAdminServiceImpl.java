@@ -4,18 +4,25 @@ import com.cjkj.common.model.ResultData;
 import com.cjkj.common.redis.template.StringRedisUtil;
 import com.cjkj.usercenter.dto.common.SelectDeptResp;
 import com.cjkj.usercenter.dto.common.SelectRoleResp;
+import com.cjkj.usercenter.dto.yc.SelectUsersByRoleResp;
 import com.cjyc.common.model.dao.IAdminDao;
 import com.cjyc.common.model.entity.Admin;
+import com.cjyc.common.model.entity.Store;
 import com.cjyc.common.model.vo.web.admin.CacheAdminVo;
 import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.service.ICsAdminService;
+import com.cjyc.common.system.service.ICsStoreService;
 import com.cjyc.common.system.service.sys.ICsSysService;
+import com.cjyc.common.system.util.ResultDataUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * 业务员公用业务
@@ -27,7 +34,11 @@ public class CsAdminServiceImpl implements ICsAdminService {
     @Resource
     private IAdminDao adminDao;
     @Resource
+    private ICsStoreService csStoreService;
+    @Resource
     private ICsSysService csSysService;
+    @Resource
+    private ISysDeptService sysDeptService;
     @Resource
     private StringRedisUtil redisUtil;
 
@@ -51,7 +62,14 @@ public class CsAdminServiceImpl implements ICsAdminService {
      */
     @Override
     public List<Admin> getListByStoreId(Long storeId) {
-        return null;
+        Store store = csStoreService.getById(storeId, true);
+        ResultData<List<SelectUsersByRoleResp>> resultData = sysDeptService.getUsersByDeptId(store.getDeptId());
+        if(ResultDataUtil.isEmpty(resultData)){
+            return null;
+        }
+        Set<Long> userIds = resultData.getData().stream().map(SelectUsersByRoleResp::getUserId).collect(Collectors.toSet());
+        List<Admin> admins = adminDao.findListByUserIds(userIds);
+        return admins;
     }
 
     @Override

@@ -8,6 +8,8 @@ import com.cjyc.common.model.entity.CarSeries;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.carSeries.CarSeriesTree;
+import com.cjyc.common.system.service.ICsCarSeriesService;
 import com.cjyc.web.api.service.ICarSeriesService;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
@@ -32,6 +34,8 @@ import java.util.List;
 public class CarSeriesController {
     @Autowired
     private ICarSeriesService carSeriesService;
+    @Autowired
+    private ICsCarSeriesService csCarSeriesService;
 
     @ApiOperation(value = "新增", notes = "\t 请求接口为json格式")
     @PostMapping("/add")
@@ -89,5 +93,11 @@ public class CarSeriesController {
     @GetMapping("/exportExcel")
     public void exportExcel(HttpServletRequest request, HttpServletResponse response){
         carSeriesService.exportExcel(request,response);
+    }
+
+    @ApiOperation(value = "tree")
+    @GetMapping("/tree")
+    public ResultVo<List<CarSeriesTree>> tree(){
+       return BaseResultUtil.success(csCarSeriesService.tree(true));
     }
 }

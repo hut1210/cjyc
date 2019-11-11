@@ -16,6 +16,7 @@ import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.StringUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.carSeries.CarSeriesExportExcel;
+import com.cjyc.common.model.vo.web.carSeries.CarSeriesTree;
 import com.cjyc.web.api.service.ICarSeriesService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -26,6 +27,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -44,6 +46,9 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class CarSeriesServiceImpl extends ServiceImpl<ICarSeriesDao,CarSeries> implements ICarSeriesService {
+
+    @Resource
+    private ICarSeriesDao carSeriesDao;
 
     @Override
     public boolean add(CarSeriesAddDto carSeriesAddDto) {

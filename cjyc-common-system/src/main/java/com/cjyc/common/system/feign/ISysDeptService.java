@@ -6,6 +6,7 @@ import com.cjkj.common.model.ResultData;
 import com.cjkj.usercenter.dto.common.*;
 import com.cjkj.usercenter.dto.yc.AddDeptAndUserReq;
 import com.cjkj.usercenter.dto.yc.AddDeptAndUserResp;
+import com.cjkj.usercenter.dto.yc.SelectUsersByRoleResp;
 import com.cjkj.usercenter.dto.yc.UpdateDeptManagerReq;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -107,4 +108,12 @@ public interface ISysDeptService {
      */
     @PostMapping("/feign/uc/getSonDeptsByParentIds")
     ResultData<List<SelectDeptResp>> getSonDeptsByParentIds(SelectDeptListByParentIdsReq req);
+
+    /**
+     * 根据机构id查询此机构下所有角色的关联用户列表
+     * @param deptId
+     * @return
+     */
+    @PostMapping("/feign/yc/getUsersByDeptId/{deptId}")
+    ResultData<List<SelectUsersByRoleResp>> getUsersByDeptId(@PathVariable(value = "deptId") Long deptId);
 }

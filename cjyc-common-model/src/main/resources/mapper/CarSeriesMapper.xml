@@ -18,6 +18,18 @@
         <result column="update_user_id" property="updateUserId" />
     </resultMap>
 
+    <!-- 通用查询映射结果 -->
+    <resultMap id="TreeResultMap" type="com.cjyc.common.model.vo.web.carSeries.CarSeriesTree">
+        <result column="pin_initial" property="pinInitial" />
+        <collection property="list" ofType="com.cjyc.common.model.vo.web.carSeries.CarSeriesBrand" javaType="java.util.List">
+            <result column="brand" property="brand" />
+            <result column="logo_img" property="logoImg" />
+            <collection property="list" ofType="com.cjyc.common.model.vo.web.carSeries.CarSeriesModel" javaType="java.util.List">
+                <result column="model" property="model" />
+            </collection>
+        </collection>
+    </resultMap>
+
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id, car_code, brand, model, type, pin_initial, pin_acronym, logo_img, create_time, create_user_id, update_time, update_user_id
@@ -65,5 +77,8 @@
                 model like concat('%',#{keyword},'%'))
             </if>
         </where>
+    </select>
+    <select id="findTree" resultMap="TreeResultMap">
+        select <include refid="Base_Column_List"/> from s_car_series
     </select>
 </mapper>

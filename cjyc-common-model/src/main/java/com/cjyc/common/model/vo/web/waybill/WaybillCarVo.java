@@ -22,6 +22,11 @@ public class WaybillCarVo extends WaybillCar {
     @ApiModelProperty(value = "vin码")
     private String vin;
 
+    @ApiModelProperty(value = "")
+    private String lineFreightFee;
+
+    @ApiModelProperty(value = "距离")
+    private String km;
 
 
 }

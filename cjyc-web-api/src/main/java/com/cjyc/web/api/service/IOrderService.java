@@ -60,7 +60,7 @@ public interface IOrderService extends IService<Order> {
 
     ResultVo save(SaveOrderDto reqDto);
 
-    ResultVo<List<CarFromToGetVo>> getCarFromTo(CarFromToGetDto reqDto);
+    ResultVo<DispatchAddCarVo> getCarFromTo(CarFromToGetDto reqDto);
 
     List<ListOrderChangeLogVo> getChangeLogVoById(ListOrderChangeLogDto reqDto);
 

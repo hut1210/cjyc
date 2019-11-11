@@ -7,6 +7,7 @@ import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.order.CarFromToGetVo;
+import com.cjyc.common.model.vo.web.order.DispatchAddCarVo;
 import com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo;
 import com.cjyc.web.api.service.IAdminService;
 import com.cjyc.web.api.service.IOrderService;
@@ -74,7 +75,7 @@ public class DispatchController {
      */
     @ApiOperation(value = "根据订单车辆ID查询可调度起始地和目的地")
     @PostMapping(value = "/car/from/to/get")
-    public ResultVo<List<CarFromToGetVo>> getCarFromTo(@RequestBody CarFromToGetDto reqDto) {
+    public ResultVo<DispatchAddCarVo> getCarFromTo(@RequestBody CarFromToGetDto reqDto) {
         return orderService.getCarFromTo(reqDto);
     }
 
