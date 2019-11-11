@@ -1,7 +1,9 @@
 package com.cjyc.common.model.util;
 
-import java.text.SimpleDateFormat;
-import java.time.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
@@ -139,6 +141,18 @@ public class LocalDateTimeUtil {
      */
     public static LocalDateTime getDayStartByLDT(LocalDateTime localDateTime) {
         return localDateTime.withHour(0)
+                .withMinute(0)
+                .withSecond(0)
+                .withNano(0);
+    }
+
+    /**
+     * 获取一天的开始时间，2017,7,22 00:00
+     * @param timeStamp 长整型时间戳
+     * @return
+     */
+    public static LocalDateTime getDayStartByLong(Long timeStamp) {
+        return convertLongToLDT(timeStamp).withHour(0)
                 .withMinute(0)
                 .withSecond(0)
                 .withNano(0);

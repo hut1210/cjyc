@@ -44,7 +44,7 @@ public class CustomerCouponServiceImpl extends ServiceImpl<ICouponSendDao, Coupo
     public ResultVo customerCoupon(InvoiceApplyQueryDto dto) {
         PageInfo<CustomerCouponVo> pageInfo = null;
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        Customer customer = customerDao.getCustomerByUserId(dto.getUserId());
+        Customer customer = customerDao.findByUserId(dto.getUserId());
         if(customer != null){
             List<CustomerCouponVo> sendVos = couponSendDao.getCustomerCouponById(customer.getId());
             Long now = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());

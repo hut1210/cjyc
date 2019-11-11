@@ -78,6 +78,14 @@ public class OrderController {
         return resultVo;
     }
 
+
+    @ApiOperation(value = "导入订单")
+    @PostMapping(value = "/batch/import")
+    @Deprecated
+    public ResultVo batchImport(@Validated @RequestBody BatchImportOrderDto reqDto) {
+        return null;
+    }
+
     /**
      * 完善订单信息
      * @author JPG

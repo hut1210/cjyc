@@ -9,7 +9,7 @@ public enum SendNoTypeEnum {
     WAYBILL("运单编号","Y"),
     TASK("任务编号","R"),
     CUSTOMER("客户编号","C"),
-    COUPON("任务编号","Q");
+    COUPON("优惠券编号","Q");
 
     public String name ;
     public String prefix ;

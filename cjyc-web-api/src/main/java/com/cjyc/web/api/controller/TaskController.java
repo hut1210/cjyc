@@ -1,26 +1,24 @@
 package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.web.task.*;
-import com.cjyc.common.model.dto.web.waybill.TrunkMainListWaybillDto;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.enums.AdminStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.waybill.TrunkMainListWaybillVo;
+import com.cjyc.common.model.vo.web.task.ListByWaybillTaskVo;
+import com.cjyc.common.model.vo.web.task.TaskVo;
 import com.cjyc.web.api.service.IAdminService;
 import com.cjyc.web.api.service.IDriverService;
 import com.cjyc.web.api.service.ITaskService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * 任务
@@ -139,6 +137,26 @@ public class TaskController {
         }
         reqDto.setUserName(admin.getName());
         return taskService.sign(reqDto);
+    }
+
+
+
+    /**
+     * 查询子运单（任务）列表
+     */
+    @ApiOperation(value = "查询子运单（任务）列表")
+    @PostMapping(value = "/list/{waybillId}")
+    public ResultVo<List<ListByWaybillTaskVo>> listByWaybillId(@PathVariable Long waybillId) {
+        return taskService.getlistByWaybillId(waybillId);
+    }
+
+    /**
+     * 查询子运单（任务）列表
+     */
+    @ApiOperation(value = "查询子运单（任务）列表")
+    @PostMapping(value = "/get/{taskId}")
+    public ResultVo<TaskVo> get(@PathVariable Long taskId) {
+        return taskService.get(taskId);
     }
 
 

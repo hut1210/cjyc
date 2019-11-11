@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
-public class TrunkDetailWaybillCarVo extends WaybillCar {
+public class WaybillCarVo extends WaybillCar {
 
     @ApiModelProperty(value = "状态")
     private String outterState;

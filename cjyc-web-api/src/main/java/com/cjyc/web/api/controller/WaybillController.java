@@ -9,7 +9,7 @@ import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.waybill.*;
-import com.cjyc.web.api.service.IAdminService;
+import com.cjyc.common.system.service.ICsAdminService;
 import com.cjyc.web.api.service.IWaybillService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -34,7 +34,7 @@ public class WaybillController {
     @Autowired
     private IWaybillService waybillService;
     @Autowired
-    private IAdminService adminService;
+    private ICsAdminService csAdminService;
 
     /**
      * 提送车调度
@@ -43,27 +43,27 @@ public class WaybillController {
      * @since 2019/10/15 11:53
      */
     @ApiOperation("提送车调度")
-    @PostMapping("/local/dispatch")
-    public ResultVo localDispatch(@RequestBody LocalDispatchListWaybillDto reqDto) {
+    @PostMapping("/local/save")
+    public ResultVo saveLocal(@RequestBody SaveLocalDto reqDto) {
         //验证用户
-        Admin admin = adminService.getByUserId(reqDto.getUserId());
+        Admin admin = csAdminService.getByUserId(reqDto.getUserId(), true);
         if (admin == null || admin.getState() != AdminStateEnum.CHECKED.code) {
             return BaseResultUtil.fail("当前业务员，不在职");
         }
         reqDto.setUserName(admin.getName());
-        return waybillService.localDispatch(reqDto);
+        return waybillService.saveLocal(reqDto);
     }
 
     /**
-     * TODO 干线追加调度
+     * 修改同城调度
      *
      * @author JPG
      * @since 2019/10/15 11:53
      */
-    @ApiOperation("同城修改调度")
-    @PostMapping("/local/dispatch/update")
-    public ResultVo updateLocalDispatch(@RequestBody TrunkDispatchListShellWaybillDto reqDto) {
-        return null;
+    @ApiOperation("修改同城调度")
+    @PostMapping("/local/update")
+    public ResultVo updateLocal(@RequestBody UpdateLocalDto reqDto) {
+        return waybillService.updateLocal(reqDto);
     }
 
 
@@ -74,35 +74,47 @@ public class WaybillController {
      * @since 2019/10/15 11:53
      */
     @ApiOperation("干线调度")
-    @PostMapping("/trunk/dispatch")
-    public ResultVo trunkDispatch(@RequestBody TrunkDispatchListShellWaybillDto reqDto) {
-        return waybillService.trunkDispatch(reqDto);
+    @PostMapping("/trunk/save")
+    public ResultVo saveTrunk(@RequestBody SaveTrunkDto reqDto) {
+        return waybillService.saveTrunk(reqDto);
     }
 
     /**
-     * TODO 干线追加调度
+     * 修改干线运单
      *
      * @author JPG
      * @since 2019/10/15 11:53
      */
-    @ApiOperation("干线修改调度")
-    @PostMapping("/trunk/dispatch/update")
-    public ResultVo updateTrunkDispatch(@RequestBody TrunkDispatchListShellWaybillDto reqDto) {
-        return null;
+    @ApiOperation("修改干线调度")
+    @PostMapping("/trunk/update")
+    public ResultVo updateTrunk(@RequestBody UpdateTrunkDto reqDto) {
+        return waybillService.updateTrunk(reqDto);
+    }
+
+    /**
+     * 中止干线运单并结算
+     *
+     * @author JPG
+     * @since 2019/10/15 11:53
+     */
+    @ApiOperation("中止干线运单并结算")
+    @PostMapping("/trunk/midway/finish")
+    public ResultVo updateTrunkMidwayFinish(@RequestBody updateTrunkMidwayFinishDto reqDto) {
+        return waybillService.updateTrunkMidwayFinish(reqDto);
     }
 
 
 
     /**
-     * 取消运单
+     * 取消调度
      *
      * @author JPG
      * @since 2019/10/15 11:53
      */
-    @ApiOperation("取消运单")
-    @PostMapping("/dispatch/cancel")
-    public ResultVo<ListVo<BaseTipVo>> cancelDispatch(@RequestBody CancelDispatchDto reqDto) {
-        return waybillService.cancelDispatch(reqDto);
+    @ApiOperation("取消调度")
+    @PostMapping("/cancel")
+    public ResultVo<ListVo<BaseTipVo>> cancel(@RequestBody CancelWaybillDto reqDto) {
+        return waybillService.cancel(reqDto);
     }
 
 
@@ -112,7 +124,7 @@ public class WaybillController {
      */
     @ApiOperation(value = "根据订单车辆ID查询历史运单")
     @PostMapping(value = "/car/history/list")
-    public ResultVo<List<HistoryListWaybillVo>> getCarHistoryList(@RequestBody HistoryListWaybillDto reqDto) {
+    public ResultVo<List<HistoryListWaybillVo>> getCarHistoryList(@RequestBody HistoryListDto reqDto) {
         return waybillService.historyList(reqDto);
     }
 
@@ -127,7 +139,7 @@ public class WaybillController {
     }
 
     /**
-     * 查询干线运单列表
+     * 查询干线主运单列表
      */
     @ApiOperation(value = "查询干线主运单列表")
     @PostMapping(value = "/trunk/main/list")
@@ -136,13 +148,14 @@ public class WaybillController {
     }
 
     /**
-     * 查询干线运单列表
+     * 查询干线子运单（任务）列表
      */
     @ApiOperation(value = "查询干线子运单（任务）列表")
     @PostMapping(value = "/trunk/sub/list")
     public ResultVo<PageVo<TrunkSubListWaybillVo>> getTrunkSubList(@RequestBody TrunkSubListWaybillDto reqDto) {
         return waybillService.getTrunkSubList(reqDto);
     }
+
 
 
     /**
@@ -167,12 +180,12 @@ public class WaybillController {
     }
 
     /**
-     * 查询干线运单车辆列表
+     * 查询运单（含车辆）
      */
-    @ApiOperation(value = "查询干线运单车辆列表")
+    @ApiOperation(value = "查询运单车辆列表")
     @PostMapping(value = "/get/{waybillId}")
-    public ResultVo<WaybillVo> getForTrunkDetail(@ApiParam(value = "运单ID") @PathVariable Long waybillId) {
-        return waybillService.getForTrunkDetail(waybillId);
+    public ResultVo<WaybillVo> get(@ApiParam(value = "运单ID") @PathVariable Long waybillId) {
+        return waybillService.get(waybillId);
     }
 
     /**
@@ -180,8 +193,8 @@ public class WaybillController {
      */
     @ApiOperation(value = "分类根据车辆ID查询车辆运单")
     @PostMapping(value = "/car/get/{orderCarId}/{waybillType}")
-    public ResultVo<List<TrunkDetailWaybillCarVo>> getByType(@ApiParam(value = "运单车辆ID") @PathVariable Long orderCarId,
-                                                             @ApiParam(value = "运单类型：1提车运单，2干线运单，3送车运单") @PathVariable Integer waybillType) {
+    public ResultVo<List<WaybillCarVo>> getByType(@ApiParam(value = "运单车辆ID") @PathVariable Long orderCarId,
+                                                  @ApiParam(value = "运单类型：1提车运单，2干线运单，3送车运单") @PathVariable Integer waybillType) {
         return waybillService.getCarByType(orderCarId, waybillType);
     }
 

@@ -20,7 +20,7 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel
-public class LocalDispatchWaybillDto implements Serializable {
+public class SaveLocalWaybillDto implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

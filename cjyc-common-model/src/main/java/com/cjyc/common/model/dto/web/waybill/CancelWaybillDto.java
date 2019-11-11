@@ -12,7 +12,7 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class CancelDispatchDto {
+public class CancelWaybillDto {
 
     @ApiModelProperty(value = "用户ID",required = true)
     private Long userId;

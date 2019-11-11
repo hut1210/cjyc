@@ -18,6 +18,9 @@ import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.OrderCarVo;
+import com.cjyc.common.model.vo.web.task.ListByWaybillTaskVo;
+import com.cjyc.common.model.vo.web.task.TaskVo;
+import com.cjyc.common.model.vo.web.waybill.WaybillCarVo;
 import com.cjyc.web.api.service.ISendNoService;
 import com.cjyc.web.api.service.ITaskService;
 import org.apache.commons.lang3.StringUtils;
@@ -93,7 +96,8 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
             }
 
             Task task = new Task();
-            task.setNo(sendNoService.getNo(SendNoTypeEnum.TASK));
+            //计算任务编号
+            task.setNo("");
             task.setWaybillId(waybill.getId());
             task.setWaybillNo(waybill.getNo());
             task.setCarNum(paramsDto.getWaybillCarIdList().size());
@@ -193,6 +197,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
         } else {
             return BaseResultUtil.fail("未识别的任务类型");
         }
+        // TODO 更新空车位数
         //更新订单状态
         orderDao.updateStateForLoad(OrderStateEnum.TRANSPORTING.code, waybillCar.getOrderCarId());
         //更新订单
@@ -368,6 +373,20 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
     @Override
     public ResultVo sign(SignTaskDto reqDto) {
         return null;
+    }
+
+    @Override
+    public ResultVo<List<ListByWaybillTaskVo>> getlistByWaybillId(Long waybillId) {
+        List<ListByWaybillTaskVo> list = taskDao.findListByWaybillId(waybillId);
+        return BaseResultUtil.success(list);
+    }
+
+    @Override
+    public ResultVo<TaskVo> get(Long taskId) {
+        TaskVo taskVo = taskDao.findVoById(taskId);
+        List<WaybillCarVo> list = waybillCarDao.findVoByTaskId(taskId);
+        taskVo.setList(list);
+        return BaseResultUtil.success(taskVo);
     }
 
 }

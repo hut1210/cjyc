@@ -202,10 +202,7 @@
     <!--查询待调度车辆列表-->
     <select id="findWaitDispatchCarList" resultType="com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo">
         select
-        oc.id as id,
-        oc.order_id as orderId,
-        oc.order_no as orderNo,
-        o.source as source,
+/*        o.source as source,
         o.start_store_id as startStoreId,
         o.start_store_name as startStoreName,
         o.end_store_id as endStoreId,
@@ -213,30 +210,28 @@
         o.state as state,
         o.start_city as startCity,
         o.end_city as endCity,
-        oc.no as carNo,
-        oc.brand as brand,
-        oc.model as model,
-        oc.plate_no as plateNo,
-        oc.vin as vin,
-        oc.is_move as isMove,
-        oc.is_new as isNew,
-        oc.valuation as valuation,
-        oc.now_store_id as nowStoreId,
-        oc.now_area_code as nowAreaCode,
-        oc.description as description,
-        oc.pick_fee as pickFee,
-        oc.trunk_fee as trunkFee,
-        oc.back_fee as backFee,
-        oc.add_insurance_fee as addInsuranceFee,
-        oc.add_insurance_amount as addInsuranceAmount,
-        oc.agency_fee as agencyFee,
-        oc.total_fee as totalFee,
-        oc.wl_pay_state as wlPayState,
         o.create_time as createTime,
         o.create_user_name as createUserName,
-        o.create_user_id as createUserId
+        o.create_user_id as createUserId,
+        o.create_time as createTime,
+        o.create_user_name as createUserName,
+        o.create_user_id as createUserId,
+        o.check_time as checkTime,
+        o.check_user_name as checkUserName,
+        o.check_user_id as checkUserId,*/
+        concat(s1.province, s1.city, s1.area, s1.detail_addr) as start_store_full_address,
+        concat(s2.province, s2.city, s2.area, s2.detail_addr) as end_store_full_address,
+        ct1.parent_name as now_city_name,
+        o.*,
+        oc.*
         from w_order o
         join w_order_car oc on oc.order_id = o.id
+        LEFT JOIN s_store s1 on s1.id = o.start_store_id
+        LEFT JOIN s_store s2 on s2.id = o.end_store_id
+        LEFT JOIN s_city ct1 on oc.now_area_code = ct1.code
+        from w_order o
+        join w_order_car oc on oc.order_id = o.id
+
         <where>
             <choose>
                 <when test="paramsDto.signState == 0">

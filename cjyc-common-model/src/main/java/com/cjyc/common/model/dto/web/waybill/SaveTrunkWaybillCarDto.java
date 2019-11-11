@@ -1,7 +1,5 @@
 package com.cjyc.common.model.dto.web.waybill;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -23,10 +21,9 @@ import java.math.BigDecimal;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel
-public class TrunkDispatchWaybillDto implements Serializable {
+public class SaveTrunkWaybillCarDto implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
     @ApiModelProperty(value = "运单ID")
     private Long waybillId;
     @ApiModelProperty(value = "运单编号")
