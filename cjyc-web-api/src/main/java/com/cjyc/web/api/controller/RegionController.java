@@ -13,10 +13,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @Description 大区管理控制层
@@ -62,5 +59,19 @@ public class RegionController {
         }
         return resultVo;
     }
+
+    @ApiOperation(value = "删除大区")
+    @PostMapping("/removeRegion/{regionCode}")
+    public ResultVo removeRegion(@PathVariable String regionCode){
+        ResultVo resultVo = null;
+        try {
+            resultVo = regionService.removeRegion(regionCode);
+        } catch (Exception e) {
+            log.error("删除大区异常",e);
+            resultVo = BaseResultUtil.fail("删除大区失败");
+        }
+        return resultVo;
+    }
+
 
 }
