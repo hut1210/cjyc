@@ -40,7 +40,7 @@ public class CustomerLineServiceImpl extends ServiceImpl<ICustomerLineDao, Custo
     public ResultVo queryLinePage(InvoiceApplyQueryDto dto) {
         BasePageUtil.initPage(dto);
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        Customer customer =  customerDao.getCustomerByUserId(dto.getUserId());
+        Customer customer =  customerDao.findByUserId(dto.getUserId());
         PageInfo<CustomerLine> pageInfo = null;
         if(customer != null){
             List<CustomerLine> list =  getCustomerLineList(dto,customer.getId());

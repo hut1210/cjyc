@@ -79,7 +79,7 @@ public class StoreController {
         return result ? BaseResultUtil.success() : BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
 
-    @ApiOperation(value = "查询详情", notes = "\t 请求接口为/getDetail/id格式")
+    @ApiOperation(value = "查询详情", notes = "\t 请求接口为/get/id格式")
     @PostMapping("/getDetail/{id}")
     public ResultVo<Store> getDetail(@PathVariable Long id) {
         return BaseResultUtil.success(storeService.getById(id));

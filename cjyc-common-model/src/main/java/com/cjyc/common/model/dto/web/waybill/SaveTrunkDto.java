@@ -6,23 +6,28 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
+/**
+ *
+ * @author JPG
+ */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel
-public class LocalDispatchListWaybillDto {
+public class SaveTrunkDto {
 
+    @NotNull(message = "userId不能为空")
     @ApiModelProperty(value = "用户userId", required = true)
     private Long userId;
+    @NotNull(message = "storeId不能为空")
+    @ApiModelProperty(value = "业务中心ID", required = true)
+    private Long storeId;
 
-    @ApiModelProperty(value = "用户userName", required = true)
-    private String userName;
-
-    @ApiModelProperty(value = "运单类型：1提车运单，2自送运单，3干线运单，4送车运单，5自提运单", required = true)
-    private Integer type;
-
+    @NotEmpty(message = "list不能为空")
     @ApiModelProperty(value = "调度内容", required = true)
-    private List<LocalDispatchWaybillDto> list;
+    private List<SaveTrunkWaybillDto> list;
 }

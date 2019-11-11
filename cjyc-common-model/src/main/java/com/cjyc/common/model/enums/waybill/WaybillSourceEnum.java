@@ -10,7 +10,8 @@ public enum WaybillSourceEnum {
     SELF("自己处理", 1),
     MANUAL("人工调度",2),
     BID("竞抢调度",3),
-    BID_APPOINT("竞抢指派",4);
+    BID_APPOINT("竞抢指派",4),
+    MIDWAY_FINISH("中途完结生成",7);
 
     public String name;
     public int code;

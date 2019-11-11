@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -13,9 +15,20 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel
-public class TrunkDispatchListWaybillDto {
-    @ApiModelProperty(value = "用户userId", required = true)
+public class SaveTrunkWaybillDto {
+
+    @ApiModelProperty(value = "用户userId(不用传)", required = true)
     private Long userId;
+    @ApiModelProperty(value = "用户userName(不用传)", required = true)
+    private String userName;
+    @ApiModelProperty(value = "业务中心ID(不用传)", required = true)
+    private Long storeId;
+    @ApiModelProperty(value = "运单顺序(不用传)", required = true)
+    private Integer index;
+
+
+    @ApiModelProperty(value = "运单ID（修改时传）", required = true)
+    private String waybillId;
 
     @ApiModelProperty(value = "指导线路", required = true)
     private String guideLine;
@@ -39,5 +52,5 @@ public class TrunkDispatchListWaybillDto {
     private String remark;
 
     @ApiModelProperty(value = "调度内容", required = true)
-    private List<TrunkDispatchWaybillDto> list;
+    private List<SaveTrunkWaybillCarDto> list;
 }

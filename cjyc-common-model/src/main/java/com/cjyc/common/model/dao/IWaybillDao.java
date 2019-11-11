@@ -7,7 +7,6 @@ import com.cjyc.common.model.vo.web.waybill.*;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -37,7 +36,7 @@ public interface IWaybillDao extends BaseMapper<Waybill> {
      */
     List<Waybill> findListByNos(@Param("waybillNoList") List<String> waybillNoList);
 
-    List<HistoryListWaybillVo> findHistoryList(@Param("paramsDto") HistoryListWaybillDto paramsDto);
+    List<HistoryListWaybillVo> findHistoryList(@Param("paramsDto") HistoryListDto paramsDto);
 
     List<Waybill> findByOrderCarId(Long orderCarId);
 
@@ -50,7 +49,6 @@ public interface IWaybillDao extends BaseMapper<Waybill> {
 
     WaybillVo findVoById(Long id);
 
-    List<TrunkCarListWaybillVo> findListTrunkWithCar(@Param("paramsDto")TrunkListWaybillCarDto paramsDto);
 
     List<TrunkMainListWaybillVo> findMainListTrunk(@Param("paramsDto") TrunkMainListWaybillDto paramsDto);
 

@@ -12,6 +12,6 @@ public class WaybillVo extends Waybill {
 
 
     @ApiModelProperty("车辆列表")
-    private List<TrunkDetailWaybillCarVo> list;
+    private List<WaybillCarVo> list;
 
 }

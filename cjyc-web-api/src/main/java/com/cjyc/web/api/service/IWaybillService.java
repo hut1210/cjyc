@@ -25,21 +25,21 @@ public interface IWaybillService extends IService<Waybill> {
      * 提送车调度
      * @author JPG
      * @since 2019/10/17 9:16
-     * @param paramsDto
+     * @param reqDto
      */
-    ResultVo localDispatch(LocalDispatchListWaybillDto paramsDto);
+    ResultVo saveLocal(SaveLocalDto reqDto);
 
     /**
      * 干线调度
      * @author JPG
      * @since 2019/10/17 9:16
-     * @param paramsDto
+     * @param reqDto
      */
-    ResultVo trunkDispatch(TrunkDispatchListShellWaybillDto paramsDto);
+    ResultVo saveTrunk(SaveTrunkDto reqDto);
 
-    ResultVo<ListVo<BaseTipVo>> cancelDispatch(CancelDispatchDto paramsDto);
+    ResultVo<ListVo<BaseTipVo>> cancel(CancelWaybillDto reqDto);
 
-    ResultVo<List<HistoryListWaybillVo>> historyList(HistoryListWaybillDto reqDto);
+    ResultVo<List<HistoryListWaybillVo>> historyList(HistoryListDto reqDto);
 
     ResultVo<List<CysWaybillVo>> cysList(CysWaybillDto reqDto);
 
@@ -49,11 +49,17 @@ public interface IWaybillService extends IService<Waybill> {
 
     ResultVo<PageVo<TrunkCarListWaybillCarVo>> trunkCarlist(TrunkListWaybillCarDto reqDto);
 
-    ResultVo<WaybillVo> getForTrunkDetail(Long id);
+    ResultVo<WaybillVo> get(Long id);
 
-    ResultVo<List<TrunkDetailWaybillCarVo>> getCarByType(Long orderCarId, Integer waybillType);
+    ResultVo<List<WaybillCarVo>> getCarByType(Long orderCarId, Integer waybillType);
 
     ResultVo<PageVo<TrunkMainListWaybillVo>> getTrunkMainList(TrunkMainListWaybillDto reqDto);
 
     ResultVo<PageVo<TrunkSubListWaybillVo>> getTrunkSubList(TrunkSubListWaybillDto reqDto);
+
+    ResultVo updateLocal(UpdateLocalDto reqDto);
+
+    ResultVo updateTrunk(UpdateTrunkDto reqDto);
+
+    ResultVo updateTrunkMidwayFinish(updateTrunkMidwayFinishDto reqDto);
 }

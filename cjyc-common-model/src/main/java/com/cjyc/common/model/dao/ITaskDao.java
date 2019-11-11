@@ -2,6 +2,9 @@ package com.cjyc.common.model.dao;
 
 import com.cjyc.common.model.entity.Task;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.task.ListByWaybillTaskVo;
+import com.cjyc.common.model.vo.web.task.TaskVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -26,4 +29,12 @@ public interface ITaskDao extends BaseMapper<Task> {
     int updateListByWaybillIds(@Param("newState") int newState, @Param("cancelWaybillIdList") List<Long> cancelWaybillIdList);
 
     int cancelBywaybillId(@Param("newState") int newState, @Param("waybillId")Long waybillId);
+
+    List<ListByWaybillTaskVo> findListByWaybillId(Long waybillId);
+
+    TaskVo findVoById(Long taskId);
+
+    int deleteByWaybillId(Long waybillId);
+
+    Task findTopByWaybillId(Long id);
 }

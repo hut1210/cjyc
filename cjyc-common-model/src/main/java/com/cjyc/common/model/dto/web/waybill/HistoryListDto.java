@@ -10,7 +10,7 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel
-public class HistoryListWaybillDto {
+public class HistoryListDto {
 
     @ApiModelProperty(value = "订单车辆ID",required = true)
     private Long orderCarId;

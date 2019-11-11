@@ -4,6 +4,10 @@ import com.cjyc.common.model.dto.web.task.*;
 import com.cjyc.common.model.entity.Task;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.task.ListByWaybillTaskVo;
+import com.cjyc.common.model.vo.web.task.TaskVo;
+
+import java.util.List;
 
 /**
  * <p>
@@ -26,4 +30,8 @@ public interface ITaskService extends IService<Task> {
     ResultVo outStore(OutStoreTaskDto paramsDto);
 
     ResultVo sign(SignTaskDto paramsDto);
+
+    ResultVo<List<ListByWaybillTaskVo>> getlistByWaybillId(Long waybillId);
+
+    ResultVo<TaskVo> get(Long taskId);
 }
