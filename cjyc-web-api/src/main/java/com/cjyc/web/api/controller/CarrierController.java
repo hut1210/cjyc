@@ -5,7 +5,6 @@ import com.cjyc.common.model.dto.web.carrier.CarrierDto;
 import com.cjyc.common.model.dto.web.carrier.DispatchCarrierDto;
 import com.cjyc.common.model.dto.web.carrier.SeleCarrierDto;
 import com.cjyc.common.model.dto.web.carrier.SeleVehicleDriverDto;
-import com.cjyc.common.model.dto.web.driver.DispatchDriverDto;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BasePageUtil;
 import com.cjyc.common.model.util.BaseResultUtil;

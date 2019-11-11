@@ -8,8 +8,9 @@ import java.util.List;
 
 @Data
 public class CarVo implements Serializable {
+    private static final long serialVersionUID = 2363009297494520191L;
 
-    private static final long serialVersionUID = 5534408070705846757L;
-    @ApiModelProperty("车系")
-    private List<CarSeriesVo> carSeriesVos;
+    @ApiModelProperty("首字母")
+    private List<InitialVo> initial;
+
 }
