@@ -69,7 +69,7 @@
             c_coupon c
             LEFT JOIN c_coupon_send send ON c.id = send.coupon_id
         WHERE
-            c.state = 2
+            c.state = 2 and send.customer_id = #{customerId}
     </select>
 
     <!-- 根据用户编号查询所属自己的优惠券 -->

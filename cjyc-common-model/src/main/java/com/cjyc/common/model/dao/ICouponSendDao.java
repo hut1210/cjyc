@@ -36,10 +36,10 @@ public interface ICouponSendDao extends BaseMapper<CouponSend> {
 
     /**
      * 根据用户编号查询所属自己的优惠券
-     * @param id
+     * @param customerId
      * @return
      */
-    List<CustomerCouponVo> getCustomerCouponById(@Param("id") Long id);
+    List<CustomerCouponVo> getCustomerCouponById(@Param("customerId") Long customerId);
 
     /**
      * 根据客户id获取优惠券

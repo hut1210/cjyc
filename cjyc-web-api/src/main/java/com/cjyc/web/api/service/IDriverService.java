@@ -1,18 +1,14 @@
 package com.cjyc.web.api.service;
 
-import com.cjyc.common.model.dto.KeywordDto;
 import com.cjyc.common.model.dto.web.OperateDto;
+import com.cjyc.common.model.dto.web.driver.DispatchDriverDto;
 import com.cjyc.common.model.dto.web.driver.DriverDto;
 import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
 import com.cjyc.common.model.dto.web.user.DriverListDto;
-import com.cjyc.common.model.entity.BusinessCityCode;
 import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.driver.DriverVo;
-import com.cjyc.common.model.vo.web.driver.ShowDriverVo;
 import com.cjyc.common.model.vo.web.user.DriverListVo;
-import com.github.pagehelper.PageInfo;
 
 public interface IDriverService {
     /**
@@ -66,5 +62,12 @@ public interface IDriverService {
      * @return
      */
     ResultVo resetState(Long id, Integer flag);
+
+    /**
+     * 调度个人司机
+     * @param dto
+     * @return
+     */
+    ResultVo dispatchDriver(DispatchDriverDto dto);
 
 }

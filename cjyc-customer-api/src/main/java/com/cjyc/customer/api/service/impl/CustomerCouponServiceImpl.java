@@ -38,34 +38,27 @@ public class CustomerCouponServiceImpl extends ServiceImpl<ICouponSendDao, Coupo
     @Resource
     private ICouponSendDao couponSendDao;
 
-    @Resource
-    private ICustomerDao customerDao;
-
     @Override
     public ResultVo customerCoupon(CommonDto dto) {
-        PageInfo<CustomerCouponVo> pageInfo = null;
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        Customer customer = customerDao.selectById(dto.getLoginId());
-        if(customer != null){
-            List<CustomerCouponVo> sendVos = couponSendDao.getCustomerCouponById(customer.getId());
-            Long now = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
-            if(!CollectionUtils.isEmpty(sendVos)){
-                for(CustomerCouponVo vo : sendVos){
-                    if(CouponLifeTypeEnum.FOREVER.code != vo.getIsForever()){
-                        if(StringUtils.isNotBlank(vo.getEndPeriodDate())){
-                            Long endPeriodDate = Long.valueOf(vo.getEndPeriodDate());
-                            vo.setEndPeriodDate(LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(endPeriodDate),TimePatternConstant.SIMPLE_DATE_FORMAT));
-                            if((UseStateEnum.NO_USE.code == vo.getIsUse()) && endPeriodDate > now){
-                                vo.setIsExpire(UseStateEnum.YES_EXPIRE.code);
-                            }else{
-                                vo.setIsExpire(UseStateEnum.NO_EXPIRE.code);
-                            }
+        List<CustomerCouponVo> sendVos = couponSendDao.getCustomerCouponById(dto.getLoginId());
+        Long now = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
+        if(!CollectionUtils.isEmpty(sendVos)){
+            for(CustomerCouponVo vo : sendVos){
+                if(CouponLifeTypeEnum.FOREVER.code != vo.getIsForever()){
+                    if(StringUtils.isNotBlank(vo.getEndPeriodDate())){
+                        Long endPeriodDate = Long.valueOf(vo.getEndPeriodDate());
+                        vo.setEndPeriodDate(LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(endPeriodDate),TimePatternConstant.SIMPLE_DATE_FORMAT));
+                        if((UseStateEnum.NO_USE.code == vo.getIsUse()) && endPeriodDate > now){
+                            vo.setIsExpire(UseStateEnum.YES_EXPIRE.code);
+                        }else{
+                            vo.setIsExpire(UseStateEnum.NO_EXPIRE.code);
                         }
                     }
                 }
-                pageInfo = new PageInfo<>(sendVos);
             }
         }
+        PageInfo<CustomerCouponVo> pageInfo = new PageInfo<>(sendVos);
         return BaseResultUtil.success(pageInfo == null ? new PageInfo<>(Collections.EMPTY_LIST):pageInfo);
     }
 }

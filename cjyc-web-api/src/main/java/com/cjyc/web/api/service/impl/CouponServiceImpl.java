@@ -59,7 +59,7 @@ public class CouponServiceImpl extends ServiceImpl<ICouponDao,Coupon> implements
         coupon = encapCoupon(coupon,dto);
         coupon.setState(CommonStateEnum.WAIT_CHECK.code);
         coupon.setCreateTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
-        coupon.setCreateUserId(dto.getUserId());
+        coupon.setCreateUserId(dto.getLoginId());
         couponDao.insert(coupon);
         return BaseResultUtil.success();
     }

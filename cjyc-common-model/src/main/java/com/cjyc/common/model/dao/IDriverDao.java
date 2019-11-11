@@ -1,17 +1,18 @@
 package com.cjyc.common.model.dao;
 
+import com.cjyc.common.model.dto.web.driver.DispatchDriverDto;
 import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
 import com.cjyc.common.model.dto.web.mimeCarrier.QueryMyDriverDto;
 import com.cjyc.common.model.dto.web.user.DriverListDto;
 import com.cjyc.common.model.entity.Driver;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.vo.web.carrier.BaseDriverVo;
+import com.cjyc.common.model.vo.web.driver.DispatchDriverVo;
 import com.cjyc.common.model.vo.web.driver.DriverVo;
 import com.cjyc.common.model.vo.web.driver.ShowDriverVo;
 import com.cjyc.common.model.vo.web.mimeCarrier.MyDriverVo;
 import com.cjyc.common.model.vo.web.mimeCarrier.MyFreeDriverVo;
 import com.cjyc.common.model.vo.web.user.DriverListVo;
-import io.swagger.annotations.ApiParam;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -99,4 +100,11 @@ public interface IDriverDao extends BaseMapper<Driver> {
      * @return
      */
     List<Long> findMyBusyDriver(@Param("carrierId") Long carrierId);
+
+    /**
+     * 查询符合条件的调度个人司机
+     * @param dto
+     * @return
+     */
+    List<DispatchDriverVo> getDispatchDriver(DispatchDriverDto dto);
 }

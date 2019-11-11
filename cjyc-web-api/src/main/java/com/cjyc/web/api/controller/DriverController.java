@@ -1,7 +1,7 @@
 package com.cjyc.web.api.controller;
 
-import com.cjyc.common.model.dto.KeywordDto;
 import com.cjyc.common.model.dto.web.OperateDto;
+import com.cjyc.common.model.dto.web.driver.DispatchDriverDto;
 import com.cjyc.common.model.dto.web.driver.DriverDto;
 import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
 import com.cjyc.common.model.dto.web.user.DriverListDto;
@@ -14,7 +14,6 @@ import com.cjyc.common.model.vo.web.driver.DriverVo;
 import com.cjyc.common.model.vo.web.driver.ShowDriverVo;
 import com.cjyc.common.model.vo.web.user.DriverListVo;
 import com.cjyc.web.api.service.IDriverService;
-import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -87,5 +86,11 @@ public class DriverController {
                                @ApiParam(name = "flag", value = "冻结/解除状态 1：冻结 2：解除", required = true)
                                @PathVariable Integer flag){
         return driverService.resetState(id, flag);
+    }
+
+    @ApiOperation(value = "调度个人司机信息")
+    @PostMapping(value = "/dispatchDriver")
+    public ResultVo dispatchDriver(@RequestBody DispatchDriverDto dto){
+        return driverService.dispatchDriver(dto);
     }
 }

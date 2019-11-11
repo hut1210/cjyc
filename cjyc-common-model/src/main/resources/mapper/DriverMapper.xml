@@ -324,4 +324,39 @@
         where veh.carrier_id = #{carrierId}
     </select>
 
+    <!--查询符合条件的调度个人司机-->
+    <select id="getDispatchDriver" resultType="com.cjyc.common.model.vo.web.driver.DispatchDriverVo"
+                                    parameterType="com.cjyc.common.model.dto.web.driver.DispatchDriverDto">
+        SELECT
+            d.id AS driverId,
+            d.real_name AS realName,
+            d.phone AS phone,
+            d.MODE AS MODE,
+            vr.plate_no AS plateNo,
+            d.id_card AS idCard,
+            vr.carry_car_num AS carryCarNum,
+            vr.occupied_car_num AS occupiedCarNum,
+            vr.running_state AS runningState
+        FROM
+            d_driver d
+        LEFT JOIN d_vehicle_running vr ON vr.driver_id = d.id
+        <where>
+            <if test="realName != null and realName.trim() != ''">
+                d.real_name like CONCAT('%',#{realName},'%')
+            </if>
+            <if test="plateNo != null and plateNo.trim() != ''">
+                vr.plate_no = #{plateNo}
+            </if>
+            <if test="phone != null and phone.trim() != ''">
+                d.phone = #{phone}
+            </if>
+            <if test="idCard != null and idCard.trim() != ''">
+                d.id_card = #{idCard}
+            </if>
+            and d.type = 2
+            AND d.state = 2
+            AND d.business_state = 0
+        </where>
+    </select>
+
 </mapper>

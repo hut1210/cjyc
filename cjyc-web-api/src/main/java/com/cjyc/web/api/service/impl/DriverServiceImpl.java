@@ -8,8 +8,8 @@ import com.cjkj.usercenter.dto.common.AddUserReq;
 import com.cjkj.usercenter.dto.common.AddUserResp;
 import com.cjkj.usercenter.dto.common.UpdateUserReq;
 import com.cjyc.common.model.dao.*;
-import com.cjyc.common.model.dto.KeywordDto;
 import com.cjyc.common.model.dto.web.OperateDto;
+import com.cjyc.common.model.dto.web.driver.DispatchDriverDto;
 import com.cjyc.common.model.dto.web.driver.DriverDto;
 import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
 import com.cjyc.common.model.dto.web.user.DriverListDto;
@@ -19,15 +19,16 @@ import com.cjyc.common.model.enums.FlagEnum;
 import com.cjyc.common.model.enums.saleman.SalemanStateEnum;
 import com.cjyc.common.model.enums.task.TaskStateEnum;
 import com.cjyc.common.model.enums.transport.*;
+import com.cjyc.common.model.util.BasePageUtil;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.driver.DispatchDriverVo;
 import com.cjyc.common.model.vo.web.driver.DriverVo;
 import com.cjyc.common.model.vo.web.driver.ShowDriverVo;
 import com.cjyc.common.model.vo.web.user.DriverListVo;
-import com.cjyc.common.model.vo.web.vehicle.FreeVehicleVo;
 import com.cjyc.web.api.exception.CommonException;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.web.api.service.ICarrierCityConService;
@@ -311,6 +312,14 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         return BaseResultUtil.success();
     }
 
+    @Override
+    public ResultVo dispatchDriver(DispatchDriverDto dto) {
+        BasePageUtil.initPage(dto);
+        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
+        List<DispatchDriverVo> dispatchDriverVos = driverDao.getDispatchDriver(dto);
+        PageInfo<DispatchDriverVo> pageInfo = new PageInfo<>(dispatchDriverVos);
+        return BaseResultUtil.success(pageInfo);
+    }
 
 
     /**
