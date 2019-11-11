@@ -2,6 +2,7 @@ package com.cjyc.web.api.service;
 
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.carrier.CarrierDto;
+import com.cjyc.common.model.dto.web.carrier.DispatchCarrierDto;
 import com.cjyc.common.model.dto.web.carrier.SeleCarrierDto;
 import com.cjyc.common.model.dto.web.carrier.SeleVehicleDriverDto;
 import com.cjyc.common.model.vo.ResultVo;
@@ -72,4 +73,11 @@ public interface ICarrierService {
      * @return
      */
     ResultVo resetPwd(Long id);
+
+    /**
+     * 调度承运商信息
+     * @param dto
+     * @return
+     */
+    ResultVo dispatchCarrier(DispatchCarrierDto dto);
 }

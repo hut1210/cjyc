@@ -2,6 +2,11 @@ package com.cjyc.web.api.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cjkj.common.model.ResultData;
+import com.cjkj.common.model.ReturnMsg;
+import com.cjkj.usercenter.dto.common.AddUserReq;
+import com.cjkj.usercenter.dto.common.AddUserResp;
+import com.cjkj.usercenter.dto.common.UpdateUserReq;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.mimeCarrier.*;
@@ -12,11 +17,13 @@ import com.cjyc.common.model.enums.task.TaskStateEnum;
 import com.cjyc.common.model.enums.transport.*;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
+import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.mimeCarrier.MyCarVo;
 import com.cjyc.common.model.vo.web.mimeCarrier.MyDriverVo;
 import com.cjyc.common.model.vo.web.mimeCarrier.MyFreeDriverVo;
 import com.cjyc.common.model.vo.web.vehicle.FreeVehicleVo;
+import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.web.api.service.IMimeCarrierService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -55,6 +62,12 @@ public class MimeCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
     @Resource
     private ITaskDao taskDao;
 
+    @Resource
+    private ICarrierDao carrierDao;
+
+    @Resource
+    private ISysUserService sysUserService;
+
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
     @Override
@@ -81,6 +94,12 @@ public class MimeCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
         driver.setState(CommonStateEnum.CHECKED.code);
         driver.setCreateUserId(dto.getLoginId());
         driver.setCreateTime(NOW);
+        //司机信息保存
+        ResultData<Long> rd = addDriverToPlatform(driver, dto);
+        if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+            return BaseResultUtil.fail(rd.getMsg());
+        }
+        driver.setUserId(rd.getData());
         driverDao.insert(driver);
 
         //保存司机与承运商关系
@@ -296,6 +315,11 @@ public class MimeCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
             }
             DriverVehicleCon dvc = driverVehicleConDao.selectOne(new QueryWrapper<DriverVehicleCon>().lambda().eq(DriverVehicleCon::getDriverId,dto.getDriverId()));
             //更新司机信息
+            ResultData rd = updateDriverToPlatform(dto);
+            if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+                return BaseResultUtil.fail(rd.getMsg());
+            }
+            //更新司机信息
             dri.setName(dto.getRealName());
             dri.setRealName(dto.getRealName());
             dri.setPhone(dto.getPhone());
@@ -318,5 +342,85 @@ public class MimeCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
             }
         }
         return BaseResultUtil.success();
+    }
+
+    /**
+     * 保存承运商下司机到物流平台
+     * @param driver
+     * @param dto
+     * @return
+     */
+    private ResultData<Long> addDriverToPlatform(Driver driver, MyDriverDto dto) {
+        List<Driver> existList = driverDao.selectList(new QueryWrapper<Driver>()
+                .eq("phone", driver.getPhone()));
+        if (!CollectionUtils.isEmpty(existList)) {
+            return ResultData.failed("手机号已存在，请检查");
+        }
+        Carrier carrier = carrierDao.selectById(dto.getCarrierId());
+        if (null == carrier || carrier.getDeptId() == null || carrier.getDeptId() <= 0L) {
+            return ResultData.failed("承运商信息错误，可能因为该承运商未审核通过");
+        }
+        ResultData<AddUserResp> rd = sysUserService.getByAccount(driver.getPhone());
+        if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+            return ResultData.failed("查询司机信息有误，原因：" + rd.getMsg());
+        }
+        if (rd.getData() != null) {
+            //司机已存在
+            return ResultData.ok(rd.getData().getUserId());
+        }else {
+            //司机不存在, 需新增
+            AddUserReq userReq = new AddUserReq();
+            userReq.setAccount(driver.getPhone());
+            userReq.setDeptId(carrier.getDeptId());
+            userReq.setPassword(YmlProperty.get("cjkj.salesman.password"));
+            userReq.setMobile(driver.getPhone());
+            userReq.setName(driver.getName());
+            ResultData<AddUserResp> saveRd = sysUserService.save(userReq);
+            if (!ReturnMsg.SUCCESS.getCode().equals(saveRd.getCode())) {
+                return ResultData.failed("司机账户保存失败，原因：" + saveRd.getMsg());
+            }
+            return ResultData.ok(saveRd.getData().getUserId());
+        }
+    }
+
+    /**
+     * 更新司机信息到物流平台
+     * @param dto
+     * @return
+     */
+    private ResultData updateDriverToPlatform(ModifyMyDriverDto dto){
+        Driver driver = driverDao.selectById(dto.getDriverId());
+        if (null == driver) {
+            return ResultData.failed("司机信息错误，根据id：" + dto.getDriverId() + "未查询到信息");
+        }
+        //比对是否需要变更手机号
+        if (!driver.getPhone().equals(dto.getPhone())) {
+            //需要手机号变更操作
+            //手机号是否在司机表存在
+            List<Driver> drivers = driverDao.selectList(new QueryWrapper<Driver>()
+                    .eq("", dto.getPhone()));
+            if (!CollectionUtils.isEmpty(drivers)) {
+                return ResultData.failed("手机号已使用，请检查");
+            }
+            ResultData<AddUserResp> rd = sysUserService.getByAccount(dto.getPhone());
+            if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+                return ResultData.failed("司机信息查询失败， 原因：" + rd.getMsg());
+            }
+            if (rd.getData() != null) {
+                return ResultData.failed("新手机号已存在物流平台，请检查");
+            }
+            UpdateUserReq userReq = new UpdateUserReq();
+            userReq.setUserId(driver.getUserId());
+            userReq.setAccount(dto.getPhone());
+            userReq.setMobile(dto.getPhone());
+            ResultData updateRd = sysUserService.update(userReq);
+            if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
+                return ResultData.failed("更新用户信息失败，原因：" + updateRd.getMsg());
+            }
+            return ResultData.ok("成功");
+        }else {
+            //不需要变更手机号
+            return ResultData.ok("成功");
+        }
     }
 }

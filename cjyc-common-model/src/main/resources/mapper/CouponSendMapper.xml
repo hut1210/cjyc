@@ -61,6 +61,9 @@
             parameterType="java.lang.Long">
       SELECT
             c.NAME AS NAME,
+            c.full_amount as fullAmount,
+            c.cut_amount as cutAmount,
+            c.discount as discount,
             c.type AS type,
             c.end_period_date AS endPeriodDate,
             c.is_forever AS isForever,

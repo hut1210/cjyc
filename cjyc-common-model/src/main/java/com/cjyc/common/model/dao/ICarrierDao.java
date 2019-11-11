@@ -1,10 +1,12 @@
 package com.cjyc.common.model.dao;
 
+import com.cjyc.common.model.dto.web.carrier.DispatchCarrierDto;
 import com.cjyc.common.model.dto.web.carrier.SeleCarrierDto;
 import com.cjyc.common.model.entity.Carrier;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.vo.web.carrier.CarrierVo;
 import com.cjyc.common.model.vo.web.carrier.BaseCarrierVo;
+import com.cjyc.common.model.vo.web.carrier.DispatchCarrierVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -39,5 +41,12 @@ public interface ICarrierDao extends BaseMapper<Carrier> {
      * @return
      */
     BaseCarrierVo showCarrierById(@Param("carrierId") Long carrierId);
+
+    /**
+     * 调度出符合条件的承运商
+     * @param dto
+     * @return
+     */
+    List<DispatchCarrierVo> getDispatchCarrier(DispatchCarrierDto dto);
 
 }

@@ -153,5 +153,42 @@
             left JOIN s_bank_card_bind bcb ON bcb.user_id = carr.id
     </select>
 
+    <!-- 调度出符合条件的承运商 -->
+    <select id="getDispatchCarrier" resultType="com.cjyc.common.model.vo.web.carrier.DispatchCarrierVo"
+            parameterType="com.cjyc.common.model.dto.web.carrier.DispatchCarrierDto">
+        SELECT
+            c.id AS carrierId,
+            c.NAME AS NAME,
+            c.linkman AS linkman,
+            c.linkman_phone AS linkmanPhone,
+            c.legal_name AS legalName,
+            c.legal_id_card AS legalIdCard,
+            c.settle_type AS settleType,
+            c.settle_period AS settlePeriod,
+            c.MODE AS MODE,
+            c.is_invoice AS isInvoice
+        FROM
+            d_carrier c
+        <where>
+            <if test="name != null and name.trim() != ''">
+                c.name like CONCAT('%',#{name},'%')
+            </if>
+            <if test="linkman != null and linkman.trim() != ''">
+                and  c.linkman = #{linkman}
+            </if>
+            <if test="linkmanPhone != null and linkmanPhone.trim() != ''">
+                and  c.linkman_phone = #{linkmanPhone}
+            </if>
+            <if test="settleType != null">
+                and  c.settle_type = #{settleType}
+            </if>
+            <if test="linkmanPhone != null and linkmanPhone.trim() != ''">
+                and  c.linkman_phone = #{linkmanPhone}
+            </if>
+            and c.type = 2
+            AND c.business_state = 0 and c.state = 2
+        </where>
+    </select>
+
 
 </mapper>

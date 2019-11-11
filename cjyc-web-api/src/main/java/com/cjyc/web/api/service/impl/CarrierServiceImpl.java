@@ -13,6 +13,7 @@ import com.cjkj.usercenter.dto.yc.UpdateDeptManagerReq;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.carrier.CarrierDto;
+import com.cjyc.common.model.dto.web.carrier.DispatchCarrierDto;
 import com.cjyc.common.model.dto.web.carrier.SeleCarrierDto;
 import com.cjyc.common.model.dto.web.carrier.SeleVehicleDriverDto;
 import com.cjyc.common.model.entity.*;
@@ -22,10 +23,8 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.carrier.BaseCarrierVo;
-import com.cjyc.common.model.vo.web.carrier.BaseDriverVo;
-import com.cjyc.common.model.vo.web.carrier.BaseVehicleVo;
-import com.cjyc.common.model.vo.web.carrier.CarrierVo;
+import com.cjyc.common.model.vo.web.carrier.*;
+import com.cjyc.common.model.vo.web.driver.DispatchDriverVo;
 import com.cjyc.web.api.exception.CommonException;
 import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysUserService;
@@ -270,6 +269,14 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             }
         }
         return BaseResultUtil.fail("用户信息有误，请检查");
+    }
+
+    @Override
+    public ResultVo dispatchCarrier(DispatchCarrierDto dto) {
+        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
+        List<DispatchCarrierVo> carrierVos = carrierDao.getDispatchCarrier(dto);
+        PageInfo<DispatchCarrierVo> pageInfo = new PageInfo<>(carrierVos);
+        return BaseResultUtil.success(pageInfo);
     }
 
     /**

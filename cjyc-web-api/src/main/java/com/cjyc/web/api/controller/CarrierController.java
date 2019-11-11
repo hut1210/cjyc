@@ -2,8 +2,10 @@ package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.carrier.CarrierDto;
+import com.cjyc.common.model.dto.web.carrier.DispatchCarrierDto;
 import com.cjyc.common.model.dto.web.carrier.SeleCarrierDto;
 import com.cjyc.common.model.dto.web.carrier.SeleVehicleDriverDto;
+import com.cjyc.common.model.dto.web.driver.DispatchDriverDto;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BasePageUtil;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -88,5 +90,12 @@ public class CarrierController {
                              @PathVariable Long id) {
         //重置机构超级管理员用户密码
         return carrierService.resetPwd(id);
+    }
+
+    @ApiOperation(value = "调度承运商信息")
+    @PostMapping(value = "/dispatchCarrier")
+    public ResultVo dispatchCarrier(@RequestBody DispatchCarrierDto dto){
+        BasePageUtil.initPage(dto);
+        return carrierService.dispatchCarrier(dto);
     }
 }
