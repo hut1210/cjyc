@@ -56,5 +56,17 @@
         from b_admin
         where carrier_id = #{carrierId}
     </select>
+    <select id="findListByUserIds" resultType="com.cjyc.common.model.entity.Admin">
+        select
+        <include refid="Base_Column_List"/>
+        from b_admin
+        <where>
+            state = 2
+            and user_id in
+            <foreach collection="userIds" index="index" item ="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
+    </select>
 
 </mapper>

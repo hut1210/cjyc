@@ -6,4 +6,5 @@ package com.cjyc.common.system.service.sys;
  */
 public interface ICsSysService {
     String getBizScopeByRoleId(Long roleId, boolean isSearchCache);
+
 }

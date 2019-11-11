@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -27,4 +28,5 @@ public interface IAdminDao extends BaseMapper<Admin> {
      */
     Admin getByCarrierId(@Param("carrierId") Long carrierId);
 
+    List<Admin> findListByUserIds(Set<Long> userIds);
 }

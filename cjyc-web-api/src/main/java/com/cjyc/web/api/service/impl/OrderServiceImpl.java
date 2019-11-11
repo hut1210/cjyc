@@ -4,16 +4,15 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.entity.*;
-import com.cjyc.common.model.enums.CommonStateEnum;
-import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
-import com.cjyc.common.model.enums.order.OrderChangeTypeEnum;
+import com.cjyc.common.model.entity.defined.FullWaybillCar;
+import com.cjyc.common.model.entity.defined.EndPointCity;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
-import com.cjyc.common.model.exception.ServerException;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.order.*;
+import com.cjyc.common.system.service.ICsLineNodeService;
 import com.cjyc.common.system.service.ICsOrderService;
 import com.cjyc.web.api.service.IOrderService;
 import com.github.pagehelper.PageHelper;
@@ -23,10 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -52,6 +48,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     private IWaybillCarDao waybillCarDao;
     @Resource
     private IStoreDao storeDao;
+    @Resource
+    private ICsLineNodeService csLineNodeService;
 
 
     @Override
@@ -99,14 +97,15 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
 
 
     @Override
-    public ResultVo<List<CarFromToGetVo>> getCarFromTo(CarFromToGetDto reqDto) {
-        
-        List<CarFromToGetVo> resList = new ArrayList<>();
+    public ResultVo<DispatchAddCarVo> getCarFromTo(CarFromToGetDto reqDto) {
+        DispatchAddCarVo dispatchAddCarVo = new DispatchAddCarVo();
         Store store = storeDao.selectById(reqDto.getStoreId());
         //业务范围
         List<String> areaBizScope = storeDao.findAreaBizScope(store.getId());
 
         List<OrderCar> list = orderCarDao.findByIds(reqDto.getOrderCarIdList());
+
+        List<CarFromToGetVo> childList = new ArrayList<>();
         if(list == null || list.isEmpty()){
             return BaseResultUtil.success();
         }
@@ -118,20 +117,23 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
             BeanUtils.copyProperties(orderCar, carFromToGetVo);
 
             //查询waybillcar最后一条记录
-            WaybillCar prevWaybillCar = waybillCarDao.findLastPrevByArea(orderCar.getId(), areaBizScope);
+            FullWaybillCar prevWaybillCar = waybillCarDao.findLastPrevByBelongStoreId(orderCar.getId(), store.getId());
             copyStartAddress(prevWaybillCar, carFromToGetVo);
-            WaybillCar nextWaybillCar = waybillCarDao.findLastNextByCity(orderCar.getId(), areaBizScope);
+            FullWaybillCar nextWaybillCar = waybillCarDao.findLastNextByBelongStoreId(orderCar.getId(), store.getId());
             copyEndAddress(nextWaybillCar, carFromToGetVo);
-
-            Store sSto = storeDao.selectById(prevWaybillCar.getEndStoreId());
-            carFromToGetVo.setStartStoreAddress(getStoreAddress(sSto));
-            Store eSto = storeDao.selectById(nextWaybillCar.getStartStoreId());
-            carFromToGetVo.setStartStoreAddress(getStoreAddress(eSto));
-            resList.add(carFromToGetVo);
+            childList.add(carFromToGetVo);
 
         }
+        dispatchAddCarVo.setList(childList);
+        Set<String> citySet = new HashSet<>();
+        for (CarFromToGetVo carFromToGetVo : childList) {
+            citySet.add(carFromToGetVo.getStartCity());
+            citySet.add(carFromToGetVo.getEndCity());
+        }
+        //计算推荐线路
+        csLineNodeService.getGuideLine(citySet,store.getCity());
 
-        return BaseResultUtil.success(resList);
+        return BaseResultUtil.success(dispatchAddCarVo);
     }
 
     @Override
@@ -153,7 +155,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
                 (sSto.getDetailAddr() == null ? "" : sSto.getDetailAddr());
     }
 
-    private void copyStartAddress(WaybillCar prevWaybillCar, CarFromToGetVo carFromToGetVo) {
+    private void copyStartAddress(FullWaybillCar prevWaybillCar, CarFromToGetVo carFromToGetVo) {
         if(prevWaybillCar == null){
             return;
         }
@@ -166,8 +168,9 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         carFromToGetVo.setStartAddress(prevWaybillCar.getEndAddress());
         carFromToGetVo.setStartStoreId(prevWaybillCar.getEndStoreId());
         carFromToGetVo.setStartStoreName(prevWaybillCar.getEndStoreName());
+        carFromToGetVo.setStartStoreFullAddress(prevWaybillCar.getEndStoreFullAddress());
     }
-    private void copyEndAddress(WaybillCar nextWaybillCar, CarFromToGetVo carFromToGetVo) {
+    private void copyEndAddress(FullWaybillCar nextWaybillCar, CarFromToGetVo carFromToGetVo) {
         if(nextWaybillCar == null){
             return;
         }
@@ -180,6 +183,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         carFromToGetVo.setEndAddress(nextWaybillCar.getStartAddress());
         carFromToGetVo.setEndStoreId(nextWaybillCar.getStartStoreId());
         carFromToGetVo.setEndStoreName(nextWaybillCar.getStartStoreName());
+        carFromToGetVo.setEndStoreFullAddress(nextWaybillCar.getStartStoreFullAddress());
     }
 
 
@@ -205,9 +209,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
      */
     @Override
     public ResultVo<ListVo<Map<String, Object>>> lineWaitDispatchCarCountList(LineWaitDispatchCountListOrderCarDto paramsDto, List<Long> bizScopeStoreIds) {
-        //查询列表
+        //查询统计列表
         List<Map<String, Object>> list = orderCarDao.findlineWaitDispatchCarCountList(paramsDto);
-
         //查询统计
         Map<String, Object> countInfo = null;
         if (list != null && !list.isEmpty()) {

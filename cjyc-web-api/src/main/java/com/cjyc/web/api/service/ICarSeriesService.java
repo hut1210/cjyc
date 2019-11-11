@@ -6,6 +6,7 @@ import com.cjyc.common.model.dto.web.carSeries.CarSeriesQueryDto;
 import com.cjyc.common.model.dto.web.carSeries.CarSeriesUpdateDto;
 import com.cjyc.common.model.entity.CarSeries;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.carSeries.CarSeriesTree;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -59,4 +60,7 @@ public interface ICarSeriesService extends IService<CarSeries> {
      * @return
      */
     ResultVo<List<CarSeries>> queryAll();
+
+    ResultVo<List<CarSeriesTree>> tree();
+
 }

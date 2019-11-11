@@ -262,7 +262,7 @@
         limit 1
 
     </select>
-    <select id="findLastNextByCity" resultType="com.cjyc.common.model.entity.WaybillCar">
+    <select id="findLastNextByArea" resultType="com.cjyc.common.model.entity.WaybillCar">
         select
         wc.*
         from w_waybill w
@@ -448,9 +448,12 @@
         oc.brand as brand,
         oc.model as model,
         oc.plate_no as plateNo,
-        oc.vin as vin
+        oc.vin as vin,
+        l.default_freight_fee as lineFreightFee,
+        l.kilometer as km
         from w_waybill_car wc
         join w_order_car oc on oc.id= wc.order_car_id
+        left join s_line l where l.from_code = wc.start_city_code and l.to_code = wc.end_city_code
         where wc.waybill_id = #{waybillId}
     </select>
     <select id="findTrunkList" resultType="com.cjyc.common.model.vo.web.waybill.TrunkCarListWaybillCarVo">
@@ -607,6 +610,36 @@
         join w_waybill_car wc on tc.waybill_car_id = wc.id
         join w_order_car oc on wc.order_car_id = oc.id
         where t.id = #{taskId}
+    </select>
+    <select id="findLastPrevByBelongStoreId" resultType="com.cjyc.common.model.entity.defined.FullWaybillCar">
+        select
+        wc.*,
+        concat(s1.province, s1.city, s1.area,s1.detail_addr) as startStoreFullAddress,
+        concat(s2.province, s2.city, s2.area,s2.detail_addr) as endStoreFullAddress
+        from w_waybill w
+        join w_waybill_car wc on wc.waybill_id = w.id
+        left join s_store s1 on s1.id = wc.start_store_id
+        left join s_store s2 on s2.id = wc.end_store_id
+        where wc.order_car_id = #{orderCarId}
+        and w.state &lt;= 100
+        and wc.end_belong_store_id = #{storeId}
+        order by w.id, wc.id desc
+        limit 1
+    </select>
+    <select id="findLastNextByBelongStoreId" resultType="com.cjyc.common.model.entity.defined.FullWaybillCar">
+        select
+        wc.*,
+        concat(s1.province, s1.city, s1.area,s1.detail_addr) as startStoreFullAddress,
+        concat(s2.province, s2.city, s2.area,s2.detail_addr) as endStoreFullAddress
+        from w_waybill w
+        join w_waybill_car wc on wc.waybill_id = w.id
+        left join s_store s1 on s1.id = wc.start_store_id
+        left join s_store s2 on s2.id = wc.end_store_id
+        where wc.order_car_id = #{orderCarId}
+        and w.state &lt;= 100
+        and wc.start_belong_store_id = #{storeId}
+        order by w.id, wc.id desc
+        limit 1
     </select>
 
 </mapper>

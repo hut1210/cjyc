@@ -8,6 +8,7 @@ import com.cjyc.common.model.entity.CarSeries;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.carSeries.CarSeriesTree;
 import com.cjyc.web.api.service.ICarSeriesService;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
@@ -89,5 +90,11 @@ public class CarSeriesController {
     @GetMapping("/exportExcel")
     public void exportExcel(HttpServletRequest request, HttpServletResponse response){
         carSeriesService.exportExcel(request,response);
+    }
+
+    @ApiOperation(value = "tree")
+    @GetMapping("/tree")
+    public ResultVo<List<CarSeriesTree>> tree(){
+       return carSeriesService.tree();
     }
 }

@@ -4,6 +4,7 @@ import com.cjyc.common.model.dto.web.WayBillCarrierDto;
 import com.cjyc.common.model.dto.web.waybill.LocalListWaybillCarDto;
 import com.cjyc.common.model.entity.WaybillCar;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cjyc.common.model.entity.defined.FullWaybillCar;
 import com.cjyc.common.model.vo.web.WayBillCarrierVo;
 import com.cjyc.common.model.vo.web.waybill.WaybillCarVo;
 import com.cjyc.common.model.vo.web.waybill.LocalListWaybillCarVo;
@@ -48,7 +49,7 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
 
     WaybillCar findLastPrevByArea(@Param("orderCarId") Long orderCarId, @Param("areaList") List<String> areaList);
 
-    WaybillCar findLastNextByCity(@Param("orderCarId") Long orderCarId, @Param("areaList") List<String> areaList);
+    WaybillCar findLastNextByArea(@Param("orderCarId") Long orderCarId, @Param("areaList") List<String> areaList);
 
     int countForValidateRepeatTrunkDisPatch(@Param("areaList") List<String> areaList);
 
@@ -63,4 +64,8 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
     List<TrunkCarListWaybillCarVo> findTrunkList();
 
     int deleteByWaybillId(Long waybillId);
+
+    FullWaybillCar findLastPrevByBelongStoreId(@Param("orderCarId") Long orderCarId, @Param("storeId") Long storeId);
+
+    FullWaybillCar findLastNextByBelongStoreId(@Param("orderCarId") Long orderCarId, @Param("storeId") Long storeId);
 }

@@ -2,6 +2,7 @@ package com.cjyc.common.model.dao;
 
 import com.cjyc.common.model.entity.CarSeries;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cjyc.common.model.vo.web.carSeries.CarSeriesTree;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -36,4 +37,6 @@ public interface ICarSeriesDao extends BaseMapper<CarSeries> {
      * @return
      */
     List<CarSeries> getCarSeries(@Param("keyword") String keyword);
+
+    List<CarSeriesTree> findTree();
 }
