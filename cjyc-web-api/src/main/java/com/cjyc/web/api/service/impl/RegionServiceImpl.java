@@ -138,13 +138,13 @@ public class RegionServiceImpl implements IRegionService {
     private void updateProvince(RegionAddDto dto, Long regionDeptId) throws Exception {
         List<RegionCityDto> provinceList = dto.getProvinceList();
         if (!CollectionUtils.isEmpty(provinceList)) {
+            AddDeptReq addDeptReq = new AddDeptReq();
             UpdateDeptReq updateDeptReq = new UpdateDeptReq();
             for (RegionCityDto province : provinceList) {
                 // 根据城市编码查询部门ID
                 ResultData<SelectDeptResp> provinceData = sysDeptService.getDeptByCityCode(province.getCode());
                 if (!ReturnMsg.SUCCESS.getCode().equals(provinceData.getCode()) || Objects.isNull(provinceData.getData())){
                     // 查询不到则新增省
-                    AddDeptReq addDeptReq = new AddDeptReq();
                     addDeptReq.setName(province.getName());
                     addDeptReq.setParentId(regionDeptId);
                     addDeptReq.setRemark(province.getCode());
@@ -183,15 +183,15 @@ public class RegionServiceImpl implements IRegionService {
     }
 
     private void updateNewProvinceList(RegionUpdateDto dto,List<RegionCityDto> provinceList) throws Exception {
-        LambdaUpdateWrapper<City> updateProvince = new UpdateWrapper<City>().lambda()
-                .set(City::getParentCode,dto.getRegionCode()).set(City::getParentName,dto.getRegionName());
-        // 调用物流平台查询当前大区机构ID
-        ResultData<SelectDeptResp> regionData = sysDeptService.getDeptByCityCode(dto.getRegionCode());
-        if (!ReturnMsg.SUCCESS.getCode().equals(regionData.getCode()) || Objects.isNull(regionData.getData())) {
-            throw new Exception("调用物流平台-查询大区信息异常");
-        }
+        if (!CollectionUtils.isEmpty(provinceList)) {
+            // 调用物流平台-查询当前大区机构ID
+            ResultData<SelectDeptResp> regionData = sysDeptService.getDeptByCityCode(dto.getRegionCode());
+            if (!ReturnMsg.SUCCESS.getCode().equals(regionData.getCode()) || Objects.isNull(regionData.getData())) {
+                throw new Exception("调用物流平台-查询大区信息异常");
+            }
 
-        if (CollectionUtils.isEmpty(provinceList)) {
+            LambdaUpdateWrapper<City> updateProvince = new UpdateWrapper<City>().lambda()
+                    .set(City::getParentCode,dto.getRegionCode()).set(City::getParentName,dto.getRegionName());
             for (RegionCityDto province : provinceList) {
                 // 更新大区覆盖省
                 updateProvince = updateProvince.eq(City::getCode,province.getCode()).eq(City::getLevel, FieldConstant.PROVINCE_LEVEL);
