@@ -21,4 +21,22 @@
         id, customer_id, line_code, start_adress, start_contact, start_contact_phone, end_adress, end_contact, end_contact_phone, create_time
     </sql>
 
+    <!-- 根据客户id获取历史线路 -->
+    <select id="findCustomerLine" resultType="com.cjyc.common.model.vo.customer.customerLine.CustomerLineVo"
+                                    parameterType="java.lang.Long">
+        SELECT
+            id AS id,
+            start_adress AS startAdress,
+            start_contact AS startContact,
+            start_contact_phone AS startContactPhone,
+            end_adress AS endAdress,
+            end_contact AS endContact,
+            end_contact_phone AS endContactPhone
+        FROM
+            c_customer_line
+        WHERE
+            customer_id = #{customerId}
+            order by id asc
+    </select>
+
 </mapper>

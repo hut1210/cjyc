@@ -2,7 +2,11 @@ package com.cjyc.common.model.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.entity.CustomerLine;
+import com.cjyc.common.model.vo.customer.customerLine.CustomerLineVo;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * @auther litan
@@ -11,4 +15,11 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface ICustomerLineDao extends BaseMapper<CustomerLine>{
+
+    /**
+     * 根据客户id获取历史线路
+     * @param customerId
+     * @return
+     */
+    List<CustomerLineVo> findCustomerLine(@Param("customerId") Long customerId);
 }

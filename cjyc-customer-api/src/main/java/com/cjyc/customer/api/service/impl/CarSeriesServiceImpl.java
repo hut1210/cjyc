@@ -6,48 +6,25 @@ import com.cjyc.common.model.dto.KeywordDto;
 import com.cjyc.common.model.entity.CarSeries;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.customer.CarSeries.*;
+import com.cjyc.common.model.vo.web.carSeries.CarSeriesTree;
+import com.cjyc.common.system.service.ICsCarSeriesService;
 import com.cjyc.customer.api.service.ICarSeriesService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.List;
 
 @Service
 @Slf4j
 public class CarSeriesServiceImpl extends ServiceImpl<ICarSeriesDao, CarSeries> implements ICarSeriesService {
 
     @Resource
-    private ICarSeriesDao carSeriesDao;
+    private ICsCarSeriesService csCarSeriesService;
 
     @Override
     public ResultVo queryCarSeries(KeywordDto dto) {
-        CarVo carVo = new CarVo();
-        List<ModelVo> modelVos = new ArrayList<>(15);
-        List<CarSeriesVo> carSeriesVos = new ArrayList<>(15);
-        Set<String> setInitial = new HashSet<>(15);
-        List<CarSeries> carSeries =  carSeriesDao.getCarSeries(dto.getKeyword());
-        if(!StringUtils.isEmpty(carSeries)){
-            for(CarSeries carSerie : carSeries){
-                setInitial.add(carSerie.getPinInitial());
-            }
-            for(String initial : setInitial){
-
-                for(CarSeries carSerie : carSeries){
-                    if(initial.equals(carSerie.getPinInitial())){
-                        CarSeriesVo carSeriesVo = new CarSeriesVo();
-                        carSeriesVo.setLogoImg(carSerie.getLogoImg());
-                        carSeriesVo.setBrand(carSerie.getBrand());
-
-                    }
-                }
-            }
-
-        }
-            return BaseResultUtil.success();
+        List<CarSeriesTree> carSeriesTrees =  csCarSeriesService.tree(false,dto.getKeyword());
+        return BaseResultUtil.success(carSeriesTrees);
     }
-
 }

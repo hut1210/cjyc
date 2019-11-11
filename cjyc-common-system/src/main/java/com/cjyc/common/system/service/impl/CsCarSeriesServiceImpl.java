@@ -14,7 +14,7 @@ public class CsCarSeriesServiceImpl implements ICsCarSeriesService {
     @Resource
     private ICarSeriesDao carSeriesDao;
     @Override
-    public List<CarSeriesTree> tree(boolean isSearchCache) {
-        return carSeriesDao.findTree();
+    public List<CarSeriesTree> tree(boolean isSearchCache,String keyword) {
+        return carSeriesDao.findTree(keyword);
     }
 }

@@ -36,7 +36,5 @@ public interface ICarSeriesDao extends BaseMapper<CarSeries> {
      * @param keyword
      * @return
      */
-    List<CarSeries> getCarSeries(@Param("keyword") String keyword);
-
-    List<CarSeriesTree> findTree();
+    List<CarSeriesTree> findTree(@Param("keyword") String keyword);
 }
