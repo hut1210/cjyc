@@ -1,12 +1,15 @@
 package com.cjyc.common.model.dao;
 
 import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
+import com.cjyc.common.model.dto.web.mimeCarrier.QueryMyDriverDto;
 import com.cjyc.common.model.dto.web.user.DriverListDto;
 import com.cjyc.common.model.entity.Driver;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.vo.web.carrier.BaseDriverVo;
 import com.cjyc.common.model.vo.web.driver.DriverVo;
 import com.cjyc.common.model.vo.web.driver.ShowDriverVo;
+import com.cjyc.common.model.vo.web.mimeCarrier.MyDriverVo;
+import com.cjyc.common.model.vo.web.mimeCarrier.MyFreeDriverVo;
 import com.cjyc.common.model.vo.web.user.DriverListVo;
 import io.swagger.annotations.ApiParam;
 import org.apache.ibatis.annotations.Param;
@@ -75,4 +78,25 @@ public interface IDriverDao extends BaseMapper<Driver> {
     List<BaseDriverVo> getDriversByIds(List<Long> driverIds);
 
     Driver findByUserId(Long userId);
+
+    /**
+     * 查询该承该运商下的司机
+     * @return
+     */
+    List<MyDriverVo> findMyDriver(QueryMyDriverDto dto);
+
+    /**
+     * 根据承运商id和司机姓名查询所有符合的司机
+     * @param carrierId
+     * @param realName
+     * @return
+     */
+    List<MyFreeDriverVo> findMyAllDriver(@Param("carrierId") Long carrierId,@Param("realName") String realName);
+
+    /**
+     * 根据承运商查询绑定的司机
+     * @param carrierId
+     * @return
+     */
+    List<Long> findMyBusyDriver(@Param("carrierId") Long carrierId);
 }

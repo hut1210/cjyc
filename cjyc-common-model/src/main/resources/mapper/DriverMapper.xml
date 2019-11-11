@@ -248,4 +248,80 @@
         </foreach>
     </select>
 
+    <!--查询该承该运商下的司机-->
+    <select id="findMyDriver" resultType="com.cjyc.common.model.vo.web.mimeCarrier.MyDriverVo"
+                                parameterType="com.cjyc.common.model.dto.web.mimeCarrier.QueryMyDriverDto">
+        SELECT
+            d.id AS driverId,
+            driCon.carrier_id AS carrierId,
+            d.real_name AS realName,
+            d.phone AS phone,
+            d.MODE AS MODE,
+            d.business_state AS businessState,
+            d.state AS state,
+            d.identity AS identity,
+            veh.plate_no AS plateNo,
+            veh.default_carry_num AS defaultCarryNum
+        FROM
+            d_driver d
+            LEFT JOIN d_carrier_driver_con driCon ON driCon.driver_id = d.id
+            LEFT JOIN d_driver_vehicle_con vehCon ON vehCon.driver_id = d.id
+            LEFT JOIN d_vehicle veh ON veh.id = vehCon.vehicle_id
+        <where>
+            <if test="realName != null and realName.trim() != ''">
+                d.real_name like CONCAT('%',#{realName},'%')
+            </if>
+            <if test="phone != null and phone.trim() != ''">
+                and  d.phone = #{phone}
+            </if>
+            <if test="idCard != null and idCard.trim() != ''">
+                and  d.id_card = #{idCard}
+            </if>
+            <if test="plateNo != null and plateNo.trim() != ''">
+                and  v.plate_no = #{plateNo}
+            </if>
+            <if test="identity != null">
+                and  d.identity = #{identity}
+            </if>
+            <if test="businessState != null">
+                and  d.business_state = #{businessState}
+            </if>
+            <if test="state != null">
+                and  d.state = #{state}
+            </if>
+            <if test="mode != null">
+                and  d.mode = #{mode}
+            </if>
+            and driCon.carrier_id = #{carrierId}
+        </where>
+    </select>
+
+    <!--根据承运商id和司机姓名司机-->
+    <select id="findMyAllDriver" resultType="com.cjyc.common.model.vo.web.mimeCarrier.MyFreeDriverVo">
+        SELECT
+            d.id AS id,
+            d.real_name AS realName,
+            d.phone AS phone,
+            d.MODE AS MODE
+        FROM
+            d_driver d
+	    LEFT JOIN d_carrier_driver_con con ON con.driver_id = d.id
+        <where>
+            <if test="realName != null and realName.trim() != ''">
+                d.real_name like CONCAT('%',#{realName},'%')
+            </if>
+            and con.carrier_id = #{carrierId} and d.state=2
+        </where>
+    </select>
+
+    <!--根据承运商查询绑定的司机-->
+    <select id="findMyBusyDriver" resultType="java.lang.Long" parameterType="java.lang.Long">
+        SELECT
+            con.driver_id
+        FROM
+            d_driver_vehicle_con con
+            LEFT JOIN d_vehicle veh ON veh.id = con.vehicle_id
+        where veh.carrier_id = #{carrierId}
+    </select>
+
 </mapper>

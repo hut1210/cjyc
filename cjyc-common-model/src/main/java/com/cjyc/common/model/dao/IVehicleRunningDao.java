@@ -36,4 +36,11 @@ public interface IVehicleRunningDao extends BaseMapper<VehicleRunning> {
     int removeRun(@Param("driverId") Long driverId);
 
     VehicleRunning findByDriverId(Long driverId);
+
+    /**
+     * 更新已绑定车辆
+     * @param vehicleId
+     * @return
+     */
+    int updateVehicleRunning(@Param("vehicleId") Long vehicleId);
 }

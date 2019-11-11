@@ -33,6 +33,10 @@ public class DriverDto implements Serializable {
     @NotBlank(groups = {SaveDriverDto.class,UpdateDriverDto.class},message = "司机姓名不能为空")
     private String realName;
 
+    @ApiModelProperty("身份证号")
+    @NotBlank(groups = {SaveDriverDto.class,UpdateDriverDto.class},message = "司机身份证号不能为空")
+    private String idCard;
+
     @ApiModelProperty("司机手机号")
     @NotBlank(groups = {SaveDriverDto.class,UpdateDriverDto.class},message = "司机手机号不能为空")
     private String phone;

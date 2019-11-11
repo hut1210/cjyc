@@ -42,7 +42,7 @@
             left JOIN d_carrier_driver_con cdc on cdc.driver_id = dri.id
             left JOIN d_carrier carr ON carr.id = cdc.carrier_id
         WHERE
-	carr.id = #{carrierId}
+	        carr.id = #{carrierId}
     </select>
 
     <!-- 查询司机与车辆绑定信息 -->
@@ -96,5 +96,27 @@
                 and ownership_type = 1
             </if>
         </where>
+    </select>
+
+    <!-- 根据条件查询该承运商下的车辆 -->
+    <select id="findMyCar" resultType="com.cjyc.common.model.vo.web.mimeCarrier.MyCarVo"
+                            parameterType="com.cjyc.common.model.dto.web.mimeCarrier.QueryMyCarDto">
+        SELECT
+            veh.id AS vehicleId,
+            veh.carrier_id as carrierId,
+            dri.id as driverId,
+            veh.plate_no AS plateNo,
+            veh.default_carry_num AS defaultCarryNum,
+            dri.real_name AS realName,
+            dri.phone AS phone,
+            dri.MODE AS MODE
+        FROM
+            d_vehicle veh
+            left JOIN d_driver_vehicle_con con ON con.vehicle_id = veh.id
+            left JOIN d_driver dri ON dri.id = con.driver_id
+            left JOIN d_carrier_driver_con cdc on cdc.driver_id = dri.id
+            left JOIN d_carrier carr ON carr.id = cdc.carrier_id
+        WHERE
+	        carr.id = #{carrierId}
     </select>
 </mapper>

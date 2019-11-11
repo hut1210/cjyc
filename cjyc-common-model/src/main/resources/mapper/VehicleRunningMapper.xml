@@ -47,9 +47,14 @@
         and state = 1
     </select>
 
-    <!-- 根据运力vehicleId删除运力信息 -->
-    <delete id="removeRun" parameterType="java.lang.Long">
-        update  d_vehicle_running set state = 0 where driver_id = #{driverId}
-    </delete>
+    <!-- 根据司机id删除运力信息 -->
+    <update id="removeRun" parameterType="java.lang.Long">
+        update  d_vehicle_running set state = 0 where driver_id = #{driverId} and state = 1
+    </update>
+
+    <!-- 根据车辆id(vehicleId)删除运力信息 -->
+    <update id="updateVehicleRunning" parameterType="java.lang.Long">
+        update  d_vehicle_running set state = 0 where vehicle_id = #{vehicleId} and state = 1
+    </update>
 
 </mapper>

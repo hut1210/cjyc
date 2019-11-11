@@ -13,7 +13,9 @@ public enum FlagEnum {
     DELETE("删除",7),
     NULLIFY("作废",8),
     TURNOFF_SWITCH("关闭开关",9),
-    TURNONN_SWITCH("打开开关",10);
+    TURNONN_SWITCH("打开开关",10),
+    ADMINISTRATOR("设为管理员",11),
+    REMOVE_ADMINISTRATOR("解除管理员",12);
 
     public String name;
     public int code;

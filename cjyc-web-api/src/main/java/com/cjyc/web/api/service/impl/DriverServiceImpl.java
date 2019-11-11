@@ -100,9 +100,10 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
     @Override
     public ResultVo saveDriver(DriverDto dto) {
         //判断散户司机是否已存在
-        Driver dri = driverDao.selectOne(new QueryWrapper<Driver>().lambda().eq(Driver::getPhone,dto.getPhone()));
+        Driver dri = driverDao.selectOne(new QueryWrapper<Driver>().lambda().eq(Driver::getPhone,dto.getPhone())
+                                            .or().eq(Driver::getIdCard,dto.getIdCard()));
         if(dri != null){
-            return BaseResultUtil.fail("该散户司机已存在");
+            return BaseResultUtil.fail("该司机已存在");
         }
         //保存散户司机
         Driver driver = new Driver();
@@ -162,7 +163,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
 
     @Override
     public boolean verifyDriver(OperateDto dto) {
-        //获取司机
+        //获取司
         Driver driver = driverDao.selectById(dto.getId());
         //获取承运商
         Carrier carr = carrierDao.getCarrierById(dto.getId());
