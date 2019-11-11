@@ -37,4 +37,13 @@ public interface IRegionService {
      * @return com.cjyc.common.model.vo.ResultVo
      */
     ResultVo modifyRegion(RegionUpdateDto dto) throws Exception;
+
+    /**
+     * 功能描述: 删除大区
+     * @author liuxingxiang
+     * @date 2019/11/11
+     * @param regionCode
+     * @return com.cjyc.common.model.vo.ResultVo
+     */
+    ResultVo removeRegion(String regionCode) throws Exception;
 }
