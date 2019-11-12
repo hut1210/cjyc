@@ -25,4 +25,8 @@ public class OrderAmountDto implements Serializable {
     @ApiModelProperty(value = "订单编号")
     @NotBlank(message = "订单编号不能为空")
     private String orderNo;
+
+    public BigDecimal getAmount() {
+        return amount.multiply(new BigDecimal(100));
+    }
 }

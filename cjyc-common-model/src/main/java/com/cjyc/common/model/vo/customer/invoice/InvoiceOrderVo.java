@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * @Description 发票订单返回实体
@@ -22,7 +23,7 @@ public class InvoiceOrderVo implements Serializable {
     private String endCity;
 
     @ApiModelProperty(value = "订单总价")
-    private String totalFee;
+    private BigDecimal totalFee;
 
     @ApiModelProperty(value = "订单完结时间")
     private Long finishTime;
@@ -36,8 +37,8 @@ public class InvoiceOrderVo implements Serializable {
     public String getEndCity() {
         return endCity == null ? "" : endCity;
     }
-    public String getTotalFee() {
-        return totalFee == null ? "" : totalFee;
+    public BigDecimal getTotalFee() {
+        return totalFee == null ? new BigDecimal(0) : totalFee.divide(new BigDecimal(100));
     }
     public Long getFinishTime() {
         return finishTime == null ? 0L : finishTime;

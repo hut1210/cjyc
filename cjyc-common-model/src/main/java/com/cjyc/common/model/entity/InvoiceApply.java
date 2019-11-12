@@ -1,15 +1,16 @@
 package com.cjyc.common.model.entity;
 
-import java.math.BigDecimal;
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.io.Serializable;
+import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * <p>
@@ -59,5 +60,7 @@ public class InvoiceApply implements Serializable {
     @ApiModelProperty(value = "开票状态 1-申请中，2-已开票")
     private Integer state;
 
-
+    public BigDecimal getAmount() {
+        return amount.divide(new BigDecimal(100));
+    }
 }

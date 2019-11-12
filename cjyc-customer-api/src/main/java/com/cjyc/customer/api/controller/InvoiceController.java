@@ -60,7 +60,7 @@ public class InvoiceController {
         return orderService.getUnInvoicePage(dto);
     }
 
-    @ApiOperation(value = "查询开票历史开票信息", notes = "\t 请求参数:loginId-客户登录ID-必传")
+    @ApiOperation(value = "查询开票历史开票明细", notes = "\t 请求参数:loginId-客户登录ID-必传")
     @PostMapping("/getInvoiceInfo/{loginId}")
     public ResultVo<CustomerInvoice> getInvoiceInfo(@PathVariable Long loginId){
         CustomerInvoice invoice = customerInvoiceService.getOne(new QueryWrapper<CustomerInvoice>().lambda().eq(CustomerInvoice::getCustomerId, loginId));
