@@ -107,7 +107,7 @@ public class InvoiceApplyServiceImpl extends SuperServiceImpl<IInvoiceApplyDao, 
         for (OrderAmountDto orderAmountDto : dto.getOrderAmountList()) {
             amount = amount.add(orderAmountDto.getAmount());
         }
-        invoiceApply.setAmount(amount);
+        invoiceApply.setAmount(amount.multiply(new BigDecimal(100)));
         invoiceApply.setApplyTime(System.currentTimeMillis());
         invoiceApply.setCustomerId(dto.getLoginId());
         invoiceApply.setCustomerName(dto.getName());
