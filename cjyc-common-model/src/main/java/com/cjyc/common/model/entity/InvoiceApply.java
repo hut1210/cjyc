@@ -3,6 +3,9 @@ package com.cjyc.common.model.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.cjyc.common.model.util.BigDecimalSerizlizer;
+import com.cjyc.common.model.util.DataLongSerizlizer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -43,12 +46,15 @@ public class InvoiceApply implements Serializable {
     private String customerName;
 
     @ApiModelProperty(value = "申请时间")
+    @JsonSerialize(using = DataLongSerizlizer.class)
     private Long applyTime;
 
     @ApiModelProperty(value = "开票时间")
+    @JsonSerialize(using = DataLongSerizlizer.class)
     private Long invoiceTime;
 
     @ApiModelProperty(value = "开票金额")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal amount;
 
     @ApiModelProperty(value = "发票号")
@@ -59,8 +65,4 @@ public class InvoiceApply implements Serializable {
 
     @ApiModelProperty(value = "开票状态 1-申请中，2-已开票")
     private Integer state;
-
-    public BigDecimal getAmount() {
-        return amount.divide(new BigDecimal(100));
-    }
 }

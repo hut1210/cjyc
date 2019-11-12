@@ -689,6 +689,7 @@
             o.start_city AS startCity,
             o.end_city AS endCity,
             o.total_fee AS totalFee,
+            o.car_num AS carNum,
             o.finish_time AS finishTime
         FROM
             w_order o
@@ -719,6 +720,7 @@
             o.start_city AS startCity,
             o.end_city AS endCity,
             o.total_fee AS totalFee,
+            o.car_num AS carNum,
             o.finish_time AS finishTime
         FROM
             w_order o
