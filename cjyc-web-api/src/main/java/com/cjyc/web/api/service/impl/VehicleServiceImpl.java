@@ -3,12 +3,16 @@ package com.cjyc.web.api.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.dao.IDriverVehicleConDao;
+import com.cjyc.common.model.dao.ITaskDao;
 import com.cjyc.common.model.dao.IVehicleDao;
 import com.cjyc.common.model.dao.IVehicleRunningDao;
 import com.cjyc.common.model.dto.KeywordDto;
 import com.cjyc.common.model.dto.web.vehicle.*;
 import com.cjyc.common.model.entity.DriverVehicleCon;
+import com.cjyc.common.model.entity.Task;
 import com.cjyc.common.model.entity.Vehicle;
+import com.cjyc.common.model.entity.VehicleRunning;
+import com.cjyc.common.model.enums.task.TaskStateEnum;
 import com.cjyc.common.model.enums.transport.VehicleOwnerEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
@@ -39,6 +43,9 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
     @Resource
     private IDriverVehicleConDao driverVehicleConDao;
 
+    @Resource
+    private ITaskDao taskDao;
+
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
     @Override
@@ -67,11 +74,19 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
 
     @Override
     public ResultVo removeVehicle(RemoveVehicleDto dto) {
+        //获取运力信息
+        VehicleRunning vRun = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda().eq(VehicleRunning::getDriverId,dto.getDriverId()));
+        if(vRun != null){
+            Task task = taskDao.selectOne(new QueryWrapper<Task>().lambda().eq(Task::getVehicleRunningId,vRun.getId()));
+            if(task != null && task.getState() == TaskStateEnum.TRANSPORTING.code){
+                return BaseResultUtil.fail("该运力正在运输中，不可删除");
+            }
+        }
         if(dto.getDriverId() != null){
             //车辆与司机有绑定关系
             //删除与司机关系
-            driverVehicleConDao.removeCon(dto.getDriverId());
-            vehicleRunningDao.removeRun(dto.getDriverId());
+            driverVehicleConDao.removeCon(dto.getDriverId(),dto.getVehicleId());
+            vehicleRunningDao.removeRun(dto.getDriverId(),dto.getVehicleId());
         }
         vehicleDao.deleteById(dto.getVehicleId());
         return BaseResultUtil.success();

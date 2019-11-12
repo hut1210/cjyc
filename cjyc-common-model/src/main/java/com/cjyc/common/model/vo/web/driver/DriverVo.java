@@ -11,17 +11,14 @@ import java.math.BigDecimal;
 @Data
 public class DriverVo implements Serializable {
 
+    private static final long serialVersionUID = 873178028316877563L;
     @ApiModelProperty("承运商id")
     @JsonSerialize(using= ToStringSerializer.class)
     private Long carrierId;
 
     @ApiModelProperty("司机id")
     @JsonSerialize(using= ToStringSerializer.class)
-    private Long id;
-
-    @ApiModelProperty("司机userId")
-    @JsonSerialize(using= ToStringSerializer.class)
-    private Long userId;
+    private Long driverId;
 
     @ApiModelProperty("司机姓名")
     private String realName;
@@ -29,20 +26,23 @@ public class DriverVo implements Serializable {
     @ApiModelProperty("司机手机号")
     private String phone;
 
-    @ApiModelProperty("承运方式：0 ：代驾 1：干线司机  2：拖车司机 4全支持")
-    private String mode;
+    @ApiModelProperty("承运方式：2 : 代驾  3 : 干线   4：拖车")
+    private Integer mode;
 
     @ApiModelProperty("结算方式：0时付，1账期")
-    private String settleType;
-
-    @ApiModelProperty("账期/天")
-    private Integer settlePeriod;
-
-    @ApiModelProperty("是否开发票 0：否  1：是")
-    private String isInvoice;
+    private Integer settleType;
 
     @ApiModelProperty("车牌号")
     private String plateNo;
+
+    @ApiModelProperty("持卡人")
+    private String cardName;
+
+    @ApiModelProperty("开户行")
+    private String bankName;
+
+    @ApiModelProperty("银行卡号")
+    private String cardNo;
 
     @ApiModelProperty("身份证号")
     private String idCard;
@@ -56,9 +56,6 @@ public class DriverVo implements Serializable {
     @ApiModelProperty("驾驶证正面")
     private String driverLicenceFrontImg;
 
-    @ApiModelProperty("行驶证正面")
-    private String travelLicenceFrontImg;
-
     @ApiModelProperty("从业证正面")
     private String qualifiCertFrontImg;
 
@@ -68,8 +65,8 @@ public class DriverVo implements Serializable {
     @ApiModelProperty("账号来源：1App注册，2Applet注册，3业务员创建，4承运商管理员创建，11掌控接口，12otm接口")
     private String source;
 
-    @ApiModelProperty("营运状态：0营运中，1停运中")
-    private String businessState;
+    @ApiModelProperty("运行状态：0空闲，1在途 2繁忙")
+    private Integer runningState;
 
     @ApiModelProperty("总运量(台)")
     private Integer carNum;
@@ -81,5 +78,5 @@ public class DriverVo implements Serializable {
     private String state;
 
     @ApiModelProperty("操作人")
-    private String operateName;
+    private String operator;
 }

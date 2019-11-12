@@ -24,6 +24,10 @@ public class DriverDto implements Serializable {
     @NotNull(groups = {UpdateDriverDto.class},message = "司机id(driverId)不能为空")
     private Long driverId;
 
+    @ApiModelProperty("承运商id(carrierId)")
+    @NotNull(groups = {UpdateDriverDto.class},message = "承运商id不能为空")
+    private Long carrierId;
+
     @ApiModelProperty("当前登陆用户id(loginId)")
     @NotNull(groups = {SaveDriverDto.class,UpdateDriverDto.class},message = "当前登陆用户id(loginId)不能为空")
     private Long loginId;

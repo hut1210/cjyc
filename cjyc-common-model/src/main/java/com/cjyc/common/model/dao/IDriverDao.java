@@ -1,5 +1,6 @@
 package com.cjyc.common.model.dao;
 
+import com.cjyc.common.model.dto.web.VerifyCarrierDto;
 import com.cjyc.common.model.dto.web.driver.DispatchDriverDto;
 import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
 import com.cjyc.common.model.dto.web.mimeCarrier.QueryMyDriverDto;
@@ -110,9 +111,15 @@ public interface IDriverDao extends BaseMapper<Driver> {
 
     /**
      * 根据手机号查询个人司机/承运商中是否存在
-     * @param phone
-     * @param type
+     * @param dto,type
      * @return
      */
-    String existCarrier(@Param("phone") String phone,@Param("type") Integer type);
+    String existCarrier(VerifyCarrierDto dto, Integer type);
+
+    /**
+     * 通过承运商id获取司机
+     * @param carrierId
+     * @return
+     */
+    Driver findDriverByCarrierId(@Param("carrierId") Long carrierId);
 }

@@ -31,7 +31,6 @@
         <result column="deposit_pay_state" property="depositPayState" />
         <result column="business_state" property="businessState" />
         <result column="source" property="source" />
-        <result column="is_red" property="isRed" />
         <result column="create_time" property="createTime" />
         <result column="create_user_id" property="createUserId" />
         <result column="check_time" property="checkTime" />
@@ -40,7 +39,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, user_id, name, phone, emergency_phone, type, identity, id_card, real_name, age, sex, address, id_card_front_img, id_card_back_img, driver_licence_front_img, driver_licence_back_img, travel_licence_front_img, travel_licence_back_img, taxi_licence_front_img, taxi_licence_back_img, qualifi_cert_front_img, qualifi_cert_back_img, remark, state, deposit_pay_state, business_state, source, is_red, create_time, create_user_id, check_time, check_user_id
+        id, user_id, name, phone, emergency_phone, type, identity, id_card, real_name, age, sex, address, id_card_front_img, id_card_back_img, driver_licence_front_img, driver_licence_back_img, travel_licence_front_img, travel_licence_back_img, taxi_licence_front_img, taxi_licence_back_img, qualifi_cert_front_img, qualifi_cert_back_img, remark, state, deposit_pay_state, business_state, source, create_time, create_user_id, check_time, check_user_id
     </sql>
 
     <select id="findList" resultType="com.cjyc.common.model.vo.web.user.DriverListVo">
@@ -100,15 +99,15 @@
     </select>
 
     <!--根据条件查询司机信息-->
-    <select id="getDriverByTerm" resultType="com.cjyc.common.model.vo.web.driver.DriverVo" parameterType="com.cjyc.common.model.dto.web.driver.SelectDriverDto">
+    <select id="getDriverByTerm" resultType="com.cjyc.common.model.vo.web.driver.DriverVo"
+            parameterType="com.cjyc.common.model.dto.web.driver.SelectDriverDto">
         SELECT
-            carr.id AS carrierId,
-            d.id AS id,
-            d.user_id AS userId,
+            carrier.id AS carrierId,
+            d.id AS driverId,
             d.real_name AS realName,
             d.phone AS phone,
-            d.MODE AS MODE,
-            carr.settle_type AS settleType,
+            driCon.MODE AS MODE,
+            carrier.settle_type AS settleType,
             v.plate_no AS plateNo,
             card.card_name AS cardName,
             card.bank_name AS bankName,
@@ -120,16 +119,18 @@
             d.taxi_licence_front_img AS taxiLicenceFrontImg,
             d.qualifi_cert_front_img AS qualifiCertFrontImg,
             d.source AS source,
-            d.business_state AS businessState,
             d.state AS state,
-            d.operate_name as operateName
-            FROM
-            d_driver d
-            LEFT JOIN d_carrier_driver_con driCon ON driCon.driver_id = d.id
-            LEFT JOIN d_carrier carr ON carr.id = driCon.carrier_id
-            LEFT JOIN s_bank_card_bind card ON card.user_id = d.user_id
-            LEFT JOIN d_driver_vehicle_con con ON con.driver_id = d.id
-            LEFT JOIN d_vehicle v ON v.id = con.vehicle_id
+            vr.running_state AS runningState,
+            admin.NAME AS operator
+        FROM
+           d_carrier carrier
+        LEFT JOIN d_carrier_driver_con driCon ON driCon.carrier_id = carrier.id
+        LEFT JOIN d_driver d ON d.id = driCon.driver_id
+        LEFT JOIN s_bank_card_bind card ON card.user_id = d.id
+        LEFT JOIN d_driver_vehicle_con con ON con.driver_id = d.id
+        LEFT JOIN d_vehicle v ON v.id = con.vehicle_id
+        LEFT JOIN d_vehicle_running vr ON vr.driver_id = d.id
+        LEFT JOIN b_admin admin ON admin.id = d.check_user_id
         <where>
             <if test="realName != null and realName.trim() != ''">
                 d.real_name like CONCAT('%',#{realName},'%')
@@ -147,15 +148,15 @@
                 and  d.identity = #{identity}
             </if>
             <if test="businessState != null">
-                and  d.business_state = #{businessState}
+                and  vr.running_state = #{runningState}
             </if>
             <if test="state != null">
-                and  d.state = #{state}
+                and  carrier.state = #{state}
             </if>
             <if test="mode != null">
-                and  d.mode = #{mode}
+                and  driCon.mode = #{mode}
             </if>
-            and d.type = 2 and d.identity = 0
+            and  carrier.type = 1 and d.identity = 0
         </where>
     </select>
 
@@ -362,13 +363,26 @@
     <!--根据手机号查询承运商中是否存在-->
     <select id="existCarrier" resultType="java.lang.String">
         SELECT
-	        carrier.name
+            carrier.NAME
         FROM
-            d_driver driver
-            LEFT JOIN d_carrier_driver_con con ON con.driver_id = driver.id
-            LEFT JOIN d_carrier carrier ON carrier.id = con.carrier_id
+            d_carrier carrier
+            LEFT JOIN d_carrier_driver_con con ON con.carrier_id = carrier.id
+            LEFT JOIN d_driver driver ON driver.id = con.driver_id
         WHERE
             carrier.type = #{type}
-            AND driver.phone = #{phone} limit 1
+            AND (driver.phone = #{phone} or driver.id_card = #{idCard}) limit 1
+    </select>
+
+    <!--通过承运商id获取司机-->
+    <select id="findDriverByCarrierId" parameterType="java.lang.Long"
+                                    resultType="com.cjyc.common.model.entity.Driver">
+        SELECT
+          <include refid="Base_Column_List"/>
+        FROM
+            d_driver d
+            LEFT JOIN d_carrier_driver_con con ON con.driver_id = d.id
+            LEFT JOIN d_carrier c ON c.id = con.carrier_id
+        WHERE
+	    c.id = #{carrierId}
     </select>
 </mapper>

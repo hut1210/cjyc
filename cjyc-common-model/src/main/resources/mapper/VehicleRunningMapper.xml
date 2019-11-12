@@ -34,7 +34,7 @@
     </select>
 
     <!-- 根据driverId获取运力信息 -->
-    <select id="getVehiRunByDriverId" resultType="com.cjyc.common.model.entity.VehicleRunning" parameterType="java.lang.Long">
+    <select id="getVehiRunByDriverId" resultType="com.cjyc.common.model.entity.VehicleRunning">
         select
         <include refid="Base_Column_List"/>
         from d_vehicle_running
@@ -49,12 +49,7 @@
 
     <!-- 根据司机id删除运力信息 -->
     <update id="removeRun" parameterType="java.lang.Long">
-        update  d_vehicle_running set state = 0 where driver_id = #{driverId} and state = 1
-    </update>
-
-    <!-- 根据车辆id(vehicleId)删除运力信息 -->
-    <update id="updateVehicleRunning" parameterType="java.lang.Long">
-        update  d_vehicle_running set state = 0 where vehicle_id = #{vehicleId} and state = 1
+        delete from d_vehicle_running where driver_id = #{driverId} and vehicle_id = #{vehicleId}
     </update>
 
 </mapper>

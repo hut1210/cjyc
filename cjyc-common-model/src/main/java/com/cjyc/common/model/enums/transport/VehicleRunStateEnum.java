@@ -1,14 +1,15 @@
 package com.cjyc.common.model.enums.transport;
 
-public enum DriverRedEnum {
+public enum VehicleRunStateEnum {
 
-    NORED("不标红", 0),
-    RED("浅红色底色", 1);
+    FREE("空闲", 0),
+    WAY("在途", 1),
+    BUSY("繁忙", 2);
 
     public String name;
     public int code;
 
-    DriverRedEnum(String name, int code) {
+    VehicleRunStateEnum(String name, int code) {
         this.name = name;
         this.code = code;
     }

@@ -14,18 +14,16 @@ public class CarrierDto implements Serializable {
 
     private static final long serialVersionUID = 8035192987370988017L;
 
-    public interface SaveCarrierDto {
-    }
+    public interface SaveCarrierDto {}
 
-    public interface UpdateCarrierDto {
-    }
+    public interface UpdateCarrierDto {}
 
     @ApiModelProperty("承运商id(carrierId)")
-    @NotNull(groups = {CarrierDto.UpdateCarrierDto.class},message = "承运商id(carrierId)不能为空")
+    @NotNull(groups = {UpdateCarrierDto.class},message = "承运商id(carrierId)不能为空")
     private Long carrierId;
 
     @ApiModelProperty("当前登陆用户id(loginId)")
-    @NotNull(groups = {CarrierDto.SaveCarrierDto.class},message = "当前登陆用户id(loginId)不能为空")
+    @NotNull(groups = {SaveCarrierDto.class},message = "当前登陆用户id(loginId)不能为空")
     private Long loginId;
 
     @ApiModelProperty("企业名称")
@@ -59,8 +57,8 @@ public class CarrierDto implements Serializable {
     @ApiModelProperty("账期/天")
     private Integer settlePeriod;
 
-    @ApiModelProperty("业务范围")
-    @NotEmpty(message = "业务范围不能为空")
+    @ApiModelProperty("业务城市")
+    @NotEmpty(message = "业务城市不能为空")
     private List<String> codes;
 
     @ApiModelProperty("承运方式：2 : 代驾 3 : 干线 4：拖车  5：代驾+干线  6：代驾+拖车  7：干线+拖车  9：代驾+干线+拖车")
@@ -68,10 +66,11 @@ public class CarrierDto implements Serializable {
     private Integer mode;
 
     @ApiModelProperty("卡类型:1公户，2私户")
+    @NotNull(message = "卡类型不能为空")
     private Integer cardType;
 
-    @ApiModelProperty("持卡人姓名/企业名称")
-    @NotBlank(message = "持卡人姓名/企业名称不能为空")
+    @ApiModelProperty("银行卡户主")
+    @NotBlank(message = "银行卡户主不能为空")
     private String cardName;
 
     @ApiModelProperty("开户行")

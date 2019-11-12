@@ -88,12 +88,17 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
     @Override
-    public ResultVo saveCarrier(CarrierDto dto) {
+    public ResultVo existCarrier(String linkmanPhone) {
         //判断是否已存在
-        Carrier carr = carrierDao.selectOne(new QueryWrapper<Carrier>().lambda().eq(Carrier::getLinkmanPhone,dto.getLinkmanPhone()));
+        Carrier carr = carrierDao.selectOne(new QueryWrapper<Carrier>().lambda().eq(Carrier::getLinkmanPhone,linkmanPhone));
         if(carr != null){
             return BaseResultUtil.fail("该承运商已存在");
         }
+        return BaseResultUtil.success();
+    }
+
+    @Override
+    public ResultVo saveCarrier(CarrierDto dto) {
         //添加承运商
         Carrier carrier = new Carrier();
         BeanUtils.copyProperties(dto,carrier);
@@ -109,7 +114,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         driver.setName(dto.getName());
         driver.setPhone(dto.getLinkmanPhone());
         driver.setIdentity(DriverIdentityEnum.ADMIN.code);
-        driver.setState(CommonStateEnum.CHECKED.code);
+        driver.setState(CommonStateEnum.WAIT_CHECK.code);
         driver.setBusinessState(BusinessStateEnum.BUSINESS.code);
         driver.setSource(DriverSourceEnum.SALEMAN_WEB.code);
         driver.setIdCard(dto.getLegalIdCard());
@@ -132,7 +137,16 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     }
 
     @Override
-    public boolean modifyCarrier(CarrierDto dto) {
+    public ResultVo existCarrierDriver(Long carrierId,String linkmanPhone) {
+        Integer count = carrierDao.existCarrierDriver(carrierId,linkmanPhone);
+        if(count == null || count == 0){
+            return BaseResultUtil.fail("请选择该承运商下司机");
+        }
+        return BaseResultUtil.success();
+    }
+
+    @Override
+    public ResultVo modifyCarrier(CarrierDto dto) {
         //更新承运商
         Carrier carrier = new Carrier();
         BeanUtils.copyProperties(dto,carrier);
@@ -143,25 +157,18 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         ResultData<Long> rd = updateCarrierToPlatform(origCarrier, dto);
         if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
             log.error(rd.getMsg());
-            return false;
+            return BaseResultUtil.fail(rd.getMsg());
         }
         super.updateById(carrier);
-        //更新承运商司机管理员：司机更新用途？
-        Driver driver = driverDao.getDriverByCarrierId(dto.getCarrierId());
-        if(driver != null){
-            driver.setPhone(dto.getLinkmanPhone());
-            driver.setName(dto.getName());
-            driver.setRealName(dto.getLinkman());
-            driver.setIdCard(dto.getLegalIdCard());
-            driverDao.updateById(driver);
-        }
+
         //更新银行卡信息(先删除后添加)
         bankCardBindDao.removeBandCarBind(dto.getCarrierId());
         saveBankCardBand(dto,carrier.getId());
 
         //承运商业务范围,先批量删除，再添加
         carrierCityConService.batchDelete(carrier.getId());
-        return carrierCityConService.batchSave(carrier.getId(),dto.getCodes());
+        carrierCityConService.batchSave(carrier.getId(),dto.getCodes());
+        return BaseResultUtil.success();
     }
 
     @Override
@@ -183,35 +190,45 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public boolean verifyCarrier(OperateDto dto) {
+    public ResultVo verifyCarrier(OperateDto dto) {
         //审核状态 1:审核通过 2:审核拒绝 3：冻结 4:解除
         Carrier carrier = carrierDao.selectById(dto.getId());
+        Driver driver = findDriver(carrier.getId());
+        if (null == carrier || null == driver) {
+            return BaseResultUtil.fail("承运商信息错误，请检查");
+        }
         //审核通过
         if(FlagEnum.AUDIT_PASS.code == dto.getFlag()){
             //审核通过将承运商信息同步到物流平台
             ResultData<AddDeptAndUserResp> rd = saveCarrierToPlatform(carrier);
             if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
-                throw new CommonException("承运商机构添加失败");
+                return BaseResultUtil.fail("承运商机构添加失败");
             }
             //更新司机userID信息
-            updateDriver(rd.getData().getUserId(), carrier.getId());
+            driver.setUserId(rd.getData().getUserId());
+            driver.setState(CommonStateEnum.CHECKED.code);
             carrier.setDeptId(rd.getData().getDeptId());
             carrier.setState(CommonStateEnum.CHECKED.code);
             carrier.setCheckUserId(dto.getLoginId());
             carrier.setCheckTime(NOW);
         }else if(FlagEnum.AUDIT_REJECT.code == dto.getFlag()){
             //审核拒绝
+            driver.setState(CommonStateEnum.REJECT.code);
             carrier.setState(CommonStateEnum.REJECT.code);
             carrier.setCheckUserId(dto.getLoginId());
             carrier.setCheckTime(NOW);
         }else if(FlagEnum.FROZEN.code == dto.getFlag()){
             //冻结
+            driver.setState(CommonStateEnum.FROZEN.code);
             carrier.setState(CommonStateEnum.FROZEN.code);
         }else if(FlagEnum.THAW.code == dto.getFlag()){
             //解冻
+            driver.setState(CommonStateEnum.CHECKED.code);
             carrier.setState(CommonStateEnum.CHECKED.code);
         }
-        return super.updateById(carrier);
+        driverDao.updateById(driver);
+        super.updateById(carrier);
+        return BaseResultUtil.success();
     }
 
     @Override
@@ -305,9 +322,6 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
      * @return
      */
     private ResultData<AddDeptAndUserResp> saveCarrierToPlatform(Carrier carrier) {
-        if (null == carrier) {
-            return ResultData.failed("承运商信息错误，请检查");
-        }
         AddDeptAndUserReq deptReq = new AddDeptAndUserReq();
         deptReq.setName(carrier.getName());
         deptReq.setLegalPerson(carrier.getLegalName());
@@ -323,10 +337,9 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
 
     /**
      * 保存司机及承运商-司机关联关系
-     * @param userId
      * @param carrierId
      */
-    private void updateDriver(Long userId, Long carrierId) {
+    private Driver findDriver(Long carrierId) {
         List<CarrierDriverCon> conList = carrierDriverConDao.selectList(new QueryWrapper<CarrierDriverCon>()
                 .eq("carrier_id", carrierId)
                 .eq("role", DriverIdentityEnum.SUPERADMIN.code));
@@ -337,10 +350,10 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         if (driverId != null) {
             Driver driver = driverDao.selectById(driverId);
             if (driver != null) {
-                driver.setUserId(userId);
-                driverDao.updateById(driver);
+                return driver;
             }
         }
+        return null;
     }
 
     /**

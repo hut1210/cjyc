@@ -1,6 +1,7 @@
 package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.web.OperateDto;
+import com.cjyc.common.model.dto.web.VerifyCarrierDto;
 import com.cjyc.common.model.dto.web.driver.DispatchDriverDto;
 import com.cjyc.common.model.dto.web.driver.DriverDto;
 import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
@@ -48,8 +49,8 @@ public class DriverController {
 
     @ApiOperation(value = "判断个人司机在承运商中是否存在")
     @PostMapping(value = "/existDriver")
-    public ResultVo existDriver(@PathVariable @ApiParam(value = "手机号",required = true) String phone){
-        return driverService.existDriver(phone);
+    public ResultVo existDriver(@RequestBody VerifyCarrierDto dto){
+        return driverService.existDriver(dto);
     }
 
     @ApiOperation(value = "新增散户司机")
@@ -67,8 +68,7 @@ public class DriverController {
     @ApiOperation(value = "根据id进行审核通过/拒绝/冻结解冻")
     @PostMapping(value = "/verifyDriver")
     public ResultVo verifyDriver(@RequestBody OperateDto dto){
-        boolean result = driverService.verifyDriver(dto);
-        return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
+        return driverService.verifyDriver(dto);
     }
 
     @ApiOperation(value = "根据司机id(driverId)查看司机信息")

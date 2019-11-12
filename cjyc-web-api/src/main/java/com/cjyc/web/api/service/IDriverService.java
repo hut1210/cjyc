@@ -1,6 +1,7 @@
 package com.cjyc.web.api.service;
 
 import com.cjyc.common.model.dto.web.OperateDto;
+import com.cjyc.common.model.dto.web.VerifyCarrierDto;
 import com.cjyc.common.model.dto.web.driver.DispatchDriverDto;
 import com.cjyc.common.model.dto.web.driver.DriverDto;
 import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
@@ -19,11 +20,11 @@ public interface IDriverService {
     ResultVo<PageVo<DriverListVo>> lineWaitDispatchCarCountList(DriverListDto paramsDto);
 
     /**
-     * 根据个人司机手机号判断在承运商中是否存在
-     * @param phone
+     * 根据个人司机手机号/身份证号判断在承运商中是否存在
+     * @param dto
      * @return
      */
-    ResultVo existDriver(String phone);
+    ResultVo existDriver(VerifyCarrierDto dto);
 
     /**
      * 保存散户司机
@@ -44,7 +45,7 @@ public interface IDriverService {
      * @param dto
      * @return
      */
-    boolean verifyDriver(OperateDto dto);
+    ResultVo verifyDriver(OperateDto dto);
 
     /**
      * 根据司机id查看司机信息

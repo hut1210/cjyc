@@ -35,17 +35,29 @@ public class CarrierController {
     @Resource
     private ICarrierService carrierService;
 
+    @ApiOperation(value = "判断承运商是否存在")
+    @PostMapping(value = "/existCarrier")
+    public ResultVo existCarrier(@PathVariable @ApiParam(value = "承运商联系人手机号",required = true) String linkmanPhone){
+        return carrierService.existCarrier(linkmanPhone);
+    }
+
     @ApiOperation(value = "新增承运商")
     @PostMapping(value = "/saveCarrier")
     public ResultVo saveCarrier(@Validated({ CarrierDto.SaveCarrierDto.class }) @RequestBody CarrierDto dto){
         return carrierService.saveCarrier(dto);
     }
 
+    @ApiOperation(value = "验证修改承运商输入的手机号是否为该承运商下面的司机")
+    @PostMapping(value = "/existCarrierDriver")
+    public ResultVo existCarrierDriver(@PathVariable @ApiParam(value = "承运商id",required = true) Long carrierId,
+                                @PathVariable @ApiParam(value = "承运商联系人手机号",required = true) String linkmanPhone){
+        return carrierService.existCarrierDriver(carrierId,linkmanPhone);
+    }
+
     @ApiOperation(value = "更新承运商")
     @PostMapping(value = "/modifyCarrier")
     public ResultVo modifyCarrier(@Validated({ CarrierDto.UpdateCarrierDto.class }) @RequestBody CarrierDto dto){
-        boolean result = carrierService.modifyCarrier(dto);
-        return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
+        return carrierService.modifyCarrier(dto);
     }
 
     @ApiOperation(value = "根据条件查询承运商")
@@ -57,8 +69,7 @@ public class CarrierController {
     @ApiOperation(value = "根据id审核/冻结/解冻承运商")
     @PostMapping(value = "/verifyCarrier")
     public ResultVo verifyCarrier(@RequestBody OperateDto dto){
-        boolean result = carrierService.verifyCarrier(dto);
-        return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
+        return carrierService.verifyCarrier(dto);
     }
 
     @ApiOperation(value = "根据carrierId查看基本承运商信息")

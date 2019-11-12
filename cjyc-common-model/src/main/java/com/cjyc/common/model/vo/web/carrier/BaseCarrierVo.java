@@ -11,7 +11,7 @@ import java.util.List;
 public class BaseCarrierVo implements Serializable {
 
     @ApiModelProperty("承运商id")
-    private Long id;
+    private Long carrierId;
 
     @ApiModelProperty("公司名称")
     private String name;
