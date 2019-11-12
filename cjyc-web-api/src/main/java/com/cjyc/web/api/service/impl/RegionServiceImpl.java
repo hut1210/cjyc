@@ -215,6 +215,7 @@ public class RegionServiceImpl implements IRegionService {
         for (City city : list) {
             boolean update = cityService.update(new UpdateWrapper<City>().lambda()
                     .set(City::getParentCode, FieldConstant.NOT_REGION_CODE)
+                    .set(City::getParentName, FieldConstant.NOT_REGION_NAME)
                     .eq(City::getLevel, FieldConstant.PROVINCE_LEVEL).eq(City::getCode, city.getCode()));
             if (!update) {
                 throw new Exception("修改省份大区编码失败");
