@@ -119,10 +119,10 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
 
     /**
      * 查询未开发票订单列表
-     * @param userId
+     * @param loginId
      * @return
      */
-    List<InvoiceOrderVo> selectUnInvoiceOrderList(Long userId);
+    List<InvoiceOrderVo> selectUnInvoiceOrderList(Long loginId);
 
     /**
      * 查询发票申请信息订单明细

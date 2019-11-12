@@ -34,7 +34,6 @@ public class CustomerLineServiceImpl extends ServiceImpl<ICustomerLineDao, Custo
 
     @Override
     public ResultVo queryLinePage(CommonDto dto) {
-        BasePageUtil.initPage(dto);
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<CustomerLineVo> lineVos = customerLineDao.findCustomerLine(dto.getLoginId());
         PageInfo<CustomerLineVo> pageInfo =  new PageInfo<>(lineVos);
