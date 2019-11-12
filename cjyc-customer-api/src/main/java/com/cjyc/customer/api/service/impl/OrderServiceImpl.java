@@ -209,7 +209,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
     @Override
     public ResultVo getUnInvoicePage(InvoiceApplyQueryDto dto) {
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        List<InvoiceOrderVo> list = orderCarDao.selectUnInvoiceOrderList(dto.getUserId());
+        List<InvoiceOrderVo> list = orderCarDao.selectUnInvoiceOrderList(dto.getLoginId());
         PageInfo<InvoiceOrderVo> pageInfo = new PageInfo<>(list);
         return BaseResultUtil.success(pageInfo);
     }

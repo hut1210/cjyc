@@ -49,7 +49,7 @@ public class InvoiceApplyServiceImpl extends SuperServiceImpl<IInvoiceApplyDao, 
     @Override
     public ResultVo getInvoiceApplyPage(InvoiceApplyQueryDto dto) {
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        List<InvoiceApply> list = super.list(new QueryWrapper<InvoiceApply>().lambda().eq(InvoiceApply::getCustomerId, dto.getUserId()));
+        List<InvoiceApply> list = super.list(new QueryWrapper<InvoiceApply>().lambda().eq(InvoiceApply::getCustomerId, dto.getLoginId()));
         PageInfo<InvoiceApply> pageInfo = new PageInfo<>(list);
         return BaseResultUtil.success(pageInfo);
     }

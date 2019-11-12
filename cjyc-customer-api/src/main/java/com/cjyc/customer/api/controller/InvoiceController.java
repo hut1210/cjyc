@@ -38,13 +38,13 @@ public class InvoiceController {
     @Resource
     private IOrderService orderService;
 
-    @ApiOperation(value = "分页查询已申请发票信息")
+    @ApiOperation(value = "分页查询开票历史")
     @PostMapping("/getInvoiceApplyPage")
     public ResultVo<PageVo<List<InvoiceApply>>> getInvoiceApplyPage(@RequestBody @Validated({InvoiceApplyQueryDto.InvoiceOrderAndInvoiceApplyQuery.class}) InvoiceApplyQueryDto dto){
         return invoiceApplyService.getInvoiceApplyPage(dto);
     }
 
-    @ApiOperation(value = "分页查询已申请发票订单明细")
+    @ApiOperation(value = "分页查询开票历史订单明细")
     @PostMapping("/getInvoiceApplyOrderPage")
     public ResultVo<PageVo<InvoiceOrderVo>> getInvoiceApplyOrderPage(@RequestBody @Validated({InvoiceApplyQueryDto.InvoiceApplyOrderQuery.class}) InvoiceApplyQueryDto dto){
         return orderService.getInvoiceApplyOrderPage(dto);
@@ -56,7 +56,7 @@ public class InvoiceController {
         return orderService.getUnInvoicePage(dto);
     }
 
-    @ApiOperation(value = "查询开票信息")
+    @ApiOperation(value = "查询开票历史开票信息")
     @PostMapping("/getInvoiceInfo/{userId}")
     public ResultVo<CustomerInvoice> getInvoiceInfo(@PathVariable Long userId){
         CustomerInvoice invoice = customerInvoiceService.getOne(new QueryWrapper<CustomerInvoice>().lambda().eq(CustomerInvoice::getCustomerId, userId));
