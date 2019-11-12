@@ -38,28 +38,32 @@ public class InvoiceController {
     @Resource
     private IOrderService orderService;
 
-    @ApiOperation(value = "分页查询开票历史")
+    @ApiOperation(value = "分页查询开票历史", notes = "\t 请求参数:loginId-客户登录ID-必传;currentPage-当前页号;pageSize-每页条数")
     @PostMapping("/getInvoiceApplyPage")
     public ResultVo<PageVo<List<InvoiceApply>>> getInvoiceApplyPage(@RequestBody @Validated({InvoiceApplyQueryDto.InvoiceOrderAndInvoiceApplyQuery.class}) InvoiceApplyQueryDto dto){
         return invoiceApplyService.getInvoiceApplyPage(dto);
     }
 
-    @ApiOperation(value = "分页查询开票历史订单明细")
+    @ApiOperation(value = "分页查询开票历史订单明细", notes = "\t " +
+            "请求参数:" +
+            "loginId-客户登录ID-必传;" +
+            "invoiceApplyId-发票申请ID-必传;" +
+            "currentPage-当前页号;pageSize-每页条数")
     @PostMapping("/getInvoiceApplyOrderPage")
     public ResultVo<PageVo<InvoiceOrderVo>> getInvoiceApplyOrderPage(@RequestBody @Validated({InvoiceApplyQueryDto.InvoiceApplyOrderQuery.class}) InvoiceApplyQueryDto dto){
         return orderService.getInvoiceApplyOrderPage(dto);
     }
 
-    @ApiOperation(value = "分页查询用户未开发票的订单")
+    @ApiOperation(value = "分页查询用户未开发票的订单", notes = "\t 请求参数:loginId-客户登录ID-必传;currentPage-当前页号;pageSize-每页条数")
     @PostMapping("/getUnInvoicePage")
     public ResultVo<PageVo<InvoiceOrderVo>> getUnInvoicePage(@RequestBody @Validated({InvoiceApplyQueryDto.InvoiceOrderAndInvoiceApplyQuery.class}) InvoiceApplyQueryDto dto){
         return orderService.getUnInvoicePage(dto);
     }
 
-    @ApiOperation(value = "查询开票历史开票信息")
-    @PostMapping("/getInvoiceInfo/{userId}")
-    public ResultVo<CustomerInvoice> getInvoiceInfo(@PathVariable Long userId){
-        CustomerInvoice invoice = customerInvoiceService.getOne(new QueryWrapper<CustomerInvoice>().lambda().eq(CustomerInvoice::getCustomerId, userId));
+    @ApiOperation(value = "查询开票历史开票信息", notes = "\t 请求参数:loginId-客户登录ID-必传")
+    @PostMapping("/getInvoiceInfo/{loginId}")
+    public ResultVo<CustomerInvoice> getInvoiceInfo(@PathVariable Long loginId){
+        CustomerInvoice invoice = customerInvoiceService.getOne(new QueryWrapper<CustomerInvoice>().lambda().eq(CustomerInvoice::getCustomerId, loginId));
         return BaseResultUtil.success(invoice);
     }
 

@@ -55,7 +55,7 @@ public class InvoiceApplyServiceImpl extends SuperServiceImpl<IInvoiceApplyDao, 
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ResultVo applyInvoice(CustomerInvoiceAddDto dto) throws Exception {
         // 开票订单号校验
         for (OrderAmountDto orderAmountDto : dto.getOrderAmountList()) {
@@ -69,7 +69,7 @@ public class InvoiceApplyServiceImpl extends SuperServiceImpl<IInvoiceApplyDao, 
         CustomerInvoice invoice = new CustomerInvoice();
         BeanUtils.copyProperties(dto,invoice);
         invoice.setType(Integer.valueOf(dto.getType()));
-        invoice.setCustomerId(dto.getUserId());
+        invoice.setCustomerId(dto.getLoginId());
         Long invoiceId = null;
         if (dto.getId() != null) {
             invoiceId = dto.getId();
@@ -109,7 +109,7 @@ public class InvoiceApplyServiceImpl extends SuperServiceImpl<IInvoiceApplyDao, 
         }
         invoiceApply.setAmount(amount);
         invoiceApply.setApplyTime(System.currentTimeMillis());
-        invoiceApply.setCustomerId(dto.getUserId());
+        invoiceApply.setCustomerId(dto.getLoginId());
         invoiceApply.setCustomerName(dto.getName());
         invoiceApply.setState(FieldConstant.INVOICE_APPLY_IN);
         return invoiceApply;
