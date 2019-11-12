@@ -64,4 +64,13 @@ public class AdminController {
         //发送推送信息
         return BaseResultUtil.success(list);
     }
+
+    @ApiOperation(value = "分页查询指定业务中心下的业务员")
+    @PostMapping(value = "/listPage")
+    public ResultVo listPage(@RequestBody Long storeId) {
+
+
+        //发送推送信息
+        return null;
+    }
 }
