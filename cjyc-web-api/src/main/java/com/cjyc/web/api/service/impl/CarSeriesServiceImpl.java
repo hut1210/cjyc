@@ -10,13 +10,11 @@ import com.cjyc.common.model.dto.web.carSeries.CarSeriesImportExcel;
 import com.cjyc.common.model.dto.web.carSeries.CarSeriesQueryDto;
 import com.cjyc.common.model.dto.web.carSeries.CarSeriesUpdateDto;
 import com.cjyc.common.model.entity.CarSeries;
-import com.cjyc.common.model.util.BasePageUtil;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.StringUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.carSeries.CarSeriesExportExcel;
-import com.cjyc.common.model.vo.web.carSeries.CarSeriesTree;
 import com.cjyc.web.api.service.ICarSeriesService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -81,7 +79,6 @@ public class CarSeriesServiceImpl extends ServiceImpl<ICarSeriesDao,CarSeries> i
 
     @Override
     public ResultVo queryPage(CarSeriesQueryDto carSeriesQueryDto) {
-        BasePageUtil.initPage(carSeriesQueryDto);
         List<CarSeries> list = getCarSeriesList(carSeriesQueryDto);
         PageInfo<CarSeries> pageInfo = new PageInfo<>(list);
         return BaseResultUtil.success(pageInfo);

@@ -6,7 +6,6 @@ import com.cjyc.common.model.dto.web.line.SelectLineDto;
 import com.cjyc.common.model.dto.web.line.SortNodeListDto;
 import com.cjyc.common.model.entity.Line;
 import com.cjyc.common.model.enums.ResultEnum;
-import com.cjyc.common.model.util.BasePageUtil;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -63,7 +62,6 @@ public class LineController {
     @ApiOperation(value = "根据条件查询班线")
     @PostMapping(value = "/findPageLine")
     public ResultVo<PageVo<LineVo>> findPageLine(@RequestBody SelectLineDto dto){
-        BasePageUtil.initPage(dto);
         return lineService.findPageLine(dto);
     }
 

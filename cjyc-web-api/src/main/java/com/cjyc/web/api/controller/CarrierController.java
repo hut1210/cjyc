@@ -6,7 +6,6 @@ import com.cjyc.common.model.dto.web.carrier.DispatchCarrierDto;
 import com.cjyc.common.model.dto.web.carrier.SeleCarrierDto;
 import com.cjyc.common.model.dto.web.carrier.SeleVehicleDriverDto;
 import com.cjyc.common.model.enums.ResultEnum;
-import com.cjyc.common.model.util.BasePageUtil;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -52,7 +51,6 @@ public class CarrierController {
     @ApiOperation(value = "根据条件查询承运商")
     @PostMapping(value = "/findCarrier")
     public ResultVo<PageVo<CarrierVo>> findCarrier(@RequestBody SeleCarrierDto dto){
-        BasePageUtil.initPage(dto);
         return carrierService.findCarrier(dto);
     }
 
@@ -72,14 +70,12 @@ public class CarrierController {
     @ApiOperation(value = "根据条件查看该承运商下车辆信息")
     @PostMapping(value = "/findBaseVehicle")
     public ResultVo<PageVo<BaseVehicleVo>> findBaseVehicle(@Validated({ SeleVehicleDriverDto.SelectVehicleDto.class })@RequestBody SeleVehicleDriverDto dto){
-        BasePageUtil.initPage(dto);
         return carrierService.findBaseVehicle(dto);
     }
 
     @ApiOperation(value = "根据条件查看承运商下司机信息")
     @PostMapping(value = "/findBaseDriver")
     public ResultVo findBaseDriver(@Validated({ SeleVehicleDriverDto.SelectVehicleDto.class })@RequestBody SeleVehicleDriverDto dto){
-        BasePageUtil.initPage(dto);
         return carrierService.findBaseDriver(dto);
     }
 
@@ -94,7 +90,6 @@ public class CarrierController {
     @ApiOperation(value = "调度承运商信息")
     @PostMapping(value = "/dispatchCarrier")
     public ResultVo dispatchCarrier(@RequestBody DispatchCarrierDto dto){
-        BasePageUtil.initPage(dto);
         return carrierService.dispatchCarrier(dto);
     }
 }

@@ -19,7 +19,6 @@ import com.cjyc.common.model.enums.FlagEnum;
 import com.cjyc.common.model.enums.saleman.SalemanStateEnum;
 import com.cjyc.common.model.enums.task.TaskStateEnum;
 import com.cjyc.common.model.enums.transport.*;
-import com.cjyc.common.model.util.BasePageUtil;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.YmlProperty;
@@ -52,22 +51,13 @@ import java.util.List;
 public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implements IDriverService {
 
     @Resource
-    private IAdminDao adminDao;
-
-    @Resource
     private IDriverDao driverDao;
 
     @Resource
     private IDriverVehicleConDao driverVehicleConDao;
 
     @Resource
-    private ICityDao cityDao;
-
-    @Resource
     private ICarrierDao carrierDao;
-
-    @Resource
-    private IVehicleDao vehicleDao;
 
     @Resource
     private IVehicleRunningDao vehicleRunningDao;
@@ -314,7 +304,6 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
 
     @Override
     public ResultVo dispatchDriver(DispatchDriverDto dto) {
-        BasePageUtil.initPage(dto);
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<DispatchDriverVo> dispatchDriverVos = driverDao.getDispatchDriver(dto);
         PageInfo<DispatchDriverVo> pageInfo = new PageInfo<>(dispatchDriverVos);

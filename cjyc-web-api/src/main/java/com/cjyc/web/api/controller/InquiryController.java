@@ -1,20 +1,15 @@
 package com.cjyc.web.api.controller;
 
-import com.cjyc.common.model.dto.BasePageDto;
 import com.cjyc.common.model.dto.web.inquiry.HandleInquiryDto;
 import com.cjyc.common.model.dto.web.inquiry.SelectInquiryDto;
-import com.cjyc.common.model.entity.Dictionary;
 import com.cjyc.common.model.enums.ResultEnum;
-import com.cjyc.common.model.util.BasePageUtil;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.inquiry.InquiryVo;
 import com.cjyc.web.api.service.IInquiryService;
-import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -36,7 +31,6 @@ public class InquiryController  {
     @ApiOperation(value = "根据条件分页查询询价条目")
     @PostMapping(value = "/findInquiry")
     public ResultVo<PageVo<InquiryVo>> findInquiry(@RequestBody SelectInquiryDto dto){
-        BasePageUtil.initPage(dto);
         return inquiryService.findInquiry(dto);
     }
 

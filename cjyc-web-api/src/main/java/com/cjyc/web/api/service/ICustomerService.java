@@ -118,7 +118,7 @@ public interface ICustomerService  extends IService<Customer> {
      * @param dto
      * @return
      */
-    ResultVo getCustomerCouponByTerm(CustomerCouponDto dto);
+    ResultVo customerCoupon(CustomerCouponDto dto);
 
     /**
      * 根据customerId查询该用户的优惠券

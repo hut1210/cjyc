@@ -6,7 +6,6 @@ import com.cjyc.common.model.dto.web.driver.DriverDto;
 import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
 import com.cjyc.common.model.dto.web.user.DriverListDto;
 import com.cjyc.common.model.enums.ResultEnum;
-import com.cjyc.common.model.util.BasePageUtil;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -56,7 +55,6 @@ public class DriverController {
     @ApiOperation(value = "根据查询条件查看司机信息")
     @PostMapping(value = "/findDriver")
     public ResultVo<PageVo<DriverVo>> findDriver(@RequestBody SelectDriverDto dto){
-        BasePageUtil.initPage(dto);
         return driverService.findDriver(dto);
     }
 

@@ -15,8 +15,9 @@ public class CustomerCouponDto extends BasePageDto implements Serializable {
     @NotNull(message = "客户id不能为空")
     private Long customerId;
 
-    @ApiModelProperty("是否使用 0：未使用 1：已使用")
-    private Integer isUse;
+    @ApiModelProperty("是否可用 0：不可用 1：可用")
+    @NotNull(message = "是否可用不能为空")
+    private Integer isUsable;
 
     @ApiModelProperty("有效期开始时间")
     private Long startPeriodTime;

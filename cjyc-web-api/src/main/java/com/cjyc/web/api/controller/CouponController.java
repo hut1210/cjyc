@@ -5,13 +5,9 @@ import com.cjyc.common.model.dto.web.coupon.ConsumeCouponDto;
 import com.cjyc.common.model.dto.web.coupon.CouponDto;
 import com.cjyc.common.model.dto.web.coupon.SeleCouponDto;
 import com.cjyc.common.model.enums.ResultEnum;
-import com.cjyc.common.model.util.BasePageUtil;
 import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.coupon.CouponVo;
 import com.cjyc.web.api.service.ICouponService;
-import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,14 +51,12 @@ public class CouponController {
     @ApiOperation(value = "根据条件筛选分页查询优惠券")
     @PostMapping(value = "/getCouponByTerm")
     public ResultVo getCouponByTerm(@RequestBody SeleCouponDto dto){
-        BasePageUtil.initPage(dto.getCurrentPage(),dto.getPageSize());
         return couponService.getCouponByTerm(dto);
     }
 
     @ApiOperation(value = "查询该优惠券消耗明细")
     @PostMapping(value = "/getConsumeDetail")
     public ResultVo getConsumeDetail(@RequestBody ConsumeCouponDto dto){
-        BasePageUtil.initPage(dto.getCurrentPage(),dto.getPageSize());
         return couponService.getConsumeDetail(dto);
     }
 

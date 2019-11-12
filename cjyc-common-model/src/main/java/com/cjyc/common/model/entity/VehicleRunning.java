@@ -49,7 +49,7 @@ public class VehicleRunning implements Serializable {
     @ApiModelProperty(value = "状态：0无效，1有效")
     private Integer state;
 
-    @ApiModelProperty(value = "运行状态：0空闲，1在途")
+    @ApiModelProperty(value = "运行状态：0空闲，1在途  2繁忙")
     private Integer runningState;
 
     @ApiModelProperty(value = "创建时间")

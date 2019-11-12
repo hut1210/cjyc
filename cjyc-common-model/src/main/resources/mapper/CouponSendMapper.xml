@@ -59,18 +59,19 @@
     <!-- 根据用户编号查询所属自己的优惠券 -->
     <select id="getCustomerCouponById" resultType="com.cjyc.common.model.vo.customer.coupon.CustomerCouponVo"
             parameterType="java.lang.Long">
-      SELECT
+        SELECT
+            send.id AS id,
             c.NAME AS NAME,
-            c.full_amount as fullAmount,
-            c.cut_amount as cutAmount,
-            c.discount as discount,
+            c.full_amount AS fullAmount,
+            c.cut_amount AS cutAmount,
+            c.discount AS discount,
             c.type AS type,
             c.end_period_date AS endPeriodDate,
             c.is_forever AS isForever,
             send.is_use AS isUse
         FROM
-            c_coupon c
-            LEFT JOIN c_coupon_send send ON c.id = send.coupon_id
+	      c_coupon_send send
+	    LEFT JOIN c_coupon c ON c.id = send.coupon_id
         WHERE
             c.state = 2 and send.customer_id = #{customerId}
     </select>
@@ -91,6 +92,5 @@
             JOIN c_coupon_send send ON send.coupon_id = coupon.id
          where
             send.customer_id = #{customerId} and send.is_use = 0
-
     </select>
 </mapper>

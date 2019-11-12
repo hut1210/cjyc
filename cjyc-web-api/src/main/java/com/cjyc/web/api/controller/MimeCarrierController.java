@@ -2,7 +2,6 @@ package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.mimeCarrier.*;
-import com.cjyc.common.model.util.BasePageUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.web.api.service.IMimeCarrierService;
 import io.swagger.annotations.Api;
@@ -36,7 +35,6 @@ public class MimeCarrierController {
     @ApiOperation(value = "查询承运商下司机",notes = "如果carrierId为空，则是承运商管理员登陆，需要把loginId转成carrierId,否则是韵车内部登陆")
     @PostMapping(value = "/findPageDriver")
     public ResultVo findPageDriver(@RequestBody QueryMyDriverDto dto){
-        BasePageUtil.initPage(dto);
         return mimeCarrierService.findPageDriver(dto);
     }
 

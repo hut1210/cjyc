@@ -1,15 +1,9 @@
 package com.cjyc.customer.api.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.cjyc.common.model.dao.ICustomerDao;
 import com.cjyc.common.model.dto.CommonDto;
-import com.cjyc.common.model.dto.customer.invoice.InvoiceApplyQueryDto;
-import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.entity.CustomerLine;
 import com.cjyc.common.model.dao.ICustomerLineDao;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.cjyc.common.model.util.BasePageUtil;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.customerLine.CustomerLineVo;
