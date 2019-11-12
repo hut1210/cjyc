@@ -37,6 +37,9 @@ public class CarrierDriverCon implements Serializable {
     @ApiModelProperty(value = "司机ID")
     private Long driverId;
 
+    @ApiModelProperty("承运方式：2 : 代驾  3 : 干线   4：拖车")
+    private Integer mode;
+
     @ApiModelProperty(value = "角色：0个人司机，1下属司机，2管理员，3超级管理员")
     private Integer role;
 

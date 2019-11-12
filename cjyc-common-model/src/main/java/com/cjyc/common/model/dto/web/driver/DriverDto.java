@@ -16,10 +16,9 @@ import java.util.List;
 @Accessors(chain = true)
 public class DriverDto implements Serializable {
 
-    public interface SaveDriverDto {
-    }
-    public interface UpdateDriverDto {
-    }
+    private static final long serialVersionUID = 4826078276921799480L;
+    public interface SaveDriverDto {}
+    public interface UpdateDriverDto {}
 
     @ApiModelProperty("司机id(driverId)")
     @NotNull(groups = {UpdateDriverDto.class},message = "司机id(driverId)不能为空")
@@ -33,10 +32,6 @@ public class DriverDto implements Serializable {
     @NotBlank(groups = {SaveDriverDto.class,UpdateDriverDto.class},message = "司机姓名不能为空")
     private String realName;
 
-    @ApiModelProperty("身份证号")
-    @NotBlank(groups = {SaveDriverDto.class,UpdateDriverDto.class},message = "司机身份证号不能为空")
-    private String idCard;
-
     @ApiModelProperty("司机手机号")
     @NotBlank(groups = {SaveDriverDto.class,UpdateDriverDto.class},message = "司机手机号不能为空")
     private String phone;
@@ -45,9 +40,13 @@ public class DriverDto implements Serializable {
     @NotBlank(groups = {SaveDriverDto.class,UpdateDriverDto.class},message = "承运方式不能为空")
     private Integer mode;
 
-    @ApiModelProperty("业务类型")
+    @ApiModelProperty("业务城市")
     @NotEmpty(groups = {SaveDriverDto.class,UpdateDriverDto.class},message = "业务类型不能为空")
     private List<String> codes;
+
+    @ApiModelProperty("身份证号")
+    @NotBlank(groups = {SaveDriverDto.class,UpdateDriverDto.class},message = "司机身份证号不能为空")
+    private String idCard;
 
     @ApiModelProperty("身份证正面")
     @NotBlank(groups = {SaveDriverDto.class,UpdateDriverDto.class},message = "身份证正面不能为空")

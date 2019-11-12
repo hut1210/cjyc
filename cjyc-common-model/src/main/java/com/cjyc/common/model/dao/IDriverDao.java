@@ -107,4 +107,12 @@ public interface IDriverDao extends BaseMapper<Driver> {
      * @return
      */
     List<DispatchDriverVo> getDispatchDriver(DispatchDriverDto dto);
+
+    /**
+     * 根据手机号查询个人司机/承运商中是否存在
+     * @param phone
+     * @param type
+     * @return
+     */
+    String existCarrier(@Param("phone") String phone,@Param("type") Integer type);
 }

@@ -46,9 +46,6 @@ public class Driver implements Serializable {
     @ApiModelProperty(value = "类型：1自营司机，2社会司机")
     private Integer type;
 
-    @ApiModelProperty(value = "承运方式：2 : 代驾  3 : 干线   4：拖车")
-    private Integer mode;
-
     @ApiModelProperty(value = "司机身份 0：普通司机 1：管理员")
     private Integer identity;
 
@@ -111,6 +108,9 @@ public class Driver implements Serializable {
 
     @ApiModelProperty(value = "账号来源：1App注册，2Applet注册，3业务员创建，4承运商管理员创建，11掌控接口，12otm接口")
     private Integer source;
+
+    @ApiModelProperty(value = "0:不标红  1：浅红色底色")
+    private Integer isRed;
 
     @ApiModelProperty(value = "创建时间")
     private Long createTime;

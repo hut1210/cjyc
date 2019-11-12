@@ -74,7 +74,7 @@
           s_car_series
         <where>
             <if test="keyword != null and keyword.trim() != ''">
-                brand = #{keyword} or
+                brand like concat('%',#{keyword},'%') or
                 model = #{keyword} or
                 pin_initial = #{keyword}
             </if>

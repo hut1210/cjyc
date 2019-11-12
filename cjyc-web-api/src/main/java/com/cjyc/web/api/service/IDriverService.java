@@ -19,6 +19,13 @@ public interface IDriverService {
     ResultVo<PageVo<DriverListVo>> lineWaitDispatchCarCountList(DriverListDto paramsDto);
 
     /**
+     * 根据个人司机手机号判断在承运商中是否存在
+     * @param phone
+     * @return
+     */
+    ResultVo existDriver(String phone);
+
+    /**
      * 保存散户司机
      * @param dto
      * @return

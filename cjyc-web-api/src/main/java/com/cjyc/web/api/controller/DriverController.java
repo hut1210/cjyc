@@ -46,6 +46,12 @@ public class DriverController {
         return driverService.lineWaitDispatchCarCountList(reqDto);
     }
 
+    @ApiOperation(value = "判断个人司机在承运商中是否存在")
+    @PostMapping(value = "/existDriver")
+    public ResultVo existDriver(@PathVariable @ApiParam(value = "手机号",required = true) String phone){
+        return driverService.existDriver(phone);
+    }
+
     @ApiOperation(value = "新增散户司机")
     @PostMapping(value = "/saveDriver")
     public ResultVo saveDriver(@Validated({ DriverDto.SaveDriverDto.class }) @RequestBody DriverDto dto){

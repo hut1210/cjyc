@@ -93,27 +93,37 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
     }
 
     @Override
-    public ResultVo saveDriver(DriverDto dto) {
-        //判断散户司机是否已存在
-        Driver dri = driverDao.selectOne(new QueryWrapper<Driver>().lambda().eq(Driver::getPhone,dto.getPhone())
-                .or().eq(Driver::getIdCard,dto.getIdCard()));
-        if(dri != null){
-            return BaseResultUtil.fail("该司机已存在,请检查");
+    public ResultVo existDriver(String phone) {
+        //判断散户司机是否在个人司机/承运商中已存在
+        String realName = driverDao.existCarrier(phone,CarrierTypeEnum.PERSONAL.code);
+        if(StringUtils.isNotBlank(realName)){
+            return BaseResultUtil.fail("账号已存在于个人司机中");
         }
+        String name = driverDao.existCarrier(phone,CarrierTypeEnum.ENTERPRISE.code);
+        if(StringUtils.isNotBlank(name)){
+            return BaseResultUtil.fail("该司机已存在于["+name+"]不可创建");
+        }
+        return BaseResultUtil.success();
+    }
+
+    @Override
+    public ResultVo saveDriver(DriverDto dto) {
         //保存散户司机
         Driver driver = new Driver();
         BeanUtils.copyProperties(dto,driver);
         driver.setName(dto.getRealName());
         driver.setType(DriverTypeEnum.SOCIETY.code);
         driver.setIdentity(DriverIdentityEnum.PERSONAL_DRIVER.code);
-        driver.setBusinessState(BusinessStateEnum.OUTAGE.code);
+        driver.setBusinessState(BusinessStateEnum.BUSINESS.code);
         driver.setSource(DriverSourceEnum.SALEMAN_WEB.code);
+        driver.setIsRed(DriverRedEnum.NORED.code);
         driver.setState(CommonStateEnum.WAIT_CHECK.code);
         driver.setCreateTime(NOW);
         driver.setCreateUserId(dto.getLoginId());
         super.save(driver);
 
-        if(StringUtils.isNotBlank(dto.getPlateNo())){
+        if(StringUtils.isNotBlank(dto.getPlateNo()) && dto.getVehicleId() != null
+            && dto.getDefaultCarryNum() != null){
             //保存司机与车辆关系
             bindDriverVehicle(dto);
         }
@@ -124,6 +134,8 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         carrier.setLinkmanPhone(dto.getPhone());
         carrier.setType(CarrierTypeEnum.PERSONAL.code);
         carrier.setSettleType(ModeTypeEnum.TIME.code);
+        carrier.setState(CommonStateEnum.WAIT_CHECK.code);
+        carrier.setBusinessState(BusinessStateEnum.BUSINESS.code);
         carrier.setCreateTime(NOW);
         carrier.setCreateUserId(dto.getLoginId());
         carrierDao.insert(carrier);
@@ -132,6 +144,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         CarrierDriverCon cdc = new CarrierDriverCon();
         cdc.setCarrierId(carrier.getId());
         cdc.setDriverId(driver.getId());
+        cdc.setMode(dto.getMode());
         cdc.setRole(DriverIdentityEnum.PERSONAL_DRIVER.code);
         carrierDriverConDao.insert(cdc);
         //添加承运商业务范围
@@ -327,7 +340,6 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         vr.setVehicleId(dto.getVehicleId());
         vr.setPlateNo(dto.getPlateNo());
         vr.setCarryCarNum(dto.getDefaultCarryNum());
-        vr.setState(VehicleStateEnum.EFFECTIVE.code);
         vr.setRunningState(BusinessStateEnum.OUTAGE.code);
         vr.setCreateTime(NOW);
         vehicleRunningDao.insert(vr);
