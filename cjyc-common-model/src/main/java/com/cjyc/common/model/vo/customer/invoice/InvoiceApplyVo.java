@@ -1,34 +1,23 @@
-package com.cjyc.common.model.entity;
+package com.cjyc.common.model.vo.customer.invoice;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import io.swagger.annotations.ApiModel;
+import com.cjyc.common.model.util.BigDecimalSerizlizer;
+import com.cjyc.common.model.util.DataLongSerizlizer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
- * <p>
- * 发票申请信息表
- * </p>
- *
- * @author JPG
- * @since 2019-11-02
- */
+ * @Description 开票申请记录
+ * @Author LiuXingXiang
+ * @Date 2019/11/12 17:24
+ **/
 @Data
-@EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
-@TableName("c_invoice_apply")
-@ApiModel(value="InvoiceApply对象", description="发票申请信息表")
-public class InvoiceApply implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class InvoiceApplyVo implements Serializable {
+    private static final long serialVersionUID = 2794677299505293380L;
     @ApiModelProperty(value = "主键")
-    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     @ApiModelProperty(value = "发票ID")
@@ -41,12 +30,15 @@ public class InvoiceApply implements Serializable {
     private String customerName;
 
     @ApiModelProperty(value = "申请时间")
+    @JsonSerialize(using = DataLongSerizlizer.class)
     private Long applyTime;
 
     @ApiModelProperty(value = "开票时间")
+    @JsonSerialize(using = DataLongSerizlizer.class)
     private Long invoiceTime;
 
     @ApiModelProperty(value = "开票金额")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal amount;
 
     @ApiModelProperty(value = "发票号")
@@ -57,4 +49,16 @@ public class InvoiceApply implements Serializable {
 
     @ApiModelProperty(value = "开票状态 1-申请中，2-已开票")
     private Integer state;
+
+    public String getCustomerName() {
+        return customerName == null ? "" : customerName;
+    }
+
+    public String getInvoiceNo() {
+        return invoiceNo == null ? "" : invoiceNo;
+    }
+
+    public String getOperationName() {
+        return operationName == null ? "" : operationName;
+    }
 }

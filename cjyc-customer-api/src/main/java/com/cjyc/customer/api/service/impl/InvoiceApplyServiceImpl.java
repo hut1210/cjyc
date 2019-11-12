@@ -13,6 +13,7 @@ import com.cjyc.common.model.entity.InvoiceApply;
 import com.cjyc.common.model.entity.InvoiceOrderCon;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.customer.invoice.InvoiceApplyVo;
 import com.cjyc.customer.api.service.ICustomerInvoiceService;
 import com.cjyc.customer.api.service.IInvoiceApplyService;
 import com.github.pagehelper.PageHelper;
@@ -26,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -50,7 +52,14 @@ public class InvoiceApplyServiceImpl extends SuperServiceImpl<IInvoiceApplyDao, 
     public ResultVo getInvoiceApplyPage(InvoiceApplyQueryDto dto) {
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<InvoiceApply> list = super.list(new QueryWrapper<InvoiceApply>().lambda().eq(InvoiceApply::getCustomerId, dto.getLoginId()));
-        PageInfo<InvoiceApply> pageInfo = new PageInfo<>(list);
+        List<InvoiceApplyVo> returnList = new ArrayList<>(10);
+        for (InvoiceApply invoiceApply : list) {
+            InvoiceApplyVo vo = new InvoiceApplyVo();
+            BeanUtils.copyProperties(invoiceApply,vo);
+            returnList.add(vo);
+        }
+
+        PageInfo<InvoiceApplyVo> pageInfo = new PageInfo<>(returnList);
         return BaseResultUtil.success(pageInfo);
     }
 

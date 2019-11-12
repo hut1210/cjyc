@@ -34,5 +34,17 @@ public class InvoiceOrderVo implements Serializable {
     private Long finishTime;
 
     @ApiModelProperty(value = "车辆数")
-    private String carNum;
+    private int carNum;
+
+    public String getOrderNo() {
+        return orderNo == null ? "" : orderNo;
+    }
+
+    public String getStartCity() {
+        return startCity == null ? "" : startCity;
+    }
+
+    public String getEndCity() {
+        return endCity == null ? "" : endCity;
+    }
 }
