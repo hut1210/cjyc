@@ -21,4 +21,32 @@
         id, channel, user_id, user_name, customer_num_valid, income_amount, settling_amount, unsettle_amount, create_time, update_time
     </sql>
 
+    <!--分页查询分享列表-->
+    <select id="selectPage" parameterType="com.cjyc.common.model.dto.promote.AdminPromoteQueryDto"
+            resultType="com.cjyc.common.model.vo.web.promote.AdminPromoteVo">
+        select
+            *
+        from
+            b_admin_promote promote
+        left join b_admin_promote_detail detail on promote.user_id=detail.promote_user_id
+        <where>
+            <if test="channel != null and channel.trim() != ''">
+                and promote.channel like CONCAT('%',#{channel},'%')
+            </if>
+            <if test="userName != null and userName.trim() != ''">
+                and promote.user_name like CONCAT('%',#{userName},'%')
+            </if>
+            <if test="customerName != null and customerName.trim() != ''">
+                and detail.customer_name like CONCAT('%',#{customerName},'%')
+            </if>
+            <if test="registerTimeStart != null">
+                and detail.create_time >= #{registerTimeStart}
+            </if>
+            <if test="registerTimeEnd != null">
+                and detail.create_time &lt;= #{registerTimeEnd}
+            </if>
+        </where>
+        order by detail.create_time desc
+    </select>
+
 </mapper>
