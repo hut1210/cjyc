@@ -97,9 +97,6 @@ public class Driver implements Serializable {
     @ApiModelProperty(value = "备注")
     private String remark;
 
-    @ApiModelProperty(value = "状态：0待审核，2已审核，4取消，5冻结  7已驳回，9已停用（CommonStateEnum）")
-    private Integer state;
-
     @ApiModelProperty(value = "是否缴纳保证金：0否，1是")
     private Integer depositPayState;
 

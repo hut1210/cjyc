@@ -117,7 +117,6 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         driver.setIdentity(DriverIdentityEnum.PERSONAL_DRIVER.code);
         driver.setBusinessState(BusinessStateEnum.BUSINESS.code);
         driver.setSource(DriverSourceEnum.SALEMAN_WEB.code);
-        driver.setState(CommonStateEnum.WAIT_CHECK.code);
         driver.setCreateTime(NOW);
         driver.setCreateUserId(dto.getLoginId());
         super.save(driver);
@@ -145,6 +144,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         cdc.setCarrierId(carrier.getId());
         cdc.setDriverId(driver.getId());
         cdc.setMode(dto.getMode());
+        cdc.setState(CommonStateEnum.CHECKED.code);
         cdc.setRole(DriverIdentityEnum.PERSONAL_DRIVER.code);
         carrierDriverConDao.insert(cdc);
         //添加承运商业务范围
@@ -175,6 +175,11 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         Driver driver = driverDao.findDriverByCarrierId(dto.getId());
         //获取承运商
         Carrier carr = carrierDao.selectById(dto.getId());
+        if (null == carr || null == driver) {
+            return BaseResultUtil.fail("承运商信息错误，请检查");
+        }
+        CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda().eq(CarrierDriverCon::getCarrierId, driver.getId())
+                .eq(CarrierDriverCon::getCarrierId, carr.getId()));
         //审核通过
         if(dto.getFlag() == FlagEnum.AUDIT_PASS.code){
             //保存司机用户到平台，返回用户id
@@ -183,30 +188,29 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
                 return BaseResultUtil.fail("司机信息保存失败，原因：" + saveRd.getMsg());
             }
             driver.setUserId(saveRd.getData());
-            driver.setState(CommonStateEnum.CHECKED.code);
+            cdc.setState(CommonStateEnum.CHECKED.code);
             //更新承运商
             carr.setState(CommonStateEnum.CHECKED.code);
         }else if(dto.getFlag() == FlagEnum.AUDIT_REJECT.code){
             //审核拒绝
-            driver.setState(CommonStateEnum.REJECT.code);
+            cdc.setState(CommonStateEnum.REJECT.code);
             //更新承运商
             carr.setState(CommonStateEnum.REJECT.code);
         }else if(dto.getFlag() == FlagEnum.FROZEN.code){
             //冻结
-            driver.setState(CommonStateEnum.FROZEN.code);
+            cdc.setState(CommonStateEnum.FROZEN.code);
             //更新承运商
             carr.setState(CommonStateEnum.FROZEN.code);
         }else if(dto.getFlag() == FlagEnum.THAW.code){
             //解除
-            driver.setState(CommonStateEnum.CHECKED.code);
+            cdc.setState(CommonStateEnum.CHECKED.code);
             //更新承运商
             carr.setState(CommonStateEnum.CHECKED.code);
         }
-        driver.setCheckTime(NOW);
-        driver.setCheckUserId(dto.getLoginId());
         carr.setCheckTime(NOW);
         carr.setCheckUserId(dto.getLoginId());
         driverDao.updateById(driver);
+        carrierDriverConDao.updateById(cdc);
         carrierDao.updateById(carr);
         return BaseResultUtil.success();
     }
@@ -299,8 +303,8 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         if (null == driver) {
             return BaseResultUtil.fail("司机信息错误，请检查");
         }
-        driver.setState(flag.equals(1)?
-                SalemanStateEnum.REJECTED.code: SalemanStateEnum.CHECKED.code);
+        //driver.setState(flag.equals(1)?
+                //SalemanStateEnum.REJECTED.code: SalemanStateEnum.CHECKED.code);
         driverDao.updateById(driver);
         return BaseResultUtil.success();
     }

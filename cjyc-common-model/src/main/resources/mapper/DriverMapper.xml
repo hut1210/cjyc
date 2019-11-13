@@ -27,7 +27,6 @@
         <result column="qualifi_cert_front_img" property="qualifiCertFrontImg" />
         <result column="qualifi_cert_back_img" property="qualifiCertBackImg" />
         <result column="remark" property="remark" />
-        <result column="state" property="state" />
         <result column="deposit_pay_state" property="depositPayState" />
         <result column="business_state" property="businessState" />
         <result column="source" property="source" />
@@ -39,7 +38,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, user_id, name, phone, emergency_phone, type, identity, id_card, real_name, age, sex, address, id_card_front_img, id_card_back_img, driver_licence_front_img, driver_licence_back_img, travel_licence_front_img, travel_licence_back_img, taxi_licence_front_img, taxi_licence_back_img, qualifi_cert_front_img, qualifi_cert_back_img, remark, state, deposit_pay_state, business_state, source, create_time, create_user_id, check_time, check_user_id
+        id, user_id, name, phone, emergency_phone, type, identity, id_card, real_name, age, sex, address, id_card_front_img, id_card_back_img, driver_licence_front_img, driver_licence_back_img, travel_licence_front_img, travel_licence_back_img, taxi_licence_front_img, taxi_licence_back_img, qualifi_cert_front_img, qualifi_cert_back_img, remark, deposit_pay_state, business_state, source, create_time, create_user_id, check_time, check_user_id
     </sql>
 
     <select id="findList" resultType="com.cjyc.common.model.vo.web.user.DriverListVo">

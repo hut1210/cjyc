@@ -40,6 +40,9 @@ public class CarrierDriverCon implements Serializable {
     @ApiModelProperty("承运方式：2 : 代驾  3 : 干线   4：拖车")
     private Integer mode;
 
+    @ApiModelProperty(value = "状态：0待审核，2已审核，4取消，5冻结  7已驳回，9已停用（CommonStateEnum）")
+    private Integer state;
+
     @ApiModelProperty(value = "角色：0个人司机，1下属司机，2管理员，3超级管理员")
     private Integer role;
 

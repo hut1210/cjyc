@@ -85,7 +85,6 @@ public class MimeCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
             //业务员登陆
             driver.setSource(DriverSourceEnum.SALEMAN_WEB.code);
         }
-        driver.setState(CommonStateEnum.CHECKED.code);
         driver.setCreateUserId(dto.getLoginId());
         driver.setCreateTime(NOW);
         //司机信息保存
@@ -110,6 +109,7 @@ public class MimeCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
             }
         }
         driverCon.setDriverId(driver.getId());
+        driverCon.setState(CommonStateEnum.CHECKED.code);
         driverCon.setRole(DriverIdentityEnum.SUB_DRIVER.code);
         carrierDriverConDao.insert(driverCon);
         //车牌号不为空
@@ -176,12 +176,13 @@ public class MimeCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
             carrierDriverConDao.updateById(cdc);
         }else if(dto.getFlag() == FlagEnum.FROZEN.code){
             //冻结
-            driver.setState(CommonStateEnum.FROZEN.code);
+            cdc.setState(CommonStateEnum.FROZEN.code);
         }else if(dto.getFlag() == FlagEnum.THAW.code){
             //解冻
-            driver.setState(CommonStateEnum.CHECKED.code);
+            cdc.setState(CommonStateEnum.CHECKED.code);
         }
         driverDao.updateById(driver);
+        carrierDriverConDao.updateById(cdc);
         return BaseResultUtil.success();
     }
 
