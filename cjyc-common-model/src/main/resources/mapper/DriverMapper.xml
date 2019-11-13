@@ -101,61 +101,61 @@
     <select id="getDriverByTerm" resultType="com.cjyc.common.model.vo.web.driver.DriverVo"
             parameterType="com.cjyc.common.model.dto.web.driver.SelectDriverDto">
         SELECT
-            carrier.id AS carrierId,
-            d.id AS driverId,
-            d.real_name AS realName,
-            d.phone AS phone,
-            driCon.MODE AS MODE,
-            carrier.settle_type AS settleType,
-            v.plate_no AS plateNo,
-            card.card_name AS cardName,
-            card.bank_name AS bankName,
-            card.card_no AS cardNo,
-            d.id_card_front_img AS idCardFrontImg,
-            d.id_card_back_img AS idCardBackImg,
-            d.driver_licence_front_img AS driverLicenceFrontImg,
-            d.travel_licence_front_img AS travelLicenceFrontImg,
-            d.taxi_licence_front_img AS taxiLicenceFrontImg,
-            d.qualifi_cert_front_img AS qualifiCertFrontImg,
-            d.source AS source,
-            d.state AS state,
-            vr.running_state AS runningState,
-            admin.NAME AS operator
+            dc.id AS carrierId,
+            dd.id AS driverId,
+            dd.real_name AS realName,
+            dd.phone AS phone,
+            dcdc.MODE AS MODE,
+            dc.settle_type AS settleType,
+            dv.plate_no AS plateNo,
+            sbcb.card_name AS cardName,
+            sbcb.bank_name AS bankName,
+            sbcb.card_no AS cardNo,
+            dd.id_card_front_img AS idCardFrontImg,
+            dd.id_card_back_img AS idCardBackImg,
+            dd.driver_licence_front_img AS driverLicenceFrontImg,
+            dd.travel_licence_front_img AS travelLicenceFrontImg,
+            dd.taxi_licence_front_img AS taxiLicenceFrontImg,
+            dd.qualifi_cert_front_img AS qualifiCertFrontImg,
+            dd.source AS source,
+            dcdc.state AS state,
+            dvr.running_state AS runningState,
+            ba.NAME AS operator
         FROM
-           d_carrier carrier
-        LEFT JOIN d_carrier_driver_con driCon ON driCon.carrier_id = carrier.id
-        LEFT JOIN d_driver d ON d.id = driCon.driver_id
-        LEFT JOIN s_bank_card_bind card ON card.user_id = d.id
-        LEFT JOIN d_driver_vehicle_con con ON con.driver_id = d.id
-        LEFT JOIN d_vehicle v ON v.id = con.vehicle_id
-        LEFT JOIN d_vehicle_running vr ON vr.driver_id = d.id
-        LEFT JOIN b_admin admin ON admin.id = d.check_user_id
+            d_carrier dc
+        LEFT JOIN d_carrier_driver_con dcdc ON dcdc.carrier_id = dc.id
+        LEFT JOIN d_driver dd ON dd.id = dcdc.driver_id
+        LEFT JOIN s_bank_card_bind sbcb ON sbcb.user_id = dc.id
+        LEFT JOIN d_driver_vehicle_con ddvc ON ddvc.driver_id = dd.id
+        LEFT JOIN d_vehicle dv ON dv.id = ddvc.vehicle_id
+        LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
+        LEFT JOIN b_admin ba ON ba.id = dd.check_user_id
         <where>
             <if test="realName != null and realName.trim() != ''">
-                d.real_name like CONCAT('%',#{realName},'%')
+                dd.real_name like CONCAT('%',#{realName},'%')
             </if>
             <if test="phone != null and phone.trim() != ''">
-                and  d.phone = #{phone}
+                and  dd.phone = #{phone}
             </if>
             <if test="idCard != null and idCard.trim() != ''">
-                and  d.id_card = #{idCard}
+                and  dd.id_card = #{idCard}
             </if>
             <if test="plateNo != null and plateNo.trim() != ''">
-                and  v.plate_no = #{plateNo}
+                and  dv.plate_no = #{plateNo}
             </if>
             <if test="identity != null">
-                and  d.identity = #{identity}
+                and  dd.identity = #{identity}
             </if>
-            <if test="businessState != null">
-                and  vr.running_state = #{runningState}
+            <if test="runningState != null">
+                and  dvr.running_state = #{runningState}
             </if>
             <if test="state != null">
-                and  carrier.state = #{state}
+                and  dc.state = #{state}
             </if>
             <if test="mode != null">
-                and  driCon.mode = #{mode}
+                and  dcdc.mode = #{mode}
             </if>
-            and  carrier.type = 1 and d.identity = 0
+            and  dc.type = 1 and dd.identity = 0
         </where>
     </select>
 
@@ -362,14 +362,14 @@
     <!--根据手机号查询承运商中是否存在-->
     <select id="existCarrier" resultType="java.lang.String">
         SELECT
-            carrier.NAME
+            dc.NAME
         FROM
-            d_carrier carrier
-            LEFT JOIN d_carrier_driver_con con ON con.carrier_id = carrier.id
-            LEFT JOIN d_driver driver ON driver.id = con.driver_id
+            d_carrier dc
+            LEFT JOIN d_carrier_driver_con dcdc ON dcdc.carrier_id = dc.id
+            LEFT JOIN d_driver dd ON dd.id = dcdc.driver_id
         WHERE
-            carrier.type = #{type}
-            AND (driver.phone = #{phone} or driver.id_card = #{idCard}) limit 1
+            (dd.phone = #{phone} or dd.id_card = #{idCard})
+            AND  dc.type = #{type}
     </select>
 
     <!--通过承运商id获取司机-->

@@ -210,43 +210,63 @@
     <select id="findTrailDriver" resultType="com.cjyc.common.model.vo.web.carrier.TrailCarrierVo"
                  parameterType="com.cjyc.common.model.dto.web.carrier.TrailCarrierDto">
         SELECT
-            carrier.id AS carrierId,
-            carrier.NAME AS businessName,
-            carrier.linkman AS NAME,
-            carrier.linkman_phone AS phone,
-            carrier.type AS type,
-            vr.plate_no AS plateNo,
-            carrier.legal_id_card AS idCard,
-            vr.carry_car_num AS carryCarNum,
-            vr.occupied_car_num AS occupiedCarNum,
-            vr.running_state AS runningState
+            dc.id AS carrierId,
+            dc.NAME AS businessName,
+            dc.linkman AS NAME,
+            dc.linkman_phone AS phone,
+            dc.type AS type,
+            dvr.plate_no AS plateNo,
+            dc.legal_id_card AS idCard,
+            dvr.carry_car_num AS carryCarNum,
+            dvr.occupied_car_num AS occupiedCarNum,
+            dvr.running_state AS runningState
         FROM
-          d_carrier carrier
-        LEFT JOIN d_carrier_driver_con con ON con.carrier_id = carrier.id
-        LEFT JOIN d_driver driver ON driver.id = con.driver_id
-        LEFT JOIN d_driver_vehicle_con dvcon ON dvcon.driver_id = driver.id
-        LEFT JOIN d_vehicle vehicle ON vehicle.id = dvcon.vehicle_id
-        LEFT JOIN d_vehicle_running vr ON vr.driver_id = driver.id
+          d_carrier dc
+        LEFT JOIN d_carrier_driver_con dcdc ON dcdc.carrier_id = dc.id
+        LEFT JOIN d_driver dd ON dd.id = dcdc.driver_id
+        LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
         <where>
             <if test="name != null and name.trim() != ''">
-                carrier.name like CONCAT('%',#{name},'%')
+                dc.name like CONCAT('%',#{name},'%')
             </if>
             <if test="mode != null ">
-                and  carrier.mode = #{mode}
+                and  dc.mode = #{mode}
             </if>
             <if test="type != null">
-                and  carrier.type = #{type}
+                and  dc.type = #{type}
             </if>
             <if test="phone != null and phone.trim() != ''">
-                and  carrier.linkman_phone = #{phone}
+                and  dc.linkman_phone = #{phone}
             </if>
             <if test="idCard != null and idCard.trim() != ''">
-                and  carrier.legal_id_card = #{idCard}
+                and  dc.legal_id_card = #{idCard}
             </if>
             <if test="plateNo != null and plateNo.trim() != ''">
-                and  vehicle.plate_no = #{plateNo}
+                and  dvr.plate_no = #{plateNo}
             </if>
-                AND carrier.state = 2 and carrier.business_state = 0
+                AND dc.state = 2 and dc.business_state = 0
+        </where>
+    </select>
+
+    <!-- 判断该司机在个人或者该承运商下是否存在 -->
+    <select id="existMyDriver" resultType="java.lang.Integer">
+        SELECT
+	      count( carrier.id )
+        FROM
+            d_carrier carrier
+            LEFT JOIN d_carrier_driver_con con ON con.carrier_id = carrier.id
+            LEFT JOIN d_driver driver ON driver.id = con.driver_id
+        <where>
+            <if test="phone != null and phone.trim() != ''">
+                and  driver.phone = #{phone}
+            </if>
+            <if test="idCard != null and idCard.trim() != ''">
+                and  driver.id_card = #{idCard}
+            </if>
+            <if test="carrierId != null">
+                and  carrier.id = #{carrierId}
+            </if>
+                and  carrier.type = #{type}
         </where>
     </select>
 

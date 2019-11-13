@@ -72,8 +72,21 @@ public class MimeCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
     @Override
     public ResultVo existMyDriver(ExistMyDriverDto dto) {
         //判断在个人司机池中是否存在
-
-        return null;
+        if(dto.getCarrierId() == null){
+            //承运商超级管理员登陆，查询司机所在的承运商
+            CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
+                    .eq(CarrierDriverCon::getDriverId,dto.getLoginId()));
+            dto.setCarrierId(cdc.getCarrierId());
+        }
+        Integer count = carrierDao.existMyDriver(dto,CarrierTypeEnum.PERSONAL.code);
+        if(count > 0){
+            return BaseResultUtil.fail("该司机已存在于'韵车后台-司机管理'，不可创建");
+        }
+        count = carrierDao.existMyDriver(dto,CarrierTypeEnum.ENTERPRISE.code);
+        if(count > 0){
+            return BaseResultUtil.fail("账号已存在");
+        }
+        return BaseResultUtil.success();
     }
 
     @Override

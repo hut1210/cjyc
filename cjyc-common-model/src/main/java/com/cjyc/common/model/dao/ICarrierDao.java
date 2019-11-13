@@ -3,6 +3,7 @@ package com.cjyc.common.model.dao;
 import com.cjyc.common.model.dto.web.carrier.DispatchCarrierDto;
 import com.cjyc.common.model.dto.web.carrier.SeleCarrierDto;
 import com.cjyc.common.model.dto.web.carrier.TrailCarrierDto;
+import com.cjyc.common.model.dto.web.mimeCarrier.ExistMyDriverDto;
 import com.cjyc.common.model.entity.Carrier;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.vo.web.carrier.CarrierVo;
@@ -65,4 +66,11 @@ public interface ICarrierDao extends BaseMapper<Carrier> {
      * @return
      */
     List<TrailCarrierVo> findTrailDriver(TrailCarrierDto dto);
+
+    /**
+     * 判断该司机在个人或者该承运商下是否存在
+     * @param dto
+     * @return
+     */
+    Integer existMyDriver(ExistMyDriverDto dto,Integer type);
 }

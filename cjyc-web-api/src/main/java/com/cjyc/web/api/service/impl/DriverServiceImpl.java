@@ -94,13 +94,13 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
     }
 
     @Override
-    public ResultVo existDriver(VerifyCarrierDto dto) {
+    public ResultVo existDriver(String phone,String idCard) {
         //判断散户司机是否在个人司机/承运商中已存在
-        String realName = driverDao.existCarrier(dto,CarrierTypeEnum.PERSONAL.code);
+        String realName = driverDao.existCarrier(phone,idCard,CarrierTypeEnum.PERSONAL.code);
         if(StringUtils.isNotBlank(realName)){
             return BaseResultUtil.fail("账号已存在于个人司机中");
         }
-        String name = driverDao.existCarrier(dto,CarrierTypeEnum.ENTERPRISE.code);
+        String name = driverDao.existCarrier(phone,idCard,CarrierTypeEnum.ENTERPRISE.code);
         if(StringUtils.isNotBlank(name)){
             return BaseResultUtil.fail("该司机已存在于["+name+"]不可创建");
         }
@@ -124,13 +124,17 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         if(StringUtils.isNotBlank(dto.getPlateNo()) && dto.getVehicleId() != null
             && dto.getDefaultCarryNum() != null){
             //保存司机与车辆关系
+            dto.setDriverId(driver.getId());
             bindDriverVehicle(dto);
         }
         //保存个人承运商
         Carrier carrier = new Carrier();
+        carrier.setLegalName(dto.getRealName());
+        carrier.setLegalIdCard(dto.getIdCard());
         carrier.setName(dto.getRealName());
         carrier.setLinkman(dto.getRealName());
         carrier.setLinkmanPhone(dto.getPhone());
+        carrier.setMode(dto.getMode());
         carrier.setType(CarrierTypeEnum.PERSONAL.code);
         carrier.setSettleType(ModeTypeEnum.TIME.code);
         carrier.setState(CommonStateEnum.WAIT_CHECK.code);
@@ -144,7 +148,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         cdc.setCarrierId(carrier.getId());
         cdc.setDriverId(driver.getId());
         cdc.setMode(dto.getMode());
-        cdc.setState(CommonStateEnum.CHECKED.code);
+        cdc.setState(CommonStateEnum.WAIT_CHECK.code);
         cdc.setRole(DriverIdentityEnum.PERSONAL_DRIVER.code);
         carrierDriverConDao.insert(cdc);
         //添加承运商业务范围

@@ -21,10 +21,10 @@ public interface IDriverService {
 
     /**
      * 根据个人司机手机号/身份证号判断在承运商中是否存在
-     * @param dto
+     * @param phone,idCard
      * @return
      */
-    ResultVo existDriver(VerifyCarrierDto dto);
+    ResultVo existDriver(String phone,String idCard);
 
     /**
      * 保存散户司机

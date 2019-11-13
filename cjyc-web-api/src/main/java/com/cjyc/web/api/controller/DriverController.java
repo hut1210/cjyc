@@ -48,9 +48,10 @@ public class DriverController {
     }
 
     @ApiOperation(value = "判断个人司机在承运商中是否存在")
-    @PostMapping(value = "/existDriver")
-    public ResultVo existDriver(@RequestBody VerifyCarrierDto dto){
-        return driverService.existDriver(dto);
+    @PostMapping(value = "/existDriver/{phone}/{idCard}")
+    public ResultVo existDriver(@PathVariable(required = false) @ApiParam(value = "个人司机手机号") String phone,
+                                @PathVariable(required = false) @ApiParam(value = "个人司机身份证号") String idCard){
+        return driverService.existDriver(phone,idCard);
     }
 
     @ApiOperation(value = "新增散户司机")

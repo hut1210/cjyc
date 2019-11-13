@@ -111,10 +111,10 @@ public interface IDriverDao extends BaseMapper<Driver> {
 
     /**
      * 根据手机号查询个人司机/承运商中是否存在
-     * @param dto,type
+     * @param
      * @return
      */
-    String existCarrier(VerifyCarrierDto dto, Integer type);
+    String existCarrier(@Param("phone") String phone,@Param("idCard") String idCard,@Param("type") Integer type);
 
     /**
      * 通过承运商id获取司机

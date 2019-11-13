@@ -19,6 +19,7 @@ import com.cjyc.common.model.enums.transport.*;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.YmlProperty;
+import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.admin.TypeSalesmanVo;
 import com.cjyc.common.model.vo.web.carrier.*;
@@ -247,7 +248,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     }
 
     @Override
-    public ResultVo findBaseDriver(SeleVehicleDriverDto dto) {
+    public ResultVo<PageVo<BaseDriverVo>> findBaseDriver(SeleVehicleDriverDto dto) {
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
         List<Long> idsList =  carrierDriverConService.getDriverIds(dto.getCarrierId());
         List<BaseDriverVo> driverVos = null;
