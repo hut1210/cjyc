@@ -63,9 +63,10 @@ public class InvoiceController {
     }
 
     @ApiOperation(value = "查询开票历史开票信息", notes = "\t 请求参数:loginId-客户登录ID-必传")
-    @PostMapping("/getInvoiceInfo/{invoiceId}")
-    public ResultVo<CustomerInvoiceVo> getInvoiceInfo(@PathVariable Long invoiceId){
-        CustomerInvoice invoice = customerInvoiceService.getOne(new QueryWrapper<CustomerInvoice>().lambda().eq(CustomerInvoice::getCustomerId, invoiceId));
+    @PostMapping("/getInvoiceInfo/{invoiceId}/{loginId}")
+    public ResultVo<CustomerInvoiceVo> getInvoiceInfo(@PathVariable Long invoiceId,@PathVariable Long loginId){
+        CustomerInvoice invoice = customerInvoiceService.getOne(new QueryWrapper<CustomerInvoice>().lambda()
+                .eq(CustomerInvoice::getId, invoiceId).eq(CustomerInvoice::getCustomerId,loginId));
         CustomerInvoiceVo vo = new CustomerInvoiceVo();
         BeanUtils.copyProperties(invoice,vo);
         return BaseResultUtil.success(vo);
