@@ -15,6 +15,7 @@ import com.cjyc.common.system.service.ICsWaybillService;
 import com.cjyc.web.api.service.IWaybillService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -67,13 +68,18 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
     }
 
     @Override
-    public ResultVo updateTrunk(UpdateTrunkDto paramsDto) {
+    public ResultVo updateTrunk(UpdateTrunkWaybillDto paramsDto) {
         return csWaybillService.updateTrunk(paramsDto);
     }
 
     @Override
-    public ResultVo updateTrunkMidwayFinish(updateTrunkMidwayFinishDto paramsDto) {
+    public ResultVo updateTrunkMidwayFinish(UpdateTrunkMidwayFinishDto paramsDto) {
         return  csWaybillService.updateTrunkMidwayFinish(paramsDto);
+    }
+
+    @Override
+    public ResultVo trunkMidwayUnload(TrunkMidwayUnload paramsDto) {
+        return csWaybillService.trunkMidwayUnload(paramsDto);
     }
 
     @Override
@@ -132,7 +138,12 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
     @Override
     public ResultVo<PageVo<TrunkListWaybillVo>> trunklist(TrunkListWaybillDto paramsDto) {
         PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
-        List<TrunkListWaybillVo> list = waybillDao.findListTrunk(paramsDto);
+        List<TrunkListWaybillVo> list = null;
+        if(StringUtils.isBlank(paramsDto.getDriverName()) && StringUtils.isBlank(paramsDto.getDriverPhone()) && StringUtils.isBlank(paramsDto.getVehiclePlateNo())){
+            list = waybillDao.findLeftListTrunk(paramsDto);
+        }else{
+            list = waybillDao.findListTrunk(paramsDto);
+        }
         PageInfo<TrunkListWaybillVo> pageInfo = new PageInfo<>(list);
         if(paramsDto.getCurrentPage() > pageInfo.getPages()){
             pageInfo.setList(null);
@@ -163,7 +174,6 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
     @Override
     public ResultVo<List<WaybillCarVo> > getCarByType(Long orderCarId, Integer waybillType) {
        List<WaybillCarVo> list =waybillCarDao.findVoByType(orderCarId, waybillType);
-
         return BaseResultUtil.success(list);
     }
 

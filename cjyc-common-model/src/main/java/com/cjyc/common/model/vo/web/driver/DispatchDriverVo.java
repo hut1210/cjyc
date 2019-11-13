@@ -10,21 +10,26 @@ import java.io.Serializable;
 public class DispatchDriverVo implements Serializable {
     private static final long serialVersionUID = 6420417671963463704L;
 
+    @ApiModelProperty(value = "ID")
+    private Long carrierId;
+
+    @ApiModelProperty(value = "公司名称")
+    private String name;
+    @ApiModelProperty(value = "承运方式")
+    private String mode;
+
     @ApiModelProperty("司机id(driverId)")
     @JsonSerialize(using= ToStringSerializer.class)
     private Long driverId;
 
     @ApiModelProperty("司机姓名")
-    private String realName;
+    private String driverName;
 
     @ApiModelProperty("手机号")
-    private String phone;
-
-    @ApiModelProperty("承运方式：2 : 代驾  3 : 干线   4：拖车")
-    private Integer mode;
+    private String driverPhone;
 
     @ApiModelProperty("车牌号")
-    private String plateNo;
+    private String vehiclePlateNo;
 
     @ApiModelProperty("身份证号")
     private String idCard;

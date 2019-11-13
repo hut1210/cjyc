@@ -51,6 +51,17 @@ public class StoreController {
         return BaseResultUtil.success(list);
     }
 
+    /**
+     * 根据角色查询业务中心
+     * @author JPG
+     */
+    @ApiOperation(value = "根据角色查询业务中心")
+    @PostMapping(value = "/get/by/role")
+    public ResultVo<List<Store>> getByRole(@RequestHeader(required = false) Long roleId) {
+        List<Store> list = storeService.getByRole(roleId);
+        return BaseResultUtil.success(list);
+    }
+
     @ApiOperation(value = "分页查询", notes = "\t 请求接口为json格式")
     @PostMapping("/queryPage")
     public ResultVo<PageInfo<Store>> queryPage(@RequestBody StoreQueryDto storeQueryDto) {

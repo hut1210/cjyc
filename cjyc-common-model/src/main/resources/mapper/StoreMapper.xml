@@ -75,5 +75,14 @@
         dept_id
         from s_store
     </select>
+    <select id="findByIds" resultType="com.cjyc.common.model.entity.Store">
+        select * from s_store
+        <where>
+            and id in
+            <foreach collection="set" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
+    </select>
 
 </mapper>

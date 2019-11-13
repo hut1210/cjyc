@@ -31,7 +31,7 @@
         update w_task
         set state = #{newState}
         <where>
-            id in
+            and waybill_id in
             <foreach collection="cancelWaybillIdList" index="index" item="item" open="(" separator="," close=")">
                 #{item}
             </foreach>
@@ -40,7 +40,16 @@
     <delete id="cancelBywaybillId">
         update w_task
         set state = #{newState}
-        where waybill_id = #{waybillId}
+        <where>
+            <choose>
+                <when test="waybillId != null">
+                    waybill_id = #{waybillId}
+                </when>
+                <otherwise>
+                    1 != 1
+                </otherwise>
+            </choose>
+        </where>
     </delete>
     <delete id="deleteByWaybillId">
         delete t,tc

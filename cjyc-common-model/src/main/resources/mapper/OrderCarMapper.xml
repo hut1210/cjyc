@@ -202,6 +202,42 @@
     <!--查询待调度车辆列表-->
     <select id="findWaitDispatchCarList" resultType="com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo">
         select
+        (case
+        when oc.pick_mode = 3 then 100
+        when oc.pick_mode = 2 then
+        (case
+        when oc.state &lt;= 5 then 21
+        when oc.state = 15 then 23
+        when oc.state &gt;= 25 then 25 end)
+        else
+        (case
+        when oc.state &lt;= 5 then 1
+        when oc.state = 10 then 2
+        when oc.state = 15 then 3
+        when oc.state &gt;= 25 then 5 end)end ) as pickTransportState,
+
+        (case
+        when oc.trunk_state = 10 then 100
+        when oc.trunk_state = 5 then 5
+        else (case
+        when oc.state &lt;= 25 and oc.trunk_state = 1 then 1
+        when oc.state &lt;= 25 and oc.trunk_state > 1 then 2
+        when oc.state = 35 then 2
+        when oc.state = 40 then 3
+        when oc.state &gt; 40 then 5 end)end ) as trunkTransportState,
+
+        (case
+        when oc.back_mode = 3 then 100
+        when oc.back_mode = 2 then (case
+        when oc.state = 45 then 21
+        when oc.state = 55 then 23
+        when oc.state &gt;= 100 then 25 end)
+        else (case
+        when oc.state &lt;= 45 and oc.back_state = 1 then 1
+        when oc.state &lt;= 45 and oc.back_state > 1 then 2
+        when oc.state = 50 then 2
+        when oc.state = 55 then 3
+        when oc.state &gt;= 100 then 5 end)end ) as backTransportState,
         o.source as source,
         o.start_store_id as startStoreId,
         o.start_store_name as startStoreName,
@@ -227,9 +263,6 @@
 
         <where>
             <choose>
-                <when test="paramsDto.signState == 0">
-                    and 1 = 1
-                </when>
                 <when test="paramsDto.signState == 1">
                     and o.state between 25 and 99
                 </when>
@@ -237,7 +270,6 @@
                     and o.state = 100
                 </when>
                 <otherwise>
-                    and 1 != 1
                 </otherwise>
             </choose>
 

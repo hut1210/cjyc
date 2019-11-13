@@ -313,7 +313,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
     }
 
     @Override
-    public ResultVo dispatchDriver(DispatchDriverDto dto) {
+    public ResultVo<PageVo<DispatchDriverVo>> dispatchDriver(DispatchDriverDto dto) {
         BasePageUtil.initPage(dto);
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<DispatchDriverVo> dispatchDriverVos = driverDao.getDispatchDriver(dto);

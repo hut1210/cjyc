@@ -10,7 +10,7 @@ public class DispatchCarrierDto extends BasePageDto implements Serializable {
     private static final long serialVersionUID = -7496908972850812115L;
 
     @ApiModelProperty("登陆id(loginId)")
-    private Long loginId;
+    private Long userId;
 
     @ApiModelProperty("企业名称")
     private String name;
@@ -23,4 +23,7 @@ public class DispatchCarrierDto extends BasePageDto implements Serializable {
 
     @ApiModelProperty("联系电话")
     private String linkmanPhone;
+
+    @ApiModelProperty("1个人承运商，2企业承运商")
+    private String type;
 }

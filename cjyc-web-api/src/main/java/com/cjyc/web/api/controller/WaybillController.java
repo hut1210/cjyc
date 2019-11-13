@@ -87,10 +87,22 @@ public class WaybillController {
      */
     @ApiOperation("修改干线调度")
     @PostMapping("/trunk/update")
-    public ResultVo updateTrunk(@RequestBody UpdateTrunkDto reqDto) {
+    public ResultVo updateTrunk(@RequestBody UpdateTrunkWaybillDto reqDto) {
         return waybillService.updateTrunk(reqDto);
     }
 
+
+    /**
+     * 中途卸载车辆
+     *
+     * @author JPG
+     * @since 2019/10/15 11:53
+     */
+    @ApiOperation("中途卸载车辆")
+    @PostMapping("/trunk/midway/unload")
+    public ResultVo trunkMidwayUnload(@RequestBody TrunkMidwayUnload reqDto) {
+        return waybillService.trunkMidwayUnload(reqDto);
+    }
     /**
      * 中止干线运单并结算
      *
@@ -99,7 +111,7 @@ public class WaybillController {
      */
     @ApiOperation("中止干线运单并结算")
     @PostMapping("/trunk/midway/finish")
-    public ResultVo updateTrunkMidwayFinish(@RequestBody updateTrunkMidwayFinishDto reqDto) {
+    public ResultVo updateTrunkMidwayFinish(@RequestBody UpdateTrunkMidwayFinishDto reqDto) {
         return waybillService.updateTrunkMidwayFinish(reqDto);
     }
 

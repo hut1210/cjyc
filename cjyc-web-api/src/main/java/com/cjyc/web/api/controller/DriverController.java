@@ -10,6 +10,7 @@ import com.cjyc.common.model.util.BasePageUtil;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.driver.DispatchDriverVo;
 import com.cjyc.common.model.vo.web.driver.DriverVo;
 import com.cjyc.common.model.vo.web.driver.ShowDriverVo;
 import com.cjyc.common.model.vo.web.user.DriverListVo;
@@ -90,7 +91,7 @@ public class DriverController {
 
     @ApiOperation(value = "调度个人司机信息")
     @PostMapping(value = "/dispatchDriver")
-    public ResultVo dispatchDriver(@RequestBody DispatchDriverDto dto){
+    public ResultVo<PageVo<DispatchDriverVo>> dispatchDriver(@RequestBody DispatchDriverDto dto){
         return driverService.dispatchDriver(dto);
     }
 }

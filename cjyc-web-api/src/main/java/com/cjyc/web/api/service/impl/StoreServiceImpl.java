@@ -25,7 +25,9 @@ import com.cjyc.common.model.dto.web.store.StoreUpdateDto;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Store;
 import com.cjyc.common.model.entity.StoreCityCon;
+import com.cjyc.common.model.entity.defined.BizScope;
 import com.cjyc.common.model.entity.defined.FullCity;
+import com.cjyc.common.model.enums.BizScopeEnum;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.util.BasePageUtil;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -33,6 +35,8 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.store.StoreExportExcel;
 import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysUserService;
+import com.cjyc.common.system.service.ICsStoreService;
+import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.web.api.service.IStoreService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -68,6 +72,8 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
     private IAdminDao adminDao;
     @Resource
     private IStoreCityConDao storeCityConDao;
+    @Resource
+    private ICsSysService csSysService;
     @Resource
     private ICityDao cityDao;
 
@@ -239,6 +245,15 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
             int i = storeCityConDao.delete(updateWrapper);
         }
         return BaseResultUtil.success();
+    }
+
+    @Override
+    public List<Store> getByRole(Long roleId) {
+        BizScope scope = csSysService.getBizScopeByRoleId(roleId, true);
+        if(scope == null || scope.getCode() == BizScopeEnum.NONE.getCode()){
+            return null;
+        }
+        return storeDao.findByIds(scope.getStoreIds());
     }
 
     private StoreQueryDto getStoreQueryDto(HttpServletRequest request) {

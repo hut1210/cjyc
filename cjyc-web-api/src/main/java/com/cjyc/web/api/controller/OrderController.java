@@ -174,7 +174,7 @@ public class OrderController {
         return orderService.carlist(reqDto);
     }
     /**
-     * 查询订单车辆运输状态-根据ID
+     * 查询订单车辆运输信息-根据ID
      * @author JPG
      */
     @ApiOperation(value = "查询订单车辆运输状态-根据ID")
@@ -200,13 +200,6 @@ public class OrderController {
         reqDto.setToUserName(toUserName);
         return orderService.allot(reqDto);
     }
-
-
-
-
-    /**
-     * TODO 订单运输信息
-     */
 
 
     /**

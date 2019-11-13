@@ -12,19 +12,22 @@
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <select id="findByCitySet" resultType="com.cjyc.common.model.entity.LineNode">
-        select
-        * from
-        s_line_node
-        where nodes like concat(#{startCity},'%')
-        <foreach collection="citySet" index="index" item="item" open="(" separator="," close=",">
-            and nodes like concat('', item,'')
-        </foreach>
-
-
-    </select>
     <sql id="Base_Column_List">
         id, line_id, nodes, default_flag, state
     </sql>
+
+    <select id="findByCitySet" resultType="com.cjyc.common.model.entity.LineNode">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        s_line_node
+        where nodes like concat(#{startCity},'%')
+        <foreach collection="citySet" index="index" item="item" separator=" ">
+            and nodes like concat('%', #{item},'%')
+        </foreach>
+        order by default_flag desc
+
+
+    </select>
 
 </mapper>

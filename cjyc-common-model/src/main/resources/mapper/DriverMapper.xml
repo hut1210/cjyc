@@ -91,11 +91,10 @@
     <!--根据承运商查询承运商唯一的司机-->
     <select id="findTopByCarrierId" resultType="com.cjyc.common.model.entity.Driver">
         select
-        <include refid="Base_Column_List"/>
+        d.*
         from d_driver d
         join d_carrier_driver_con con
         where con.carrier_id = #{carrierId}
-        and d.
         limit 1
     </select>
 
@@ -328,30 +327,33 @@
     <select id="getDispatchDriver" resultType="com.cjyc.common.model.vo.web.driver.DispatchDriverVo"
                                     parameterType="com.cjyc.common.model.dto.web.driver.DispatchDriverDto">
         SELECT
+            cr.id as carrierId,
+            cr.`name` as `name`,
             d.id AS driverId,
-            d.real_name AS realName,
-            d.phone AS phone,
-            d.MODE AS MODE,
-            vr.plate_no AS plateNo,
+            d.real_name AS driverName,
+            d.phone AS driverPhone,
+            vr.plate_no AS vehiclePlateNo,
             d.id_card AS idCard,
             vr.carry_car_num AS carryCarNum,
             vr.occupied_car_num AS occupiedCarNum,
-            vr.running_state AS runningState
-        FROM
-            d_driver d
+            vr.running_state AS runningState,
+            con.mode as mode
+        FROM d_carrier cr
+        LEFT JOIN d_carrier_driver_con con on con.carrier_id = cr.id
+        LEFT JOIN d_driver d on con.driver_id = d.id
         LEFT JOIN d_vehicle_running vr ON vr.driver_id = d.id
         <where>
             <if test="realName != null and realName.trim() != ''">
-                d.real_name like CONCAT('%',#{realName},'%')
+                and d.real_name like CONCAT('%',#{realName},'%')
             </if>
             <if test="plateNo != null and plateNo.trim() != ''">
-                vr.plate_no = #{plateNo}
+                and vr.plate_no = #{plateNo}
             </if>
             <if test="phone != null and phone.trim() != ''">
-                d.phone = #{phone}
+                and d.phone = #{phone}
             </if>
             <if test="idCard != null and idCard.trim() != ''">
-                d.id_card = #{idCard}
+                and d.id_card = #{idCard}
             </if>
             and d.type = 2
             AND d.state = 2

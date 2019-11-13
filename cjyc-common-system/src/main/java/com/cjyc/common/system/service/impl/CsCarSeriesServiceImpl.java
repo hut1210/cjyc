@@ -8,6 +8,10 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.List;
 
+/**
+ * 车系公用业务
+ * @author JPG
+ */
 @Service
 public class CsCarSeriesServiceImpl implements ICsCarSeriesService {
 

@@ -27,7 +27,7 @@ public interface IWaybillDao extends BaseMapper<Waybill> {
      * @return
      */
     int updateStateBatchByNos(@Param("state") int state, @Param("waybillNoList") List<String> waybillNoList);
-
+    int updateStateBatchByIds(@Param("state") int code, @Param("waybillIdList") List<Long> waybillIdList);
     /**
      * 批量根据运单号查询未承接运单
      * @author JPG
@@ -47,10 +47,16 @@ public interface IWaybillDao extends BaseMapper<Waybill> {
 
     List<TrunkListWaybillVo> findListTrunk(@Param("paramsDto") TrunkListWaybillDto paramsDto);
 
+    List<TrunkListWaybillVo> findLeftListTrunk(TrunkListWaybillDto paramsDto);
+
     WaybillVo findVoById(Long id);
 
 
     List<TrunkMainListWaybillVo> findMainListTrunk(@Param("paramsDto") TrunkMainListWaybillDto paramsDto);
 
     List<TrunkSubListWaybillVo> findSubListTrunk(@Param("paramsDto")TrunkSubListWaybillDto paramsDto);
+
+    List<Waybill> findListByIds(@Param("waybillIdList") List<Long> waybillIdList);
+
+
 }

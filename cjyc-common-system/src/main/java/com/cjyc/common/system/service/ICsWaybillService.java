@@ -48,7 +48,7 @@ public interface ICsWaybillService {
      * @since 2019/11/9 8:59
      * @param paramsDto
      */
-    ResultVo updateTrunk(UpdateTrunkDto paramsDto);
+    ResultVo updateTrunk(UpdateTrunkWaybillDto paramsDto);
 
     /**
      * 干线运单中途完结
@@ -56,6 +56,13 @@ public interface ICsWaybillService {
      * @since 2019/11/9 8:59
      * @param paramsDto
      */
-    ResultVo updateTrunkMidwayFinish(updateTrunkMidwayFinishDto paramsDto);
+    ResultVo updateTrunkMidwayFinish(UpdateTrunkMidwayFinishDto paramsDto);
 
+    /**
+     * 中途强制卸车
+     * @author JPG
+     * @since 2019/11/13 10:00
+     * @param paramsDto
+     */
+    ResultVo trunkMidwayUnload(TrunkMidwayUnload paramsDto);
 }

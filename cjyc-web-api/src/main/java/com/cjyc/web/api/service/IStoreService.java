@@ -87,4 +87,6 @@ public interface IStoreService extends IService<Store> {
      * @return com.cjyc.common.model.vo.ResultVo
      */
     ResultVo removeCoveredArea(StoreAreaQueryDto dto);
+
+    List<Store> getByRole(Long roleId);
 }

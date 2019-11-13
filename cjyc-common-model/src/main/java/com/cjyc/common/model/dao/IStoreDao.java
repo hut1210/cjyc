@@ -2,8 +2,10 @@ package com.cjyc.common.model.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.entity.Store;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -29,4 +31,6 @@ public interface IStoreDao extends BaseMapper<Store> {
     List<Store> findAll();
 
     List<Long> findAllDeptId();
+
+    List<Store> findByIds(@Param("set") Set<Long> storeIds);
 }

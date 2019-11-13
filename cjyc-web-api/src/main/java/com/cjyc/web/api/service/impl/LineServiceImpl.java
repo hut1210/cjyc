@@ -131,7 +131,7 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
 
     @Override
     public ResultVo<List<Line>> listByTwoCity(ListLineDto paramsDto) {
-        List<Line> list = lineDao.findListByTwoCity(paramsDto);
+        List<Line> list = lineDao.findListByCity(paramsDto.getStartCityCode(), paramsDto.getStartCityCode());
         return BaseResultUtil.success(list);
     }
 

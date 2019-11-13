@@ -71,12 +71,20 @@
             </if>
         </where>
     </select>
-    <select id="findListByTwoCity" resultType="com.cjyc.common.model.entity.Line">
+    <select id="findOneByCity" resultType="com.cjyc.common.model.entity.Line">
         select
         <include refid="Base_Column_List"/>
         from s_line
-        where from_code = #{paramsDto.startCityCode}
-        and to_code = #{paramsDto.endCityCode}
+        where from_code = #{startCityCode}
+        and to_code = #{endCityCode}
+        limit 1
+    </select>
+    <select id="findListByCity" resultType="com.cjyc.common.model.entity.Line">
+        select
+        <include refid="Base_Column_List"/>
+        from s_line
+        where from_code = #{startCityCode}
+        and to_code = #{endCityCode}
     </select>
 
 </mapper>

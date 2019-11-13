@@ -55,6 +55,9 @@ public class CarFromToGetVo extends OrderCar {
     @ApiModelProperty(value = "起始地所属业务中心ID")
     private Long startBelongStoreId;
 
+    @ApiModelProperty(value = "出发地不可修改")
+    private Boolean startFixedFlag;
+
     @ApiModelProperty(value = "省")
     private String endProvince;
 
@@ -84,6 +87,9 @@ public class CarFromToGetVo extends OrderCar {
 
     @ApiModelProperty(value = "目的地所属业务中心ID")
     private Long endBelongStoreId;
+
+    @ApiModelProperty(value = "目的地不可修改")
+    private Boolean endFixedFlag;
 
     @ApiModelProperty(value = "线路ID")
     private Long lineId;

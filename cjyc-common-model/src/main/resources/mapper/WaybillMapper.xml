@@ -88,6 +88,17 @@
         </where>
 
     </update>
+    <update id="updateStateBatchByIds">
+        update w_waybill
+        set state = #{state}
+        <where>
+            and state &lt; 15
+            and id in
+            <foreach collection="waybillIdList" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
+    </update>
     <select id="findByNo" resultType="com.cjyc.common.model.entity.Waybill">
         select
         <include refid="Base_Column_List"/>
@@ -96,11 +107,22 @@
     </select>
     <select id="findListByNos" resultType="com.cjyc.common.model.entity.Waybill">
         select
-        no
+        <include refid="Base_Column_List"/>
         from w_waybill
         <where>
             no in
             <foreach collection="waybillNoList" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
+    </select>
+    <select id="findListByIds" resultType="com.cjyc.common.model.entity.Waybill">
+        select
+        <include refid="Base_Column_List"/>
+        from w_waybill
+        <where>
+            id in
+            <foreach collection="waybillIdList" index="index" item="item" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </where>
@@ -165,75 +187,59 @@
         and w.type = #{waybillType}
     </select>
 
-    <select id="findListTrunk" resultType="com.cjyc.common.model.vo.web.waybill.TrunkListWaybillVo">
+    <select id="findListTrunk" resultMap="TrunkListResultMap">
         select
         w.*,
         t.*,
         vr.carry_car_num as carryCarNum,
         vr.occupied_car_num as occupiedCarNum
-        from
-        (select * from w_waybill wb where EXISTS
-        (select * from w_task task
-        <where>
-            wb.id = task.waybill_id
-            <if test="paramsDto.driverName != null and paramsDto.driverName != ''">
-                and task.driver_name  = #{paramsDto.driverName}
-            </if>
-            <if test="paramsDto.driverPhone != null and paramsDto.driverPhone != ''">
-                and task.driver_phone  = #{paramsDto.driverPhone}
-            </if>
-            <if test="paramsDto.vehiclePlateNo != null and paramsDto.vehiclePlateNo != ''">
-                and task.vehicle_plate_no  = #{paramsDto.vehiclePlateNo}
-            </if>
-        </where>
-        )
-        ) as w
+        from w_waybill w
+        join w_task t on t.waybill_id = w.id
+        left join d_vehicle_running vr on vr.id = t.vehicle_running_id
+    </select>
+    <select id="findLeftListTrunk" resultType="com.cjyc.common.model.vo.web.waybill.TrunkListWaybillVo">
+         select
+        w.*,
+        t.*,
+        vr.carry_car_num as carryCarNum,
+        vr.occupied_car_num as occupiedCarNum
+        from w_waybill w
         left join w_task t on t.waybill_id = w.id
         left join d_vehicle_running vr on vr.id = t.vehicle_running_id
-        <where>
-            <if test="paramsDto.waybillNo != null and paramsDto.waybillNo != ''">
-                and w.no  = #{paramsDto.waybillNo}
-            </if>
-            <if test="paramsDto.guideLine != null and paramsDto.guideLine != ''">
-                and w.guide_line  = #{paramsDto.guideLine}
-            </if>
-            <if test="paramsDto.carrierName != null and paramsDto.carrierName != ''">
-                and w.carrier_name  = #{paramsDto.carrierName}
-            </if>
-            <if test="paramsDto.beginCreateTime != null">
-                and w.create_time  &gt; #{paramsDto.beginCreateTime}
-            </if>
-            <if test="paramsDto.endCreateTime != null">
-                and w.create_time  &lt;= #{paramsDto.endCreateTime}
-            </if>
-            <if test="paramsDto.driverName != null and paramsDto.driverName != ''">
-                and t.driver_name  = #{paramsDto.driverName}
-            </if>
-            <if test="paramsDto.driverPhone != null and paramsDto.driverPhone != ''">
-                and t.driver_phone  = #{paramsDto.driverPhone}
-            </if>
-            <if test="paramsDto.vehiclePlateNo != null and paramsDto.vehiclePlateNo != ''">
-                and t.vehicle_plate_no  = #{paramsDto.vehiclePlateNo}
-            </if>
-        </where>
     </select>
+
 
     <select id="findVoById" resultType="com.cjyc.common.model.vo.web.waybill.WaybillVo">
         select
-        <include refid="Base_Column_List"/>
-        from w_waybill
-        where id = #{id}
-
+            w.*,
+            (case w.carrier_type
+            when 1 then '个人司机'
+            when 2 then w.carrier_name
+            when 3 then '业务员'
+            when 4 then '代驾'
+            when 5 then '拖车'
+            when 6 then '自提/自送'
+            else null end) as carrier,
+            (case when w.carrier_type != 2 then dr.id else null end) as driverId,
+            (case when w.carrier_type != 2 then dr.name else null end) as driverName,
+            (case when w.carrier_type != 2 then dr.phone else null end) as driverPhone,
+            (case when w.carrier_type != 2 then dr.id_card else null end) as idCard,
+            (case when w.carrier_type != 2 then vr.plate_no else null end) as vehiclePlateNo
+        from w_waybill w
+        LEFT JOIN w_task t on t.waybill_id = w.id
+        LEFT JOIN d_driver dr on dr.id = t.driver_id
+        left join d_vehicle_running vr on vr.driver_id = t.driver_id
+        where w.id = #{id}
     </select>
     <select id="findMainListTrunk" resultType="com.cjyc.common.model.vo.web.waybill.TrunkMainListWaybillVo">
         select
         w.*,
-        (case when w.carrier_type = 1 then t.driver_id end) as driverId,
-        (case when w.carrier_type = 1 then t.driver_name end) as driverName,
-        (case when w.carrier_type = 1 then t.driver_phone end) as driverPhone,
-        (case when w.carrier_type = 1 then vr.plate_no end) as plateNo,
-        (case when w.carrier_type = 1 then vr.carry_car_num end) as carryCarNum,
-        (case when w.carrier_type = 1 then vr.occupied_car_num end) as occupiedCarNum
+        (case when w.carrier_type != 2 then t.driver_id end) as driverId,
+        (case when w.carrier_type != 2 then t.driver_name end) as driverName,
+        (case when w.carrier_type != 2 then t.driver_phone end) as driverPhone,
+        (case when w.carrier_type != 2 then vr.plate_no end) as vehiclePlateNo,
+        (case when w.carrier_type != 2 then vr.carry_car_num end) as carryCarNum,
+        (case when w.carrier_type != 2 then vr.occupied_car_num end) as occupiedCarNum
         from w_waybill w
         LEFT JOIN w_task t on w.id = t.waybill_id
         left join d_vehicle_running vr on vr.driver_id = t.driver_id
@@ -301,5 +307,6 @@
         </where>
         group by w.id
     </select>
+
 
 </mapper>

@@ -95,7 +95,8 @@ public class CarrierController {
     @ApiOperation(value = "调度承运商信息")
     @PostMapping(value = "/dispatchCarrier")
     public ResultVo dispatchCarrier(@RequestBody DispatchCarrierDto dto){
-        BasePageUtil.initPage(dto);
         return carrierService.dispatchCarrier(dto);
     }
+
+
 }

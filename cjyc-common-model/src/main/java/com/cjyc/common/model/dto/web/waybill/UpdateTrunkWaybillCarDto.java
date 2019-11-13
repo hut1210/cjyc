@@ -1,39 +1,16 @@
 package com.cjyc.common.model.dto.web.waybill;
 
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 
-/**
- * <p>
- * 运单表(业务员调度单)
- * </p>
- *
- * @author JPG
- * @since 2019-10-12
- */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
-@ApiModel
-public class SaveTrunkWaybillCarDto implements Serializable {
+public class UpdateTrunkWaybillCarDto {
 
-    private static final long serialVersionUID = 1L;
-    @ApiModelProperty(value = "运单ID")
-    private Long waybillId;
-    @ApiModelProperty(value = "运单编号")
-    private String waybillNo;
 
-    @ApiModelProperty(value = "订单车辆ID")
-    private Long orderCarId;
-
-    @ApiModelProperty(value = "车辆编号")
-    private String orderCarNo;
+    @ApiModelProperty(value = "ID")
+    private Long id;
 
     @ApiModelProperty(value = "运费")
     private BigDecimal freightFee;
@@ -97,6 +74,4 @@ public class SaveTrunkWaybillCarDto implements Serializable {
 
     @ApiModelProperty(value = "卸车交接类型：1客户家，2中途交接，3业务中心")
     private Integer unloadTurnType;
-
-
 }

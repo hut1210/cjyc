@@ -59,7 +59,9 @@ public interface IWaybillService extends IService<Waybill> {
 
     ResultVo updateLocal(UpdateLocalDto reqDto);
 
-    ResultVo updateTrunk(UpdateTrunkDto reqDto);
+    ResultVo updateTrunk(UpdateTrunkWaybillDto reqDto);
 
-    ResultVo updateTrunkMidwayFinish(updateTrunkMidwayFinishDto reqDto);
+    ResultVo updateTrunkMidwayFinish(UpdateTrunkMidwayFinishDto reqDto);
+
+    ResultVo trunkMidwayUnload(TrunkMidwayUnload reqDto);
 }
