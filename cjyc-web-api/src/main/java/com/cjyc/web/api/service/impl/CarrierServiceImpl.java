@@ -173,7 +173,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         List<CarrierVo> carrierVos = carrierDao.getCarrierByTerm(dto);
         if(!CollectionUtils.isEmpty(carrierVos)){
             for(CarrierVo vo : carrierVos){
-                CarrierCarCount count = carrierCarCountDao.count(vo.getId());
+                CarrierCarCount count = carrierCarCountDao.count(vo.getCarrierId());
                 if(count != null){
                     vo.setCarNum(count.getCarNum() == null ? 0:count.getCarNum());
                     vo.setTotalIncome(count.getIncome() == null ? BigDecimal.ZERO:count.getIncome().divide(new BigDecimal(100)));
@@ -187,14 +187,14 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     @Transactional(rollbackFor = Exception.class)
     @Override
     public ResultVo verifyCarrier(OperateDto dto) {
-        //审核状态 1:审核通过 2:审核拒绝 3：冻结 4:解除
         Carrier carrier = carrierDao.selectById(dto.getId());
         Driver driver = findDriver(carrier.getId());
-        if (null == carrier || null == driver) {
+        CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
+                                .eq(CarrierDriverCon::getCarrierId, carrier.getId())
+                                .eq(CarrierDriverCon::getDriverId, driver.getId()));
+        if (null == carrier || null == driver || cdc == null) {
             return BaseResultUtil.fail("承运商信息错误，请检查");
         }
-        CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda().eq(CarrierDriverCon::getCarrierId, driver.getId())
-                .eq(CarrierDriverCon::getCarrierId, carrier.getId()));
         //审核通过
         if(FlagEnum.AUDIT_PASS.code == dto.getFlag()){
             //审核通过将承运商信息同步到物流平台
@@ -315,7 +315,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         //承运商id
         bcb.setUserId(carrierId);
         //承运商超级管理员
-        bcb.setUserType(UserTypeEnum.ADMIN.code);
+        bcb.setUserType(UserTypeEnum.DRIVER.code);
         bcb.setIdCard(dto.getLegalIdCard());
         bcb.setState(UseStateEnum.USABLE.code);
         bcb.setCreateTime(NOW);

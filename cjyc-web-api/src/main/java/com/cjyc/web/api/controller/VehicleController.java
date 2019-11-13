@@ -42,7 +42,7 @@ public class VehicleController {
         return vehicleService.removeVehicle(dto);
     }
 
-    @ApiOperation(value = "修改车辆与司机关系")
+    @ApiOperation(value = "修改车辆车位数")
     @PostMapping(value = "/modifyVehicle")
     public ResultVo modifyVehicle(@RequestBody ModifyCarryNumDto dto){
         return vehicleService.modifyVehicle(dto);

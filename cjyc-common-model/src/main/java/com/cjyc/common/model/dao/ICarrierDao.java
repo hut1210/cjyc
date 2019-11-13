@@ -3,13 +3,11 @@ package com.cjyc.common.model.dao;
 import com.cjyc.common.model.dto.web.carrier.DispatchCarrierDto;
 import com.cjyc.common.model.dto.web.carrier.SeleCarrierDto;
 import com.cjyc.common.model.dto.web.carrier.TrailCarrierDto;
+import com.cjyc.common.model.dto.web.carrier.VerifyCarrierDto;
 import com.cjyc.common.model.dto.web.mimeCarrier.ExistMyDriverDto;
 import com.cjyc.common.model.entity.Carrier;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.cjyc.common.model.vo.web.carrier.CarrierVo;
-import com.cjyc.common.model.vo.web.carrier.BaseCarrierVo;
-import com.cjyc.common.model.vo.web.carrier.DispatchCarrierVo;
-import com.cjyc.common.model.vo.web.carrier.TrailCarrierVo;
+import com.cjyc.common.model.vo.web.carrier.*;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -66,6 +64,13 @@ public interface ICarrierDao extends BaseMapper<Carrier> {
      * @return
      */
     List<TrailCarrierVo> findTrailDriver(TrailCarrierDto dto);
+
+    /**
+     * 根据手机号查询个人司机/承运商中是否存在
+     * @param
+     * @return
+     */
+    ExistCarrierVo existCarrier(VerifyCarrierDto dto);
 
     /**
      * 判断该司机在个人或者该承运商下是否存在

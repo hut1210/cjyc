@@ -13,7 +13,7 @@ public class CarrierVo implements Serializable {
 
     @ApiModelProperty("承运商id")
     @JsonSerialize(using= ToStringSerializer.class)
-    private Long id;
+    private Long carrierId;
 
     @ApiModelProperty("承运商部门id")
     @JsonSerialize(using= ToStringSerializer.class)
