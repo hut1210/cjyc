@@ -4,18 +4,22 @@ import com.cjkj.common.constant.SecurityConstants;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.usercenter.dto.common.AddUserResp;
 import com.cjkj.usercenter.dto.yc.SelectPageUsersByDeptReq;
+import com.cjyc.common.model.dto.web.mimeCarrier.MyDriverDto;
 import com.cjyc.common.model.dto.web.salesman.MySalesmanQueryDto;
+import com.cjyc.common.model.dto.web.salesman.TypeSalesmanDto;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.admin.CacheAdminVo;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.ICsAdminService;
+import com.cjyc.web.api.service.IAdminService;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -37,6 +41,9 @@ public class AdminController {
     private ICsAdminService csAdminService;
     @Resource
     private ISysUserService sysUserService;
+
+    @Resource
+    private IAdminService adminService;
 
     /**
      * 校验用户并获取缓存数据
@@ -82,5 +89,12 @@ public class AdminController {
             return BaseResultUtil.success(pageInfo);
         }
         return BaseResultUtil.success(resultData.getData());
+    }
+
+
+    @ApiOperation(value = "提送车业务员")
+    @PostMapping(value = "/deliverySalesman")
+    public ResultVo deliverySalesman(@RequestBody TypeSalesmanDto dto){
+        return adminService.deliverySalesman(dto);
     }
 }

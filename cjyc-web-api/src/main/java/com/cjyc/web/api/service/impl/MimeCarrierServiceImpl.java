@@ -70,8 +70,14 @@ public class MimeCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
     @Override
-    public ResultVo saveDriver(MyDriverDto dto) {
+    public ResultVo existMyDriver(ExistMyDriverDto dto) {
+        //判断在个人司机池中是否存在
 
+        return null;
+    }
+
+    @Override
+    public ResultVo saveDriver(MyDriverDto dto) {
         //保存司机
         Driver driver = new Driver();
         BeanUtils.copyProperties(dto,driver);
