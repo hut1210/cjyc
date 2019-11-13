@@ -21,7 +21,7 @@ import java.util.Map;
  * @date:2019/10/28
  */
 @RestController
-@Api(tags = "分享管理")
+@Api(tags = "分享")
 @RequestMapping(value = "/share",
         produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class ShareController {

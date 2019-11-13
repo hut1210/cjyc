@@ -31,7 +31,7 @@ import java.util.List;
  * @Author LiuXingXiang
  * @Date 2019/10/29 15:58
  **/
-@Api(tags = "业务中心管理")
+@Api(tags = "基础数据-业务中心")
 @RestController
 @RequestMapping("/store")
 public class StoreController {

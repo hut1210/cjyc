@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author JPG
  */
 @RestController
-@Api(tags = "财务")
+@Api(tags = "资金-财务")
 @RequestMapping(value = "/finance",
         produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class FinanceController {

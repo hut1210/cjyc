@@ -6,11 +6,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 /**
  * Created by DELL on 2019/9/27.
  */
 @SpringBootApplication
+@EnableAsync
 @EnableDiscoveryClient
 @EnableFeignClients({"com.cjyc.web.api.feign","com.cjyc.common.system.feign"})
 @MapperScan("com.cjyc.common.model.dao")

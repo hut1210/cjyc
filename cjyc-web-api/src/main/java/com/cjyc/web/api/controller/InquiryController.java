@@ -17,9 +17,9 @@ import javax.annotation.Resource;
 /**
  *  @author: zj
  *  @Date: 2019/10/25 9:14
- *  @Description:客服中心询价管理
+ *  @Description:询价管理
  */
-@Api(tags = "客服中心询价管理")
+@Api(tags = "询价")
 @CrossOrigin
 @RestController
 @RequestMapping("/inquiry")

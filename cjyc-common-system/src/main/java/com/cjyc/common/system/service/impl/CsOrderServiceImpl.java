@@ -48,6 +48,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
     private ICsStoreService csStoreService;
     @Resource
     private ICsOrderChangeLogService orderChangeLogService;
+    @Resource
+    private ICsCustomerContactService csCustomerContactService;
 
 
     @Override
@@ -143,42 +145,13 @@ public class CsOrderServiceImpl implements ICsOrderService {
         copyOrderEndCity(endFullCity, order);
 
         //验证用户
-        Customer customer = new Customer();
-        if (paramsDto.getCustomerId() != null) {
-            customer = csCustomerService.getByUserId(paramsDto.getCustomerId(),true);
-            if(customer == null){
-                customer = csCustomerService.getByPhone(paramsDto.getCustomerPhone(), true);
-            }
-            if(customer != null && customer.getName().equals(paramsDto.getCustomerName())){
-                return BaseResultUtil.fail(ResultEnum.CREATE_NEW_CUSTOMER.getCode(),
-                        "客户手机号存在，名称不一致：新名称（{0}）旧名称（{1}），请返回订单重新选择客户",
-                        paramsDto.getCustomerName(),customer.getName());
-            }
+        ResultVo<Customer> validateCustomerResult = validateCustomer(paramsDto);
+        if(ResultEnum.SUCCESS.getCode() != validateCustomerResult.getCode()){
+            return validateCustomerResult;
         }
-        if (customer == null) {
-            customer = new Customer();
-            if (paramsDto.getCustomerType() == CustomerTypeEnum.INDIVIDUAL.code) {
-                if (paramsDto.getCreateCustomerFlag()) {
-                    customer.setName(paramsDto.getCustomerName());
-                    customer.setContactMan(paramsDto.getCustomerName());
-                    customer.setContactPhone(paramsDto.getCustomerPhone());
-                    customer.setType(CustomerTypeEnum.INDIVIDUAL.code);
-                    //customer.setInitial()
-                    customer.setState(1);
-                    customer.setPayMode(PayModeEnum.COLLECT.code);
-                    customer.setCreateTime(System.currentTimeMillis());
-                    customer.setCreateUserId(paramsDto.getUserId());
-                    //添加
-                    csCustomerService.save(customer);
-                    //订单中添加客户ID
-                    order.setCustomerId(customer.getId());
-                } else {
-                    return BaseResultUtil.getVo(ResultEnum.CREATE_NEW_CUSTOMER.getCode(), ResultEnum.CREATE_NEW_CUSTOMER.getMsg());
-                }
-            } else {
-                return BaseResultUtil.fail("企业客户/合伙人不存在");
-            }
-        }
+        Customer customer= validateCustomerResult.getData();
+        //订单中添加客户ID
+        order.setCustomerId(customer.getId());
         /**1、组装订单数据
          *
          */
@@ -252,7 +225,53 @@ public class CsOrderServiceImpl implements ICsOrderService {
             throw new ParameterException("订单至少包含一辆车");
         }
         orderDao.updateById(order);
-        return BaseResultUtil.success();
+
+        //记录发车人和收车人
+        csCustomerContactService.saveByOrder(order);
+        return BaseResultUtil.success(order.getNo());
+    }
+
+    private ResultVo<Customer> validateCustomer(CommitOrderDto paramsDto) {
+        Customer customer = null;
+        if (paramsDto.getCustomerId() != null) {
+            customer = csCustomerService.getByUserId(paramsDto.getCustomerId(),true);
+            if(customer != null && customer.getName().equals(paramsDto.getCustomerName())){
+                return BaseResultUtil.fail(ResultEnum.CREATE_NEW_CUSTOMER.getCode(),
+                        "客户手机号存在，名称不一致：新名称（{0}）旧名称（{1}），请返回订单重新选择客户",
+                        paramsDto.getCustomerName(),customer.getName());
+            }
+        }
+        if(customer == null){
+            customer = csCustomerService.getByPhone(paramsDto.getCustomerPhone(),true);
+            if(customer != null && customer.getName().equals(paramsDto.getCustomerName())){
+                return BaseResultUtil.fail(ResultEnum.CREATE_NEW_CUSTOMER.getCode(),
+                        "客户手机号存在，名称不一致：新名称（{0}）旧名称（{1}），请返回订单重新选择客户",
+                        paramsDto.getCustomerName(),customer.getName());
+            }
+        }
+        if (customer == null) {
+            customer = new Customer();
+            if (paramsDto.getCustomerType() == CustomerTypeEnum.INDIVIDUAL.code) {
+                if (paramsDto.getCreateCustomerFlag()) {
+                    customer.setName(paramsDto.getCustomerName());
+                    customer.setContactMan(paramsDto.getCustomerName());
+                    customer.setContactPhone(paramsDto.getCustomerPhone());
+                    customer.setType(CustomerTypeEnum.INDIVIDUAL.code);
+                    //customer.setInitial()
+                    customer.setState(1);
+                    customer.setPayMode(PayModeEnum.COLLECT.code);
+                    customer.setCreateTime(System.currentTimeMillis());
+                    customer.setCreateUserId(paramsDto.getUserId());
+                    //添加
+                    csCustomerService.save(customer);
+                } else {
+                    return BaseResultUtil.getVo(ResultEnum.CREATE_NEW_CUSTOMER.getCode(), ResultEnum.CREATE_NEW_CUSTOMER.getMsg());
+                }
+            } else {
+                return BaseResultUtil.fail("企业客户/合伙人不存在");
+            }
+        }
+        return BaseResultUtil.success(customer);
     }
 
     /**

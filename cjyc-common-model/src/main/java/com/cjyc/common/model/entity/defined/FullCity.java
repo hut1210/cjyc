@@ -29,4 +29,6 @@ public class FullCity {
     private String area;
     @ApiModelProperty("区编码")
     private String areaCode;
+    @ApiModelProperty("详细地址")
+    private String address;
 }

@@ -27,7 +27,7 @@ import java.util.Map;
  * @author JPG
  */
 @RestController
-@Api(tags = "调度池")
+@Api(tags = "运单-调度池")
 @RequestMapping(value = "/dispatch",
         produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class DispatchController {

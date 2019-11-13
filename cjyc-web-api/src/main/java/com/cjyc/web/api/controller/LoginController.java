@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-@Api(tags = "用户登录")
+@Api(tags = "功能-登录")
 @RestController
 public class LoginController {
 

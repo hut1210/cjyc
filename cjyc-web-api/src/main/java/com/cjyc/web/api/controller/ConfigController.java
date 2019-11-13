@@ -16,7 +16,7 @@ import javax.annotation.Resource;
  *  @Date: 2019/10/29 13:10
  *  @Description:系统开关设置
  */
-@Api(tags = "系统开关设置")
+@Api(tags = "功能-系统设置")
 @CrossOrigin
 @RestController
 @RequestMapping("/config")

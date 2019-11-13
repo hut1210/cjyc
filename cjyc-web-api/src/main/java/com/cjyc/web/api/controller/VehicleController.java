@@ -15,7 +15,7 @@ import javax.annotation.Resource;
  *  @Date: 2019/10/18 15:13
  *  @Description:运输车辆管理
  */
-@Api(tags = "运输车辆管理")
+@Api(tags = "司机-运力")
 @CrossOrigin
 @RestController
 @RequestMapping("/vehicle")

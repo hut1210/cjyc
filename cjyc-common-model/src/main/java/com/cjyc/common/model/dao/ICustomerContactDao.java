@@ -15,4 +15,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ICustomerContactDao extends BaseMapper<CustomerContact> {
 
+    CustomerContact findByPhone(String phone);
+
+    int countByPhone(String pickContactPhone);
 }

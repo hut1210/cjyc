@@ -2,10 +2,12 @@ package com.cjyc.web.api.service;
 
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.carrier.*;
+import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.carrier.BaseVehicleVo;
 import com.cjyc.common.model.vo.web.carrier.CarrierVo;
 import com.cjyc.common.model.vo.web.carrier.BaseCarrierVo;
+import com.cjyc.common.model.vo.web.carrier.TrailCarrierVo;
 import com.github.pagehelper.PageInfo;
 
 /**
@@ -96,5 +98,5 @@ public interface ICarrierService {
      * @param dto
      * @return
      */
-    ResultVo trailDriver(TrailCarrierDto dto);
+    ResultVo<PageVo<TrailCarrierVo>> trailDriver(TrailCarrierDto dto);
 }

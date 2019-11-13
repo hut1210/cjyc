@@ -109,6 +109,7 @@ public class WaybillController {
      * @author JPG
      * @since 2019/10/15 11:53
      */
+    @Deprecated
     @ApiOperation("中止干线运单并结算")
     @PostMapping("/trunk/midway/finish")
     public ResultVo updateTrunkMidwayFinish(@RequestBody UpdateTrunkMidwayFinishDto reqDto) {

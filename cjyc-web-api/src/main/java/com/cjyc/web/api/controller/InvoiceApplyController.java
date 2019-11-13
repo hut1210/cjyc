@@ -25,7 +25,7 @@ import java.util.List;
  * @author JPG
  * @since 2019-11-02
  */
-@Api(tags = "发票管理")
+@Api(tags = "基础数据-发票")
 @RestController
 @RequestMapping("/invoice")
 public class InvoiceApplyController {

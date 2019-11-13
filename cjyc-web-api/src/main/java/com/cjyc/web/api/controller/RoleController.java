@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
-@Api(value = "角色管理")
+@Api(tags = "基础数据-角色")
 @CrossOrigin(allowCredentials = "true", allowedHeaders = "*")
 @RestController
 @RequestMapping("/role")

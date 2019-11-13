@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
  * @Date 2019/11/7 11:44
  **/
 @Slf4j
-@Api(tags = "大区管理")
+@Api(tags = "基础数据-大区管理")
 @RestController
 @RequestMapping("/region")
 public class RegionController {
