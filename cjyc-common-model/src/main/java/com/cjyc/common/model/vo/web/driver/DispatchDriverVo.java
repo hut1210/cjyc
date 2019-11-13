@@ -11,6 +11,7 @@ public class DispatchDriverVo implements Serializable {
     private static final long serialVersionUID = 6420417671963463704L;
 
     @ApiModelProperty(value = "ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long carrierId;
 
     @ApiModelProperty(value = "公司名称")

@@ -59,7 +59,7 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
      * @since 2019/10/17 9:16
      */
     @Override
-    public ResultVo saveTrunk(SaveTrunkDto paramsDto) {
+    public ResultVo saveTrunk(SaveTrunkWaybillDto paramsDto) {
         return csWaybillService.saveTrunk(paramsDto);
     }
     @Override
@@ -167,7 +167,9 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
     public ResultVo<WaybillVo> get(Long waybillId) {
         WaybillVo waybillVo = waybillDao.findVoById(waybillId);
         List<WaybillCarVo> waybillCarVo = waybillCarDao.findVoByWaybillId(waybillId);
-        waybillVo.setList(waybillCarVo);
+        if(waybillCarVo != null){
+            waybillVo.setList(waybillCarVo);
+        }
         return BaseResultUtil.success(waybillVo);
     }
 

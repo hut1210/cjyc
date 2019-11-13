@@ -78,7 +78,7 @@ public class OrderController {
         ResultVo resultVo = orderService.commit(reqDto);
 
         //发送消息给用户
-        csPushMsgService.send(reqDto.getCustomerPhone(), PushMessageEnum.COMMIT_ORDER.getMsg(resultVo.getData().toString()));
+        //csPushMsgService.send(reqDto.getCustomerPhone(), PushMessageEnum.COMMIT_ORDER.getMsg(resultVo.getData().toString()));
         //发送短信
         return resultVo;
     }

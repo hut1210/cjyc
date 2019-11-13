@@ -57,6 +57,10 @@
         left join w_task_car tc on tc.task_id = t.id
         where t.waybill_id = #{waybillId}
     </delete>
+    <delete id="deleteByWaybillCarId">
+        delete from w_task_car
+        where waybill_car_id = #{waybillCarId}
+    </delete>
     <select id="findListByWaybillId" resultType="com.cjyc.common.model.vo.web.task.ListByWaybillTaskVo">
         select
         t.*,

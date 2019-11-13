@@ -24,7 +24,7 @@ public interface ICsWaybillService {
      * @since 2019/11/5 17:23
      * @param paramsDto
      */
-    ResultVo saveTrunk(SaveTrunkDto paramsDto);
+    ResultVo saveTrunk(SaveTrunkWaybillDto paramsDto);
 
     /**
      * 取消调度

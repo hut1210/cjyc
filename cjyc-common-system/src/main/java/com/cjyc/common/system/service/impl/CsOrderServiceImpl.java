@@ -235,7 +235,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         Customer customer = null;
         if (paramsDto.getCustomerId() != null) {
             customer = csCustomerService.getByUserId(paramsDto.getCustomerId(),true);
-            if(customer != null && customer.getName().equals(paramsDto.getCustomerName())){
+            if(customer != null && !customer.getName().equals(paramsDto.getCustomerName())){
                 return BaseResultUtil.fail(ResultEnum.CREATE_NEW_CUSTOMER.getCode(),
                         "客户手机号存在，名称不一致：新名称（{0}）旧名称（{1}），请返回订单重新选择客户",
                         paramsDto.getCustomerName(),customer.getName());
@@ -243,7 +243,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         }
         if(customer == null){
             customer = csCustomerService.getByPhone(paramsDto.getCustomerPhone(),true);
-            if(customer != null && customer.getName().equals(paramsDto.getCustomerName())){
+            if(customer != null && !customer.getName().equals(paramsDto.getCustomerName())){
                 return BaseResultUtil.fail(ResultEnum.CREATE_NEW_CUSTOMER.getCode(),
                         "客户手机号存在，名称不一致：新名称（{0}）旧名称（{1}），请返回订单重新选择客户",
                         paramsDto.getCustomerName(),customer.getName());

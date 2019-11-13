@@ -1,5 +1,7 @@
 package com.cjyc.common.model.vo.web.carrier;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -9,6 +11,7 @@ public class TrailCarrierVo implements Serializable {
     private static final long serialVersionUID = -4994289044268667924L;
 
     @ApiModelProperty("承运商id")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long carrierId;
 
     @ApiModelProperty("企业名称")

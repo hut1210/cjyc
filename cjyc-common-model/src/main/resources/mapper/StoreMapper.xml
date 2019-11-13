@@ -30,7 +30,8 @@
     </sql>
     <select id="findByCityCode" resultType="com.cjyc.common.model.entity.Store">
         select
-        <include refid="Base_Column_List"/>
+        <include refid="Base_Column_List"/>,
+        concat(province,city,area,detail_addr) as fullAddress
         from s_store
         where city_code =#{cityCode}
         and state = 2

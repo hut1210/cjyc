@@ -75,7 +75,7 @@ public class WaybillController {
      */
     @ApiOperation("干线调度")
     @PostMapping("/trunk/save")
-    public ResultVo saveTrunk(@RequestBody SaveTrunkDto reqDto) {
+    public ResultVo saveTrunk(@RequestBody SaveTrunkWaybillDto reqDto) {
         return waybillService.saveTrunk(reqDto);
     }
 

@@ -4,51 +4,51 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.WaybillCar">
-        <id column="id" property="id" />
-        <result column="waybill_id" property="waybillId" />
-        <result column="waybill_no" property="waybillNo" />
-        <result column="order_car_id" property="orderCarId" />
-        <result column="order_car_no" property="orderCarNo" />
-        <result column="freight_fee" property="freightFee" />
-        <result column="start_province" property="startProvince" />
-        <result column="start_province_code" property="startProvinceCode" />
-        <result column="start_city" property="startCity" />
-        <result column="start_city_code" property="startCityCode" />
-        <result column="start_area" property="startArea" />
-        <result column="start_area_code" property="startAreaCode" />
-        <result column="start_address" property="startAddress" />
-        <result column="start_store_name" property="startStoreName" />
-        <result column="start_store_id" property="startStoreId" />
-        <result column="start_belong_store_id" property="startBelongStoreId" />
-        <result column="end_province" property="endProvince" />
-        <result column="end_province_code" property="endProvinceCode" />
-        <result column="end_city" property="endCity" />
-        <result column="end_city_code" property="endCityCode" />
-        <result column="end_area" property="endArea" />
-        <result column="end_area_code" property="endAreaCode" />
-        <result column="end_address" property="endAddress" />
-        <result column="end_store_name" property="endStoreName" />
-        <result column="end_store_id" property="endStoreId" />
-        <result column="end_belong_store_id" property="endBelongStoreId" />
-        <result column="line_id" property="lineId" />
-        <result column="state" property="state" />
-        <result column="expect_start_time" property="expectStartTime" />
-        <result column="expect_end_time" property="expectEndTime" />
-        <result column="take_type" property="takeType" />
-        <result column="load_link_name" property="loadLinkName" />
-        <result column="load_link_user_id" property="loadLinkUserId" />
-        <result column="load_link_phone" property="loadLinkPhone" />
-        <result column="load_turn_type" property="loadTurnType" />
-        <result column="load_photo_img" property="loadPhotoImg" />
-        <result column="load_time" property="loadTime" />
-        <result column="unload_link_name" property="unloadLinkName" />
-        <result column="unload_link_user_id" property="unloadLinkUserId" />
-        <result column="unload_link_phone" property="unloadLinkPhone" />
-        <result column="unload_turn_type" property="unloadTurnType" />
-        <result column="unload_photo_img" property="unloadPhotoImg" />
-        <result column="unload_time" property="unloadTime" />
-        <result column="sort" property="sort" />
-        <result column="create_time" property="createTime" />
+        <id column="id" property="id"/>
+        <result column="waybill_id" property="waybillId"/>
+        <result column="waybill_no" property="waybillNo"/>
+        <result column="order_car_id" property="orderCarId"/>
+        <result column="order_car_no" property="orderCarNo"/>
+        <result column="freight_fee" property="freightFee"/>
+        <result column="start_province" property="startProvince"/>
+        <result column="start_province_code" property="startProvinceCode"/>
+        <result column="start_city" property="startCity"/>
+        <result column="start_city_code" property="startCityCode"/>
+        <result column="start_area" property="startArea"/>
+        <result column="start_area_code" property="startAreaCode"/>
+        <result column="start_address" property="startAddress"/>
+        <result column="start_store_name" property="startStoreName"/>
+        <result column="start_store_id" property="startStoreId"/>
+        <result column="start_belong_store_id" property="startBelongStoreId"/>
+        <result column="end_province" property="endProvince"/>
+        <result column="end_province_code" property="endProvinceCode"/>
+        <result column="end_city" property="endCity"/>
+        <result column="end_city_code" property="endCityCode"/>
+        <result column="end_area" property="endArea"/>
+        <result column="end_area_code" property="endAreaCode"/>
+        <result column="end_address" property="endAddress"/>
+        <result column="end_store_name" property="endStoreName"/>
+        <result column="end_store_id" property="endStoreId"/>
+        <result column="end_belong_store_id" property="endBelongStoreId"/>
+        <result column="line_id" property="lineId"/>
+        <result column="state" property="state"/>
+        <result column="expect_start_time" property="expectStartTime"/>
+        <result column="expect_end_time" property="expectEndTime"/>
+        <result column="take_type" property="takeType"/>
+        <result column="load_link_name" property="loadLinkName"/>
+        <result column="load_link_user_id" property="loadLinkUserId"/>
+        <result column="load_link_phone" property="loadLinkPhone"/>
+        <result column="load_turn_type" property="loadTurnType"/>
+        <result column="load_photo_img" property="loadPhotoImg"/>
+        <result column="load_time" property="loadTime"/>
+        <result column="unload_link_name" property="unloadLinkName"/>
+        <result column="unload_link_user_id" property="unloadLinkUserId"/>
+        <result column="unload_link_phone" property="unloadLinkPhone"/>
+        <result column="unload_turn_type" property="unloadTurnType"/>
+        <result column="unload_photo_img" property="unloadPhotoImg"/>
+        <result column="unload_time" property="unloadTime"/>
+        <result column="sort" property="sort"/>
+        <result column="create_time" property="createTime"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -109,6 +109,20 @@
     <delete id="deleteByWaybillId">
         delete from w_waybill_car where waybill_id = #{waybillId}
     </delete>
+    <delete id="deleteWaybillCar">
+        delete from w_waybill_car
+        <where>
+            <if test="waybillId == null">
+                and 1 != 1
+            </if>
+            and waybill_id = #{waybillId}
+            and id not in
+            <foreach collection="unDeleteWaybillCarId" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+
+        </where>
+    </delete>
 
 
     <select id="getWayBillCarrier" parameterType="com.cjyc.common.model.vo.web.WayBillCarrierVo"
@@ -163,11 +177,11 @@
     </select>
     <select id="findVoByIds" resultType="com.cjyc.common.model.entity.WaybillCar">
         select
-          <include refid="Base_Column_List"/>
+        <include refid="Base_Column_List"/>
         from w_waybill_car wc
         <where>
             and wc.id in
-            <foreach collection="waybillCarIdList"  index="index" item="item" open="(" separator="," close=")">
+            <foreach collection="waybillCarIdList" index="index" item="item" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </where>
@@ -289,39 +303,40 @@
     </select>
     <select id="findListLocal" resultType="com.cjyc.common.model.vo.web.waybill.LocalListWaybillCarVo">
         select
-            (case
-            when wc.state = 0 then '待指派'
-            when wc.state = 2 then '已指派'
-            when wc.state = 5 then '待装车'
-            when wc.state = 15 then '待装车确认'
-            when wc.state = 45 then '已装车'
-            when wc.state = 70 then '已卸车'
-            when wc.state = 90 then '确认交车'
-            when wc.state = 100 then '确认收车'
-            end
-            ) as outterState,
-            w.carrier_id as carrierId,
-            w.carrier_type as carrierType,
-            w.carrier_name as carrierName,
-            w.create_time as createTime,
-            w.create_user as createUser,
-            w.create_user_id as createUserId,
-            oc.brand as brand,
-            oc.model as model,
-            oc.plate_no as plateNo,
-            oc.vin as vin,
-            oc.order_no as orderNo,
-            t.driver_name as driverName,
-            t.driver_phone as driverPhone,
-            t.driver_id as driverId,
-            t.vehicle_plate_no as vehiclePlateNo,
-            wc.*
+        (case
+        when wc.state = 0 then '待指派'
+        when wc.state = 2 then '已指派'
+        when wc.state = 5 then '待装车'
+        when wc.state = 15 then '待装车确认'
+        when wc.state = 45 then '已装车'
+        when wc.state = 70 then '已卸车'
+        when wc.state = 90 then '确认交车'
+        when wc.state = 100 then '确认收车'
+        end
+        ) as outterState,
+        w.carrier_id as carrierId,
+        w.carrier_type as carrierType,
+        w.carrier_name as carrierName,
+        w.create_time as createTime,
+        w.create_user as createUser,
+        w.create_user_id as createUserId,
+        oc.brand as brand,
+        oc.model as model,
+        oc.plate_no as plateNo,
+        oc.vin as vin,
+        oc.order_no as orderNo,
+        t.driver_name as driverName,
+        t.driver_phone as driverPhone,
+        t.driver_id as driverId,
+        t.vehicle_plate_no as vehiclePlateNo,
+        wc.*
         from w_waybill w
         join w_waybill_car wc on wc.waybill_id = w.id
         join w_order_car oc on wc.order_car_id = oc.id
         left join w_task_car tc on tc.waybill_car_id = wc.id
         left join w_task t on tc.task_id = t.id
         <where>
+            w.type != 2
             <if test="paramsDto.brand != null and paramsDto.brand != ''">
                 and oc.brand = #{paramsDto.brand}
             </if>
@@ -494,6 +509,7 @@
         left join w_task_car tc on tc.waybill_car_id = wc.id
         left join w_task t on tc.task_id = t.id
         <where>
+            w.type == 2
             <if test="paramsDto.brand != null and paramsDto.brand != ''">
                 and oc.brand = #{paramsDto.brand}
             </if>

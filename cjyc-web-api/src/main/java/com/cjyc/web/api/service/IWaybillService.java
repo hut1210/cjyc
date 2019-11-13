@@ -35,7 +35,7 @@ public interface IWaybillService extends IService<Waybill> {
      * @since 2019/10/17 9:16
      * @param reqDto
      */
-    ResultVo saveTrunk(SaveTrunkDto reqDto);
+    ResultVo saveTrunk(SaveTrunkWaybillDto reqDto);
 
     ResultVo<ListVo<BaseTipVo>> cancel(CancelWaybillDto reqDto);
 

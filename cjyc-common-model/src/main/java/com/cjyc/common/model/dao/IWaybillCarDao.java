@@ -12,6 +12,7 @@ import com.cjyc.common.model.vo.web.waybill.TrunkCarListWaybillCarVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -70,4 +71,6 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
     FullWaybillCar findLastNextByBelongStoreId(@Param("orderCarId") Long orderCarId, @Param("storeId") Long storeId);
 
     int countUnAllFinish(Long waybillId);
+
+    int deleteWaybillCar(@Param("waybillId") Long waybillId, @Param("unDeleteWaybillCarId") Set<Long> unDeleteWaybillCarId);
 }

@@ -21,8 +21,12 @@ public class OrderCarWaitDispatchVo extends OrderCar {
     @ApiModelProperty(value = "目的业务中心地址")
     private String nowCityName;
 
-
-
+    @ApiModelProperty("提车运输状态")
+    private Integer pickTransportState;
+    @ApiModelProperty("干线运输状态")
+    private Integer trunkTransportState;
+    @ApiModelProperty("送车运输状态")
+    private Integer backTransportState;
 
     @ApiModelProperty(value = "订单所属业务中心ID")
     private Long inputStoreId;

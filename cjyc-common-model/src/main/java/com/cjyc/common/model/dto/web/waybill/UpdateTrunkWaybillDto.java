@@ -10,8 +10,6 @@ import java.util.List;
 public class UpdateTrunkWaybillDto {
     @ApiModelProperty(value = "用户userId", required = true)
     private Long userId;
-    @ApiModelProperty(value = "业务中心ID", required = true)
-    private Long storeId;
 
     @ApiModelProperty(value = "运单ID（修改时传）", required = true)
     private String id;
