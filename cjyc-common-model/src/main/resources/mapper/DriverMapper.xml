@@ -286,7 +286,7 @@
                 and  d.business_state = #{businessState}
             </if>
             <if test="state != null">
-                and  d.state = #{state}
+                and  driCon.state = #{state}
             </if>
             <if test="mode != null">
                 and  d.mode = #{mode}
@@ -356,7 +356,7 @@
                 and d.id_card = #{idCard}
             </if>
             and d.type = 2
-            AND d.state = 2
+            AND con.state = 2
             AND d.business_state = 0
         </where>
     </select>

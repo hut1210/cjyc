@@ -20,7 +20,8 @@ public class CarFromToGetVo extends OrderCar {
     private String startStoreFullAddress;
     @ApiModelProperty("目的地业务中心地址")
     private String endStoreFullAddress;
-
+    @ApiModelProperty(value = "价卡运费")
+    private BigDecimal lineFreightFee;
 
     @ApiModelProperty(value = "运费")
     private BigDecimal freightFee;

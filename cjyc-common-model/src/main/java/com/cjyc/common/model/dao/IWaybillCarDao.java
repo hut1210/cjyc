@@ -68,4 +68,6 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
     FullWaybillCar findLastPrevByBelongStoreId(@Param("orderCarId") Long orderCarId, @Param("storeId") Long storeId);
 
     FullWaybillCar findLastNextByBelongStoreId(@Param("orderCarId") Long orderCarId, @Param("storeId") Long storeId);
+
+    int countUnAllFinish(Long waybillId);
 }

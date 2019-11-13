@@ -28,7 +28,7 @@ public interface ISysRoleService {
      * @since 2019/11/6 11:47
      * @param id
      */
-    @PostMapping("/feign/uc/getRole/{id}")
+    @GetMapping("/feign/uc/getRole/{id}")
     ResultData<SelectRoleResp> getById(@PathVariable(value="id") Long id);
 
     /**
@@ -88,7 +88,7 @@ public interface ISysRoleService {
      * @param userId 用户ID
      * @return ResultData<List<SelectRoleResp>>
      */
-    @PostMapping("/feign/uc/getRoles/{userId}")
+    @GetMapping("/feign/uc/getRoles/{userId}")
     ResultData<List<SelectRoleResp>> getListByUserId(@PathVariable(value="userId") Integer userId);
 
     /**
@@ -114,7 +114,7 @@ public interface ISysRoleService {
      * @param req
      * @return
      */
-    @PostMapping("/feign/yc/getUsersByRoleId")
+    @GetMapping("/feign/yc/getUsersByRoleId")
     ResultData<List<SelectUsersByRoleResp>> getUsersByRoleId(@RequestBody SelectUsersByRoleReq req);
 
     /**

@@ -648,5 +648,14 @@
         order by w.id, wc.id desc
         limit 1
     </select>
+    <select id="countUnAllFinish" resultType="java.lang.Integer">
+        select
+        count(0)
+        from w_waybill w
+        join w_waybill_car wc on wc.waybill_id = w.id
+        where wc.waybill_id = #{waybillId}
+        and w.state &lt; 100
+        and wc.state &lt; 100
+    </select>
 
 </mapper>

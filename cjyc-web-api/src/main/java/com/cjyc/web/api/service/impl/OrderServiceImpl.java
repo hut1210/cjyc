@@ -130,7 +130,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
             //查询线路价卡
             Line line = csLineService.getLineByCity(carFromToGetVo.getStartCityCode(), carFromToGetVo.getEndCityCode(), true);
             if(line != null){
-                carFromToGetVo.setFreightFee(line.getDefaultFreightFee());
+                carFromToGetVo.setLineFreightFee(line.getDefaultFreightFee());
             }
             childList.add(carFromToGetVo);
         }

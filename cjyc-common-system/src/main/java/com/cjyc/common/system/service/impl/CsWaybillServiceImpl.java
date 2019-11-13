@@ -871,8 +871,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                     waybillCar.setEndStoreId(store.getId());
                 }
             } else {
-                waybillCar.setStartStoreName(paramsDto.getEndStoreName());
-                waybillCar.setStartStoreId(paramsDto.getEndStoreId());
+                waybillCar.setEndStoreName(paramsDto.getEndStoreName());
+                waybillCar.setEndStoreId(paramsDto.getEndStoreId());
             }
             //车辆运输到中途卸车算调度单业务中心
             waybillCar.setEndBelongStoreId(waybillCar.getStartBelongStoreId());
@@ -898,15 +898,59 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         if(CollectionUtils.isEmpty(carIdList)){
             return BaseResultUtil.fail("车辆不能为空");
         }
+        //查询完结城市
+        FullCity fullCity = csCityService.findFullCity(paramsDto.getEndAreaCode(), CityLevelEnum.PROVINCE);
+        if(fullCity == null){
+            return BaseResultUtil.fail("请填写卸车城市");
+        }
+        Set<Long> waybillIds = new HashSet<>();
         for (Long waybillCarId : carIdList) {
             if(waybillCarId == null){
                 continue;
             }
+            WaybillCar waybillCar = waybillCarDao.selectById(waybillCarId);
+            if(waybillCar == null){
+                throw new ParameterException("ID为{}的车辆不存在", waybillCarId);
+            }
+            if(waybillCar.getState() != WaybillCarStateEnum.LOADED.code){
+                throw new ParameterException("车辆未装车或已卸车", waybillCarId);
+            }
 
+            copyWaybillCarEndCity(fullCity, waybillCar);
+            waybillCar.setEndAddress(paramsDto.getEndAddress());
 
+            Long endStoreId = paramsDto.getEndStoreId();
+            String endStoreName = paramsDto.getEndStoreName();
+            if (paramsDto.getEndStoreId() == null) {
+                //算起始地业务中心
+                Store store = csStoreService.findOneBelongByAreaCode(waybillCar.getStartAreaCode());
+                if (store != null) {
+                    endStoreId = store.getId();
+                    endStoreName = store.getName();
+                }
+            }
+            waybillCar.setEndStoreId(endStoreId);
+            waybillCar.setEndStoreName(endStoreName);
+            //车辆运输到中途卸车算调度单业务中心
+            waybillCar.setEndBelongStoreId(waybillCar.getStartBelongStoreId());
+            //车辆运输到中途卸车算调度单业务中心
+            waybillCar.setEndBelongStoreId(waybillCar.getStartBelongStoreId());
+            //交接状态如何变更
+            waybillCar.setState(WaybillCarStateEnum.WAIT_CONNECT.code);
+            int i = waybillCarDao.updateById(waybillCar);
+            if(i > 0){
+                waybillIds.add(waybillCar.getWaybillId());
+            }
         }
-
-        return null;
+        //验证运单是否已经全部完成
+        for (Long waybillId : waybillIds) {
+            int num = waybillCarDao.countUnAllFinish(waybillId);
+            if(num == 0){
+                //修改运单状态
+                waybillDao.updateStateById(WaybillStateEnum.FINISHED.code, waybillId);
+            }
+        }
+        return BaseResultUtil.success();
     }
 
     /**

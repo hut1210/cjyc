@@ -17,13 +17,13 @@ public class BigDecimalSerizlizer extends JsonSerializer<BigDecimal> {
     @Override
     public void serialize(BigDecimal amount, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
         // 将金额分 转换为元 如果没有小数位，则加上小数位
-        if(!Objects.isNull(amount)){
+        if(!Objects.isNull(amount) && !amount.equals(new BigDecimal(0))){
             String str = String.valueOf(amount.divide(new BigDecimal(100)));
             if (!str.contains(".")) {
                 str = str + ".00";
             }
             jsonGenerator.writeString(str);
-        }else{
+        } else {
             jsonGenerator.writeString("0.00");
         }
     }
