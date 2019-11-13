@@ -20,6 +20,7 @@ import com.cjyc.common.model.entity.InvoiceOrderCon;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.customer.invoice.InvoiceApplyVo;
 import com.cjyc.common.model.vo.web.invoice.InvoiceApplyExportExcel;
 import com.cjyc.common.model.vo.web.invoice.InvoiceDetailVo;
 import com.cjyc.web.api.service.IInvoiceApplyService;
@@ -59,7 +60,13 @@ public class InvoiceApplyServiceImpl extends ServiceImpl<IInvoiceApplyDao, Invoi
     @Override
     public ResultVo getInvoiceApplyPage(InvoiceQueryDto dto) {
         List<InvoiceApply> list = getInvoiceApplyList(dto);
-        PageInfo pageInfo = new PageInfo(list);
+        List<InvoiceApplyVo> returnList = new ArrayList<>(10);
+        for (InvoiceApply invoiceApply : list) {
+            InvoiceApplyVo vo = new InvoiceApplyVo();
+            BeanUtils.copyProperties(invoiceApply,vo);
+            returnList.add(vo);
+        }
+        PageInfo pageInfo = new PageInfo(returnList);
         return BaseResultUtil.success(pageInfo);
     }
 
@@ -95,7 +102,7 @@ public class InvoiceApplyServiceImpl extends ServiceImpl<IInvoiceApplyDao, Invoi
         InvoiceDetailVo detailVo = new InvoiceDetailVo();
         // 根据客户ID，主键ID查询发票申请信息
         LambdaQueryWrapper<InvoiceApply> queryWrapper = new QueryWrapper<InvoiceApply>().lambda()
-                .eq(InvoiceApply::getCustomerId, dto.getUserId()).eq(InvoiceApply::getId, dto.getInvoiceApplyId())
+                .eq(InvoiceApply::getCustomerId, dto.getLoginId()).eq(InvoiceApply::getId, dto.getInvoiceApplyId())
                 .select(InvoiceApply::getAmount,InvoiceApply::getInvoiceId);
         InvoiceApply invoice = super.getOne(queryWrapper);
         detailVo.setAmount(Objects.isNull(invoice) ? new BigDecimal(0) : invoice.getAmount());
@@ -139,7 +146,7 @@ public class InvoiceApplyServiceImpl extends ServiceImpl<IInvoiceApplyDao, Invoi
                 .set(InvoiceApply::getInvoiceTime, System.currentTimeMillis())
                 .set(InvoiceApply::getOperationName, dto.getOperationName())
                 .eq(InvoiceApply::getId, dto.getInvoiceApplyId())
-                .eq(InvoiceApply::getCustomerId, dto.getUserId());
+                .eq(InvoiceApply::getCustomerId, dto.getLoginId());
         boolean result = super.update(updateWrapper);
         return result ? BaseResultUtil.success() : BaseResultUtil.fail();
     }
