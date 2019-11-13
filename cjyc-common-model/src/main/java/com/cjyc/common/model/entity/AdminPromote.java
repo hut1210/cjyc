@@ -1,15 +1,16 @@
 package com.cjyc.common.model.entity;
 
-import java.math.BigDecimal;
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.io.Serializable;
+import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * <p>
@@ -17,7 +18,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-29
+ * @since 2019-11-13
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -32,11 +33,14 @@ public class AdminPromote implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "user_id")
+    @ApiModelProperty(value = "分享渠道")
+    private String channel;
+
+    @ApiModelProperty(value = "分享人ID")
     private Long userId;
 
-    @ApiModelProperty(value = "推广人数")
-    private Integer customerNum;
+    @ApiModelProperty(value = "分享人名称")
+    private String userName;
 
     @ApiModelProperty(value = "有效推广人数")
     private Integer customerNumValid;
@@ -49,6 +53,12 @@ public class AdminPromote implements Serializable {
 
     @ApiModelProperty(value = "未结算收益")
     private BigDecimal unsettleAmount;
+
+    @ApiModelProperty(value = "分享时间")
+    private Long createTime;
+
+    @ApiModelProperty(value = "修改时间")
+    private Long updateTime;
 
 
 }

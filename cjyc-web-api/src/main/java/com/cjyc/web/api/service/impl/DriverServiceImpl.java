@@ -94,13 +94,13 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
     }
 
     @Override
-    public ResultVo existDriver(VerifyCarrierDto dto) {
+    public ResultVo existDriver(String phone,String idCard) {
         //判断散户司机是否在个人司机/承运商中已存在
-        String realName = driverDao.existCarrier(dto,CarrierTypeEnum.PERSONAL.code);
+        String realName = driverDao.existCarrier(phone,idCard,CarrierTypeEnum.PERSONAL.code);
         if(StringUtils.isNotBlank(realName)){
             return BaseResultUtil.fail("账号已存在于个人司机中");
         }
-        String name = driverDao.existCarrier(dto,CarrierTypeEnum.ENTERPRISE.code);
+        String name = driverDao.existCarrier(phone,idCard,CarrierTypeEnum.ENTERPRISE.code);
         if(StringUtils.isNotBlank(name)){
             return BaseResultUtil.fail("该司机已存在于["+name+"]不可创建");
         }
@@ -124,13 +124,17 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         if(StringUtils.isNotBlank(dto.getPlateNo()) && dto.getVehicleId() != null
             && dto.getDefaultCarryNum() != null){
             //保存司机与车辆关系
+            dto.setDriverId(driver.getId());
             bindDriverVehicle(dto);
         }
         //保存个人承运商
         Carrier carrier = new Carrier();
+        carrier.setLegalName(dto.getRealName());
+        carrier.setLegalIdCard(dto.getIdCard());
         carrier.setName(dto.getRealName());
         carrier.setLinkman(dto.getRealName());
         carrier.setLinkmanPhone(dto.getPhone());
+        carrier.setMode(dto.getMode());
         carrier.setType(CarrierTypeEnum.PERSONAL.code);
         carrier.setSettleType(ModeTypeEnum.TIME.code);
         carrier.setState(CommonStateEnum.WAIT_CHECK.code);
@@ -144,7 +148,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         cdc.setCarrierId(carrier.getId());
         cdc.setDriverId(driver.getId());
         cdc.setMode(dto.getMode());
-        cdc.setState(CommonStateEnum.CHECKED.code);
+        cdc.setState(CommonStateEnum.WAIT_CHECK.code);
         cdc.setRole(DriverIdentityEnum.PERSONAL_DRIVER.code);
         carrierDriverConDao.insert(cdc);
         //添加承运商业务范围
@@ -171,23 +175,22 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
 
     @Override
     public ResultVo verifyDriver(OperateDto dto) {
-        //获取司机,该id为承运商的id
-        Driver driver = driverDao.findDriverByCarrierId(dto.getId());
         //获取承运商
         Carrier carr = carrierDao.selectById(dto.getId());
-        if (null == carr || null == driver) {
+        CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda().eq(CarrierDriverCon::getCarrierId, carr.getId()));
+        //获取司机,该id为承运商的id
+        Driver driver = driverDao.selectOne(new QueryWrapper<Driver>().lambda().eq(Driver::getId,cdc.getDriverId()));
+        if (null == carr || null == cdc || null == driver) {
             return BaseResultUtil.fail("承运商信息错误，请检查");
         }
-        CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda().eq(CarrierDriverCon::getCarrierId, driver.getId())
-                .eq(CarrierDriverCon::getCarrierId, carr.getId()));
         //审核通过
         if(dto.getFlag() == FlagEnum.AUDIT_PASS.code){
             //保存司机用户到平台，返回用户id
-            ResultData<Long> saveRd = saveDriverToPlatform(driver);
+            /*ResultData<Long> saveRd = saveDriverToPlatform(driver);
             if (!ReturnMsg.SUCCESS.getCode().equals(saveRd.getCode())) {
                 return BaseResultUtil.fail("司机信息保存失败，原因：" + saveRd.getMsg());
             }
-            driver.setUserId(saveRd.getData());
+            driver.setUserId(saveRd.getData());*/
             cdc.setState(CommonStateEnum.CHECKED.code);
             //更新承运商
             carr.setState(CommonStateEnum.CHECKED.code);
@@ -334,6 +337,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         vr.setVehicleId(dto.getVehicleId());
         vr.setPlateNo(dto.getPlateNo());
         vr.setCarryCarNum(dto.getDefaultCarryNum());
+        vr.setOccupiedCarNum(0);
         vr.setRunningState(VehicleRunStateEnum.FREE.code);
         vr.setCreateTime(NOW);
         vehicleRunningDao.insert(vr);

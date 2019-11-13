@@ -1,14 +1,16 @@
 package com.cjyc.common.model.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.io.Serializable;
+import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * <p>
@@ -16,7 +18,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-10-29
+ * @since 2019-11-13
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -31,20 +33,35 @@ public class AdminPromoteDetail implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "业务员ID")
-    private Long userId;
+    @ApiModelProperty(value = "分享业务员ID")
+    private Long promoteUserId;
 
-    @ApiModelProperty(value = "推广的用户ID")
+    @ApiModelProperty(value = "注册用户ID")
     private Long customerId;
+
+    @ApiModelProperty(value = "注册用户名称")
+    private String customerName;
 
     @ApiModelProperty(value = "状态：0用户未下单，1用户已下单")
     private Integer state;
 
-    @ApiModelProperty(value = "状态：0未结算，1结算中，2已结算")
-    private Integer settleState;
+    @ApiModelProperty(value = "总收益")
+    private BigDecimal incomeAmount;
 
-    @ApiModelProperty(value = "结算申请单号")
-    private String settleBillNo;
+    @ApiModelProperty(value = "已结算收益")
+    private BigDecimal settlingAmount;
+
+    @ApiModelProperty(value = "未结算收益")
+    private BigDecimal unsettleAmount;
+
+    @ApiModelProperty(value = "注册用户类型：2-司机；3-客户")
+    private Integer type;
+
+    @ApiModelProperty(value = "注册时间")
+    private Long createTime;
+
+    @ApiModelProperty(value = "修改时间")
+    private Long updateTime;
 
 
 }

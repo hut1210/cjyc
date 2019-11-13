@@ -41,7 +41,7 @@ public class DriverDto implements Serializable {
     private String phone;
 
     @ApiModelProperty("承运方式：2 : 代驾  3 : 干线   4：拖车")
-    @NotBlank(groups = {SaveDriverDto.class,UpdateDriverDto.class},message = "承运方式不能为空")
+    @NotNull(groups = {SaveDriverDto.class,UpdateDriverDto.class},message = "承运方式不能为空")
     private Integer mode;
 
     @ApiModelProperty("业务城市")

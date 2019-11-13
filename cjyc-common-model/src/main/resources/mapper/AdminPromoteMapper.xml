@@ -5,17 +5,20 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.AdminPromote">
         <id column="id" property="id" />
+        <result column="channel" property="channel" />
         <result column="user_id" property="userId" />
-        <result column="customer_num" property="customerNum" />
+        <result column="user_name" property="userName" />
         <result column="customer_num_valid" property="customerNumValid" />
         <result column="income_amount" property="incomeAmount" />
         <result column="settling_amount" property="settlingAmount" />
         <result column="unsettle_amount" property="unsettleAmount" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, user_id, customer_num, customer_num_valid, income_amount, settling_amount, unsettle_amount
+        id, channel, user_id, user_name, customer_num_valid, income_amount, settling_amount, unsettle_amount, create_time, update_time
     </sql>
 
 </mapper>

@@ -78,7 +78,7 @@ public class InvoiceController {
         try {
             resultVo = invoiceApplyService.applyInvoice(dto);
         } catch (Exception e) {
-            log.error("确认开票异常:{}",e);
+            log.error("确认开票异常:",e);
             resultVo = BaseResultUtil.fail("开票失败");
         }
         return resultVo;
