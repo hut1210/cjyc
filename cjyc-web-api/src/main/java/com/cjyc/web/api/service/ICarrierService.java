@@ -19,6 +19,12 @@ import com.github.pagehelper.PageInfo;
 public interface ICarrierService {
 
     /**
+     * 根据手机号判断该承运商是否已添加
+     * @param linkmanPhone
+     * @return
+     */
+    ResultVo existCarrier(String linkmanPhone);
+    /**
      * 添加承运商
      * @param dto
      * @return
@@ -26,11 +32,18 @@ public interface ICarrierService {
     ResultVo saveCarrier(CarrierDto dto);
 
     /**
+     * 查询是否为该承运商下的司机
+     * @param carrierId,linkmanPhone
+     * @return
+     */
+    ResultVo existCarrierDriver(Long carrierId,String linkmanPhone);
+
+    /**
      * 更新承运商
      * @param dto
      * @return
      */
-    boolean modifyCarrier(CarrierDto dto);
+    ResultVo modifyCarrier(CarrierDto dto);
 
     /**
      * 根据条件查询承运商
@@ -44,7 +57,7 @@ public interface ICarrierService {
      * @param dto
      * @return
      */
-    boolean verifyCarrier(OperateDto dto);
+    ResultVo verifyCarrier(OperateDto dto);
 
     /**
      * 根据承运商carrierId查看承运商信息

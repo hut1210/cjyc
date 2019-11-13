@@ -46,7 +46,7 @@ public class TaskController {
     public ResultVo allot(@RequestBody AllotTaskDto reqDto) {
         //验证用户
         Driver driver = driverService.getByUserId(reqDto.getUserId());
-        if (driver == null || driver.getState() != AdminStateEnum.CHECKED.code) {
+        if (driver == null) {
             return BaseResultUtil.fail("当前用户不能登录");
         }
         reqDto.setUserName(driver.getName());
@@ -64,7 +64,7 @@ public class TaskController {
     public ResultVo load(@Validated @RequestBody LoadTaskDto reqDto) {
         //验证用户
         Driver driver = driverService.getByUserId(reqDto.getUserId());
-        if (driver == null || driver.getState() != AdminStateEnum.CHECKED.code) {
+        if (driver == null) {
             return BaseResultUtil.fail("当前用户，不能执行操作");
         }
         reqDto.setUserName(driver.getName());
@@ -81,7 +81,7 @@ public class TaskController {
     public ResultVo unload(@RequestBody UnLoadTaskDto reqDto) {
         //验证用户
         Driver driver = driverService.getByUserId(reqDto.getUserId());
-        if (driver == null || driver.getState() != AdminStateEnum.CHECKED.code) {
+        if (driver == null) {
             return BaseResultUtil.fail("当前用户，不能执行操作");
         }
         reqDto.setUserName(driver.getName());

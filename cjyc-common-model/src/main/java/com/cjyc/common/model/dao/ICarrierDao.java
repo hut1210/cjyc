@@ -49,4 +49,12 @@ public interface ICarrierDao extends BaseMapper<Carrier> {
      */
     List<DispatchCarrierVo> getDispatchCarrier(DispatchCarrierDto dto);
 
+    /**
+     * 查询根据输入手机号是否在该承运商下的普通司机
+     * @param carrierId
+     * @param linkmanPhone
+     * @return
+     */
+    Integer existCarrierDriver(@Param("carrierId") Long carrierId,@Param("linkmanPhone") String linkmanPhone);
+
 }

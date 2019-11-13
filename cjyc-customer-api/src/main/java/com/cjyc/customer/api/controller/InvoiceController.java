@@ -4,10 +4,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjyc.common.model.dto.customer.invoice.CustomerInvoiceAddDto;
 import com.cjyc.common.model.dto.customer.invoice.InvoiceApplyQueryDto;
 import com.cjyc.common.model.entity.CustomerInvoice;
-import com.cjyc.common.model.entity.InvoiceApply;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.customer.invoice.CustomerInvoiceVo;
+import com.cjyc.common.model.vo.customer.invoice.InvoiceApplyVo;
 import com.cjyc.common.model.vo.customer.invoice.InvoiceOrderVo;
 import com.cjyc.customer.api.service.ICustomerInvoiceService;
 import com.cjyc.customer.api.service.IInvoiceApplyService;
@@ -15,6 +16,7 @@ import com.cjyc.customer.api.service.IOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,29 +40,35 @@ public class InvoiceController {
     @Resource
     private IOrderService orderService;
 
-    @ApiOperation(value = "分页查询已申请发票信息")
+    @ApiOperation(value = "分页查询开票历史", notes = "\t 请求参数:loginId-客户登录ID-必传;currentPage-当前页号;pageSize-每页条数")
     @PostMapping("/getInvoiceApplyPage")
-    public ResultVo<PageVo<List<InvoiceApply>>> getInvoiceApplyPage(@RequestBody @Validated({InvoiceApplyQueryDto.InvoiceOrderAndInvoiceApplyQuery.class}) InvoiceApplyQueryDto dto){
+    public ResultVo<PageVo<List<InvoiceApplyVo>>> getInvoiceApplyPage(@RequestBody @Validated({InvoiceApplyQueryDto.InvoiceOrderAndInvoiceApplyQuery.class}) InvoiceApplyQueryDto dto){
         return invoiceApplyService.getInvoiceApplyPage(dto);
     }
 
-    @ApiOperation(value = "分页查询已申请发票订单明细")
+    @ApiOperation(value = "分页查询开票历史订单明细", notes = "\t " +
+            "请求参数:" +
+            "loginId-客户登录ID-必传;" +
+            "invoiceApplyId-发票申请ID-必传;" +
+            "currentPage-当前页号;pageSize-每页条数")
     @PostMapping("/getInvoiceApplyOrderPage")
     public ResultVo<PageVo<InvoiceOrderVo>> getInvoiceApplyOrderPage(@RequestBody @Validated({InvoiceApplyQueryDto.InvoiceApplyOrderQuery.class}) InvoiceApplyQueryDto dto){
         return orderService.getInvoiceApplyOrderPage(dto);
     }
 
-    @ApiOperation(value = "分页查询用户未开发票的订单")
+    @ApiOperation(value = "分页查询用户未开发票的订单", notes = "\t 请求参数:loginId-客户登录ID-必传;currentPage-当前页号;pageSize-每页条数")
     @PostMapping("/getUnInvoicePage")
     public ResultVo<PageVo<InvoiceOrderVo>> getUnInvoicePage(@RequestBody @Validated({InvoiceApplyQueryDto.InvoiceOrderAndInvoiceApplyQuery.class}) InvoiceApplyQueryDto dto){
         return orderService.getUnInvoicePage(dto);
     }
 
-    @ApiOperation(value = "查询开票信息")
-    @PostMapping("/getInvoiceInfo/{userId}")
-    public ResultVo<CustomerInvoice> getInvoiceInfo(@PathVariable Long userId){
-        CustomerInvoice invoice = customerInvoiceService.getOne(new QueryWrapper<CustomerInvoice>().lambda().eq(CustomerInvoice::getCustomerId, userId));
-        return BaseResultUtil.success(invoice);
+    @ApiOperation(value = "查询开票历史开票明细", notes = "\t 请求参数:loginId-客户登录ID-必传")
+    @PostMapping("/getInvoiceInfo/{loginId}")
+    public ResultVo<CustomerInvoiceVo> getInvoiceInfo(@PathVariable Long loginId){
+        CustomerInvoice invoice = customerInvoiceService.getOne(new QueryWrapper<CustomerInvoice>().lambda().eq(CustomerInvoice::getCustomerId, loginId));
+        CustomerInvoiceVo vo = new CustomerInvoiceVo();
+        BeanUtils.copyProperties(invoice,vo);
+        return BaseResultUtil.success(vo);
     }
 
     @ApiOperation(value = "确认开票")

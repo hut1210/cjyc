@@ -29,8 +29,9 @@
     </select>
 
     <!-- 根据运力vehicleId删除司机与运力关系 -->
-    <delete id="removeCon" parameterType="java.lang.Long">
-        delete from d_driver_vehicle_con where driver_id = #{driverId}
+    <delete id="removeCon">
+        delete from d_driver_vehicle_con
+          where driver_id = #{driverId} and vehicle_id = #{vehicleId}
     </delete>
 
 </mapper>

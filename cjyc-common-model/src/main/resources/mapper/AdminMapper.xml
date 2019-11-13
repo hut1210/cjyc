@@ -69,4 +69,29 @@
         </where>
     </select>
 
+    <select id="deliverySalesman" resultType="com.cjyc.common.model.vo.web.admin.TypeSalesmanVo"
+                parameterType="com.cjyc.common.model.dto.web.salesman.TypeSalesmanDto">
+        SELECT
+            admin.id AS adminId,
+            admin.NAME AS NAME,
+            admin.phone AS phone,
+            s.NAME AS storeName
+        FROM
+          b_admin admin
+        LEFT JOIN s_store s ON s.id = admin.store_id
+        <where>
+            <if test="name != null and name.trim() != ''">
+                admin.name like CONCAT('%',#{name},'%')
+            </if>
+            <if test="phone != null and phone.trim() != ''">
+                and  admin.phone = #{phone}
+            </if>
+            <if test="storeId != null">
+                and  admin.store_id = #{storeId}
+            </if>
+            and admin.state = 2
+            AND admin.type = 1
+        </where>
+    </select>
+
 </mapper>

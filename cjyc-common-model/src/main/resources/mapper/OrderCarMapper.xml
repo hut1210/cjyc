@@ -721,6 +721,7 @@
             o.start_city AS startCity,
             o.end_city AS endCity,
             o.total_fee AS totalFee,
+            o.car_num AS carNum,
             o.finish_time AS finishTime
         FROM
             w_order o
@@ -735,7 +736,7 @@
             AND apply.state IN ( 1, 2 )
             ) t ON o.NO = t.order_no AND o.customer_id = t.customer_id
         WHERE
-            o.customer_id = #{userId}
+            o.customer_id = #{loginId}
             AND t.id IS NULL
             AND o.invoice_flag = 1
             AND o.state = 100
@@ -751,12 +752,13 @@
             o.start_city AS startCity,
             o.end_city AS endCity,
             o.total_fee AS totalFee,
+            o.car_num AS carNum,
             o.finish_time AS finishTime
         FROM
             w_order o
             LEFT JOIN c_invoice_order_con con ON o.NO = con.order_no
         WHERE
-            o.customer_id = #{userId}
+            o.customer_id = #{loginId}
             AND con.invoice_apply_id = #{invoiceApplyId}
             AND con.id IS NOT NULL
             AND o.invoice_flag = 1

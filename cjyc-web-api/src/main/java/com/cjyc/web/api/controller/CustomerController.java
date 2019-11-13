@@ -2,7 +2,6 @@ package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.customer.*;
-import com.cjyc.common.model.util.BasePageUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.web.customer.CustomerVo;
 import com.cjyc.common.model.enums.ResultEnum;
@@ -46,7 +45,6 @@ public class CustomerController {
     @ApiOperation(value = "根据条件查询移动端用户")
     @PostMapping(value = "/findCustomer")
     public ResultVo<PageVo<CustomerVo>> findCustomer(@RequestBody SelectCustomerDto dto){
-        BasePageUtil.initPage(dto);
         return customerService.findCustomer(dto);
     }
 
@@ -80,7 +78,6 @@ public class CustomerController {
     @ApiOperation(value = "根据条件查询大客户")
     @PostMapping(value = "/findKeyCustomer")
     public ResultVo findKeyCustomer(@RequestBody SelectKeyCustomerDto dto){
-        BasePageUtil.initPage(dto);
         return customerService.findKeyCustomer(dto);
     }
 
@@ -99,7 +96,6 @@ public class CustomerController {
     @ApiOperation(value = "根据条件分页查看合伙人")
     @PostMapping(value = "/findPartner")
     public ResultVo findPartner(@RequestBody CustomerPartnerDto dto){
-        BasePageUtil.initPage(dto);
         return customerService.findPartner(dto);
     }
 
@@ -116,9 +112,9 @@ public class CustomerController {
     }
 
     @ApiOperation(value = "查看客户优惠券")
-    @PostMapping(value = "/getCouponByTerm")
-    public ResultVo getCustomerCouponByTerm(CustomerCouponDto dto){
-        return customerService.getCustomerCouponByTerm(dto);
+    @PostMapping(value = "/customerCoupon")
+    public ResultVo customerCoupon(@RequestBody CustomerCouponDto dto){
+        return customerService.customerCoupon(dto);
     }
 
     @ApiOperation(value = "根据customerId查看客户优惠券")

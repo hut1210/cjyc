@@ -16,7 +16,6 @@ import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
-import com.cjyc.common.model.util.BasePageUtil;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.PageVo;
@@ -85,7 +84,6 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
 
     @Override
     public ResultVo<PageVo<OrderCenterVo>> getPage(OrderQueryDto dto) {
-        BasePageUtil.initPage(dto);
         // 分页
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
         // 日期格式处理
@@ -209,7 +207,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
     @Override
     public ResultVo getUnInvoicePage(InvoiceApplyQueryDto dto) {
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        List<InvoiceOrderVo> list = orderCarDao.selectUnInvoiceOrderList(dto.getUserId());
+        List<InvoiceOrderVo> list = orderCarDao.selectUnInvoiceOrderList(dto.getLoginId());
         PageInfo<InvoiceOrderVo> pageInfo = new PageInfo<>(list);
         return BaseResultUtil.success(pageInfo);
     }

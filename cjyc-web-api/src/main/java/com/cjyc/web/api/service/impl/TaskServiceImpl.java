@@ -85,7 +85,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
             }
             //验证司机信息
             Driver driver = driverDao.selectById(driverId);
-            if (driver == null || driver.getState() != 1) {
+            if (driver == null) {
                 return BaseResultUtil.fail("司机不在运营中");
             }
 

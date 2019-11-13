@@ -9,6 +9,13 @@ import com.cjyc.common.model.vo.ResultVo;
 public interface IMimeCarrierService extends IService<Carrier> {
 
     /**
+     * 判断该承运商下是否有司机或者查询个人司机池中是否存在
+     * @param dto
+     * @return
+     */
+    ResultVo existMyDriver(ExistMyDriverDto dto);
+
+    /**
      * 新增承运商下司机
      * @param dto
      * @return

@@ -1,12 +1,12 @@
 package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.web.OperateDto;
+import com.cjyc.common.model.dto.web.VerifyCarrierDto;
 import com.cjyc.common.model.dto.web.driver.DispatchDriverDto;
 import com.cjyc.common.model.dto.web.driver.DriverDto;
 import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
 import com.cjyc.common.model.dto.web.user.DriverListDto;
 import com.cjyc.common.model.enums.ResultEnum;
-import com.cjyc.common.model.util.BasePageUtil;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -48,6 +48,12 @@ public class DriverController {
         return driverService.lineWaitDispatchCarCountList(reqDto);
     }
 
+    @ApiOperation(value = "判断个人司机在承运商中是否存在")
+    @PostMapping(value = "/existDriver")
+    public ResultVo existDriver(@RequestBody VerifyCarrierDto dto){
+        return driverService.existDriver(dto);
+    }
+
     @ApiOperation(value = "新增散户司机")
     @PostMapping(value = "/saveDriver")
     public ResultVo saveDriver(@Validated({ DriverDto.SaveDriverDto.class }) @RequestBody DriverDto dto){
@@ -57,15 +63,13 @@ public class DriverController {
     @ApiOperation(value = "根据查询条件查看司机信息")
     @PostMapping(value = "/findDriver")
     public ResultVo<PageVo<DriverVo>> findDriver(@RequestBody SelectDriverDto dto){
-        BasePageUtil.initPage(dto);
         return driverService.findDriver(dto);
     }
 
     @ApiOperation(value = "根据id进行审核通过/拒绝/冻结解冻")
     @PostMapping(value = "/verifyDriver")
     public ResultVo verifyDriver(@RequestBody OperateDto dto){
-        boolean result = driverService.verifyDriver(dto);
-        return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
+        return driverService.verifyDriver(dto);
     }
 
     @ApiOperation(value = "根据司机id(driverId)查看司机信息")

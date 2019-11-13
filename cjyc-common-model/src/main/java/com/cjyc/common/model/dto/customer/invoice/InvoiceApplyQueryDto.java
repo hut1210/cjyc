@@ -17,9 +17,9 @@ public class InvoiceApplyQueryDto extends BasePageDto {
     public interface InvoiceApplyOrderQuery{}
     public interface InvoiceOrderAndInvoiceApplyQuery{}
 
-    @ApiModelProperty(value = "客户userId")
-    @NotNull(groups = {InvoiceOrderAndInvoiceApplyQuery.class,InvoiceApplyOrderQuery.class},message = "客户userId不能为空")
-    private Long userId;
+    @ApiModelProperty(value = "客户登录ID")
+    @NotNull(groups = {InvoiceOrderAndInvoiceApplyQuery.class,InvoiceApplyOrderQuery.class},message = "客户登录ID不能为空")
+    private Long loginId;
 
     @ApiModelProperty(value = "发票申请ID")
     @NotNull(groups = {InvoiceApplyOrderQuery.class},message = "发票申请ID不能为空")

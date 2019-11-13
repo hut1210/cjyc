@@ -29,7 +29,6 @@ import com.cjyc.common.model.entity.defined.BizScope;
 import com.cjyc.common.model.entity.defined.FullCity;
 import com.cjyc.common.model.enums.BizScopeEnum;
 import com.cjyc.common.model.enums.CommonStateEnum;
-import com.cjyc.common.model.util.BasePageUtil;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.store.StoreExportExcel;
@@ -89,7 +88,6 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
 
     @Override
     public ResultVo queryPage(StoreQueryDto dto) {
-        BasePageUtil.initPage(dto);
         List<Store> list = getStoreList(dto);
         PageInfo<Store> pageInfo = new PageInfo<>(list);
         return BaseResultUtil.success(pageInfo);

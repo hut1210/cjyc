@@ -109,6 +109,7 @@
     <select id="getCustomerCouponByTerm" resultType="com.cjyc.common.model.vo.web.customer.CustomerCouponVo"
                                         parameterType="com.cjyc.common.model.dto.web.customer.CustomerCouponDto">
         SELECT
+            send.id AS sendId,
             send.coupon_no AS couponNo,
             coupon.type AS type,
             coupon.full_amount AS fullAmount,
@@ -117,25 +118,23 @@
             coupon.is_forever AS isForever,
             coupon.start_period_date AS startPeriodDate,
             coupon.end_period_date AS endPeriodDate,
-            send.receive_time AS receiveTime
+            send.receive_time AS receiveTime,
+            send.is_use as isUse
         FROM
-            c_coupon coupon
-            JOIN c_coupon_send send ON send.coupon_id = coupon.id
-            JOIN c_customer customer ON customer.id = send.customer_id
+              c_coupon_send send
+            LEFT JOIN c_coupon coupon ON coupon.id = send.coupon_id
+            LEFT JOIN c_customer c ON c.id = send.customer_id
         <where>
             <if test="type != null">
                 coupon.type = #{type}
             </if>
-            <if test="isUse != null ">
-                and send.is_use = #{isUse}
-            </if>
             <if test="startPeriodTime != null">
-                and  cooupon.start_period_date >=  #{startPeriodTime}
+                and  coupon.start_period_date >=  #{startPeriodTime}
             </if>
             <if test="endPeriodTime != null">
-                and  cooupon.end_period_date &lt;= #{endPeriodTime}
+                and  coupon.end_period_date &lt;= #{endPeriodTime}
             </if>
-            and customer.id = #{customerId}
+            and send.customer_id = #{customerId}
         </where>
     </select>
 

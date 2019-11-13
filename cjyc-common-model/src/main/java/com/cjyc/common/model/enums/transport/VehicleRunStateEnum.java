@@ -1,14 +1,15 @@
 package com.cjyc.common.model.enums.transport;
 
-public enum VehicleStateEnum {
+public enum VehicleRunStateEnum {
 
-    INVALID("无效", 0),
-    EFFECTIVE("有效", 1);
+    FREE("空闲", 0),
+    WAY("在途", 1),
+    BUSY("繁忙", 2);
 
     public String name;
     public int code;
 
-    VehicleStateEnum(String name, int code) {
+    VehicleRunStateEnum(String name, int code) {
         this.name = name;
         this.code = code;
     }

@@ -1,23 +1,19 @@
 package com.cjyc.web.api.controller;
 
-import com.cjyc.common.model.dto.BasePageDto;
 import com.cjyc.common.model.dto.web.dictionary.DictionaryDto;
 import com.cjyc.common.model.dto.web.dictionary.SelectDictionaryDto;
 import com.cjyc.common.model.entity.Dictionary;
 import com.cjyc.common.model.enums.ResultEnum;
-import com.cjyc.common.model.util.BasePageUtil;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.web.api.service.IDictionaryService;
-import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -44,7 +40,6 @@ public class DictionaryController {
     @ApiOperation(value = "根据条件查询字典项")
     @PostMapping(value = "/queryPage")
     public ResultVo<PageVo<Dictionary>> queryPage(@RequestBody SelectDictionaryDto dto){
-        BasePageUtil.initPage(dto);
         return dictionaryService.queryPage(dto);
     }
 

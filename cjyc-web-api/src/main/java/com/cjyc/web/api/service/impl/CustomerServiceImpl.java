@@ -41,10 +41,7 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  *  @author: zj
@@ -455,32 +452,33 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     }
 
     @Override
-    public ResultVo getCustomerCouponByTerm(CustomerCouponDto dto) {
+    public ResultVo customerCoupon(CustomerCouponDto dto) {
+        PageInfo<CustomerCouponVo> pageInfo = null;
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
         List<CustomerCouponVo> voList = couponDao.getCustomerCouponByTerm(dto);
-        if(!CollectionUtils.isEmpty(voList)){
-            for(CustomerCouponVo vo : voList){
-                vo.setFullAmount(vo.getFullAmount() == null ? BigDecimal.ZERO : vo.getFullAmount().divide(new BigDecimal(100)));
-                vo.setCutAmount(vo.getCutAmount() == null ? BigDecimal.ZERO : vo.getCutAmount().divide(new BigDecimal(100)));
-                if(CouponLifeTypeEnum.FOREVER.code != vo.getIsForever()){
-                    //有效期
-                    if(StringUtils.isNotBlank(vo.getStartPeriodDate())){
-                        vo.setStartPeriodDate(LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(Long.valueOf(vo.getStartPeriodDate())),TimePatternConstant.COMPLEX_TIME_FORMAT));
-                    }
-                    if(StringUtils.isNotBlank(vo.getEndPeriodDate())){
-                        vo.setEndPeriodDate(LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(Long.valueOf(vo.getEndPeriodDate())),TimePatternConstant.COMPLEX_TIME_FORMAT));
-                    }
-                }
-                //永久 没有有效期
-                if(StringUtils.isNotBlank(vo.getReceiveTime())){
-                    vo.setReceiveTime(LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(Long.valueOf(vo.getReceiveTime())),TimePatternConstant.COMPLEX_TIME_FORMAT));
+        List<CustomerCouponVo> disCouponVos = new ArrayList<>(15);
+        List<CustomerCouponVo> couponVos = new ArrayList<>(15);
+        Map<String, Object> count = new HashMap<>();
+        if (!CollectionUtils.isEmpty(voList)) {
+            //不可用的优惠券(使用过的或者是过期的)
+            for (CustomerCouponVo couponVo : voList) {
+                if (couponVo.getIsUse() == 1 || (couponVo.getIsForever() == 0 && couponVo.getEndPeriodDate() > NOW)) {
+                    disCouponVos.add(couponVo);
+                } else {
+                    couponVos.add(couponVo);
                 }
             }
+            count.put("isUse_0", couponVos.size());
+            count.put("isUse_1", disCouponVos.size());
         }
-        PageInfo<CustomerCouponVo> pageInfo = new PageInfo<>(voList);
-        return BaseResultUtil.success(pageInfo);
+        if(UseStateEnum.DISABLED.code == dto.getIsUsable()){
+            //不可用
+            pageInfo = new PageInfo<>(disCouponVos);
+        }else{
+            pageInfo = new PageInfo<>(couponVos);
+        }
+        return BaseResultUtil.success(pageInfo,count);
     }
-
     @Override
     public ResultVo getCouponByCustomerId(Long customerId) {
         List<CustomerCouponSendVo> sendVoList = null;

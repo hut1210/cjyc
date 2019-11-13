@@ -1,8 +1,6 @@
 package com.cjyc.customer.api.controller;
 
 import com.cjyc.common.model.dto.CommonDto;
-import com.cjyc.common.model.dto.customer.invoice.InvoiceApplyQueryDto;
-import com.cjyc.common.model.util.BasePageUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.coupon.CustomerCouponVo;
@@ -29,7 +27,6 @@ public class CustomerCouponController {
     @ApiOperation(value = "客户优惠券")
     @PostMapping(value = "/customerCoupon")
     public ResultVo<PageVo<CustomerCouponVo>> customerCoupon(@RequestBody CommonDto dto){
-        BasePageUtil.initPage(dto);
         return couponSendService.customerCoupon(dto);
     }
 }

@@ -67,17 +67,19 @@
     </select>
 
     <!-- 通过关键字查询品牌车系 -->
-    <select id="getCarSeries" resultType="com.cjyc.common.model.entity.CarSeries" parameterType="java.lang.String">
-        select
-           brand,model,logo_img
-        from s_car_series
+    <select id="findTree" resultMap="TreeResultMap" parameterType="java.lang.String">
+        SELECT
+          <include refid = "Base_Column_List"/>
+        FROM
+          s_car_series
         <where>
             <if test="keyword != null and keyword.trim() != ''">
-               and concat(brand,model) like concat('%',#{keyword},'%')
+                brand like concat('%',#{keyword},'%') or
+                model = #{keyword} or
+                pin_initial = #{keyword}
             </if>
         </where>
-    </select>
-    <select id="findTree" resultMap="TreeResultMap">
-        select <include refid="Base_Column_List"/> from s_car_series
+        ORDER BY
+          pin_initial ASC
     </select>
 </mapper>

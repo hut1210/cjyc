@@ -182,6 +182,85 @@ public class RegionServiceImpl implements IRegionService {
         return BaseResultUtil.success();
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public ResultVo removeRegion(String regionCode) throws Exception {
+        // 查询当前大区下的省份
+        List<City> list = cityService.list(new QueryWrapper<City>().lambda()
+                .eq(City::getLevel, FieldConstant.PROVINCE_LEVEL).eq(City::getParentCode, regionCode));
+
+        // 调用物流平台-更新省份上级机构为未覆盖大区
+        if (!CollectionUtils.isEmpty(list)) {
+            this.removeJgProvince(list);
+        }
+
+        // 调用物流平台-删除大区信息
+        this.deleteRegion(regionCode);
+
+        // 更新城市列表中省份的上级机构（大区）
+        if (!CollectionUtils.isEmpty(list)) {
+            this.removeYcProvince(list);
+        }
+
+        // 删除韵车大区信息
+        boolean remove = cityService.remove(new QueryWrapper<City>().lambda().eq(City::getCode, regionCode));
+        if (!remove) {
+            throw new Exception("删除大区失败");
+        }
+
+        return BaseResultUtil.success();
+    }
+
+    private void removeYcProvince(List<City> list) throws Exception {
+        for (City city : list) {
+            boolean update = cityService.update(new UpdateWrapper<City>().lambda()
+                    .set(City::getParentCode, FieldConstant.NOT_REGION_CODE)
+                    .set(City::getParentName, FieldConstant.NOT_REGION_NAME)
+                    .eq(City::getLevel, FieldConstant.PROVINCE_LEVEL).eq(City::getCode, city.getCode()));
+            if (!update) {
+                throw new Exception("修改省份大区编码失败");
+            }
+        }
+    }
+
+    private void deleteRegion(String regionCode) throws Exception {
+        // 调用物流平台-查询大区机构ID
+        ResultData<SelectDeptResp> regionData = sysDeptService.getDeptByCityCode(regionCode);
+        if (!ReturnMsg.SUCCESS.getCode().equals(regionData.getCode()) || Objects.isNull(regionData.getData())) {
+            throw new Exception("调用物流平台-查询大区信息异常");
+        }
+        // 调用物流平台-删除大区信息
+        ResultData deleteData = sysDeptService.delete(regionData.getData().getDeptId());
+        if (!ReturnMsg.SUCCESS.getCode().equals(deleteData.getCode())) {
+            throw new Exception("调用物流平台-删除大区信息异常");
+        }
+    }
+
+    private void removeJgProvince(List<City> list) throws Exception {
+        // 调用物流平台-查询未覆盖大区的机构ID
+        ResultData<SelectDeptResp> notRegionData = sysDeptService.getDeptByCityCode(FieldConstant.NOT_REGION_CODE);
+        if (!ReturnMsg.SUCCESS.getCode().equals(notRegionData.getCode()) || Objects.isNull(notRegionData.getData())) {
+            throw new Exception("调用物流平台-查询未覆盖大区信息异常");
+        }
+
+        for (City city : list) {
+            // 调用物流平台-查询省份的机构ID
+            ResultData<SelectDeptResp> provinceData = sysDeptService.getDeptByCityCode(city.getCode());
+            if (!ReturnMsg.SUCCESS.getCode().equals(provinceData.getCode()) || Objects.isNull(provinceData.getData())) {
+                throw new Exception("调用物流平台-查询省份信息异常");
+            }
+
+            // 调用物流平台-更新大区覆盖省份的上级机构
+            UpdateDeptReq updateDeptReq = new UpdateDeptReq();
+            updateDeptReq.setDeptId(provinceData.getData().getDeptId());
+            updateDeptReq.setParentId(notRegionData.getData().getDeptId());
+            ResultData resultData = sysDeptService.update(updateDeptReq);
+            if(!ReturnMsg.SUCCESS.getCode().equals(resultData.getCode())) {
+                throw new Exception("调用物流平台-修改省份信息异常:"+resultData.getMsg());
+            }
+        }
+    }
+
     private void updateNewProvinceList(RegionUpdateDto dto,List<RegionCityDto> provinceList) throws Exception {
         if (!CollectionUtils.isEmpty(provinceList)) {
             // 调用物流平台-查询当前大区机构ID

@@ -1,7 +1,9 @@
 package com.cjyc.web.api.service;
 
+import com.cjyc.common.model.dto.web.salesman.TypeSalesmanDto;
 import com.cjyc.common.model.entity.Admin;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.cjyc.common.model.vo.ResultVo;
 
 import java.util.List;
 
@@ -16,5 +18,7 @@ import java.util.List;
 public interface IAdminService extends IService<Admin> {
 
     Admin getByUserId(Long userId);
+
+    ResultVo deliverySalesman(TypeSalesmanDto dto);
 
 }

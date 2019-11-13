@@ -46,9 +46,6 @@ public class Driver implements Serializable {
     @ApiModelProperty(value = "类型：1自营司机，2社会司机")
     private Integer type;
 
-    @ApiModelProperty(value = "承运方式：2 : 代驾  3 : 干线   4：拖车")
-    private Integer mode;
-
     @ApiModelProperty(value = "司机身份 0：普通司机 1：管理员")
     private Integer identity;
 
@@ -99,9 +96,6 @@ public class Driver implements Serializable {
 
     @ApiModelProperty(value = "备注")
     private String remark;
-
-    @ApiModelProperty(value = "状态：0待审核，2已审核，4取消，5冻结  7已驳回，9已停用（CommonStateEnum）")
-    private Integer state;
 
     @ApiModelProperty(value = "是否缴纳保证金：0否，1是")
     private Integer depositPayState;

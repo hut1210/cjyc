@@ -6,56 +6,25 @@ import com.cjyc.common.model.dto.KeywordDto;
 import com.cjyc.common.model.entity.CarSeries;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.customer.CarSeries.CarSeriesVo;
-import com.cjyc.common.model.vo.customer.CarSeries.CarVo;
-import com.cjyc.common.model.vo.customer.CarSeries.ModelVo;
+import com.cjyc.common.model.vo.web.carSeries.CarSeriesTree;
+import com.cjyc.common.system.service.ICsCarSeriesService;
 import com.cjyc.customer.api.service.ICarSeriesService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.List;
 
 @Service
 @Slf4j
 public class CarSeriesServiceImpl extends ServiceImpl<ICarSeriesDao, CarSeries> implements ICarSeriesService {
 
     @Resource
-    private ICarSeriesDao carSeriesDao;
+    private ICsCarSeriesService csCarSeriesService;
 
     @Override
     public ResultVo queryCarSeries(KeywordDto dto) {
-        CarVo carVo = new CarVo();
-        List<CarSeries> carSeries =  carSeriesDao.getCarSeries(dto.getKeyword());
-        List<CarSeriesVo> carSeriesList = new ArrayList<>();
-        CarSeriesVo carSeriesVo = null;
-        List<ModelVo> modelVos = null;
-        ModelVo modelVo = null;
-        if(!CollectionUtils.isEmpty(carSeries)){
-           Set<String> set = new HashSet<>(10);
-           for(CarSeries car : carSeries){
-               set.add(car.getBrand());
-           }
-           if(!CollectionUtils.isEmpty(set)){
-               for(String brand : set){
-                   carSeriesVo = new CarSeriesVo();
-                   carSeriesVo.setBrand(brand);
-                   modelVos = new ArrayList<>();
-                   for(CarSeries car : carSeries){
-                       if(car.getBrand().equals(brand)){
-                           carSeriesVo.setLogoImg(car.getLogoImg());
-                           modelVo = new ModelVo();
-                           modelVo.setModel(car.getModel());
-                           modelVos.add(modelVo);
-                       }
-                   }
-                   carSeriesVo.setModelVos(modelVos);
-                   carSeriesList.add(carSeriesVo);
-               }
-               carVo.setCarSeriesVos(carSeriesList);
-           }
-       }
-        return BaseResultUtil.success(carVo);
+        List<CarSeriesTree> carSeriesTrees =  csCarSeriesService.tree(false,dto.getKeyword());
+        return BaseResultUtil.success(carSeriesTrees);
     }
 }

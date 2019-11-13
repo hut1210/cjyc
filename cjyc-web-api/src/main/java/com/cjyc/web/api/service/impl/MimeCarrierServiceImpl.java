@@ -22,7 +22,6 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.mimeCarrier.MyCarVo;
 import com.cjyc.common.model.vo.web.mimeCarrier.MyDriverVo;
 import com.cjyc.common.model.vo.web.mimeCarrier.MyFreeDriverVo;
-import com.cjyc.common.model.vo.web.vehicle.FreeVehicleVo;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.web.api.service.IMimeCarrierService;
 import com.github.pagehelper.PageHelper;
@@ -71,13 +70,14 @@ public class MimeCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
     @Override
+    public ResultVo existMyDriver(ExistMyDriverDto dto) {
+        //判断在个人司机池中是否存在
+
+        return null;
+    }
+
+    @Override
     public ResultVo saveDriver(MyDriverDto dto) {
-        Driver dri = driverDao.selectOne(new QueryWrapper<Driver>().lambda()
-                                            .eq(Driver::getPhone,dto.getPhone()).or()
-                                            .eq(Driver::getIdCard,dto.getIdCard()));
-        if(dri != null){
-            return BaseResultUtil.fail("该司机已添加,请检查");
-        }
         //保存司机
         Driver driver = new Driver();
         BeanUtils.copyProperties(dto,driver);
@@ -91,7 +91,6 @@ public class MimeCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
             //业务员登陆
             driver.setSource(DriverSourceEnum.SALEMAN_WEB.code);
         }
-        driver.setState(CommonStateEnum.CHECKED.code);
         driver.setCreateUserId(dto.getLoginId());
         driver.setCreateTime(NOW);
         //司机信息保存
@@ -116,6 +115,7 @@ public class MimeCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
             }
         }
         driverCon.setDriverId(driver.getId());
+        driverCon.setState(CommonStateEnum.CHECKED.code);
         driverCon.setRole(DriverIdentityEnum.SUB_DRIVER.code);
         carrierDriverConDao.insert(driverCon);
         //车牌号不为空
@@ -132,8 +132,7 @@ public class MimeCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
             vr.setVehicleId(dto.getVehicleId());
             vr.setPlateNo(dto.getPlateNo());
             vr.setCarryCarNum(dto.getDefaultCarryNum());
-            vr.setState(VehicleStateEnum.EFFECTIVE.code);
-            vr.setRunningState(BusinessStateEnum.OUTAGE.code);
+            vr.setRunningState(VehicleRunStateEnum.FREE.code);
             vr.setCreateTime(NOW);
             vehicleRunningDao.insert(vr);
         }
@@ -183,12 +182,13 @@ public class MimeCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
             carrierDriverConDao.updateById(cdc);
         }else if(dto.getFlag() == FlagEnum.FROZEN.code){
             //冻结
-            driver.setState(CommonStateEnum.FROZEN.code);
+            cdc.setState(CommonStateEnum.FROZEN.code);
         }else if(dto.getFlag() == FlagEnum.THAW.code){
             //解冻
-            driver.setState(CommonStateEnum.CHECKED.code);
+            cdc.setState(CommonStateEnum.CHECKED.code);
         }
         driverDao.updateById(driver);
+        carrierDriverConDao.updateById(cdc);
         return BaseResultUtil.success();
     }
 
@@ -223,7 +223,7 @@ public class MimeCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
             vr.setVehicleId(veh.getId());
             vr.setPlateNo(dto.getPlateNo());
             vr.setCarryCarNum(dto.getDefaultCarryNum());
-            vr.setState(VehicleStateEnum.EFFECTIVE.code);
+            vr.setRunningState(VehicleRunStateEnum.FREE.code);
             vr.setRunningState(BusinessStateEnum.OUTAGE.code);
             vr.setCreateTime(NOW);
         }
@@ -291,7 +291,7 @@ public class MimeCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
                 vr.setVehicleId(dto.getVehicleId());
                 vr.setPlateNo(dto.getPlateNo());
                 vr.setCarryCarNum(dto.getDefaultCarryNum());
-                vr.setState(VehicleStateEnum.EFFECTIVE.code);
+                vr.setRunningState(VehicleRunStateEnum.FREE.code);
                 vr.setRunningState(BusinessStateEnum.OUTAGE.code);
                 vr.setCreateTime(NOW);
             }
@@ -324,7 +324,6 @@ public class MimeCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
             dri.setRealName(dto.getRealName());
             dri.setPhone(dto.getPhone());
             dri.setIdCard(dto.getIdCard());
-            dri.setMode(dto.getMode());
             dri.setIdCardFrontImg(dto.getIdCardFrontImg());
             dri.setIdCardBackImg(dto.getIdCardBackImg());
             driverDao.updateById(dri);
@@ -337,8 +336,8 @@ public class MimeCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
                 vehicleRunningDao.updateById(vr);
             }else if(StringUtils.isBlank(dto.getPlateNo())){
                 //为空删除绑定关系
-                driverVehicleConDao.removeCon(dto.getDriverId());
-                vehicleRunningDao.removeRun(dto.getDriverId());
+                driverVehicleConDao.removeCon(dvc.getDriverId(),dvc.getVehicleId());
+                vehicleRunningDao.removeRun(dvc.getDriverId(),dvc.getVehicleId());
             }
         }
         return BaseResultUtil.success();

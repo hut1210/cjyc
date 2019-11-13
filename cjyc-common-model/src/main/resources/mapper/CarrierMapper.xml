@@ -119,6 +119,7 @@
             <if test="operateName != null and operateName.trim() != ''">
                 and  admin.name like CONCAT('%',#{operateName},'%')
             </if>
+             and carr.type = 2
         </where>
     </select>
 
@@ -126,7 +127,7 @@
     <select id="showCarrierById" resultType="com.cjyc.common.model.vo.web.carrier.BaseCarrierVo"
                                 parameterType="java.lang.Long">
       SELECT
-            carr.id AS id,
+            carr.id AS carrierId,
             carr.NAME AS NAME,
             carr.linkman AS linkman,
             carr.linkman_phone AS linkmanPhone,
@@ -151,6 +152,7 @@
             left JOIN d_carrier_driver_con cdc ON cdc.carrier_id = carr.id
             left JOIN d_driver dri ON dri.id = cdc.driver_id
             left JOIN s_bank_card_bind bcb ON bcb.user_id = carr.id
+          where carr.id = #{carrierId}
     </select>
 
     <!-- 调度出符合条件的承运商 -->
@@ -190,5 +192,18 @@
         </where>
     </select>
 
+    <!-- 查询根据输入手机号是否在该承运商下的普通司机 -->
+    <select id="existCarrierDriver" resultType="java.lang.Integer">
+        SELECT
+            count( carrier.id )
+        FROM
+            d_carrier carrier
+            LEFT JOIN d_carrier_driver_con con ON con.carrier_id = carrier.id
+            LEFT JOIN d_driver driver ON driver.id = con.driver_id
+        WHERE
+            driver.phone = #{linkmanPhone}
+            AND carrier.id = #{carrierId}
+            AND con.role = 1
+    </select>
 
 </mapper>

@@ -1,5 +1,7 @@
 package com.cjyc.common.model.vo.customer.coupon;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -10,6 +12,11 @@ import java.math.BigDecimal;
 public class CustomerCouponVo implements Serializable {
 
     private static final long serialVersionUID = 5038946191538866849L;
+
+    @ApiModelProperty("优惠券id")
+    @JsonSerialize(using= ToStringSerializer.class)
+    private Long id;
+
     @ApiModelProperty("优惠券名称")
     private String name;
 

@@ -7,12 +7,14 @@
         <id column="id" property="id" />
         <result column="carrier_id" property="carrierId" />
         <result column="driver_id" property="driverId" />
+        <result column="mode" property="mode"/>
+        <result column="state" property="state"/>
         <result column="role" property="role" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, carrier_id, driver_id, role
+        id, carrier_id, driver_id, mode, state, role
     </sql>
 
     <!-- 根据承运商id获取司机ids -->

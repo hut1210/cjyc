@@ -13,6 +13,7 @@ import com.cjyc.common.model.entity.InvoiceApply;
 import com.cjyc.common.model.entity.InvoiceOrderCon;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.customer.invoice.InvoiceApplyVo;
 import com.cjyc.customer.api.service.ICustomerInvoiceService;
 import com.cjyc.customer.api.service.IInvoiceApplyService;
 import com.github.pagehelper.PageHelper;
@@ -26,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -49,13 +51,20 @@ public class InvoiceApplyServiceImpl extends SuperServiceImpl<IInvoiceApplyDao, 
     @Override
     public ResultVo getInvoiceApplyPage(InvoiceApplyQueryDto dto) {
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        List<InvoiceApply> list = super.list(new QueryWrapper<InvoiceApply>().lambda().eq(InvoiceApply::getCustomerId, dto.getUserId()));
-        PageInfo<InvoiceApply> pageInfo = new PageInfo<>(list);
+        List<InvoiceApply> list = super.list(new QueryWrapper<InvoiceApply>().lambda().eq(InvoiceApply::getCustomerId, dto.getLoginId()));
+        List<InvoiceApplyVo> returnList = new ArrayList<>(10);
+        for (InvoiceApply invoiceApply : list) {
+            InvoiceApplyVo vo = new InvoiceApplyVo();
+            BeanUtils.copyProperties(invoiceApply,vo);
+            returnList.add(vo);
+        }
+
+        PageInfo<InvoiceApplyVo> pageInfo = new PageInfo<>(returnList);
         return BaseResultUtil.success(pageInfo);
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ResultVo applyInvoice(CustomerInvoiceAddDto dto) throws Exception {
         // 开票订单号校验
         for (OrderAmountDto orderAmountDto : dto.getOrderAmountList()) {
@@ -69,7 +78,7 @@ public class InvoiceApplyServiceImpl extends SuperServiceImpl<IInvoiceApplyDao, 
         CustomerInvoice invoice = new CustomerInvoice();
         BeanUtils.copyProperties(dto,invoice);
         invoice.setType(Integer.valueOf(dto.getType()));
-        invoice.setCustomerId(dto.getUserId());
+        invoice.setCustomerId(dto.getLoginId());
         Long invoiceId = null;
         if (dto.getId() != null) {
             invoiceId = dto.getId();
@@ -107,9 +116,9 @@ public class InvoiceApplyServiceImpl extends SuperServiceImpl<IInvoiceApplyDao, 
         for (OrderAmountDto orderAmountDto : dto.getOrderAmountList()) {
             amount = amount.add(orderAmountDto.getAmount());
         }
-        invoiceApply.setAmount(amount);
+        invoiceApply.setAmount(amount.multiply(new BigDecimal(100)));
         invoiceApply.setApplyTime(System.currentTimeMillis());
-        invoiceApply.setCustomerId(dto.getUserId());
+        invoiceApply.setCustomerId(dto.getLoginId());
         invoiceApply.setCustomerName(dto.getName());
         invoiceApply.setState(FieldConstant.INVOICE_APPLY_IN);
         return invoiceApply;
