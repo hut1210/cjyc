@@ -47,4 +47,8 @@ public class InvoiceOrderVo implements Serializable {
     public String getEndCity() {
         return endCity == null ? "" : endCity;
     }
+
+    public Long getFinishTime() {
+        return finishTime == null ? 0 : finishTime;
+    }
 }

@@ -18,10 +18,10 @@ public class DataLongSerizlizer extends JsonSerializer<Long> {
     @Override
     public void serialize(Long date, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
         //将毫秒值转换成秒变成char型数据返回
-        if(!Objects.isNull(date)){
+        if(!Objects.isNull(date) && date != 0){
             String dateStr = LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.getDayStartByLong(date), TimePatternConstant.COMPLEX_TIME_FORMAT);
             jsonGenerator.writeString(dateStr);
-        }else{
+        } else {
             jsonGenerator.writeString("");
         }
     }
