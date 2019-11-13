@@ -56,4 +56,14 @@ public class FieldConstant {
      * 未覆盖大区名称
      */
     public static final String NOT_REGION_NAME = "未覆盖大区";
+
+    /*******分享下单状态******/
+    /**
+     * 未下单
+     */
+    public static final int NOT_PLACE_ORDER = 0;
+    /**
+     * 已下单
+     */
+    public static final int PLACE_ORDER = 1;
 }
