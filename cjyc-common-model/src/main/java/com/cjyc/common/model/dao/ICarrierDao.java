@@ -2,11 +2,13 @@ package com.cjyc.common.model.dao;
 
 import com.cjyc.common.model.dto.web.carrier.DispatchCarrierDto;
 import com.cjyc.common.model.dto.web.carrier.SeleCarrierDto;
+import com.cjyc.common.model.dto.web.carrier.TrailCarrierDto;
 import com.cjyc.common.model.entity.Carrier;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.vo.web.carrier.CarrierVo;
 import com.cjyc.common.model.vo.web.carrier.BaseCarrierVo;
 import com.cjyc.common.model.vo.web.carrier.DispatchCarrierVo;
+import com.cjyc.common.model.vo.web.carrier.TrailCarrierVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -57,4 +59,10 @@ public interface ICarrierDao extends BaseMapper<Carrier> {
      */
     Integer existCarrierDriver(@Param("carrierId") Long carrierId,@Param("linkmanPhone") String linkmanPhone);
 
+    /**
+     * 调度中心中提车干线调度中代驾和拖车列表
+     * @param dto
+     * @return
+     */
+    List<TrailCarrierVo> findTrailDriver(TrailCarrierDto dto);
 }

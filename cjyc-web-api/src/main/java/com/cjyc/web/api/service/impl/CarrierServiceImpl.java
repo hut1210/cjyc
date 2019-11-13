@@ -12,10 +12,7 @@ import com.cjkj.usercenter.dto.yc.AddDeptAndUserResp;
 import com.cjkj.usercenter.dto.yc.UpdateDeptManagerReq;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.OperateDto;
-import com.cjyc.common.model.dto.web.carrier.CarrierDto;
-import com.cjyc.common.model.dto.web.carrier.DispatchCarrierDto;
-import com.cjyc.common.model.dto.web.carrier.SeleCarrierDto;
-import com.cjyc.common.model.dto.web.carrier.SeleVehicleDriverDto;
+import com.cjyc.common.model.dto.web.carrier.*;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.transport.*;
@@ -23,6 +20,7 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.admin.TypeSalesmanVo;
 import com.cjyc.common.model.vo.web.carrier.*;
 import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysUserService;
@@ -293,6 +291,14 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<DispatchCarrierVo> carrierVos = carrierDao.getDispatchCarrier(dto);
         PageInfo<DispatchCarrierVo> pageInfo = new PageInfo<>(carrierVos);
+        return BaseResultUtil.success(pageInfo);
+    }
+
+    @Override
+    public ResultVo trailDriver(TrailCarrierDto dto) {
+        PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
+        List<TrailCarrierVo> carrierVos = carrierDao.findTrailDriver(dto);
+        PageInfo<TrailCarrierVo> pageInfo =  new PageInfo<>(carrierVos);
         return BaseResultUtil.success(pageInfo);
     }
 

@@ -1,10 +1,7 @@
 package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.web.OperateDto;
-import com.cjyc.common.model.dto.web.carrier.CarrierDto;
-import com.cjyc.common.model.dto.web.carrier.DispatchCarrierDto;
-import com.cjyc.common.model.dto.web.carrier.SeleCarrierDto;
-import com.cjyc.common.model.dto.web.carrier.SeleVehicleDriverDto;
+import com.cjyc.common.model.dto.web.carrier.*;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
@@ -102,5 +99,11 @@ public class CarrierController {
     @PostMapping(value = "/dispatchCarrier")
     public ResultVo dispatchCarrier(@RequestBody DispatchCarrierDto dto){
         return carrierService.dispatchCarrier(dto);
+    }
+
+    @ApiOperation(value = "调度中心中提车干线调度中代驾和拖车列表")
+    @PostMapping(value = "/traileDriver")
+    public ResultVo trailDriver(@RequestBody TrailCarrierDto dto){
+        return carrierService.trailDriver(dto);
     }
 }
