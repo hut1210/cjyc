@@ -61,4 +61,16 @@ public class InvoiceApplyVo implements Serializable {
     public String getOperationName() {
         return operationName == null ? "" : operationName;
     }
+
+    public Long getApplyTime() {
+        return applyTime == null ? 0 : applyTime;
+    }
+
+    public Long getInvoiceTime() {
+        return invoiceTime == null ? 0 : invoiceTime;
+    }
+
+    public BigDecimal getAmount() {
+        return amount == null ? new BigDecimal(0) : amount;
+    }
 }
