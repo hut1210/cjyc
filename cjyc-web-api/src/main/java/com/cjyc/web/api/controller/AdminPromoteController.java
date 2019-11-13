@@ -2,17 +2,19 @@ package com.cjyc.web.api.controller;
 
 
 import com.cjyc.common.model.dto.promote.AdminPromoteQueryDto;
-import com.cjyc.common.model.enums.ResultEnum;
-import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.promote.AdminPromoteVo;
 import com.cjyc.web.api.service.IAdminPromoteService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * <p>
@@ -22,15 +24,16 @@ import org.springframework.web.bind.annotation.RestController;
  * @author JPG
  * @since 2019-11-13
  */
+@Api(tags = "分享管理")
 @RestController
 @RequestMapping("/adminPromote")
 public class AdminPromoteController {
     @Autowired
     private IAdminPromoteService adminPromoteService;
 
-    @ApiOperation(value = "查询分页列表", notes = "\t 请求接口为json格式")
+    @ApiOperation(value = "查询分享分页列表", notes = "\t 请求接口为json格式")
     @PostMapping("/getPage")
-    public ResultVo getPage(@RequestBody AdminPromoteQueryDto dto){
+    public ResultVo<PageVo<List<AdminPromoteVo>>> getPage(@RequestBody AdminPromoteQueryDto dto){
         return adminPromoteService.getPage(dto);
     }
 

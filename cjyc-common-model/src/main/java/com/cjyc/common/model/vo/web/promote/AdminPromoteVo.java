@@ -13,6 +13,9 @@ import java.io.Serializable;
 @Data
 public class AdminPromoteVo implements Serializable {
     private static final long serialVersionUID = 1660092563378232781L;
+    @ApiModelProperty(value = "id")
+    private Long id;
+
     @ApiModelProperty(value = "分享渠道")
     private String channel;
 
