@@ -2,11 +2,8 @@ package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.carrier.*;
-import com.cjyc.common.model.enums.ResultEnum;
-import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.carrier.BaseVehicleVo;
 import com.cjyc.common.model.vo.web.carrier.CarrierVo;
 import com.cjyc.common.model.vo.web.carrier.BaseCarrierVo;
 import com.cjyc.web.api.service.ICarrierService;
@@ -44,6 +41,13 @@ public class CarrierController {
         return carrierService.saveCarrier(dto);
     }
 
+    @ApiOperation(value = "验证修改承运商输入的手机号是否为该承运商下面的司机")
+    @PostMapping(value = "/existCarrierDriver")
+    public ResultVo existCarrierDriver(@PathVariable @ApiParam(value = "承运商id",required = true) Long carrierId,
+                                       @PathVariable @ApiParam(value = "承运商联系人手机号",required = true) String linkmanPhone){
+        return carrierService.existCarrierDriver(carrierId,linkmanPhone);
+    }
+
     @ApiOperation(value = "更新承运商")
     @PostMapping(value = "/modifyCarrier")
     public ResultVo modifyCarrier(@Validated({ CarrierDto.UpdateCarrierDto.class }) @RequestBody CarrierDto dto){
@@ -66,18 +70,6 @@ public class CarrierController {
     @PostMapping(value = "/showBaseCarrier/{carrierId}")
     public ResultVo<BaseCarrierVo> showBaseCarrier(@PathVariable @ApiParam(value = "承运商id",required = true) Long carrierId){
         return carrierService.showBaseCarrier(carrierId);
-    }
-
-    @ApiOperation(value = "根据条件查看该承运商下车辆信息")
-    @PostMapping(value = "/findBaseVehicle")
-    public ResultVo<PageVo<BaseVehicleVo>> findBaseVehicle(@Validated({ SeleVehicleDriverDto.SelectVehicleDto.class })@RequestBody SeleVehicleDriverDto dto){
-        return carrierService.findBaseVehicle(dto);
-    }
-
-    @ApiOperation(value = "根据条件查看承运商下司机信息")
-    @PostMapping(value = "/findBaseDriver")
-    public ResultVo findBaseDriver(@Validated({ SeleVehicleDriverDto.SelectVehicleDto.class })@RequestBody SeleVehicleDriverDto dto){
-        return carrierService.findBaseDriver(dto);
     }
 
     @PostMapping("/resetPwd/{id}")

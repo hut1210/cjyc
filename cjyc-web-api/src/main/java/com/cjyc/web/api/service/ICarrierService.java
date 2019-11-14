@@ -3,11 +3,6 @@ package com.cjyc.web.api.service;
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.carrier.*;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.carrier.BaseVehicleVo;
-import com.cjyc.common.model.vo.web.carrier.CarrierVo;
-import com.cjyc.common.model.vo.web.carrier.BaseCarrierVo;
-import com.github.pagehelper.PageInfo;
-
 /**
  *  @author: zj
  *  @Date: 2019/10/18 15:22
@@ -27,6 +22,14 @@ public interface ICarrierService {
      * @return
      */
     ResultVo saveCarrier(CarrierDto dto);
+
+    /**
+     * 根据承运商id和联系人手机号查看是否在该承运商下
+     * @param carrierId
+     * @param linkmanPhone
+     * @return
+     */
+    ResultVo existCarrierDriver(Long carrierId,String linkmanPhone);
 
     /**
      * 更新承运商
@@ -55,20 +58,6 @@ public interface ICarrierService {
      * @return
      */
     ResultVo showBaseCarrier(Long carrierId);
-
-    /**
-     * 根据承运商id查看车辆信息
-     * @param dto
-     * @return
-     */
-    ResultVo findBaseVehicle(SeleVehicleDriverDto dto);
-
-    /**
-     * 根据承运商id查看司机信息
-     * @param dto
-     * @return
-     */
-    ResultVo findBaseDriver(SeleVehicleDriverDto dto);
 
     /**
      * 重置承运商超级管理员密码

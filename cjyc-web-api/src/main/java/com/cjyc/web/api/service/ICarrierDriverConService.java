@@ -14,11 +14,4 @@ import java.util.List;
  * @since 2019-10-29
  */
 public interface ICarrierDriverConService extends IService<CarrierDriverCon> {
-
-    /**
-     * 根据承运商id获取司机ids
-     * @param carrierId
-     * @return
-     */
-    List<Long> getDriverIds(Long carrierId);
 }

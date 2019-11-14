@@ -234,26 +234,17 @@
         </where>
     </select>
 
-    <!-- 判断该司机在个人或者该承运商下是否存在 -->
-    <select id="existMyDriver" resultType="java.lang.Integer">
+    <!-- 查询根据输入手机号是否在该承运商下的普通司机 -->
+    <select id="existCarrierDriver" resultType="java.lang.Integer">
         SELECT
-	      count( carrier.id )
+            count( dc.id )
         FROM
-            d_carrier carrier
-            LEFT JOIN d_carrier_driver_con con ON con.carrier_id = carrier.id
-            LEFT JOIN d_driver driver ON driver.id = con.driver_id
-        <where>
-            <if test="phone != null and phone.trim() != ''">
-                  driver.phone = #{phone}
-            </if>
-            <if test="idCard != null and idCard.trim() != ''">
-                and  driver.id_card = #{idCard}
-            </if>
-            <if test="carrierId != null">
-                and  carrier.id = #{carrierId}
-            </if>
-                and  carrier.type = #{type}
-        </where>
+            d_carrier dc
+            LEFT JOIN d_carrier_driver_con dcdc ON dcdc.carrier_id = dc.id
+            LEFT JOIN d_driver dd ON dd.id = dcdc.driver_id
+        WHERE
+            dd.phone = #{linkmanPhone}
+            AND dc.id = #{carrierId}
     </select>
 
     <!--根据手机号查询承运商中是否存在-->

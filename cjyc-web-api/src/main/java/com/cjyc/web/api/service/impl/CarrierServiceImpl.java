@@ -134,14 +134,43 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     }
 
     @Override
+    public ResultVo existCarrierDriver(Long carrierId,String linkmanPhone) {
+        Integer count = carrierDao.existCarrierDriver(carrierId,linkmanPhone);
+        if(count == null || count == 0){
+            return BaseResultUtil.fail("该手机号不在承运商下,请先在该承运商下添加该普通司机账号");
+        }
+        return BaseResultUtil.success();
+    }
+
+    @Override
     public ResultVo modifyCarrier(CarrierDto dto) {
+        Carrier origCarrier = carrierDao.selectById(dto.getCarrierId());
+        if(origCarrier == null){
+            return BaseResultUtil.fail("数据信息有误");
+        }
+        //未审核通过，更新司机/承运商表信息
+        if(origCarrier.getState() == CommonStateEnum.WAIT_CHECK.code){
+            CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>()
+                    .eq("carrier_id", dto.getCarrierId())
+                    .eq("role", DriverIdentityEnum.SUPERADMIN.code));
+            if(cdc == null){
+                return BaseResultUtil.fail("数据信息有误");
+            }
+            Driver driver = driverDao.selectOne(new QueryWrapper<Driver>().lambda().eq(Driver::getId,cdc.getDriverId()));
+            if(driver == null){
+                return BaseResultUtil.fail("数据信息有误");
+            }
+            driver.setName(dto.getLinkman());
+            driver.setRealName(dto.getLinkman());
+            driver.setPhone(dto.getLinkmanPhone());
+            driverDao.updateById(driver);
+        }
         //更新承运商
         Carrier carrier = new Carrier();
         BeanUtils.copyProperties(dto,carrier);
         carrier.setId(dto.getCarrierId());
-        //更新到物流平台
-        Carrier origCarrier = carrierDao.selectById(dto.getCarrierId());
-        //审核通过的
+
+        //审核通过的更新到物流平台
         ResultData<Long> rd = updateCarrierToPlatform(origCarrier, dto);
         if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
             log.error(rd.getMsg());
@@ -231,34 +260,6 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             vo.setMapCodes(carrierCityConService.getMapCodes(carrierId));
         }
         return BaseResultUtil.success(vo);
-    }
-
-    @Override
-    public ResultVo findBaseVehicle(SeleVehicleDriverDto dto) {
-        PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
-        List<BaseVehicleVo> baseVehicleVos = vehicleDao.getBaseVehicleByTerm(dto);
-        PageInfo<BaseVehicleVo> pageInfo = new PageInfo<>(baseVehicleVos);
-        return BaseResultUtil.success(pageInfo);
-    }
-
-    @Override
-    public ResultVo<PageVo<BaseDriverVo>> findBaseDriver(SeleVehicleDriverDto dto) {
-        PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
-        List<Long> idsList =  carrierDriverConService.getDriverIds(dto.getCarrierId());
-        List<BaseDriverVo> driverVos = null;
-        if(!CollectionUtils.isEmpty(idsList)){
-            driverVos = driverDao.getDriversByIds(idsList);
-            if(!CollectionUtils.isEmpty(driverVos)){
-                for(BaseDriverVo vo : driverVos){
-                    CarrierCarCount count = carrierCarCountDao.driverCount(vo.getDriverId());
-                    if(count != null){
-                        vo.setCarNum(count.getCarNum() == null ? 0:count.getCarNum());
-                    }
-                }
-            }
-        }
-        PageInfo<BaseDriverVo> pageInfo = new PageInfo<>(driverVos);
-        return BaseResultUtil.success(pageInfo);
     }
 
     @Override

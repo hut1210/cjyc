@@ -24,14 +24,5 @@ import java.util.List;
  */
 @Service
 @Slf4j
-@Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
 public class CarrierDriverConServiceImpl extends ServiceImpl<ICarrierDriverConDao, CarrierDriverCon> implements ICarrierDriverConService {
-
-    @Resource
-    private ICarrierDriverConDao carrierDriverConDao;
-
-    @Override
-    public List<Long> getDriverIds(Long carrierId) {
-        return carrierDriverConDao.getDriverIds(carrierId);
-    }
 }

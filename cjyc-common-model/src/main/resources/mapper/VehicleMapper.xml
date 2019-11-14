@@ -25,26 +25,6 @@
         id,carrier_id, plate_no, vin, default_carry_num, ownership_type, position_sensor_flag, tachograph_flag, driving_license, driving_license_left_img, driving_license_right_img, driving_license_expire, create_user_id, create_time
     </sql>
 
-    <!-- 根据承运商id条件查询车辆信息 -->
-    <select id="getBaseVehicleByTerm" resultType="com.cjyc.common.model.vo.web.carrier.BaseVehicleVo"
-                parameterType="com.cjyc.common.model.dto.web.carrier.SeleVehicleDriverDto">
-        SELECT
-            veh.id AS vehicleId,
-            veh.plate_no AS plateNo,
-            veh.default_carry_num AS defaultCarryNum,
-            dri.real_name AS realName,
-            dri.phone AS phone,
-            dri.MODE AS MODE
-        FROM
-            d_vehicle veh
-            left JOIN d_driver_vehicle_con con ON con.vehicle_id = veh.id
-            left JOIN d_driver dri ON dri.id = con.driver_id
-            left JOIN d_carrier_driver_con cdc on cdc.driver_id = dri.id
-            left JOIN d_carrier carr ON carr.id = cdc.carrier_id
-        WHERE
-	        carr.id = #{carrierId}
-    </select>
-
     <!-- 查询司机与车辆绑定信息 -->
     <select id="findVehicle" resultType="com.cjyc.common.model.vo.web.vehicle.VehicleVo"
                             parameterType="com.cjyc.common.model.dto.web.vehicle.SelectVehicleDto">
