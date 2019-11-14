@@ -96,7 +96,7 @@ public class OrderController {
     }
 
 
-    @ApiOperation(value = "分页查询", notes = "根据条件分页查询订单", httpMethod = "POST")
+    @ApiOperation(value = "分页查询订单列表", notes = "根据条件分页查询订单", httpMethod = "POST")
     @PostMapping(value = "/getPage")
     public ResultVo<PageVo<OrderCenterVo>> getPage(@RequestBody @Validated OrderQueryDto dto){
         return orderService.getPage(dto);

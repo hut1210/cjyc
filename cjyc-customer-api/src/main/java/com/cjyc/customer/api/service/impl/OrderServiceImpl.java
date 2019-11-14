@@ -99,7 +99,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         }
 
         List<OrderCenterVo> list = orderDao.selectPage(dto);
-        return BaseResultUtil.success(new PageInfo<>(list == null ? new ArrayList<>(0) : list));
+        PageInfo<OrderCenterVo> pageInfo = new PageInfo<>(list == null ? new ArrayList<>(0) : list);
+        return BaseResultUtil.success(pageInfo);
     }
 
     @Override
