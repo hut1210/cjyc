@@ -1,6 +1,5 @@
 package com.cjyc.web.api.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjyc.common.model.dto.web.carSeries.CarSeriesAddDto;
 import com.cjyc.common.model.dto.web.carSeries.CarSeriesQueryDto;
 import com.cjyc.common.model.dto.web.carSeries.CarSeriesUpdateDto;
@@ -8,7 +7,6 @@ import com.cjyc.common.model.entity.CarSeries;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.carSeries.CarSeriesTree;
 import com.cjyc.common.system.service.ICsCarSeriesService;
 import com.cjyc.web.api.service.ICarSeriesService;
 import com.github.pagehelper.PageInfo;
@@ -65,8 +63,8 @@ public class CarSeriesController {
 
     @ApiOperation(value = "查询品牌下所有车系", notes = "\t 请求接口为/queryModel/brand格式")
     @PostMapping("/queryModel/{brand}")
-    public ResultVo<List<CarSeries>> queryModel(@PathVariable String brand){
-        return BaseResultUtil.success(carSeriesService.list(new QueryWrapper<CarSeries>().lambda().eq(CarSeries::getBrand,brand)));
+    public ResultVo queryModel(@PathVariable String brand){
+        return carSeriesService.getModelByBrand(brand);
     }
 
     @ApiOperation(value = "修改", notes = "\t 请求接口为json格式")

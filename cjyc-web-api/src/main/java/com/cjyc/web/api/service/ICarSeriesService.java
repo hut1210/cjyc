@@ -6,7 +6,6 @@ import com.cjyc.common.model.dto.web.carSeries.CarSeriesQueryDto;
 import com.cjyc.common.model.dto.web.carSeries.CarSeriesUpdateDto;
 import com.cjyc.common.model.entity.CarSeries;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.carSeries.CarSeriesTree;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -61,4 +60,12 @@ public interface ICarSeriesService extends IService<CarSeries> {
      */
     ResultVo<List<CarSeries>> queryAll();
 
+    /**
+     * 功能描述: 根据品牌查询车系
+     * @author liuxingxiang
+     * @date 2019/11/14
+     * @param
+     * @return com.cjyc.common.model.vo.ResultVo
+     */
+    ResultVo getModelByBrand(String brand);
 }
