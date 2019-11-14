@@ -11,7 +11,6 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterDetailVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterVo;
-import com.cjyc.customer.api.dto.OrderDto;
 
 import java.util.Map;
 
@@ -32,10 +31,10 @@ public interface IOrderService extends IService<Order> {
 
     /**
      * 根据客户id查询订单数量
-     * @param userId
+     * @param loginId
      * @return
      */
-    ResultVo<Map<String, Object>> getOrderCount(Long userId);
+    ResultVo<Map<String, Object>> getOrderCount(Long loginId);
 
     /**
      * 根据条件查询各种状态下的订单明细

@@ -103,34 +103,34 @@ public class OrderController {
     }
 
     @ApiOperation(value = "查询订单数量", notes = "查询各种订单状态下的订单数量", httpMethod = "POST")
-    @PostMapping(value = "/getOrderCount/{userId}")
-    public ResultVo<Map<String,Object>> getOrderCount(@PathVariable Long userId){
-        return orderService.getOrderCount(userId);
+    @PostMapping(value = "/getOrderCount/{loginId}")
+    public ResultVo<Map<String,Object>> getOrderCount(@PathVariable Long loginId){
+        return orderService.getOrderCount(loginId);
     }
 
-    @ApiOperation(value = "取消订单", notes = "：参数orderNo(订单号),userId(客户ID)",httpMethod = "POST")
+    @ApiOperation(value = "取消订单", notes = "：参数orderNo(订单号),loginId(客户ID)",httpMethod = "POST")
     @PostMapping(value = "/cancelOrder")
     public ResultVo cancelOrder(@RequestBody @Validated({OrderUpdateDto.CancelAndPlaceOrder.class}) OrderUpdateDto dto){
         boolean result = orderService.update(new UpdateWrapper<Order>().lambda().set(Order::getState, OrderStateEnum.F_CANCEL.code)
-                .eq(Order::getNo,dto.getOrderNo()).eq(Order::getCustomerId,dto.getUserId()));
+                .eq(Order::getNo,dto.getOrderNo()).eq(Order::getCustomerId,dto.getLoginId()));
         return result ? BaseResultUtil.success() : BaseResultUtil.fail();
     }
 
-    @ApiOperation(value = "确认下单", notes = "：参数orderNo(订单号),userId(客户ID)", httpMethod = "POST")
+    @ApiOperation(value = "确认下单", notes = "：参数orderNo(订单号),loginId(客户ID)", httpMethod = "POST")
     @PostMapping(value = "/placeOrder")
     public ResultVo placeOrder(@RequestBody @Validated({OrderUpdateDto.CancelAndPlaceOrder.class}) OrderUpdateDto dto){
         boolean result = orderService.update(new UpdateWrapper<Order>().lambda().set(Order::getState,OrderStateEnum.SUBMITTED.code)
-                .eq(Order::getNo,dto.getOrderNo()).eq(Order::getCustomerId,dto.getUserId()));
+                .eq(Order::getNo,dto.getOrderNo()).eq(Order::getCustomerId,dto.getLoginId()));
         return result ? BaseResultUtil.success() : BaseResultUtil.fail();
     }
 
-    @ApiOperation(value = "查询订单明细", notes = "根据条件查询订单明细：参数orderNo(订单号),userId(客户ID)", httpMethod = "POST")
+    @ApiOperation(value = "查询订单明细", notes = "根据条件查询订单明细：参数orderNo(订单号),loginId(客户ID)", httpMethod = "POST")
     @PostMapping(value = "/getDetail")
     public ResultVo<OrderCenterDetailVo> getDetail(@RequestBody @Validated({OrderUpdateDto.GetDetail.class}) OrderUpdateDto dto){
         return orderService.getDetail(dto);
     }
 
-    @ApiOperation(value = "确认收车", notes = "：参数orderNo(订单号),userId(客户ID),carIdList:车辆id列表", httpMethod = "POST")
+    @ApiOperation(value = "确认收车", notes = "：参数orderNo(订单号),loginId(客户ID),carIdList:车辆id列表", httpMethod = "POST")
     @PostMapping(value = "/confirmPickCar")
     public ResultVo confirmPickCar(@RequestBody @Validated({OrderUpdateDto.ConfirmPickCar.class}) OrderUpdateDto dto){
         return orderService.confirmPickCar(dto);
