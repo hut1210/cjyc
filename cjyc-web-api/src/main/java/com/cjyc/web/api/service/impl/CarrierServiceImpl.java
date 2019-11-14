@@ -86,9 +86,9 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     @Override
     public ResultVo existCarrier(String linkmanPhone) {
         //判断是否已存在
-        Carrier carr = carrierDao.selectOne(new QueryWrapper<Carrier>().lambda().eq(Carrier::getLinkmanPhone,linkmanPhone));
-        if(carr != null){
-            return BaseResultUtil.fail("该承运商已存在");
+        Driver driver = driverDao.selectOne(new QueryWrapper<Driver>().lambda().eq(Driver::getPhone,linkmanPhone));
+        if(driver != null){
+            return BaseResultUtil.fail("该手机号已存在,请检查");
         }
         return BaseResultUtil.success();
     }
@@ -109,7 +109,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         Driver driver = new Driver();
         driver.setName(dto.getName());
         driver.setPhone(dto.getLinkmanPhone());
-        driver.setIdentity(DriverIdentityEnum.ADMIN.code);
+        driver.setType(DriverTypeEnum.SOCIETY.code);
         driver.setBusinessState(BusinessStateEnum.BUSINESS.code);
         driver.setSource(DriverSourceEnum.SALEMAN_WEB.code);
         driver.setIdCard(dto.getLegalIdCard());
@@ -122,6 +122,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         CarrierDriverCon cdc = new CarrierDriverCon();
         cdc.setDriverId(driver.getId());
         cdc.setCarrierId(carrier.getId());
+        cdc.setMode(dto.getMode());
         cdc.setState(CommonStateEnum.WAIT_CHECK.code);
         cdc.setRole(DriverIdentityEnum.SUPERADMIN.code);
         carrierDriverConDao.insert(cdc);
@@ -129,15 +130,6 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         saveBankCardBand(dto,carrier.getId());
         //添加承运商业务范围
         carrierCityConService.batchSave(carrier.getId(),dto.getCodes());
-        return BaseResultUtil.success();
-    }
-
-    @Override
-    public ResultVo existCarrierDriver(Long carrierId,String linkmanPhone) {
-        Integer count = carrierDao.existCarrierDriver(carrierId,linkmanPhone);
-        if(count == null || count == 0){
-            return BaseResultUtil.fail("请选择该承运商下司机");
-        }
         return BaseResultUtil.success();
     }
 
@@ -191,21 +183,21 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         Driver driver = findDriver(carrier.getId());
         CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
                                 .eq(CarrierDriverCon::getCarrierId, carrier.getId())
-                                .eq(CarrierDriverCon::getDriverId, driver.getId()));
+                                .eq(CarrierDriverCon::getRole,DriverIdentityEnum.SUPERADMIN.code));
         if (null == carrier || null == driver || cdc == null) {
             return BaseResultUtil.fail("承运商信息错误，请检查");
         }
         //审核通过
         if(FlagEnum.AUDIT_PASS.code == dto.getFlag()){
             //审核通过将承运商信息同步到物流平台
-            ResultData<AddDeptAndUserResp> rd = saveCarrierToPlatform(carrier);
+           /* ResultData<AddDeptAndUserResp> rd = saveCarrierToPlatform(carrier);
             if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
                 return BaseResultUtil.fail("承运商机构添加失败");
-            }
+            }*/
             //更新司机userID信息
-            driver.setUserId(rd.getData().getUserId());
+            //driver.setUserId(rd.getData().getUserId());
             cdc.setState(CommonStateEnum.CHECKED.code);
-            carrier.setDeptId(rd.getData().getDeptId());
+            //carrier.setDeptId(rd.getData().getDeptId());
             carrier.setState(CommonStateEnum.CHECKED.code);
             carrier.setCheckUserId(dto.getLoginId());
             carrier.setCheckTime(NOW);
@@ -224,6 +216,8 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             cdc.setState(CommonStateEnum.CHECKED.code);
             carrier.setState(CommonStateEnum.CHECKED.code);
         }
+        driver.setCheckUserId(dto.getLoginId());
+        driver.setCheckTime(NOW);
         carrierDriverConDao.updateById(cdc);
         driverDao.updateById(driver);
         super.updateById(carrier);

@@ -29,13 +29,6 @@ public interface ICarrierService {
     ResultVo saveCarrier(CarrierDto dto);
 
     /**
-     * 查询是否为该承运商下的司机
-     * @param carrierId,linkmanPhone
-     * @return
-     */
-    ResultVo existCarrierDriver(Long carrierId,String linkmanPhone);
-
-    /**
      * 更新承运商
      * @param dto
      * @return

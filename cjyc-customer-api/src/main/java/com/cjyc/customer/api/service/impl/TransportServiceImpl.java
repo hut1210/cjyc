@@ -14,6 +14,7 @@ import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.customer.api.service.ITransportService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -42,30 +43,28 @@ public class TransportServiceImpl implements ITransportService {
     private IInquiryDao inquiryDao;
 
     @Override
-    public ResultVo existLine(LineDto dto) {
-        Line line = lineDao.getLinePriceByCode(dto.getFromCode(),dto.getToCode());
-        return BaseResultUtil.success(line == null ? "该线路不存在":"存在");
-    }
-
-    @Override
     public ResultVo linePriceByCode(TransportDto dto) {
         Line line = lineDao.getLinePriceByCode(dto.getFromCode(), dto.getToCode());
-        if (line.getDefaultWlFee() != null) {
-            //添加用户询价记录
-            Inquiry inquiry = new Inquiry();
-            //根据用户userId查询用户
-            Customer customer = customerDao.selectById(dto.getLgoinId());
-            if (customer != null) {
-                BeanUtils.copyProperties(dto, inquiry);
-                inquiry.setName(customer.getContactMan());
-                inquiry.setCustomerId(customer.getId());
-                inquiry.setPhone(customer.getContactPhone());
-                inquiry.setLogisticsFee(line.getDefaultWlFee());
-                inquiry.setState(InquiryStateEnum.NO_HANDLE.code);
-                inquiry.setInquiryTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
-                inquiryDao.insert(inquiry);
+        if(line == null){
+            return BaseResultUtil.success(BigDecimal.ZERO);
+        }else{
+            if (line.getDefaultWlFee() != null) {
+                //添加用户询价记录
+                Inquiry inquiry = new Inquiry();
+                //根据用户userId查询用户
+                Customer customer = customerDao.selectById(dto.getLgoinId());
+                if (customer != null) {
+                    BeanUtils.copyProperties(dto, inquiry);
+                    inquiry.setName(customer.getContactMan());
+                    inquiry.setCustomerId(customer.getId());
+                    inquiry.setPhone(customer.getContactPhone());
+                    inquiry.setLogisticsFee(line.getDefaultWlFee());
+                    inquiry.setState(InquiryStateEnum.NO_HANDLE.code);
+                    inquiry.setInquiryTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
+                    inquiryDao.insert(inquiry);
+                }
             }
+            return BaseResultUtil.success(line.getDefaultWlFee().divide(new BigDecimal(100)));
         }
-        return BaseResultUtil.success(line.getDefaultWlFee() == null ? line.getDefaultWlFee() : BigDecimal.ZERO);
     }
 }

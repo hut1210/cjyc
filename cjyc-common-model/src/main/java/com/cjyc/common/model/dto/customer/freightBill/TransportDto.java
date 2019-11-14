@@ -9,6 +9,7 @@ import java.io.Serializable;
 @Data
 public class TransportDto implements Serializable {
 
+    private static final long serialVersionUID = 291266326412877024L;
     @ApiModelProperty("用户id(lgoinId)")
     @NotNull(message = "登陆用户id(lgoinId)不能为空")
     private Long lgoinId;

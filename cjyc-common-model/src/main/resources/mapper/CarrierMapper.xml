@@ -192,20 +192,6 @@
         </where>
     </select>
 
-    <!-- 查询根据输入手机号是否在该承运商下的普通司机 -->
-    <select id="existCarrierDriver" resultType="java.lang.Integer">
-        SELECT
-            count( carrier.id )
-        FROM
-            d_carrier carrier
-            LEFT JOIN d_carrier_driver_con con ON con.carrier_id = carrier.id
-            LEFT JOIN d_driver driver ON driver.id = con.driver_id
-        WHERE
-            driver.phone = #{linkmanPhone}
-            AND carrier.id = #{carrierId}
-            AND con.role = 1
-    </select>
-
     <!-- 调度中心中提车干线调度中代驾和拖车列表 -->
     <select id="findTrailDriver" resultType="com.cjyc.common.model.vo.web.carrier.TrailCarrierVo"
                  parameterType="com.cjyc.common.model.dto.web.carrier.TrailCarrierDto">
@@ -284,10 +270,10 @@
         LEFT JOIN d_driver dd ON dd.id = dcdc.driver_id
         <where>
             <if test="phone != null and phone.trim() != ''">
-                  dd.phone = #{phone}
+                (dd.phone = #{phone} or dd.phone = #{phone})
             </if>
             <if test="idCard != null and idCard.trim() != ''">
-                or  dd.id_card = #{idCard}
+                and (dd.id_card = #{idCard} or dd.id_card = #{idCard})
             </if>
             <if test="carrierId != null">
                 and  dc.id = #{carrierId}

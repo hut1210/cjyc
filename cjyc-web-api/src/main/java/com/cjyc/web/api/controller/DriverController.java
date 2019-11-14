@@ -45,7 +45,7 @@ public class DriverController {
         return driverService.lineWaitDispatchCarCountList(reqDto);
     }
 
-    @ApiOperation(value = "判断个人司机在承运商中/个人司机池中是否存在")
+    @ApiOperation(value = "新增/修改司机时验证在个人司机池或者在自己承运商下(去掉自己账号)有无相同的")
     @PostMapping(value = "/existDriver")
     public ResultVo existDriver(@RequestBody VerifyCarrierDto dto){
         return driverService.existDriver(dto);

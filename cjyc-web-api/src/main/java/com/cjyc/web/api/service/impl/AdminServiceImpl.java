@@ -5,6 +5,7 @@ import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.dao.IAdminDao;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.admin.TypeSalesmanVo;
 import com.cjyc.web.api.service.IAdminService;
@@ -37,6 +38,10 @@ public class AdminServiceImpl extends ServiceImpl<IAdminDao, Admin> implements I
     public ResultVo deliverySalesman(TypeSalesmanDto dto) {
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
         List<TypeSalesmanVo> salesmanVos = adminDao.deliverySalesman(dto);
+        if(dto.getIsPage() == 0){
+            //不分页
+            return BaseResultUtil.success(salesmanVos);
+        }
         PageInfo<TypeSalesmanVo> pageInfo =  new PageInfo<>(salesmanVos);
         return BaseResultUtil.success(pageInfo);
     }

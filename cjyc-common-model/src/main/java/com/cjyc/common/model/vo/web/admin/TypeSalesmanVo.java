@@ -13,7 +13,7 @@ public class TypeSalesmanVo implements Serializable {
     @ApiModelProperty("业务员姓名")
     private String name;
 
-    @ApiModelProperty("业务员姓名")
+    @ApiModelProperty("业务员电话")
     private String phone;
 
     @ApiModelProperty("业务中心名称")
