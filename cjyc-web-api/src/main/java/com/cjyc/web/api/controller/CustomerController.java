@@ -59,7 +59,7 @@ public class CustomerController {
 
     @ApiOperation(value = "新增大客户&合同")
     @PostMapping(value = "/saveKeyCustomer")
-    public ResultVo saveKeyCustomer(@Validated({ KeyCustomerDto.SaveKeyCustomerVo.class }) @RequestBody KeyCustomerDto dto){
+    public ResultVo saveKeyCustomer(@Validated @RequestBody KeyCustomerDto dto){
         return customerService.saveKeyCustomer(dto);
     }
 
@@ -77,7 +77,7 @@ public class CustomerController {
 
     @ApiOperation(value = "更新大客户&合同")
     @PostMapping(value = "/modifyKeyCustomer")
-    public ResultVo modifyKeyCustomer(@Validated({ KeyCustomerDto.UpdateKeyCustomerVo.class }) @RequestBody KeyCustomerDto customerDto){
+    public ResultVo modifyKeyCustomer(@Validated @RequestBody KeyCustomerDto customerDto){
         return customerService.modifyKeyCustomer(customerDto);
     }
 

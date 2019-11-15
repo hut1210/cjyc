@@ -38,7 +38,7 @@ public class InquiryServiceImpl extends SuperServiceImpl<IInquiryDao, Inquiry> i
         if(inquiry != null){
             return true;
         }
-        //根据用户userId查询用户
+        //根据用户id查询用户
         Customer customer = customerDao.selectById(dto.getLgoinId());
         //添加用户询价记录
         inquiry = new Inquiry();

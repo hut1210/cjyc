@@ -47,32 +47,34 @@
     </select>
 
     <!-- 通过手机号，姓名，身份证号查询 -->
-    <select id="findCustomer" resultType="com.cjyc.common.model.vo.web.customer.CustomerVo" parameterType="com.cjyc.common.model.dto.web.customer.SelectCustomerDto">
+    <select id="findCustomer" resultType="com.cjyc.common.model.vo.web.customer.CustomerVo"
+                parameterType="com.cjyc.common.model.dto.web.customer.SelectCustomerDto">
         SELECT
-            id AS id,
-            user_id AS userId,
-            customer_no as customerNo,
-            contact_phone AS contactPhone,
-            contact_man AS contactMan,
-            id_card AS idCard,
-            source AS source,
-            id_card_front_img AS idCardFrontImg,
-            id_card_back_img AS idCardBackImg,
-            create_time AS createTime,
-            create_user_id as createUserId
+            cc.id AS customerId,
+            cc.user_id AS userId,
+            cc.customer_no AS customerNo,
+            cc.contact_phone AS contactPhone,
+            cc.contact_man AS contactMan,
+            cc.id_card AS idCard,
+            cc.source AS source,
+            cc.id_card_front_img AS idCardFrontImg,
+            cc.id_card_back_img AS idCardBackImg,
+            cc.create_time AS createTime,
+            ba.NAME AS createUserName
         FROM
-          c_customer
+          c_customer cc
+        LEFT JOIN b_admin ba ON ba.id = cc.create_user_id
         <where>
             <if test="contactPhone != null and contactPhone.trim() != ''">
-                contact_phone = #{contactPhone}
+                cc.contact_phone = #{contactPhone}
             </if>
-            <if test="name != null  and name.trim() != ''">
-                and  name = #{name}
+            <if test="contactMan != null  and contactMan.trim() != ''">
+                and  cc.contact_man = #{contactMan}
             </if>
             <if test="idCard != null and idCard.trim() != ''">
-                and  id_card = #{idCard}
+                and  cc.id_card = #{idCard}
             </if>
-                and type = 1 and is_delete = 0
+                and cc.type = 1 and cc.is_delete = 0
         </where>
     </select>
 
@@ -97,85 +99,96 @@
     <!-- 通过客户编号，客户全称，客户简称等条件查询 -->
     <select id="findKeyCustomter" resultType="com.cjyc.common.model.vo.web.customer.ListKeyCustomerVo"
             parameterType="com.cjyc.common.model.dto.web.customer.SelectKeyCustomerDto">
-        select
-            c.id AS id,
-            c.user_id as userId,
-            c.customer_no as customerNo,
-            c.NAME AS NAME,
-            c.alias AS alias,
-            c.source as source,
-            c.contact_man AS contactMan,
-            c.contact_phone AS contactPhone,
-            c.customer_nature AS customerNature,
-            c.create_time AS createTime,
-            admin.name as createUserName
-            from c_customer c
-            left join b_admin admin on admin.id = c.create_user_id
+        SELECT
+            cc.id AS customerId,
+            cc.user_id AS userId,
+            cc.customer_no AS customerNo,
+            cc.NAME AS NAME,
+            cc.alias AS alias,
+            cc.source AS source,
+            cc.contact_man AS contactMan,
+            cc.contact_phone AS contactPhone,
+            cc.customer_nature AS customerNature,
+            cc.create_time AS createTime,
+            ba.NAME AS createUserName
+        FROM
+          c_customer cc
+        LEFT JOIN b_admin ba ON ba.id = cc.create_user_id
         <where>
             <if test="customerNo != null and customerNo.trim() != ''">
-                c.customer_no = #{customerNo}
+                cc.customer_no = #{customerNo}
             </if>
             <if test="name != null and name.trim() != ''">
-                and  c.name = #{name}
+                and  cc.name = #{name}
             </if>
             <if test="alias != null  and alias.trim() != ''">
-                and  c.alias = #{alias}
+                and  cc.alias = #{alias}
             </if>
             <if test="contactMan != null  and contactMan.trim() != ''">
-                and c.contact_man = #{contactMan}
+                and cc.contact_man = #{contactMan}
             </if>
             <if test="contactPhone != null  and contactPhone.trim() != ''">
-                and  c.contact_phone = #{contactPhone}
+                and  cc.contact_phone = #{contactPhone}
             </if>
             <if test="createUserName != null and createUserName.trim() != ''">
-                and admin.name like concat('%',#{createUserName},'%')
+                and  ba.name like concat('%',#{createUserName},'%')
             </if>
             <if test="customerNature != null ">
-                and c.customer_nature = #{customerNature}
+                and cc.customer_nature = #{customerNature}
             </if>
-                and c.type = 2 and c.is_delete = 0
+                and cc.type = 2 and cc.is_delete = 0
         </where>
     </select>
 
     <!-- 根据条件查询合伙人 -->
     <select id="getPartnerByTerm" resultType="com.cjyc.common.model.vo.web.customer.CustomerPartnerVo"
-                                    parameterType="com.cjyc.common.model.dto.web.customer.CustomerPartnerDto">
+            parameterType="com.cjyc.common.model.dto.web.customer.CustomerPartnerDto">
         SELECT
-            c.id AS id,
-            c.user_id AS userId,
-            c.customer_no as customerNo,
-            c.NAME AS NAME,
-            c.contact_man AS contactMan,
-            c.contact_phone AS contactPhone,
-            p.is_taxpayer AS isTaxpayer,
-            p.is_invoice AS isInvoice,
-            p.settle_type AS settleType,
-            p.settle_period AS settlePeriod,
-            b.description AS description,
-            c.source AS source,
-            c.register_time AS registerTime,
-            c.create_user_id as createUserId
+            cc.id AS customerId,
+            cc.user_id AS userId,
+            cc.customer_no AS customerNo,
+            cc.NAME AS NAME,
+            cc.contact_man AS contactMan,
+            cc.contact_phone AS contactPhone,
+            ccp.is_taxpayer AS isTaxpayer,
+            ccp.is_invoice AS isInvoice,
+            ccp.settle_type AS settleType,
+            ccp.settle_period AS settlePeriod,
+            sbcb.description AS description,
+            cc.source AS source,
+            cc.create_time as registerTime,
+            ba.NAME AS createUserName
         FROM
-            c_customer c
-            JOIN c_customer_partner p ON p.customer_id = c.id
-            JOIN s_bank_card_bind b ON b.user_id = c.user_id
+            c_customer cc
+        LEFT JOIN c_customer_partner ccp ON ccp.customer_id = cc.id
+        LEFT JOIN s_bank_card_bind sbcb ON sbcb.user_id = cc.id
+        LEFT JOIN b_admin ba ON ba.id = cc.create_user_id
         <where>
+            <if test="customerNo != null and customerNo.trim() != ''">
+                cc.customer_no = #{customerNo}
+            </if>
             <if test="name != null and name.trim() != ''">
-                c.name = #{name}
+               and cc.name = #{name}
             </if>
             <if test="contactMan != null  and contactMan.trim() != ''">
-                and  c.contact_man = #{contactMan}
+                and  cc.contact_man = #{contactMan}
             </if>
             <if test="contactPhone != null  and contactPhone.trim() != ''">
-                and c.contact_phone = #{contactPhone}
+                and cc.contact_phone = #{contactPhone}
             </if>
             <if test="socialCreditCode != null  and socialCreditCode.trim() != ''">
-                and  c.social_credit_code = #{socialCreditCode}
+                and  cc.social_credit_code = #{socialCreditCode}
+            </if>
+            <if test="source != null">
+                and  cc.source = #{source}
+            </if>
+            <if test="settleType != null">
+                and  ccp.settle_type = #{settleType}
             </if>
             <if test="isInvoice != null">
-                and p.is_invoice = #{isInvoice}
+                and  ccp.is_invoice = #{isInvoice}
             </if>
-            and c.type = 3 and is_delete = 0
+            and cc.type = 3 and cc.is_delete = 0
         </where>
     </select>
 

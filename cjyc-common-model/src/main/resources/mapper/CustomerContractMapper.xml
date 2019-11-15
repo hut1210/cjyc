@@ -41,7 +41,7 @@
     <!-- 根据customerId查询大客户合同 -->
     <select id="getCustContractByCustId" resultType="com.cjyc.common.model.vo.web.customer.CustomerContractVo" parameterType="java.lang.Long">
        SELECT
-            id AS id,
+            id AS contractId,
             contract_no AS contractNo,
             contact_nature AS contactNature,
             settle_Type AS settleType,

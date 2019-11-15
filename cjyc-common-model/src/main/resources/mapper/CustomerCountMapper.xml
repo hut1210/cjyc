@@ -17,16 +17,16 @@
     <!-- 根据用户userId统计用户下单量，运车量，总金额-->
     <select id="count" resultType="com.cjyc.common.model.vo.web.customer.CustomerCountVo" parameterType="java.lang.Long">
         SELECT
-            count( o.NO ) AS totalOrder,
-            sum( o.car_num ) AS totalCar,
-            IFNULL( SUM( o.total_fee ), 0 ) AS totalAmount
+            IFNULL(count( wo.NO ),0) AS totalOrder,
+            IFNULL(sum( wo.car_num ),0) AS totalCar,
+            IFNULL( SUM( wo.total_fee ), 0 ) AS totalAmount
         FROM
-            w_order o
-            JOIN c_customer_count c ON c.order_no = o.NO
+            w_order wo
+            JOIN c_customer_count ccc ON ccc.order_no = wo.NO
         WHERE
-            c.customer_id = #{customerId}
-            AND o.state = 100
-            group by c.customer_id
+            ccc.customer_id = #{customerId}
+            AND wo.state = 100
+            group by ccc.customer_id
     </select>
 
 </mapper>
