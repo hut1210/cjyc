@@ -7,6 +7,7 @@ import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
 import net.sourceforge.pinyin4j.format.HanyuPinyinVCharType;
 import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
 
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -68,7 +69,32 @@ public class StringUtil {
                 convert += word;
             }
         }
-        return convert;
+        return convert.toUpperCase();
+    }
+
+    /**
+     * 提取第一个汉字的首字母
+     *
+     * @param str
+     * @return String
+     */
+    public static String getFirstPinYinHeadChar(String str) {
+        if (Objects.isNull(str)) {
+            return null;
+        }
+        String convert = "";
+        String s1 = str.substring(0, 1);
+        for (int j = 0; j < s1.length(); j++) {
+            char word = s1.charAt(j);
+            // 提取汉字的首字母
+            String[] pinyinArray = PinyinHelper.toHanyuPinyinStringArray(word);
+            if (pinyinArray != null) {
+                convert += pinyinArray[0].charAt(0);
+            } else {
+                convert += word;
+            }
+        }
+        return convert.toUpperCase();
     }
 
     /**

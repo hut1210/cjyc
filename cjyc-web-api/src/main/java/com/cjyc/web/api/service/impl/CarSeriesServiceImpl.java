@@ -58,6 +58,7 @@ public class CarSeriesServiceImpl extends ServiceImpl<ICarSeriesDao,CarSeries> i
             carSeries.setCarCode(StringUtil.getUUID());
             carSeries.setBrand(carSeriesAddDto.getBrand());
             carSeries.setModel(model);
+            carSeries.setPinAcronym(StringUtil.getFirstPinYinHeadChar(carSeriesAddDto.getBrand()));
             carSeries.setLogoImg(StringUtil.getCarLogoURL(carSeriesAddDto.getBrand()));
             carSeries.setCreateTime(System.currentTimeMillis());
             carSeries.setCreateUserId(carSeriesAddDto.getCreateUserId());
