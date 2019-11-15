@@ -1,14 +1,15 @@
 package com.cjyc.common.model.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.io.Serializable;
+import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
 
 /**
  * <p>
@@ -24,9 +25,7 @@ import lombok.experimental.Accessors;
 @TableName("s_car_series")
 @ApiModel(value="CarSeries对象", description="车系管理")
 public class CarSeries implements Serializable {
-
     private static final long serialVersionUID = 1L;
-
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
@@ -48,6 +47,7 @@ public class CarSeries implements Serializable {
     @ApiModelProperty(value = "拼音首字母缩写")
     private String pinAcronym;
 
+    @ApiModelProperty(value = "品牌logo图片")
     private String logoImg;
 
     @ApiModelProperty(value = "创建时间")
@@ -61,6 +61,4 @@ public class CarSeries implements Serializable {
 
     @ApiModelProperty(value = "最后修改人")
     private Long updateUserId;
-
-
 }
