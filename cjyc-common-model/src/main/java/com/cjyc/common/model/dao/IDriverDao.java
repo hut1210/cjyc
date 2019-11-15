@@ -2,7 +2,7 @@ package com.cjyc.common.model.dao;
 
 import com.cjyc.common.model.dto.web.driver.DispatchDriverDto;
 import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
-import com.cjyc.common.model.dto.web.mimeCarrier.QueryMyDriverDto;
+import com.cjyc.common.model.dto.web.mineCarrier.QueryMyDriverDto;
 import com.cjyc.common.model.dto.web.user.DriverListDto;
 import com.cjyc.common.model.entity.Driver;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -10,8 +10,8 @@ import com.cjyc.common.model.vo.web.carrier.BaseDriverVo;
 import com.cjyc.common.model.vo.web.driver.DispatchDriverVo;
 import com.cjyc.common.model.vo.web.driver.DriverVo;
 import com.cjyc.common.model.vo.web.driver.ShowDriverVo;
-import com.cjyc.common.model.vo.web.mimeCarrier.MyDriverVo;
-import com.cjyc.common.model.vo.web.mimeCarrier.MyFreeDriverVo;
+import com.cjyc.common.model.vo.web.mineCarrier.MyDriverVo;
+import com.cjyc.common.model.vo.web.mineCarrier.MyFreeDriverVo;
 import com.cjyc.common.model.vo.web.user.DriverListVo;
 import org.apache.ibatis.annotations.Param;
 

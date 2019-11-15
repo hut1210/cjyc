@@ -6,7 +6,7 @@ import lombok.Data;
 import java.io.Serializable;
 @Data
 public class TypeSalesmanVo implements Serializable {
-
+    private static final long serialVersionUID = 3217035256635845269L;
     @ApiModelProperty("业务员id")
     private Long adminId;
 

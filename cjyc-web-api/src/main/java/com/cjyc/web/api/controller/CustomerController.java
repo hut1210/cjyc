@@ -3,10 +3,12 @@ package com.cjyc.web.api.controller;
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.customer.*;
 import com.cjyc.common.model.vo.PageVo;
+import com.cjyc.common.model.vo.web.coupon.CustomerCouponSendVo;
+import com.cjyc.common.model.vo.web.customer.CustomerPartnerVo;
 import com.cjyc.common.model.vo.web.customer.CustomerVo;
-import com.cjyc.common.model.enums.ResultEnum;
-import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.customer.ListKeyCustomerVo;
+import com.cjyc.common.model.vo.web.customer.ShowKeyCustomerVo;
 import com.cjyc.web.api.service.ICustomerService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -14,6 +16,8 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  *  @author: zj
@@ -29,6 +33,12 @@ public class CustomerController {
     @Autowired
     private ICustomerService customerService;
 
+    @ApiOperation(value = "验证移动端用户是否存在")
+    @PostMapping(value = "/existCustomer")
+    public ResultVo existCustomer(@RequestBody ExistCustomreDto dto){
+        return customerService.existCustomer(dto);
+    }
+
     @ApiOperation(value = "新增移动端用户")
     @PostMapping(value = "/saveCustomer")
     public ResultVo saveCustomer(@Validated({ CustomerDto.SaveCustomerVo.class }) @RequestBody CustomerDto customerDto){
@@ -38,8 +48,7 @@ public class CustomerController {
     @ApiOperation(value = "更新移动端用户")
     @PostMapping(value = "/modifyCustomer")
     public ResultVo modifyCustomer(@Validated({ CustomerDto.UpdateCustomerVo.class }) @RequestBody CustomerDto customerDto){
-        boolean result = customerService.modifyCustomer(customerDto);
-        return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
+        return customerService.modifyCustomer(customerDto);
     }
 
     @ApiOperation(value = "根据条件查询移动端用户")
@@ -51,33 +60,30 @@ public class CustomerController {
     @ApiOperation(value = "新增大客户&合同")
     @PostMapping(value = "/saveKeyCustomer")
     public ResultVo saveKeyCustomer(@Validated({ KeyCustomerDto.SaveKeyCustomerVo.class }) @RequestBody KeyCustomerDto dto){
-        boolean result =  customerService.saveKeyCustomer(dto);
-        return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
+        return customerService.saveKeyCustomer(dto);
     }
 
     @ApiOperation(value = "根据主键id/当前登陆用户loginId删除/审核用户")
     @PostMapping(value = "/verifyCustomer")
     public ResultVo verifyCustomer(@RequestBody OperateDto dto){
-        boolean result = customerService.verifyCustomer(dto);
-        return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
+        return customerService.verifyCustomer(dto);
     }
 
     @ApiOperation(value = "大客户customerId查看大客户&合同")
     @PostMapping(value = "/showKeyCustomer/{customerId}")
-    public ResultVo showKeyCustomer(@PathVariable Long customerId){
+    public ResultVo<ShowKeyCustomerVo> showKeyCustomer(@PathVariable Long customerId){
         return customerService.showKeyCustomer(customerId);
     }
 
     @ApiOperation(value = "更新大客户&合同")
     @PostMapping(value = "/modifyKeyCustomer")
     public ResultVo modifyKeyCustomer(@Validated({ KeyCustomerDto.UpdateKeyCustomerVo.class }) @RequestBody KeyCustomerDto customerDto){
-        boolean result = customerService.modifyKeyCustomer(customerDto);
-        return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
+        return customerService.modifyKeyCustomer(customerDto);
     }
 
     @ApiOperation(value = "根据条件查询大客户")
     @PostMapping(value = "/findKeyCustomer")
-    public ResultVo findKeyCustomer(@RequestBody SelectKeyCustomerDto dto){
+    public ResultVo<PageVo<ListKeyCustomerVo>> findKeyCustomer(@RequestBody SelectKeyCustomerDto dto){
         return customerService.findKeyCustomer(dto);
     }
 
@@ -95,7 +101,7 @@ public class CustomerController {
 
     @ApiOperation(value = "根据条件分页查看合伙人")
     @PostMapping(value = "/findPartner")
-    public ResultVo findPartner(@RequestBody CustomerPartnerDto dto){
+    public ResultVo<PageVo<CustomerPartnerVo>> findPartner(@RequestBody CustomerPartnerDto dto){
         return customerService.findPartner(dto);
     }
 
@@ -119,7 +125,7 @@ public class CustomerController {
 
     @ApiOperation(value = "根据customerId查看客户优惠券")
     @PostMapping(value = "/getCouponByCustomerId/{customerId}")
-    public ResultVo getCouponByCustomerId(@PathVariable @ApiParam(value = "客户customerId",required = true) Long customerId){
+    public ResultVo<List<CustomerCouponSendVo>> getCouponByCustomerId(@PathVariable @ApiParam(value = "客户customerId",required = true) Long customerId){
         return customerService.getCouponByCustomerId(customerId);
     }
 }

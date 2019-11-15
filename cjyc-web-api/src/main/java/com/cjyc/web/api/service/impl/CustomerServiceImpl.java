@@ -22,6 +22,7 @@ import com.cjyc.common.model.exception.ServerException;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.YmlProperty;
+import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.customer.*;
 import com.cjyc.common.model.vo.web.coupon.CustomerCouponSendVo;
@@ -91,6 +92,17 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
     @Override
+    public ResultVo existCustomer(ExistCustomreDto dto) {
+        Customer c = customerDao.selectOne(new QueryWrapper<Customer>().lambda()
+                        .eq(Customer::getContactPhone, dto.getPhone())
+                        .ne((dto.getCustomerId() != null && dto.getCustomerId() != 0),Customer::getId,dto.getCustomerId()));
+        if(c != null){
+            return BaseResultUtil.fail("该客户已存在，请检查");
+        }
+        return BaseResultUtil.success();
+    }
+
+    @Override
     public ResultVo saveCustomer(CustomerDto dto) {
         Customer customer = new Customer();
         BeanUtils.copyProperties(dto,customer);
@@ -105,16 +117,10 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         customer.setRegisterTime(NOW);
         customer.setCreateUserId(dto.getLoginId());
         customer.setCreateTime(NOW);
-        //用户手机号在C端不能重复
-       if (phoneExistsInCustomer(customer.getContactPhone())) {
-            log.error("手机号已存在，请检查");
-            return BaseResultUtil.fail("手机号已存在，请检查");
-        }
-        //注册时间
         //新增个人用户信息到物流平台
         ResultData<Long> rd = addCustomerToPlatform(customer);
         if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
-            throw new CommonException(rd.getMsg());
+            return BaseResultUtil.fail(rd.getMsg());
         }
         customer.setUserId(rd.getData());
         super.save(customer);
@@ -123,13 +129,13 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
 
 
     @Override
-    public boolean modifyCustomer(CustomerDto dto) {
+    public ResultVo modifyCustomer(CustomerDto dto) {
         Customer customer = customerDao.selectById(dto.getCustomerId());
         if(null != customer){
             ResultData<Boolean> updateRd = updateCustomerToPlatform(customer, dto.getContactPhone());
             if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
                 log.error("修改用户信息失败，原因：" + updateRd.getMsg());
-                return false;
+                return BaseResultUtil.fail("修改用户信息失败，原因：" + updateRd.getMsg());
             }
             if (updateRd.getData()) {
                 //需要同步手机号信息
@@ -143,7 +149,8 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             customer.setIdCardFrontImg(dto.getIdCardFrontImg());
             customer.setIdCardBackImg(dto.getIdCardBackImg());
         }
-        return super.updateById(customer);
+        super.updateById(customer);
+        return BaseResultUtil.success();
     }
 
     @Override
@@ -173,7 +180,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     }
 
     @Override
-    public boolean saveKeyCustomer(KeyCustomerDto dto) {
+    public ResultVo saveKeyCustomer(KeyCustomerDto dto) {
         //新增大客户
         Customer customer = new Customer();
         BeanUtils.copyProperties(dto,customer);
@@ -186,26 +193,24 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         customer.setRegisterTime(NOW);
         customer.setCreateTime(NOW);
         customer.setCreateUserId(dto.getLoginId());
-        //客户端信息不能重复
-        if (phoneExistsInCustomer(dto.getContactPhone())) {
-            return false;
-        }
+
         //保存大客户信息到物流平台
         ResultData<Long> rd = addCustomerToPlatform(customer);
         if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
             log.error("保存大客户信息失败，原因：" + rd.getMsg());
-            return false;
+            return BaseResultUtil.fail("保存大客户信息失败，原因：" + rd.getMsg());
         }
         customer.setUserId(rd.getData());
         super.save(customer);
         //合同集合
         List<CustomerContractDto> customerConList = dto.getCustContraVos();
         List<CustomerContract> list = encapCustomerContract(customer.getId(),customerConList);
-        return customerContractService.saveBatch(list);
+        customerContractService.saveBatch(list);
+        return BaseResultUtil.success();
     }
 
     @Override
-    public boolean verifyCustomer(OperateDto dto) {
+    public ResultVo verifyCustomer(OperateDto dto) {
         Customer customer = customerDao.selectById(dto.getId());
         if(customer != null){
             Long now = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
@@ -223,13 +228,13 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                 customer.setCheckTime(now);
                 customer.setCheckUserId(dto.getLoginId());
             }
-            return super.updateById(customer);
         }
-        return false;
+        super.updateById(customer);
+        return BaseResultUtil.success();
     }
 
     @Override
-    public ResultVo showKeyCustomer(Long customerId) {
+    public ResultVo<ShowKeyCustomerVo> showKeyCustomer(Long customerId) {
         ShowKeyCustomerVo sKeyCustomerDto = new ShowKeyCustomerVo();
         //根据主键id查询大客户
         Customer customer = customerDao.selectById(customerId);
@@ -251,19 +256,18 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             }
             sKeyCustomerDto.setCustContraVos(contractVos);
         }
-        return BaseResultUtil.success(sKeyCustomerDto == null ? new SelectKeyCustomerDto():sKeyCustomerDto);
+        return BaseResultUtil.success(sKeyCustomerDto);
     }
 
     @Override
-    public boolean modifyKeyCustomer(KeyCustomerDto dto) {
-        boolean flag = false;
+    public ResultVo modifyKeyCustomer(KeyCustomerDto dto) {
         Customer customer = customerDao.selectById(dto.getCustomerId());
         if(null != customer){
             //判断手机号是否存在
             ResultData<Boolean> updateRd = updateCustomerToPlatform(customer, dto.getContactPhone());
             if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
                 log.error("修改用户信息失败，原因：" + updateRd.getMsg());
-                return false;
+                return BaseResultUtil.fail("修改用户信息失败，原因：" + updateRd.getMsg());
             }
             if (updateRd.getData()) {
                 //需要同步手机号信息
@@ -276,27 +280,22 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             customer.setContactPhone(dto.getContactPhone());
             customer.setContactAddress(dto.getContactAddress());
             customer.setCustomerNature(dto.getCustomerNature());
-            flag = super.updateById(customer);
-            if(!flag){
-                throw new CommonException("更新大客户失败");
-            }
+            super.updateById(customer);
+
             List<CustomerContractDto> contractDtos = dto.getCustContraVos();
             List<CustomerContract> list = null;
             if(!CollectionUtils.isEmpty(contractDtos)){
                 //批量删除
-                int n = customerContractDao.removeKeyContract(dto.getCustomerId());
-                if(n <= 0){
-                    throw new CommonException("删除合同失败");
-                }
+                customerContractDao.removeKeyContract(dto.getCustomerId());
                 list = encapCustomerContract(customer.getId(),contractDtos);
-                return customerContractService.saveBatch(list);
+                customerContractService.saveBatch(list);
             }
         }
-        return true;
+        return BaseResultUtil.success();
     }
 
     @Override
-    public ResultVo findKeyCustomer(SelectKeyCustomerDto dto) {
+    public ResultVo<PageVo<ListKeyCustomerVo>> findKeyCustomer(SelectKeyCustomerDto dto) {
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
         List<ListKeyCustomerVo> keyCustomerList = customerDao.findKeyCustomter(dto);
         if(!CollectionUtils.isEmpty(keyCustomerList)){
@@ -330,7 +329,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         if(resultData == null || resultData.getData() == null || resultData.getData().getUserId() == null){
             throw new ServerException("添加用户失败");
         }
-        //customer.setUserId(resultData.getData().getUserId());
+        customer.setUserId(resultData.getData().getUserId());
         return super.save(customer);
     }
 
@@ -341,7 +340,6 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
 
     @Override
     public ResultVo savePartner(PartnerDto dto) {
-        boolean result = true;
         //新增c_customer
         Customer customer = new Customer();
         BeanUtils.copyProperties(dto,customer);
@@ -354,29 +352,21 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         customer.setRegisterTime(NOW);
         customer.setCreateTime(NOW);
         customer.setCreateUserId(dto.getLoginId());
-        //用户手机号在C端不能重复
-        if (phoneExistsInCustomer(customer.getContactPhone())) {
-            log.error("手机号已存在，请检查");
-            return BaseResultUtil.fail("手机号已存在，请检查");
-        }
+
         //新增用户信息到物流平台
         ResultData<Long> rd = addCustomerToPlatform(customer);
         if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
-            throw new CommonException(rd.getMsg());
+            return BaseResultUtil.fail(rd.getMsg());
         }
         customer.setUserId(rd.getData());
 
-        result = super.save(customer);
-        if(!result){
-            throw new CommonException("新增合伙人失败");
-        }
+        super.save(customer);
         encapPartner(dto,customer,NOW);
         return BaseResultUtil.success();
     }
 
     @Override
     public ResultVo modifyPartner(PartnerDto dto) {
-        boolean result = true;
         Long now = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
         Customer customer = customerDao.selectById(dto.getCustomerId());
         if(customer != null){
@@ -392,10 +382,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             }
            BeanUtils.copyProperties(dto,customer);
            customer.setAlias(dto.getName());
-           result = super.updateById(customer);
-            if(!result){
-                throw new CommonException("更新合伙人失败");
-            }
+           super.updateById(customer);
             //删除合伙人附加信息
             customerPartnerDao.removeByCustomerId(customer.getId());
             //删除合伙人银行卡信息
@@ -406,7 +393,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     }
 
     @Override
-    public ResultVo findPartner(CustomerPartnerDto dto) {
+    public ResultVo<PageVo<CustomerPartnerVo>> findPartner(CustomerPartnerDto dto) {
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<CustomerPartnerVo> partnerVos = customerDao.getPartnerByTerm(dto);
         if(!CollectionUtils.isEmpty(partnerVos)){
@@ -424,7 +411,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             }
         }
         PageInfo<CustomerPartnerVo> pageInfo = new PageInfo<>(partnerVos);
-        return BaseResultUtil.success(pageInfo == null ? new PageInfo<>():pageInfo);
+        return BaseResultUtil.success(pageInfo);
     }
 
     @Override
@@ -440,7 +427,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     @Override
     public ResultVo getAllCustomerByKey(String keyword) {
         List<Map<String,Object>> customerList = customerDao.getAllCustomerByKey(keyword);
-        return BaseResultUtil.success(customerList == null ? Collections.EMPTY_LIST:customerList);
+        return BaseResultUtil.success(customerList);
     }
 
     @Override
@@ -448,7 +435,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         //获取当前时间戳
         Long now = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
         List<Map<String,Object>> contractList = customerDao.getContractByCustomerId(customerId,now);
-        return BaseResultUtil.success(contractList == null ? Collections.EMPTY_LIST:contractList);
+        return BaseResultUtil.success(contractList);
     }
 
     @Override
@@ -456,8 +443,8 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         PageInfo<CustomerCouponVo> pageInfo = null;
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
         List<CustomerCouponVo> voList = couponDao.getCustomerCouponByTerm(dto);
-        List<CustomerCouponVo> disCouponVos = new ArrayList<>(15);
-        List<CustomerCouponVo> couponVos = new ArrayList<>(15);
+        List<CustomerCouponVo> disCouponVos = new ArrayList<>(10);
+        List<CustomerCouponVo> couponVos = new ArrayList<>(10);
         Map<String, Object> count = new HashMap<>();
         if (!CollectionUtils.isEmpty(voList)) {
             //不可用的优惠券(使用过的或者是过期的)
@@ -480,7 +467,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         return BaseResultUtil.success(pageInfo,count);
     }
     @Override
-    public ResultVo getCouponByCustomerId(Long customerId) {
+    public ResultVo<List<CustomerCouponSendVo>> getCouponByCustomerId(Long customerId) {
         List<CustomerCouponSendVo> sendVoList = null;
         //根据客户id查看发放的优惠券
         List<CustomerCouponSendVo> couponVos = couponSendDao.getCustomerCoupon(customerId);
@@ -496,7 +483,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                 }
             }
         }
-        return BaseResultUtil.success(sendVoList == null ? Collections.EMPTY_LIST:sendVoList);
+        return BaseResultUtil.success(sendVoList);
     }
 
     /**
@@ -634,7 +621,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
      * @param phone
      * @return
      */
-    private boolean phoneExistsInCustomer(String phone) {
+    /*private boolean phoneExistsInCustomer(String phone) {
         List<Customer> existList = customerDao.selectList(new QueryWrapper<Customer>()
                 .eq("contact_phone", phone));
         if (!CollectionUtils.isEmpty(existList)) {
@@ -642,5 +629,5 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             return true;
         }
         return false;
-    }
+    }*/
 }

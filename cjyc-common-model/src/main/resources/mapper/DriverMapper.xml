@@ -252,8 +252,8 @@
     </select>
 
     <!--查询该承该运商下的司机-->
-    <select id="findMyDriver" resultType="com.cjyc.common.model.vo.web.mimeCarrier.MyDriverVo"
-                                parameterType="com.cjyc.common.model.dto.web.mimeCarrier.QueryMyDriverDto">
+    <select id="findMyDriver" resultType="com.cjyc.common.model.vo.web.mineCarrier.MyDriverVo"
+                                parameterType="com.cjyc.common.model.dto.web.mineCarrier.QueryMyDriverDto">
         SELECT
             d.id AS driverId,
             driCon.carrier_id AS carrierId,
@@ -300,7 +300,7 @@
     </select>
 
     <!--根据承运商id和司机姓名司机-->
-    <select id="findMyAllDriver" resultType="com.cjyc.common.model.vo.web.mimeCarrier.MyFreeDriverVo">
+    <select id="findMyAllDriver" resultType="com.cjyc.common.model.vo.web.mineCarrier.MyFreeDriverVo">
         SELECT
             d.id AS id,
             d.real_name AS realName,

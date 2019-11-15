@@ -9,7 +9,7 @@ import com.cjkj.usercenter.dto.common.AddUserResp;
 import com.cjkj.usercenter.dto.common.UpdateUserReq;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.OperateDto;
-import com.cjyc.common.model.dto.web.mimeCarrier.*;
+import com.cjyc.common.model.dto.web.mineCarrier.*;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.FlagEnum;
@@ -19,11 +19,11 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.mimeCarrier.MyCarVo;
-import com.cjyc.common.model.vo.web.mimeCarrier.MyDriverVo;
-import com.cjyc.common.model.vo.web.mimeCarrier.MyFreeDriverVo;
+import com.cjyc.common.model.vo.web.mineCarrier.MyCarVo;
+import com.cjyc.common.model.vo.web.mineCarrier.MyDriverVo;
+import com.cjyc.common.model.vo.web.mineCarrier.MyFreeDriverVo;
 import com.cjyc.common.system.feign.ISysUserService;
-import com.cjyc.web.api.service.IMimeCarrierService;
+import com.cjyc.web.api.service.IMineCarrierService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +38,7 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class MimeCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implements IMimeCarrierService {
+public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implements IMineCarrierService {
 
     @Resource
     private ICarrierDriverConDao carrierDriverConDao;
@@ -68,26 +68,6 @@ public class MimeCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
     private ISysUserService sysUserService;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
-
-    @Override
-    public ResultVo existMyDriver(ExistMyDriverDto dto) {
-        //判断在个人司机池中是否存在
-        if(dto.getCarrierId() == null){
-            //承运商超级管理员登陆，查询司机所在的承运商
-            CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
-                    .eq(CarrierDriverCon::getDriverId,dto.getLoginId()));
-            dto.setCarrierId(cdc.getCarrierId());
-        }
-        Integer count = carrierDao.existMyDriver(dto,CarrierTypeEnum.PERSONAL.code);
-        if(count > 0){
-            return BaseResultUtil.fail("该司机已存在于'韵车后台-司机管理'，不可创建");
-        }
-        count = carrierDao.existMyDriver(dto,CarrierTypeEnum.ENTERPRISE.code);
-        if(count > 0){
-            return BaseResultUtil.fail("账号已存在");
-        }
-        return BaseResultUtil.success();
-    }
 
     @Override
     public ResultVo saveDriver(MyDriverDto dto) {
@@ -237,8 +217,8 @@ public class MimeCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
             vr.setPlateNo(dto.getPlateNo());
             vr.setCarryCarNum(dto.getDefaultCarryNum());
             vr.setRunningState(VehicleRunStateEnum.FREE.code);
-            vr.setRunningState(BusinessStateEnum.OUTAGE.code);
             vr.setCreateTime(NOW);
+            vehicleRunningDao.insert(vr);
         }
         return BaseResultUtil.success();
     }
@@ -294,19 +274,7 @@ public class MimeCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
             }
             if(dvc == null || !dto.getDriverId().equals(dvc.getDriverId())){
                 //绑定新的
-                DriverVehicleCon driverCon = new DriverVehicleCon();
-                driverCon.setDriverId(dto.getDriverId());
-                driverCon.setVehicleId(dto.getVehicleId());
-                driverVehicleConDao.insert(driverCon);
-                //保存运力关系
-                VehicleRunning vr = new VehicleRunning();
-                vr.setDriverId(dto.getDriverId());
-                vr.setVehicleId(dto.getVehicleId());
-                vr.setPlateNo(dto.getPlateNo());
-                vr.setCarryCarNum(dto.getDefaultCarryNum());
-                vr.setRunningState(VehicleRunStateEnum.FREE.code);
-                vr.setRunningState(BusinessStateEnum.OUTAGE.code);
-                vr.setCreateTime(NOW);
+                bindDriverVeh(dto);
             }
         }
         return BaseResultUtil.success();
@@ -315,18 +283,18 @@ public class MimeCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
     @Override
     public ResultVo modifyDriver(ModifyMyDriverDto dto) {
         //判断司机是否已存在
-        Driver dri = driverDao.selectOne(new QueryWrapper<Driver>().lambda().eq(Driver::getPhone,dto.getPhone())
-                .or().eq(Driver::getIdCard,dto.getIdCard()));
-        if(dri != null && !dri.getId().equals(dto.getDriverId())){
-            return BaseResultUtil.fail("该司机已存在,请检查");
+        Driver dri = driverDao.selectById(dto.getDriverId());
+        if(null == dri){
+            return BaseResultUtil.fail("司机信息错误，根据id：" + dto.getDriverId() + "未查询到信息");
         }
-        VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda().eq(VehicleRunning::getDriverId,dto.getDriverId()));
-        if(vr != null){
-            Task task = taskDao.selectOne(new QueryWrapper<Task>().lambda().eq(Task::getVehicleRunningId,vr.getId()));
-            if(task != null && task.getState() == TaskStateEnum.TRANSPORTING.code){
+        DriverVehicleCon dvc = driverVehicleConDao.selectOne(new QueryWrapper<DriverVehicleCon>().lambda().eq(DriverVehicleCon::getDriverId,dto.getDriverId()));
+        VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda().eq(VehicleRunning::getDriverId,dri.getId()));
+        if(vr != null) {
+            Task task = taskDao.selectOne(new QueryWrapper<Task>().lambda().eq(Task::getVehicleRunningId, vr.getId()));
+            if (task != null && task.getState() == TaskStateEnum.TRANSPORTING.code) {
                 return BaseResultUtil.fail("该运力正在运输中，不可修改");
             }
-            DriverVehicleCon dvc = driverVehicleConDao.selectOne(new QueryWrapper<DriverVehicleCon>().lambda().eq(DriverVehicleCon::getDriverId,dto.getDriverId()));
+        }
             //更新司机信息
             ResultData rd = updateDriverToPlatform(dto);
             if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
@@ -340,22 +308,44 @@ public class MimeCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
             dri.setIdCardFrontImg(dto.getIdCardFrontImg());
             dri.setIdCardBackImg(dto.getIdCardBackImg());
             driverDao.updateById(dri);
-            if(StringUtils.isNotBlank(dto.getPlateNo())){
+            if(StringUtils.isNotBlank(dto.getPlateNo()) && dvc != null){
                 //更新司机与车辆绑定关系
                 dvc.setVehicleId(dvc.getVehicleId());
                 driverVehicleConDao.updateById(dvc);
                 //更新运力信息
                 vr.setVehicleId(dto.getVehicleId());
                 vehicleRunningDao.updateById(vr);
-            }else if(StringUtils.isBlank(dto.getPlateNo())){
+            }else if(StringUtils.isBlank(dto.getPlateNo()) && dvc != null){
                 //为空删除绑定关系
                 driverVehicleConDao.removeCon(dvc.getDriverId(),dvc.getVehicleId());
                 vehicleRunningDao.removeRun(dvc.getDriverId(),dvc.getVehicleId());
+            }else if(StringUtils.isNotBlank(dto.getPlateNo()) && dvc == null){
+                //之前没绑定，现在绑定
+                bindDriverVeh(dto);
             }
-        }
         return BaseResultUtil.success();
     }
 
+    /**
+     * 绑定司机与车辆之间关系
+     * @param dto
+     */
+    private void bindDriverVeh(ModifyMyCarDto dto){
+        //绑定新的
+        DriverVehicleCon driverCon = new DriverVehicleCon();
+        driverCon.setDriverId(dto.getDriverId());
+        driverCon.setVehicleId(dto.getVehicleId());
+        driverVehicleConDao.insert(driverCon);
+        //保存运力关系
+        VehicleRunning vr = new VehicleRunning();
+        vr.setDriverId(dto.getDriverId());
+        vr.setVehicleId(dto.getVehicleId());
+        vr.setPlateNo(dto.getPlateNo());
+        vr.setCarryCarNum(dto.getDefaultCarryNum());
+        vr.setRunningState(VehicleRunStateEnum.FREE.code);
+        vr.setCreateTime(NOW);
+        vehicleRunningDao.insert(vr);
+    }
     /**
      * 保存承运商下司机到物流平台
      * @param driver

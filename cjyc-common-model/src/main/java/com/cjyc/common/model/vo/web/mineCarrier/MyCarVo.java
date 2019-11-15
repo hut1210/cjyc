@@ -1,4 +1,4 @@
-package com.cjyc.common.model.vo.web.mimeCarrier;
+package com.cjyc.common.model.vo.web.mineCarrier;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;

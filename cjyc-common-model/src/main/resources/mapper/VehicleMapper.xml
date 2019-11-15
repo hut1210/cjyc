@@ -78,8 +78,8 @@
     </select>
 
     <!-- 根据条件查询该承运商下的车辆 -->
-    <select id="findMyCar" resultType="com.cjyc.common.model.vo.web.mimeCarrier.MyCarVo"
-                            parameterType="com.cjyc.common.model.dto.web.mimeCarrier.QueryMyCarDto">
+    <select id="findMyCar" resultType="com.cjyc.common.model.vo.web.mineCarrier.MyCarVo"
+                            parameterType="com.cjyc.common.model.dto.web.mineCarrier.QueryMyCarDto">
         SELECT
             veh.id AS vehicleId,
             veh.carrier_id as carrierId,

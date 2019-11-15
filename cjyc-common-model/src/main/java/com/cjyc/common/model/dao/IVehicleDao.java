@@ -1,10 +1,10 @@
 package com.cjyc.common.model.dao;
 
-import com.cjyc.common.model.dto.web.mimeCarrier.QueryMyCarDto;
+import com.cjyc.common.model.dto.web.mineCarrier.QueryMyCarDto;
 import com.cjyc.common.model.dto.web.vehicle.SelectVehicleDto;
 import com.cjyc.common.model.entity.Vehicle;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.cjyc.common.model.vo.web.mimeCarrier.MyCarVo;
+import com.cjyc.common.model.vo.web.mineCarrier.MyCarVo;
 import com.cjyc.common.model.vo.web.vehicle.FreeVehicleVo;
 import com.cjyc.common.model.vo.web.vehicle.VehicleVo;
 import org.apache.ibatis.annotations.Param;

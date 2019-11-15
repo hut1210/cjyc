@@ -2,18 +2,11 @@ package com.cjyc.web.api.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.dto.web.OperateDto;
-import com.cjyc.common.model.dto.web.mimeCarrier.*;
+import com.cjyc.common.model.dto.web.mineCarrier.*;
 import com.cjyc.common.model.entity.Carrier;
 import com.cjyc.common.model.vo.ResultVo;
 
-public interface IMimeCarrierService extends IService<Carrier> {
-
-    /**
-     * 判断该承运商下是否有司机或者查询个人司机池中是否存在
-     * @param dto
-     * @return
-     */
-    ResultVo existMyDriver(ExistMyDriverDto dto);
+public interface IMineCarrierService extends IService<Carrier> {
 
     /**
      * 新增承运商下司机

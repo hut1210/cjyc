@@ -4,7 +4,6 @@ import com.cjkj.common.constant.SecurityConstants;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.usercenter.dto.common.AddUserResp;
 import com.cjkj.usercenter.dto.yc.SelectPageUsersByDeptReq;
-import com.cjyc.common.model.dto.web.mimeCarrier.MyDriverDto;
 import com.cjyc.common.model.dto.web.salesman.MySalesmanQueryDto;
 import com.cjyc.common.model.dto.web.salesman.TypeSalesmanDto;
 import com.cjyc.common.model.entity.Admin;
@@ -19,7 +18,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.MediaType;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;

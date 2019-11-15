@@ -4,7 +4,6 @@ import com.cjyc.common.model.dto.web.carrier.DispatchCarrierDto;
 import com.cjyc.common.model.dto.web.carrier.SeleCarrierDto;
 import com.cjyc.common.model.dto.web.carrier.TrailCarrierDto;
 import com.cjyc.common.model.dto.web.carrier.VerifyCarrierDto;
-import com.cjyc.common.model.dto.web.mimeCarrier.ExistMyDriverDto;
 import com.cjyc.common.model.entity.Carrier;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.vo.web.carrier.*;
@@ -63,14 +62,6 @@ public interface ICarrierDao extends BaseMapper<Carrier> {
      * @return
      */
     ExistCarrierVo existCarrier(VerifyCarrierDto dto);
-
-    /**
-     * 判断该司机在个人或者该承运商下是否存在
-     * @param dto
-     * @return
-     */
-    Integer existMyDriver(ExistMyDriverDto dto,Integer type);
-
     /**
      * 查询根据输入手机号是否在该承运商下的普通司机
      * @param carrierId

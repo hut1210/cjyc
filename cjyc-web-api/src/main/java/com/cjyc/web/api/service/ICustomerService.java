@@ -3,8 +3,15 @@ package com.cjyc.web.api.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.customer.*;
+import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.entity.Customer;
+import com.cjyc.common.model.vo.web.coupon.CustomerCouponSendVo;
+import com.cjyc.common.model.vo.web.customer.CustomerPartnerVo;
+import com.cjyc.common.model.vo.web.customer.ListKeyCustomerVo;
+import com.cjyc.common.model.vo.web.customer.ShowKeyCustomerVo;
+
+import java.util.List;
 
 /**
  *  @author: zj
@@ -12,6 +19,13 @@ import com.cjyc.common.model.entity.Customer;
  *  @Description: 用户接口
  */
 public interface ICustomerService  extends IService<Customer> {
+
+    /**
+     * 验证用户是否已存在
+     * @param dto
+     * @return
+     */
+    ResultVo existCustomer(ExistCustomreDto dto);
 
     /**
      *  新增移动端用户
@@ -25,7 +39,7 @@ public interface ICustomerService  extends IService<Customer> {
      * @param dto
      * @return
      */
-    boolean modifyCustomer(CustomerDto dto);
+    ResultVo modifyCustomer(CustomerDto dto);
 
     /**
      * 根据条件查询移动端用户
@@ -39,35 +53,35 @@ public interface ICustomerService  extends IService<Customer> {
      * @param dto
      * @return
      */
-    boolean saveKeyCustomer(KeyCustomerDto dto);
+    ResultVo saveKeyCustomer(KeyCustomerDto dto);
 
     /**
      *  审核/删除大客户
      * @param  dto
      * @return
      */
-    boolean verifyCustomer(OperateDto dto);
+    ResultVo verifyCustomer(OperateDto dto);
 
     /**
      * 根据大客户id查看大客户&合同
      * @param customerId
      * @return
      */
-    ResultVo showKeyCustomer(Long customerId);
+    ResultVo<ShowKeyCustomerVo> showKeyCustomer(Long customerId);
 
     /**
      * 更新大客户&合同
      * @param keyCustomerDto
      * @return
      */
-    boolean modifyKeyCustomer(KeyCustomerDto keyCustomerDto);
+    ResultVo modifyKeyCustomer(KeyCustomerDto keyCustomerDto);
 
     /**
      * 根据条件查询大客户信息
      * @param dto
      * @return
      */
-    ResultVo findKeyCustomer(SelectKeyCustomerDto dto);
+    ResultVo<PageVo<ListKeyCustomerVo>> findKeyCustomer(SelectKeyCustomerDto dto);
 
     @Override
     boolean save(Customer customer);
@@ -92,7 +106,7 @@ public interface ICustomerService  extends IService<Customer> {
      * @param dto
      * @return
      */
-    ResultVo findPartner(CustomerPartnerDto dto);
+    ResultVo<PageVo<CustomerPartnerVo>> findPartner(CustomerPartnerDto dto);
 
     Customer selectByPhone(String customerPhone);
 
@@ -125,5 +139,5 @@ public interface ICustomerService  extends IService<Customer> {
      * @param customerId
      * @return
      */
-    ResultVo getCouponByCustomerId(Long customerId);
+    ResultVo<List<CustomerCouponSendVo>> getCouponByCustomerId(Long customerId);
 }
