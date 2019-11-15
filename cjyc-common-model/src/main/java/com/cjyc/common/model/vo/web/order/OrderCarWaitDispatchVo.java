@@ -135,5 +135,16 @@ public class OrderCarWaitDispatchVo extends OrderCar {
     private String backContactPhone;
 
 
+    @ApiModelProperty(value = "确认人手机号")
+    private Long checkUserPhone;
+
+    @ApiModelProperty(value = "确认人：业务员")
+    private String checkUserName;
+
+    @ApiModelProperty(value = "确认人userid")
+    private Long checkUserId;
+
+
+
 
 }

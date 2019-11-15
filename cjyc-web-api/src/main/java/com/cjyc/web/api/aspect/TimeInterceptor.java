@@ -1,5 +1,7 @@
 package com.cjyc.web.api.aspect;
 
+import com.cjyc.common.model.exception.ParameterException;
+import com.cjyc.common.model.exception.ServerException;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -17,7 +19,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class TimeInterceptor {
-    //@Around(value = "execution (* com.cjyc.web.api.service..*.*(..))")
+    /**@Around(value = "execution (* com.cjyc.web.api.service..*.*(..))")*/
     public Object timeAround(ProceedingJoinPoint joinPoint) {
         // 定义返回对象、得到方法需要的参数  
         Object obj = null;
@@ -26,8 +28,15 @@ public class TimeInterceptor {
 
         try {
             obj = joinPoint.proceed(args);
+        } catch (ParameterException e) {
+            log.error("统计方法执行耗时环绕通知出错", e);
+            throw new ParameterException(e.getMessage());
+        } catch (ServerException e){
+            log.error("统计方法执行耗时环绕通知出错", e);
+            throw new ServerException(e.getMessage());
         } catch (Throwable e) {
             log.error("统计方法执行耗时环绕通知出错", e);
+            throw new RuntimeException(e.getMessage());
         }
         // 获取执行的方法名
         long endTime = System.currentTimeMillis();

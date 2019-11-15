@@ -313,6 +313,42 @@
         </where>
         group by w.id
     </select>
+    <select id="findCrListByCarrierId" resultType="java.util.List">
+
+        select
+            w.no,
+            w.id,
+            w.type,
+            w.guide_line,
+            w.carrier_name,
+            w.state,
+            w.remark,
+            w.create_time,
+            w.car_num,
+            w.create_user,
+            sum(IFNULL(w.car_num,0)) as hasAllottedNum
+        from w_waybill w
+        LEFT JOIN w_task t on w.id = t.waybill_id
+        <where>
+            w.carrier_id = #{carrierId}
+            <if test="paramsDto.waybillNo != null and paramsDto.waybillNo != ''">
+                and w.no = #{paramsDto.waybillNo}
+            </if>
+            <if test="paramsDto.waybillType != null and paramsDto.waybillType != ''">
+                and w.type = #{paramsDto.waybillType}
+            </if>
+            <if test="paramsDto.createUser != null and paramsDto.createUser != ''">
+                and w.create_user = #{paramsDto.createUser}
+            </if>
+        </where>
+        group by w.carrierId
+<!--        <choose>
+            <if test="paramsDto.allotProgress == 1">
+                having sum(IFNULL(w.car_num,0)) &lt; w.car_num
+            </if>
+        </choose>-->
+        order by w.id desc
+    </select>
 
 
 </mapper>

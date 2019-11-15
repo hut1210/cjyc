@@ -12,6 +12,12 @@ public class UpdateTrunkWaybillCarDto {
     @ApiModelProperty(value = "ID")
     private Long id;
 
+    @ApiModelProperty(value = "订单ID")
+    private Long orderCarId;
+
+    @ApiModelProperty(value = "订单编号")
+    private String orderCarNo;
+
     @ApiModelProperty(value = "运费")
     private BigDecimal freightFee;
 

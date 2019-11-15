@@ -57,9 +57,6 @@ public class UpdateLocalCarDto{
     @ApiModelProperty(value = "出发地业务中心ID")
     private Long startStoreId;
 
-    @ApiModelProperty(value = "起始地所属业务中心ID")
-    private Long startBelongStoreId;
-
     @ApiModelProperty(value = "省")
     private String endProvince;
 
@@ -87,14 +84,8 @@ public class UpdateLocalCarDto{
     @ApiModelProperty(value = "目的地业务中心ID")
     private Long endStoreId;
 
-    @ApiModelProperty(value = "目的地所属业务中心ID")
-    private Long endBelongStoreId;
-
     @ApiModelProperty(value = "线路ID")
     private Long lineId;
-
-    @ApiModelProperty(value = "运单车辆状态：0待指派，2已指派，5待装车，15待装车确认，45已装车，70已卸车，90确认交车, 100确认收车, 105待重连，120已重连")
-    private Integer state;
 
     @ApiModelProperty(value = "预计提车日期")
     private Long expectStartTime;
@@ -114,15 +105,6 @@ public class UpdateLocalCarDto{
     @ApiModelProperty(value = "提车联系人电话")
     private String loadLinkPhone;
 
-    @ApiModelProperty(value = "装车交接类型：1客户家，2中途交接，3业务中心")
-    private Integer loadTurnType;
-
-    @ApiModelProperty(value = "图片地址，逗号分隔")
-    private String loadPhotoImg;
-
-    @ApiModelProperty(value = "实际开始装车时间")
-    private Long loadTime;
-
     @ApiModelProperty(value = "收车人名称")
     private String unloadLinkName;
 
@@ -132,19 +114,6 @@ public class UpdateLocalCarDto{
     @ApiModelProperty(value = "收车人电话")
     private String unloadLinkPhone;
 
-    @ApiModelProperty(value = "卸车交接类型：1客户指定地，2中途交接，3业务中心")
-    private Integer unloadTurnType;
-
-    @ApiModelProperty(value = "图片地址，逗号分隔")
-    private String unloadPhotoImg;
-
-    @ApiModelProperty(value = "实际完成卸车时间")
-    private Long unloadTime;
-
-    private Integer sort;
-
-    @ApiModelProperty(value = "创建时间")
-    private Long createTime;
 
 
 }

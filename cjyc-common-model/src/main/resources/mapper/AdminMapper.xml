@@ -93,5 +93,11 @@
             AND admin.type = 1
         </where>
     </select>
+    <select id="findByPhone" resultType="com.cjyc.common.model.entity.Admin">
+        select
+        <include refid="Base_Column_List"/>
+        from b_admin
+        where phone = #{phone}
+    </select>
 
 </mapper>

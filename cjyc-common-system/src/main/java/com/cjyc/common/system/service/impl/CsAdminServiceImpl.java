@@ -83,4 +83,9 @@ public class CsAdminServiceImpl implements ICsAdminService {
 
         return cacheAdminVo;
     }
+
+    @Override
+    public Admin getByPhone(String username, boolean isSearchCache) {
+        return adminDao.findByPhone(username);
+    }
 }

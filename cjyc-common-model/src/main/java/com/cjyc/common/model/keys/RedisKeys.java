@@ -38,6 +38,8 @@ public class RedisKeys {
 
     private final static String ROLE_BIZ_SCOPE_KEY = "role:biz:scope";
 
+    private final static String NEW_TASK_NO_KEY = "new:task:no";
+
     /**---------------salesman-------------------------------------------------------------------*/
     /**验证码*/
     private final static String CAPTCHA_KEY = "cjyc:sale";
@@ -69,6 +71,10 @@ public class RedisKeys {
         return getPreixByCilent(clientEnum) + I + ROLE_BIZ_SCOPE_KEY + I + roleId;
     }
 
+    public static String getNewTaskNoKey(String waybillNo) {
+        return PROJECT_PREFIX + I + NEW_TASK_NO_KEY + I + waybillNo;
+    }
+
     /**
      * 根据客户端判断前缀
      * @param clientEnum
@@ -89,4 +95,5 @@ public class RedisKeys {
         }
         return prefix;
     }
+
 }

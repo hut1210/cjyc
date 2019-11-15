@@ -10,6 +10,7 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.waybill.*;
 import com.cjyc.common.system.service.ICsAdminService;
+import com.cjyc.web.api.annotations.RequestHeaderAndBody;
 import com.cjyc.web.api.service.IWaybillService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -44,7 +45,7 @@ public class WaybillController {
      */
     @ApiOperation("提送车调度")
     @PostMapping("/local/save")
-    public ResultVo saveLocal(@RequestBody SaveLocalDto reqDto) {
+    public ResultVo saveLocal(@RequestHeaderAndBody SaveLocalDto reqDto) {
         //验证用户
         Admin admin = csAdminService.getByUserId(reqDto.getUserId(), true);
         if (admin == null || admin.getState() != AdminStateEnum.CHECKED.code) {
@@ -230,9 +231,9 @@ public class WaybillController {
      * 我的运单-承运商
      */
     @ApiOperation(value = "我的运单-承运商")
-    @PostMapping(value = "/cys/list")
-    public ResultVo<List<CysWaybillVo>> cysList(@RequestBody CysWaybillDto reqDto) {
-        return waybillService.cysList(reqDto);
+    @PostMapping(value = "/cr/list")
+    public ResultVo<List<CrWaybillVo>> crList(@RequestBody CrWaybillDto reqDto) {
+        return waybillService.crList(reqDto);
     }
 
 

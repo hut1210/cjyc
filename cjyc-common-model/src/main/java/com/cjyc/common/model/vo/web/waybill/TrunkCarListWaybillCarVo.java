@@ -7,7 +7,10 @@ import lombok.Data;
 @Data
 public class TrunkCarListWaybillCarVo extends WaybillCar {
 
-
+    @ApiModelProperty(value = "订单编号")
+    private String orderNo;
+    @ApiModelProperty(value = "状态")
+    private String outterState;
 
     @ApiModelProperty(value = "承运商ID")
     private Long carrierId;

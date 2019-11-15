@@ -2,7 +2,7 @@ package com.cjyc.web.api.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.dao.*;
-import com.cjyc.common.model.dto.web.waybill.CysWaybillDto;
+import com.cjyc.common.model.dto.web.waybill.CrWaybillDto;
 import com.cjyc.common.model.dto.web.waybill.*;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -95,9 +95,11 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
     }
 
     @Override
-    public ResultVo<List<CysWaybillVo>> cysList(CysWaybillDto paramsDto) {
+    public ResultVo<List<CrWaybillVo>> crList(CrWaybillDto paramsDto) {
+        //根据角色查询承运商ID
 
-        return null;
+        PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
+        return waybillDao.findCrListByCarrierId(paramsDto);
     }
 
     @Override
@@ -155,7 +157,7 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
     @Override
     public ResultVo<PageVo<TrunkCarListWaybillCarVo>> trunkCarlist(TrunkListWaybillCarDto paramsDto) {
         PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
-        List<TrunkCarListWaybillCarVo> list = waybillCarDao.findTrunkList();
+        List<TrunkCarListWaybillCarVo> list = waybillCarDao.findTrunkCarList(paramsDto);
         PageInfo<TrunkCarListWaybillCarVo> pageInfo = new PageInfo<>(list);
         if(paramsDto.getCurrentPage() > pageInfo.getPages()){
             pageInfo.setList(null);

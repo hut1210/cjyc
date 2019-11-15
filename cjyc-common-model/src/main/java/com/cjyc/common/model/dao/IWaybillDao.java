@@ -3,6 +3,7 @@ package com.cjyc.common.model.dao;
 import com.cjyc.common.model.dto.web.waybill.*;
 import com.cjyc.common.model.entity.Waybill;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.waybill.*;
 import org.apache.ibatis.annotations.Param;
 
@@ -59,4 +60,6 @@ public interface IWaybillDao extends BaseMapper<Waybill> {
     List<Waybill> findListByIds(@Param("waybillIdList") List<Long> waybillIdList);
 
     int updateStateById(@Param("state") int state, @Param("waybillId") Long waybillId);
+
+    ResultVo<List<CrWaybillVo>> findCrListByCarrierId(@Param("paramsDto") CrWaybillDto paramsDto);
 }

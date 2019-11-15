@@ -33,4 +33,6 @@ public interface IAdminDao extends BaseMapper<Admin> {
     List<Admin> findListByUserIds(Set<Long> userIds);
 
     List<TypeSalesmanVo> deliverySalesman(TypeSalesmanDto dto);
+
+    Admin findByPhone(String phone);
 }

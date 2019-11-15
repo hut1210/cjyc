@@ -109,18 +109,14 @@
     <delete id="deleteByWaybillId">
         delete from w_waybill_car where waybill_id = #{waybillId}
     </delete>
-    <delete id="deleteWaybillCar">
-        delete from w_waybill_car
+    <delete id="deleteWaybillCarAndTaskCar">
+        delete wc,tc from w_waybill_car wc left join w_task_car tc on tc.waybill_car_id = wc.id
         <where>
-            <if test="waybillId == null">
-                and 1 != 1
-            </if>
-            and waybill_id = #{waybillId}
-            and id not in
+            and wc.waybill_id = #{waybillId}
+            and wc.id not in
             <foreach collection="unDeleteWaybillCarId" index="index" item="item" open="(" separator="," close=")">
                 #{item}
             </foreach>
-
         </where>
     </delete>
 
@@ -320,6 +316,7 @@
         w.create_time as createTime,
         w.create_user as createUser,
         w.create_user_id as createUserId,
+        w.type,
         oc.brand as brand,
         oc.model as model,
         oc.plate_no as plateNo,
@@ -472,13 +469,14 @@
         oc.plate_no as plateNo,
         oc.vin as vin,
         l.default_freight_fee as lineFreightFee,
-        l.kilometer as km
+        l.kilometer as km,
+        (case when l.id > 0 then true else false end) as hasLine
         from w_waybill_car wc
         join w_order_car oc on oc.id= wc.order_car_id
         left join s_line l on l.from_code = wc.start_city_code and l.to_code = wc.end_city_code
         where wc.waybill_id = #{waybillId}
     </select>
-    <select id="findTrunkList" resultType="com.cjyc.common.model.vo.web.waybill.TrunkCarListWaybillCarVo">
+    <select id="findTrunkCarList" resultType="com.cjyc.common.model.vo.web.waybill.TrunkCarListWaybillCarVo">
         select
         (case
         when wc.state &lt;= 15 then '待提车'
@@ -496,6 +494,7 @@
         oc.model as model,
         oc.plate_no as plateNo,
         oc.vin as vin,
+        o.no as orderNo,
         t.no as taskNo,
         t.driver_name as driverName,
         t.driver_phone as driverPhone,
@@ -506,10 +505,35 @@
         from w_waybill w
         join w_waybill_car wc on wc.waybill_id = w.id
         join w_order_car oc on wc.order_car_id = oc.id
+        join w_order o on o.id = oc.order_id
         left join w_task_car tc on tc.waybill_car_id = wc.id
         left join w_task t on tc.task_id = t.id
         <where>
-            w.type == 2
+            w.type = 2
+            <if test="paramsDto.orderStartProvinceCode != null and paramsDto.orderStartProvinceCode != ''">
+                and o.start_province_code  = #{paramsDto.orderStartProvinceCode}
+            </if>
+            <if test="paramsDto.orderStartCityCode != null and paramsDto.orderStartCityCode != ''">
+                and o.start_city_code  = #{paramsDto.orderStartCityCode}
+            </if>
+            <if test="paramsDto.orderStartAreaCode != null and paramsDto.orderStartAreaCode != ''">
+                and o.start_area_code  = #{paramsDto.orderStartAreaCode}
+            </if>
+            <if test="paramsDto.orderEndProvinceCode != null and paramsDto.orderEndProvinceCode != ''">
+                and o.end_province_code  = #{paramsDto.orderEndProvinceCode}
+            </if>
+            <if test="paramsDto.orderEndCityCode != null and paramsDto.orderEndCityCode != ''">
+                and o.end_city_code  = #{paramsDto.orderEndCityCode}
+            </if>
+            <if test="paramsDto.orderEndAreaCode != null and paramsDto.orderEndAreaCode != ''">
+                and o.end_area_code  = #{paramsDto.orderEndAreaCode}
+            </if>
+            <if test="paramsDto.orderNo != null and paramsDto.orderNo != ''">
+                and o.no = #{paramsDto.orderNo}
+            </if>
+            <if test="paramsDto.orderSource != null and paramsDto.orderSource != ''">
+                and o.source = #{paramsDto.orderSource}
+            </if>
             <if test="paramsDto.brand != null and paramsDto.brand != ''">
                 and oc.brand = #{paramsDto.brand}
             </if>
@@ -524,6 +548,9 @@
             </if>
             <if test="paramsDto.carrierName != null and paramsDto.carrierName != ''">
                 and w.carrier_name = #{paramsDto.carrierName}
+            </if>
+            <if test="paramsDto.createUser != null and paramsDto.createUser != ''">
+                and w.create_user = #{paramsDto.createUser}
             </if>
             <if test="paramsDto.driverName != null and paramsDto.driverName != ''">
                 and t.driver_name = #{paramsDto.driverName}

@@ -20,7 +20,7 @@ import javax.annotation.Resource;
 @Api(tags = "司机-我的承运商模块")
 @CrossOrigin
 @RestController
-@RequestMapping("/mimeCarrier")
+@RequestMapping("/mineCarrier")
 public class MineCarrierController {
 
     @Resource
@@ -80,8 +80,5 @@ public class MineCarrierController {
     public ResultVo modifyDriver(ModifyMyDriverDto dto){
         return mimeCarrierService.modifyDriver(dto);
     }
-
-
-
 
 }

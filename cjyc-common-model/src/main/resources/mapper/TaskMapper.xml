@@ -86,5 +86,8 @@
         where t.waybill_id = #{waybillId}
         limit 1
     </select>
+    <select id="findMaxNo" resultType="java.lang.String">
+        select max(no) from w_task where waybill_no = #{waybillNo}
+    </select>
 
 </mapper>

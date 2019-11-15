@@ -2,6 +2,7 @@ package com.cjyc.common.model.dao;
 
 import com.cjyc.common.model.dto.web.WayBillCarrierDto;
 import com.cjyc.common.model.dto.web.waybill.LocalListWaybillCarDto;
+import com.cjyc.common.model.dto.web.waybill.TrunkListWaybillCarDto;
 import com.cjyc.common.model.entity.WaybillCar;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.entity.defined.FullWaybillCar;
@@ -62,7 +63,7 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
 
     List<WaybillCarVo> findVoByTaskId(Long taskId);
 
-    List<TrunkCarListWaybillCarVo> findTrunkList();
+    List<TrunkCarListWaybillCarVo> findTrunkCarList(@Param("paramsDto") TrunkListWaybillCarDto paramsDto);
 
     int deleteByWaybillId(Long waybillId);
 
@@ -72,5 +73,5 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
 
     int countUnAllFinish(Long waybillId);
 
-    int deleteWaybillCar(@Param("waybillId") Long waybillId, @Param("unDeleteWaybillCarId") Set<Long> unDeleteWaybillCarId);
+    int deleteWaybillCarAndTaskCar(@Param("waybillId") Long waybillId, @Param("unDeleteWaybillCarId") Set<Long> unDeleteWaybillCarId);
 }

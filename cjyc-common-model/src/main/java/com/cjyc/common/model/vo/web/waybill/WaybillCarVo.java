@@ -23,14 +23,8 @@ public class WaybillCarVo {
     @ApiModelProperty(value = "vin码")
     private String vin;
 
-    @ApiModelProperty(value = "")
-    private String lineFreightFee;
-
-    @ApiModelProperty(value = "距离")
-    private String km;
-
-
-
+    @ApiModelProperty(value = "价卡运费")
+    private BigDecimal lineFreightFee;
 
 
     @ApiModelProperty(value = "ID")
@@ -81,6 +75,9 @@ public class WaybillCarVo {
     @ApiModelProperty(value = "起始地所属业务中心ID")
     private Long startBelongStoreId;
 
+    @ApiModelProperty(value = "起始地是否固定")
+    private Boolean startFixedFlag;
+
     @ApiModelProperty(value = "省")
     private String endProvince;
 
@@ -111,8 +108,12 @@ public class WaybillCarVo {
     @ApiModelProperty(value = "目的地所属业务中心ID")
     private Long endBelongStoreId;
 
+    @ApiModelProperty(value = "目的地是否固定")
+    private Boolean endFixedFlag;
     @ApiModelProperty(value = "线路ID")
     private Long lineId;
+    @ApiModelProperty(value = "是否存在线路")
+    private Boolean hasLine;
 
     @ApiModelProperty(value = "运单车辆状态：0待指派，2已指派，5待装车，15待装车确认，45已装车，70已卸车，90确认交车, 100确认收车, 105待重连，120已重连")
     private Integer state;
@@ -161,11 +162,6 @@ public class WaybillCarVo {
 
     @ApiModelProperty(value = "实际完成卸车时间")
     private Long unloadTime;
-
-    private Integer sort;
-
-    @ApiModelProperty(value = "创建时间")
-    private Long createTime;
 
 
 }

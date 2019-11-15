@@ -20,7 +20,18 @@
         <foreach collection="list" item="item" index="index" separator=",">
             (
             #{item.taskId},
-            #{item.waybillCarId},
+            #{item.waybillCarId}
+            )
+        </foreach>
+    </insert>
+    <insert id="saveBatchByTaskIdAndWaybillCarIds">
+        insert into w_task_car
+        (task_id, waybill_car_id)
+        values
+        <foreach collection="waybillCarIds" item="item" index="index" separator=",">
+            (
+            #{taskId},
+            #{item}
             )
         </foreach>
     </insert>
