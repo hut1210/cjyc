@@ -1,9 +1,9 @@
 package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.web.OperateDto;
-import com.cjyc.common.model.dto.web.mimeCarrier.*;
+import com.cjyc.common.model.dto.web.mineCarrier.*;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.web.api.service.IMimeCarrierService;
+import com.cjyc.web.api.service.IMineCarrierService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -24,13 +24,7 @@ import javax.annotation.Resource;
 public class MineCarrierController {
 
     @Resource
-    private IMimeCarrierService mimeCarrierService;
-
-    @ApiOperation(value = "判断该承运商下司机在个人司机中存在/该承运商下是否存在",notes = "如果carrierId为空，则是承运商管理员登陆，需要把loginId转成carrierId,否则是韵车内部登陆")
-    @PostMapping(value = "/existMyDriver")
-    public ResultVo existMyDriver(@RequestBody ExistMyDriverDto dto){
-        return mimeCarrierService.existMyDriver(dto);
-    }
+    private IMineCarrierService mimeCarrierService;
 
     @ApiOperation(value = "新增承运商下司机",notes = "如果carrierId为空，则是承运商管理员登陆，需要把loginId转成carrierId,否则是韵车内部登陆")
     @PostMapping(value = "/saveDriver")

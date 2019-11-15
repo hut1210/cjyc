@@ -22,12 +22,6 @@ public class TransportController {
     @Autowired
     private ITransportService transportService;
 
-    @ApiOperation(value = "查看班线是否存在")
-    @PostMapping(value = "/existLine")
-    public ResultVo existLine(@RequestBody LineDto dto){
-        return transportService.existLine(dto);
-    }
-
     @ApiOperation(value = "查看运价查询")
     @PostMapping(value = "/linePriceByCode")
     public ResultVo linePriceByCode(@RequestBody TransportDto dto){

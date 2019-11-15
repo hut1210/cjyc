@@ -58,7 +58,7 @@
 
     <resultMap id="VinResultMap" type="com.cjyc.common.model.vo.customer.order.OrderCenterVo">
         <!--查询该订单号下的一条车辆信息-->
-        <collection property="orderCarCenterVoList" column="{orderNo = no,brand = brand,model = model}"
+        <collection property="orderCarCenterVoList" column="{orderNo = no,model = model}"
                     select="com.cjyc.common.model.dao.IOrderCarDao.selectByCondition">
         </collection>
     </resultMap>
@@ -290,12 +290,11 @@
             o.end_city as endCity,
             o.total_fee as totalFee,
             o.car_num as carNum,
-            #{brand} as brand,
             #{model} as model
         from
             w_order o
         <where>
-            customer_id = #{customerId}
+            customer_id = #{loginId}
             /*待确认*/
             <if test="state != null and state == 0">
                 and o.state &lt;= 25
@@ -313,16 +312,6 @@
             <if test="state != null and state == 3">
                 and (o.state &lt;= 100 or o.state = 113)
             </if>
-            <if test="key != null and key.trim() != ''">
-                and (
-                o.no like concat('%',#{key},'%')
-                or o.start_city like concat('%',#{key},'%')
-                or o.end_city like concat('%',#{key},'%')
-                )
-            </if>
-            <if test="storeId != null and storeId.trim() != ''">
-                and o.input_store_id = #{storeId}
-            </if>
             <if test="startCityCode != null and startCityCode.trim() != ''">
                 and o.start_city_code = #{startCityCode}
             </if>
@@ -337,15 +326,6 @@
             </if>
         </where>
         order by o.create_time
-        <if test="sort != null and sort.trim() == 0">
-            desc
-        </if>
-        <if test="sort != null and sort.trim() == 1">
-            asc
-        </if>
-        <if test="sort != null and sort.trim() == 2">
-            desc
-        </if>
     </select>
 
 

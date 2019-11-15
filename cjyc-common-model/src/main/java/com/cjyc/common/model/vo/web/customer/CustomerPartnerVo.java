@@ -1,5 +1,9 @@
 package com.cjyc.common.model.vo.web.customer;
 
+import com.cjyc.common.model.util.BigDecimalSerizlizer;
+import com.cjyc.common.model.util.DataLongSerizlizer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -10,10 +14,12 @@ import java.math.BigDecimal;
 public class CustomerPartnerVo implements Serializable {
     private static final long serialVersionUID = -3153565792285453161L;
 
-    @ApiModelProperty("合伙人id")
-    private Long id;
+    @ApiModelProperty("合伙人id(customerId)")
+    @JsonSerialize(using= ToStringSerializer.class)
+    private Long customerId;
 
     @ApiModelProperty("合伙人userId")
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long userId;
 
     @ApiModelProperty("客户编号")
@@ -47,6 +53,7 @@ public class CustomerPartnerVo implements Serializable {
     private Integer totalCar;
 
     @ApiModelProperty("订单总金额")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal totalAmount;
 
     @ApiModelProperty("备注")
@@ -56,10 +63,8 @@ public class CustomerPartnerVo implements Serializable {
     private Integer source;
 
     @ApiModelProperty("注册时间")
-    private String registerTime;
-
-    @ApiModelProperty("创建人userId")
-    private Long createUserId;
+    @JsonSerialize(using = DataLongSerizlizer.class)
+    private Long registerTime;
 
     @ApiModelProperty("创建人名称")
     private String createUserName;

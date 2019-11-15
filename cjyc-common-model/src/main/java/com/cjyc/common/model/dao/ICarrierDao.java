@@ -3,13 +3,10 @@ package com.cjyc.common.model.dao;
 import com.cjyc.common.model.dto.web.carrier.DispatchCarrierDto;
 import com.cjyc.common.model.dto.web.carrier.SeleCarrierDto;
 import com.cjyc.common.model.dto.web.carrier.TrailCarrierDto;
-import com.cjyc.common.model.dto.web.mimeCarrier.ExistMyDriverDto;
+import com.cjyc.common.model.dto.web.carrier.VerifyCarrierDto;
 import com.cjyc.common.model.entity.Carrier;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.cjyc.common.model.vo.web.carrier.CarrierVo;
-import com.cjyc.common.model.vo.web.carrier.BaseCarrierVo;
-import com.cjyc.common.model.vo.web.carrier.DispatchCarrierVo;
-import com.cjyc.common.model.vo.web.carrier.TrailCarrierVo;
+import com.cjyc.common.model.vo.web.carrier.*;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -53,14 +50,6 @@ public interface ICarrierDao extends BaseMapper<Carrier> {
     List<DispatchCarrierVo> getDispatchCarrier(DispatchCarrierDto dto);
 
     /**
-     * 查询根据输入手机号是否在该承运商下的普通司机
-     * @param carrierId
-     * @param linkmanPhone
-     * @return
-     */
-    Integer existCarrierDriver(@Param("carrierId") Long carrierId,@Param("linkmanPhone") String linkmanPhone);
-
-    /**
      * 调度中心中提车干线调度中代驾和拖车列表
      * @param dto
      * @return
@@ -68,9 +57,17 @@ public interface ICarrierDao extends BaseMapper<Carrier> {
     List<TrailCarrierVo> findTrailDriver(TrailCarrierDto dto);
 
     /**
-     * 判断该司机在个人或者该承运商下是否存在
-     * @param dto
+     * 根据手机号查询个人司机/承运商中是否存在
+     * @param
      * @return
      */
-    Integer existMyDriver(ExistMyDriverDto dto,Integer type);
+    ExistCarrierVo existCarrier(VerifyCarrierDto dto);
+    /**
+     * 查询根据输入手机号是否在该承运商下的普通司机
+     * @param carrierId
+     * @param linkmanPhone
+     * @return
+     */
+    Integer existCarrierDriver(@Param("carrierId") Long carrierId,@Param("linkmanPhone") String linkmanPhone);
+
 }

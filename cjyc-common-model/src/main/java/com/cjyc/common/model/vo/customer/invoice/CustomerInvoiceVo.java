@@ -94,4 +94,8 @@ public class CustomerInvoiceVo implements Serializable {
     public String getPickupAddress() {
         return pickupAddress == null ? "" : pickupAddress;
     }
+
+    public Integer getType() {
+        return type == null ? -1 : type;
+    }
 }

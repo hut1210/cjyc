@@ -1,13 +1,11 @@
 package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.web.OperateDto;
-import com.cjyc.common.model.dto.web.VerifyCarrierDto;
+import com.cjyc.common.model.dto.web.carrier.VerifyCarrierDto;
 import com.cjyc.common.model.dto.web.driver.DispatchDriverDto;
 import com.cjyc.common.model.dto.web.driver.DriverDto;
 import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
 import com.cjyc.common.model.dto.web.user.DriverListDto;
-import com.cjyc.common.model.enums.ResultEnum;
-import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.driver.DispatchDriverVo;
@@ -48,11 +46,10 @@ public class DriverController {
         return driverService.lineWaitDispatchCarCountList(reqDto);
     }
 
-    @ApiOperation(value = "判断个人司机在承运商中是否存在")
-    @PostMapping(value = "/existDriver/{phone}/{idCard}")
-    public ResultVo existDriver(@PathVariable(required = false) @ApiParam(value = "个人司机手机号") String phone,
-                                @PathVariable(required = false) @ApiParam(value = "个人司机身份证号") String idCard){
-        return driverService.existDriver(phone,idCard);
+    @ApiOperation(value = "新增/修改司机时验证在个人司机池或者在自己承运商下(去掉自己账号)有无相同的")
+    @PostMapping(value = "/existDriver")
+    public ResultVo existDriver(@RequestBody VerifyCarrierDto dto){
+        return driverService.existDriver(dto);
     }
 
     @ApiOperation(value = "新增散户司机")
@@ -73,10 +70,10 @@ public class DriverController {
         return driverService.verifyDriver(dto);
     }
 
-    @ApiOperation(value = "根据司机id(driverId)查看司机信息")
-    @PostMapping(value = "/showDriver/{driverId}")
-    public ResultVo<ShowDriverVo> showDriver(@PathVariable @ApiParam(value = "司机id",required = true) Long driverId){
-        return driverService.showDriver(driverId);
+    @ApiOperation(value = "根据承运商id(carrierId)查看司机信息")
+    @PostMapping(value = "/showDriver/{carrierId}")
+    public ResultVo<ShowDriverVo> showDriver(@PathVariable @ApiParam(value = "承运商id",required = true) Long carrierId){
+        return driverService.showDriver(carrierId);
     }
 
     @ApiOperation(value = "更新司机信息")

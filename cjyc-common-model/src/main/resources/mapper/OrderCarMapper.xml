@@ -652,9 +652,6 @@
             <if test="orderNo != null and orderNo.trim() != ''">
                 and car.order_no = #{orderNo}
             </if>
-            <if test="brand != null and brand.trim() != ''">
-                and car.brand = #{brand}
-            </if>
             <if test="model != null and model.trim() != ''">
                 and car.model = #{model}
             </if>

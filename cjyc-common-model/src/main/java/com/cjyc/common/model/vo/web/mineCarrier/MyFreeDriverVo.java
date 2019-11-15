@@ -1,4 +1,4 @@
-package com.cjyc.common.model.vo.web.mimeCarrier;
+package com.cjyc.common.model.vo.web.mineCarrier;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

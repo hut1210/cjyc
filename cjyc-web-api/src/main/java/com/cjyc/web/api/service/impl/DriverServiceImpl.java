@@ -9,7 +9,7 @@ import com.cjkj.usercenter.dto.common.AddUserResp;
 import com.cjkj.usercenter.dto.common.UpdateUserReq;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.OperateDto;
-import com.cjyc.common.model.dto.web.VerifyCarrierDto;
+import com.cjyc.common.model.dto.web.carrier.VerifyCarrierDto;
 import com.cjyc.common.model.dto.web.driver.DispatchDriverDto;
 import com.cjyc.common.model.dto.web.driver.DriverDto;
 import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
@@ -17,7 +17,6 @@ import com.cjyc.common.model.dto.web.user.DriverListDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.FlagEnum;
-import com.cjyc.common.model.enums.saleman.SalemanStateEnum;
 import com.cjyc.common.model.enums.task.TaskStateEnum;
 import com.cjyc.common.model.enums.transport.*;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -25,6 +24,7 @@ import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.carrier.ExistCarrierVo;
 import com.cjyc.common.model.vo.web.driver.DispatchDriverVo;
 import com.cjyc.common.model.vo.web.driver.DriverVo;
 import com.cjyc.common.model.vo.web.driver.ShowDriverVo;
@@ -94,15 +94,16 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
     }
 
     @Override
-    public ResultVo existDriver(String phone,String idCard) {
+    public ResultVo existDriver(VerifyCarrierDto dto) {
         //判断散户司机是否在个人司机/承运商中已存在
-        String realName = driverDao.existCarrier(phone,idCard,CarrierTypeEnum.PERSONAL.code);
-        if(StringUtils.isNotBlank(realName)){
-            return BaseResultUtil.fail("账号已存在于个人司机中");
-        }
-        String name = driverDao.existCarrier(phone,idCard,CarrierTypeEnum.ENTERPRISE.code);
-        if(StringUtils.isNotBlank(name)){
-            return BaseResultUtil.fail("该司机已存在于["+name+"]不可创建");
+        ExistCarrierVo carrierVo = carrierDao.existCarrier(dto);
+        if(carrierVo != null){
+            if(carrierVo.getType() == CarrierTypeEnum.PERSONAL.code){
+                return BaseResultUtil.fail("账号已存在于个人司机中");
+            }
+            if(carrierVo.getType() == CarrierTypeEnum.ENTERPRISE.code){
+                return BaseResultUtil.fail("该司机已存在于["+carrierVo.getName()+"]不可创建");
+            }
         }
         return BaseResultUtil.success();
     }
@@ -219,11 +220,10 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
     }
 
     @Override
-    public ResultVo showDriver(Long driverId) {
-        ShowDriverVo vo = driverDao.getDriverById(driverId);
+    public ResultVo showDriver(Long carrierId) {
+        ShowDriverVo vo = driverDao.getDriverById(carrierId);
         if(vo != null){
             //根据司机id获取该承运商id
-            Long carrierId = driverDao.getCarrIdByDriverId(driverId);
             if(carrierId != null){
                 vo.setMapCodes(carrierCityConService.getMapCodes(carrierId));
             }
@@ -246,7 +246,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         //修改司机信息
        ResultData rd = updateUserToPlatform(driver);
         if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
-            throw new CommonException("司机信息同步失败，原因：" + rd.getMsg());
+            return BaseResultUtil.fail("司机信息同步失败，原因：" + rd.getMsg());
         }
         BeanUtils.copyProperties(dto,driver);
         driver.setId(dto.getDriverId());
@@ -280,15 +280,28 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         //更新承运商信息
         Carrier carrier = carrierDao.selectById(dto.getCarrierId());
         if(carrier != null){
+            BeanUtils.copyProperties(dto,carrier);
+            carrier.setState(CommonStateEnum.WAIT_CHECK.code);
             carrier.setName(dto.getRealName());
+            carrier.setLegalName(dto.getRealName());
+            carrier.setLegalIdCard(dto.getIdCard());
             carrier.setLinkman(dto.getRealName());
             carrier.setLinkmanPhone(dto.getPhone());
+            carrier.setMode(dto.getMode());
             carrierDao.updateById(carrier);
         }
         //更新承运商业务范围
         //承运商业务范围,先批量删除，再添加
         carrierCityConService.batchDelete(carrier.getId());
         carrierCityConService.batchSave(carrier.getId(),dto.getCodes());
+
+        //更新司机与承运商之间关系状态
+        CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>()
+                            .lambda().eq(CarrierDriverCon::getDriverId,driver.getId())
+                                    .eq(CarrierDriverCon::getCarrierId,carrier.getId()));
+        cdc.setMode(dto.getMode());
+        cdc.setState(CommonStateEnum.WAIT_CHECK.code);
+        carrierDriverConDao.updateById(cdc);
         return BaseResultUtil.success();
     }
 

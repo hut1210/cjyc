@@ -14,9 +14,13 @@ public class ShowDriverVo implements Serializable {
 
     private static final long serialVersionUID = -4902283401893145744L;
 
-    @ApiModelProperty("司机id")
+    @ApiModelProperty("承运商id(carrierId)")
     @JsonSerialize(using= ToStringSerializer.class)
-    private Long id;
+    private Long carrierId;
+
+    @ApiModelProperty("司机id(driverId)")
+    @JsonSerialize(using= ToStringSerializer.class)
+    private Long driverId;
 
     @ApiModelProperty("司机姓名")
     private String realName;
@@ -26,6 +30,9 @@ public class ShowDriverVo implements Serializable {
 
     @ApiModelProperty("承运方式：2 : 代驾  3 : 干线   4：拖车")
     private Integer mode;
+
+    @ApiModelProperty("身份证号")
+    private String idCard;
 
     @ApiModelProperty("司机业务范围")
     private List<LinkedHashMap> mapCodes;

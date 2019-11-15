@@ -15,11 +15,4 @@ import java.util.List;
  * @since 2019-09-29
  */
 public interface ICarrierDriverConDao extends BaseMapper<CarrierDriverCon> {
-
-    /**
-     * 根据承运商id获取司机ids
-     * @param carrierId
-     * @return
-     */
-    List<Long> getDriverIds(@Param("carrierId") Long carrierId);
 }

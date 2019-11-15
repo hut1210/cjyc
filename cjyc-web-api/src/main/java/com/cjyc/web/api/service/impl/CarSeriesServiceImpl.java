@@ -25,16 +25,12 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 /**
  * @Description 品牌车系业务接口实现类
@@ -44,10 +40,6 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class CarSeriesServiceImpl extends ServiceImpl<ICarSeriesDao,CarSeries> implements ICarSeriesService {
-
-    @Resource
-    private ICarSeriesDao carSeriesDao;
-
     @Override
     public boolean add(CarSeriesAddDto carSeriesAddDto) {
         List<CarSeries> list = new ArrayList<>(10);
@@ -61,6 +53,7 @@ public class CarSeriesServiceImpl extends ServiceImpl<ICarSeriesDao,CarSeries> i
             carSeries.setCarCode(StringUtil.getUUID());
             carSeries.setBrand(carSeriesAddDto.getBrand());
             carSeries.setModel(model);
+            carSeries.setPinInitial(StringUtil.getFirstPinYinHeadChar(carSeriesAddDto.getBrand()));
             carSeries.setLogoImg(StringUtil.getCarLogoURL(carSeriesAddDto.getBrand()));
             carSeries.setCreateTime(System.currentTimeMillis());
             carSeries.setCreateUserId(carSeriesAddDto.getCreateUserId());
@@ -146,14 +139,23 @@ public class CarSeriesServiceImpl extends ServiceImpl<ICarSeriesDao,CarSeries> i
     }
 
     @Override
-    public ResultVo<List<CarSeries>> queryAll() {
-        List<CarSeries> list = super.list();
-        // 去除重复的品牌
+    public ResultVo queryAll() {
+        List<CarSeries> list = super.list(new QueryWrapper<CarSeries>().lambda().groupBy(CarSeries::getBrand).select(CarSeries::getBrand));
+        List<String> brandList = new ArrayList<>(100);
         if (!CollectionUtils.isEmpty(list)) {
-            list = list.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(()
-                    ->new TreeSet<>(Comparator.comparing(CarSeries::getBrand))), ArrayList::new));
+            list.stream().forEach(e->brandList.add(e.getBrand()));
         }
-        return BaseResultUtil.success(list);
+        return BaseResultUtil.success(brandList);
+    }
+
+    @Override
+    public ResultVo getModelByBrand(String brand) {
+        List<CarSeries> list = super.list(new QueryWrapper<CarSeries>().lambda().eq(CarSeries::getBrand, brand).select(CarSeries::getModel));
+        List<String> modelList = new ArrayList<>(20);
+        if (!CollectionUtils.isEmpty(list)) {
+            list.stream().forEach(e->modelList.add(e.getModel()));
+        }
+        return BaseResultUtil.success(modelList);
     }
 
     private CarSeriesQueryDto getCarSeriesQueryDto(HttpServletRequest request) {

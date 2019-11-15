@@ -9,8 +9,14 @@ import java.io.Serializable;
 public class CustomerPartnerDto extends BasePageDto implements Serializable {
     private static final long serialVersionUID = -4471541673400527556L;
 
-    @ApiModelProperty("公司名称")
+    @ApiModelProperty("客户编码")
+    private String customerNo;
+
+    @ApiModelProperty("合伙人名称")
     private String name;
+
+    @ApiModelProperty("结算方式：0时付，1账期")
+    private Integer settleType;
 
     @ApiModelProperty("联系人")
     private String contactMan;
@@ -18,12 +24,12 @@ public class CustomerPartnerDto extends BasePageDto implements Serializable {
     @ApiModelProperty("联系电话")
     private String contactPhone;
 
-    @ApiModelProperty("统一社会信用代码")
-    private String socialCreditCode;
-
     @ApiModelProperty("是否可以开票 0：否 1：是")
     private Integer isInvoice;
 
-    @ApiModelProperty("结算方式：0时付，1账期")
-    private Integer settleType;
+    @ApiModelProperty("账号来源：1：App注册，2：Applet注册，3：韵车后台 4：升级创建")
+    private Integer source;
+
+    @ApiModelProperty("统一社会信用代码")
+    private String socialCreditCode;
 }

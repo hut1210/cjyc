@@ -59,100 +59,100 @@
     <select id="getCarrierByTerm" resultType="com.cjyc.common.model.vo.web.carrier.CarrierVo"
                                 parameterType="com.cjyc.common.model.dto.web.carrier.SeleCarrierDto">
         SELECT
-            carr.id AS id,
-            carr.dept_id AS deptId,
-            carr.NAME AS NAME,
-            carr.linkman AS linkman,
-            carr.linkman_phone AS linkmanPhone,
-            carr.legal_name AS legalName,
-            carr.legal_id_card AS legalIdCard,
-            carr.settle_type AS settleType,
-            carr.settle_period AS settlePeriod,
-            carr.bus_license_front_img AS busLicenseFrontImg,
-            carr.bus_license_back_img AS busLicenseBackImg,
-            carr.transport_license_front_img AS transportLicenseFrontImg,
-            carr.transport_license_Back_img AS transportLicenseBackImg,
-            carr.bank_open_front_img AS bankOpenFrontImg,
-            carr.bank_open_Back_img AS bankOpenBackImg,
-            carr.MODE AS MODE,
-            carr.is_invoice AS isInvoice,
-            carr.state AS state,
-            bind.card_type AS cardType,
-            bind.card_name AS cardName,
-            bind.bank_name AS bankName,
-            bind.card_no AS cardNo,
-            admin.NAME AS operateName
+            dc.id AS carrierId,
+            dc.dept_id AS deptId,
+            dc.NAME AS NAME,
+            dc.linkman AS linkman,
+            dc.linkman_phone AS linkmanPhone,
+            dc.legal_name AS legalName,
+            dc.legal_id_card AS legalIdCard,
+            dc.settle_type AS settleType,
+            dc.settle_period AS settlePeriod,
+            dc.bus_license_front_img AS busLicenseFrontImg,
+            dc.bus_license_back_img AS busLicenseBackImg,
+            dc.transport_license_front_img AS transportLicenseFrontImg,
+            dc.transport_license_Back_img AS transportLicenseBackImg,
+            dc.bank_open_front_img AS bankOpenFrontImg,
+            dc.bank_open_Back_img AS bankOpenBackImg,
+            dc.MODE AS MODE,
+            dc.is_invoice AS isInvoice,
+            dc.state AS state,
+            sbcb.card_type AS cardType,
+            sbcb.card_name AS cardName,
+            sbcb.bank_name AS bankName,
+            sbcb.card_no AS cardNo,
+            ba.NAME AS operateName
         FROM
-            d_carrier carr
-        LEFT JOIN d_carrier_driver_con con ON con.carrier_id = carr.id
-        LEFT JOIN d_driver dri ON dri.id = con.driver_id
-        LEFT JOIN s_bank_card_bind bind ON bind.user_id = carr.id
-        LEFT JOIN b_admin admin ON admin.id = carr.check_user_id
+        d_carrier dc
+        LEFT JOIN d_carrier_driver_con dcdc ON dcdc.carrier_id = dc.id
+        LEFT JOIN d_driver dd ON dd.id = dcdc.driver_id
+        LEFT JOIN s_bank_card_bind sbcb ON sbcb.user_id = dc.id
+        LEFT JOIN b_admin ba ON ba.id = dc.check_user_id
         <where>
             <if test="name != null and name.trim() != ''">
-                carr.name like CONCAT('%',#{name},'%')
+                dc.name like CONCAT('%',#{name},'%')
             </if>
             <if test="linkman != null and linkman.trim() != ''">
-                and  carr.linkman = #{linkman}
+                and  dc.linkman = #{linkman}
             </if>
             <if test="linkmanPhone != null and linkmanPhone.trim() != ''">
-                and  carr.linkman_phone = #{linkmanPhone}
+                and  dc.linkman_phone = #{linkmanPhone}
             </if>
             <if test="cardNo != null and cardNo.trim() != ''">
-                and  bind.card_no = #{cardNo}
+                and  sbcb.card_no = #{cardNo}
             </if>
             <if test="legalName != null and legalName.trim() != ''">
-                and  carr.legal_name = #{legalName}
+                and  dc.legal_name = #{legalName}
             </if>
             <if test="legalIdCard != null and legalIdCard.trim() != ''">
-                and  carr.legal_id_card = #{legalIdCard}
+                and  dc.legal_id_card = #{legalIdCard}
             </if>
             <if test="isInvoice != null">
-                and  carr.is_invoice = #{isInvoice}
+                and  dc.is_invoice = #{isInvoice}
             </if>
             <if test="settleType != null">
-                and  carr.settle_type = #{settleType}
+                and  dc.settle_type = #{settleType}
             </if>
             <if test="state != null">
-                and  carr.state = #{state}
+                and  dc.state = #{state}
             </if>
             <if test="operateName != null and operateName.trim() != ''">
-                and  admin.name like CONCAT('%',#{operateName},'%')
+                and  ba.name like CONCAT('%',#{operateName},'%')
             </if>
-             and carr.type = 2
+             and dc.type = 2
         </where>
     </select>
 
     <!-- 根据承运商id查看承运商信息 -->
     <select id="showCarrierById" resultType="com.cjyc.common.model.vo.web.carrier.BaseCarrierVo"
                                 parameterType="java.lang.Long">
-      SELECT
-            carr.id AS carrierId,
-            carr.NAME AS NAME,
-            carr.linkman AS linkman,
-            carr.linkman_phone AS linkmanPhone,
-            carr.legal_name AS legalName,
-            carr.legal_id_card AS legalIdCard,
-            carr.bus_license_front_img AS busLicenseFrontImg,
-            carr.bus_license_back_img AS busLicenseBackImg,
-            carr.transport_license_front_img AS transportLicenseFrontImg,
-            carr.transport_license_back_img AS transportLicenseBackImg,
-            carr.bank_open_front_img AS bankOpenFrontImg,
-            carr.bank_open_back_img AS bankOpenBackImg,
-            carr.settle_period,
-            carr.settle_type AS settleType,
-            carr.mode as mode,
-            carr.is_invoice AS isInvoice,
-            bcb.card_type AS cardType,
-            bcb.card_name AS cardName,
-            bcb.bank_name AS bankName,
-            bcb.card_no AS cardNo
+        SELECT
+            dc.id AS carrierId,
+            dc.NAME AS NAME,
+            dc.linkman AS linkman,
+            dc.linkman_phone AS linkmanPhone,
+            dc.legal_name AS legalName,
+            dc.legal_id_card AS legalIdCard,
+            dc.bus_license_front_img AS busLicenseFrontImg,
+            dc.bus_license_back_img AS busLicenseBackImg,
+            dc.transport_license_front_img AS transportLicenseFrontImg,
+            dc.transport_license_back_img AS transportLicenseBackImg,
+            dc.bank_open_front_img AS bankOpenFrontImg,
+            dc.bank_open_back_img AS bankOpenBackImg,
+            dc.settle_period,
+            dc.settle_type AS settleType,
+            dc.MODE AS MODE,
+            dc.is_invoice AS isInvoice,
+            sbcb.card_type AS cardType,
+            sbcb.card_name AS cardName,
+            sbcb.bank_name AS bankName,
+            sbcb.card_no AS cardNo
         FROM
-            d_carrier carr
-            left JOIN d_carrier_driver_con cdc ON cdc.carrier_id = carr.id
-            left JOIN d_driver dri ON dri.id = cdc.driver_id
-            left JOIN s_bank_card_bind bcb ON bcb.user_id = carr.id
-          where carr.id = #{carrierId}
+            d_carrier dc
+            LEFT JOIN d_carrier_driver_con dcdc ON dcdc.carrier_id = dc.id
+            LEFT JOIN d_driver dd ON dd.id = dcdc.driver_id
+            LEFT JOIN s_bank_card_bind sbcb ON sbcb.user_id = dc.id
+          where dc.id = #{carrierId}
     </select>
 
     <!-- 调度出符合条件的承运商 -->
@@ -190,20 +190,6 @@
             and c.type = 2
             AND c.business_state = 0 and c.state = 2
         </where>
-    </select>
-
-    <!-- 查询根据输入手机号是否在该承运商下的普通司机 -->
-    <select id="existCarrierDriver" resultType="java.lang.Integer">
-        SELECT
-            count( carrier.id )
-        FROM
-            d_carrier carrier
-            LEFT JOIN d_carrier_driver_con con ON con.carrier_id = carrier.id
-            LEFT JOIN d_driver driver ON driver.id = con.driver_id
-        WHERE
-            driver.phone = #{linkmanPhone}
-            AND carrier.id = #{carrierId}
-            AND con.role = 1
     </select>
 
     <!-- 调度中心中提车干线调度中代驾和拖车列表 -->
@@ -248,26 +234,45 @@
         </where>
     </select>
 
-    <!-- 判断该司机在个人或者该承运商下是否存在 -->
-    <select id="existMyDriver" resultType="java.lang.Integer">
+    <!-- 查询根据输入手机号是否在该承运商下的普通司机 -->
+    <select id="existCarrierDriver" resultType="java.lang.Integer">
         SELECT
-	      count( carrier.id )
+            count( dc.id )
         FROM
-            d_carrier carrier
-            LEFT JOIN d_carrier_driver_con con ON con.carrier_id = carrier.id
-            LEFT JOIN d_driver driver ON driver.id = con.driver_id
-        <where>
-            <if test="phone != null and phone.trim() != ''">
-                and  driver.phone = #{phone}
-            </if>
-            <if test="idCard != null and idCard.trim() != ''">
-                and  driver.id_card = #{idCard}
-            </if>
-            <if test="carrierId != null">
-                and  carrier.id = #{carrierId}
-            </if>
-                and  carrier.type = #{type}
-        </where>
+            d_carrier dc
+            LEFT JOIN d_carrier_driver_con dcdc ON dcdc.carrier_id = dc.id
+            LEFT JOIN d_driver dd ON dd.id = dcdc.driver_id
+        WHERE
+            dd.phone = #{linkmanPhone}
+            AND dc.id = #{carrierId}
     </select>
 
+    <!--根据手机号查询承运商中是否存在-->
+    <select id="existCarrier" resultType="com.cjyc.common.model.vo.web.carrier.ExistCarrierVo"
+            parameterType="com.cjyc.common.model.dto.web.carrier.VerifyCarrierDto">
+      SELECT
+        dc.type AS type,
+        dc.NAME AS NAME,
+        dd.phone AS phone,
+        dd.id_card AS idCard
+      FROM
+        d_carrier dc
+        LEFT JOIN d_carrier_driver_con dcdc ON dcdc.carrier_id = dc.id
+        LEFT JOIN d_driver dd ON dd.id = dcdc.driver_id
+        <where>
+            <if test="phone != null and phone.trim() != ''">
+                (dd.phone = #{phone} or dd.phone = #{phone})
+            </if>
+            <if test="idCard != null and idCard.trim() != ''">
+                and (dd.id_card = #{idCard} or dd.id_card = #{idCard})
+            </if>
+            <if test="carrierId != null">
+                and  dc.id = #{carrierId}
+            </if>
+            <if test="driverId != null">
+                and  dd.id  &lt;&gt; #{driverId}
+            </if>
+              limit 1
+        </where>
+    </select>
 </mapper>

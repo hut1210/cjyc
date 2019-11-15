@@ -95,4 +95,6 @@ public class AdminController {
     public ResultVo deliverySalesman(@RequestBody TypeSalesmanDto dto){
         return adminService.deliverySalesman(dto);
     }
+
+
 }

@@ -1,5 +1,7 @@
 package com.cjyc.common.model.vo.web.customer;
 
+import com.cjyc.common.model.util.BigDecimalSerizlizer;
+import com.cjyc.common.model.util.DataLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
@@ -11,9 +13,9 @@ import java.math.BigDecimal;
 @Data
 public class CustomerVo implements Serializable {
 
-    @ApiModelProperty(value = "用户id")
+    @ApiModelProperty(value = "用户id(customerId)")
     @JsonSerialize(using= ToStringSerializer.class)
-    private Long id;
+    private Long customerId;
 
     @ApiModelProperty(value = "用户userId")
     @JsonSerialize(using= ToStringSerializer.class)
@@ -41,13 +43,11 @@ public class CustomerVo implements Serializable {
     private Integer source;
 
     @ApiModelProperty("注册时间")
-    private String createTime;
+    @JsonSerialize(using = DataLongSerizlizer.class)
+    private Long createTime;
 
     @ApiModelProperty("注册操作人")
     private String createUserName;
-
-    @ApiModelProperty("注册操作人userId")
-    private Long createUserId;
 
     @ApiModelProperty("总单量")
     private Integer totalOrder;
@@ -56,5 +56,6 @@ public class CustomerVo implements Serializable {
     private Integer totalCar;
 
     @ApiModelProperty("订单总金额")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal totalAmount;
 }

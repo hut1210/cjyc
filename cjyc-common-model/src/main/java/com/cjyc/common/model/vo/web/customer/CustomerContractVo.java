@@ -1,5 +1,8 @@
 package com.cjyc.common.model.vo.web.customer;
 
+import com.cjyc.common.model.util.DataLongSerizlizer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -9,8 +12,9 @@ import java.math.BigDecimal;
 @Data
 public class CustomerContractVo implements Serializable {
 
-    @ApiModelProperty(value = "合同主键id")
-    private Long id;
+    @ApiModelProperty(value = "合同主键id(contractId)")
+    @JsonSerialize(using= ToStringSerializer.class)
+    private Long contractId;
 
     @ApiModelProperty(value = "合同编号")
     private String contractNo;
@@ -25,7 +29,8 @@ public class CustomerContractVo implements Serializable {
     private Integer settlePeriod;
 
     @ApiModelProperty(value = "合同有效期")
-    private String contractLife;
+    @JsonSerialize(using = DataLongSerizlizer.class)
+    private Long contractLife;
 
     @ApiModelProperty(value = "项目名称")
     private String projectName;
@@ -67,7 +72,8 @@ public class CustomerContractVo implements Serializable {
     private String projectTeamPer;
 
     @ApiModelProperty(value = "立项日期")
-    private String projectEstabTime;
+    @JsonSerialize(using = DataLongSerizlizer.class)
+    private Long projectEstabTime;
 
     @ApiModelProperty(value = "主要KPI")
     private String majorKpi;

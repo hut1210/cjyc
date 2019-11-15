@@ -9,7 +9,7 @@ public enum UserTypeEnum {
     /***/
     ADMIN("管理员", 0),
     SALEMAN("业务员",1),
-    DRIVER("司机",2),
+    DRIVER("司机/承运商",2),
     CUSTOMER("客户",3);
 
     public String name;

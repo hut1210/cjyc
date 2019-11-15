@@ -1,9 +1,8 @@
 package com.cjyc.common.model.dao;
 
-import com.cjyc.common.model.dto.web.VerifyCarrierDto;
 import com.cjyc.common.model.dto.web.driver.DispatchDriverDto;
 import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
-import com.cjyc.common.model.dto.web.mimeCarrier.QueryMyDriverDto;
+import com.cjyc.common.model.dto.web.mineCarrier.QueryMyDriverDto;
 import com.cjyc.common.model.dto.web.user.DriverListDto;
 import com.cjyc.common.model.entity.Driver;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -11,8 +10,8 @@ import com.cjyc.common.model.vo.web.carrier.BaseDriverVo;
 import com.cjyc.common.model.vo.web.driver.DispatchDriverVo;
 import com.cjyc.common.model.vo.web.driver.DriverVo;
 import com.cjyc.common.model.vo.web.driver.ShowDriverVo;
-import com.cjyc.common.model.vo.web.mimeCarrier.MyDriverVo;
-import com.cjyc.common.model.vo.web.mimeCarrier.MyFreeDriverVo;
+import com.cjyc.common.model.vo.web.mineCarrier.MyDriverVo;
+import com.cjyc.common.model.vo.web.mineCarrier.MyFreeDriverVo;
 import com.cjyc.common.model.vo.web.user.DriverListVo;
 import org.apache.ibatis.annotations.Param;
 
@@ -53,10 +52,10 @@ public interface IDriverDao extends BaseMapper<Driver> {
 
     /**
      * 根据司机id查看司机信息
-     * @param driverId
+     * @param carrierId
      * @return
      */
-    ShowDriverVo getDriverById(@Param("driverId") Long driverId);
+    ShowDriverVo getDriverById(@Param("carrierId") Long carrierId);
 
     /**
      * 根据承运商id查询司机信息
@@ -108,13 +107,6 @@ public interface IDriverDao extends BaseMapper<Driver> {
      * @return
      */
     List<DispatchDriverVo> getDispatchDriver(DispatchDriverDto dto);
-
-    /**
-     * 根据手机号查询个人司机/承运商中是否存在
-     * @param
-     * @return
-     */
-    String existCarrier(@Param("phone") String phone,@Param("idCard") String idCard,@Param("type") Integer type);
 
     /**
      * 通过承运商id获取司机

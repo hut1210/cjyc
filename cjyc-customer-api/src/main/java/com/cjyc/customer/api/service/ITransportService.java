@@ -13,13 +13,6 @@ import com.cjyc.common.model.vo.ResultVo;
 public interface ITransportService {
 
     /**
-     * 根据起始目的城市获取班线是否存在
-     * @param dto
-     * @return
-     */
-    ResultVo existLine(LineDto dto);
-
-    /**
      * 根据起始城市编码和目的地城市编码获取班线价格
      * @param dto
      * @return
