@@ -1,14 +1,17 @@
 package com.cjyc.web.api.controller;
 
-import com.cjyc.common.model.dto.KeywordDto;
 import com.cjyc.common.model.dto.web.vehicle.*;
+import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.vehicle.FreeVehicleVo;
+import com.cjyc.common.model.vo.web.vehicle.VehicleVo;
 import com.cjyc.web.api.service.IVehicleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  *  @author: zj
@@ -32,7 +35,7 @@ public class VehicleController {
 
     @ApiOperation(value = "根据条件查询运输车辆信息")
     @PostMapping(value = "/findVehicle")
-    public ResultVo findVehicle(@RequestBody SelectVehicleDto dto){
+    public ResultVo<PageVo<VehicleVo>> findVehicle(@RequestBody SelectVehicleDto dto){
         return vehicleService.findVehicle(dto);
     }
 
@@ -50,9 +53,7 @@ public class VehicleController {
 
     @ApiOperation(value = "查询没有被绑定的车辆信息")
     @PostMapping(value = "/findFreeVehicle")
-    public ResultVo findFreeVehicle(@RequestBody FreeVehicleDto dto){
+    public ResultVo<List<FreeVehicleVo>> findFreeVehicle(@RequestBody FreeVehicleDto dto){
         return vehicleService.findFreeVehicle(dto);
     }
-
-
 }

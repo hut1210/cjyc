@@ -66,14 +66,14 @@ public class LineController {
     }
 
     @ApiOperation(value = "新增/更新班线")
-    @PostMapping(value = "/addAndUpdateLine")
-    public ResultVo addAndUpdateLine(@Validated({ AddOrUpdateLineDto.AddLineDto.class }) @RequestBody AddOrUpdateLineDto dto){
-        return lineService.addAndUpdateLine(dto);
+    @PostMapping(value = "/addOrUpdateLine")
+    public ResultVo addOrUpdateLine(@Validated @RequestBody AddOrUpdateLineDto dto){
+        return lineService.addOrUpdateLine(dto);
     }
 
     @ApiOperation(value = "删除班线")
-    @PostMapping(value = "/deleteLineById/{id}")
-    public ResultVo deleteLineById(@PathVariable Long id){
+    @PostMapping(value = "/removeLineById/{id}")
+    public ResultVo removeLineById(@PathVariable Long id){
         boolean result = lineService.removeById(id);
         return result ? BaseResultUtil.success() : BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }

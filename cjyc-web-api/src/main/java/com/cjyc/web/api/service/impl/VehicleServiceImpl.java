@@ -16,6 +16,7 @@ import com.cjyc.common.model.enums.task.TaskStateEnum;
 import com.cjyc.common.model.enums.transport.VehicleOwnerEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
+import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.vehicle.FreeVehicleVo;
 import com.cjyc.common.model.vo.web.vehicle.VehicleVo;
@@ -65,7 +66,7 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
     }
 
     @Override
-    public ResultVo findVehicle(SelectVehicleDto dto) {
+    public ResultVo<PageVo<VehicleVo>> findVehicle(SelectVehicleDto dto) {
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
         List<VehicleVo> vehicleVos = vehicleDao.findVehicle(dto);
         PageInfo<VehicleVo> pageInfo = new PageInfo<>(vehicleVos);
@@ -108,7 +109,7 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
     }
 
     @Override
-    public ResultVo findFreeVehicle(FreeVehicleDto dto) {
+    public ResultVo<List<FreeVehicleVo>> findFreeVehicle(FreeVehicleDto dto) {
         //查询个人所有车辆
         /*List<Vehicle> vehicles = vehicleDao.selectList(new QueryWrapper<Vehicle>().lambda().eq(Vehicle::getOwnershipType, VehicleOwnerEnum.PERSONAL.code)
                                             .like(!StringUtils.isNotBlank(dto.getKeyword()),Vehicle::getPlateNo,dto.getKeyword()).select(Vehicle::getId,Vehicle::getPlateNo,Vehicle::getDefaultCarryNum));*/

@@ -158,15 +158,15 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
     }
 
     @Override
-    public ResultVo findDriver(SelectDriverDto dto) {
+    public ResultVo<PageVo<DriverVo>> findDriver(SelectDriverDto dto) {
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
         List<DriverVo> driverVos = driverDao.getDriverByTerm(dto);
         if(!CollectionUtils.isEmpty(driverVos)){
             for(DriverVo vo : driverVos){
                 CarrierCarCount count = carrierCarCountDao.count(vo.getCarrierId());
                 if(count != null){
-                    vo.setCarNum(count.getCarNum() == null ? 0:count.getCarNum());
-                    vo.setTotalIncome(count.getIncome() == null ? BigDecimal.ZERO:count.getIncome().divide(new BigDecimal(100)));
+                    vo.setCarNum(count.getCarNum());
+                    vo.setTotalIncome(count.getIncome());
                 }
             }
         }
@@ -187,11 +187,11 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         //审核通过
         if(dto.getFlag() == FlagEnum.AUDIT_PASS.code){
             //保存司机用户到平台，返回用户id
-            /*ResultData<Long> saveRd = saveDriverToPlatform(driver);
+            ResultData<Long> saveRd = saveDriverToPlatform(driver);
             if (!ReturnMsg.SUCCESS.getCode().equals(saveRd.getCode())) {
                 return BaseResultUtil.fail("司机信息保存失败，原因：" + saveRd.getMsg());
             }
-            driver.setUserId(saveRd.getData());*/
+            driver.setUserId(saveRd.getData());
             cdc.setState(CommonStateEnum.CHECKED.code);
             //更新承运商
             carr.setState(CommonStateEnum.CHECKED.code);
@@ -332,7 +332,6 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         PageInfo<DispatchDriverVo> pageInfo = new PageInfo<>(dispatchDriverVos);
         return BaseResultUtil.success(pageInfo);
     }
-
 
     /**
      * 司机与车辆绑定关系

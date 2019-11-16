@@ -53,7 +53,7 @@ public interface ICustomerService  extends IService<Customer> {
      * @param dto
      * @return
      */
-    ResultVo saveKeyCustomer(KeyCustomerDto dto);
+    ResultVo saveOrModifyKey(KeyCustomerDto dto);
 
     /**
      *  审核/删除大客户
@@ -68,13 +68,6 @@ public interface ICustomerService  extends IService<Customer> {
      * @return
      */
     ResultVo<ShowKeyCustomerVo> showKeyCustomer(Long customerId);
-
-    /**
-     * 更新大客户&合同
-     * @param keyCustomerDto
-     * @return
-     */
-    ResultVo modifyKeyCustomer(KeyCustomerDto keyCustomerDto);
 
     /**
      * 根据条件查询大客户信息
@@ -93,14 +86,8 @@ public interface ICustomerService  extends IService<Customer> {
      * @param dto
      * @return
      */
-    ResultVo savePartner(PartnerDto dto);
+    ResultVo saveOrModifyPartner(PartnerDto dto);
 
-    /**
-     * 更新合伙人
-     * @param dto
-     * @return
-     */
-    ResultVo modifyPartner(PartnerDto dto);
     /**
      * 根据条件分页查看合伙人
      * @param dto

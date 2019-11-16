@@ -40,7 +40,7 @@ public interface ILineService extends IService<Line> {
      * @param dto
      * @return
      */
-    ResultVo addAndUpdateLine(AddOrUpdateLineDto dto);
+    ResultVo addOrUpdateLine(AddOrUpdateLineDto dto);
 
     /**
      * 根据起始目的地code查询物流费

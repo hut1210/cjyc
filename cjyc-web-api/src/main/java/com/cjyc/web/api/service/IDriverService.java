@@ -9,6 +9,7 @@ import com.cjyc.common.model.dto.web.user.DriverListDto;
 import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.driver.DriverVo;
 import com.cjyc.common.model.vo.web.user.DriverListVo;
 
 public interface IDriverService {
@@ -38,7 +39,7 @@ public interface IDriverService {
      * @param dto
      * @return
      */
-    ResultVo findDriver(SelectDriverDto dto);
+    ResultVo<PageVo<DriverVo>> findDriver(SelectDriverDto dto);
 
     /**
      * 根据司机userId进行审核

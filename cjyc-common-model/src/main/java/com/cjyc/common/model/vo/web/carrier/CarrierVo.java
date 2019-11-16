@@ -1,5 +1,6 @@
 package com.cjyc.common.model.vo.web.carrier;
 
+import com.cjyc.common.model.util.BigDecimalSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
@@ -11,6 +12,7 @@ import java.math.BigDecimal;
 @Data
 public class CarrierVo implements Serializable {
 
+    private static final long serialVersionUID = 1152187218002996582L;
     @ApiModelProperty("承运商id")
     @JsonSerialize(using= ToStringSerializer.class)
     private Long carrierId;
@@ -80,6 +82,7 @@ public class CarrierVo implements Serializable {
     private Integer carNum;
 
     @ApiModelProperty("总收入")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal totalIncome;
 
     @ApiModelProperty("状态：0待审核，2已审核，4取消，7已驳回，9已停用（CommonStateEnum）")

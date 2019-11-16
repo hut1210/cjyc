@@ -234,19 +234,6 @@
         </where>
     </select>
 
-    <!-- 查询根据输入手机号是否在该承运商下的普通司机 -->
-    <select id="existCarrierDriver" resultType="java.lang.Integer">
-        SELECT
-            count( dc.id )
-        FROM
-            d_carrier dc
-            LEFT JOIN d_carrier_driver_con dcdc ON dcdc.carrier_id = dc.id
-            LEFT JOIN d_driver dd ON dd.id = dcdc.driver_id
-        WHERE
-            dd.phone = #{linkmanPhone}
-            AND dc.id = #{carrierId}
-    </select>
-
     <!--根据手机号查询承运商中是否存在-->
     <select id="existCarrier" resultType="com.cjyc.common.model.vo.web.carrier.ExistCarrierVo"
             parameterType="com.cjyc.common.model.dto.web.carrier.VerifyCarrierDto">

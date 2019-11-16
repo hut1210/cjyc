@@ -2,7 +2,11 @@ package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.mineCarrier.*;
+import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.mineCarrier.MyCarVo;
+import com.cjyc.common.model.vo.web.mineCarrier.MyDriverVo;
+import com.cjyc.common.model.vo.web.mineCarrier.MyFreeDriverVo;
 import com.cjyc.web.api.service.IMineCarrierService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -11,6 +15,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  *  @author: zj
@@ -34,7 +39,7 @@ public class MineCarrierController {
 
     @ApiOperation(value = "查询承运商下司机",notes = "如果carrierId为空，则是承运商管理员登陆，需要把loginId转成carrierId,否则是韵车内部登陆")
     @PostMapping(value = "/findPageDriver")
-    public ResultVo findPageDriver(@RequestBody QueryMyDriverDto dto){
+    public ResultVo<PageVo<MyDriverVo>> findPageDriver(@RequestBody QueryMyDriverDto dto){
         return mimeCarrierService.findPageDriver(dto);
     }
 
@@ -52,14 +57,14 @@ public class MineCarrierController {
 
     @ApiOperation(value = "查询承运商下车辆",notes = "如果carrierId为空，则是承运商管理员登陆，需要把loginId转成carrierId,否则是韵车内部登陆")
     @PostMapping(value = "/findPageCar")
-    public ResultVo findPageCar(@RequestBody QueryMyCarDto dto){
+    public ResultVo<PageVo<MyCarVo>> findPageCar(@RequestBody QueryMyCarDto dto){
         return mimeCarrierService.findPageCar(dto);
     }
 
     @ApiOperation(value = "查询承运商下的空闲司机")
     @PostMapping(value = "/findFreeDriver")
-    public ResultVo findFreeDriver(@PathVariable @ApiParam(value = "该承运商id",required = true) Long carrierId,
-                                   @PathVariable(required = false) @ApiParam(value = "司机姓名") String realName){
+    public ResultVo<List<MyFreeDriverVo>> findFreeDriver(@PathVariable @ApiParam(value = "该承运商id",required = true) Long carrierId,
+                                                         @PathVariable(required = false) @ApiParam(value = "司机姓名") String realName){
         return mimeCarrierService.findFreeDriver(carrierId,realName);
     }
 

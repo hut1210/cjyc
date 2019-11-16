@@ -1,5 +1,8 @@
 package com.cjyc.common.model.vo.web.line;
 
+import com.cjyc.common.model.util.BigDecimalSerizlizer;
+import com.cjyc.common.model.util.DataLongSerizlizer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -38,12 +41,15 @@ public class LineVo implements Serializable {
     private String toCity;
 
     @ApiModelProperty("上游运费(元)")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal defaultWlFee;
 
     @ApiModelProperty("下游运费(元)")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal defaultFreightFee;
 
     @ApiModelProperty("总里程")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal kilometer;
 
     @ApiModelProperty("总耗时(天)")
@@ -53,7 +59,8 @@ public class LineVo implements Serializable {
     private String remark;
 
     @ApiModelProperty("创建时间")
-    private String createTime;
+    @JsonSerialize(using = DataLongSerizlizer.class)
+    private Long createTime;
 
     @ApiModelProperty("创建人员")
     private String createUserName;

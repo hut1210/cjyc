@@ -18,6 +18,7 @@ import com.cjyc.common.model.enums.transport.*;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.YmlProperty;
+import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyCarVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyDriverVo;
@@ -133,7 +134,7 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
     }
 
     @Override
-    public ResultVo findPageDriver(QueryMyDriverDto dto) {
+    public ResultVo<PageVo<MyDriverVo>> findPageDriver(QueryMyDriverDto dto) {
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         if(dto.getCarrierId() == null){
             //此时登陆时承运商管理员，loginId --- carrierId
@@ -224,7 +225,7 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
     }
 
     @Override
-    public ResultVo findPageCar(QueryMyCarDto dto) {
+    public ResultVo<PageVo<MyCarVo>> findPageCar(QueryMyCarDto dto) {
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         if(dto.getCarrierId() == null){
             //此时登陆时承运商管理员，loginId --- carrierId
@@ -241,7 +242,7 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
     }
 
     @Override
-    public ResultVo findFreeDriver(Long carrierId, String realName) {
+    public ResultVo<List<MyFreeDriverVo>> findFreeDriver(Long carrierId, String realName) {
         //查询该承运商下的符合的全部司机
         List<MyFreeDriverVo> freeDriverVos = driverDao.findMyAllDriver(carrierId,realName);
         //查询已被绑定的司机

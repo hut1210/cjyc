@@ -24,46 +24,44 @@
         id, name, type, full_amount, cut_amount, discount, grant_num, is_forever, start_period_date, end_period_date, state, create_time, create_user_id
     </sql>
 
-    <!-- 通用查询结果列 -->
-    <sql id="Query_Column_List">
-        id AS id,
-        NAME AS NAME,
-        grant_num AS grantNum,
-        start_period_date AS startPeriodDate,
-        end_period_date AS endPeriodDate,
-        create_time AS createTime,
-        full_amount AS fullAmount,
-        cut_amount AS cutAmount,
-        discount AS discount,
-        type AS type,
-        state AS state,
-        is_forever AS isForever
-    </sql>
-
     <!-- 根据筛选条件查询优惠券 -->
     <select id="getCouponByTerm" resultType="com.cjyc.common.model.vo.web.coupon.CouponVo"
                                  parameterType="com.cjyc.common.model.dto.web.coupon.SeleCouponDto">
-      select
-        <include refid="Query_Column_List"/>
-          from c_coupon
+        SELECT
+            cc.id AS couponId,
+            cc.NAME AS NAME,
+            cc.type AS type,
+            cc.full_amount AS fullAmount,
+            cc.cut_amount AS cutAmount,
+            cc.discount AS discount,
+            cc.grant_num AS grantNum,
+            cc.start_period_date AS startPeriodDate,
+            cc.end_period_date AS endPeriodDate,
+            cc.create_time AS createTime,
+            cc.state AS state,
+            cc.is_forever AS isForever,
+            ba.name as createName
+        FROM
+          c_coupon cc
+        LEFT JOIN b_admin ba ON ba.id = cc.create_user_id
         <where>
             <if test="name != null and name.trim() != ''">
-                name like CONCAT('%',#{name},'%')
+                cc.name like CONCAT('%',#{name},'%')
             </if>
             <if test="type != null">
-                and type = #{type}
+                and cc.type = #{type}
             </if>
             <if test="state != null">
-                and state =  #{state}
+                and cc.state =  #{state}
             </if>
             <if test="startTime != null">
-                and  create_time >=  #{startTime}
+                and  cc.create_time >=  #{startTime}
             </if>
             <if test="endTime != null">
-                and  create_time &lt;= #{endTime}
+                and  cc.create_time &lt;= #{endTime}
             </if>
-            <if test="createUserId != null">
-                and  create_user_id = #{createUserId}
+            <if test="createName != null">
+                and  ba.name = #{createName}
             </if>
         </where>
     </select>
@@ -71,37 +69,38 @@
     <!-- 查询优惠券消耗明细 -->
     <select id="getConsumeDetail" resultType="com.cjyc.common.model.vo.web.coupon.ConsumeCouponVo"
                             parameterType="com.cjyc.common.model.dto.web.coupon.ConsumeCouponDto">
-          SELECT
-            send.coupon_no AS couponNo,
-            send.use_time AS useTime,
-            o.customer_name AS customerName,
-            o.NO AS orderNo,
-            o.coupon_offset_fee AS couponOffsetFee,
+        SELECT
+            cc.id AS couponId,
+            ccs.id AS sendId,
+            ccs.coupon_no AS couponNo,
+            ccs.use_time AS useTime,
+            wo.customer_name AS customerName,
+            wo.NO AS orderNo,
+            wo.coupon_offset_fee AS couponOffsetFee,
             (
-            ifnull( SUM( o.pick_fee + o.trunk_fee + o.back_fee + o.add_insurance_fee ), 0 ) - ifnull( o.coupon_offset_fee, 0 )
-
-        ) AS finalOrderAmount
+            ifnull( SUM( wo.pick_fee + wo.trunk_fee + wo.back_fee + wo.add_insurance_fee ), 0 ) - ifnull( wo.coupon_offset_fee, 0 )
+            ) AS finalOrderAmount
         FROM
-            c_coupon coupon
-            JOIN c_coupon_send send ON send.coupon_id = coupon.id
-            JOIN w_order o ON o.coupon_send_id = send.id
+          c_coupon_send ccs
+        LEFT JOIN c_coupon cc ON cc.id = ccs.coupon_id
+        LEFT JOIN w_order wo ON wo.coupon_send_id = ccs.id
         <where>
             <if test="couponNo != null and couponNo.trim() != ''">
-                send.coupon_no = #{couponNo}
+                ccs.coupon_no = #{couponNo}
             </if>
             <if test="customerName != null and customerName.trim() != ''">
-                and o.customer_name = #{customerName}
+                and wo.customer_name = #{customerName}
             </if>
             <if test="orderNo != null and orderNo.trim() != ''">
-                and o.no =  #{orderNo}
+                and wo.no =  #{orderNo}
             </if>
             <if test="startUseDate != null">
-                and  send.use_time >=  #{startUseDate}
+                and  ccs.use_time >=  #{startUseDate}
             </if>
             <if test="endUseDate != null">
-                and  send.use_time &lt;= #{endUseDate}
+                and  ccs.use_time &lt;= #{endUseDate}
             </if>
-                and coupon.id = #{id}
+                and cc.id = #{couponId}
         </where>
     </select>
 
@@ -109,32 +108,32 @@
     <select id="getCustomerCouponByTerm" resultType="com.cjyc.common.model.vo.web.customer.CustomerCouponVo"
                                         parameterType="com.cjyc.common.model.dto.web.customer.CustomerCouponDto">
         SELECT
-            send.id AS sendId,
-            send.coupon_no AS couponNo,
-            coupon.type AS type,
-            coupon.full_amount AS fullAmount,
-            coupon.cut_amount AS cutAmount,
-            coupon.discount AS discount,
-            coupon.is_forever AS isForever,
-            coupon.start_period_date AS startPeriodDate,
-            coupon.end_period_date AS endPeriodDate,
-            send.receive_time AS receiveTime,
-            send.is_use as isUse
+            ccs.id AS sendId,
+            ccs.coupon_no AS couponNo,
+            cc.type AS type,
+            cc.full_amount AS fullAmount,
+            cc.cut_amount AS cutAmount,
+            cc.discount AS discount,
+            cc.is_forever AS isForever,
+            cc.start_period_date AS startPeriodDate,
+            cc.end_period_date AS endPeriodDate,
+            ccs.receive_time AS receiveTime,
+            ccs.is_use AS isUse
         FROM
-              c_coupon_send send
-            LEFT JOIN c_coupon coupon ON coupon.id = send.coupon_id
-            LEFT JOIN c_customer c ON c.id = send.customer_id
+          c_coupon_send ccs
+        LEFT JOIN c_coupon cc ON cc.id = ccs.coupon_id
+        LEFT JOIN c_customer c ON c.id = ccs.customer_id
         <where>
             <if test="type != null">
-                coupon.type = #{type}
+                cc.type = #{type}
             </if>
             <if test="startPeriodTime != null">
-                and  coupon.start_period_date >=  #{startPeriodTime}
+                and  cc.start_period_date >=  #{startPeriodTime}
             </if>
             <if test="endPeriodTime != null">
-                and  coupon.end_period_date &lt;= #{endPeriodTime}
+                and  cc.end_period_date &lt;= #{endPeriodTime}
             </if>
-            and send.customer_id = #{customerId}
+            and ccs.customer_id = #{customerId}
         </where>
     </select>
 

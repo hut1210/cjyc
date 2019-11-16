@@ -13,17 +13,12 @@ import java.util.List;
 public class CarrierDto implements Serializable {
 
     private static final long serialVersionUID = 8035192987370988017L;
-
-    public interface SaveCarrierDto {}
-
-    public interface UpdateCarrierDto {}
-
     @ApiModelProperty("承运商id(carrierId)")
-    @NotNull(groups = {UpdateCarrierDto.class},message = "承运商id(carrierId)不能为空")
+    @NotNull(message = "承运商id(carrierId)不能为空")
     private Long carrierId;
 
     @ApiModelProperty("当前登陆用户id(loginId)")
-    @NotNull(groups = {SaveCarrierDto.class},message = "当前登陆用户id(loginId)不能为空")
+    @NotNull(message = "当前登陆用户id(loginId)不能为空")
     private Long loginId;
 
     @ApiModelProperty("企业名称")

@@ -9,7 +9,8 @@ import java.math.BigDecimal;
 @Data
 public class CustomerCouponSendVo implements Serializable {
 
-    @ApiModelProperty("优惠券id")
+    private static final long serialVersionUID = -4638706234324512258L;
+    @ApiModelProperty("优惠券发放id")
     private Long couponSendId;
 
     @ApiModelProperty("优惠券名称")

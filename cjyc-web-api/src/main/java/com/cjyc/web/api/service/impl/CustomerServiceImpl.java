@@ -13,7 +13,6 @@ import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.customer.*;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.*;
-import com.cjyc.common.model.enums.coupon.CouponLifeTypeEnum;
 import com.cjyc.common.model.enums.customer.CustomerPayEnum;
 import com.cjyc.common.model.enums.customer.CustomerSourceEnum;
 import com.cjyc.common.model.enums.customer.CustomerStateEnum;
@@ -26,7 +25,6 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.customer.*;
 import com.cjyc.common.model.vo.web.coupon.CustomerCouponSendVo;
-import com.cjyc.web.api.exception.CommonException;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.web.api.service.ICustomerContractService;
 import com.cjyc.web.api.service.ICustomerService;
@@ -40,7 +38,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -93,7 +90,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
 
     @Override
     public ResultVo existCustomer(ExistCustomreDto dto) {
-        Customer c = customerDao.selectOne(new QueryWrapper<Customer>().lambda()
+        Customer c = this.getOne(new QueryWrapper<Customer>().lambda()
                         .eq(Customer::getContactPhone, dto.getPhone())
                         .ne((dto.getCustomerId() != null && dto.getCustomerId() != 0),Customer::getId,dto.getCustomerId()));
         if(c != null){
@@ -126,7 +123,6 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         super.save(customer);
         return BaseResultUtil.success();
     }
-
 
     @Override
     public ResultVo modifyCustomer(CustomerDto dto) {
@@ -170,32 +166,66 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     }
 
     @Override
-    public ResultVo saveKeyCustomer(KeyCustomerDto dto) {
-        //新增大客户
-        Customer customer = new Customer();
-        BeanUtils.copyProperties(dto,customer);
-        customer.setCustomerNo(sendNoService.getNo(SendNoTypeEnum.CUSTOMER));
-        customer.setAlias(dto.getName());
-        customer.setIsDelete(DeleteStateEnum.NO_DELETE.code);
-        customer.setType(CustomerTypeEnum.ENTERPRISE.code);
-        customer.setState(CustomerStateEnum.WAIT_LOGIN.code);
-        customer.setSource(CustomerSourceEnum.WEB.code);
-        customer.setRegisterTime(NOW);
-        customer.setCreateTime(NOW);
-        customer.setCreateUserId(dto.getLoginId());
+    public ResultVo saveOrModifyKey(KeyCustomerDto dto) {
+        if(dto.getCustomerId() == 0){
+            //新增大客户
+            Customer customer = new Customer();
+            BeanUtils.copyProperties(dto,customer);
+            customer.setCustomerNo(sendNoService.getNo(SendNoTypeEnum.CUSTOMER));
+            customer.setAlias(dto.getName());
+            customer.setIsDelete(DeleteStateEnum.NO_DELETE.code);
+            customer.setType(CustomerTypeEnum.ENTERPRISE.code);
+            customer.setState(CustomerStateEnum.WAIT_LOGIN.code);
+            customer.setSource(CustomerSourceEnum.WEB.code);
+            customer.setRegisterTime(NOW);
+            customer.setCreateTime(NOW);
+            customer.setCreateUserId(dto.getLoginId());
 
-        //保存大客户信息到物流平台
-        ResultData<Long> rd = addCustomerToPlatform(customer);
-        if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
-            log.error("保存大客户信息失败，原因：" + rd.getMsg());
-            return BaseResultUtil.fail("保存大客户信息失败，原因：" + rd.getMsg());
+            //保存大客户信息到物流平台
+            ResultData<Long> rd = addCustomerToPlatform(customer);
+            if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+                log.error("保存大客户信息失败，原因：" + rd.getMsg());
+                return BaseResultUtil.fail("保存大客户信息失败，原因：" + rd.getMsg());
+            }
+            customer.setUserId(rd.getData());
+            super.save(customer);
+            //合同集合
+            List<CustomerContractDto> customerConList = dto.getCustContraVos();
+            List<CustomerContract> list = encapCustomerContract(customer.getId(),customerConList);
+            customerContractService.saveBatch(list);
+        }else{
+            modifyKey(dto);
         }
-        customer.setUserId(rd.getData());
-        super.save(customer);
-        //合同集合
-        List<CustomerContractDto> customerConList = dto.getCustContraVos();
-        List<CustomerContract> list = encapCustomerContract(customer.getId(),customerConList);
-        customerContractService.saveBatch(list);
+        return BaseResultUtil.success();
+    }
+
+    private ResultVo modifyKey(KeyCustomerDto dto){
+        Customer customer = customerDao.selectById(dto.getCustomerId());
+        if(null != customer){
+            //判断手机号是否存在
+            ResultData<Boolean> updateRd = updateCustomerToPlatform(customer, dto.getContactPhone());
+            if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
+                log.error("修改用户信息失败，原因：" + updateRd.getMsg());
+                return BaseResultUtil.fail("修改用户信息失败，原因：" + updateRd.getMsg());
+            }
+            if (updateRd.getData()) {
+                //需要同步手机号信息
+                syncPhone(customer.getContactPhone(), dto.getContactPhone());
+            }
+            BeanUtils.copyProperties(dto,customer);
+            customer.setId(dto.getCustomerId());
+            customer.setAlias(dto.getName());
+            super.updateById(customer);
+
+            List<CustomerContractDto> contractDtos = dto.getCustContraVos();
+            List<CustomerContract> list = null;
+            if(!CollectionUtils.isEmpty(contractDtos)){
+                //批量删除
+                customerContractDao.removeKeyContract(dto.getCustomerId());
+                list = encapCustomerContract(customer.getId(),contractDtos);
+                customerContractService.saveBatch(list);
+            }
+        }
         return BaseResultUtil.success();
     }
 
@@ -234,37 +264,6 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             sKeyCustomerDto.setCustContraVos(contractVos);
         }
         return BaseResultUtil.success(sKeyCustomerDto);
-    }
-
-    @Override
-    public ResultVo modifyKeyCustomer(KeyCustomerDto dto) {
-        Customer customer = customerDao.selectById(dto.getCustomerId());
-        if(null != customer){
-            //判断手机号是否存在
-            ResultData<Boolean> updateRd = updateCustomerToPlatform(customer, dto.getContactPhone());
-            if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
-                log.error("修改用户信息失败，原因：" + updateRd.getMsg());
-                return BaseResultUtil.fail("修改用户信息失败，原因：" + updateRd.getMsg());
-            }
-            if (updateRd.getData()) {
-                //需要同步手机号信息
-                syncPhone(customer.getContactPhone(), dto.getContactPhone());
-            }
-            BeanUtils.copyProperties(dto,customer);
-            customer.setId(dto.getCustomerId());
-            customer.setAlias(dto.getName());
-            super.updateById(customer);
-
-            List<CustomerContractDto> contractDtos = dto.getCustContraVos();
-            List<CustomerContract> list = null;
-            if(!CollectionUtils.isEmpty(contractDtos)){
-                //批量删除
-                customerContractDao.removeKeyContract(dto.getCustomerId());
-                list = encapCustomerContract(customer.getId(),contractDtos);
-                customerContractService.saveBatch(list);
-            }
-        }
-        return BaseResultUtil.success();
     }
 
     @Override
@@ -309,7 +308,63 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     }
 
     @Override
-    public ResultVo savePartner(PartnerDto dto) {
+    public ResultVo saveOrModifyPartner(PartnerDto dto) {
+        //新增/修改时，验证在大客户或者合伙人中是否存在
+        Customer c = customerDao.selectOne(new QueryWrapper<Customer>().lambda()
+                .eq(Customer::getContactPhone,dto.getContactPhone())
+                .ne(Customer::getType,1)
+                .ne((dto.getCustomerId() != 0),Customer::getId,dto.getCustomerId()));
+        if(c != null){
+            return BaseResultUtil.getVo(ResultEnum.EXIST_CUSTOMER.getCode(),ResultEnum.EXIST_CUSTOMER.getMsg());
+        }
+        //新增/修改时，验证在C端用户中是否存在
+        c =  customerDao.selectOne(new QueryWrapper<Customer>().lambda()
+                .eq(Customer::getContactPhone,dto.getContactPhone())
+                .eq(Customer::getType,1));
+        if(c != null){
+            if(dto.getFlag()){
+                if(c.getIsDelete() == DeleteStateEnum.YES_DELETE.code){
+                    //已删除
+                    return BaseResultUtil.getVo(ResultEnum.DELETE_CUSTOMER.getCode(),ResultEnum.DELETE_CUSTOMER.getMsg());
+                }
+                //前端重置为true，升级为合伙人
+                Customer cu = customerDao.selectById(dto.getCustomerId());
+                if(cu != null){
+                    cu.setIsDelete(DeleteStateEnum.YES_DELETE.code);
+                    super.updateById(cu);
+                }
+                BeanUtils.copyProperties(dto,c);
+                c.setAlias(dto.getName());
+                c.setType(CustomerTypeEnum.COOPERATOR.code);
+                c.setSource(CustomerSourceEnum.UPGRADE.code);
+                c.setState(CommonStateEnum.WAIT_CHECK.code);
+                c.setIsDelete(DeleteStateEnum.NO_DELETE.code);
+                c.setCreateUserId(dto.getLoginId());
+                c.setCreateTime(NOW);
+                super.updateById(c);
+                //合伙人附加信息
+                encapPartner(dto,c,NOW);
+                return BaseResultUtil.success();
+            }else{
+                //返回前端，flag重置为true
+                return BaseResultUtil.getVo(ResultEnum.UPGRADE_CUSTOMER.getCode(),ResultEnum.UPGRADE_CUSTOMER.getMsg());
+            }
+        }
+        if(dto.getCustomerId() == 0){
+            addPartner(dto);
+        }else{
+            //修改
+            modifyPartner(dto);
+        }
+        return BaseResultUtil.success();
+    }
+
+    /**
+     * 新增合伙人
+     * @param dto
+     * @return
+     */
+    private ResultVo addPartner(PartnerDto dto){
         //新增c_customer
         Customer customer = new Customer();
         BeanUtils.copyProperties(dto,customer);
@@ -329,15 +384,17 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             return BaseResultUtil.fail(rd.getMsg());
         }
         customer.setUserId(rd.getData());
-
         super.save(customer);
         encapPartner(dto,customer,NOW);
         return BaseResultUtil.success();
     }
 
-    @Override
-    public ResultVo modifyPartner(PartnerDto dto) {
-        Long now = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
+    /**
+     * 修改合伙人
+     * @param dto
+     * @return
+     */
+    private ResultVo modifyPartner(PartnerDto dto){
         Customer customer = customerDao.selectById(dto.getCustomerId());
         if(customer != null){
             //判断手机号是否存在
@@ -350,18 +407,17 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                 //需要同步手机号信息
                 syncPhone(customer.getContactPhone(), dto.getContactPhone());
             }
-           BeanUtils.copyProperties(dto,customer);
-           customer.setAlias(dto.getName());
-           super.updateById(customer);
+            BeanUtils.copyProperties(dto,customer);
+            customer.setAlias(dto.getName());
+            super.updateById(customer);
             //删除合伙人附加信息
             customerPartnerDao.removeByCustomerId(customer.getId());
             //删除合伙人银行卡信息
             bankCardBindDao.removeBandCarBind(customer.getId());
-            encapPartner(dto,customer,now);
+            encapPartner(dto,customer,NOW);
         }
         return BaseResultUtil.success();
     }
-
     @Override
     public ResultVo<PageVo<CustomerPartnerVo>> findPartner(CustomerPartnerDto dto) {
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());

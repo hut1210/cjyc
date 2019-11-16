@@ -18,13 +18,19 @@
     <!-- 根据承运商id查询车数和总收入 -->
     <select id="count" resultType="com.cjyc.common.model.entity.CarrierCarCount" parameterType="java.lang.Long">
         SELECT
-            sum( count.car_num ) AS carNum,
-            IFNULL( SUM( count.income ), 0 ) AS income
+            IFNULL( sum( ddcc.car_num ), 0 ) AS carNum,
+            IFNULL( SUM( ddcc.income ), 0 ) AS income
         FROM
-            d_driver_car_count count
+            d_driver_car_count ddcc
         WHERE
-            count.driver_id IN ( SELECT con.driver_id FROM d_carrier_driver_con con LEFT JOIN d_carrier c ON c.id = con.carrier_id
-            where c.id = #{carrierId})
+            ddcc.driver_id IN (
+        SELECT
+            dcdc.driver_id
+        FROM
+            d_carrier_driver_con dcdc
+            LEFT JOIN d_carrier dc ON dc.id = dcdc.carrier_id
+        WHERE
+            dc.id = #{carrierId})
     </select>
 
     <!-- 根据司机id统计司机运车数和总收入 -->

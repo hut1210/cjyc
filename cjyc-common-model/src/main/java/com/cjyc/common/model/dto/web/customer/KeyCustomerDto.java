@@ -15,31 +15,27 @@ public class KeyCustomerDto implements Serializable {
 
     private static final long serialVersionUID = -952981230730963579L;
 
-    public interface SaveKeyCustomerVo {}
-
-    public interface UpdateKeyCustomerVo {}
-
-    @NotNull(groups = {SaveKeyCustomerVo.class},message = "登陆用户id(loginId)不能为空")
+    @NotNull(message = "登陆用户id(loginId)不能为空")
     @ApiModelProperty(value = "登陆用户id(loginId)")
     private Long loginId;
 
     @ApiModelProperty(value = "大客户主键id(customerId)")
-    @NotNull(groups = {UpdateKeyCustomerVo.class},message = "大客户主键id(customerId)不能为空")
+    @NotNull(message = "大客户主键id(customerId)不能为空")
     private Long customerId;
 
-     @NotBlank(groups = {SaveKeyCustomerVo.class,UpdateKeyCustomerVo.class},message = "客户全称不能为空")
+     @NotBlank(message = "客户全称不能为空")
      @ApiModelProperty(value = "客户全称",required = true)
      private String name;
 
      @ApiModelProperty("统一社会信用代码")
-     @NotBlank(groups = {SaveKeyCustomerVo.class,UpdateKeyCustomerVo.class},message = "统一社会信用代码不能为空")
+     @NotBlank(message = "统一社会信用代码不能为空")
      private String socialCreditCode;
 
-    @NotBlank(groups = {SaveKeyCustomerVo.class,UpdateKeyCustomerVo.class},message = "联系人不能为空")
+    @NotBlank(message = "联系人不能为空")
     @ApiModelProperty(value = "联系人",required = true)
     private String contactMan;
 
-    @NotBlank(groups = {SaveKeyCustomerVo.class,UpdateKeyCustomerVo.class},message = "联系电话不能为空")
+    @NotBlank(message = "联系电话不能为空")
     @ApiModelProperty(value = "联系电话",required = true)
     private String contactPhone;
 
