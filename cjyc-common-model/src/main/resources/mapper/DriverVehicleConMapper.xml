@@ -25,6 +25,7 @@
     <select id="getDriVehConByDriId" resultType="com.cjyc.common.model.entity.DriverVehicleCon" parameterType="java.lang.Long">
         select
         <include refid="Base_Column_List"/>
+        from  d_driver_vehicle_con
         where driver_id = #{driverId}
     </select>
 

@@ -36,7 +36,7 @@
     <!-- 根据司机id统计司机运车数和总收入 -->
     <select id="driverCount" resultType="com.cjyc.common.model.entity.CarrierCarCount" parameterType="java.lang.Long">
         SELECT
-            sum( car_num ) AS carNum,
+            IFNULL( sum( car_num ),0) AS carNum,
             IFNULL( SUM( income ), 0 ) AS income
         FROM
             `d_driver_car_count`

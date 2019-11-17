@@ -1,7 +1,6 @@
 package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.web.OperateDto;
-import com.cjyc.common.model.dto.web.carrier.VerifyCarrierDto;
 import com.cjyc.common.model.dto.web.driver.DispatchDriverDto;
 import com.cjyc.common.model.dto.web.driver.DriverDto;
 import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
@@ -45,16 +44,10 @@ public class DriverController {
         return driverService.lineWaitDispatchCarCountList(reqDto);
     }
 
-    @ApiOperation(value = "新增/修改司机时验证在个人司机池或者在自己承运商下(去掉自己账号)有无相同的")
-    @PostMapping(value = "/existDriver")
-    public ResultVo existDriver(@RequestBody VerifyCarrierDto dto){
-        return driverService.existDriver(dto);
-    }
-
-    @ApiOperation(value = "新增散户司机")
-    @PostMapping(value = "/saveDriver")
-    public ResultVo saveDriver(@Validated({ DriverDto.SaveDriverDto.class }) @RequestBody DriverDto dto){
-        return driverService.saveDriver(dto);
+    @ApiOperation(value = "新增/修改散户司机")
+    @PostMapping(value = "/saveOrModifyDriver")
+    public ResultVo saveOrModifyDriver(@Validated @RequestBody DriverDto dto){
+        return driverService.saveOrModifyDriver(dto);
     }
 
     @ApiOperation(value = "根据查询条件查看司机信息")
@@ -73,12 +66,6 @@ public class DriverController {
     @PostMapping(value = "/showDriver/{carrierId}")
     public ResultVo<ShowDriverVo> showDriver(@PathVariable @ApiParam(value = "承运商id",required = true) Long carrierId){
         return driverService.showDriver(carrierId);
-    }
-
-    @ApiOperation(value = "更新司机信息")
-    @PostMapping(value = "/modifyDriver")
-    public ResultVo modifyDriver(@Validated({ DriverDto.UpdateDriverDto.class }) @RequestBody DriverDto dto){
-        return driverService.modifyDriver(dto);
     }
 
     @ApiOperation(value = "冻结/解除司机冻结状态")

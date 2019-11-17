@@ -31,10 +31,10 @@ public class MineCarrierController {
     @Resource
     private IMineCarrierService mimeCarrierService;
 
-    @ApiOperation(value = "新增承运商下司机",notes = "如果carrierId为空，则是承运商管理员登陆，需要把loginId转成carrierId,否则是韵车内部登陆")
-    @PostMapping(value = "/saveDriver")
-    public ResultVo saveDriver(@Validated({ MyDriverDto.SaveMyDriverDto.class }) @RequestBody MyDriverDto dto){
-        return mimeCarrierService.saveDriver(dto);
+    @ApiOperation(value = "新增/修改承运商下司机",notes = "如果承运商id和登陆人id相同则为承运商添加，否则为业务员添加")
+    @PostMapping(value = "/saveOrModifyDriver")
+    public ResultVo saveOrModifyDriver(@Validated @RequestBody MyDriverDto dto){
+        return mimeCarrierService.saveOrModifyDriver(dto);
     }
 
     @ApiOperation(value = "查询承运商下司机",notes = "如果carrierId为空，则是承运商管理员登陆，需要把loginId转成carrierId,否则是韵车内部登陆")
@@ -49,10 +49,10 @@ public class MineCarrierController {
         return mimeCarrierService.verifyDriver(dto);
     }
 
-    @ApiOperation(value = "新增承运商下车辆",notes = "如果carrierId为空，则是承运商管理员登陆，需要把loginId转成carrierId,否则是韵车内部登陆")
-    @PostMapping(value = "/saveCar")
-    public ResultVo saveCar(@RequestBody MyCarDto dto){
-        return mimeCarrierService.saveCar(dto);
+    @ApiOperation(value = "新增/修改承运商下车辆",notes = "根据司机id判断时新增还是修改")
+    @PostMapping(value = "/saveOrModifyVehicle")
+    public ResultVo saveOrModifyVehicle(@RequestBody MyVehicleDto dto){
+        return mimeCarrierService.saveOrModifyVehicle(dto);
     }
 
     @ApiOperation(value = "查询承运商下车辆",notes = "如果carrierId为空，则是承运商管理员登陆，需要把loginId转成carrierId,否则是韵车内部登陆")
@@ -66,18 +66,6 @@ public class MineCarrierController {
     public ResultVo<List<MyFreeDriverVo>> findFreeDriver(@PathVariable @ApiParam(value = "该承运商id",required = true) Long carrierId,
                                                          @PathVariable(required = false) @ApiParam(value = "司机姓名") String realName){
         return mimeCarrierService.findFreeDriver(carrierId,realName);
-    }
-
-    @ApiOperation(value = "修改车辆与司机绑定信息")
-    @PostMapping(value = "/modifyVehicle")
-    public ResultVo modifyVehicle(ModifyMyCarDto dto){
-        return mimeCarrierService.modifyVehicle(dto);
-    }
-
-    @ApiOperation(value = "修改司机绑定信息")
-    @PostMapping(value = "/modifyDriver")
-    public ResultVo modifyDriver(ModifyMyDriverDto dto){
-        return mimeCarrierService.modifyDriver(dto);
     }
 
 }

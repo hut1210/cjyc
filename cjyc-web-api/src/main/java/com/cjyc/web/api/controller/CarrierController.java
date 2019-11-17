@@ -29,12 +29,6 @@ public class CarrierController {
     @Resource
     private ICarrierService carrierService;
 
-    @ApiOperation(value = "承运商手机号保证在司机表中唯一/验证修改承运商输入的手机号是否为该承运商下面的司机")
-    @PostMapping(value = "/existCarrier")
-    public ResultVo existCarrier(@RequestBody ExistCarrierDto dto){
-        return carrierService.existCarrier(dto);
-    }
-
     @ApiOperation(value = "新增/修改承运商")
     @PostMapping(value = "/saveOrModifyCarrier")
     public ResultVo saveOrModifyCarrier(@Validated @RequestBody CarrierDto dto){

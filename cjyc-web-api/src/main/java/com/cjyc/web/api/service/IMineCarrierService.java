@@ -19,7 +19,7 @@ public interface IMineCarrierService extends IService<Carrier> {
      * @param dto
      * @return
      */
-    ResultVo saveDriver(MyDriverDto dto);
+    ResultVo saveOrModifyDriver(MyDriverDto dto);
 
     /**
      * 分页查询承运商下司机
@@ -40,7 +40,7 @@ public interface IMineCarrierService extends IService<Carrier> {
      * @param dto
      * @return
      */
-    ResultVo saveCar(MyCarDto dto);
+    ResultVo saveOrModifyVehicle(MyVehicleDto dto);
 
     /**
      * 分页查询该承运商下的车辆
@@ -56,18 +56,4 @@ public interface IMineCarrierService extends IService<Carrier> {
      * @return
      */
     ResultVo<List<MyFreeDriverVo>> findFreeDriver(Long carrierId, String realName);
-
-    /**
-     * 修改该承运商下的车辆与司机绑定关系
-     * @param dto
-     * @return
-     */
-    ResultVo modifyVehicle(ModifyMyCarDto dto);
-
-    /**
-     * 修改承运商下的司机与车辆绑定关系
-     * @param dto
-     * @return
-     */
-    ResultVo modifyDriver(ModifyMyDriverDto dto);
 }

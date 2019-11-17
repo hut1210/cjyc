@@ -236,7 +236,7 @@
 
     <!--根据手机号查询承运商中是否存在-->
     <select id="existCarrier" resultType="com.cjyc.common.model.vo.web.carrier.ExistCarrierVo"
-            parameterType="com.cjyc.common.model.dto.web.carrier.VerifyCarrierDto">
+            parameterType="com.cjyc.common.model.dto.web.driver.DriverDto">
       SELECT
         dc.type AS type,
         dc.NAME AS NAME,
@@ -247,19 +247,57 @@
         LEFT JOIN d_carrier_driver_con dcdc ON dcdc.carrier_id = dc.id
         LEFT JOIN d_driver dd ON dd.id = dcdc.driver_id
         <where>
-            <if test="phone != null and phone.trim() != ''">
-                (dd.phone = #{phone} or dd.phone = #{phone})
+            <if test="(phone != null and phone.trim() != '') or (idCard != null and idCard.trim() != '')">
+                (dd.phone = #{phone} or dd.id_card = #{idCard})
             </if>
-            <if test="idCard != null and idCard.trim() != ''">
-                and (dd.id_card = #{idCard} or dd.id_card = #{idCard})
-            </if>
-            <if test="carrierId != null">
-                and  dc.id = #{carrierId}
-            </if>
-            <if test="driverId != null">
+            <if test="driverId != 0">
                 and  dd.id  &lt;&gt; #{driverId}
             </if>
               limit 1
         </where>
+    </select>
+
+    <!--查询个人承运商中是否存在-->
+    <select id="existPersonalCarrier" resultType="java.lang.Integer"
+                        parameterType="com.cjyc.common.model.dto.web.mineCarrier.MyDriverDto">
+        SELECT count(dc.id)
+        FROM
+            d_carrier dc
+          LEFT JOIN d_carrier_driver_con dcdc ON dcdc.carrier_id = dc.id
+          LEFT JOIN d_driver dd ON dd.id = dcdc.driver_id
+        <where>
+            <if test="(phone != null and phone.trim() != '') or (idCard != null and idCard.trim() != '')">
+                (dd.phone = #{phone} or dd.id_card = #{idCard})
+            </if>
+            and dc.type = 1
+        </where>
+    </select>
+
+    <!--查询企业承运商中是否存在-->
+    <select id="existBusinessCarrier" resultType="java.lang.Integer"
+            parameterType="com.cjyc.common.model.dto.web.mineCarrier.MyDriverDto">
+      SELECT count(dc.id)
+        FROM
+            d_carrier dc
+        LEFT JOIN d_carrier_driver_con dcdc ON dcdc.carrier_id = dc.id
+        LEFT JOIN d_driver dd ON dd.id = dcdc.driver_id
+        <where>
+            <if test="driverId != 0">
+                and dd.id &lt;&gt; #{driverId}
+            </if>
+                and dc.id = #{carrierId} and (dd.phone = #{phone} or dd.id_card = #{idCard}) and dc.type = 2
+        </where>
+    </select>
+
+    <!--修改承运商时验证是否为该承运商下的司机-->
+    <select id="existBusinessDriver" resultType="java.lang.Integer"
+                    parameterType="com.cjyc.common.model.dto.web.carrier.CarrierDto">
+        SELECT
+        count( dc.id )
+    FROM
+        d_carrier dc
+        LEFT JOIN d_carrier_driver_con dcdc ON dcdc.carrier_id = dc.id
+        LEFT JOIN d_driver dd ON dd.id = dcdc.driver_id
+     where dc.id = #{carrierId}  and dc.type = 2 and  dd.phone = #{linkmanPhone}  and  dd.id_card = #{legalIdCard}
     </select>
 </mapper>

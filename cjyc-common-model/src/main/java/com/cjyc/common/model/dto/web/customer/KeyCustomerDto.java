@@ -19,7 +19,7 @@ public class KeyCustomerDto implements Serializable {
     @ApiModelProperty(value = "登陆用户id(loginId)")
     private Long loginId;
 
-    @ApiModelProperty(value = "大客户主键id(customerId)")
+    @ApiModelProperty("大客户主键id(customerId)")
     @NotNull(message = "大客户主键id(customerId)不能为空")
     private Long customerId;
 
@@ -27,7 +27,7 @@ public class KeyCustomerDto implements Serializable {
      @ApiModelProperty(value = "客户全称",required = true)
      private String name;
 
-     @ApiModelProperty("统一社会信用代码")
+     @ApiModelProperty(value = "统一社会信用代码",required = true)
      @NotBlank(message = "统一社会信用代码不能为空")
      private String socialCreditCode;
 

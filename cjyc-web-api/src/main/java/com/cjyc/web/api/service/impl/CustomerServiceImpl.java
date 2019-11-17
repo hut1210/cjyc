@@ -194,7 +194,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             List<CustomerContract> list = encapCustomerContract(customer.getId(),customerConList);
             customerContractService.saveBatch(list);
         }else{
-            modifyKey(dto);
+            return modifyKey(dto);
         }
         return BaseResultUtil.success();
     }
@@ -351,12 +351,11 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             }
         }
         if(dto.getCustomerId() == 0){
-            addPartner(dto);
+            return addPartner(dto);
         }else{
             //修改
-            modifyPartner(dto);
+           return modifyPartner(dto);
         }
-        return BaseResultUtil.success();
     }
 
     /**

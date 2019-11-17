@@ -13,12 +13,6 @@ import com.cjyc.common.model.vo.web.carrier.BaseCarrierVo;
 public interface ICarrierService {
 
     /**
-     * 根据手机号判断该承运商是否已添加
-     * @param dto
-     * @return
-     */
-    ResultVo existCarrier(ExistCarrierDto dto);
-    /**
      * 添加承运商
      * @param dto
      * @return
