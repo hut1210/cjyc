@@ -254,47 +254,47 @@
     <select id="findMyDriver" resultType="com.cjyc.common.model.vo.web.mineCarrier.MyDriverVo"
                                 parameterType="com.cjyc.common.model.dto.web.mineCarrier.QueryMyDriverDto">
         SELECT
-            d.id AS driverId,
-            driCon.carrier_id AS carrierId,
-            d.real_name AS realName,
-            d.phone AS phone,
-            d.MODE AS MODE,
-            d.business_state AS businessState,
-            d.state AS state,
-            d.identity AS identity,
-            veh.plate_no AS plateNo,
-            veh.default_carry_num AS defaultCarryNum
+            dd.id AS driverId,
+            dcdc.carrier_id AS carrierId,
+            dd.real_name AS realName,
+            dd.phone AS phone,
+            dcdc.MODE AS MODE,
+            dd.business_state AS businessState,
+            dcdc.state AS state,
+            dd.identity AS identity,
+            dvr.plate_no AS plateNo,
+            dvr.carry_car_num AS defaultCarryNum
         FROM
-            d_driver d
-            LEFT JOIN d_carrier_driver_con driCon ON driCon.driver_id = d.id
-            LEFT JOIN d_driver_vehicle_con vehCon ON vehCon.driver_id = d.id
-            LEFT JOIN d_vehicle veh ON veh.id = vehCon.vehicle_id
+          d_driver dd
+        LEFT JOIN d_carrier_driver_con dcdc ON dcdc.driver_id = dd.id
+        LEFT JOIN d_carrier dc ON dc.id = dcdc.carrier_id
+        LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
         <where>
             <if test="realName != null and realName.trim() != ''">
-                d.real_name like CONCAT('%',#{realName},'%')
+                dd.real_name like CONCAT('%',#{realName},'%')
             </if>
             <if test="phone != null and phone.trim() != ''">
-                and  d.phone = #{phone}
+                and  dd.phone = #{phone}
             </if>
             <if test="idCard != null and idCard.trim() != ''">
-                and  d.id_card = #{idCard}
+                and  dd.id_card = #{idCard}
             </if>
             <if test="plateNo != null and plateNo.trim() != ''">
-                and  v.plate_no = #{plateNo}
+                and  dvr.plate_no = #{plateNo}
             </if>
             <if test="identity != null">
-                and  d.identity = #{identity}
+                and  dd.identity = #{identity}
             </if>
-            <if test="businessState != null">
-                and  d.business_state = #{businessState}
+            <if test="runningState != null">
+                and  dvr.running_state = #{businessState}
             </if>
             <if test="state != null">
-                and  driCon.state = #{state}
+                and  dcdc.state = #{state}
             </if>
             <if test="mode != null">
-                and  d.mode = #{mode}
+                and  dcdc.mode = #{mode}
             </if>
-            and driCon.carrier_id = #{carrierId}
+            and dc.carrier_id = #{carrierId} and dc.type = 2 and dc.business_state = 0
         </where>
     </select>
 

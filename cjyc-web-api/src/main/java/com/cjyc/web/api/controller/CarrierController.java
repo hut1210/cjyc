@@ -30,29 +30,10 @@ public class CarrierController {
     @Resource
     private ICarrierService carrierService;
 
-    @ApiOperation(value = "承运商手机号保证在司机表中唯一")
-    @PostMapping(value = "/existCarrier")
-    public ResultVo existCarrier(@PathVariable @ApiParam(value = "承运商联系人手机号",required = true) String linkmanPhone){
-        return carrierService.existCarrier(linkmanPhone);
-    }
-
-    @ApiOperation(value = "新增承运商")
-    @PostMapping(value = "/saveCarrier")
-    public ResultVo saveCarrier(@Validated({ CarrierDto.SaveCarrierDto.class }) @RequestBody CarrierDto dto){
-        return carrierService.saveCarrier(dto);
-    }
-
-    @ApiOperation(value = "验证修改承运商输入的手机号是否为该承运商下面的司机")
-    @PostMapping(value = "/existCarrierDriver")
-    public ResultVo existCarrierDriver(@PathVariable @ApiParam(value = "承运商id",required = true) Long carrierId,
-                                       @PathVariable @ApiParam(value = "承运商联系人手机号",required = true) String linkmanPhone){
-        return carrierService.existCarrierDriver(carrierId,linkmanPhone);
-    }
-
-    @ApiOperation(value = "更新承运商")
-    @PostMapping(value = "/modifyCarrier")
-    public ResultVo modifyCarrier(@Validated({ CarrierDto.UpdateCarrierDto.class }) @RequestBody CarrierDto dto){
-        return carrierService.modifyCarrier(dto);
+    @ApiOperation(value = "新增/修改承运商")
+    @PostMapping(value = "/saveOrModifyCarrier")
+    public ResultVo saveOrModifyCarrier(@Validated @RequestBody CarrierDto dto){
+        return carrierService.saveOrModifyCarrier(dto);
     }
 
     @ApiOperation(value = "根据条件查询承运商")

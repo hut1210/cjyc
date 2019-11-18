@@ -13,6 +13,7 @@ import com.cjyc.common.model.entity.CarSeries;
 import com.cjyc.common.model.entity.Line;
 import com.cjyc.common.model.enums.CityLevelEnum;
 import com.cjyc.common.model.enums.FlagEnum;
+import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.StringUtil;
@@ -63,6 +64,8 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
     @Resource
     private ICityDao cityDao;
 
+    private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
+
     @Override
     public ResultVo<String> sortNode(SortNodeListDto paramsDto) {
         @NotNull List<SortNodeDto> list = paramsDto.getList();
@@ -96,26 +99,26 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
     }
 
     @Override
-    public ResultVo addAndUpdateLine(AddOrUpdateLineDto dto) {
+    public ResultVo addOrUpdateLine(AddOrUpdateLineDto dto) {
         Line line = null;
         //新增
-        if(dto.getFlag() == FlagEnum.ADD.code){
+        if(dto.getLineId() == 0){
             line = lineDao.getLinePriceByCode(dto.getFromCode(),dto.getToCode());
             if(line != null){
-                return BaseResultUtil.fail("该班线已存在");
+                return BaseResultUtil.getVo(ResultEnum.EXIST_LINE.getCode(),ResultEnum.EXIST_LINE.getMsg());
             }
             Line addLine = new Line();
             addLine = encapLine(addLine,dto);
             addLine.setLevel(CityLevelEnum.CITY_LEVEL.getLevel());
-            addLine.setCreateTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
+            addLine.setCreateTime(NOW);
             addLine.setCreateUserId(dto.getLoginId());
             lineDao.insert(addLine);
-        }else if(dto.getFlag() == FlagEnum.UPDTATE.code){
+        }else{
             //更新
-            line = lineDao.selectById(dto.getId());
+            line = lineDao.selectById(dto.getLineId());
             if(line != null){
                 line = encapLine(line,dto);
-                line.setUpdateTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
+                line.setUpdateTime(NOW);
                 line.setUpdateUserId(dto.getLoginId());
                 lineDao.updateById(line);
             }
@@ -126,6 +129,9 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
     @Override
     public ResultVo getDefaultWlFeeByCode(String fromCode, String toCode) {
         Line line = lineDao.getLinePriceByCode(fromCode,toCode);
+        if(line == null){
+            return BaseResultUtil.getVo(ResultEnum.NOEXIST_LINE.getCode(),ResultEnum.NOEXIST_LINE.getMsg());
+        }
         return BaseResultUtil.success(line.getDefaultWlFee() == null ? BigDecimal.ZERO:line.getDefaultWlFee().divide(new BigDecimal(100)));
     }
 
@@ -237,15 +243,10 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
                     ProvinceCityVo pcvo = cityDao.getProvinceCityByCode(vo.getToCityCode());
                     if(pcvo != null){
                         vo.setToProvinceCode(pcvo.getProvinceCode());
-                        vo.setToProvinceCode(pcvo.getProvinceName());
+                        vo.setToProvince(pcvo.getProvinceName());
                         vo.setToCity(pcvo.getCityName());
                         vo.setToCityCode(pcvo.getCityCode());
                     }
-                }
-                vo.setDefaultWlFee(vo.getDefaultWlFee() == null ? BigDecimal.ZERO : vo.getDefaultWlFee().divide(new BigDecimal(100)));
-                vo.setDefaultFreightFee(vo.getDefaultFreightFee() == null ? BigDecimal.ZERO:vo.getDefaultFreightFee().divide(new BigDecimal(100)));
-                if(StringUtils.isNotBlank(vo.getCreateTime())){
-                    vo.setCreateTime(LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(Long.valueOf(vo.getCreateTime())),TimePatternConstant.COMPLEX_TIME_FORMAT));
                 }
             }
         }

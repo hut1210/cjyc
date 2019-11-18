@@ -4,7 +4,9 @@ import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.coupon.ConsumeCouponDto;
 import com.cjyc.common.model.dto.web.coupon.CouponDto;
 import com.cjyc.common.model.dto.web.coupon.SeleCouponDto;
+import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.coupon.ConsumeCouponVo;
 import com.cjyc.common.model.vo.web.coupon.CouponVo;
 import com.github.pagehelper.PageInfo;
 
@@ -16,38 +18,31 @@ import com.github.pagehelper.PageInfo;
 public interface ICouponService {
 
     /**
-     * 新增优惠券
+     * 新增/修改优惠券
      * @param dto
      * @return
      */
-    ResultVo saveCoupon(CouponDto dto);
-
-    /**
-     * 根据更新优惠券
-     * @param dto
-     * @return
-     */
-    boolean updateCoupon(CouponDto dto);
+    ResultVo saveOrModifyCoupon(CouponDto dto);
 
     /**
      * 审核/作废优惠券
      * @param dto
      * @return
      */
-    boolean operateCoupon(OperateDto dto);
+    ResultVo verifyCoupon(OperateDto dto);
 
     /**
      * 根据条件筛选优惠券
      * @param dto
      * @return
      */
-    ResultVo getCouponByTerm(SeleCouponDto dto);
+    ResultVo<PageVo<CouponVo>> getCouponByTerm(SeleCouponDto dto);
 
     /**
      * 查看优惠券消耗明细
      * @param dto
      * @return
      */
-    ResultVo getConsumeDetail(ConsumeCouponDto dto);
+    ResultVo<PageVo<ConsumeCouponVo>> getConsumeDetail(ConsumeCouponDto dto);
 
 }

@@ -34,7 +34,20 @@ public enum ResultEnum {
 
 
     /**业务返回码*/
-    CREATE_NEW_CUSTOMER(9001, "个人用户不存在，是否保存为新用户");
+    NOEXIST_LINE(8001, "该班线不存在"),
+    EXIST_LINE(8002, "该班线已存在"),
+    CREATE_NEW_CUSTOMER(9001, "个人用户不存在，是否保存为新用户"),
+    EXIST_CUSTOMER(9002, "该用户已存在于大客户或者合伙人中"),
+    UPGRADE_CUSTOMER(9003, "账号已存在，且为普通用户，是否升级为合伙人"),
+    DELETE_CUSTOMER(9004, "该账号已被禁用"),
+
+
+    EXIST_CARRIER(9101, "该承运商账号已存在"),
+    CARRIER_DRIVER(9102, "该手机号不是承运商下司机，请先添加"),
+    EXIST_PERSONAL_CARRIER(9103, "账号已存在于个人司机中"),
+    EXIST_ENTERPRISE_CARRIER(9104,"账号不存在于该企业承运商中"),
+    VEHICLE_RUNNING(9105, "该运力正在运输中，不可修改"),
+    EXIST_VEHICLE(9106,"该车辆已存在,请检查");
     /**状态码*/
     private Integer code;
 

@@ -2,7 +2,12 @@ package com.cjyc.web.api.service;
 
 import com.cjyc.common.model.dto.KeywordDto;
 import com.cjyc.common.model.dto.web.vehicle.*;
+import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.vehicle.FreeVehicleVo;
+import com.cjyc.common.model.vo.web.vehicle.VehicleVo;
+
+import java.util.List;
 
 /**
  *  @author: zj
@@ -23,7 +28,7 @@ public interface IVehicleService {
      * @param dto
      * @return
      */
-    ResultVo findVehicle(SelectVehicleDto dto);
+    ResultVo<PageVo<VehicleVo>> findVehicle(SelectVehicleDto dto);
 
     /**
      * 根据车辆id删除/修改与司机绑定关系
@@ -44,6 +49,6 @@ public interface IVehicleService {
      * @param dto
      * @return
      */
-    ResultVo findFreeVehicle(FreeVehicleDto dto);
+    ResultVo<List<FreeVehicleVo>> findFreeVehicle(FreeVehicleDto dto);
 
 }

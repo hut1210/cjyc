@@ -8,6 +8,7 @@ import com.cjyc.common.model.dto.customer.freightBill.TransportDto;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.entity.Inquiry;
 import com.cjyc.common.model.entity.Line;
+import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.inquiry.InquiryStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
@@ -44,7 +45,7 @@ public class TransportServiceImpl implements ITransportService {
     public ResultVo linePriceByCode(TransportDto dto) {
         Line line = lineDao.getLinePriceByCode(dto.getFromCode(), dto.getToCode());
         if(line == null){
-            return BaseResultUtil.success(BigDecimal.ZERO);
+            return BaseResultUtil.getVo(ResultEnum.NOEXIST_LINE.getCode(),ResultEnum.NOEXIST_LINE.getMsg());
         }
         inquiryService.saveInquiry(dto,line.getDefaultWlFee());
         return BaseResultUtil.success(line.getDefaultWlFee().divide(new BigDecimal(100)));

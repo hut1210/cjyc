@@ -33,7 +33,7 @@ public class CustomerController {
     @Autowired
     private ICustomerService customerService;
 
-    @ApiOperation(value = "验证移动端用户是否存在")
+    @ApiOperation(value = "验证用户是否存在")
     @PostMapping(value = "/existCustomer")
     public ResultVo existCustomer(@RequestBody ExistCustomreDto dto){
         return customerService.existCustomer(dto);
@@ -57,10 +57,10 @@ public class CustomerController {
         return customerService.findCustomer(dto);
     }
 
-    @ApiOperation(value = "新增大客户&合同")
-    @PostMapping(value = "/saveKeyCustomer")
-    public ResultVo saveKeyCustomer(@Validated @RequestBody KeyCustomerDto dto){
-        return customerService.saveKeyCustomer(dto);
+    @ApiOperation(value = "新增/修改大客户&合同")
+    @PostMapping(value = "/saveOrModifyKey")
+    public ResultVo saveOrModifyKey(@Validated @RequestBody KeyCustomerDto dto){
+        return customerService.saveOrModifyKey(dto);
     }
 
     @ApiOperation(value = "根据主键id/当前登陆用户loginId删除/审核用户")
@@ -75,28 +75,16 @@ public class CustomerController {
         return customerService.showKeyCustomer(customerId);
     }
 
-    @ApiOperation(value = "更新大客户&合同")
-    @PostMapping(value = "/modifyKeyCustomer")
-    public ResultVo modifyKeyCustomer(@Validated @RequestBody KeyCustomerDto customerDto){
-        return customerService.modifyKeyCustomer(customerDto);
-    }
-
     @ApiOperation(value = "根据条件查询大客户")
     @PostMapping(value = "/findKeyCustomer")
     public ResultVo<PageVo<ListKeyCustomerVo>> findKeyCustomer(@RequestBody SelectKeyCustomerDto dto){
         return customerService.findKeyCustomer(dto);
     }
 
-    @ApiOperation(value = "新增合伙人")
-    @PostMapping(value = "/savePartner")
-    public ResultVo savePartner(@Validated({ PartnerDto.SavePartnerDto.class }) @RequestBody PartnerDto dto){
-        return customerService.savePartner(dto);
-    }
-
-    @ApiOperation(value = "更新合伙人")
-    @PostMapping(value = "/modifyPartner")
-    public ResultVo modifyPartner(@Validated({ PartnerDto.updatePartnerDto.class }) @RequestBody PartnerDto dto){
-        return customerService.modifyPartner(dto);
+    @ApiOperation(value = "新增/修改合伙人")
+    @PostMapping(value = "/saveOrModifyPartner")
+    public ResultVo saveOrModifyPartner(@Validated  @RequestBody PartnerDto dto){
+        return customerService.saveOrModifyPartner(dto);
     }
 
     @ApiOperation(value = "根据条件分页查看合伙人")
@@ -117,7 +105,7 @@ public class CustomerController {
         return customerService.getContractByCustomerId(customerId);
     }
 
-    @ApiOperation(value = "查看客户优惠券")
+    @ApiOperation(value = "查看客户优惠券(客户中心)")
     @PostMapping(value = "/customerCoupon")
     public ResultVo customerCoupon(@RequestBody CustomerCouponDto dto){
         return customerService.customerCoupon(dto);

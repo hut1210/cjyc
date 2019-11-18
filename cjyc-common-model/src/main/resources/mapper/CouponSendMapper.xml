@@ -80,17 +80,17 @@
     <select id="getCustomerCoupon" resultType="com.cjyc.common.model.vo.web.coupon.CustomerCouponSendVo"
                                     parameterType="java.lang.Long">
         SELECT
-            send.id AS couponSendId,
-            coupon.NAME AS NAME,
-            coupon.type AS type,
-            coupon.full_amount AS fullAmount,
-            coupon.cut_amount AS cutAmount,
-            coupon.discount AS discount,
-            coupon.end_period_date AS endPeriodDate
-        FROM
-            c_coupon coupon
-            JOIN c_coupon_send send ON send.coupon_id = coupon.id
-         where
-            send.customer_id = #{customerId} and send.is_use = 0
+            ccs.id AS couponSendId,
+            cc.NAME AS NAME,
+            cc.type AS type,
+            cc.full_amount AS fullAmount,
+            cc.cut_amount AS cutAmount,
+            cc.discount AS discount,
+            cc.end_period_date AS endPeriodDate
+    FROM
+        c_coupon_send ccs
+        left JOIN c_coupon cc ON cc.id = ccs.coupon_id
+    WHERE
+        ccs.customer_id = #{customerId} and ccs.is_use = 0
     </select>
 </mapper>

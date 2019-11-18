@@ -8,6 +8,7 @@ import java.io.Serializable;
 @Data
 public class SeleCouponDto extends BasePageDto implements Serializable {
 
+    private static final long serialVersionUID = 1549905775177738505L;
     @ApiModelProperty("优惠券名称")
     private String name;
 
@@ -25,7 +26,4 @@ public class SeleCouponDto extends BasePageDto implements Serializable {
 
     @ApiModelProperty(value = "创建人")
     private String createName;
-
-    @ApiModelProperty("创建人userId")
-    private Long createUserId;
 }

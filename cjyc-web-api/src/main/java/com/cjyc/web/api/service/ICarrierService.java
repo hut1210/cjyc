@@ -9,6 +9,8 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.carrier.TrailCarrierVo;
 
+import com.cjyc.common.model.vo.web.carrier.BaseCarrierVo;
+
 /**
  *  @author: zj
  *  @Date: 2019/10/18 15:22
@@ -17,32 +19,11 @@ import com.cjyc.common.model.vo.web.carrier.TrailCarrierVo;
 public interface ICarrierService {
 
     /**
-     * 根据手机号判断该承运商是否已添加
-     * @param linkmanPhone
-     * @return
-     */
-    ResultVo existCarrier(String linkmanPhone);
-    /**
      * 添加承运商
      * @param dto
      * @return
      */
-    ResultVo saveCarrier(CarrierDto dto);
-
-    /**
-     * 根据承运商id和联系人手机号查看是否在该承运商下
-     * @param carrierId
-     * @param linkmanPhone
-     * @return
-     */
-    ResultVo existCarrierDriver(Long carrierId,String linkmanPhone);
-
-    /**
-     * 更新承运商
-     * @param dto
-     * @return
-     */
-    ResultVo modifyCarrier(CarrierDto dto);
+    ResultVo saveOrModifyCarrier(CarrierDto dto);
 
     /**
      * 根据条件查询承运商

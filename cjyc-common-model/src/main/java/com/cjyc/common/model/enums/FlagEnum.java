@@ -4,7 +4,7 @@ public enum FlagEnum {
 
     //0：查询 1：保存 2：更新 3：审核通过 4：审核拒绝 5：冻结 6：解冻 7：删除 8：作废
     QUERY("查询", 0),
-    ADD("保存", 1),
+    ADD("保存/新增", 1),
     UPDTATE("更新", 2),
     AUDIT_PASS("审核通过",3),
     AUDIT_REJECT("审核拒绝",4),

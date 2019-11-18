@@ -7,13 +7,20 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 @Data
-public class MyCarDto implements Serializable {
+public class MyVehicleDto implements Serializable {
 
     private static final long serialVersionUID = 992240700345836877L;
 
     @ApiModelProperty("登陆系统用户id(loginId)")
     @NotNull(message = "登陆系统用户id(loginId)不能为空")
     private Long loginId;
+
+    @ApiModelProperty("承运商id")
+    @NotNull(message = "承运商id不能为空")
+    private Long carrierId;
+
+    @ApiModelProperty("车辆id")
+    private Long vehicleId;
 
     @ApiModelProperty("车牌号")
     @NotBlank(message = "车牌号不能为空")

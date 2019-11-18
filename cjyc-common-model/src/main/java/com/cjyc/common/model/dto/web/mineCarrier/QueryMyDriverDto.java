@@ -25,8 +25,8 @@ public class QueryMyDriverDto extends BasePageDto implements Serializable {
     @ApiModelProperty("承运方式：2 : 代驾  3 : 干线   4：拖车")
     private Integer mode;
 
-    @ApiModelProperty("营运状态：0营运中，1停运中")
-    private Integer businessState;
+    @ApiModelProperty("运行状态：0空闲，1在途 2繁忙")
+    private Integer runningState;
 
     @ApiModelProperty("司机状态 2：正常 5冻结")
     private Integer state;

@@ -12,10 +12,12 @@ import com.cjyc.common.model.entity.DriverVehicleCon;
 import com.cjyc.common.model.entity.Task;
 import com.cjyc.common.model.entity.Vehicle;
 import com.cjyc.common.model.entity.VehicleRunning;
+import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.task.TaskStateEnum;
 import com.cjyc.common.model.enums.transport.VehicleOwnerEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
+import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.vehicle.FreeVehicleVo;
 import com.cjyc.common.model.vo.web.vehicle.VehicleVo;
@@ -53,7 +55,7 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
         //判断车辆是否已有
         Vehicle veh = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda().eq(Vehicle::getPlateNo,dto.getPlateNo()));
         if(veh != null){
-            return BaseResultUtil.fail("该车辆已存在,请检查");
+            return BaseResultUtil.getVo(ResultEnum.EXIST_VEHICLE.getCode(),ResultEnum.EXIST_VEHICLE.getMsg());
         }
         Vehicle vehicle = new Vehicle();
         BeanUtils.copyProperties(dto,vehicle);
@@ -65,7 +67,7 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
     }
 
     @Override
-    public ResultVo findVehicle(SelectVehicleDto dto) {
+    public ResultVo<PageVo<VehicleVo>> findVehicle(SelectVehicleDto dto) {
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
         List<VehicleVo> vehicleVos = vehicleDao.findVehicle(dto);
         PageInfo<VehicleVo> pageInfo = new PageInfo<>(vehicleVos);
@@ -76,8 +78,8 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
     public ResultVo removeVehicle(RemoveVehicleDto dto) {
         //获取运力信息
         Object obj = verifyTrans(dto.getDriverId(),dto.getVehicleId());
-        if(!Boolean.parseBoolean(obj.toString())){
-            return BaseResultUtil.fail("该运力正在运输中，请检查");
+        if(obj != null && !Boolean.parseBoolean(obj.toString())){
+            return BaseResultUtil.getVo(ResultEnum.VEHICLE_RUNNING.getCode(),ResultEnum.VEHICLE_RUNNING.getMsg());
         }
         if(dto.getDriverId() != null){
             //车辆与司机有绑定关系
@@ -91,24 +93,23 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
 
     @Override
     public ResultVo modifyVehicle(ModifyCarryNumDto dto) {
-        //判断该运力是否在运输中
-        Object obj = verifyTrans(dto.getDriverId(),dto.getVehicleId());
-        if(!Boolean.parseBoolean(obj.toString())){
-            return BaseResultUtil.fail("该运力正在运输中，请检查");
+        VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda()
+                .eq(VehicleRunning::getDriverId, dto.getDriverId())
+                .eq(VehicleRunning::getVehicleId, dto.getVehicleId()));
+        if(vr != null){
+            //更新运力
+            vr.setCarryCarNum(dto.getDefauleCarryNum());
+            vehicleRunningDao.updateById(vr);
         }
-        VehicleRunning vr = (VehicleRunning) obj;
         //更新车辆
         Vehicle vehicle = vehicleDao.selectById(dto.getVehicleId());
         vehicle.setDefaultCarryNum(dto.getDefauleCarryNum());
         vehicleDao.updateById(vehicle);
-        //更新运力
-        vr.setCarryCarNum(dto.getDefauleCarryNum());
-        vehicleRunningDao.updateById(vr);
         return BaseResultUtil.success();
     }
 
     @Override
-    public ResultVo findFreeVehicle(FreeVehicleDto dto) {
+    public ResultVo<List<FreeVehicleVo>> findFreeVehicle(FreeVehicleDto dto) {
         //查询个人所有车辆
         /*List<Vehicle> vehicles = vehicleDao.selectList(new QueryWrapper<Vehicle>().lambda().eq(Vehicle::getOwnershipType, VehicleOwnerEnum.PERSONAL.code)
                                             .like(!StringUtils.isNotBlank(dto.getKeyword()),Vehicle::getPlateNo,dto.getKeyword()).select(Vehicle::getId,Vehicle::getPlateNo,Vehicle::getDefaultCarryNum));*/

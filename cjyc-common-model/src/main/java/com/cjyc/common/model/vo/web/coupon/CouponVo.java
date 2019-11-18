@@ -1,5 +1,8 @@
 package com.cjyc.common.model.vo.web.coupon;
 
+import com.cjyc.common.model.util.BigDecimalSerizlizer;
+import com.cjyc.common.model.util.DataLongSerizlizer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -9,8 +12,9 @@ import java.math.BigDecimal;
 @Data
 public class CouponVo implements Serializable {
 
-    @ApiModelProperty(value = "优惠券主键id")
-    private Long id;
+    private static final long serialVersionUID = 1331863052699915068L;
+    @ApiModelProperty(value = "优惠券主键id(couponId)")
+    private Long couponId;
 
     @ApiModelProperty(value = "优惠券名称")
     private String name;
@@ -19,12 +23,15 @@ public class CouponVo implements Serializable {
     private Integer type;
 
     @ApiModelProperty(value = "满额价")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal fullAmount;
 
     @ApiModelProperty(value = "减额值")
-    private String cutAmount;
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
+    private BigDecimal cutAmount;
 
     @ApiModelProperty(value = "折扣")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal discount;
 
     @ApiModelProperty(value = "发放张数")
@@ -46,14 +53,20 @@ public class CouponVo implements Serializable {
     private Integer isForever;
 
     @ApiModelProperty(value = "优惠券有效起始时间")
-    private String startPeriodDate;
+    @JsonSerialize(using = DataLongSerizlizer.class)
+    private Long startPeriodDate;
 
     @ApiModelProperty(value = "优惠券有效结束时间")
-    private String endPeriodDate;
+    @JsonSerialize(using = DataLongSerizlizer.class)
+    private Long endPeriodDate;
 
     @ApiModelProperty(value = "优惠券审核状态： 0待审核，2已审核，4取消，7已驳回，9已停用（CommonStateEnum）")
     private Integer state;
 
     @ApiModelProperty(value = "创建时间")
-    private String createTime;
+    @JsonSerialize(using = DataLongSerizlizer.class)
+    private Long createTime;
+
+    @ApiModelProperty("创建人")
+    private String createName;
 }

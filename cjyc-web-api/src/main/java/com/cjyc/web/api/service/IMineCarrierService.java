@@ -4,7 +4,13 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.mineCarrier.*;
 import com.cjyc.common.model.entity.Carrier;
+import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.mineCarrier.MyCarVo;
+import com.cjyc.common.model.vo.web.mineCarrier.MyDriverVo;
+import com.cjyc.common.model.vo.web.mineCarrier.MyFreeDriverVo;
+
+import java.util.List;
 
 public interface IMineCarrierService extends IService<Carrier> {
 
@@ -13,14 +19,14 @@ public interface IMineCarrierService extends IService<Carrier> {
      * @param dto
      * @return
      */
-    ResultVo saveDriver(MyDriverDto dto);
+    ResultVo saveOrModifyDriver(MyDriverDto dto);
 
     /**
      * 分页查询承运商下司机
      * @param dto
      * @return
      */
-    ResultVo findPageDriver(QueryMyDriverDto dto);
+    ResultVo<PageVo<MyDriverVo>> findPageDriver(QueryMyDriverDto dto);
 
     /**
      * 操作承运商下的司机
@@ -34,14 +40,14 @@ public interface IMineCarrierService extends IService<Carrier> {
      * @param dto
      * @return
      */
-    ResultVo saveCar(MyCarDto dto);
+    ResultVo saveOrModifyVehicle(MyVehicleDto dto);
 
     /**
      * 分页查询该承运商下的车辆
      * @param dto
      * @return
      */
-    ResultVo findPageCar(QueryMyCarDto dto);
+    ResultVo<PageVo<MyCarVo>> findPageCar(QueryMyCarDto dto);
 
     /**
      * 根据承运商id和司机姓名查询该承运商下的空闲司机
@@ -49,19 +55,5 @@ public interface IMineCarrierService extends IService<Carrier> {
      * @param realName
      * @return
      */
-    ResultVo findFreeDriver(Long carrierId,String realName);
-
-    /**
-     * 修改该承运商下的车辆与司机绑定关系
-     * @param dto
-     * @return
-     */
-    ResultVo modifyVehicle(ModifyMyCarDto dto);
-
-    /**
-     * 修改承运商下的司机与车辆绑定关系
-     * @param dto
-     * @return
-     */
-    ResultVo modifyDriver(ModifyMyDriverDto dto);
+    ResultVo<List<MyFreeDriverVo>> findFreeDriver(Long carrierId, String realName);
 }
