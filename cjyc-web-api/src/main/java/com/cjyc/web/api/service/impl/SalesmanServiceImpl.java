@@ -1,5 +1,6 @@
 package com.cjyc.web.api.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
@@ -187,6 +188,11 @@ public class SalesmanServiceImpl extends ServiceImpl<IAdminDao, Admin> implement
      * @return
      */
     private ResultVo addUser(Admin admin, AddDto dto){
+        List<Admin> phoneList = this.list(new QueryWrapper<Admin>()
+                .eq("phone", dto.getPhone()));
+        if (!CollectionUtils.isEmpty(phoneList)) {
+            return BaseResultUtil.fail("手机号已存在，请检查");
+        }
         ResultData<AddUserResp> existRd = sysUserService.getByAccount(dto.getAccount());
         if (!ReturnMsg.SUCCESS.getCode().equals(existRd.getCode())) {
             return BaseResultUtil.fail("用户信息保存失败，原因：根据账号" + dto.getAccount() +
