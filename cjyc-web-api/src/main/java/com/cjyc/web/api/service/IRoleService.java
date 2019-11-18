@@ -34,4 +34,6 @@ public interface IRoleService extends IService<Role> {
      * @return
      */
     ResultVo<List<SelectUsersByRoleResp>> getUsersByRoleId(Long roleId);
+
+    ResultVo<List<SelectUsersByRoleResp>> getDeptRoleListByUserRoleId(Long roleId);
 }

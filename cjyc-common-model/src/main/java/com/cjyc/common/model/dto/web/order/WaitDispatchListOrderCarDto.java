@@ -1,6 +1,7 @@
 package com.cjyc.common.model.dto.web.order;
 
 import com.cjyc.common.model.dto.BasePageDto;
+import com.cjyc.common.model.dto.web.line.FromToCityDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -8,6 +9,7 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * <p>
@@ -67,7 +69,6 @@ public class WaitDispatchListOrderCarDto extends BasePageDto implements Serializ
     @ApiModelProperty(value = "预计出发时间（提车日期）结束")
     private Long endExpectStartDate;
 
-
     @ApiModelProperty(value = "提车方式:1 自送，2代驾上门，3拖车上门")
     private Integer pickType;
 
@@ -103,5 +104,8 @@ public class WaitDispatchListOrderCarDto extends BasePageDto implements Serializ
 
     @ApiModelProperty(value = "车牌号")
     private String plateNo;
+
+    @ApiModelProperty(value = "起始目的城市列表")
+    private List<FromToCityDto> fromToCityList;
 
 }

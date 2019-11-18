@@ -29,8 +29,6 @@ import java.util.stream.Collectors;
 @Service
 public class CsSysServiceImpl implements ICsSysService {
 
-    private  static final String TOP_ADMIN_DEPT = YmlProperty.get("cjkj.dept_admin_id");
-
     @Resource
     private ISysRoleService sysRoleService;
     @Resource
@@ -94,6 +92,7 @@ public class CsSysServiceImpl implements ICsSysService {
         if(CollectionUtils.isEmpty(set)){
             return bizScope;
         }
+        bizScope.setCode(BizScopeEnum.STORE.code);
         bizScope.setStoreIds(set);
         return bizScope;
     }

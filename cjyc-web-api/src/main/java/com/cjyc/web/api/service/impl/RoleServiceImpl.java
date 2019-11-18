@@ -86,6 +86,13 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
         return BaseResultUtil.success(list);
     }
 
+    @Override
+    public ResultVo<List<SelectUsersByRoleResp>> getDeptRoleListByUserRoleId(Long roleId) {
+        //sysDeptService.
+
+        return null;
+    }
+
     /**
      * 根据角色id查询获取用户列表信息
      * @param role

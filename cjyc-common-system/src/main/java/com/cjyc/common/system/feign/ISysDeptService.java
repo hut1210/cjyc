@@ -98,7 +98,7 @@ public interface ISysDeptService {
      * @author JPG
      * @since 2019/11/7 13:45
      */
-    @GetMapping("/getMultiLevelDeptList/{deptId}")
+    @GetMapping("/feign/uc/getMultiLevelRoles/{deptId}")
     ResultData<List<SelectDeptResp>> getMultiLevelDeptList(@PathVariable(value = "deptId") Long deptId);
 
     /**

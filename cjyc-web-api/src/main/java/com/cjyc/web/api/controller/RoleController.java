@@ -50,6 +50,8 @@ public class RoleController {
         return roleService.getUsersByRoleId(roleId);
     }
 
+
+
     @GetMapping("/getMenuList")
     @ApiOperation(value = "获取韵车系统资源列表")
     public ResultVo<List<MenuResp>> getMenuList() {
@@ -58,5 +60,20 @@ public class RoleController {
             return BaseResultUtil.fail(rd.getMsg());
         }
         return BaseResultUtil.success(rd.getData());
+    }
+
+
+    /**
+     * 查询角色对应机构下的角色列表
+     * @author JPG
+     * @since 2019/11/18 13:17
+     * @param roleId
+     */
+    @GetMapping("/dept/role/list/{roleId}")
+    @ApiOperation(value = "根据角色id获取关联用户列表信息")
+    public ResultVo<List<SelectUsersByRoleResp>> getDeptRoleListByUserRoleId(
+            @ApiParam(name = "roleId", value = "角色标识", required = true)
+            @PathVariable Long roleId) {
+        return roleService.getDeptRoleListByUserRoleId(roleId);
     }
 }

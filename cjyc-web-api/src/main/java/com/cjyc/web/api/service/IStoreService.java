@@ -88,5 +88,6 @@ public interface IStoreService extends IService<Store> {
      */
     ResultVo removeCoveredArea(StoreAreaQueryDto dto);
 
-    List<Store> getByRole(Long roleId);
+    List<Store> getListByRoleId(Long roleId);
+
 }

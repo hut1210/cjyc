@@ -97,9 +97,8 @@ public interface ISysUserService {
 
     /**
      * 根据机构及用户条件查询机构下所有角色的关联用户列表:分页
-     * @param selectPageUsersByDeptReq
      * @return
      */
-    @GetMapping("/feign/yc/getPageUsersByDept")
+    @PostMapping("/feign/yc/getPageUsersByDept")
     ResultData getPageUsersByDept(@RequestBody SelectPageUsersByDeptReq req);
 }
