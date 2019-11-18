@@ -1,8 +1,10 @@
 package com.cjyc.common.model.dao;
 
+import com.cjyc.common.model.dto.web.mineCarrier.MyWaybillDto;
 import com.cjyc.common.model.dto.web.waybill.*;
 import com.cjyc.common.model.entity.Waybill;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cjyc.common.model.vo.web.mineCarrier.MyWaybillVo;
 import com.cjyc.common.model.vo.web.waybill.*;
 import org.apache.ibatis.annotations.Param;
 
@@ -53,4 +55,11 @@ public interface IWaybillDao extends BaseMapper<Waybill> {
     List<TrunkMainListWaybillVo> findMainListTrunk(@Param("paramsDto") TrunkMainListWaybillDto paramsDto);
 
     List<TrunkSubListWaybillVo> findSubListTrunk(@Param("paramsDto")TrunkSubListWaybillDto paramsDto);
+
+    /**
+     * 获取承运商下的运单
+     * @param dto
+     * @return
+     */
+    List<MyWaybillVo> findByCarrierId(MyWaybillDto dto);
 }

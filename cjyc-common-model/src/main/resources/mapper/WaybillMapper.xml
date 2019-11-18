@@ -302,4 +302,35 @@
         group by w.id
     </select>
 
+    <!-- 查询该承运商下运单 -->
+    <select id="findByCarrierId" resultType="com.cjyc.common.model.vo.web.mineCarrier.MyWaybillVo"
+                parameterType="com.cjyc.common.model.dto.web.mineCarrier.MyWaybillDto">
+          SELECT
+            ww.id AS billId,
+            ww.no AS billNo,
+            ww.guide_line AS guideLine,
+            ww.car_num AS totalCarNum,
+            IFNULL( ( ww.car_num - sum( wt.car_num ) ), 0 ) AS allocateCarNum,
+            dc.name AS carrierName,
+            ww.remark AS remark,
+            ww.create_time AS createTime,
+            ww.create_user AS createUser
+        FROM
+            w_waybill ww
+        LEFT JOIN w_task wt ON wt.waybill_id = ww.id
+        LEFT JOIN d_carrier dc ON dc.id = ww.carrier_id
+        <where>
+            <if test="billNo != null and billNo.trim() != ''">
+                  ww.no = #{billNo}
+            </if>
+            <if test="carrierId != null ">
+                and dc.id = #{carrierId}
+            </if>
+            and dc.type = 2
+            and dc.business_state = 0
+            and dc.state = 2
+            group by wt.id
+        </where>
+    </select>
+
 </mapper>

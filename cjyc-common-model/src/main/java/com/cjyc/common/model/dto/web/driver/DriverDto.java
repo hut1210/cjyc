@@ -83,14 +83,12 @@ public class DriverDto implements Serializable {
     private String qualifiCertBackImg;
 
     @ApiModelProperty("车辆id(vehicleId)")
-    @NotNull(message = "车辆id不能为空")
     private Long vehicleId;
 
     @ApiModelProperty("车牌号")
     private String plateNo;
 
     @ApiModelProperty("车位数")
-    @NotNull(message = "车位数不能为空")
     private Integer defaultCarryNum;
 
 }

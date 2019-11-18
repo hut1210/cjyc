@@ -24,6 +24,7 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyCarVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyDriverVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyFreeDriverVo;
+import com.cjyc.common.model.vo.web.mineCarrier.MyWaybillVo;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.web.api.service.IMineCarrierService;
 import com.github.pagehelper.PageHelper;
@@ -67,9 +68,20 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
     private ICarrierDao carrierDao;
 
     @Resource
+    private IWaybillDao waybillDao;
+
+    @Resource
     private ISysUserService sysUserService;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
+
+    @Override
+    public ResultVo<PageVo<MyWaybillVo>> findWaybill(MyWaybillDto dto) {
+        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
+        List<MyWaybillVo> waybillVos = waybillDao.findByCarrierId(dto);
+        PageInfo<MyWaybillVo> pageInfo = new PageInfo<>(waybillVos);
+        return BaseResultUtil.success(pageInfo);
+    }
 
     @Override
     public ResultVo saveOrModifyDriver(MyDriverDto dto) {
@@ -186,7 +198,7 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
 
     @Override
     public ResultVo saveOrModifyVehicle(MyVehicleDto dto) {
-        if(dto.getVehicleId() == 0){
+        if(dto.getVehicleId() == null){
             Vehicle vehicle = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda().eq(Vehicle::getPlateNo,dto.getPlateNo()));
             if(vehicle != null){
                 return BaseResultUtil.fail("该车辆已添加，请核对");

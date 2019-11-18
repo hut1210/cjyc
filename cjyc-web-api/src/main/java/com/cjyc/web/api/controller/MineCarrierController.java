@@ -7,6 +7,7 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyCarVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyDriverVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyFreeDriverVo;
+import com.cjyc.common.model.vo.web.mineCarrier.MyWaybillVo;
 import com.cjyc.web.api.service.IMineCarrierService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -30,6 +31,12 @@ public class MineCarrierController {
 
     @Resource
     private IMineCarrierService mimeCarrierService;
+
+    @ApiOperation(value = "查询承运商下运单")
+    @PostMapping(value = "/findWaybill")
+    public ResultVo<PageVo<MyWaybillVo>> findWaybill(@Validated @RequestBody MyWaybillDto dto){
+        return mimeCarrierService.findWaybill(dto);
+    }
 
     @ApiOperation(value = "新增/修改承运商下司机",notes = "如果承运商id和登陆人id相同则为承运商添加，否则为业务员添加")
     @PostMapping(value = "/saveOrModifyDriver")

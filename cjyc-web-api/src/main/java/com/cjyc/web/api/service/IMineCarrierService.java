@@ -9,11 +9,18 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyCarVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyDriverVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyFreeDriverVo;
+import com.cjyc.common.model.vo.web.mineCarrier.MyWaybillVo;
 
 import java.util.List;
 
 public interface IMineCarrierService extends IService<Carrier> {
 
+    /**
+     * 查询该承运商下的运单
+     * @param dto
+     * @return
+     */
+    ResultVo<PageVo<MyWaybillVo>> findWaybill(MyWaybillDto dto);
     /**
      * 新增承运商下司机
      * @param dto
