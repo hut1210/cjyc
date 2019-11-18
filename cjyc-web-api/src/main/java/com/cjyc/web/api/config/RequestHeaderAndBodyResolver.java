@@ -9,6 +9,7 @@ import org.springframework.core.MethodParameter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.ModelAndViewContainer;
@@ -21,6 +22,9 @@ import java.util.Map;
 
 @Component
 public class RequestHeaderAndBodyResolver extends RequestResponseBodyMethodProcessor {
+
+    private static final String ROLE_ID = "roleId";
+    private static final String USER_ID = "userId";
 
     public RequestHeaderAndBodyResolver(List<HttpMessageConverter<?>> converters) {
         super(converters);
@@ -37,7 +41,12 @@ public class RequestHeaderAndBodyResolver extends RequestResponseBodyMethodProce
         Map<String, String> headerParams = Maps.newHashMapWithExpectedSize(10);
         Iterator<String> headerNames = webRequest.getHeaderNames();
         headerNames.forEachRemaining(headerName -> headerParams.put(headerName, webRequest.getHeader(headerName)));
-        BeanUtils.populate(result, headerParams);
+        if(headerParams.containsKey(ROLE_ID)){
+            BeanUtils.setProperty(result, ROLE_ID, headerParams.get(ROLE_ID));
+        }
+        if(headerParams.containsKey(USER_ID)){
+            BeanUtils.setProperty(result, USER_ID, headerParams.get(USER_ID));
+        }
         return result;
     }
 

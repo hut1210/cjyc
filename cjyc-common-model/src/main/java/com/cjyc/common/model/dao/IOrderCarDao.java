@@ -139,5 +139,4 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
      */
     List<TransportInfoOrderCarVo> findTransportStateByOrderId(Long orderId);
 
-
 }

@@ -69,7 +69,6 @@ public class DispatchController {
     }
 
 
-
     /**
      * 根据订单车辆ID查询可调度起始地和目的地
      */
@@ -78,8 +77,6 @@ public class DispatchController {
     public ResultVo<DispatchAddCarVo> getCarFromTo(@RequestBody CarFromToGetDto reqDto) {
         return orderService.getCarFromTo(reqDto);
     }
-
-
 
 
 }

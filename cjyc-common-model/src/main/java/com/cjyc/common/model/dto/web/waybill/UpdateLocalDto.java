@@ -6,6 +6,9 @@ import lombok.Data;
 @Data
 public class UpdateLocalDto {
 
+    @ApiModelProperty(value = "用户roleId", required = true)
+    private Long roleId;
+
     @ApiModelProperty(value = "用户userId", required = true)
     private Long userId;
 

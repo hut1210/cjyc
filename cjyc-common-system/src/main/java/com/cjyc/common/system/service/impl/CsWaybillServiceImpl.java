@@ -956,9 +956,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 throw new ParameterException("已完成", waybillCarId);
             }
 
-            //已装车的完成并结算
+            //已装车的完成
             if (waybillCar.getState() >= WaybillCarStateEnum.LOADED.code) {
-                //TODO 结算
                 copyWaybillCarEndCity(fullCity, waybillCar);
                 waybillCar.setEndAddress(paramsDto.getEndAddress());
 
@@ -982,6 +981,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 waybillCar.setState(WaybillCarStateEnum.WAIT_CONNECT.code);
                 waybillCarDao.updateById(waybillCar);
             }
+            //未装车的删除
             if (waybillCar.getState() < WaybillCarStateEnum.LOADED.code) {
                 //删除车辆
                 waybillCarDao.deleteById(waybillCarId);

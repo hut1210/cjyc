@@ -45,7 +45,8 @@ public class WaybillController {
      */
     @ApiOperation("提送车调度")
     @PostMapping("/local/save")
-    public ResultVo saveLocal(@RequestHeaderAndBody SaveLocalDto reqDto) {
+    public ResultVo saveLocal(@RequestBody SaveLocalDto reqDto) {
+
         //验证用户
         Admin admin = csAdminService.getByUserId(reqDto.getUserId(), true);
         if (admin == null || admin.getState() != AdminStateEnum.CHECKED.code) {
@@ -61,9 +62,9 @@ public class WaybillController {
      * @author JPG
      * @since 2019/10/15 11:53
      */
-    @ApiOperation("修改同城调度")
+    @ApiOperation(value = "修改同城调度", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @PostMapping("/local/update")
-    public ResultVo updateLocal(@RequestBody UpdateLocalDto reqDto) {
+    public ResultVo updateLocal(@RequestHeaderAndBody UpdateLocalDto reqDto) {
         return waybillService.updateLocal(reqDto);
     }
 
@@ -116,6 +117,7 @@ public class WaybillController {
     public ResultVo updateTrunkMidwayFinish(@RequestBody UpdateTrunkMidwayFinishDto reqDto) {
         return waybillService.updateTrunkMidwayFinish(reqDto);
     }
+
 
 
 
@@ -211,7 +213,6 @@ public class WaybillController {
                                                   @ApiParam(value = "运单类型：1提车运单，2干线运单，3送车运单") @PathVariable Integer waybillType) {
         return waybillService.getCarByType(orderCarId, waybillType);
     }
-
 
 
 

@@ -12,12 +12,13 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequestMapping(value = "/organization",
-        consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
         produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class WaybillController {
 
     @Autowired
     private IWaybillService waybillService;
+
+
 
 
 

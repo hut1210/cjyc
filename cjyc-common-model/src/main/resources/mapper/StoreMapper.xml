@@ -59,7 +59,7 @@
     </select>
     <select id="findOneBelongByAreaCode" resultType="com.cjyc.common.model.entity.Store">
         select
-        <include refid="Base_Column_List"/>
+        s.*
         from s_store_city_con con
         join s_store s on con.store_id = s.id
         where con.area_code = #{areaCode}

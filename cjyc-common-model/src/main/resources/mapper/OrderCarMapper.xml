@@ -262,7 +262,6 @@
         LEFT JOIN s_store s2 on s2.id = o.end_store_id
         LEFT JOIN s_city ct1 on oc.now_area_code = ct1.code
         left join b_admin m on m.id = o.check_user_id
-
         <where>
             and o.state >= 25
             <choose>

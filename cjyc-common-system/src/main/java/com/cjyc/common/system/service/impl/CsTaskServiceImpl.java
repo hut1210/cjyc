@@ -34,9 +34,10 @@ public class CsTaskServiceImpl implements ICsTaskService {
         String maxNo = taskDao.findMaxNo(waybillNo);
         if(maxNo == null){
             taskNo = waybillNo + "-" + "1";
+        }else{
+            String[] split = maxNo.split("-");
+            taskNo = split[0] + "-" + (Integer.valueOf(split[1]) + 1);
         }
-        String[] split = maxNo.split("-");
-        taskNo = split[0] + "-" + (Integer.valueOf(split[1]) + 1);
         return taskNo;
     }
 }
