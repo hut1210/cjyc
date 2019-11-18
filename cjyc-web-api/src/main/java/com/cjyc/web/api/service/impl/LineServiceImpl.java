@@ -99,10 +99,10 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
     }
 
     @Override
-    public ResultVo addOrUpdateLine(AddOrUpdateLineDto dto) {
+    public ResultVo saveOrModifyLine(AddOrUpdateLineDto dto) {
         Line line = null;
         //新增
-        if(dto.getLineId() == 0){
+        if(dto.getLineId() == null){
             line = lineDao.getLinePriceByCode(dto.getFromCode(),dto.getToCode());
             if(line != null){
                 return BaseResultUtil.getVo(ResultEnum.EXIST_LINE.getCode(),ResultEnum.EXIST_LINE.getMsg());

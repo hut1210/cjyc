@@ -76,7 +76,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
 
     @Override
     public ResultVo saveOrModifyCarrier(CarrierDto dto) {
-        if(dto.getCarrierId() == 0){
+        if(dto.getCarrierId() == null){
             List<Driver> driverList = driverDao.selectList(new QueryWrapper<Driver>().lambda()
                     .eq(Driver::getPhone,dto.getLinkmanPhone())
                     .or()

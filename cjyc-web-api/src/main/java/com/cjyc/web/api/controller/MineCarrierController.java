@@ -37,7 +37,7 @@ public class MineCarrierController {
         return mimeCarrierService.saveOrModifyDriver(dto);
     }
 
-    @ApiOperation(value = "查询承运商下司机",notes = "如果carrierId为空，则是承运商管理员登陆，需要把loginId转成carrierId,否则是韵车内部登陆")
+    @ApiOperation(value = "查询承运商下司机")
     @PostMapping(value = "/findPageDriver")
     public ResultVo<PageVo<MyDriverVo>> findPageDriver(@RequestBody QueryMyDriverDto dto){
         return mimeCarrierService.findPageDriver(dto);

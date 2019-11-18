@@ -104,7 +104,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
                 return BaseResultUtil.getVo(ResultEnum.EXIST_ENTERPRISE_CARRIER.getCode(),"该司机已存在于["+carrierVo.getName()+"]不可创建");
             }
         }
-        if(dto.getDriverId() == 0){
+        if(dto.getDriverId() == null){
             //保存散户司机
             Driver driver = new Driver();
             BeanUtils.copyProperties(dto,driver);

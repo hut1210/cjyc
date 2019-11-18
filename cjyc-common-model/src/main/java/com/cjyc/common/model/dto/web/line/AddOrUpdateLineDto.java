@@ -17,7 +17,6 @@ public class AddOrUpdateLineDto implements Serializable {
     private Long loginId;
 
     @ApiModelProperty("班线id(lineId)")
-    @NotNull(message = "班线id不能为空")
     private Long lineId;
 
     @ApiModelProperty("起始城市编码")

@@ -83,7 +83,7 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
         if(count <= 0){
             return BaseResultUtil.getVo(ResultEnum.EXIST_ENTERPRISE_CARRIER.getCode(),ResultEnum.EXIST_ENTERPRISE_CARRIER.getMsg());
         }
-        if(dto.getDriverId() == 0){
+        if(dto.getDriverId() == null){
             //保存司机
             Driver driver = new Driver();
             BeanUtils.copyProperties(dto,driver);

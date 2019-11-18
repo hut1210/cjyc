@@ -53,7 +53,7 @@ public class CouponServiceImpl extends ServiceImpl<ICouponDao,Coupon> implements
 
     @Override
     public ResultVo saveOrModifyCoupon(CouponDto dto) {
-        if(dto.getCouponId() == 0){
+        if(dto.getCouponId() == null){
             //保存
             Coupon coupon = new Coupon();
             coupon = encapCoupon(coupon,dto);

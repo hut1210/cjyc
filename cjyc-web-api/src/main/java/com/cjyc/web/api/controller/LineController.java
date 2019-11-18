@@ -66,9 +66,9 @@ public class LineController {
     }
 
     @ApiOperation(value = "新增/更新班线")
-    @PostMapping(value = "/addOrUpdateLine")
-    public ResultVo addOrUpdateLine(@Validated @RequestBody AddOrUpdateLineDto dto){
-        return lineService.addOrUpdateLine(dto);
+    @PostMapping(value = "/saveOrModifyLine")
+    public ResultVo saveOrModifyLine(@Validated @RequestBody AddOrUpdateLineDto dto){
+        return lineService.saveOrModifyLine(dto);
     }
 
     @ApiOperation(value = "删除班线")
