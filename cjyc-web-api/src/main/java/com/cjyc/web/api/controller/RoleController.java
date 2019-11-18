@@ -5,6 +5,7 @@ import com.cjkj.common.model.ReturnMsg;
 import com.cjkj.usercenter.dto.asc.MenuResp;
 import com.cjkj.usercenter.dto.yc.SelectUsersByRoleResp;
 import com.cjyc.common.model.dto.web.role.AddRoleDto;
+import com.cjyc.common.model.entity.Role;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.role.AdminListVo;
@@ -75,5 +76,15 @@ public class RoleController {
             @ApiParam(name = "roleId", value = "角色标识", required = true)
             @PathVariable Long roleId) {
         return roleService.getDeptRoleListByUserRoleId(roleId);
+    }
+
+    /**
+     * 查询所有角色信息列表
+     * @return
+     */
+    @GetMapping("/getAllList")
+    @ApiOperation(value = "获取所有角色信息列表")
+    public ResultVo<List<Role>> getAllList() {
+        return roleService.getAllList();
     }
 }

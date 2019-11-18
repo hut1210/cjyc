@@ -36,4 +36,10 @@ public interface IRoleService extends IService<Role> {
     ResultVo<List<SelectUsersByRoleResp>> getUsersByRoleId(Long roleId);
 
     ResultVo<List<SelectUsersByRoleResp>> getDeptRoleListByUserRoleId(Long roleId);
+
+    /**
+     * 查询所有角色信息列表
+     * @return
+     */
+    ResultVo<List<Role>> getAllList();
 }

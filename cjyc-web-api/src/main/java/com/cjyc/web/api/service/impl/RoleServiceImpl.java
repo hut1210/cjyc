@@ -1,5 +1,6 @@
 package com.cjyc.web.api.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
@@ -91,6 +92,11 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
         //sysDeptService.
 
         return null;
+    }
+
+    @Override
+    public ResultVo<List<Role>> getAllList() {
+        return BaseResultUtil.success(this.list());
     }
 
     /**
