@@ -167,7 +167,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
 
     @Override
     public ResultVo saveOrModifyKey(KeyCustomerDto dto) {
-        if(dto.getCustomerId() == 0){
+        if(dto.getCustomerId() == null){
             //新增大客户
             Customer customer = new Customer();
             BeanUtils.copyProperties(dto,customer);
@@ -313,7 +313,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         Customer c = customerDao.selectOne(new QueryWrapper<Customer>().lambda()
                 .eq(Customer::getContactPhone,dto.getContactPhone())
                 .ne(Customer::getType,1)
-                .ne((dto.getCustomerId() != 0),Customer::getId,dto.getCustomerId()));
+                .ne((dto.getCustomerId() != null),Customer::getId,dto.getCustomerId()));
         if(c != null){
             return BaseResultUtil.getVo(ResultEnum.EXIST_CUSTOMER.getCode(),ResultEnum.EXIST_CUSTOMER.getMsg());
         }
@@ -350,7 +350,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                 return BaseResultUtil.getVo(ResultEnum.UPGRADE_CUSTOMER.getCode(),ResultEnum.UPGRADE_CUSTOMER.getMsg());
             }
         }
-        if(dto.getCustomerId() == 0){
+        if(dto.getCustomerId() == null){
             return addPartner(dto);
         }else{
             //修改

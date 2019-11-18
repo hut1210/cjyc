@@ -16,7 +16,6 @@ public class PartnerDto implements Serializable {
     private Boolean flag;
 
     @ApiModelProperty("合伙人id(customerId)")
-    @NotNull(message = "合伙人id(customerId)不能为空")
     private Long customerId;
 
     @ApiModelProperty("登陆用户id(loginId)")

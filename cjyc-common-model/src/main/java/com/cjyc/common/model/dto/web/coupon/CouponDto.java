@@ -14,7 +14,6 @@ public class CouponDto implements Serializable {
     private static final long serialVersionUID = 14175756539931543L;
 
     @ApiModelProperty(value = "优惠券主键id")
-    @NotNull(message = "优惠券主键id不能为空")
     private Long couponId;
 
     @ApiModelProperty(value = "登陆用户id(loginId)")

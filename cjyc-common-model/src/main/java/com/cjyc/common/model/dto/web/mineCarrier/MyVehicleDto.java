@@ -16,18 +16,15 @@ public class MyVehicleDto implements Serializable {
     private Long loginId;
 
     @ApiModelProperty("承运商id")
-    @NotNull(message = "承运商id不能为空")
     private Long carrierId;
 
     @ApiModelProperty("车辆id")
     private Long vehicleId;
 
     @ApiModelProperty("车牌号")
-    @NotBlank(message = "车牌号不能为空")
     private String plateNo;
 
     @ApiModelProperty("车位数")
-    @NotNull(message = "车位数不能为空")
     private Integer defaultCarryNum;
 
     @ApiModelProperty("司机id(driverId)")

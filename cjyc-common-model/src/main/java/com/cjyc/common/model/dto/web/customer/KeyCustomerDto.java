@@ -20,7 +20,6 @@ public class KeyCustomerDto implements Serializable {
     private Long loginId;
 
     @ApiModelProperty("大客户主键id(customerId)")
-    @NotNull(message = "大客户主键id(customerId)不能为空")
     private Long customerId;
 
      @NotBlank(message = "客户全称不能为空")

@@ -19,11 +19,9 @@ public class DriverDto implements Serializable {
     private static final long serialVersionUID = 4826078276921799480L;
 
     @ApiModelProperty("司机id(driverId)")
-    @NotNull(message = "司机id(driverId)不能为空")
     private Long driverId;
 
     @ApiModelProperty("承运商id(carrierId)")
-    @NotNull(message = "承运商id不能为空")
     private Long carrierId;
 
     @ApiModelProperty("当前登陆用户id(loginId)")
