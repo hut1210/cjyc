@@ -5,6 +5,7 @@ import com.cjyc.common.model.dto.web.waybill.*;
 import com.cjyc.common.model.entity.Waybill;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.vo.web.mineCarrier.MyWaybillVo;
+import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.waybill.*;
 import org.apache.ibatis.annotations.Param;
 
@@ -29,7 +30,7 @@ public interface IWaybillDao extends BaseMapper<Waybill> {
      * @return
      */
     int updateStateBatchByNos(@Param("state") int state, @Param("waybillNoList") List<String> waybillNoList);
-
+    int updateStateBatchByIds(@Param("state") int code, @Param("waybillIdList") List<Long> waybillIdList);
     /**
      * 批量根据运单号查询未承接运单
      * @author JPG
@@ -49,6 +50,8 @@ public interface IWaybillDao extends BaseMapper<Waybill> {
 
     List<TrunkListWaybillVo> findListTrunk(@Param("paramsDto") TrunkListWaybillDto paramsDto);
 
+    List<TrunkListWaybillVo> findLeftListTrunk(TrunkListWaybillDto paramsDto);
+
     WaybillVo findVoById(Long id);
 
 
@@ -62,4 +65,9 @@ public interface IWaybillDao extends BaseMapper<Waybill> {
      * @return
      */
     List<MyWaybillVo> findByCarrierId(MyWaybillDto dto);
+    List<Waybill> findListByIds(@Param("waybillIdList") List<Long> waybillIdList);
+
+    int updateStateById(@Param("state") int state, @Param("waybillId") Long waybillId);
+
+    ResultVo<List<CrWaybillVo>> findCrListByCarrierId(@Param("paramsDto") CrWaybillDto paramsDto);
 }

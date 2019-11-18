@@ -104,7 +104,7 @@
             cc.user_id AS userId,
             cc.customer_no AS customerNo,
             cc.NAME AS NAME,
-            cc.alias AS alias,
+            cc.state AS state,
             cc.source AS source,
             cc.contact_man AS contactMan,
             cc.contact_phone AS contactPhone,
@@ -121,8 +121,8 @@
             <if test="name != null and name.trim() != ''">
                 and  cc.name = #{name}
             </if>
-            <if test="alias != null  and alias.trim() != ''">
-                and  cc.alias = #{alias}
+            <if test="state != null">
+                and  cc.state = #{state}
             </if>
             <if test="contactMan != null  and contactMan.trim() != ''">
                 and cc.contact_man = #{contactMan}
