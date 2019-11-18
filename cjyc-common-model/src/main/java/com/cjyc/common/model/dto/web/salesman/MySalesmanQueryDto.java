@@ -1,6 +1,7 @@
 package com.cjyc.common.model.dto.web.salesman;
 
 import com.cjyc.common.model.dto.BasePageDto;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -12,15 +13,16 @@ import javax.validation.constraints.Pattern;
  * @Author LiuXingXiang
  * @Date 2019/11/12 18:27
  **/
+@ApiModel
 @Data
 public class MySalesmanQueryDto extends BasePageDto {
     private static final long serialVersionUID = 2276066081881754008L;
-    @ApiModelProperty(value = "登录账号")
-    private String account;
+    @ApiModelProperty(value = "用户ID")
+    private String userId;
 
-    @ApiModelProperty(value = "业务中心ID", required = true)
+    @ApiModelProperty(value = "角色ID", required = true)
     @NotNull(message = "业务中心ID不能为空")
-    private Long deptId;
+    private Long roleId;
 
     @ApiModelProperty(value = "姓名")
     private String name;

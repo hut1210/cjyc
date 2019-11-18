@@ -60,7 +60,6 @@ public class AdminController {
         //发送推送信息
         return BaseResultUtil.success(cacheAdminVo);
     }
-
     /**
      * 查询业务中心业务员
      *
@@ -73,6 +72,17 @@ public class AdminController {
         List<Admin> list = csAdminService.getListByStoreId(storeId);
         //发送推送信息
         return BaseResultUtil.success(list);
+    }
+    /**
+     * 根据userName查询业务员
+     * @author JPG
+     */
+    @ApiOperation(value = "根据手机号查询业务员")
+    @PostMapping(value = "/get/{phone}")
+    public ResultVo<Admin> get(@PathVariable String phone) {
+        Admin admin = csAdminService.getByPhone(phone, true);
+        //发送推送信息
+        return BaseResultUtil.success(admin);
     }
 
     @ApiOperation(value = "分页查询指定业务中心下的业务员")
@@ -95,6 +105,4 @@ public class AdminController {
     public ResultVo deliverySalesman(@RequestBody TypeSalesmanDto dto){
         return adminService.deliverySalesman(dto);
     }
-
-
 }

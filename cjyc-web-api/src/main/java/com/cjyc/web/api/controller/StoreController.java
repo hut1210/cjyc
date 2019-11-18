@@ -51,14 +51,15 @@ public class StoreController {
         return BaseResultUtil.success(list);
     }
 
+
     /**
-     * 根据角色查询业务中心
+     * 根据角色查询角色所属机构下属业务中心
      * @author JPG
      */
     @ApiOperation(value = "根据角色查询业务中心")
-    @PostMapping(value = "/get/by/role")
-    public ResultVo<List<Store>> getByRole(@RequestHeader(required = false) Long roleId) {
-        List<Store> list = storeService.getByRole(roleId);
+    @PostMapping(value = "/get/by/{roleId}")
+    public ResultVo<List<Store>> getByRole(@PathVariable Long roleId) {
+        List<Store> list = storeService.getListByRoleId(roleId);
         return BaseResultUtil.success(list);
     }
 

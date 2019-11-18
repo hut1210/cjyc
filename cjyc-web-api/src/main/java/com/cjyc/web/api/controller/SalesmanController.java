@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-@Api(tags = "业务员")
+@Api(tags = "业务员-系统用户")
 @RestController
 @RequestMapping("/salesman")
 public class SalesmanController {
