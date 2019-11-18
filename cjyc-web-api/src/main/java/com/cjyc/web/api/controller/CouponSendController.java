@@ -15,7 +15,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-@Api(tags = "发放优惠券")
+@Api(tags = "优惠券-发放")
 @CrossOrigin
 @RestController
 @RequestMapping("/couponSend")

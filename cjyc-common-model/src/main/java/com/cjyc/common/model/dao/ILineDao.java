@@ -35,5 +35,7 @@ public interface ILineDao extends BaseMapper<Line> {
      */
     List<LineVo> getLineByTerm(SelectLineDto dto);
 
-    List<Line> findListByTwoCity(@Param("paramsDto") ListLineDto paramsDto);
+    Line findOneByCity(@Param("startCityCode") String startCityCode, @Param("endCityCode")String endCityCode);
+
+    List<Line> findListByCity(@Param("startCityCode") String startCityCode, @Param("endCityCode")String endCityCode);
 }

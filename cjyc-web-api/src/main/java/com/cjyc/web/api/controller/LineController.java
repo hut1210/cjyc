@@ -29,7 +29,7 @@ import java.util.List;
  *
  * @author JPG
  */
-@Api(tags = "线路")
+@Api(tags = "基础数据-线路")
 @RestController
 @RequestMapping(value = "/line",
         produces = MediaType.APPLICATION_JSON_UTF8_VALUE)

@@ -50,7 +50,7 @@ public class SaveTrunkWaybillCarDto implements Serializable {
     @ApiModelProperty(value = "出发地业务中心ID")
     private Long startStoreId;
 
-      @ApiModelProperty(value = "区县编码")
+    @ApiModelProperty(value = "区县编码")
     private String endAreaCode;
 
     @ApiModelProperty(value = "卸车地址")

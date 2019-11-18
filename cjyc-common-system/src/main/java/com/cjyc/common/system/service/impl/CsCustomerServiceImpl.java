@@ -63,7 +63,7 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
         ResultData<AddUserResp> resultData = sysUserService.save(addUserReq);
 
         if(resultData == null || resultData.getData() == null || resultData.getData().getUserId() == null){
-            throw new ServerException("添加用户失败");
+            throw new ServerException(resultData == null ? "添加用户失败" : resultData.getMsg());
         }
         customer.setUserId(resultData.getData().getUserId());
         customerDao.insert(customer);

@@ -70,4 +70,23 @@ public class CsStoreServiceImpl implements ICsStoreService {
     public List<Long> getAllDeptId() {
         return storeDao.findAllDeptId();
     }
+
+    /**
+     * 获取所属业务中心
+     * @author JPG
+     * @since 2019/11/15 10:04
+     * @param storeId
+     * @param areaCode
+     */
+    @Override
+    public Long getBelongStoreId(Long storeId, String areaCode) {
+        if(storeId != null && storeId > 0){
+            return storeId;
+        }
+        Store store = storeDao.findOneBelongByAreaCode(areaCode);
+        if(store == null){
+            return null;
+        }
+        return storeId;
+    }
 }

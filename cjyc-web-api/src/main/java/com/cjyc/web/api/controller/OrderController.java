@@ -3,12 +3,14 @@ package com.cjyc.web.api.controller;
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.enums.AdminStateEnum;
+import com.cjyc.common.model.enums.message.PushMessageEnum;
 import com.cjyc.common.model.exception.ParameterException;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.order.*;
 import com.cjyc.common.system.service.ICsAdminService;
+import com.cjyc.common.system.service.ICsPushMsgService;
 import com.cjyc.web.api.service.IOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -31,9 +33,10 @@ public class OrderController {
 
     @Resource
     private IOrderService orderService;
-
     @Resource
     private ICsAdminService csAdminService;
+    @Resource
+    private ICsPushMsgService csPushMsgService;
 
 
     /**
@@ -74,7 +77,9 @@ public class OrderController {
 
         ResultVo resultVo = orderService.commit(reqDto);
 
-        //发送推送信息
+        //发送消息给用户
+        //csPushMsgService.send(reqDto.getCustomerPhone(), PushMessageEnum.COMMIT_ORDER.getMsg(resultVo.getData().toString()));
+        //发送短信
         return resultVo;
     }
 
@@ -174,7 +179,7 @@ public class OrderController {
         return orderService.carlist(reqDto);
     }
     /**
-     * 查询订单车辆运输状态-根据ID
+     * 查询订单车辆运输信息-根据ID
      * @author JPG
      */
     @ApiOperation(value = "查询订单车辆运输状态-根据ID")
@@ -200,13 +205,6 @@ public class OrderController {
         reqDto.setToUserName(toUserName);
         return orderService.allot(reqDto);
     }
-
-
-
-
-    /**
-     * TODO 订单运输信息
-     */
 
 
     /**

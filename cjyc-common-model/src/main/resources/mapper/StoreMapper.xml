@@ -30,7 +30,8 @@
     </sql>
     <select id="findByCityCode" resultType="com.cjyc.common.model.entity.Store">
         select
-        <include refid="Base_Column_List"/>
+        <include refid="Base_Column_List"/>,
+        concat(province,city,area,detail_addr) as fullAddress
         from s_store
         where city_code =#{cityCode}
         and state = 2
@@ -58,7 +59,7 @@
     </select>
     <select id="findOneBelongByAreaCode" resultType="com.cjyc.common.model.entity.Store">
         select
-        <include refid="Base_Column_List"/>
+        s.*
         from s_store_city_con con
         join s_store s on con.store_id = s.id
         where con.area_code = #{areaCode}
@@ -74,6 +75,15 @@
         select
         dept_id
         from s_store
+    </select>
+    <select id="findByIds" resultType="com.cjyc.common.model.entity.Store">
+        select * from s_store
+        <where>
+            and id in
+            <foreach collection="set" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
     </select>
 
 </mapper>

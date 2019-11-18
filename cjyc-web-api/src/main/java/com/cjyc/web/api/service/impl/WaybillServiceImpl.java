@@ -2,7 +2,7 @@ package com.cjyc.web.api.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.dao.*;
-import com.cjyc.common.model.dto.web.waybill.CysWaybillDto;
+import com.cjyc.common.model.dto.web.waybill.CrWaybillDto;
 import com.cjyc.common.model.dto.web.waybill.*;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -15,6 +15,7 @@ import com.cjyc.common.system.service.ICsWaybillService;
 import com.cjyc.web.api.service.IWaybillService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,7 +59,7 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
      * @since 2019/10/17 9:16
      */
     @Override
-    public ResultVo saveTrunk(SaveTrunkDto paramsDto) {
+    public ResultVo saveTrunk(SaveTrunkWaybillDto paramsDto) {
         return csWaybillService.saveTrunk(paramsDto);
     }
     @Override
@@ -67,13 +68,18 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
     }
 
     @Override
-    public ResultVo updateTrunk(UpdateTrunkDto paramsDto) {
+    public ResultVo updateTrunk(UpdateTrunkWaybillDto paramsDto) {
         return csWaybillService.updateTrunk(paramsDto);
     }
 
     @Override
-    public ResultVo updateTrunkMidwayFinish(updateTrunkMidwayFinishDto paramsDto) {
+    public ResultVo updateTrunkMidwayFinish(UpdateTrunkMidwayFinishDto paramsDto) {
         return  csWaybillService.updateTrunkMidwayFinish(paramsDto);
+    }
+
+    @Override
+    public ResultVo trunkMidwayUnload(TrunkMidwayUnload paramsDto) {
+        return csWaybillService.trunkMidwayUnload(paramsDto);
     }
 
     @Override
@@ -89,9 +95,11 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
     }
 
     @Override
-    public ResultVo<List<CysWaybillVo>> cysList(CysWaybillDto paramsDto) {
+    public ResultVo<List<CrWaybillVo>> crList(CrWaybillDto paramsDto) {
+        //根据角色查询承运商ID
 
-        return null;
+        PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
+        return waybillDao.findCrListByCarrierId(paramsDto);
     }
 
     @Override
@@ -132,7 +140,12 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
     @Override
     public ResultVo<PageVo<TrunkListWaybillVo>> trunklist(TrunkListWaybillDto paramsDto) {
         PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
-        List<TrunkListWaybillVo> list = waybillDao.findListTrunk(paramsDto);
+        List<TrunkListWaybillVo> list = null;
+        if(StringUtils.isBlank(paramsDto.getDriverName()) && StringUtils.isBlank(paramsDto.getDriverPhone()) && StringUtils.isBlank(paramsDto.getVehiclePlateNo())){
+            list = waybillDao.findLeftListTrunk(paramsDto);
+        }else{
+            list = waybillDao.findListTrunk(paramsDto);
+        }
         PageInfo<TrunkListWaybillVo> pageInfo = new PageInfo<>(list);
         if(paramsDto.getCurrentPage() > pageInfo.getPages()){
             pageInfo.setList(null);
@@ -144,7 +157,7 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
     @Override
     public ResultVo<PageVo<TrunkCarListWaybillCarVo>> trunkCarlist(TrunkListWaybillCarDto paramsDto) {
         PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
-        List<TrunkCarListWaybillCarVo> list = waybillCarDao.findTrunkList();
+        List<TrunkCarListWaybillCarVo> list = waybillCarDao.findTrunkCarList(paramsDto);
         PageInfo<TrunkCarListWaybillCarVo> pageInfo = new PageInfo<>(list);
         if(paramsDto.getCurrentPage() > pageInfo.getPages()){
             pageInfo.setList(null);
@@ -156,14 +169,15 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
     public ResultVo<WaybillVo> get(Long waybillId) {
         WaybillVo waybillVo = waybillDao.findVoById(waybillId);
         List<WaybillCarVo> waybillCarVo = waybillCarDao.findVoByWaybillId(waybillId);
-        waybillVo.setList(waybillCarVo);
+        if(waybillCarVo != null){
+            waybillVo.setList(waybillCarVo);
+        }
         return BaseResultUtil.success(waybillVo);
     }
 
     @Override
     public ResultVo<List<WaybillCarVo> > getCarByType(Long orderCarId, Integer waybillType) {
        List<WaybillCarVo> list =waybillCarDao.findVoByType(orderCarId, waybillType);
-
         return BaseResultUtil.success(list);
     }
 

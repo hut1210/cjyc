@@ -1,8 +1,14 @@
 package com.cjyc.web.api.service;
 
 import com.cjyc.common.model.dto.web.OperateDto;
-import com.cjyc.common.model.dto.web.carrier.*;
+import com.cjyc.common.model.dto.web.carrier.CarrierDto;
+import com.cjyc.common.model.dto.web.carrier.DispatchCarrierDto;
+import com.cjyc.common.model.dto.web.carrier.SeleCarrierDto;
+import com.cjyc.common.model.dto.web.carrier.TrailCarrierDto;
+import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.carrier.TrailCarrierVo;
+
 import com.cjyc.common.model.vo.web.carrier.BaseCarrierVo;
 
 /**
@@ -38,7 +44,7 @@ public interface ICarrierService {
      * @param carrierId
      * @return
      */
-    ResultVo<BaseCarrierVo> showBaseCarrier(Long carrierId);
+    ResultVo showBaseCarrier(Long carrierId);
 
     /**
      * 重置承运商超级管理员密码
@@ -59,5 +65,5 @@ public interface ICarrierService {
      * @param dto
      * @return
      */
-    ResultVo trailDriver(TrailCarrierDto dto);
+    ResultVo<PageVo<TrailCarrierVo>> trailDriver(TrailCarrierDto dto);
 }

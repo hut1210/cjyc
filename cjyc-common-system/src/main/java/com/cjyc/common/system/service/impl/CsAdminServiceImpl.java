@@ -81,7 +81,11 @@ public class CsAdminServiceImpl implements ICsAdminService {
         }
         BeanUtils.copyProperties(admin, cacheAdminVo);
 
-        String bizScope = csSysService.getBizScopeByRoleId(roleId, true);
         return cacheAdminVo;
+    }
+
+    @Override
+    public Admin getByPhone(String username, boolean isSearchCache) {
+        return adminDao.findByPhone(username);
     }
 }

@@ -10,6 +10,7 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.waybill.*;
 import com.cjyc.common.system.service.ICsAdminService;
+import com.cjyc.web.api.annotations.RequestHeaderAndBody;
 import com.cjyc.web.api.service.IWaybillService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -45,6 +46,7 @@ public class WaybillController {
     @ApiOperation("提送车调度")
     @PostMapping("/local/save")
     public ResultVo saveLocal(@RequestBody SaveLocalDto reqDto) {
+
         //验证用户
         Admin admin = csAdminService.getByUserId(reqDto.getUserId(), true);
         if (admin == null || admin.getState() != AdminStateEnum.CHECKED.code) {
@@ -60,9 +62,9 @@ public class WaybillController {
      * @author JPG
      * @since 2019/10/15 11:53
      */
-    @ApiOperation("修改同城调度")
+    @ApiOperation(value = "修改同城调度", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @PostMapping("/local/update")
-    public ResultVo updateLocal(@RequestBody UpdateLocalDto reqDto) {
+    public ResultVo updateLocal(@RequestHeaderAndBody UpdateLocalDto reqDto) {
         return waybillService.updateLocal(reqDto);
     }
 
@@ -75,7 +77,7 @@ public class WaybillController {
      */
     @ApiOperation("干线调度")
     @PostMapping("/trunk/save")
-    public ResultVo saveTrunk(@RequestBody SaveTrunkDto reqDto) {
+    public ResultVo saveTrunk(@RequestBody SaveTrunkWaybillDto reqDto) {
         return waybillService.saveTrunk(reqDto);
     }
 
@@ -87,21 +89,35 @@ public class WaybillController {
      */
     @ApiOperation("修改干线调度")
     @PostMapping("/trunk/update")
-    public ResultVo updateTrunk(@RequestBody UpdateTrunkDto reqDto) {
+    public ResultVo updateTrunk(@RequestBody UpdateTrunkWaybillDto reqDto) {
         return waybillService.updateTrunk(reqDto);
     }
 
+
+    /**
+     * 中途卸载车辆
+     *
+     * @author JPG
+     * @since 2019/10/15 11:53
+     */
+    @ApiOperation("中途卸载车辆")
+    @PostMapping("/trunk/midway/unload")
+    public ResultVo trunkMidwayUnload(@RequestBody TrunkMidwayUnload reqDto) {
+        return waybillService.trunkMidwayUnload(reqDto);
+    }
     /**
      * 中止干线运单并结算
      *
      * @author JPG
      * @since 2019/10/15 11:53
      */
+    @Deprecated
     @ApiOperation("中止干线运单并结算")
     @PostMapping("/trunk/midway/finish")
-    public ResultVo updateTrunkMidwayFinish(@RequestBody updateTrunkMidwayFinishDto reqDto) {
+    public ResultVo updateTrunkMidwayFinish(@RequestBody UpdateTrunkMidwayFinishDto reqDto) {
         return waybillService.updateTrunkMidwayFinish(reqDto);
     }
+
 
 
 
@@ -212,14 +228,13 @@ public class WaybillController {
 
 
 
-
     /**
      * 我的运单-承运商
      */
     @ApiOperation(value = "我的运单-承运商")
-    @PostMapping(value = "/cys/list")
-    public ResultVo<List<CysWaybillVo>> cysList(@RequestBody CysWaybillDto reqDto) {
-        return waybillService.cysList(reqDto);
+    @PostMapping(value = "/cr/list")
+    public ResultVo<List<CrWaybillVo>> crList(@RequestBody CrWaybillDto reqDto) {
+        return waybillService.crList(reqDto);
     }
 
 

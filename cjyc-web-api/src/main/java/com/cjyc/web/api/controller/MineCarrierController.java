@@ -23,7 +23,7 @@ import java.util.List;
  *  @Date: 2019/11/8 18:33
  *  @Description:我的承运商下司机与车辆
  */
-@Api(tags = "我的承运商下司机与车辆")
+@Api(tags = "司机-我的承运商模块")
 @CrossOrigin
 @RestController
 @RequestMapping("/mineCarrier")

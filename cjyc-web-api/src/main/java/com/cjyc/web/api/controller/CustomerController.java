@@ -24,7 +24,7 @@ import java.util.List;
  *  @Date: 2019/9/29 14:37
  *  @Description: 韵车C端客户/大客户/合伙人
  */
-@Api(tags = "韵车C端客户/大客户/合伙人")
+@Api(tags = "客户")
 @CrossOrigin
 @RestController
 @RequestMapping("/customer")

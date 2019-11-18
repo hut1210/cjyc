@@ -24,7 +24,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
-@Api(tags = "城市")
+@Api(tags = "基础数据-城市")
 @Slf4j
 @RestController
 @RequestMapping(value = "/city",

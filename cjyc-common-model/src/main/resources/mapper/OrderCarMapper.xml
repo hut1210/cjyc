@@ -202,6 +202,42 @@
     <!--查询待调度车辆列表-->
     <select id="findWaitDispatchCarList" resultType="com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo">
         select
+        (case
+        when oc.pick_mode = 3 then 100
+        when oc.pick_mode = 2 then
+        (case
+        when oc.state &lt;= 5 then 21
+        when oc.state = 15 then 23
+        when oc.state &gt;= 25 then 25 end)
+        else
+        (case
+        when oc.state &lt;= 5 then 1
+        when oc.state = 10 then 2
+        when oc.state = 15 then 3
+        when oc.state &gt;= 25 then 5 end)end ) as pickTransportState,
+
+        (case
+        when oc.trunk_state = 10 then 100
+        when oc.trunk_state = 5 then 5
+        else (case
+        when oc.state &lt;= 25 and oc.trunk_state = 1 then 1
+        when oc.state &lt;= 25 and oc.trunk_state > 1 then 2
+        when oc.state = 35 then 2
+        when oc.state = 40 then 3
+        when oc.state &gt; 40 then 5 end)end ) as trunkTransportState,
+
+        (case
+        when oc.back_mode = 3 then 100
+        when oc.back_mode = 2 then (case
+        when oc.state = 45 then 21
+        when oc.state = 55 then 23
+        when oc.state &gt;= 100 then 25 end)
+        else (case
+        when oc.state &lt;= 45 and oc.back_state = 1 then 1
+        when oc.state &lt;= 45 and oc.back_state > 1 then 2
+        when oc.state = 50 then 2
+        when oc.state = 55 then 3
+        when oc.state &gt;= 100 then 5 end)end ) as backTransportState,
         o.source as source,
         o.start_store_id as startStoreId,
         o.start_store_name as startStoreName,
@@ -218,18 +254,17 @@
         concat(s1.province, s1.city, s1.area, s1.detail_addr) as startStoreFullAddress,
         concat(s2.province, s2.city, s2.area, s2.detail_addr) as endStoreFullAddress,
         ct1.parent_name as nowCityName,
+        m.phone as checkUserPhone,
         oc.*
         from w_order o
         join w_order_car oc on oc.order_id = o.id
         LEFT JOIN s_store s1 on s1.id = o.start_store_id
         LEFT JOIN s_store s2 on s2.id = o.end_store_id
         LEFT JOIN s_city ct1 on oc.now_area_code = ct1.code
-
+        left join b_admin m on m.id = o.check_user_id
         <where>
+            and o.state >= 25
             <choose>
-                <when test="paramsDto.signState == 0">
-                    and 1 = 1
-                </when>
                 <when test="paramsDto.signState == 1">
                     and o.state between 25 and 99
                 </when>
@@ -237,7 +272,6 @@
                     and o.state = 100
                 </when>
                 <otherwise>
-                    and 1 != 1
                 </otherwise>
             </choose>
 
@@ -796,5 +830,52 @@
                 where wc.state BETWEEN 15 and 90
                 ) as t on t.order_car_id = oc.id
         where oc.order_id = #{orderId}
+    </select>
+    <select id="findVoListByIds" resultType="com.cjyc.common.model.vo.web.OrderCarVo">
+        select
+        o.customer_id as customerId,
+        o.customer_name as customerName,
+        o.customer_phone as customerPhone,
+        o.customer_type as customerType,
+        o.input_store_id as inputStoreId,
+        o.input_store_name as inputStoreName,
+        o.start_province as startProvince,
+        o.start_province_code as startProvinceCode,
+        o.start_city as startCity,
+        o.start_city_code as startCityCode,
+        o.start_area as startArea,
+        o.start_area_code as startAreaCode,
+        o.start_address as startAddress,
+        o.start_store_id as startStoreId,
+        o.start_store_name as startStoreName,
+        o.end_province as endProvince,
+        o.end_province_code as endProvinceCode,
+        o.end_city as endCity,
+        o.end_city_code as endCityCode,
+        o.end_area as endArea,
+        o.end_area_code as endAreaCode,
+        o.end_address as endAddress,
+        o.end_store_id as endStoreId,
+        o.end_store_name as endStoreName,
+        o.expect_start_date as expectStartDate,
+        o.expect_end_date as expectEndDate,
+        o.car_num as carNum,
+        o.line_id as lineId,
+        o.pick_type as pickType,
+        o.pick_contact_name as pickContactName,
+        o.pick_contact_phone as pickContactPhone,
+        o.back_type as backType,
+        o.back_contact_name as backContactName,
+        o.back_contact_phone as backContactPhone,
+        o.state as orderState,
+        oc.*
+        from w_order o
+        join w_order_car oc on o.id= oc.order_id
+        <where>
+            oc.id in
+            <foreach collection="orderCarIdList" index="index" item = "item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
     </select>
 </mapper>

@@ -37,4 +37,8 @@ public interface ITaskDao extends BaseMapper<Task> {
     int deleteByWaybillId(Long waybillId);
 
     Task findTopByWaybillId(Long id);
+
+    int deleteByWaybillCarId(Long waybillCarId);
+
+    String findMaxNo(String waybillNo);
 }

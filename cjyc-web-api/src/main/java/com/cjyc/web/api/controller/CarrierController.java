@@ -6,6 +6,7 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.carrier.CarrierVo;
 import com.cjyc.common.model.vo.web.carrier.BaseCarrierVo;
+import com.cjyc.common.model.vo.web.carrier.TrailCarrierVo;
 import com.cjyc.web.api.service.ICarrierService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -20,7 +21,7 @@ import javax.annotation.Resource;
  *  @Date: 2019/10/18 15:13
  *  @Description:承运商管理
  */
-@Api(tags = "承运商管理")
+@Api(tags = "司机-承运商")
 @CrossOrigin
 @RestController
 @RequestMapping("/carrier")
@@ -69,7 +70,9 @@ public class CarrierController {
 
     @ApiOperation(value = "调度中心中提车干线调度中代驾和拖车列表")
     @PostMapping(value = "/traileDriver")
-    public ResultVo trailDriver(@RequestBody TrailCarrierDto dto){
+    public ResultVo<PageVo<TrailCarrierVo>> trailDriver(@RequestBody TrailCarrierDto dto){
         return carrierService.trailDriver(dto);
     }
+
+
 }

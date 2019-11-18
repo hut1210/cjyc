@@ -46,7 +46,9 @@ public class CsSysServiceImpl implements ICsSysService {
      * @param isSearchCache
      */
     @Override
-    public String getBizScopeByRoleId(Long roleId, boolean isSearchCache) {
+    public BizScope getBizScopeByRoleId(Long roleId, boolean isSearchCache) {
+        BizScope bizScope = new BizScope();
+        bizScope.setCode(BizScopeEnum.NONE.code);
 
         Set<Long> set = new HashSet<>();
 
@@ -56,22 +58,23 @@ public class CsSysServiceImpl implements ICsSysService {
                 || resultData.getData() == null
                 || resultData.getData().getRoleId() == null
                 || resultData.getData().getDeptId() == null) {
-            return BizScopeEnum.NONE.value;
+            return bizScope;
         }
         Long deptId = resultData.getData().getDeptId();
         //查询机构信息
         ResultData<SelectDeptResp> deptResultDta = sysDeptService.getById(deptId);
         if(deptResultDta == null || deptResultDta.getData() == null){
-            return BizScopeEnum.NONE.value;
+            return bizScope;
         }
         if(deptResultDta.getData().getParentId() == null){
             //全国权限
-            return BizScopeEnum.CHINA.value;
+            bizScope.setCode(BizScopeEnum.CHINA.code);
+            return bizScope;
         }
         //查询当前角色机构下的所有机构
         ResultData<List<SelectDeptResp>> multiLevelResultData = sysDeptService.getMultiLevelDeptList(deptId);
         if(multiLevelResultData == null || CollectionUtils.isEmpty(multiLevelResultData.getData())){
-            return BizScopeEnum.NONE.value;
+            return bizScope;
         }
         List<SelectDeptResp> data = multiLevelResultData.getData();
         //获取deptId的Set集合
@@ -80,7 +83,7 @@ public class CsSysServiceImpl implements ICsSysService {
         //查询全部业务中心ID
         List<Store> storeList = csStoreService.getAll();
         if(storeList == null){
-            return BizScopeEnum.NONE.value;
+            return bizScope;
         }
         //计算当前机构下包含的业务中心
         for (Store store : storeList) {
@@ -89,9 +92,9 @@ public class CsSysServiceImpl implements ICsSysService {
             }
         }
         if(CollectionUtils.isEmpty(set)){
-            return BizScopeEnum.NONE.value;
+            return bizScope;
         }
-
-        return Joiner.on(",").join(set);
+        bizScope.setStoreIds(set);
+        return bizScope;
     }
 }

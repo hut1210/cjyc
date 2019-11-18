@@ -27,11 +27,11 @@ public class SaveLocalWaybillDto implements Serializable {
     @ApiModelProperty(value = "承运商ID", required = true)
     private Long carrierId;
 
-    @ApiModelProperty(value = "承运商类型：0承运商，1业务员, 2客户自己", required = true)
+    @ApiModelProperty(value = "承运商类型：1干线-个人承运商，2干线-企业承运商，3同城-业务员，4同城-代驾，5同城-拖车，6客户自己", required = true)
     private Integer carrierType;
 
-    @ApiModelProperty(value = "司机ID")
-    private Long driverId;
+    @ApiModelProperty(value = "承运商名称")
+    private String carrierName;
 
     @ApiModelProperty(value = "备注")
     private String remark;
@@ -39,9 +39,6 @@ public class SaveLocalWaybillDto implements Serializable {
 
 
     /**车辆信息*/
-
-    @ApiModelProperty(value = "运单ID")
-    private Long waybillId;
 
     @ApiModelProperty(value = "订单车辆ID")
     private Long orderCarId;
@@ -72,12 +69,6 @@ public class SaveLocalWaybillDto implements Serializable {
 
     @ApiModelProperty(value = "目的地业务中心ID")
     private Long endStoreId;
-
-    @ApiModelProperty(value = "线路ID")
-    private Long lineId;
-
-    @ApiModelProperty(value = "运单车辆状态：0待指派，2已指派，5待装车，15待装车确认，45已装车，70已卸车，90确认交车, 100确认收车, 105待重连")
-    private Integer state;
 
     @ApiModelProperty(value = "预计提车日期")
     private Long expectStartTime;

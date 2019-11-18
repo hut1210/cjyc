@@ -31,7 +31,7 @@
         update w_task
         set state = #{newState}
         <where>
-            id in
+            and waybill_id in
             <foreach collection="cancelWaybillIdList" index="index" item="item" open="(" separator="," close=")">
                 #{item}
             </foreach>
@@ -40,13 +40,26 @@
     <delete id="cancelBywaybillId">
         update w_task
         set state = #{newState}
-        where waybill_id = #{waybillId}
+        <where>
+            <choose>
+                <when test="waybillId != null">
+                    waybill_id = #{waybillId}
+                </when>
+                <otherwise>
+                    1 != 1
+                </otherwise>
+            </choose>
+        </where>
     </delete>
     <delete id="deleteByWaybillId">
         delete t,tc
         from w_task t
         left join w_task_car tc on tc.task_id = t.id
         where t.waybill_id = #{waybillId}
+    </delete>
+    <delete id="deleteByWaybillCarId">
+        delete from w_task_car
+        where waybill_car_id = #{waybillCarId}
     </delete>
     <select id="findListByWaybillId" resultType="com.cjyc.common.model.vo.web.task.ListByWaybillTaskVo">
         select
@@ -72,6 +85,9 @@
         left join d_vehicle_running vr on vr.id = t.vehicle_running_id
         where t.waybill_id = #{waybillId}
         limit 1
+    </select>
+    <select id="findMaxNo" resultType="java.lang.String">
+        select max(no) from w_task where waybill_no = #{waybillNo}
     </select>
 
 </mapper>

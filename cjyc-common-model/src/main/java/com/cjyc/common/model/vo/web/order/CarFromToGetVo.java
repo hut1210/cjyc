@@ -1,7 +1,5 @@
 package com.cjyc.common.model.vo.web.order;
 
-import com.cjyc.common.model.entity.OrderCar;
-import com.cjyc.common.model.entity.WaybillCar;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -14,13 +12,45 @@ import java.math.BigDecimal;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel
-public class CarFromToGetVo extends OrderCar {
+public class CarFromToGetVo {
 
-    @ApiModelProperty("出发地业务中心地址")
+/*    @ApiModelProperty("出发地业务中心地址")
     private String startStoreFullAddress;
     @ApiModelProperty("目的地业务中心地址")
-    private String endStoreFullAddress;
+    private String endStoreFullAddress;*/
+    @ApiModelProperty(value = "状态")
+    private String outterState;
 
+    @ApiModelProperty(value = "品牌")
+    private String brand;
+
+    @ApiModelProperty(value = "型号")
+    private String model;
+
+    @ApiModelProperty(value = "车牌号")
+    private String plateNo;
+
+    @ApiModelProperty(value = "vin码")
+    private String vin;
+
+    @ApiModelProperty(value = "价卡运费")
+    private String lineFreightFee;
+
+
+    @ApiModelProperty(value = "ID")
+    private Long id;
+
+    @ApiModelProperty(value = "运单ID")
+    private Long waybillId;
+
+    @ApiModelProperty(value = "运单编号")
+    private String waybillNo;
+
+    @ApiModelProperty(value = "订单车辆ID")
+    private Long orderCarId;
+
+    @ApiModelProperty(value = "车辆编号")
+    private String orderCarNo;
 
     @ApiModelProperty(value = "运费")
     private BigDecimal freightFee;

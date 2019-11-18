@@ -31,7 +31,7 @@ import java.util.List;
  * @Author LiuXingXiang
  * @Date 2019/10/29 15:58
  **/
-@Api(tags = "业务中心管理")
+@Api(tags = "基础数据-业务中心")
 @RestController
 @RequestMapping("/store")
 public class StoreController {
@@ -48,6 +48,17 @@ public class StoreController {
     @PostMapping(value = "/get/{cityCode}")
     public ResultVo<List<Store>> getByCityCode(@PathVariable String cityCode) {
         List<Store> list = storeService.getByCityCode(cityCode);
+        return BaseResultUtil.success(list);
+    }
+
+    /**
+     * 根据角色查询业务中心
+     * @author JPG
+     */
+    @ApiOperation(value = "根据角色查询业务中心")
+    @PostMapping(value = "/get/by/role")
+    public ResultVo<List<Store>> getByRole(@RequestHeader(required = false) Long roleId) {
+        List<Store> list = storeService.getByRole(roleId);
         return BaseResultUtil.success(list);
     }
 

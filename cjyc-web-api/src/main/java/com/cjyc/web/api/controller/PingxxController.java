@@ -16,7 +16,7 @@ import javax.annotation.Resource;
  * @author JPG
  */
 @RestController
-@Api(tags = "Ping++")
+@Api(tags = "资金-Ping++")
 @RequestMapping(value = "/pingxx",
         produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class PingxxController {

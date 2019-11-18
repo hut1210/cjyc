@@ -30,4 +30,6 @@ public interface ICsAdminService {
      * @param roleId
      */
     CacheAdminVo getCacheData(Long userId, Long roleId);
+
+    Admin getByPhone(String username, boolean isSearchCache);
 }

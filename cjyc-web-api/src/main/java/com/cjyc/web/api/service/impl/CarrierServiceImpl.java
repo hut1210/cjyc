@@ -12,15 +12,22 @@ import com.cjkj.usercenter.dto.yc.AddDeptAndUserResp;
 import com.cjkj.usercenter.dto.yc.UpdateDeptManagerReq;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.OperateDto;
-import com.cjyc.common.model.dto.web.carrier.*;
+import com.cjyc.common.model.dto.web.carrier.CarrierDto;
+import com.cjyc.common.model.dto.web.carrier.DispatchCarrierDto;
+import com.cjyc.common.model.dto.web.carrier.SeleCarrierDto;
+import com.cjyc.common.model.dto.web.carrier.TrailCarrierDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.transport.*;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.YmlProperty;
+import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.carrier.*;
+import com.cjyc.common.model.vo.web.carrier.BaseCarrierVo;
+import com.cjyc.common.model.vo.web.carrier.CarrierVo;
+import com.cjyc.common.model.vo.web.carrier.DispatchCarrierVo;
+import com.cjyc.common.model.vo.web.carrier.TrailCarrierVo;
 import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.web.api.service.ICarrierCityConService;
@@ -28,7 +35,6 @@ import com.cjyc.web.api.service.ICarrierService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -294,7 +300,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     }
 
     @Override
-    public ResultVo trailDriver(TrailCarrierDto dto) {
+    public ResultVo<PageVo<TrailCarrierVo>> trailDriver(TrailCarrierDto dto) {
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
         List<TrailCarrierVo> carrierVos = carrierDao.findTrailDriver(dto);
         PageInfo<TrailCarrierVo> pageInfo =  new PageInfo<>(carrierVos);

@@ -35,13 +35,13 @@ public interface IWaybillService extends IService<Waybill> {
      * @since 2019/10/17 9:16
      * @param reqDto
      */
-    ResultVo saveTrunk(SaveTrunkDto reqDto);
+    ResultVo saveTrunk(SaveTrunkWaybillDto reqDto);
 
     ResultVo<ListVo<BaseTipVo>> cancel(CancelWaybillDto reqDto);
 
     ResultVo<List<HistoryListWaybillVo>> historyList(HistoryListDto reqDto);
 
-    ResultVo<List<CysWaybillVo>> cysList(CysWaybillDto reqDto);
+    ResultVo<List<CrWaybillVo>> crList(CrWaybillDto reqDto);
 
     ResultVo<PageVo<LocalListWaybillCarVo>> locallist(LocalListWaybillCarDto reqDto);
 
@@ -59,7 +59,9 @@ public interface IWaybillService extends IService<Waybill> {
 
     ResultVo updateLocal(UpdateLocalDto reqDto);
 
-    ResultVo updateTrunk(UpdateTrunkDto reqDto);
+    ResultVo updateTrunk(UpdateTrunkWaybillDto reqDto);
 
-    ResultVo updateTrunkMidwayFinish(updateTrunkMidwayFinishDto reqDto);
+    ResultVo updateTrunkMidwayFinish(UpdateTrunkMidwayFinishDto reqDto);
+
+    ResultVo trunkMidwayUnload(TrunkMidwayUnload reqDto);
 }

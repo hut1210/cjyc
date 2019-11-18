@@ -10,6 +10,8 @@ public enum ResultEnum {
     //通用业务失败状态， 可以自定义返回消息msg 如：用户名或密码错误、提交失败等
     FAIL(1, "处理失败"),
 
+    TOKEN_EXPIRE(401, "token过期"),
+
     /* 移动端错误：1000-1999 */
     //MOBILE_TOKEN_ILLEGAL(1000, "token校验失败"),
     //MOBILE_TOKEN_TIMEOUT(1001, "token超时"),

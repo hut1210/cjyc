@@ -26,7 +26,7 @@ import java.util.List;
  * @Author LiuXingXiang
  * @Date 2019/10/28 15:58
  **/
-@Api(tags = "品牌车系管理")
+@Api(tags = "基础数据-品牌车系")
 @RestController
 @RequestMapping("/carSeries")
 public class CarSeriesController {

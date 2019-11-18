@@ -115,6 +115,7 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
     int updateTrunkStateById(Long id);
 
     List<OrderCar> findByIds(@Param("orderCarIdList") List<Long> orderCarIdList);
+    List<OrderCarVo> findVoListByIds(@Param("orderCarIdList") List<Long> orderCarIdList);
 
     /**
      * 查询未开发票订单列表
@@ -137,4 +138,5 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
      * @param orderId
      */
     List<TransportInfoOrderCarVo> findTransportStateByOrderId(Long orderId);
+
 }

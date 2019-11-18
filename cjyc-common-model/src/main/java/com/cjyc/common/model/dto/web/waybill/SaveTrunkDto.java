@@ -19,15 +19,4 @@ import java.util.List;
 @Accessors(chain = true)
 @ApiModel
 public class SaveTrunkDto {
-
-    @NotNull(message = "userId不能为空")
-    @ApiModelProperty(value = "用户userId", required = true)
-    private Long userId;
-    @NotNull(message = "storeId不能为空")
-    @ApiModelProperty(value = "业务中心ID", required = true)
-    private Long storeId;
-
-    @NotEmpty(message = "list不能为空")
-    @ApiModelProperty(value = "调度内容", required = true)
-    private List<SaveTrunkWaybillDto> list;
 }

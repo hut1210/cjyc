@@ -43,6 +43,7 @@
     <select id="findByDriverId" resultType="com.cjyc.common.model.entity.VehicleRunning">
         select
         <include refid="Base_Column_List"/>
+        from d_vehicle_running
         where driver_id = #{driverId}
         and state = 1
     </select>

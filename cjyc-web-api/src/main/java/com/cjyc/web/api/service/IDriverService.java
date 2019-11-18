@@ -8,6 +8,7 @@ import com.cjyc.common.model.dto.web.user.DriverListDto;
 import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.driver.DispatchDriverVo;
 import com.cjyc.common.model.vo.web.driver.DriverVo;
 import com.cjyc.common.model.vo.web.user.DriverListVo;
 
@@ -62,6 +63,6 @@ public interface IDriverService {
      * @param dto
      * @return
      */
-    ResultVo dispatchDriver(DispatchDriverDto dto);
+    ResultVo<PageVo<DispatchDriverVo>> dispatchDriver(DispatchDriverDto dto);
 
 }

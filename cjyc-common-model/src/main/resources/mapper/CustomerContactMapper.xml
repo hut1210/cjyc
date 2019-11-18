@@ -23,6 +23,18 @@
     <sql id="Base_Column_List">
         id, customer_id, name, phone, province, province_code, city, city_code, area, area_code, detail_addr, rewark, state
     </sql>
+    <select id="findByPhone" resultType="com.cjyc.common.model.entity.CustomerContact">
+        select
+        <include refid="Base_Column_List"/>
+        from c_customer_contact
+        where phone = #{phone}
+    </select>
+    <select id="countByPhone" resultType="java.lang.Integer">
+        select
+        count(0)
+        from c_customer_contact
+        where phone = #{phone}
+    </select>
 
 
 </mapper>

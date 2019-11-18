@@ -4,24 +4,29 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.entity.*;
+import com.cjyc.common.model.entity.defined.FullCity;
 import com.cjyc.common.model.entity.defined.FullWaybillCar;
-import com.cjyc.common.model.entity.defined.EndPointCity;
+import com.cjyc.common.model.enums.city.CityLevelEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.OrderCarVo;
 import com.cjyc.common.model.vo.web.order.*;
-import com.cjyc.common.system.service.ICsLineNodeService;
-import com.cjyc.common.system.service.ICsOrderService;
+import com.cjyc.common.model.vo.web.waybill.WaybillCarVo;
+import com.cjyc.common.system.service.*;
 import com.cjyc.web.api.service.IOrderService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.time.LocalDate;
 import java.util.*;
 
 /**
@@ -50,6 +55,12 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     private IStoreDao storeDao;
     @Resource
     private ICsLineNodeService csLineNodeService;
+    @Resource
+    private ICsLineService csLineService;
+    @Resource
+    private ICsCityService csCityService;
+
+
 
 
     @Override
@@ -99,41 +110,100 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     @Override
     public ResultVo<DispatchAddCarVo> getCarFromTo(CarFromToGetDto reqDto) {
         DispatchAddCarVo dispatchAddCarVo = new DispatchAddCarVo();
-        Store store = storeDao.selectById(reqDto.getStoreId());
+        Store store = storeDao.selectById(2L);
         //业务范围
-        List<String> areaBizScope = storeDao.findAreaBizScope(store.getId());
-
-        List<OrderCar> list = orderCarDao.findByIds(reqDto.getOrderCarIdList());
-
-        List<CarFromToGetVo> childList = new ArrayList<>();
-        if(list == null || list.isEmpty()){
-            return BaseResultUtil.success();
+        List<OrderCarVo> list = orderCarDao.findVoListByIds(reqDto.getOrderCarIdList());
+        List<WaybillCarVo> childList = new ArrayList<>();
+        if(CollectionUtils.isEmpty(list)){
+            return BaseResultUtil.fail("车辆不存在");
         }
-        for (OrderCar orderCar : list) {
-            if(orderCar == null){
+        for (OrderCarVo orderCarVo : list) {
+            if(orderCarVo == null){
                 continue;
             }
-            CarFromToGetVo carFromToGetVo = new CarFromToGetVo();
-            BeanUtils.copyProperties(orderCar, carFromToGetVo);
+            WaybillCarVo waybillCarVo = new WaybillCarVo();
+            copyOrderCarToWaybillCar(orderCarVo, waybillCarVo);
+            Long expectStartTime = orderCarVo.getExpectStartDate();
+          /*  if(expectStartTime == null || expectStartTime < LocalDateTimeUtil.getMillisByLDT()){
 
-            //查询waybillcar最后一条记录
-            FullWaybillCar prevWaybillCar = waybillCarDao.findLastPrevByBelongStoreId(orderCar.getId(), store.getId());
-            copyStartAddress(prevWaybillCar, carFromToGetVo);
-            FullWaybillCar nextWaybillCar = waybillCarDao.findLastNextByBelongStoreId(orderCar.getId(), store.getId());
-            copyEndAddress(nextWaybillCar, carFromToGetVo);
-            childList.add(carFromToGetVo);
-
+            }*/
+            waybillCarVo.setExpectStartTime(orderCarVo.getExpectStartDate());
+            //查询waybillcar最后一条记录，重置
+            FullWaybillCar prevWaybillCar = waybillCarDao.findLastPrevByBelongStoreId(orderCarVo.getId(), store.getId());
+            if(prevWaybillCar != null){
+                copyPrevInfo(prevWaybillCar, waybillCarVo);
+                waybillCarVo.setStartFixedFlag(true);
+            }else{
+                //查询城市数据
+                FullCity fullCity = csCityService.findFullCity(orderCarVo.getStartAreaCode(), CityLevelEnum.PROVINCE);
+                if(fullCity != null){
+                    copyStartToWaybillCarVo(fullCity, waybillCarVo);
+                }
+                waybillCarVo.setStartFixedFlag(true);
+            }
+            FullWaybillCar nextWaybillCar = waybillCarDao.findLastNextByBelongStoreId(orderCarVo.getId(), store.getId());
+            //查询
+            if(nextWaybillCar != null){
+                copyNextInfo(nextWaybillCar, waybillCarVo);
+                waybillCarVo.setEndFixedFlag(true);
+            }else{
+                //查询城市数据
+                FullCity fullCity = csCityService.findFullCity(orderCarVo.getEndAreaCode(), CityLevelEnum.PROVINCE);
+                if(fullCity != null){
+                    copyEndToWaybillCarVo(fullCity, waybillCarVo);
+                }
+                waybillCarVo.setEndFixedFlag(false);
+            }
+            //查询线路价卡
+            Line line = csLineService.getLineByCity(waybillCarVo.getStartCityCode(), waybillCarVo.getEndCityCode(), true);
+            if(line != null){
+                waybillCarVo.setLineFreightFee(line.getDefaultFreightFee());
+                waybillCarVo.setLineId(line.getId());
+                waybillCarVo.setHasLine(true);
+            }
+            childList.add(waybillCarVo);
         }
         dispatchAddCarVo.setList(childList);
         Set<String> citySet = new HashSet<>();
-        for (CarFromToGetVo carFromToGetVo : childList) {
-            citySet.add(carFromToGetVo.getStartCity());
-            citySet.add(carFromToGetVo.getEndCity());
+        for (WaybillCarVo waybillCarVo : childList) {
+            citySet.add(waybillCarVo.getStartCity());
+            citySet.add(waybillCarVo.getEndCity());
         }
         //计算推荐线路
-        csLineNodeService.getGuideLine(citySet,store.getCity());
-
+        List<String> guideLines = csLineNodeService.getGuideLine(citySet, store.getCity());
+        dispatchAddCarVo.setGuideLine(guideLines == null ? store.getCity() : guideLines.get(0));
         return BaseResultUtil.success(dispatchAddCarVo);
+    }
+
+    private void copyStartToWaybillCarVo(FullCity fullCity, WaybillCarVo waybillCarVo) {
+        waybillCarVo.setStartProvince(fullCity.getProvince());
+        waybillCarVo.setStartProvinceCode(fullCity.getProvinceCode());
+        waybillCarVo.setStartCity(fullCity.getCity());
+        waybillCarVo.setStartCityCode(fullCity.getCityCode());
+        waybillCarVo.setStartArea(fullCity.getArea());
+        waybillCarVo.setStartAreaCode(fullCity.getAreaCode());
+    }
+
+    private void copyEndToWaybillCarVo(FullCity fullCity, WaybillCarVo waybillCarVo) {
+        waybillCarVo.setEndProvince(fullCity.getProvince());
+        waybillCarVo.setEndProvinceCode(fullCity.getProvinceCode());
+        waybillCarVo.setEndCity(fullCity.getCity());
+        waybillCarVo.setEndCityCode(fullCity.getCityCode());
+        waybillCarVo.setEndArea(fullCity.getArea());
+        waybillCarVo.setEndAreaCode(fullCity.getAreaCode());
+    }
+
+    private void copyOrderCarToWaybillCar(OrderCarVo orderCarVo, WaybillCarVo waybillCarVo) {
+        BeanUtils.copyProperties(orderCarVo, waybillCarVo);
+        waybillCarVo.setOrderCarId(orderCarVo.getId());
+        waybillCarVo.setOrderCarNo(orderCarVo.getNo());
+        waybillCarVo.setFreightFee(orderCarVo.getTrunkFee());
+        waybillCarVo.setLineId(orderCarVo.getLineId());
+        waybillCarVo.setExpectStartTime(orderCarVo.getExpectStartDate());
+        waybillCarVo.setLoadLinkName(orderCarVo.getPickContactName());
+        waybillCarVo.setLoadLinkPhone(orderCarVo.getPickContactPhone());
+        waybillCarVo.setUnloadLinkName(orderCarVo.getBackContactName());
+        waybillCarVo.setUnloadLinkPhone(orderCarVo.getBackContactPhone());
     }
 
     @Override
@@ -155,7 +225,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
                 (sSto.getDetailAddr() == null ? "" : sSto.getDetailAddr());
     }
 
-    private void copyStartAddress(FullWaybillCar prevWaybillCar, CarFromToGetVo carFromToGetVo) {
+    private void copyPrevInfo(FullWaybillCar prevWaybillCar, WaybillCarVo carFromToGetVo) {
         if(prevWaybillCar == null){
             return;
         }
@@ -168,9 +238,12 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         carFromToGetVo.setStartAddress(prevWaybillCar.getEndAddress());
         carFromToGetVo.setStartStoreId(prevWaybillCar.getEndStoreId());
         carFromToGetVo.setStartStoreName(prevWaybillCar.getEndStoreName());
-        carFromToGetVo.setStartStoreFullAddress(prevWaybillCar.getEndStoreFullAddress());
+        //carFromToGetVo.setStartStoreFullAddress(prevWaybillCar.getEndStoreFullAddress());
+        carFromToGetVo.setLoadLinkName(prevWaybillCar.getUnloadLinkName());
+        carFromToGetVo.setLoadLinkPhone(prevWaybillCar.getUnloadLinkPhone());
+        carFromToGetVo.setLoadLinkUserId(prevWaybillCar.getUnloadLinkUserId());
     }
-    private void copyEndAddress(FullWaybillCar nextWaybillCar, CarFromToGetVo carFromToGetVo) {
+    private void copyNextInfo(FullWaybillCar nextWaybillCar, WaybillCarVo carFromToGetVo) {
         if(nextWaybillCar == null){
             return;
         }
@@ -183,7 +256,10 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         carFromToGetVo.setEndAddress(nextWaybillCar.getStartAddress());
         carFromToGetVo.setEndStoreId(nextWaybillCar.getStartStoreId());
         carFromToGetVo.setEndStoreName(nextWaybillCar.getStartStoreName());
-        carFromToGetVo.setEndStoreFullAddress(nextWaybillCar.getStartStoreFullAddress());
+        //carFromToGetVo.setEndStoreFullAddress(nextWaybillCar.getStartStoreFullAddress());
+        carFromToGetVo.setUnloadLinkName(nextWaybillCar.getLoadLinkName());
+        carFromToGetVo.setUnloadLinkPhone(nextWaybillCar.getLoadLinkPhone());
+        carFromToGetVo.setUnloadLinkUserId(nextWaybillCar.getLoadLinkUserId());
     }
 
 

@@ -6,6 +6,22 @@ import lombok.Data;
 
 @Data
 public class TrunkListWaybillCarDto extends BasePageDto {
+    @ApiModelProperty(value = "订单编号")
+    private String orderNo;
+    @ApiModelProperty(value = "订单来源：1WEB管理后台, 2业务员APP, 4司机APP, 6用户端APP, 7用户端小程序")
+    private String orderSource;
+    @ApiModelProperty(value = "省编号")
+    private String orderStartProvinceCode;
+    @ApiModelProperty(value = "市编号")
+    private String orderStartCityCode;
+    @ApiModelProperty(value = "区编号")
+    private String orderStartAreaCode;
+    @ApiModelProperty(value = "省编号")
+    private String orderEndProvinceCode;
+    @ApiModelProperty(value = "市编号")
+    private String orderEndCityCode;
+    @ApiModelProperty(value = "区编号")
+    private String orderEndAreaCode;
 
 
     @ApiModelProperty(value = "品牌")
@@ -17,11 +33,7 @@ public class TrunkListWaybillCarDto extends BasePageDto {
     @ApiModelProperty(value = "vin码")
     private String vin;
 
-
-
     private String carrierName;
-
-
 
     @ApiModelProperty(value = "司机名称")
     private String driverName;
@@ -30,6 +42,8 @@ public class TrunkListWaybillCarDto extends BasePageDto {
     @ApiModelProperty(value = "运力车牌号")
     private String vehiclePlateNo;
 
+    @ApiModelProperty(value = "创建人")
+    private String createUser;
     /**
      * 0待指派
      * 2已指派        2待提车
@@ -44,6 +58,7 @@ public class TrunkListWaybillCarDto extends BasePageDto {
      */
     @ApiModelProperty(value = "0全部，2待提车，3已提车，4已交付")
     private Integer outterState;
+
 
     @ApiModelProperty(value = "运单编号")
     private String waybillNo;

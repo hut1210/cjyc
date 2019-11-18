@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
  *  @Date: 2019/10/16 16:14
  *  @Description:优惠券管理
  */
-@Api(tags = "优惠券管理")
+@Api(tags = "优惠券")
 @CrossOrigin
 @RestController
 @RequestMapping("/coupon")

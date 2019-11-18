@@ -95,7 +95,7 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
         List<LineVo> lineVos = queryAllByTerm(dto);
         PageInfo<LineVo> pageInfo = new PageInfo<>(lineVos);
-        return BaseResultUtil.success(pageInfo == null ? new PageInfo<>():pageInfo);
+        return BaseResultUtil.success(pageInfo);
     }
 
     @Override
@@ -137,7 +137,7 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
 
     @Override
     public ResultVo<List<Line>> listByTwoCity(ListLineDto paramsDto) {
-        List<Line> list = lineDao.findListByTwoCity(paramsDto);
+        List<Line> list = lineDao.findListByCity(paramsDto.getStartCityCode(), paramsDto.getStartCityCode());
         return BaseResultUtil.success(list);
     }
 

@@ -55,4 +55,6 @@ public interface ICsStoreService {
      */
     List<Long> getAllDeptId();
 
+    Long getBelongStoreId(Long storeId, String areaCode);
+
 }

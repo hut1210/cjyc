@@ -1,6 +1,7 @@
 package com.cjyc.common.model.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
@@ -82,6 +83,11 @@ public class Store implements Serializable {
 
     @ApiModelProperty(value = "备注")
     private String remark;
+
+    @TableField(exist = false)
+    @ApiModelProperty(value = "全地址")
+    private String fullAddress;
+
 
 
 }

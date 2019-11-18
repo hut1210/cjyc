@@ -27,7 +27,7 @@ import java.util.Map;
  * @author JPG
  */
 @RestController
-@Api(tags = "调度池")
+@Api(tags = "运单-调度池")
 @RequestMapping(value = "/dispatch",
         produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class DispatchController {
@@ -69,7 +69,6 @@ public class DispatchController {
     }
 
 
-
     /**
      * 根据订单车辆ID查询可调度起始地和目的地
      */
@@ -78,8 +77,6 @@ public class DispatchController {
     public ResultVo<DispatchAddCarVo> getCarFromTo(@RequestBody CarFromToGetDto reqDto) {
         return orderService.getCarFromTo(reqDto);
     }
-
-
 
 
 }

@@ -154,7 +154,6 @@
             <version>2.3.14</version>
             <type>jar</type>
         </dependency>
-
     </dependencies>
 
 </project>
