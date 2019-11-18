@@ -173,6 +173,20 @@ public class SalesmanServiceImpl extends ServiceImpl<IAdminDao, Admin> implement
     private ResultVo updateUser(Admin admin, AddDto dto){
         UpdateUserReq updateUser = new UpdateUserReq();
         packUpdateUserCommonInfo(updateUser, dto);
+        //校验规则
+        List<Admin> list = this.list(new QueryWrapper<Admin>()
+                .eq("phone", dto.getPhone())
+                .ne("id", dto.getId()));
+        if (!CollectionUtils.isEmpty(list)) {
+            return BaseResultUtil.fail("手机号已被使用，请检查");
+        }
+        ResultData<AddUserResp> accountRd = sysUserService.getByAccount(dto.getAccount());
+        if (!ReturnMsg.SUCCESS.getCode().equals(accountRd.getCode())) {
+            return BaseResultUtil.fail("用户信息更新失败， 原因:" + accountRd.getMsg());
+        }
+        if (accountRd.getData() != null) {
+            return BaseResultUtil.fail("被更新账号已存在，请检查");
+        }
         ResultData rd = sysUserService.update(updateUser);
         if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())){
             return BaseResultUtil.fail("用户信息更新失败, 原因：" + rd.getMsg());
