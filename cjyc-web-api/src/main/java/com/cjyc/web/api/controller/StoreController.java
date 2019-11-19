@@ -3,6 +3,7 @@ package com.cjyc.web.api.controller;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
 import com.cjyc.common.model.dto.web.city.StoreAreaQueryDto;
+import com.cjyc.common.model.dto.web.store.GetStoreDto;
 import com.cjyc.common.model.dto.web.store.StoreAddDto;
 import com.cjyc.common.model.dto.web.store.StoreQueryDto;
 import com.cjyc.common.model.dto.web.store.StoreUpdateDto;
@@ -60,6 +61,17 @@ public class StoreController {
     @PostMapping(value = "/get/by/{roleId}")
     public ResultVo<List<Store>> getByRole(@PathVariable Long roleId) {
         List<Store> list = storeService.getListByRoleId(roleId);
+        return BaseResultUtil.success(list);
+    }
+
+    /**
+     * 根据角色查询角色所属机构下属业务中心
+     * @author JPG
+     */
+    @ApiOperation(value = "根据角色查询业务中心")
+    @PostMapping(value = "/get")
+    public ResultVo<List<Store>> get(@RequestBody GetStoreDto reqDto) {
+        List<Store> list = storeService.get(reqDto);
         return BaseResultUtil.success(list);
     }
 

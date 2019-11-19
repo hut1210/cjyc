@@ -2,6 +2,7 @@ package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.web.waybill.*;
 import com.cjyc.common.model.entity.Admin;
+import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.enums.AdminStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.BaseTipVo;
@@ -10,6 +11,8 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.waybill.*;
 import com.cjyc.common.system.service.ICsAdminService;
+import com.cjyc.common.system.service.ICsCarrierService;
+import com.cjyc.common.system.service.ICsDriverService;
 import com.cjyc.web.api.annotations.RequestHeaderAndBody;
 import com.cjyc.web.api.service.IWaybillService;
 import io.swagger.annotations.Api;
@@ -36,6 +39,10 @@ public class WaybillController {
     private IWaybillService waybillService;
     @Autowired
     private ICsAdminService csAdminService;
+    @Autowired
+    private ICsDriverService csDriverService;
+    @Autowired
+    private ICsCarrierService csCarrierService;
 
     /**
      * 提送车调度
@@ -216,18 +223,21 @@ public class WaybillController {
 
 
 
-
+    /**----承运商模块------------------------------------------------------------------------------------------------------------*/
 
     /**
      * 我的运单-承运商
      */
     @ApiOperation(value = "我的运单-承运商")
     @PostMapping(value = "/cr/list")
-    public ResultVo<List<CrWaybillVo>> crList(@RequestBody CrWaybillDto reqDto) {
-        return waybillService.crList(reqDto);
+    public ResultVo<PageVo<CrWaybillVo>> crList(@RequestBody CrWaybillDto reqDto) {
+        //验证用户
+        Driver driver = csDriverService.getById(reqDto.getUserId());
+        if(driver == null){
+            return BaseResultUtil.fail("用户不存在");
+        }
+        return waybillService.crListForMineCarrier(reqDto);
     }
-
-
 
 
 

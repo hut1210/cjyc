@@ -1,6 +1,8 @@
 package com.cjyc.web.api.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cjkj.common.model.ResultData;
+import com.cjkj.usercenter.dto.common.SelectRoleResp;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.waybill.CrWaybillDto;
 import com.cjyc.common.model.dto.web.waybill.*;
@@ -11,6 +13,7 @@ import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.waybill.*;
+import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.service.ICsWaybillService;
 import com.cjyc.web.api.service.IWaybillService;
 import com.github.pagehelper.PageHelper;
@@ -40,6 +43,8 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
     private IWaybillCarDao waybillCarDao;
     @Resource
     private ICsWaybillService csWaybillService;
+    @Resource
+    private ISysRoleService sysRoleService;
 
     /**
      * 提送车调度
@@ -95,11 +100,21 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
     }
 
     @Override
-    public ResultVo<List<CrWaybillVo>> crList(CrWaybillDto paramsDto) {
+    public ResultVo<PageVo<CrWaybillVo>> crListForMineCarrier(CrWaybillDto paramsDto) {
         //根据角色查询承运商ID
+        ResultData<SelectRoleResp> resultData = sysRoleService.getById(paramsDto.getRoleId());
+        if(resultData == null || resultData.getData() == null){
+            return BaseResultUtil.fail("用户机构不存在");
+        }
+        //查询承运商信息
 
         PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
-        return waybillDao.findCrListByCarrierId(paramsDto);
+        List<CrWaybillVo> list = waybillDao.findCrListForMineCarrier(paramsDto);
+        PageInfo<CrWaybillVo> pageInfo = new PageInfo<>(list);
+        if(paramsDto.getCurrentPage() > pageInfo.getPages()){
+            pageInfo.setList(null);
+        }
+        return BaseResultUtil.success(pageInfo);
     }
 
     @Override

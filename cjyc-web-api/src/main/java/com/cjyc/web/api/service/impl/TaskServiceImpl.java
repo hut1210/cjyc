@@ -16,13 +16,16 @@ import com.cjyc.common.model.enums.waybill.WaybillTypeEnum;
 import com.cjyc.common.model.exception.ServerException;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.OrderCarVo;
+import com.cjyc.common.model.vo.web.task.CrTaskVo;
 import com.cjyc.common.model.vo.web.task.ListByWaybillTaskVo;
 import com.cjyc.common.model.vo.web.task.TaskVo;
 import com.cjyc.common.model.vo.web.waybill.WaybillCarVo;
 import com.cjyc.web.api.service.ISendNoService;
 import com.cjyc.web.api.service.ITaskService;
+import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -387,6 +390,14 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
         List<WaybillCarVo> list = waybillCarDao.findVoByTaskId(taskId);
         taskVo.setList(list);
         return BaseResultUtil.success(taskVo);
+    }
+
+    @Override
+    public ResultVo<PageVo<CrTaskVo>> crAllottedList(CrTaskDto paramsDto) {
+        PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
+        List<CrTaskVo> list = taskDao.findListForMineCarrier(paramsDto);
+
+        return null;
     }
 
 }

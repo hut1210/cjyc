@@ -69,5 +69,5 @@ public interface IWaybillDao extends BaseMapper<Waybill> {
 
     int updateStateById(@Param("state") int state, @Param("waybillId") Long waybillId);
 
-    ResultVo<List<CrWaybillVo>> findCrListByCarrierId(CrWaybillDto carrierId);
+    List<CrWaybillVo> findCrListForMineCarrier(@Param("paramsDto") CrWaybillDto paramsDto);
 }

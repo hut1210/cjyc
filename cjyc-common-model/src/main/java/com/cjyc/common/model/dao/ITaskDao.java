@@ -1,8 +1,10 @@
 package com.cjyc.common.model.dao;
 
+import com.cjyc.common.model.dto.web.task.CrTaskDto;
 import com.cjyc.common.model.entity.Task;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.task.CrTaskVo;
 import com.cjyc.common.model.vo.web.task.ListByWaybillTaskVo;
 import com.cjyc.common.model.vo.web.task.TaskVo;
 import org.apache.ibatis.annotations.Param;
@@ -41,4 +43,6 @@ public interface ITaskDao extends BaseMapper<Task> {
     int deleteByWaybillCarId(Long waybillCarId);
 
     String findMaxNo(String waybillNo);
+
+    List<CrTaskVo> findListForMineCarrier(CrTaskDto paramsDto);
 }

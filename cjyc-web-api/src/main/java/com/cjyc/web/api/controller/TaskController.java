@@ -1,14 +1,18 @@
 package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.web.task.*;
+import com.cjyc.common.model.dto.web.waybill.CrWaybillDto;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Driver;
+import com.cjyc.common.model.entity.Task;
 import com.cjyc.common.model.enums.AdminStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.task.CrTaskVo;
 import com.cjyc.common.model.vo.web.task.ListByWaybillTaskVo;
 import com.cjyc.common.model.vo.web.task.TaskVo;
+import com.cjyc.common.model.vo.web.waybill.CrWaybillVo;
 import com.cjyc.web.api.service.IAdminService;
 import com.cjyc.web.api.service.IDriverService;
 import com.cjyc.web.api.service.ITaskService;
@@ -159,6 +163,23 @@ public class TaskController {
         return taskService.get(taskId);
     }
 
+
+
+
+
+
+
+    /**----承运商模块------------------------------------------------------------------------------------------------------------*/
+
+
+    /**
+     * 我的运单-承运商
+     */
+    @ApiOperation(value = "我的运单-承运商")
+    @PostMapping(value = "/cr/alloted/list")
+    public ResultVo<PageVo<CrTaskVo>> crAllottedList(@RequestBody CrTaskDto reqDto) {
+        return taskService.crAllottedList(reqDto);
+    }
 
 
 

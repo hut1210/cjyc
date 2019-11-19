@@ -8,6 +8,7 @@
         <result column="no" property="no" />
         <result column="waybill_id" property="waybillId" />
         <result column="waybill_no" property="waybillNo" />
+        <result column="guide_line" property="guideLine" />
         <result column="car_num" property="carNum" />
         <result column="state" property="state" />
         <result column="driver_name" property="driverName" />
@@ -25,7 +26,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, no, waybill_id, waybill_no, car_num, state, driver_name, driver_phone, driver_id, load_car_num, unload_car_num, vehicle_running_id, vehicle_plate_no, remark, create_user, create_user_id, create_time
+        id, no, waybill_id, waybill_no, guide_line, car_num, state, driver_name, driver_phone, driver_id, load_car_num, unload_car_num, vehicle_running_id, vehicle_plate_no, remark, create_user, create_user_id, create_time
     </sql>
     <update id="updateListByWaybillIds">
         update w_task
@@ -88,6 +89,9 @@
     </select>
     <select id="findMaxNo" resultType="java.lang.String">
         select max(no) from w_task where waybill_no = #{waybillNo}
+    </select>
+    <select id="findListForMineCarrier" resultType="com.cjyc.common.model.vo.web.task.CrTaskVo">
+
     </select>
 
 </mapper>
