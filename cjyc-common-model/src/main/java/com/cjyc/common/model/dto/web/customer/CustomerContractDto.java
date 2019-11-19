@@ -29,9 +29,9 @@ public class CustomerContractDto implements Serializable {
     @ApiModelProperty("账期/天")
     private Integer settlePeriod;
 
-    @NotBlank(message = "合同有效期不能为空")
+    @NotNull(message = "合同有效期不能为空")
     @ApiModelProperty(value = "合同有效期",required = true)
-    private String contractLife;
+    private Long contractLife;
 
     @NotBlank(message = "项目名称不能为空")
     @ApiModelProperty(value = "项目名称",required = true)
@@ -81,7 +81,7 @@ public class CustomerContractDto implements Serializable {
     private String projectTeamPer;
 
     @ApiModelProperty(value = "立项日期")
-    private String projectEstabTime;
+    private Long projectEstabTime;
 
     @ApiModelProperty(value = "主要KPI")
     private String majorKpi;

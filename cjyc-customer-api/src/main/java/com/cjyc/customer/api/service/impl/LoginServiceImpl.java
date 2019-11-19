@@ -1,24 +1,30 @@
 package com.cjyc.customer.api.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjkj.common.model.ResultData;
+import com.cjkj.common.model.ReturnMsg;
 import com.cjkj.common.redis.template.StringRedisUtil;
+import com.cjkj.usercenter.dto.common.AddUserResp;
 import com.cjkj.usercenter.dto.common.auth.AuthLoginReq;
 import com.cjkj.usercenter.dto.common.auth.AuthLoginResp;
+import com.cjkj.usercenter.dto.common.auth.AuthMobileLoginReq;
 import com.cjyc.common.model.dao.ICustomerDao;
+import com.cjyc.common.model.dto.customer.login.LoginDto;
 import com.cjyc.common.model.dto.salesman.login.LoginByPhoneDto;
 import com.cjyc.common.model.entity.Customer;
-import com.cjyc.common.model.enums.CaptchaTypeEnum;
-import com.cjyc.common.model.enums.ClientEnum;
-import com.cjyc.common.model.enums.PayModeEnum;
+import com.cjyc.common.model.enums.*;
+import com.cjyc.common.model.enums.customer.CustomerPayEnum;
 import com.cjyc.common.model.enums.customer.CustomerSourceEnum;
 import com.cjyc.common.model.enums.customer.CustomerStateEnum;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.login.CustomerLoginVo;
 import com.cjyc.common.system.feign.ISysLoginService;
 import com.cjyc.common.system.service.ICsCustomerService;
+import com.cjyc.common.system.service.ISendNoService;
 import com.cjyc.customer.api.config.LoginProperty;
 import com.cjyc.customer.api.service.ILoginService;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 
 /**
  * 登录
@@ -43,8 +50,74 @@ public class LoginServiceImpl implements ILoginService {
     @Resource
     private ISysLoginService sysLoginService;
     @Resource
+    private ISendNoService sendNoService;
+    @Resource
     private ICsCustomerService comCustomerService;
 
+    private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
+
+    @Override
+    public ResultVo verifyCode(String phone) {
+        ResultData rd = sysLoginService.verifyCode(phone);
+        return BaseResultUtil.success(rd.getData());
+    }
+
+    @Override
+    public ResultVo<CustomerLoginVo> login(LoginDto dto) {
+        Customer c = customerDao.selectOne(new QueryWrapper<Customer>().lambda()
+                .eq(Customer::getContactPhone, dto.getPhone()));
+        if(c == null){
+            //添加数据
+           addToPlatform(dto.getPhone());
+        }
+        if(c != null && c.getType() == CustomerTypeEnum.ENTERPRISE.code){
+            return BaseResultUtil.getVo(ResultEnum.PARTNER_NOTLOGIN.getCode(),ResultEnum.PARTNER_NOTLOGIN.getMsg());
+        }
+        //调用架构组验证手机号验证码登陆
+        AuthMobileLoginReq req = new AuthMobileLoginReq();
+        req.setClientId(LoginProperty.clientId);
+        req.setClientSecret(LoginProperty.clientSecret);
+        req.setGrantType(LoginProperty.grantType);
+        req.setMobile(dto.getPhone());
+        req.setSmsCode(dto.getCode());
+        ResultData<AuthLoginResp> rd = sysLoginService.mobileLogin(req);
+        if(rd == null || rd.getData() == null || rd.getData().getAccessToken() == null){
+            return BaseResultUtil.fail("登录失败,请联系管理员");
+        }
+        //组装返回给移动端
+        CustomerLoginVo loginVo = new CustomerLoginVo();
+        BeanUtils.copyProperties(c,loginVo);
+        BeanUtils.copyProperties(rd.getData(),loginVo);
+        loginVo.setName(c.getContactMan());
+        loginVo.setPhone(c.getContactPhone());
+        return BaseResultUtil.success(loginVo);
+    }
+
+    /**
+     * 添加用户到架构组/韵车库中
+     * @param phone
+     * @return
+     */
+    private void addToPlatform(String phone){
+        Customer c = new Customer();
+        String no = sendNoService.getNo(SendNoTypeEnum.CUSTOMER, 6);
+        c.setName(no);
+        c.setAlias(no);
+        c.setContactMan(no);
+        c.setContactPhone(phone);
+        c.setCustomerNo(sendNoService.getNo(SendNoTypeEnum.CUSTOMER));
+        c.setPayMode(CustomerPayEnum.TIME_PAY.code);
+        c.setType(CustomerTypeEnum.INDIVIDUAL.code);
+        c.setIsDelete(DeleteStateEnum.NO_DELETE.code);
+        c.setState(CommonStateEnum.CHECKED.code);
+        c.setSource(CustomerSourceEnum.APP.code);
+        c.setRegisterTime(NOW);
+        c.setCreateTime(NOW);
+        //新增用户信息到物流平台
+        ResultData<Long> rd = comCustomerService.addCustomerToPlatform(c);
+        c.setUserId(rd.getData());
+        customerDao.insert(c);
+    }
 
     @Override
     public ResultVo<CustomerLoginVo> loginByPhone(LoginByPhoneDto paramsDto) {
@@ -88,7 +161,6 @@ public class LoginServiceImpl implements ILoginService {
             return BaseResultUtil.fail("登录失败,请联系管理员");
         }
         String authentication = resultData.getData().getAccessToken();
-        customerLoginVo.setAuthentication(authentication);
 
         //获取token
 

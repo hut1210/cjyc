@@ -30,7 +30,7 @@ public class LoginProperty {
     public void setPassword(String password) {
         LoginProperty.password = password;
     }
-    @Value("${cjkj.customer.grantType:password}")
+    @Value("${cjkj.customer.grantType:mobile}")
     public void setGrantType(String grantType) {
         LoginProperty.grantType = grantType;
     }

@@ -1,10 +1,10 @@
-package com.cjyc.web.api.service.impl;
+package com.cjyc.common.system.service.impl;
 
 import com.cjkj.common.redis.template.StringRedisUtil;
 import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
-import com.cjyc.web.api.service.ISendNoService;
+import com.cjyc.common.system.service.ISendNoService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;

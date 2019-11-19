@@ -1,7 +1,7 @@
 package com.cjyc.common.system.service;
 
+import com.cjkj.common.model.ResultData;
 import com.cjyc.common.model.entity.Customer;
-
 /**
  * 客户公用接口
  * @author JPG
@@ -34,4 +34,20 @@ public interface ICsCustomerService {
      * @return Customer 返回userId
      */
     Customer save(Customer customer);
+
+    /**
+     * 将用户保存到物流平台
+     * @param customer
+     * @return
+     */
+    ResultData<Long> addCustomerToPlatform(Customer customer);
+
+    /**
+     * 修改账号信息到物流平台：
+     *  修改物流平台账号信息：如果修改账号则将要修改的账号不能存在否则修改失败
+     * @param customer
+     * @param newPhone
+     * @return
+     */
+    ResultData<Boolean> updateCustomerToPlatform(Customer customer, String newPhone);
 }

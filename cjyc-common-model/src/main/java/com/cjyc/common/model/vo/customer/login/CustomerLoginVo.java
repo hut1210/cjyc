@@ -1,6 +1,7 @@
 package com.cjyc.common.model.vo.customer.login;
 
-import com.cjyc.common.model.entity.Customer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -21,15 +22,39 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel
-public class CustomerLoginVo extends Customer implements Serializable {
+public class CustomerLoginVo  implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "authentication")
-    private String authentication;
+    @ApiModelProperty("用户id")
+    @JsonSerialize(using= ToStringSerializer.class)
+    private Long id;
 
-    @ApiModelProperty(value = "token")
-    private String token;
+    @ApiModelProperty("用户userId")
+    @JsonSerialize(using= ToStringSerializer.class)
+    private Long userId;
 
+    @ApiModelProperty("用户名")
+    private String name;
 
+    @ApiModelProperty("用户手机号")
+    private String phone;
+
+    @ApiModelProperty("头像")
+    private String photoImg;
+
+    @ApiModelProperty("类型：1个人,3-合伙人")
+    private Integer type;
+
+    @ApiModelProperty("token值")
+    private String accessToken;
+
+    @ApiModelProperty("token生成类型")
+    private String tokenType;
+
+    @ApiModelProperty("token有效时间，单位：秒")
+    private Integer expiresIn;
+
+    @ApiModelProperty("刷新token值")
+    private String refreshToken;
 }

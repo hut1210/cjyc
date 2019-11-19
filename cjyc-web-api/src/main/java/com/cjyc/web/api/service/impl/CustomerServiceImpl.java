@@ -7,7 +7,6 @@ import com.cjkj.common.model.ReturnMsg;
 import com.cjkj.usercenter.dto.common.AddUserReq;
 import com.cjkj.usercenter.dto.common.AddUserResp;
 import com.cjkj.usercenter.dto.common.UpdateUserReq;
-import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.customer.*;
@@ -26,13 +25,13 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.customer.*;
 import com.cjyc.common.model.vo.web.coupon.CustomerCouponSendVo;
 import com.cjyc.common.system.feign.ISysUserService;
+import com.cjyc.common.system.service.ICsCustomerService;
 import com.cjyc.web.api.service.ICustomerContractService;
 import com.cjyc.web.api.service.ICustomerService;
-import com.cjyc.web.api.service.ISendNoService;
+import com.cjyc.common.system.service.ISendNoService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -86,6 +85,9 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     @Resource
     private ISendNoService sendNoService;
 
+    @Resource
+    private ICsCustomerService csCustomerService;
+
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
     @Override
@@ -115,7 +117,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         customer.setCreateUserId(dto.getLoginId());
         customer.setCreateTime(NOW);
         //新增个人用户信息到物流平台
-        ResultData<Long> rd = addCustomerToPlatform(customer);
+        ResultData<Long> rd = csCustomerService.addCustomerToPlatform(customer);
         if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
             return BaseResultUtil.fail(rd.getMsg());
         }
@@ -128,7 +130,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     public ResultVo modifyCustomer(CustomerDto dto) {
         Customer customer = customerDao.selectById(dto.getCustomerId());
         if(null != customer){
-            ResultData<Boolean> updateRd = updateCustomerToPlatform(customer, dto.getContactPhone());
+            ResultData<Boolean> updateRd = csCustomerService.updateCustomerToPlatform(customer, dto.getContactPhone());
             if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
                 log.error("修改用户信息失败，原因：" + updateRd.getMsg());
                 return BaseResultUtil.fail("修改用户信息失败，原因：" + updateRd.getMsg());
@@ -182,7 +184,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             customer.setCreateUserId(dto.getLoginId());
 
             //保存大客户信息到物流平台
-            ResultData<Long> rd = addCustomerToPlatform(customer);
+            ResultData<Long> rd = csCustomerService.addCustomerToPlatform(customer);
             if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
                 log.error("保存大客户信息失败，原因：" + rd.getMsg());
                 return BaseResultUtil.fail("保存大客户信息失败，原因：" + rd.getMsg());
@@ -203,7 +205,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         Customer customer = customerDao.selectById(dto.getCustomerId());
         if(null != customer){
             //判断手机号是否存在
-            ResultData<Boolean> updateRd = updateCustomerToPlatform(customer, dto.getContactPhone());
+            ResultData<Boolean> updateRd = csCustomerService.updateCustomerToPlatform(customer, dto.getContactPhone());
             if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
                 log.error("修改用户信息失败，原因：" + updateRd.getMsg());
                 return BaseResultUtil.fail("修改用户信息失败，原因：" + updateRd.getMsg());
@@ -378,7 +380,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         customer.setCreateUserId(dto.getLoginId());
 
         //新增用户信息到物流平台
-        ResultData<Long> rd = addCustomerToPlatform(customer);
+        ResultData<Long> rd = csCustomerService.addCustomerToPlatform(customer);
         if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
             return BaseResultUtil.fail(rd.getMsg());
         }
@@ -397,7 +399,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         Customer customer = customerDao.selectById(dto.getCustomerId());
         if(customer != null){
             //判断手机号是否存在
-            ResultData<Boolean> updateRd = updateCustomerToPlatform(customer, dto.getContactPhone());
+            ResultData<Boolean> updateRd = csCustomerService.updateCustomerToPlatform(customer, dto.getContactPhone());
             if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
                 log.error("修改用户信息失败，原因：" + updateRd.getMsg());
                 return BaseResultUtil.fail("修改用户信息失败，原因：" + updateRd.getMsg());
@@ -545,76 +547,10 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                 CustomerContract custCont = new CustomerContract();
                 BeanUtils.copyProperties(dto,custCont);
                 custCont.setCustomerId(customerId);
-                if(StringUtils.isNotBlank(dto.getContractLife())){
-                    custCont.setContractLife(LocalDateTimeUtil.convertToLong(dto.getContractLife(),TimePatternConstant.SIMPLE_DATE_FORMAT));
-                }
-                if(StringUtils.isNotBlank(dto.getProjectEstabTime())){
-                    custCont.setProjectEstabTime(LocalDateTimeUtil.convertToLong(dto.getProjectEstabTime(),TimePatternConstant.SIMPLE_DATE_FORMAT));
-                }
                 list.add(custCont);
             }
         }
         return list;
-    }
-
-    /**
-     * 将C端客户保存到物流平台
-     * @param customer
-     * @return
-     */
-    private ResultData<Long> addCustomerToPlatform(Customer customer) {
-        ResultData<AddUserResp> accountRd =
-                sysUserService.getByAccount(customer.getContactPhone());
-        if (!ReturnMsg.SUCCESS.getCode().equals(accountRd.getCode())) {
-            return ResultData.failed("获取用户信息失败，原因：" + accountRd.getMsg());
-        }
-        if (accountRd.getData() != null) {
-            //存在，则直接返回已有用户userId信息
-            return ResultData.ok(accountRd.getData().getUserId());
-        }
-        //不存在，需要重新添加
-        AddUserReq user = new AddUserReq();
-        user.setName(customer.getName());
-        user.setAccount(customer.getContactPhone());
-        user.setMobile(customer.getContactPhone());
-        user.setDeptId(Long.parseLong(YmlProperty.get("cjkj.dept_customer_id")));
-        user.setPassword(YmlProperty.get("cjkj.salesman.password"));
-        ResultData<AddUserResp> saveRd = sysUserService.save(user);
-        if (!ReturnMsg.SUCCESS.getCode().equals(saveRd.getCode())) {
-            return ResultData.failed("保存客户信息失败，原因：" + saveRd.getMsg());
-        }
-        return ResultData.ok(saveRd.getData().getUserId());
-    }
-
-    /**
-     * 修改账号信息到物流平台：
-     *  修改物流平台账号信息：如果修改账号则将要修改的账号不能存在否则修改失败
-     * @param customer
-     * @param newPhone
-     * @return
-     */
-    private ResultData<Boolean> updateCustomerToPlatform(Customer customer, String newPhone) {
-        String oldPhone = customer.getContactPhone();
-        if (!oldPhone.equals(newPhone)) {
-            //新旧账号不相同需要替换手机号
-            ResultData<AddUserResp> accountRd = sysUserService.getByAccount(newPhone);
-            if (!ReturnMsg.SUCCESS.getCode().equals(accountRd.getCode())) {
-                return ResultData.failed("用户信息获取失败，原因：" + accountRd.getMsg());
-            }
-            if (accountRd.getData() != null) {
-                return ResultData.failed("用户账号不允许修改，预修改账号：" + newPhone + " 已存在");
-            }
-            UpdateUserReq user = new UpdateUserReq();
-            user.setUserId(customer.getUserId());
-            user.setAccount(newPhone);
-            user.setMobile(newPhone);
-            ResultData rd = sysUserService.updateUser(user);
-            if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
-                return ResultData.failed("用户信息修改失败，原因：" + rd.getMsg());
-            }
-            return ResultData.ok(true);
-        }
-        return ResultData.ok(false);
     }
 
     /**

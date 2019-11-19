@@ -1,4 +1,4 @@
-package com.cjyc.web.api.service;
+package com.cjyc.common.system.service;
 
 import com.cjyc.common.model.enums.SendNoTypeEnum;
 

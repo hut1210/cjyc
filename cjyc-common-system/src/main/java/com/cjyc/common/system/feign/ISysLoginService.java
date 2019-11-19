@@ -2,11 +2,14 @@ package com.cjyc.common.system.feign;
 
 import com.cjkj.common.feign.fallback.UserServiceFallbackFactory;
 import com.cjkj.common.model.ResultData;
+import com.cjkj.usercenter.dto.common.SelectDeptResp;
 import com.cjkj.usercenter.dto.common.auth.AuthLoginReq;
 import com.cjkj.usercenter.dto.common.auth.AuthLoginResp;
 import com.cjkj.usercenter.dto.common.auth.AuthMobileLoginReq;
 import com.cjyc.common.model.constant.FeignServiceContant;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -33,4 +36,12 @@ public interface ISysLoginService {
      */
     @PostMapping("/feign/auth/mobile/login")
     ResultData<AuthLoginResp> mobileLogin(@RequestBody AuthMobileLoginReq req);
+
+    /**
+     * 根据手机号获取验证码
+     * @param mobile
+     * @return
+     */
+    @GetMapping("/sms/code/{mobile}")
+    ResultData verifyCode(@PathVariable(value = "mobile") String mobile);
 }

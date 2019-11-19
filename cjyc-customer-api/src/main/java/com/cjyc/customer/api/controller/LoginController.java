@@ -1,6 +1,8 @@
 package com.cjyc.customer.api.controller;
 
+import com.cjyc.common.model.dto.customer.login.LoginDto;
 import com.cjyc.common.model.dto.salesman.login.LoginByPhoneDto;
+import com.cjyc.common.model.dto.web.customer.CustomerfuzzyListDto;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.RegexUtil;
 import com.cjyc.common.model.vo.ResultVo;
@@ -8,14 +10,12 @@ import com.cjyc.common.model.vo.customer.login.CustomerLoginVo;
 import com.cjyc.customer.api.service.ILoginService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
 
@@ -32,6 +32,18 @@ public class LoginController {
 
     @Autowired
     private ILoginService loginService;
+
+    @ApiOperation(value = "获取验证码")
+    @PostMapping("/verifyCode/{phone}")
+    public ResultVo verifyCode(@PathVariable @ApiParam(value = "手机号",required = true) String phone) {
+        return loginService.verifyCode(phone);
+    }
+
+    @ApiOperation(value = "获取验证码")
+    @PostMapping("/login")
+    public ResultVo<CustomerLoginVo> login(@Validated @RequestBody LoginDto dto) {
+        return loginService.login(dto);
+    }
 
     @ApiOperation(value = "手机号验证码登录", notes = " ")
     @PostMapping("/phone")

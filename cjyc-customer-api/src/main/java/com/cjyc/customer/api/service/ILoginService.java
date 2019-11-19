@@ -1,5 +1,6 @@
 package com.cjyc.customer.api.service;
 
+import com.cjyc.common.model.dto.customer.login.LoginDto;
 import com.cjyc.common.model.dto.salesman.login.LoginByPhoneDto;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.login.CustomerLoginVo;
@@ -9,6 +10,21 @@ import com.cjyc.common.model.vo.customer.login.CustomerLoginVo;
  * @author JPG
  */
 public interface ILoginService {
+
+    /**
+     * 根据手机号获取验证码
+     * @param phone
+     * @return
+     */
+    ResultVo verifyCode(String phone);
+
+    /**
+     * 手机号验证码登陆
+     * @param dto
+     * @return
+     */
+    ResultVo<CustomerLoginVo> login(LoginDto dto);
+
     /**
      * 手机号验证码登录
      * @author JPG
@@ -16,5 +32,6 @@ public interface ILoginService {
      * @param captchaValidatedDto
      */
     ResultVo<CustomerLoginVo> loginByPhone(LoginByPhoneDto captchaValidatedDto);
+
 
 }
