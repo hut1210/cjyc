@@ -1,7 +1,7 @@
 package com.cjyc.web.api.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.cjyc.common.model.dto.web.city.StoreAreaQueryDto;
+import com.cjyc.common.model.dto.web.city.StoreDto;
 import com.cjyc.common.model.dto.web.store.GetStoreDto;
 import com.cjyc.common.model.dto.web.store.StoreAddDto;
 import com.cjyc.common.model.dto.web.store.StoreQueryDto;
@@ -69,7 +69,7 @@ public interface IStoreService extends IService<Store> {
      * @param dto
      * @return com.cjyc.common.model.vo.ResultVo
      */
-    ResultVo getStoreAreaList(StoreAreaQueryDto dto);
+    ResultVo getStoreAreaList(StoreDto dto);
 
     /**
      * 功能描述: 给当前业务中心新增区域
@@ -78,7 +78,7 @@ public interface IStoreService extends IService<Store> {
      * @param dto
      * @return com.cjyc.common.model.vo.ResultVo
      */
-    ResultVo addCoveredArea(StoreAreaQueryDto dto);
+    ResultVo addCoveredArea(StoreDto dto);
 
     /**
      * 功能描述: 给当前业务中心新增区域
@@ -87,7 +87,7 @@ public interface IStoreService extends IService<Store> {
      * @param dto
      * @return com.cjyc.common.model.vo.ResultVo
      */
-    ResultVo removeCoveredArea(StoreAreaQueryDto dto);
+    ResultVo removeCoveredArea(StoreDto dto);
 
     List<Store> getListByRoleId(Long roleId);
 

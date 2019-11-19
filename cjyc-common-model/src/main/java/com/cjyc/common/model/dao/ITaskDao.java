@@ -1,9 +1,10 @@
 package com.cjyc.common.model.dao;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cjyc.common.model.dto.driver.BaseConditionDto;
 import com.cjyc.common.model.dto.web.task.CrTaskDto;
 import com.cjyc.common.model.entity.Task;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.driver.task.FinishTaskVo;
 import com.cjyc.common.model.vo.web.task.CrTaskVo;
 import com.cjyc.common.model.vo.web.task.ListByWaybillTaskVo;
 import com.cjyc.common.model.vo.web.task.TaskVo;
@@ -45,4 +46,13 @@ public interface ITaskDao extends BaseMapper<Task> {
     String findMaxNo(String waybillNo);
 
     List<CrTaskVo> findListForMineCarrier(CrTaskDto paramsDto);
+
+    /**
+     * 功能描述: 分页查询已交付运单
+     * @author liuxingxiang
+     * @date 2019/11/19
+     * @param dto
+     * @return java.util.List<com.cjyc.common.model.vo.driver.task.FinishTaskVo>
+     */
+    List<FinishTaskVo> selectPage(BaseConditionDto dto);
 }

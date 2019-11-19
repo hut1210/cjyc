@@ -1,8 +1,8 @@
 package com.cjyc.driver.api.service;
 
-import com.cjyc.common.model.dto.driver.BaseDriverDto;
-import com.cjyc.common.model.entity.Task;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.cjyc.common.model.dto.driver.BaseConditionDto;
+import com.cjyc.common.model.entity.Task;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.task.FinishTaskVo;
 import com.github.pagehelper.PageInfo;
@@ -24,5 +24,5 @@ public interface ITaskService extends IService<Task> {
      * @param dto
      * @return com.cjyc.common.model.vo.ResultVo<com.github.pagehelper.PageInfo<com.cjyc.common.model.vo.driver.task.FinishTaskVo>>
      */
-    ResultVo<PageInfo<FinishTaskVo>> getPage(BaseDriverDto dto);
+    ResultVo<PageInfo<FinishTaskVo>> getPage(BaseConditionDto dto);
 }
