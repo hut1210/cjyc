@@ -32,4 +32,6 @@ public class MineController {
     public ResultVo findBinkCardInfo(@PathVariable @ApiParam(value = "司机id",required = true) Long loginId) {
         return mineService.findBinkCardInfo(loginId);
     }
+
+
 }
