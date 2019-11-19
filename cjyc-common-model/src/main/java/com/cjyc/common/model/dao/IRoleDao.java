@@ -13,4 +13,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface IRoleDao extends BaseMapper<Role> {
 
+    Role findByName(String roleName);
 }

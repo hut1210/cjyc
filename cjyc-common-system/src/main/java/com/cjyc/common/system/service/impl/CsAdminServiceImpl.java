@@ -2,7 +2,9 @@ package com.cjyc.common.system.service.impl;
 
 import com.cjkj.common.model.ResultData;
 import com.cjkj.common.redis.template.StringRedisUtil;
+import com.cjkj.usercenter.dto.common.AddUserResp;
 import com.cjkj.usercenter.dto.common.SelectRoleResp;
+import com.cjkj.usercenter.dto.common.UserResp;
 import com.cjkj.usercenter.dto.yc.SelectUsersByRoleResp;
 import com.cjyc.common.model.dao.IAdminDao;
 import com.cjyc.common.model.entity.Admin;
@@ -10,9 +12,11 @@ import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.entity.Store;
 import com.cjyc.common.model.enums.UserTypeEnum;
+import com.cjyc.common.model.vo.web.admin.AdminVo;
 import com.cjyc.common.model.vo.web.admin.CacheData;
 import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysRoleService;
+import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.*;
 import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.common.system.util.ResultDataUtil;
@@ -40,6 +44,8 @@ public class CsAdminServiceImpl implements ICsAdminService {
     private ICsSysService csSysService;
     @Resource
     private ISysDeptService sysDeptService;
+    @Resource
+    private ISysUserService sysUserService;
     @Resource
     private StringRedisUtil redisUtil;
     @Resource
@@ -116,7 +122,16 @@ public class CsAdminServiceImpl implements ICsAdminService {
     }
 
     @Override
-    public Admin getByPhone(String username, boolean isSearchCache) {
-        return adminDao.findByPhone(username);
+    public AdminVo getByPhone(String username, boolean isSearchCache) {
+        AdminVo vo = adminDao.findVoByPhone(username);
+        if(vo == null){
+            return null;
+        }
+        ResultData<UserResp> resultData = sysUserService.getByAccount(username);
+        if(resultData == null || resultData.getData() == null){
+            return null;
+        }
+        vo.setDeptId(resultData.getData().getDeptId());
+        return vo;
     }
 }

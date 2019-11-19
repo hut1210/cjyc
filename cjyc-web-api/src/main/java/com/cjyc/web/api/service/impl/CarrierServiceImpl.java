@@ -7,6 +7,7 @@ import com.cjkj.common.model.ReturnMsg;
 import com.cjkj.usercenter.dto.common.AddUserResp;
 import com.cjkj.usercenter.dto.common.UpdateDeptReq;
 import com.cjkj.usercenter.dto.common.UpdateUserReq;
+import com.cjkj.usercenter.dto.common.UserResp;
 import com.cjkj.usercenter.dto.yc.AddDeptAndUserReq;
 import com.cjkj.usercenter.dto.yc.AddDeptAndUserResp;
 import com.cjkj.usercenter.dto.yc.UpdateDeptManagerReq;
@@ -381,7 +382,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
                 if (!carrier.getLinkmanPhone().equals(dto.getLinkmanPhone())) {
                     //需要变更联系人
                     //1.新联系人是否在物流平台
-                    ResultData<AddUserResp> accountRd = sysUserService.getByAccount(dto.getLinkmanPhone());
+                    ResultData<UserResp> accountRd = sysUserService.getByAccount(dto.getLinkmanPhone());
                     if (!ReturnMsg.SUCCESS.getCode().equals(accountRd.getCode())) {
                         return ResultData.failed("查询用户信息失败，原因：" + accountRd.getMsg());
                     }

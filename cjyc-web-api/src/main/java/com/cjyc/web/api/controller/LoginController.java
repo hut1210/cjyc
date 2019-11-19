@@ -4,6 +4,7 @@ import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
 import com.cjkj.usercenter.dto.common.AddUserResp;
 import com.cjkj.usercenter.dto.common.UpdatePwdReq;
+import com.cjkj.usercenter.dto.common.UserResp;
 import com.cjkj.usercenter.dto.common.auth.AuthLoginReq;
 import com.cjkj.usercenter.dto.common.auth.AuthLoginResp;
 import com.cjyc.common.model.dto.salesman.login.LoginByUserNameDto;
@@ -83,7 +84,7 @@ public class LoginController {
     @ApiOperation(value = "修改密码")
     @PostMapping("/updatePwd")
     public ResultVo updatePwd(@Valid @RequestBody UpdatePwdDto dto){
-        ResultData<AddUserResp> accountRd = sysUserService.getByAccount(dto.getAccount());
+        ResultData<UserResp> accountRd = sysUserService.getByAccount(dto.getAccount());
         if (!ReturnMsg.SUCCESS.getCode().equals(accountRd.getCode())) {
             return BaseResultUtil.fail("用户密码更新失败，原因：" + accountRd.getMsg());
         }

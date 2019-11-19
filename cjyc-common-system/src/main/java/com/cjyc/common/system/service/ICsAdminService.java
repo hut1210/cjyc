@@ -1,6 +1,7 @@
 package com.cjyc.common.system.service;
 
 import com.cjyc.common.model.entity.Admin;
+import com.cjyc.common.model.vo.web.admin.AdminVo;
 import com.cjyc.common.model.vo.web.admin.CacheData;
 
 import java.util.List;
@@ -31,6 +32,6 @@ public interface ICsAdminService {
      */
     CacheData getCacheData(Long userId, Long roleId);
 
-    Admin getByPhone(String username, boolean isSearchCache);
+    AdminVo getByPhone(String username, boolean isSearchCache);
 
 }

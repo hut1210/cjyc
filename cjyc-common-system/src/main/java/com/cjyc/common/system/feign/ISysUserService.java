@@ -6,6 +6,7 @@ import com.cjkj.common.model.PageData;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.usercenter.dto.common.*;
 import com.cjkj.usercenter.dto.yc.SelectPageUsersByDeptReq;
+import com.cjkj.usercenter.dto.yc.SelectPageUsersForSalesmanReq;
 import com.cjkj.usercenter.dto.yc.SelectUsersByRoleResp;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -50,7 +51,7 @@ public interface ISysUserService {
      * @param account 参数
      */
     @GetMapping("/feign/uc/getUser/{account}")
-    ResultData<AddUserResp> getByAccount(@PathVariable(value = "account") String account);
+    ResultData<UserResp> getByAccount(@PathVariable(value = "account") String account);
 
 
 
@@ -102,4 +103,14 @@ public interface ISysUserService {
      */
     @PostMapping("/feign/yc/getPageUsersByDept")
     ResultData<PageData<SelectUsersByRoleResp>> getPageUsersByDept(@RequestBody SelectPageUsersByDeptReq req);
+
+
+    /**
+     * 根据机构及用户条件查询机构下所有角色的关联用户列表:分页
+     * @return
+     */
+    @PostMapping("/feign/yc/getPageUsersForSalesman")
+    ResultData<PageData<SelectUsersByRoleResp>> getPageUsersForSalesman(@RequestBody SelectPageUsersForSalesmanReq req);
+
+
 }

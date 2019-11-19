@@ -7,6 +7,7 @@ import com.cjkj.common.model.ReturnMsg;
 import com.cjkj.usercenter.dto.common.AddUserReq;
 import com.cjkj.usercenter.dto.common.AddUserResp;
 import com.cjkj.usercenter.dto.common.UpdateUserReq;
+import com.cjkj.usercenter.dto.common.UserResp;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.mineCarrier.*;
@@ -366,7 +367,7 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
         if (null == carrier || carrier.getDeptId() == null || carrier.getDeptId() <= 0L) {
             return ResultData.failed("承运商信息错误，可能因为该承运商未审核通过");
         }
-        ResultData<AddUserResp> rd = sysUserService.getByAccount(driver.getPhone());
+        ResultData<UserResp> rd = sysUserService.getByAccount(driver.getPhone());
         if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
             return ResultData.failed("查询司机信息有误，原因：" + rd.getMsg());
         }
@@ -408,7 +409,7 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
             if (!CollectionUtils.isEmpty(drivers)) {
                 return ResultData.failed("手机号已使用，请检查");
             }
-            ResultData<AddUserResp> rd = sysUserService.getByAccount(dto.getPhone());
+            ResultData<UserResp> rd = sysUserService.getByAccount(dto.getPhone());
             if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
                 return ResultData.failed("司机信息查询失败， 原因：" + rd.getMsg());
             }

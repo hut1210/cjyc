@@ -5,6 +5,7 @@ import com.cjyc.common.model.dto.web.salesman.TypeSalesmanDto;
 import com.cjyc.common.model.entity.Admin;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.vo.web.admin.AdminPageVo;
+import com.cjyc.common.model.vo.web.admin.AdminVo;
 import com.cjyc.common.model.vo.web.admin.TypeSalesmanVo;
 import org.apache.ibatis.annotations.Param;
 
@@ -39,4 +40,6 @@ public interface IAdminDao extends BaseMapper<Admin> {
     Admin findByPhone(String phone);
 
     List<AdminPageVo> findList(AdminPageDto paramsDto, Set<Long> collect);
+
+    AdminVo findVoByPhone(String phone);
 }

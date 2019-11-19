@@ -4,10 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
-import com.cjkj.usercenter.dto.common.AddUserReq;
-import com.cjkj.usercenter.dto.common.AddUserResp;
-import com.cjkj.usercenter.dto.common.SelectRoleResp;
-import com.cjkj.usercenter.dto.common.UpdateUserReq;
+import com.cjkj.usercenter.dto.common.*;
 import com.cjyc.common.model.dao.IAdminDao;
 import com.cjyc.common.model.dto.web.salesman.AddDto;
 import com.cjyc.common.model.dto.web.salesman.AssignRoleDto;
@@ -180,7 +177,7 @@ public class SalesmanServiceImpl extends ServiceImpl<IAdminDao, Admin> implement
         if (!CollectionUtils.isEmpty(list)) {
             return BaseResultUtil.fail("手机号已被使用，请检查");
         }
-        ResultData<AddUserResp> accountRd = sysUserService.getByAccount(dto.getAccount());
+        ResultData<UserResp> accountRd = sysUserService.getByAccount(dto.getAccount());
         if (!ReturnMsg.SUCCESS.getCode().equals(accountRd.getCode())) {
             return BaseResultUtil.fail("用户信息更新失败， 原因:" + accountRd.getMsg());
         }
@@ -207,7 +204,7 @@ public class SalesmanServiceImpl extends ServiceImpl<IAdminDao, Admin> implement
         if (!CollectionUtils.isEmpty(phoneList)) {
             return BaseResultUtil.fail("手机号已存在，请检查");
         }
-        ResultData<AddUserResp> existRd = sysUserService.getByAccount(dto.getAccount());
+        ResultData<UserResp> existRd = sysUserService.getByAccount(dto.getAccount());
         if (!ReturnMsg.SUCCESS.getCode().equals(existRd.getCode())) {
             return BaseResultUtil.fail("用户信息保存失败，原因：根据账号" + dto.getAccount() +
                     "获取物流平台用户信息失败");

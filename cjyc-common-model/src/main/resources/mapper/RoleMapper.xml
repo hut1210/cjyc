@@ -19,5 +19,8 @@
     <sql id="Base_Column_List">
         id, role_name, role_level, role_range, create_time, create_user_id, update_time, update_user_id,  state
     </sql>
+    <select id="findByName" resultType="com.cjyc.common.model.entity.Role">
+        select * from s_role where name = #{roleName};
+    </select>
 
 </mapper>

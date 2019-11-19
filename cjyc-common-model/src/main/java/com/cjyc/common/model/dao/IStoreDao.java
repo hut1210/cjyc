@@ -34,7 +34,7 @@ public interface IStoreDao extends BaseMapper<Store> {
 
     List<Store> findByIds(@Param("set") Set<Long> storeIds);
 
-    List<Store> findByName(String storeName);
+    List<Store> findByName(@Param("storeName") String storeName);
 
     List<Store> findByNameAndIds(@Param("storeName") String storeName, @Param("storeIds") Set<Long> storeIds);
 }

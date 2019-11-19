@@ -98,7 +98,7 @@
         <where>
             and name like concat('%',#{storeName},'%')
             and id in
-            <foreach collection="set" index="index" item="item" open="(" separator="," close=")">
+            <foreach collection="storeIds" index="index" item="item" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </where>

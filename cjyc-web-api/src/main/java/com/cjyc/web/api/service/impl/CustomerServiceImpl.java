@@ -7,6 +7,7 @@ import com.cjkj.common.model.ReturnMsg;
 import com.cjkj.usercenter.dto.common.AddUserReq;
 import com.cjkj.usercenter.dto.common.AddUserResp;
 import com.cjkj.usercenter.dto.common.UpdateUserReq;
+import com.cjkj.usercenter.dto.common.UserResp;
 import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.OperateDto;
@@ -563,7 +564,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
      * @return
      */
     private ResultData<Long> addCustomerToPlatform(Customer customer) {
-        ResultData<AddUserResp> accountRd =
+        ResultData<UserResp> accountRd =
                 sysUserService.getByAccount(customer.getContactPhone());
         if (!ReturnMsg.SUCCESS.getCode().equals(accountRd.getCode())) {
             return ResultData.failed("获取用户信息失败，原因：" + accountRd.getMsg());
@@ -597,7 +598,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         String oldPhone = customer.getContactPhone();
         if (!oldPhone.equals(newPhone)) {
             //新旧账号不相同需要替换手机号
-            ResultData<AddUserResp> accountRd = sysUserService.getByAccount(newPhone);
+            ResultData<UserResp> accountRd = sysUserService.getByAccount(newPhone);
             if (!ReturnMsg.SUCCESS.getCode().equals(accountRd.getCode())) {
                 return ResultData.failed("用户信息获取失败，原因：" + accountRd.getMsg());
             }

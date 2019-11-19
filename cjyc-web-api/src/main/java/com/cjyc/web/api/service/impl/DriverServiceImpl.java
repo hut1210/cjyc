@@ -7,6 +7,7 @@ import com.cjkj.common.model.ReturnMsg;
 import com.cjkj.usercenter.dto.common.AddUserReq;
 import com.cjkj.usercenter.dto.common.AddUserResp;
 import com.cjkj.usercenter.dto.common.UpdateUserReq;
+import com.cjkj.usercenter.dto.common.UserResp;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.driver.DispatchDriverDto;
@@ -373,7 +374,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         if (null == driver) {
             return ResultData.failed("司机信息错误，请检查");
         }
-        ResultData<AddUserResp> accountRd = sysUserService.getByAccount(driver.getPhone());
+        ResultData<UserResp> accountRd = sysUserService.getByAccount(driver.getPhone());
         if (!ReturnMsg.SUCCESS.getCode().equals(accountRd.getCode())) {
             return ResultData.failed("司机信息查询失败：原因：" + accountRd.getMsg());
         }

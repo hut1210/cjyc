@@ -69,7 +69,8 @@ public class Admin implements Serializable {
 
     @ApiModelProperty(value = "创建时间")
     private Long createTime;
-
+    @ApiModelProperty(value = "创建人")
+    private Long createUser;
     @ApiModelProperty(value = "创建人")
     private Long createUserId;
 
