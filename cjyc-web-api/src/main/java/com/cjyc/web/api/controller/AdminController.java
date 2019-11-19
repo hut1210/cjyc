@@ -61,7 +61,7 @@ public class AdminController {
         if (resultData == null || resultData.getData() == null || resultData.getData().getUserId() == null) {
             return BaseResultUtil.fail("用户不存在");
         }
-        CacheData cacheData = csAdminService.getCacheData(resultData.getData().getUserId(), roleId);
+        CacheData cacheData = adminService.getCacheData(resultData.getData().getUserId(), roleId);
         //发送推送信息
         return BaseResultUtil.success(cacheData);
     }

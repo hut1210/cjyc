@@ -13,19 +13,21 @@ import com.cjyc.common.model.dao.IAdminDao;
 import com.cjyc.common.model.dao.IRoleDao;
 import com.cjyc.common.model.dto.web.salesman.AdminPageDto;
 import com.cjyc.common.model.dto.web.salesman.TypeSalesmanDto;
-import com.cjyc.common.model.entity.Admin;
-import com.cjyc.common.model.entity.Role;
-import com.cjyc.common.model.entity.Store;
+import com.cjyc.common.model.entity.*;
+import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.enums.role.RoleLevelEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.admin.AdminPageVo;
+import com.cjyc.common.model.vo.web.admin.CacheData;
 import com.cjyc.common.model.vo.web.admin.TypeSalesmanVo;
 import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.feign.ISysUserService;
+import com.cjyc.common.system.service.ICsCustomerService;
+import com.cjyc.common.system.service.ICsDriverService;
 import com.cjyc.common.system.service.ICsStoreService;
 import com.cjyc.web.api.service.IAdminService;
 import com.github.pagehelper.PageHelper;
@@ -71,6 +73,10 @@ public class AdminServiceImpl extends ServiceImpl<IAdminDao, Admin> implements I
     private ICsStoreService csStoreService;
     @Resource
     private ISysUserService sysUserService;
+    @Resource
+    private ICsCustomerService csCustomerService;
+    @Resource
+    private ICsDriverService csDriverService;
     @Resource
     private IRoleDao roleDao;
 
@@ -196,6 +202,7 @@ public class AdminServiceImpl extends ServiceImpl<IAdminDao, Admin> implements I
                     adminPageVo.setState(admin.getState());
                     adminPageVo.setCreateTime(admin.getCreateTime());
                     adminPageVo.setCreateUser(admin.getCreateUser());
+                    adminPageVo.setId(admin.getId());
                 }
             }
             resList.add(adminPageVo);
@@ -210,6 +217,57 @@ public class AdminServiceImpl extends ServiceImpl<IAdminDao, Admin> implements I
 
         return pageVo;
 
+    }
+
+
+    @Override
+    public CacheData getCacheData(Long userId, Long roleId) {
+        CacheData cacheData = new CacheData();
+        //根据角色查询机构ID
+        ResultData<SelectRoleResp> resultData = sysRoleService.getById(roleId);
+        if (resultData == null || resultData.getData() == null) {
+            return null;
+        }
+
+        //业务员
+        Integer userType = 0;
+        if(userType == UserTypeEnum.ADMIN.code){
+            Admin admin = adminDao.findByUserId(userId);
+            if (admin != null) {
+                cacheData.setDeptId(resultData.getData().getDeptId());
+                cacheData.setLoginId(admin.getId());
+                cacheData.setLoginName(admin.getName());
+                cacheData.setLoginPhone(admin.getPhone());
+                cacheData.setRoleId(roleId);
+                cacheData.setLoginType(UserTypeEnum.ADMIN.code);
+            }
+
+        }else if(userType == UserTypeEnum.CUSTOMER.code){
+            //客户
+            Customer customer = csCustomerService.getByUserId(userId, true);
+            if(customer != null){
+                cacheData.setDeptId(resultData.getData().getDeptId());
+                cacheData.setLoginId(customer.getId());
+                cacheData.setLoginName(customer.getName());
+                cacheData.setLoginPhone(customer.getContactPhone());
+                cacheData.setRoleId(roleId);
+                cacheData.setLoginType(UserTypeEnum.CUSTOMER.code);
+            }
+        }else if(userType == UserTypeEnum.DRIVER.code){
+            //司机
+            Driver driver = csDriverService.getByUserId(userId);
+            if(driver != null){
+                cacheData.setDeptId(resultData.getData().getDeptId());
+                cacheData.setLoginId(driver.getId());
+                cacheData.setLoginName(driver.getName());
+                cacheData.setLoginPhone(driver.getPhone());
+                cacheData.setRoleId(roleId);
+                cacheData.setLoginType(UserTypeEnum.DRIVER.code);
+            }
+        }else{
+            return null;
+        }
+        return cacheData;
     }
 
     private int getPages(long total, Integer pageSize) {

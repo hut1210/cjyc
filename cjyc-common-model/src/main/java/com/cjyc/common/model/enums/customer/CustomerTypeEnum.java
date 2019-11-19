@@ -7,8 +7,8 @@ package com.cjyc.common.model.enums.customer;
  */
 public enum CustomerTypeEnum {
     /***/
-    INDIVIDUAL("个人", 1),
-    ENTERPRISE("企业人员", 2),
+    INDIVIDUAL("个人客户", 1),
+    ENTERPRISE("企业客户", 2),
     COOPERATOR("合伙人",3);
 
     public String name;

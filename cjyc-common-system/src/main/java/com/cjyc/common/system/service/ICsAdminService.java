@@ -23,15 +23,6 @@ public interface ICsAdminService {
      */
     List<Admin> getListByStoreId(Long storeId);
 
-    /**
-     * 获取缓存数据
-     * @author JPG
-     * @since 2019/11/6 12:30
-     * @param userId
-     * @param roleId
-     */
-    CacheData getCacheData(Long userId, Long roleId);
-
     AdminVo getByPhone(String username, boolean isSearchCache);
 
 }

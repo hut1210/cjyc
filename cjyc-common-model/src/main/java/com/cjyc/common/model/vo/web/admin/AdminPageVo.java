@@ -1,11 +1,14 @@
 package com.cjyc.common.model.vo.web.admin;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
 public class AdminPageVo {
-
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long id;
     @ApiModelProperty(value = "状态：0待审核，2已审核，4取消，7已驳回，9已停用（CommonStateEnum）")
     private Integer state;
     @ApiModelProperty("用户名称")

@@ -12,7 +12,8 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @ApiModel
 public class ListOrderDto extends BasePageDto {
-
+    @ApiModelProperty(value = "角色ID")
+    private Long roleId;
     /**
      0待提交    1预订单
      2待分配    5待确认

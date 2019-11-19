@@ -7,6 +7,7 @@ import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.admin.AdminPageVo;
+import com.cjyc.common.model.vo.web.admin.CacheData;
 
 /**
  * <p>
@@ -23,4 +24,6 @@ public interface IAdminService extends IService<Admin> {
     ResultVo deliverySalesman(TypeSalesmanDto dto);
 
     PageVo<AdminPageVo> page(AdminPageDto reqDto);
+
+    CacheData getCacheData(Long userId, Long roleId);
 }

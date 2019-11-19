@@ -41,20 +41,11 @@ public class CsAdminServiceImpl implements ICsAdminService {
     @Resource
     private ICsStoreService csStoreService;
     @Resource
-    private ICsSysService csSysService;
-    @Resource
     private ISysDeptService sysDeptService;
     @Resource
     private ISysUserService sysUserService;
     @Resource
     private StringRedisUtil redisUtil;
-    @Resource
-    private ICsDriverService csDriverService;
-    @Resource
-    private ICsCustomerService csCustomerService;
-    @Resource
-    private ISysRoleService sysRoleService;
-
     /**
      * @param userId
      * @param isSearchCache
@@ -85,41 +76,6 @@ public class CsAdminServiceImpl implements ICsAdminService {
         return admins;
     }
 
-    @Override
-    public CacheData getCacheData(Long userId, Long roleId) {
-        CacheData cacheData = new CacheData();
-        //根据角色查询机构ID
-        ResultData<SelectRoleResp> resultData = sysRoleService.getById(roleId);
-        if (resultData == null || resultData.getData() == null) {
-            return null;
-        }
-
-        //业务员
-        Admin admin = adminDao.findByUserId(userId);
-        if (admin != null) {
-            cacheData.setDeptId(resultData.getData().getDeptId());
-            cacheData.setLoginId(admin.getId());
-            cacheData.setLoginName(admin.getName());
-            cacheData.setLoginPhone(admin.getPhone());
-            cacheData.setRoleId(roleId);
-            cacheData.setLoginType(UserTypeEnum.ADMIN.code);
-        }
-        //司机
-        Driver driver = csDriverService.getByUserId(userId);
-        if(driver != null){
-
-        }
-        //客户
-        Customer customer = csCustomerService.getByUserId(userId, true);
-        if(customer != null){
-
-        }
-
-
-        /*BeanUtils.copyProperties(admin, cacheData);*/
-
-        return cacheData;
-    }
 
     @Override
     public AdminVo getByPhone(String username, boolean isSearchCache) {

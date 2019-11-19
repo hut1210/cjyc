@@ -4,16 +4,24 @@ import com.cjkj.common.model.ResultData;
 import com.cjkj.common.redis.template.StringRedisUtil;
 import com.cjkj.usercenter.dto.common.AddUserReq;
 import com.cjkj.usercenter.dto.common.AddUserResp;
+import com.cjkj.usercenter.dto.common.SelectRoleResp;
 import com.cjyc.common.model.dao.ICustomerDao;
 import com.cjyc.common.model.entity.Customer;
+import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
+import com.cjyc.common.model.enums.driver.DriverTypeEnum;
 import com.cjyc.common.model.exception.ServerException;
 import com.cjyc.common.model.util.YmlProperty;
+import com.cjyc.common.system.feign.ISysDeptService;
+import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.ICsCustomerService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * 客户公用业务
@@ -30,6 +38,8 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
     private ICustomerDao customerDao;
     @Resource
     private ISysUserService sysUserService;
+    @Resource
+    private ISysRoleService sysRoleService;
     @Resource
     private StringRedisUtil redisUtil;
 
@@ -53,10 +63,23 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
 
     @Override
     public Customer save(Customer customer) {
+        //
+        ResultData<List<SelectRoleResp>> roleData = sysRoleService.getSingleLevelList(Long.valueOf(CUSTOMER_FIXED_DEPTID));
+        if (roleData == null || roleData.getData() == null) {
+            throw new ServerException(roleData == null ? "添加用户失败" : roleData.getMsg());
+        }
+
+        Long roleId = null;
+        for (SelectRoleResp selectRoleResp : roleData.getData()) {
+            if(selectRoleResp.getRoleName().equals(CustomerTypeEnum.INDIVIDUAL.name)){
+                roleId = selectRoleResp.getRoleId();
+            }
+        }
         //添加架构组数据
         AddUserReq addUserReq = new AddUserReq();
         addUserReq.setAccount(customer.getContactPhone());
         addUserReq.setPassword(CUSTOMER_FIXED_PWD);
+        addUserReq.setRoleIdList(roleId == null ? null : Collections.singletonList(roleId));
         addUserReq.setDeptId(Long.valueOf(CUSTOMER_FIXED_DEPTID));
         addUserReq.setMobile(customer.getContactPhone());
         addUserReq.setName(customer.getName());
