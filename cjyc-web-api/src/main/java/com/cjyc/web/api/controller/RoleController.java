@@ -87,4 +87,12 @@ public class RoleController {
     public ResultVo<List<Role>> getAllList() {
         return roleService.getAllList();
     }
+
+    @ApiOperation(value = "根据角色标识获取用户类型信息")
+    @GetMapping("/getUserTypeByRole/{roleId}")
+    public ResultVo<Integer> getUserTypeByRole(
+            @ApiParam(name = "roleId", value = "角色标识", required = true)
+            @PathVariable("roleId")Long roleId) {
+        return roleService.getUserTypeByRole(roleId);
+    }
 }

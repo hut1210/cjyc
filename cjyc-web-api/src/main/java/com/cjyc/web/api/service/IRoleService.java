@@ -42,4 +42,11 @@ public interface IRoleService extends IService<Role> {
      * @return
      */
     ResultVo<List<Role>> getAllList();
+
+    /**
+     * 根据角色id获取用户类型
+     * @param roleId
+     * @return
+     */
+    ResultVo<Integer> getUserTypeByRole(Long roleId);
 }

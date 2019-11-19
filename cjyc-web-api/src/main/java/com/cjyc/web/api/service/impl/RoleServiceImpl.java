@@ -10,6 +10,7 @@ import com.cjkj.usercenter.dto.yc.SelectUsersByRoleResp;
 import com.cjyc.common.model.dao.IRoleDao;
 import com.cjyc.common.model.dto.web.role.AddRoleDto;
 import com.cjyc.common.model.entity.Role;
+import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.enums.role.RoleLevelEnum;
 import com.cjyc.common.model.enums.role.RoleRangeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -98,6 +99,49 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
     public ResultVo<List<Role>> getAllList() {
         return BaseResultUtil.success(this.list());
     }
+
+    @Override
+    public ResultVo<Integer> getUserTypeByRole(Long roleId) {
+        ResultData<SelectRoleResp> byIdRd = sysRoleService.getById(roleId);
+        if (!isResultDataSuccess(byIdRd)) {
+            return BaseResultUtil.fail("角色信息查询错误，原因：" + byIdRd.getMsg());
+        }
+        if (null == byIdRd.getData()) {
+            return BaseResultUtil.success(0);
+        }
+        Long roleDeptId = byIdRd.getData().getDeptId();
+        ResultData<List<SelectDeptResp>> multiDeptRd =
+                sysDeptService.getMultiLevelDeptList(Long.parseLong(YmlProperty.get("cjkj.dept_customer_id")));
+        if (!isResultDataSuccess(multiDeptRd)) {
+            return BaseResultUtil.fail("机构信息查询失败，原因：" + multiDeptRd.getMsg());
+        }
+        //个人用户判断
+        if (!CollectionUtils.isEmpty(multiDeptRd.getData())) {
+            List<Long> cDeptIdList = multiDeptRd.getData().stream().map(m -> m.getDeptId())
+                    .collect(Collectors.toList());
+            if (cDeptIdList.contains(roleDeptId)) {
+                return BaseResultUtil.success(UserTypeEnum.CUSTOMER.code);
+            }
+        }
+        //管理员用户判断
+        if (roleDeptId.equals(BIZ_TOP_DEPT_ID)) {
+            return BaseResultUtil.success(UserTypeEnum.ADMIN.code);
+        }
+        if (getRegionGovIdList().contains(roleDeptId)) {
+            return BaseResultUtil.success(UserTypeEnum.ADMIN.code);
+        }
+        if (getProvinceGovIdList().contains(roleDeptId)) {
+            return BaseResultUtil.success(UserTypeEnum.ADMIN.code);
+        }
+        if (getCityGovIdList().contains(roleDeptId)) {
+            return BaseResultUtil.success(UserTypeEnum.ADMIN.code);
+        }
+        if (getBizCenterGovIdList() != null && getBizCenterGovIdList().contains(roleDeptId)) {
+            return BaseResultUtil.success(UserTypeEnum.ADMIN.code);
+        }
+        return BaseResultUtil.success(UserTypeEnum.DRIVER.code);
+    }
+
 
     /**
      * 根据角色id查询获取用户列表信息
