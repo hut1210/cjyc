@@ -131,7 +131,7 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
             log.error("保存业务中心失败，原因：" + saveRd.getMsg());
             return false;
         }
-        store.setId(saveRd.getData());
+        store.setDeptId(saveRd.getData());
         return super.save(store);
     }
 
@@ -347,8 +347,7 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
         Long parentDeptId = null;
         if (!store.getCityCode().equals(originalStore.getCityCode())) {
             //上级机构变更，物流平台需要变更部门
-            ResultData<SelectDeptResp> deptRd =
-                    sysDeptService.getDeptByCityCode(store.getCityCode());
+            ResultData<SelectDeptResp> deptRd = sysDeptService.getDeptByCityCode(store.getCityCode());
             if (!ReturnMsg.SUCCESS.getCode().equals(deptRd.getCode())) {
                 return ResultData.failed("查询机构信息错误，原因: " + deptRd.getMsg());
             }
