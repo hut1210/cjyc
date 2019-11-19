@@ -5,11 +5,13 @@ import com.cjkj.common.model.ResultData;
 import com.cjkj.usercenter.dto.common.AddUserResp;
 import com.cjkj.usercenter.dto.yc.SelectPageUsersByDeptReq;
 import com.cjyc.common.model.dto.web.salesman.MySalesmanQueryDto;
+import com.cjyc.common.model.dto.web.salesman.AdminPageDto;
 import com.cjyc.common.model.dto.web.salesman.TypeSalesmanDto;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.admin.CacheAdminVo;
+import com.cjyc.common.model.vo.web.admin.AdminPageVo;
+import com.cjyc.common.model.vo.web.admin.CacheData;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.ICsAdminService;
 import com.cjyc.web.api.service.IAdminService;
@@ -50,15 +52,15 @@ public class AdminController {
      */
     @ApiOperation(value = "校验用户并获取缓存数据")
     @PostMapping(value = "/validate/{roleId}")
-    public ResultVo<CacheAdminVo> validateUser(@RequestHeader(SecurityConstants.USER_HEADER) String account,
-                                 @PathVariable Long roleId) {
+    public ResultVo<CacheData> validateUser(@RequestHeader(SecurityConstants.USER_HEADER) String account,
+                                            @PathVariable Long roleId) {
         ResultData<AddUserResp> resultData = sysUserService.getByAccount(account);
         if (resultData == null || resultData.getData() == null || resultData.getData().getUserId() == null) {
             return BaseResultUtil.fail("用户不存在");
         }
-        CacheAdminVo cacheAdminVo = csAdminService.getCacheData(resultData.getData().getUserId(), roleId);
+        CacheData cacheData = csAdminService.getCacheData(resultData.getData().getUserId(), roleId);
         //发送推送信息
-        return BaseResultUtil.success(cacheAdminVo);
+        return BaseResultUtil.success(cacheData);
     }
     /**
      * 查询业务中心业务员
@@ -86,12 +88,19 @@ public class AdminController {
     }
 
     @ApiOperation(value = "分页查询指定业务中心下的业务员")
-    @PostMapping(value = "/listPage")
+    @PostMapping(value = "/page")
+    public ResultVo listByRoleId(@RequestBody AdminPageDto reqDto) {
+        List<AdminPageVo> admin = adminService.page(reqDto);
+        return BaseResultUtil.success(admin);
+    }
+    @ApiOperation(value = "分页查询指定业务中心下的业务员")
+    @PostMapping(value = "/Page")
     public ResultVo listPage(@RequestBody MySalesmanQueryDto dto) {
         SelectPageUsersByDeptReq req = new SelectPageUsersByDeptReq();
         BeanUtils.copyProperties(dto,req);
         req.setPageNum(dto.getCurrentPage());
         ResultData resultData = sysUserService.getPageUsersByDept(req);
+
         if (Objects.isNull(resultData)) {
             PageInfo pageInfo = new PageInfo();
             return BaseResultUtil.success(pageInfo);

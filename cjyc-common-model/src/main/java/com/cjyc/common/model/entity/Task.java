@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-11-01
+ * @since 2019-11-18
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -39,6 +39,8 @@ public class Task implements Serializable {
 
     @ApiModelProperty(value = "运单编号")
     private String waybillNo;
+
+    private String guideLine;
 
     @ApiModelProperty(value = "车辆数")
     private Integer carNum;

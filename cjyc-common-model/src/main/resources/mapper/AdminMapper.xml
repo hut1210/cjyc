@@ -99,5 +99,27 @@
         from b_admin
         where phone = #{phone}
     </select>
+    <select id="findList" resultType="com.cjyc.common.model.vo.web.admin.AdminPageVo">
+        select
+        <include refid="Base_Column_List"/>
+        from b_admin
+        <where>
+            state = 2
+            <if test="name != null and name.trim() != ''">
+                admin.name like CONCAT('%',#{name},'%')
+            </if>
+            <if test="phone != null and phone.trim() != ''">
+                and  admin.phone = #{phone}
+            </if>
+            <if test="storeId != null">
+                and  admin.store_id = #{storeId}
+            </if>
+            and user_id in
+            <foreach collection="userIds" index="index" item ="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
+
+    </select>
 
 </mapper>

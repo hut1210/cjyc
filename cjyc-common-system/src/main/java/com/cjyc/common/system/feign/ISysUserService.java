@@ -2,6 +2,7 @@ package com.cjyc.common.system.feign;
 
 import com.cjkj.common.constant.ServiceNameConstants;
 import com.cjkj.common.feign.fallback.UserServiceFallbackFactory;
+import com.cjkj.common.model.PageData;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.usercenter.dto.common.*;
 import com.cjkj.usercenter.dto.yc.SelectPageUsersByDeptReq;
@@ -100,5 +101,5 @@ public interface ISysUserService {
      * @return
      */
     @PostMapping("/feign/yc/getPageUsersByDept")
-    ResultData getPageUsersByDept(@RequestBody SelectPageUsersByDeptReq req);
+    ResultData<PageData<SelectUsersByRoleResp>> getPageUsersByDept(@RequestBody SelectPageUsersByDeptReq req);
 }
