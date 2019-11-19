@@ -109,29 +109,37 @@
         <where>
             t.state = #{state} and t.driver_id = #{loginId}
             <if test="waybillNo != null and waybillNo.trim() != ''">
-                t.waybill_no like concat('%',#{waybillNo},'%')
+                and t.waybill_no like concat('%',#{waybillNo},'%')
             </if>
-            <if test="type != null">
-                w.type = #{type}
+            <if test="type != null and type != 0">
+                and w.type = #{type}
             </if>
             <if test="expectStartDateS != null and expectStartDateS != 0">
-                car.expect_start_date >= #{expectStartDateS}
+                and car.expect_start_date >= #{expectStartDateS}
             </if>
             <if test="expectStartDateE != null and expectStartDateE != 0">
-                car.expect_start_date &lt;= #{expectStartDateE}
+                and car.expect_start_date &lt;= #{expectStartDateE}
             </if>
             <if test="completeTimeS != null and completeTimeS != 0">
-                t.complete_time >= #{completeTimeS}
+                and t.complete_time >= #{completeTimeS}
             </if>
             <if test="completeTimeE != null and completeTimeE != 0">
-                t.complete_time &lt;= #{completeTimeE}
+                and t.complete_time &lt;= #{completeTimeE}
             </if>
-            <if test="completeTimeE != null and completeTimeE != 0">
-                t.complete_time &lt;= #{completeTimeE}
+            <if test="(lineStart != null and lineStart.trim() != '') or (lineEnd != null and lineEnd.trim() != '')">
+                <trim prefix="and (" suffix=")">
+                    <if test="lineStart != null and lineStart.trim() != ''">
+                        t.guide_line like concat('%',#{lineStart},'%')
+                    </if>
+                    <if test="(lineStart != null and lineStart.trim() != '') and (lineEnd != null and lineEnd.trim() != '')">
+                        or t.guide_line like concat('%',#{lineEnd},'%')
+                    </if>
+                    <if test="(lineStart == null or lineStart.trim() == '') and (lineEnd != null and lineEnd.trim() != '')">
+                        t.guide_line like concat('%',#{lineEnd},'%')
+                    </if>
+                </trim>
             </if>
-
         </where>
-
         order by t.complete_time desc
     </select>
 
