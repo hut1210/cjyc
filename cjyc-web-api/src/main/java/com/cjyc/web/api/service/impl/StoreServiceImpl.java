@@ -94,10 +94,12 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
     @Override
     public ResultVo queryPage(StoreQueryDto dto) {
         List<Store> list = getStoreList(dto);
-        List<StoreVo> storeVoList = new ArrayList<>(20);
-        if (!CollectionUtils.isEmpty(list)) {
+        PageInfo<Store> pageInfo = new PageInfo<>(list);
+        List<Store> storeVoList = new ArrayList<>(20);
+        List<Store> pageInfoList = pageInfo.getList();
+        if (!CollectionUtils.isEmpty(pageInfoList)) {
             StoreVo storeVo = null;
-            for (Store store : list) {
+            for (Store store : pageInfoList) {
                 storeVo = new StoreVo();
                 BeanUtils.copyProperties(store,storeVo);
                 // 查询业务中心所属大区
@@ -109,7 +111,7 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
                 storeVoList.add(storeVo);
             }
         }
-        PageInfo<StoreVo> pageInfo = new PageInfo<>(storeVoList);
+        pageInfo.setList(storeVoList);
         return BaseResultUtil.success(pageInfo);
     }
 
@@ -301,7 +303,7 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
     }
 
     private List<Store> getStoreList(StoreQueryDto storeQueryDto) {
-        PageHelper.startPage(storeQueryDto.getCurrentPage(), storeQueryDto.getPageSize(), true);
+        PageHelper.startPage(storeQueryDto.getCurrentPage(), storeQueryDto.getPageSize());
         LambdaQueryWrapper<Store> queryWrapper = new QueryWrapper<Store>().lambda()
                 .eq(!StringUtils.isEmpty(storeQueryDto.getProvinceCode()),Store::getProvinceCode,storeQueryDto.getProvinceCode())
                 .eq(!StringUtils.isEmpty(storeQueryDto.getCityCode()),Store::getCityCode,storeQueryDto.getCityCode())
