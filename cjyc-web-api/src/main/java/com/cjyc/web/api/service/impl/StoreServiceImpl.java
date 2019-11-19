@@ -16,6 +16,7 @@ import com.cjyc.common.model.dao.IStoreCityConDao;
 import com.cjyc.common.model.dao.IStoreDao;
 import com.cjyc.common.model.dto.web.city.CityQueryDto;
 import com.cjyc.common.model.dto.web.city.StoreAreaQueryDto;
+import com.cjyc.common.model.dto.web.store.GetStoreDto;
 import com.cjyc.common.model.dto.web.store.StoreAddDto;
 import com.cjyc.common.model.dto.web.store.StoreQueryDto;
 import com.cjyc.common.model.dto.web.store.StoreUpdateDto;
@@ -276,6 +277,17 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
         }
     }
 
+    @Override
+    public List<Store> get(GetStoreDto reqDto) {
+        BizScope bizScope = csSysService.getBizScopeByRoleId(reqDto.getRoleId(), true);
+        if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code || bizScope.getStoreIds() == null){
+            return null;
+        }else if(bizScope.getCode() == BizScopeEnum.CHINA.code){
+            return storeDao.findByName(reqDto.getStoreName());
+        }else{
+            return storeDao.findByNameAndIds(reqDto.getStoreName(), bizScope.getStoreIds());
+        }
+    }
 
     private StoreQueryDto getStoreQueryDto(HttpServletRequest request) {
         StoreQueryDto storeQueryDto = new StoreQueryDto();

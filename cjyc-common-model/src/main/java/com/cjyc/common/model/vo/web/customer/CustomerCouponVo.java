@@ -1,5 +1,7 @@
 package com.cjyc.common.model.vo.web.customer;
 
+import com.cjyc.common.model.util.BigDecimalSerizlizer;
+import com.cjyc.common.model.util.DataLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
@@ -22,9 +24,11 @@ public class CustomerCouponVo implements Serializable {
     private Integer type;
 
     @ApiModelProperty("满减价")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal fullAmount;
 
     @ApiModelProperty("减额值")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal cutAmount;
 
     @ApiModelProperty("折扣")
@@ -37,12 +41,15 @@ public class CustomerCouponVo implements Serializable {
     private Integer isForever;
 
     @ApiModelProperty("有效期开始时间")
+    @JsonSerialize(using = DataLongSerizlizer.class)
     private Long startPeriodDate;
 
     @ApiModelProperty("有效期结束时间")
+    @JsonSerialize(using = DataLongSerizlizer.class)
     private Long endPeriodDate;
 
     @ApiModelProperty("领取时间")
+    @JsonSerialize(using = DataLongSerizlizer.class)
     private Long receiveTime;
 
 }

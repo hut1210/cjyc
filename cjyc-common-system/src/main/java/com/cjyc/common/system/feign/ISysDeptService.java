@@ -114,6 +114,6 @@ public interface ISysDeptService {
      * @param deptId
      * @return
      */
-    @PostMapping("/feign/yc/getUsersByDeptId/{deptId}")
+    @GetMapping("/feign/yc/getUsersByDeptId/{deptId}")
     ResultData<List<SelectUsersByRoleResp>> getUsersByDeptId(@PathVariable(value = "deptId") Long deptId);
 }

@@ -85,5 +85,23 @@
             </foreach>
         </where>
     </select>
+    <select id="findByName" resultType="com.cjyc.common.model.entity.Store">
+        select
+        <include refid="Base_Column_List"/>
+        from s_store
+        where name like concat('%',#{storeName},'%')
+    </select>
+    <select id="findByNameAndIds" resultType="com.cjyc.common.model.entity.Store">
+        select
+        <include refid="Base_Column_List"/>
+        from s_store
+        <where>
+            and name like concat('%',#{storeName},'%')
+            and id in
+            <foreach collection="set" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
+    </select>
 
 </mapper>

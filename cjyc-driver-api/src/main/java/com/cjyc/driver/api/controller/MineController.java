@@ -1,5 +1,6 @@
 package com.cjyc.driver.api.controller;
 
+import com.cjyc.common.model.dto.driver.BaseDriverDto;
 import com.cjyc.common.model.dto.web.user.DriverListDto;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -32,4 +33,12 @@ public class MineController {
     public ResultVo findBinkCardInfo(@PathVariable @ApiParam(value = "司机id",required = true) Long loginId) {
         return mineService.findBinkCardInfo(loginId);
     }
+
+   /* @ApiOperation(value = "司机管理信息")
+    @PostMapping(value = "/findDriver")
+    public ResultVo findDriver(@RequestBody BaseDriverDto dto) {
+        return mineService.findDriver(dto);
+    }*/
+
+
 }

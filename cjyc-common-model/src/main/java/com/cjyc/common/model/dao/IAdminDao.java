@@ -1,8 +1,10 @@
 package com.cjyc.common.model.dao;
 
+import com.cjyc.common.model.dto.web.salesman.AdminPageDto;
 import com.cjyc.common.model.dto.web.salesman.TypeSalesmanDto;
 import com.cjyc.common.model.entity.Admin;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cjyc.common.model.vo.web.admin.AdminPageVo;
 import com.cjyc.common.model.vo.web.admin.TypeSalesmanVo;
 import org.apache.ibatis.annotations.Param;
 
@@ -30,9 +32,11 @@ public interface IAdminDao extends BaseMapper<Admin> {
      */
     Admin getByCarrierId(@Param("carrierId") Long carrierId);
 
-    List<Admin> findListByUserIds(Set<Long> userIds);
+    List<Admin> findListByUserIds(@Param("userIds") Set<Long> userIds);
 
-    List<TypeSalesmanVo> deliverySalesman(TypeSalesmanDto dto);
+    List<TypeSalesmanVo> deliverySalesman(@Param("dto") TypeSalesmanDto dto);
 
     Admin findByPhone(String phone);
+
+    List<AdminPageVo> findList(AdminPageDto paramsDto, Set<Long> collect);
 }

@@ -68,12 +68,13 @@
             <result column="create_time" property="createTime" />
             <result column="carry_car_num" property="carryCarNum" />
             <result column="empty_car_num" property="emptyCarNum" />
+            <result column="complete_time" property="completeTime" />
         </collection>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, no, type, source, guide_line, recommend_line, carrier_id, carrier_type, carrier_name, car_num, state, freight_fee, freight_pay_state, freight_pay_time, freight_pay_billno, fixed_freight_fee, remark, create_time, create_user, create_user_id, input_store_id
+        id, no, type, source, guide_line, recommend_line, carrier_id, carrier_type, carrier_name, car_num, state, freight_fee, freight_pay_state, freight_pay_time, freight_pay_billno, fixed_freight_fee, remark, create_time, create_user, create_user_id, input_store_id, complete_time
     </sql>
 
     <update id="updateStateBatchByNos">
@@ -313,7 +314,7 @@
         </where>
         group by w.id
     </select>
-    <select id="findCrListByCarrierId" resultType="java.util.List">
+    <select id="findCrListForMineCarrier" resultType="com.cjyc.common.model.vo.web.waybill.CrWaybillVo">
 
         select
             w.no,
@@ -330,7 +331,7 @@
         from w_waybill w
         LEFT JOIN w_task t on w.id = t.waybill_id
         <where>
-            w.carrier_id = #{carrierId}
+            w.carrier_id = #{paramsDto.carrierId}
             <if test="paramsDto.waybillNo != null and paramsDto.waybillNo != ''">
                 and w.no = #{paramsDto.waybillNo}
             </if>
@@ -341,7 +342,7 @@
                 and w.create_user = #{paramsDto.createUser}
             </if>
         </where>
-        group by w.carrierId
+        group by w.id
 <!--        <choose>
             <if test="paramsDto.allotProgress == 1">
                 having sum(IFNULL(w.car_num,0)) &lt; w.car_num

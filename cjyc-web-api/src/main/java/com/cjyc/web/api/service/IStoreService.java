@@ -2,6 +2,7 @@ package com.cjyc.web.api.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.dto.web.city.StoreAreaQueryDto;
+import com.cjyc.common.model.dto.web.store.GetStoreDto;
 import com.cjyc.common.model.dto.web.store.StoreAddDto;
 import com.cjyc.common.model.dto.web.store.StoreQueryDto;
 import com.cjyc.common.model.dto.web.store.StoreUpdateDto;
@@ -90,4 +91,5 @@ public interface IStoreService extends IService<Store> {
 
     List<Store> getListByRoleId(Long roleId);
 
+    List<Store> get(GetStoreDto reqDto);
 }

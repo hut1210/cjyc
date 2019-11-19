@@ -41,7 +41,7 @@ public interface IWaybillService extends IService<Waybill> {
 
     ResultVo<List<HistoryListWaybillVo>> historyList(HistoryListDto reqDto);
 
-    ResultVo<List<CrWaybillVo>> crList(CrWaybillDto reqDto);
+    ResultVo<PageVo<CrWaybillVo>> crListForMineCarrier(CrWaybillDto reqDto);
 
     ResultVo<PageVo<LocalListWaybillCarVo>> locallist(LocalListWaybillCarDto reqDto);
 
