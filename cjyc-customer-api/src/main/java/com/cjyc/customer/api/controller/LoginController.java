@@ -1,10 +1,6 @@
 package com.cjyc.customer.api.controller;
 
-import com.cjyc.common.model.dto.customer.login.LoginDto;
-import com.cjyc.common.model.dto.salesman.login.LoginByPhoneDto;
-import com.cjyc.common.model.dto.web.customer.CustomerfuzzyListDto;
-import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.util.RegexUtil;
+import com.cjyc.common.model.dto.LoginDto;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.login.CustomerLoginVo;
 import com.cjyc.customer.api.service.ILoginService;
@@ -17,13 +13,11 @@ import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.constraints.NotNull;
-
 /**
  * 注册登录
  * @author JPG
  */
-@Api(tags = "注册登录")
+@Api(tags = "客户注册登录")
 @Slf4j
 @RestController
 @RequestMapping(value = "/login",
@@ -39,13 +33,13 @@ public class LoginController {
         return loginService.verifyCode(phone);
     }
 
-    @ApiOperation(value = "获取验证码")
+    @ApiOperation(value = "用户注册登陆")
     @PostMapping("/login")
     public ResultVo<CustomerLoginVo> login(@Validated @RequestBody LoginDto dto) {
         return loginService.login(dto);
     }
 
-    @ApiOperation(value = "手机号验证码登录", notes = " ")
+    /*@ApiOperation(value = "手机号验证码登录", notes = " ")
     @PostMapping("/phone")
     public ResultVo<CustomerLoginVo> login(@Validated @RequestBody LoginByPhoneDto reqDto){
         //验证手机号
@@ -56,5 +50,5 @@ public class LoginController {
         }
 
         return loginService.loginByPhone(reqDto);
-    }
+    }*/
 }

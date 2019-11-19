@@ -1,7 +1,9 @@
 package com.cjyc.customer.api.service;
 
-import com.cjyc.common.model.dto.customer.login.LoginDto;
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.cjyc.common.model.dto.LoginDto;
 import com.cjyc.common.model.dto.salesman.login.LoginByPhoneDto;
+import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.login.CustomerLoginVo;
 
@@ -9,7 +11,7 @@ import com.cjyc.common.model.vo.customer.login.CustomerLoginVo;
  * 登录
  * @author JPG
  */
-public interface ILoginService {
+public interface ILoginService extends IService<Customer> {
 
     /**
      * 根据手机号获取验证码

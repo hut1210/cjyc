@@ -48,13 +48,4 @@ public class CustomerLoginVo  implements Serializable {
 
     @ApiModelProperty("token值")
     private String accessToken;
-
-    @ApiModelProperty("token生成类型")
-    private String tokenType;
-
-    @ApiModelProperty("token有效时间，单位：秒")
-    private Integer expiresIn;
-
-    @ApiModelProperty("刷新token值")
-    private String refreshToken;
 }
