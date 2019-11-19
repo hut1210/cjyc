@@ -1,5 +1,8 @@
 package com.cjyc.common.model.vo.driver.task;
 
+import com.cjyc.common.model.util.BigDecimalSerizlizer;
+import com.cjyc.common.model.util.DataLongSerizlizer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -30,8 +33,10 @@ public class FinishTaskVo implements Serializable {
     private Integer type;
 
     @ApiModelProperty(value = "运单总运费")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal freightFee;
 
     @ApiModelProperty(value = "完成时间")
+    @JsonSerialize(using = DataLongSerizlizer.class)
     private Long completeTime;
 }
