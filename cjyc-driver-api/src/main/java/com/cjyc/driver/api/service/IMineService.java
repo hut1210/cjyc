@@ -12,4 +12,6 @@ public interface IMineService extends IService<Driver> {
      * @return
      */
     ResultVo findBinkCardInfo(Long loginId);
+
+
 }
