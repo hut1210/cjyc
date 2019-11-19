@@ -102,7 +102,7 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
             driver.setName(dto.getRealName());
             driver.setType(DriverTypeEnum.SOCIETY.code);
             driver.setIdentity(DriverIdentityEnum.SUB_DRIVER.code);
-            driver.setBusinessState(BusinessStateEnum.OUTAGE.code);
+            driver.setBusinessState(BusinessStateEnum.BUSINESS.code);
             if(dto.getCarrierId().equals(dto.getLoginId())){
                 //承运商超级管理员登陆
                 driver.setSource(DriverSourceEnum.CARRIER_ADMIN.code);
