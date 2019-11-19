@@ -12,6 +12,8 @@ import com.cjyc.common.model.entity.Store;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.store.StoreCoveredAreaVo;
+import com.cjyc.common.model.vo.store.StoreVo;
 import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.web.api.service.IStoreService;
 import com.github.pagehelper.PageInfo;
@@ -77,7 +79,7 @@ public class StoreController {
 
     @ApiOperation(value = "分页查询", notes = "\t 请求接口为json格式")
     @PostMapping("/queryPage")
-    public ResultVo<PageInfo<Store>> queryPage(@RequestBody StoreQueryDto storeQueryDto) {
+    public ResultVo<PageInfo<StoreVo>> queryPage(@RequestBody StoreQueryDto storeQueryDto) {
         return storeService.queryPage(storeQueryDto);
     }
 
@@ -133,7 +135,7 @@ public class StoreController {
 
     @ApiOperation(value = "根据业务中心ID查询当前业务中心覆盖区")
     @PostMapping("/getStoreAreaList")
-    public ResultVo getStoreAreaList(@RequestBody @Validated({StoreAreaQueryDto.GetStoreAreaList.class}) StoreAreaQueryDto dto) {
+    public ResultVo<StoreCoveredAreaVo> getStoreAreaList(@RequestBody @Validated({StoreAreaQueryDto.GetStoreAreaList.class}) StoreAreaQueryDto dto) {
         return storeService.getStoreAreaList(dto);
     }
 

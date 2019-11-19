@@ -21,6 +21,7 @@ import com.cjyc.common.model.dto.web.store.StoreAddDto;
 import com.cjyc.common.model.dto.web.store.StoreQueryDto;
 import com.cjyc.common.model.dto.web.store.StoreUpdateDto;
 import com.cjyc.common.model.entity.Admin;
+import com.cjyc.common.model.entity.City;
 import com.cjyc.common.model.entity.Store;
 import com.cjyc.common.model.entity.StoreCityCon;
 import com.cjyc.common.model.entity.defined.BizScope;
@@ -29,11 +30,12 @@ import com.cjyc.common.model.enums.BizScopeEnum;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.store.StoreCoveredAreaVo;
 import com.cjyc.common.model.vo.store.StoreExportExcel;
+import com.cjyc.common.model.vo.store.StoreVo;
 import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.feign.ISysUserService;
-import com.cjyc.common.system.service.ICsStoreService;
 import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.web.api.service.IStoreService;
 import com.github.pagehelper.PageHelper;
@@ -92,7 +94,22 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
     @Override
     public ResultVo queryPage(StoreQueryDto dto) {
         List<Store> list = getStoreList(dto);
-        PageInfo<Store> pageInfo = new PageInfo<>(list);
+        List<StoreVo> storeVoList = new ArrayList<>(20);
+        if (!CollectionUtils.isEmpty(list)) {
+            StoreVo storeVo = null;
+            for (Store store : list) {
+                storeVo = new StoreVo();
+                BeanUtils.copyProperties(store,storeVo);
+                // 查询业务中心所属大区
+                City city = cityDao.selectOne(new QueryWrapper<City>().lambda().eq(City::getCode, store.getProvinceCode()));
+                storeVo.setRegionName(city.getParentName());
+                // 查询业务中心管辖区数量
+                Integer count = storeCityConDao.selectCount(new QueryWrapper<StoreCityCon>().lambda().eq(StoreCityCon::getStoreId, store.getId()));
+                storeVo.setAreaCount(count);
+                storeVoList.add(storeVo);
+            }
+        }
+        PageInfo<StoreVo> pageInfo = new PageInfo<>(storeVoList);
         return BaseResultUtil.success(pageInfo);
     }
 
@@ -189,7 +206,6 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
 
     @Override
     public ResultVo getStoreAreaList(StoreAreaQueryDto dto) {
-        Map<String,Object> map = new HashMap<>(16);
         // 根据业务中心ID查询区编码
         List<StoreCityCon> storeCityConList = storeCityConDao.selectList(new QueryWrapper<StoreCityCon>().lambda()
                 .eq(StoreCityCon::getStoreId, dto.getStoreId())
@@ -218,9 +234,10 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
             }
         }
 
-        map.put("coveredAreaList",coveredAreaList);
-        map.put("fullCityList",fullCityList);
-        return BaseResultUtil.success(map);
+        StoreCoveredAreaVo areaVo = new StoreCoveredAreaVo();
+        areaVo.setCoveredAreaList(coveredAreaList);
+        areaVo.setFullCityList(fullCityList);
+        return BaseResultUtil.success(areaVo);
     }
 
     @Override

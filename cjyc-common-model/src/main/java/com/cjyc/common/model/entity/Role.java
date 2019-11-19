@@ -51,5 +51,6 @@ public class Role implements Serializable {
     @ApiModelProperty(value = "最后修改人")
     private Long updateUserId;
 
-
+    @ApiModelProperty(value = "角色状态 1：有效/启用 2: 无效/停用")
+    private Integer state;
 }

@@ -2,7 +2,10 @@ package com.cjyc.common.model.dao;
 
 import com.cjyc.common.model.entity.BankCardBind;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cjyc.common.model.vo.driver.mine.BinkCardVo;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * <p>
@@ -20,5 +23,12 @@ public interface IBankCardBindDao extends BaseMapper<BankCardBind> {
      * @return
      */
     int removeBandCarBind(@Param("userId") Long userId);
+
+    /**
+     * 根据司机id获取绑定银行卡信息
+     * @param driverId
+     * @return
+     */
+    List<BinkCardVo> findBinkCardInfo(@Param("driverId") Long driverId);
 
 }

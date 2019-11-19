@@ -26,9 +26,7 @@ import java.io.Serializable;
 @TableName("s_store")
 @ApiModel(value="Store对象", description="韵车业务中心信息表")
 public class Store implements Serializable {
-
     private static final long serialVersionUID = 1L;
-
     @ApiModelProperty(value = "ID")
     @TableId(value = "id", type = IdType.ID_WORKER)
     private Long id;
@@ -87,7 +85,4 @@ public class Store implements Serializable {
     @TableField(exist = false)
     @ApiModelProperty(value = "全地址")
     private String fullAddress;
-
-
-
 }

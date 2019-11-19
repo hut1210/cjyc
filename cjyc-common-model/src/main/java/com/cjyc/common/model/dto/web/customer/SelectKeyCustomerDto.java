@@ -16,8 +16,8 @@ public class SelectKeyCustomerDto extends BasePageDto implements Serializable {
     @ApiModelProperty(value = "大客户全称")
     private String name;
 
-    @ApiModelProperty(value = "大客户简称")
-    private String alias;
+    @ApiModelProperty(value = "状态：0待审核，1未登录，2已审核，3审核拒绝，7已冻结")
+    private Integer state;
 
     @ApiModelProperty(value = "联系人")
     private String contactMan;

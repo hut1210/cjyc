@@ -12,9 +12,9 @@ import org.springframework.context.annotation.ComponentScan;
  */
 @SpringBootApplication
 @EnableDiscoveryClient
-@EnableFeignClients
+@EnableFeignClients({"com.cjyc"})
 @MapperScan("com.cjyc.common.model.dao")
-@ComponentScan({"com.cjyc.driver.api", "com.cjyc.common.system"})
+@ComponentScan({"com.cjyc.driver.api", "com.cjyc.common.system","com.cjkj.common.redis"})
 public class DriverApiApplication {
     public static void main(String[] args) {
         SpringApplication.run(DriverApiApplication.class, args);
