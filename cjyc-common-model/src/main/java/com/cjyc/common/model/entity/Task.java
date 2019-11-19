@@ -1,14 +1,15 @@
 package com.cjyc.common.model.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.io.Serializable;
+import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
 
 /**
  * <p>
@@ -40,6 +41,7 @@ public class Task implements Serializable {
     @ApiModelProperty(value = "运单编号")
     private String waybillNo;
 
+    @ApiModelProperty(value = "指导线路")
     private String guideLine;
 
     @ApiModelProperty(value = "车辆数")
@@ -80,6 +82,9 @@ public class Task implements Serializable {
 
     @ApiModelProperty(value = "创建时间")
     private Long createTime;
+
+    @ApiModelProperty(value = "完成时间")
+    private Long completeTime;
 
 
 }

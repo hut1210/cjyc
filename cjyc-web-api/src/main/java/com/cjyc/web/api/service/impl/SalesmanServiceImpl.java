@@ -14,6 +14,7 @@ import com.cjyc.common.model.enums.saleman.SalemanStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.web.api.service.ISalesmanService;
 import org.springframework.beans.BeanUtils;
@@ -34,6 +35,8 @@ public class SalesmanServiceImpl extends ServiceImpl<IAdminDao, Admin> implement
 
     @Autowired
     private ISysUserService sysUserService;
+    @Autowired
+    private ISysDeptService sysDeptService;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -120,28 +123,64 @@ public class SalesmanServiceImpl extends ServiceImpl<IAdminDao, Admin> implement
     private ResultData<Set<Long>> resolveRoleIdsFromPlatform(AssignRoleDto dto) {
         Set<Long> roleIds = new HashSet<>();
         AtomicReference<Boolean> hasError = new AtomicReference<>(Boolean.FALSE);
-        if (!CollectionUtils.isEmpty(dto.getRoleDeptList())) {
-            //解析角色id列表信息
-            dto.getRoleDeptList().stream().forEach(rd -> {
-                if (!StringUtils.isEmpty(rd.getRoleName())
-                        && !CollectionUtils.isEmpty(rd.getDeptIdList())) {
-                    rd.getDeptIdList().stream().forEach(dId -> {
-                        ResultData<List<SelectRoleResp>> rolesRd =
-                                sysUserService.getSingleLevelRolesByDeptId(dId);
-                        if (!ReturnMsg.SUCCESS.getCode().equals(rolesRd.getCode())) {
-                            hasError.set(true);
-                            return;
-                        }
-                        if (!CollectionUtils.isEmpty(rolesRd.getData())) {
-                            rolesRd.getData().stream().forEach(r -> {
-                                if (rd.getRoleName().equals(r.getRoleName())) {
-                                    roleIds.add(r.getRoleId());
+        if (dto.getDeptType().equals(1)) {
+            if (!CollectionUtils.isEmpty(dto.getRoleDeptList())) {
+                //解析角色id列表信息
+                dto.getRoleDeptList().stream().forEach(rd -> {
+                    if (!StringUtils.isEmpty(rd.getRoleName())
+                            && !CollectionUtils.isEmpty(rd.getDeptIdList())) {
+                        rd.getDeptIdList().stream().forEach(dId -> {
+                            ResultData<List<SelectRoleResp>> rolesRd =
+                                    sysUserService.getSingleLevelRolesByDeptId(dId);
+                            if (!ReturnMsg.SUCCESS.getCode().equals(rolesRd.getCode())) {
+                                hasError.set(true);
+                                return;
+                            }
+                            if (!CollectionUtils.isEmpty(rolesRd.getData())) {
+                                rolesRd.getData().stream().forEach(r -> {
+                                    if (rd.getRoleName().equals(r.getRoleName())) {
+                                        roleIds.add(r.getRoleId());
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        }else if(dto.getDeptType().equals(2)) {
+            if (!CollectionUtils.isEmpty(dto.getRoleDeptCodeList())) {
+                //解析角色id列表信息
+                dto.getRoleDeptCodeList().stream().forEach(rd -> {
+                    if (!StringUtils.isEmpty(rd.getRoleName())
+                            && !CollectionUtils.isEmpty(rd.getDeptCodeList())) {
+                        rd.getDeptCodeList().stream().forEach(dCode -> {
+                            ResultData<SelectDeptResp> deptByCityCodeRd = sysDeptService.getDeptByCityCode(dCode);
+                            if (!ReturnMsg.SUCCESS.getCode().equals(deptByCityCodeRd.getCode())) {
+                                hasError.set(true);
+                                return;
+                            }
+                            if (deptByCityCodeRd.getData() != null) {
+                                ResultData<List<SelectRoleResp>> rolesRd =
+                                        sysUserService.getSingleLevelRolesByDeptId(
+                                                deptByCityCodeRd.getData().getDeptId());
+                                if (!ReturnMsg.SUCCESS.getCode().equals(rolesRd.getCode())) {
+                                    hasError.set(true);
+                                    return;
                                 }
-                            });
-                        }
-                    });
-                }
-            });
+                                if (!CollectionUtils.isEmpty(rolesRd.getData())) {
+                                    rolesRd.getData().stream().forEach(r -> {
+                                        if (rd.getRoleName().equals(r.getRoleName())) {
+                                            roleIds.add(r.getRoleId());
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+        } else {
+            return  ResultData.failed("不支持的机构类型，请检查");
         }
         if (hasError.get()) {
             return ResultData.failed("获取机构下角色信息异常，请检查");

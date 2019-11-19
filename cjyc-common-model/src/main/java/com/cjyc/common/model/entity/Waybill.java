@@ -91,5 +91,8 @@ public class Waybill implements Serializable {
     @ApiModelProperty(value = "所属业务中心ID")
     private Long inputStoreId;
 
+    @ApiModelProperty(value = "完成时间")
+    private Long completeTime;
+
 
 }
