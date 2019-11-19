@@ -68,12 +68,13 @@
             <result column="create_time" property="createTime" />
             <result column="carry_car_num" property="carryCarNum" />
             <result column="empty_car_num" property="emptyCarNum" />
+            <result column="complete_time" property="completeTime" />
         </collection>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, no, type, source, guide_line, recommend_line, carrier_id, carrier_type, carrier_name, car_num, state, freight_fee, freight_pay_state, freight_pay_time, freight_pay_billno, fixed_freight_fee, remark, create_time, create_user, create_user_id, input_store_id
+        id, no, type, source, guide_line, recommend_line, carrier_id, carrier_type, carrier_name, car_num, state, freight_fee, freight_pay_state, freight_pay_time, freight_pay_billno, fixed_freight_fee, remark, create_time, create_user, create_user_id, input_store_id, complete_time
     </sql>
 
     <update id="updateStateBatchByNos">

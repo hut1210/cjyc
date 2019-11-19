@@ -79,5 +79,8 @@ public class Task implements Serializable {
     @ApiModelProperty(value = "创建时间")
     private Long createTime;
 
+    @ApiModelProperty(value = "完成时间")
+    private Long completeTime;
+
 
 }
