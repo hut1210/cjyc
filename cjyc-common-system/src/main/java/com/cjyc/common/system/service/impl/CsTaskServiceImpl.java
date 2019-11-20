@@ -4,6 +4,7 @@ import com.cjkj.common.redis.lock.RedisDistributedLock;
 import com.cjkj.common.redis.template.StringRedisUtil;
 import com.cjyc.common.model.dao.ITaskDao;
 import com.cjyc.common.model.keys.RedisKeys;
+import com.cjyc.common.system.service.ICsSendNoService;
 import com.cjyc.common.system.service.ICsTaskService;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,8 @@ public class CsTaskServiceImpl implements ICsTaskService {
     @Resource
     private RedisDistributedLock redisLock;
     @Resource
+    private ICsSendNoService sendNoService;
+    @Resource
     private StringRedisUtil redisUtil;
 
     @Override
@@ -33,10 +36,10 @@ public class CsTaskServiceImpl implements ICsTaskService {
         }
         String maxNo = taskDao.findMaxNo(waybillNo);
         if(maxNo == null){
-            taskNo = waybillNo + "-" + "1";
+            taskNo = sendNoService.formatNo(waybillNo, 1, 3);
         }else{
             String[] split = maxNo.split("-");
-            taskNo = split[0] + "-" + (Integer.valueOf(split[1]) + 1);
+            taskNo = sendNoService.formatNo(waybillNo, (Integer.valueOf(split[1]) + 1), 3);
         }
         return taskNo;
     }

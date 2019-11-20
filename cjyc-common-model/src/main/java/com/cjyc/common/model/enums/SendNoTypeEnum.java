@@ -7,10 +7,11 @@ public enum SendNoTypeEnum {
     /***/
     ORDER("订单编号","D"),
     WAYBILL("运单编号","Y"),
-    TASK("任务编号","R"),
-    CUSTOMER("客户编号","K"),
-    DRIVER("司机编号","S"),
-    COUPON("优惠券编号","Y");
+    CUSTOMER("客户编号","KH"),
+    DRIVER("司机编号","SJ"),
+    RECEIPT("应收流水号","S"),
+    PAYMENT("应付流水号","F"),
+    COUPON("优惠券编号","Q");
 
     public String name ;
     public String prefix ;

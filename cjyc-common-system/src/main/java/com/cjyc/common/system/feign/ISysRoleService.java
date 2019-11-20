@@ -67,7 +67,7 @@ public interface ISysRoleService {
      * @param deptId 组机机构ID
      * @return ResultData<List<SelectRoleResp>>
      */
-    @PostMapping("feign/uc/getMultiLevelRoles/{deptId}")
+    @GetMapping("feign/uc/getMultiLevelRoles/{deptId}")
     ResultData<List<SelectRoleResp>> getMultiLevelList(@PathVariable(value="deptId") Long deptId);
 
     /**
@@ -77,7 +77,7 @@ public interface ISysRoleService {
      * @param deptId 部门ID
      * @return ResultData<List<SelectRoleResp>>
      */
-    @PostMapping("/feign/uc/getSingleLevelRoles/{deptId}")
+    @GetMapping("/feign/uc/getSingleLevelRoles/{deptId}")
     ResultData<List<SelectRoleResp>> getSingleLevelList(@PathVariable(value="deptId") Long deptId);
 
 
@@ -98,7 +98,7 @@ public interface ISysRoleService {
      * @param roleId 角色ID
      * @return  ResultData<SelectRoleResp>
      */
-    @PostMapping("/feign/uc/deleteRole/{roleId}")
+    @GetMapping("/feign/uc/deleteRole/{roleId}")
     ResultData<SelectRoleResp> delete(@PathVariable(value="roleId") Long roleId);
 
     /**

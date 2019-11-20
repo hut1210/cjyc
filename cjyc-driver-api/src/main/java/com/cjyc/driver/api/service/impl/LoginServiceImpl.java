@@ -5,7 +5,6 @@ import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
 import com.cjkj.common.service.impl.SuperServiceImpl;
 import com.cjkj.usercenter.dto.yc.AddDeptAndUserResp;
-import com.cjyc.common.model.dao.ICarrierDao;
 import com.cjyc.common.model.dao.ICarrierDriverConDao;
 import com.cjyc.common.model.dao.IDriverDao;
 import com.cjyc.common.model.dto.LoginDto;
@@ -15,13 +14,12 @@ import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
 import com.cjyc.common.model.enums.transport.*;
-import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.login.DriverLoginVo;
 import com.cjyc.common.system.service.ICsCarrierService;
 import com.cjyc.common.system.service.ICsDriverService;
-import com.cjyc.common.system.service.ISendNoService;
+import com.cjyc.common.system.service.ICsSendNoService;
 import com.cjyc.driver.api.service.ILoginService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -34,13 +32,11 @@ import java.time.LocalDateTime;
 public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> implements ILoginService {
 
     @Resource
-    private ICarrierDao carrierDao;
-    @Resource
     private IDriverDao driverDao;
     @Resource
     private ICarrierDriverConDao carrierDriverConDao;
     @Resource
-    private ISendNoService sendNoService;
+    private ICsSendNoService sendNoService;
     @Resource
     private ICsDriverService csDriverService;
     @Resource
@@ -66,7 +62,7 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
     private void addToPlatform(String phone){
         //架构组和韵车添加数据
         Driver driver = new Driver();
-        String no = sendNoService.getNo(SendNoTypeEnum.DRIVER, 6);
+        String no = sendNoService.getNo(SendNoTypeEnum.DRIVER);
         driver.setName(no);
         driver.setRealName(no);
         driver.setPhone(phone);

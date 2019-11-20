@@ -1,17 +1,24 @@
 package com.cjyc.common.system.service.impl;
 
-import com.cjkj.common.redis.template.StringRedisUtil;
+import com.cjkj.common.redis.lock.RedisDistributedLock;
 import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
+import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
+import com.cjyc.common.model.util.RandomUtil;
 import com.cjyc.common.system.service.ICsSendNoService;
+import com.cjyc.common.system.util.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
 import java.text.DecimalFormat;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 发号
@@ -20,28 +27,25 @@ import java.text.DecimalFormat;
 @Service
 @Slf4j
 public class CsSendNoServiceImpl implements ICsSendNoService {
-
+	@Resource
+	private RedisDistributedLock redisLock;
 	@Autowired
-	private StringRedisUtil redisUtil;
+	private RedisUtils redisUtil;
+	private static final DecimalFormat TWO_FORMAT = new DecimalFormat("00");
+	private static final DecimalFormat THREE_FORMAT = new DecimalFormat("000");
 	private static final DecimalFormat FOUR_FORMAT = new DecimalFormat("0000");
 	private static final DecimalFormat FIVE_FORMAT = new DecimalFormat("00000");
 	private static final DecimalFormat SIX_FORMAT = new DecimalFormat("000000");
 	private static final DecimalFormat SEVEN_FORMAT = new DecimalFormat("0000000");
 
 
-	/**
-	 * 发无随机数号
-	 *
-	 * @param type
-	 * @author JPG
-	 * @since 2019/10/17 11:50
-	 */
 	@Override
-	public String getNo(SendNoTypeEnum type, int noLength) {
-		return getNo(type, noLength,0,0);
+	public String formatNo(String prefixNo, int indexNo, int formatLength) {
+		return prefixNo == null ? "" : prefixNo + "-" + getDecimalFormat(formatLength).format(indexNo);
 	}
+
 	/**
-	 * 发订单号
+	 * 发号：X8888888
 	 *
 	 * @param type
 	 * @author JPG
@@ -49,7 +53,76 @@ public class CsSendNoServiceImpl implements ICsSendNoService {
 	 */
 	@Override
 	public String getNo(SendNoTypeEnum type) {
+		if(type == SendNoTypeEnum.ORDER){
+			return getNo(type, 5);
+		}
+		if(type == SendNoTypeEnum.WAYBILL){
+			return getNo(type, 6);
+		}
+/*		if(type == SendNoTypeEnum.DRIVER){
+			return getNo(type, false, 8);
+		}
+		if(type == SendNoTypeEnum.CUSTOMER){
+			return getNo(type, false, 8);
+		}*/
+		if(type == SendNoTypeEnum.COUPON){
+			return getNo(type, 3);
+		}
+		if(type == SendNoTypeEnum.PAYMENT){
+			return getNo(type, 6);
+		}
+		if(type == SendNoTypeEnum.RECEIPT){
+			return getNo(type, 6);
+		}
 		return getNo(type,5, 2,2);
+	}
+
+
+
+	/**
+	 * 发订单编号
+	 * D+6位日期+5位随机数字组合
+	 * @author JPG
+	 * @since 2019/11/20 9:20
+	 */
+	private String getNo(SendNoTypeEnum sendNoTypeEnum, int randomLength) {
+
+		String time = LocalDateTimeUtil.formatLDTNow(TimePatternConstant.SUB_SIMPLE_SIMPLE_DATE);
+		String random = null;
+		String lockKey = getSendNoKey(sendNoTypeEnum.prefix, time);
+		try {
+			if(!redisLock.lock(lockKey, 86400, 10, 200)){
+				throw new RuntimeException("获取订单编号失败");
+			}
+
+			String setKey = getSendNoSetKey(sendNoTypeEnum.prefix, time);
+			if (!redisUtil.hasKey(lockKey)) {
+				redisUtil.expire(lockKey, 1, TimeUnit.DAYS);
+			}
+			Set<String> set = redisUtil.sMembers(setKey);
+			if(CollectionUtils.isEmpty(set)) {
+				random = RandomUtil.getMathRandom(randomLength);
+			}else{
+				while (random == null){
+					String temp = RandomUtil.getMathRandom(randomLength);
+					if(!set.contains(temp)){
+						random = temp;
+					}
+				}
+			}
+			redisUtil.sAdd(setKey, random);
+
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			random = RandomUtil.getMathRandom(randomLength);
+		}finally {
+			redisUtil.delete(lockKey);
+		}
+		StringBuffer orderNo = new StringBuffer();
+		orderNo.append(sendNoTypeEnum.prefix == null? "" : sendNoTypeEnum.prefix);
+		orderNo.append(time);
+		orderNo.append(random);
+		return orderNo.toString();
 	}
 
 	/**
@@ -66,11 +139,11 @@ public class CsSendNoServiceImpl implements ICsSendNoService {
 		String no = "";
 		try {
 			String key = getSendNoKey(sendNoType.name, time);
-			if (!redisUtil.exists(key)) {
-				redisUtil.setExpire(key, 86400);
+			if (!redisUtil.hasKey(key)) {
+				redisUtil.expire(key, 1, TimeUnit.DAYS);
 			}
 
-			long incrbySendNo = redisUtil.incr(key);
+			long incrbySendNo = redisUtil.incrBy(key, 1);
 
 			DecimalFormat DECIMAL_FORMAT = getDecimalFormat(noLength);
 
@@ -94,6 +167,12 @@ public class CsSendNoServiceImpl implements ICsSendNoService {
 	private DecimalFormat getDecimalFormat(Integer noLength) {
 		DecimalFormat decimalFormat;
 		switch (noLength){
+			case 2:
+				decimalFormat = TWO_FORMAT;
+				break;
+			case 3:
+				decimalFormat = THREE_FORMAT;
+				break;
 			case 4:
 				decimalFormat = FOUR_FORMAT;
 				break;
@@ -114,5 +193,7 @@ public class CsSendNoServiceImpl implements ICsSendNoService {
 		return "cjyc:send:no:" + type + ":" + time;
 	}
 
-
+	private String getSendNoSetKey(String prefix, String time) {
+		return "cjyc:send:no:set:" + prefix + ":" + time;
+	}
 }

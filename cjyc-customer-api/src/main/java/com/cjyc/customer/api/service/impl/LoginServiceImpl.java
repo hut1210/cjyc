@@ -24,7 +24,7 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.login.CustomerLoginVo;
 import com.cjyc.common.system.feign.ISysLoginService;
 import com.cjyc.common.system.service.ICsCustomerService;
-import com.cjyc.common.system.service.ISendNoService;
+import com.cjyc.common.system.service.ICsSendNoService;
 import com.cjyc.customer.api.config.LoginProperty;
 import com.cjyc.customer.api.service.ILoginService;
 import lombok.extern.slf4j.Slf4j;
@@ -51,7 +51,7 @@ public class LoginServiceImpl extends SuperServiceImpl<ICustomerDao, Customer> i
     @Resource
     private ISysLoginService sysLoginService;
     @Resource
-    private ISendNoService sendNoService;
+    private ICsSendNoService sendNoService;
     @Resource
     private ICsCustomerService comCustomerService;
 
@@ -103,7 +103,7 @@ public class LoginServiceImpl extends SuperServiceImpl<ICustomerDao, Customer> i
      */
     private Customer addToPlatform(String phone){
         Customer c = new Customer();
-        String no = sendNoService.getNo(SendNoTypeEnum.CUSTOMER, 6);
+        String no = sendNoService.getNo(SendNoTypeEnum.CUSTOMER);
         c.setName(no);
         c.setAlias(no);
         c.setContactMan(no);

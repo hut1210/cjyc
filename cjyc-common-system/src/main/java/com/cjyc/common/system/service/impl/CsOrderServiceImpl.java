@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.List;
 
 /**
@@ -33,7 +34,7 @@ import java.util.List;
 @Service
 @Transactional(rollbackFor = RuntimeException.class)
 public class CsOrderServiceImpl implements ICsOrderService {
-
+    private static final DecimalFormat THREE_FORMAT = new DecimalFormat("000");
     @Resource
     private IOrderDao orderDao;
     @Resource
@@ -112,13 +113,13 @@ public class CsOrderServiceImpl implements ICsOrderService {
             //填充数据
             orderCar.setOrderNo(order.getNo());
             orderCar.setOrderId(order.getId());
-            orderCar.setNo(order.getNo() + "-" + noCount);
+            orderCar.setNo(csSendNoService.formatNo(order.getNo(), noCount, 3));
             orderCar.setState(OrderCarStateEnum.WAIT_ROUTE.code);
             orderCarDao.insert(orderCar);
             //统计数量
             noCount++;
         }
-        return BaseResultUtil.success();
+        return BaseResultUtil.success(order.getNo());
     }
 
     @Override
@@ -212,7 +213,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
             //填充数据
             orderCar.setOrderNo(order.getNo());
             orderCar.setOrderId(order.getId());
-            orderCar.setNo(order.getNo() + "-" + noCount);
+            orderCar.setNo(csSendNoService.formatNo(order.getNo(), noCount, 3));
             orderCar.setState(OrderCarStateEnum.WAIT_ROUTE.code);
             orderCar.setPickFee(dto.getPickFee() == null ? BigDecimal.ZERO : dto.getPickFee());
             orderCar.setTrunkFee(dto.getTrunkFee() == null ? BigDecimal.ZERO : dto.getTrunkFee());

@@ -22,7 +22,7 @@ import com.cjyc.common.model.vo.web.task.CrTaskVo;
 import com.cjyc.common.model.vo.web.task.ListByWaybillTaskVo;
 import com.cjyc.common.model.vo.web.task.TaskVo;
 import com.cjyc.common.model.vo.web.waybill.WaybillCarVo;
-import com.cjyc.common.system.service.ISendNoService;
+import com.cjyc.common.system.service.ICsSendNoService;
 import com.cjyc.web.api.service.ITaskService;
 import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang3.StringUtils;
@@ -56,7 +56,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
     @Resource
     private RedisDistributedLock redisLock;
     @Resource
-    private ISendNoService sendNoService;
+    private ICsSendNoService sendNoService;
     @Resource
     private ITaskDao taskDao;
     @Resource
