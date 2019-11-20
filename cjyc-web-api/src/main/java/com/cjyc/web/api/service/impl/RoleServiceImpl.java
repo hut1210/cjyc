@@ -182,7 +182,7 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
     }
 
     @Override
-    public ResultVo<List<Long>> getBtmMenuIdsByRoleId(Long roleId) {
+    public ResultVo<List<String>> getBtmMenuIdsByRoleId(Long roleId) {
         Role role = baseMapper.selectById(roleId);
         if (null == role) {
             return BaseResultUtil.fail("角色信息错误，请检查");
@@ -212,7 +212,12 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
         if (!isResultDataSuccess(rsRd)) {
             return BaseResultUtil.fail("查询错误，原因：" + rsRd.getMsg());
         }
-        return BaseResultUtil.success(rsRd.getData());
+        if (CollectionUtils.isEmpty(rsRd.getData())) {
+            return BaseResultUtil.success();
+        }else {
+            List<String> rsList = rsRd.getData().stream().map(id -> String.valueOf(id)).collect(Collectors.toList());
+            return BaseResultUtil.success(rsList);
+        }
     }
 
 
