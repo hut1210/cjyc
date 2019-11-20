@@ -7,6 +7,7 @@ import com.cjkj.usercenter.dto.asc.MenuResp;
 import com.cjkj.usercenter.dto.common.*;
 import com.cjkj.usercenter.dto.yc.SelectUsersByRoleReq;
 import com.cjkj.usercenter.dto.yc.SelectUsersByRoleResp;
+import com.cjkj.usercenter.dto.yc.UpdateBatchRoleMenusReq;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -123,4 +124,12 @@ public interface ISysRoleService {
      */
     @GetMapping("/feign/yc/getMenuList")
     ResultData<List<MenuResp>> getMenuList();
+
+    /**
+     * 批量更新角色-菜单列表信息
+     * @param req
+     * @return
+     */
+    @PostMapping("/feign/yc/batchUpdateRoleMenus")
+    ResultData batchUpdateRoleMenus(@RequestBody UpdateBatchRoleMenusReq req);
 }

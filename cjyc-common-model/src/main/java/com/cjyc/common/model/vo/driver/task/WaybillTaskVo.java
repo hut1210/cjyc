@@ -15,7 +15,7 @@ import java.math.BigDecimal;
  * @Date 2019/11/19 11:34
  **/
 @Data
-public class FinishTaskVo implements Serializable {
+public class WaybillTaskVo implements Serializable {
     private static final long serialVersionUID = -5688740696634356580L;
     @ApiModelProperty(value = "运单id")
     private Long waybillId;
@@ -36,7 +36,19 @@ public class FinishTaskVo implements Serializable {
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal freightFee;
 
+    @ApiModelProperty(value = "提车时间")
+    @JsonSerialize(using = DataLongSerizlizer.class)
+    private Long expectStartTime;
+
     @ApiModelProperty(value = "完成时间")
     @JsonSerialize(using = DataLongSerizlizer.class)
     private Long completeTime;
+
+    public Long getExpectStartTime() {
+        return expectStartTime == null ? 0 : expectStartTime;
+    }
+
+    public Long getCompleteTime() {
+        return completeTime == null ? 0 : completeTime;
+    }
 }

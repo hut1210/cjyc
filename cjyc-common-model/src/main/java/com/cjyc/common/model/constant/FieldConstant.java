@@ -66,4 +66,22 @@ public class FieldConstant {
      * 已下单
      */
     public static final int PLACE_ORDER = 1;
+
+    /*******司机端任务状态请求常量******/
+    /**
+     * 分配任务
+     */
+    public static final String WAIT_HANDLE_TASK = "1";
+    /**
+     * 提车任务
+     */
+    public static final String PICK_CAR_TASK = "2";
+    /**
+     * 交车任务
+     */
+    public static final String GIVE_CAR_TASK = "3";
+    /**
+     * 已交付
+     */
+    public static final String FINISH_TASK = "4";
 }

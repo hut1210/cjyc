@@ -2,10 +2,8 @@ package com.cjyc.driver.api.service.impl;
 
 import com.cjyc.common.model.dao.IWaybillDao;
 import com.cjyc.common.model.dto.driver.waybill.WaitAllotDto;
-import com.cjyc.common.model.entity.Carrier;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.driver.task.FinishTaskVo;
 import com.cjyc.common.model.vo.driver.waybill.WaitAllotVo;
 import com.cjyc.common.system.service.ICsCarrierService;
 import com.cjyc.driver.api.service.IWaybillService;

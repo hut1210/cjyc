@@ -7,8 +7,11 @@ import com.cjkj.common.model.ReturnMsg;
 import com.cjkj.usercenter.dto.common.*;
 import com.cjkj.usercenter.dto.yc.SelectUsersByRoleReq;
 import com.cjkj.usercenter.dto.yc.SelectUsersByRoleResp;
+import com.cjkj.usercenter.dto.yc.UpdateBatchRoleMenusReq;
 import com.cjyc.common.model.dao.IRoleDao;
 import com.cjyc.common.model.dto.web.role.AddRoleDto;
+import com.cjyc.common.model.dto.web.role.ModifyRoleMenusDto;
+import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Role;
 import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.enums.role.RoleLevelEnum;
@@ -16,8 +19,10 @@ import com.cjyc.common.model.enums.role.RoleRangeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.role.SelectUserByRoleVo;
 import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysRoleService;
+import com.cjyc.web.api.service.IAdminService;
 import com.cjyc.web.api.service.IRoleService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +52,8 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
     private ISysRoleService sysRoleService;
     @Autowired
     private ISysDeptService sysDeptService;
+    @Autowired
+    private IAdminService adminService;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -66,7 +73,7 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
     }
 
     @Override
-    public ResultVo<List<SelectUsersByRoleResp>> getUsersByRoleId(Long roleId) {
+    public ResultVo<List<SelectUserByRoleVo>> getUsersByRoleId(Long roleId) {
         //根据角色查询关联角色信息
         Role role = baseMapper.selectById(roleId);
         if (null == role) {
@@ -80,13 +87,23 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
         if (CollectionUtils.isEmpty(list)) {
             return BaseResultUtil.success();
         }
+        List<SelectUserByRoleVo> rsList = new ArrayList<>();
         list.stream().forEach(l -> {
             if (RoleLevelEnum.BIZ_CENTER_LEVEL.getLevel() == role.getRoleLevel()) {
                 l.setBizCenter(l.getBizCity());
                 l.setBizCity(null);
             }
+            SelectUserByRoleVo vo = new SelectUserByRoleVo();
+            BeanUtils.copyProperties(l, vo);
+            Admin admin = adminService.getOne(new QueryWrapper<Admin>()
+                    .eq("phone", l.getAccount()));
+            if (null != admin) {
+                vo.setCreateUser(admin.getCreateUser());
+                vo.setCreateTime(admin.getCreateTime());
+            }
+            rsList.add(vo);
         });
-        return BaseResultUtil.success(list);
+        return BaseResultUtil.success(rsList);
     }
 
     @Override
@@ -142,6 +159,26 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
             return BaseResultUtil.success(UserTypeEnum.ADMIN.code);
         }
         return BaseResultUtil.success(UserTypeEnum.DRIVER.code);
+    }
+
+    @Override
+    public ResultVo modifyRoleMenus(ModifyRoleMenusDto dto) {
+        Role role = baseMapper.selectById(dto.getId());
+        if (null == role) {
+            return BaseResultUtil.success();
+        }
+        List<Long> deptIdList = getGovIdsByRoleLevel(role.getRoleLevel());
+        if (CollectionUtils.isEmpty(deptIdList)) {
+            return BaseResultUtil.fail("机构id列表信息为空，请检查角色信息");
+        }
+        UpdateBatchRoleMenusReq req = new UpdateBatchRoleMenusReq();
+        req.setDeptIdList(deptIdList);
+        req.setMenuIdList(dto.getMenuIdList());
+        ResultData rd = sysRoleService.batchUpdateRoleMenus(req);
+        if (!isResultDataSuccess(rd)) {
+            return BaseResultUtil.fail("变更角色菜单列表失败，原因: " + rd.getMsg());
+        }
+        return BaseResultUtil.success();
     }
 
 
