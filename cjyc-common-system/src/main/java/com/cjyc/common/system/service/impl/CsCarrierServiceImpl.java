@@ -3,11 +3,9 @@ package com.cjyc.common.system.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
-import com.cjkj.usercenter.dto.common.AddUserResp;
 import com.cjkj.usercenter.dto.common.UpdateDeptReq;
 import com.cjkj.usercenter.dto.common.UpdateUserReq;
-import com.cjkj.usercenter.dto.yc.AddDeptAndUserReq;
-import com.cjkj.usercenter.dto.yc.AddDeptAndUserResp;
+import com.cjkj.usercenter.dto.common.UserResp;
 import com.cjkj.usercenter.dto.yc.UpdateDeptManagerReq;
 import com.cjyc.common.model.dao.ICarrierDao;
 import com.cjyc.common.model.dao.ICarrierDriverConDao;
@@ -18,16 +16,13 @@ import com.cjyc.common.model.entity.CarrierDriverCon;
 import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.transport.DriverIdentityEnum;
-import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.ICsCarrierService;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.Arrays;
 
 @Service
 public class CsCarrierServiceImpl implements ICsCarrierService {
@@ -61,7 +56,7 @@ public class CsCarrierServiceImpl implements ICsCarrierService {
                 if (!carrier.getLinkmanPhone().equals(dto.getLinkmanPhone())) {
                     //需要变更联系人
                     //1.新联系人是否在物流平台
-                    ResultData<AddUserResp> accountRd = sysUserService.getByAccount(dto.getLinkmanPhone());
+                    ResultData<UserResp> accountRd = sysUserService.getByAccount(dto.getLinkmanPhone());
                     if (!ReturnMsg.SUCCESS.getCode().equals(accountRd.getCode())) {
                         return ResultData.failed("查询用户信息失败，原因：" + accountRd.getMsg());
                     }
