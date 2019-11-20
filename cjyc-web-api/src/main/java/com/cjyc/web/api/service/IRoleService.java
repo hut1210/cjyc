@@ -64,5 +64,5 @@ public interface IRoleService extends IService<Role> {
      * @param roleId
      * @return
      */
-    ResultVo<List<Long>> getBtmMenuIdsByRoleId(Long roleId);
+    ResultVo<List<String>> getBtmMenuIdsByRoleId(Long roleId);
 }

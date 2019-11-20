@@ -111,7 +111,7 @@ public class RoleController {
 
     @ApiOperation(value = "根据角色标识获取末级角色-菜单id列表信息")
     @GetMapping("/getBtmMenuIdsByRoleId/{roleId}")
-    public ResultVo<List<Long>> getBtmMenuIdsByRoleId(
+    public ResultVo<List<String>> getBtmMenuIdsByRoleId(
             @ApiParam(value = "roleId", name = "角色标识", required = true)
             @PathVariable("roleId")Long roleId) {
         return roleService.getBtmMenuIdsByRoleId(roleId);
