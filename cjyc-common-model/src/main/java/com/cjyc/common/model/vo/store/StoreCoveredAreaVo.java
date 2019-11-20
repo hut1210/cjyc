@@ -19,5 +19,5 @@ public class StoreCoveredAreaVo implements Serializable {
     private List<FullCity> coveredAreaList;
 
     @ApiModelProperty(value = "业务中心未覆盖的区域")
-    private List<FullCity> fullCityList;
+    private List<FullCity> noCoveredCityList;
 }

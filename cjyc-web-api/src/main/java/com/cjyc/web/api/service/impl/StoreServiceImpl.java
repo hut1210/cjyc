@@ -17,7 +17,6 @@ import com.cjyc.common.model.dao.IAdminDao;
 import com.cjyc.common.model.dao.ICityDao;
 import com.cjyc.common.model.dao.IStoreCityConDao;
 import com.cjyc.common.model.dao.IStoreDao;
-import com.cjyc.common.model.dto.web.city.CityQueryDto;
 import com.cjyc.common.model.dto.web.city.StoreDto;
 import com.cjyc.common.model.dto.web.store.GetStoreDto;
 import com.cjyc.common.model.dto.web.store.StoreAddDto;
@@ -216,20 +215,29 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
         // 根据业务中心ID查询区编码
         List<StoreCityCon> storeCityConList = storeCityConDao.selectList(new QueryWrapper<StoreCityCon>().lambda()
                 .eq(StoreCityCon::getStoreId, dto.getStoreId())
-                .eq(!StringUtils.isEmpty(dto.getAreaCode()),StoreCityCon::getAreaCode,dto.getAreaCode()));
+                .eq(!StringUtils.isEmpty(dto.getCoveredAreaCode()),StoreCityCon::getAreaCode,dto.getCoveredAreaCode()));
         // 查询当前业务中心覆盖区域
         List<FullCity> coveredAreaList = new ArrayList<>(10);
         if (!CollectionUtils.isEmpty(storeCityConList)) {
+            dto.setProvinceCode(dto.getCoveredProvinceCode());
+            dto.setCityCode(dto.getCoveredCityCode());
             for (StoreCityCon storeCityCon : storeCityConList) {
                 dto.setAreaCode(storeCityCon.getAreaCode());
                 List<FullCity> list = cityDao.selectStoreAreaList(dto);
                 coveredAreaList.addAll(list);
             }
         }
-        // 查询当前业务中心未覆盖的区域
-        List<FullCity> fullCityList = cityDao.selectCityPage(new CityQueryDto());
-        // 取出未覆盖的区域
+
+        // 查询所有区
+        dto.setProvinceCode(dto.getNoCoveredProvinceCode());
+        dto.setCityCode(dto.getNoCoveredCityCode());
+        dto.setAreaCode(dto.getNoCoveredAreaCode());
+        List<FullCity> fullCityList = cityDao.selectStoreAreaList(dto);
+
+        // 查询所有已覆盖的区
         List<StoreCityCon> cityConList = storeCityConDao.selectList(new QueryWrapper<StoreCityCon>());
+
+        // 取出所有未覆盖的区域
         if (!CollectionUtils.isEmpty(cityConList)) {
             for (StoreCityCon coveredArea : cityConList) {
                 for (FullCity fullCity : fullCityList) {
@@ -243,7 +251,7 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
 
         StoreCoveredAreaVo areaVo = new StoreCoveredAreaVo();
         areaVo.setCoveredAreaList(coveredAreaList);
-        areaVo.setFullCityList(fullCityList);
+        areaVo.setNoCoveredCityList(fullCityList);
         return BaseResultUtil.success(areaVo);
     }
 

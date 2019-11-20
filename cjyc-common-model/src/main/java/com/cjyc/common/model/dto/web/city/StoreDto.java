@@ -27,6 +27,24 @@ public class StoreDto implements Serializable {
     @ApiModelProperty(value = "区编码")
     private String areaCode;
 
+    @ApiModelProperty(value = "覆盖省编码")
+    private String coveredProvinceCode;
+
+    @ApiModelProperty(value = "覆盖市编码")
+    private String coveredCityCode;
+
+    @ApiModelProperty(value = "覆盖区编码")
+    private String coveredAreaCode;
+
+    @ApiModelProperty(value = "未覆盖省编码")
+    private String noCoveredProvinceCode;
+
+    @ApiModelProperty(value = "未覆盖市编码")
+    private String noCoveredCityCode;
+
+    @ApiModelProperty(value = "未覆盖区编码")
+    private String noCoveredAreaCode;
+
     @ApiModelProperty(value = "业务中心ID")
     @NotNull(groups = {AddAndRemoveCoveredArea.class,GetStoreAreaList.class},message = "业务中心ID不能为空")
     private Long storeId;

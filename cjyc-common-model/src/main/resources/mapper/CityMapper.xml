@@ -194,7 +194,7 @@
     </select>
 
     <!--分页查询城市信息-->
-    <select id="selectCityPage" parameterType="com.cjyc.common.model.dto.web.city.CityQueryDto"
+    <select id="selectCityList" parameterType="com.cjyc.common.model.dto.web.city.CityQueryDto"
             resultType="com.cjyc.common.model.entity.defined.FullCity">
         SELECT
             t2.regionCode,
@@ -246,7 +246,7 @@
         </where>
     </select>
 
-    <!--根据业务中心ID查询当前业务中心覆盖区-->
+    <!--根据条件查询省，市，区-->
     <select id="selectStoreAreaList" parameterType="com.cjyc.common.model.dto.web.city.StoreDto"
             resultType="com.cjyc.common.model.entity.defined.FullCity">
         SELECT
