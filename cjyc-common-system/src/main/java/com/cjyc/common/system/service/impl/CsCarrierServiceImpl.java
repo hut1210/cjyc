@@ -31,6 +31,8 @@ import java.util.Arrays;
 @Service
 public class CsCarrierServiceImpl implements ICsCarrierService {
     @Resource
+    private ICarrierDao carrierDao;
+    @Resource
     private IDriverDao driverDao;
     @Resource
     private ICarrierDriverConDao carrierDriverConDao;
@@ -38,6 +40,25 @@ public class CsCarrierServiceImpl implements ICsCarrierService {
     private ISysUserService sysUserService;
     @Resource
     private ISysDeptService sysDeptService;
+
+    @Value("${cjkj.carries_menu_ids}")
+    private static Long[] menuIds;
+
+    @Override
+    public ResultData<AddDeptAndUserResp> saveCarrierToPlatform(Carrier carrier) {
+        System.out.println(menuIds);
+        AddDeptAndUserReq deptReq = new AddDeptAndUserReq();
+        deptReq.setName(carrier.getName());
+        deptReq.setLegalPerson(carrier.getLegalName());
+        deptReq.setDeptPerson(carrier.getLinkman());
+        deptReq.setTelephone(carrier.getLinkmanPhone());
+        deptReq.setPassword(YmlProperty.get("cjkj.driver.password"));
+        if (menuIds != null && menuIds.length > 0) {
+            deptReq.setMenuIdList(Arrays.asList(menuIds));
+        }
+        ResultData<AddDeptAndUserResp> rd = sysDeptService.saveDeptAndUser(deptReq);
+        return rd;
+    }
 
     @Override
     public ResultData<Long> updateCarrierToPlatform(Carrier carrier, CarrierDto dto) {

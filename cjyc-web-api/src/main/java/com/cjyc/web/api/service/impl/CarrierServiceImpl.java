@@ -70,14 +70,11 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     @Resource
     private ICarrierCityConService carrierCityConService;
 
-    @Value("${cjkj.carries_menu_ids}")
-    private Long[] menuIds;
+    @Autowired
+    private ISysDeptService sysDeptService;
 
     @Autowired
     private ISysUserService sysUserService;
-
-    @Autowired
-    private ISysDeptService sysDeptService;
 
     @Resource
     private ICsCarrierService csCarrierService;
@@ -232,7 +229,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         //审核通过
         if(FlagEnum.AUDIT_PASS.code == dto.getFlag()){
             //审核通过将承运商信息同步到物流平台
-            ResultData<AddDeptAndUserResp> rd = saveCarrierToPlatform(carrier);
+            ResultData<AddDeptAndUserResp> rd = csCarrierService.saveCarrierToPlatform(carrier);
             if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
                 return BaseResultUtil.fail("承运商机构添加失败");
             }
@@ -350,25 +347,6 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             }
         }
         return null;
-    }
-
-    /**
-     * 将承运商相关信息保存到物流平台
-     * @param carrier 承运商信息
-     * @return
-     */
-    private ResultData<AddDeptAndUserResp> saveCarrierToPlatform(Carrier carrier) {
-        AddDeptAndUserReq deptReq = new AddDeptAndUserReq();
-        deptReq.setName(carrier.getName());
-        deptReq.setLegalPerson(carrier.getLegalName());
-        deptReq.setDeptPerson(carrier.getLinkman());
-        deptReq.setTelephone(carrier.getLinkmanPhone());
-        deptReq.setPassword(YmlProperty.get("cjkj.driver.password"));
-        if (menuIds != null && menuIds.length > 0) {
-            deptReq.setMenuIdList(Arrays.asList(menuIds));
-        }
-        ResultData<AddDeptAndUserResp> rd = sysDeptService.saveDeptAndUser(deptReq);
-        return rd;
     }
 
 }

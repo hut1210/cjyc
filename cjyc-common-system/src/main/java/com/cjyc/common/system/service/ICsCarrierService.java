@@ -6,6 +6,14 @@ import com.cjyc.common.model.dto.web.carrier.CarrierDto;
 import com.cjyc.common.model.entity.Carrier;
 
 public interface ICsCarrierService {
+
+    /**
+     * 将承运商相关信息保存到物流平台
+     * @param carrier 承运商信息
+     * @return
+     */
+    ResultData<AddDeptAndUserResp> saveCarrierToPlatform(Carrier carrier);
+
     /**
      * 更新承运商信息
      * @param carrier
