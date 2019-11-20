@@ -10,6 +10,7 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.role.AdminListVo;
 import com.cjyc.common.model.vo.web.role.MenuTreeVo;
+import com.cjyc.common.model.vo.web.role.SelectUserByRoleVo;
 import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.web.api.service.IRoleService;
 import io.swagger.annotations.Api;
@@ -48,7 +49,7 @@ public class RoleController {
 
     @GetMapping("/getUsersByRoleId/{roleId}")
     @ApiOperation(value = "根据角色id获取关联用户列表信息")
-    public ResultVo<List<SelectUsersByRoleResp>> getUsersByRoleId(
+    public ResultVo<List<SelectUserByRoleVo>> getUsersByRoleId(
             @ApiParam(name = "roleId", value = "角色标识", required = true)
             @PathVariable Long roleId) {
         return roleService.getUsersByRoleId(roleId);

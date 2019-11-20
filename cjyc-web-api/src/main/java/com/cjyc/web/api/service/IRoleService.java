@@ -5,6 +5,7 @@ import com.cjkj.usercenter.dto.yc.SelectUsersByRoleResp;
 import com.cjyc.common.model.dto.web.role.AddRoleDto;
 import com.cjyc.common.model.entity.Role;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.role.SelectUserByRoleVo;
 
 import java.util.List;
 
@@ -33,7 +34,7 @@ public interface IRoleService extends IService<Role> {
      * @param roleId
      * @return
      */
-    ResultVo<List<SelectUsersByRoleResp>> getUsersByRoleId(Long roleId);
+    ResultVo<List<SelectUserByRoleVo>> getUsersByRoleId(Long roleId);
 
     ResultVo<List<SelectUsersByRoleResp>> getDeptRoleListByUserRoleId(Long roleId);
 
