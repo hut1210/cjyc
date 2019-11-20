@@ -58,12 +58,12 @@ public class RoleController {
 
     @GetMapping("/getMenuList")
     @ApiOperation(value = "获取韵车系统资源列表")
-    public ResultVo<MenuTreeVo> getMenuList() {
+    public ResultVo<List<MenuTreeVo>> getMenuList() {
         ResultData<List<MenuResp>> rd = sysRoleService.getMenuList();
         if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
             return BaseResultUtil.fail(rd.getMsg());
         }
-        return BaseResultUtil.success(convertMenuListToTree(rd.getData()));
+        return BaseResultUtil.success(Arrays.asList(convertMenuListToTree(rd.getData())));
     }
 
 
