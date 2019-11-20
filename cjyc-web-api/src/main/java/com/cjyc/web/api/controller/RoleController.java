@@ -9,16 +9,19 @@ import com.cjyc.common.model.entity.Role;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.role.AdminListVo;
+import com.cjyc.common.model.vo.web.role.MenuTreeVo;
 import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.web.api.service.IRoleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
+import java.util.*;
 
 @Api(tags = "基础数据-角色")
 @CrossOrigin(allowCredentials = "true", allowedHeaders = "*")
@@ -55,12 +58,12 @@ public class RoleController {
 
     @GetMapping("/getMenuList")
     @ApiOperation(value = "获取韵车系统资源列表")
-    public ResultVo<List<MenuResp>> getMenuList() {
+    public ResultVo<MenuTreeVo> getMenuList() {
         ResultData<List<MenuResp>> rd = sysRoleService.getMenuList();
         if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
             return BaseResultUtil.fail(rd.getMsg());
         }
-        return BaseResultUtil.success(rd.getData());
+        return BaseResultUtil.success(convertMenuListToTree(rd.getData()));
     }
 
 
@@ -96,5 +99,56 @@ public class RoleController {
             @ApiParam(name = "roleId", value = "角色标识", required = true)
             @PathVariable("roleId")Long roleId) {
         return roleService.getUserTypeByRole(roleId);
+    }
+
+
+    /**
+     * 资源列表转换为菜单树
+     * @param list
+     * @return
+     */
+    private MenuTreeVo convertMenuListToTree(List<MenuResp> list) {
+        if (CollectionUtils.isEmpty(list)) {
+            return null;
+        }
+        MenuTreeVo root = new MenuTreeVo();
+        //将所有数据按照parentId相同分级处理
+        Map<Long, List<MenuResp>> treeMap = new HashMap<>();
+        list.stream().forEach(m -> {
+            if (m.getParentId() == null || m.getParentId() <= 0L) {
+                BeanUtils.copyProperties(m, root);
+            }
+            if (treeMap.containsKey(m.getParentId())) {
+                treeMap.get(m.getParentId()).add(m);
+            }else {
+                treeMap.put(m.getParentId(), Arrays.asList(m));
+            }
+        });
+        if (CollectionUtils.isEmpty(treeMap)) {
+            return root;
+        }
+        root.setChildren(resolveTreeMap(root.getMenuId(), treeMap));
+        return root;
+    }
+
+    /**
+     * 根据父级id解析子集
+     * @param parentId
+     * @param treeMap
+     * @return
+     */
+    private List<MenuTreeVo> resolveTreeMap(Long parentId, Map<Long, List<MenuResp>> treeMap) {
+        List<MenuTreeVo> rsList = new ArrayList<>();
+        List<MenuResp> respList = treeMap.get(parentId);
+        if (CollectionUtils.isEmpty(respList)) {
+            return null;
+        }
+        respList.stream().forEach(r -> {
+            MenuTreeVo mvo = new MenuTreeVo();
+            BeanUtils.copyProperties(r, mvo);
+            mvo.setChildren(resolveTreeMap(r.getMenuId(), treeMap));
+            rsList.add(mvo);
+        });
+        return rsList;
     }
 }
