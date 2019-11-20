@@ -6,6 +6,8 @@ import com.cjkj.common.model.ReturnMsg;
 import com.cjkj.usercenter.dto.common.UpdateDeptReq;
 import com.cjkj.usercenter.dto.common.UpdateUserReq;
 import com.cjkj.usercenter.dto.common.UserResp;
+import com.cjkj.usercenter.dto.yc.AddDeptAndUserReq;
+import com.cjkj.usercenter.dto.yc.AddDeptAndUserResp;
 import com.cjkj.usercenter.dto.yc.UpdateDeptManagerReq;
 import com.cjyc.common.model.dao.ICarrierDao;
 import com.cjyc.common.model.dao.ICarrierDriverConDao;
@@ -16,27 +18,48 @@ import com.cjyc.common.model.entity.CarrierDriverCon;
 import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.transport.DriverIdentityEnum;
+import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.ICsCarrierService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
 public class CsCarrierServiceImpl implements ICsCarrierService {
     @Resource
-    private IDriverDao driverDao;
-    @Resource
     private ICarrierDao carrierDao;
-
+    @Resource
+    private IDriverDao driverDao;
     @Resource
     private ICarrierDriverConDao carrierDriverConDao;
     @Resource
     private ISysUserService sysUserService;
     @Resource
     private ISysDeptService sysDeptService;
+
+    @Value("${cjkj.carries_menu_ids}")
+    private static Long[] menuIds;
+
+    @Override
+    public ResultData<AddDeptAndUserResp> saveCarrierToPlatform(Carrier carrier) {
+        System.out.println(menuIds);
+        AddDeptAndUserReq deptReq = new AddDeptAndUserReq();
+        deptReq.setName(carrier.getName());
+        deptReq.setLegalPerson(carrier.getLegalName());
+        deptReq.setDeptPerson(carrier.getLinkman());
+        deptReq.setTelephone(carrier.getLinkmanPhone());
+        deptReq.setPassword(YmlProperty.get("cjkj.driver.password"));
+        if (menuIds != null && menuIds.length > 0) {
+            deptReq.setMenuIdList(Arrays.asList(menuIds));
+        }
+        ResultData<AddDeptAndUserResp> rd = sysDeptService.saveDeptAndUser(deptReq);
+        return rd;
+    }
 
     @Override
     public List<Carrier> getBelongListByDriver(Long driverId) {

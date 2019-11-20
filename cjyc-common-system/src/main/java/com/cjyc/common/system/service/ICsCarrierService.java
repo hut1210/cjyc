@@ -8,6 +8,14 @@ import com.cjyc.common.model.entity.Carrier;
 import java.util.List;
 
 public interface ICsCarrierService {
+
+    /**
+     * 将承运商相关信息保存到物流平台
+     * @param carrier 承运商信息
+     * @return
+     */
+    ResultData<AddDeptAndUserResp> saveCarrierToPlatform(Carrier carrier);
+
     List<Carrier> getBelongListByDriver(Long driverId);
 
     List<Long> getBelongIdsListByDriver(Long driverId);
