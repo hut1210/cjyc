@@ -41,7 +41,7 @@ public interface IRoleService extends IService<Role> {
      * 查询所有角色信息列表
      * @return
      */
-    ResultVo<List<Role>> getAllList();
+    ResultVo<List<Role>> getAllList(String roleName);
 
     /**
      * 根据角色id获取用户类型

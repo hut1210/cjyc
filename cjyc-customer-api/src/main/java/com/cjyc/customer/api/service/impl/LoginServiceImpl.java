@@ -2,14 +2,13 @@ package com.cjyc.customer.api.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjkj.common.model.ResultData;
-import com.cjkj.common.model.ReturnMsg;
 import com.cjkj.common.redis.template.StringRedisUtil;
-import com.cjkj.usercenter.dto.common.AddUserResp;
+import com.cjkj.common.service.impl.SuperServiceImpl;
 import com.cjkj.usercenter.dto.common.auth.AuthLoginReq;
 import com.cjkj.usercenter.dto.common.auth.AuthLoginResp;
 import com.cjkj.usercenter.dto.common.auth.AuthMobileLoginReq;
 import com.cjyc.common.model.dao.ICustomerDao;
-import com.cjyc.common.model.dto.customer.login.LoginDto;
+import com.cjyc.common.model.dto.LoginDto;
 import com.cjyc.common.model.dto.salesman.login.LoginByPhoneDto;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.enums.*;
@@ -28,6 +27,7 @@ import com.cjyc.common.system.service.ISendNoService;
 import com.cjyc.customer.api.config.LoginProperty;
 import com.cjyc.customer.api.service.ILoginService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,7 +41,7 @@ import java.time.LocalDateTime;
  */
 @Service
 @Slf4j
-public class LoginServiceImpl implements ILoginService {
+public class LoginServiceImpl extends SuperServiceImpl<ICustomerDao, Customer> implements ILoginService {
 
     @Resource
     private ICustomerDao customerDao;
@@ -68,7 +68,7 @@ public class LoginServiceImpl implements ILoginService {
                 .eq(Customer::getContactPhone, dto.getPhone()));
         if(c == null){
             //添加数据
-           addToPlatform(dto.getPhone());
+           c = addToPlatform(dto.getPhone());
         }
         if(c != null && c.getType() == CustomerTypeEnum.ENTERPRISE.code){
             return BaseResultUtil.getVo(ResultEnum.PARTNER_NOTLOGIN.getCode(),ResultEnum.PARTNER_NOTLOGIN.getMsg());
@@ -82,12 +82,14 @@ public class LoginServiceImpl implements ILoginService {
         req.setSmsCode(dto.getCode());
         ResultData<AuthLoginResp> rd = sysLoginService.mobileLogin(req);
         if(rd == null || rd.getData() == null || rd.getData().getAccessToken() == null){
-            return BaseResultUtil.fail("登录失败,请联系管理员");
+            return BaseResultUtil.getVo(ResultEnum.LOGIN_FAIL.getCode(),ResultEnum.LOGIN_FAIL.getMsg());
         }
         //组装返回给移动端
         CustomerLoginVo loginVo = new CustomerLoginVo();
         BeanUtils.copyProperties(c,loginVo);
-        BeanUtils.copyProperties(rd.getData(),loginVo);
+        loginVo.setUserId(c.getUserId() == null ? 0 : c.getUserId());
+        loginVo.setAccessToken(rd.getData().getAccessToken());
+        loginVo.setPhotoImg(StringUtils.isNotBlank(c.getPhotoImg()) ? c.getPhotoImg():"");
         loginVo.setName(c.getContactMan());
         loginVo.setPhone(c.getContactPhone());
         return BaseResultUtil.success(loginVo);
@@ -98,7 +100,7 @@ public class LoginServiceImpl implements ILoginService {
      * @param phone
      * @return
      */
-    private void addToPlatform(String phone){
+    private Customer addToPlatform(String phone){
         Customer c = new Customer();
         String no = sendNoService.getNo(SendNoTypeEnum.CUSTOMER, 6);
         c.setName(no);
@@ -117,6 +119,7 @@ public class LoginServiceImpl implements ILoginService {
         ResultData<Long> rd = comCustomerService.addCustomerToPlatform(c);
         c.setUserId(rd.getData());
         customerDao.insert(c);
+        return c;
     }
 
     @Override

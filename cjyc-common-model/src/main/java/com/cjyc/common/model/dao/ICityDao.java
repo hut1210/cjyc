@@ -102,7 +102,7 @@ public interface ICityDao extends BaseMapper<City> {
      * @param dto
      * @return java.util.List<com.cjyc.common.model.entity.defined.FullCity>
      */
-    List<FullCity> selectCityPage(CityQueryDto dto);
+    List<FullCity> selectCityList(CityQueryDto dto);
 
     /**
      * 功能描述: 根据业务中心ID查询当前业务中心覆盖区

@@ -37,6 +37,24 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
         // 查询当前登录人已完成任务列表
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         dto.setState(TaskStateEnum.FINISHED.code);
+        /*StringBuilder sb = null;
+        if (!StringUtils.isEmpty(dto.getLineStart())) {
+            sb = new StringBuilder();
+            sb.append(dto.getLineStart());
+        }
+        if (!StringUtils.isEmpty(dto.getLineEnd())) {
+            if (sb == null) {
+                sb = new StringBuilder();
+                sb.append(dto.getLineEnd());
+            } else {
+                sb.append("-");
+                sb.append(dto.getLineEnd());
+            }
+        }
+        if (sb != null) {
+            dto.setGuideLine(sb.toString());
+        }*/
+
         List<FinishTaskVo> taskList = taskDao.selectPage(dto);
         PageInfo pageInfo = new PageInfo(taskList);
         return BaseResultUtil.success(pageInfo);

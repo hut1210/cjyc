@@ -30,6 +30,8 @@ import com.cjyc.common.model.vo.web.driver.DispatchDriverVo;
 import com.cjyc.common.model.vo.web.driver.DriverVo;
 import com.cjyc.common.model.vo.web.driver.ShowDriverVo;
 import com.cjyc.common.model.vo.web.user.DriverListVo;
+import com.cjyc.common.system.service.ICsDriverService;
+import com.cjyc.common.system.service.ICsDriverService;
 import com.cjyc.web.api.exception.CommonException;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.web.api.service.ICarrierCityConService;
@@ -44,7 +46,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -78,6 +79,8 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
 
     @Autowired
     private ISysUserService sysUserService;
+    @Resource
+    private ICsDriverService csDriverService;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -181,7 +184,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         }
         //修改司机信息
         if(cdc.getState() == CommonStateEnum.CHECKED.code){
-            ResultData rd = updateUserToPlatform(driver);
+            ResultData rd = csDriverService.updateUserToPlatform(driver);
             if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
                 return BaseResultUtil.fail("司机信息同步失败，原因：" + rd.getMsg());
             }
@@ -271,7 +274,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         //审核通过
         if(dto.getFlag() == FlagEnum.AUDIT_PASS.code){
             //保存司机用户到平台，返回用户id
-            ResultData<Long> saveRd = saveDriverToPlatform(driver);
+            ResultData<Long> saveRd = csDriverService.saveDriverToPlatform(driver);
             if (!ReturnMsg.SUCCESS.getCode().equals(saveRd.getCode())) {
                 return BaseResultUtil.fail("司机信息保存失败，原因：" + saveRd.getMsg());
             }

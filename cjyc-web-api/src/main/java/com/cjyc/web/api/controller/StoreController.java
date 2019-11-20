@@ -133,7 +133,7 @@ public class StoreController {
         return storeService.listAdminsByStoreId(storeId);
     }
 
-    @ApiOperation(value = "根据业务中心ID查询当前业务中心覆盖区,参数storeId - 业务中心ID - 必填;areaCode - 区编码 - 非必填")
+    @ApiOperation(value = "根据业务中心ID查询当前业务中心覆盖区和所有业务中心未覆盖区列表")
     @PostMapping("/getStoreAreaList")
     public ResultVo<StoreCoveredAreaVo> getStoreAreaList(@RequestBody @Validated({StoreDto.GetStoreAreaList.class}) StoreDto dto) {
         return storeService.getStoreAreaList(dto);
