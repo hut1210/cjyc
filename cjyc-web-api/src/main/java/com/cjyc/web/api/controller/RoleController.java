@@ -82,10 +82,12 @@ public class RoleController {
      * 查询所有角色信息列表
      * @return
      */
-    @GetMapping("/getAllList")
+    @GetMapping(value = {"/getAllList", "/getAllList/{roleName}"})
     @ApiOperation(value = "获取所有角色信息列表")
-    public ResultVo<List<Role>> getAllList() {
-        return roleService.getAllList();
+    public ResultVo<List<Role>> getAllList(
+            @ApiParam(name = "roleName", value = "角色名称", required = false)
+            @PathVariable(name = "roleName", required = false) String roleName) {
+        return roleService.getAllList(roleName);
     }
 
     @ApiOperation(value = "根据角色标识获取用户类型信息")

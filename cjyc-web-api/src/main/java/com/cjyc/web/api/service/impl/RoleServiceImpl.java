@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -96,8 +97,9 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
     }
 
     @Override
-    public ResultVo<List<Role>> getAllList() {
-        return BaseResultUtil.success(this.list());
+    public ResultVo<List<Role>> getAllList(String roleName) {
+        return BaseResultUtil.success(this.list(new QueryWrapper<Role>()
+            .eq(!StringUtils.isEmpty(roleName), "role_name", roleName)));
     }
 
     @Override
