@@ -82,7 +82,7 @@ public class LoginServiceImpl extends SuperServiceImpl<ICustomerDao, Customer> i
         req.setSmsCode(dto.getCode());
         ResultData<AuthLoginResp> rd = sysLoginService.mobileLogin(req);
         if(rd == null || rd.getData() == null || rd.getData().getAccessToken() == null){
-            return BaseResultUtil.fail("登录失败,请联系管理员");
+            return BaseResultUtil.getVo(ResultEnum.LOGIN_FAIL.getCode(),ResultEnum.LOGIN_FAIL.getMsg());
         }
         //组装返回给移动端
         CustomerLoginVo loginVo = new CustomerLoginVo();

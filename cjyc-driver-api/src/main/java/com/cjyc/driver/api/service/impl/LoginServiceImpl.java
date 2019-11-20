@@ -90,10 +90,10 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
         carrier.setSettleType(ModeTypeEnum.TIME.code);
         carrier.setState(CommonStateEnum.WAIT_CHECK.code);
         carrier.setCreateTime(NOW);
-        ResultData<AddDeptAndUserResp> carrierRd = csCarrierService.saveCarrierToPlatform(carrier);
+        /*ResultData<AddDeptAndUserResp> carrierRd = csCarrierService.saveCarrierToPlatform(carrier);
         if (!ReturnMsg.SUCCESS.getCode().equals(carrierRd.getCode())) {
             //return BaseResultUtil.fail("承运商机构添加失败");
-        }
+        }*/
 
         //承运商与司机关系
         CarrierDriverCon cdc = new CarrierDriverCon();

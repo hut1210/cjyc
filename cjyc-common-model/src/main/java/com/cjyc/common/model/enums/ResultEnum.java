@@ -18,6 +18,7 @@ public enum ResultEnum {
     //MOBILE_HTTP_ILLEGAL(1002, "非法请求"),
     //MOBILE_HEAD_ERROR(1003, "Header参数错误"),
     MOBILE_PARAM_ERROR(1004, "接口请求参数错误"),
+    LOGIN_FAIL(1005, "登陆失败，请联系管理员"),
     //MOBILE_SYSTEM_MAINTAIN(1005, "系统维护中"),
     //MOBILE_NO_ACCESS(1006, "无访问权限"),
     //MOBILE_VERRION_LOW(1007, "版本低，非强制更新"),
