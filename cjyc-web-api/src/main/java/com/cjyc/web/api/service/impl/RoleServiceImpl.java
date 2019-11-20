@@ -7,8 +7,10 @@ import com.cjkj.common.model.ReturnMsg;
 import com.cjkj.usercenter.dto.common.*;
 import com.cjkj.usercenter.dto.yc.SelectUsersByRoleReq;
 import com.cjkj.usercenter.dto.yc.SelectUsersByRoleResp;
+import com.cjkj.usercenter.dto.yc.UpdateBatchRoleMenusReq;
 import com.cjyc.common.model.dao.IRoleDao;
 import com.cjyc.common.model.dto.web.role.AddRoleDto;
+import com.cjyc.common.model.dto.web.role.ModifyRoleMenusDto;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Role;
 import com.cjyc.common.model.enums.UserTypeEnum;
@@ -157,6 +159,26 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
             return BaseResultUtil.success(UserTypeEnum.ADMIN.code);
         }
         return BaseResultUtil.success(UserTypeEnum.DRIVER.code);
+    }
+
+    @Override
+    public ResultVo modifyRoleMenus(ModifyRoleMenusDto dto) {
+        Role role = baseMapper.selectById(dto.getId());
+        if (null == role) {
+            return BaseResultUtil.success();
+        }
+        List<Long> deptIdList = getGovIdsByRoleLevel(role.getRoleLevel());
+        if (CollectionUtils.isEmpty(deptIdList)) {
+            return BaseResultUtil.fail("机构id列表信息为空，请检查角色信息");
+        }
+        UpdateBatchRoleMenusReq req = new UpdateBatchRoleMenusReq();
+        req.setDeptIdList(deptIdList);
+        req.setMenuIdList(dto.getMenuIdList());
+        ResultData rd = sysRoleService.batchUpdateRoleMenus(req);
+        if (!isResultDataSuccess(rd)) {
+            return BaseResultUtil.fail("变更角色菜单列表失败，原因: " + rd.getMsg());
+        }
+        return BaseResultUtil.success();
     }
 
 

@@ -5,6 +5,7 @@ import com.cjkj.common.model.ReturnMsg;
 import com.cjkj.usercenter.dto.asc.MenuResp;
 import com.cjkj.usercenter.dto.yc.SelectUsersByRoleResp;
 import com.cjyc.common.model.dto.web.role.AddRoleDto;
+import com.cjyc.common.model.dto.web.role.ModifyRoleMenusDto;
 import com.cjyc.common.model.entity.Role;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
@@ -100,6 +101,12 @@ public class RoleController {
             @ApiParam(name = "roleId", value = "角色标识", required = true)
             @PathVariable("roleId")Long roleId) {
         return roleService.getUserTypeByRole(roleId);
+    }
+
+    @ApiOperation(value = "根据角色标识更新角色-菜单列表信息")
+    @PostMapping("/modifyRoleMenus")
+    public ResultVo modifyRoleMenus(@Valid @RequestBody ModifyRoleMenusDto dto) {
+        return roleService.modifyRoleMenus(dto);
     }
 
 
