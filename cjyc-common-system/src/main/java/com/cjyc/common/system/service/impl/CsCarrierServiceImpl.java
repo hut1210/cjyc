@@ -19,6 +19,7 @@ import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.transport.DriverIdentityEnum;
 import com.cjyc.common.model.util.YmlProperty;
+import com.cjyc.common.system.config.CarrierProperty;
 import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.ICsCarrierService;
@@ -42,20 +43,18 @@ public class CsCarrierServiceImpl implements ICsCarrierService {
     @Resource
     private ISysDeptService sysDeptService;
 
-    @Value("${cjkj.carries_menu_ids}")
-    private static Long[] menuIds;
 
     @Override
     public ResultData<AddDeptAndUserResp> saveCarrierToPlatform(Carrier carrier) {
-        System.out.println(menuIds);
+        List<Long> menuIds = CarrierProperty.carriesMenuIds;
         AddDeptAndUserReq deptReq = new AddDeptAndUserReq();
         deptReq.setName(carrier.getName());
         deptReq.setLegalPerson(carrier.getLegalName());
         deptReq.setDeptPerson(carrier.getLinkman());
         deptReq.setTelephone(carrier.getLinkmanPhone());
         deptReq.setPassword(YmlProperty.get("cjkj.driver.password"));
-        if (menuIds != null && menuIds.length > 0) {
-            deptReq.setMenuIdList(Arrays.asList(menuIds));
+        if (menuIds != null && menuIds.size() > 0) {
+            deptReq.setMenuIdList(menuIds);
         }
         ResultData<AddDeptAndUserResp> rd = sysDeptService.saveDeptAndUser(deptReq);
         return rd;

@@ -5,7 +5,6 @@ import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
 import com.cjkj.common.service.impl.SuperServiceImpl;
 import com.cjkj.usercenter.dto.yc.AddDeptAndUserResp;
-import com.cjyc.common.model.dao.ICarSeriesDao;
 import com.cjyc.common.model.dao.ICarrierDao;
 import com.cjyc.common.model.dao.ICarrierDriverConDao;
 import com.cjyc.common.model.dao.IDriverDao;
@@ -13,7 +12,6 @@ import com.cjyc.common.model.dto.LoginDto;
 import com.cjyc.common.model.entity.Carrier;
 import com.cjyc.common.model.entity.CarrierDriverCon;
 import com.cjyc.common.model.entity.Driver;
-import com.cjyc.common.model.enums.CardTypeEnum;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
 import com.cjyc.common.model.enums.transport.*;
@@ -90,10 +88,10 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
         carrier.setSettleType(ModeTypeEnum.TIME.code);
         carrier.setState(CommonStateEnum.WAIT_CHECK.code);
         carrier.setCreateTime(NOW);
-        /*ResultData<AddDeptAndUserResp> carrierRd = csCarrierService.saveCarrierToPlatform(carrier);
+        ResultData<AddDeptAndUserResp> carrierRd = csCarrierService.saveCarrierToPlatform(carrier);
         if (!ReturnMsg.SUCCESS.getCode().equals(carrierRd.getCode())) {
             //return BaseResultUtil.fail("承运商机构添加失败");
-        }*/
+        }
 
         //承运商与司机关系
         CarrierDriverCon cdc = new CarrierDriverCon();

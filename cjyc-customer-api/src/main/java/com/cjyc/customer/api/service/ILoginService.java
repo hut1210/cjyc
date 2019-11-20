@@ -2,6 +2,7 @@ package com.cjyc.customer.api.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.dto.LoginDto;
+import com.cjyc.common.model.dto.customer.login.VerifyCodeDto;
 import com.cjyc.common.model.dto.salesman.login.LoginByPhoneDto;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.vo.ResultVo;
@@ -15,10 +16,10 @@ public interface ILoginService extends IService<Customer> {
 
     /**
      * 根据手机号获取验证码
-     * @param phone
+     * @param dto
      * @return
      */
-    ResultVo verifyCode(String phone);
+    ResultVo verifyCode(VerifyCodeDto dto);
 
     /**
      * 手机号验证码登陆

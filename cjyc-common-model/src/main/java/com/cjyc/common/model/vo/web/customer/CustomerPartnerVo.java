@@ -28,6 +28,9 @@ public class CustomerPartnerVo implements Serializable {
     @ApiModelProperty("合伙人名称")
     private String name;
 
+    @ApiModelProperty("状态：0待审核，1未登录，2已审核，3审核拒绝， 7已冻结")
+    private Integer state;
+
     @ApiModelProperty("联系人")
     private String contactMan;
 

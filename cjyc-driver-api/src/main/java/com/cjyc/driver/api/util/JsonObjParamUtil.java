@@ -1,7 +1,7 @@
 package com.cjyc.driver.api.util;
 
 import com.alibaba.fastjson.JSONObject;
-import com.cjyc.driver.api.exception.ParameterException;
+import com.cjyc.common.model.exception.ParameterException;
 import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;

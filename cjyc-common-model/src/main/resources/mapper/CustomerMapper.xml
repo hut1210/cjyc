@@ -148,6 +148,7 @@
             cc.user_id AS userId,
             cc.customer_no AS customerNo,
             cc.NAME AS NAME,
+            cc.state as state,
             cc.contact_man AS contactMan,
             cc.contact_phone AS contactPhone,
             ccp.is_taxpayer AS isTaxpayer,

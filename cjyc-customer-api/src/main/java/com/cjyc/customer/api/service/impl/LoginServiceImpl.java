@@ -9,6 +9,7 @@ import com.cjkj.usercenter.dto.common.auth.AuthLoginResp;
 import com.cjkj.usercenter.dto.common.auth.AuthMobileLoginReq;
 import com.cjyc.common.model.dao.ICustomerDao;
 import com.cjyc.common.model.dto.LoginDto;
+import com.cjyc.common.model.dto.customer.login.VerifyCodeDto;
 import com.cjyc.common.model.dto.salesman.login.LoginByPhoneDto;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.enums.*;
@@ -57,8 +58,8 @@ public class LoginServiceImpl extends SuperServiceImpl<ICustomerDao, Customer> i
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
     @Override
-    public ResultVo verifyCode(String phone) {
-        ResultData rd = sysLoginService.verifyCode(phone);
+    public ResultVo verifyCode(VerifyCodeDto dto) {
+        ResultData rd = sysLoginService.verifyCode(dto.getPhone());
         return BaseResultUtil.success(rd.getData());
     }
 

@@ -49,7 +49,7 @@ public class SmsController {
     @Autowired
     private StringRedisUtil redisUtil;
 
-    @ApiOperation(value = "发送短信验证码", notes = " ")
+   /* @ApiOperation(value = "发送短信验证码", notes = " ")
     @PostMapping("/captcha/send")
     public ResultVo send(@RequestBody CaptchaSendDto reqDto){
         @NotNull String phone = reqDto.getPhone();
@@ -97,6 +97,6 @@ public class SmsController {
             return BaseResultUtil.fail("验证码错误");
         }
         return BaseResultUtil.success("验证码正确");
-    }
+    }*/
 
 }

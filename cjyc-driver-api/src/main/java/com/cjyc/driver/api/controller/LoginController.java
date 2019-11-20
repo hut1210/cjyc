@@ -2,7 +2,6 @@ package com.cjyc.driver.api.controller;
 
 import com.cjyc.common.model.dto.LoginDto;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.customer.login.CustomerLoginVo;
 import com.cjyc.common.model.vo.driver.login.DriverLoginVo;
 import com.cjyc.driver.api.service.ILoginService;
 import io.swagger.annotations.Api;

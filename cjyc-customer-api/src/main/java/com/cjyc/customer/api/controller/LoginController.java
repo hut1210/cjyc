@@ -1,6 +1,7 @@
 package com.cjyc.customer.api.controller;
 
 import com.cjyc.common.model.dto.LoginDto;
+import com.cjyc.common.model.dto.customer.login.VerifyCodeDto;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.login.CustomerLoginVo;
 import com.cjyc.customer.api.service.ILoginService;
@@ -28,9 +29,9 @@ public class LoginController {
     private ILoginService loginService;
 
     @ApiOperation(value = "获取验证码")
-    @PostMapping("/verifyCode/{phone}")
-    public ResultVo verifyCode(@PathVariable @ApiParam(value = "手机号",required = true) String phone) {
-        return loginService.verifyCode(phone);
+    @PostMapping("/verifyCode")
+    public ResultVo verifyCode(@RequestBody VerifyCodeDto dto) {
+        return loginService.verifyCode(dto);
     }
 
     @ApiOperation(value = "用户注册登陆")
