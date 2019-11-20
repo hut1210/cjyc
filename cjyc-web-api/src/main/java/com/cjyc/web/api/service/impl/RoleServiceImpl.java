@@ -34,7 +34,7 @@ import org.springframework.util.StringUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -179,6 +179,40 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
             return BaseResultUtil.fail("变更角色菜单列表失败，原因: " + rd.getMsg());
         }
         return BaseResultUtil.success();
+    }
+
+    @Override
+    public ResultVo<List<Long>> getBtmMenuIdsByRoleId(Long roleId) {
+        Role role = baseMapper.selectById(roleId);
+        if (null == role) {
+            return BaseResultUtil.fail("角色信息错误，请检查");
+        }
+        List<Long> deptIdList = getGovIdsByRoleLevel(role.getRoleLevel());
+        if (CollectionUtils.isEmpty(deptIdList)) {
+            return BaseResultUtil.fail("角色级别错误，请检查");
+        }
+        ResultData<List<SelectRoleResp>> rolesRd =
+                sysRoleService.getSingleLevelList(deptIdList.get(0));
+        if (!isResultDataSuccess(rolesRd)) {
+            return BaseResultUtil.fail("查询角色信息错误，原因：" + rolesRd.getMsg());
+        }
+        if (CollectionUtils.isEmpty(rolesRd.getData())) {
+            return BaseResultUtil.fail("根据机构id ：" + deptIdList.get(0) + "未查询到角色信息");
+        }
+        AtomicReference<Long> finalRoleId = null;
+        rolesRd.getData().stream().forEach(r -> {
+            if (r.getRoleName().equals(role.getRoleName())) {
+                finalRoleId.set(r.getRoleId());
+            }
+        });
+        if (finalRoleId == null) {
+            return BaseResultUtil.fail("查询角色信息错误，机构下无此角色");
+        }
+        ResultData<List<Long>> rsRd = sysRoleService.getBottomMenuIdsByRoleId(finalRoleId.get());
+        if (!isResultDataSuccess(rsRd)) {
+            return BaseResultUtil.fail("查询错误，原因：" + rsRd.getMsg());
+        }
+        return BaseResultUtil.success(rsRd.getData());
     }
 
 
