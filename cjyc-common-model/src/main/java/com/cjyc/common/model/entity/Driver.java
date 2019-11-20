@@ -106,6 +106,9 @@ public class Driver implements Serializable {
     @ApiModelProperty(value = "账号来源：1App注册，2Applet注册，3业务员创建，4承运商管理员创建，11掌控接口，12otm接口")
     private Integer source;
 
+    @ApiModelProperty(value = "头像")
+    private String photoImg;
+
     @ApiModelProperty(value = "创建时间")
     private Long createTime;
 

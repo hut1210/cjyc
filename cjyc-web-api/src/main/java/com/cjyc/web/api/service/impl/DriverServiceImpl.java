@@ -400,18 +400,4 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
             return ResultData.ok(saveRd.getData().getUserId());
         }
     }
-
-    /**
-     * 将司机信息更新到平台用户
-     * @param driver
-     * @return
-     */
-    private ResultData updateUserToPlatform(Driver driver) {
-        UpdateUserReq user = new UpdateUserReq();
-        user.setUserId(driver.getUserId());
-        user.setName(driver.getName());
-        user.setAccount(driver.getPhone());
-        user.setMobile(driver.getPhone());
-        return sysUserService.updateUser(user);
-    }
 }

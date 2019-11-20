@@ -1,18 +1,17 @@
 package com.cjyc.driver.api.controller;
 
 import com.cjyc.common.model.dto.driver.BaseDriverDto;
-import com.cjyc.common.model.dto.web.user.DriverListDto;
-import com.cjyc.common.model.vo.PageVo;
+import com.cjyc.common.model.dto.driver.BaseDto;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.user.DriverListVo;
+import com.cjyc.common.model.vo.driver.mine.BinkCardVo;
 import com.cjyc.driver.api.service.IMineService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * 用户
@@ -29,16 +28,16 @@ public class MineController {
     private IMineService mineService;
 
     @ApiOperation(value = "司机的银行卡信息")
-    @PostMapping(value = "/findBinkCardInfo/{loginId}")
-    public ResultVo findBinkCardInfo(@PathVariable @ApiParam(value = "司机id",required = true) Long loginId) {
-        return mineService.findBinkCardInfo(loginId);
+    @PostMapping(value = "/findBinkCard")
+    public ResultVo<List<BinkCardVo>> findBinkCard(@RequestBody BaseDto dto) {
+        return mineService.findBinkCard(dto);
     }
 
-   /* @ApiOperation(value = "司机管理信息")
+    @ApiOperation(value = "司机管理信息")
     @PostMapping(value = "/findDriver")
     public ResultVo findDriver(@RequestBody BaseDriverDto dto) {
         return mineService.findDriver(dto);
-    }*/
+    }
 
 
 }

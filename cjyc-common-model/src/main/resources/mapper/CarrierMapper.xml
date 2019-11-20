@@ -314,4 +314,27 @@
         where driver_id = #{driverId}
 
     </select>
+
+    <select id="findDriverLogin" resultType="com.cjyc.common.model.vo.driver.login.BaseLoginVo"
+                parameterType="java.lang.Long">
+        SELECT
+        dd.id AS id,
+        dd.user_id AS userId,
+        dd.real_name AS realName,
+        dd.phone AS phone,
+        dd.identity AS identity,
+        dd.business_state AS businessState,
+        dcdc.state AS state,
+        dcdc.role as role,
+        dc.state as carrierState,
+        dc.NAME AS companyName,
+        dvr.plate_no AS plateNo,
+        dd.photo_img AS photoImg
+    FROM
+        d_carrier dc
+        LEFT JOIN d_carrier_driver_con dcdc ON dcdc.carrier_id = dc.id
+        LEFT JOIN d_driver dd ON dd.id = dcdc.driver_id
+        LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
+      where dd.id = #{driverId} and dc.state &lt; 9
+    </select>
 </mapper>

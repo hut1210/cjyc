@@ -15,13 +15,6 @@ import com.cjyc.common.model.vo.customer.login.CustomerLoginVo;
 public interface ILoginService extends IService<Customer> {
 
     /**
-     * 根据手机号获取验证码
-     * @param dto
-     * @return
-     */
-    ResultVo verifyCode(VerifyCodeDto dto);
-
-    /**
      * 手机号验证码登陆
      * @param dto
      * @return

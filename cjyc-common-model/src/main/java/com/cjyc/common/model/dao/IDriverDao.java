@@ -6,6 +6,7 @@ import com.cjyc.common.model.dto.web.mineCarrier.QueryMyDriverDto;
 import com.cjyc.common.model.dto.web.user.DriverListDto;
 import com.cjyc.common.model.entity.Driver;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cjyc.common.model.vo.driver.mine.DriverInfoVo;
 import com.cjyc.common.model.vo.web.carrier.BaseDriverVo;
 import com.cjyc.common.model.vo.web.driver.DispatchDriverVo;
 import com.cjyc.common.model.vo.web.driver.DriverVo;
@@ -114,4 +115,18 @@ public interface IDriverDao extends BaseMapper<Driver> {
      * @return
      */
     Driver findDriverByCarrierId(@Param("carrierId") Long carrierId);
+
+    /**
+     * 根据管理员司机id获取符合条件的司机集合
+     * @param driverId
+     * @return
+     */
+    List<Long> findDriverIds(@Param("driverId") Long driverId);
+
+    /**
+     * 根据司机ids获取司机信息
+     * @param driverIds
+     * @return
+     */
+    List<DriverInfoVo> findDriverInfo(@Param("driverIds") List<Long> driverIds);
 }
