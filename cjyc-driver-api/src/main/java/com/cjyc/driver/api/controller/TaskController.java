@@ -48,9 +48,9 @@ public class TaskController {
         return taskService.getFinishTaskPage(dto);
     }
 
-    @ApiOperation(value = "查询已交付运单明细", notes = "\t 请求接口为json格式")
+    @ApiOperation(value = "查询待分配任务明细", notes = "\t 请求接口为json格式")
     @PostMapping("/getDetail")
-    public ResultVo<PageInfo<TaskDetailVo>> getDetail(@RequestBody @Validated DetailQueryDto dto) {
+    public ResultVo<TaskDetailVo> getDetail(@RequestBody @Validated DetailQueryDto dto) {
         return taskService.getDetail(dto);
     }
 

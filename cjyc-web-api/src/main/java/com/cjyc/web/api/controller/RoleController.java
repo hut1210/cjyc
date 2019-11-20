@@ -109,6 +109,14 @@ public class RoleController {
         return roleService.modifyRoleMenus(dto);
     }
 
+    @ApiOperation(value = "根据角色标识获取末级角色-菜单id列表信息")
+    @GetMapping("/getBtmMenuIdsByRoleId/{roleId}")
+    public ResultVo<List<Long>> getBtmMenuIdsByRoleId(
+            @ApiParam(value = "roleId", name = "角色标识", required = true)
+            @PathVariable("roleId")Long roleId) {
+        return roleService.getBtmMenuIdsByRoleId(roleId);
+    }
+
 
     /**
      * 资源列表转换为菜单树

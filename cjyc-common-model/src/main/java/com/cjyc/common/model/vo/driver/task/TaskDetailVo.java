@@ -1,5 +1,9 @@
 package com.cjyc.common.model.vo.driver.task;
 
+import com.cjyc.common.model.util.BigDecimalSerizlizer;
+import com.cjyc.common.model.util.DataLongSerizlizer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -16,9 +20,10 @@ import java.util.List;
 public class TaskDetailVo implements Serializable {
     private static final long serialVersionUID = -6460478260449465114L;
     @ApiModelProperty(value = "ID")
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long id;
 
-    @ApiModelProperty(value = "运单状态：0待分配承运商（竞抢），15待承运商承接任务，55运输中，100已完成，111超时关闭，113已取消，115已拒接")
+    @ApiModelProperty(value = "运单状态：0待分配承运商，15待承运商承接任务，20已承接, 55运输中，100已完成，111超时关闭，113已取消，115已拒接")
     private Integer state;
 
     @ApiModelProperty(value = "运单编号")
@@ -28,15 +33,18 @@ public class TaskDetailVo implements Serializable {
     private Integer type;
 
     @ApiModelProperty(value = "接单时间")
+    @JsonSerialize(using = DataLongSerizlizer.class)
     private Long createTime;
 
     @ApiModelProperty(value = "指导线路")
     private String guideLine;
 
     @ApiModelProperty(value = "运单总运费")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal freightFee;
 
     @ApiModelProperty(value = "承运商ID")
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long carrierId;
 
     @ApiModelProperty(value = "车辆信息列表")

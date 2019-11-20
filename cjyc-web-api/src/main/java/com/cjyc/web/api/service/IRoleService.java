@@ -58,4 +58,11 @@ public interface IRoleService extends IService<Role> {
      * @return
      */
     ResultVo modifyRoleMenus(ModifyRoleMenusDto dto);
+
+    /**
+     * 根据角色id获取角色所拥有的末级id列表
+     * @param roleId
+     * @return
+     */
+    ResultVo<List<Long>> getBtmMenuIdsByRoleId(Long roleId);
 }

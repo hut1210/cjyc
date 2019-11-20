@@ -37,7 +37,7 @@ public interface ITaskService extends IService<Task> {
      * @param dto
      * @return com.cjyc.common.model.vo.ResultVo<com.github.pagehelper.PageInfo<com.cjyc.common.model.vo.driver.task.TaskDetailVo>>
      */
-    ResultVo<PageInfo<TaskDetailVo>> getDetail(DetailQueryDto dto);
+    ResultVo<TaskDetailVo> getDetail(DetailQueryDto dto);
 
     /**
      * 功能描述: 分页查询待分配任务列表

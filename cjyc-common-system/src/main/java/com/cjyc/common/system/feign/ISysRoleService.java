@@ -132,4 +132,12 @@ public interface ISysRoleService {
      */
     @PostMapping("/feign/yc/batchUpdateRoleMenus")
     ResultData batchUpdateRoleMenus(@RequestBody UpdateBatchRoleMenusReq req);
+
+    /**
+     * 根据角色id获取角色所拥有末级菜单列表
+     * @param roleId
+     * @return
+     */
+    @GetMapping("/feign/yc/getBottomMenuIdsByRoleId/{roleId}")
+    ResultData<List<Long>> getBottomMenuIdsByRoleId(@PathVariable(value="roleId") Long roleId);
 }
