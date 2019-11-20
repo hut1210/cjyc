@@ -35,6 +35,8 @@ public class BaseConditionDto extends BaseDriverDto{
     @ApiModelProperty(value = "目的地")
     private String lineEnd;
 
+    //private String guideLine;
+
     //@ApiModelProperty(value = "任务状态：0待承接，5待装车，55运输中，100已完成，113已取消，115已拒接")
     private Integer state;
 }
