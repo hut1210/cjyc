@@ -5,6 +5,7 @@ import com.cjkj.common.model.ReturnMsg;
 import com.cjkj.usercenter.dto.common.AddUserReq;
 import com.cjkj.usercenter.dto.common.AddUserResp;
 import com.cjkj.usercenter.dto.common.UpdateUserReq;
+import com.cjkj.usercenter.dto.common.UserResp;
 import com.cjyc.common.model.dao.IDriverDao;
 import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.util.YmlProperty;
@@ -38,7 +39,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
         if (null == driver) {
             return ResultData.failed("司机信息错误，请检查");
         }
-        ResultData<AddUserResp> accountRd = sysUserService.getByAccount(driver.getPhone());
+        ResultData<UserResp> accountRd = sysUserService.getByAccount(driver.getPhone());
         if (!ReturnMsg.SUCCESS.getCode().equals(accountRd.getCode())) {
             return ResultData.failed("司机信息查询失败：原因：" + accountRd.getMsg());
         }
