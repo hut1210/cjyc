@@ -68,7 +68,7 @@ public class LoginServiceImpl extends SuperServiceImpl<ICustomerDao, Customer> i
                 .eq(Customer::getContactPhone, dto.getPhone()));
         if(c == null){
             //添加数据
-           addToPlatform(dto.getPhone());
+           c = addToPlatform(dto.getPhone());
         }
         if(c != null && c.getType() == CustomerTypeEnum.ENTERPRISE.code){
             return BaseResultUtil.getVo(ResultEnum.PARTNER_NOTLOGIN.getCode(),ResultEnum.PARTNER_NOTLOGIN.getMsg());
@@ -100,7 +100,7 @@ public class LoginServiceImpl extends SuperServiceImpl<ICustomerDao, Customer> i
      * @param phone
      * @return
      */
-    private void addToPlatform(String phone){
+    private Customer addToPlatform(String phone){
         Customer c = new Customer();
         String no = sendNoService.getNo(SendNoTypeEnum.CUSTOMER, 6);
         c.setName(no);
@@ -119,6 +119,7 @@ public class LoginServiceImpl extends SuperServiceImpl<ICustomerDao, Customer> i
         ResultData<Long> rd = comCustomerService.addCustomerToPlatform(c);
         c.setUserId(rd.getData());
         customerDao.insert(c);
+        return c;
     }
 
     @Override
