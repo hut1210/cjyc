@@ -11,13 +11,14 @@ import javax.validation.constraints.Pattern;
  * @Date 2019/11/19 15:10
  **/
 @Data
-public class BaseConditionDto extends BaseDriverDto{
+public class FinishTaskQueryDto extends BaseDriverDto{
     private static final long serialVersionUID = -6926657129770237023L;
     @ApiModelProperty(value = "运单编号")
     private String waybillNo;
 
     @ApiModelProperty(value = "运单类型：1提车运单，2干线运单，3送车运单")
-    private Integer type;
+    @Pattern(regexp = "[1|2|3]",message = "运单类型只能是1,2,3中的一位数")
+    private String type;
 
     @ApiModelProperty(value = "提车日期开始")
     private Long expectStartDateS;
@@ -36,9 +37,4 @@ public class BaseConditionDto extends BaseDriverDto{
 
     @ApiModelProperty(value = "目的地")
     private String lineEnd;
-
-    // 查询条件值 "任务状态：0待承接，5待装车，55运输中，100已完成，113已取消，115已拒接"
-    @ApiModelProperty(value = "任务状态：1-分配任务，2-提车任务，3-交车任务，4-已交付")
-    @Pattern(regexp = "[1|2|3|4]",message = "任务状态只能是1,2,3,4中的一位数")
-    private String taskState;
 }

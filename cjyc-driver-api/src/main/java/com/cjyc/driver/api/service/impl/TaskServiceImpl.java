@@ -5,9 +5,10 @@ import com.cjyc.common.model.dao.ICarrierDriverConDao;
 import com.cjyc.common.model.dao.IDriverDao;
 import com.cjyc.common.model.dao.ITaskDao;
 import com.cjyc.common.model.dao.IWaybillDao;
-import com.cjyc.common.model.dto.driver.BaseConditionDto;
 import com.cjyc.common.model.dto.driver.BaseDriverDto;
 import com.cjyc.common.model.dto.driver.DetailQueryDto;
+import com.cjyc.common.model.dto.driver.FinishTaskQueryDto;
+import com.cjyc.common.model.dto.driver.NoFinishTaskQueryDto;
 import com.cjyc.common.model.entity.Task;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
@@ -49,7 +50,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
     }
 
     @Override
-    public ResultVo<PageInfo<WaybillTaskVo>> getNoFinishTaskPage(BaseDriverDto dto) {
+    public ResultVo<PageInfo<WaybillTaskVo>> getNoFinishTaskPage(NoFinishTaskQueryDto dto) {
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<WaybillTaskVo> taskList = taskDao.selectNoFinishTaskPage(dto);
         PageInfo pageInfo = new PageInfo(taskList);
@@ -57,7 +58,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
     }
 
     @Override
-    public ResultVo<PageInfo<WaybillTaskVo>> getFinishTaskPage(BaseConditionDto dto) {
+    public ResultVo<PageInfo<WaybillTaskVo>> getFinishTaskPage(FinishTaskQueryDto dto) {
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<WaybillTaskVo> taskList = taskDao.selectFinishTaskPage(dto);
         PageInfo pageInfo = new PageInfo(taskList);

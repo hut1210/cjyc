@@ -93,7 +93,7 @@
     </select>
 
     <!--查询提车，交车任务列表-->
-    <select id="selectNoFinishTaskPage" parameterType="com.cjyc.common.model.dto.driver.BaseDriverDto"
+    <select id="selectNoFinishTaskPage" parameterType="com.cjyc.common.model.dto.driver.NoFinishTaskQueryDto"
             resultType="com.cjyc.common.model.vo.driver.task.WaybillTaskVo">
         select
             t.waybill_id as waybillId,
@@ -118,7 +118,7 @@
     </select>
 
     <!--查询已交付任务列表-->
-    <select id="selectFinishTaskPage" parameterType="com.cjyc.common.model.dto.driver.BaseConditionDto"
+    <select id="selectFinishTaskPage" parameterType="com.cjyc.common.model.dto.driver.FinishTaskQueryDto"
             resultType="com.cjyc.common.model.vo.driver.task.WaybillTaskVo">
         select
             t.waybill_id as waybillId,

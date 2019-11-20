@@ -1,8 +1,8 @@
 package com.cjyc.common.model.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.cjyc.common.model.dto.driver.BaseConditionDto;
-import com.cjyc.common.model.dto.driver.BaseDriverDto;
+import com.cjyc.common.model.dto.driver.FinishTaskQueryDto;
+import com.cjyc.common.model.dto.driver.NoFinishTaskQueryDto;
 import com.cjyc.common.model.dto.web.task.CrTaskDto;
 import com.cjyc.common.model.entity.Task;
 import com.cjyc.common.model.vo.driver.task.WaybillTaskVo;
@@ -55,7 +55,7 @@ public interface ITaskDao extends BaseMapper<Task> {
      * @param dto
      * @return java.util.List<com.cjyc.common.model.vo.driver.task.WaybillTaskVo>
      */
-    List<WaybillTaskVo> selectFinishTaskPage(BaseConditionDto dto);
+    List<WaybillTaskVo> selectFinishTaskPage(FinishTaskQueryDto dto);
 
     /**
      * 功能描述: 查询提车，交车任务列表
@@ -64,5 +64,5 @@ public interface ITaskDao extends BaseMapper<Task> {
      * @param dto
      * @return java.util.List<com.cjyc.common.model.vo.driver.task.WaybillTaskVo>
      */
-    List<WaybillTaskVo> selectNoFinishTaskPage(BaseDriverDto dto);
+    List<WaybillTaskVo> selectNoFinishTaskPage(NoFinishTaskQueryDto dto);
 }

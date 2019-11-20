@@ -1,9 +1,10 @@
 package com.cjyc.driver.api.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.cjyc.common.model.dto.driver.BaseConditionDto;
 import com.cjyc.common.model.dto.driver.BaseDriverDto;
 import com.cjyc.common.model.dto.driver.DetailQueryDto;
+import com.cjyc.common.model.dto.driver.FinishTaskQueryDto;
+import com.cjyc.common.model.dto.driver.NoFinishTaskQueryDto;
 import com.cjyc.common.model.entity.Task;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.task.TaskDetailVo;
@@ -27,7 +28,7 @@ public interface ITaskService extends IService<Task> {
      * @param dto
      * @return com.cjyc.common.model.vo.ResultVo<com.github.pagehelper.PageInfo<com.cjyc.common.model.vo.driver.task.WaybillTaskVo>>
      */
-    ResultVo<PageInfo<WaybillTaskVo>> getFinishTaskPage(BaseConditionDto dto);
+    ResultVo<PageInfo<WaybillTaskVo>> getFinishTaskPage(FinishTaskQueryDto dto);
 
     /**
      * 功能描述: 查询任务详情
@@ -54,5 +55,5 @@ public interface ITaskService extends IService<Task> {
      * @param dto
      * @return com.cjyc.common.model.vo.ResultVo<com.github.pagehelper.PageInfo<com.cjyc.common.model.vo.driver.task.WaybillTaskVo>>
      */
-    ResultVo<PageInfo<WaybillTaskVo>> getNoFinishTaskPage(BaseDriverDto dto);
+    ResultVo<PageInfo<WaybillTaskVo>> getNoFinishTaskPage(NoFinishTaskQueryDto dto);
 }

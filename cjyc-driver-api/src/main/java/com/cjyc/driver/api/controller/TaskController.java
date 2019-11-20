@@ -1,8 +1,9 @@
 package com.cjyc.driver.api.controller;
 
-import com.cjyc.common.model.dto.driver.BaseConditionDto;
 import com.cjyc.common.model.dto.driver.BaseDriverDto;
 import com.cjyc.common.model.dto.driver.DetailQueryDto;
+import com.cjyc.common.model.dto.driver.FinishTaskQueryDto;
+import com.cjyc.common.model.dto.driver.NoFinishTaskQueryDto;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.task.TaskDetailVo;
 import com.cjyc.common.model.vo.driver.task.WaybillTaskVo;
@@ -37,13 +38,13 @@ public class TaskController {
 
     @ApiOperation(value = "分页查询提车，交车任务列表", notes = "\t 请求接口为json格式")
     @PostMapping("/getNoFinishTaskPage")
-    public ResultVo<PageInfo<WaybillTaskVo>> getNoFinishTaskPage(@RequestBody @Validated BaseDriverDto dto) {
+    public ResultVo<PageInfo<WaybillTaskVo>> getNoFinishTaskPage(@RequestBody @Validated NoFinishTaskQueryDto dto) {
         return taskService.getNoFinishTaskPage(dto);
     }
 
     @ApiOperation(value = "分页查询已交付任务列表", notes = "\t 请求接口为json格式,条件查询日期传毫秒值")
     @PostMapping("/getFinishTaskPage")
-    public ResultVo<PageInfo<WaybillTaskVo>> getFinishTaskPage(@RequestBody @Validated BaseConditionDto dto) {
+    public ResultVo<PageInfo<WaybillTaskVo>> getFinishTaskPage(@RequestBody @Validated FinishTaskQueryDto dto) {
         return taskService.getFinishTaskPage(dto);
     }
 
