@@ -7,6 +7,8 @@ import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.waybill.CrWaybillDto;
 import com.cjyc.common.model.dto.web.waybill.*;
 import com.cjyc.common.model.entity.*;
+import com.cjyc.common.model.entity.defined.BizScope;
+import com.cjyc.common.model.enums.BizScopeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.BaseTipVo;
 import com.cjyc.common.model.vo.ListVo;
@@ -15,6 +17,7 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.waybill.*;
 import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.service.ICsWaybillService;
+import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.web.api.service.IWaybillService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -45,6 +48,8 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
     private ICsWaybillService csWaybillService;
     @Resource
     private ISysRoleService sysRoleService;
+    @Resource
+    private ICsSysService csSysService;
 
     /**
      * 提送车调度
@@ -154,6 +159,14 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
 
     @Override
     public ResultVo<PageVo<TrunkListWaybillVo>> trunklist(TrunkListWaybillDto paramsDto) {
+        //查询角色业务中心范围
+        BizScope bizScope = csSysService.getBizScopeByRoleId(paramsDto.getRoleId(), true);
+        if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
+            return null;
+        }
+        paramsDto.setBizScope(bizScope.getCode() == 0 ? null : bizScope.getStoreIds());
+
+
         PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
         List<TrunkListWaybillVo> list = null;
         if(StringUtils.isBlank(paramsDto.getDriverName()) && StringUtils.isBlank(paramsDto.getDriverPhone()) && StringUtils.isBlank(paramsDto.getVehiclePlateNo())){
@@ -171,6 +184,14 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
 
     @Override
     public ResultVo<PageVo<TrunkCarListWaybillCarVo>> trunkCarlist(TrunkListWaybillCarDto paramsDto) {
+        //查询角色业务中心范围
+        BizScope bizScope = csSysService.getBizScopeByRoleId(paramsDto.getRoleId(), true);
+        if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
+            return null;
+        }
+        paramsDto.setBizScope(bizScope.getCode() == 0 ? null : bizScope.getStoreIds());
+
+
         PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
         List<TrunkCarListWaybillCarVo> list = waybillCarDao.findTrunkCarList(paramsDto);
         PageInfo<TrunkCarListWaybillCarVo> pageInfo = new PageInfo<>(list);

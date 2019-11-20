@@ -382,5 +382,36 @@
             group by wt.id
         </where>
     </select>
+    <select id="findCrListByCarrierId" resultType="java.util.List">
+
+    </select>
+    <select id="findWaitAllotListByCarrierIds"
+            resultType="com.cjyc.common.model.vo.driver.waybill.WaitAllotVo">
+        select
+            w.id as waybillId,
+            w.no as waybillNo,
+            w.type as waybillType,
+            w.guide_line as guideLine,
+            w.carrier_id as carrierId,
+            w.carrier_type as carrierType,
+            w.carrier_name as carrierName,
+            w.car_num as carNum,
+            sum(IFNULL(t.car_num,0)) as allottedCarNum,
+            w.freight_fee as freightFee,
+            w.fixed_freight_fee as fixedFreightFee,
+            w.remark as remark,
+            w.create_time as createTime,
+            w.create_user as createUser,
+            w.create_user_id as createUserId
+        from w_waybill w
+        left join w_task t on t.waybill_id = w.id
+        <where>
+<!--           <if test="carrierIds != null">
+               w.carrier_id in
+               <foreach collection=""
+           </if>-->
+        </where>
+        GROUP BY w.id
+    </select>
 
 </mapper>

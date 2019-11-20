@@ -71,7 +71,7 @@ public class RoleController {
      * @param roleId
      */
     @GetMapping("/dept/role/list/{roleId}")
-    @ApiOperation(value = "根据角色id获取关联用户列表信息")
+    @ApiOperation(value = "查询角色对应机构下的角色列表")
     public ResultVo<List<SelectUsersByRoleResp>> getDeptRoleListByUserRoleId(
             @ApiParam(name = "roleId", value = "角色标识", required = true)
             @PathVariable Long roleId) {

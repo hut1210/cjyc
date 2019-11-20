@@ -14,6 +14,9 @@ import java.math.BigDecimal;
 @Data
 public class FinishTaskVo implements Serializable {
     private static final long serialVersionUID = -5688740696634356580L;
+    @ApiModelProperty(value = "运单id")
+    private Long waybillId;
+
     @ApiModelProperty(value = "运单编号")
     private String waybillNo;
 

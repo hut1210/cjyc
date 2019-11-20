@@ -14,7 +14,7 @@ import java.util.List;
  * @Date 2019/11/6 15:52
  **/
 @Data
-public class StoreAreaQueryDto implements Serializable {
+public class StoreDto implements Serializable {
     private static final long serialVersionUID = 9177744066955537372L;
     public interface AddAndRemoveCoveredArea{}
     public interface GetStoreAreaList{}

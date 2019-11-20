@@ -611,6 +611,12 @@
             <if test="paramsDto.vin != null and paramsDto.vin != ''">
                 and oc.vin = #{paramsDto.vin}
             </if>
+            <if test="paramsDto.bizScope != null">
+                and (o.start_belong_store_id or o.end_belong_store_id or oc.now_store_id) in
+                <foreach collection="paramsDto.bizScope" item="item" index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
 
         </where>
     </select>

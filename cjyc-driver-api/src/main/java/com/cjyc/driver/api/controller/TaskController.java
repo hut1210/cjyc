@@ -1,6 +1,6 @@
 package com.cjyc.driver.api.controller;
 
-import com.cjyc.common.model.dto.driver.BaseDriverDto;
+import com.cjyc.common.model.dto.driver.BaseConditionDto;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.task.FinishTaskVo;
 import com.cjyc.driver.api.service.ITaskService;
@@ -26,10 +26,11 @@ public class TaskController {
     @Autowired
     private ITaskService taskService;
 
-    @ApiOperation(value = "分页查询【首页】近期任务列表", notes = "\t 请求接口为json格式")
+    @ApiOperation(value = "分页查询已交付运单列表", notes = "\t 请求接口为json格式")
     @PostMapping("/getPage")
-    public ResultVo<PageInfo<FinishTaskVo>> getPage(@RequestBody @Validated BaseDriverDto dto) {
+    public ResultVo<PageInfo<FinishTaskVo>> getPage(@RequestBody @Validated BaseConditionDto dto) {
         return taskService.getPage(dto);
     }
+
 
 }

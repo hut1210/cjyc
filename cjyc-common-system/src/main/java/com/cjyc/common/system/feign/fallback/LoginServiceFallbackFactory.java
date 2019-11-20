@@ -26,6 +26,12 @@ public class LoginServiceFallbackFactory implements FallbackFactory<ISysLoginSer
                 log.error("调用登录服务，降级");
                 return ResultData.failed("网络异常，请稍后再试");
             }
+
+            @Override
+            public ResultData verifyCode(String mobile) {
+                log.error("调用登录服务，降级");
+                return ResultData.failed("网络异常，请稍后再试");
+            }
         };
     }
 }

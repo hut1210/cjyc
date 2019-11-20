@@ -5,6 +5,7 @@ import com.cjyc.common.model.dto.web.waybill.*;
 import com.cjyc.common.model.entity.Waybill;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.driver.waybill.WaitAllotVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyWaybillVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.waybill.*;
@@ -71,5 +72,8 @@ public interface IWaybillDao extends BaseMapper<Waybill> {
     int updateStateById(@Param("state") int state, @Param("waybillId") Long waybillId);
 
     List<CrWaybillVo> findCrListForMineCarrier(@Param("paramsDto") CrWaybillDto paramsDto);
+
     ResultVo<List<CrWaybillVo>> findCrListByCarrierId(@Param("paramsDto") CrWaybillDto paramsDto);
+
+    List<WaitAllotVo> findWaitAllotListByCarrierIds(List<Long> carrierIds);
 }

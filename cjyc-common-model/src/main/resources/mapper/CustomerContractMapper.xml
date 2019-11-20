@@ -26,11 +26,12 @@
         <result column="project_team_per" property="projectTeamPer" />
         <result column="project_estab_time" property="projectEstabTime" />
         <result column="major_kpi" property="majorKpi" />
+        <result column="create_time" property="createTime" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, customer_id, contract_no, contact_nature, settle_type, settle_period, contract_life, project_name, project_level, major_product, project_nature, pro_tra_volume, avg_mth_tra_volume, busi_cover, fixed_route, project_deper, project_leader, leader_phone, project_status, project_team_per, project_estab_time, major_kpi
+        id, customer_id, contract_no, contact_nature, settle_type, settle_period, contract_life, project_name, project_level, major_product, project_nature, pro_tra_volume, avg_mth_tra_volume, busi_cover, fixed_route, project_deper, project_leader, leader_phone, project_status, project_team_per, project_estab_time, major_kpi , create_time
     </sql>
 
     <!-- 根据customerId删除大客户合同 -->
@@ -39,7 +40,9 @@
     </delete>
 
     <!-- 根据customerId查询大客户合同 -->
-    <select id="getCustContractByCustId" resultType="com.cjyc.common.model.vo.web.customer.CustomerContractVo" parameterType="java.lang.Long">
+    <select id="getCustContractByCustId"
+            resultType="com.cjyc.common.model.vo.web.customer.CustomerContractVo"
+            parameterType="java.lang.Long">
        SELECT
             id AS contractId,
             contract_no AS contractNo,
@@ -61,7 +64,8 @@
             project_status AS projectStatus,
             project_team_per AS projectTeamPer,
             project_estab_time AS projectEstabTime,
-            major_kpi AS majorKpi
+            major_kpi AS majorKpi,
+            create_time as createTime
         FROM
             c_customer_contract
         WHERE

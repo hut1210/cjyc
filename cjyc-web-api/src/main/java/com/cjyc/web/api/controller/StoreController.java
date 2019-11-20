@@ -2,7 +2,7 @@ package com.cjyc.web.api.controller;
 
 import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
-import com.cjyc.common.model.dto.web.city.StoreAreaQueryDto;
+import com.cjyc.common.model.dto.web.city.StoreDto;
 import com.cjyc.common.model.dto.web.store.GetStoreDto;
 import com.cjyc.common.model.dto.web.store.StoreAddDto;
 import com.cjyc.common.model.dto.web.store.StoreQueryDto;
@@ -120,7 +120,7 @@ public class StoreController {
 
     @ApiOperation(value = "导出Excel", notes = "\t 请求接口为/store/exportExcel?currentPage=1&pageSize=6" +
             "&name=业务中心名称&provinceCode=省编码&cityCode=市编码&areaCode=区编码")
-    @PostMapping("/exportExcel")
+    @GetMapping("/exportExcel")
     public void exportExcel(HttpServletRequest request, HttpServletResponse response){
         storeService.exportExcel(request,response);
     }
@@ -133,21 +133,21 @@ public class StoreController {
         return storeService.listAdminsByStoreId(storeId);
     }
 
-    @ApiOperation(value = "根据业务中心ID查询当前业务中心覆盖区")
+    @ApiOperation(value = "根据业务中心ID查询当前业务中心覆盖区,参数storeId - 业务中心ID - 必填;areaCode - 区编码 - 非必填")
     @PostMapping("/getStoreAreaList")
-    public ResultVo<StoreCoveredAreaVo> getStoreAreaList(@RequestBody @Validated({StoreAreaQueryDto.GetStoreAreaList.class}) StoreAreaQueryDto dto) {
+    public ResultVo<StoreCoveredAreaVo> getStoreAreaList(@RequestBody @Validated({StoreDto.GetStoreAreaList.class}) StoreDto dto) {
         return storeService.getStoreAreaList(dto);
     }
 
     @ApiOperation(value = "新增前业务中心覆盖区域")
     @PostMapping("/addCoveredArea")
-    public ResultVo addCoveredArea(@RequestBody @Validated({StoreAreaQueryDto.AddAndRemoveCoveredArea.class}) StoreAreaQueryDto dto) {
+    public ResultVo addCoveredArea(@RequestBody @Validated({StoreDto.AddAndRemoveCoveredArea.class}) StoreDto dto) {
         return storeService.addCoveredArea(dto);
     }
 
     @ApiOperation(value = "删除当前业务中心覆盖区域")
     @PostMapping("/removeCoveredArea")
-    public ResultVo removeCoveredArea(@RequestBody @Validated({StoreAreaQueryDto.AddAndRemoveCoveredArea.class}) StoreAreaQueryDto dto) {
+    public ResultVo removeCoveredArea(@RequestBody @Validated({StoreDto.AddAndRemoveCoveredArea.class}) StoreDto dto) {
         return storeService.removeCoveredArea(dto);
     }
 }

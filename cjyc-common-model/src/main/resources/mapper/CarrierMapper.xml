@@ -300,4 +300,18 @@
         LEFT JOIN d_driver dd ON dd.id = dcdc.driver_id
      where dc.id = #{carrierId} and dc.type = 2  and  dd.phone = #{linkmanPhone}  and  dd.id_card = #{legalIdCard}
     </select>
+    <select id="findBelongListByDriverId" resultType="com.cjyc.common.model.entity.Carrier">
+        select
+        cr.*
+        from d_carrier cr
+        join d_carrier_driver_con con on con.carrier_id = cr.id
+        where con.driver_id = #{driverId}
+    </select>
+    <select id="getBelongIdsListByDriver" resultType="java.lang.Long">
+        select
+        carrier_id
+        from d_carrier_driver_con
+        where driver_id = #{driverId}
+
+    </select>
 </mapper>

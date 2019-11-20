@@ -3,13 +3,17 @@ package com.cjyc.web.api.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.order.*;
-import com.cjyc.common.model.entity.*;
+import com.cjyc.common.model.entity.Line;
+import com.cjyc.common.model.entity.Order;
+import com.cjyc.common.model.entity.OrderCar;
+import com.cjyc.common.model.entity.Store;
+import com.cjyc.common.model.entity.defined.BizScope;
 import com.cjyc.common.model.entity.defined.FullCity;
 import com.cjyc.common.model.entity.defined.FullWaybillCar;
+import com.cjyc.common.model.enums.BizScopeEnum;
 import com.cjyc.common.model.enums.city.CityLevelEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -17,6 +21,7 @@ import com.cjyc.common.model.vo.web.OrderCarVo;
 import com.cjyc.common.model.vo.web.order.*;
 import com.cjyc.common.model.vo.web.waybill.WaybillCarVo;
 import com.cjyc.common.system.service.*;
+import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.web.api.service.IOrderService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -26,7 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.time.LocalDate;
 import java.util.*;
 
 /**
@@ -59,6 +63,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     private ICsLineService csLineService;
     @Resource
     private ICsCityService csCityService;
+    @Resource
+    private ICsSysService csSysService;
 
 
 
@@ -318,6 +324,14 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
 
     @Override
     public ResultVo<PageVo<ListOrderVo>> list(ListOrderDto paramsDto) {
+
+        //查询角色业务中心范围
+        BizScope bizScope = csSysService.getBizScopeByRoleId(paramsDto.getRoleId(), true);
+        if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
+            return null;
+        }
+        paramsDto.setBizScope(bizScope.getCode() == 0 ? null : bizScope.getStoreIds());
+
         PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
         List<ListOrderVo> list = orderDao.findListSelective(paramsDto);
         PageInfo<ListOrderVo> pageInfo = new PageInfo<>(list);
@@ -332,6 +346,13 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
 
     @Override
     public ResultVo<PageVo<ListOrderCarVo>> carlist(ListOrderCarDto paramsDto) {
+
+        //查询角色业务中心范围
+        BizScope bizScope = csSysService.getBizScopeByRoleId(paramsDto.getRoleId(), true);
+        if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
+            return null;
+        }
+        paramsDto.setBizScope(bizScope.getCode() == 0 ? null : bizScope.getStoreIds());
         PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
         List<ListOrderCarVo> list = orderCarDao.findListSelective(paramsDto);
         PageInfo<ListOrderCarVo> pageInfo = new PageInfo<>(list);

@@ -263,6 +263,12 @@
             <if test="paramsDto.regionCode != null and paramsDto.regionCode != ''">
                 and ct1.parent_code = #{paramsDto.regionCode}
             </if>
+            <if test="paramsDto.bizScope != null">
+                and (o.start_belong_store_id or end_belong_store_id ) in
+                <foreach collection="paramsDto.bizScope" item="item" index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
         </where>
         group by o.id
     </select>

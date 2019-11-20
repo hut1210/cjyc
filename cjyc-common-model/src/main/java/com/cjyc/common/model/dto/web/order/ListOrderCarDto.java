@@ -7,11 +7,17 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.util.Set;
+
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel
 public class ListOrderCarDto extends BasePageDto {
+    @ApiModelProperty(value = "角色ID")
+    private Long roleId;
+    @ApiModelProperty(value = "业务范围(不用传)")
+    private Set<Long> bizScope;
 
     /**
      0待提交    1预订单

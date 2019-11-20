@@ -7,6 +7,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.util.List;
+import java.util.Set;
+
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
@@ -115,6 +118,9 @@ public class ListOrderDto extends BasePageDto {
 
     @ApiModelProperty(value = "大区编码")
     private Integer regionCode;
+
+    @ApiModelProperty(value = "业务范围(不用传)")
+    private Set<Long> bizScope;
 
 
 }

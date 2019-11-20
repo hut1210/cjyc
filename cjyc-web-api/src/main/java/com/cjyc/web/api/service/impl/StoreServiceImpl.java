@@ -8,14 +8,17 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
 import com.cjkj.common.utils.ExcelUtil;
-import com.cjkj.usercenter.dto.common.*;
+import com.cjkj.usercenter.dto.common.AddDeptReq;
+import com.cjkj.usercenter.dto.common.AddDeptResp;
+import com.cjkj.usercenter.dto.common.SelectDeptResp;
+import com.cjkj.usercenter.dto.common.UpdateDeptReq;
 import com.cjkj.usercenter.dto.yc.SelectUsersByRoleResp;
 import com.cjyc.common.model.dao.IAdminDao;
 import com.cjyc.common.model.dao.ICityDao;
 import com.cjyc.common.model.dao.IStoreCityConDao;
 import com.cjyc.common.model.dao.IStoreDao;
 import com.cjyc.common.model.dto.web.city.CityQueryDto;
-import com.cjyc.common.model.dto.web.city.StoreAreaQueryDto;
+import com.cjyc.common.model.dto.web.city.StoreDto;
 import com.cjyc.common.model.dto.web.store.GetStoreDto;
 import com.cjyc.common.model.dto.web.store.StoreAddDto;
 import com.cjyc.common.model.dto.web.store.StoreQueryDto;
@@ -50,7 +53,9 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * <p>
@@ -207,7 +212,7 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
     }
 
     @Override
-    public ResultVo getStoreAreaList(StoreAreaQueryDto dto) {
+    public ResultVo getStoreAreaList(StoreDto dto) {
         // 根据业务中心ID查询区编码
         List<StoreCityCon> storeCityConList = storeCityConDao.selectList(new QueryWrapper<StoreCityCon>().lambda()
                 .eq(StoreCityCon::getStoreId, dto.getStoreId())
@@ -243,7 +248,7 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
     }
 
     @Override
-    public ResultVo addCoveredArea(StoreAreaQueryDto dto) {
+    public ResultVo addCoveredArea(StoreDto dto) {
         StoreCityCon storeCityCon = new StoreCityCon();
         storeCityCon.setStoreId(dto.getStoreId());
         for (String areaCode : dto.getAreaCodeList()) {
@@ -258,7 +263,7 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
     }
 
     @Override
-    public ResultVo removeCoveredArea(StoreAreaQueryDto dto) {
+    public ResultVo removeCoveredArea(StoreDto dto) {
         LambdaUpdateWrapper<StoreCityCon> updateWrapper = new UpdateWrapper<StoreCityCon>().lambda();
         for (String areaCode : dto.getAreaCodeList()) {
             updateWrapper = updateWrapper.eq(StoreCityCon::getStoreId,dto.getStoreId()).eq(StoreCityCon::getAreaCode,areaCode);

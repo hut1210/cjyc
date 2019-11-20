@@ -83,4 +83,7 @@ public interface ICarrierDao extends BaseMapper<Carrier> {
      */
     Integer existBusinessDriver(CarrierDto dto);
 
+    List<Carrier> findBelongListByDriverId(Long driverId);
+
+    List<Long> getBelongIdsListByDriver(Long driverId);
 }

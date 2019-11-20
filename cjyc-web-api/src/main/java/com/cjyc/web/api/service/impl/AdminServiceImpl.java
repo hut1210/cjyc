@@ -192,6 +192,9 @@ public class AdminServiceImpl extends ServiceImpl<IAdminDao, Admin> implements I
         List<SelectUsersByRoleResp> list = resData.getData().getList();
         Set<Long> collect = list.stream().map(SelectUsersByRoleResp::getUserId).collect(Collectors.toSet());
         List<Admin> adminList = adminDao.findListByUserIds(collect);
+        if(CollectionUtils.isEmpty(adminList)){
+            return null;
+        }
         //附加数据
         for (SelectUsersByRoleResp selectUsersByRoleResp : list) {
             AdminPageVo adminPageVo = new AdminPageVo();
@@ -353,7 +356,7 @@ public class AdminServiceImpl extends ServiceImpl<IAdminDao, Admin> implements I
      * @return
      */
     private boolean isResultDataSuccess(ResultData rd) {
-        return ReturnMsg.SUCCESS.getCode().equals(rd.getCode())?true: false;
+        return ReturnMsg.SUCCESS.getCode().equals(rd.getCode());
     }
 
 }

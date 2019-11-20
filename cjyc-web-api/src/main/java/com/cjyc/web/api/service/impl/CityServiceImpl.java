@@ -84,7 +84,7 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
         if (!CollectionUtils.isEmpty(cityTreeVos)) {
             nodeList = CityTreeUtil.encapTree(cityTreeVos);
         }
-        return BaseResultUtil.success(nodeList == null ? Collections.EMPTY_LIST : nodeList);
+        return BaseResultUtil.success(nodeList);
     }
 
     @Override

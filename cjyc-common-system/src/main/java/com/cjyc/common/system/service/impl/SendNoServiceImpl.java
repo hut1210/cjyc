@@ -1,12 +1,13 @@
-package com.cjyc.web.api.service.impl;
+package com.cjyc.common.system.service.impl;
 
 import com.cjkj.common.redis.template.StringRedisUtil;
 import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
-import com.cjyc.web.api.service.ISendNoService;
+import com.cjyc.common.system.service.ISendNoService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -53,6 +54,51 @@ public class SendNoServiceImpl implements ISendNoService {
 	}
 
 	/**
+	 * 发订单编号
+	 * D+6位日期+5位随机数字组合
+	 * @author JPG
+	 * @since 2019/11/20 9:20
+	 */
+	@Override
+	public String getOrderNo() {
+
+/*
+		String time = LocalDateTimeUtil.formatLDTNow(TimePatternConstant.SUB_SIMPLE_SIMPLE_DATE);
+		String no = "";
+		try {
+			String key = getSendNoListKey(SendNoTypeEnum.ORDER.prefix, time);
+			if (!redisUtil.exists(key)) {
+				redisUtil.setExpire(key, 86400);
+			}
+			String listKey = getSendNoListKey(SendNoTypeEnum.ORDER.prefix, time);
+			if (!redisUtil.exists(key)) {
+				redisUtil.setExpire(key, 86400);
+			}
+
+			int random = RandomUtils.nextInt(10000, 99999);
+
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			no = RandomStringUtils.random("D" + time, false, true);
+		}
+		StringBuffer sb = new StringBuffer();
+		String value = sendNoType.prefix;
+		if (StringUtils.isNotBlank(value)) {
+			sb.append(value);
+		}
+		sb.append(time);
+		sb.append(RandomStringUtils.randomNumeric(timeTailRandomLength));
+		sb.append(no);
+		sb.append(RandomStringUtils.randomNumeric(noTailRandomLength));
+		return sb.toString();
+
+*/
+		return null;
+
+	}
+
+
+	/**
 	 *
 	 * @author JPG
 	 * @since 2019/10/17 12:49
@@ -65,7 +111,7 @@ public class SendNoServiceImpl implements ISendNoService {
 		String time = LocalDateTimeUtil.formatLDTNow(TimePatternConstant.SUB_SIMPLE_SIMPLE_DATE);
 		String no = "";
 		try {
-			String key = getSendNoKey(sendNoType.name, time);
+			String key = getSendNoKey(sendNoType.prefix, time);
 			if (!redisUtil.exists(key)) {
 				redisUtil.setExpire(key, 86400);
 			}
@@ -110,9 +156,13 @@ public class SendNoServiceImpl implements ISendNoService {
 
 	}
 
-	private String getSendNoKey(String type, String time) {
-		return "cjyc:send:no:" + type + ":" + time;
+	private String getSendNoKey(String prefix, String time) {
+		return "cjyc:send:no:" + prefix + ":" + time;
 	}
 
+
+	private String getSendNoListKey(String prefix, String time) {
+		return "cjyc:send:no:list" + prefix + ":" + time;
+	}
 
 }

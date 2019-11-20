@@ -10,6 +10,7 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.CityTreeVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.system.config.CarrierProperty;
 import com.cjyc.web.api.service.ICityService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

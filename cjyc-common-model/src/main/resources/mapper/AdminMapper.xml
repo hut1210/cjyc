@@ -62,7 +62,6 @@
         <include refid="Base_Column_List"/>
         from b_admin
         <where>
-            state = 2
             and user_id in
             <foreach collection="userIds" index="index" item ="item" open="(" separator="," close=")">
                 #{item}

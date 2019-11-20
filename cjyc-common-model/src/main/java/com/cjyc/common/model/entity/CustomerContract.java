@@ -95,5 +95,6 @@ public class CustomerContract implements Serializable {
     @ApiModelProperty(value = "主要KPI")
     private String majorKpi;
 
-
+    @ApiModelProperty(value = "创建时间")
+    private Long createTime;
 }

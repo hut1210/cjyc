@@ -4,8 +4,16 @@ import com.cjyc.common.model.dto.BasePageDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.Set;
+
 @Data
 public class TrunkListWaybillCarDto extends BasePageDto {
+    @ApiModelProperty(value = "角色ID")
+    private Long roleId;
+    @ApiModelProperty(value = "业务范围(不用传)")
+    private Set<Long> bizScope;
+
+
     @ApiModelProperty(value = "订单编号")
     private String orderNo;
     @ApiModelProperty(value = "订单来源：1WEB管理后台, 2业务员APP, 4司机APP, 6用户端APP, 7用户端小程序")
@@ -136,7 +144,6 @@ public class TrunkListWaybillCarDto extends BasePageDto {
     private Long beginCreateTime;
     @ApiModelProperty(value = "创建时间")
     private Long endCreateTime;
-
 
 
 }

@@ -77,4 +77,8 @@ public class CustomerContractVo implements Serializable {
 
     @ApiModelProperty(value = "主要KPI")
     private String majorKpi;
+
+    @ApiModelProperty("创建时间")
+    @JsonSerialize(using = DataLongSerizlizer.class)
+    private Long createTime;
 }
