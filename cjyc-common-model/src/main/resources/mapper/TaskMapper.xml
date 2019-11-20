@@ -126,18 +126,14 @@
             <if test="completeTimeE != null and completeTimeE != 0">
                 and t.complete_time &lt;= #{completeTimeE}
             </if>
-            <if test="(lineStart != null and lineStart.trim() != '') or (lineEnd != null and lineEnd.trim() != '')">
-                <trim prefix="and (" suffix=")">
-                    <if test="lineStart != null and lineStart.trim() != ''">
-                        t.guide_line like concat('%',#{lineStart},'%')
-                    </if>
-                    <if test="(lineStart != null and lineStart.trim() != '') and (lineEnd != null and lineEnd.trim() != '')">
-                        or t.guide_line like concat('%',#{lineEnd},'%')
-                    </if>
-                    <if test="(lineStart == null or lineStart.trim() == '') and (lineEnd != null and lineEnd.trim() != '')">
-                        t.guide_line like concat('%',#{lineEnd},'%')
-                    </if>
-                </trim>
+            <if test="lineStart != null and lineStart.trim() != ''">
+                and t.guide_line like concat('%',#{lineStart},'%')
+            </if>
+            <if test="(lineStart != null and lineStart.trim() != '') and (lineEnd != null and lineEnd.trim() != '')">
+                and t.guide_line like concat('%',#{lineEnd},'%')
+            </if>
+            <if test="(lineStart == null or lineStart.trim() == '') and (lineEnd != null and lineEnd.trim() != '')">
+                and t.guide_line like concat('%-',#{lineEnd},'%')
             </if>
         </where>
         order by t.complete_time desc
