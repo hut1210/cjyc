@@ -1,5 +1,7 @@
 package com.cjyc.common.model.vo.driver.task;
 
+import com.cjyc.common.model.util.DataLongSerizlizer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -32,9 +34,11 @@ public class CarDetailVo implements Serializable {
     private String endAddress;
 
     @ApiModelProperty(value = "提车日期")
+    @JsonSerialize(using = DataLongSerizlizer.class)
     private Long expectStartTime;
 
     @ApiModelProperty(value = "交车日期:已交付的运单")
+    @JsonSerialize(using = DataLongSerizlizer.class)
     private Long completeTime;
 
     @ApiModelProperty(value = "提车图片地址，逗号分隔")
@@ -54,4 +58,23 @@ public class CarDetailVo implements Serializable {
 
     @ApiModelProperty(value = "vin码")
     private String vin;
+
+    public Long getExpectStartTime() {
+        return expectStartTime == null ? 0 : expectStartTime;
+    }
+    public Long getCompleteTime() {
+        return completeTime == null ? 0 : completeTime;
+    }
+    public String getLoadPhotoImg() {
+        return loadPhotoImg == null ? "" : loadPhotoImg;
+    }
+    public String getUnloadPhotoImg() {
+        return unloadPhotoImg == null ? "" : unloadPhotoImg;
+    }
+    public String getPlateNo() {
+        return plateNo == null ? "" : plateNo;
+    }
+    public String getVin() {
+        return vin == null ? "" : vin;
+    }
 }
