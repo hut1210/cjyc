@@ -92,14 +92,14 @@
         select max(no) from w_task where waybill_no = #{waybillNo}
     </select>
 
-    <select id="selectPage" parameterType="com.cjyc.common.model.dto.driver.BaseConditionDto"
-            resultType="com.cjyc.common.model.vo.driver.task.FinishTaskVo">
+    <!--查询提车，交车任务列表-->
+    <select id="selectNoFinishTaskPage" parameterType="com.cjyc.common.model.dto.driver.BaseDriverDto"
+            resultType="com.cjyc.common.model.vo.driver.task.WaybillTaskVo">
         select
             t.waybill_id as waybillId,
             t.waybill_no as waybillNo,
             t.guide_line as guideLine,
             t.car_num as carNum,
-            t.complete_time as completeTime,
             w.type as type,
             w.freight_fee as freightFee,
             car.expect_start_time as expectStartTime
@@ -107,7 +107,32 @@
             left join w_waybill w on t.waybill_id = w.id
             left join w_waybill_car car on t.waybill_id = car.waybill_id
         <where>
-            t.state = #{state} and t.driver_id = #{loginId}
+            t.driver_id = #{loginId}
+            <if test="taskState != null and taskState == 2">
+                and t.state = 5
+            </if>
+            <if test="taskState != null and taskState == 3">
+                and t.state = 55
+            </if>
+        </where>
+    </select>
+
+    <!--查询已交付任务列表-->
+    <select id="selectFinishTaskPage" parameterType="com.cjyc.common.model.dto.driver.BaseConditionDto"
+            resultType="com.cjyc.common.model.vo.driver.task.WaybillTaskVo">
+        select
+            t.waybill_id as waybillId,
+            t.waybill_no as waybillNo,
+            t.guide_line as guideLine,
+            t.car_num as carNum,
+            t.complete_time as completeTime,
+            w.type as type,
+            w.freight_fee as freightFee
+        from
+            w_task t
+            left join w_waybill w on t.waybill_id = w.id
+        <where>
+            t.driver_id = #{loginId} and t.state = 100
             <if test="waybillNo != null and waybillNo.trim() != ''">
                 and t.waybill_no like concat('%',#{waybillNo},'%')
             </if>

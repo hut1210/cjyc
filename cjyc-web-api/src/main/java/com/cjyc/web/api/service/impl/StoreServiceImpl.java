@@ -272,10 +272,10 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
 
     @Override
     public ResultVo removeCoveredArea(StoreDto dto) {
-        LambdaUpdateWrapper<StoreCityCon> updateWrapper = new UpdateWrapper<StoreCityCon>().lambda();
+        LambdaUpdateWrapper<StoreCityCon> updateWrapper = null;
         for (String areaCode : dto.getAreaCodeList()) {
-            updateWrapper = updateWrapper.eq(StoreCityCon::getStoreId,dto.getStoreId()).eq(StoreCityCon::getAreaCode,areaCode);
-            int i = storeCityConDao.delete(updateWrapper);
+            updateWrapper = new UpdateWrapper<StoreCityCon>().lambda().eq(StoreCityCon::getStoreId,dto.getStoreId()).eq(StoreCityCon::getAreaCode,areaCode);
+            storeCityConDao.delete(updateWrapper);
         }
         return BaseResultUtil.success();
     }
