@@ -42,13 +42,19 @@ public class TaskController {
 
     @ApiOperation(value = "分页查询已交付任务列表", notes = "\t 请求接口为json格式,条件查询日期传毫秒值")
     @PostMapping("/getFinishTaskPage")
-    public ResultVo<PageVo<WaybillTaskVo>> getFinishTaskPage(@RequestBody @Validated FinishTaskQueryDto dto) {
+    public ResultVo<PageVo<WaybillTaskVo>> getFinishTaskPage(@RequestBody @Validated TaskQueryDto dto) {
         return taskService.getFinishTaskPage(dto);
     }
 
-    @ApiOperation(value = "查询待分配任务明细", notes = "\t 请求接口为json格式")
+    @ApiOperation(value = "查询任务明细", notes = "\t 请求接口为json格式")
     @PostMapping("/getDetail")
-    public ResultVo<TaskDetailVo> getDetail(@RequestBody @Validated DetailQueryDto dto) {
+    public ResultVo<TaskDetailVo> getDetail(@RequestBody @Validated({DetailQueryDto.GetDetail.class}) DetailQueryDto dto) {
+        return taskService.getDetail(dto);
+    }
+
+    @ApiOperation(value = "查询历史任务明细", notes = "\t 请求接口为json格式")
+    @PostMapping("/getHistoryDetail")
+    public ResultVo<TaskDetailVo> getHistoryDetail(@RequestBody @Validated({DetailQueryDto.GetHistoryDetail.class}) DetailQueryDto dto) {
         return taskService.getDetail(dto);
     }
 
@@ -56,6 +62,12 @@ public class TaskController {
     @PostMapping("/getDriverPage")
     public ResultVo<PageVo<TaskDriverVo>> getDriverPage(@RequestBody @Validated DriverQueryDto dto) {
         return taskService.getDriverPage(dto);
+    }
+
+    @ApiOperation(value = "分页查询分配任务历史记录列表", notes = "\t 请求接口为json格式,条件查询日期传毫秒值")
+    @PostMapping("/getHistoryTaskPage")
+    public ResultVo<PageVo<WaybillTaskVo>> getHistoryTaskPage(@RequestBody @Validated TaskQueryDto dto) {
+        return taskService.getHistoryTaskPage(dto);
     }
 
 

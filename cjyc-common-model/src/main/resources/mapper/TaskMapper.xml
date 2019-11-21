@@ -96,6 +96,7 @@
     <select id="selectNoFinishTaskPage" parameterType="com.cjyc.common.model.dto.driver.NoFinishTaskQueryDto"
             resultType="com.cjyc.common.model.vo.driver.task.WaybillTaskVo">
         select
+            t.id as taskId,
             t.waybill_id as waybillId,
             t.waybill_no as waybillNo,
             t.guide_line as guideLine,
@@ -118,9 +119,10 @@
     </select>
 
     <!--查询已交付任务列表-->
-    <select id="selectFinishTaskPage" parameterType="com.cjyc.common.model.dto.driver.FinishTaskQueryDto"
+    <select id="selectFinishTaskPage" parameterType="com.cjyc.common.model.dto.driver.TaskQueryDto"
             resultType="com.cjyc.common.model.vo.driver.task.WaybillTaskVo">
         select
+            t.id as taskId,
             t.waybill_id as waybillId,
             t.waybill_no as waybillNo,
             t.guide_line as guideLine,
@@ -133,6 +135,59 @@
             left join w_waybill w on t.waybill_id = w.id
         <where>
             t.driver_id = #{loginId} and t.state = 100
+            <if test="waybillNo != null and waybillNo.trim() != ''">
+                and t.waybill_no like concat('%',#{waybillNo},'%')
+            </if>
+            <if test="type != null and type != 0">
+                and w.type = #{type}
+            </if>
+            <if test="expectStartDateS != null and expectStartDateS != 0">
+                and car.expect_start_date >= #{expectStartDateS}
+            </if>
+            <if test="expectStartDateE != null and expectStartDateE != 0">
+                and car.expect_start_date &lt;= #{expectStartDateE}
+            </if>
+            <if test="completeTimeS != null and completeTimeS != 0">
+                and t.complete_time >= #{completeTimeS}
+            </if>
+            <if test="completeTimeE != null and completeTimeE != 0">
+                and t.complete_time &lt;= #{completeTimeE}
+            </if>
+            <if test="lineStart != null and lineStart.trim() != ''">
+                and t.guide_line like concat('%',#{lineStart},'%')
+            </if>
+            <if test="(lineStart != null and lineStart.trim() != '') and (lineEnd != null and lineEnd.trim() != '')">
+                and t.guide_line like concat('%',#{lineEnd},'%')
+            </if>
+            <if test="(lineStart == null or lineStart.trim() == '') and (lineEnd != null and lineEnd.trim() != '')">
+                and t.guide_line like concat('%-',#{lineEnd},'%')
+            </if>
+        </where>
+        order by t.complete_time desc
+    </select>
+
+    <!--查询历史任务记录列表-->
+    <select id="selectHistoryTaskPage" parameterType="com.cjyc.common.model.dto.driver.TaskQueryDto"
+            resultType="com.cjyc.common.model.vo.driver.task.WaybillTaskVo">
+        select
+            t.id as taskId,
+            t.waybill_id as waybillId,
+            t.waybill_no as waybillNo,
+            t.guide_line as guideLine,
+            t.car_num as carNum,
+            t.complete_time as completeTime,
+            t.driver_name as driverName,
+            t.driver_phone as driverPhone,
+            t.vehicle_plate_no as vehiclePlateNo,
+            w.type as type,
+            w.freight_fee as freightFee,
+            car.expect_start_time as expectStartTime
+        from
+            w_task t
+            left join w_waybill w on t.waybill_id = w.id
+            left join w_waybill_car car on t.waybill_id = car.waybill_id
+        <where>
+            t.create_user_id = #{loginId}
             <if test="waybillNo != null and waybillNo.trim() != ''">
                 and t.waybill_no like concat('%',#{waybillNo},'%')
             </if>
