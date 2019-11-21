@@ -30,35 +30,38 @@
     <!-- 根据条件查询询价管理条目 -->
     <select id="findInquiry" resultType="com.cjyc.common.model.vo.web.inquiry.InquiryVo"
                                     parameterType="com.cjyc.common.model.dto.web.inquiry.SelectInquiryDto">
-     SELECT
-        id AS id ,inquiry_time AS inquiryTime,
-        logistics_fee AS logisticsFee,
-        from_city AS fromCity,
-        to_city AS toCity,
-        NAME AS NAME,
-        phone AS phone,
-        handle_time AS handleTime,
-        handle_user_name AS handleUserName,
-        state AS state
-    FROM
-        s_inquiry
+        SELECT
+            si.id AS id,
+            si.inquiry_time AS inquiryTime,
+            si.logistics_fee AS logisticsFee,
+            si.from_city AS fromCity,
+            si.to_city AS toCity,
+            si.NAME AS NAME,
+            si.phone AS phone,
+            si.handle_time AS handleTime,
+            ba.NAME AS handleUserName,
+            si.state AS state,
+            si.job_content AS jobContent
+        FROM
+          s_inquiry si
+        LEFT JOIN b_admin ba ON ba.id = si.handle_user_id
         <where>
             <if test="startStamp != null">
-                   inquiry_time >= #{startStamp}
+                si.inquiry_time >= #{startStamp}
             </if>
             <if test="endStamp != null ">
-                and  inquiry_time &lt;= #{endStamp}
+                and  si.inquiry_time &lt;= #{endStamp}
             </if>
             <if test="fromCity != null  and fromCity.trim() != ''">
-                and from_city like concat('%',#{fromCity},'%')
+                and si.from_city like concat('%',#{fromCity},'%')
             </if>
             <if test="toCity != null  and toCity.trim() != ''">
-                and  to_city like concat('%',#{toCity},'%')
+                and  si.to_city like concat('%',#{toCity},'%')
             </if>
             <if test="state != null">
-                and state = #{state}
+                and si.state = #{state}
             </if>
-            and inquiry_time &lt;= #{hourAgo}
+            and si.inquiry_time &lt;= #{hourAgo}
         </where>
     </select>
 

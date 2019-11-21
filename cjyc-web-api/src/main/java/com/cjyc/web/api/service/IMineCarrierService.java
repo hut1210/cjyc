@@ -1,6 +1,8 @@
 package com.cjyc.web.api.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.cjyc.common.model.dto.CarrierDriverDto;
+import com.cjyc.common.model.dto.CarrierVehicleDto;
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.mineCarrier.*;
 import com.cjyc.common.model.entity.Carrier;
@@ -22,13 +24,6 @@ public interface IMineCarrierService extends IService<Carrier> {
      */
     ResultVo<PageVo<MyWaybillVo>> findWaybill(MyWaybillDto dto);
     /**
-     * 新增承运商下司机
-     * @param dto
-     * @return
-     */
-    ResultVo saveOrModifyDriver(MyDriverDto dto);
-
-    /**
      * 分页查询承运商下司机
      * @param dto
      * @return
@@ -47,7 +42,7 @@ public interface IMineCarrierService extends IService<Carrier> {
      * @param dto
      * @return
      */
-    ResultVo saveOrModifyVehicle(MyVehicleDto dto);
+    ResultVo saveOrModifyVehicle(CarrierVehicleDto dto);
 
     /**
      * 分页查询该承运商下的车辆

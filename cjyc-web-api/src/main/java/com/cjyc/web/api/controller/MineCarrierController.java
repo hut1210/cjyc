@@ -1,5 +1,7 @@
 package com.cjyc.web.api.controller;
 
+import com.cjyc.common.model.dto.CarrierDriverDto;
+import com.cjyc.common.model.dto.CarrierVehicleDto;
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.mineCarrier.*;
 import com.cjyc.common.model.vo.PageVo;
@@ -8,6 +10,7 @@ import com.cjyc.common.model.vo.web.mineCarrier.MyCarVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyDriverVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyFreeDriverVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyWaybillVo;
+import com.cjyc.common.system.service.ICsDriverService;
 import com.cjyc.web.api.service.IMineCarrierService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -31,6 +34,8 @@ public class MineCarrierController {
 
     @Resource
     private IMineCarrierService mimeCarrierService;
+    @Resource
+    private ICsDriverService csDriverService;
 
     @ApiOperation(value = "查询承运商下运单")
     @PostMapping(value = "/findWaybill")
@@ -40,8 +45,8 @@ public class MineCarrierController {
 
     @ApiOperation(value = "新增/修改承运商下司机",notes = "如果承运商id和登陆人id相同则为承运商添加，否则为业务员添加")
     @PostMapping(value = "/saveOrModifyDriver")
-    public ResultVo saveOrModifyDriver(@Validated @RequestBody MyDriverDto dto){
-        return mimeCarrierService.saveOrModifyDriver(dto);
+    public ResultVo saveOrModifyDriver(@Validated @RequestBody CarrierDriverDto dto){
+        return csDriverService.saveOrModifyDriver(dto);
     }
 
     @ApiOperation(value = "查询承运商下司机")
@@ -58,7 +63,7 @@ public class MineCarrierController {
 
     @ApiOperation(value = "新增/修改承运商下车辆",notes = "根据司机id判断时新增还是修改")
     @PostMapping(value = "/saveOrModifyVehicle")
-    public ResultVo saveOrModifyVehicle(@RequestBody MyVehicleDto dto){
+    public ResultVo saveOrModifyVehicle(@RequestBody CarrierVehicleDto dto){
         return mimeCarrierService.saveOrModifyVehicle(dto);
     }
 

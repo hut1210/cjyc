@@ -1,7 +1,11 @@
 package com.cjyc.common.system.service;
 
 import com.cjkj.common.model.ResultData;
+import com.cjyc.common.model.dto.CarrierDriverDto;
+import com.cjyc.common.model.dto.CarrierVehicleDto;
 import com.cjyc.common.model.entity.Driver;
+import com.cjyc.common.model.vo.ResultVo;
+import org.springframework.web.bind.annotation.RequestBody;
 
 public interface ICsDriverService {
     Driver getById(Long userId);
@@ -21,4 +25,32 @@ public interface ICsDriverService {
      * @return
      */
     ResultData updateUserToPlatform(Driver driver);
+
+    /**
+     * 添加和修改承运商下司机信息
+     * @param dto
+     * @return
+     */
+    ResultVo saveOrModifyDriver(CarrierDriverDto dto);
+
+    /**
+     * 绑定关系
+     * @param dto
+     */
+    void bindDriverVeh(CarrierVehicleDto dto);
+
+    /**
+     * 保存承运商下司机
+     * @param driver
+     * @param dto
+     * @return
+     */
+    ResultData<Long> addDriverToPlatform(Driver driver, CarrierDriverDto dto);
+
+    /**
+     * 更新承运商下司机信息到物流平台
+     * @param dto
+     * @return
+     */
+    ResultData updateDriverToPlatform(CarrierDriverDto dto);
 }

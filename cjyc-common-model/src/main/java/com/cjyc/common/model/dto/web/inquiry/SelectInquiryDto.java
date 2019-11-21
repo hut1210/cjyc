@@ -16,12 +16,6 @@ public class SelectInquiryDto extends BasePageDto implements Serializable {
     @ApiModelProperty("登陆用户id(loginId)")
     private Long loginId;
 
-    @ApiModelProperty("询价开始日期")
-    private String startDate;
-
-    @ApiModelProperty("询价结束日期")
-    private String endDate;
-
     @ApiModelProperty("始发地")
     private String fromCity;
 

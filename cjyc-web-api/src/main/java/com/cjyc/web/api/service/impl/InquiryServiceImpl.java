@@ -46,14 +46,7 @@ public class InquiryServiceImpl extends ServiceImpl<IInquiryDao, Inquiry> implem
 
     @Override
     public ResultVo findInquiry(SelectInquiryDto dto) {
-        PageInfo<InquiryVo> pageInfo = null;
         //日期转Long
-        if(StringUtils.isNotBlank(dto.getStartDate())){
-            dto.setStartStamp(LocalDateTimeUtil.convertToLong(dto.getStartDate(),TimePatternConstant.SIMPLE_DATE_FORMAT));
-        }
-        if(StringUtils.isNotBlank(dto.getEndDate())){
-            dto.setEndStamp(LocalDateTimeUtil.convertToLong(dto.getEndDate(),TimePatternConstant.SIMPLE_DATE_FORMAT));
-        }
         //当前时间减去一小时
         Long hourAgo = LocalDateTimeUtil.getMillisByLDT(LocalDateTimeUtil.minus(LocalDateTime.now(),
                 1,
@@ -63,14 +56,11 @@ public class InquiryServiceImpl extends ServiceImpl<IInquiryDao, Inquiry> implem
         List<InquiryVo> inquiryVos = inquiryDao.findInquiry(dto);
         if(!CollectionUtils.isEmpty(inquiryVos)){
             for(InquiryVo vo : inquiryVos){
-                vo.setHandleTime(StringUtils.isBlank(vo.getHandleTime()) ? "":LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(Long.parseLong(vo.getHandleTime())), TimePatternConstant.COMPLEX_TIME_FORMAT));
-                vo.setLogisticsFee(vo.getLogisticsFee() == null ? BigDecimal.ZERO : vo.getLogisticsFee().divide(new BigDecimal(100)));
                 if(InquiryStateEnum.YES_HANDLE.name.equals(vo.getState())){
                     continue;
                 }
-                if(StringUtils.isNotBlank(vo.getInquiryTime())){
-                    Long inquiryTime = Long.parseLong(vo.getInquiryTime());
-                    LocalDateTime time =  LocalDateTimeUtil.convertLongToLDT(inquiryTime);
+                if(vo.getInquiryTime() != null){
+                    LocalDateTime time =  LocalDateTimeUtil.convertLongToLDT(vo.getInquiryTime());
                     //判断数据是否标红
                     LocalDateTime currentNow = LocalDateTimeUtil.plus(LocalDateTime.now(),
                             24,
@@ -81,12 +71,11 @@ public class InquiryServiceImpl extends ServiceImpl<IInquiryDao, Inquiry> implem
                     }else{
                         vo.setIsRed(InquiryStateEnum.NO_RED.code);
                     }
-                    vo.setInquiryTime(StringUtils.isBlank(vo.getInquiryTime()) ? "":LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(inquiryTime), TimePatternConstant.COMPLEX_TIME_FORMAT));
                 }
             }
-            pageInfo = new PageInfo<>(inquiryVos);
         }
-        return BaseResultUtil.success(pageInfo == null ? new PageInfo<>():pageInfo);
+        PageInfo<InquiryVo> pageInfo = new PageInfo<>(inquiryVos);
+        return BaseResultUtil.success(pageInfo);
     }
 
     @Override

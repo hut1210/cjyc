@@ -101,7 +101,7 @@ public class LoginServiceImpl extends SuperServiceImpl<ICustomerDao, Customer> i
         c.setAlias(no);
         c.setContactMan(no);
         c.setContactPhone(phone);
-        c.setCustomerNo(sendNoService.getNo(SendNoTypeEnum.CUSTOMER));
+        c.setCustomerNo(no);
         c.setPayMode(CustomerPayEnum.TIME_PAY.code);
         c.setType(CustomerTypeEnum.INDIVIDUAL.code);
         c.setIsDelete(DeleteStateEnum.NO_DELETE.code);

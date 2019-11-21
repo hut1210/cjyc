@@ -14,8 +14,8 @@ public class HandleInquiryDto implements Serializable {
     @NotNull(message = "询价id不能为空")
     private Long id;
 
-    @ApiModelProperty("处理人userId")
-    @NotNull(message = "处理人userId不能为空")
+    @ApiModelProperty("处理人id")
+    @NotNull(message = "处理人id不能为空")
     private Long handleUserId;
 
     @ApiModelProperty("工单内容")

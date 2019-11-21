@@ -2,7 +2,7 @@ package com.cjyc.common.model.dao;
 
 import com.cjyc.common.model.dto.web.carrier.*;
 import com.cjyc.common.model.dto.web.driver.DriverDto;
-import com.cjyc.common.model.dto.web.mineCarrier.MyDriverDto;
+import com.cjyc.common.model.dto.CarrierDriverDto;
 import com.cjyc.common.model.entity.Carrier;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.vo.driver.login.BaseLoginVo;
@@ -68,14 +68,14 @@ public interface ICarrierDao extends BaseMapper<Carrier> {
      * @param dto
      * @return
      */
-    Integer existPersonalCarrier(MyDriverDto dto);
+    Integer existPersonalCarrier(CarrierDriverDto dto);
 
     /**
      * 判断在该承运商下司机是否存在
      * @param dto
      * @return
      */
-    Integer existBusinessCarrier(MyDriverDto dto);
+    Integer existBusinessCarrier(CarrierDriverDto dto);
 
     /**
      * 修改承运商时验证是否为该承运商下的司机

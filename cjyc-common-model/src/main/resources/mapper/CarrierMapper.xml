@@ -260,7 +260,7 @@
 
     <!--查询个人承运商中是否存在-->
     <select id="existPersonalCarrier" resultType="java.lang.Integer"
-                        parameterType="com.cjyc.common.model.dto.web.mineCarrier.MyDriverDto">
+                        parameterType="com.cjyc.common.model.dto.CarrierDriverDto">
         SELECT count(dc.id)
         FROM
             d_carrier dc
@@ -276,7 +276,7 @@
 
     <!--查询企业承运商中是否存在-->
     <select id="existBusinessCarrier" resultType="java.lang.Integer"
-            parameterType="com.cjyc.common.model.dto.web.mineCarrier.MyDriverDto">
+            parameterType="com.cjyc.common.model.dto.CarrierDriverDto">
       SELECT count(dc.id)
         FROM
             d_carrier dc
