@@ -71,13 +71,17 @@ public interface ICityDao extends BaseMapper<City> {
      */
     String getCodeByName(@Param("name") String name);
 
-
     /**
      * 获取热门城市
      * @return
      */
     List<HotCityVo> getHotCity();
 
+    /**
+     * 根据关键字查询城市树形结构
+     * @param keyword
+     * @return
+     */
     List<CityTreeVo> findThreeCity(@Param("keyword") String keyword);
 
     /**

@@ -43,7 +43,7 @@ public class MineCarrierController {
         return mimeCarrierService.findWaybill(dto);
     }
 
-    @ApiOperation(value = "新增/修改承运商下司机",notes = "如果承运商id和登陆人id相同则为承运商添加，否则为业务员添加")
+    @ApiOperation(value = "新增/修改承运商下司机")
     @PostMapping(value = "/saveOrModifyDriver")
     public ResultVo saveOrModifyDriver(@Validated @RequestBody CarrierDriverDto dto){
         return csDriverService.saveOrModifyDriver(dto);

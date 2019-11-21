@@ -115,31 +115,38 @@
             <if test="keyword != null and keyword.trim() != ''">
                 union
                 SELECT
-                NAME AS NAME,
-                CODE AS CODE,
-                parent_code AS parentCode
+                    NAME AS NAME,
+                    CODE AS CODE,
+                    parent_code AS parentCode
                 FROM
-                s_city
+                  s_city
                 WHERE
-                NAME = ( SELECT
-                parent_name
+                  NAME = ( SELECT
+                  parent_name
                 FROM s_city
-                <where>
-                <if test="keyword != null and keyword.trim() != ''">
-                    and NAME LIKE concat( '%', #{keyword}, '%' )
-                </if>
-                    limit 1) and level = 1
-            </where>
+                    <where>
+                    <if test="keyword != null and keyword.trim() != ''">
+                        and NAME LIKE concat( '%', #{keyword}, '%' )
+                    </if>
+                        limit 1) and level = 1
+                    </where>
             </if>
     </select>
 
     <!--获取热门城市 -->
     <select id="getHotCity" resultType="com.cjyc.common.model.vo.customer.city.HotCityVo">
-        select
-          code as code,
-          name as name
-        from s_city
-        where hot = 1
+        SELECT
+            s1.NAME AS NAME,
+            s1.CODE AS CODE,
+            s2.NAME AS areaName,
+            s2.CODE AS areaCode
+        FROM
+            s_city s1
+            LEFT JOIN s_city s2 ON s1.CODE = s2.parent_code
+        WHERE
+            s1.hot = 1
+        GROUP BY
+            s1.CODE
     </select>
 
     <select id="findListByLevel" resultType="com.cjyc.common.model.vo.web.city.TreeCityVo">

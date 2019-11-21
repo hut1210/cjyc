@@ -6,7 +6,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 @Data
-public class DispatchCarrierDto extends BasePageDto implements Serializable {
+public class DispatchCarrierDto extends BasePageDto {
     private static final long serialVersionUID = -7496908972850812115L;
 
     @ApiModelProperty("登陆id(loginId)")

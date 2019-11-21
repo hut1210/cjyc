@@ -40,5 +40,4 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
         }
         return BaseResultUtil.success(cityvo);
     }
-
 }

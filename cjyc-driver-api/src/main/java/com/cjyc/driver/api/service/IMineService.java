@@ -3,6 +3,7 @@ package com.cjyc.driver.api.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.dto.driver.BaseDriverDto;
 import com.cjyc.common.model.dto.driver.BaseDto;
+import com.cjyc.common.model.dto.driver.mine.FrozenDto;
 import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -26,6 +27,13 @@ public interface IMineService extends IService<Driver> {
      * @return
      */
     ResultVo<PageVo<DriverInfoVo>> findDriver(BaseDriverDto dto);
+
+    /**
+     * 司机管理中冻结(删除)司机
+     * @param dto
+     * @return
+     */
+    ResultVo frozenDriver(FrozenDto dto);
 
 
 }

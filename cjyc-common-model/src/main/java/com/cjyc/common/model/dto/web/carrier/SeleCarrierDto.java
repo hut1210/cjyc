@@ -6,7 +6,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 @Data
-public class SeleCarrierDto extends BasePageDto implements Serializable {
+public class SeleCarrierDto extends BasePageDto {
 
     @ApiModelProperty("企业名称")
     private String name;

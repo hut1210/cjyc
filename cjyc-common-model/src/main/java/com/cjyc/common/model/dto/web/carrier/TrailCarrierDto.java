@@ -6,7 +6,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 @Data
-public class TrailCarrierDto extends BasePageDto implements Serializable {
+public class TrailCarrierDto extends BasePageDto {
     private static final long serialVersionUID = -8220451193541684094L;
 
     @ApiModelProperty("承运方式：2 : 代驾 4：拖车")
