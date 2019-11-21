@@ -25,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *  @author: zj
@@ -47,7 +49,9 @@ public class TransportServiceImpl implements ITransportService {
         if(line == null){
             return BaseResultUtil.getVo(ResultEnum.NOEXIST_LINE.getCode(),ResultEnum.NOEXIST_LINE.getMsg());
         }
+        Map<String,Object> map = new HashMap<>(10);
+        map.put("defaultWlFee",line.getDefaultWlFee().divide(new BigDecimal(100)));
         inquiryService.saveInquiry(dto,line.getDefaultWlFee());
-        return BaseResultUtil.success(line.getDefaultWlFee().divide(new BigDecimal(100)));
+        return BaseResultUtil.success(map);
     }
 }

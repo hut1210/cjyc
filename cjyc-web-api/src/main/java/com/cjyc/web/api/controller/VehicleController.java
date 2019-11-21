@@ -1,9 +1,10 @@
 package com.cjyc.web.api.controller;
 
+import com.cjyc.common.model.dto.FreeVehicleDto;
 import com.cjyc.common.model.dto.web.vehicle.*;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.vehicle.FreeVehicleVo;
+import com.cjyc.common.model.vo.FreeVehicleVo;
 import com.cjyc.common.model.vo.web.vehicle.VehicleVo;
 import com.cjyc.web.api.service.IVehicleService;
 import io.swagger.annotations.Api;

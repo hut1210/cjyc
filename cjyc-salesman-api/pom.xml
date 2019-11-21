@@ -157,10 +157,7 @@
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.cjkj</groupId>
-            <artifactId>cjkj-usercenter-dto</artifactId>
-        </dependency>
+
 
     </dependencies>
 

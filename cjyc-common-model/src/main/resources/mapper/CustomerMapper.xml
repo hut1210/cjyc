@@ -193,6 +193,41 @@
         </where>
     </select>
 
+
+    <select id="showPartner" resultType="com.cjyc.common.model.vo.web.customer.ShowPartnerVo"
+                parameterType="java.lang.Long">
+          SELECT
+            cc.id AS customerId,
+            cc.NAME AS NAME,
+            cc.contact_man AS contactMan,
+            cc.contact_phone AS contactPhone,
+            cc.social_credit_code AS socialCreditCode,
+            cc.contact_address AS contactAddress,
+            ccp.is_taxpayer AS isTaxpayer,
+            ccp.is_invoice AS isInvoice,
+            ccp.settle_type AS settleType,
+            ccp.settle_period AS settlePeriod,
+            sbcb.card_type AS cardType,
+            sbcb.bank_name AS bankName,
+            sbcb.card_no AS cardNo,
+            sbcb.card_name AS cardName,
+            sbcb.description AS description,
+            sbcb.bank_licence AS bankLicence,
+            ccp.business_license_front_img AS businessLicenseFrontImg,
+            ccp.business_license_back_img AS businessLicenseBackImg,
+            ccp.legal_idCard_front_img AS legalIdcardFrontImg,
+            ccp.legal_idCard_back_img AS legalIdcardBackImg,
+            ccp.linkman_idCard_front_img AS linkmanIdcardFrontImg,
+            ccp.linkman_idCard_back_img AS linkmanIdcardFrontImg,
+            ccp.authorization_front_img AS authorizationFrontImg,
+            ccp.authorization_back_img AS authorizationBackImg
+        FROM
+              c_customer cc
+            LEFT JOIN c_customer_partner ccp ON ccp.customer_id = cc.id
+            LEFT JOIN s_bank_card_bind sbcb ON sbcb.user_id = cc.id
+            where cc.id = #{customerId} and type = 3
+    </select>
+
     <select id="findByPhone" resultType="com.cjyc.common.model.entity.Customer" parameterType="java.lang.String">
         select
         <include refid="Base_Column_List"/>
@@ -256,6 +291,6 @@
         where user_id = #{userId}
     </select>
     <select id="findAllNo" resultType="java.lang.String">
-        select no from c_customer
+        select customer_no from c_customer
     </select>
 </mapper>

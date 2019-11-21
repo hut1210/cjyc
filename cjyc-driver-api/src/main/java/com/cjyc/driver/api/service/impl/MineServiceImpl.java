@@ -8,6 +8,7 @@ import com.cjyc.common.model.dto.driver.BaseDriverDto;
 import com.cjyc.common.model.dto.driver.BaseDto;
 import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.mine.BinkCardVo;
 import com.cjyc.common.model.vo.driver.mine.DriverInfoVo;
@@ -40,7 +41,7 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
     }
 
     @Override
-    public ResultVo findDriver(BaseDriverDto dto) {
+    public ResultVo<PageVo<DriverInfoVo>> findDriver(BaseDriverDto dto) {
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<Long> driverIds = driverDao.findDriverIds(dto.getLoginId());
         List<DriverInfoVo> driverInfo = null;
@@ -50,4 +51,6 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
         PageInfo<DriverInfoVo> pageInfo = new PageInfo(driverInfo);
         return BaseResultUtil.success(pageInfo == null ? new PageInfo<DriverInfoVo>():pageInfo);
     }
+
+
 }

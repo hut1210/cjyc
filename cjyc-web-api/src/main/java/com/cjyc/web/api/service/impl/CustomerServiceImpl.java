@@ -385,7 +385,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             return BaseResultUtil.fail(rd.getMsg());
         }
         customer.setUserId(rd.getData());
-        super.save(customer);
+        customerDao.insert(customer);
         encapPartner(dto,customer,NOW);
         return BaseResultUtil.success();
     }
@@ -435,6 +435,12 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         }
         PageInfo<CustomerPartnerVo> pageInfo = new PageInfo<>(partnerVos);
         return BaseResultUtil.success(pageInfo);
+    }
+
+    @Override
+    public ResultVo showPartner(Long customerId) {
+        ShowPartnerVo partnerVo = customerDao.showPartner(customerId);
+        return BaseResultUtil.success(partnerVo);
     }
 
     @Override

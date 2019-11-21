@@ -2,8 +2,10 @@ package com.cjyc.driver.api.controller;
 
 import com.cjyc.common.model.dto.driver.BaseDriverDto;
 import com.cjyc.common.model.dto.driver.BaseDto;
+import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.mine.BinkCardVo;
+import com.cjyc.common.model.vo.driver.mine.DriverInfoVo;
 import com.cjyc.driver.api.service.IMineService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -35,9 +37,12 @@ public class MineController {
 
     @ApiOperation(value = "司机管理信息")
     @PostMapping(value = "/findDriver")
-    public ResultVo findDriver(@RequestBody BaseDriverDto dto) {
+    public ResultVo<PageVo<DriverInfoVo>> findDriver(@RequestBody BaseDriverDto dto) {
         return mineService.findDriver(dto);
     }
+
+
+
 
 
 }

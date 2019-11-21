@@ -404,6 +404,7 @@
     <select id="findDriverInfo" resultType="com.cjyc.common.model.vo.driver.mine.DriverInfoVo"
                         parameterType="java.lang.Long">
           SELECT
+            dc.id as carrierId,
             dd.id AS driverId,
             dd.real_name AS realName,
             dd.phone AS phone,

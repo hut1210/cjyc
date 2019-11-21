@@ -3,7 +3,6 @@ package com.cjyc.driver.api.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.common.service.impl.SuperServiceImpl;
-import com.cjkj.usercenter.dto.yc.AddDeptAndUserResp;
 import com.cjkj.usercenter.dto.common.auth.AuthLoginResp;
 import com.cjkj.usercenter.dto.common.auth.AuthMobileLoginReq;
 import com.cjyc.common.model.dao.ICarrierDao;
@@ -73,7 +72,6 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
         }
         //查询所有的
         List<BaseLoginVo> loginVos = carrierDao.findDriverLogin(driverLoginVo.getId());
-
         //韵车库中没有
         if(CollectionUtils.isEmpty(loginVos)){
             return BaseResultUtil.fail("该账号已停用");
@@ -160,6 +158,7 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
         carrierDriverConDao.insert(cdc);
         //组装数据
         dVo.setId(driver.getId());
+        dVo.setCarrierId(carrier.getId());
         dVo.setUserId(driver.getUserId());
         dVo.setRealName(driver.getRealName());
         dVo.setPhone(driver.getPhone());

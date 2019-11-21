@@ -3,6 +3,7 @@ package com.cjyc.common.model.vo.driver.login;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiParam;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -13,6 +14,10 @@ public class DriverLoginVo implements Serializable {
     @ApiModelProperty("司机id")
     @JsonSerialize(using= ToStringSerializer.class)
     private Long id;
+
+    @ApiModelProperty("承运商id")
+    @JsonSerialize(using= ToStringSerializer.class)
+    private Long carrierId;
 
     @ApiModelProperty("司机userId")
     @JsonSerialize(using= ToStringSerializer.class)
