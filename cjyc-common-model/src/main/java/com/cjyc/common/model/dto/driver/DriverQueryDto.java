@@ -1,6 +1,5 @@
 package com.cjyc.common.model.dto.driver;
 
-import com.cjyc.common.model.dto.BasePageDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -12,7 +11,7 @@ import javax.validation.constraints.NotNull;
  * @Date 2019/11/20 17:19
  **/
 @Data
-public class DriverQueryDto extends BasePageDto {
+public class DriverQueryDto extends BaseDriverDto {
     private static final long serialVersionUID = 1861114501976166079L;
     @ApiModelProperty(value = "承运商ID")
     @NotNull(message = "承运商ID不能为空")

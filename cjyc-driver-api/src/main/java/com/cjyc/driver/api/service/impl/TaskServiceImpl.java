@@ -17,6 +17,7 @@ import com.github.pagehelper.PageInfo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,11 +60,27 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
     }
 
     @Override
-    public ResultVo<PageInfo<TaskDriverVo>> getDriverPage(DriverQueryDto dto) {
+    public ResultVo<List<TaskDriverVo>> getDriverPage(DriverQueryDto dto) {
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<TaskDriverVo> taskList = driverDao.selectDriverList(dto);
-        PageInfo pageInfo = new PageInfo(taskList);
-        return BaseResultUtil.success(pageInfo);
+        PageInfo<TaskDriverVo> pageInfo = new PageInfo(taskList);
+        List<TaskDriverVo> pageInfoList = pageInfo.getList();
+        List<TaskDriverVo> returnList = new ArrayList<>(10);
+        // 将当前操作人放在列表的第一个
+        if (!CollectionUtils.isEmpty(pageInfoList)) {
+            for (TaskDriverVo driverVo : pageInfoList) {
+                if (dto.getLoginId().equals(driverVo.getLoginId())) {
+                    returnList.add(driverVo);
+                    break;
+                }
+            }
+            for (TaskDriverVo driverVo : pageInfoList) {
+                if (!dto.getLoginId().equals(driverVo.getLoginId())) {
+                    returnList.add(driverVo);
+                }
+            }
+        }
+        return BaseResultUtil.success(returnList);
     }
 
     @Override

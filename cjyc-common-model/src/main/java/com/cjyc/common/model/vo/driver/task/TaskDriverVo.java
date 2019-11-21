@@ -1,5 +1,7 @@
 package com.cjyc.common.model.vo.driver.task;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -22,23 +24,30 @@ public class TaskDriverVo implements Serializable {
     @ApiModelProperty(value = "真实姓名")
     private String realName;
 
-    @ApiModelProperty(value = "营运状态：0营运中，1停运中")
-    private Integer businessState;
+    @ApiModelProperty(value = "运行状态：0空闲，1在途 2繁忙")
+    private Integer runningState;
 
     @ApiModelProperty(value = "车牌号")
     private String plateNo;
 
-    @ApiModelProperty(value = "车位数")
-    private Integer defaultCarryNum;
+    @ApiModelProperty(value = "总车位数")
+    private Integer carryCarNum;
 
     @ApiModelProperty(value = "正在使用车位数")
-    private Integer useCarryNum;
+    private Integer occupiedCarNum;
 
-    public Integer getDefaultCarryNum() {
-        return defaultCarryNum == null ? 0 : defaultCarryNum;
-    }
+    @ApiModelProperty(value = "司机ID")
+    @JsonSerialize(using= ToStringSerializer.class)
+    private Long driverId;
 
-    public Integer getUseCarryNum() {
-        return useCarryNum == null ? 0 : useCarryNum;
+    @ApiModelProperty(value = "司机登录ID")
+    @JsonSerialize(using= ToStringSerializer.class)
+    private Long loginId;
+
+    @ApiModelProperty(value = "司机角色：0个人司机，1下属司机，2管理员，3超级管理员")
+    private Integer role;
+
+    public Integer getOccupiedCarNum() {
+        return occupiedCarNum == null ? 0 : occupiedCarNum;
     }
 }
