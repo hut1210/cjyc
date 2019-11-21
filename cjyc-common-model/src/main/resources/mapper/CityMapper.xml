@@ -15,11 +15,12 @@
         <result column="lng" property="lng" />
         <result column="lat" property="lat" />
         <result column="hot" property="hot" />
+        <result column="remark" property="remark" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        code, name, level, parent_code, parent_name, pin_yin, pin_initial, pin_acronym, lng, lat, hot
+        code, name, level, parent_code, parent_name, pin_yin, pin_initial, pin_acronym, lng, lat, hot,remark
     </sql>
     <select id="findChildList" resultType="com.cjyc.common.model.entity.City">
         select

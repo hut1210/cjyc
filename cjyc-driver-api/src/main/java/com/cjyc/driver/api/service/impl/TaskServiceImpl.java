@@ -2,23 +2,15 @@ package com.cjyc.driver.api.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.cjyc.common.model.dao.IOrderCarDao;
-import com.cjyc.common.model.dao.ITaskDao;
-import com.cjyc.common.model.dao.IWaybillCarDao;
-import com.cjyc.common.model.dao.IWaybillDao;
-import com.cjyc.common.model.dto.driver.BaseDriverDto;
-import com.cjyc.common.model.dto.driver.DetailQueryDto;
-import com.cjyc.common.model.dto.driver.FinishTaskQueryDto;
-import com.cjyc.common.model.dto.driver.NoFinishTaskQueryDto;
+import com.cjyc.common.model.dao.*;
+import com.cjyc.common.model.dto.driver.*;
 import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.entity.Task;
 import com.cjyc.common.model.entity.Waybill;
 import com.cjyc.common.model.entity.WaybillCar;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.driver.task.CarDetailVo;
-import com.cjyc.common.model.vo.driver.task.TaskDetailVo;
-import com.cjyc.common.model.vo.driver.task.WaybillTaskVo;
+import com.cjyc.common.model.vo.driver.task.*;
 import com.cjyc.driver.api.service.ITaskService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -47,6 +39,8 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
     private IWaybillCarDao waybillCarDao;
     @Autowired
     private IOrderCarDao orderCarDao;
+    @Autowired
+    private IDriverDao driverDao;
 
     @Override
     public ResultVo<PageInfo<WaybillTaskVo>> getWaitHandleTaskPage(BaseDriverDto dto) {
@@ -60,6 +54,14 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
     public ResultVo<PageInfo<WaybillTaskVo>> getNoFinishTaskPage(NoFinishTaskQueryDto dto) {
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<WaybillTaskVo> taskList = taskDao.selectNoFinishTaskPage(dto);
+        PageInfo pageInfo = new PageInfo(taskList);
+        return BaseResultUtil.success(pageInfo);
+    }
+
+    @Override
+    public ResultVo<PageInfo<TaskDriverVo>> getDriverPage(DriverQueryDto dto) {
+        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
+        List<TaskDriverVo> taskList = driverDao.selectDriverList(dto);
         PageInfo pageInfo = new PageInfo(taskList);
         return BaseResultUtil.success(pageInfo);
     }

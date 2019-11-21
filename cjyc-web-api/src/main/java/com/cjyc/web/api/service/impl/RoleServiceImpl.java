@@ -174,6 +174,7 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
         UpdateBatchRoleMenusReq req = new UpdateBatchRoleMenusReq();
         req.setDeptIdList(deptIdList);
         req.setMenuIdList(dto.getMenuIdList());
+        req.setRoleName(role.getRoleName());
         ResultData rd = sysRoleService.batchUpdateRoleMenus(req);
         if (!isResultDataSuccess(rd)) {
             return BaseResultUtil.fail("变更角色菜单列表失败，原因: " + rd.getMsg());
@@ -199,13 +200,13 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
         if (CollectionUtils.isEmpty(rolesRd.getData())) {
             return BaseResultUtil.fail("根据机构id ：" + deptIdList.get(0) + "未查询到角色信息");
         }
-        AtomicReference<Long> finalRoleId = null;
+        AtomicReference<Long> finalRoleId = new AtomicReference<>();
         rolesRd.getData().forEach(r -> {
             if (r.getRoleName().equals(role.getRoleName())) {
                 finalRoleId.set(r.getRoleId());
             }
         });
-        if (finalRoleId == null) {
+        if (finalRoleId.get() == null) {
             return BaseResultUtil.fail("查询角色信息错误，机构下无此角色");
         }
         ResultData<List<Long>> rsRd = sysRoleService.getBottomMenuIdsByRoleId(finalRoleId.get());
@@ -321,23 +322,23 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
      * @return
      */
     private ResultVo doAddRole(AddRoleDto dto) {
-        if (RoleRangeEnum.INNER.getValue() == dto.getRange()) {
+        if (RoleRangeEnum.INNER.getValue() == dto.getRoleRange()) {
             //内部机构
             ResultData rd = doInnerAdd(dto);
             if (!isResultDataSuccess(rd)) {
                 return BaseResultUtil.fail("保存角色信息失败");
             }
-        }else if (RoleRangeEnum.OUTER.getValue() == dto.getRange()) {
+        }else if (RoleRangeEnum.OUTER.getValue() == dto.getRoleRange()) {
             //外部机构
 
         }else {
-            return BaseResultUtil.fail("不支持此机构范围: " + dto.getRange());
+            return BaseResultUtil.fail("不支持此机构范围: " + dto.getRoleRange());
         }
         //此处维护韵车角色信息
         Role role = new Role();
         BeanUtils.copyProperties(dto, role);
-        role.setRoleLevel(dto.getLevel());
-        role.setRoleRange(dto.getRange());
+        role.setRoleLevel(dto.getRoleLevel());
+        role.setRoleRange(dto.getRoleRange());
         role.setUpdateTime(System.currentTimeMillis());
         role.setCreateTime(System.currentTimeMillis());
         baseMapper.insert(role);
@@ -350,7 +351,7 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
      * @return
      */
     private ResultData doInnerAdd(AddRoleDto dto) {
-        int level = dto.getLevel();
+        int level = dto.getRoleLevel();
         if (RoleLevelEnum.COUNTRY_LEVEL.getLevel() == level) {
             //全国机构添加角色
             return addRoleForCountryGov(dto);
