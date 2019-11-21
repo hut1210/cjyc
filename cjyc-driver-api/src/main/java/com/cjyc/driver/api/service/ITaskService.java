@@ -1,13 +1,11 @@
 package com.cjyc.driver.api.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.cjyc.common.model.dto.driver.BaseDriverDto;
-import com.cjyc.common.model.dto.driver.DetailQueryDto;
-import com.cjyc.common.model.dto.driver.FinishTaskQueryDto;
-import com.cjyc.common.model.dto.driver.NoFinishTaskQueryDto;
+import com.cjyc.common.model.dto.driver.*;
 import com.cjyc.common.model.entity.Task;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.task.TaskDetailVo;
+import com.cjyc.common.model.vo.driver.task.TaskDriverVo;
 import com.cjyc.common.model.vo.driver.task.WaybillTaskVo;
 import com.github.pagehelper.PageInfo;
 
@@ -56,4 +54,13 @@ public interface ITaskService extends IService<Task> {
      * @return com.cjyc.common.model.vo.ResultVo<com.github.pagehelper.PageInfo<com.cjyc.common.model.vo.driver.task.WaybillTaskVo>>
      */
     ResultVo<PageInfo<WaybillTaskVo>> getNoFinishTaskPage(NoFinishTaskQueryDto dto);
+
+    /**
+     * 功能描述: 分页查询司机列表
+     * @author liuxingxiang
+     * @date 2019/11/20
+     * @param dto
+     * @return com.cjyc.common.model.vo.ResultVo<com.github.pagehelper.PageInfo<com.cjyc.common.model.vo.driver.task.TaskDriverVo>>
+     */
+    ResultVo<PageInfo<TaskDriverVo>> getDriverPage(DriverQueryDto dto);
 }

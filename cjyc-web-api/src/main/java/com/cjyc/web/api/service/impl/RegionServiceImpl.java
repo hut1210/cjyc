@@ -27,6 +27,7 @@ import com.cjyc.web.api.service.ICityService;
 import com.cjyc.web.api.service.IRegionService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -57,23 +58,24 @@ public class RegionServiceImpl implements IRegionService {
         // 分页查询大区信息
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         LambdaQueryWrapper<City> queryWrapper = new QueryWrapper<City>().lambda()
-                .eq(City::getLevel, FieldConstant.REGION_LEVEL).like(!StringUtils.isEmpty(dto.getRegionName()), City::getName, dto.getRegionName());
+                .eq(City::getLevel, FieldConstant.REGION_LEVEL)
+                .like(!StringUtils.isEmpty(dto.getRegionName()), City::getName, dto.getRegionName());
         List<City> cityList = cityDao.selectList(queryWrapper);
+        PageInfo<City> pageInfo = new PageInfo(cityList);
         // 根据大区编码查询覆盖省数量
-        List<RegionVo> list = new ArrayList<>(10);
-        if (!CollectionUtils.isEmpty(cityList)) {
-            LambdaQueryWrapper<City> wrapper = new QueryWrapper<City>().lambda();
-            for (City city : cityList) {
-                wrapper = wrapper.eq(City::getParentCode, city.getCode());
+        List<City> list = new ArrayList<>(10);
+        List<City> pageInfoList = pageInfo.getList();
+        if (!CollectionUtils.isEmpty(pageInfoList)) {
+            for (City city : pageInfoList) {
                 RegionVo vo = new RegionVo();
-                vo.setRegionCode(city.getCode());
-                vo.setRegionName(city.getName());
-                Integer count = cityDao.selectCount(wrapper);
+                BeanUtils.copyProperties(city,vo);
+                Integer count = cityDao.selectCount(new QueryWrapper<City>().lambda().eq(City::getParentCode, city.getCode()));
                 vo.setProvinceCount(count);
                 list.add(vo);
             }
         }
-        return BaseResultUtil.success(new PageInfo(list));
+        pageInfo.setList(list);
+        return BaseResultUtil.success(pageInfo);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -100,6 +102,7 @@ public class RegionServiceImpl implements IRegionService {
         region.setLevel(FieldConstant.REGION_LEVEL);
         region.setParentCode(FieldConstant.CHINA_CODE);
         region.setParentName(FieldConstant.CHINA_NAME);
+        region.setRemark(dto.getRemark());
         cityService.save(region);
 
         // 更新省份的上级大区
@@ -274,6 +277,7 @@ public class RegionServiceImpl implements IRegionService {
                 LambdaUpdateWrapper<City> updateProvince = new UpdateWrapper<City>().lambda()
                         .set(City::getParentCode,dto.getRegionCode())
                         .set(City::getParentName,dto.getRegionName())
+                        .set(City::getRemark,dto.getRemark())
                         .eq(City::getCode,province.getCode())
                         .eq(City::getLevel, FieldConstant.PROVINCE_LEVEL);
                 boolean updateRes = cityService.update(updateProvince);
