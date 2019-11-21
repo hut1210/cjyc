@@ -1,6 +1,7 @@
 package com.cjyc.common.model.vo.web.carrier;
 
 import com.cjyc.common.model.util.BigDecimalSerizlizer;
+import com.cjyc.common.model.util.DataLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
@@ -87,6 +88,10 @@ public class CarrierVo implements Serializable {
 
     @ApiModelProperty("状态：0待审核，2已审核，4取消，7已驳回，9已停用（CommonStateEnum）")
     private Integer state;
+
+    @ApiModelProperty("最后操作时间")
+    @JsonSerialize(using = DataLongSerizlizer.class)
+    private Long operateTime;
 
     @ApiModelProperty("最后操作人")
     private String operateName;

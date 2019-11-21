@@ -1,4 +1,4 @@
-package com.cjyc.common.model.vo.web.vehicle;
+package com.cjyc.common.model.vo;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;

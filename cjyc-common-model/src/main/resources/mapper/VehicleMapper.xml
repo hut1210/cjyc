@@ -57,7 +57,7 @@
     </select>
 
     <!-- 模糊匹配查询空闲社会车辆 -->
-    <select id="findFreeVehicle" resultType="com.cjyc.common.model.vo.web.vehicle.FreeVehicleVo">
+    <select id="findFreeVehicle" resultType="com.cjyc.common.model.vo.FreeVehicleVo">
         SELECT
             id AS id,
             plate_no AS plateNo,

@@ -95,6 +95,13 @@ public interface ICustomerService  extends IService<Customer> {
      */
     ResultVo<PageVo<CustomerPartnerVo>> findPartner(CustomerPartnerDto dto);
 
+    /**
+     * 根据客户id查询合伙人
+     * @param customerId
+     * @return
+     */
+    ResultVo showPartner(Long customerId);
+
     Customer selectByPhone(String customerPhone);
 
     @Override

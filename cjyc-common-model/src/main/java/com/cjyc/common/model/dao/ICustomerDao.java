@@ -55,6 +55,8 @@ public interface ICustomerDao extends BaseMapper<Customer> {
      */
     List<CustomerPartnerVo> getPartnerByTerm(CustomerPartnerDto dto);
 
+    ShowPartnerVo showPartner(@Param("customerId") Long customerId);
+
     Customer findByPhone(@Param("phone") String phone);
 
     List<CustomerFuzzyListVo> findFuzzyList(@Param("paramsDto") CustomerfuzzyListDto paramsDto);

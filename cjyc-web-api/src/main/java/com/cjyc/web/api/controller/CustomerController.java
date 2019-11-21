@@ -93,6 +93,12 @@ public class CustomerController {
         return customerService.findPartner(dto);
     }
 
+    @ApiOperation(value = "根据客户id查看合伙人")
+    @PostMapping(value = "/showPartner/{customerId}")
+    public ResultVo showPartner(@PathVariable Long customerId){
+        return customerService.showPartner(customerId);
+    }
+
     @ApiOperation(value = "根据输入手机号/用户名称模糊查询用户信息")
     @PostMapping(value = "/getAllCustomerByKey/{keyword}")
     public ResultVo getAllCustomerByKey(@PathVariable @ApiParam(value = "手机号/用户名",required = true) String keyword){

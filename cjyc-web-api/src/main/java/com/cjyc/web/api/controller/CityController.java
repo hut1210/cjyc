@@ -10,7 +10,6 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.CityTreeVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.system.config.CarrierProperty;
 import com.cjyc.web.api.service.ICityService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -88,7 +87,14 @@ public class CityController {
         return cityService.getCityPage(dto);
     }
 
-    @ApiOperation(value = "根据省名称查询省份信息")
+    /**
+     * 功能描述: 查询大区未覆盖的省列表
+     * @author liuxingxiang
+     * @date 2019/11/21
+     * @param dto
+     * @return com.cjyc.common.model.vo.ResultVo<java.util.List<com.cjyc.common.model.entity.City>>
+     */
+    @ApiOperation(value = "根据省名称查询大区未覆盖省列表")
     @PostMapping("/getProvinceList")
     public ResultVo<List<City>> getProvinceList(@RequestBody KeywordDto dto) {
         return cityService.getProvinceList(dto);

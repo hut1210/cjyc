@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 /**
  * @Description 已交付任务接口控制层
  * @Author Liu Xing Xiang
@@ -54,7 +56,7 @@ public class TaskController {
 
     @ApiOperation(value = "分页查询司机列表", notes = "\t 请求接口为json格式")
     @PostMapping("/getDriverPage")
-    public ResultVo<PageInfo<TaskDriverVo>> getDriverPage(@RequestBody @Validated DriverQueryDto dto) {
+    public ResultVo<List<TaskDriverVo>> getDriverPage(@RequestBody @Validated DriverQueryDto dto) {
         return taskService.getDriverPage(dto);
     }
 

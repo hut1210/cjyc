@@ -1,10 +1,12 @@
 package com.cjyc.web.api.controller;
 
+import com.cjyc.common.model.dto.FreeVehicleDto;
 import com.cjyc.common.model.dto.web.vehicle.*;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.vehicle.FreeVehicleVo;
+import com.cjyc.common.model.vo.FreeVehicleVo;
 import com.cjyc.common.model.vo.web.vehicle.VehicleVo;
+import com.cjyc.common.system.service.ICsVehicleService;
 import com.cjyc.web.api.service.IVehicleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -26,6 +28,8 @@ public class VehicleController {
 
     @Resource
     private IVehicleService vehicleService;
+    @Resource
+    private ICsVehicleService csVehicleService;
 
     @ApiOperation(value = "新增运输车辆")
     @PostMapping(value = "/saveVehicle")
@@ -54,6 +58,6 @@ public class VehicleController {
     @ApiOperation(value = "查询没有被绑定的车辆信息")
     @PostMapping(value = "/findFreeVehicle")
     public ResultVo<List<FreeVehicleVo>> findFreeVehicle(@RequestBody FreeVehicleDto dto){
-        return vehicleService.findFreeVehicle(dto);
+        return csVehicleService.findFreeVehicle(dto);
     }
 }

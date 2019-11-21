@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.dto.driver.BaseDriverDto;
 import com.cjyc.common.model.dto.driver.BaseDto;
 import com.cjyc.common.model.entity.Driver;
+import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.mine.BinkCardVo;
+import com.cjyc.common.model.vo.driver.mine.DriverInfoVo;
 
 import java.util.List;
 
@@ -23,7 +25,7 @@ public interface IMineService extends IService<Driver> {
      * @param dto
      * @return
      */
-    ResultVo findDriver(BaseDriverDto dto);
+    ResultVo<PageVo<DriverInfoVo>> findDriver(BaseDriverDto dto);
 
 
 }

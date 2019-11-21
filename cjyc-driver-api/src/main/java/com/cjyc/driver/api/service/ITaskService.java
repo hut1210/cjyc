@@ -9,6 +9,8 @@ import com.cjyc.common.model.vo.driver.task.TaskDriverVo;
 import com.cjyc.common.model.vo.driver.task.WaybillTaskVo;
 import com.github.pagehelper.PageInfo;
 
+import java.util.List;
+
 /**
  * <p>
  * 任务表(子运单) 服务类
@@ -62,5 +64,5 @@ public interface ITaskService extends IService<Task> {
      * @param dto
      * @return com.cjyc.common.model.vo.ResultVo<com.github.pagehelper.PageInfo<com.cjyc.common.model.vo.driver.task.TaskDriverVo>>
      */
-    ResultVo<PageInfo<TaskDriverVo>> getDriverPage(DriverQueryDto dto);
+    ResultVo<List<TaskDriverVo>> getDriverPage(DriverQueryDto dto);
 }
