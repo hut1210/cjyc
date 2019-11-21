@@ -16,4 +16,6 @@ public interface ICsCityService {
      * @param cityLevelEnum 根节点，默认3级
      */
     FullCity findFullCity(String areaCode, CityLevelEnum cityLevelEnum);
+
+    FullCity findFullCityByCityCode(String cityCode);
 }

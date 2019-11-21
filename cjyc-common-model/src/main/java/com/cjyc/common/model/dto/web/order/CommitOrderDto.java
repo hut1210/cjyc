@@ -24,14 +24,14 @@ public class CommitOrderDto {
     @ApiModelProperty(value = "1WEB管理后台, 2业务员APP, 4司机APP, 6用户端APP, 7用户端小程序", required = true)
     private int clientId;
     @NotNull(message = "userId不能为空")
-    @ApiModelProperty(value = "操作人userid", required = true)
+    @ApiModelProperty(value = "操作人id", required = true)
     private Long userId;
     @ApiModelProperty(value = "操作人")
     private Long userName;
     @NotNull(message = "createCustomerFlag不能为空")
     @ApiModelProperty(value = "用户不存在，是否创建用户",required = true)
     private Boolean createCustomerFlag;
-    /**车辆列表*/
+    @ApiModelProperty(value = "车辆列表")
     private List<CommitOrderCarDto> orderCarList;
 
     @ApiModelProperty(value = "订单ID")

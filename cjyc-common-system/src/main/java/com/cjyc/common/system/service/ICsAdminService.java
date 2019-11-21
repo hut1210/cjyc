@@ -25,4 +25,5 @@ public interface ICsAdminService {
 
     AdminVo getByPhone(String username, boolean isSearchCache);
 
+    Admin getById(Long userId, boolean isSearchCache);
 }

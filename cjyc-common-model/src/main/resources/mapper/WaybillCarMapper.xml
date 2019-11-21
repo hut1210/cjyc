@@ -208,6 +208,12 @@
         set state = #{state}
         where id = #{id}
     </update>
+    <update id="updateForAllotDriver">
+        update w_waybill_car
+        set state = 2
+        where id =#{id}
+        and state &lt; 2
+    </update>
 
     <select id="findByTaskCarId" resultType="com.cjyc.common.model.entity.WaybillCar">
         select

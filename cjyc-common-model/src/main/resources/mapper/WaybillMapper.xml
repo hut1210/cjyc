@@ -109,8 +109,7 @@
     <update id="updateForAllotDriver">
         update w_waybill
         set state = 55
-        where state = 20
-
+        where id = #{waybillId} and state = 20
     </update>
     <select id="findByNo" resultType="com.cjyc.common.model.entity.Waybill">
         select

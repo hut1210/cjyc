@@ -305,5 +305,18 @@
             </if>
         </where>
     </select>
+    <select id="findFullCityByCityCode" resultType="com.cjyc.common.model.entity.defined.FullCity">
+        select
+            c1.`name` as city,
+            c1.code as cityCode,
+            c2.`name` as province,
+            c2.`code` as provinceCode,
+            c2.parent_name as region,
+            c2.parent_code as regionCode
+        from s_city c1
+        join s_city c2 on c1.parent_code = c2.`code`
+        where c1.code = #{cityCode}
+
+    </select>
 
 </mapper>

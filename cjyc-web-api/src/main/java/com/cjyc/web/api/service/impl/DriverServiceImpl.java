@@ -1,6 +1,7 @@
 package com.cjyc.web.api.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.injector.methods.SelectById;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
@@ -344,6 +345,11 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         List<DispatchDriverVo> dispatchDriverVos = driverDao.getDispatchDriver(dto);
         PageInfo<DispatchDriverVo> pageInfo = new PageInfo<>(dispatchDriverVos);
         return BaseResultUtil.success(pageInfo);
+    }
+
+    @Override
+    public Driver getById(Long id, boolean isSearchCache) {
+        return driverDao.selectById(id);
     }
 
     /**

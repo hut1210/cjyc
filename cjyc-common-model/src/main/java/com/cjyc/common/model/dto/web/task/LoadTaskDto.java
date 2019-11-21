@@ -6,24 +6,20 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.util.List;
+
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel
 public class LoadTaskDto {
-    @ApiModelProperty(value = "用户userId",required = true)
-    private Long userId;
+    @ApiModelProperty(value = "登录用户ID",required = true)
+    private Long loginId;
 
-    @ApiModelProperty(value = "用户userName")
-    private String userName;
-
-    @ApiModelProperty(value = "装车方式：1客户家提车，2业务中心提车，3司机交接提车",required = true)
-    private Long loadType;
+    @ApiModelProperty(value = "登录用户名(不用传)")
+    private String loginName;
 
     @ApiModelProperty(value = "任务车辆ID",required = true)
-    private Long taskCarId;
-
-    @ApiModelProperty(value = "图片地址，逗号分隔")
-    private String loadPhotoImg;
+    private List<Long> taskCarIdList;
 
 }

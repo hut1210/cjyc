@@ -65,4 +65,5 @@ public interface IDriverService {
      */
     ResultVo<PageVo<DispatchDriverVo>> dispatchDriver(DispatchDriverDto dto);
 
+    Driver getById(Long id, boolean isSearchCache);
 }

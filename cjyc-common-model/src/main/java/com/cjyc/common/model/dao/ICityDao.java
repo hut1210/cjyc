@@ -108,5 +108,7 @@ public interface ICityDao extends BaseMapper<City> {
      * @return java.util.List<com.cjyc.common.model.entity.defined.FullCity>
      */
     List<FullCity> selectStoreAreaList(StoreDto dto);
+
+    FullCity findFullCityByCityCode(String cityCode);
 }
 

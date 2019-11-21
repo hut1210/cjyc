@@ -90,4 +90,9 @@ public class CsAdminServiceImpl implements ICsAdminService {
         vo.setDeptId(resultData.getData().getDeptId());
         return vo;
     }
+
+    @Override
+    public Admin getById(Long userId, boolean isSearchCache) {
+        return adminDao.selectById(userId);
+    }
 }

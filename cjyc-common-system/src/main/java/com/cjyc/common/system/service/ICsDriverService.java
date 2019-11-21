@@ -5,10 +5,10 @@ import com.cjyc.common.model.dto.CarrierDriverDto;
 import com.cjyc.common.model.dto.CarrierVehicleDto;
 import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.vo.ResultVo;
-import org.springframework.web.bind.annotation.RequestBody;
 
 public interface ICsDriverService {
-    Driver getById(Long userId);
+
+    Driver getById(Long userId, boolean isSearchCache);
 
     Driver getByUserId(Long userId);
 

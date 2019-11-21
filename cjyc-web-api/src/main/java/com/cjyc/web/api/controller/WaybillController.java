@@ -231,7 +231,7 @@ public class WaybillController {
     @PostMapping(value = "/cr/list")
     public ResultVo<PageVo<CrWaybillVo>> crList(@RequestBody CrWaybillDto reqDto) {
         //验证用户
-        Driver driver = csDriverService.getById(reqDto.getUserId());
+        Driver driver = csDriverService.getById(reqDto.getUserId(), true);
         if(driver == null){
             return BaseResultUtil.fail("用户不存在");
         }

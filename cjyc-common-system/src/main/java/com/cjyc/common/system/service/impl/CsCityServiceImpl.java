@@ -39,4 +39,15 @@ public class CsCityServiceImpl implements ICsCityService {
         }
         return fullCity;
     }
+
+    /**
+     * 查询全字段城市对象
+     *
+     * @author JPG
+     * @since 2019/11/5 9:33
+     */
+    @Override
+    public FullCity findFullCityByCityCode(String cityCode) {
+        return cityDao.findFullCityByCityCode(cityCode);
+    }
 }

@@ -1,10 +1,8 @@
 package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.web.task.*;
-import com.cjyc.common.model.dto.web.waybill.CrWaybillDto;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Driver;
-import com.cjyc.common.model.entity.Task;
 import com.cjyc.common.model.enums.AdminStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
@@ -12,9 +10,8 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.task.CrTaskVo;
 import com.cjyc.common.model.vo.web.task.ListByWaybillTaskVo;
 import com.cjyc.common.model.vo.web.task.TaskVo;
-import com.cjyc.common.model.vo.web.waybill.CrWaybillVo;
+import com.cjyc.common.system.service.ICsDriverService;
 import com.cjyc.web.api.service.IAdminService;
-import com.cjyc.web.api.service.IDriverService;
 import com.cjyc.web.api.service.ITaskService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -38,7 +35,7 @@ public class TaskController {
     @Resource
     private IAdminService adminService;
     @Resource
-    private IDriverService driverService;
+    private ICsDriverService csDriverService;
 
 
     /**
@@ -49,7 +46,7 @@ public class TaskController {
     @PostMapping(value = "/allot")
     public ResultVo allot(@RequestBody AllotTaskDto reqDto) {
         //验证用户
-        Driver driver = driverService.getByUserId(reqDto.getUserId());
+        Driver driver = csDriverService.getById(reqDto.getUserId(), true);
         if (driver == null) {
             return BaseResultUtil.fail("当前用户不能登录");
         }
@@ -67,7 +64,7 @@ public class TaskController {
     @PostMapping(value = "/car/load")
     public ResultVo load(@Validated @RequestBody LoadTaskDto reqDto) {
         //验证用户
-        Driver driver = driverService.getByUserId(reqDto.getUserId());
+        Driver driver = csDriverService.getById(reqDto.getUserId(), true);
         if (driver == null) {
             return BaseResultUtil.fail("当前用户，不能执行操作");
         }
@@ -84,7 +81,7 @@ public class TaskController {
     @PostMapping(value = "/car/unload")
     public ResultVo unload(@RequestBody UnLoadTaskDto reqDto) {
         //验证用户
-        Driver driver = driverService.getByUserId(reqDto.getUserId());
+        Driver driver = csDriverService.getById(reqDto.getUserId(),true);
         if (driver == null) {
             return BaseResultUtil.fail("当前用户，不能执行操作");
         }
@@ -101,7 +98,7 @@ public class TaskController {
     @PostMapping(value = "/car/in/store")
     public ResultVo inStore(@Validated @RequestBody InStoreTaskDto reqDto) {
         //验证用户
-        Admin admin = adminService.getByUserId(reqDto.getUserId());
+        Admin admin = adminService.getById(reqDto.getUserId());
         if (admin == null || admin.getState() != AdminStateEnum.CHECKED.code) {
             return BaseResultUtil.fail("当前业务员，不在职");
         }
@@ -117,7 +114,7 @@ public class TaskController {
     @PostMapping(value = "/car/out/store")
     public ResultVo outStore(@RequestBody OutStoreTaskDto reqDto) {
         //验证用户
-        Admin admin = adminService.getByUserId(reqDto.getUserId());
+        Admin admin = adminService.getById(reqDto.getUserId());
         if (admin == null || admin.getState() != AdminStateEnum.CHECKED.code) {
             return BaseResultUtil.fail("当前业务员，不在职");
         }
@@ -135,7 +132,7 @@ public class TaskController {
     @PostMapping(value = "/car/driver/sign")
     public ResultVo driverSign(@RequestBody SignTaskDto reqDto) {
         //验证用户
-        Admin admin = adminService.getByUserId(reqDto.getUserId());
+        Admin admin = adminService.getById(reqDto.getUserId());
         if (admin == null || admin.getState() != AdminStateEnum.CHECKED.code) {
             return BaseResultUtil.fail("当前业务员，不在职");
         }

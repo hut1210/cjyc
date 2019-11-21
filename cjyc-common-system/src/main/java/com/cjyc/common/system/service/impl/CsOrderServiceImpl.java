@@ -18,6 +18,7 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.entity.defined.FullCity;
 import com.cjyc.common.system.service.*;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +35,6 @@ import java.util.List;
 @Service
 @Transactional(rollbackFor = RuntimeException.class)
 public class CsOrderServiceImpl implements ICsOrderService {
-    private static final DecimalFormat THREE_FORMAT = new DecimalFormat("000");
     @Resource
     private IOrderDao orderDao;
     @Resource

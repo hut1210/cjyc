@@ -45,9 +45,9 @@
 
 
     <update id="updateStateForLoad">
-        update w_order w join w_order_car wc on w.id = wc.order_id
+        update w_order w
         set w.state = #{orderState}
-        where wc.id = #{orderCarId}
+        where w.id = #{orderId}
         and w.state = 25
     </update>
     <update id="updateStateById">

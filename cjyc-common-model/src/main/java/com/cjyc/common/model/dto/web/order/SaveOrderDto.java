@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.List;
@@ -19,62 +20,48 @@ import java.util.List;
 @Accessors(chain = true)
 @ApiModel
 public class SaveOrderDto {
-    
+
+    @NotNull
     @ApiModelProperty(value = "1WEB管理后台, 2业务员APP, 4司机APP, 6用户端APP, 7用户端小程序", required = true)
     private int clientId;
-    @ApiModelProperty(value = "操作人userid", required = true)
+    @NotNull
+    @ApiModelProperty(value = "操作人id", required = true)
     private Long userId;
     @ApiModelProperty(value = "操作人(不用传)")
     private Long userName;
     @ApiModelProperty(value = "物流券抵消金额")
     private BigDecimal couponOffsetFee;
-    /**车辆列表*/
+    @ApiModelProperty(value = "车辆列表")
     private List<SaveOrderCarDto> orderCarList;
 
 
 
     @ApiModelProperty(value = "订单ID（修改时传）")
     private Long orderId;
+    @NotNull
     @ApiModelProperty(value = "1C端 2大客户 3-伙人", required = true)
     private int customerType;
     @ApiModelProperty(value = "客户id")
     private Long customerId;
-    @ApiModelProperty(value = "客户电话")
+    @NotBlank
+    @ApiModelProperty(value = "客户电话", required = true)
     private String customerPhone;
     @NotBlank
-    @ApiModelProperty(value = "客户姓名")
+    @ApiModelProperty(value = "客户姓名", required = true)
     private String customerName;
-  /*  @ApiModelProperty(value = "省")
-    private String startProvince;
-    @ApiModelProperty(value = "省编号")
-    private String startProvinceCode;
-    @ApiModelProperty(value = "市")
-    private String startCity;
-    @ApiModelProperty(value = "市编号")
-    private String startCityCode;
-    @ApiModelProperty(value = "区")
-    private String startArea;*/
-    @ApiModelProperty(value = "区编号")
+    @NotBlank
+    @ApiModelProperty(value = "区编号", required = true)
     private String startAreaCode;
-    @ApiModelProperty(value = "始发地详细地址")
+    @NotBlank
+    @ApiModelProperty(value = "始发地详细地址", required = true)
     private String startAddress;
     @ApiModelProperty(value = "出发地业务中心ID: -1不经过业务中心")
     private Long startStoreId;
     @ApiModelProperty(value = "出发地业务中心名称")
     private String startStoreName;
-  /*  @ApiModelProperty(value = "省")
-    private String endProvince;
-    @ApiModelProperty(value = "省编号")
-    private String endProvinceCode;
-    @ApiModelProperty(value = "市")
-    private String endCity;
-    @ApiModelProperty(value = "市编号")
-    private String endCityCode;
-    @ApiModelProperty(value = "区")
-    private String endArea;*/
-    @ApiModelProperty(value = "区编号")
+    @ApiModelProperty(value = "区编号", required = true)
     private String endAreaCode;
-    @ApiModelProperty(value = "目的地详细地址")
+    @ApiModelProperty(value = "目的地详细地址", required = true)
     private String endAddress;
     @ApiModelProperty(value = "目的地业务中心ID: -1不经过业务中心")
     private Long endStoreId;
@@ -111,8 +98,6 @@ public class SaveOrderDto {
     private int invoiceType;
     @ApiModelProperty(value = "合同ID")
     private Long customerContractId;
-    @ApiModelProperty(value = "加急")
-    private Integer hurryDays;
     @ApiModelProperty(value = "备注")
     private String remark;
     @ApiModelProperty(value = "创建人：客户/业务员")
@@ -123,8 +108,8 @@ public class SaveOrderDto {
     private Integer payType;
     @ApiModelProperty(value = "优惠券id")
     private Long couponSendId;
-
-    @ApiModelProperty(value = "应收总价：收车后客户应支付平台的费用")
+    @NotNull
+    @ApiModelProperty(value = "应收总价：收车后客户应支付平台的费用", required = true)
     private BigDecimal totalFee;
 
     @ApiModelProperty(value = "状态（不需要传）")

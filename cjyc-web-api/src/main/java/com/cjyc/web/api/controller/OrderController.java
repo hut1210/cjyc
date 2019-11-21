@@ -110,7 +110,7 @@ public class OrderController {
     public ResultVo check(@RequestBody CheckOrderDto reqDto) {
         //验证用户存不存在
         Long userId = reqDto.getUserId();
-        Admin admin = csAdminService.getByUserId(userId, true);
+        Admin admin = csAdminService.getById(userId, true);
         if(admin == null){
             return BaseResultUtil.fail("用户不存在");
         }
@@ -249,7 +249,7 @@ public class OrderController {
 
     private String validateAdmin(Long userId) {
         //验证操作人
-        Admin admin = csAdminService.getByUserId(userId,true);
+        Admin admin = csAdminService.getById(userId,true);
         if(admin == null || admin.getState() != AdminStateEnum.CHECKED.code){
             throw new ParameterException("操作用户不存在或者已离职");
         }

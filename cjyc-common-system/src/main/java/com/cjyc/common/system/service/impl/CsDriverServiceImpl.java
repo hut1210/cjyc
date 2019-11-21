@@ -56,7 +56,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
     @Override
-    public Driver getById(Long userId) {
+    public Driver getById(Long userId, boolean b) {
         return driverDao.selectById(userId);
     }
 
