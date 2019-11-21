@@ -199,13 +199,13 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
         if (CollectionUtils.isEmpty(rolesRd.getData())) {
             return BaseResultUtil.fail("根据机构id ：" + deptIdList.get(0) + "未查询到角色信息");
         }
-        AtomicReference<Long> finalRoleId = null;
+        AtomicReference<Long> finalRoleId = new AtomicReference<>();
         rolesRd.getData().forEach(r -> {
             if (r.getRoleName().equals(role.getRoleName())) {
                 finalRoleId.set(r.getRoleId());
             }
         });
-        if (finalRoleId == null) {
+        if (finalRoleId.get() == null) {
             return BaseResultUtil.fail("查询角色信息错误，机构下无此角色");
         }
         ResultData<List<Long>> rsRd = sysRoleService.getBottomMenuIdsByRoleId(finalRoleId.get());
