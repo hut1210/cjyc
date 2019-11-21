@@ -81,6 +81,7 @@
             sbcb.card_name AS cardName,
             sbcb.bank_name AS bankName,
             sbcb.card_no AS cardNo,
+            dc.check_time as operateTime,
             ba.NAME AS operateName
         FROM
         d_carrier dc
