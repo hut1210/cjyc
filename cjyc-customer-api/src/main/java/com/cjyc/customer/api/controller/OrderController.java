@@ -65,7 +65,7 @@ public class OrderController {
     public ResultVo submit(@Validated @RequestBody SaveOrderDto reqDto) {
 
         //验证用户存不存在
-        Customer admin = comCustomerService.getByUserId(reqDto.getUserId(), true);
+        Customer admin = comCustomerService.getById(reqDto.getUserId(), true);
         if(admin == null){
             return BaseResultUtil.fail("用户不存在");
         }
