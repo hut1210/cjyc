@@ -1,12 +1,14 @@
 package com.cjyc.common.model.dao;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cjyc.common.model.dto.driver.DriverQueryDto;
 import com.cjyc.common.model.dto.web.driver.DispatchDriverDto;
 import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
 import com.cjyc.common.model.dto.web.mineCarrier.QueryMyDriverDto;
 import com.cjyc.common.model.dto.web.user.DriverListDto;
 import com.cjyc.common.model.entity.Driver;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.vo.driver.mine.DriverInfoVo;
+import com.cjyc.common.model.vo.driver.task.TaskDriverVo;
 import com.cjyc.common.model.vo.web.carrier.BaseDriverVo;
 import com.cjyc.common.model.vo.web.driver.DispatchDriverVo;
 import com.cjyc.common.model.vo.web.driver.DriverVo;
@@ -133,4 +135,13 @@ public interface IDriverDao extends BaseMapper<Driver> {
      * @return
      */
     List<DriverInfoVo> findDriverInfo(@Param("driverIds") List<Long> driverIds);
+
+    /**
+     * 功能描述: 查询司机列表
+     * @author liuxingxiang
+     * @date 2019/11/21
+     * @param dto
+     * @return java.util.List<com.cjyc.common.model.vo.driver.task.TaskDriverVo>
+     */
+    List<TaskDriverVo> selectDriverList(DriverQueryDto dto);
 }

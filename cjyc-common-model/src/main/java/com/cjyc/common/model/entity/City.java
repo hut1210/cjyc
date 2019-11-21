@@ -59,5 +59,6 @@ public class City implements Serializable {
     @ApiModelProperty(value = "热门城市：0否，1是")
     private Boolean hot;
 
-
+    @ApiModelProperty(value = "备注")
+    private String remark;
 }

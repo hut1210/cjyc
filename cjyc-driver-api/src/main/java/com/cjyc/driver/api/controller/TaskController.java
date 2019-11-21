@@ -1,11 +1,9 @@
 package com.cjyc.driver.api.controller;
 
-import com.cjyc.common.model.dto.driver.BaseDriverDto;
-import com.cjyc.common.model.dto.driver.DetailQueryDto;
-import com.cjyc.common.model.dto.driver.FinishTaskQueryDto;
-import com.cjyc.common.model.dto.driver.NoFinishTaskQueryDto;
+import com.cjyc.common.model.dto.driver.*;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.task.TaskDetailVo;
+import com.cjyc.common.model.vo.driver.task.TaskDriverVo;
 import com.cjyc.common.model.vo.driver.task.WaybillTaskVo;
 import com.cjyc.driver.api.service.ITaskService;
 import com.github.pagehelper.PageInfo;
@@ -52,6 +50,12 @@ public class TaskController {
     @PostMapping("/getDetail")
     public ResultVo<TaskDetailVo> getDetail(@RequestBody @Validated DetailQueryDto dto) {
         return taskService.getDetail(dto);
+    }
+
+    @ApiOperation(value = "分页查询司机列表", notes = "\t 请求接口为json格式")
+    @PostMapping("/getDriverPage")
+    public ResultVo<PageInfo<TaskDriverVo>> getDriverPage(@RequestBody @Validated DriverQueryDto dto) {
+        return taskService.getDriverPage(dto);
     }
 
 
