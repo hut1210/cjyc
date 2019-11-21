@@ -174,6 +174,7 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
         UpdateBatchRoleMenusReq req = new UpdateBatchRoleMenusReq();
         req.setDeptIdList(deptIdList);
         req.setMenuIdList(dto.getMenuIdList());
+        req.setRoleName(role.getRoleName());
         ResultData rd = sysRoleService.batchUpdateRoleMenus(req);
         if (!isResultDataSuccess(rd)) {
             return BaseResultUtil.fail("变更角色菜单列表失败，原因: " + rd.getMsg());
