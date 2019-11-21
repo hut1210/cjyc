@@ -23,10 +23,10 @@ public class AddRoleDto implements Serializable {
     private String roleName;
     @NotNull(message = "角色创建所属机构级别不能为空")
     @ApiModelProperty(value = "角色所属机构级别 1：全国 2：大区 3：省 4：城市 5：业务中心", required = true)
-    private Integer level;
+    private Integer roleLevel;
     @NotNull(message = "机构范围不能为空")
     @ApiModelProperty(value = "机构范围 1：内部 2：外部", required = true)
-    private Integer range;
+    private Integer roleRange;
     @ApiModelProperty(value = "菜单id列表信息")
     private List<Long> menuIdList;
 }
