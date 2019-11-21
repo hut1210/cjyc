@@ -380,8 +380,8 @@ public class RegionServiceImpl implements IRegionService {
                 list.add(Integer.valueOf(code));
             }
             Collections.sort(list);
-            Integer value = list.get(list.size() - 1);
-            String str = String.valueOf(value + 1);
+            Integer value = list.get(list.size() - 1) + 1;
+            String str = String.valueOf(value == 8 ? value + 1 : value);
             for(int i = 1;i < codeLength;i++) {
                 regionCode.append(NoConstant.REGION_CODE_PREFIX);
                 if (i == codeLength - str.length()) {
