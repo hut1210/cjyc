@@ -255,4 +255,7 @@
         from c_customer
         where user_id = #{userId}
     </select>
+    <select id="findAllNo" resultType="java.lang.String">
+        select no from c_customer
+    </select>
 </mapper>

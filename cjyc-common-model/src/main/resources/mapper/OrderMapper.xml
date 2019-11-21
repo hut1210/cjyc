@@ -264,7 +264,7 @@
                 and ct1.parent_code = #{paramsDto.regionCode}
             </if>
             <if test="paramsDto.bizScope != null">
-                and (o.start_belong_store_id or end_belong_store_id ) in
+                and o.start_belong_store_id in
                 <foreach collection="paramsDto.bizScope" item="item" index="index" open="(" separator="," close=")">
                     #{item}
                 </foreach>
@@ -285,6 +285,14 @@
         sum(case when o.state = 113 then 1 else 0 end ) as cancelCount,<!--已取消-->
         sum(case when o.state = 114 then 1 else 0 end ) as obsoleteCount<!--已作废-->
         from w_order o
+        <where>
+            <if test="bizScope != null">
+                and o.start_belong_store_id in
+                <foreach collection="bizScope" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
     </select>
 
     <select id="selectPage" parameterType="com.cjyc.common.model.dto.customer.order.OrderQueryDto"

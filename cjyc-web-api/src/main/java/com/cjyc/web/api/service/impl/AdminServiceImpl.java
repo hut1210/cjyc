@@ -30,6 +30,7 @@ import com.cjyc.common.system.service.ICsCustomerService;
 import com.cjyc.common.system.service.ICsDriverService;
 import com.cjyc.common.system.service.ICsStoreService;
 import com.cjyc.web.api.service.IAdminService;
+import com.cjyc.web.api.service.IRoleService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang3.StringUtils;
@@ -79,6 +80,8 @@ public class AdminServiceImpl extends ServiceImpl<IAdminDao, Admin> implements I
     private ICsDriverService csDriverService;
     @Resource
     private IRoleDao roleDao;
+    @Resource
+    private IRoleService roleService;
 
 
     @Override
@@ -231,9 +234,12 @@ public class AdminServiceImpl extends ServiceImpl<IAdminDao, Admin> implements I
         if (resultData == null || resultData.getData() == null) {
             return null;
         }
-
-        //业务员
-        Integer userType = 0;
+        ResultVo<Integer> userTypeData = roleService.getUserTypeByRole(roleId);
+        if(userTypeData == null || userTypeData.getData() == null){
+            return null;
+        }
+        //
+        Integer userType = userTypeData.getData();
         if(userType == UserTypeEnum.ADMIN.code){
             Admin admin = adminDao.findByUserId(userId);
             if (admin != null) {

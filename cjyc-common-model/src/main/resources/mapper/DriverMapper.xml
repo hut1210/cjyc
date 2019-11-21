@@ -378,4 +378,10 @@
         WHERE
 	    c.id = #{carrierId}
     </select>
+    <select id="findAll" resultType="com.cjyc.common.model.entity.Driver">
+        select * from d_driver
+    </select>
+    <select id="findAllNo" resultType="java.lang.String">
+        select no from d_driver
+    </select>
 </mapper>

@@ -14,6 +14,7 @@ import com.cjyc.common.model.vo.web.role.MenuTreeVo;
 import com.cjyc.common.model.vo.web.role.SelectUserByRoleVo;
 import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.web.api.service.IRoleService;
+import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -130,14 +131,14 @@ public class RoleController {
         MenuTreeVo root = new MenuTreeVo();
         //将所有数据按照parentId相同分级处理
         Map<Long, List<MenuResp>> treeMap = new HashMap<>();
-        list.stream().forEach(m -> {
+        list.forEach(m -> {
             if (m.getParentId() == null || m.getParentId() <= 0L) {
                 BeanUtils.copyProperties(m, root);
             }
             if (treeMap.containsKey(m.getParentId())) {
                 treeMap.get(m.getParentId()).add(m);
             }else {
-                treeMap.put(m.getParentId(), Arrays.asList(m));
+                treeMap.put(m.getParentId(), Lists.newArrayList(m));
             }
         });
         if (CollectionUtils.isEmpty(treeMap)) {

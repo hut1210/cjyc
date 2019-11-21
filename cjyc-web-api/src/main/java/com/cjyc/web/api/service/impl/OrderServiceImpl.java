@@ -339,7 +339,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
             pageInfo.setList(null);
         }
         //查询统计
-        Map<String, Object> countInfo = orderDao.countForAllTab();
+        Map<String, Object> countInfo = orderDao.countForAllTab(paramsDto.getBizScope());
 
         return BaseResultUtil.success(pageInfo, countInfo);
     }

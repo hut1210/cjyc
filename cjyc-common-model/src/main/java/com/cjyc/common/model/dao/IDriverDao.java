@@ -114,4 +114,8 @@ public interface IDriverDao extends BaseMapper<Driver> {
      * @return
      */
     Driver findDriverByCarrierId(@Param("carrierId") Long carrierId);
+
+    List<Driver> findAll();
+
+    List<String> findAllNo();
 }

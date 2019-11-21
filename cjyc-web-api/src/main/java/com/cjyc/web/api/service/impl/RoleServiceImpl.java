@@ -200,7 +200,7 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
             return BaseResultUtil.fail("根据机构id ：" + deptIdList.get(0) + "未查询到角色信息");
         }
         AtomicReference<Long> finalRoleId = null;
-        rolesRd.getData().stream().forEach(r -> {
+        rolesRd.getData().forEach(r -> {
             if (r.getRoleName().equals(role.getRoleName())) {
                 finalRoleId.set(r.getRoleId());
             }

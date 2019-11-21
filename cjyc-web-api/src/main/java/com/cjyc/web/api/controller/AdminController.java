@@ -59,7 +59,7 @@ public class AdminController {
                                             @PathVariable Long roleId) {
         ResultData<UserResp> resultData = sysUserService.getByAccount(account);
         if (resultData == null || resultData.getData() == null || resultData.getData().getUserId() == null) {
-            return BaseResultUtil.fail("用户不存在");
+            return BaseResultUtil.fail(resultData == null ? "用户不存在" : resultData.getMsg());
         }
         CacheData cacheData = adminService.getCacheData(resultData.getData().getUserId(), roleId);
         //发送推送信息

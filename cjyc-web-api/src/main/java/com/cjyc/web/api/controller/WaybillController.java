@@ -53,7 +53,6 @@ public class WaybillController {
     @ApiOperation("提送车调度")
     @PostMapping("/local/save")
     public ResultVo saveLocal(@RequestBody SaveLocalDto reqDto) {
-
         //验证用户
         Admin admin = csAdminService.getByUserId(reqDto.getUserId(), true);
         if (admin == null || admin.getState() != AdminStateEnum.CHECKED.code) {

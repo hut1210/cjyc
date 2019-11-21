@@ -75,4 +75,6 @@ public interface ICustomerDao extends BaseMapper<Customer> {
     List<Map<String,Object>> getContractByCustomerId(@Param("customerId") Long customerId,@Param("now") Long now);
 
     Customer findByUserId(Long userId);
+
+    List<String> findAllNo();
 }
