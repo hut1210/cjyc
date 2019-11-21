@@ -9,14 +9,19 @@ import com.cjyc.common.model.entity.Task;
 import com.cjyc.common.model.entity.Waybill;
 import com.cjyc.common.model.entity.WaybillCar;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.driver.task.*;
+import com.cjyc.common.model.vo.driver.task.CarDetailVo;
+import com.cjyc.common.model.vo.driver.task.TaskDetailVo;
+import com.cjyc.common.model.vo.driver.task.TaskDriverVo;
+import com.cjyc.common.model.vo.driver.task.WaybillTaskVo;
 import com.cjyc.driver.api.service.ITaskService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
@@ -44,7 +49,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
     private IDriverDao driverDao;
 
     @Override
-    public ResultVo<PageInfo<WaybillTaskVo>> getWaitHandleTaskPage(BaseDriverDto dto) {
+    public ResultVo<PageVo<WaybillTaskVo>> getWaitHandleTaskPage(BaseDriverDto dto) {
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<WaybillTaskVo> taskList = waybillDao.selectWaitHandleTaskPage(dto);
         PageInfo pageInfo = new PageInfo(taskList);
@@ -52,7 +57,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
     }
 
     @Override
-    public ResultVo<PageInfo<WaybillTaskVo>> getNoFinishTaskPage(NoFinishTaskQueryDto dto) {
+    public ResultVo<PageVo<WaybillTaskVo>> getNoFinishTaskPage(NoFinishTaskQueryDto dto) {
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<WaybillTaskVo> taskList = taskDao.selectNoFinishTaskPage(dto);
         PageInfo pageInfo = new PageInfo(taskList);
@@ -60,7 +65,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
     }
 
     @Override
-    public ResultVo<List<TaskDriverVo>> getDriverPage(DriverQueryDto dto) {
+    public ResultVo<PageVo<TaskDriverVo>> getDriverPage(DriverQueryDto dto) {
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<TaskDriverVo> taskList = driverDao.selectDriverList(dto);
         PageInfo<TaskDriverVo> pageInfo = new PageInfo(taskList);
@@ -80,11 +85,12 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                 }
             }
         }
-        return BaseResultUtil.success(returnList);
+        pageInfo.setList(returnList);
+        return BaseResultUtil.success(pageInfo);
     }
 
     @Override
-    public ResultVo<PageInfo<WaybillTaskVo>> getFinishTaskPage(FinishTaskQueryDto dto) {
+    public ResultVo<PageVo<WaybillTaskVo>> getFinishTaskPage(FinishTaskQueryDto dto) {
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<WaybillTaskVo> taskList = taskDao.selectFinishTaskPage(dto);
         PageInfo pageInfo = new PageInfo(taskList);

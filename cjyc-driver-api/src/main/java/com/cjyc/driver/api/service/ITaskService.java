@@ -3,13 +3,11 @@ package com.cjyc.driver.api.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.dto.driver.*;
 import com.cjyc.common.model.entity.Task;
+import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.task.TaskDetailVo;
 import com.cjyc.common.model.vo.driver.task.TaskDriverVo;
 import com.cjyc.common.model.vo.driver.task.WaybillTaskVo;
-import com.github.pagehelper.PageInfo;
-
-import java.util.List;
 
 /**
  * <p>
@@ -28,7 +26,7 @@ public interface ITaskService extends IService<Task> {
      * @param dto
      * @return com.cjyc.common.model.vo.ResultVo<com.github.pagehelper.PageInfo<com.cjyc.common.model.vo.driver.task.WaybillTaskVo>>
      */
-    ResultVo<PageInfo<WaybillTaskVo>> getFinishTaskPage(FinishTaskQueryDto dto);
+    ResultVo<PageVo<WaybillTaskVo>> getFinishTaskPage(FinishTaskQueryDto dto);
 
     /**
      * 功能描述: 查询任务详情
@@ -46,7 +44,7 @@ public interface ITaskService extends IService<Task> {
      * @param dto
      * @return com.cjyc.common.model.vo.ResultVo<com.github.pagehelper.PageInfo<com.cjyc.common.model.vo.driver.task.WaybillTaskVo>>
      */
-    ResultVo<PageInfo<WaybillTaskVo>> getWaitHandleTaskPage(BaseDriverDto dto);
+    ResultVo<PageVo<WaybillTaskVo>> getWaitHandleTaskPage(BaseDriverDto dto);
 
     /**
      * 功能描述: 分页查询提车，交车任务列表
@@ -55,7 +53,7 @@ public interface ITaskService extends IService<Task> {
      * @param dto
      * @return com.cjyc.common.model.vo.ResultVo<com.github.pagehelper.PageInfo<com.cjyc.common.model.vo.driver.task.WaybillTaskVo>>
      */
-    ResultVo<PageInfo<WaybillTaskVo>> getNoFinishTaskPage(NoFinishTaskQueryDto dto);
+    ResultVo<PageVo<WaybillTaskVo>> getNoFinishTaskPage(NoFinishTaskQueryDto dto);
 
     /**
      * 功能描述: 分页查询司机列表
@@ -64,5 +62,5 @@ public interface ITaskService extends IService<Task> {
      * @param dto
      * @return com.cjyc.common.model.vo.ResultVo<com.github.pagehelper.PageInfo<com.cjyc.common.model.vo.driver.task.TaskDriverVo>>
      */
-    ResultVo<List<TaskDriverVo>> getDriverPage(DriverQueryDto dto);
+    ResultVo<PageVo<TaskDriverVo>> getDriverPage(DriverQueryDto dto);
 }
