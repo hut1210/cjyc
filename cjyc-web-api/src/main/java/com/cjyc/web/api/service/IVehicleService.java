@@ -43,12 +43,4 @@ public interface IVehicleService {
      * @return
      */
     ResultVo modifyVehicle(ModifyCarryNumDto dto);
-
-    /**
-     * 根据车牌号模糊匹配空闲的社会车辆
-     * @param dto
-     * @return
-     */
-    ResultVo<List<FreeVehicleVo>> findFreeVehicle(FreeVehicleDto dto);
-
 }

@@ -1,8 +1,11 @@
 package com.cjyc.common.system.service;
 
 import com.cjyc.common.model.dto.FreeVehicleDto;
+import com.cjyc.common.model.vo.FreeVehicleVo;
 import com.cjyc.common.model.vo.ResultVo;
 import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.List;
 
 public interface ICsVehicleService {
 
@@ -11,5 +14,5 @@ public interface ICsVehicleService {
      * @param dto
      * @return
      */
-    ResultVo findFreeVehicle(@RequestBody FreeVehicleDto dto);
+    ResultVo<List<FreeVehicleVo>> findFreeVehicle(@RequestBody FreeVehicleDto dto);
 }

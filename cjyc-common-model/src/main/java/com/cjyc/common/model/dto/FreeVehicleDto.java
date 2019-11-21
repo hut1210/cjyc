@@ -15,8 +15,4 @@ public class FreeVehicleDto implements Serializable {
 
     @ApiModelProperty("车牌号")
     private String plateNo;
-
-    @ApiModelProperty("承运商类型：1个人承运商，2企业承运商/管理员(app中)")
-    @NotNull
-    private Integer type;
 }

@@ -49,7 +49,7 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
             driverInfo = driverDao.findDriverInfo(driverIds);
         }
         PageInfo<DriverInfoVo> pageInfo = new PageInfo(driverInfo);
-        return BaseResultUtil.success(pageInfo == null ? new PageInfo<DriverInfoVo>():pageInfo);
+        return BaseResultUtil.success(pageInfo == null ? new PageInfo<>():pageInfo);
     }
 
 
