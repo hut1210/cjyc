@@ -31,8 +31,8 @@ public class AddDto implements Serializable {
         message = "手机号为11位数字")
     @ApiModelProperty(value = "手机号", required = true)
     private String phone;
-    @NotNull(message = "所属机构不能为空")
-    @ApiModelProperty(value = "机构标识", required = true)
+//    @NotNull(message = "所属机构不能为空")
+    @ApiModelProperty(value = "机构标识")
     private Long deptId;
     @ApiModelProperty(value = "用户记录标识：更新用户信息时此字段必填")
     private Long id;

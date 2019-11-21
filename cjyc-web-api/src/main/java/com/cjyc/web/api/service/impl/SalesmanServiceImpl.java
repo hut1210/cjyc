@@ -19,6 +19,7 @@ import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.web.api.service.ISalesmanService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -37,6 +38,11 @@ public class SalesmanServiceImpl extends ServiceImpl<IAdminDao, Admin> implement
     private ISysUserService sysUserService;
     @Autowired
     private ISysDeptService sysDeptService;
+    /**
+     * 社会车辆事业部机构id
+     */
+    @Value("${cjkj.dept_admin_id}")
+    private Long YC_CT_DEPT_ID;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -257,6 +263,7 @@ public class SalesmanServiceImpl extends ServiceImpl<IAdminDao, Admin> implement
             //物流平台不存在此账号，需要新增
             AddUserReq user = new AddUserReq();
             packAddUserCommonInfo(user, dto);
+            user.setDeptId(YC_CT_DEPT_ID);
             ResultData<AddUserResp> saveRd = sysUserService.save(user);
             if (!ReturnMsg.SUCCESS.getCode().equals(saveRd.getCode())) {
                 return BaseResultUtil.fail("物流平台用户保存失败，原因：" + saveRd.getMsg());
