@@ -2,6 +2,7 @@ package com.cjyc.customer.api.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjyc.common.model.dao.IDictionaryDao;
+import com.cjyc.common.model.dto.sys.SysPictureDto;
 import com.cjyc.common.model.entity.Dictionary;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
@@ -32,8 +33,18 @@ public class AppServiceImpl implements IAppService {
                 list.add(dictionary.getItemValue());
             }
         }
-
         return BaseResultUtil.success(list);
+    }
+
+    @Override
+    public ResultVo updateSysPicture(SysPictureDto sysPictureDto) {
+        Dictionary dictionary = new Dictionary();
+        LambdaQueryWrapper<Dictionary> queryWrapper = new QueryWrapper<Dictionary>().lambda().eq(Dictionary::getItemKey, sysPictureDto.getItemKey());
+        int i = dictionaryDao.update(dictionary, queryWrapper);
+        if (i < 1) {
+            return BaseResultUtil.fail();
+        }
+        return BaseResultUtil.success();
     }
 
 }

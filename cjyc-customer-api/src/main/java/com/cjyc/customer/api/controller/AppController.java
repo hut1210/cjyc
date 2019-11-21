@@ -1,14 +1,13 @@
 package com.cjyc.customer.api.controller;
 
+import com.cjyc.common.model.dto.sys.SysPictureDto;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.customer.api.service.IAppService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 /**
@@ -28,5 +27,11 @@ public class AppController {
     @PostMapping(value = "/getSysPicture/{item}")
     public ResultVo<List<String>> getSysPicture(@PathVariable String item){
         return appService.getSysPicture(item);
+    }
+
+    @ApiOperation(value = "修改首页轮播图")
+    @PostMapping(value = "/updateSysPicture")
+    public ResultVo updateSysPicture(@RequestBody @Validated SysPictureDto sysPictureDto){
+        return appService.updateSysPicture(sysPictureDto);
     }
 }
