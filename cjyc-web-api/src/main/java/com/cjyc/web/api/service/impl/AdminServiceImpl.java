@@ -69,8 +69,6 @@ public class AdminServiceImpl extends ServiceImpl<IAdminDao, Admin> implements I
     @Resource
     private ISysDeptService sysDeptService;
     @Resource
-    private ISysDeptService deptService;
-    @Resource
     private ICsStoreService csStoreService;
     @Resource
     private ISysUserService sysUserService;

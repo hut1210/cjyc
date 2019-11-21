@@ -25,9 +25,9 @@ public class WaybillController {
     private IWaybillService waybillService;
 
 
-    @ApiOperation(value = "分页查询待分配运单列表")
+/*    @ApiOperation(value = "分页查询待分配运单列表")
     @PostMapping("/wait/allot/page")
     public ResultVo<PageVo<WaitAllotVo>> getWaitAllot(@RequestBody WaitAllotDto dto) {
         return waybillService.getWaitAllotPage(dto);
-    }
+    }*/
 }
