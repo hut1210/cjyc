@@ -10,7 +10,10 @@ public class HotCityVo implements Serializable {
 
     @ApiModelProperty("城市编码")
     private String code;
-
     @ApiModelProperty("城市名称")
     private String name;
+    @ApiModelProperty("区县名称")
+    private String areaName;
+    @ApiModelProperty("区县co编码")
+    private String areaCode;
 }

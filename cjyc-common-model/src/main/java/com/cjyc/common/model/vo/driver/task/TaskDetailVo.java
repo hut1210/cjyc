@@ -19,10 +19,6 @@ import java.util.List;
 @Data
 public class TaskDetailVo implements Serializable {
     private static final long serialVersionUID = -6460478260449465114L;
-    @ApiModelProperty(value = "ID")
-    @JsonSerialize(using= ToStringSerializer.class)
-    private Long id;
-
     @ApiModelProperty(value = "运单状态：0待分配承运商，15待承运商承接任务，20已承接, 55运输中，100已完成，111超时关闭，113已取消，115已拒接")
     private Integer state;
 
@@ -47,6 +43,24 @@ public class TaskDetailVo implements Serializable {
     @JsonSerialize(using= ToStringSerializer.class)
     private Long carrierId;
 
+    @ApiModelProperty(value = "司机名称")
+    private String driverName;
+
+    @ApiModelProperty(value = "司机电话")
+    private String driverPhone;
+
+    @ApiModelProperty(value = "运力车牌号")
+    private String vehiclePlateNo;
+
     @ApiModelProperty(value = "车辆信息列表")
     private List<CarDetailVo> carDetailVoList;
+    public String getDriverName() {
+        return driverName == null ? "" : driverName;
+    }
+    public String getDriverPhone() {
+        return driverPhone == null ? "" : driverPhone;
+    }
+    public String getVehiclePlateNo() {
+        return vehiclePlateNo == null ? "" : vehiclePlateNo;
+    }
 }

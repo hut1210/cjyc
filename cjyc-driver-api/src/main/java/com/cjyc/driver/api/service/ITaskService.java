@@ -26,7 +26,7 @@ public interface ITaskService extends IService<Task> {
      * @param dto
      * @return com.cjyc.common.model.vo.ResultVo<com.github.pagehelper.PageInfo<com.cjyc.common.model.vo.driver.task.WaybillTaskVo>>
      */
-    ResultVo<PageVo<WaybillTaskVo>> getFinishTaskPage(FinishTaskQueryDto dto);
+    ResultVo<PageVo<WaybillTaskVo>> getFinishTaskPage(TaskQueryDto dto);
 
     /**
      * 功能描述: 查询任务详情
@@ -63,4 +63,13 @@ public interface ITaskService extends IService<Task> {
      * @return com.cjyc.common.model.vo.ResultVo<com.github.pagehelper.PageInfo<com.cjyc.common.model.vo.driver.task.TaskDriverVo>>
      */
     ResultVo<PageVo<TaskDriverVo>> getDriverPage(DriverQueryDto dto);
+
+    /**
+     * 功能描述: 查询历史任务记录列表
+     * @author liuxingxiang
+     * @date 2019/11/21
+     * @param dto
+     * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.vo.PageVo<com.cjyc.common.model.vo.driver.task.WaybillTaskVo>>
+     */
+    ResultVo<PageVo<WaybillTaskVo>> getHistoryTaskPage(TaskQueryDto dto);
 }

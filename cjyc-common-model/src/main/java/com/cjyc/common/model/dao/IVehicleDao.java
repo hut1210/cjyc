@@ -30,10 +30,10 @@ public interface IVehicleDao extends BaseMapper<Vehicle> {
 
     /**
      * 模糊匹配查询空闲社会车辆
-     * @param plateNo
+     * @param vehicle
      * @return
      */
-    List<FreeVehicleVo> findFreeVehicle(@Param("plateNo") String plateNo,@Param("carrierId") Long carrierId);
+    List<FreeVehicleVo> findFreeVehicle(@Param("vehicle") Vehicle vehicle);
 
     /**
      * 根据条件查询该承运商下的车辆

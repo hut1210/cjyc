@@ -1,12 +1,16 @@
 package com.cjyc.driver.api.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.dao.IBankCardBindDao;
 import com.cjyc.common.model.dao.ICarrierDriverConDao;
 import com.cjyc.common.model.dao.IDriverDao;
 import com.cjyc.common.model.dto.driver.BaseDriverDto;
 import com.cjyc.common.model.dto.driver.BaseDto;
+import com.cjyc.common.model.dto.driver.mine.FrozenDto;
+import com.cjyc.common.model.entity.CarrierDriverCon;
 import com.cjyc.common.model.entity.Driver;
+import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -50,6 +54,19 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
         }
         PageInfo<DriverInfoVo> pageInfo = new PageInfo(driverInfo);
         return BaseResultUtil.success(pageInfo == null ? new PageInfo<>():pageInfo);
+    }
+
+    @Override
+    public ResultVo frozenDriver(FrozenDto dto) {
+        CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
+                                .eq(CarrierDriverCon::getDriverId,dto.getDriverId())
+                                .eq(CarrierDriverCon::getCarrierId,dto.getCarrierId()));
+        if(cdc == null){
+            return BaseResultUtil.fail("该司机不存在");
+        }
+        cdc.setState(CommonStateEnum.FROZEN.code);
+        carrierDriverConDao.updateById(cdc);
+        return BaseResultUtil.success();
     }
 
 

@@ -76,26 +76,20 @@ public class CarrierDto implements Serializable {
     private String cardNo;
 
     @ApiModelProperty("营业执照正面")
-    @NotBlank(message = "营业执照正面不能为空")
     private String busLicenseFrontImg;
 
     @ApiModelProperty("营业执照反面")
-    @NotBlank(message = "营业执照反面不能为空")
     private String busLicenseBackImg;
 
     @ApiModelProperty("道路运输许可证正面")
-    @NotBlank(message = "道路运输许可证正面不能为空")
     private String transportLicenseFrontImg;
 
     @ApiModelProperty("道路运输许可证反面")
-    @NotBlank(message = "道路运输许可证反面不能为空")
     private String transportLicenseBackImg;
 
     @ApiModelProperty("银行开户证明正面")
-    @NotBlank(message = "银行开户证明正面不能为空")
     private String bankOpenFrontImg;
 
     @ApiModelProperty("银行开户证明反面")
-    @NotBlank(message = "银行开户证明反面不能为空")
     private String bankOpenBackImg;
 }

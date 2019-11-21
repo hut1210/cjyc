@@ -10,7 +10,7 @@ import java.util.List;
 public interface ICsVehicleService {
 
     /**
-     * 获取该承运商下的空闲车辆
+     * 获取该承运商(个人/企业)下的空闲车辆
      * @param dto
      * @return
      */

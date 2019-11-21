@@ -11,7 +11,7 @@ import javax.validation.constraints.Pattern;
  * @Date 2019/11/19 15:10
  **/
 @Data
-public class FinishTaskQueryDto extends BaseDriverDto{
+public class TaskQueryDto extends BaseDriverDto{
     private static final long serialVersionUID = -6926657129770237023L;
     @ApiModelProperty(value = "运单编号")
     private String waybillNo;

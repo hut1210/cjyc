@@ -42,10 +42,6 @@ public class CsDriverServiceImpl implements ICsDriverService {
     @Resource
     private IVehicleRunningDao vehicleRunningDao;
     @Resource
-    private ICarrierCarCountDao carrierCarCountDao;
-    @Resource
-    private IVehicleDao vehicleDao;
-    @Resource
     private ITaskDao taskDao;
     @Resource
     private ICarrierDao carrierDao;

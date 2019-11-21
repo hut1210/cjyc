@@ -20,6 +20,9 @@ public class WaybillTaskVo implements Serializable {
     @ApiModelProperty(value = "运单id")
     private Long waybillId;
 
+    @ApiModelProperty(value = "任务单id")
+    private Long taskId;
+
     @ApiModelProperty(value = "运单编号")
     private String waybillNo;
 
@@ -40,15 +43,35 @@ public class WaybillTaskVo implements Serializable {
     @JsonSerialize(using = DataLongSerizlizer.class)
     private Long expectStartTime;
 
-    @ApiModelProperty(value = "完成时间")
+    @ApiModelProperty(value = "交车时间")
     @JsonSerialize(using = DataLongSerizlizer.class)
     private Long completeTime;
 
+    @ApiModelProperty(value = "司机名称")
+    private String driverName;
+
+    @ApiModelProperty(value = "司机电话")
+    private String driverPhone;
+
+    @ApiModelProperty(value = "运力车牌号")
+    private String vehiclePlateNo;
+
+    public Long getTaskId() {
+        return taskId == null ? 0 : taskId;
+    }
     public Long getExpectStartTime() {
         return expectStartTime == null ? 0 : expectStartTime;
     }
-
     public Long getCompleteTime() {
         return completeTime == null ? 0 : completeTime;
+    }
+    public String getDriverName() {
+        return driverName == null ? "" : driverName;
+    }
+    public String getDriverPhone() {
+        return driverPhone == null ? "" : driverPhone;
+    }
+    public String getVehiclePlateNo() {
+        return vehiclePlateNo == null ? "" : vehiclePlateNo;
     }
 }

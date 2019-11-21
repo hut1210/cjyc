@@ -1,8 +1,8 @@
 package com.cjyc.common.model.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.cjyc.common.model.dto.driver.FinishTaskQueryDto;
 import com.cjyc.common.model.dto.driver.NoFinishTaskQueryDto;
+import com.cjyc.common.model.dto.driver.TaskQueryDto;
 import com.cjyc.common.model.dto.web.task.CrTaskDto;
 import com.cjyc.common.model.entity.Task;
 import com.cjyc.common.model.vo.driver.task.WaybillTaskVo;
@@ -55,7 +55,7 @@ public interface ITaskDao extends BaseMapper<Task> {
      * @param dto
      * @return java.util.List<com.cjyc.common.model.vo.driver.task.WaybillTaskVo>
      */
-    List<WaybillTaskVo> selectFinishTaskPage(FinishTaskQueryDto dto);
+    List<WaybillTaskVo> selectFinishTaskPage(TaskQueryDto dto);
 
     /**
      * 功能描述: 查询提车，交车任务列表
@@ -65,4 +65,13 @@ public interface ITaskDao extends BaseMapper<Task> {
      * @return java.util.List<com.cjyc.common.model.vo.driver.task.WaybillTaskVo>
      */
     List<WaybillTaskVo> selectNoFinishTaskPage(NoFinishTaskQueryDto dto);
+
+    /**
+     * 功能描述: 查询历史任务记录列表
+     * @author liuxingxiang
+     * @date 2019/11/21
+     * @param dto
+     * @return java.util.List<com.cjyc.common.model.vo.driver.task.WaybillTaskVo>
+     */
+    List<WaybillTaskVo> selectHistoryTaskPage(TaskQueryDto dto);
 }
