@@ -9,9 +9,17 @@ public class FieldConstant {
     public static final String ITEM = "system_config";
 
     /**
-     * 字典表中项值
+     * 用户端轮播图KEY
      */
-    public static final String SYSTEM_PICTURE = "system_picture";
+    public static final String SYSTEM_PICTURE_CUSTOMER = "system_picture_customer";
+    /**
+     * 司机端轮播图KEY
+     */
+    public static final String SYSTEM_PICTURE_DRIVER = "system_picture_driver";
+    /**
+     * 业务员端轮播图KEY
+     */
+    public static final String SYSTEM_PICTURE_SALE = "system_picture_sale";
 
     /*******开发票状态******/
     /**

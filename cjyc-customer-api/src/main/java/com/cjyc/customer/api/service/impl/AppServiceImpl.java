@@ -7,6 +7,7 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.customer.api.service.IAppService;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -21,11 +22,18 @@ public class AppServiceImpl implements IAppService {
     private IDictionaryDao dictionaryDao;
 
     @Override
-    public ResultVo<List<Dictionary>> getSysPicture(String systemPicture) {
+    public ResultVo<List<String>> getSysPicture(String systemPicture) {
         LambdaQueryWrapper<Dictionary> queryWrapper = new QueryWrapper<Dictionary>().lambda()
-                .eq(Dictionary::getItem,systemPicture).eq(Dictionary::getState,1);
+                .eq(Dictionary::getItem,systemPicture).eq(Dictionary::getState,1).select(Dictionary::getItemValue);
         List<Dictionary> dictionaryList = dictionaryDao.selectList(queryWrapper);
-        return BaseResultUtil.success(dictionaryList);
+        List<String> list = new ArrayList<>(10);
+        if (!CollectionUtils.isEmpty(dictionaryList)) {
+            for (Dictionary dictionary : dictionaryList) {
+                list.add(dictionary.getItemValue());
+            }
+        }
+
+        return BaseResultUtil.success(list);
     }
 
 }
