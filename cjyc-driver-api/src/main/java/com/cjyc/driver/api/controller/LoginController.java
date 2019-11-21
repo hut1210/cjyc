@@ -1,8 +1,11 @@
 package com.cjyc.driver.api.controller;
 
 import com.cjyc.common.model.dto.LoginDto;
+import com.cjyc.common.model.dto.customer.login.VerifyCodeDto;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.driver.login.BaseLoginVo;
 import com.cjyc.common.model.vo.driver.login.DriverLoginVo;
+import com.cjyc.common.system.service.ICsLoginService;
 import com.cjyc.driver.api.service.ILoginService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -25,6 +28,15 @@ public class LoginController {
 
     @Resource
     private ILoginService loginService;
+
+    @Resource
+    private ICsLoginService csLoginService;
+
+    @ApiOperation(value = "获取验证码")
+    @PostMapping("/verifyCode")
+    public ResultVo verifyCode(@RequestBody VerifyCodeDto dto) {
+        return csLoginService.verifyCode(dto);
+    }
 
     @ApiOperation(value = "司机注册登陆")
     @PostMapping("/login")

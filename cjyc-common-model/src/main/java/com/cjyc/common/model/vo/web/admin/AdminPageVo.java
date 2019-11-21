@@ -28,6 +28,6 @@ public class AdminPageVo {
     @ApiModelProperty(value = "创建时间")
     private Long createTime;
     @ApiModelProperty(value = "创建时间")
-    private Long createUser;
+    private String createUser;
 
 }

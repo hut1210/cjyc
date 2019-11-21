@@ -5,6 +5,7 @@ import com.cjyc.common.model.dto.web.driver.DriverDto;
 import com.cjyc.common.model.dto.web.mineCarrier.MyDriverDto;
 import com.cjyc.common.model.entity.Carrier;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cjyc.common.model.vo.driver.login.BaseLoginVo;
 import com.cjyc.common.model.vo.web.carrier.*;
 import org.apache.ibatis.annotations.Param;
 
@@ -86,4 +87,11 @@ public interface ICarrierDao extends BaseMapper<Carrier> {
     List<Carrier> findBelongListByDriverId(Long driverId);
 
     List<Long> getBelongIdsListByDriver(Long driverId);
+
+    /**
+     * 根据司机id获取信息
+     * @param driverId
+     * @return
+     */
+    List<BaseLoginVo> findDriverLogin(@Param("driverId") Long driverId);
 }

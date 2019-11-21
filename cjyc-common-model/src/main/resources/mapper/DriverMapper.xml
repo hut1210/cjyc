@@ -30,6 +30,7 @@
         <result column="deposit_pay_state" property="depositPayState" />
         <result column="business_state" property="businessState" />
         <result column="source" property="source" />
+        <result column="photo_img" property="photoImg" />
         <result column="create_time" property="createTime" />
         <result column="create_user_id" property="createUserId" />
         <result column="check_time" property="checkTime" />
@@ -38,7 +39,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, user_id, name, phone, emergency_phone, type, identity, id_card, real_name, age, sex, address, id_card_front_img, id_card_back_img, driver_licence_front_img, driver_licence_back_img, travel_licence_front_img, travel_licence_back_img, taxi_licence_front_img, taxi_licence_back_img, qualifi_cert_front_img, qualifi_cert_back_img, remark, deposit_pay_state, business_state, source, create_time, create_user_id, check_time, check_user_id
+        id, user_id, name, phone, emergency_phone, type, identity, id_card, real_name, age, sex, address, id_card_front_img, id_card_back_img, driver_licence_front_img, driver_licence_back_img, travel_licence_front_img, travel_licence_back_img, taxi_licence_front_img, taxi_licence_back_img, qualifi_cert_front_img, qualifi_cert_back_img, remark, deposit_pay_state, business_state, source, photo_img, create_time, create_user_id, check_time, check_user_id
     </sql>
 
     <select id="findList" resultType="com.cjyc.common.model.vo.web.user.DriverListVo">
@@ -383,5 +384,44 @@
     </select>
     <select id="findAllNo" resultType="java.lang.String">
         select no from d_driver
+    </select>
+
+    <!--根据管理员司机id获取符合条件的司机集合-->
+    <select id="findDriverIds" resultType="java.lang.Long" parameterType="java.lang.Long">
+        SELECT
+          dcdc.driver_id
+        FROM
+          d_driver dd
+        LEFT JOIN d_carrier_driver_con dcdc ON dcdc.driver_id = dd.id
+        LEFT JOIN d_carrier dc ON dc.id = dcdc.carrier_id
+        WHERE
+          dd.id = #{driverId}
+        AND dcdc.state &lt; 9
+        AND dc.state &lt; 9
+    </select>
+
+    <!--根据司机ids获取司机信息-->
+    <select id="findDriverInfo" resultType="com.cjyc.common.model.vo.driver.mine.DriverInfoVo"
+                        parameterType="java.lang.Long">
+          SELECT
+            dd.id AS driverId,
+            dd.real_name AS realName,
+            dd.phone AS phone,
+            dd.id_card AS idCard,
+            dd.id_card_front_img AS idCardFrontImg,
+            dd.id_card_back_img AS idCardBackImg,
+            dcdc.MODE AS MODE,
+            dd.business_state AS businessState,
+            dvr.vehicle_id AS vehicleId,
+            dvr.plate_no AS plateNo
+      FROM
+          d_driver dd
+        LEFT JOIN d_carrier_driver_con dcdc ON dcdc.driver_id = dd.id
+        LEFT JOIN d_carrier dc ON dc.id = dcdc.carrier_id
+        LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
+        where dd.id in
+        <foreach collection="driverIds" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
     </select>
 </mapper>

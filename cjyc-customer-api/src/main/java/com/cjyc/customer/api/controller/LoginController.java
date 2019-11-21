@@ -4,6 +4,7 @@ import com.cjyc.common.model.dto.LoginDto;
 import com.cjyc.common.model.dto.customer.login.VerifyCodeDto;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.login.CustomerLoginVo;
+import com.cjyc.common.system.service.ICsLoginService;
 import com.cjyc.customer.api.service.ILoginService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -13,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
 
 /**
  * 注册登录
@@ -28,10 +31,13 @@ public class LoginController {
     @Autowired
     private ILoginService loginService;
 
+    @Resource
+    private ICsLoginService csLoginService;
+
     @ApiOperation(value = "获取验证码")
     @PostMapping("/verifyCode")
     public ResultVo verifyCode(@RequestBody VerifyCodeDto dto) {
-        return loginService.verifyCode(dto);
+        return csLoginService.verifyCode(dto);
     }
 
     @ApiOperation(value = "用户注册登陆")
