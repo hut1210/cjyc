@@ -86,4 +86,6 @@ public interface IWaybillDao extends BaseMapper<Waybill> {
      * @return java.util.List<com.cjyc.common.model.vo.driver.task.WaybillTaskVo>
      */
     List<WaybillTaskVo> selectWaitHandleTaskPage(BaseDriverDto dto);
+
+    int updateForAllotDriver(Long waybillId);
 }

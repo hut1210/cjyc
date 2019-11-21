@@ -108,7 +108,9 @@ public class CsSendNoServiceImpl implements ICsSendNoService {
                 }
                 if (!CollectionUtils.isEmpty(list)) {
                     set = new HashSet<>(list);
-                    redisUtil.sAdd(setKey, set.toArray(new String[0]));
+                    set.remove(null);
+                    String[] strings = set.toArray(new String[0]);
+                    redisUtil.sAdd(setKey, strings);
                     redisUtil.expire(setKey, 1, TimeUnit.DAYS);
                 }
             }
@@ -128,10 +130,13 @@ public class CsSendNoServiceImpl implements ICsSendNoService {
                 }
             }
             redisUtil.sAdd(setKey, driverNo);
-            return driverNo;
+        }catch(Exception e){
+            log.error(e.getMessage(),e);
         } finally {
             redisUtil.delete(lockKey);
         }
+
+        return driverNo;
     }
 
     /**

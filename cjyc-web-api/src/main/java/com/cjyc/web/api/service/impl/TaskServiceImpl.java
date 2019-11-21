@@ -142,6 +142,9 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                 taskDao.updateById(task);
             }
 
+            //更新运单类型
+            int i = waybillDao.updateForAllotDriver(waybill.getId());
+
         } finally {
             for (String key : lockKeySet) {
                 redisLock.releaseLock(key);

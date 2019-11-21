@@ -106,6 +106,12 @@
         where state &lt; 100
         and id = #{waybillId}
     </update>
+    <update id="updateForAllotDriver">
+        update w_waybill
+        set state = 55
+        where state = 20
+
+    </update>
     <select id="findByNo" resultType="com.cjyc.common.model.entity.Waybill">
         select
         <include refid="Base_Column_List"/>

@@ -20,14 +20,12 @@ import java.util.List;
 @ApiModel
 public class SaveOrderDto {
     
-    @ApiModelProperty(value = "1WEB管理后台, 2业务员APP, 4司机APP, 6用户端APP, 7用户端小程序")
+    @ApiModelProperty(value = "1WEB管理后台, 2业务员APP, 4司机APP, 6用户端APP, 7用户端小程序", required = true)
     private int clientId;
     @ApiModelProperty(value = "操作人userid", required = true)
     private Long userId;
-    @ApiModelProperty(value = "操作人")
+    @ApiModelProperty(value = "操作人(不用传)")
     private Long userName;
-    @ApiModelProperty(value = "0保存（预订单） 1提交， 2审核")
-    private int saveType;
     @ApiModelProperty(value = "物流券抵消金额")
     private BigDecimal couponOffsetFee;
     /**车辆列表*/
@@ -35,9 +33,9 @@ public class SaveOrderDto {
 
 
 
-    @ApiModelProperty(value = "订单ID")
+    @ApiModelProperty(value = "订单ID（修改时传）")
     private Long orderId;
-    @ApiModelProperty(value = "1C端 2大客户 3-伙人")
+    @ApiModelProperty(value = "1C端 2大客户 3-伙人", required = true)
     private int customerType;
     @ApiModelProperty(value = "客户id")
     private Long customerId;
