@@ -50,4 +50,6 @@ public interface ICsCustomerService {
      * @return
      */
     ResultData<Boolean> updateCustomerToPlatform(Customer customer, String newPhone);
+
+    Customer getById(Long userId, boolean isSearchCache);
 }

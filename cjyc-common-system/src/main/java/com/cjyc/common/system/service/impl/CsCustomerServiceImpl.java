@@ -141,4 +141,10 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
         }
         return ResultData.ok(false);
     }
+
+    @Override
+    public Customer getById(Long userId, boolean isSearchCache) {
+        return customerDao.selectById(userId);
+    }
+
 }

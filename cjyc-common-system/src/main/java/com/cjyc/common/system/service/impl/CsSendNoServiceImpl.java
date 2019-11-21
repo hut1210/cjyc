@@ -62,25 +62,25 @@ public class CsSendNoServiceImpl implements ICsSendNoService {
     @Override
     public String getNo(SendNoTypeEnum type) {
         if (type == SendNoTypeEnum.ORDER) {
-            return getNo(type, 5);
+            return getNo(type, type.randomLength);
         }
         if (type == SendNoTypeEnum.WAYBILL) {
-            return getNo(type, 6);
+            return getNo(type, type.randomLength);
         }
         if (type == SendNoTypeEnum.CUSTOMER) {
-            return getRandomNo(type, 8);
+            return getRandomNo(type, type.randomLength);
         }
         if (type == SendNoTypeEnum.DRIVER) {
-            return getRandomNo(type, 8);
+            return getRandomNo(type, type.randomLength);
         }
         if (type == SendNoTypeEnum.COUPON) {
-            return getNo(type, 3);
+            return getNo(type, type.randomLength);
         }
         if (type == SendNoTypeEnum.PAYMENT) {
-            return getNo(type, 6);
+            return getNo(type, type.randomLength);
         }
         if (type == SendNoTypeEnum.RECEIPT) {
-            return getNo(type, 6);
+            return getNo(type, type.randomLength);
         }
         return getNo(type, 5, 2, 2);
     }
@@ -131,7 +131,7 @@ public class CsSendNoServiceImpl implements ICsSendNoService {
             }
             redisUtil.sAdd(setKey, driverNo);
         }catch(Exception e){
-            log.error(e.getMessage(),e);
+            throw new ServerException("获取编号失败");
         } finally {
             redisUtil.delete(lockKey);
         }
@@ -179,11 +179,11 @@ public class CsSendNoServiceImpl implements ICsSendNoService {
         } finally {
             redisUtil.delete(lockKey);
         }
-        StringBuffer orderNo = new StringBuffer();
-        orderNo.append(sendNoTypeEnum.prefix == null ? "" : sendNoTypeEnum.prefix);
-        orderNo.append(time);
-        orderNo.append(random);
-        return orderNo.toString();
+        StringBuffer resNo = new StringBuffer();
+        resNo.append(sendNoTypeEnum.prefix == null ? "" : sendNoTypeEnum.prefix);
+        resNo.append(time);
+        resNo.append(random);
+        return resNo.toString();
     }
 
     /**
