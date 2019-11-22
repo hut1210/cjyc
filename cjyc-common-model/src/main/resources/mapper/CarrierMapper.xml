@@ -328,6 +328,7 @@
         dd.business_state AS businessState,
         dcdc.state AS state,
         dcdc.role as role,
+        dc.type as type,
         dc.state as carrierState,
         dc.NAME AS companyName,
         dvr.plate_no AS plateNo,

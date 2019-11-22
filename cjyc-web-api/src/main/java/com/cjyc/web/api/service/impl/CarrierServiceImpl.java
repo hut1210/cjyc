@@ -4,13 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
-import com.cjkj.usercenter.dto.common.AddUserResp;
-import com.cjkj.usercenter.dto.common.UpdateDeptReq;
-import com.cjkj.usercenter.dto.common.UpdateUserReq;
-import com.cjkj.usercenter.dto.common.UserResp;
-import com.cjkj.usercenter.dto.yc.AddDeptAndUserReq;
 import com.cjkj.usercenter.dto.yc.AddDeptAndUserResp;
-import com.cjkj.usercenter.dto.yc.UpdateDeptManagerReq;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.carrier.CarrierDto;
@@ -55,28 +49,20 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
 
     @Resource
     private ICarrierDao carrierDao;
-
     @Resource
     private IDriverDao driverDao;
-
     @Resource
     private ICarrierDriverConDao carrierDriverConDao;
-
     @Resource
     private IBankCardBindDao bankCardBindDao;
-
     @Resource
     private ICarrierCarCountDao carrierCarCountDao;
-
     @Resource
     private ICarrierCityConService carrierCityConService;
-
     @Autowired
     private ISysDeptService sysDeptService;
-
     @Autowired
     private ISysUserService sysUserService;
-
     @Resource
     private ICsCarrierService csCarrierService;
 
