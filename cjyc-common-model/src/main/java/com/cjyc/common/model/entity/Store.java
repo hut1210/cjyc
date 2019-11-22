@@ -67,6 +67,12 @@ public class Store implements Serializable {
     @ApiModelProperty(value = "状态：0待审核，2已开通，4取消，7已驳回，9已停用（CommonStateEnum）")
     private Integer state;
 
+    @ApiModelProperty(value = "联系人ID")
+    private Long contactAdminId;
+
+    @ApiModelProperty(value = "联系人名称")
+    private String contactAdmin;
+
     @ApiModelProperty(value = "创建人ID")
     private Long createUserId;
 
