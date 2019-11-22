@@ -27,7 +27,7 @@
 
     <!-- 根据用户userId和用户类型删除银行卡信息-->
     <delete id="removeBandCarBind" parameterType="java.lang.Long">
-        delete from s_bank_card_bind where user_id = #{userId}
+        delete from s_bank_card_bind where user_id = #{carrierId}
     </delete>
 
     <select id="findBinkCardInfo" resultType="com.cjyc.common.model.vo.driver.mine.BinkCardVo"
