@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
@@ -13,7 +14,7 @@ import java.util.List;
 @Accessors(chain = true)
 @ApiModel
 public class SignTaskDto {
-        @NotNull(message = "用户ID不能为空")
+    @NotNull(message = "用户ID不能为空")
     @ApiModelProperty(value = "用户Id",required = true)
     private Long loginId;
 

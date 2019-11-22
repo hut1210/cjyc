@@ -15,6 +15,8 @@ import java.util.Set;
 @Accessors(chain = true)
 @ApiModel
 public class ListOrderDto extends BasePageDto {
+    @ApiModelProperty(value = "用户ID")
+    private Long loginId;
     @ApiModelProperty(value = "角色ID")
     private Long roleId;
     /**
@@ -107,11 +109,8 @@ public class ListOrderDto extends BasePageDto {
     @ApiModelProperty(value = "订单来源：1WEB管理后台, 2业务员APP, 4司机APP, 6用户端APP, 7用户端小程序")
     private Integer source;
 
-
     @ApiModelProperty(value = "创建人：客户/业务员")
     private String createUserName;
-
-
 
     @ApiModelProperty(value = "客户付款方式：0到付（默认），1预付，2账期")
     private Integer payType;

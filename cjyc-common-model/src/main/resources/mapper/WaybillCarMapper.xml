@@ -223,6 +223,10 @@
         where id =#{id}
         and state &lt; 2
     </update>
+    <update id="updateInfoForUnload">
+
+
+    </update>
 
     <select id="findByTaskCarId" resultType="com.cjyc.common.model.entity.WaybillCar">
         select

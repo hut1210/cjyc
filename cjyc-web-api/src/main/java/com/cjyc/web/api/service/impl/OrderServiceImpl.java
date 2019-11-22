@@ -332,6 +332,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         }
         paramsDto.setBizScope(bizScope.getCode() == 0 ? null : bizScope.getStoreIds());
 
+        //分页查询
         PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
         List<ListOrderVo> list = orderDao.findListSelective(paramsDto);
         PageInfo<ListOrderVo> pageInfo = new PageInfo<>(list);
@@ -339,7 +340,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
             pageInfo.setList(null);
         }
         //查询统计
-        Map<String, Object> countInfo = orderDao.countForAllTab(paramsDto.getBizScope());
+        Map<String, Object> countInfo = orderDao.countForAllTab(paramsDto.getLoginId(), paramsDto.getBizScope());
 
         return BaseResultUtil.success(pageInfo, countInfo);
     }

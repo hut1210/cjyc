@@ -284,7 +284,7 @@
     <select id="countForAllTab" resultType="java.util.Map">
         select
         sum(case when o.state &gt; 0 then 1 else 0 end ) as totalCount,<!--全部订单-->
-        sum(case when o.state = 0 then 1 else 0 end ) as waitCommitCount,<!--待提交-->
+        sum(case when o.state = 0 and o.check_user_id = #{loginId} then 1 else 0 end ) as waitCommitCount,<!--待提交-->
         sum(case when o.state &gt; 0 and o.state &lt; 15 then 1 else 0 end ) as waitCheckCount,<!--待确认-->
         sum(case when o.state = 15 then 1 else 0 end ) as waitPrePayCount,<!--带预付款-->
         sum(case when o.state = 25 then 1 else 0 end ) as waitDispatchCount,<!--待调度-->

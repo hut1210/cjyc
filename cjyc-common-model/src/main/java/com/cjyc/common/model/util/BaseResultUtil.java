@@ -33,11 +33,11 @@ public class BaseResultUtil<T> {
         return getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg());
     }
 
-    public static <T> ResultVo<T> success(String msg, String... args) {
+    public static <T> ResultVo<T> success(String msg, Object... args) {
         return getVo(ResultEnum.SUCCESS.getCode(), MessageFormat.format(msg, args));
     }
 
-    public static <T> ResultVo<T> success(int code, String msg, String... args) {
+    public static <T> ResultVo<T> success(int code, String msg, Object... args) {
         return getVo(code, MessageFormat.format(msg, args));
     }
 
@@ -93,11 +93,11 @@ public class BaseResultUtil<T> {
         return getVo(ResultEnum.FAIL.getCode(), ResultEnum.FAIL.getMsg(), data);
     }
 
-    public static <T> ResultVo<T> fail(String message, String... args) {
+    public static <T> ResultVo<T> fail(String message, Object... args) {
         return getVo(ResultEnum.FAIL.getCode(), MessageFormat.format(message, args));
     }
 
-    public static <T> ResultVo<T> fail(int code, String message, String... args) {
+    public static <T> ResultVo<T> fail(int code, String message, Object... args) {
         return getVo(code, MessageFormat.format(message, args));
     }
 
