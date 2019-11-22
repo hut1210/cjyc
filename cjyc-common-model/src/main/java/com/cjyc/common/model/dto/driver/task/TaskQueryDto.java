@@ -1,5 +1,6 @@
-package com.cjyc.common.model.dto.driver;
+package com.cjyc.common.model.dto.driver.task;
 
+import com.cjyc.common.model.dto.driver.BaseDriverDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -9,7 +10,7 @@ import lombok.Data;
  * @Date 2019/11/19 15:10
  **/
 @Data
-public class TaskQueryDto extends BaseDriverDto{
+public class TaskQueryDto extends BaseDriverDto {
     private static final long serialVersionUID = -6926657129770237023L;
     @ApiModelProperty(value = "运单编号")
     private String waybillNo;

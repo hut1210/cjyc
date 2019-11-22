@@ -1,6 +1,7 @@
 package com.cjyc.driver.api.controller;
 
-import com.cjyc.common.model.dto.driver.*;
+import com.cjyc.common.model.dto.driver.BaseDriverDto;
+import com.cjyc.common.model.dto.driver.task.*;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.task.TaskDetailVo;
@@ -68,6 +69,12 @@ public class TaskController {
     @PostMapping("/getHistoryTaskPage")
     public ResultVo<PageVo<WaybillTaskVo>> getHistoryTaskPage(@RequestBody @Validated TaskQueryDto dto) {
         return taskService.getHistoryTaskPage(dto);
+    }
+
+    @ApiOperation(value = "确认提车", notes = "\t 请求接口为json格式")
+    @PostMapping("/confirmTakeCar")
+    public ResultVo confirmTakeCar(@RequestBody @Validated ConfirmTakeCarDto dto) {
+        return taskService.confirmTakeCar(dto);
     }
 
 

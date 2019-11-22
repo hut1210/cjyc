@@ -427,7 +427,7 @@
     </select>
 
     <!--根据司机所在的承运商id获取司机信息-->
-    <select id="selectDriverList" parameterType="com.cjyc.common.model.dto.driver.DriverQueryDto"
+    <select id="selectDriverList" parameterType="com.cjyc.common.model.dto.driver.task.DriverQueryDto"
             resultType="com.cjyc.common.model.vo.driver.task.TaskDriverVo">
         select
             con.role as role,

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.driver.*;
+import com.cjyc.common.model.dto.driver.task.*;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.driver.DriverIdentityEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -109,6 +110,11 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
         List<WaybillTaskVo> taskList = taskDao.selectHistoryTaskPage(dto);
         PageInfo pageInfo = new PageInfo(taskList);
         return BaseResultUtil.success(pageInfo);
+    }
+
+    @Override
+    public ResultVo confirmTakeCar(ConfirmTakeCarDto dto) {
+        return null;
     }
 
     @Override

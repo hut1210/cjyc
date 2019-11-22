@@ -1,4 +1,4 @@
-package com.cjyc.common.model.dto.driver;
+package com.cjyc.common.model.dto.driver.task;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
