@@ -52,7 +52,6 @@ public class SaveOrderDto {
     @NotBlank
     @ApiModelProperty(value = "区编号", required = true)
     private String startAreaCode;
-    @NotBlank
     @ApiModelProperty(value = "始发地详细地址", required = true)
     private String startAddress;
     @ApiModelProperty(value = "出发地业务中心ID: -1不经过业务中心")

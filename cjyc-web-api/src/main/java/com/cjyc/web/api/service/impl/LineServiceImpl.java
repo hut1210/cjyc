@@ -3,20 +3,15 @@ package com.cjyc.web.api.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.utils.ExcelUtil;
 import com.cjyc.common.model.constant.NoConstant;
-import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.dao.ICityDao;
 import com.cjyc.common.model.dao.ILineDao;
 import com.cjyc.common.model.dao.ILineNodeDao;
-import com.cjyc.common.model.dto.web.carSeries.CarSeriesImportExcel;
 import com.cjyc.common.model.dto.web.line.*;
-import com.cjyc.common.model.entity.CarSeries;
 import com.cjyc.common.model.entity.Line;
 import com.cjyc.common.model.enums.CityLevelEnum;
-import com.cjyc.common.model.enums.FlagEnum;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
-import com.cjyc.common.model.util.StringUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.city.ProvinceCityVo;
@@ -29,8 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -132,7 +125,9 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
         if(line == null){
             return BaseResultUtil.getVo(ResultEnum.NOEXIST_LINE.getCode(),ResultEnum.NOEXIST_LINE.getMsg());
         }
-        return BaseResultUtil.success(line.getDefaultWlFee() == null ? BigDecimal.ZERO:line.getDefaultWlFee().divide(new BigDecimal(100)));
+        Map<String,Object> map = new HashMap<>(10);
+        map.put("defaultWlFee",line.getDefaultWlFee() == null ? BigDecimal.ZERO : line.getDefaultWlFee().divide(new BigDecimal(100)));
+        return BaseResultUtil.success(map);
     }
 
     @Override

@@ -7,11 +7,13 @@ import com.cjyc.common.model.dao.ICarrierDriverConDao;
 import com.cjyc.common.model.dao.IDriverDao;
 import com.cjyc.common.model.dto.driver.BaseDriverDto;
 import com.cjyc.common.model.dto.driver.BaseDto;
+import com.cjyc.common.model.dto.driver.mine.DriverVehicleDto;
 import com.cjyc.common.model.dto.driver.mine.FrozenDto;
 import com.cjyc.common.model.entity.CarrierDriverCon;
 import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.mine.BinkCardVo;
@@ -24,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -37,6 +40,8 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
     private IDriverDao driverDao;
     @Resource
     private IBankCardBindDao bankCardBindDao;
+
+    private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
     @Override
     public ResultVo<List<BinkCardVo>> findBinkCard(BaseDto dto) {
@@ -64,9 +69,23 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
         if(cdc == null){
             return BaseResultUtil.fail("该司机不存在");
         }
+        Driver driver = driverDao.selectOne(new QueryWrapper<Driver>().lambda().eq(Driver::getId, dto.getDriverId()));
+        if(driver == null){
+            return BaseResultUtil.fail("该司机不存在");
+        }
+        driver.setCheckUserId(dto.getLoginId());
+        driver.setCheckTime(NOW);
+        driverDao.updateById(driver);
+
         cdc.setState(CommonStateEnum.FROZEN.code);
         carrierDriverConDao.updateById(cdc);
         return BaseResultUtil.success();
+    }
+
+    @Override
+    public ResultVo findVehicle(DriverVehicleDto dto) {
+
+        return null;
     }
 
 

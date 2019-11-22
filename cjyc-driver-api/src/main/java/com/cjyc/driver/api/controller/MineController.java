@@ -4,6 +4,7 @@ import com.cjyc.common.model.dto.CarrierDriverDto;
 import com.cjyc.common.model.dto.FreeVehicleDto;
 import com.cjyc.common.model.dto.driver.BaseDriverDto;
 import com.cjyc.common.model.dto.driver.BaseDto;
+import com.cjyc.common.model.dto.driver.mine.DriverVehicleDto;
 import com.cjyc.common.model.dto.driver.mine.FrozenDto;
 import com.cjyc.common.model.vo.FreeVehicleVo;
 import com.cjyc.common.model.vo.PageVo;
@@ -68,5 +69,11 @@ public class MineController {
     @PostMapping(value = "/frozenDriver")
     public ResultVo frozenDriver(@Validated @RequestBody FrozenDto dto){
         return mineService.frozenDriver(dto);
+    }
+
+    @ApiOperation(value = "车辆信息")
+    @PostMapping(value = "/findVehicle")
+    public ResultVo findVehicle(@RequestBody DriverVehicleDto dto) {
+        return mineService.findVehicle(dto);
     }
 }
