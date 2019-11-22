@@ -15,13 +15,10 @@ import java.io.Serializable;
 public class DetailQueryDto implements Serializable {
     private static final long serialVersionUID = -764356177374166763L;
     public interface GetHistoryDetail{}
-    public interface GetDetail{}
-    @ApiModelProperty("司机id")
-    @NotNull(groups = {GetHistoryDetail.class,GetDetail.class},message = "司机id不能为空")
-    private Long loginId;
+    public interface GetNoHandleDetail{}
 
     @ApiModelProperty(value = "运单id")
-    @NotNull(groups = {GetHistoryDetail.class,GetDetail.class},message = "运单id不能为空")
+    @NotNull(groups = {GetHistoryDetail.class,GetNoHandleDetail.class},message = "运单id不能为空")
     private Long waybillId;
 
     @ApiModelProperty(value = "任务单id")

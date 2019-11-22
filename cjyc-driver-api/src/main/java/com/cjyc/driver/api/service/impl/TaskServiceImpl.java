@@ -66,8 +66,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
     @Override
     public ResultVo<PageVo<WaybillTaskVo>> getNoFinishTaskPage(NoFinishTaskQueryDto dto) {
         // 根据司机登录ID查询司机信息ID
-        Driver driver = driverDao.selectOne(new QueryWrapper<Driver>().lambda()
-                .eq(Driver::getUserId, dto.getLoginId()).select(Driver::getId));
+        Driver driver = driverDao.selectOne(new QueryWrapper<Driver>().lambda().eq(Driver::getUserId, dto.getLoginId()).select(Driver::getId));
         if (driver == null) {
             return BaseResultUtil.fail("司机账号不正确,请检查!");
         }
@@ -114,6 +113,13 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
 
     @Override
     public ResultVo<PageVo<WaybillTaskVo>> getFinishTaskPage(TaskQueryDto dto) {
+        // 根据司机登录ID查询司机信息ID
+        Driver driver = driverDao.selectOne(new QueryWrapper<Driver>().lambda().eq(Driver::getUserId, dto.getLoginId()).select(Driver::getId));
+        if (driver == null) {
+            return BaseResultUtil.fail("司机账号不正确,请检查!");
+        }
+        dto.setDriverId(driver.getId());
+
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<WaybillTaskVo> taskList = taskDao.selectFinishTaskPage(dto);
         PageInfo pageInfo = new PageInfo(taskList);

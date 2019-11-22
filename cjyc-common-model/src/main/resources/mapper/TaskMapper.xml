@@ -103,12 +103,13 @@
             t.car_num AS carNum,
             w.type AS type,
             car.expect_start_time AS expectStartTime,
-            car.freight_fee AS freightFee
+            sum(car.freight_fee) AS freightFee
         FROM
             ( SELECT task.id, task.waybill_id, task.waybill_no, task.guide_line, task.car_num,task.state,tc.waybill_car_id
             FROM w_task task
-            LEFT JOIN w_task_car tc ON task.id = tc.task_id and task.driver_id = #{driverId}
+            LEFT JOIN w_task_car tc ON task.id = tc.task_id
             <where>
+                task.driver_id = #{driverId}
                 <if test="taskState != null and taskState == @com.cjyc.common.model.constant.FieldConstant@PICK_CAR_TASK">
                     AND task.state = ${@com.cjyc.common.model.enums.task.TaskStateEnum@WAIT_LOAD.code}
                 </if>
@@ -119,6 +120,7 @@
             ) t
             LEFT JOIN w_waybill w ON t.waybill_id = w.id
             LEFT JOIN w_waybill_car car ON t.waybill_car_id = car.id
+        GROUP BY t.id
     </select>
 
     <!--查询已交付任务列表-->
@@ -132,12 +134,16 @@
             t.car_num as carNum,
             t.complete_time as completeTime,
             w.type as type,
-            w.freight_fee as freightFee
+            sum(car.freight_fee) as freightFee
         from
-            w_task t
+            (select task.id, task.waybill_id, task.waybill_no, task.guide_line, task.car_num,task.state,task.complete_time,tc.waybill_car_id
+            from w_task task
+            left join w_task_car tc on task.id = tc.task_id
+            where task.driver_id = #{driverId} and task.state = ${@com.cjyc.common.model.enums.task.TaskStateEnum@FINISHED.code}
+            ) t
             left join w_waybill w on t.waybill_id = w.id
+            left join w_waybill_car car on t.waybill_car_id = car.id
         <where>
-            t.driver_id = #{loginId} and t.state = 100
             <if test="waybillNo != null and waybillNo.trim() != ''">
                 and t.waybill_no like concat('%',#{waybillNo},'%')
             </if>
@@ -166,6 +172,7 @@
                 and t.guide_line like concat('%-',#{lineEnd},'%')
             </if>
         </where>
+        group by t.id
         order by t.complete_time desc
     </select>
 
@@ -183,14 +190,18 @@
             t.driver_phone as driverPhone,
             t.vehicle_plate_no as vehiclePlateNo,
             w.type as type,
-            w.freight_fee as freightFee,
-            car.expect_start_time as expectStartTime
+            car.expect_start_time as expectStartTime,
+            sum(car.freight_fee) as freightFee
         from
-            w_task t
+            (select task.id, task.waybill_id, task.waybill_no, task.guide_line, task.car_num,
+            task.state,task.complete_time,task.driver_name,task.driver_phone,task.vehicle_plate_no,tc.waybill_car_id
+            from w_task task
+            left join w_task_car tc on task.id = tc.task_id
+            where task.create_user_id = #{loginId}
+            ) t
             left join w_waybill w on t.waybill_id = w.id
-            left join w_waybill_car car on t.waybill_id = car.waybill_id
+            left join w_waybill_car car on t.waybill_car_id = car.id
         <where>
-            t.create_user_id = #{loginId}
             <if test="waybillNo != null and waybillNo.trim() != ''">
                 and t.waybill_no like concat('%',#{waybillNo},'%')
             </if>
@@ -219,6 +230,7 @@
                 and t.guide_line like concat('%-',#{lineEnd},'%')
             </if>
         </where>
+        group by t.id
         order by t.complete_time desc
     </select>
 
