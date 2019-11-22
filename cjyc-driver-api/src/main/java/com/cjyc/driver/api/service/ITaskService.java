@@ -2,6 +2,7 @@ package com.cjyc.driver.api.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.dto.driver.*;
+import com.cjyc.common.model.dto.driver.task.*;
 import com.cjyc.common.model.entity.Task;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -72,4 +73,13 @@ public interface ITaskService extends IService<Task> {
      * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.vo.PageVo<com.cjyc.common.model.vo.driver.task.WaybillTaskVo>>
      */
     ResultVo<PageVo<WaybillTaskVo>> getHistoryTaskPage(TaskQueryDto dto);
+
+    /**
+     * 功能描述: 确认提车
+     * @author liuxingxiang
+     * @date 2019/11/22
+     * @param dto
+     * @return com.cjyc.common.model.vo.ResultVo
+     */
+    ResultVo confirmTakeCar(ConfirmTakeCarDto dto);
 }

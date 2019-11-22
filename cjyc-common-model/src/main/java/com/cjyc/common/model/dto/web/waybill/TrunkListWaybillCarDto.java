@@ -89,6 +89,7 @@ public class TrunkListWaybillCarDto extends BasePageDto {
     @ApiModelProperty(value = "出发地业务中心ID")
     private Long startStoreId;
 
+
     @ApiModelProperty(value = "省编码")
     private String endProvinceCode;
 
@@ -145,5 +146,7 @@ public class TrunkListWaybillCarDto extends BasePageDto {
     @ApiModelProperty(value = "创建时间")
     private Long endCreateTime;
 
+    @ApiModelProperty(value = "当前所在业务中心ID")
+    private Long nowStoreId;
 
 }

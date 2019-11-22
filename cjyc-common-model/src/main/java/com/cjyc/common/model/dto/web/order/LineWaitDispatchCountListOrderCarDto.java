@@ -20,6 +20,6 @@ public class LineWaitDispatchCountListOrderCarDto {
 
     @NotNull
     @ApiModelProperty(value = "用户ID", required = true)
-    private Long userId;
+    private Long loginId;
 
 }

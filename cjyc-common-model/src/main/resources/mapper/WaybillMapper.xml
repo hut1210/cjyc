@@ -420,7 +420,7 @@
     </select>
 
     <!--查询待分配运单列表-->
-    <select id="selectWaitHandleTaskPage" parameterType="com.cjyc.common.model.dto.driver.BaseDriverDto"
+    <select id="selectWaitHandleTaskPage" parameterType="java.lang.Long"
             resultType="com.cjyc.common.model.vo.driver.task.WaybillTaskVo">
         select
             w.id as waybillId,
@@ -434,8 +434,11 @@
             w_waybill w
             left join w_waybill_car car on w.id = car.waybill_id
         where
-            w.carrier_id in (select carrier_id from d_carrier_driver_con where driver_id = #{loginId} and state = 2 and role in(2,3))
-            and w.state = 20
+            w.carrier_id in (select carrier_id
+            from d_carrier_driver_con
+            where driver_id = #{driverId} and state = ${@com.cjyc.common.model.enums.CommonStateEnum@CHECKED.code})
+            and w.state = ${@com.cjyc.common.model.enums.waybill.WaybillStateEnum@ALLOT_CONFIRM.code}
+            group by w.id
     </select>
 
 </mapper>

@@ -428,7 +428,7 @@
     </select>
 
     <!--根据司机所在的承运商id获取司机信息-->
-    <select id="selectDriverList" parameterType="com.cjyc.common.model.dto.driver.DriverQueryDto"
+    <select id="selectDriverList" parameterType="com.cjyc.common.model.dto.driver.task.DriverQueryDto"
             resultType="com.cjyc.common.model.vo.driver.task.TaskDriverVo">
         select
             con.role as role,
@@ -446,7 +446,7 @@
             left join d_driver d on run.driver_id=d.id
             left join d_carrier_driver_con con on run.driver_id=con.driver_id
         <where>
-            run.state=1 and con.state=2 and con.carrier_id=#{carrierId}
+            run.state= 1 and con.state = ${@com.cjyc.common.model.enums.CommonStateEnum@CHECKED.code} and con.carrier_id=#{carrierId}
             <if test="keyword != null and keyword.trim() != ''">
                 and (
                 d.real_name like CONCAT('%',#{keyword},'%')

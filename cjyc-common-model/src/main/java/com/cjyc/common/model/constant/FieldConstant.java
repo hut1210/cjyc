@@ -75,7 +75,7 @@ public class FieldConstant {
      */
     public static final int PLACE_ORDER = 1;
 
-    /*******司机端任务状态请求常量******/
+    /*******司机端任务状态请求常量 不能删除 XML中使用******/
     /**
      * 分配任务
      */

@@ -105,7 +105,7 @@ public class OrderController {
     @PostMapping(value = "/check")
     public ResultVo check(@RequestBody CheckOrderDto reqDto) {
         //验证用户存不存在
-        Long userId = reqDto.getUserId();
+        Long userId = reqDto.getLoginId();
         Admin admin = csAdminService.getById(userId, true);
         if(admin == null){
             return BaseResultUtil.fail("用户不存在");
@@ -121,7 +121,7 @@ public class OrderController {
     @PostMapping(value = "/reject")
     public ResultVo reject(@RequestBody RejectOrderDto reqDto) {
         //验证用户存不存在
-        Long userId = reqDto.getUserId();
+        Long userId = reqDto.getLoginId();
         Admin admin = csAdminService.getByUserId(userId,true);
         if(admin == null){
             return BaseResultUtil.fail("用户不存在");
@@ -194,10 +194,10 @@ public class OrderController {
     @ApiOperation(value = "分配订单")
     @PostMapping(value = "/allot")
     public ResultVo allot(@Validated @RequestBody AllotOrderDto reqDto) {
-        String name = validateAdmin(reqDto.getUserId());
-        reqDto.setUserName(name);
+        String name = validateAdmin(reqDto.getLoginId());
+        reqDto.setLoginName(name);
         String toUserName = validateAdmin(reqDto.getToUserId());
-        reqDto.setUserName(name);
+        reqDto.setLoginName(name);
         reqDto.setToUserName(toUserName);
         return orderService.allot(reqDto);
     }
@@ -210,8 +210,8 @@ public class OrderController {
     @ApiOperation(value = "订单改价")
     @PostMapping(value = "/change/price")
     public ResultVo changePrice(@RequestBody ChangePriceOrderDto reqDto) {
-        String name = validateAdmin(reqDto.getUserId());
-        reqDto.setUserName(name);
+        String name = validateAdmin(reqDto.getLoginId());
+        reqDto.setLoginName(name);
         return orderService.changePrice(reqDto);
     }
 
@@ -223,8 +223,8 @@ public class OrderController {
     @ApiOperation(value = "取消订单")
     @PostMapping(value = "/cancel")
     public ResultVo cancel(@RequestBody CancelOrderDto reqDto) {
-        String name = validateAdmin(reqDto.getUserId());
-        reqDto.setUserName(name);
+        String name = validateAdmin(reqDto.getLoginId());
+        reqDto.setLoginName(name);
         return orderService.cancel(reqDto);
     }
 
@@ -237,8 +237,8 @@ public class OrderController {
     @PostMapping(value = "/obsolete")
     public ResultVo obsolete(@RequestBody CancelOrderDto reqDto) {
 
-        String name = validateAdmin(reqDto.getUserId());
-        reqDto.setUserName(name);
+        String name = validateAdmin(reqDto.getLoginId());
+        reqDto.setLoginName(name);
 
         return orderService.obsolete(reqDto);
     }

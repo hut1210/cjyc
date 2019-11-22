@@ -20,10 +20,10 @@ public class ChangePriceOrderDto {
 
     @NotNull
     @ApiModelProperty(value = "用户ID",required = true)
-    private Long userId;
+    private Long loginId;
     @NotBlank
     @ApiModelProperty(value = "用户名",required = true)
-    private String userName;
+    private String loginName;
     @NotNull
     @ApiModelProperty(value = "订单ID",required = true)
     private Long orderId;

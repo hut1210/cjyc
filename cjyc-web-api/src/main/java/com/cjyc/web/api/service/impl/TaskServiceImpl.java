@@ -11,7 +11,6 @@ import com.cjyc.common.model.enums.task.TaskStateEnum;
 import com.cjyc.common.model.enums.waybill.WaybillCarStateEnum;
 import com.cjyc.common.model.enums.waybill.WaybillStateEnum;
 import com.cjyc.common.model.enums.waybill.WaybillTypeEnum;
-import com.cjyc.common.model.exception.ParameterException;
 import com.cjyc.common.model.exception.ServerException;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -24,6 +23,7 @@ import com.cjyc.common.model.vo.web.task.TaskVo;
 import com.cjyc.common.model.vo.web.waybill.WaybillCarVo;
 import com.cjyc.web.api.service.ITaskService;
 import com.github.pagehelper.PageHelper;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.apache.commons.lang3.StringUtils;
@@ -110,7 +110,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
             task.setDriverName(driver.getName());
             task.setCreateTime(System.currentTimeMillis());
             task.setCreateUser(paramsDto.getUserName());
-            task.setCreateUserId(paramsDto.getUserId());
+            task.setCreateUserId(paramsDto.getLoginId());
             taskDao.insert(task);
 
             int noCount = 0;
@@ -201,18 +201,18 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
         for (Long taskCarId : paramsDto.getTaskCarIdList()) {
             WaybillCar waybillCar = waybillCarDao.findByTaskCarId(taskCarId);
             if (waybillCar == null) {
-                throw new ParameterException("运单车辆不存在");
+                return BaseResultUtil.fail("ID：{0}运单车辆不存在", taskCarId);
             }
             if (waybillCar.getState() > WaybillCarStateEnum.LOADED.code) {
-                throw new ParameterException("运单车辆已经装过车");
+                return BaseResultUtil.fail("No:{0}运单车辆已经装过车", waybillCar.getOrderCarId());
             }
             //验证车辆当前所在地是否与出发城市匹配
             OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
             if(orderCar == null ){
-                throw new ParameterException("订单车辆不存在");
+                return BaseResultUtil.fail("No:{0}订单车辆不存在", waybillCar.getOrderCarId());
             }
             if(!waybillCar.getStartStoreId().equals(orderCar.getNowStoreId())){
-                throw new ParameterException("订单车辆尚未到达始发地业务中心范围内");
+                return BaseResultUtil.fail("No:{0}订单车辆尚未到达始发地业务中心范围内", waybillCar.getOrderCarId());
             }
             waybillCar.setLoadTime(currentTimeMillis);
             //订单
@@ -227,16 +227,17 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
             }
             count++;
         }
+        //更新运单车辆状态
+        waybillCarDao.updateStateForLoad(waybillCarNewState, waybillCarIdSet);
         //更新空车位数
         vehicleRunningDao.updateOccupiedNumForLoad(paramsDto.getLoginId(), count);
+        //更新订单车辆状态
+        orderCarDao.updateStateForLoad(orderCarNewState, orderCarIdSet);
         //更新订单状态
         if(!CollectionUtils.isEmpty(orderIdSet)){
             orderDao.updateStateForLoad(OrderStateEnum.TRANSPORTING.code, orderIdSet);
         }
-        //更新订单车辆状态
-        orderCarDao.updateStateForLoad(orderCarNewState, orderCarIdSet);
-        //更新运单车辆状态
-        waybillCarDao.updateStateForLoad(waybillCarNewState, waybillCarIdSet);
+
         //TODO 给客户发送消息
         //TODO 写物流轨迹
         return BaseResultUtil.success();
@@ -246,7 +247,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
     public ResultVo unload(UnLoadTaskDto paramsDto) {
         //返回内容
         Map<String, Object> failCarNoMap = Maps.newHashMap();
-        Map<String, Object> successCarNoMap = Maps.newHashMap();
+        List<WaybillCar> updateWaybillCarList = Lists.newArrayList();
 
         Task task = taskDao.selectById(paramsDto.getTaskId());
         if(task == null){
@@ -279,12 +280,18 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
             waybillCar.setState(WaybillCarStateEnum.UNLOADED.code);
             waybillCar.setUnloadTime(currentTimeMillis);
             waybillCarDao.updateById(waybillCar);
-            successCarNoMap.put(waybillCar.getOrderCarNo(), waybillCar.getId());
-
+            //更新运单信息
+            //更新订单车辆信息
+            //更新订单信息
+            updateWaybillCarList.add(waybillCar);
         }
-        if (successCarNoMap.isEmpty()) {
+
+        if (CollectionUtils.isEmpty(updateWaybillCarList)) {
             return BaseResultUtil.fail(failCarNoMap);
         }
+
+        //更新任务信息
+        //更新实时运力信息
         //TODO 发送收车推送信息
 
         return BaseResultUtil.success(failCarNoMap);

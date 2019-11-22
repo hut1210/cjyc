@@ -45,7 +45,7 @@ public class TaskController {
     @PostMapping(value = "/allot")
     public ResultVo allot(@RequestBody AllotTaskDto reqDto) {
         //验证用户
-        Driver driver = csDriverService.getById(reqDto.getUserId(), true);
+        Driver driver = csDriverService.getById(reqDto.getLoginId(), true);
         if (driver == null) {
             return BaseResultUtil.fail("当前用户不能登录");
         }

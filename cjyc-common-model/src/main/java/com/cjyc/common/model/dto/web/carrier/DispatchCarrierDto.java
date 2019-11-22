@@ -10,7 +10,7 @@ public class DispatchCarrierDto extends BasePageDto {
     private static final long serialVersionUID = -7496908972850812115L;
 
     @ApiModelProperty("登陆id(loginId)")
-    private Long userId;
+    private Long loginId;
 
     @ApiModelProperty("企业名称")
     private String name;

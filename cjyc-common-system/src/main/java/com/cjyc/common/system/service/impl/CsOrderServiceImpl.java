@@ -418,7 +418,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         //添加操作日志
         orderChangeLogService.save(order, OrderChangeTypeEnum.REJECT,
                 new Object[]{oldState, OrderStateEnum.WAIT_SUBMIT.code, paramsDto.getReason()},
-                new Object[]{paramsDto.getUserId(), paramsDto.getUserName()});
+                new Object[]{paramsDto.getLoginId(), paramsDto.getLoginName()});
         //TODO 发送消息给创建人
         return BaseResultUtil.success();
     }
@@ -446,7 +446,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         //添加操作日志
         orderChangeLogService.save(order, OrderChangeTypeEnum.CANCEL,
                 new Object[]{oldState, OrderStateEnum.F_CANCEL.code, paramsDto.getReason()},
-                new Object[]{paramsDto.getUserId(), paramsDto.getUserName()});
+                new Object[]{paramsDto.getLoginId(), paramsDto.getLoginName()});
         //TODO 发送消息
         return BaseResultUtil.success();
     }
@@ -468,7 +468,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         //添加操作日志
         orderChangeLogService.save(order, OrderChangeTypeEnum.OBSOLETE,
                 new Object[]{oldState, OrderStateEnum.F_OBSOLETE.code, paramsDto.getReason()},
-                new Object[]{paramsDto.getUserId(), paramsDto.getUserName()});
+                new Object[]{paramsDto.getLoginId(), paramsDto.getLoginName()});
 
         return BaseResultUtil.success();
     }

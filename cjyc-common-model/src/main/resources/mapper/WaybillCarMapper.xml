@@ -660,6 +660,9 @@
             <if test="paramsDto.endCreateTime != null">
                 and wc.create_time &lt;= #{paramsDto.endCreateTime}
             </if>
+            <if test="paramsDto.nowStoreId != null">
+                and wc.now_store_id &lt;= #{paramsDto.nowStoreId}
+            </if>
 
         </where>
 

@@ -328,10 +328,11 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         //查询角色业务中心范围
         BizScope bizScope = csSysService.getBizScopeByRoleId(paramsDto.getRoleId(), true);
         if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
-            return null;
+            return BaseResultUtil.fail("没有数据权限");
         }
         paramsDto.setBizScope(bizScope.getCode() == 0 ? null : bizScope.getStoreIds());
 
+        //分页查询
         PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
         List<ListOrderVo> list = orderDao.findListSelective(paramsDto);
         PageInfo<ListOrderVo> pageInfo = new PageInfo<>(list);
@@ -339,8 +340,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
             pageInfo.setList(null);
         }
         //查询统计
-        Map<String, Object> countInfo = orderDao.countForAllTab(paramsDto.getBizScope());
-
+        Map<String, Object> countInfo = orderDao.countForAllTab(paramsDto.getLoginId(), paramsDto.getBizScope());
         return BaseResultUtil.success(pageInfo, countInfo);
     }
 
@@ -350,7 +350,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         //查询角色业务中心范围
         BizScope bizScope = csSysService.getBizScopeByRoleId(paramsDto.getRoleId(), true);
         if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
-            return null;
+            return BaseResultUtil.fail("没有数据权限");
         }
         paramsDto.setBizScope(bizScope.getCode() == 0 ? null : bizScope.getStoreIds());
         PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);

@@ -13,9 +13,9 @@ public class UpdateTrunkMidwayFinishDto {
     private int clientId;
     @NotNull(message = "userId不能为空")
     @ApiModelProperty(value = "操作人userid", required = true)
-    private Long userId;
+    private Long loginId;
     @ApiModelProperty(value = "操作人userName", required = true)
-    private String userName;
+    private String loginName;
     @ApiModelProperty(value = "操作人userName", required = true)
     private String userPhone;
     @NotNull

@@ -1,0 +1,10 @@
+package com.cjyc.common.model.dto.web.waybill;
+
+import lombok.Data;
+
+@Data
+public class InStoreListDto {
+
+    private Long storeId;
+
+}

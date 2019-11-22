@@ -19,11 +19,11 @@ import javax.validation.constraints.NotNull;
 public class CancelOrderDto {
 
     @NotNull
-    @ApiModelProperty(value = "loginId", required = true)
-    private Long userId;
+    @ApiModelProperty(value = "用户ID", required = true)
+    private Long loginId;
 
-    @ApiModelProperty("loginName")
-    private String userName;
+    @ApiModelProperty("用户名")
+    private String loginName;
     @NotNull
     @ApiModelProperty(value = "订单ID", required = true)
     private Long orderId;

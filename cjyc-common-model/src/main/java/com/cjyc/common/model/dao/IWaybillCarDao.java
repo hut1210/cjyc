@@ -76,4 +76,5 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
     int deleteWaybillCarAndTaskCar(@Param("waybillId") Long waybillId, @Param("unDeleteWaybillCarId") Set<Long> unDeleteWaybillCarId);
 
     int updateForAllotDriver(Long id);
+
 }

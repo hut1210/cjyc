@@ -3,6 +3,7 @@ package com.cjyc.common.model.vo.driver.task;
 import com.cjyc.common.model.util.BigDecimalSerizlizer;
 import com.cjyc.common.model.util.DataLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -18,9 +19,11 @@ import java.math.BigDecimal;
 public class WaybillTaskVo implements Serializable {
     private static final long serialVersionUID = -5688740696634356580L;
     @ApiModelProperty(value = "运单id")
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long waybillId;
 
     @ApiModelProperty(value = "任务单id")
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long taskId;
 
     @ApiModelProperty(value = "运单编号")

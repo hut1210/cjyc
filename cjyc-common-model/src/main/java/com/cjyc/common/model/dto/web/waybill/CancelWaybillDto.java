@@ -15,7 +15,7 @@ import java.util.List;
 public class CancelWaybillDto {
 
     @ApiModelProperty(value = "用户ID",required = true)
-    private Long userId;
+    private Long loginId;
     @ApiModelProperty(value = "运单号", required = true)
     private List<Long> waybillIdList;
 }
