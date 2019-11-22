@@ -18,6 +18,7 @@ import org.apache.ibatis.annotations.Param;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * <p>
@@ -110,7 +111,7 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
 
     OrderCarVo findExtraById(Long orderCarId);
 
-    int updateStateForLoad(@Param("orderCarState") int orderCarState, @Param("orderCarId") Long orderCarId);
+    int updateStateForLoad(@Param("orderCarState") int orderCarState, @Param("orderCarIdSet") Set<Long> orderCarIdSet);
 
     int updateTrunkStateById(Long id);
 

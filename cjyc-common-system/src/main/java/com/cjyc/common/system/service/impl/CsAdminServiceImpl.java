@@ -11,7 +11,9 @@ import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.entity.Store;
+import com.cjyc.common.model.enums.AdminStateEnum;
 import com.cjyc.common.model.enums.UserTypeEnum;
+import com.cjyc.common.model.exception.ParameterException;
 import com.cjyc.common.model.vo.web.admin.AdminVo;
 import com.cjyc.common.model.vo.web.admin.CacheData;
 import com.cjyc.common.system.feign.ISysDeptService;
@@ -94,5 +96,14 @@ public class CsAdminServiceImpl implements ICsAdminService {
     @Override
     public Admin getById(Long userId, boolean isSearchCache) {
         return adminDao.selectById(userId);
+    }
+
+    @Override
+    public Admin validate(Long adminId) {
+        Admin admin = getById(adminId, true);
+        if(admin == null || admin.getState() != AdminStateEnum.CHECKED.code){
+            throw new ParameterException("用户不存在或者已离职");
+        }
+        return admin;
     }
 }

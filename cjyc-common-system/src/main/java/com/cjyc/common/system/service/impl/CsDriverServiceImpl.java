@@ -15,6 +15,7 @@ import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.task.TaskStateEnum;
 import com.cjyc.common.model.enums.transport.*;
+import com.cjyc.common.model.exception.ParameterException;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.YmlProperty;
@@ -28,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.lang.reflect.Parameter;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -245,6 +247,16 @@ public class CsDriverServiceImpl implements ICsDriverService {
             //不需要变更手机号
             return ResultData.ok("成功");
         }
+    }
+
+    @Override
+    public Driver validate(Long driverId) {
+        Driver driver = getById(driverId, true);
+        if (driver == null) {
+            throw new ParameterException("当前用户，不能执行操作");
+        }
+        return driver;
+
     }
 
     /**

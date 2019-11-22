@@ -43,7 +43,7 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
 
     int countByStartCityAndOrderCar(@Param("cityCode") String cityCode, @Param("inStoreId") Long inStoreId);
 
-    int updateStateById(@Param("state") int state, @Param("id") Long id);
+    int updateStateForLoad(@Param("state") int state, @Param("set") Set<Long> waybillCarIdSet);
 
     WaybillCar findUnConnectCar(String cityCode);
 

@@ -24,7 +24,7 @@ import java.util.Map;
 public class RequestHeaderAndBodyResolver extends RequestResponseBodyMethodProcessor {
 
     private static final String ROLE_ID = "roleId";
-    private static final String USER_ID = "userId";
+    private static final String USER_ID = "loginId";
 
     public RequestHeaderAndBodyResolver(List<HttpMessageConverter<?>> converters) {
         super(converters);

@@ -15,12 +15,12 @@ import java.util.List;
 @ApiModel
 public class InStoreTaskDto {
 
-    @NotNull(message = "用户userId不能为空")
-    @ApiModelProperty(value = "用户userId",required = true)
-    private Long userId;
+    @NotNull(message = "用户ID不能为空")
+    @ApiModelProperty(value = "用户Id",required = true)
+    private Long loginId;
 
-    @ApiModelProperty(value = "用户userName")
-    private String userName;
+    @ApiModelProperty(value = "用户名称")
+    private String loginName;
 
     @NotNull(message = "入库业务中心ID不能为空")
     @ApiModelProperty(value = "入库业务中心ID")

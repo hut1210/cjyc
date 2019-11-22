@@ -39,7 +39,7 @@ public class LocalListWaybillCarVo extends WaybillCar {
     private String driverName;
     @ApiModelProperty(value = "司机电话")
     private String driverPhone;
-    @ApiModelProperty(value = "司机ID(userId)")
+    @ApiModelProperty(value = "司机ID(loginId)")
     private Long driverId;
     @ApiModelProperty(value = "运力车牌号")
     private String vehiclePlateNo;

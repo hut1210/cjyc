@@ -48,16 +48,16 @@ public class LoginServiceImpl implements ILoginService {
 /*
         //查询本地用户信息
         Saleman saleman = salemanService.getByphone(contactPhone);
-        if(saleman == null || saleman.getUserId() == null){
+        if(saleman == null || saleman.getLoginId() == null){
             return BaseResultUtil.fail("用户不存在");
         }
         BeanUtils.copyProperties(saleman, salemanLoginVo);
 
         //验证是否是管理员
-        Admin admin = adminService.getByUserId(saleman.getUserId());
+        Admin admin = adminService.getByUserId(saleman.getLoginId());
         if(admin != null){
             //查询用户角色信息
-            List<SysRoleDto> roleList = sysRoleService.getListByUserId(saleman.getUserId());
+            List<SysRoleDto> roleList = sysRoleService.getListByUserId(saleman.getLoginId());
             salemanLoginVo.setRoleList(roleList);
         }
         return BaseResultUtil.success();*/

@@ -45,7 +45,7 @@ public class TrunkCarListWaybillCarVo extends WaybillCar {
     @ApiModelProperty(value = "司机电话")
     private String driverPhone;
 
-    @ApiModelProperty(value = "司机ID(userId)")
+    @ApiModelProperty(value = "司机ID(loginId)")
     private Long driverId;
 
     @ApiModelProperty(value = "运力车牌号")

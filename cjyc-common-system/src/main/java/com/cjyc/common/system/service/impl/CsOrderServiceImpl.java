@@ -18,14 +18,12 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.entity.defined.FullCity;
 import com.cjyc.common.system.service.*;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.util.List;
 
 /**
@@ -262,7 +260,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                     customer.setState(1);
                     customer.setPayMode(PayModeEnum.COLLECT.code);
                     customer.setCreateTime(System.currentTimeMillis());
-                    customer.setCreateUserId(paramsDto.getUserId());
+                    customer.setCreateUserId(paramsDto.getLoginId());
                     //添加
                     csCustomerService.save(customer);
                 } else {

@@ -22,7 +22,7 @@ import java.util.Set;
  */
 public interface IAdminDao extends BaseMapper<Admin> {
 
-    Admin findByUserId(@Param("userId") Long userId);
+    Admin findByUserId(@Param("loginId") Long userId);
 
     List<Long> findStoreBizScope(@Param("adminId") Long adminId);
 

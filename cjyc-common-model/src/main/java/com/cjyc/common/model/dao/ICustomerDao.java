@@ -27,7 +27,7 @@ public interface ICustomerDao extends BaseMapper<Customer> {
      * @param userId
      * @return
      */
-    Customer getCustomerByUserId(@Param("userId") Long userId);
+    Customer getCustomerByUserId(@Param("loginId") Long userId);
     /**
      * 根据手机号，姓名，身份证号查询移动端用户
      * @param customerVo

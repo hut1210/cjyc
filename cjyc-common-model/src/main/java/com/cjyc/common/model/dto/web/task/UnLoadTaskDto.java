@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
@@ -13,12 +15,18 @@ import java.util.List;
 @Accessors(chain = true)
 @ApiModel
 public class UnLoadTaskDto {
-    @ApiModelProperty(value = "用户userId",required = true)
-    private Long userId;
+    @NotNull(message = "用户ID不能为空")
+    @ApiModelProperty(value = "用户Id",required = true)
+    private Long loginId;
 
-    @ApiModelProperty(value = "用户userName")
-    private String userName;
+    @ApiModelProperty(value = "用户名称（不用传）")
+    private String loginName;
 
+    @NotNull(message = "任务ID不能为空")
+    @ApiModelProperty(value = "任务ID")
+    private String taskId;
+
+    @NotEmpty(message = "任务车辆不能为空")
     @ApiModelProperty(value = "任务车辆ID",required = true)
     private List<Long> taskCarIdList;
 }

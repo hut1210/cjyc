@@ -19,6 +19,9 @@ public class LoadTaskDto {
     @ApiModelProperty(value = "登录用户名(不用传)")
     private String loginName;
 
+    @ApiModelProperty(value = "任务ID",required = true)
+    private String taskId;
+
     @ApiModelProperty(value = "任务车辆ID",required = true)
     private List<Long> taskCarIdList;
 

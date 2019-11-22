@@ -91,7 +91,7 @@ public class LineController {
         lineService.exportExcel(request,response);
     }
 
-    @ApiOperation(value = "导入Excel", notes = "\t 请求接口为/importExcel/userId(导入用户ID)格式")
+    @ApiOperation(value = "导入Excel", notes = "\t 请求接口为/importExcel/loginId(导入用户ID)格式")
     @PostMapping("/importExcel/{userId}")
     public ResultVo importExcel(@RequestParam("file") MultipartFile file, @PathVariable Long userId){
         boolean result = lineService.importExcel(file, userId);

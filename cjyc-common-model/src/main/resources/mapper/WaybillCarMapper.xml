@@ -203,10 +203,19 @@
         and start_store_id = #{endStoreId}
     </update>
 
-    <update id="updateStateById">
+    <update id="updateStateForLoad">
         update w_waybill_car
         set state = #{state}
         where id = #{id}
+        <where>
+            and state &lt; #{state}
+            <if test="set != null">
+                and id in
+                <foreach collection="set" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
     </update>
     <update id="updateForAllotDriver">
         update w_waybill_car
@@ -517,22 +526,22 @@
         <where>
             w.type = 2
             <if test="paramsDto.orderStartProvinceCode != null and paramsDto.orderStartProvinceCode != ''">
-                and o.start_province_code  = #{paramsDto.orderStartProvinceCode}
+                and o.start_province_code = #{paramsDto.orderStartProvinceCode}
             </if>
             <if test="paramsDto.orderStartCityCode != null and paramsDto.orderStartCityCode != ''">
-                and o.start_city_code  = #{paramsDto.orderStartCityCode}
+                and o.start_city_code = #{paramsDto.orderStartCityCode}
             </if>
             <if test="paramsDto.orderStartAreaCode != null and paramsDto.orderStartAreaCode != ''">
-                and o.start_area_code  = #{paramsDto.orderStartAreaCode}
+                and o.start_area_code = #{paramsDto.orderStartAreaCode}
             </if>
             <if test="paramsDto.orderEndProvinceCode != null and paramsDto.orderEndProvinceCode != ''">
-                and o.end_province_code  = #{paramsDto.orderEndProvinceCode}
+                and o.end_province_code = #{paramsDto.orderEndProvinceCode}
             </if>
             <if test="paramsDto.orderEndCityCode != null and paramsDto.orderEndCityCode != ''">
-                and o.end_city_code  = #{paramsDto.orderEndCityCode}
+                and o.end_city_code = #{paramsDto.orderEndCityCode}
             </if>
             <if test="paramsDto.orderEndAreaCode != null and paramsDto.orderEndAreaCode != ''">
-                and o.end_area_code  = #{paramsDto.orderEndAreaCode}
+                and o.end_area_code = #{paramsDto.orderEndAreaCode}
             </if>
             <if test="paramsDto.orderNo != null and paramsDto.orderNo != ''">
                 and o.no = #{paramsDto.orderNo}

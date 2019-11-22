@@ -53,4 +53,6 @@ public interface ICsDriverService {
      * @return
      */
     ResultData updateDriverToPlatform(CarrierDriverDto dto);
+
+    Driver validate(Long loginId);
 }

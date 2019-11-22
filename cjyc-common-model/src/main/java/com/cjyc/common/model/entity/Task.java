@@ -56,7 +56,7 @@ public class Task implements Serializable {
     @ApiModelProperty(value = "司机电话")
     private String driverPhone;
 
-    @ApiModelProperty(value = "司机ID(userId)")
+    @ApiModelProperty(value = "司机ID(loginId)")
     private Long driverId;
 
     @ApiModelProperty(value = "装车数量")

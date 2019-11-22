@@ -3,14 +3,12 @@ package com.cjyc.web.api.controller;
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.enums.AdminStateEnum;
-import com.cjyc.common.model.enums.message.PushMessageEnum;
 import com.cjyc.common.model.exception.ParameterException;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.order.*;
 import com.cjyc.common.system.service.ICsAdminService;
-import com.cjyc.common.system.service.ICsPushMsgService;
 import com.cjyc.web.api.service.IOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -35,8 +33,6 @@ public class OrderController {
     private IOrderService orderService;
     @Resource
     private ICsAdminService csAdminService;
-    @Resource
-    private ICsPushMsgService csPushMsgService;
 
 
     /**
@@ -48,8 +44,8 @@ public class OrderController {
     public ResultVo save(@RequestBody SaveOrderDto reqDto) {
 
         //验证用户存不存在
-        String name = validateAdmin(reqDto.getUserId());
-        reqDto.setCreateUserId(reqDto.getUserId());
+        String name = validateAdmin(reqDto.getLoginId());
+        reqDto.setCreateUserId(reqDto.getLoginId());
         reqDto.setCreateUserName(name);
 
         ResultVo resultVo = orderService.save(reqDto);
@@ -67,7 +63,7 @@ public class OrderController {
     public ResultVo commit(@Validated @RequestBody CommitOrderDto reqDto) {
 
         //验证用户存不存在
-        Long userId = reqDto.getUserId();
+        Long userId = reqDto.getLoginId();
         Admin admin = csAdminService.getByUserId(userId, true);
         if(admin == null){
             throw new ParameterException("用户不存在");

@@ -117,7 +117,16 @@
     <update id="updateStateForLoad">
         update w_order_car
         set state = #{orderCarState}
-        where id = #{orderCarId}
+        <where>
+            and state &lt; #{orderCarState}
+            <if test="orderCarIdSet != null">
+                and id in
+                <foreach collection="orderCarIdSet" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+
+                </foreach>
+            </if>
+        </where>
     </update>
 
     <delete id="deleteBatchByOrderId">

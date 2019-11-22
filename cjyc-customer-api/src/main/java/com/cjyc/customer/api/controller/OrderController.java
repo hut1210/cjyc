@@ -45,7 +45,7 @@ public class OrderController {
     public ResultVo save(@RequestBody SaveOrderDto reqDto) {
 
         //验证用户存不存在
-        Customer customer = comCustomerService.getById(reqDto.getUserId(), true);
+        Customer customer = comCustomerService.getById(reqDto.getLoginId(), true);
         if(customer == null){
             return BaseResultUtil.fail("用户不存在");
         }
@@ -65,7 +65,7 @@ public class OrderController {
     public ResultVo submit(@Validated @RequestBody SaveOrderDto reqDto) {
 
         //验证用户存不存在
-        Customer admin = comCustomerService.getById(reqDto.getUserId(), true);
+        Customer admin = comCustomerService.getById(reqDto.getLoginId(), true);
         if(admin == null){
             return BaseResultUtil.fail("用户不存在");
         }
@@ -84,7 +84,7 @@ public class OrderController {
     public ResultVo commit(@Validated @RequestBody CommitOrderDto reqDto) {
 
         //验证用户存不存在
-        Customer admin = comCustomerService.getById(reqDto.getUserId(), true);
+        Customer admin = comCustomerService.getById(reqDto.getLoginId(), true);
         if(admin == null){
             return BaseResultUtil.fail("用户不存在");
         }

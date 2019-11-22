@@ -19,7 +19,7 @@ public interface ICustomerPartnerDao extends BaseMapper<CustomerPartner> {
      * @param userId
      * @return
      */
-    CustomerPartner getPartnerByUserId(@Param("userId") Long userId);
+    CustomerPartner getPartnerByUserId(@Param("loginId") Long userId);
 
     /**
      * 根据合伙人id删除合伙人附加信息

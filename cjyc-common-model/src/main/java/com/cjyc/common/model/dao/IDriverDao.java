@@ -144,4 +144,5 @@ public interface IDriverDao extends BaseMapper<Driver> {
      * @return java.util.List<com.cjyc.common.model.vo.driver.task.TaskDriverVo>
      */
     List<TaskDriverVo> selectDriverList(DriverQueryDto dto);
+
 }

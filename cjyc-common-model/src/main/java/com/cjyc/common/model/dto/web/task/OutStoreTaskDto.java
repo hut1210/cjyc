@@ -13,11 +13,12 @@ import java.util.List;
 @Accessors(chain = true)
 @ApiModel
 public class OutStoreTaskDto {
-    @ApiModelProperty(value = "用户userId",required = true)
-    private Long userId;
+        @NotNull(message = "用户ID不能为空")
+    @ApiModelProperty(value = "用户Id",required = true)
+    private Long loginId;
 
-    @ApiModelProperty(value = "用户userName")
-    private String userName;
+    @ApiModelProperty(value = "用户名称")
+    private String loginName;
 
     @ApiModelProperty(value = "任务车辆ID",required = true)
     private List<Long> taskCarIdList;

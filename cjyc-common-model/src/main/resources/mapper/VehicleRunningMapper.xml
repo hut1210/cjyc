@@ -52,5 +52,10 @@
     <update id="removeRun" parameterType="java.lang.Long">
         delete from d_vehicle_running where driver_id = #{driverId} and vehicle_id = #{vehicleId}
     </update>
+    <update id="updateOccupiedNumForLoad">
+        update d_vehicle_running
+        set occupied_car_num = occupied_car_num + #{count}
+        where driver_id = #{driverId}
+    </update>
 
 </mapper>

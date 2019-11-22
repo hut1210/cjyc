@@ -45,10 +45,18 @@
 
 
     <update id="updateStateForLoad">
-        update w_order w
-        set w.state = #{orderState}
-        where w.id = #{orderId}
-        and w.state = 25
+        update w_order o
+        set o.state = #{orderState}
+        <where>
+            and o.state = 25
+            <if test="orderIdSet != null">
+                and o.id in
+                <foreach collection="orderIdSet" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+
     </update>
     <update id="updateStateById">
         update w_order

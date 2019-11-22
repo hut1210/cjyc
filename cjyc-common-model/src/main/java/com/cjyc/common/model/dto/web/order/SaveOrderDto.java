@@ -26,9 +26,9 @@ public class SaveOrderDto {
     private int clientId;
     @NotNull
     @ApiModelProperty(value = "操作人id", required = true)
-    private Long userId;
+    private Long loginId;
     @ApiModelProperty(value = "操作人(不用传)")
-    private Long userName;
+    private Long loginName;
     @ApiModelProperty(value = "物流券抵消金额")
     private BigDecimal couponOffsetFee;
     @ApiModelProperty(value = "车辆列表")

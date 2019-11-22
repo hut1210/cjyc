@@ -14,10 +14,10 @@ import java.util.List;
 @ApiModel
 public class AllotTaskDto {
 
-    @ApiModelProperty(value = "用户userId",required = true)
+    @ApiModelProperty(value = "用户Id",required = true)
     private Long userId;
 
-    @ApiModelProperty(value = "用户userName")
+    @ApiModelProperty(value = "用户名称")
     private String userName;
 
     @ApiModelProperty(value = "运单ID",required = true)

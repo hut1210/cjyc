@@ -25,9 +25,9 @@ public class CommitOrderDto {
     private int clientId;
     @NotNull(message = "userId不能为空")
     @ApiModelProperty(value = "操作人id", required = true)
-    private Long userId;
+    private Long loginId;
     @ApiModelProperty(value = "操作人")
-    private Long userName;
+    private Long loginName;
     @NotNull(message = "createCustomerFlag不能为空")
     @ApiModelProperty(value = "用户不存在，是否创建用户",required = true)
     private Boolean createCustomerFlag;

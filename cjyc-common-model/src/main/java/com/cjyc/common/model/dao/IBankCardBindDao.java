@@ -22,7 +22,7 @@ public interface IBankCardBindDao extends BaseMapper<BankCardBind> {
      * @param userId
      * @return
      */
-    int removeBandCarBind(@Param("userId") Long userId);
+    int removeBandCarBind(@Param("loginId") Long userId);
 
     /**
      * 根据司机id获取绑定银行卡信息
