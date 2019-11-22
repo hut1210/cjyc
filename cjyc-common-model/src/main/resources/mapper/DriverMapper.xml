@@ -440,7 +440,7 @@
             d.real_name as realName,
             d.id_card as idCard,
             d.phone as phone,
-            d.user_id as loginId
+            d.id as loginId
         from
             d_vehicle_running run
             left join d_driver d on run.driver_id=d.id

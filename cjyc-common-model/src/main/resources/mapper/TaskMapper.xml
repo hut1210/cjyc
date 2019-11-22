@@ -109,7 +109,7 @@
             FROM w_task task
             LEFT JOIN w_task_car tc ON task.id = tc.task_id
             <where>
-                task.driver_id = #{driverId}
+                task.driver_id = #{loginId}
                 <if test="taskState != null and taskState == @com.cjyc.common.model.constant.FieldConstant@PICK_CAR_TASK">
                     AND task.state = ${@com.cjyc.common.model.enums.task.TaskStateEnum@WAIT_LOAD.code}
                 </if>
@@ -139,7 +139,7 @@
             (select task.id, task.waybill_id, task.waybill_no, task.guide_line, task.car_num,task.state,task.complete_time,tc.waybill_car_id
             from w_task task
             left join w_task_car tc on task.id = tc.task_id
-            where task.driver_id = #{driverId} and task.state = ${@com.cjyc.common.model.enums.task.TaskStateEnum@FINISHED.code}
+            where task.driver_id = #{loginId} and task.state = ${@com.cjyc.common.model.enums.task.TaskStateEnum@FINISHED.code}
             ) t
             left join w_waybill w on t.waybill_id = w.id
             left join w_waybill_car car on t.waybill_car_id = car.id

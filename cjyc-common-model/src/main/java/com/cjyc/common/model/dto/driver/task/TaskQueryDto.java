@@ -35,5 +35,4 @@ public class TaskQueryDto extends BaseDriverDto {
 
     @ApiModelProperty(value = "目的地")
     private String lineEnd;
-    private Long driverId;
 }

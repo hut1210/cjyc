@@ -1,6 +1,7 @@
 package com.cjyc.common.model.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cjyc.common.model.dto.driver.BaseDriverDto;
 import com.cjyc.common.model.dto.web.mineCarrier.MyWaybillDto;
 import com.cjyc.common.model.dto.web.waybill.*;
 import com.cjyc.common.model.entity.Waybill;
@@ -81,10 +82,10 @@ public interface IWaybillDao extends BaseMapper<Waybill> {
      * 功能描述: 查询待分配运单列表
      * @author liuxingxiang
      * @date 2019/11/20
-     * @param driverId
+     * @param dto
      * @return java.util.List<com.cjyc.common.model.vo.driver.task.WaybillTaskVo>
      */
-    List<WaybillTaskVo> selectWaitHandleTaskPage(Long driverId);
+    List<WaybillTaskVo> selectWaitHandleTaskPage(BaseDriverDto dto);
 
     int updateForAllotDriver(Long waybillId);
 }
