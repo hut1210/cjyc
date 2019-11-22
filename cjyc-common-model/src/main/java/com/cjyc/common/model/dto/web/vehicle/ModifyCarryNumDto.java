@@ -9,15 +9,15 @@ import java.io.Serializable;
 public class ModifyCarryNumDto implements Serializable {
     private static final long serialVersionUID = 4811129462747451190L;
 
-    @ApiModelProperty("司机id(driverId)")
+    @ApiModelProperty(value = "司机id(driverId)",required = true)
     @NotNull(message = "司机id(driverId)不能为空")
     private Long driverId;
 
-    @ApiModelProperty("车辆id(vehicleId)")
+    @ApiModelProperty(value = "车辆id(vehicleId)",required = true)
     @NotNull(message = "车辆id(vehicleId)不能为空")
     private Long vehicleId;
 
-    @ApiModelProperty("车位数")
+    @ApiModelProperty(value = "车位数",required = true)
     @NotNull(message = "车位数不能为空")
     private Integer defauleCarryNum;
 }

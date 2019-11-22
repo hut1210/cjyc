@@ -16,7 +16,7 @@ public class KeyCustomerDto implements Serializable {
     private static final long serialVersionUID = -952981230730963579L;
 
     @NotNull(message = "登陆用户id(loginId)不能为空")
-    @ApiModelProperty(value = "登陆用户id(loginId)")
+    @ApiModelProperty(value = "登陆用户id(loginId)",required = true)
     private Long loginId;
 
     @ApiModelProperty("大客户主键id(customerId)")

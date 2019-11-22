@@ -126,8 +126,8 @@ public class CouponServiceImpl extends ServiceImpl<ICouponDao,Coupon> implements
            coupon.setDiscount(coupon.getDiscount() == null ? BigDecimal.ZERO:coupon.getDiscount());
        }
        if(CouponLifeTypeEnum.FOREVER.code != coupon.getIsForever()){
-           coupon.setStartPeriodDate(LocalDateTimeUtil.convertToLong(dto.getStartPeriodDate(),TimePatternConstant.SIMPLE_DATE_FORMAT));
-           coupon.setEndPeriodDate(LocalDateTimeUtil.convertToLong(dto.getEndPeriodDate(), TimePatternConstant.SIMPLE_DATE_FORMAT));
+           coupon.setStartPeriodDate(dto.getStartPeriodDate());
+           coupon.setEndPeriodDate(dto.getEndPeriodDate());
        }
         return coupon;
     }

@@ -12,6 +12,7 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.FreeVehicleVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.service.ICsVehicleService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -34,7 +35,11 @@ public class CsVehicleServiceImpl implements ICsVehicleService {
                 .eq(CarrierDriverCon::getDriverId, dto.getLoginId())
                 .eq(CarrierDriverCon::getId, dto.getRoleId()));
         Vehicle vehicle = new Vehicle();
-        vehicle.setPlateNo(dto.getPlateNo());
+        if(StringUtils.isNotBlank(dto.getPlateNo())){
+            vehicle.setPlateNo(dto.getPlateNo());
+        }else{
+            vehicle.setPlateNo("");
+        }
         if(cdc == null){
             //个人车辆
             vehicle.setCarrierId(null);

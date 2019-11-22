@@ -10,7 +10,7 @@ import java.io.Serializable;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class SelectInquiryDto extends BasePageDto implements Serializable {
+public class SelectInquiryDto extends BasePageDto {
 
     private static final long serialVersionUID = -5463698523193022010L;
     @ApiModelProperty("登陆用户id(loginId)")

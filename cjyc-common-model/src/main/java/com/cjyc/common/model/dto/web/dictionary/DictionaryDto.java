@@ -9,22 +9,20 @@ import java.io.Serializable;
 @Data
 public class DictionaryDto implements Serializable {
 
-    public interface UpdDictionaryDto {
-    }
-
-    @ApiModelProperty("字典项id")
-    @NotNull(groups = {DictionaryDto.UpdDictionaryDto.class},message = "字典项id不能为空")
+    private static final long serialVersionUID = -6805423342689391790L;
+    @ApiModelProperty(value = "字典项id",required = true)
+    @NotNull(message = "字典项id不能为空")
     private Long id;
 
-    @ApiModelProperty("字典项名称")
-    @NotBlank(groups = {DictionaryDto.UpdDictionaryDto.class},message = "字典项名称不能为空")
+    @ApiModelProperty(value = "字典项名称",required = true)
+    @NotBlank(message = "字典项名称不能为空")
     private String name;
 
-    @ApiModelProperty("字典值")
-    @NotBlank(groups = {DictionaryDto.UpdDictionaryDto.class},message = "字典值不能为空")
+    @ApiModelProperty(value = "字典值",required = true)
+    @NotBlank(message = "字典值不能为空")
     private String itemValue;
 
-    @ApiModelProperty("字典单位")
-    @NotBlank(groups = {DictionaryDto.UpdDictionaryDto.class},message = "字典单位不能为空")
+    @ApiModelProperty(value = "字典单位",required = true)
+    @NotBlank(message = "字典单位不能为空")
     private String itemUnit;
 }

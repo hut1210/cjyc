@@ -14,11 +14,11 @@ public class PersonDriverDto extends BaseDriverDto {
     @ApiModelProperty("车牌号id")
     private Long vehicleId;
 
-    @ApiModelProperty("车牌号")
+    @ApiModelProperty(value = "车牌号",required = true)
     @NotBlank(message = "车牌号不能为空")
     private String plateNo;
 
-    @ApiModelProperty("车位数")
+    @ApiModelProperty(value = "车位数",required = true)
     @Null(message = "车位数不能为空")
     private Integer defaultCarryNum;
 }

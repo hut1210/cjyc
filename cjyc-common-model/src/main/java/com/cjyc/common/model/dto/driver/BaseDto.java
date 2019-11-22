@@ -9,7 +9,7 @@ import java.io.Serializable;
 public class BaseDto implements Serializable {
     private static final long serialVersionUID = -1680169213070049919L;
 
-    @ApiModelProperty("司机id")
+    @ApiModelProperty(value = "司机id",required = true)
     @NotNull(message = "司机id不能为空")
     private Long loginId;
 }

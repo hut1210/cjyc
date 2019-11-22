@@ -7,9 +7,9 @@ import lombok.Data;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 @Data
-public class QueryMyDriverDto extends BasePageDto implements Serializable {
+public class QueryMyDriverDto extends BasePageDto {
 
-    @ApiModelProperty("登陆系统用户id(loginId)")
+    @ApiModelProperty(value = "登陆系统用户id(loginId)",required = true)
     @NotNull(message = "登陆系统用户loginId不能为空")
     private Long loginId;
 

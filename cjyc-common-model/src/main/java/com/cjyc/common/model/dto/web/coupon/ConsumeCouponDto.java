@@ -13,7 +13,7 @@ import java.io.Serializable;
 @Accessors(chain = true)
 public class ConsumeCouponDto extends BasePageDto implements Serializable {
 
-    @ApiModelProperty("优惠券主键id(couponId)")
+    @ApiModelProperty(value = "优惠券主键id(couponId)",required = true)
     @NotNull(message = "优惠券主键id不能为空")
     private Long couponId;
 

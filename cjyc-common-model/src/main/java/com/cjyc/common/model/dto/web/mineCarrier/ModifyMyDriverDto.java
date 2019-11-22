@@ -10,23 +10,23 @@ import java.io.Serializable;
 public class ModifyMyDriverDto extends ModifyMyCarDto implements Serializable {
     private static final long serialVersionUID = -2484034830988498379L;
 
-    @ApiModelProperty("登陆人id(loginId)")
+    @ApiModelProperty(value = "登陆人id(loginId)",required = true)
     @NotNull(message = "登陆人id(loginId)不能为空")
     private Long loginId;
 
-    @ApiModelProperty("司机真实姓名")
+    @ApiModelProperty(value = "司机真实姓名",required = true)
     @NotBlank(message = "司机真实姓名不能为空")
     private String realName;
 
-    @ApiModelProperty("司机手机号")
+    @ApiModelProperty(value = "司机手机号",required = true)
     @NotBlank(message = "司机手机号不能为空")
     private String phone;
 
-    @ApiModelProperty("司机身份证号")
+    @ApiModelProperty(value = "司机身份证号",required = true)
     @NotBlank(message = "司机身份证号不能为空")
     private String idCard;
 
-    @ApiModelProperty("承运方式：2 : 代驾  3 : 干线   4：拖车")
+    @ApiModelProperty(value = "承运方式：2 : 代驾  3 : 干线   4：拖车",required = true)
     @NotNull(message = "承运方式不能为空")
     private Integer mode;
 

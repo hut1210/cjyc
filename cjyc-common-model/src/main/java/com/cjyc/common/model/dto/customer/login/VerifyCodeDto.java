@@ -10,7 +10,7 @@ import java.io.Serializable;
 public class VerifyCodeDto implements Serializable {
     private static final long serialVersionUID = 7330948394277510224L;
 
-    @ApiModelProperty("手机号")
+    @ApiModelProperty(value = "手机号",required = true)
     @NotBlank(message = "手机号不能为空")
     @Pattern(regexp = "1[3|4|5|7|8][0-9]\\d{8}",message = "电话号码格式不对")
     private String phone;

@@ -10,11 +10,11 @@ import java.io.Serializable;
 public class FrozenDto extends BaseDto implements Serializable {
     private static final long serialVersionUID = 6407613385776403501L;
 
-    @ApiModelProperty("承运商id")
+    @ApiModelProperty(value = "承运商id",required = true)
     @NotNull(message = "承运商id不能为空")
     private Long carrierId;
 
-    @ApiModelProperty("司机id")
+    @ApiModelProperty(value = "司机id",required = true)
     @NotNull(message = "司机id不能为空")
     private Long driverId;
 }

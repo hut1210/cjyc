@@ -13,7 +13,7 @@ public class ExistCustomreDto implements Serializable {
     @ApiModelProperty("客户id(customerId)，新增时不需要传，修改时要传")
     private Long customerId;
 
-    @ApiModelProperty("客户手机号")
+    @ApiModelProperty(value = "客户手机号",required = true)
     @NotBlank(message = "客户手机号不能未空")
     private String phone;
 

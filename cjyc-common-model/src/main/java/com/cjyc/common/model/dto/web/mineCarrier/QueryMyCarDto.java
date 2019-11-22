@@ -11,7 +11,7 @@ public class QueryMyCarDto extends BasePageDto implements Serializable {
 
     private static final long serialVersionUID = 8614314182597568522L;
 
-    @ApiModelProperty("登陆系统用户id(loginId)")
+    @ApiModelProperty(value = "登陆系统用户id(loginId)",required = true)
     @NotNull(message = "登陆系统用户loginId不能为空")
     private Long loginId;
 
