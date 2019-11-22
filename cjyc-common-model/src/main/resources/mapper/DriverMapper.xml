@@ -156,7 +156,7 @@
             <if test="mode != null">
                 and  dcdc.mode = #{mode}
             </if>
-            and  dc.type = 1
+            and  dc.type = 1 and dd.identity = 0
         </where>
     </select>
 
