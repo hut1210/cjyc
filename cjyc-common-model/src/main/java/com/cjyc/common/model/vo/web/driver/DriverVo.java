@@ -1,5 +1,7 @@
 package com.cjyc.common.model.vo.web.driver;
 
+import com.cjyc.common.model.util.BigDecimalSerizlizer;
+import com.cjyc.common.model.util.DataLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
@@ -56,6 +58,9 @@ public class DriverVo implements Serializable {
     @ApiModelProperty("驾驶证正面")
     private String driverLicenceFrontImg;
 
+    @ApiModelProperty("行驶证正面")
+    private String travelLicenceFrontImg;
+
     @ApiModelProperty("从业证正面")
     private String qualifiCertFrontImg;
 
@@ -63,7 +68,7 @@ public class DriverVo implements Serializable {
     private String taxiLicenceFrontImg;
 
     @ApiModelProperty("账号来源：1App注册，2Applet注册，3业务员创建，4承运商管理员创建，11掌控接口，12otm接口")
-    private String source;
+    private Integer source;
 
     @ApiModelProperty("运行状态：0空闲，1在途 2繁忙")
     private Integer runningState;
@@ -72,10 +77,15 @@ public class DriverVo implements Serializable {
     private Integer carNum;
 
     @ApiModelProperty("总收入")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal totalIncome;
 
     @ApiModelProperty("状态：0待审核，2审核通过，4已驳回(审核不通过)，7已冻结")
-    private String state;
+    private Integer state;
+
+    @ApiModelProperty("最后操作时间")
+    @JsonSerialize(using = DataLongSerizlizer.class)
+    private Long operatTime;
 
     @ApiModelProperty("操作人")
     private String operator;

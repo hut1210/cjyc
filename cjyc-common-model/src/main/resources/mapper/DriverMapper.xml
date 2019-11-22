@@ -120,6 +120,7 @@
             dd.source AS source,
             dcdc.state AS state,
             dvr.running_state AS runningState,
+            dd.check_time as operatTime,
             ba.NAME AS operator
         FROM
             d_carrier dc
@@ -155,7 +156,7 @@
             <if test="mode != null">
                 and  dcdc.mode = #{mode}
             </if>
-            and  dc.type = 1 and dd.identity = 0
+            and  dc.type = 1
         </where>
     </select>
 
@@ -455,4 +456,25 @@
             </if>
         </where>
     </select>
+
+    <!--获取司机端我的车辆-->
+    <select id="findVehicle" resultType="com.cjyc.common.model.vo.driver.mine.DriverVehicleVo"
+            parameterType="java.lang.Long">
+            SELECT
+                dd.id AS driverId,
+                dd.real_name AS realName,
+                dd.phone AS phone,
+                dvr.vehicle_id AS vehicleId,
+                dvr.plate_no AS plateNo,
+                dvr.carry_car_num AS carryCarNum,
+                dvr.occupied_car_num AS occupiedCarNum
+          FROM
+            d_driver dd
+          LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
+          where dd.id in
+        <foreach collection="driverIds" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
 </mapper>

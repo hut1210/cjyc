@@ -2,9 +2,11 @@ package com.cjyc.driver.api.controller;
 
 import com.cjyc.common.model.dto.CarrierDriverDto;
 import com.cjyc.common.model.dto.FreeVehicleDto;
+import com.cjyc.common.model.dto.driver.mine.DeleteVehicleDto;
+import com.cjyc.common.model.dto.driver.mine.PersonDriverDto;
+import com.cjyc.common.model.dto.web.vehicle.VehicleDto;
 import com.cjyc.common.model.dto.driver.BaseDriverDto;
 import com.cjyc.common.model.dto.driver.BaseDto;
-import com.cjyc.common.model.dto.driver.mine.DriverVehicleDto;
 import com.cjyc.common.model.dto.driver.mine.FrozenDto;
 import com.cjyc.common.model.vo.FreeVehicleVo;
 import com.cjyc.common.model.vo.PageVo;
@@ -47,13 +49,13 @@ public class MineController {
         return mineService.findBinkCard(dto);
     }
 
-    @ApiOperation(value = "司机管理信息")
+    @ApiOperation(value = "司机管理信息(管理员中的)")
     @PostMapping(value = "/findDriver")
     public ResultVo<PageVo<DriverInfoVo>> findDriver(@RequestBody BaseDriverDto dto) {
         return mineService.findDriver(dto);
     }
 
-    @ApiOperation(value = "该承运商下空闲车辆")
+    @ApiOperation(value = "该承运商下空闲车辆(管理员中的)")
     @PostMapping(value = "/findFreeVehicle")
     public ResultVo<List<FreeVehicleVo>> findFreeVehicle(@RequestBody FreeVehicleDto dto){
         return csVehicleService.findFreeVehicle(dto);
@@ -71,9 +73,23 @@ public class MineController {
         return mineService.frozenDriver(dto);
     }
 
-    @ApiOperation(value = "车辆信息")
+    @ApiOperation(value = "个人司机添加/修改车辆信息")
+    @PostMapping(value = "/addOrModifyVehicle")
+    public ResultVo addOrModifyVehicle(@RequestBody PersonDriverDto dto) {
+        return mineService.addOrModifyVehicle(dto);
+    }
+
+    @ApiOperation(value = "个人司机删除车辆绑定关系")
+    @PostMapping(value = "/deleteVehicle")
+    public ResultVo deleteVehicle(@RequestBody DeleteVehicleDto dto) {
+        return mineService.deleteVehicle(dto);
+    }
+
+    @ApiOperation(value = "车辆管理(我的车辆)")
     @PostMapping(value = "/findVehicle")
-    public ResultVo findVehicle(@RequestBody DriverVehicleDto dto) {
+    public ResultVo findVehicle(@RequestBody BaseDriverDto dto) {
         return mineService.findVehicle(dto);
     }
+
+
 }

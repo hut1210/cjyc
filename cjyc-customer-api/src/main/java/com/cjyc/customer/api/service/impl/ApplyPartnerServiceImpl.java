@@ -31,27 +31,31 @@ public class ApplyPartnerServiceImpl extends ServiceImpl<ICustomerDao, Customer>
 
     @Resource
     private ICustomerPartnerDao customerPartnerDao;
-
     @Resource
     private IBankCardBindDao bankCardBindDao;
+    @Resource
+    private ICustomerDao customerDao;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
     @Override
     public ResultVo applyPartner(ApplyPartnerDto dto) {
-        Customer customer = new Customer();
-        BeanUtils.copyProperties(dto,customer);
-        customer.setId(dto.getLoginId());
-        customer.setName(dto.getName());
-        customer.setAlias(dto.getName());
-        customer.setType(CustomerTypeEnum.COOPERATOR.code);
-        customer.setSource(CustomerSourceEnum.UPGRADE.code);
-        customer.setState(CommonStateEnum.WAIT_CHECK.code);
-        super.updateById(customer);
+        Customer cust = customerDao.selectById(dto.getLoginId());
+        if(cust == null){
+            return BaseResultUtil.fail("该用户不存在,请联系管理员");
+        }
+        BeanUtils.copyProperties(dto,cust);
+        cust.setId(dto.getLoginId());
+        cust.setName(dto.getName());
+        cust.setAlias(dto.getName());
+        cust.setType(CustomerTypeEnum.COOPERATOR.code);
+        cust.setSource(CustomerSourceEnum.UPGRADE.code);
+        cust.setState(CommonStateEnum.WAIT_CHECK.code);
+        super.updateById(cust);
         //合伙人附加信息
         CustomerPartner cp = new CustomerPartner();
         BeanUtils.copyProperties(dto,cp);
-        cp.setCustomerId(customer.getId());
+        cp.setCustomerId(cust.getId());
         customerPartnerDao.insert(cp);
         //创建合伙人银行信息
         BankCardBind bcb = new BankCardBind();

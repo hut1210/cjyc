@@ -1,6 +1,7 @@
 package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.FreeVehicleDto;
+import com.cjyc.common.model.dto.web.vehicle.VehicleDto;
 import com.cjyc.common.model.dto.web.vehicle.*;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;

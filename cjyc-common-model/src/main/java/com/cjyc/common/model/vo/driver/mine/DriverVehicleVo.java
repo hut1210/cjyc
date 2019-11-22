@@ -24,12 +24,6 @@ public class DriverVehicleVo implements Serializable {
     @ApiModelProperty("手机号")
     private String phone;
 
-    @ApiModelProperty("公司名称")
-    private String name;
-
-    @ApiModelProperty("承运方式：2 : 代驾  3 : 干线   4：拖车")
-    private Integer mode;
-
     @ApiModelProperty("车牌号")
     private String plateNo;
 

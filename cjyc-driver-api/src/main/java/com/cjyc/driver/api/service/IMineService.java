@@ -1,9 +1,11 @@
 package com.cjyc.driver.api.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.cjyc.common.model.dto.driver.mine.DeleteVehicleDto;
+import com.cjyc.common.model.dto.driver.mine.PersonDriverDto;
+import com.cjyc.common.model.dto.web.vehicle.VehicleDto;
 import com.cjyc.common.model.dto.driver.BaseDriverDto;
 import com.cjyc.common.model.dto.driver.BaseDto;
-import com.cjyc.common.model.dto.driver.mine.DriverVehicleDto;
 import com.cjyc.common.model.dto.driver.mine.FrozenDto;
 import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.vo.PageVo;
@@ -37,11 +39,25 @@ public interface IMineService extends IService<Driver> {
     ResultVo frozenDriver(FrozenDto dto);
 
     /**
+     * 个人司机新增修改车辆信息
+     * @param dto
+     * @return
+     */
+    ResultVo addOrModifyVehicle(PersonDriverDto dto);
+
+    /**
+     * 删除个人司机车辆信息
+     * @param dto
+     * @return
+     */
+    ResultVo deleteVehicle(DeleteVehicleDto dto);
+
+    /**
      * 查看车辆信息
      * @param dto
      * @return
      */
-    ResultVo findVehicle(DriverVehicleDto dto);
+    ResultVo findVehicle(BaseDriverDto dto);
 
 
 }

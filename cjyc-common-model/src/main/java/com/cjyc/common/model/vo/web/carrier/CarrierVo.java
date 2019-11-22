@@ -86,7 +86,7 @@ public class CarrierVo implements Serializable {
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal totalIncome;
 
-    @ApiModelProperty("状态：0待审核，2已审核，4取消，7已驳回，9已停用（CommonStateEnum）")
+    @ApiModelProperty("状态：0待审核，2已审核，4取消，5冻结， 7已驳回，9已停用（CommonStateEnum）")
     private Integer state;
 
     @ApiModelProperty("最后操作时间")

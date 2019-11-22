@@ -8,6 +8,7 @@ import com.cjyc.common.model.dto.web.mineCarrier.QueryMyDriverDto;
 import com.cjyc.common.model.dto.web.user.DriverListDto;
 import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.vo.driver.mine.DriverInfoVo;
+import com.cjyc.common.model.vo.driver.mine.DriverVehicleVo;
 import com.cjyc.common.model.vo.driver.task.TaskDriverVo;
 import com.cjyc.common.model.vo.web.carrier.BaseDriverVo;
 import com.cjyc.common.model.vo.web.driver.DispatchDriverVo;
@@ -144,5 +145,12 @@ public interface IDriverDao extends BaseMapper<Driver> {
      * @return java.util.List<com.cjyc.common.model.vo.driver.task.TaskDriverVo>
      */
     List<TaskDriverVo> selectDriverList(DriverQueryDto dto);
+
+    /**
+     * 获取司机端我的车辆
+     * @param driverIds
+     * @return
+     */
+    List<DriverVehicleVo> findVehicle(@Param("driverIds") List<Long> driverIds);
 
 }
