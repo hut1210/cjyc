@@ -28,7 +28,7 @@ public class WaitDispatchListOrderCarDto extends BasePageDto implements Serializ
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "用户ID")
-    private Long userId;
+    private Long loginId;
 
     @ApiModelProperty(value = "调度类型：0全部，1待提车，2待干线，3待配送")
     private Long dispatchType;

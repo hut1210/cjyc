@@ -16,7 +16,7 @@ public class CheckOrderDto {
 
     @NotNull
     @ApiModelProperty(value = "loginId", required = true)
-    private Long userId;
+    private Long loginId;
 
     @ApiModelProperty("loginName")
     private String userName;

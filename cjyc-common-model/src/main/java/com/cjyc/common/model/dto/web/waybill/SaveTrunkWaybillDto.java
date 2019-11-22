@@ -17,9 +17,9 @@ import java.util.List;
 @ApiModel
 public class SaveTrunkWaybillDto {
 
-    @NotNull(message = "userId不能为空")
-    @ApiModelProperty(value = "用户userId", required = true)
-    private Long userId;
+    @NotNull(message = "loginId不能为空")
+    @ApiModelProperty(value = "用户Id", required = true)
+    private Long loginId;
 
     @ApiModelProperty(value = "运单ID（修改时传）", required = true)
     private String waybillId;

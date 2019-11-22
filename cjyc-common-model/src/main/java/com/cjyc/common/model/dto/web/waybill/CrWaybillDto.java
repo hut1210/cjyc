@@ -8,7 +8,7 @@ import lombok.Data;
 public class CrWaybillDto extends BasePageDto {
 
     @ApiModelProperty(value = "用户登录ID-司机")
-    private Long userId;
+    private Long loginId;
     @ApiModelProperty(value = "用户登录ID-司机")
     private Long roleId;
     @ApiModelProperty(value = "承运商ID（不需要传）")

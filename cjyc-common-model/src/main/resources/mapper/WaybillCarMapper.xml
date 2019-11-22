@@ -223,10 +223,6 @@
         where id =#{id}
         and state &lt; 2
     </update>
-    <update id="updateInfoForUnload">
-
-
-    </update>
 
     <select id="findByTaskCarId" resultType="com.cjyc.common.model.entity.WaybillCar">
         select
@@ -663,6 +659,9 @@
             </if>
             <if test="paramsDto.endCreateTime != null">
                 and wc.create_time &lt;= #{paramsDto.endCreateTime}
+            </if>
+            <if test="paramsDto.nowStoreId != null">
+                and wc.now_store_id &lt;= #{paramsDto.nowStoreId}
             </if>
 
         </where>

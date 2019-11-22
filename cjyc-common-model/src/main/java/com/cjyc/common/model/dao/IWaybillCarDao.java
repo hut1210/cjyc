@@ -77,5 +77,4 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
 
     int updateForAllotDriver(Long id);
 
-    int updateInfoForUnload(List<WaybillCar> updateWaybillCarList);
 }

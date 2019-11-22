@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cjyc.common.model.dao.ICarStorageLogDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.CarStorageLog">
+        <result column="id" property="id" />
+        <result column="type" property="type" />
+        <result column="order_no" property="orderNo" />
+        <result column="order_car_no" property="orderCarNo" />
+        <result column="vin" property="vin" />
+        <result column="brand" property="brand" />
+        <result column="model" property="model" />
+        <result column="freight" property="freight" />
+        <result column="carry_type" property="carryType" />
+        <result column="carrier_id" property="carrierId" />
+        <result column="carrier" property="carrier" />
+        <result column="driver" property="driver" />
+        <result column="driver_id" property="driverId" />
+        <result column="drvier_phone" property="drvierPhone" />
+        <result column="vehicle_plate_no" property="vehiclePlateNo" />
+        <result column="create_time" property="createTime" />
+        <result column="create_user_id" property="createUserId" />
+        <result column="create_user" property="createUser" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, type, order_no, order_car_no, vin, brand, model, freight, carry_type, carrier_id, carrier, driver, driver_id, drvier_phone, vehicle_plate_no, create_time, create_user_id, create_user
+    </sql>
+
+</mapper>

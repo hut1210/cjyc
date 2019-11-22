@@ -11,7 +11,6 @@ import com.cjyc.common.model.enums.task.TaskStateEnum;
 import com.cjyc.common.model.enums.waybill.WaybillCarStateEnum;
 import com.cjyc.common.model.enums.waybill.WaybillStateEnum;
 import com.cjyc.common.model.enums.waybill.WaybillTypeEnum;
-import com.cjyc.common.model.exception.ParameterException;
 import com.cjyc.common.model.exception.ServerException;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -111,7 +110,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
             task.setDriverName(driver.getName());
             task.setCreateTime(System.currentTimeMillis());
             task.setCreateUser(paramsDto.getUserName());
-            task.setCreateUserId(paramsDto.getUserId());
+            task.setCreateUserId(paramsDto.getLoginId());
             taskDao.insert(task);
 
             int noCount = 0;

@@ -127,6 +127,7 @@
                 </when>
                 <when test="paramsDto.outterState == 1">
                     and o.state = 0
+                    and o.check_user_id = #{paramsDto.loginId}
                 </when>
                 <when test="paramsDto.outterState == 5">
                     and o.state &lt;= 10 and o.state &gt; 0

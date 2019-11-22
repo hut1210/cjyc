@@ -14,15 +14,15 @@ import java.util.List;
 @ApiModel
 public class SaveLocalDto {
 
-    @ApiModelProperty(value = "用户userId（header）")
-    private Long userId;
+    @ApiModelProperty(value = "用户Id")
+    private Long loginId;
 
-    @ApiModelProperty(value = "用户roleId（header）")
+    @ApiModelProperty(value = "用户roleId")
     private Long roleId;
 
 
     @ApiModelProperty(value = "用户userName", required = true)
-    private String userName;
+    private String loginName;
 
     @ApiModelProperty(value = "运单类型：1提车运单，2干线运单，3送车运单", required = true)
     private Integer type;

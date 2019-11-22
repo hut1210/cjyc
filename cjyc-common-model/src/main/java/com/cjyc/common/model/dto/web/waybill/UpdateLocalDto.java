@@ -9,8 +9,8 @@ public class UpdateLocalDto {
     @ApiModelProperty(value = "用户roleId", required = true)
     private Long roleId;
 
-    @ApiModelProperty(value = "用户userId", required = true)
-    private Long userId;
+    @ApiModelProperty(value = "用户Id", required = true)
+    private Long loginId;
 
     @ApiModelProperty(value = "用户userName", required = true)
     private String userName;

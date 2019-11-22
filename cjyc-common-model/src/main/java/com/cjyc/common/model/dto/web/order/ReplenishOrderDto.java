@@ -18,8 +18,8 @@ import java.util.List;
 @ApiModel
 public class ReplenishOrderDto {
 
-    private Long userId;
-    private String userName;
+    private Long loginId;
+    private String loginName;
     private Long orderId;
     private List<ReplenishOrderCarDto> orderCarList;
 

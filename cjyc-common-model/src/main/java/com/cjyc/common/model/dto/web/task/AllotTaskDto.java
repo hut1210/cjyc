@@ -15,7 +15,7 @@ import java.util.List;
 public class AllotTaskDto {
 
     @ApiModelProperty(value = "用户Id",required = true)
-    private Long userId;
+    private Long loginId;
 
     @ApiModelProperty(value = "用户名称")
     private String userName;

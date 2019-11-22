@@ -3,10 +3,10 @@ package com.cjyc.web.api.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.usercenter.dto.common.SelectRoleResp;
-import com.cjyc.common.model.dao.*;
-import com.cjyc.common.model.dto.web.waybill.CrWaybillDto;
+import com.cjyc.common.model.dao.IWaybillCarDao;
+import com.cjyc.common.model.dao.IWaybillDao;
 import com.cjyc.common.model.dto.web.waybill.*;
-import com.cjyc.common.model.entity.*;
+import com.cjyc.common.model.entity.Waybill;
 import com.cjyc.common.model.entity.defined.BizScope;
 import com.cjyc.common.model.enums.BizScopeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -90,6 +90,13 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
     @Override
     public ResultVo trunkMidwayUnload(TrunkMidwayUnload paramsDto) {
         return csWaybillService.trunkMidwayUnload(paramsDto);
+    }
+
+    @Override
+    public ResultVo<PageVo<CrWaybillVo>> inStoreList(InStoreListDto reqDto) {
+
+
+        return null;
     }
 
     @Override

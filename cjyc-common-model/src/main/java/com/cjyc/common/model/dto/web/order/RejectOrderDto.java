@@ -9,10 +9,10 @@ import javax.validation.constraints.NotNull;
 public class RejectOrderDto {
     @NotNull
     @ApiModelProperty(value = "loginId", required = true)
-    private Long userId;
+    private Long loginId;
 
     @ApiModelProperty("loginName")
-    private String userName;
+    private String loginName;
 
     @NotNull
     @ApiModelProperty(value = "订单ID", required = true)

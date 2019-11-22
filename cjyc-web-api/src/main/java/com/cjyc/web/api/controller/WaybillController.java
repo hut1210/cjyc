@@ -54,11 +54,11 @@ public class WaybillController {
     @PostMapping("/local/save")
     public ResultVo saveLocal(@RequestBody SaveLocalDto reqDto) {
         //验证用户
-        Admin admin = csAdminService.getByUserId(reqDto.getUserId(), true);
+        Admin admin = csAdminService.getByUserId(reqDto.getLoginId(), true);
         if (admin == null || admin.getState() != AdminStateEnum.CHECKED.code) {
             return BaseResultUtil.fail("当前业务员，不在职");
         }
-        reqDto.setUserName(admin.getName());
+        reqDto.setLoginName(admin.getName());
         return waybillService.saveLocal(reqDto);
     }
 
@@ -222,7 +222,7 @@ public class WaybillController {
 
 
 
-    /**----承运商模块------------------------------------------------------------------------------------------------------------*/
+    /**----承运商模块-------------------------------------------------------------------------------------*/
 
     /**
      * 我的运单-承运商
@@ -231,7 +231,7 @@ public class WaybillController {
     @PostMapping(value = "/cr/list")
     public ResultVo<PageVo<CrWaybillVo>> crList(@RequestBody CrWaybillDto reqDto) {
         //验证用户
-        Driver driver = csDriverService.getById(reqDto.getUserId(), true);
+        Driver driver = csDriverService.getById(reqDto.getLoginId(), true);
         if(driver == null){
             return BaseResultUtil.fail("用户不存在");
         }
@@ -239,5 +239,16 @@ public class WaybillController {
     }
 
 
+    /**----我的业务中心-------------------------------------------------------------------------------------*/
+
+    /**
+     * 车辆入库列表
+     * @author JPG
+     */
+/*    @ApiOperation(value = "车辆入库列表")
+    @PostMapping(value = "/in/store/list")
+    public ResultVo<PageVo<InStoreListVo>> inStoreList(@RequestBody InStoreListDto reqDto) {
+        return waybillService.inStoreList(reqDto);
+    }*/
 
 }

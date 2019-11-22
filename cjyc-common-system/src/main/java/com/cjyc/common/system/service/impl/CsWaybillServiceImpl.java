@@ -201,8 +201,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 waybill.setFreightFee(paramsDto.getType() == WaybillTypeEnum.PICK.code ? orderCar.getPickFee() : orderCar.getPickFee());
                 waybill.setRemark(dto.getRemark());
                 waybill.setCreateTime(currentMillisTime);
-                waybill.setCreateUser(paramsDto.getUserName());
-                waybill.setCreateUserId(paramsDto.getUserId());
+                waybill.setCreateUser(paramsDto.getLoginName());
+                waybill.setCreateUserId(paramsDto.getLoginId());
                 waybill.setFixedFreightFee(false);
                 //waybill.setInputStoreId(paramsDto.);
                 //waybill.setGuideLine(dto.);
@@ -256,8 +256,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                         }
                     }
                     task.setCreateTime(currentMillisTime);
-                    task.setCreateUser(paramsDto.getUserName());
-                    task.setCreateUserId(paramsDto.getUserId());
+                    task.setCreateUser(paramsDto.getLoginName());
+                    task.setCreateUserId(paramsDto.getLoginId());
                     taskDao.insert(task);
 
                     /**4、插入任务车辆关联表*/
@@ -295,7 +295,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
     @Override
     public ResultVo saveTrunk(SaveTrunkWaybillDto paramsDto) {
         Long currentMillisTime = System.currentTimeMillis();
-        Long userId = paramsDto.getUserId();
+        Long userId = paramsDto.getLoginId();
         Set<String> lockSet = new HashSet<>();
         //【验证参数】操作人
         Admin admin = adminDao.findByUserId(userId);
@@ -669,7 +669,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                     }
                     //task.setRemark(paramsDto.getRemark());
                     task.setCreateUser(paramsDto.getUserName());
-                    task.setCreateUserId(paramsDto.getUserId());
+                    task.setCreateUserId(paramsDto.getLoginId());
                     task.setCreateTime(System.currentTimeMillis());
                     taskDao.insert(task);
                 }
@@ -692,7 +692,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
     @Override
     public ResultVo updateTrunk(UpdateTrunkWaybillDto paramsDto) {
         Long currentMillisTime = System.currentTimeMillis();
-        Long userId = paramsDto.getUserId();
+        Long userId = paramsDto.getLoginId();
         Set<String> lockSet = new HashSet<>();
         //【验证参数】操作人
         Admin admin = adminDao.findByUserId(userId);
@@ -1032,8 +1032,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         newWaybill.setFixedFreightFee(false);
         newWaybill.setRemark(MessageFormat.format(WaybillRemarkEnum.MIDWAY_FINISH_CREATED.getMsg(), waybill.getNo()));
         newWaybill.setCreateTime(currentTimeMillis);
-        newWaybill.setCreateUser(paramsDto.getUserName());
-        newWaybill.setCreateUserId(paramsDto.getUserId());
+        newWaybill.setCreateUser(paramsDto.getLoginName());
+        newWaybill.setCreateUserId(paramsDto.getLoginId());
         waybillDao.insert(newWaybill);
 
         for (WaybillCar waybillCar : list) {
@@ -1060,8 +1060,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             newWaybillCar.setExpectStartTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTimeUtil.getDayStartByLong(paramsDto.getUnloadTime())));
             newWaybillCar.setExpectEndTime(null);
             newWaybillCar.setTakeType(WaybillTakeTypeEnum.PICK.code);
-            newWaybillCar.setLoadLinkName(paramsDto.getUserName());
-            newWaybillCar.setLoadLinkUserId(paramsDto.getUserId());
+            newWaybillCar.setLoadLinkName(paramsDto.getLoginName());
+            newWaybillCar.setLoadLinkUserId(paramsDto.getLoginId());
             newWaybillCar.setLoadLinkPhone(paramsDto.getUserPhone());
             newWaybillCar.setLoadTurnType(WaybillCarTurnType.MIDWAY.code);
             newWaybillCar.setUnloadLinkName(waybillCar.getUnloadLinkName());
