@@ -1,6 +1,6 @@
 package com.cjyc.common.system.service;
 
-import com.cjyc.common.model.dto.customer.login.VerifyCodeDto;
+import com.cjyc.common.model.dto.VerifyCodeDto;
 import com.cjyc.common.model.vo.ResultVo;
 
 public interface ICsLoginService {

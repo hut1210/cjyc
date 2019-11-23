@@ -2,7 +2,6 @@ package com.cjyc.customer.api.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.dto.LoginDto;
-import com.cjyc.common.model.dto.customer.login.VerifyCodeDto;
 import com.cjyc.common.model.dto.salesman.login.LoginByPhoneDto;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.vo.ResultVo;

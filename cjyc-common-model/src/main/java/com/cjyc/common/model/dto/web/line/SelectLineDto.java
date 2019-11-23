@@ -8,6 +8,7 @@ import java.io.Serializable;
 @Data
 public class SelectLineDto extends BasePageDto {
 
+    private static final long serialVersionUID = -8401768906217301840L;
     @ApiModelProperty("登录人id(loginId)")
     private Long loginId;
 

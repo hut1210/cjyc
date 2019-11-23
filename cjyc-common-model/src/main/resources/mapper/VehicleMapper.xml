@@ -56,28 +56,6 @@
         </where>
     </select>
 
-    <!-- 模糊匹配查询空闲社会车辆 -->
-    <select id="findFreeVehicle" resultType="com.cjyc.common.model.vo.FreeVehicleVo"
-                parameterType="com.cjyc.common.model.entity.Vehicle">
-        SELECT
-            id AS id,
-            plate_no AS plateNo,
-            default_carry_num AS defaultCarryNum
-        FROM
-            d_vehicle
-        <where>
-            <if test="plateNo != null and plateNo.trim() != ''">
-                 plate_no like concat('%',#{plateNo},'%')
-            </if>
-            <if test="carrierId != null ">
-                 and carrier_id = #{carrierId} and ownership_type = 2
-            </if>
-            <if test="carrierId == null ">
-                and ownership_type = 1
-            </if>
-        </where>
-    </select>
-
     <!-- 根据条件查询该承运商下的车辆 -->
     <select id="findMyCar" resultType="com.cjyc.common.model.vo.web.mineCarrier.MyCarVo"
                             parameterType="com.cjyc.common.model.dto.web.mineCarrier.QueryMyCarDto">
@@ -98,5 +76,37 @@
         LEFT JOIN d_carrier dc ON dc.id = dcdc.carrier_id
       WHERE
 	        dc.id = #{carrierId} and dc.type = 2 and dc.business_state = 0
+    </select>
+
+    <!-- 获取所有个人车辆 -->
+    <select id="findPersonVehicle" resultType="com.cjyc.common.model.vo.FreeVehicleVo">
+        SELECT
+            id AS vehicleId,
+            plate_no AS plateNo,
+            default_carry_num AS defaultCarryNum
+        FROM
+            d_vehicle
+        <where>
+            <if test="keyword != null and keyword.trim() != ''">
+                plate_no like concat('%',#{keyword},'%')
+            </if>
+             and ownership_type = 1
+        </where>
+    </select>
+
+    <!-- 获取该承运商下的所有车辆 -->
+    <select id="findCarrierVehicle" resultType="com.cjyc.common.model.vo.FreeVehicleVo">
+        SELECT
+            id AS vehicleId,
+            plate_no AS plateNo,
+            default_carry_num AS defaultCarryNum
+        FROM
+            d_vehicle
+        <where>
+            <if test="plateNo != null and plateNo.trim() != ''">
+                plate_no like concat('%',#{plateNo},'%')
+            </if>
+                and ownership_type = 2 and carrier_id = #{carrierId}
+        </where>
     </select>
 </mapper>

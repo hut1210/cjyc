@@ -1,11 +1,13 @@
 package com.cjyc.common.model.dto.web.customer;
 
+import com.cjyc.common.model.constant.RegexConstant;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiParam;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -20,10 +22,12 @@ public class CustomerContractDto implements Serializable {
 
     @NotNull(message = "合同性质不能为空")
     @ApiModelProperty(value = "合同性质 0：框式  1：制式",required = true)
+    @Pattern(regexp = RegexConstant.ZERO_ONE,message = "只能输入0或者1")
     private Integer contactNature;
 
     @NotNull(message = "结算类型不能为空")
     @ApiModelProperty(value = "结算类型 0:时付 1：账期",required = true)
+    @Pattern(regexp = RegexConstant.ZERO_ONE,message = "只能输入0或者1")
     private Integer settleType;
 
     @ApiModelProperty("账期/天")
@@ -35,10 +39,12 @@ public class CustomerContractDto implements Serializable {
 
     @NotBlank(message = "项目名称不能为空")
     @ApiModelProperty(value = "项目名称",required = true)
+    @Pattern(regexp = RegexConstant.NAME,message = "请输入合法名称")
     private String projectName;
 
     @NotNull(message = "项目级别不能为空")
     @ApiModelProperty(value = "项目级别 0：一级  1：二级",required = true)
+    @Pattern(regexp = RegexConstant.ZERO_ONE,message = "只能输入0或者1")
     private Integer projectLevel;
 
     @NotNull(message = "主要产品不能为空")
@@ -47,6 +53,7 @@ public class CustomerContractDto implements Serializable {
 
     @NotNull(message = "项目性质不能为空")
     @ApiModelProperty(value = "项目性质 0：新开  1：存量",required = true)
+    @Pattern(regexp = RegexConstant.ZERO_ONE,message = "只能输入0或者1")
     private Integer projectNature;
 
     @ApiModelProperty(value = "项目预计运量")
@@ -67,14 +74,17 @@ public class CustomerContractDto implements Serializable {
 
     @NotBlank(message = "项目负责人不能为空")
     @ApiModelProperty(value = "项目负责人",required = true)
+    @Pattern(regexp = RegexConstant.NAME,message = "请输入合法姓名")
     private String projectLeader;
 
     @NotBlank(message = "负责人电话不能为空")
     @ApiModelProperty(value = "负责人电话",required = true)
+    @Pattern(regexp = RegexConstant.REGEX_MOBILE_EXACT_LATEST,message = "电话号码格式不对")
     private String leaderPhone;
 
     @NotNull(message = "项目状态不能为空")
     @ApiModelProperty(value = "项目状态 0：停止   1：正常",required = true)
+    @Pattern(regexp = RegexConstant.ZERO_ONE,message = "只能输入0或者1")
     private Integer projectStatus;
 
     @ApiModelProperty(value = "项目团队成员")

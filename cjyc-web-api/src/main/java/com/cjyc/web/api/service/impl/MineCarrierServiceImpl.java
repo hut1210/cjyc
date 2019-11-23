@@ -2,33 +2,22 @@ package com.cjyc.web.api.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.cjkj.common.model.ResultData;
-import com.cjkj.common.model.ReturnMsg;
-import com.cjkj.usercenter.dto.common.AddUserReq;
-import com.cjkj.usercenter.dto.common.AddUserResp;
-import com.cjkj.usercenter.dto.common.UpdateUserReq;
-import com.cjkj.usercenter.dto.common.UserResp;
 import com.cjyc.common.model.dao.*;
-import com.cjyc.common.model.dto.CarrierDriverDto;
 import com.cjyc.common.model.dto.CarrierVehicleDto;
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.mineCarrier.*;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.FlagEnum;
-import com.cjyc.common.model.enums.ResultEnum;
-import com.cjyc.common.model.enums.task.TaskStateEnum;
 import com.cjyc.common.model.enums.transport.*;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
-import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyCarVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyDriverVo;
-import com.cjyc.common.model.vo.web.mineCarrier.MyFreeDriverVo;
+import com.cjyc.common.model.vo.FreeDriverVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyWaybillVo;
-import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.ICsDriverService;
 import com.cjyc.web.api.service.IMineCarrierService;
 import com.github.pagehelper.PageHelper;
@@ -161,24 +150,6 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
         List<MyCarVo> myCarVos = vehicleDao.findMyCar(dto);
         PageInfo<MyCarVo> pageInfo = new PageInfo<>(myCarVos);
         return BaseResultUtil.success(pageInfo);
-    }
-
-    @Override
-    public ResultVo<List<MyFreeDriverVo>> findFreeDriver(Long carrierId, String realName) {
-        //查询该承运商下的符合的全部司机
-        List<MyFreeDriverVo> freeDriverVos = driverDao.findMyAllDriver(carrierId,realName);
-        //查询已被绑定的司机
-        List<Long> driverIds = driverDao.findMyBusyDriver(carrierId);
-        //去除已绑定司机
-        for (Long driverId : driverIds) {
-            for (MyFreeDriverVo vo : freeDriverVos) {
-                if(driverId.equals(vo.getDriverId())){
-                    freeDriverVos.remove(vo);
-                    break;
-                }
-            }
-        }
-        return BaseResultUtil.success(freeDriverVos);
     }
 
     /**

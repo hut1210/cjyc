@@ -1,10 +1,14 @@
 package com.cjyc.common.system.service;
 
 import com.cjkj.common.model.ResultData;
-import com.cjyc.common.model.dto.CarrierDriverDto;
 import com.cjyc.common.model.dto.CarrierVehicleDto;
+import com.cjyc.common.model.dto.FreeDto;
+import com.cjyc.common.model.dto.driver.mine.CarrierDriverNameDto;
 import com.cjyc.common.model.entity.Driver;
+import com.cjyc.common.model.vo.FreeDriverVo;
 import com.cjyc.common.model.vo.ResultVo;
+
+import java.util.List;
 
 public interface ICsDriverService {
 
@@ -31,7 +35,7 @@ public interface ICsDriverService {
      * @param dto
      * @return
      */
-    ResultVo saveOrModifyDriver(CarrierDriverDto dto);
+    ResultVo saveOrModifyDriver(com.cjyc.common.model.dto.CarrierDriverDto dto);
 
     /**
      * 绑定关系
@@ -45,14 +49,28 @@ public interface ICsDriverService {
      * @param dto
      * @return
      */
-    ResultData<Long> addDriverToPlatform(Driver driver, CarrierDriverDto dto);
+    ResultData<Long> addDriverToPlatform(Driver driver, com.cjyc.common.model.dto.CarrierDriverDto dto);
 
     /**
      * 更新承运商下司机信息到物流平台
      * @param dto
      * @return
      */
-    ResultData updateDriverToPlatform(CarrierDriverDto dto);
+    ResultData updateDriverToPlatform(com.cjyc.common.model.dto.CarrierDriverDto dto);
 
     Driver validate(Long loginId);
+
+    /**
+     * 获取该承运商下空闲司机
+     * @param dto
+     * @return
+     */
+    ResultVo<List<FreeDriverVo>> findCarrierFreeDriver(FreeDto dto);
+
+    /**
+     * 根据承运商id获取该承运商下的空闲司机
+     * @param dto
+     * @return
+     */
+    ResultVo<List<FreeDriverVo>> findCarrierDriver(CarrierDriverNameDto dto);
 }

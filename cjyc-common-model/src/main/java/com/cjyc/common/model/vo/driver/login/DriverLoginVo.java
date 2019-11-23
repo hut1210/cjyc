@@ -14,6 +14,10 @@ public class DriverLoginVo implements Serializable {
     @JsonSerialize(using= ToStringSerializer.class)
     private Long id;
 
+    @ApiModelProperty("承运商id")
+    @JsonSerialize(using= ToStringSerializer.class)
+    private Long carrierId;
+
     @ApiModelProperty("角色id")
     @JsonSerialize(using= ToStringSerializer.class)
     private Long roleId;

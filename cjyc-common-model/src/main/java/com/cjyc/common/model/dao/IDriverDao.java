@@ -1,6 +1,9 @@
 package com.cjyc.common.model.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cjyc.common.model.dto.FreeDto;
+import com.cjyc.common.model.dto.driver.BaseDriverDto;
+import com.cjyc.common.model.dto.driver.mine.CarrierDriverNameDto;
 import com.cjyc.common.model.dto.driver.task.DriverQueryDto;
 import com.cjyc.common.model.dto.web.driver.DispatchDriverDto;
 import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
@@ -9,13 +12,14 @@ import com.cjyc.common.model.dto.web.user.DriverListDto;
 import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.vo.driver.mine.DriverInfoVo;
 import com.cjyc.common.model.vo.driver.mine.DriverVehicleVo;
+import com.cjyc.common.model.vo.driver.mine.PersonDriverVo;
 import com.cjyc.common.model.vo.driver.task.TaskDriverVo;
 import com.cjyc.common.model.vo.web.carrier.BaseDriverVo;
 import com.cjyc.common.model.vo.web.driver.DispatchDriverVo;
 import com.cjyc.common.model.vo.web.driver.DriverVo;
 import com.cjyc.common.model.vo.web.driver.ShowDriverVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyDriverVo;
-import com.cjyc.common.model.vo.web.mineCarrier.MyFreeDriverVo;
+import com.cjyc.common.model.vo.FreeDriverVo;
 import com.cjyc.common.model.vo.web.user.DriverListVo;
 import org.apache.ibatis.annotations.Param;
 
@@ -91,19 +95,18 @@ public interface IDriverDao extends BaseMapper<Driver> {
     List<MyDriverVo> findMyDriver(QueryMyDriverDto dto);
 
     /**
-     * 根据承运商id和司机姓名查询所有符合的司机
-     * @param carrierId
-     * @param realName
+     * 查询该承运商下的符合条件的司机
+     * @param dto
      * @return
      */
-    List<MyFreeDriverVo> findMyAllDriver(@Param("carrierId") Long carrierId,@Param("realName") String realName);
+    List<FreeDriverVo> findCarrierDriver(@Param("dto") FreeDto dto);
 
     /**
      * 根据承运商查询绑定的司机
      * @param carrierId
      * @return
      */
-    List<Long> findMyBusyDriver(@Param("carrierId") Long carrierId);
+    List<Long> findCarrierBusyDriver(@Param("carrierId") Long carrierId);
 
     /**
      * 查询符合条件的调度个人司机
@@ -152,5 +155,19 @@ public interface IDriverDao extends BaseMapper<Driver> {
      * @return
      */
     List<DriverVehicleVo> findVehicle(@Param("driverIds") List<Long> driverIds);
+
+    /**
+     * 获取该承运商下符合条件的司机
+     * @param dto
+     * @return
+     */
+    List<FreeDriverVo> findCarrierAllDriver(CarrierDriverNameDto dto);
+
+    /**
+     * 司机端查询个人司机信息
+     * @param dto
+     * @return
+     */
+    PersonDriverVo findPersonInfo(BaseDriverDto dto);
 
 }

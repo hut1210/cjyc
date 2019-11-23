@@ -41,13 +41,13 @@ public class CustomerController {
 
     @ApiOperation(value = "新增移动端用户")
     @PostMapping(value = "/saveCustomer")
-    public ResultVo saveCustomer(@Validated({ CustomerDto.SaveCustomerVo.class }) @RequestBody CustomerDto customerDto){
+    public ResultVo saveCustomer(@Validated @RequestBody CustomerDto customerDto){
         return customerService.saveCustomer(customerDto);
     }
 
     @ApiOperation(value = "更新移动端用户")
     @PostMapping(value = "/modifyCustomer")
-    public ResultVo modifyCustomer(@Validated({ CustomerDto.UpdateCustomerVo.class }) @RequestBody CustomerDto customerDto){
+    public ResultVo modifyCustomer(@Validated @RequestBody CustomerDto customerDto){
         return customerService.modifyCustomer(customerDto);
     }
 

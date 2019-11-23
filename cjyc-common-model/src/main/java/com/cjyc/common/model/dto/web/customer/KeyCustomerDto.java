@@ -1,5 +1,6 @@
 package com.cjyc.common.model.dto.web.customer;
 
+import com.cjyc.common.model.constant.RegexConstant;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -7,6 +8,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 import java.util.List;
 
@@ -24,6 +26,7 @@ public class KeyCustomerDto implements Serializable {
 
      @NotBlank(message = "客户全称不能为空")
      @ApiModelProperty(value = "客户全称",required = true)
+     @Pattern(regexp = RegexConstant.NAME,message = "请输入合法姓名")
      private String name;
 
      @ApiModelProperty(value = "统一社会信用代码",required = true)
@@ -32,10 +35,12 @@ public class KeyCustomerDto implements Serializable {
 
     @NotBlank(message = "联系人不能为空")
     @ApiModelProperty(value = "联系人",required = true)
+    @Pattern(regexp = RegexConstant.NAME,message = "请输入合法姓名")
     private String contactMan;
 
     @NotBlank(message = "联系电话不能为空")
     @ApiModelProperty(value = "联系电话",required = true)
+    @Pattern(regexp = RegexConstant.REGEX_MOBILE_EXACT_LATEST,message = "电话号码格式不对")
     private String contactPhone;
 
     @ApiModelProperty(value = "客户地址")

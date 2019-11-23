@@ -37,7 +37,8 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
             List<CityTreeVo> citys = CityTreeUtil.encapTree(cityTreeVos);
             cityvo.setHotCityVos(hotCity);
             cityvo.setCityTreeVos(citys);
+            return BaseResultUtil.success(cityvo);
         }
-        return BaseResultUtil.success(cityvo);
+        return BaseResultUtil.fail("数据有误，请联系管理员");
     }
 }

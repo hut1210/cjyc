@@ -33,14 +33,12 @@
     <select id="findBinkCardInfo" resultType="com.cjyc.common.model.vo.driver.mine.BinkCardVo"
                             parameterType="java.lang.Long">
         SELECT
-        sbcb.id AS bankId,
-        sbcb.card_no AS cardNo,
-        sbcb.bank_name AS bankName
-      FROM
-          s_bank_card_bind sbcb
-        LEFT JOIN d_carrier_driver_con dcdc ON dcdc.carrier_id = sbcb.user_id
-        LEFT JOIN d_driver dd ON dd.id = dcdc.driver_id
-      where dd.id = #{driverId}
+            IFNULL(sbcb.id,0) AS bankId,
+            IFNULL(sbcb.card_no,'') AS cardNo,
+            IFNULL(sbcb.bank_name,'') AS bankName
+          FROM
+              s_bank_card_bind
+          where user_id = #{carrierId}
     </select>
 
 </mapper>

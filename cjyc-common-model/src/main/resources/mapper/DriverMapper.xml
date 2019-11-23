@@ -301,31 +301,32 @@
     </select>
 
     <!--根据承运商id和司机姓名司机-->
-    <select id="findMyAllDriver" resultType="com.cjyc.common.model.vo.web.mineCarrier.MyFreeDriverVo">
+    <select id="findCarrierDriver" resultType="com.cjyc.common.model.vo.FreeDriverVo"
+                parameterType="com.cjyc.common.model.dto.FreeDto">
         SELECT
-            d.id AS id,
-            d.real_name AS realName,
-            d.phone AS phone,
-            d.MODE AS MODE
+            dd.id AS driverId,
+            dd.real_name AS realName,
+            dd.phone AS phone,
+            dcdc.MODE AS MODE
         FROM
-            d_driver d
-	    LEFT JOIN d_carrier_driver_con con ON con.driver_id = d.id
+            d_driver dd
+	    LEFT JOIN d_carrier_driver_con dcdc ON dcdc.driver_id = dd.id
         <where>
             <if test="realName != null and realName.trim() != ''">
-                d.real_name like CONCAT('%',#{realName},'%')
+                dd.real_name like CONCAT('%',#{realName},'%')
             </if>
-            and con.carrier_id = #{carrierId} and d.state=2
+              and dcdc.id = #{roleId} and dcdc.state=2 and dd.id = #{loginId}
         </where>
     </select>
 
     <!--根据承运商查询绑定的司机-->
-    <select id="findMyBusyDriver" resultType="java.lang.Long" parameterType="java.lang.Long">
+    <select id="findCarrierBusyDriver" resultType="java.lang.Long" parameterType="java.lang.Long">
         SELECT
-            con.driver_id
+            ddvc.driver_id
         FROM
-            d_driver_vehicle_con con
-            LEFT JOIN d_vehicle veh ON veh.id = con.vehicle_id
-        where veh.carrier_id = #{carrierId}
+            d_driver_vehicle_con ddvc
+            LEFT JOIN d_vehicle dv ON dv.id = ddvc.vehicle_id
+        where dv.carrier_id = #{carrierId}
     </select>
 
     <!--查询符合条件的调度个人司机-->
@@ -475,6 +476,50 @@
         <foreach collection="driverIds" item="item" index="index" open="(" close=")" separator=",">
             #{item}
         </foreach>
+    </select>
+
+    <!--获取该承运商下符合条件的司机-->
+    <select id="findCarrierAllDriver" resultType="com.cjyc.common.model.vo.FreeDriverVo"
+                parameterType="com.cjyc.common.model.dto.driver.mine.CarrierDriverNameDto">
+        SELECT
+            dd.id AS driverId,
+            dd.real_name AS realName,
+            dd.phone AS phone,
+            dcdc.MODE AS MODE
+        FROM
+            d_driver dd
+            LEFT JOIN d_carrier_driver_con dcdc ON dcdc.driver_id = dd.id
+        <where>
+            <if test="realName != null and realName.trim() != ''">
+                and dd.real_name like CONCAT('%',#{realName},'%')
+            </if>
+            and dcdc.carrier_id = #{carrierId}
+            and dcdc.state = 2
+        </where>
+    </select>
+
+    <!--司机端查询个人司机信息-->
+    <select id="findPersonInfo" resultType="com.cjyc.common.model.vo.driver.mine.PersonDriverVo"
+                parameterType="com.cjyc.common.model.dto.driver.BaseDriverDto">
+        SELECT
+            dd.real_name AS realName,
+            dd.phone AS phone,
+            dd.id_card AS idCard,
+            IFNULL(dvr.vehicle_id,0) AS vehicleId,
+            IFNULL(dvr.plate_no,'') AS plateNo,
+            dcdc.MODE AS MODE,
+            dd.id_card_front_img AS idCardFrontImg,
+            dd.id_card_back_img AS idCardBackImg,
+            IFNULL(dd.driver_licence_front_img,'') AS driverLicenceFrontImg,
+            IFNULL(dd.qualifi_cert_front_img,'') AS qualifiCertFrontImg,
+            IFNULL(dd.taxi_licence_front_img,'') AS taxiLicenceFrontImg,
+            IFNULL(dd.travel_licence_front_img,'') AS travelLicenceFrontImg
+        FROM
+            d_driver dd
+            LEFT JOIN d_carrier_driver_con dcdc ON dcdc.driver_id = dd.id
+            LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
+        where dcdc.id = #{roleId} and dd.id = #{loginId}
+            and dcdc.state &lt; 9
     </select>
 
 </mapper>

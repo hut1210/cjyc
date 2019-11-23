@@ -6,7 +6,7 @@ import lombok.Data;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 @Data
-public class FreeVehicleDto implements Serializable {
+public class FreeDto implements Serializable {
 
     private static final long serialVersionUID = 5883906486927136906L;
     @ApiModelProperty("登陆用户id(loginId)")
@@ -19,4 +19,7 @@ public class FreeVehicleDto implements Serializable {
 
     @ApiModelProperty("车牌号")
     private String plateNo;
+
+    @ApiModelProperty("司机名字")
+    private String realName;
 }

@@ -1,10 +1,12 @@
 package com.cjyc.common.model.dto.web.mineCarrier;
 
+import com.cjyc.common.model.constant.RegexConstant;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 @Data
 public class ModifyMyCarDto implements Serializable {
@@ -23,6 +25,7 @@ public class ModifyMyCarDto implements Serializable {
 
     @ApiModelProperty(value = "车牌号",required = true)
     @NotBlank(message = "车牌号不能为空")
+    @Pattern(regexp = RegexConstant.PLATE_NO,message = "车牌号格式不对")
     private String plateNo;
 
     @ApiModelProperty(value = "车位数",required = true)

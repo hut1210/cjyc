@@ -69,5 +69,25 @@ public class RegexConstant {
      * 正则：IP地址
      */
     public static final String REGEX_IP = "((2[0-4]\\d|25[0-5]|[01]?\\d\\d?)\\.){3}(2[0-4]\\d|25[0-5]|[01]?\\d\\d?)";
+    /**
+     * 正则：验证码
+     */
+    public static final String VERIFY_CODE = "\\d{4}";
+    /**
+     * 正则：0|1
+     */
+    public static final String ZERO_ONE = "[0|1]";
+    /**
+     * 正则：车牌号
+     */
+    public static final String PLATE_NO = "^[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领A-Z]{1}[A-Z]{1}(?:(?![A-Z]{4})[A-Z0-9]){4}[A-Z0-9挂学警港澳]{1}$";
+    /**
+     * 正则：姓名(包含新疆姓名)
+     */
+    public static final String NAME = "^[\\u4e00-\\u9fa5.·\\u36c3\\u4DAE]{0,}$";
+    /**
+     * 正则：银行卡号
+     */
+    public static final String BINK_CARD = "^([1-9]{1})(\\d{14}|\\d{18})$";
 
 }

@@ -103,6 +103,11 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
 
     @Override
     public ResultVo saveCustomer(CustomerDto dto) {
+        //判断该手机号是否在库中存在
+        Customer cust = customerDao.selectOne(new QueryWrapper<Customer>().lambda().eq(Customer::getContactPhone, dto.getContactPhone()));
+        if(cust != null){
+            return BaseResultUtil.fail("该客户已存在，请检查");
+        }
         Customer customer = new Customer();
         BeanUtils.copyProperties(dto,customer);
         customer.setCustomerNo(sendNoService.getNo(SendNoTypeEnum.CUSTOMER));
@@ -128,6 +133,11 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
 
     @Override
     public ResultVo modifyCustomer(CustomerDto dto) {
+        //判断该手机号是否在库中存在
+        Customer cust = customerDao.selectOne(new QueryWrapper<Customer>().lambda().eq(Customer::getContactPhone, dto.getContactPhone()));
+        if(cust != null){
+            return BaseResultUtil.fail("该客户已存在，请检查");
+        }
         Customer customer = customerDao.selectById(dto.getCustomerId());
         if(null != customer){
             ResultData<Boolean> updateRd = csCustomerService.updateCustomerToPlatform(customer, dto.getContactPhone());

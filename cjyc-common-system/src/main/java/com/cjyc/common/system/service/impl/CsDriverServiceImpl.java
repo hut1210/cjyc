@@ -8,8 +8,9 @@ import com.cjkj.usercenter.dto.common.AddUserResp;
 import com.cjkj.usercenter.dto.common.UpdateUserReq;
 import com.cjkj.usercenter.dto.common.UserResp;
 import com.cjyc.common.model.dao.*;
-import com.cjyc.common.model.dto.CarrierDriverDto;
 import com.cjyc.common.model.dto.CarrierVehicleDto;
+import com.cjyc.common.model.dto.FreeDto;
+import com.cjyc.common.model.dto.driver.mine.CarrierDriverNameDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.ResultEnum;
@@ -19,6 +20,7 @@ import com.cjyc.common.model.exception.ParameterException;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.YmlProperty;
+import com.cjyc.common.model.vo.FreeDriverVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.ICsDriverService;
@@ -29,7 +31,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.lang.reflect.Parameter;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -103,7 +104,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
     }
 
     @Override
-    public ResultVo saveOrModifyDriver(CarrierDriverDto dto) {
+    public ResultVo saveOrModifyDriver(com.cjyc.common.model.dto.CarrierDriverDto dto) {
         if(dto.getCarrierId() == null && dto.getRoleId() != null){
             //web承运商管理员登陆
             CarrierDriverCon carrierDriCon = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
@@ -179,7 +180,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
     }
 
     @Override
-    public ResultData<Long> addDriverToPlatform(Driver driver, CarrierDriverDto dto) {
+    public ResultData<Long> addDriverToPlatform(Driver driver, com.cjyc.common.model.dto.CarrierDriverDto dto) {
         List<Driver> existList = driverDao.selectList(new QueryWrapper<Driver>().lambda()
                 .eq(Driver::getPhone, driver.getPhone()));
         if (!CollectionUtils.isEmpty(existList)) {
@@ -213,7 +214,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
     }
 
     @Override
-    public ResultData updateDriverToPlatform(CarrierDriverDto dto) {
+    public ResultData updateDriverToPlatform(com.cjyc.common.model.dto.CarrierDriverDto dto) {
         Driver driver = driverDao.selectById(dto.getDriverId());
         if (null == driver) {
             return ResultData.failed("司机信息错误，根据id：" + dto.getDriverId() + "未查询到信息");
@@ -259,12 +260,60 @@ public class CsDriverServiceImpl implements ICsDriverService {
 
     }
 
+    @Override
+    public ResultVo<List<FreeDriverVo>> findCarrierFreeDriver(FreeDto dto) {
+        //获取承运商
+        CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
+                .eq(CarrierDriverCon::getId, dto.getRoleId())
+                .eq(CarrierDriverCon::getDriverId, dto.getLoginId()));
+        //查询该承运商下的符合的全部司机
+        List<FreeDriverVo> freeDriverVos = driverDao.findCarrierDriver(dto);
+        if(cdc != null){
+            if(!CollectionUtils.isEmpty(freeDriverVos)){
+                return freeDriver(freeDriverVos,cdc.getCarrierId());
+            }
+        }
+        return BaseResultUtil.fail("数据有误，请联系管理员");
+    }
+
+    @Override
+    public ResultVo<List<FreeDriverVo>> findCarrierDriver(CarrierDriverNameDto dto) {
+        List<FreeDriverVo> freeDriverVos = driverDao.findCarrierAllDriver(dto);
+        if(!CollectionUtils.isEmpty(freeDriverVos)){
+           return freeDriver(freeDriverVos,dto.getCarrierId());
+        }
+        return BaseResultUtil.fail("该数据有误，请联系管理员");
+    }
+
+    /**
+     * 获取该承运商下空闲司机
+     * @param freeDriverVos
+     * @param carrierId
+     * @return
+     */
+    private ResultVo freeDriver(List<FreeDriverVo> freeDriverVos,Long carrierId){
+        //查询已被绑定的司机
+        List<Long> driverIds = driverDao.findCarrierBusyDriver(carrierId);
+        //去除已绑定司机
+        if(!CollectionUtils.isEmpty(driverIds)){
+            for (Long driverId : driverIds) {
+                for (FreeDriverVo vo : freeDriverVos) {
+                    if(driverId.equals(vo.getDriverId())){
+                        freeDriverVos.remove(vo);
+                        break;
+                    }
+                }
+            }
+            return BaseResultUtil.success(freeDriverVos);
+        }
+        return BaseResultUtil.fail("数据有误，请联系管理员");
+    }
     /**
      * 修改承运商下司机与车辆关系
      * @param dto
      * @return
      */
-    private ResultVo modifyDriver(CarrierDriverDto dto) {
+    private ResultVo modifyDriver(com.cjyc.common.model.dto.CarrierDriverDto dto) {
         //判断司机是否已存在
         Driver dri = driverDao.selectById(dto.getDriverId());
         DriverVehicleCon dvc = driverVehicleConDao.selectOne(new QueryWrapper<DriverVehicleCon>().lambda().eq(DriverVehicleCon::getDriverId,dto.getDriverId()));

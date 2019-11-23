@@ -2,7 +2,7 @@ package com.cjyc.common.system.service.impl;
 
 import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
-import com.cjyc.common.model.dto.customer.login.VerifyCodeDto;
+import com.cjyc.common.model.dto.VerifyCodeDto;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.feign.ISysLoginService;
