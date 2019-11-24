@@ -1,6 +1,7 @@
 package com.cjyc.common.system.service;
 
 import com.cjkj.common.model.ResultData;
+import com.cjyc.common.model.dto.CarrierDriverDto;
 import com.cjyc.common.model.dto.CarrierVehicleDto;
 import com.cjyc.common.model.dto.FreeDto;
 import com.cjyc.common.model.dto.driver.mine.CarrierDriverNameDto;
@@ -35,7 +36,7 @@ public interface ICsDriverService {
      * @param dto
      * @return
      */
-    ResultVo saveOrModifyDriver(com.cjyc.common.model.dto.CarrierDriverDto dto);
+    ResultVo saveOrModifyDriver(CarrierDriverDto dto);
 
     /**
      * 绑定关系

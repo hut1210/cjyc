@@ -1,10 +1,12 @@
 package com.cjyc.common.model.dao;
 
 import com.cjyc.common.model.dto.KeywordDto;
+import com.cjyc.common.model.dto.web.carrier.TransportDto;
 import com.cjyc.common.model.dto.web.mineCarrier.QueryMyCarDto;
 import com.cjyc.common.model.dto.web.vehicle.SelectVehicleDto;
 import com.cjyc.common.model.entity.Vehicle;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cjyc.common.model.vo.web.carrier.TransportVehicleVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyCarVo;
 import com.cjyc.common.model.vo.FreeVehicleVo;
 import com.cjyc.common.model.vo.web.vehicle.VehicleVo;
@@ -35,6 +37,13 @@ public interface IVehicleDao extends BaseMapper<Vehicle> {
      * @return
      */
     List<MyCarVo> findMyCar(QueryMyCarDto dto);
+
+    /**
+     * 获取该承运商下车辆信息
+     * @param dto
+     * @return
+     */
+    List<TransportVehicleVo> findTransportVehicle(TransportDto dto);
 
     /**
      * 获取所有社会车辆

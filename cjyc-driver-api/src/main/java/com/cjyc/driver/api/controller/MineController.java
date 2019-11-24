@@ -9,6 +9,7 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.mine.BinkCardVo;
 import com.cjyc.common.model.vo.driver.mine.DriverInfoVo;
+import com.cjyc.common.model.vo.driver.mine.DriverVehicleVo;
 import com.cjyc.common.model.vo.driver.mine.PersonDriverVo;
 import com.cjyc.common.system.service.ICsDriverService;
 import com.cjyc.common.system.service.ICsVehicleService;
@@ -70,6 +71,12 @@ public class MineController {
         return csDriverService.saveOrModifyDriver(dto);
     }
 
+    @ApiOperation(value = "新增/修改承运商下车辆")
+    @PostMapping(value = "/saveOrModifyEnterPriseVehicle")
+    public ResultVo saveOrModifyEnterPriseVehicle(@Validated @RequestBody EnterPriseDto dto){
+        return mineService.saveOrModifyEnterPriseVehicle(dto);
+    }
+
     @ApiOperation(value = "删除(冻结)承运商下司机")
     @PostMapping(value = "/frozenDriver")
     public ResultVo frozenDriver(@Validated @RequestBody FrozenDto dto){
@@ -92,6 +99,12 @@ public class MineController {
     @PostMapping(value = "/findVehicle")
     public ResultVo findVehicle(@RequestBody BaseDriverDto dto) {
         return mineService.findVehicle(dto);
+    }
+
+    @ApiOperation(value = "个人司机认证/修改个人信息")
+    @PostMapping(value = "/authPersonInfo")
+    public ResultVo authPersonInfo(@RequestBody PersonDriverDto dto) {
+        return mineService.authPersonInfo(dto);
     }
 
     @ApiOperation(value = "个人司机信息(认证通过后)")

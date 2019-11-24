@@ -48,6 +48,10 @@ public class PersonDriverDto implements Serializable {
     @Pattern(regexp = RegexConstant.PLATE_NO,message = "车牌号格式不对")
     private String plateNo;
 
+    @ApiModelProperty(value = "车位数",required = true)
+    @NotNull(message = "车位数不能为空")
+    private Integer defaultCarryNum;
+
     @ApiModelProperty(value = "承运方式：2 : 代驾  3 : 干线   4：拖车",required = true)
     @NotNull(message = "承运方式不能为空")
     private Integer mode;

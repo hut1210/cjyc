@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.dto.FreeDto;
 import com.cjyc.common.model.dto.driver.BaseDriverDto;
 import com.cjyc.common.model.dto.driver.mine.CarrierDriverNameDto;
+import com.cjyc.common.model.dto.driver.mine.PersonDriverDto;
 import com.cjyc.common.model.dto.driver.task.DriverQueryDto;
+import com.cjyc.common.model.dto.web.carrier.TransportDto;
 import com.cjyc.common.model.dto.web.driver.DispatchDriverDto;
 import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
 import com.cjyc.common.model.dto.web.mineCarrier.QueryMyDriverDto;
@@ -15,6 +17,7 @@ import com.cjyc.common.model.vo.driver.mine.DriverVehicleVo;
 import com.cjyc.common.model.vo.driver.mine.PersonDriverVo;
 import com.cjyc.common.model.vo.driver.task.TaskDriverVo;
 import com.cjyc.common.model.vo.web.carrier.BaseDriverVo;
+import com.cjyc.common.model.vo.web.carrier.TransportDriverVo;
 import com.cjyc.common.model.vo.web.driver.DispatchDriverVo;
 import com.cjyc.common.model.vo.web.driver.DriverVo;
 import com.cjyc.common.model.vo.web.driver.ShowDriverVo;
@@ -87,6 +90,13 @@ public interface IDriverDao extends BaseMapper<Driver> {
     List<BaseDriverVo> getDriversByIds(List<Long> driverIds);
 
     Driver findByUserId(Long userId);
+
+    /**
+     * 获取承运商下的司机
+     * @param dto
+     * @return
+     */
+    List<TransportDriverVo> findTransportDriver(TransportDto dto);
 
     /**
      * 查询该承该运商下的司机
@@ -169,5 +179,19 @@ public interface IDriverDao extends BaseMapper<Driver> {
      * @return
      */
     PersonDriverVo findPersonInfo(BaseDriverDto dto);
+
+    /**
+     * 验证在企业承运商下是否存在
+     * @param dto
+     * @return
+     */
+    Integer existEnterPriseDriver(PersonDriverDto dto);
+
+    /**
+     * 验证在个人承运商下是否存在
+     * @param dto
+     * @return
+     */
+    Integer existPersonDriver(PersonDriverDto dto);
 
 }

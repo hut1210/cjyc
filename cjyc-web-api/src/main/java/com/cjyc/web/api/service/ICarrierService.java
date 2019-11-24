@@ -1,15 +1,13 @@
 package com.cjyc.web.api.service;
 
 import com.cjyc.common.model.dto.web.OperateDto;
-import com.cjyc.common.model.dto.web.carrier.CarrierDto;
-import com.cjyc.common.model.dto.web.carrier.DispatchCarrierDto;
-import com.cjyc.common.model.dto.web.carrier.SeleCarrierDto;
-import com.cjyc.common.model.dto.web.carrier.TrailCarrierDto;
+import com.cjyc.common.model.dto.web.carrier.*;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.carrier.TrailCarrierVo;
 
-import com.cjyc.common.model.vo.web.carrier.BaseCarrierVo;
+import com.cjyc.common.model.vo.web.carrier.TransportDriverVo;
+import com.cjyc.common.model.vo.web.carrier.TransportVehicleVo;
 
 /**
  *  @author: zj
@@ -52,6 +50,20 @@ public interface ICarrierService {
      * @return
      */
     ResultVo resetPwd(Long id);
+
+    /**
+     * 获取承运商下司机
+     * @param dto
+     * @return
+     */
+    ResultVo<PageVo<TransportDriverVo>> transportDriver(TransportDto dto);
+
+    /**
+     * 获取该承运商下的车辆信息
+     * @param dto
+     * @return
+     */
+    ResultVo<PageVo<TransportVehicleVo>> transportVehicle(TransportDto dto);
 
     /**
      * 调度承运商信息

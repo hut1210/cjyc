@@ -6,6 +6,8 @@ import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.List;
+
 @Data
 public class QueryMyCarDto extends BasePageDto implements Serializable {
 
@@ -14,9 +16,6 @@ public class QueryMyCarDto extends BasePageDto implements Serializable {
     @ApiModelProperty(value = "登陆系统用户id(loginId)",required = true)
     @NotNull(message = "登陆系统用户loginId不能为空")
     private Long loginId;
-
-    @ApiModelProperty("承运商id(carrierId)")
-    private Long carrierId;
 
     @ApiModelProperty("车牌号")
     private String plateNo;
@@ -29,4 +28,7 @@ public class QueryMyCarDto extends BasePageDto implements Serializable {
 
     @ApiModelProperty("承运方式：2 : 代驾  3 : 干线   4：拖车")
     private Integer mode;
+
+    @ApiModelProperty("司机ids，不需要传")
+    private List<Long> driverIds;
 }

@@ -2,7 +2,6 @@ package com.cjyc.common.system.service;
 
 import com.cjyc.common.model.dto.FreeDto;
 import com.cjyc.common.model.dto.KeywordDto;
-import com.cjyc.common.model.dto.driver.mine.CarrierDriverNameDto;
 import com.cjyc.common.model.dto.driver.mine.CarrierVehicleNoDto;
 import com.cjyc.common.model.vo.FreeVehicleVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -26,7 +25,7 @@ public interface ICsVehicleService {
     ResultVo<List<FreeVehicleVo>> findCarrierFreeVehicle(FreeDto dto);
 
     /**
-     * 根据承运商id获取该承运商下的空闲司机
+     * 根据承运商id获取该承运商下的空闲车辆
      * @param dto
      * @return
      */

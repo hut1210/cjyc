@@ -252,6 +252,39 @@
         </foreach>
     </select>
 
+    <!--查询(承运商查看中的)该承该运商下的司机-->
+    <select id="findTransportDriver" resultType="com.cjyc.common.model.vo.web.carrier.TransportDriverVo"
+                    parameterType="com.cjyc.common.model.dto.web.carrier.TransportDto">
+        SELECT
+            dd.id AS driverId,
+            dcdc.carrier_id AS carrierId,
+            dd.real_name AS realName,
+            dd.phone AS phone,
+            dcdc.MODE AS MODE,
+            dd.business_state AS businessState,
+            dcdc.state AS state,
+            dd.identity AS identity,
+            dvr.plate_no AS plateNo,
+            dvr.carry_car_num AS defaultCarryNum
+            FROM
+            d_driver dd
+        LEFT JOIN d_carrier_driver_con dcdc ON dcdc.driver_id = dd.id
+        LEFT JOIN d_carrier dc ON dc.id = dcdc.carrier_id
+        LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
+        <where>
+            <if test="realName != null and realName.trim() != ''">
+                dd.real_name like CONCAT('%',#{realName},'%')
+            </if>
+            <if test="phone != null and phone.trim() != ''">
+                and  dd.phone = #{phone}
+            </if>
+            <if test="plateNo != null and plateNo.trim() != ''">
+                and  dvr.plate_no = #{plateNo}
+            </if>
+            and dc.carrier_id = #{carrierId} and dc.type = 2 and dc.state &lt; 9
+        </where>
+    </select>
+
     <!--查询该承该运商下的司机-->
     <select id="findMyDriver" resultType="com.cjyc.common.model.vo.web.mineCarrier.MyDriverVo"
                                 parameterType="com.cjyc.common.model.dto.web.mineCarrier.QueryMyDriverDto">
@@ -296,7 +329,10 @@
             <if test="mode != null">
                 and  dcdc.mode = #{mode}
             </if>
-            and dc.carrier_id = #{carrierId} and dc.type = 2 and dc.business_state = 0
+            and dd.id in
+            <foreach collection="driverIds" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
         </where>
     </select>
 
@@ -520,6 +556,36 @@
             LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
         where dcdc.id = #{roleId} and dd.id = #{loginId}
             and dcdc.state &lt; 9
+    </select>
+
+    <!--验证在企业承运商下是否存在-->
+    <select id="existEnterPriseDriver" resultType="java.lang.Integer"
+                        parameterType="com.cjyc.common.model.dto.driver.mine.PersonDriverDto">
+        SELECT
+            count( dd.id )
+        FROM
+            d_driver dd
+            LEFT JOIN d_carrier_driver_con dcdc ON dcdc.driver_id = dd.id
+            LEFT JOIN d_carrier dc ON dc.id = dcdc.carrier_id
+        WHERE
+            dc.type = 2
+            AND ( dd.phone = #{phone} OR dd.id_card = #{idCard})
+    </select>
+
+
+    <!--验证在个人承运商下是否存在-->
+    <select id="existPersonDriver" resultType="java.lang.Integer"
+            parameterType="com.cjyc.common.model.dto.driver.mine.PersonDriverDto">
+        SELECT
+            count( dd.id )
+        FROM
+            d_driver dd
+            LEFT JOIN d_carrier_driver_con dcdc ON dcdc.driver_id = dd.id
+            LEFT JOIN d_carrier dc ON dc.id = dcdc.carrier_id
+        WHERE
+            dc.type = 1
+            AND ( dd.phone = #{phone} and dd.id_card = #{idCard})
+            and dd.id &lt;&gt; #{loginId}
     </select>
 
 </mapper>

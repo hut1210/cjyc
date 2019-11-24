@@ -66,17 +66,22 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
     @Override
     public ResultVo<PageVo<MyDriverVo>> findPageDriver(QueryMyDriverDto dto) {
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        List<MyDriverVo> myDriverVos =  driverDao.findMyDriver(dto);
-        if(!CollectionUtils.isEmpty(myDriverVos)){
-            for(MyDriverVo vo : myDriverVos){
-                CarrierCarCount count = carrierCarCountDao.driverCount(vo.getDriverId());
-                if(count != null){
-                    vo.setCarNum(count.getCarNum());
+        List<Long> driverIds = driverDao.findDriverIds(dto.getLoginId());
+        if(!CollectionUtils.isEmpty(driverIds)){
+            dto.setDriverIds(driverIds);
+            List<MyDriverVo> myDriverVos =  driverDao.findMyDriver(dto);
+            if(!CollectionUtils.isEmpty(myDriverVos)){
+                for(MyDriverVo vo : myDriverVos){
+                    CarrierCarCount count = carrierCarCountDao.driverCount(vo.getDriverId());
+                    if(count != null){
+                        vo.setCarNum(count.getCarNum());
+                    }
                 }
             }
+            PageInfo<MyDriverVo> pageInfo = new PageInfo<>(myDriverVos);
+            return BaseResultUtil.success(pageInfo);
         }
-        PageInfo<MyDriverVo> pageInfo = new PageInfo<>(myDriverVos);
-        return BaseResultUtil.success(pageInfo);
+        return BaseResultUtil.fail("数据错误，请俩你想管理员");
     }
 
     @Override
@@ -147,9 +152,14 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
     @Override
     public ResultVo<PageVo<MyCarVo>> findPageCar(QueryMyCarDto dto) {
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        List<MyCarVo> myCarVos = vehicleDao.findMyCar(dto);
-        PageInfo<MyCarVo> pageInfo = new PageInfo<>(myCarVos);
-        return BaseResultUtil.success(pageInfo);
+        List<Long> driverIds = driverDao.findDriverIds(dto.getLoginId());
+        if(!CollectionUtils.isEmpty(driverIds)){
+            dto.setDriverIds(driverIds);
+            List<MyCarVo> myCarVos = vehicleDao.findMyCar(dto);
+            PageInfo<MyCarVo> pageInfo = new PageInfo<>(myCarVos);
+            return BaseResultUtil.success(pageInfo);
+        }
+        return BaseResultUtil.fail("数据错误，请俩你想管理员");
     }
 
     /**

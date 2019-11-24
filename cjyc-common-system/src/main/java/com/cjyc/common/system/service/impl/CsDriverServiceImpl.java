@@ -8,6 +8,7 @@ import com.cjkj.usercenter.dto.common.AddUserResp;
 import com.cjkj.usercenter.dto.common.UpdateUserReq;
 import com.cjkj.usercenter.dto.common.UserResp;
 import com.cjyc.common.model.dao.*;
+import com.cjyc.common.model.dto.CarrierDriverDto;
 import com.cjyc.common.model.dto.CarrierVehicleDto;
 import com.cjyc.common.model.dto.FreeDto;
 import com.cjyc.common.model.dto.driver.mine.CarrierDriverNameDto;
@@ -104,7 +105,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
     }
 
     @Override
-    public ResultVo saveOrModifyDriver(com.cjyc.common.model.dto.CarrierDriverDto dto) {
+    public ResultVo saveOrModifyDriver(CarrierDriverDto dto) {
         if(dto.getCarrierId() == null && dto.getRoleId() != null){
             //web承运商管理员登陆
             CarrierDriverCon carrierDriCon = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
@@ -176,7 +177,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
         }else{
             return modifyDriver(dto);
         }
-        return null;
+        return BaseResultUtil.fail("数据有误，请联系管理员");
     }
 
     @Override

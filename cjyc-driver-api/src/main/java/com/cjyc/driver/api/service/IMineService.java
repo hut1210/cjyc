@@ -1,16 +1,16 @@
 package com.cjyc.driver.api.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.cjyc.common.model.dto.driver.mine.DeleteVehicleDto;
-import com.cjyc.common.model.dto.driver.mine.PersonVehicleDto;
+import com.cjyc.common.model.dto.driver.mine.*;
 import com.cjyc.common.model.dto.driver.BaseDriverDto;
-import com.cjyc.common.model.dto.driver.mine.FrozenDto;
 import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.mine.BinkCardVo;
 import com.cjyc.common.model.vo.driver.mine.DriverInfoVo;
 import com.cjyc.common.model.vo.driver.mine.PersonDriverVo;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestBody;
 
 public interface IMineService extends IService<Driver> {
 
@@ -36,6 +36,13 @@ public interface IMineService extends IService<Driver> {
     ResultVo frozenDriver(FrozenDto dto);
 
     /**
+     * 新增修改企业的车辆
+     * @param dto
+     * @return
+     */
+    ResultVo saveOrModifyEnterPriseVehicle(EnterPriseDto dto);
+
+    /**
      * 个人司机新增修改车辆信息
      * @param dto
      * @return
@@ -55,6 +62,13 @@ public interface IMineService extends IService<Driver> {
      * @return
      */
     ResultVo findVehicle(BaseDriverDto dto);
+
+    /**
+     * 个人司机实名认证或者修改信息
+     * @param dto
+     * @return
+     */
+    ResultVo authPersonInfo(PersonDriverDto dto);
 
     /**
      * 查看认证后的个人司机信息

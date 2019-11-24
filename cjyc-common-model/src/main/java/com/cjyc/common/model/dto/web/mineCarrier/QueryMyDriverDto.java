@@ -6,15 +6,14 @@ import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.List;
+
 @Data
 public class QueryMyDriverDto extends BasePageDto {
 
     @ApiModelProperty(value = "登陆系统用户id(loginId)",required = true)
     @NotNull(message = "登陆系统用户loginId不能为空")
     private Long loginId;
-
-    @ApiModelProperty("承运商id(carrierId)")
-    private Long carrierId;
 
     @ApiModelProperty("司机姓名")
     private String realName;
@@ -36,4 +35,7 @@ public class QueryMyDriverDto extends BasePageDto {
 
     @ApiModelProperty("车牌号")
     private String plateNo;
+
+    @ApiModelProperty("司机ids，不用传")
+    private List<Long> driverIds;
 }

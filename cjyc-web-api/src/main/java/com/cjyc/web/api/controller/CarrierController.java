@@ -1,12 +1,12 @@
 package com.cjyc.web.api.controller;
 
+import com.cjyc.common.model.dto.CarrierDriverDto;
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.carrier.*;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.carrier.CarrierVo;
-import com.cjyc.common.model.vo.web.carrier.BaseCarrierVo;
-import com.cjyc.common.model.vo.web.carrier.TrailCarrierVo;
+import com.cjyc.common.model.vo.web.carrier.*;
+import com.cjyc.common.system.service.ICsDriverService;
 import com.cjyc.web.api.service.ICarrierService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -29,6 +29,8 @@ public class CarrierController {
 
     @Resource
     private ICarrierService carrierService;
+    @Resource
+    private ICsDriverService csDriverService;
 
     @ApiOperation(value = "新增/修改承运商")
     @PostMapping(value = "/saveOrModifyCarrier")
@@ -60,6 +62,24 @@ public class CarrierController {
                              @PathVariable Long id) {
         //重置机构超级管理员用户密码
         return carrierService.resetPwd(id);
+    }
+
+    @ApiOperation(value = "新增/修改承运商下司机")
+    @PostMapping(value = "/saveOrModifyDriver")
+    public ResultVo saveOrModifyDriver(@Validated @RequestBody CarrierDriverDto dto){
+        return csDriverService.saveOrModifyDriver(dto);
+    }
+
+    @ApiOperation(value = "根据carrierId查看基本司机信息")
+    @PostMapping(value = "/transportDriver")
+    public ResultVo<PageVo<TransportDriverVo>> transportDriver(@Validated @RequestBody TransportDto dto){
+        return carrierService.transportDriver(dto);
+    }
+
+    @ApiOperation(value = "根据carrierId查看基本车辆信息")
+    @PostMapping(value = "/transportVehicle")
+    public ResultVo<PageVo<TransportVehicleVo>> transportVehicle(@Validated @RequestBody TransportDto dto){
+        return carrierService.transportVehicle(dto);
     }
 
     @ApiOperation(value = "调度承运商信息")
