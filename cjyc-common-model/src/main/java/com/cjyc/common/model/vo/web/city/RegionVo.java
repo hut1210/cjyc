@@ -4,6 +4,8 @@ import com.cjyc.common.model.entity.City;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @Description 大区vo
  * @Author LiuXingXiang
@@ -14,4 +16,7 @@ public class RegionVo extends City {
     private static final long serialVersionUID = -8907210911560768082L;
     @ApiModelProperty("包含省分数量")
     private Integer provinceCount;
+
+    @ApiModelProperty("包含省分数量")
+    private List<ProvinceCityVo> provinceList;
 }
