@@ -74,8 +74,14 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
 
     @Override
     public ResultVo<PageVo<DriverInfoVo>> findDriver(BaseDriverDto dto) {
+        CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
+                .eq(CarrierDriverCon::getDriverId, dto.getLoginId())
+                .eq(CarrierDriverCon::getId, dto.getRoleId()));
+        List<Long> driverIds = null;
+        if(cdc != null){
+            driverIds = driverDao.findDriverIds(cdc.getCarrierId());
+        }
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        List<Long> driverIds = driverDao.findDriverIds(dto.getLoginId());
         List<DriverInfoVo> driverInfo = null;
         if(!CollectionUtils.isEmpty(driverIds)){
             driverInfo = driverDao.findDriverInfo(driverIds);
@@ -268,7 +274,9 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
                 //普通司机
                 driverIds.add(dto.getLoginId());
             }else{
-                driverIds = driverDao.findDriverIds(dto.getLoginId());
+                if(cdc != null){
+                    driverIds = driverDao.findDriverIds(cdc.getCarrierId());
+                }
             }
             PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
             List<DriverVehicleVo> vehicleVos = driverDao.findVehicle(driverIds);

@@ -42,11 +42,6 @@ public class MineCarrierController {
     @Resource
     private ICsVehicleService csVehicleService;
 
-    @ApiOperation(value = "查询承运商下运单")
-    @PostMapping(value = "/findWaybill")
-    public ResultVo<PageVo<MyWaybillVo>> findWaybill(@Validated @RequestBody MyWaybillDto dto){
-        return mimeCarrierService.findWaybill(dto);
-    }
 
     @ApiOperation(value = "新增/修改承运商下司机")
     @PostMapping(value = "/saveOrModifyDriver")
@@ -72,7 +67,7 @@ public class MineCarrierController {
         return mimeCarrierService.saveOrModifyVehicle(dto);
     }
 
-    @ApiOperation(value = "查询承运商下车辆",notes = "如果carrierId为空，则是承运商管理员登陆，需要把loginId转成carrierId,否则是韵车内部登陆")
+    @ApiOperation(value = "查询承运商下车辆")
     @PostMapping(value = "/findPageCar")
     public ResultVo<PageVo<MyCarVo>> findPageCar(@RequestBody QueryMyCarDto dto){
         return mimeCarrierService.findPageCar(dto);

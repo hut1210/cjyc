@@ -15,6 +15,7 @@ import com.cjyc.common.model.dto.driver.mine.CarrierDriverNameDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.ResultEnum;
+import com.cjyc.common.model.enums.driver.DriverIdentityEnum;
 import com.cjyc.common.model.enums.task.TaskStateEnum;
 import com.cjyc.common.model.enums.transport.*;
 import com.cjyc.common.model.exception.ParameterException;
@@ -27,7 +28,6 @@ import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.ICsDriverService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -109,7 +109,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
         if(dto.getCarrierId() == null && dto.getRoleId() != null){
             //web承运商管理员登陆
             CarrierDriverCon carrierDriCon = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
-                    .eq(CarrierDriverCon::getDriverId, dto.getDriverId())
+                    .eq(CarrierDriverCon::getDriverId, dto.getLoginId())
                     .eq(CarrierDriverCon::getId, dto.getRoleId()));
             dto.setCarrierId(carrierDriCon.getCarrierId());
         }
@@ -129,9 +129,9 @@ public class CsDriverServiceImpl implements ICsDriverService {
             BeanUtils.copyProperties(dto,driver);
             driver.setName(dto.getRealName());
             driver.setType(DriverTypeEnum.SOCIETY.code);
-            driver.setIdentity(DriverIdentityEnum.SUB_DRIVER.code);
+            driver.setIdentity(DriverIdentityEnum.GENERAL_DRIVER.code);
             driver.setBusinessState(BusinessStateEnum.BUSINESS.code);
-            if(dto.getCarrierId() != null){
+            if(dto.getRoleId() == null){
                 //业务员登陆
                 driver.setSource(DriverSourceEnum.SALEMAN_WEB.code);
             }else{
@@ -154,7 +154,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
             driverCon.setDriverId(driver.getId());
             driverCon.setMode(dto.getMode());
             driverCon.setState(CommonStateEnum.CHECKED.code);
-            driverCon.setRole(DriverIdentityEnum.SUB_DRIVER.code);
+            driverCon.setRole(DriverRoleEnum.SUB_DRIVER.code);
             carrierDriverConDao.insert(driverCon);
             //车牌号不为空
             if(StringUtils.isNotBlank(dto.getPlateNo())){
@@ -275,7 +275,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
                 return freeDriver(freeDriverVos,cdc.getCarrierId());
             }
         }
-        return BaseResultUtil.fail("数据有误，请联系管理员");
+        return BaseResultUtil.success();
     }
 
     @Override
@@ -284,7 +284,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
         if(!CollectionUtils.isEmpty(freeDriverVos)){
            return freeDriver(freeDriverVos,dto.getCarrierId());
         }
-        return BaseResultUtil.fail("该数据有误，请联系管理员");
+        return BaseResultUtil.success();
     }
 
     /**

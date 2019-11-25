@@ -40,8 +40,6 @@ public class MineController {
     private ICsVehicleService csVehicleService;
     @Resource
     private ICsDriverService csDriverService;
-    @Resource
-    private ICsSmsService csSmsService;
 
     @ApiOperation(value = "司机的银行卡信息")
     @PostMapping(value = "/findBinkCard")
@@ -120,12 +118,5 @@ public class MineController {
     public ResultVo addBankCard(@Validated @RequestBody BankCardDto dto) {
         return mineService.addBankCard(dto);
     }
-
-    @ApiOperation(value = "获取验证码")
-    @PostMapping(value = "/send")
-    public ResultVo send(@Validated @RequestBody CaptchaSendDto dto) {
-        return csSmsService.send(dto);
-    }
-
 
 }

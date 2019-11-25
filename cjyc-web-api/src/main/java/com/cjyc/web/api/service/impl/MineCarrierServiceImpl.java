@@ -9,6 +9,7 @@ import com.cjyc.common.model.dto.web.mineCarrier.*;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.FlagEnum;
+import com.cjyc.common.model.enums.driver.DriverIdentityEnum;
 import com.cjyc.common.model.enums.transport.*;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
@@ -16,7 +17,6 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyCarVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyDriverVo;
-import com.cjyc.common.model.vo.FreeDriverVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyWaybillVo;
 import com.cjyc.common.system.service.ICsDriverService;
 import com.cjyc.web.api.service.IMineCarrierService;
@@ -65,11 +65,18 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
 
     @Override
     public ResultVo<PageVo<MyDriverVo>> findPageDriver(QueryMyDriverDto dto) {
+        CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
+                .eq(CarrierDriverCon::getDriverId, dto.getLoginId())
+                .eq(CarrierDriverCon::getId, dto.getRoleId()));
+        List<Long> driverIds = null;
+        if(cdc != null){
+            driverIds = driverDao.findDriverIds(cdc.getCarrierId());
+        }
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        List<Long> driverIds = driverDao.findDriverIds(dto.getLoginId());
+        List<MyDriverVo> myDriverVos = null;
         if(!CollectionUtils.isEmpty(driverIds)){
             dto.setDriverIds(driverIds);
-            List<MyDriverVo> myDriverVos =  driverDao.findMyDriver(dto);
+            myDriverVos =  driverDao.findMyDriver(dto);
             if(!CollectionUtils.isEmpty(myDriverVos)){
                 for(MyDriverVo vo : myDriverVos){
                     CarrierCarCount count = carrierCarCountDao.driverCount(vo.getDriverId());
@@ -78,10 +85,9 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
                     }
                 }
             }
-            PageInfo<MyDriverVo> pageInfo = new PageInfo<>(myDriverVos);
-            return BaseResultUtil.success(pageInfo);
         }
-        return BaseResultUtil.fail("数据错误，请俩你想管理员");
+        PageInfo<MyDriverVo> pageInfo = new PageInfo<>(myDriverVos);
+        return BaseResultUtil.success(pageInfo);
     }
 
     @Override
@@ -90,15 +96,15 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
         CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda().eq(CarrierDriverCon::getDriverId,dto.getId()));
         if(dto.getFlag() == FlagEnum.ADMINISTRATOR.code){
             //设为管理员
-            driver.setIdentity(DriverIdentityEnum.ADMIN.code);
+            driver.setIdentity(DriverIdentityEnum.CARRIER_MANAGER.code);
             //修改身份
-            cdc.setRole(DriverIdentityEnum.ADMIN.code);
+            cdc.setRole(DriverRoleEnum.ADMIN.code);
             carrierDriverConDao.updateById(cdc);
         }else if(dto.getFlag() == FlagEnum.REMOVE_ADMINISTRATOR.code){
             //解除管理员
-            driver.setIdentity(DriverIdentityEnum.SUB_DRIVER.code);
+            driver.setIdentity(DriverIdentityEnum.GENERAL_DRIVER.code);
             //修改身份
-            cdc.setRole(DriverIdentityEnum.SUB_DRIVER.code);
+            cdc.setRole(DriverRoleEnum.SUB_DRIVER.code);
             carrierDriverConDao.updateById(cdc);
         }else if(dto.getFlag() == FlagEnum.FROZEN.code){
             //冻结
@@ -151,15 +157,21 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
 
     @Override
     public ResultVo<PageVo<MyCarVo>> findPageCar(QueryMyCarDto dto) {
+        CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
+                .eq(CarrierDriverCon::getDriverId, dto.getLoginId())
+                .eq(CarrierDriverCon::getId, dto.getRoleId()));
+        List<Long> driverIds = null;
+        if(cdc != null){
+            driverIds = driverDao.findDriverIds(cdc.getCarrierId());
+        }
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        List<Long> driverIds = driverDao.findDriverIds(dto.getLoginId());
+        List<MyCarVo> myCarVos = null;
         if(!CollectionUtils.isEmpty(driverIds)){
             dto.setDriverIds(driverIds);
-            List<MyCarVo> myCarVos = vehicleDao.findMyCar(dto);
-            PageInfo<MyCarVo> pageInfo = new PageInfo<>(myCarVos);
-            return BaseResultUtil.success(pageInfo);
+            myCarVos = vehicleDao.findMyCar(dto);
         }
-        return BaseResultUtil.fail("数据错误，请俩你想管理员");
+        PageInfo<MyCarVo> pageInfo = new PageInfo<>(myCarVos);
+        return BaseResultUtil.success(pageInfo);
     }
 
     /**

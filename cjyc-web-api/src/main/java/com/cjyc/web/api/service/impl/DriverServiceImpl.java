@@ -1,13 +1,11 @@
 package com.cjyc.web.api.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.injector.methods.SelectById;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
 import com.cjkj.usercenter.dto.common.AddUserReq;
 import com.cjkj.usercenter.dto.common.AddUserResp;
-import com.cjkj.usercenter.dto.common.UpdateUserReq;
 import com.cjkj.usercenter.dto.common.UserResp;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.OperateDto;
@@ -20,6 +18,7 @@ import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.FlagEnum;
 import com.cjyc.common.model.enums.ResultEnum;
+import com.cjyc.common.model.enums.driver.DriverIdentityEnum;
 import com.cjyc.common.model.enums.task.TaskStateEnum;
 import com.cjyc.common.model.enums.transport.*;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -34,8 +33,6 @@ import com.cjyc.common.model.vo.web.driver.ExistDriverVo;
 import com.cjyc.common.model.vo.web.driver.ShowDriverVo;
 import com.cjyc.common.model.vo.web.user.DriverListVo;
 import com.cjyc.common.system.service.ICsDriverService;
-import com.cjyc.common.system.service.ICsDriverService;
-import com.cjyc.web.api.exception.CommonException;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.web.api.service.ICarrierCityConService;
 import com.cjyc.web.api.service.IDriverService;
@@ -111,7 +108,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
             BeanUtils.copyProperties(dto,driver);
             driver.setName(dto.getRealName());
             driver.setType(DriverTypeEnum.SOCIETY.code);
-            driver.setIdentity(DriverIdentityEnum.PERSONAL_DRIVER.code);
+            driver.setIdentity(DriverIdentityEnum.GENERAL_DRIVER.code);
             driver.setBusinessState(BusinessStateEnum.BUSINESS.code);
             driver.setSource(DriverSourceEnum.SALEMAN_WEB.code);
             driver.setCreateTime(NOW);
@@ -146,7 +143,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
             cdc.setDriverId(driver.getId());
             cdc.setMode(dto.getMode());
             cdc.setState(CommonStateEnum.WAIT_CHECK.code);
-            cdc.setRole(DriverIdentityEnum.PERSONAL_DRIVER.code);
+            cdc.setRole(DriverRoleEnum.PERSONAL_DRIVER.code);
             carrierDriverConDao.insert(cdc);
             //添加承运商业务范围
             carrierCityConService.batchSave(carrier.getId(),dto.getCodes());

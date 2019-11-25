@@ -17,6 +17,10 @@ public class QueryMyCarDto extends BasePageDto implements Serializable {
     @NotNull(message = "登陆系统用户loginId不能为空")
     private Long loginId;
 
+    @ApiModelProperty(value = "角色id",required = true)
+    @NotNull(message = "角色id不能为空")
+    private Long roleId;
+
     @ApiModelProperty("车牌号")
     private String plateNo;
 

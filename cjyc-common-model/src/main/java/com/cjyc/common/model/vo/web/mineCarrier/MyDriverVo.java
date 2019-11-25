@@ -27,6 +27,15 @@ public class MyDriverVo implements Serializable {
     @ApiModelProperty("承运方式：2 : 代驾  3 : 干线   4：拖车")
     private Integer mode;
 
+    @ApiModelProperty("身份证号")
+    private String idCard;
+
+    @ApiModelProperty("身份证正面")
+    private String idCardFrontImg;
+
+    @ApiModelProperty("身份证反面")
+    private String idCardBackImg;
+
     @ApiModelProperty("营运状态：0营运中，1停运中")
     private Integer businessState;
 
@@ -36,8 +45,14 @@ public class MyDriverVo implements Serializable {
     @ApiModelProperty("司机身份 0：普通司机 1：管理员")
     private Integer identity;
 
+    @ApiModelProperty("角色：0个人司机，1下属司机，2管理员，3超级管理员")
+    private Integer role;
+
     @ApiModelProperty("总运台")
     private Integer carNum;
+
+    @ApiModelProperty("车辆id")
+    private Long vehicleId;
 
     @ApiModelProperty("车牌号")
     private String plateNo;

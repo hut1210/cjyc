@@ -1,6 +1,6 @@
 package com.cjyc.common.model.enums.transport;
 
-public enum DriverIdentityEnum {
+public enum DriverRoleEnum {
 
     //司机身份 0：个人司机 1：下属司机 2：管理员 3：超级管理员
     PERSONAL_DRIVER("普通司机", 0),
@@ -11,7 +11,7 @@ public enum DriverIdentityEnum {
     public String name;
     public int code;
 
-    DriverIdentityEnum(String name, int code) {
+    DriverRoleEnum(String name, int code) {
         this.name = name;
         this.code = code;
     }

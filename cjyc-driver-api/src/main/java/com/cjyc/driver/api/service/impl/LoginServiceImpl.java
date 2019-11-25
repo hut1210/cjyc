@@ -130,7 +130,7 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
         driver.setRealName(no);
         driver.setPhone(phone);
         driver.setType(DriverTypeEnum.SOCIETY.code);
-        driver.setIdentity(DriverIdentityEnum.PERSONAL_DRIVER.code);
+        driver.setIdentity(DriverRoleEnum.PERSONAL_DRIVER.code);
         driver.setSource(DriverSourceEnum.APP_DRIVER.code);
         driver.setCreateTime(NOW);
         //新增数据到物流平台
@@ -154,7 +154,7 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
         cdc.setDriverId(driver.getId());
         cdc.setCarrierId(carrier.getId());
         cdc.setState(CommonStateEnum.WAIT_CHECK.code);
-        cdc.setRole(DriverIdentityEnum.PERSONAL_DRIVER.code);
+        cdc.setRole(DriverRoleEnum.PERSONAL_DRIVER.code);
         carrierDriverConDao.insert(cdc);
         //组装数据
         dVo.setId(driver.getId());
@@ -163,7 +163,7 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
         dVo.setUserId(driver.getUserId());
         dVo.setRealName(driver.getRealName());
         dVo.setPhone(driver.getPhone());
-        dVo.setIdentity(DriverIdentityEnum.PERSONAL_DRIVER.code);
+        dVo.setIdentity(DriverRoleEnum.PERSONAL_DRIVER.code);
         dVo.setBusinessState(driver.getBusinessState());
         dVo.setCompanyName(carrier.getName());
         return BaseResultUtil.success(dVo);
