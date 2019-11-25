@@ -43,6 +43,12 @@
         update set unload_car_num = unload_car_num + #{unLoadNum}
         where id = #{taskId}
     </update>
+    <update id="updateStateById">
+        update w_task
+        set state = #{state}
+        where id = #{taskId}
+        and state &lt; 100
+    </update>
     <delete id="cancelBywaybillId">
         update w_task
         set state = #{newState}

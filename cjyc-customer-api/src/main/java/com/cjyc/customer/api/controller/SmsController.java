@@ -11,7 +11,9 @@ import com.cjyc.common.model.enums.message.SmsMessageEnum;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
+import com.cjyc.common.model.util.RandomUtil;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.system.service.ICsSmsService;
 import com.cjyc.customer.api.util.MiaoxinSmsUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -46,16 +49,19 @@ public class SmsController {
     @Value("${cjyc.sms.daylimit:20}")
     private Integer daylimit;
 
+    @Resource
+    private ICsSmsService csSmsService;
+
     @Autowired
     private StringRedisUtil redisUtil;
 
-   /* @ApiOperation(value = "发送短信验证码", notes = " ")
+    @ApiOperation(value = "发送短信验证码", notes = " ")
     @PostMapping("/captcha/send")
     public ResultVo send(@RequestBody CaptchaSendDto reqDto){
         @NotNull String phone = reqDto.getPhone();
         @NotNull Integer type = reqDto.getType();
         //生成随机验证码
-        String captcha = String.valueOf((int) ((Math.random() * 9 + 1) * Math.pow(10, 6 - 1)));
+        String captcha = RandomUtil.getMathRandom(4);
         //验证短信限制
         String keyPrefix = LocalDateTimeUtil.formatLDT(LocalDateTime.now(), TimePatternConstant.SIMPLE_DATE);
         String countKey = RedisKeys.getSmsCountKey(keyPrefix, phone);
@@ -84,19 +90,13 @@ public class SmsController {
     @ApiOperation(value = "校验短信验证码", notes = " ")
     @PostMapping("/captcha/validate")
     public ResultVo validate(@RequestBody CaptchaValidatedDto reqDto){
-        @NotNull String phone = reqDto.getPhone();
-        @NotNull String captcha = reqDto.getCaptcha();
-        int type = reqDto.getType();
+        String phone = reqDto.getPhone();
+        String captcha = reqDto.getCaptcha();
+        Integer type = reqDto.getType();
 
-        String key = RedisKeys.getCaptchaKey(ClientEnum.APP_CUSTOMER, phone, CaptchaTypeEnum.valueOf(type));
-        String captchaCached = redisUtil.getStrValue(key);
-        if(StringUtils.isBlank(captchaCached)){
-            return BaseResultUtil.fail("请重新获取校验码");
-        }
-        if(!captcha.equals(captchaCached)){
-            return BaseResultUtil.fail("验证码错误");
-        }
-        return BaseResultUtil.success("验证码正确");
-    }*/
+        boolean flag = csSmsService.validateCaptcha(phone, captcha, CaptchaTypeEnum.valueOf(type));
+
+        return flag ? BaseResultUtil.success("验证通过") : BaseResultUtil.fail("验证码错误");
+    }
 
 }

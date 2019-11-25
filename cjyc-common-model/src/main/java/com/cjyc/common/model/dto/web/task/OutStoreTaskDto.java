@@ -14,13 +14,15 @@ import java.util.List;
 @Accessors(chain = true)
 @ApiModel
 public class OutStoreTaskDto {
-    @NotNull(message = "用户ID不能为空")
-    @ApiModelProperty(value = "用户Id",required = true)
+    @ApiModelProperty(value = "登录用户ID", required = true)
     private Long loginId;
 
-    @ApiModelProperty(value = "用户名称")
+    @ApiModelProperty(value = "登录用户名(不用传)")
     private String loginName;
 
-    @ApiModelProperty(value = "任务车辆ID",required = true)
+    @ApiModelProperty(value = "任务ID", required = true)
+    private String taskId;
+
+    @ApiModelProperty(value = "任务车辆ID", required = true)
     private List<Long> taskCarIdList;
 }

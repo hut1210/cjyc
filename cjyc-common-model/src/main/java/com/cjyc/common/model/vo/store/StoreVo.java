@@ -25,6 +25,9 @@ public class StoreVo extends Store {
     @ApiModelProperty(value = "管辖范围")
     private Integer areaCount;
 
+    @ApiModelProperty(value = "联系人手机号")
+    private Integer contactAdminPhone;
+
     @Override
     public Store setId(Long id) {
         this.id = id;

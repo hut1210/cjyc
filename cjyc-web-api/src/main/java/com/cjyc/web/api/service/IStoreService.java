@@ -9,6 +9,7 @@ import com.cjyc.common.model.dto.web.store.StoreUpdateDto;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Store;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.store.StoreVo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -92,4 +93,6 @@ public interface IStoreService extends IService<Store> {
     List<Store> getListByRoleId(Long roleId);
 
     List<Store> get(GetStoreDto reqDto);
+
+    List<StoreVo> getVoListByRoleId(Long roleId);
 }

@@ -3,8 +3,10 @@ package com.cjyc.web.api.controller;
 import com.cjyc.common.model.dto.web.task.*;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Driver;
+import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
+import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.task.CrTaskVo;
 import com.cjyc.common.model.vo.web.task.ListByWaybillTaskVo;
@@ -47,12 +49,11 @@ public class TaskController {
         //验证用户
         Driver driver = csDriverService.getById(reqDto.getLoginId(), true);
         if (driver == null) {
-            return BaseResultUtil.fail("当前用户不能登录");
+            return BaseResultUtil.fail("当前用户不存在");
         }
         reqDto.setUserName(driver.getName());
         return taskService.allot(reqDto);
     }
-
 
 
     /**
@@ -61,21 +62,32 @@ public class TaskController {
      */
     @ApiOperation(value = "装车")
     @PostMapping(value = "/car/load")
-    public ResultVo load(@Validated @RequestBody LoadTaskDto reqDto) {
+    public ResultVo<ResultReasonVo> load(@Validated @RequestBody LoadTaskDto reqDto) {
         //验证用户
         Driver driver = csDriverService.validate(reqDto.getLoginId());
         reqDto.setLoginName(driver.getName());
         return taskService.load(reqDto);
     }
 
-
+    /**
+     * 确认出库
+     * @author JPG
+     */
+    @ApiOperation(value = "确认出库")
+    @PostMapping(value = "/car/out/store")
+    public ResultVo<ResultReasonVo> outStore(@RequestBody OutStoreTaskDto reqDto) {
+        //验证用户
+        Admin admin = csAdminService.validate(reqDto.getLoginId());
+        reqDto.setLoginName(admin.getName());
+        return taskService.outStore(reqDto);
+    }
     /**
      * 卸车
      * @author JPG
      */
     @ApiOperation(value = "卸车")
     @PostMapping(value = "/car/unload")
-    public ResultVo unload(@RequestBody UnLoadTaskDto reqDto) {
+    public ResultVo<ResultReasonVo> unload(@RequestBody UnLoadTaskDto reqDto) {
         //验证用户
         Driver driver = csDriverService.validate(reqDto.getLoginId());
         reqDto.setLoginName(driver.getName());
@@ -96,32 +108,21 @@ public class TaskController {
         return taskService.inStore(reqDto);
     }
 
-    /**
-     * 确认出库
-     * @author JPG
-     */
-    @ApiOperation(value = "确认出库")
-    @PostMapping(value = "/car/out/store")
-    public ResultVo outStore(@RequestBody OutStoreTaskDto reqDto) {
-        //验证用户
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
-        return taskService.outStore(reqDto);
-    }
+
 
 
 
     /**
-     * 交接-司机
+     * 签收
      * @author JPG
      */
     @ApiOperation(value = "签收")
-    @PostMapping(value = "/car/driver/sign")
-    public ResultVo driverSign(@RequestBody SignTaskDto reqDto) {
-        //验证用户
+    @PostMapping(value = "/car/receipt")
+    public ResultVo receipt(@RequestBody ReceiptTaskDto reqDto) {
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
-        return taskService.sign(reqDto);
+        reqDto.setLoginPhone(admin.getPhone());
+        return taskService.receipt(reqDto);
     }
 
 

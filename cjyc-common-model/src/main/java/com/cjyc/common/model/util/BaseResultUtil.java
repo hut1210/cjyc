@@ -33,6 +33,10 @@ public class BaseResultUtil<T> {
         return getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg());
     }
 
+    public static <T> ResultVo<T> success(String msg) {
+        return getVo(ResultEnum.SUCCESS.getCode(), msg);
+    }
+
     public static <T> ResultVo<T> success(String msg, Object... args) {
         return getVo(ResultEnum.SUCCESS.getCode(), MessageFormat.format(msg, args));
     }

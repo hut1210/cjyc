@@ -43,8 +43,6 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
 
     int countByStartCityAndOrderCar(@Param("cityCode") String cityCode, @Param("inStoreId") Long inStoreId);
 
-    int updateStateForLoad(@Param("state") int state, @Param("set") Set<Long> waybillCarIdSet);
-
     WaybillCar findUnConnectCar(String cityCode);
 
     WaybillCar findLastTrunkWaybillCar(@Param("cityCode") String cityCode,@Param("orderCarId") Long orderCarId);
@@ -77,5 +75,13 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
 
     int updateForAllotDriver(Long id);
 
-    int updateInfoBatchForUnload(@Param("set")Set<Long> waybillCarIdSet, @Param("state")int state);
+    int updateBatchForUnload(@Param("set")Set<Long> waybillCarIdSet, @Param("state")int state);
+
+    int updateBatchForLoad(@Param("set") Set<Long> waybillCarIdSet, @Param("state") int state, @Param("currentTimeMillis") long currentTimeMillis);
+
+    int updateStateBatchByIds(@Param("set") Set<Long> waybillCarIdSet, @Param("state") int state);
+
+    int countUnFinishByWaybillId(Long waybillId);
+
+    int updateStateById(@Param("id") Long id, @Param("state") int state);
 }

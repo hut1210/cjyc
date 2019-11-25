@@ -57,5 +57,10 @@
         set occupied_car_num = occupied_car_num + #{count}
         where driver_id = #{driverId}
     </update>
+    <update id="updateOccupiedNumForUnload">
+        update d_vehicle_running
+        set occupied_car_num = occupied_car_num - #{count}
+        where driver_id = #{driverId}
+    </update>
 
 </mapper>

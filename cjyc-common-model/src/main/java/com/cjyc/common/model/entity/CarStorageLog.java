@@ -21,10 +21,11 @@ import lombok.experimental.Accessors;
  * @since 2019-11-22
  */
 @Builder
+@Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("w_car_storage_log")
-@ApiModel(value="CarStorageLog对象", description="出入库记录")
+@ApiModel
 public class CarStorageLog implements Serializable {
 
     private static final long serialVersionUID = 1L;

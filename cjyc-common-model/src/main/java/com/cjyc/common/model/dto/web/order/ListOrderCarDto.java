@@ -134,6 +134,10 @@ public class ListOrderCarDto extends BasePageDto {
     private String plateNo;
     @ApiModelProperty(value = "vin码")
     private String vin;
+    @ApiModelProperty(value = "当前业务中心")
+    private String nowStoreId;
+
+
 
 
 

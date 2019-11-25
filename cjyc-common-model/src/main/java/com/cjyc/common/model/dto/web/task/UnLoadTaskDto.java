@@ -22,11 +22,11 @@ public class UnLoadTaskDto {
     @ApiModelProperty(value = "用户名称（不用传）")
     private String loginName;
 
-    @NotNull(message = "任务ID不能为空")
+    @NotNull(message = "taskId不能为空")
     @ApiModelProperty(value = "任务ID")
     private String taskId;
 
-    @NotEmpty(message = "任务车辆不能为空")
+    @NotEmpty(message = "taskCarIdList不能为空")
     @ApiModelProperty(value = "任务车辆ID",required = true)
     private List<Long> taskCarIdList;
 }

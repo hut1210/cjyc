@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -19,14 +20,14 @@ public class InStoreTaskDto {
     @ApiModelProperty(value = "用户Id",required = true)
     private Long loginId;
 
-    @ApiModelProperty(value = "用户名称")
+    @ApiModelProperty(value = "用户名称（不用传）")
     private String loginName;
 
-    @NotNull(message = "入库业务中心ID不能为空")
-    @ApiModelProperty(value = "入库业务中心ID")
-    private Long storeId;
+    @NotNull(message = "任务ID不能为空")
+    @ApiModelProperty(value = "任务ID")
+    private String taskId;
 
-    @NotNull(message = "任务车辆ID不能为空")
+    @NotEmpty(message = "任务车辆不能为空")
     @ApiModelProperty(value = "任务车辆ID",required = true)
     private List<Long> taskCarIdList;
 }

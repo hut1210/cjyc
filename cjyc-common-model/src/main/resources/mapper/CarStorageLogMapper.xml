@@ -34,28 +34,58 @@
         <include refid="Base_Column_List"/>
         from w_car_storage_log
         <where>
-            and type = 1
-
-            store_id storeId
-            type type
-            order_no orderNo
-            order_car_no orderCarNo
-            vin vin
-            brand brand
-            model model
-            freight freight
-            carry_type carryType
-            carrier_id carrierId
-            carrier carrier
-            driver driver
-            driver_id driverId
-            drvier_phone drvierPhone
-            vehicle_plate_no vehiclePlateNo
-            start_create_time startCreateTime
-            end_create_time endCreateTime
-            create_user_id createUserId
-            create_user createUser
-
+            and type = #{paramsDto.type}
+            <if test="paramsDto.storeId != null">
+                and store_id =#{paramsDto.storeId}
+            </if>
+            <if test="paramsDto.orderNo != null and paramsDto.orderNo.trim() != ''">
+                and order_no =#{paramsDto.orderNo}
+            </if>
+            <if test="paramsDto.orderCarNo != null and paramsDto.orderCarNo.trim() != ''">
+                and order_car_no =#{paramsDto.orderCarNo}
+            </if>
+            <if test="paramsDto.vin != null and paramsDto.vin.trim() != ''">
+                and vin =#{paramsDto.vin}
+            </if>
+            <if test="paramsDto.brand != null and paramsDto.brand.trim() != ''">
+                and brand =#{paramsDto.brand}
+            </if>
+            <if test="paramsDto.model != null and paramsDto.model.trim() != ''">
+                and model =#{paramsDto.model}
+            </if>
+            <if test="paramsDto.carryType != null">
+                and carry_type =#{paramsDto.carryType}
+            </if>
+            <if test="paramsDto.carrierId != null">
+                and carrier_id =#{paramsDto.carrierId}
+            </if>
+            <if test="paramsDto.carrier != null and paramsDto.carrier.trim() != ''">
+                and carrier =#{paramsDto.carrier}
+            </if>
+            <if test="paramsDto.driver != null and paramsDto.driver.trim() != ''">
+                and driver =#{paramsDto.driver}
+            </if>
+            <if test="paramsDto.driverId != null">
+                and driver_id =#{paramsDto.driverId}
+            </if>
+            <if test="paramsDto.drvierPhone != null and paramsDto.drvierPhone.trim() != ''">
+                and drvier_phone =#{paramsDto.drvierPhone}
+            </if>
+            <if test="paramsDto.vehiclePlateNo != null and paramsDto.vehiclePlateNo.trim() != ''">
+                and vehicle_plate_no =#{paramsDto.vehiclePlateNo}
+            </if>
+            <if test="paramsDto.startCreateTime != null">
+                and create_time &gt;= #{paramsDto.startCreateTime}
+            </if>
+            <if test="paramsDto.endCreateTime != null">
+                and create_time &lt;= #{paramsDto.endCreateTime}
+            </if>
+            <if test="paramsDto.createUserId != null">
+                and create_user_id =#{paramsDto.createUserId}
+            </if>
+            <if test="paramsDto.createUser != null and paramsDto.createUser.trim() != ''">
+                and create_user =#{paramsDto.createUser}
+            </if>
         </where>
     </select>
 

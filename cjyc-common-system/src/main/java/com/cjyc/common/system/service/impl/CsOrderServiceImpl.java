@@ -117,7 +117,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
             //统计数量
             noCount++;
         }
-        return BaseResultUtil.success(order.getNo());
+        return BaseResultUtil.success();
     }
 
     @Override
@@ -162,7 +162,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
             order.setStartBelongStoreId(paramsDto.getStartStoreId());
         }else{
             //查询地址所属业务中心
-            Store startBelongStore = csStoreService.findOneBelongByAreaCode(order.getStartAreaCode());
+            Store startBelongStore = csStoreService.getOneBelongByAreaCode(order.getStartAreaCode());
             if(startBelongStore != null){
                 order.setStartBelongStoreId(startBelongStore.getId());
             }
@@ -171,7 +171,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
             order.setStartBelongStoreId(paramsDto.getEndStoreId());
         }else{
             //查询地址所属业务中心
-            Store endBelongStore = csStoreService.findOneBelongByAreaCode(order.getEndAreaCode());
+            Store endBelongStore = csStoreService.getOneBelongByAreaCode(order.getEndAreaCode());
             if(endBelongStore != null){
                 order.setStartBelongStoreId(endBelongStore.getId());
             }
@@ -227,7 +227,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
         //记录发车人和收车人
         csCustomerContactService.saveByOrder(order);
-        return BaseResultUtil.success(order.getNo());
+        return BaseResultUtil.success();
     }
 
     private ResultVo<Customer> validateCustomer(CommitOrderDto paramsDto) {

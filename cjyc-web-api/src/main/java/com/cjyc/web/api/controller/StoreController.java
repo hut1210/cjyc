@@ -71,6 +71,17 @@ public class StoreController {
      * @author JPG
      */
     @ApiOperation(value = "根据角色查询业务中心")
+    @PostMapping(value = "/get/vo/by/{roleId}")
+    public ResultVo<List<StoreVo>> getVoByRole(@PathVariable Long roleId) {
+        List<StoreVo> list = storeService.getVoListByRoleId(roleId);
+        return BaseResultUtil.success(list);
+    }
+
+    /**
+     * 根据角色查询角色所属机构下属业务中心
+     * @author JPG
+     */
+    @ApiOperation(value = "根据角色查询业务中心")
     @PostMapping(value = "/get")
     public ResultVo<List<Store>> get(@RequestBody GetStoreDto reqDto) {
         List<Store> list = storeService.get(reqDto);

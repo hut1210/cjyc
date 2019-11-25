@@ -2,6 +2,7 @@ package com.cjyc.common.model.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.entity.Store;
+import com.cjyc.common.model.vo.store.StoreVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -30,9 +31,13 @@ public interface IStoreDao extends BaseMapper<Store> {
 
     List<Store> findAll();
 
+    List<StoreVo> findVoAll();
+
     List<Long> findAllDeptId();
 
     List<Store> findByIds(@Param("set") Set<Long> storeIds);
+
+    List<StoreVo> findVoByIds(@Param("set") Set<Long> storeIds);
 
     List<Store> findByName(@Param("storeName") String storeName);
 

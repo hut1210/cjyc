@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Collection;
 import java.util.Set;
 
 @Slf4j
@@ -29,7 +30,7 @@ public class CsStorageLogServiceImpl implements ICsStorageLogService {
 
     @Async
     @Override
-    public void asyncSaveBatch(Set<CarStorageLog> storageLogSet) {
+    public void asyncSaveBatch(Collection<CarStorageLog> storageLogSet) {
         try {
             storageLogSet.forEach(s -> carStorageLogDao.insert(s));
         } catch (Exception e) {

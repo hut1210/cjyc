@@ -9,7 +9,9 @@ public enum CaptchaTypeEnum {
     LOGIN("注册登录", 1),
     FORGET_LOGIN_PWD("忘记登录密码", 2),
     FORGET_SAFE_PWD("忘记安全密码", 3),
-    UPDATE_BANK_CAR("修改银行卡", 4);
+    UPDATE_BANK_CAR("修改银行卡", 4),
+    CONFIRM_RECEIPT("收车码", 5);
+
 
     private String name;
     private int code;

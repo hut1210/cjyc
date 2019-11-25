@@ -203,18 +203,23 @@
         and start_store_id = #{endStoreId}
     </update>
 
-    <update id="updateStateForLoad">
+    <update id="updateBatchForLoad">
         update w_waybill_car
-        set state = #{state}
-        where id = #{id}
+        set state = #{state},
+        load_time = #{currentTimeMillis}
         <where>
             and state &lt; #{state}
-            <if test="set != null">
-                and id in
-                <foreach collection="set" index="index" item="item" open="(" separator="," close=")">
-                    #{item}
-                </foreach>
-            </if>
+            <choose>
+                <when test="set != null and set.size > 0">
+                    and id in
+                    <foreach collection="set" index="index" item="item" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </when>
+                <otherwise>
+                    and 1 != 1
+                </otherwise>
+            </choose>
         </where>
     </update>
     <update id="updateForAllotDriver">
@@ -223,21 +228,57 @@
         where id =#{id}
         and state &lt; 2
     </update>
-    <update id="updateInfoBatchForUnload">
+    <update id="updateBatchForUnload">
         update w_waybill_car
         set state = #{state}
         <where>
+            and state &lt; #{state}
             <choose>
-                <when test="set == null and set.size > 0">
+                <when test="set != null and set.size > 0">
+                    and id in
                     <foreach collection="set" index="index" item="item" open="(" separator="," close=")">
                         #{item}
                     </foreach>
                 </when>
                 <otherwise>
-                    1 != 1
+                    and 1 != 1
                 </otherwise>
             </choose>
         </where>
+    </update>
+    <update id="updateStateBatchByIds">
+        update w_waybill_car
+        set state = #{state}
+        <where>
+            and state &lt; #{state}
+            <choose>
+                <when test="set != null and set.size > 0">
+                    and id in
+                    <foreach collection="set" index="index" item="item" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </when>
+                <otherwise>
+                    and 1 != 1
+                </otherwise>
+            </choose>
+        </where>
+    </update>
+    <update id="updateStateById">
+        update w_waybill_car
+        set state = #{state}
+        <where>
+            and state &lt; #{state}
+            <choose>
+                <when test="set != null and set.size > 0">
+                    and id = #{id}
+                </when>
+                <otherwise>
+                    and 1 != 1
+                </otherwise>
+            </choose>
+        </where>
+
     </update>
 
     <select id="findByTaskCarId" resultType="com.cjyc.common.model.entity.WaybillCar">
@@ -732,7 +773,12 @@
         join w_waybill_car wc on wc.waybill_id = w.id
         where wc.waybill_id = #{waybillId}
         and w.state &lt; 100
-        and wc.state &lt; 100
+    </select>
+    <select id="countUnFinishByWaybillId" resultType="java.lang.Integer">
+        select count(0)
+        from w_waybill_car
+        where waybill_id = #{waybillId}
+        and w.state &lt; 100
     </select>
 
 </mapper>

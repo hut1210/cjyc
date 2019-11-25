@@ -530,7 +530,9 @@
                     </if>
                 </when>
             </choose>
-
+            <if test="paramsDto.nowStoreId != null and paramsDto.nowStoreId != ''">
+                and oc.now_store_id = #{paramsDto.nowStoreId}
+            </if>
 
             <if test="paramsDto.orderNo != null and paramsDto.orderNo != ''">
                 and o.no = #{paramsDto.orderNo}

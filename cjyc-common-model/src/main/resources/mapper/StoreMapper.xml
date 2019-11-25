@@ -74,6 +74,14 @@
         <include refid="Base_Column_List"/>
         from s_store
     </select>
+
+    <select id="findVoAll" resultType="com.cjyc.common.model.vo.store.StoreVo">
+        select
+        s.*,
+        m.phone as  contactAdminPhone
+        from s_store s
+        left join b_admin m on m.id = s.contact_admin_id
+    </select>
     <select id="findAllDeptId" resultType="java.lang.Long">
         select
         dept_id
@@ -83,6 +91,19 @@
         select * from s_store
         <where>
             and id in
+            <foreach collection="set" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
+    </select>
+    <select id="findVoByIds" resultType="com.cjyc.common.model.vo.store.StoreVo">
+        select
+        s.*,
+        m.phone as  contactAdminPhone
+        from s_store s
+        left join b_admin m on m.id = s.contact_admin_id
+        <where>
+            and s.id in
             <foreach collection="set" index="index" item="item" open="(" separator="," close=")">
                 #{item}
             </foreach>
@@ -106,5 +127,7 @@
             </foreach>
         </where>
     </select>
+
+
 
 </mapper>

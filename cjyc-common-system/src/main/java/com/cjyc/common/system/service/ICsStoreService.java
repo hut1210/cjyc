@@ -15,14 +15,14 @@ public interface ICsStoreService {
      * @since 2019/11/5 9:27
      * @param areaCode
      */
-    Store findOneBelongByAreaCode(String areaCode);
+    Store getOneBelongByAreaCode(String areaCode);
     /**
      * 查询区县所属业务中心列表-业务范围
      * @author JPG
      * @since 2019/11/5 9:27
      * @param areaCode
      */
-    List<Store> findBelongByAreaCode(String areaCode);
+    List<Store> getBelongByAreaCode(String areaCode);
 
     /**
      * 根据ID查询业务中心
@@ -38,7 +38,7 @@ public interface ICsStoreService {
      * @param storeId
      * @return
      */
-    List<String> findAreaBizScope(Long storeId);
+    List<String> getAreaBizScope(Long storeId);
 
     /**
      * 查询所有业务中心

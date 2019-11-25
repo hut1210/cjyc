@@ -76,4 +76,6 @@ public interface ITaskDao extends BaseMapper<Task> {
     List<WaybillTaskVo> selectHistoryTaskPage(TaskQueryDto dto);
 
     int updateForUnload(@Param("taskId") Long taskId, @Param("unLoadNum")int unLoadNum);
+
+    int updateStateById(@Param("taskId") Long taskId, @Param("state") int state);
 }

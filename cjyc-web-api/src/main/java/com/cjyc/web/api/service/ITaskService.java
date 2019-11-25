@@ -4,6 +4,7 @@ import com.cjyc.common.model.dto.web.task.*;
 import com.cjyc.common.model.entity.Task;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.vo.PageVo;
+import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.task.CrTaskVo;
 import com.cjyc.common.model.vo.web.task.ListByWaybillTaskVo;
@@ -23,15 +24,15 @@ public interface ITaskService extends IService<Task> {
 
     ResultVo allot(AllotTaskDto paramsDto);
 
-    ResultVo load(LoadTaskDto paramsDto);
+    ResultVo<ResultReasonVo> load(LoadTaskDto paramsDto);
 
-    ResultVo unload(UnLoadTaskDto paramsDto);
+    ResultVo<ResultReasonVo> unload(UnLoadTaskDto paramsDto);
 
-    ResultVo inStore(InStoreTaskDto paramsDto);
+    ResultVo<ResultReasonVo> inStore(InStoreTaskDto paramsDto);
 
-    ResultVo outStore(OutStoreTaskDto paramsDto);
+    ResultVo<ResultReasonVo> outStore(OutStoreTaskDto paramsDto);
 
-    ResultVo sign(SignTaskDto paramsDto);
+    ResultVo receipt(ReceiptTaskDto paramsDto);
 
     ResultVo<List<ListByWaybillTaskVo>> getlistByWaybillId(Long waybillId);
 

@@ -26,4 +26,6 @@ public interface ITaskCarDao extends BaseMapper<TaskCar> {
     int saveBatch(@Param("list") List<TaskCar> list);
 
     int saveBatchByTaskIdAndWaybillCarIds(@Param("taskId")Long taskId, @Param("waybillCarIds") Set<Long> waybillCarIds);
+
+    int countUnFinishByTaskId(String taskId);
 }

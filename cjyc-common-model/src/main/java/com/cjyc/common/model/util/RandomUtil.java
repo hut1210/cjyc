@@ -30,5 +30,4 @@ public class RandomUtil {
         return String.valueOf((int) ((Math.random() * 9 + 1) * Math.pow(10, length - 1)));
     }
 
-
 }

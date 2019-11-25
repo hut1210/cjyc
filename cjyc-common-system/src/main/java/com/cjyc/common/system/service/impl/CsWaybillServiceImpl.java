@@ -701,7 +701,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         }
         //【验证参数】业务中心ID
         //Store store = csStoreService.getById(paramsDto.getStoreId(), true);
-        //List<String> areaList = csStoreService.findAreaBizScope(store.getId());
+        //List<String> areaList = csStoreService.getAreaBizScope(store.getId());
         // TODO 验证用户角色
         try {
             Waybill waybill = waybillDao.selectById(paramsDto.getId());
@@ -905,7 +905,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             waybillCar.setEndAddress(paramsDto.getEndAddress());
             if (paramsDto.getEndStoreId() == null) {
                 //算起始地业务中心
-                Store store = csStoreService.findOneBelongByAreaCode(waybillCar.getStartAreaCode());
+                Store store = csStoreService.getOneBelongByAreaCode(waybillCar.getStartAreaCode());
                 if (store != null) {
                     waybillCar.setEndStoreName(store.getName());
                     waybillCar.setEndStoreId(store.getId());
@@ -965,7 +965,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 String endStoreName = paramsDto.getEndStoreName();
                 if (paramsDto.getEndStoreId() == null) {
                     //算起始地业务中心
-                    Store store = csStoreService.findOneBelongByAreaCode(waybillCar.getStartAreaCode());
+                    Store store = csStoreService.getOneBelongByAreaCode(waybillCar.getStartAreaCode());
                     if (store != null) {
                         endStoreId = store.getId();
                         endStoreName = store.getName();
@@ -1045,7 +1045,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             copyWaybillCarStartCity(fullCity, newWaybillCar);
             newWaybillCar.setStartAddress(paramsDto.getEndAddress());
             if (paramsDto.getEndStoreId() == null) {
-                Store store = csStoreService.findOneBelongByAreaCode(paramsDto.getEndAreaCode());
+                Store store = csStoreService.getOneBelongByAreaCode(paramsDto.getEndAreaCode());
                 if (store != null) {
                     newWaybillCar.setStartStoreName(store.getName());
                     newWaybillCar.setStartStoreId(store.getId());
