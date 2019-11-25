@@ -41,7 +41,7 @@ public class TaskController {
         return taskService.getNoFinishTaskPage(dto);
     }
 
-    @ApiOperation(value = "分页查询已交付任务列表", notes = "\t 请求接口为json格式,条件查询日期传毫秒值")
+    @ApiOperation(value = "分页查询已交付任务列表", notes = "\t 请求接口为json格式")
     @PostMapping("/getFinishTaskPage")
     public ResultVo<PageVo<WaybillTaskVo>> getFinishTaskPage(@RequestBody @Validated TaskQueryDto dto) {
         return taskService.getFinishTaskPage(dto);
@@ -65,7 +65,7 @@ public class TaskController {
         return taskService.getDriverPage(dto);
     }
 
-    @ApiOperation(value = "分页查询历史记录列表", notes = "\t 请求接口为json格式,条件查询日期传毫秒值")
+    @ApiOperation(value = "分页查询历史记录列表", notes = "\t 请求接口为json格式")
     @PostMapping("/getHistoryTaskPage")
     public ResultVo<PageVo<WaybillTaskVo>> getHistoryTaskPage(@RequestBody @Validated TaskQueryDto dto) {
         return taskService.getHistoryTaskPage(dto);

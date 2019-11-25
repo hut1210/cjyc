@@ -320,20 +320,21 @@
             customer_id = #{loginId}
             /*待确认*/
             <if test="state != null and state == 0">
-                and o.state &lt;= 25
+                and o.state &lt;= ${@com.cjyc.common.model.enums.order.OrderStateEnum@CHECKED.code}
             </if>
             /*运输中*/
             <if test="state != null and state == 1">
-                and o.state &gt; 25
-                and o.state &lt; 100
+                and o.state &gt; ${@com.cjyc.common.model.enums.order.OrderStateEnum@CHECKED.code}
+                and o.state &lt; ${@com.cjyc.common.model.enums.order.OrderStateEnum@FINISHED.code}
             </if>
             /*已交付*/
             <if test="state != null and state == 2">
-                and o.state = 100
+                and o.state = ${@com.cjyc.common.model.enums.order.OrderStateEnum@FINISHED.code}
             </if>
             /*全部*/
             <if test="state != null and state == 3">
-                and (o.state &lt;= 100 or o.state = 113)
+                and (o.state &lt;= ${@com.cjyc.common.model.enums.order.OrderStateEnum@FINISHED.code}
+                or o.state = ${@com.cjyc.common.model.enums.order.OrderStateEnum@F_CANCEL.code})
             </if>
             <if test="startCityCode != null and startCityCode.trim() != ''">
                 and o.start_city_code = #{startCityCode}

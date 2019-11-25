@@ -382,6 +382,15 @@ public class RegionServiceImpl implements IRegionService {
         }
     }
 
+    /**
+     * 功能描述: 根据表中已有的大区编码生成新的大区编码，编码格式 0*****
+     *          如果遇到000008编码时，跳过该编码
+     *          000008为固定的未覆盖大区编码
+     * @author liuxingxiang
+     * @date 2019/11/25
+     * @param regionList
+     * @return java.lang.String
+     */
     private String getRegionCode(List<City> regionList) {
         StringBuilder regionCode = new StringBuilder();
         if (!CollectionUtils.isEmpty(regionList)) {

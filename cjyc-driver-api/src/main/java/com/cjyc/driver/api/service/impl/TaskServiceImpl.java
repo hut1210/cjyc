@@ -3,6 +3,7 @@ package com.cjyc.driver.api.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.driver.BaseDriverDto;
 import com.cjyc.common.model.dto.driver.task.DetailQueryDto;
@@ -11,6 +12,7 @@ import com.cjyc.common.model.dto.driver.task.NoFinishTaskQueryDto;
 import com.cjyc.common.model.dto.driver.task.TaskQueryDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.task.CarDetailVo;
@@ -20,6 +22,7 @@ import com.cjyc.common.model.vo.driver.task.WaybillTaskVo;
 import com.cjyc.driver.api.service.ITaskService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -96,6 +99,8 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
 
     @Override
     public ResultVo<PageVo<WaybillTaskVo>> getHistoryTaskPage(TaskQueryDto dto) {
+        // 日期格式处理
+        this.handelDate(dto);
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<WaybillTaskVo> taskList = taskDao.selectHistoryTaskPage(dto);
         PageInfo pageInfo = new PageInfo(taskList);
@@ -104,10 +109,35 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
 
     @Override
     public ResultVo<PageVo<WaybillTaskVo>> getFinishTaskPage(TaskQueryDto dto) {
+        // 日期格式处理
+        this.handelDate(dto);
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<WaybillTaskVo> taskList = taskDao.selectFinishTaskPage(dto);
         PageInfo pageInfo = new PageInfo(taskList);
         return BaseResultUtil.success(pageInfo);
+    }
+
+    private void handelDate(TaskQueryDto dto) {
+        String expectStartDateS = dto.getExpectStartDateS();
+        String expectStartDateE = dto.getExpectStartDateE();
+        if (!StringUtils.isBlank(expectStartDateS)) {
+            Long startLong = LocalDateTimeUtil.convertToLong(expectStartDateS, TimePatternConstant.COMPLEX_TIME_FORMAT);
+            dto.setExpectStartDateSMS(startLong);
+        }
+        if (!StringUtils.isBlank(expectStartDateE)) {
+            Long endLong = LocalDateTimeUtil.convertToLong(expectStartDateE, TimePatternConstant.COMPLEX_TIME_FORMAT);
+            dto.setExpectStartDateEMS(endLong);
+        }
+        String completeTimeS = dto.getCompleteTimeS();
+        String completeTimeE = dto.getCompleteTimeE();
+        if (!StringUtils.isBlank(completeTimeS)) {
+            Long startLong = LocalDateTimeUtil.convertToLong(completeTimeS, TimePatternConstant.COMPLEX_TIME_FORMAT);
+            dto.setCompleteTimeSMS(startLong);
+        }
+        if (!StringUtils.isBlank(completeTimeE)) {
+            Long endLong = LocalDateTimeUtil.convertToLong(completeTimeE, TimePatternConstant.COMPLEX_TIME_FORMAT);
+            dto.setCompleteTimeEMS(endLong);
+        }
     }
 
     @Override

@@ -19,16 +19,20 @@ public class TaskQueryDto extends BaseDriverDto {
     private String type;
 
     @ApiModelProperty(value = "提车日期开始")
-    private Long expectStartDateS;
+    private String expectStartDateS;
+    private Long expectStartDateSMS;
 
     @ApiModelProperty(value = "提车日期结束")
-    private Long expectStartDateE;
+    private String expectStartDateE;
+    private Long expectStartDateEMS;
 
     @ApiModelProperty(value = "交车日期开始")
-    private Long completeTimeS;
+    private String completeTimeS;
+    private Long completeTimeSMS;
 
     @ApiModelProperty(value = "交车日期结束")
-    private Long completeTimeE;
+    private String completeTimeE;
+    private Long completeTimeEMS;
 
     @ApiModelProperty(value = "起始地")
     private String lineStart;
