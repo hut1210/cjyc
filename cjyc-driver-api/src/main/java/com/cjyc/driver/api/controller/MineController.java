@@ -1,8 +1,14 @@
 package com.cjyc.driver.api.controller;
 
+import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.dto.CarrierDriverDto;
+import com.cjyc.common.model.dto.VerifyCodeDto;
 import com.cjyc.common.model.dto.driver.mine.*;
 import com.cjyc.common.model.dto.driver.BaseDriverDto;
+import com.cjyc.common.model.enums.message.SmsMessageEnum;
+import com.cjyc.common.model.keys.RedisKeys;
+import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.FreeDriverVo;
 import com.cjyc.common.model.vo.FreeVehicleVo;
 import com.cjyc.common.model.vo.PageVo;
@@ -13,7 +19,9 @@ import com.cjyc.common.model.vo.driver.mine.DriverVehicleVo;
 import com.cjyc.common.model.vo.driver.mine.PersonDriverVo;
 import com.cjyc.common.system.service.ICsDriverService;
 import com.cjyc.common.system.service.ICsVehicleService;
+import com.cjyc.common.system.util.RedisUtils;
 import com.cjyc.driver.api.service.IMineService;
+import com.cjyc.driver.api.util.MiaoxinSmsUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.MediaType;
@@ -21,6 +29,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -112,5 +121,12 @@ public class MineController {
     public ResultVo<PersonDriverVo> showDriverInfo(@RequestBody BaseDriverDto dto) {
         return mineService.showDriverInfo(dto);
     }
+
+    @ApiOperation(value = "个人司机添加银行卡")
+    @PostMapping(value = "/addBankCard")
+    public ResultVo addBankCard(@Validated @RequestBody BankCardDto dto) {
+        return mineService.addBankCard(dto);
+    }
+
 
 }

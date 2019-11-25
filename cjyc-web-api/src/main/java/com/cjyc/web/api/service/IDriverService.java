@@ -11,7 +11,10 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.driver.DispatchDriverVo;
 import com.cjyc.common.model.vo.web.driver.DriverVo;
+import com.cjyc.common.model.vo.web.driver.ExistDriverVo;
 import com.cjyc.common.model.vo.web.user.DriverListVo;
+
+import java.util.List;
 
 public interface IDriverService {
     /**
@@ -48,6 +51,12 @@ public interface IDriverService {
      * @return
      */
     ResultVo showDriver(BaseCarrierIdDto dto);
+
+    /**
+     * app校验注册记录
+     * @return
+     */
+    ResultVo<List<ExistDriverVo>> showExistDriver();
 
     Driver getByUserId(Long userId);
 

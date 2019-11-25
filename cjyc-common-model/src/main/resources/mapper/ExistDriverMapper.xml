@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cjyc.common.model.dao.IExistDriverDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.ExistDriver">
+        <id column="id" property="id" />
+        <result column="driver_id" property="driverId" />
+        <result column="name" property="name" />
+        <result column="phone" property="phone" />
+        <result column="id_card" property="idCard" />
+        <result column="exist_id_card" property="existIdCard" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, driver_id, name, phone, id_card, exist_id_card, create_time
+    </sql>
+
+    <!-- 获取所有已存在数据 -->
+    <select id="findExistDriver" resultType="com.cjyc.common.model.vo.web.driver.ExistDriverVo">
+        SELECT
+            id AS id,
+            driver_id AS driverId,
+            NAME AS NAME,
+            phone AS phone,
+            id_card AS idCard,
+            exist_id_card AS existIdCard,
+            create_time AS createTime
+        FROM
+            d_exist_driver
+    </select>
+
+</mapper>

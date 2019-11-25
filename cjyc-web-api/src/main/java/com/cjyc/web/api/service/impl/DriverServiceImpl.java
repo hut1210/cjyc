@@ -30,6 +30,7 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.carrier.ExistCarrierVo;
 import com.cjyc.common.model.vo.web.driver.DispatchDriverVo;
 import com.cjyc.common.model.vo.web.driver.DriverVo;
+import com.cjyc.common.model.vo.web.driver.ExistDriverVo;
 import com.cjyc.common.model.vo.web.driver.ShowDriverVo;
 import com.cjyc.common.model.vo.web.user.DriverListVo;
 import com.cjyc.common.system.service.ICsDriverService;
@@ -57,28 +58,22 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
 
     @Resource
     private IDriverDao driverDao;
-
     @Resource
     private IDriverVehicleConDao driverVehicleConDao;
-
     @Resource
     private ICarrierDao carrierDao;
-
     @Resource
     private IVehicleRunningDao vehicleRunningDao;
-
     @Resource
     private ICarrierDriverConDao carrierDriverConDao;
-
     @Resource
     private ICarrierCarCountDao carrierCarCountDao;
-
     @Resource
     private ITaskDao taskDao;
-
+    @Resource
+    private IExistDriverDao existDriverDao;
     @Resource
     private ICarrierCityConService carrierCityConService;
-
     @Autowired
     private ISysUserService sysUserService;
     @Resource
@@ -318,6 +313,12 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
             }
         }
         return BaseResultUtil.success(vo);
+    }
+
+    @Override
+    public ResultVo<List<ExistDriverVo>> showExistDriver() {
+        List<ExistDriverVo> existDriverVos = existDriverDao.findExistDriver();
+        return BaseResultUtil.success(existDriverVos);
     }
 
     @Override

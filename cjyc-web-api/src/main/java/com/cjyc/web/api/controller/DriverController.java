@@ -10,6 +10,7 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.driver.DispatchDriverVo;
 import com.cjyc.common.model.vo.web.driver.DriverVo;
+import com.cjyc.common.model.vo.web.driver.ExistDriverVo;
 import com.cjyc.common.model.vo.web.driver.ShowDriverVo;
 import com.cjyc.common.model.vo.web.user.DriverListVo;
 import com.cjyc.web.api.service.IDriverService;
@@ -21,6 +22,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * 用户
@@ -68,6 +70,12 @@ public class DriverController {
     @PostMapping(value = "/showDriver")
     public ResultVo<ShowDriverVo> showDriver(@Validated @RequestBody BaseCarrierIdDto dto){
         return driverService.showDriver(dto);
+    }
+
+    @ApiOperation(value = "app注册校验记录")
+    @PostMapping(value = "/showExistDriver")
+    public ResultVo<List<ExistDriverVo>> showExistDriver(){
+        return driverService.showExistDriver();
     }
 
     @ApiOperation(value = "冻结/解除司机冻结状态")

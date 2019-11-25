@@ -56,7 +56,7 @@ public class CsVehicleServiceImpl implements ICsVehicleService {
         if(!CollectionUtils.isEmpty(freeVehicleVos)){
             return freeVehicles(freeVehicleVos);
         }
-        return BaseResultUtil.fail("数据有误，请联系管理员");
+        return BaseResultUtil.success();
     }
 
     /**

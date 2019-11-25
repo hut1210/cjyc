@@ -7,8 +7,7 @@ import com.cjyc.common.model.dto.driver.mine.*;
 import com.cjyc.common.model.dto.driver.BaseDriverDto;
 import com.cjyc.common.model.dto.web.driver.DriverDto;
 import com.cjyc.common.model.entity.*;
-import com.cjyc.common.model.enums.CommonStateEnum;
-import com.cjyc.common.model.enums.ResultEnum;
+import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.task.TaskStateEnum;
 import com.cjyc.common.model.enums.transport.CarrierTypeEnum;
 import com.cjyc.common.model.enums.transport.VehicleOwnerEnum;
@@ -54,6 +53,8 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
     private ITaskDao taskDao;
     @Resource
     private ICarrierDao carrierDao;
+    @Resource
+    private IExistDriverDao existDriverDao;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -282,6 +283,14 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
         //验证在承运商中是否存在
         Integer count = driverDao.existEnterPriseDriver(dto);
         if(count > 0){
+            //个人转承运商下记录
+            ExistDriver existDriver = new ExistDriver();
+            existDriver.setDriverId(dto.getLoginId());
+            existDriver.setName(dto.getRealName());
+            existDriver.setIdCard(dto.getIdCard());
+            existDriver.setExistIdCard(dto.getIdCard());
+            existDriver.setCreateTime(NOW);
+            existDriverDao.insert(existDriver);
             return BaseResultUtil.getVo(ResultEnum.EXIST_ENTERPRISE_CARRIER.getCode(),"该司机已存在于企业承运商中，不可创建");
         }
         //验证在个人司机中是否存在
@@ -346,5 +355,22 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
             return BaseResultUtil.success(personInfo);
         }
         return BaseResultUtil.fail("未获取数据，请联系管理员");
+    }
+
+    @Override
+    public ResultVo addBankCard(BankCardDto dto) {
+        BankCardBind bcb = new BankCardBind();
+        bcb.setUserId(dto.getCarrierId());
+        bcb.setCardNo(dto.getCardNo());
+        bcb.setUserType(UserTypeEnum.DRIVER.code);
+        bcb.setCardType(CardTypeEnum.PRIVATE.code);
+        bcb.setCardName(dto.getRealName());
+        bcb.setCardPhone(dto.getPhone());
+        bcb.setIdCard(dto.getIdCard());
+        bcb.setBankName(dto.getBankName());
+        bcb.setState(UseStateEnum.USABLE.code);
+        bcb.setCreateTime(NOW);
+        bankCardBindDao.insert(bcb);
+        return BaseResultUtil.success();
     }
 }

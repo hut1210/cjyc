@@ -9,8 +9,6 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.mine.BinkCardVo;
 import com.cjyc.common.model.vo.driver.mine.DriverInfoVo;
 import com.cjyc.common.model.vo.driver.mine.PersonDriverVo;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestBody;
 
 public interface IMineService extends IService<Driver> {
 
@@ -77,5 +75,10 @@ public interface IMineService extends IService<Driver> {
      */
     ResultVo<PersonDriverVo> showDriverInfo(BaseDriverDto dto);
 
-
+    /**
+     * 个人司机添加银行卡
+     * @param dto
+     * @return
+     */
+    ResultVo addBankCard(BankCardDto dto);
 }

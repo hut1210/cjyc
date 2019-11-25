@@ -284,7 +284,7 @@
         LEFT JOIN d_driver dd ON dd.id = dcdc.driver_id
         <where>
             <if test="driverId != null">
-                and dd.id &lt;&gt; #{driverId}
+                 dd.id &lt;&gt; #{driverId}
             </if>
                 and dc.id = #{carrierId} and (dd.phone = #{phone} or dd.id_card = #{idCard}) and dc.type = 2
         </where>
