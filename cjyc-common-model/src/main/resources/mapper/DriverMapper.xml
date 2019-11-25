@@ -261,9 +261,13 @@
             dd.real_name AS realName,
             dd.phone AS phone,
             dcdc.MODE AS MODE,
+            dd.id_card as idCard,
             dd.business_state AS businessState,
+            dd.id_card_front_img as idCardFrontImg,
+            dd.id_card_back_img as idCardBackImg,
             dcdc.state AS state,
             dd.identity AS identity,
+            dvr.vehicle_id as vehicleId,
             dvr.plate_no AS plateNo,
             dvr.carry_car_num AS defaultCarryNum
             FROM

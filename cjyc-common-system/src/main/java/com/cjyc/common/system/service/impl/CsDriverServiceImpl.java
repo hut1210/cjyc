@@ -120,7 +120,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
         }
         //验证在该承运商下是否有相同的
         count = carrierDao.existBusinessCarrier(dto);
-        if(count <= 0){
+        if(count > 0){
             return BaseResultUtil.getVo(ResultEnum.EXIST_ENTERPRISE_CARRIER.getCode(),ResultEnum.EXIST_ENTERPRISE_CARRIER.getMsg());
         }
         if(dto.getDriverId() == null){

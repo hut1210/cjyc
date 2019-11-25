@@ -47,7 +47,7 @@ public enum ResultEnum {
     EXIST_CARRIER(9101, "该承运商账号已存在"),
     CARRIER_DRIVER(9102, "该手机号不是承运商下司机，请先添加"),
     EXIST_PERSONAL_CARRIER(9103, "账号已存在于个人司机中"),
-    EXIST_ENTERPRISE_CARRIER(9104,"账号不存在于该企业承运商中"),
+    EXIST_ENTERPRISE_CARRIER(9104,"账号已存在于该企业承运商中"),
     VEHICLE_RUNNING(9105, "该运力正在运输中，不可修改"),
     EXIST_VEHICLE(9106,"该车辆已存在,请检查");
     /**状态码*/

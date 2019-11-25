@@ -36,12 +36,25 @@ public class TransportDriverVo implements Serializable {
     @ApiModelProperty("司机身份 0：普通司机 1：管理员")
     private Integer identity;
 
+    @ApiModelProperty("身份证号")
+    private String idCard;
+
     @ApiModelProperty("总运台")
     private Integer carNum;
+
+    @ApiModelProperty("车牌号id")
+    @JsonSerialize(using= ToStringSerializer.class)
+    private Long vehicleId;
 
     @ApiModelProperty("车牌号")
     private String plateNo;
 
     @ApiModelProperty("车位")
     private Integer defaultCarryNum;
+
+    @ApiModelProperty("身份证正面")
+    private String idCardFrontImg;
+
+    @ApiModelProperty("身份证反面")
+    private String idCardBackImg;
 }
