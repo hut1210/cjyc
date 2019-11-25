@@ -1,6 +1,7 @@
 package com.cjyc.web.api.service;
 
 import com.cjyc.common.model.dto.web.OperateDto;
+import com.cjyc.common.model.dto.web.driver.BaseCarrierIdDto;
 import com.cjyc.common.model.dto.web.driver.DispatchDriverDto;
 import com.cjyc.common.model.dto.web.driver.DriverDto;
 import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
@@ -43,10 +44,10 @@ public interface IDriverService {
 
     /**
      * 根据承运商id查看司机信息
-     * @param carrierId
+     * @param dto
      * @return
      */
-    ResultVo showDriver(Long carrierId);
+    ResultVo showDriver(BaseCarrierIdDto dto);
 
     Driver getByUserId(Long userId);
 

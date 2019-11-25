@@ -11,6 +11,7 @@ import com.cjkj.usercenter.dto.common.UpdateUserReq;
 import com.cjkj.usercenter.dto.common.UserResp;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.OperateDto;
+import com.cjyc.common.model.dto.web.driver.BaseCarrierIdDto;
 import com.cjyc.common.model.dto.web.driver.DispatchDriverDto;
 import com.cjyc.common.model.dto.web.driver.DriverDto;
 import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
@@ -308,12 +309,12 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
     }
 
     @Override
-    public ResultVo showDriver(Long carrierId) {
-        ShowDriverVo vo = driverDao.getDriverById(carrierId);
+    public ResultVo showDriver(BaseCarrierIdDto dto) {
+        ShowDriverVo vo = driverDao.getDriverById(dto.getCarrierId());
         if(vo != null){
             //根据司机id获取该承运商id
-            if(carrierId != null){
-                vo.setMapCodes(carrierCityConService.getMapCodes(carrierId));
+            if(dto.getCarrierId() != null){
+                vo.setMapCodes(carrierCityConService.getMapCodes(dto.getCarrierId()));
             }
         }
         return BaseResultUtil.success(vo);

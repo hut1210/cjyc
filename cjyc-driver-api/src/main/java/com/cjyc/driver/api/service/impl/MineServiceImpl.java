@@ -68,7 +68,7 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
                 return BaseResultUtil.success(bankCardVo);
             }
         }
-        return BaseResultUtil.fail("未获取数据，请联系管理员");
+        return BaseResultUtil.success();
     }
 
     @Override

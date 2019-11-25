@@ -122,7 +122,7 @@
             <if test="plateNo != null and plateNo.trim() != ''">
                 and  dvr.plate_no = #{plateNo}
             </if>
-            and dc.carrier_id = #{carrierId} and dc.type = 2 and dc.state &lt; 9
+            and dc.id = #{carrierId} and dc.type = 2 and dc.state &lt; 9
         </where>
     </select>
 

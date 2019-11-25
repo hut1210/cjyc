@@ -1,6 +1,7 @@
 package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.web.OperateDto;
+import com.cjyc.common.model.dto.web.driver.BaseCarrierIdDto;
 import com.cjyc.common.model.dto.web.driver.DispatchDriverDto;
 import com.cjyc.common.model.dto.web.driver.DriverDto;
 import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
@@ -64,9 +65,9 @@ public class DriverController {
     }
 
     @ApiOperation(value = "根据承运商id(carrierId)查看司机信息")
-    @PostMapping(value = "/showDriver/{carrierId}")
-    public ResultVo<ShowDriverVo> showDriver(@PathVariable @ApiParam(value = "承运商id",required = true) Long carrierId){
-        return driverService.showDriver(carrierId);
+    @PostMapping(value = "/showDriver")
+    public ResultVo<ShowDriverVo> showDriver(@Validated @RequestBody BaseCarrierIdDto dto){
+        return driverService.showDriver(dto);
     }
 
     @ApiOperation(value = "冻结/解除司机冻结状态")
