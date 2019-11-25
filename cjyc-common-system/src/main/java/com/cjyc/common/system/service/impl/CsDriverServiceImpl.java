@@ -50,7 +50,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
     @Resource
     private ICarrierDao carrierDao;
 
-    @Autowired
+    @Resource
     private ISysUserService sysUserService;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
@@ -173,6 +173,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
                 vr.setRunningState(VehicleRunStateEnum.FREE.code);
                 vr.setCreateTime(NOW);
                 vehicleRunningDao.insert(vr);
+                return BaseResultUtil.success();
             }
         }else{
             return modifyDriver(dto);

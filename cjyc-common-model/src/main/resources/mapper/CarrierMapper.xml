@@ -120,7 +120,7 @@
             <if test="operateName != null and operateName.trim() != ''">
                 and  ba.name like CONCAT('%',#{operateName},'%')
             </if>
-             and dc.type = 2
+             and dc.type = 2 group by dc.id
         </where>
     </select>
 
@@ -153,7 +153,7 @@
             LEFT JOIN d_carrier_driver_con dcdc ON dcdc.carrier_id = dc.id
             LEFT JOIN d_driver dd ON dd.id = dcdc.driver_id
             LEFT JOIN s_bank_card_bind sbcb ON sbcb.user_id = dc.id
-          where dc.id = #{carrierId}
+          where dc.id = #{carrierId} group by dc.id
     </select>
 
     <!-- 调度出符合条件的承运商 -->
