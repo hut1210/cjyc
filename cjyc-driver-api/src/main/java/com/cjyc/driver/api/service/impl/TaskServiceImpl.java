@@ -145,6 +145,9 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
         TaskDetailVo taskDetailVo = new TaskDetailVo();
         // 查询运单信息
         Long waybillId = dto.getWaybillId();
+        if (waybillId == 0) {
+            return BaseResultUtil.fail("运单ID参数错误");
+        }
         Waybill waybill = waybillDao.selectById(waybillId);
         BeanUtils.copyProperties(waybill,taskDetailVo);
 

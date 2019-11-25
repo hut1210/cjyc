@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @Description 大区管理业务接口实现
@@ -184,17 +185,18 @@ public class RegionServiceImpl implements IRegionService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public ResultVo modifyRegion(RegionUpdateDto dto) throws Exception {
-        // 查询当前大区已覆盖省
-        LambdaQueryWrapper<City> queryWrapper = new QueryWrapper<City>().lambda()
-                .eq(City::getLevel, FieldConstant.PROVINCE_LEVEL).eq(City::getParentCode,dto.getRegionCode());
-        List<City> oldCityList = cityDao.selectList(queryWrapper);
-        // 筛选出新增的省和被删除的省
-        List<RegionCityDto> provinceList = dto.getProvinceList();
-        this.filterProvince(oldCityList, provinceList);
+        // 获取被删除省编码，获取新增的省编码
+        List<City> deleteProvinceList = this.filterProvince(dto);
         // 给大区新增覆盖省
-        this.updateNewProvinceList(dto,provinceList);
+        this.updateNewProvinceList(dto);
         // 将被删除的覆盖省挂在未覆盖大区下
-        this.updateOldProvinceList(oldCityList);
+        this.updateOldProvinceList(deleteProvinceList);
+        // 修改大区信息
+        boolean update = cityService.update(new UpdateWrapper<City>().lambda().set(City::getRemark,
+                dto.getRemark()).eq(City::getCode, dto.getRegionCode()));
+        if (!update) {
+            throw new Exception("更新大区信息异常");
+        }
         return BaseResultUtil.success();
     }
 
@@ -277,7 +279,8 @@ public class RegionServiceImpl implements IRegionService {
         }
     }
 
-    private void updateNewProvinceList(RegionUpdateDto dto,List<RegionCityDto> provinceList) throws Exception {
+    private void updateNewProvinceList(RegionUpdateDto dto) throws Exception {
+        List<RegionCityDto> provinceList = dto.getProvinceList();
         if (!CollectionUtils.isEmpty(provinceList)) {
             // 调用物流平台-查询当前大区机构ID
             ResultData<SelectDeptResp> regionData = sysDeptService.getDeptByCityCode(dto.getRegionCode());
@@ -287,16 +290,7 @@ public class RegionServiceImpl implements IRegionService {
 
             for (RegionCityDto province : provinceList) {
                 // 更新大区覆盖省
-                LambdaUpdateWrapper<City> updateProvince = new UpdateWrapper<City>().lambda()
-                        .set(City::getParentCode,dto.getRegionCode())
-                        .set(City::getParentName,dto.getRegionName())
-                        .set(City::getRemark,dto.getRemark())
-                        .eq(City::getCode,province.getCode())
-                        .eq(City::getLevel, FieldConstant.PROVINCE_LEVEL);
-                boolean updateRes = cityService.update(updateProvince);
-                if (!updateRes) {
-                    throw new Exception("更新大区覆盖省失败");
-                }
+                updateProvinceParentCity(dto, province);
 
                 // 调用物流平台-查询省份机构ID
                 ResultData<SelectDeptResp> provinceData = sysDeptService.getDeptByCityCode(province.getCode());
@@ -305,43 +299,74 @@ public class RegionServiceImpl implements IRegionService {
                 }
 
                 // 调用物流平台-更新省份的上一级机构ID
-                if (Objects.isNull(provinceData.getData())) {
-                    // 不存在该省份则新增省
-                    AddDeptReq addDeptReq = new AddDeptReq();
-                    addDeptReq.setName(province.getName());
-                    addDeptReq.setParentId(regionData.getData().getDeptId());
-                    addDeptReq.setRemark(province.getCode());
-                    ResultData<AddDeptResp> res = sysDeptService.save(addDeptReq);
-                    if (!ReturnMsg.SUCCESS.getCode().equals(res.getCode())) {
-                        throw new Exception("调用物流平台-保存省份信息异常:" + res.getMsg());
-                    }
-                } else {
-                    // 存在该省份则更新省
-                    UpdateDeptReq updateDeptReq = new UpdateDeptReq();
-                    updateDeptReq.setDeptId(provinceData.getData().getDeptId());
-                    updateDeptReq.setParentId(regionData.getData().getDeptId());
-                    ResultData res = sysDeptService.update(updateDeptReq);
-                    if(!ReturnMsg.SUCCESS.getCode().equals(res.getCode())) {
-                        throw new Exception("调用物流平台-修改省份信息异常:"+res.getMsg());
-                    }
-                }
+                updateProvinceParentDept(regionData, province, provinceData);
             }
         }
     }
 
-    private void filterProvince(List<City> oldCityList, List<RegionCityDto> provinceList) {
+    private void updateProvinceParentCity(RegionUpdateDto dto, RegionCityDto province) throws Exception {
+        LambdaUpdateWrapper<City> updateProvince = new UpdateWrapper<City>().lambda()
+                .set(City::getParentCode,dto.getRegionCode())
+                .set(City::getParentName,dto.getRegionName())
+                .eq(City::getCode,province.getCode())
+                .eq(City::getLevel, FieldConstant.PROVINCE_LEVEL);
+        boolean updateRes = cityService.update(updateProvince);
+        if (!updateRes) {
+            throw new Exception("更新大区覆盖省失败");
+        }
+    }
+
+    private void updateProvinceParentDept(ResultData<SelectDeptResp> regionData, RegionCityDto province,
+                                          ResultData<SelectDeptResp> provinceData) throws Exception {
+        if (Objects.isNull(provinceData.getData())) {
+            // 不存在该省份则新增省
+            AddDeptReq addDeptReq = new AddDeptReq();
+            addDeptReq.setName(province.getName());
+            addDeptReq.setParentId(regionData.getData().getDeptId());
+            addDeptReq.setRemark(province.getCode());
+            ResultData<AddDeptResp> res = sysDeptService.save(addDeptReq);
+            if (!ReturnMsg.SUCCESS.getCode().equals(res.getCode())) {
+                throw new Exception("调用物流平台-保存省份信息异常:" + res.getMsg());
+            }
+        } else {
+            // 存在该省份则更新省
+            UpdateDeptReq updateDeptReq = new UpdateDeptReq();
+            updateDeptReq.setDeptId(provinceData.getData().getDeptId());
+            updateDeptReq.setParentId(regionData.getData().getDeptId());
+            ResultData res = sysDeptService.update(updateDeptReq);
+            if(!ReturnMsg.SUCCESS.getCode().equals(res.getCode())) {
+                throw new Exception("调用物流平台-修改省份信息异常:"+res.getMsg());
+            }
+        }
+    }
+
+    private List<City> filterProvince(RegionUpdateDto dto) {
+        // 查询当前大区已覆盖省
+        LambdaQueryWrapper<City> queryWrapper = new QueryWrapper<City>().lambda()
+                .eq(City::getLevel, FieldConstant.PROVINCE_LEVEL).eq(City::getParentCode,dto.getRegionCode());
+        List<City> oldCityList = cityDao.selectList(queryWrapper);
+
+        // 筛选出新增的省和被删除的省
+        List<RegionCityDto> provinceList = dto.getProvinceList();
         if (!CollectionUtils.isEmpty(provinceList) && !CollectionUtils.isEmpty(oldCityList)) {
-            for (RegionCityDto newCity : provinceList) {
-                for (City oldCity : oldCityList) {
+            CopyOnWriteArrayList<City> cowCityList = new CopyOnWriteArrayList<>(oldCityList);
+            CopyOnWriteArrayList<RegionCityDto> cowRegionList = new CopyOnWriteArrayList<>(provinceList);
+            for (RegionCityDto newCity : cowRegionList) {
+                for (City oldCity : cowCityList) {
                     if (newCity.getCode().equals(oldCity.getCode())) {
                         // 筛选出被删除的省
-                        oldCityList.remove(oldCity);
+                        cowCityList.remove(oldCity);
                         // 筛选出新增的省
-                        provinceList.remove(newCity);
+                        cowRegionList.remove(newCity);
                     }
                 }
             }
+            // 被删除的省
+            oldCityList = cowCityList;
+            // 新增的省
+            dto.setProvinceList(cowRegionList);
         }
+        return oldCityList;
     }
 
     private void updateOldProvinceList(List<City> oldCityList) throws Exception {
@@ -371,14 +396,18 @@ public class RegionServiceImpl implements IRegionService {
                 }
 
                 // 调用物流平台接口更新机构信息
-                UpdateDeptReq updateDeptReq = new UpdateDeptReq();
-                updateDeptReq.setDeptId(provinceData.getData().getDeptId());
-                updateDeptReq.setParentId(regionData.getData().getDeptId());
-                ResultData resultData = sysDeptService.update(updateDeptReq);
-                if(!ReturnMsg.SUCCESS.getCode().equals(resultData.getCode())) {
-                    throw new Exception("调用物流平台-修改机构信息异常:"+resultData.getMsg());
-                }
+                updateDept(regionData, provinceData);
             }
+        }
+    }
+
+    private void updateDept(ResultData<SelectDeptResp> regionData, ResultData<SelectDeptResp> provinceData) throws Exception {
+        UpdateDeptReq updateDeptReq = new UpdateDeptReq();
+        updateDeptReq.setDeptId(provinceData.getData().getDeptId());
+        updateDeptReq.setParentId(regionData.getData().getDeptId());
+        ResultData resultData = sysDeptService.update(updateDeptReq);
+        if(!ReturnMsg.SUCCESS.getCode().equals(resultData.getCode())) {
+            throw new Exception("调用物流平台-修改机构信息异常:"+resultData.getMsg());
         }
     }
 
