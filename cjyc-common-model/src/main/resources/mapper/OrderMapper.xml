@@ -342,11 +342,11 @@
             <if test="endCityCode != null and endCityCode.trim() != ''">
                 and o.end_city_code = #{endCityCode}
             </if>
-            <if test="startDateMS != null and startDateMS != 0">
-                and o.create_time &gt;= #{startDateMS}
+            <if test="startDate != null and startDate != 0">
+                and o.create_time &gt;= #{startDate}
             </if>
-            <if test="endDateMS != null and endDateMS != 0">
-                and o.create_time &lt;= #{endDateMS}
+            <if test="endDate != null and endDate != 0">
+                and o.create_time &lt;= #{endDate}
             </if>
         </where>
         order by o.create_time

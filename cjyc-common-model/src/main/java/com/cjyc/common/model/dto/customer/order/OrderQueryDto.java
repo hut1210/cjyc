@@ -4,7 +4,6 @@ import com.cjyc.common.model.dto.BasePageDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
@@ -16,7 +15,6 @@ public class OrderQueryDto extends BasePageDto {
     private Long loginId;
 
     @ApiModelProperty("订单状态 查询分页参数0:待确认,1:运输中,2:已交付,3:全部")
-    @NotBlank(message = "订单状态不能为空")
     @Pattern(regexp = "[0|1|2|3]",message = "订单状态只能是0,1,2,3中的一位数")
     private String state;
 
@@ -27,17 +25,14 @@ public class OrderQueryDto extends BasePageDto {
     private String model;
 
     @ApiModelProperty("下单开始时间")
-    private String startDate;
+    private Long startDate;
 
     @ApiModelProperty("下单结束时间")
-    private String endDate;
+    private Long endDate;
 
     @ApiModelProperty("始发地编码")
     private String startCityCode;
 
     @ApiModelProperty("目的地编码")
     private String endCityCode;
-
-    private Long startDateMS;
-    private Long endDateMS;
 }

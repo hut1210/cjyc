@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IOrderDao;
 import com.cjyc.common.model.dto.customer.invoice.InvoiceApplyQueryDto;
@@ -18,7 +17,6 @@ import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.invoice.InvoiceOrderVo;
@@ -30,7 +28,6 @@ import com.cjyc.customer.api.service.IOrderService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -87,18 +84,6 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
     public ResultVo<PageVo<OrderCenterVo>> getPage(OrderQueryDto dto) {
         // 分页
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
-        // 日期格式处理
-        String startDate = dto.getStartDate();
-        String endDate = dto.getEndDate();
-        if (!StringUtils.isBlank(startDate)) {
-            Long startLong = LocalDateTimeUtil.convertToLong(startDate, TimePatternConstant.COMPLEX_TIME_FORMAT);
-            dto.setStartDateMS(startLong);
-        }
-        if (!StringUtils.isBlank(endDate)) {
-            Long endLong = LocalDateTimeUtil.convertToLong(endDate, TimePatternConstant.COMPLEX_TIME_FORMAT);
-            dto.setEndDateMS(endLong);
-        }
-
         List<OrderCenterVo> list = orderDao.selectPage(dto);
         PageInfo<OrderCenterVo> pageInfo = new PageInfo<>(list == null ? new ArrayList<>(0) : list);
         return BaseResultUtil.success(pageInfo);
