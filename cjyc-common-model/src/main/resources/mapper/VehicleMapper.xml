@@ -127,7 +127,8 @@
     </select>
 
     <!-- 获取所有个人车辆 -->
-    <select id="findPersonVehicle" resultType="com.cjyc.common.model.vo.FreeVehicleVo">
+    <select id="findPersonVehicle" resultType="com.cjyc.common.model.vo.FreeVehicleVo"
+        parameterType="java.lang.String">
         SELECT
             id AS vehicleId,
             plate_no AS plateNo,

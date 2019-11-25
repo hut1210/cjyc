@@ -18,6 +18,23 @@
         <result column="remark" property="remark" />
     </resultMap>
 
+    <!-- 通用查询映射结果 -->
+    <resultMap id="TreeResultMap" type="com.cjyc.common.model.vo.customer.city.ProvinceTreeVo">
+        <result column="parent_code" property="parentCode" />
+        <result column="code" property="code" />
+        <result column="name" property="name" />
+        <collection property="cityVos" ofType="com.cjyc.common.model.vo.customer.city.CityTreeVo" javaType="java.util.List">
+            <result column="parent_code" property="parentCode" />
+            <result column="code" property="code" />
+            <result column="name" property="name" />
+            <collection property="cityVos" ofType="com.cjyc.common.model.vo.customer.city.AreaTreeVo" javaType="java.util.List">
+                <result column="parent_code" property="parentCode" />
+                <result column="code" property="code" />
+                <result column="name" property="name" />
+            </collection>
+        </collection>
+    </resultMap>
+
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         code, name, level, parent_code, parent_name, pin_yin, pin_initial, pin_acronym, lng, lat, hot,remark
@@ -94,11 +111,11 @@
     </select>
 
     <!--根据关键字查询城市编码 -->
-    <select id="findThreeCity" resultType="com.cjyc.common.model.vo.CityTreeVo"  parameterType="java.lang.String">
+    <select id="findThreeCity" resultType="com.cjyc.common.model.vo.CityTreeVo" parameterType="java.lang.String">
         SELECT
-            NAME AS NAME,
-            CODE AS CODE,
-            parent_code AS parentCode
+        NAME AS NAME,
+        CODE AS CODE,
+        parent_code AS parentCode
         FROM
         s_city
         <where>
@@ -112,25 +129,25 @@
             </if>
             and level >= 1 and level &lt;= 3
         </where>
-            <if test="keyword != null and keyword.trim() != ''">
-                union
-                SELECT
-                    NAME AS NAME,
-                    CODE AS CODE,
-                    parent_code AS parentCode
-                FROM
-                  s_city
-                WHERE
-                  NAME = ( SELECT
-                  parent_name
-                FROM s_city
-                    <where>
-                    <if test="keyword != null and keyword.trim() != ''">
-                        and NAME LIKE concat( '%', #{keyword}, '%' )
-                    </if>
-                        limit 1) and level = 1
-                    </where>
-            </if>
+        <if test="keyword != null and keyword.trim() != ''">
+            union
+            SELECT
+            NAME AS NAME,
+            CODE AS CODE,
+            parent_code AS parentCode
+            FROM
+            s_city
+            WHERE
+            NAME = ( SELECT
+            parent_name
+            FROM s_city
+            <where>
+                <if test="keyword != null and keyword.trim() != ''">
+                    and NAME LIKE concat( '%', #{keyword}, '%' )
+                </if>
+                limit 1) and level = 1
+            </where>
+        </if>
     </select>
 
     <!--获取热门城市 -->

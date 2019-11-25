@@ -49,7 +49,7 @@ public interface IVehicleDao extends BaseMapper<Vehicle> {
      * 获取所有社会车辆
      * @return
      */
-    List<FreeVehicleVo> findPersonVehicle(@Param("keyword") KeywordDto keyword);
+    List<FreeVehicleVo> findPersonVehicle(KeywordDto keyword);
 
     /**
      * 获取该承运商下的车辆

@@ -1,16 +1,17 @@
 package com.cjyc.customer.api.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.dao.ICityDao;
 import com.cjyc.common.model.dto.KeywordDto;
 import com.cjyc.common.model.entity.City;
-import com.cjyc.common.model.enums.CityLevelEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.CityTreeUtil;
 import com.cjyc.common.model.vo.CityTreeVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.city.CityVo;
 import com.cjyc.common.model.vo.customer.city.HotCityVo;
+import com.cjyc.common.model.vo.customer.city.ProvinceTreeVo;
 import com.cjyc.customer.api.service.ICityService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;

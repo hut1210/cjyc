@@ -7,6 +7,7 @@ import com.cjyc.common.model.entity.City;
 import com.cjyc.common.model.entity.defined.FullCity;
 import com.cjyc.common.model.vo.CityTreeVo;
 import com.cjyc.common.model.vo.customer.city.HotCityVo;
+import com.cjyc.common.model.vo.customer.city.ProvinceTreeVo;
 import com.cjyc.common.model.vo.web.city.ProvinceCityVo;
 import com.cjyc.common.model.vo.web.city.TreeCityVo;
 import org.apache.ibatis.annotations.Param;
