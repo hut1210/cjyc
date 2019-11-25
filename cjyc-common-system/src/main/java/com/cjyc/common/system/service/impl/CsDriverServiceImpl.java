@@ -131,12 +131,12 @@ public class CsDriverServiceImpl implements ICsDriverService {
             driver.setType(DriverTypeEnum.SOCIETY.code);
             driver.setIdentity(DriverIdentityEnum.SUB_DRIVER.code);
             driver.setBusinessState(BusinessStateEnum.BUSINESS.code);
-            if(dto.getDriverId().equals(dto.getLoginId())){
-                //承运商超级管理员登陆
-                driver.setSource(DriverSourceEnum.CARRIER_ADMIN.code);
-            }else if(dto.getCarrierId().equals(dto.getLoginId())){
+            if(dto.getCarrierId() != null){
                 //业务员登陆
                 driver.setSource(DriverSourceEnum.SALEMAN_WEB.code);
+            }else{
+                //承运商超级管理员登陆
+                driver.setSource(DriverSourceEnum.CARRIER_ADMIN.code);
             }
             driver.setCreateUserId(dto.getLoginId());
             driver.setCreateTime(NOW);
@@ -314,7 +314,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
      * @param dto
      * @return
      */
-    private ResultVo modifyDriver(com.cjyc.common.model.dto.CarrierDriverDto dto) {
+    private ResultVo modifyDriver(CarrierDriverDto dto) {
         //判断司机是否已存在
         Driver dri = driverDao.selectById(dto.getDriverId());
         DriverVehicleCon dvc = driverVehicleConDao.selectOne(new QueryWrapper<DriverVehicleCon>().lambda().eq(DriverVehicleCon::getDriverId,dto.getDriverId()));
