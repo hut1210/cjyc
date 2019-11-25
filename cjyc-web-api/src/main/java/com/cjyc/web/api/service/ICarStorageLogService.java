@@ -1,7 +1,10 @@
 package com.cjyc.web.api.service;
 
-import com.cjyc.common.model.entity.CarStorageLog;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.cjyc.common.model.dto.web.waybill.storeListDto;
+import com.cjyc.common.model.entity.CarStorageLog;
+import com.cjyc.common.model.vo.PageVo;
+import com.cjyc.common.model.vo.ResultVo;
 
 /**
  * <p>
@@ -13,4 +16,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ICarStorageLogService extends IService<CarStorageLog> {
 
+    ResultVo<PageVo<CarStorageLog>> inList(storeListDto dto);
 }

@@ -4,7 +4,8 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.CarStorageLog">
-        <result column="id" property="id" />
+        <id column="id" property="id" />
+        <result column="store_id" property="storeId" />
         <result column="type" property="type" />
         <result column="order_no" property="orderNo" />
         <result column="order_car_no" property="orderCarNo" />
@@ -26,7 +27,36 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, type, order_no, order_car_no, vin, brand, model, freight, carry_type, carrier_id, carrier, driver, driver_id, drvier_phone, vehicle_plate_no, create_time, create_user_id, create_user
+        id, store_id, type, order_no, order_car_no, vin, brand, model, freight, carry_type, carrier_id, carrier, driver, driver_id, drvier_phone, vehicle_plate_no, create_time, create_user_id, create_user
     </sql>
+    <select id="findList" resultType="com.cjyc.common.model.entity.CarStorageLog">
+        select
+        <include refid="Base_Column_List"/>
+        from w_car_storage_log
+        <where>
+            and type = 1
+
+            store_id storeId
+            type type
+            order_no orderNo
+            order_car_no orderCarNo
+            vin vin
+            brand brand
+            model model
+            freight freight
+            carry_type carryType
+            carrier_id carrierId
+            carrier carrier
+            driver driver
+            driver_id driverId
+            drvier_phone drvierPhone
+            vehicle_plate_no vehiclePlateNo
+            start_create_time startCreateTime
+            end_create_time endCreateTime
+            create_user_id createUserId
+            create_user createUser
+
+        </where>
+    </select>
 
 </mapper>

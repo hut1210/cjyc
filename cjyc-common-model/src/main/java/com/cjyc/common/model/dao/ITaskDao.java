@@ -74,4 +74,6 @@ public interface ITaskDao extends BaseMapper<Task> {
      * @return java.util.List<com.cjyc.common.model.vo.driver.task.WaybillTaskVo>
      */
     List<WaybillTaskVo> selectHistoryTaskPage(TaskQueryDto dto);
+
+    int updateForUnload(@Param("taskId") Long taskId, @Param("unLoadNum")int unLoadNum);
 }

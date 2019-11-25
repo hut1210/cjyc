@@ -326,11 +326,13 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     public ResultVo<PageVo<ListOrderVo>> list(ListOrderDto paramsDto) {
 
         //查询角色业务中心范围
+/*
         BizScope bizScope = csSysService.getBizScopeByRoleId(paramsDto.getRoleId(), true);
         if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
             return BaseResultUtil.fail("没有数据权限");
         }
         paramsDto.setBizScope(bizScope.getCode() == 0 ? null : bizScope.getStoreIds());
+*/
 
         //分页查询
         PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
@@ -348,11 +350,12 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     public ResultVo<PageVo<ListOrderCarVo>> carlist(ListOrderCarDto paramsDto) {
 
         //查询角色业务中心范围
-        BizScope bizScope = csSysService.getBizScopeByRoleId(paramsDto.getRoleId(), true);
+/*        BizScope bizScope = csSysService.getBizScopeByRoleId(paramsDto.getRoleId(), true);
         if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
             return BaseResultUtil.fail("没有数据权限");
         }
-        paramsDto.setBizScope(bizScope.getCode() == 0 ? null : bizScope.getStoreIds());
+        paramsDto.setBizScope(bizScope.getCode() == 0 ? null : bizScope.getStoreIds());*/
+
         PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
         List<ListOrderCarVo> list = orderCarDao.findListSelective(paramsDto);
         PageInfo<ListOrderCarVo> pageInfo = new PageInfo<>(list);

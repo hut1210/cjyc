@@ -1,37 +1,13 @@
-package com.cjyc.common.model.entity;
+package com.cjyc.common.model.dto.web.waybill;
+
+import com.cjyc.common.model.dto.BasePageDto;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 import java.math.BigDecimal;
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import java.io.Serializable;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 
-/**
- * <p>
- * 出入库记录
- * </p>
- *
- * @author JPG
- * @since 2019-11-22
- */
-@Builder
-@EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
-@TableName("w_car_storage_log")
-@ApiModel(value="CarStorageLog对象", description="出入库记录")
-public class CarStorageLog implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    @ApiModelProperty(value = "ID")
-    @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
+@Data
+public class storeListDto extends BasePageDto {
 
     @ApiModelProperty(value = "业务中心ID")
     private Long storeId;
@@ -57,7 +33,7 @@ public class CarStorageLog implements Serializable {
     @ApiModelProperty(value = "运费")
     private BigDecimal freight;
 
-    @ApiModelProperty(value = "承运方式")
+    @ApiModelProperty(value = "承运方式:1干线-个人承运商，2干线-企业承运商，3同城-业务员，4同城-代驾，5同城-拖车，6客户自己")
     private Integer carryType;
 
     @ApiModelProperty(value = "承运商ID")
@@ -79,13 +55,15 @@ public class CarStorageLog implements Serializable {
     private String vehiclePlateNo;
 
     @ApiModelProperty(value = "创建时间")
-    private Long createTime;
+    private Long startCreateTime;
+    @ApiModelProperty(value = "创建时间")
+    private Long endCreateTime;
+
 
     @ApiModelProperty(value = "创建人ID")
     private Long createUserId;
 
     @ApiModelProperty(value = "创建人")
     private String createUser;
-
 
 }

@@ -247,7 +247,7 @@ public class WaybillController {
      */
 /*    @ApiOperation(value = "车辆入库列表")
     @PostMapping(value = "/in/store/list")
-    public ResultVo<PageVo<InStoreListVo>> inStoreList(@RequestBody InStoreListDto reqDto) {
+    public ResultVo<PageVo<InStoreListVo>> inStoreList(@RequestBody storeListDto reqDto) {
         return waybillService.inStoreList(reqDto);
     }*/
 

@@ -14,4 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/finance",
         produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class FinanceController {
+
+
 }

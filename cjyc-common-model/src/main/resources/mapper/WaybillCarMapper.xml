@@ -223,6 +223,22 @@
         where id =#{id}
         and state &lt; 2
     </update>
+    <update id="updateInfoBatchForUnload">
+        update w_waybill_car
+        set state = #{state}
+        <where>
+            <choose>
+                <when test="set == null and set.size > 0">
+                    <foreach collection="set" index="index" item="item" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </when>
+                <otherwise>
+                    1 != 1
+                </otherwise>
+            </choose>
+        </where>
+    </update>
 
     <select id="findByTaskCarId" resultType="com.cjyc.common.model.entity.WaybillCar">
         select

@@ -93,7 +93,7 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
     }
 
     @Override
-    public ResultVo<PageVo<CrWaybillVo>> inStoreList(InStoreListDto reqDto) {
+    public ResultVo<PageVo<CrWaybillVo>> inStoreList(storeListDto reqDto) {
 
 
         return null;

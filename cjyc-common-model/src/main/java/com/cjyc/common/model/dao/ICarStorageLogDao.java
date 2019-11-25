@@ -1,7 +1,10 @@
 package com.cjyc.common.model.dao;
 
+import com.cjyc.common.model.dto.web.waybill.storeListDto;
 import com.cjyc.common.model.entity.CarStorageLog;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +16,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface ICarStorageLogDao extends BaseMapper<CarStorageLog> {
 
+    List<CarStorageLog> findList(storeListDto dto);
 }

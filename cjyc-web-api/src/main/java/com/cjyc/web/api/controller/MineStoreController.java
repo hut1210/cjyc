@@ -11,9 +11,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -30,13 +28,13 @@ public class MineStoreController {
     private IMineStoreService mineStoreService;
 
     @ApiOperation(value = "查询我的业务中心-我的业务员列表")
-    @RequestMapping("/listSalesman")
+    @PostMapping("/listSalesman")
     public ResultVo<PageVo<MySalesmanVo>> listSalesman(@Valid @RequestBody ListMineSalesmanDto dto) {
         return mineStoreService.listSalesman(dto);
     }
 
     @ApiOperation(value = "设置联系人")
-    @RequestMapping("/setContractPerson")
+    @PostMapping("/setContractPerson")
     public ResultVo setContractPerson(@Valid @RequestBody SetContactPersonDto dto) {
         return mineStoreService.setContractPerson(dto);
     }

@@ -5,6 +5,7 @@ import com.cjkj.common.redis.lock.RedisDistributedLock;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.task.*;
 import com.cjyc.common.model.entity.*;
+import com.cjyc.common.model.enums.CarStorageTypeEnum;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.enums.task.TaskStateEnum;
@@ -21,6 +22,8 @@ import com.cjyc.common.model.vo.web.task.CrTaskVo;
 import com.cjyc.common.model.vo.web.task.ListByWaybillTaskVo;
 import com.cjyc.common.model.vo.web.task.TaskVo;
 import com.cjyc.common.model.vo.web.waybill.WaybillCarVo;
+import com.cjyc.common.system.service.ICsTaskService;
+import com.cjyc.web.api.service.ICarStorageLogService;
 import com.cjyc.web.api.service.ITaskService;
 import com.github.pagehelper.PageHelper;
 import com.google.common.collect.Lists;
@@ -56,245 +59,27 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
     @Resource
     private IWaybillCarDao waybillCarDao;
     @Resource
-    private IDriverDao driverDao;
-    @Resource
-    private RedisDistributedLock redisLock;
-    @Resource
     private ITaskDao taskDao;
     @Resource
     private ITaskCarDao taskCarDao;
     @Resource
     private IStoreDao storeDao;
     @Resource
-    private IVehicleRunningDao vehicleRunningDao;
+    private ICsTaskService csTaskService;
 
     @Override
     public ResultVo allot(AllotTaskDto paramsDto) {
-        Long waybillId = paramsDto.getWaybillId();
-        Long driverId = paramsDto.getDriverId();
-        List<Long> waybillCarIdList = paramsDto.getWaybillCarIdList();
-        Set<String> lockKeySet = new HashSet<>();
-        try {
-            //验证运单状态
-            Waybill waybill = waybillDao.selectById(waybillId);
-            if (waybill == null
-                    || waybill.getState() < WaybillStateEnum.WAIT_ALLOT.code
-                    || waybill.getState() > WaybillStateEnum.FINISHED.code) {
-                return BaseResultUtil.fail("当前运单的状态，无法分配任务");
-            }
-            List<WaybillCar> list = waybillCarDao.findVoByIds(waybillCarIdList);
-            if (list == null || list.isEmpty()) {
-                return BaseResultUtil.fail("内容不能为空");
-            }
-            //验证司机信息
-            Driver driver = driverDao.selectById(driverId);
-            if (driver == null) {
-                return BaseResultUtil.fail("司机不在运营中");
-            }
-
-            if(StringUtils.isNotBlank(waybill.getGuideLine())){
-                if(waybill.getCarNum() != list.size()){
-                    return BaseResultUtil.fail("此单不允许拆单分派");
-                }
-            }
-
-            Task task = new Task();
-            //计算任务编号
-            task.setNo("");
-            task.setWaybillId(waybill.getId());
-            task.setWaybillNo(waybill.getNo());
-            task.setCarNum(paramsDto.getWaybillCarIdList().size());
-            task.setState(TaskStateEnum.WAIT_ALLOT_CONFIRM.code);
-            task.setDriverId(driver.getId());
-            task.setDriverPhone(driver.getPhone());
-            task.setDriverName(driver.getName());
-            task.setCreateTime(System.currentTimeMillis());
-            task.setCreateUser(paramsDto.getUserName());
-            task.setCreateUserId(paramsDto.getLoginId());
-            taskDao.insert(task);
-
-            int noCount = 0;
-            for (WaybillCar waybillCar : list) {
-                if (waybillCar == null) {
-                    continue;
-                }
-                //加锁
-                String lockKey = RedisKeys.getAllotTaskKey(waybillCar.getOrderCarNo());
-                if (!redisLock.lock(lockKey, 20000, 100, 300)) {
-                    throw new ServerException("当前运单的状态，无法分配任务");
-                }
-                lockKeySet.add(lockKey);
-
-                //验证运单车辆状态
-                if (waybillCar.getState() > WaybillCarStateEnum.WAIT_ALLOT.code) {
-                    throw new ServerException("当前运单车辆的状态，无法分配任务");
-                }
-
-                TaskCar taskCar = new TaskCar();
-                taskCar.setTaskId(task.getId());
-                taskCar.setWaybillCarId(waybillCar.getId());
-                taskCarDao.insert(taskCar);
-                noCount++;
-
-                //更新运单车辆状态
-                if(waybillCar.getState() < WaybillCarStateEnum.ALLOTED.code){
-                    waybillCarDao.updateForAllotDriver(waybillCar.getId());
-                }
-            }
-            if (noCount != task.getCarNum()) {
-                task.setCarNum(noCount);
-                taskDao.updateById(task);
-            }
-
-        } finally {
-            for (String key : lockKeySet) {
-                redisLock.releaseLock(key);
-            }
-        }
-        return null;
+        return csTaskService.allot(paramsDto);
     }
 
     @Override
     public ResultVo load(LoadTaskDto paramsDto) {
-
-        Task task = taskDao.selectById(paramsDto.getTaskId());
-        if(task == null){
-            return BaseResultUtil.fail("任务不存在");
-        }
-        if(StringUtils.isBlank(task.getVehiclePlateNo())){
-            return BaseResultUtil.fail("请先完善车牌号");
-        }
-        //验证运单
-        Waybill waybill = waybillDao.selectById(task.getWaybillId());
-        if(waybill == null){
-            return BaseResultUtil.fail("运单不存在");
-        }
-        if(waybill.getState() >= WaybillStateEnum.FINISHED.code || waybill.getState() <= WaybillStateEnum.WAIT_ALLOT_CONFIRM.code ){
-            return BaseResultUtil.fail("运单已完结");
-        }
-
-        //组装数据
-        int orderCarNewState;
-        int waybillCarNewState;
-        if (waybill.getType() == WaybillTypeEnum.PICK.code) {
-            //提车任务、自送到业务中心
-            waybillCarNewState = WaybillCarStateEnum.LOADED.code;
-            orderCarNewState = OrderCarStateEnum.PICKING.code;
-        } else if (waybill.getType() == WaybillTypeEnum.TRUNK.code) {
-            //干线、提干、干送、提干送任务
-            waybillCarNewState = WaybillCarStateEnum.WAIT_LOAD_TURN.code;
-            orderCarNewState = OrderCarStateEnum.TRUNKING.code;
-        } else if (waybill.getType() == WaybillTypeEnum.BACK.code) {
-            //送车、自提
-            waybillCarNewState = WaybillCarStateEnum.WAIT_LOAD_TURN.code;
-            orderCarNewState = OrderCarStateEnum.BACKING.code;
-        } else {
-            return BaseResultUtil.fail("未识别的任务类型");
-        }
-
-
-        int count = 0;
-        long currentTimeMillis = System.currentTimeMillis();
-        Set<Long> orderIdSet = Sets.newHashSet();
-        Set<Long> orderCarIdSet = Sets.newHashSet();
-        Set<Long> waybillCarIdSet = Sets.newHashSet();
-        for (Long taskCarId : paramsDto.getTaskCarIdList()) {
-            WaybillCar waybillCar = waybillCarDao.findByTaskCarId(taskCarId);
-            if (waybillCar == null) {
-                return BaseResultUtil.fail("ID：{0}运单车辆不存在", taskCarId);
-            }
-            if (waybillCar.getState() > WaybillCarStateEnum.LOADED.code) {
-                return BaseResultUtil.fail("No:{0}运单车辆已经装过车", waybillCar.getOrderCarId());
-            }
-            //验证车辆当前所在地是否与出发城市匹配
-            OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
-            if(orderCar == null ){
-                return BaseResultUtil.fail("No:{0}订单车辆不存在", waybillCar.getOrderCarId());
-            }
-            if(!waybillCar.getStartStoreId().equals(orderCar.getNowStoreId())){
-                return BaseResultUtil.fail("No:{0}订单车辆尚未到达始发地业务中心范围内", waybillCar.getOrderCarId());
-            }
-            waybillCar.setLoadTime(currentTimeMillis);
-            //订单
-            orderIdSet.add(orderCar.getOrderId());
-            //订单车辆
-            if(orderCar.getState() < orderCarNewState){
-                orderCarIdSet.add(orderCar.getId());
-            }
-            //运单车辆
-            if (waybillCar.getState() < waybillCarNewState) {
-                waybillCarIdSet.add(waybillCar.getId());
-            }
-            count++;
-        }
-        //更新运单车辆状态
-        waybillCarDao.updateStateForLoad(waybillCarNewState, waybillCarIdSet);
-        //更新空车位数
-        vehicleRunningDao.updateOccupiedNumForLoad(paramsDto.getLoginId(), count);
-        //更新订单车辆状态
-        orderCarDao.updateStateForLoad(orderCarNewState, orderCarIdSet);
-        //更新订单状态
-        if(!CollectionUtils.isEmpty(orderIdSet)){
-            orderDao.updateStateForLoad(OrderStateEnum.TRANSPORTING.code, orderIdSet);
-        }
-
-        //TODO 给客户发送消息
-        //TODO 写物流轨迹
-        return BaseResultUtil.success();
+        return csTaskService.load(paramsDto);
     }
 
     @Override
     public ResultVo unload(UnLoadTaskDto paramsDto) {
-        //返回内容
-        Map<String, Object> failCarNoMap = Maps.newHashMap();
-        List<WaybillCar> updateWaybillCarList = Lists.newArrayList();
-
-        Task task = taskDao.selectById(paramsDto.getTaskId());
-        if(task == null){
-            return BaseResultUtil.fail("任务不存在");
-        }
-        //验证运单
-        Waybill waybill = waybillDao.selectById(task.getWaybillId());
-        if(waybill == null){
-            return BaseResultUtil.fail("运单不存在");
-        }
-        if(waybill.getState() >= WaybillStateEnum.FINISHED.code || waybill.getState() <= WaybillStateEnum.WAIT_ALLOT_CONFIRM.code ){
-            return BaseResultUtil.fail("运单已完结");
-        }
-
-        long currentTimeMillis = System.currentTimeMillis();
-        for (Long taskCarId : paramsDto.getTaskCarIdList()) {
-            if (taskCarId == null) {
-                continue;
-            }
-            WaybillCar waybillCar = waybillCarDao.findByTaskCarId(taskCarId);
-            if (waybillCar == null) {
-                failCarNoMap.put(taskCarId.toString(), "运单车辆不存在");
-                continue;
-            }
-            if (waybillCar.getState() >= WaybillCarStateEnum.UNLOADED.code) {
-                failCarNoMap.put(waybillCar.getOrderCarNo(), "车辆已经卸过车");
-                continue;
-            }
-
-            waybillCar.setState(WaybillCarStateEnum.UNLOADED.code);
-            waybillCar.setUnloadTime(currentTimeMillis);
-            waybillCarDao.updateById(waybillCar);
-            //更新运单信息
-            //更新订单车辆信息
-            //更新订单信息
-            updateWaybillCarList.add(waybillCar);
-        }
-
-        if (CollectionUtils.isEmpty(updateWaybillCarList)) {
-            return BaseResultUtil.fail(failCarNoMap);
-        }
-
-        //更新任务信息
-        //更新实时运力信息
-        //TODO 发送收车推送信息
-
-        return BaseResultUtil.success(failCarNoMap);
+        return csTaskService.unload(paramsDto);
     }
 
     @Override

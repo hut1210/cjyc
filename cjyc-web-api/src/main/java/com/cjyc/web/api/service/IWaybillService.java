@@ -65,5 +65,5 @@ public interface IWaybillService extends IService<Waybill> {
 
     ResultVo trunkMidwayUnload(TrunkMidwayUnload reqDto);
 
-    ResultVo<PageVo<CrWaybillVo>> inStoreList(InStoreListDto reqDto);
+    ResultVo<PageVo<CrWaybillVo>> inStoreList(storeListDto reqDto);
 }

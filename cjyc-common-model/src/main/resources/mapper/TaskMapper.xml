@@ -39,6 +39,10 @@
             </foreach>
         </where>
     </update>
+    <update id="updateForUnload">
+        update set unload_car_num = unload_car_num + #{unLoadNum}
+        where id = #{taskId}
+    </update>
     <delete id="cancelBywaybillId">
         update w_task
         set state = #{newState}

@@ -77,4 +77,5 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
 
     int updateForAllotDriver(Long id);
 
+    int updateInfoBatchForUnload(@Param("set")Set<Long> waybillCarIdSet, @Param("state")int state);
 }
