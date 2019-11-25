@@ -25,10 +25,10 @@ public interface IBankCardBindDao extends BaseMapper<BankCardBind> {
     int removeBandCarBind(@Param("carrierId") Long carrierId);
 
     /**
-     * 根据司机id获取绑定银行卡信息
-     * @param driverId
+     * 根据承运商id获取绑定银行卡信息
+     * @param carrierId
      * @return
      */
-    List<BinkCardVo> findBinkCardInfo(@Param("driverId") Long driverId);
+    BinkCardVo findBinkCardInfo(@Param("carrierId") Long carrierId);
 
 }

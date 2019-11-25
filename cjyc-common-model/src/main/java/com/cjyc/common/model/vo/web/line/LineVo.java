@@ -63,5 +63,12 @@ public class LineVo implements Serializable {
     private Long createTime;
 
     @ApiModelProperty("创建人员")
-    private String createUserName;
+    private String createName;
+
+    @ApiModelProperty("修改人")
+    private String updateName;
+
+    @ApiModelProperty("修改时间")
+    @JsonSerialize(using = DataLongSerizlizer.class)
+    private Long updateTime;
 }

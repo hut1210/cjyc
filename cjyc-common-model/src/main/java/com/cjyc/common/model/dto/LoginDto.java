@@ -1,5 +1,6 @@
 package com.cjyc.common.model.dto;
 
+import com.cjyc.common.model.constant.RegexConstant;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -10,13 +11,13 @@ import java.io.Serializable;
 public class LoginDto implements Serializable {
     private static final long serialVersionUID = 3333146372464982794L;
 
-    @ApiModelProperty("手机号")
+    @ApiModelProperty(value = "手机号",required = true)
     @NotBlank(message = "手机号不能为空")
-    @Pattern(regexp = "1[3|4|5|7|8][0-9]\\d{8}",message = "电话号码格式不对")
+    @Pattern(regexp = RegexConstant.REGEX_MOBILE_EXACT_LATEST,message = "电话号码格式不对")
     private String phone;
 
-    @ApiModelProperty("验证码")
+    @ApiModelProperty(value = "验证码",required = true)
     @NotBlank(message = "验证码不能为空")
-    @Pattern(regexp = "\\d{4}",message = "验证码为4位数字")
+    @Pattern(regexp = RegexConstant.VERIFY_CODE,message = "验证码为4位数字")
     private String code;
 }

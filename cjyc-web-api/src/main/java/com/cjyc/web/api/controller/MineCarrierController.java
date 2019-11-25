@@ -2,15 +2,18 @@ package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.CarrierDriverDto;
 import com.cjyc.common.model.dto.CarrierVehicleDto;
+import com.cjyc.common.model.dto.FreeDto;
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.mineCarrier.*;
+import com.cjyc.common.model.vo.FreeVehicleVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyCarVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyDriverVo;
-import com.cjyc.common.model.vo.web.mineCarrier.MyFreeDriverVo;
+import com.cjyc.common.model.vo.FreeDriverVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyWaybillVo;
 import com.cjyc.common.system.service.ICsDriverService;
+import com.cjyc.common.system.service.ICsVehicleService;
 import com.cjyc.web.api.service.IMineCarrierService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -36,6 +39,8 @@ public class MineCarrierController {
     private IMineCarrierService mimeCarrierService;
     @Resource
     private ICsDriverService csDriverService;
+    @Resource
+    private ICsVehicleService csVehicleService;
 
     @ApiOperation(value = "查询承运商下运单")
     @PostMapping(value = "/findWaybill")
@@ -74,10 +79,14 @@ public class MineCarrierController {
     }
 
     @ApiOperation(value = "查询承运商下的空闲司机")
-    @PostMapping(value = "/findFreeDriver")
-    public ResultVo<List<MyFreeDriverVo>> findFreeDriver(@PathVariable @ApiParam(value = "该承运商id",required = true) Long carrierId,
-                                                         @PathVariable(required = false) @ApiParam(value = "司机姓名") String realName){
-        return mimeCarrierService.findFreeDriver(carrierId,realName);
+    @PostMapping(value = "/findCarrierFreeDriver")
+    public ResultVo<List<FreeDriverVo>> findCarrierFreeDriver(@RequestBody FreeDto dto){
+        return csDriverService.findCarrierFreeDriver(dto);
     }
 
+    @ApiOperation(value = "该承运商下空闲车辆(管理员中的)")
+    @PostMapping(value = "/findCarrierFreeVehicle")
+    public ResultVo<List<FreeVehicleVo>> findCarrierFreeVehicle(@RequestBody FreeDto dto){
+        return csVehicleService.findCarrierFreeVehicle(dto);
+    }
 }

@@ -1,11 +1,13 @@
 package com.cjyc.common.model.dto.web.customer;
 
+import com.cjyc.common.model.constant.RegexConstant;
 import com.cjyc.common.model.dto.BasePageDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 @Data
 @EqualsAndHashCode(callSuper = false)

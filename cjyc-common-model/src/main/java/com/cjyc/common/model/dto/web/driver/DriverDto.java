@@ -1,5 +1,6 @@
 package com.cjyc.common.model.dto.web.driver;
 
+import com.cjyc.common.model.constant.RegexConstant;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -8,6 +9,7 @@ import lombok.experimental.Accessors;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 import java.util.List;
 
@@ -24,43 +26,45 @@ public class DriverDto implements Serializable {
     @ApiModelProperty("承运商id(carrierId)")
     private Long carrierId;
 
-    @ApiModelProperty("当前登陆用户id(loginId)")
+    @ApiModelProperty(value = "当前登陆用户id(loginId)",required = true)
     @NotNull(message = "当前登陆用户id(loginId)不能为空")
     private Long loginId;
 
-    @ApiModelProperty("司机姓名")
+    @ApiModelProperty(value = "司机姓名",required = true)
     @NotBlank(message = "司机姓名不能为空")
     private String realName;
 
-    @ApiModelProperty("司机手机号")
+    @ApiModelProperty(value = "司机手机号",required = true)
     @NotBlank(message = "司机手机号不能为空")
+    @Pattern(regexp = RegexConstant.REGEX_MOBILE_EXACT_LATEST,message = "电话号码格式不对")
     private String phone;
 
-    @ApiModelProperty("承运方式：2 : 代驾  3 : 干线   4：拖车")
+    @ApiModelProperty(value = "承运方式：2 : 代驾  3 : 干线   4：拖车",required = true)
     @NotNull(message = "承运方式不能为空")
     private Integer mode;
 
-    @ApiModelProperty("业务城市")
+    @ApiModelProperty(value = "业务城市",required = true)
     @NotEmpty(message = "业务类型不能为空")
     private List<String> codes;
 
-    @ApiModelProperty("身份证号")
+    @ApiModelProperty(value = "身份证号",required = true)
     @NotBlank(message = "司机身份证号不能为空")
+    @Pattern(regexp = RegexConstant.REGEX_ID_CARD18,message = "身份证号码格式不对")
     private String idCard;
 
-    @ApiModelProperty("身份证正面")
+    @ApiModelProperty(value = "身份证正面",required = true)
     @NotBlank(message = "身份证正面不能为空")
     private String idCardFrontImg;
 
-    @ApiModelProperty("身份证反面")
+    @ApiModelProperty(value = "身份证反面",required = true)
     @NotBlank(message = "身份证反面不能为空")
     private String idCardBackImg;
 
-    @ApiModelProperty("驾驶证正面")
+    @ApiModelProperty(value = "驾驶证正面",required = true)
     @NotBlank(message = "驾驶证正面不能为空")
     private String driverLicenceFrontImg;
 
-    @ApiModelProperty("驾驶证反面")
+    @ApiModelProperty(value = "驾驶证反面",required = true)
     @NotBlank(message = "驾驶证反面不能为空")
     private String driverLicenceBackImg;
 

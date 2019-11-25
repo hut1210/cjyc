@@ -11,7 +11,7 @@ public class CarrierVehicleDto implements Serializable {
 
     private static final long serialVersionUID = 992240700345836877L;
 
-    @ApiModelProperty("登陆系统用户id(loginId)")
+    @ApiModelProperty(value = "登陆系统用户id(loginId)",required = true)
     @NotNull(message = "登陆系统用户id(loginId)不能为空")
     private Long loginId;
 

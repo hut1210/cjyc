@@ -4,10 +4,12 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.dao.*;
-import com.cjyc.common.model.dto.driver.*;
-import com.cjyc.common.model.dto.driver.task.*;
+import com.cjyc.common.model.dto.driver.BaseDriverDto;
+import com.cjyc.common.model.dto.driver.task.DetailQueryDto;
+import com.cjyc.common.model.dto.driver.task.DriverQueryDto;
+import com.cjyc.common.model.dto.driver.task.NoFinishTaskQueryDto;
+import com.cjyc.common.model.dto.driver.task.TaskQueryDto;
 import com.cjyc.common.model.entity.*;
-import com.cjyc.common.model.enums.driver.DriverIdentityEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -51,27 +53,15 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
 
     @Override
     public ResultVo<PageVo<WaybillTaskVo>> getWaitHandleTaskPage(BaseDriverDto dto) {
-        // 根据司机登录ID查询司机信息ID
-        Driver driver = driverDao.selectOne(new QueryWrapper<Driver>().lambda()
-                .eq(Driver::getUserId, dto.getLoginId()).eq(Driver::getIdentity, DriverIdentityEnum.CARRIER_MANAGER.code).select(Driver::getId));
-        if (driver == null) {
-            return BaseResultUtil.fail("司机账号不正确或该司机不是管理员,请检查!");
-        }
         // 分页查询待分配的运动信息
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        List<WaybillTaskVo> taskList = waybillDao.selectWaitHandleTaskPage(driver.getId());
+        List<WaybillTaskVo> taskList = waybillDao.selectWaitHandleTaskPage(dto);
         PageInfo pageInfo = new PageInfo(taskList);
         return BaseResultUtil.success(pageInfo);
     }
 
     @Override
     public ResultVo<PageVo<WaybillTaskVo>> getNoFinishTaskPage(NoFinishTaskQueryDto dto) {
-        // 根据司机登录ID查询司机信息ID
-        Driver driver = driverDao.selectOne(new QueryWrapper<Driver>().lambda().eq(Driver::getUserId, dto.getLoginId()).select(Driver::getId));
-        if (driver == null) {
-            return BaseResultUtil.fail("司机账号不正确,请检查!");
-        }
-        dto.setDriverId(driver.getId());
         // 分页查询提车，交车任务信息
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<WaybillTaskVo> taskList = taskDao.selectNoFinishTaskPage(dto);
@@ -113,19 +103,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
     }
 
     @Override
-    public ResultVo confirmTakeCar(ConfirmTakeCarDto dto) {
-        return null;
-    }
-
-    @Override
     public ResultVo<PageVo<WaybillTaskVo>> getFinishTaskPage(TaskQueryDto dto) {
-        // 根据司机登录ID查询司机信息ID
-        Driver driver = driverDao.selectOne(new QueryWrapper<Driver>().lambda().eq(Driver::getUserId, dto.getLoginId()).select(Driver::getId));
-        if (driver == null) {
-            return BaseResultUtil.fail("司机账号不正确,请检查!");
-        }
-        dto.setDriverId(driver.getId());
-
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<WaybillTaskVo> taskList = taskDao.selectFinishTaskPage(dto);
         PageInfo pageInfo = new PageInfo(taskList);

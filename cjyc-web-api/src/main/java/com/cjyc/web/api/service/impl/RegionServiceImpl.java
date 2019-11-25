@@ -21,6 +21,7 @@ import com.cjyc.common.model.entity.City;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.city.ProvinceCityVo;
 import com.cjyc.common.model.vo.web.city.RegionVo;
 import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.web.api.service.ICityService;
@@ -60,17 +61,29 @@ public class RegionServiceImpl implements IRegionService {
         LambdaQueryWrapper<City> queryWrapper = new QueryWrapper<City>().lambda()
                 .eq(City::getLevel, FieldConstant.REGION_LEVEL)
                 .like(!StringUtils.isEmpty(dto.getRegionName()), City::getName, dto.getRegionName());
-        List<City> cityList = cityDao.selectList(queryWrapper);
-        PageInfo<City> pageInfo = new PageInfo(cityList);
-        // 根据大区编码查询覆盖省数量
+        List<City> regionList = cityDao.selectList(queryWrapper);
+        PageInfo<City> pageInfo = new PageInfo(regionList);
+        // 根据大区编码查询覆盖省
         List<City> list = new ArrayList<>(10);
         List<City> pageInfoList = pageInfo.getList();
         if (!CollectionUtils.isEmpty(pageInfoList)) {
-            for (City city : pageInfoList) {
+            for (City region : pageInfoList) {
                 RegionVo vo = new RegionVo();
-                BeanUtils.copyProperties(city,vo);
-                Integer count = cityDao.selectCount(new QueryWrapper<City>().lambda().eq(City::getParentCode, city.getCode()));
-                vo.setProvinceCount(count);
+                BeanUtils.copyProperties(region,vo);
+                List<City> provinceList = cityDao.selectList(new QueryWrapper<City>().lambda().eq(City::getParentCode, region.getCode()));
+                if (!CollectionUtils.isEmpty(provinceList)) {
+                    vo.setProvinceCount(provinceList.size());
+                    List<ProvinceCityVo> provinceCityList = new ArrayList<>(10);
+                    ProvinceCityVo provinceCityVo = null;
+                    for (City province : provinceList) {
+                        provinceCityVo= new ProvinceCityVo();
+                        provinceCityVo.setProvinceCode(province.getCode());
+                        provinceCityVo.setProvinceName(province.getName());
+                        provinceCityList.add(provinceCityVo);
+                    }
+                    vo.setProvinceList(provinceCityList);
+                }
+
                 list.add(vo);
             }
         }

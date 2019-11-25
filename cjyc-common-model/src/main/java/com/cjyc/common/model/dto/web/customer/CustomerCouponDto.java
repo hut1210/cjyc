@@ -11,11 +11,11 @@ public class CustomerCouponDto extends BasePageDto implements Serializable {
 
     private static final long serialVersionUID = 5479763520601490989L;
 
-    @ApiModelProperty("客户id")
+    @ApiModelProperty(value = "客户id",required = true)
     @NotNull(message = "客户id不能为空")
     private Long customerId;
 
-    @ApiModelProperty("是否可用 0：不可用 1：可用")
+    @ApiModelProperty(value = "是否可用 0：不可用 1：可用",required = true)
     @NotNull(message = "是否可用不能为空")
     private Integer isUsable;
 

@@ -12,42 +12,42 @@ import java.math.BigDecimal;
 public class AddOrUpdateLineDto implements Serializable {
     private static final long serialVersionUID = 5221537417581694290L;
 
-    @ApiModelProperty("登陆人的id(loginId)")
+    @ApiModelProperty(value = "登陆人的id(loginId)",required = true)
     @NotNull(message = "登陆人的id(loginId)不能为空")
     private Long loginId;
 
     @ApiModelProperty("班线id(lineId)")
     private Long lineId;
 
-    @ApiModelProperty("起始城市编码")
+    @ApiModelProperty(value = "起始城市编码",required =true)
     @NotBlank(message = "起始城市编码不能为空")
     private String fromCode;
 
-    @ApiModelProperty("起始城市")
+    @ApiModelProperty(value = "起始城市",required = true)
     @NotBlank(message = "起始城市不能为空")
     private String fromCity;
 
-    @ApiModelProperty("目的城市编码")
+    @ApiModelProperty(value = "目的城市编码",required = true)
     @NotBlank(message = "目的城市编码不能为空")
     private String toCode;
 
-    @ApiModelProperty("目的城市")
+    @ApiModelProperty(value = "目的城市",required = true)
     @NotBlank(message = "目的城市不能为空")
     private String toCity;
 
-    @ApiModelProperty("总里程")
+    @ApiModelProperty(value = "总里程",required = true)
     @NotNull(message = "总里程不能为空")
     private BigDecimal kilometer;
 
-    @ApiModelProperty("总耗时(天)")
+    @ApiModelProperty(value = "总耗时(天)",required = true)
     @NotNull(message = "总耗时(天)不能为空")
     private BigDecimal days;
 
-    @ApiModelProperty("上游运费(元)/物流费")
+    @ApiModelProperty(value = "上游运费(元)/物流费",required = true)
     @NotNull(message = "上游运费(元)/物流费不能为空")
     private BigDecimal defaultWlFee;
 
-    @ApiModelProperty("下游运费(元)/运费")
+    @ApiModelProperty(value = "下游运费(元)/运费",required = true)
     @NotNull(message = "下游运费(元)/运费不能为空")
     private BigDecimal defaultFreightFee;
 

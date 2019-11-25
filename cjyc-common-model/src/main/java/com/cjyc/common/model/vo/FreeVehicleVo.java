@@ -13,7 +13,7 @@ public class FreeVehicleVo implements Serializable {
 
     @ApiModelProperty("车辆id")
     @JsonSerialize(using= ToStringSerializer.class)
-    private Long id;
+    private Long vehicleId;
 
     @ApiModelProperty("车牌号")
     private String plateNo;

@@ -10,7 +10,7 @@ import java.io.Serializable;
 public class DispatchDriverDto extends BasePageDto implements Serializable {
     private static final long serialVersionUID = -2185088130200464543L;
 
-    @ApiModelProperty("登陆人id(loginId)")
+    @ApiModelProperty(value = "登陆人id(loginId)",required = true)
     @NotNull(message = "登陆人id(loginId)不能为空")
     private Long loginId;
 

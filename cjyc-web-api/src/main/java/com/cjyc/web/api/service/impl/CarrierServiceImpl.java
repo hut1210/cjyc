@@ -7,10 +7,7 @@ import com.cjkj.common.model.ReturnMsg;
 import com.cjkj.usercenter.dto.yc.AddDeptAndUserResp;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.OperateDto;
-import com.cjyc.common.model.dto.web.carrier.CarrierDto;
-import com.cjyc.common.model.dto.web.carrier.DispatchCarrierDto;
-import com.cjyc.common.model.dto.web.carrier.SeleCarrierDto;
-import com.cjyc.common.model.dto.web.carrier.TrailCarrierDto;
+import com.cjyc.common.model.dto.web.carrier.*;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.transport.*;
@@ -19,10 +16,8 @@ import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.carrier.BaseCarrierVo;
-import com.cjyc.common.model.vo.web.carrier.CarrierVo;
-import com.cjyc.common.model.vo.web.carrier.DispatchCarrierVo;
-import com.cjyc.common.model.vo.web.carrier.TrailCarrierVo;
+import com.cjyc.common.model.vo.web.carrier.*;
+import com.cjyc.common.model.vo.web.mineCarrier.MyCarVo;
 import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.ICsCarrierService;
@@ -33,14 +28,12 @@ import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -57,6 +50,8 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     private IBankCardBindDao bankCardBindDao;
     @Resource
     private ICarrierCarCountDao carrierCarCountDao;
+    @Resource
+    private IVehicleDao vehicleDao;
     @Resource
     private ICarrierCityConService carrierCityConService;
     @Autowired
@@ -277,6 +272,30 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             }
         }
         return BaseResultUtil.fail("用户信息有误，请检查");
+    }
+
+    @Override
+    public ResultVo<PageVo<TransportDriverVo>> transportDriver(TransportDto dto) {
+        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
+        List<TransportDriverVo> transportDriverVos =  driverDao.findTransportDriver(dto);
+        if(!CollectionUtils.isEmpty(transportDriverVos)){
+            for(TransportDriverVo vo : transportDriverVos){
+                CarrierCarCount count = carrierCarCountDao.driverCount(vo.getDriverId());
+                if(count != null){
+                    vo.setCarNum(count.getCarNum());
+                }
+            }
+        }
+        PageInfo<TransportDriverVo> pageInfo = new PageInfo<>(transportDriverVos);
+        return BaseResultUtil.success(pageInfo);
+    }
+
+    @Override
+    public ResultVo<PageVo<TransportVehicleVo>> transportVehicle(TransportDto dto) {
+        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
+        List<TransportVehicleVo> transportVehicleVos = vehicleDao.findTransportVehicle(dto);
+        PageInfo<TransportVehicleVo> pageInfo = new PageInfo<>(transportVehicleVos);
+        return BaseResultUtil.success(pageInfo);
     }
 
     @Override

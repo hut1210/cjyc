@@ -1,24 +1,27 @@
 package com.cjyc.common.model.dto;
 
+import com.cjyc.common.model.constant.RegexConstant;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 @Data
 public class CarrierDriverDto extends CarrierVehicleDto implements Serializable {
 
     private static final long serialVersionUID = 8758237912016845960L;
 
-    @ApiModelProperty("身份证号")
+    @ApiModelProperty(value = "身份证号",required = true)
     @NotBlank(message = "身份证号不能为空")
+    @Pattern(regexp = RegexConstant.REGEX_ID_CARD18,message = "身份证号码格式不对")
     private String idCard;
 
-    @ApiModelProperty("身份证正面")
+    @ApiModelProperty(value = "身份证正面",required = true)
     @NotBlank(message = "身份证正面不能为空")
     private String idCardFrontImg;
 
-    @ApiModelProperty("身份证反面")
+    @ApiModelProperty(value = "身份证反面",required = true)
     @NotBlank(message = "身份证反面不能为空")
     private String idCardBackImg;
 }

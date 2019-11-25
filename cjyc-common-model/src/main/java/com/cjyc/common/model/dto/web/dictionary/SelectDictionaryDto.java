@@ -10,7 +10,7 @@ import java.io.Serializable;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class SelectDictionaryDto extends BasePageDto implements Serializable {
+public class SelectDictionaryDto extends BasePageDto {
 
     @ApiModelProperty("字典项名称")
     private String name;

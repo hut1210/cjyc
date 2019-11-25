@@ -4,7 +4,6 @@ import com.cjyc.common.model.dto.BasePageDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.io.Serializable;
 @Data
 public class DispatchCarrierDto extends BasePageDto {
     private static final long serialVersionUID = -7496908972850812115L;

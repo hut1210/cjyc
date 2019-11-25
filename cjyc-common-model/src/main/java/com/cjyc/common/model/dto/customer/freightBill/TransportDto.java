@@ -10,19 +10,19 @@ import java.io.Serializable;
 public class TransportDto implements Serializable {
 
     private static final long serialVersionUID = 291266326412877024L;
-    @ApiModelProperty("用户id(lgoinId)")
+    @ApiModelProperty(value = "用户id(lgoinId)",required = true)
     @NotNull(message = "登陆用户id(lgoinId)不能为空")
     private Long lgoinId;
 
-    @ApiModelProperty("起始地code")
+    @ApiModelProperty(value = "起始地code",required = true)
     @NotBlank(message = "起始地code不能为空")
     private String fromCode;
 
-    @ApiModelProperty("起始城市")
+    @ApiModelProperty(value = "起始城市",required = true)
     @NotBlank(message = "起始城市不能为空")
     private String fromCity;
 
-    @ApiModelProperty("目的地code")
+    @ApiModelProperty(value = "目的地code",required = true)
     @NotBlank(message = "目的地code不能为空")
     private String toCode;
 

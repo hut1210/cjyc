@@ -3,6 +3,7 @@ package com.cjyc.common.model.vo.web.coupon;
 import com.cjyc.common.model.util.BigDecimalSerizlizer;
 import com.cjyc.common.model.util.DataLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 

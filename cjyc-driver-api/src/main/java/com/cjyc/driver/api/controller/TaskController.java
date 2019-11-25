@@ -71,11 +71,4 @@ public class TaskController {
         return taskService.getHistoryTaskPage(dto);
     }
 
-    @ApiOperation(value = "确认提车", notes = "\t 请求接口为json格式")
-    @PostMapping("/confirmTakeCar")
-    public ResultVo confirmTakeCar(@RequestBody @Validated ConfirmTakeCarDto dto) {
-        return taskService.confirmTakeCar(dto);
-    }
-
-
 }

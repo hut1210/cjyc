@@ -1,7 +1,6 @@
 package com.cjyc.web.api.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.cjyc.common.model.dto.CarrierDriverDto;
 import com.cjyc.common.model.dto.CarrierVehicleDto;
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.mineCarrier.*;
@@ -10,7 +9,7 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyCarVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyDriverVo;
-import com.cjyc.common.model.vo.web.mineCarrier.MyFreeDriverVo;
+import com.cjyc.common.model.vo.FreeDriverVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyWaybillVo;
 
 import java.util.List;
@@ -50,12 +49,4 @@ public interface IMineCarrierService extends IService<Carrier> {
      * @return
      */
     ResultVo<PageVo<MyCarVo>> findPageCar(QueryMyCarDto dto);
-
-    /**
-     * 根据承运商id和司机姓名查询该承运商下的空闲司机
-     * @param carrierId
-     * @param realName
-     * @return
-     */
-    ResultVo<List<MyFreeDriverVo>> findFreeDriver(Long carrierId, String realName);
 }

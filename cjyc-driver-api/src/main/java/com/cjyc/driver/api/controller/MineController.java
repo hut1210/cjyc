@@ -1,18 +1,16 @@
 package com.cjyc.driver.api.controller;
 
 import com.cjyc.common.model.dto.CarrierDriverDto;
-import com.cjyc.common.model.dto.FreeVehicleDto;
-import com.cjyc.common.model.dto.driver.mine.DeleteVehicleDto;
-import com.cjyc.common.model.dto.driver.mine.PersonDriverDto;
-import com.cjyc.common.model.dto.web.vehicle.VehicleDto;
+import com.cjyc.common.model.dto.driver.mine.*;
 import com.cjyc.common.model.dto.driver.BaseDriverDto;
-import com.cjyc.common.model.dto.driver.BaseDto;
-import com.cjyc.common.model.dto.driver.mine.FrozenDto;
+import com.cjyc.common.model.vo.FreeDriverVo;
 import com.cjyc.common.model.vo.FreeVehicleVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.mine.BinkCardVo;
 import com.cjyc.common.model.vo.driver.mine.DriverInfoVo;
+import com.cjyc.common.model.vo.driver.mine.DriverVehicleVo;
+import com.cjyc.common.model.vo.driver.mine.PersonDriverVo;
 import com.cjyc.common.system.service.ICsDriverService;
 import com.cjyc.common.system.service.ICsVehicleService;
 import com.cjyc.driver.api.service.IMineService;
@@ -27,7 +25,7 @@ import java.util.List;
 
 /**
  * 用户
- * @author JPG
+ * @author Zj
  */
 @Api(tags = "我的")
 @RestController
@@ -45,7 +43,7 @@ public class MineController {
 
     @ApiOperation(value = "司机的银行卡信息")
     @PostMapping(value = "/findBinkCard")
-    public ResultVo<List<BinkCardVo>> findBinkCard(@RequestBody BaseDto dto) {
+    public ResultVo<BinkCardVo> findBinkCard(@RequestBody BaseDriverDto dto) {
         return mineService.findBinkCard(dto);
     }
 
@@ -55,16 +53,28 @@ public class MineController {
         return mineService.findDriver(dto);
     }
 
-    @ApiOperation(value = "该承运商下空闲车辆(管理员中的)")
-    @PostMapping(value = "/findFreeVehicle")
-    public ResultVo<List<FreeVehicleVo>> findFreeVehicle(@RequestBody FreeVehicleDto dto){
-        return csVehicleService.findFreeVehicle(dto);
+    @ApiOperation(value = "该承运商下空闲车辆(管理员中的司机管理的新增/修改)")
+    @PostMapping(value = "/findCarrierVehicle")
+    public ResultVo<List<FreeVehicleVo>> findCarrierVehicle(@RequestBody CarrierVehicleNoDto dto){
+        return csVehicleService.findCarrierVehicle(dto);
+    }
+
+    @ApiOperation(value = "该承运商下空闲司机(司机管理中新增/修改车辆)")
+    @PostMapping(value = "/findCarrierDriver")
+    public ResultVo<List<FreeDriverVo>> findCarrierDriver(@RequestBody CarrierDriverNameDto dto){
+        return csDriverService.findCarrierDriver(dto);
     }
 
     @ApiOperation(value = "新增/修改承运商下司机")
     @PostMapping(value = "/saveOrModifyDriver")
     public ResultVo saveOrModifyDriver(@Validated @RequestBody CarrierDriverDto dto){
         return csDriverService.saveOrModifyDriver(dto);
+    }
+
+    @ApiOperation(value = "新增/修改承运商下车辆")
+    @PostMapping(value = "/saveOrModifyEnterPriseVehicle")
+    public ResultVo saveOrModifyEnterPriseVehicle(@Validated @RequestBody EnterPriseDto dto){
+        return mineService.saveOrModifyEnterPriseVehicle(dto);
     }
 
     @ApiOperation(value = "删除(冻结)承运商下司机")
@@ -75,7 +85,7 @@ public class MineController {
 
     @ApiOperation(value = "个人司机添加/修改车辆信息")
     @PostMapping(value = "/addOrModifyVehicle")
-    public ResultVo addOrModifyVehicle(@RequestBody PersonDriverDto dto) {
+    public ResultVo addOrModifyVehicle(@RequestBody PersonVehicleDto dto) {
         return mineService.addOrModifyVehicle(dto);
     }
 
@@ -91,5 +101,16 @@ public class MineController {
         return mineService.findVehicle(dto);
     }
 
+    @ApiOperation(value = "个人司机认证/修改个人信息")
+    @PostMapping(value = "/authPersonInfo")
+    public ResultVo authPersonInfo(@RequestBody PersonDriverDto dto) {
+        return mineService.authPersonInfo(dto);
+    }
+
+    @ApiOperation(value = "个人司机信息(认证通过后)")
+    @PostMapping(value = "/showDriverInfo")
+    public ResultVo<PersonDriverVo> showDriverInfo(@RequestBody BaseDriverDto dto) {
+        return mineService.showDriverInfo(dto);
+    }
 
 }

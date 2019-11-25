@@ -1,9 +1,8 @@
 package com.cjyc.driver.api.controller;
 
 import com.cjyc.common.model.dto.LoginDto;
-import com.cjyc.common.model.dto.customer.login.VerifyCodeDto;
+import com.cjyc.common.model.dto.VerifyCodeDto;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.driver.login.BaseLoginVo;
 import com.cjyc.common.model.vo.driver.login.DriverLoginVo;
 import com.cjyc.common.system.service.ICsLoginService;
 import com.cjyc.driver.api.service.ILoginService;
