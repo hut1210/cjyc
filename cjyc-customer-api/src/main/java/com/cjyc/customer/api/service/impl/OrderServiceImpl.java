@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.dao.ICouponSendDao;
 import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IOrderDao;
+import com.cjyc.common.model.dao.IWaybillCarDao;
 import com.cjyc.common.model.dto.customer.invoice.InvoiceApplyQueryDto;
 import com.cjyc.common.model.dto.customer.order.OrderQueryDto;
 import com.cjyc.common.model.dto.customer.order.OrderUpdateDto;
@@ -16,6 +17,7 @@ import com.cjyc.common.model.dto.web.order.SaveOrderDto;
 import com.cjyc.common.model.entity.CouponSend;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.entity.OrderCar;
+import com.cjyc.common.model.entity.WaybillCar;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -33,6 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -53,6 +56,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
     private IOrderCarDao orderCarDao;
     @Resource
     private ICouponSendDao couponSendDao;
+    @Resource
+    private IWaybillCarDao waybillCarDao;
 
     /**
      * 保存订单
@@ -160,8 +165,12 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
                     // 待确认，已交付，运输中，全部订单车辆信息
                     orderCarCenterVoList.add(orderCarCenter);
                 }
+
+                // 查询车辆图片
+                getCarImg(orderCar, orderCarCenter);
             }
         }
+
         // 查询优惠券信息
         Long couponSendId = detailVo.getCouponSendId();
         if (couponSendId != null) {
@@ -174,6 +183,26 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         return BaseResultUtil.success(detailVo);
     }
 
+    private void getCarImg(OrderCar orderCar, OrderCarCenterVo orderCarCenter) {
+        WaybillCar waybillCar = waybillCarDao.selectOne(new QueryWrapper<WaybillCar>().lambda()
+                .eq(WaybillCar::getOrderCarId, orderCar.getId()).select(WaybillCar::getLoadPhotoImg,WaybillCar::getUnloadPhotoImg));
+        if (waybillCar != null) {
+            List<String> photoImgList = new ArrayList<>(20);
+            String loadPhotoImg = waybillCar.getLoadPhotoImg();
+            String unloadPhotoImg = waybillCar.getUnloadPhotoImg();
+            if (!StringUtils.isEmpty(loadPhotoImg)) {
+                String[] array = loadPhotoImg.split(",");
+                Collections.addAll(photoImgList,array);
+            }
+            if (!StringUtils.isEmpty(unloadPhotoImg)) {
+                String[] array = unloadPhotoImg.split(",");
+                Collections.addAll(photoImgList,array);
+            }
+            orderCarCenter.setCarImgList(photoImgList);
+        }
+    }
+
+    @Override
 /*    @Override
     public ResultVo confirmPickCar(OrderUpdateDto dto) {
         // 修改车辆状态
