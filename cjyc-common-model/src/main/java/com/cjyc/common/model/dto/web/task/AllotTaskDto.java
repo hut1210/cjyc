@@ -18,7 +18,7 @@ public class AllotTaskDto {
     private Long loginId;
 
     @ApiModelProperty(value = "用户名称")
-    private String userName;
+    private String loginName;
 
     @ApiModelProperty(value = "运单ID",required = true)
     private Long waybillId;

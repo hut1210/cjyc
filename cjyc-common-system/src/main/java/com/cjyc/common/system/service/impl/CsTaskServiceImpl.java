@@ -3,11 +3,10 @@ package com.cjyc.common.system.service.impl;
 import com.cjkj.common.redis.lock.RedisDistributedLock;
 import com.cjyc.common.model.FailResultReasonVo;
 import com.cjyc.common.model.dao.*;
+import com.cjyc.common.model.dto.driver.task.ReplenishInfoDto;
 import com.cjyc.common.model.dto.web.task.*;
 import com.cjyc.common.model.entity.*;
-import com.cjyc.common.model.enums.CaptchaTypeEnum;
 import com.cjyc.common.model.enums.CarStorageTypeEnum;
-import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.enums.task.TaskStateEnum;
@@ -127,7 +126,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             task.setDriverPhone(driver.getPhone());
             task.setDriverName(driver.getName());
             task.setCreateTime(System.currentTimeMillis());
-            task.setCreateUser(paramsDto.getUserName());
+            task.setCreateUser(paramsDto.getLoginName());
             task.setCreateUserId(paramsDto.getLoginId());
             taskDao.insert(task);
 
