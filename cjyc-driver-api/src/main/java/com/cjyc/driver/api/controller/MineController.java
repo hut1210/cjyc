@@ -4,12 +4,15 @@ import com.cjyc.common.model.dto.CarrierDriverDto;
 import com.cjyc.common.model.dto.driver.BaseDriverDto;
 import com.cjyc.common.model.dto.driver.mine.*;
 import com.cjyc.common.model.dto.salesman.sms.CaptchaSendDto;
+import com.cjyc.common.model.enums.CaptchaTypeEnum;
+import com.cjyc.common.model.enums.ClientEnum;
 import com.cjyc.common.model.vo.FreeDriverVo;
 import com.cjyc.common.model.vo.FreeVehicleVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.mine.BinkCardVo;
 import com.cjyc.common.model.vo.driver.mine.DriverInfoVo;
+import com.cjyc.common.model.vo.driver.mine.DriverVehicleVo;
 import com.cjyc.common.model.vo.driver.mine.PersonDriverVo;
 import com.cjyc.common.system.service.ICsDriverService;
 import com.cjyc.common.system.service.ICsSmsService;
@@ -44,6 +47,8 @@ public class MineController {
     private ICsVehicleService csVehicleService;
     @Resource
     private ICsDriverService csDriverService;
+    @Resource
+    private ICsSmsService csSmsService;
 
     @ApiOperation(value = "司机的银行卡信息")
     @PostMapping(value = "/findBinkCard")
@@ -101,7 +106,7 @@ public class MineController {
 
     @ApiOperation(value = "车辆管理(我的车辆)")
     @PostMapping(value = "/findVehicle")
-    public ResultVo findVehicle(@RequestBody BaseDriverDto dto) {
+    public ResultVo<PageVo<DriverVehicleVo>> findVehicle(@RequestBody BaseDriverDto dto) {
         return mineService.findVehicle(dto);
     }
 
@@ -126,8 +131,9 @@ public class MineController {
     @ApiOperation(value = "获取验证码")
     @PostMapping(value = "/send")
     public ResultVo send(@Validated @RequestBody CaptchaSendDto dto) {
-        return null;
+        return csSmsService.send(dto.getPhone(), CaptchaTypeEnum.valueOf(dto.getType()), ClientEnum.APP_DRIVER);
     }
+
 
 
 }

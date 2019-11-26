@@ -68,14 +68,10 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
         CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
                 .eq(CarrierDriverCon::getDriverId, dto.getLoginId())
                 .eq(CarrierDriverCon::getId, dto.getRoleId()));
-        List<Long> driverIds = null;
-        if(cdc != null){
-            driverIds = driverDao.findDriverIds(cdc.getCarrierId());
-        }
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<MyDriverVo> myDriverVos = null;
-        if(!CollectionUtils.isEmpty(driverIds)){
-            dto.setDriverIds(driverIds);
+        if(cdc != null){
+            dto.setCarrierId(cdc.getCarrierId());
             myDriverVos =  driverDao.findMyDriver(dto);
             if(!CollectionUtils.isEmpty(myDriverVos)){
                 for(MyDriverVo vo : myDriverVos){
@@ -160,14 +156,10 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
         CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
                 .eq(CarrierDriverCon::getDriverId, dto.getLoginId())
                 .eq(CarrierDriverCon::getId, dto.getRoleId()));
-        List<Long> driverIds = null;
-        if(cdc != null){
-            driverIds = driverDao.findDriverIds(cdc.getCarrierId());
-        }
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<MyCarVo> myCarVos = null;
-        if(!CollectionUtils.isEmpty(driverIds)){
-            dto.setDriverIds(driverIds);
+        if(cdc != null){
+            dto.setCarrierId(cdc.getCarrierId());
             myCarVos = vehicleDao.findMyCar(dto);
         }
         PageInfo<MyCarVo> pageInfo = new PageInfo<>(myCarVos);
