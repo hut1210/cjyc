@@ -280,6 +280,11 @@
         </where>
 
     </update>
+    <update id="updateForReplenishInfo">
+        update w_waybill_car
+        set load_photo_img = #{loadPhotoImg}
+        where id = #{id}
+    </update>
 
     <select id="findByTaskCarId" resultType="com.cjyc.common.model.entity.WaybillCar">
         select

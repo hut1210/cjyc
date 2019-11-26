@@ -21,7 +21,6 @@ import java.util.List;
  * 业务员推广表 前端控制器
  * </p>
  *
- * @author JPG
  * @since 2019-11-13
  */
 @Api(tags = "分享管理")

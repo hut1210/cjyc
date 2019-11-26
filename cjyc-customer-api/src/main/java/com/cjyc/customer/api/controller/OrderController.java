@@ -3,8 +3,10 @@ package com.cjyc.customer.api.controller;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.cjyc.common.model.dto.customer.order.OrderQueryDto;
 import com.cjyc.common.model.dto.customer.order.OrderUpdateDto;
+import com.cjyc.common.model.dto.web.order.CancelOrderDto;
 import com.cjyc.common.model.dto.web.order.CommitOrderDto;
 import com.cjyc.common.model.dto.web.order.SaveOrderDto;
+import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
@@ -13,7 +15,9 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterDetailVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterVo;
+import com.cjyc.common.system.service.ICsAdminService;
 import com.cjyc.common.system.service.ICsCustomerService;
+import com.cjyc.common.system.service.ICsOrderService;
 import com.cjyc.customer.api.service.IOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -35,7 +39,11 @@ public class OrderController {
     @Autowired
     IOrderService orderService;
     @Resource
-    private ICsCustomerService comCustomerService;
+    private ICsCustomerService csCustomerService;
+    @Resource
+    private ICsAdminService csAdminService;
+    @Resource
+    private ICsOrderService csOrderService;
     /**
      * 保存,只保存无验证
      * @author JPG
@@ -45,7 +53,7 @@ public class OrderController {
     public ResultVo save(@RequestBody SaveOrderDto reqDto) {
 
         //验证用户存不存在
-        Customer customer = comCustomerService.getById(reqDto.getLoginId(), true);
+        Customer customer = csCustomerService.getById(reqDto.getLoginId(), true);
         if(customer == null){
             return BaseResultUtil.fail("用户不存在");
         }
@@ -65,7 +73,7 @@ public class OrderController {
     public ResultVo submit(@Validated @RequestBody SaveOrderDto reqDto) {
 
         //验证用户存不存在
-        Customer admin = comCustomerService.getById(reqDto.getLoginId(), true);
+        Customer admin = csCustomerService.getById(reqDto.getLoginId(), true);
         if(admin == null){
             return BaseResultUtil.fail("用户不存在");
         }
@@ -84,7 +92,7 @@ public class OrderController {
     public ResultVo commit(@Validated @RequestBody CommitOrderDto reqDto) {
 
         //验证用户存不存在
-        Customer admin = comCustomerService.getById(reqDto.getLoginId(), true);
+        Customer admin = csCustomerService.getById(reqDto.getLoginId(), true);
         if(admin == null){
             return BaseResultUtil.fail("用户不存在");
         }
@@ -108,14 +116,20 @@ public class OrderController {
         return orderService.getOrderCount(loginId);
     }
 
-    @ApiOperation(value = "取消订单", notes = "：参数orderNo(订单号),loginId(客户ID)",httpMethod = "POST")
-    @PostMapping(value = "/cancelOrder")
-    public ResultVo cancelOrder(@RequestBody @Validated({OrderUpdateDto.CancelAndPlaceOrder.class}) OrderUpdateDto dto){
-        boolean result = orderService.update(new UpdateWrapper<Order>().lambda().set(Order::getState, OrderStateEnum.F_CANCEL.code)
-                .eq(Order::getNo,dto.getOrderNo()).eq(Order::getCustomerId,dto.getLoginId()));
-        return result ? BaseResultUtil.success() : BaseResultUtil.fail();
+    /**
+     * 取消订单
+     * @author JPG
+     */
+    @ApiOperation(value = "取消订单")
+    @PostMapping(value = "/cancel")
+    public ResultVo cancel(@RequestBody CancelOrderDto reqDto) {
+        Admin admin = csAdminService.validate(reqDto.getLoginId());
+        reqDto.setLoginName(admin.getName());
+        return csOrderService.cancel(reqDto);
     }
 
+
+    @Deprecated
     @ApiOperation(value = "确认下单", notes = "：参数orderNo(订单号),loginId(客户ID)", httpMethod = "POST")
     @PostMapping(value = "/placeOrder")
     public ResultVo placeOrder(@RequestBody @Validated({OrderUpdateDto.CancelAndPlaceOrder.class}) OrderUpdateDto dto){
@@ -129,6 +143,7 @@ public class OrderController {
     public ResultVo<OrderCenterDetailVo> getDetail(@RequestBody @Validated({OrderUpdateDto.GetDetail.class}) OrderUpdateDto dto){
         return orderService.getDetail(dto);
     }
+
 
     @ApiOperation(value = "确认收车", notes = "：参数orderNo(订单号),loginId(客户ID),carIdList:车辆id列表", httpMethod = "POST")
     @PostMapping(value = "/confirmPickCar")

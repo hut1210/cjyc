@@ -84,4 +84,6 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
     int countUnFinishByWaybillId(Long waybillId);
 
     int updateStateById(@Param("id") Long id, @Param("state") int state);
+
+    int updateForReplenishInfo(@Param("id") Long id, @Param("loadPhotoImg") String loadPhotoImg);
 }

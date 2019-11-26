@@ -3,7 +3,6 @@ package com.cjyc.web.api.controller;
 import com.cjyc.common.model.dto.web.task.*;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Driver;
-import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultReasonVo;
@@ -51,23 +50,10 @@ public class TaskController {
         if (driver == null) {
             return BaseResultUtil.fail("当前用户不存在");
         }
-        reqDto.setUserName(driver.getName());
+        reqDto.setLoginName(driver.getName());
         return taskService.allot(reqDto);
     }
 
-
-    /**
-     * 装车
-     * @author JPG
-     */
-    @ApiOperation(value = "装车")
-    @PostMapping(value = "/car/load")
-    public ResultVo<ResultReasonVo> load(@Validated @RequestBody LoadTaskDto reqDto) {
-        //验证用户
-        Driver driver = csDriverService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(driver.getName());
-        return taskService.load(reqDto);
-    }
 
     /**
      * 确认出库
@@ -80,18 +66,6 @@ public class TaskController {
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
         return taskService.outStore(reqDto);
-    }
-    /**
-     * 卸车
-     * @author JPG
-     */
-    @ApiOperation(value = "卸车")
-    @PostMapping(value = "/car/unload")
-    public ResultVo<ResultReasonVo> unload(@RequestBody UnLoadTaskDto reqDto) {
-        //验证用户
-        Driver driver = csDriverService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(driver.getName());
-        return taskService.unload(reqDto);
     }
 
 
@@ -108,12 +82,8 @@ public class TaskController {
         return taskService.inStore(reqDto);
     }
 
-
-
-
-
     /**
-     * 签收
+     * 签收-业务员
      * @author JPG
      */
     @ApiOperation(value = "签收")
@@ -124,8 +94,6 @@ public class TaskController {
         reqDto.setLoginPhone(admin.getPhone());
         return taskService.receipt(reqDto);
     }
-
-
 
     /**
      * 查询子运单（任务）列表
@@ -144,12 +112,6 @@ public class TaskController {
     public ResultVo<TaskVo> get(@PathVariable Long taskId) {
         return taskService.get(taskId);
     }
-
-
-
-
-
-
 
     /**----承运商模块------------------------------------------------------------------------------------------------------------*/
 
