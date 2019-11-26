@@ -8,6 +8,7 @@ import com.cjyc.common.model.dao.ICustomerDao;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.enums.driver.DriverTypeEnum;
+import com.cjyc.common.model.exception.ParameterException;
 import com.cjyc.common.model.exception.ServerException;
 import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.system.feign.ISysDeptService;
@@ -145,6 +146,15 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
     @Override
     public Customer getById(Long userId, boolean isSearchCache) {
         return customerDao.selectById(userId);
+    }
+
+    @Override
+    public Customer validate(Long loginId) {
+        Customer customer = getById(loginId, true);
+        if(customer == null){
+            throw new ParameterException("用户不存在");
+        }
+        return customer;
     }
 
 }

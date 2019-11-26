@@ -1,15 +1,13 @@
 package com.cjyc.customer.api.controller;
 
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.cjyc.common.model.dto.customer.order.OrderQueryDto;
 import com.cjyc.common.model.dto.customer.order.OrderUpdateDto;
 import com.cjyc.common.model.dto.web.order.CancelOrderDto;
 import com.cjyc.common.model.dto.web.order.CommitOrderDto;
 import com.cjyc.common.model.dto.web.order.SaveOrderDto;
+import com.cjyc.common.model.dto.web.task.ReceiptTaskDto;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Customer;
-import com.cjyc.common.model.entity.Order;
-import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -18,6 +16,7 @@ import com.cjyc.common.model.vo.customer.order.OrderCenterVo;
 import com.cjyc.common.system.service.ICsAdminService;
 import com.cjyc.common.system.service.ICsCustomerService;
 import com.cjyc.common.system.service.ICsOrderService;
+import com.cjyc.common.system.service.ICsTaskService;
 import com.cjyc.customer.api.service.IOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -30,7 +29,8 @@ import java.util.Map;
 
 
 /**
- * Created by leo on 2019/7/25.
+ * 订单
+ * @author JPG
  */
 @RequestMapping("/order")
 @Api(tags = "订单管理")
@@ -44,6 +44,8 @@ public class OrderController {
     private ICsAdminService csAdminService;
     @Resource
     private ICsOrderService csOrderService;
+    @Resource
+    private ICsTaskService csTaskService;
     /**
      * 保存,只保存无验证
      * @author JPG
@@ -84,10 +86,10 @@ public class OrderController {
         return orderService.submit(reqDto);
     }
     /**
-     * 订单提交-业务员
+     * 订单提交
      * @author JPG
      */
-    @ApiOperation(value = "订单提交-业务员")
+ /*   @ApiOperation(value = "订单提交-业务员")
     @PostMapping(value = "/commit")
     public ResultVo commit(@Validated @RequestBody CommitOrderDto reqDto) {
 
@@ -101,7 +103,7 @@ public class OrderController {
 
         //发送推送信息
         return orderService.commit(reqDto);
-    }
+    }*/
 
 
     @ApiOperation(value = "分页查询订单列表", notes = "根据条件分页查询订单", httpMethod = "POST")
@@ -123,8 +125,8 @@ public class OrderController {
     @ApiOperation(value = "取消订单")
     @PostMapping(value = "/cancel")
     public ResultVo cancel(@RequestBody CancelOrderDto reqDto) {
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
+        Customer customer = csCustomerService.validate(reqDto.getLoginId());
+        reqDto.setLoginName(customer.getName());
         return csOrderService.cancel(reqDto);
     }
 
@@ -135,12 +137,17 @@ public class OrderController {
         return orderService.getDetail(dto);
     }
 
-
-    @ApiOperation(value = "确认收车", notes = "：参数orderNo(订单号),loginId(客户ID),carIdList:车辆id列表", httpMethod = "POST")
-    @PostMapping(value = "/confirmPickCar")
-    public ResultVo confirmPickCar(@RequestBody @Validated({OrderUpdateDto.ConfirmPickCar.class}) OrderUpdateDto dto){
-        return null;
+    /**
+     * 签收-客户
+     * @author JPG
+     */
+    @ApiOperation(value = "签收")
+    @PostMapping(value = "/car/receipt")
+    public ResultVo receipt(@RequestBody ReceiptTaskDto reqDto) {
+        Admin admin = csAdminService.validate(reqDto.getLoginId());
+        reqDto.setLoginName(admin.getName());
+        reqDto.setLoginPhone(admin.getPhone());
+        return csTaskService.receipt(reqDto);
     }
-
 
 }

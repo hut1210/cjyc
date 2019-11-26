@@ -1,26 +1,15 @@
 package com.cjyc.customer.api.controller;
 
-import com.cjkj.common.redis.template.StringRedisUtil;
-import com.cjyc.common.model.constant.TimeConstant;
-import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.dto.salesman.sms.CaptchaSendDto;
 import com.cjyc.common.model.dto.salesman.sms.CaptchaValidatedDto;
 import com.cjyc.common.model.enums.CaptchaTypeEnum;
 import com.cjyc.common.model.enums.ClientEnum;
-import com.cjyc.common.model.enums.message.SmsMessageEnum;
-import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.util.LocalDateTimeUtil;
-import com.cjyc.common.model.util.RandomUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.service.ICsSmsService;
-import com.cjyc.customer.api.util.MiaoxinSmsUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,8 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.validation.constraints.NotNull;
-import java.io.IOException;
-import java.time.LocalDateTime;
 
 /**
  * 短信
@@ -40,7 +27,6 @@ import java.time.LocalDateTime;
 @Slf4j
 @RestController
 @RequestMapping(value = "/sms",
-        consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
         produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class SmsController {
 
