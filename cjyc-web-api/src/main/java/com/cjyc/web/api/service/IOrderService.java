@@ -58,6 +58,8 @@ public interface IOrderService extends IService<Order> {
 
     ResultVo<PageVo<ListOrderCarVo>> carlist(ListOrderCarDto paramsDto);
 
+    List<ListOrderCarVo> carListAll(ListOrderCarDto dto);
+
     ResultVo check(CheckOrderDto reqDto);
 
     ResultVo save(SaveOrderDto reqDto);
