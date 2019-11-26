@@ -131,9 +131,9 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
         DriverLoginVo dVo = new DriverLoginVo();
         //架构组和韵车添加数据
         Driver driver = new Driver();
-        String no = sendNoService.getNo(SendNoTypeEnum.DRIVER);
-        driver.setName(no);
-        driver.setRealName(no);
+        //String no = sendNoService.getNo(SendNoTypeEnum.DRIVER);
+        //driver.setName(no);
+        //driver.setRealName(no);
         driver.setPhone(phone);
         driver.setType(DriverTypeEnum.SOCIETY.code);
         driver.setIdentity(DriverIdentityEnum.GENERAL_DRIVER.code);
@@ -146,9 +146,9 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
 
         //保存承运商信息
         Carrier carrier = new Carrier();
-        carrier.setName(no);
+        //carrier.setName(no);
         carrier.setType(CarrierTypeEnum.PERSONAL.code);
-        carrier.setLinkman(no);
+        //carrier.setLinkman(no);
         carrier.setLinkmanPhone(phone);
         carrier.setSettleType(ModeTypeEnum.TIME.code);
         carrier.setState(CommonStateEnum.WAIT_CHECK.code);
@@ -167,11 +167,11 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
         dVo.setRoleId(cdc.getId());
         dVo.setType(carrier.getType());
         dVo.setUserId(driver.getUserId());
-        dVo.setRealName(driver.getRealName());
+        dVo.setRealName(StringUtils.isBlank(driver.getRealName()) ? "":driver.getRealName());
         dVo.setPhone(driver.getPhone());
-        dVo.setIdentity(DriverRoleEnum.PERSONAL_DRIVER.code);
+        dVo.setIdentity(DriverIdentityEnum.GENERAL_DRIVER.code);
         dVo.setBusinessState(driver.getBusinessState());
-        dVo.setCompanyName(carrier.getName());
+        dVo.setCompanyName(StringUtils.isBlank(carrier.getName()) ? "":carrier.getName());
         return BaseResultUtil.success(dVo);
     }
 }

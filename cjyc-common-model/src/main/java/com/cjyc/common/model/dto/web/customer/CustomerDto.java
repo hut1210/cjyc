@@ -23,12 +23,10 @@ public class CustomerDto implements Serializable {
 
     @NotBlank(message = "客户名称不能为空")
     @ApiModelProperty(value = "客户名称",required = true)
-    @Pattern(regexp = RegexConstant.NAME,message = "请输入合法姓名")
     private String contactMan;
 
     @NotBlank(message = "手机号不能为空")
     @ApiModelProperty(value = "手机号",required = true)
-    @Pattern(regexp = RegexConstant.REGEX_MOBILE_EXACT_LATEST,message = "电话号码格式不对")
     private String contactPhone;
 
     @ApiModelProperty(value = "身份证号")

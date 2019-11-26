@@ -26,17 +26,14 @@ public class PartnerDto implements Serializable {
 
     @ApiModelProperty(value = "合伙人名称",required = true)
     @NotBlank(message = "合伙人名称不能为空")
-    @Pattern(regexp = RegexConstant.NAME,message = "请输入合法姓名")
     private String name;
 
     @ApiModelProperty(value = "联系人",required = true)
     @NotBlank(message = "联系人不能为空")
-    @Pattern(regexp = RegexConstant.NAME,message = "请输入合法姓名")
     private String contactMan;
 
     @ApiModelProperty(value = "联系人手机号",required = true)
     @NotBlank(message = "联系人手机号不能为空")
-    @Pattern(regexp = RegexConstant.REGEX_MOBILE_EXACT_LATEST,message = "电话号码格式不对")
     private String contactPhone;
 
     @ApiModelProperty("统一社会信用代码")
@@ -54,7 +51,6 @@ public class PartnerDto implements Serializable {
 
     @ApiModelProperty(value = "结算方式：0:时付，1:账期",required = true)
     @NotNull(message = "结算方式不能为空")
-    @Pattern(regexp = RegexConstant.ZERO_ONE,message = "只能输入0或者1")
     private Integer settleType;
 
     @ApiModelProperty("账期/天")
@@ -71,7 +67,6 @@ public class PartnerDto implements Serializable {
 
     @ApiModelProperty(value = "银行卡号",required = true)
     @NotBlank(message = "银行卡号不能为空")
-    @Pattern(regexp = RegexConstant.BINK_CARD,message = "银行卡号格式不正确")
     private String cardNo;
 
     @ApiModelProperty(value = "开户行名称",required = true)

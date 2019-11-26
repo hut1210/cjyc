@@ -36,7 +36,6 @@ public class DriverDto implements Serializable {
 
     @ApiModelProperty(value = "司机手机号",required = true)
     @NotBlank(message = "司机手机号不能为空")
-    @Pattern(regexp = RegexConstant.REGEX_MOBILE_EXACT_LATEST,message = "电话号码格式不对")
     private String phone;
 
     @ApiModelProperty(value = "承运方式：2 : 代驾  3 : 干线   4：拖车",required = true)
@@ -49,7 +48,6 @@ public class DriverDto implements Serializable {
 
     @ApiModelProperty(value = "身份证号",required = true)
     @NotBlank(message = "司机身份证号不能为空")
-    @Pattern(regexp = RegexConstant.REGEX_ID_CARD18,message = "身份证号码格式不对")
     private String idCard;
 
     @ApiModelProperty(value = "身份证正面",required = true)
