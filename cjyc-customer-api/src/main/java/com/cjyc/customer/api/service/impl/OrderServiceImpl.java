@@ -146,6 +146,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         LambdaQueryWrapper<Order> queryOrderWrapper = new QueryWrapper<Order>().lambda()
                 .eq(Order::getCustomerId,dto.getLoginId()).eq(Order::getNo,dto.getOrderNo());
         Order order = super.getOne(queryOrderWrapper);
+        if(order == null)
+            return BaseResultUtil.fail("订单号不存在,请检查");
         BeanUtils.copyProperties(order,detailVo);
         // 查询车辆信息
         LambdaQueryWrapper<OrderCar> queryCarWrapper = new QueryWrapper<OrderCar>().lambda().eq(OrderCar::getOrderNo,dto.getOrderNo());
