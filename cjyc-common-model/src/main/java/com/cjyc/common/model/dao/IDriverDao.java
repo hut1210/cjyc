@@ -144,11 +144,11 @@ public interface IDriverDao extends BaseMapper<Driver> {
     List<Long> findDriverIds(@Param("carrierId") Long carrierId);
 
     /**
-     * 根据司机ids获取司机信息
-     * @param driverIds
+     * 根据承运商获取司机信息
+     * @param carrierId
      * @return
      */
-    List<DriverInfoVo> findDriverInfo(@Param("driverIds") List<Long> driverIds);
+    List<DriverInfoVo> findDriverInfo(@Param("carrierId") Long carrierId);
 
     /**
      * 功能描述: 查询司机列表
@@ -161,10 +161,10 @@ public interface IDriverDao extends BaseMapper<Driver> {
 
     /**
      * 获取司机端我的车辆
-     * @param driverIds
+     * @param carrierId
      * @return
      */
-    List<DriverVehicleVo> findVehicle(@Param("driverIds") List<Long> driverIds);
+    List<DriverVehicleVo> findVehicle(@Param("carrierId") Long carrierId);
 
     /**
      * 获取该承运商下符合条件的司机

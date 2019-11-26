@@ -77,14 +77,10 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
         CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
                 .eq(CarrierDriverCon::getDriverId, dto.getLoginId())
                 .eq(CarrierDriverCon::getId, dto.getRoleId()));
-        List<Long> driverIds = null;
-        if(cdc != null){
-            driverIds = driverDao.findDriverIds(cdc.getCarrierId());
-        }
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<DriverInfoVo> driverInfo = null;
-        if(!CollectionUtils.isEmpty(driverIds)){
-            driverInfo = driverDao.findDriverInfo(driverIds);
+        if(cdc != null){
+            driverInfo = driverDao.findDriverInfo(cdc.getCarrierId());
         }
         PageInfo<DriverInfoVo> pageInfo = new PageInfo(driverInfo);
         return BaseResultUtil.success(pageInfo == null ? new PageInfo<>():pageInfo);
@@ -200,9 +196,13 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
                 .eq(VehicleRunning::getDriverId, dto.getLoginId())
                 .eq(VehicleRunning::getVehicleId, dto.getVehicleId()));
         if(vr != null){
-            Task task = taskDao.selectOne(new QueryWrapper<Task>().lambda().eq(Task::getVehicleRunningId,vr.getId()));
-            if(task != null && task.getState() == TaskStateEnum.TRANSPORTING.code){
-                return BaseResultUtil.getVo(ResultEnum.VEHICLE_RUNNING.getCode(),ResultEnum.VEHICLE_RUNNING.getMsg());
+            List<Task> tasks = taskDao.selectList(new QueryWrapper<Task>().lambda().eq(Task::getVehicleRunningId,vr.getId()));
+            if(!CollectionUtils.isEmpty(tasks)){
+                for(Task task : tasks){
+                    if(task.getState() == TaskStateEnum.TRANSPORTING.code){
+                        return BaseResultUtil.getVo(ResultEnum.VEHICLE_RUNNING.getCode(),ResultEnum.VEHICLE_RUNNING.getMsg());
+                    }
+                }
             }
         }
         if(dto.getLoginId() != null){
@@ -266,24 +266,15 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
     }
 
     @Override
-    public ResultVo findVehicle(BaseDriverDto dto) {
-        List<Long> driverIds = null;
+    public ResultVo<PageVo<DriverVehicleVo>> findVehicle(BaseDriverDto dto) {
         CarrierDriverCon cdc = carrierDriverConDao.selectById(dto.getRoleId());
+        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         if(cdc != null){
-            if(cdc.getRole() < 2){
-                //普通司机
-                driverIds.add(dto.getLoginId());
-            }else{
-                if(cdc != null){
-                    driverIds = driverDao.findDriverIds(cdc.getCarrierId());
-                }
-            }
-            PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-            List<DriverVehicleVo> vehicleVos = driverDao.findVehicle(driverIds);
+            List<DriverVehicleVo> vehicleVos = driverDao.findVehicle(cdc.getCarrierId());
             PageInfo<DriverVehicleVo> pageInfo = new PageInfo(vehicleVos);
             return BaseResultUtil.success(pageInfo);
         }
-        return BaseResultUtil.fail("数据错误");
+       return BaseResultUtil.success();
     }
 
     @Override

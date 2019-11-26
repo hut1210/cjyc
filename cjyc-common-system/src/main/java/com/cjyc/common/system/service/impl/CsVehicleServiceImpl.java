@@ -81,6 +81,6 @@ public class CsVehicleServiceImpl implements ICsVehicleService {
             }
             return BaseResultUtil.success(freeVehicleVos);
         }
-        return BaseResultUtil.fail("暂时还没有车辆");
+        return BaseResultUtil.success();
     }
 }

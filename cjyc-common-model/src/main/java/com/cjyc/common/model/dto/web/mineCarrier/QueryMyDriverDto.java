@@ -40,6 +40,6 @@ public class QueryMyDriverDto extends BasePageDto {
     @ApiModelProperty("车牌号")
     private String plateNo;
 
-    @ApiModelProperty("司机ids，不用传")
-    private List<Long> driverIds;
+    @ApiModelProperty("承运商id,不需要传")
+    private Long carrierId;
 }

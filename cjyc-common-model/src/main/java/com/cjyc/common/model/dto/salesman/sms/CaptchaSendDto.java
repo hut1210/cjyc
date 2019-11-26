@@ -26,7 +26,7 @@ public class CaptchaSendDto {
     private String phone;
 
     @NotNull
-    @ApiModelProperty(value = "验证码类型：1登录，2忘记登录密码，3忘记安全密码，4修改银行卡", required = true)
+    @ApiModelProperty(value = "验证码类型：1登录，2忘记登录密码，3忘记安全密码，4修改银行卡，5收车码", required = true)
     private Integer type;
 
 }

@@ -8,6 +8,7 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.mine.BinkCardVo;
 import com.cjyc.common.model.vo.driver.mine.DriverInfoVo;
+import com.cjyc.common.model.vo.driver.mine.DriverVehicleVo;
 import com.cjyc.common.model.vo.driver.mine.PersonDriverVo;
 
 public interface IMineService extends IService<Driver> {
@@ -59,7 +60,7 @@ public interface IMineService extends IService<Driver> {
      * @param dto
      * @return
      */
-    ResultVo findVehicle(BaseDriverDto dto);
+    ResultVo<PageVo<DriverVehicleVo>> findVehicle(BaseDriverDto dto);
 
     /**
      * 个人司机实名认证或者修改信息
