@@ -163,9 +163,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
                     // 待确认，已交付，运输中，全部订单车辆信息
                     orderCarCenterVoList.add(orderCarCenter);
                 }
-
                 // 查询车辆图片
-                getCarImg(orderCar, orderCarCenter);
+                this.getCarImg(orderCar, orderCarCenter);
             }
         }
 
@@ -173,7 +172,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         Long couponSendId = detailVo.getCouponSendId();
         if (couponSendId != null) {
             CouponSend couponSend = couponSendDao.selectById(couponSendId);
-            detailVo.setCouponName(couponSend.getCouponName());
+            detailVo.setCouponName(couponSend == null ? "" : couponSend.getCouponName());
         }
 
         detailVo.setOrderCarCenterVoList(orderCarCenterVoList);
@@ -182,10 +181,10 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
     }
 
     private void getCarImg(OrderCar orderCar, OrderCarCenterVo orderCarCenter) {
+        List<String> photoImgList = new ArrayList<>(10);
         WaybillCar waybillCar = waybillCarDao.selectOne(new QueryWrapper<WaybillCar>().lambda()
                 .eq(WaybillCar::getOrderCarId, orderCar.getId()).select(WaybillCar::getLoadPhotoImg,WaybillCar::getUnloadPhotoImg));
         if (waybillCar != null) {
-            List<String> photoImgList = new ArrayList<>(20);
             String loadPhotoImg = waybillCar.getLoadPhotoImg();
             String unloadPhotoImg = waybillCar.getUnloadPhotoImg();
             if (!StringUtils.isEmpty(loadPhotoImg)) {
@@ -196,8 +195,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
                 String[] array = unloadPhotoImg.split(",");
                 Collections.addAll(photoImgList,array);
             }
-            orderCarCenter.setCarImgList(photoImgList);
         }
+        orderCarCenter.setCarImgList(photoImgList);
     }
 
 /*    @Override
