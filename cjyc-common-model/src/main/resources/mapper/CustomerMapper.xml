@@ -225,7 +225,7 @@
               c_customer cc
             LEFT JOIN c_customer_partner ccp ON ccp.customer_id = cc.id
             LEFT JOIN s_bank_card_bind sbcb ON sbcb.user_id = cc.id
-            where cc.id = #{customerId} and type = 3
+            where cc.id = #{customerId} and type = 3 group by cc.id
     </select>
 
     <select id="findByPhone" resultType="com.cjyc.common.model.entity.Customer" parameterType="java.lang.String">

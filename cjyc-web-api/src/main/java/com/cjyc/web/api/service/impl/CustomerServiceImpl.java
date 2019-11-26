@@ -179,6 +179,11 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
 
     @Override
     public ResultVo saveOrModifyKey(KeyCustomerDto dto) {
+        //判断该手机号是否在库中存在
+        Customer cust = customerDao.selectOne(new QueryWrapper<Customer>().lambda().eq(Customer::getContactPhone, dto.getContactPhone()));
+        if((cust != null && dto.getCustomerId() == null) || (cust != null && !cust.getId().equals(dto.getCustomerId()))){
+            return BaseResultUtil.fail("该客户已存在，请检查");
+        }
         if(dto.getCustomerId() == null){
             //新增大客户
             Customer customer = new Customer();
