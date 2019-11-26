@@ -347,6 +347,11 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     }
 
     @Override
+    public List<ListOrderVo> listAll(ListOrderDto dto) {
+        return orderDao.findListSelective(dto);
+    }
+
+    @Override
     public ResultVo<PageVo<ListOrderCarVo>> carlist(ListOrderCarDto paramsDto) {
 
         //查询角色业务中心范围

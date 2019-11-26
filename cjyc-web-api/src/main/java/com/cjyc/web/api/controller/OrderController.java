@@ -1,22 +1,28 @@
 package com.cjyc.web.api.controller;
 
+import com.cjkj.log.monitor.LogUtil;
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.enums.AdminStateEnum;
+import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.exception.ParameterException;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.order.*;
 import com.cjyc.common.system.service.ICsAdminService;
 import com.cjyc.web.api.service.IOrderService;
+import com.cjyc.web.api.util.ExcelUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.MediaType;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -163,6 +169,44 @@ public class OrderController {
     @PostMapping(value = "/list")
     public ResultVo<PageVo<ListOrderVo>> list(@RequestBody ListOrderDto reqDto) {
         return orderService.list(reqDto);
+    }
+
+    @ApiOperation(value = "分页导出订单列表")
+    @GetMapping(value = "/exportPageList")
+    public ResultVo exportPageList(ListOrderDto reqDto, HttpServletResponse response){
+        ResultVo<PageVo<ListOrderVo>> resultVo = orderService.list(reqDto);
+        if (resultVo == null || resultVo.getCode() != ResultEnum.SUCCESS.getCode()) {
+            return BaseResultUtil.fail("导出数据异常");
+        }
+        PageVo<ListOrderVo> data = resultVo.getData();
+        if (data == null || CollectionUtils.isEmpty(data.getList())) {
+            return BaseResultUtil.success("未查询到数据");
+        }
+        try{
+            ExcelUtil.exportExcel(data.getList(), "订单信息", "订单信息",
+                    ListOrderVo.class, System.currentTimeMillis()+"订单信息.xls", response);
+            return null;
+        }catch (Exception e) {
+            LogUtil.error("导出订单信息异常", e);
+            return BaseResultUtil.fail("导出订单信息异常: " + e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "导出全部订单列表")
+    @GetMapping(value = "/exportAllList")
+    public ResultVo exportAllList(ListOrderDto reqDto, HttpServletResponse response) {
+        List<ListOrderVo> orderList = orderService.listAll(reqDto);
+        if (CollectionUtils.isEmpty(orderList)) {
+            return BaseResultUtil.success("未查询到结果");
+        }
+        try{
+            ExcelUtil.exportExcel(orderList, "订单信息", "订单信息",
+                    ListOrderVo.class, System.currentTimeMillis()+"订单信息.xls", response);
+            return null;
+        }catch (Exception e) {
+            LogUtil.error("导出订单信息异常", e);
+            return BaseResultUtil.fail("导出订单信息异常: " + e.getMessage());
+        }
     }
 
     /**

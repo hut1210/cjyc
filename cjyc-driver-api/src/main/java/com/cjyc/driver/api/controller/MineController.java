@@ -81,9 +81,9 @@ public class MineController {
     }
 
     @ApiOperation(value = "新增/修改承运商下车辆")
-    @PostMapping(value = "/saveOrModifyEnterPriseVehicle")
-    public ResultVo saveOrModifyEnterPriseVehicle(@Validated @RequestBody EnterPriseDto dto){
-        return mineService.saveOrModifyEnterPriseVehicle(dto);
+    @PostMapping(value = "/saveOrModifyCarrierVehicle")
+    public ResultVo saveOrModifyCarrierVehicle(@Validated @RequestBody EnterPriseDto dto){
+        return mineService.saveOrModifyCarrierVehicle(dto);
     }
 
     @ApiOperation(value = "删除(冻结)承运商下司机")
@@ -134,6 +134,10 @@ public class MineController {
         return csSmsService.send(dto.getPhone(), CaptchaTypeEnum.valueOf(dto.getType()), ClientEnum.APP_DRIVER);
     }
 
-
+    @ApiOperation(value = "删除银行卡")
+    @PostMapping(value = "/remove")
+    public ResultVo removeBankCard(@Validated @RequestBody RemoveBankCardDto dto) {
+        return mineService.removeBankCard(dto);
+    }
 
 }

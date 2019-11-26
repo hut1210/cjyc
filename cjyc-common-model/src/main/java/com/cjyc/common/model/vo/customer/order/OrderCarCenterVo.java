@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
+
 @Data
 public class OrderCarCenterVo implements Serializable {
     private static final long serialVersionUID = 3239344642824513783L;
@@ -19,7 +21,7 @@ public class OrderCarCenterVo implements Serializable {
     @ApiModelProperty(value = "保额/万")
     private String insuredAmount;
 
-    @ApiModelProperty("车辆图片链接")
+    @ApiModelProperty("车辆logo图片链接")
     private String logoImg;
 
     @ApiModelProperty(value = "品牌")
@@ -36,6 +38,12 @@ public class OrderCarCenterVo implements Serializable {
 
     @ApiModelProperty(value = "是否能动 0-否 1-是")
     private String isMove;
+
+    @ApiModelProperty(value = "是否新车 0-否 1-是")
+    private Integer isNew;
+
+    @ApiModelProperty(value = "车辆图片列表")
+    private List<String> carImgList;
 
     public String getLogoImg() {
         return logoImg == null ? "" : logoImg;

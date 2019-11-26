@@ -28,7 +28,7 @@ public class OrderCenterDetailVo implements Serializable {
     @ApiModelProperty(value = "托运车辆信息列表")
     private List<OrderCarCenterVo> orderCarCenterVoList;
 
-    @ApiModelProperty(value = "托运车辆信息列表:运输中已交付车辆")
+    @ApiModelProperty(value = "托运车辆信息列表:运输中,已交付车辆")
     private List<OrderCarCenterVo> orderCarFinishPayList;
 
     @ApiModelProperty(value = "预计出发时间（提车日期）")
@@ -75,4 +75,26 @@ public class OrderCenterDetailVo implements Serializable {
 
     @ApiModelProperty(value = "应收总价：收车后客户应支付平台的费用，计算值")
     private BigDecimal totalFee;
+
+    @ApiModelProperty(value = "客户付款方式：0到付（默认），1预付，2账期")
+    private Integer payType;
+
+    @ApiModelProperty(value = "优惠券id:如果ID为0，则说明没有优惠券")
+    private Long couponSendId;
+
+    @ApiModelProperty(value = "优惠券名称")
+    private String couponName;
+
+    @ApiModelProperty(value = "车辆总数")
+    private Integer carNum;
+
+    public String getCouponName() {
+        return couponName == null ? "" : couponName;
+    }
+    public Long getCouponSendId() {
+        return couponSendId == null ? 0 : couponSendId;
+    }
+    public Integer getCarNum() {
+        return carNum == null ? 0 : carNum;
+    }
 }

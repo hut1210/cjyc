@@ -12,7 +12,7 @@ public class BinkCardVo implements Serializable {
 
     @ApiModelProperty("绑定银行卡id")
     @JsonSerialize(using= ToStringSerializer.class)
-    private Long bankId;
+    private Long cardId;
 
     @ApiModelProperty("银行卡名称")
     private String bankName;

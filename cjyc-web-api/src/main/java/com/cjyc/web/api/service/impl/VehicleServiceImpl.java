@@ -52,12 +52,12 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
     @Override
     public ResultVo saveVehicle(VehicleDto dto) {
         //判断车辆是否已有
-        Vehicle veh = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda().eq(Vehicle::getPlateNo,dto.getPlateNo()));
-        if(veh != null){
-            return BaseResultUtil.getVo(ResultEnum.EXIST_VEHICLE.getCode(),ResultEnum.EXIST_VEHICLE.getMsg());
+        Vehicle veh = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda().eq(Vehicle::getPlateNo, dto.getPlateNo()));
+        if (veh != null) {
+            return BaseResultUtil.getVo(ResultEnum.EXIST_VEHICLE.getCode(), ResultEnum.EXIST_VEHICLE.getMsg());
         }
         Vehicle vehicle = new Vehicle();
-        BeanUtils.copyProperties(dto,vehicle);
+        BeanUtils.copyProperties(dto, vehicle);
         vehicle.setOwnershipType(VehicleOwnerEnum.PERSONAL.code);
         vehicle.setCreateUserId(dto.getLoginId());
         vehicle.setCreateTime(NOW);
@@ -77,23 +77,21 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
     public ResultVo removeVehicle(RemoveVehicleDto dto) {
         //判断该运力是否在运输中
         VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda()
-                .eq(dto.getDriverId() != null,VehicleRunning::getDriverId, dto.getDriverId())
-                .eq(dto.getVehicleId() != null,VehicleRunning::getVehicleId, dto.getVehicleId()));
-        if(vr != null){
-            List<Task> tasks = taskDao.selectList(new QueryWrapper<Task>().lambda().eq(Task::getVehicleRunningId,vr.getId()));
-            if(!CollectionUtils.isEmpty(tasks)){
-                for(Task task : tasks){
-                    if(task.getState() == TaskStateEnum.TRANSPORTING.code){
-                        return BaseResultUtil.getVo(ResultEnum.VEHICLE_RUNNING.getCode(),ResultEnum.VEHICLE_RUNNING.getMsg());
-                    }
-                }
+                .eq(dto.getDriverId() != null, VehicleRunning::getDriverId, dto.getDriverId())
+                .eq(dto.getVehicleId() != null, VehicleRunning::getVehicleId, dto.getVehicleId()));
+        if (vr != null) {
+            Task task = taskDao.selectOne(new QueryWrapper<Task>().lambda()
+                    .eq(Task::getVehicleRunningId,vr.getId())
+                    .eq(Task::getState,TaskStateEnum.TRANSPORTING.code));
+            if(task != null){
+                return BaseResultUtil.getVo(ResultEnum.VEHICLE_RUNNING.getCode(),ResultEnum.VEHICLE_RUNNING.getMsg());
             }
         }
-        if(dto.getDriverId() != null){
+        if (dto.getDriverId() != null) {
             //车辆与司机有绑定关系
             //删除与司机关系
-            driverVehicleConDao.removeCon(dto.getDriverId(),dto.getVehicleId());
-            vehicleRunningDao.removeRun(dto.getDriverId(),dto.getVehicleId());
+            driverVehicleConDao.removeCon(dto.getDriverId(), dto.getVehicleId());
+            vehicleRunningDao.removeRun(dto.getDriverId(), dto.getVehicleId());
         }
         vehicleDao.deleteById(dto.getVehicleId());
         return BaseResultUtil.success();
@@ -104,14 +102,16 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
         VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda()
                 .eq(VehicleRunning::getDriverId, dto.getDriverId())
                 .eq(VehicleRunning::getVehicleId, dto.getVehicleId()));
-        if(vr != null){
+        if (vr != null) {
             //更新运力
-            vr.setCarryCarNum(dto.getDefauleCarryNum());
-            vehicleRunningDao.updateById(vr);
+            VehicleRunning vRun = new VehicleRunning();
+            vRun.setId(vr.getId());
+            vRun.setCarryCarNum(dto.getDefaultCarryNum());
+            vehicleRunningDao.updateById(vRun);
         }
         //更新车辆
         Vehicle vehicle = vehicleDao.selectById(dto.getVehicleId());
-        vehicle.setDefaultCarryNum(dto.getDefauleCarryNum());
+        vehicle.setDefaultCarryNum(dto.getDefaultCarryNum());
         vehicleDao.updateById(vehicle);
         return BaseResultUtil.success();
     }

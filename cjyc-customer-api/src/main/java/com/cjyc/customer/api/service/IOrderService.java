@@ -48,7 +48,6 @@ public interface IOrderService extends IService<Order> {
      * @param dto
      * @return
      */
-    ResultVo confirmPickCar(OrderUpdateDto dto);
 
     /**
      * 查询为开发票订单列表

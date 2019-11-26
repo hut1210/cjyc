@@ -3,6 +3,7 @@ package com.cjyc.common.system.service;
 import com.cjyc.common.model.dto.FreeDto;
 import com.cjyc.common.model.dto.KeywordDto;
 import com.cjyc.common.model.dto.driver.mine.CarrierVehicleNoDto;
+import com.cjyc.common.model.entity.VehicleRunning;
 import com.cjyc.common.model.vo.FreeVehicleVo;
 import com.cjyc.common.model.vo.ResultVo;
 

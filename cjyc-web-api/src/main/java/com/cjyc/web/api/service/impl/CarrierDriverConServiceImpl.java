@@ -3,16 +3,9 @@ package com.cjyc.web.api.service.impl;
 import com.cjyc.common.model.entity.CarrierDriverCon;
 import com.cjyc.common.model.dao.ICarrierDriverConDao;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.cjyc.web.api.exception.CommonException;
 import com.cjyc.web.api.service.ICarrierDriverConService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.Resource;
-import java.util.List;
 
 /**
  * <p>

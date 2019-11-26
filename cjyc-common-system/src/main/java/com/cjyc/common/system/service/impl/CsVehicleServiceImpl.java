@@ -1,15 +1,17 @@
 package com.cjyc.common.system.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.cjyc.common.model.dao.ICarrierDriverConDao;
-import com.cjyc.common.model.dao.IDriverVehicleConDao;
-import com.cjyc.common.model.dao.IVehicleDao;
+import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.FreeDto;
 import com.cjyc.common.model.dto.KeywordDto;
 import com.cjyc.common.model.dto.driver.mine.CarrierDriverNameDto;
 import com.cjyc.common.model.dto.driver.mine.CarrierVehicleNoDto;
 import com.cjyc.common.model.entity.CarrierDriverCon;
 import com.cjyc.common.model.entity.DriverVehicleCon;
+import com.cjyc.common.model.entity.Task;
+import com.cjyc.common.model.entity.VehicleRunning;
+import com.cjyc.common.model.enums.ResultEnum;
+import com.cjyc.common.model.enums.task.TaskStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.FreeVehicleVo;
 import com.cjyc.common.model.vo.ResultVo;

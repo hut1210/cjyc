@@ -1,11 +1,9 @@
 package com.cjyc.salesman.api.controller;
 
 import com.cjyc.common.model.dto.web.order.WaitDispatchListOrderCarDto;
-import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo;
-import com.cjyc.salesman.api.dto.OrderDto;
 import com.cjyc.salesman.api.service.IOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

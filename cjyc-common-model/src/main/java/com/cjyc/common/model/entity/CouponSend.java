@@ -34,6 +34,9 @@ public class CouponSend implements Serializable {
     @ApiModelProperty(value = "优惠券id")
     private Long couponId;
 
+    @ApiModelProperty(value = "优惠券名称")
+    private String couponName;
+
     @ApiModelProperty(value = "客户id")
     private Long customerId;
 

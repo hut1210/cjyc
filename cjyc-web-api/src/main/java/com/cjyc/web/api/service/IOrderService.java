@@ -46,6 +46,8 @@ public interface IOrderService extends IService<Order> {
 
     ResultVo<PageVo<ListOrderVo>> list(ListOrderDto paramsDto);
 
+    List<ListOrderVo> listAll(ListOrderDto dto);
+
     ResultVo cancel(CancelOrderDto paramsDto);
 
     ResultVo obsolete(CancelOrderDto paramsDto);

@@ -321,8 +321,10 @@ public class CsDriverServiceImpl implements ICsDriverService {
         DriverVehicleCon dvc = driverVehicleConDao.selectOne(new QueryWrapper<DriverVehicleCon>().lambda().eq(DriverVehicleCon::getDriverId,dto.getDriverId()));
         VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda().eq(VehicleRunning::getDriverId,dri.getId()));
         if(vr != null) {
-            Task task = taskDao.selectOne(new QueryWrapper<Task>().lambda().eq(Task::getVehicleRunningId, vr.getId()));
-            if (task != null && task.getState() == TaskStateEnum.TRANSPORTING.code) {
+            Task task = taskDao.selectOne(new QueryWrapper<Task>().lambda()
+                    .eq(Task::getVehicleRunningId,vr.getId())
+                    .eq(Task::getState,TaskStateEnum.TRANSPORTING.code));
+            if(task != null){
                 return BaseResultUtil.getVo(ResultEnum.VEHICLE_RUNNING.getCode(),ResultEnum.VEHICLE_RUNNING.getMsg());
             }
         }

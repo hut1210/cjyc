@@ -21,6 +21,7 @@ import com.cjyc.common.model.vo.driver.mine.DriverInfoVo;
 import com.cjyc.common.model.vo.driver.mine.DriverVehicleVo;
 import com.cjyc.common.model.vo.driver.mine.PersonDriverVo;
 import com.cjyc.common.model.vo.web.carrier.ExistCarrierVo;
+import com.cjyc.common.system.service.ICsSmsService;
 import com.cjyc.driver.api.service.IMineService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -55,6 +56,8 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
     private ICarrierDao carrierDao;
     @Resource
     private IExistDriverDao existDriverDao;
+    @Resource
+    private ICsSmsService csSmsService;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -108,10 +111,10 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
     }
 
     @Override
-    public ResultVo saveOrModifyEnterPriseVehicle(EnterPriseDto dto) {
+    public ResultVo saveOrModifyCarrierVehicle(EnterPriseDto dto) {
         //根据车牌号查询库中有没有添加
         Vehicle veh = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda().eq(Vehicle::getPlateNo,dto.getPlateNo()));
-        if(veh != null){
+        if(veh != null && !veh.getId().equals(dto.getVehicleId())){
             return BaseResultUtil.getVo(ResultEnum.EXIST_VEHICLE.getCode(),ResultEnum.EXIST_VEHICLE.getMsg());
         }
         VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda().eq(VehicleRunning::getDriverId, dto.getDriverId()));
@@ -193,23 +196,21 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
     public ResultVo deleteVehicle(DeleteVehicleDto dto) {
         //判断该运力是否在运输中
         VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda()
-                .eq(VehicleRunning::getDriverId, dto.getLoginId())
+                .eq(VehicleRunning::getDriverId, dto.getDriverId())
                 .eq(VehicleRunning::getVehicleId, dto.getVehicleId()));
         if(vr != null){
-            List<Task> tasks = taskDao.selectList(new QueryWrapper<Task>().lambda().eq(Task::getVehicleRunningId,vr.getId()));
-            if(!CollectionUtils.isEmpty(tasks)){
-                for(Task task : tasks){
-                    if(task.getState() == TaskStateEnum.TRANSPORTING.code){
-                        return BaseResultUtil.getVo(ResultEnum.VEHICLE_RUNNING.getCode(),ResultEnum.VEHICLE_RUNNING.getMsg());
-                    }
-                }
+            Task task = taskDao.selectOne(new QueryWrapper<Task>().lambda()
+                    .eq(Task::getVehicleRunningId,vr.getId())
+                    .eq(Task::getState,TaskStateEnum.TRANSPORTING.code));
+            if(task != null){
+                return BaseResultUtil.getVo(ResultEnum.VEHICLE_RUNNING.getCode(),ResultEnum.VEHICLE_RUNNING.getMsg());
             }
         }
-        if(dto.getLoginId() != null){
+        if(dto.getDriverId() != null){
             //车辆与司机有绑定关系
             //删除与司机关系
-            driverVehicleConDao.removeCon(dto.getLoginId(),dto.getVehicleId());
-            vehicleRunningDao.removeRun(dto.getLoginId(),dto.getVehicleId());
+            driverVehicleConDao.removeCon(dto.getDriverId(),dto.getVehicleId());
+            vehicleRunningDao.removeRun(dto.getDriverId(),dto.getVehicleId());
         }
         vehicleDao.deleteById(dto.getVehicleId());
         return BaseResultUtil.success();
@@ -282,7 +283,7 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
         //验证在承运商中是否存在
         Integer count = driverDao.existEnterPriseDriver(dto);
         if(count > 0){
-            //个人转承运商下记录
+            //个人承运商下记录
             ExistDriver existDriver = new ExistDriver();
             existDriver.setDriverId(dto.getLoginId());
             existDriver.setName(dto.getRealName());
@@ -329,8 +330,10 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
             VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda()
                     .eq(VehicleRunning::getDriverId, dto.getLoginId()));
             if(vr != null){
-                Task task = taskDao.selectOne(new QueryWrapper<Task>().lambda().eq(Task::getVehicleRunningId,vr.getId()));
-                if(task != null && task.getState() == TaskStateEnum.TRANSPORTING.code){
+                Task task = taskDao.selectOne(new QueryWrapper<Task>().lambda()
+                        .eq(Task::getVehicleRunningId,vr.getId())
+                        .eq(Task::getState,TaskStateEnum.TRANSPORTING.code));
+                if(task != null){
                     return BaseResultUtil.getVo(ResultEnum.VEHICLE_RUNNING.getCode(),ResultEnum.VEHICLE_RUNNING.getMsg());
                 }
             }
@@ -353,7 +356,7 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
         if(personInfo != null){
             return BaseResultUtil.success(personInfo);
         }
-        return BaseResultUtil.fail("未获取数据，请联系管理员");
+        return BaseResultUtil.success();
     }
 
     @Override
@@ -370,6 +373,18 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
         bcb.setState(UseStateEnum.USABLE.code);
         bcb.setCreateTime(NOW);
         bankCardBindDao.insert(bcb);
+        return BaseResultUtil.success();
+    }
+
+    @Override
+    public ResultVo removeBankCard(RemoveBankCardDto dto) {
+        boolean result = csSmsService.validateCaptcha(dto.getPhone(),dto.getCode(),CaptchaTypeEnum.valueOf(dto.getType()), ClientEnum.APP_DRIVER);
+        if(!result){
+            return BaseResultUtil.fail("验证码与手机号不匹配或者过期，请核对发送");
+        }
+        BankCardBind bcb = bankCardBindDao.selectById(dto.getCardId());
+        bcb.setState(UseStateEnum.DISABLED.code);
+        bankCardBindDao.updateById(bcb);
         return BaseResultUtil.success();
     }
 }
