@@ -17,7 +17,7 @@ import com.cjyc.common.model.entity.Carrier;
 import com.cjyc.common.model.entity.CarrierDriverCon;
 import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.enums.CommonStateEnum;
-import com.cjyc.common.model.enums.transport.DriverIdentityEnum;
+import com.cjyc.common.model.enums.transport.DriverRoleEnum;
 import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.system.config.CarrierProperty;
 import com.cjyc.common.system.feign.ISysDeptService;
@@ -82,7 +82,7 @@ public class CsCarrierServiceImpl implements ICsCarrierService {
                     }
                     CarrierDriverCon origCdCon = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>()
                             .eq("carrier_id", carrier.getId())
-                            .eq("role", DriverIdentityEnum.SUPERADMIN.code));
+                            .eq("role", DriverRoleEnum.SUPERADMIN.code));
                     if (null == origCdCon) {
                         return ResultData.failed("数据异常，此承运商下无机构管理员");
                     }
@@ -113,15 +113,15 @@ public class CsCarrierServiceImpl implements ICsCarrierService {
                             //将原司机-承运商关系设置为普通角色
                             CarrierDriverCon carrierDriverCon = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>()
                                     .eq("carrier_id", dto.getCarrierId())
-                                    .eq("role", DriverIdentityEnum.SUPERADMIN.code));
+                                    .eq("role", DriverRoleEnum.SUPERADMIN.code));
                             if (carrierDriverCon != null) {
-                                carrierDriverCon.setRole(DriverIdentityEnum.SUB_DRIVER.code);
+                                carrierDriverCon.setRole(DriverRoleEnum.SUB_DRIVER.code);
                                 carrierDriverConDao.updateById(carrierDriverCon);
                             }
                             //新司机-承运商关系设置为管理员
                             cdCon.setMode(dto.getMode());
                             cdCon.setState(CommonStateEnum.WAIT_CHECK.code);
-                            cdCon.setRole(DriverIdentityEnum.SUPERADMIN.code);
+                            cdCon.setRole(DriverRoleEnum.SUPERADMIN.code);
                             carrierDriverConDao.updateById(cdCon);
                         }
                         userId = accountRd.getData().getUserId();
@@ -138,7 +138,7 @@ public class CsCarrierServiceImpl implements ICsCarrierService {
                         }else {
                             CarrierDriverCon carrierDriverCon = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>()
                                     .eq("carrier_id", dto.getCarrierId())
-                                    .eq("role", DriverIdentityEnum.SUPERADMIN.code));
+                                    .eq("role", DriverRoleEnum.SUPERADMIN.code));
                             Driver driver = driverDao.selectById(carrierDriverCon.getDriverId());
                             driver.setName(dto.getLinkman());
                             driver.setRealName(dto.getLinkman());

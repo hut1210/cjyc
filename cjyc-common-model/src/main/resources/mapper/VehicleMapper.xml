@@ -52,8 +52,6 @@
             <if test="phone != null and phone.trim() != ''">
                 and  dd.phone = #{phone}
             </if>
-            and dd.id
-
         </where>
     </select>
 

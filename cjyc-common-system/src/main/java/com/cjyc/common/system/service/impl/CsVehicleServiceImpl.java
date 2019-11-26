@@ -47,7 +47,7 @@ public class CsVehicleServiceImpl implements ICsVehicleService {
             List<FreeVehicleVo> freeVehicleVos = vehicleDao.findCarrierVehicle(cdc.getCarrierId(),dto.getPlateNo());
             return freeVehicles(freeVehicleVos);
         }
-        return BaseResultUtil.fail("数据有误，请联系管理员");
+        return BaseResultUtil.success();
     }
 
     @Override

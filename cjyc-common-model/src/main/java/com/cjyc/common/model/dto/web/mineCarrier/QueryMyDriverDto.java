@@ -15,6 +15,10 @@ public class QueryMyDriverDto extends BasePageDto {
     @NotNull(message = "登陆系统用户loginId不能为空")
     private Long loginId;
 
+    @ApiModelProperty(value = "角色id",required = true)
+    @NotNull(message = "角色id不能为空")
+    private Long roleId;
+
     @ApiModelProperty("司机姓名")
     private String realName;
 

@@ -17,7 +17,6 @@ import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.carrier.*;
-import com.cjyc.common.model.vo.web.mineCarrier.MyCarVo;
 import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.ICsCarrierService;
@@ -102,7 +101,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             cdc.setCarrierId(carrier.getId());
             cdc.setMode(dto.getMode());
             cdc.setState(CommonStateEnum.WAIT_CHECK.code);
-            cdc.setRole(DriverIdentityEnum.SUPERADMIN.code);
+            cdc.setRole(DriverRoleEnum.SUPERADMIN.code);
             carrierDriverConDao.insert(cdc);
 
             saveBankCardBand(dto,carrier.getId());
@@ -127,7 +126,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         Carrier origCarrier = carrierDao.selectById(dto.getCarrierId());
         CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
                 .eq(CarrierDriverCon::getCarrierId, dto.getCarrierId())
-                .eq(CarrierDriverCon::getRole, DriverIdentityEnum.SUPERADMIN.code));
+                .eq(CarrierDriverCon::getRole, DriverRoleEnum.SUPERADMIN.code));
         Driver driver = driverDao.selectOne(new QueryWrapper<Driver>().lambda().eq(Driver::getPhone,dto.getLinkmanPhone()));
         if(origCarrier == null || cdc == null || driver == null){
             return BaseResultUtil.fail("数据信息有误");
@@ -137,7 +136,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             //更换手机号
             if(!dto.getLinkmanPhone().equals(origCarrier.getLinkmanPhone())){
                 //更新手机号,查出之前的
-                cdc.setRole(DriverIdentityEnum.SUB_DRIVER.code);
+                cdc.setRole(DriverRoleEnum.SUB_DRIVER.code);
                 carrierDriverConDao.updateById(cdc);
                 //查询现在的
                 CarrierDriverCon cdCon = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
@@ -145,7 +144,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
                         .eq(CarrierDriverCon::getDriverId, driver.getId()));
                 cdCon.setMode(dto.getMode());
                 cdCon.setState(CommonStateEnum.WAIT_CHECK.code);
-                cdCon.setRole(DriverIdentityEnum.SUPERADMIN.code);
+                cdCon.setRole(DriverRoleEnum.SUPERADMIN.code);
                 carrierDriverConDao.updateById(cdc);
             }else{
                 //没换手机号
@@ -204,7 +203,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         Driver driver = findDriver(carrier.getId());
         CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
                                 .eq(CarrierDriverCon::getCarrierId, carrier.getId())
-                                .eq(CarrierDriverCon::getRole,DriverIdentityEnum.SUPERADMIN.code));
+                                .eq(CarrierDriverCon::getRole, DriverRoleEnum.SUPERADMIN.code));
         if (null == carrier || null == driver || cdc == null) {
             return BaseResultUtil.fail("承运商信息错误，请检查");
         }
@@ -258,7 +257,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     public ResultVo resetPwd(Long id) {
         CarrierDriverCon driverCon = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
                 .eq(CarrierDriverCon::getCarrierId, id)
-                .eq(CarrierDriverCon::getRole, DriverIdentityEnum.SUPERADMIN.code));
+                .eq(CarrierDriverCon::getRole, DriverRoleEnum.SUPERADMIN.code));
         if (driverCon != null) {
             Driver driver = driverDao.selectById(driverCon.getDriverId());
             if (driver != null) {
@@ -341,7 +340,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     private Driver findDriver(Long carrierId) {
         List<CarrierDriverCon> conList = carrierDriverConDao.selectList(new QueryWrapper<CarrierDriverCon>().lambda()
                 .eq(CarrierDriverCon::getCarrierId, carrierId)
-                .eq(CarrierDriverCon::getRole, DriverIdentityEnum.SUPERADMIN.code));
+                .eq(CarrierDriverCon::getRole, DriverRoleEnum.SUPERADMIN.code));
         Long driverId = null;
         if (!CollectionUtils.isEmpty(conList)) {
             driverId = conList.get(0).getDriverId();

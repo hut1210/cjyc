@@ -33,7 +33,7 @@ public enum ResultEnum {
     //API_REQUEST_TIMEOUT(2005, "接口请求超时");
 
     /**app登陆业务码*/
-    PARTNER_NOTLOGIN(7001, "合伙人不能登陆app"),
+    ENTERPRISE_NOTLOGIN(7001, "大客户不能登陆app"),
 
     /**业务返回码*/
     NOEXIST_LINE(8001, "该班线不存在"),
