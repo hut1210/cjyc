@@ -1,4 +1,4 @@
-package com.cjyc.web.api.config;
+package com.cjyc.common.system.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
