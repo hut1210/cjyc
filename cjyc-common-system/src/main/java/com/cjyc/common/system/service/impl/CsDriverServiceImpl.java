@@ -182,7 +182,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
     }
 
     @Override
-    public ResultData<Long> addDriverToPlatform(Driver driver, com.cjyc.common.model.dto.CarrierDriverDto dto) {
+    public ResultData<Long> addDriverToPlatform(Driver driver, CarrierDriverDto dto) {
         List<Driver> existList = driverDao.selectList(new QueryWrapper<Driver>().lambda()
                 .eq(Driver::getPhone, driver.getPhone()));
         if (!CollectionUtils.isEmpty(existList)) {
@@ -216,7 +216,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
     }
 
     @Override
-    public ResultData updateDriverToPlatform(com.cjyc.common.model.dto.CarrierDriverDto dto) {
+    public ResultData updateDriverToPlatform(CarrierDriverDto dto) {
         Driver driver = driverDao.selectById(dto.getDriverId());
         if (null == driver) {
             return ResultData.failed("司机信息错误，根据id：" + dto.getDriverId() + "未查询到信息");

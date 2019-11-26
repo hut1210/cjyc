@@ -29,17 +29,14 @@ public class CarrierDto implements Serializable {
 
     @ApiModelProperty(value = "是否开发票 0：否  1：是",required = true)
     @NotNull(message = "是否开发票不能为空")
-    @Pattern(regexp = RegexConstant.ZERO_ONE,message = "只能输入0或者1")
     private Integer isInvoice;
 
     @ApiModelProperty(value = "法人姓名",required = true)
     @NotBlank(message = "法人姓名不能为空")
-    @Pattern(regexp = RegexConstant.NAME,message = "请输入合法姓名")
     private String legalName;
 
     @ApiModelProperty(value = "身份证号",required = true)
     @NotBlank(message = "身份证号不能为空")
-    @Pattern(regexp = RegexConstant.REGEX_ID_CARD18,message = "身份证号码格式不对")
     private String legalIdCard;
 
     @ApiModelProperty(value = "联系人姓名",required = true)
@@ -49,12 +46,10 @@ public class CarrierDto implements Serializable {
 
     @ApiModelProperty(value = "联系人手机号(作为登陆账号)",required = true)
     @NotBlank(message = "联系人手机号不能为空")
-    @Pattern(regexp = RegexConstant.REGEX_MOBILE_EXACT_LATEST,message = "电话号码格式不对")
     private String linkmanPhone;
 
     @ApiModelProperty(value = "结算类型 0:时付，1:账期",required = true)
     @NotNull(message = "结算类型不能为空")
-    @Pattern(regexp = RegexConstant.ZERO_ONE,message = "只能输入0或者1")
     private Integer settleType;
 
     @ApiModelProperty("账期/天")
@@ -83,7 +78,6 @@ public class CarrierDto implements Serializable {
 
     @ApiModelProperty(value = "银行卡号",required = true)
     @NotBlank(message = "银行卡号不能为空")
-    @Pattern(regexp = RegexConstant.BINK_CARD,message = "银行卡号格式不正确")
     private String cardNo;
 
     @ApiModelProperty("营业执照正面")

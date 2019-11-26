@@ -25,7 +25,6 @@ public class ModifyMyCarDto implements Serializable {
 
     @ApiModelProperty(value = "车牌号",required = true)
     @NotBlank(message = "车牌号不能为空")
-    @Pattern(regexp = RegexConstant.PLATE_NO,message = "车牌号格式不对")
     private String plateNo;
 
     @ApiModelProperty(value = "车位数",required = true)

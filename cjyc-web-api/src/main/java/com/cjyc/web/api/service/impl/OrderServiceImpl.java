@@ -371,6 +371,10 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         return BaseResultUtil.success(pageInfo);
     }
 
+    @Override
+    public List<ListOrderCarVo> carListAll(ListOrderCarDto dto) {
+        return orderCarDao.findListSelective(dto);
+    }
 
 
 }

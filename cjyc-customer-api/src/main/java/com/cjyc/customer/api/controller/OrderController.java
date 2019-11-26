@@ -106,14 +106,27 @@ public class OrderController {
         return orderService.commit(reqDto);
     }*/
 
-
+    /**
+     * 功能描述: 分页查询订单列表
+     * @author liuxingxiang
+     * @date 2019/11/26
+     * @param dto
+     * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.vo.PageVo<com.cjyc.common.model.vo.customer.order.OrderCenterVo>>
+     */
     @ApiOperation(value = "分页查询订单列表", notes = "根据条件分页查询订单", httpMethod = "POST")
     @PostMapping(value = "/getPage")
     public ResultVo<PageVo<OrderCenterVo>> getPage(@RequestBody @Validated OrderQueryDto dto){
         return orderService.getPage(dto);
     }
 
-    @ApiOperation(value = "查询订单数量", notes = "查询各种订单状态下的订单数量", httpMethod = "POST")
+    /**
+     * 功能描述: 查询每种状态下的订单数量
+     * @author liuxingxiang
+     * @date 2019/11/26
+     * @param loginId
+     * @return com.cjyc.common.model.vo.ResultVo<java.util.Map<java.lang.String,java.lang.Object>>
+     */
+    @ApiOperation(value = "查询每种状态下的订单数量", notes = "查询各种订单状态下的订单数量", httpMethod = "POST")
     @PostMapping(value = "/getOrderCount/{loginId}")
     public ResultVo<Map<String,Object>> getOrderCount(@PathVariable Long loginId){
         return orderService.getOrderCount(loginId);
@@ -131,8 +144,14 @@ public class OrderController {
         return csOrderService.cancel(reqDto);
     }
 
-
-    @ApiOperation(value = "查询订单明细", notes = "根据条件查询订单明细：参数orderNo(订单号),loginId(客户ID)", httpMethod = "POST")
+    /**
+     * 功能描述: 查询订单详情
+     * @author liuxingxiang
+     * @date 2019/11/26
+     * @param dto
+     * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.vo.customer.order.OrderCenterDetailVo>
+     */
+    @ApiOperation(value = "查询订单详情", notes = "根据条件查询订单明细：参数orderNo(订单号),loginId(客户ID)", httpMethod = "POST")
     @PostMapping(value = "/getDetail")
     public ResultVo<OrderCenterDetailVo> getDetail(@RequestBody @Validated({OrderUpdateDto.GetDetail.class}) OrderUpdateDto dto){
         return orderService.getDetail(dto);

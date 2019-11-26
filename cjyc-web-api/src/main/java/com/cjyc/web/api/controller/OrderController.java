@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 订单
@@ -175,7 +176,7 @@ public class OrderController {
     @GetMapping(value = "/exportPageList")
     public ResultVo exportPageList(ListOrderDto reqDto, HttpServletResponse response){
         ResultVo<PageVo<ListOrderVo>> resultVo = orderService.list(reqDto);
-        if (resultVo == null || resultVo.getCode() != ResultEnum.SUCCESS.getCode()) {
+        if (!isResultSuccess(resultVo)) {
             return BaseResultUtil.fail("导出数据异常");
         }
         PageVo<ListOrderVo> data = resultVo.getData();
@@ -199,6 +200,7 @@ public class OrderController {
         if (CollectionUtils.isEmpty(orderList)) {
             return BaseResultUtil.success("未查询到结果");
         }
+        orderList = orderList.stream().filter(o -> o != null).collect(Collectors.toList());
         try{
             ExcelUtil.exportExcel(orderList, "订单信息", "订单信息",
                     ListOrderVo.class, System.currentTimeMillis()+"订单信息.xls", response);
@@ -217,6 +219,45 @@ public class OrderController {
     @PostMapping(value = "/car/list")
     public ResultVo<PageVo<ListOrderCarVo>> carlist(@RequestBody ListOrderCarDto reqDto) {
         return orderService.carlist(reqDto);
+    }
+
+    @ApiOperation(value = "分页导出车辆信息列表")
+    @GetMapping(value = "/car/exportPageList")
+    public ResultVo exportPageCarList(ListOrderCarDto reqDto, HttpServletResponse response) {
+        ResultVo<PageVo<ListOrderCarVo>> resultVo = orderService.carlist(reqDto);
+        if (!isResultSuccess(resultVo)) {
+            return BaseResultUtil.fail("导出数据异常");
+        }
+        PageVo<ListOrderCarVo> data = resultVo.getData();
+        if (data == null || CollectionUtils.isEmpty(data.getList())) {
+            return BaseResultUtil.success("未查询到数据");
+        }
+        try{
+            ExcelUtil.exportExcel(data.getList(), "车辆信息", "车辆信息",
+                    ListOrderCarVo.class, System.currentTimeMillis()+"车辆信息.xls", response);
+            return null;
+        }catch (Exception e) {
+            LogUtil.error("导出车辆信息异常", e);
+            return BaseResultUtil.fail("导出车辆信息异常: " + e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "导出全部车辆信息列表")
+    @GetMapping(value = "/car/exportAllList")
+    public ResultVo exportAllCarList(ListOrderCarDto reqDto, HttpServletResponse response) {
+        List<ListOrderCarVo> carList = orderService.carListAll(reqDto);
+        if (CollectionUtils.isEmpty(carList)) {
+            return BaseResultUtil.success("未查询到结果");
+        }
+        carList = carList.stream().filter(c -> c != null).collect(Collectors.toList());
+        try {
+            ExcelUtil.exportExcel(carList, "车辆信息", "车辆信息",
+                    ListOrderCarVo.class, System.currentTimeMillis()+"车辆信息.xls", response);
+            return null;
+        }catch (Exception e) {
+            LogUtil.error("导出车辆信息异常", e);
+            return BaseResultUtil.fail("导出车辆信息异常: " + e.getMessage());
+        }
     }
     /**
      * 查询订单车辆运输信息-根据ID
@@ -294,6 +335,18 @@ public class OrderController {
             throw new ParameterException("操作用户不存在或者已离职");
         }
         return admin.getName();
+    }
+
+    /**
+     * 检查返回结果是否成功
+     * @param resultVo
+     * @return
+     */
+    private boolean isResultSuccess(ResultVo resultVo) {
+        if (null == resultVo) {
+            return false;
+        }
+        return resultVo.getCode() != ResultEnum.SUCCESS.getCode()?false: true;
     }
 
 }

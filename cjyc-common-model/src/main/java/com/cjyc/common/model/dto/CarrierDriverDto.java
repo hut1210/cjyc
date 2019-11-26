@@ -14,7 +14,6 @@ public class CarrierDriverDto extends CarrierVehicleDto implements Serializable 
 
     @ApiModelProperty(value = "身份证号",required = true)
     @NotBlank(message = "身份证号不能为空")
-    @Pattern(regexp = RegexConstant.REGEX_ID_CARD18,message = "身份证号码格式不对")
     private String idCard;
 
     @ApiModelProperty(value = "身份证正面",required = true)

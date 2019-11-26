@@ -334,9 +334,8 @@
             </if>
             /*全部*/
             <if test="state != null and state == 3">
-                and (o.state between ${@com.cjyc.common.model.enums.order.OrderStateEnum@SUBMITTED.code}
-                and ${@com.cjyc.common.model.enums.order.OrderStateEnum@FINISHED.code}
-                or o.state = ${@com.cjyc.common.model.enums.order.OrderStateEnum@F_CANCEL.code})
+                and o.state between ${@com.cjyc.common.model.enums.order.OrderStateEnum@SUBMITTED.code}
+                and ${@com.cjyc.common.model.enums.order.OrderStateEnum@F_OBSOLETE.code}
             </if>
             <if test="startCityCode != null and startCityCode.trim() != ''">
                 and o.start_city_code = #{startCityCode}
