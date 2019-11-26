@@ -69,10 +69,9 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
                 .eq(CarrierDriverCon::getDriverId, dto.getLoginId())
                 .eq(CarrierDriverCon::getId, dto.getRoleId()));
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        List<MyDriverVo> myDriverVos = null;
         if(cdc != null){
             dto.setCarrierId(cdc.getCarrierId());
-            myDriverVos =  driverDao.findMyDriver(dto);
+            List<MyDriverVo> myDriverVos =  driverDao.findMyDriver(dto);
             if(!CollectionUtils.isEmpty(myDriverVos)){
                 for(MyDriverVo vo : myDriverVos){
                     CarrierCarCount count = carrierCarCountDao.driverCount(vo.getDriverId());
@@ -80,10 +79,11 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
                         vo.setCarNum(count.getCarNum());
                     }
                 }
+                PageInfo<MyDriverVo> pageInfo = new PageInfo<>(myDriverVos);
+                return BaseResultUtil.success(pageInfo);
             }
         }
-        PageInfo<MyDriverVo> pageInfo = new PageInfo<>(myDriverVos);
-        return BaseResultUtil.success(pageInfo);
+        return BaseResultUtil.success();
     }
 
     @Override
@@ -157,13 +157,13 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
                 .eq(CarrierDriverCon::getDriverId, dto.getLoginId())
                 .eq(CarrierDriverCon::getId, dto.getRoleId()));
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        List<MyCarVo> myCarVos = null;
         if(cdc != null){
             dto.setCarrierId(cdc.getCarrierId());
-            myCarVos = vehicleDao.findMyCar(dto);
+            List<MyCarVo> myCarVos = vehicleDao.findMyCar(dto);
+            PageInfo<MyCarVo> pageInfo = new PageInfo<>(myCarVos);
+            return BaseResultUtil.success(pageInfo);
         }
-        PageInfo<MyCarVo> pageInfo = new PageInfo<>(myCarVos);
-        return BaseResultUtil.success(pageInfo);
+        return BaseResultUtil.success();
     }
 
     /**
@@ -191,7 +191,4 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
         }
         return BaseResultUtil.success();
     }
-
-
-
 }

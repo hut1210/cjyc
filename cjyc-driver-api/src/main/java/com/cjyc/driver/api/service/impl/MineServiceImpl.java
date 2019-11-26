@@ -378,7 +378,13 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
 
     @Override
     public ResultVo removeBankCard(RemoveBankCardDto dto) {
-
-        return null;
+        boolean result = csSmsService.validateCaptcha(dto.getPhone(),dto.getCode(),CaptchaTypeEnum.valueOf(dto.getType()), ClientEnum.APP_DRIVER);
+        if(!result){
+            return BaseResultUtil.fail("验证码与手机号不匹配或者过期，请核对发送");
+        }
+        BankCardBind bcb = bankCardBindDao.selectById(dto.getCardId());
+        bcb.setState(UseStateEnum.DISABLED.code);
+        bankCardBindDao.updateById(bcb);
+        return BaseResultUtil.success();
     }
 }
