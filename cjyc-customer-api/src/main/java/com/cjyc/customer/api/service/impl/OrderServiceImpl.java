@@ -104,7 +104,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         // 查询待确认订单数量
         LambdaQueryWrapper<Order> queryWrapper = new QueryWrapper<Order>().lambda()
                 .eq(Order::getCustomerId,loginId)
-                .le(Order::getState, OrderStateEnum.CHECKED.code);
+                .between(Order::getState, OrderStateEnum.SUBMITTED.code,OrderStateEnum.WAIT_RECHECK.code);
         Integer waitConfirmCount = orderDao.selectCount(queryWrapper);
         if (!Objects.isNull(waitConfirmCount)) {
             map.put("waitConfirmCount",waitConfirmCount);
@@ -113,8 +113,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         // 查询运输中订单数量
         queryWrapper = new QueryWrapper<Order>().lambda()
                 .eq(Order::getCustomerId,loginId)
-                .gt(Order::getState,OrderStateEnum.CHECKED.code)
-                .lt(Order::getState,OrderStateEnum.FINISHED.code);
+                .eq(Order::getState,OrderStateEnum.TRANSPORTING.code);
         Integer inTransitCount = orderDao.selectCount(queryWrapper);
         if (!Objects.isNull(inTransitCount)) {
             map.put("inTransitCount",inTransitCount);
@@ -122,7 +121,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
 
         // 查询已交付订单数量
         queryWrapper = new QueryWrapper<Order>().lambda()
-                .eq(Order::getCustomerId,loginId).eq(Order::getState,OrderStateEnum.FINISHED.code);
+                .eq(Order::getCustomerId,loginId)
+                .eq(Order::getState,OrderStateEnum.FINISHED.code);
         Integer payCount = orderDao.selectCount(queryWrapper);
         if (!Objects.isNull(payCount)) {
             map.put("payCount",payCount);
@@ -131,7 +131,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         // 查询所有订单数量
         queryWrapper = new QueryWrapper<Order>().lambda()
                 .eq(Order::getCustomerId,loginId)
-                .le(Order::getState,OrderStateEnum.FINISHED.code).or().eq(Order::getState,OrderStateEnum.F_CANCEL.code);
+                .between(Order::getState,OrderStateEnum.SUBMITTED.code,OrderStateEnum.F_OBSOLETE.code);
         Integer allCount = orderDao.selectCount(queryWrapper);
         if (!Objects.isNull(allCount)) {
             map.put("allCount",allCount);

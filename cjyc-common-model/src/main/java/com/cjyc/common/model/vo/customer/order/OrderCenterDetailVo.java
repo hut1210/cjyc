@@ -38,7 +38,7 @@ public class OrderCenterDetailVo implements Serializable {
     @ApiModelProperty(value = "托运车辆信息列表:运输中,已交付车辆")
     private List<OrderCarCenterVo> orderCarFinishPayList;
 
-    @ApiModelProperty(value = "预计出发时间（提车日期）")
+    @ApiModelProperty(value = "提车时间")
     @JsonSerialize(using = DataLongSerizlizer.class)
     private Long expectStartDate;
 

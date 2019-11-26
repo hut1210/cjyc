@@ -19,7 +19,7 @@ public class DataLongSerizlizer extends JsonSerializer<Long> {
     public void serialize(Long date, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
         //将毫秒值转换成秒变成char型数据返回
         if(!Objects.isNull(date) && date != 0){
-            String dateStr = LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), TimePatternConstant.COMPLEX_TIME_FORMAT);
+            String dateStr = LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), TimePatternConstant.SIMPLE_DATE_FORMAT);
             jsonGenerator.writeString(dateStr);
         } else {
             jsonGenerator.writeString("");
