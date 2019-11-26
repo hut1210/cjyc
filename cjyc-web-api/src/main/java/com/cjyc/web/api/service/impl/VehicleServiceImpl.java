@@ -25,6 +25,7 @@ import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
@@ -74,10 +75,19 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
 
     @Override
     public ResultVo removeVehicle(RemoveVehicleDto dto) {
-        //获取运力信息
-        Object obj = verifyTrans(dto.getDriverId(),dto.getVehicleId());
-        if(obj != null && !Boolean.parseBoolean(obj.toString())){
-            return BaseResultUtil.getVo(ResultEnum.VEHICLE_RUNNING.getCode(),ResultEnum.VEHICLE_RUNNING.getMsg());
+        //判断该运力是否在运输中
+        VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda()
+                .eq(dto.getDriverId() != null,VehicleRunning::getDriverId, dto.getDriverId())
+                .eq(dto.getVehicleId() != null,VehicleRunning::getVehicleId, dto.getVehicleId()));
+        if(vr != null){
+            List<Task> tasks = taskDao.selectList(new QueryWrapper<Task>().lambda().eq(Task::getVehicleRunningId,vr.getId()));
+            if(!CollectionUtils.isEmpty(tasks)){
+                for(Task task : tasks){
+                    if(task.getState() == TaskStateEnum.TRANSPORTING.code){
+                        return BaseResultUtil.getVo(ResultEnum.VEHICLE_RUNNING.getCode(),ResultEnum.VEHICLE_RUNNING.getMsg());
+                    }
+                }
+            }
         }
         if(dto.getDriverId() != null){
             //车辆与司机有绑定关系
@@ -104,25 +114,5 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
         vehicle.setDefaultCarryNum(dto.getDefauleCarryNum());
         vehicleDao.updateById(vehicle);
         return BaseResultUtil.success();
-    }
-
-    /**
-     * 根据司机id和车辆id判断运力是否在运输中
-     * @param driverId
-     * @param vehicleId
-     * @return
-     */
-    private Object verifyTrans(Long driverId,Long vehicleId){
-        //判断该运力是否在运输中
-        VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda()
-                .eq(driverId != null,VehicleRunning::getDriverId, driverId)
-                .eq(vehicleId != null,VehicleRunning::getVehicleId, vehicleId));
-        if(vr != null){
-            Task task = taskDao.selectOne(new QueryWrapper<Task>().lambda().eq(Task::getVehicleRunningId,vr.getId()));
-            if(task != null && task.getState() == TaskStateEnum.TRANSPORTING.code){
-                return false;
-            }
-        }
-        return vr;
     }
 }

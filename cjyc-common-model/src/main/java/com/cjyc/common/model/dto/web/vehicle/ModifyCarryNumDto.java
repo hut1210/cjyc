@@ -11,8 +11,7 @@ import java.io.Serializable;
 public class ModifyCarryNumDto implements Serializable {
     private static final long serialVersionUID = 4811129462747451190L;
 
-    @ApiModelProperty(value = "司机id(driverId)",required = true)
-    @NotNull(message = "司机id(driverId)不能为空")
+    @ApiModelProperty("司机id(driverId)")
     private Long driverId;
 
     @ApiModelProperty(value = "车辆id(vehicleId)",required = true)
