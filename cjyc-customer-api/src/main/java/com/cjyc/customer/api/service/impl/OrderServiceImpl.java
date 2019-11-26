@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cjyc.common.model.dao.ICouponSendDao;
 import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IOrderDao;
 import com.cjyc.common.model.dto.customer.invoice.InvoiceApplyQueryDto;
@@ -12,6 +13,7 @@ import com.cjyc.common.model.dto.customer.order.OrderQueryDto;
 import com.cjyc.common.model.dto.customer.order.OrderUpdateDto;
 import com.cjyc.common.model.dto.web.order.CommitOrderDto;
 import com.cjyc.common.model.dto.web.order.SaveOrderDto;
+import com.cjyc.common.model.entity.CouponSend;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
@@ -49,7 +51,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
     private ICsOrderService comOrderService;
     @Resource
     private IOrderCarDao orderCarDao;
-
+    @Resource
+    private ICouponSendDao couponSendDao;
 
     /**
      * 保存订单
@@ -151,7 +154,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
                 OrderCarCenterVo orderCarCenter = new OrderCarCenterVo();
                 BeanUtils.copyProperties(orderCar,orderCarCenter);
                 if (OrderCarStateEnum.SIGNED.code == orderCar.getState()) {
-                    // 运输中订单车辆信息
+                    // 已交付订单车辆信息
                     orderCarFinishPayList.add(orderCarCenter);
                 } else {
                     // 待确认，已交付，运输中，全部订单车辆信息
@@ -159,6 +162,13 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
                 }
             }
         }
+        // 查询优惠券信息
+        Long couponSendId = detailVo.getCouponSendId();
+        if (couponSendId != null) {
+            CouponSend couponSend = couponSendDao.selectById(couponSendId);
+            detailVo.setCouponName(couponSend.getCouponName());
+        }
+
         detailVo.setOrderCarCenterVoList(orderCarCenterVoList);
         detailVo.setOrderCarFinishPayList(orderCarFinishPayList);
         return BaseResultUtil.success(detailVo);

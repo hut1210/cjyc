@@ -82,7 +82,19 @@ public class OrderCenterDetailVo implements Serializable {
     @ApiModelProperty(value = "优惠券id:如果ID为0，则说明没有优惠券")
     private Long couponSendId;
 
-    @ApiModelProperty(value = "车辆数量")
-    private int carCount;
+    @ApiModelProperty(value = "优惠券名称")
+    private String couponName;
 
+    @ApiModelProperty(value = "车辆总数")
+    private Integer carNum;
+
+    public String getCouponName() {
+        return couponName == null ? "" : couponName;
+    }
+    public Long getCouponSendId() {
+        return couponSendId == null ? 0 : couponSendId;
+    }
+    public Integer getCarNum() {
+        return carNum == null ? 0 : carNum;
+    }
 }
