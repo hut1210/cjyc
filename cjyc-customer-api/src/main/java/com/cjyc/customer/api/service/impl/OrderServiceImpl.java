@@ -3,19 +3,13 @@ package com.cjyc.customer.api.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.cjyc.common.model.dao.ICouponSendDao;
-import com.cjyc.common.model.dao.IOrderCarDao;
-import com.cjyc.common.model.dao.IOrderDao;
-import com.cjyc.common.model.dao.IWaybillCarDao;
+import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.customer.invoice.InvoiceApplyQueryDto;
 import com.cjyc.common.model.dto.customer.order.OrderQueryDto;
 import com.cjyc.common.model.dto.customer.order.OrderUpdateDto;
 import com.cjyc.common.model.dto.web.order.CommitOrderDto;
 import com.cjyc.common.model.dto.web.order.SaveOrderDto;
-import com.cjyc.common.model.entity.CouponSend;
-import com.cjyc.common.model.entity.Order;
-import com.cjyc.common.model.entity.OrderCar;
-import com.cjyc.common.model.entity.WaybillCar;
+import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -56,6 +50,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
     private ICouponSendDao couponSendDao;
     @Resource
     private IWaybillCarDao waybillCarDao;
+    @Resource
+    private ICarSeriesDao carSeriesDao;
 
     /**
      * 保存订单
@@ -178,6 +174,10 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
                 }
                 // 查询车辆图片
                 this.getCarImg(orderCar, orderCarCenter);
+                //
+                CarSeries carSeries = carSeriesDao.selectOne(new QueryWrapper<CarSeries>().lambda().eq(CarSeries::getModel, orderCar.getModel()));
+                if(carSeries != null)
+                    orderCarCenter.setLogoImg(carSeries.getLogoImg());
             }
         }
         detailVo.setOrderCarCenterVoList(orderCarCenterVoList);
