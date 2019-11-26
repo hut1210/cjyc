@@ -2,8 +2,6 @@ package com.cjyc.customer.api.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.dao.ICouponSendDao;
 import com.cjyc.common.model.dao.IOrderCarDao;
@@ -202,7 +200,6 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         }
     }
 
-    @Override
 /*    @Override
     public ResultVo confirmPickCar(OrderUpdateDto dto) {
         // 修改车辆状态
