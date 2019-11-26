@@ -132,8 +132,8 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
         //架构组和韵车添加数据
         Driver driver = new Driver();
         //String no = sendNoService.getNo(SendNoTypeEnum.DRIVER);
-        //driver.setName(no);
-        //driver.setRealName(no);
+        driver.setName(phone);
+        driver.setRealName(phone);
         driver.setPhone(phone);
         driver.setType(DriverTypeEnum.SOCIETY.code);
         driver.setIdentity(DriverIdentityEnum.GENERAL_DRIVER.code);
@@ -146,9 +146,9 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
 
         //保存承运商信息
         Carrier carrier = new Carrier();
-        //carrier.setName(no);
+        carrier.setName(phone);
         carrier.setType(CarrierTypeEnum.PERSONAL.code);
-        //carrier.setLinkman(no);
+        carrier.setLinkman(phone);
         carrier.setLinkmanPhone(phone);
         carrier.setSettleType(ModeTypeEnum.TIME.code);
         carrier.setState(CommonStateEnum.WAIT_CHECK.code);
