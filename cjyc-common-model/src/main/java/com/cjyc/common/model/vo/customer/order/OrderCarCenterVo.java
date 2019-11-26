@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Data
-public class OrderCarVo implements Serializable {
+public class OrderCarCenterVo implements Serializable {
     private static final long serialVersionUID = 3239344642824513783L;
     @ApiModelProperty(value = "车辆id")
     private Long id;

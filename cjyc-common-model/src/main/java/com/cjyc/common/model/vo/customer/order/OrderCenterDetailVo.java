@@ -33,10 +33,10 @@ public class OrderCenterDetailVo implements Serializable {
     private Long createTime;
 
     @ApiModelProperty(value = "托运车辆信息列表")
-    private List<OrderCarVo> orderCarCenterVoList;
+    private List<OrderCarCenterVo> orderCarCenterVoList;
 
     @ApiModelProperty(value = "托运车辆信息列表:运输中,已交付车辆")
-    private List<OrderCarVo> orderCarFinishPayList;
+    private List<OrderCarCenterVo> orderCarFinishPayList;
 
     @ApiModelProperty(value = "预计出发时间（提车日期）")
     @JsonSerialize(using = DataLongSerizlizer.class)

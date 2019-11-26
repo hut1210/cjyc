@@ -22,7 +22,7 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.invoice.InvoiceOrderVo;
-import com.cjyc.common.model.vo.customer.order.OrderCarVo;
+import com.cjyc.common.model.vo.customer.order.OrderCarCenterVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterDetailVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterVo;
 import com.cjyc.common.system.service.ICsOrderService;
@@ -150,21 +150,21 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         // 查询车辆信息
         LambdaQueryWrapper<OrderCar> queryCarWrapper = new QueryWrapper<OrderCar>().lambda().eq(OrderCar::getOrderNo,dto.getOrderNo());
         List<OrderCar> orderCarList = orderCarDao.selectList(queryCarWrapper);
-        List<OrderCarVo> orderCarCenterVoList = new ArrayList<>(10);
-        List<OrderCarVo> orderCarFinishPayList = new ArrayList<>(10);
+        List<OrderCarCenterVo> orderCarCenterVoList = new ArrayList<>(10);
+        List<OrderCarCenterVo> orderCarFinishPayList = new ArrayList<>(10);
         if (!CollectionUtils.isEmpty(orderCarList)) {
             for (OrderCar orderCar : orderCarList) {
-                OrderCarVo orderCarVo = new OrderCarVo();
-                BeanUtils.copyProperties(orderCar,orderCarVo);
+                OrderCarCenterVo orderCarCenter = new OrderCarCenterVo();
+                BeanUtils.copyProperties(orderCar,orderCarCenter);
                 if (OrderCarStateEnum.SIGNED.code == orderCar.getState()) {
                     // 已交付订单车辆信息
-                    orderCarFinishPayList.add(orderCarVo);
+                    orderCarFinishPayList.add(orderCarCenter);
                 } else {
                     // 待确认，已交付，运输中，全部订单车辆信息
-                    orderCarCenterVoList.add(orderCarVo);
+                    orderCarCenterVoList.add(orderCarCenter);
                 }
                 // 查询车辆图片
-                this.getCarImg(orderCar, orderCarVo);
+                this.getCarImg(orderCar, orderCarCenter);
             }
         }
 
@@ -180,7 +180,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         return BaseResultUtil.success(detailVo);
     }
 
-    private void getCarImg(OrderCar orderCar, OrderCarVo orderCarVo) {
+    private void getCarImg(OrderCar orderCar, OrderCarCenterVo orderCarCenter) {
         List<String> photoImgList = new ArrayList<>(10);
         WaybillCar waybillCar = waybillCarDao.selectOne(new QueryWrapper<WaybillCar>().lambda()
                 .eq(WaybillCar::getOrderCarId, orderCar.getId()).select(WaybillCar::getLoadPhotoImg,WaybillCar::getUnloadPhotoImg));
@@ -196,7 +196,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
                 Collections.addAll(photoImgList,array);
             }
         }
-        orderCarVo.setCarImgList(photoImgList);
+        orderCarCenter.setCarImgList(photoImgList);
     }
 
 /*    @Override
