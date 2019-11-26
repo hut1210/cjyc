@@ -33,11 +33,11 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
         CityVo cityvo = new CityVo();
         //获取热门城市
         List<HotCityVo> hotCity = cityDao.getHotCity();
-        List<CityTreeVo> cityTreeVos = cityDao.findThreeCity(dto.getKeyword());
+        List<ProvinceTreeVo> cityTreeVos = cityDao.findThreeCity(dto.getKeyword());
         if(!CollectionUtils.isEmpty(cityTreeVos)){
-            List<CityTreeVo> citys = CityTreeUtil.encapTree(cityTreeVos);
+            //List<CityTreeVo> citys = CityTreeUtil.encapTree(cityTreeVos);
             cityvo.setHotCityVos(hotCity);
-            cityvo.setCityTreeVos(citys);
+            cityvo.setCityTreeVos(cityTreeVos);
             return BaseResultUtil.success(cityvo);
         }
         return BaseResultUtil.fail("数据有误，请联系管理员");

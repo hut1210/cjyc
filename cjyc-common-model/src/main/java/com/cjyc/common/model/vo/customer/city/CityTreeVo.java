@@ -10,13 +10,10 @@ import java.util.List;
 public class CityTreeVo implements Serializable {
     private static final long serialVersionUID = -7400163716561084589L;
      @ApiModelProperty("城市父编码")
-     private String parentCode;
-
-     @ApiModelProperty("城市编码")
-     private String code;
+     private String cityCode;
 
      @ApiModelProperty("城市名称")
-     private String name;
+     private String cityName;
 
     @ApiModelProperty("城市树")
     private List<AreaTreeVo> cityVos;

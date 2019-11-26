@@ -14,5 +14,5 @@ public class CityVo implements Serializable {
     private List<HotCityVo> hotCityVos;
 
     @ApiModelProperty("城市树")
-    private List<CityTreeVo> cityTreeVos;
+    private List<ProvinceTreeVo> cityTreeVos;
 }

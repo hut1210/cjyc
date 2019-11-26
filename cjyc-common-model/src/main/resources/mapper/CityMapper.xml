@@ -20,20 +20,40 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="TreeResultMap" type="com.cjyc.common.model.vo.customer.city.ProvinceTreeVo">
-        <result column="parent_code" property="parentCode" />
-        <result column="code" property="code" />
-        <result column="name" property="name" />
+        <result column="provinceCode" property="provinceCode" />
+        <result column="provinceName" property="provinceName" />
         <collection property="cityVos" ofType="com.cjyc.common.model.vo.customer.city.CityTreeVo" javaType="java.util.List">
-            <result column="parent_code" property="parentCode" />
-            <result column="code" property="code" />
-            <result column="name" property="name" />
+            <result column="cityCode" property="cityCode" />
+            <result column="cityName" property="cityName" />
             <collection property="cityVos" ofType="com.cjyc.common.model.vo.customer.city.AreaTreeVo" javaType="java.util.List">
-                <result column="parent_code" property="parentCode" />
-                <result column="code" property="code" />
-                <result column="name" property="name" />
+                <result column="areaParentCode" property="areaParentCode" />
+                <result column="areaCode" property="areaCode" />
+                <result column="areaName" property="areaName" />
             </collection>
         </collection>
     </resultMap>
+
+    <!-- 三级城市查询 -->
+    <select id="findThreeCity" resultMap="TreeResultMap">
+        SELECT
+            sc1.CODE AS provinceCode,
+            sc1.NAME AS provinceName,
+            sc2.CODE AS cityCode,
+            sc2.NAME AS cityName,
+            sc3.parent_code as areaParentCode,
+            sc3.CODE AS areaCode,
+            sc3.NAME AS areaName
+        FROM
+          s_city sc1
+        JOIN s_city sc2 ON sc2.parent_code = sc1.
+          CODE JOIN s_city sc3 ON sc3.parent_code = sc2.CODE
+        <where>
+            <if test="keyword != null and keyword.trim() != ''">
+                (sc1.name like concat('%',#{keyword},'%')  or sc2.name like concat('%',#{keyword},'%') or sc3.name like concat('%',#{keyword},'%'))
+            </if>
+            and sc1.LEVEL >= 1 AND sc1.LEVEL &lt;= 3 GROUP BY sc3.CODE
+        </where>
+    </select>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
@@ -110,45 +130,6 @@
         select code from s_city where name like concat('%',#{name},'%') and level = 2
     </select>
 
-    <!--根据关键字查询城市编码 -->
-    <select id="findThreeCity" resultType="com.cjyc.common.model.vo.CityTreeVo" parameterType="java.lang.String">
-        SELECT
-        NAME AS NAME,
-        CODE AS CODE,
-        parent_code AS parentCode
-        FROM
-        s_city
-        <where>
-            <if test="keyword != null and keyword.trim() != ''">
-                and (
-                NAME LIKE concat( '%', #{keyword}, '%' )
-                OR parent_name LIKE concat( '%', #{keyword}, '%' )
-                OR pin_yin LIKE concat( '%', #{keyword}, '%' )
-                OR pin_initial LIKE concat( '%', #{keyword}, '%' )
-                )
-            </if>
-            and level >= 1 and level &lt;= 3
-        </where>
-        <if test="keyword != null and keyword.trim() != ''">
-            union
-            SELECT
-            NAME AS NAME,
-            CODE AS CODE,
-            parent_code AS parentCode
-            FROM
-            s_city
-            WHERE
-            NAME = ( SELECT
-            parent_name
-            FROM s_city
-            <where>
-                <if test="keyword != null and keyword.trim() != ''">
-                    and NAME LIKE concat( '%', #{keyword}, '%' )
-                </if>
-                limit 1) and level = 1
-            </where>
-        </if>
-    </select>
 
     <!--获取热门城市 -->
     <select id="getHotCity" resultType="com.cjyc.common.model.vo.customer.city.HotCityVo">
