@@ -149,7 +149,18 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         if(order == null)
             return BaseResultUtil.fail("订单号不存在,请检查");
         BeanUtils.copyProperties(order,detailVo);
+
         // 查询车辆信息
+        this.getOrderCar(dto, detailVo);
+
+        // 查询优惠券信息
+        CouponSend couponSend = couponSendDao.selectById(detailVo.getCouponSendId());
+        detailVo.setCouponName(couponSend == null ? "" : couponSend.getCouponName());
+
+        return BaseResultUtil.success(detailVo);
+    }
+
+    private void getOrderCar(OrderUpdateDto dto, OrderCenterDetailVo detailVo) {
         LambdaQueryWrapper<OrderCar> queryCarWrapper = new QueryWrapper<OrderCar>().lambda().eq(OrderCar::getOrderNo,dto.getOrderNo());
         List<OrderCar> orderCarList = orderCarDao.selectList(queryCarWrapper);
         List<OrderCarCenterVo> orderCarCenterVoList = new ArrayList<>(10);
@@ -169,17 +180,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
                 this.getCarImg(orderCar, orderCarCenter);
             }
         }
-
-        // 查询优惠券信息
-        Long couponSendId = detailVo.getCouponSendId();
-        if (couponSendId != null) {
-            CouponSend couponSend = couponSendDao.selectById(couponSendId);
-            detailVo.setCouponName(couponSend == null ? "" : couponSend.getCouponName());
-        }
-
         detailVo.setOrderCarCenterVoList(orderCarCenterVoList);
         detailVo.setOrderCarFinishPayList(orderCarFinishPayList);
-        return BaseResultUtil.success(detailVo);
     }
 
     private void getCarImg(OrderCar orderCar, OrderCarCenterVo orderCarCenter) {
