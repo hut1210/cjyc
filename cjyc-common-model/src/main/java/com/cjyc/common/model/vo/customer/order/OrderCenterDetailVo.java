@@ -1,5 +1,8 @@
 package com.cjyc.common.model.vo.customer.order;
 
+import com.cjyc.common.model.util.BigDecimalSerizlizer;
+import com.cjyc.common.model.util.DataLongSerizlizer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -15,6 +18,9 @@ import java.util.List;
 @Data
 public class OrderCenterDetailVo implements Serializable {
     private static final long serialVersionUID = 2193129578098454937L;
+    @ApiModelProperty(value = "订单主键id")
+    private Long id;
+
     @ApiModelProperty(value = "订单编号")
     private String no;
 
@@ -23,15 +29,17 @@ public class OrderCenterDetailVo implements Serializable {
     private String state;
 
     @ApiModelProperty(value = "下单时间")
+    @JsonSerialize(using = DataLongSerizlizer.class)
     private Long createTime;
 
     @ApiModelProperty(value = "托运车辆信息列表")
-    private List<OrderCarCenterVo> orderCarCenterVoList;
+    private List<OrderCarVo> orderCarCenterVoList;
 
     @ApiModelProperty(value = "托运车辆信息列表:运输中,已交付车辆")
-    private List<OrderCarCenterVo> orderCarFinishPayList;
+    private List<OrderCarVo> orderCarFinishPayList;
 
     @ApiModelProperty(value = "预计出发时间（提车日期）")
+    @JsonSerialize(using = DataLongSerizlizer.class)
     private Long expectStartDate;
 
     @ApiModelProperty(value = "发车人")
@@ -58,22 +66,28 @@ public class OrderCenterDetailVo implements Serializable {
     @ApiModelProperty(value = "目的地详细地址")
     private String endAddress;
 
-    @ApiModelProperty(value = "应收提车费")
+    @ApiModelProperty(value = "代驾提车费")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal pickFee;
 
-    @ApiModelProperty(value = "应收配送费")
+    @ApiModelProperty(value = "拖车送车费")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal backFee;
 
-    @ApiModelProperty(value = "应收干线费")
+    @ApiModelProperty(value = "物流费")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal trunkFee;
 
-    @ApiModelProperty(value = "应收订单定金")
+    @ApiModelProperty(value = "预付款")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal depositFee;
 
-    @ApiModelProperty(value = "应收追加保险费")
+    @ApiModelProperty(value = "保险费")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal addInsuranceFee;
 
     @ApiModelProperty(value = "应收总价：收车后客户应支付平台的费用，计算值")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal totalFee;
 
     @ApiModelProperty(value = "客户付款方式：0到付（默认），1预付，2账期")
@@ -88,6 +102,48 @@ public class OrderCenterDetailVo implements Serializable {
     @ApiModelProperty(value = "车辆总数")
     private Integer carNum;
 
+    public Long getCreateTime() {
+        return createTime == null ? 0 : createTime;
+    }
+    public Long getExpectStartDate() {
+        return expectStartDate == null ? 0 : expectStartDate;
+    }
+    public String getPickContactName() {
+        return pickContactName == null ? "" : pickContactName;
+    }
+    public String getPickContactPhone() {
+        return pickContactPhone == null ? "" : pickContactPhone;
+    }
+    public String getStartAddress() {
+        return startAddress == null ? "" : startAddress;
+    }
+    public String getBackContactName() {
+        return backContactName == null ? "" : backContactName;
+    }
+    public String getBackContactPhone() {
+        return backContactPhone == null ? "" : backContactPhone;
+    }
+    public String getEndAddress() {
+        return endAddress == null ? "" : endAddress;
+    }
+    public BigDecimal getPickFee() {
+        return pickFee == null ? new BigDecimal(0) : pickFee;
+    }
+    public BigDecimal getBackFee() {
+        return backFee == null ? new BigDecimal(0) : backFee;
+    }
+    public BigDecimal getTrunkFee() {
+        return trunkFee == null ? new BigDecimal(0) : trunkFee;
+    }
+    public BigDecimal getDepositFee() {
+        return depositFee == null ? new BigDecimal(0) : depositFee;
+    }
+    public BigDecimal getAddInsuranceFee() {
+        return addInsuranceFee == null ? new BigDecimal(0) : addInsuranceFee;
+    }
+    public BigDecimal getTotalFee() {
+        return totalFee == null ? new BigDecimal(0) : totalFee;
+    }
     public String getCouponName() {
         return couponName == null ? "" : couponName;
     }
