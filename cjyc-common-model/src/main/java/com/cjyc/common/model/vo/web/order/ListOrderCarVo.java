@@ -2,6 +2,7 @@ package com.cjyc.common.model.vo.web.order;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.cjyc.common.model.entity.OrderCar;
 import io.swagger.annotations.ApiModel;
@@ -159,6 +160,7 @@ public class ListOrderCarVo extends OrderCar {
     private Integer source;
 
     @Excel(name = "订单来源", orderNum = "9")
+    @TableField(exist = false)
     private String sourceStr;
 
     @ApiModelProperty(value = "创建时间")
