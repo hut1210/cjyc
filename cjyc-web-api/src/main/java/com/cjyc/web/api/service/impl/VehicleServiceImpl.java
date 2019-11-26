@@ -106,8 +106,10 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
                 .eq(VehicleRunning::getVehicleId, dto.getVehicleId()));
         if(vr != null){
             //更新运力
-            vr.setCarryCarNum(dto.getDefauleCarryNum());
-            vehicleRunningDao.updateById(vr);
+            VehicleRunning vRun = new VehicleRunning();
+            vRun.setId(vr.getId());
+            vRun.setCarryCarNum(dto.getDefauleCarryNum());
+            vehicleRunningDao.updateById(vRun);
         }
         //更新车辆
         Vehicle vehicle = vehicleDao.selectById(dto.getVehicleId());
