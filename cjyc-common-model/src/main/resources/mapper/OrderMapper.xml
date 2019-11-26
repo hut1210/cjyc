@@ -307,6 +307,7 @@
     <select id="selectPage" parameterType="com.cjyc.common.model.dto.customer.order.OrderQueryDto"
             resultMap="VinResultMap">
         select
+            o.id as id,
             o.no as no,
             o.state as state,
             o.start_city as startCity,

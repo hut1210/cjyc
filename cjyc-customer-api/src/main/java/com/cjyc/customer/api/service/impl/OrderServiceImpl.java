@@ -82,7 +82,6 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
 
     @Override
     public ResultVo<PageVo<OrderCenterVo>> getPage(OrderQueryDto dto) {
-        // 分页
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
         List<OrderCenterVo> list = orderDao.selectPage(dto);
         PageInfo<OrderCenterVo> pageInfo = new PageInfo<>(list == null ? new ArrayList<>(0) : list);

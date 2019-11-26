@@ -10,6 +10,9 @@ import java.util.List;
 @Data
 public class OrderCenterVo implements Serializable {
     private static final long serialVersionUID = -5418843717123216878L;
+    @ApiModelProperty("订单主键ID")
+    private Long id;
+
     @ApiModelProperty("订单编号")
     private String no;
 
