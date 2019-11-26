@@ -6,10 +6,8 @@ import com.cjyc.common.model.dao.IOrderDao;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo;
-import com.cjyc.salesman.api.dto.OrderDto;
 import com.cjyc.salesman.api.service.IOrderService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.data.domain.jaxb.SpringDataJaxb;
 import org.springframework.stereotype.Service;
 
 /**
@@ -23,10 +21,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements IOrderService {
 
-    @Override
-    public boolean confirm(OrderDto orderDto) {
-        return false;
-    }
 
     @Override
     public ResultVo<PageVo<OrderCarWaitDispatchVo>> waitDispatchCarList(WaitDispatchListOrderCarDto reqDto, Object o) {

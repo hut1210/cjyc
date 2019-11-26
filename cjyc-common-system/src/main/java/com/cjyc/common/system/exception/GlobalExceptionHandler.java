@@ -1,4 +1,4 @@
-package com.cjyc.web.api.exception;
+package com.cjyc.common.system.exception;
 
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.exception.ParameterException;

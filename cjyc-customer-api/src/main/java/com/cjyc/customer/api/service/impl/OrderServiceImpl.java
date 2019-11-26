@@ -164,7 +164,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         return BaseResultUtil.success(detailVo);
     }
 
-    @Override
+/*    @Override
     public ResultVo confirmPickCar(OrderUpdateDto dto) {
         // 修改车辆状态
         OrderCar orderCar = new OrderCar();
@@ -188,7 +188,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
             return result ? BaseResultUtil.success() : BaseResultUtil.fail();
         }
         return BaseResultUtil.success();
-    }
+    }*/
 
     @Override
     public ResultVo getUnInvoicePage(InvoiceApplyQueryDto dto) {

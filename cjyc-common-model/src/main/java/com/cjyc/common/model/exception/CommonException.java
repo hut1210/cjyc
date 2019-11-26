@@ -1,4 +1,4 @@
-package com.cjyc.customer.api.exception;
+package com.cjyc.common.model.exception;
 
 /**
  * @ClassName CommonException

@@ -9,7 +9,7 @@ import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.salesman.login.SalemanLoginVo;
-import com.cjyc.salesman.api.feign.ISysRoleService;
+import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.salesman.api.service.IAdminService;
 import com.cjyc.salesman.api.service.ILoginService;
 import lombok.extern.slf4j.Slf4j;
