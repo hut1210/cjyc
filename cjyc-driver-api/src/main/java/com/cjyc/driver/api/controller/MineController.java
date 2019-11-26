@@ -134,6 +134,10 @@ public class MineController {
         return csSmsService.send(dto.getPhone(), CaptchaTypeEnum.valueOf(dto.getType()), ClientEnum.APP_DRIVER);
     }
 
-
+    @ApiOperation(value = "删除银行卡")
+    @PostMapping(value = "/remove")
+    public ResultVo removeBankCard(@Validated @RequestBody RemoveBankCardDto dto) {
+        return mineService.removeBankCard(dto);
+    }
 
 }

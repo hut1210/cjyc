@@ -21,6 +21,7 @@ import com.cjyc.common.model.vo.driver.mine.DriverInfoVo;
 import com.cjyc.common.model.vo.driver.mine.DriverVehicleVo;
 import com.cjyc.common.model.vo.driver.mine.PersonDriverVo;
 import com.cjyc.common.model.vo.web.carrier.ExistCarrierVo;
+import com.cjyc.common.system.service.ICsSmsService;
 import com.cjyc.driver.api.service.IMineService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -55,6 +56,8 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
     private ICarrierDao carrierDao;
     @Resource
     private IExistDriverDao existDriverDao;
+    @Resource
+    private ICsSmsService csSmsService;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -371,5 +374,11 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
         bcb.setCreateTime(NOW);
         bankCardBindDao.insert(bcb);
         return BaseResultUtil.success();
+    }
+
+    @Override
+    public ResultVo removeBankCard(RemoveBankCardDto dto) {
+
+        return null;
     }
 }

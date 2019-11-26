@@ -82,4 +82,11 @@ public interface IMineService extends IService<Driver> {
      * @return
      */
     ResultVo addBankCard(BankCardDto dto);
+
+    /**
+     * 删除银行卡
+     * @param dto
+     * @return
+     */
+    ResultVo removeBankCard(RemoveBankCardDto dto);
 }
