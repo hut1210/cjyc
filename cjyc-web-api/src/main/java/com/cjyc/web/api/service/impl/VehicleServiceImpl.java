@@ -80,13 +80,11 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
                 .eq(dto.getDriverId() != null, VehicleRunning::getDriverId, dto.getDriverId())
                 .eq(dto.getVehicleId() != null, VehicleRunning::getVehicleId, dto.getVehicleId()));
         if (vr != null) {
-            List<Task> tasks = taskDao.selectList(new QueryWrapper<Task>().lambda().eq(Task::getVehicleRunningId, vr.getId()));
-            if (!CollectionUtils.isEmpty(tasks)) {
-                for (Task task : tasks) {
-                    if (task.getState() == TaskStateEnum.TRANSPORTING.code) {
-                        return BaseResultUtil.getVo(ResultEnum.VEHICLE_RUNNING.getCode(), ResultEnum.VEHICLE_RUNNING.getMsg());
-                    }
-                }
+            Task task = taskDao.selectOne(new QueryWrapper<Task>().lambda()
+                    .eq(Task::getVehicleRunningId,vr.getId())
+                    .eq(Task::getState,TaskStateEnum.TRANSPORTING.code));
+            if(task != null){
+                return BaseResultUtil.getVo(ResultEnum.VEHICLE_RUNNING.getCode(),ResultEnum.VEHICLE_RUNNING.getMsg());
             }
         }
         if (dto.getDriverId() != null) {

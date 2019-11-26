@@ -39,7 +39,7 @@ public interface IMineService extends IService<Driver> {
      * @param dto
      * @return
      */
-    ResultVo saveOrModifyEnterPriseVehicle(EnterPriseDto dto);
+    ResultVo saveOrModifyCarrierVehicle(EnterPriseDto dto);
 
     /**
      * 个人司机新增修改车辆信息

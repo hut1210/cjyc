@@ -15,6 +15,7 @@ import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
+import com.cjyc.common.model.enums.driver.DriverIdentityEnum;
 import com.cjyc.common.model.enums.transport.*;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
@@ -71,7 +72,12 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
             driverLoginVo = (DriverLoginVo)rv.getData();
         }
         //查询所有的
-        List<BaseLoginVo> loginVos = carrierDao.findDriverLogin(driverLoginVo.getId());
+        List<BaseLoginVo> loginVos = null;
+        if(driver == null){
+            loginVos = carrierDao.findDriverLogin(driverLoginVo.getId());
+        }else{
+            loginVos = carrierDao.findDriverLogin(driver.getId());
+        }
         //韵车库中没有
         if(CollectionUtils.isEmpty(loginVos)){
             return BaseResultUtil.fail("该账号已停用");
@@ -130,7 +136,7 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
         driver.setRealName(no);
         driver.setPhone(phone);
         driver.setType(DriverTypeEnum.SOCIETY.code);
-        driver.setIdentity(DriverRoleEnum.PERSONAL_DRIVER.code);
+        driver.setIdentity(DriverIdentityEnum.GENERAL_DRIVER.code);
         driver.setSource(DriverSourceEnum.APP_DRIVER.code);
         driver.setCreateTime(NOW);
         //新增数据到物流平台

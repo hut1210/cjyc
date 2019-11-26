@@ -319,21 +319,21 @@
     <select id="findDriverLogin" resultType="com.cjyc.common.model.vo.driver.login.BaseLoginVo"
                 parameterType="java.lang.Long">
         SELECT
-        dd.id AS id,
-        dc.id as carrierId,
-        dcdc.id as roleId,
-        dd.user_id AS userId,
-        dd.real_name AS realName,
-        dd.phone AS phone,
-        dd.identity AS identity,
-        dd.business_state AS businessState,
-        dcdc.state AS state,
-        dcdc.role as role,
-        dc.type as type,
-        dc.state as carrierState,
-        dc.NAME AS companyName,
-        dvr.plate_no AS plateNo,
-        dd.photo_img AS photoImg
+            dd.id AS id,
+            dc.id as carrierId,
+            dcdc.id as roleId,
+            dd.user_id AS userId,
+            dd.real_name AS realName,
+            dd.phone AS phone,
+            dd.identity AS identity,
+            dd.business_state AS businessState,
+            dcdc.state AS state,
+            dcdc.role as role,
+            dc.type as type,
+            dc.state as carrierState,
+            dc.NAME AS companyName,
+            dvr.plate_no AS plateNo,
+            dd.photo_img AS photoImg
     FROM
         d_carrier dc
         LEFT JOIN d_carrier_driver_con dcdc ON dcdc.carrier_id = dc.id
