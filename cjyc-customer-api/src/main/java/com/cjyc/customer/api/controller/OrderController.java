@@ -8,6 +8,7 @@ import com.cjyc.common.model.dto.web.order.SaveOrderDto;
 import com.cjyc.common.model.dto.web.task.ReceiptTaskDto;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Customer;
+import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -144,9 +145,10 @@ public class OrderController {
     @ApiOperation(value = "签收")
     @PostMapping(value = "/car/receipt")
     public ResultVo receipt(@RequestBody ReceiptTaskDto reqDto) {
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
-        reqDto.setLoginPhone(admin.getPhone());
+        Customer customer = csCustomerService.validate(reqDto.getLoginId());
+        reqDto.setLoginName(customer.getName());
+        reqDto.setLoginPhone(customer.getContactPhone());
+        reqDto.setLoginType(UserTypeEnum.CUSTOMER);
         return csTaskService.receipt(reqDto);
     }
 

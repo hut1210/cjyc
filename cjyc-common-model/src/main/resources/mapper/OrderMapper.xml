@@ -353,6 +353,12 @@
         </where>
         order by o.create_time
     </select>
+    <select id="findByCarId" resultType="com.cjyc.common.model.entity.Order">
+        select o.*
+        from w_order_car oc
+        join w_order o on oc.order_id = o.id
+        where oc.id = #{orderCarId}
+    </select>
 
 
 </mapper>
