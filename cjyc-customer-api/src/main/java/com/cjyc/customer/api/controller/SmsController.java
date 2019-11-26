@@ -65,7 +65,7 @@ public class SmsController {
         String captcha = reqDto.getCaptcha();
         Integer type = reqDto.getType();
 
-        boolean flag = csSmsService.validateCaptcha(phone, captcha, CaptchaTypeEnum.valueOf(type));
+        boolean flag = csSmsService.validateCaptcha(phone, captcha, CaptchaTypeEnum.valueOf(type), ClientEnum.APP_CUSTOMER);
 
         return flag ? BaseResultUtil.success("验证通过") : BaseResultUtil.fail("验证码错误");
     }

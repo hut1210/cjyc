@@ -43,8 +43,8 @@ public class ICsSmsServiceImpl implements ICsSmsService {
      * @since 2019/11/25 17:24
      */
     @Override
-    public boolean validateCaptcha(String phone, String captcha, CaptchaTypeEnum captchaTypeEnum) {
-        String key = RedisKeys.getCaptchaKey(ClientEnum.APP_CUSTOMER, phone, captchaTypeEnum);
+    public boolean validateCaptcha(String phone, String captcha, CaptchaTypeEnum captchaTypeEnum, ClientEnum clientEnum) {
+        String key = RedisKeys.getCaptchaKey(clientEnum, phone, captchaTypeEnum);
         String captchaCached = redisUtils.get(key);
         if(StringUtils.isBlank(captchaCached) || !captcha.equals(captchaCached)){
             return false;
@@ -63,7 +63,6 @@ public class ICsSmsServiceImpl implements ICsSmsService {
         if(count != null && Integer.valueOf(count) > 20){
             return BaseResultUtil.fail("发送短信数量超出数量限制，请明天再试");
         }
-
         //发送短信
         try {
             String message = SmsMessageEnum.SMS_CAPTCHA.getMsg(captcha);
@@ -74,7 +73,7 @@ public class ICsSmsServiceImpl implements ICsSmsService {
             return BaseResultUtil.fail("短信验证码发送失败");
         }
         //放入缓存
-        String key = RedisKeys.getCaptchaKey(ClientEnum.APP_CUSTOMER, phone, captchaTypeEnum);
+        String key = RedisKeys.getCaptchaKey(clientEnum, phone, captchaTypeEnum);
         redisUtils.set(key, captcha);
         redisUtils.expire(key, 1, TimeUnit.DAYS);
         //计数缓存
