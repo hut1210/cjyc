@@ -125,8 +125,8 @@ cjyc:
 
   #短信
   sms:
-    ##短信时效(分钟)
-    expires: 5
+    ##短信时效(秒)
+    expires: 300
     ##单日最大发送条数
     daylimit: 20
     miaoxin:

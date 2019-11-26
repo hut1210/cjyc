@@ -1,8 +1,8 @@
 package com.cjyc.driver.api.controller;
 
 import com.cjyc.common.model.dto.CarrierDriverDto;
-import com.cjyc.common.model.dto.driver.mine.*;
 import com.cjyc.common.model.dto.driver.BaseDriverDto;
+import com.cjyc.common.model.dto.driver.mine.*;
 import com.cjyc.common.model.dto.salesman.sms.CaptchaSendDto;
 import com.cjyc.common.model.vo.FreeDriverVo;
 import com.cjyc.common.model.vo.FreeVehicleVo;
@@ -12,13 +12,17 @@ import com.cjyc.common.model.vo.driver.mine.BinkCardVo;
 import com.cjyc.common.model.vo.driver.mine.DriverInfoVo;
 import com.cjyc.common.model.vo.driver.mine.PersonDriverVo;
 import com.cjyc.common.system.service.ICsDriverService;
+import com.cjyc.common.system.service.ICsSmsService;
 import com.cjyc.common.system.service.ICsVehicleService;
 import com.cjyc.driver.api.service.IMineService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -124,7 +128,7 @@ public class MineController {
     @ApiOperation(value = "获取验证码")
     @PostMapping(value = "/send")
     public ResultVo send(@Validated @RequestBody CaptchaSendDto dto) {
-        return csSmsService.send(dto);
+        return null;
     }
 
 
