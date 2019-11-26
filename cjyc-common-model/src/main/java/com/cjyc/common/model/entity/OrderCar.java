@@ -3,6 +3,7 @@ package com.cjyc.common.model.entity;
 import java.math.BigDecimal;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -79,6 +80,7 @@ public class OrderCar implements Serializable {
     private Integer state;
 
     @Excel(name = "订单状态", orderNum = "9")
+    @TableField(exist = false)
     private String stateStr;
 
     @ApiModelProperty(value = "提车方式：1调度，2自送，3物流上门")
