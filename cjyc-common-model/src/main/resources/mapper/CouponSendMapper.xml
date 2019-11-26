@@ -6,6 +6,7 @@
     <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.CouponSend">
         <id column="id" property="id" />
         <result column="coupon_id" property="couponId" />
+        <result column="coupon_name" property="couponName" />
         <result column="customer_id" property="customerId" />
         <result column="coupon_no" property="couponNo" />
         <result column="is_use" property="isUse" />
@@ -15,7 +16,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, coupon_id, customer_id, coupon_no, is_use, receive_time, use_time
+        id, coupon_id, coupon_name, customer_id, coupon_no, is_use, receive_time, use_time
     </sql>
 
     <!-- 获取领取/消耗张数 -->

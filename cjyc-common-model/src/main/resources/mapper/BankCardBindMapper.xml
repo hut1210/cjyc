@@ -33,7 +33,7 @@
     <select id="findBinkCardInfo" resultType="com.cjyc.common.model.vo.driver.mine.BinkCardVo"
                             parameterType="java.lang.Long">
         SELECT
-            IFNULL(sbcb.id,0) AS bankId,
+            IFNULL(sbcb.id,0) AS cardId,
             IFNULL(sbcb.card_no,'') AS cardNo,
             IFNULL(sbcb.bank_name,'') AS bankName
           FROM
