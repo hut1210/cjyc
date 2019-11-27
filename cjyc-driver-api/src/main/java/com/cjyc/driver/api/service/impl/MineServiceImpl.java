@@ -141,8 +141,10 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
             driverVehicleConDao.insert(dvc);
         }else{
             //判断该运力是否在运输中
-            Task task = taskDao.selectOne(new QueryWrapper<Task>().lambda().eq(Task::getVehicleRunningId,vr.getId()));
-            if(task != null && task.getState() == TaskStateEnum.TRANSPORTING.code){
+            Task task = taskDao.selectOne(new QueryWrapper<Task>().lambda()
+                               .eq(Task::getVehicleRunningId,vr.getId())
+                               .eq(Task::getState,TaskStateEnum.TRANSPORTING.code));
+            if(task != null){
                 return BaseResultUtil.getVo(ResultEnum.VEHICLE_RUNNING.getCode(),ResultEnum.VEHICLE_RUNNING.getMsg());
             }
             //更新车辆
@@ -168,14 +170,12 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
 
     @Override
     public ResultVo addOrModifyVehicle(PersonVehicleDto dto) {
-        VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda().eq(VehicleRunning::getDriverId, dto.getLoginId()));
-        if(vr == null){
+        Vehicle veh = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda().eq(Vehicle::getPlateNo,dto.getPlateNo()));
+        if((dto.getVehicleId() == null && veh != null) || (dto.getVehicleId() != null && !dto.getVehicleId().equals(veh.getId()) && veh != null)){
+            return BaseResultUtil.getVo(ResultEnum.EXIST_VEHICLE.getCode(),ResultEnum.EXIST_VEHICLE.getMsg());
+        }
+        if(dto.getVehicleId() == null){
             //新增
-            //根据车牌号查询库中有没有添加
-            Vehicle veh = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda().eq(Vehicle::getPlateNo,dto.getPlateNo()));
-            if(veh != null){
-                return BaseResultUtil.getVo(ResultEnum.EXIST_VEHICLE.getCode(),ResultEnum.EXIST_VEHICLE.getMsg());
-            }
             //获取carrierId
             CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
                     .eq(CarrierDriverCon::getId, dto.getRoleId())
@@ -231,22 +231,6 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
         veh.setCreateTime(NOW);
         veh.setCarrierId(dto.getLoginId());
         vehicleDao.insert(veh);
-
-        //保存车辆与司机关系
-        DriverVehicleCon dvc = new DriverVehicleCon();
-        dvc.setVehicleId(veh.getId());
-        dvc.setDriverId(dto.getLoginId());
-        driverVehicleConDao.insert(dvc);
-
-        //保存运力信息
-        VehicleRunning vr = new VehicleRunning();
-        vr.setDriverId(dto.getLoginId());
-        vr.setVehicleId(veh.getId());
-        vr.setPlateNo(dto.getPlateNo());
-        vr.setCarryCarNum(dto.getDefaultCarryNum());
-        vr.setRunningState(VehicleRunStateEnum.FREE.code);
-        vr.setCreateTime(NOW);
-        vehicleRunningDao.insert(vr);
     }
 
     /**
@@ -260,10 +244,14 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
         vehicle.setPlateNo(dto.getPlateNo());
         vehicleDao.updateById(vehicle);
         //修改运力
-        VehicleRunning vehr = vehicleRunningDao.selectById(dto.getVehicleId());
-        vehr.setPlateNo(dto.getPlateNo());
-        vehr.setCarryCarNum(dto.getDefaultCarryNum());
-        vehicleRunningDao.updateById(vehr);
+        VehicleRunning vehr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda()
+                                                .eq(VehicleRunning::getDriverId,dto.getLoginId())
+                                                .eq(VehicleRunning::getVehicleId,dto.getVehicleId()));
+        if(vehr != null){
+            vehr.setPlateNo(dto.getPlateNo());
+            vehr.setCarryCarNum(dto.getDefaultCarryNum());
+            vehicleRunningDao.updateById(vehr);
+        }
     }
 
     @Override
@@ -314,7 +302,8 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
         driverDao.updateById(driver);
         //运力信息
         DriverVehicleCon vehicleCon = driverVehicleConDao.selectOne(new QueryWrapper<DriverVehicleCon>().lambda()
-                .eq(DriverVehicleCon::getDriverId, dto.getLoginId()));
+                .eq(DriverVehicleCon::getDriverId, dto.getLoginId())
+                .eq(dto.getVehicleId() != null,DriverVehicleCon::getVehicleId,dto.getVehicleId()));
         if(vehicleCon == null){
             vehicleCon.setDriverId(dto.getLoginId());
             vehicleCon.setVehicleId(dto.getVehicleId());
@@ -328,7 +317,8 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
             vehicleRunningDao.insert(vr);
         }else{
             VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda()
-                    .eq(VehicleRunning::getDriverId, dto.getLoginId()));
+                    .eq(VehicleRunning::getDriverId, dto.getLoginId())
+                    .eq(dto.getVehicleId() != null,VehicleRunning::getVehicleId,dto.getVehicleId()));
             if(vr != null){
                 Task task = taskDao.selectOne(new QueryWrapper<Task>().lambda()
                         .eq(Task::getVehicleRunningId,vr.getId())

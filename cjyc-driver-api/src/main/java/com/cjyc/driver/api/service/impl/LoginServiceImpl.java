@@ -131,7 +131,6 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
         DriverLoginVo dVo = new DriverLoginVo();
         //架构组和韵车添加数据
         Driver driver = new Driver();
-        //String no = sendNoService.getNo(SendNoTypeEnum.DRIVER);
         driver.setName(phone);
         driver.setRealName(phone);
         driver.setPhone(phone);
@@ -165,6 +164,7 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
         //组装数据
         dVo.setId(driver.getId());
         dVo.setRoleId(cdc.getId());
+        dVo.setRole(cdc.getRole());
         dVo.setType(carrier.getType());
         dVo.setUserId(driver.getUserId());
         dVo.setRealName(StringUtils.isBlank(driver.getRealName()) ? "":driver.getRealName());

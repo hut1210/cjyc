@@ -20,6 +20,7 @@ import com.cjyc.common.model.vo.web.carrier.*;
 import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.ICsCarrierService;
+import com.cjyc.common.system.service.ICsDriverService;
 import com.cjyc.web.api.service.ICarrierCityConService;
 import com.cjyc.web.api.service.ICarrierService;
 import com.github.pagehelper.PageHelper;
@@ -59,6 +60,8 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     private ISysUserService sysUserService;
     @Resource
     private ICsCarrierService csCarrierService;
+    @Resource
+    private ICsDriverService csDriverService;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -80,6 +83,12 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             carrier.setBusinessState(BusinessStateEnum.BUSINESS.code);
             carrier.setCreateUserId(dto.getLoginId());
             carrier.setCreateTime(NOW);
+            //审核通过将承运商信息同步到物流平台
+            ResultData<AddDeptAndUserResp> rd = csCarrierService.saveCarrierToPlatform(carrier);
+            if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+                return BaseResultUtil.fail("承运商机构添加失败");
+            }
+            carrier.setDeptId(rd.getData().getDeptId());
             super.save(carrier);
 
             //添加承运商司机管理员
@@ -94,6 +103,15 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             driver.setCreateUserId(dto.getLoginId());
             driver.setCreateTime(NOW);
             driverDao.insert(driver);
+            driver = driverDao.selectById(driver.getId());
+            //司机信息保存
+            ResultData<Long> rData = csDriverService.addDriverToPlatform(driver, carrier.getId());
+            if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+                return BaseResultUtil.fail(rd.getMsg());
+            }
+            driver.setUserId(rData.getData());
+            driver.setId(driver.getId());
+            driverDao.updateById(driver);
 
             //承运商与司机绑定关系
             CarrierDriverCon cdc = new CarrierDriverCon();
@@ -209,15 +227,8 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         }
         //审核通过
         if(FlagEnum.AUDIT_PASS.code == dto.getFlag()){
-            //审核通过将承运商信息同步到物流平台
-            ResultData<AddDeptAndUserResp> rd = csCarrierService.saveCarrierToPlatform(carrier);
-            if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
-                return BaseResultUtil.fail("承运商机构添加失败");
-            }
             //更新司机userID信息
-            driver.setUserId(rd.getData().getUserId());
             cdc.setState(CommonStateEnum.CHECKED.code);
-            carrier.setDeptId(rd.getData().getDeptId());
             carrier.setState(CommonStateEnum.CHECKED.code);
             carrier.setCheckUserId(dto.getLoginId());
             carrier.setCheckTime(NOW);
