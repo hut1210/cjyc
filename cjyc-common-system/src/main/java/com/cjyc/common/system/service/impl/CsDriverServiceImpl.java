@@ -26,6 +26,7 @@ import com.cjyc.common.model.vo.FreeDriverVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.ICsDriverService;
+import com.cjyc.common.system.service.sys.ICsSysService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -49,9 +50,10 @@ public class CsDriverServiceImpl implements ICsDriverService {
     private ITaskDao taskDao;
     @Resource
     private ICarrierDao carrierDao;
-
     @Resource
     private ISysUserService sysUserService;
+    @Resource
+    private ICsSysService csSysService;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -298,7 +300,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
         //去除已绑定司机
         if(!CollectionUtils.isEmpty(driverIds)){
             for (int i = 0; i < driverIds.size(); i++) {
-                if(null==driverIds.get(i)){
+                if(null == driverIds.get(i)){
                     continue;
                 }
                 for (FreeDriverVo vo : freeDriverVos) {

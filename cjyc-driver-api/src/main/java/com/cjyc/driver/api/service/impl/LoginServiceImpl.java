@@ -161,7 +161,7 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
         carrierDriverConDao.insert(cdc);
         //组装数据
         dVo.setId(driver.getId());
-        dVo.setRoleId(cdc.getId());
+        dVo.setDriverRoleId(cdc.getId());
         dVo.setRole(cdc.getRole());
         dVo.setType(carrier.getType());
         dVo.setUserId(driver.getUserId());
