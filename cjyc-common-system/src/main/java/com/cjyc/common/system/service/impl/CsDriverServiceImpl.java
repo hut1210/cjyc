@@ -173,12 +173,11 @@ public class CsDriverServiceImpl implements ICsDriverService {
                 vr.setRunningState(VehicleRunStateEnum.FREE.code);
                 vr.setCreateTime(NOW);
                 vehicleRunningDao.insert(vr);
-                return BaseResultUtil.success();
             }
+            return BaseResultUtil.success();
         }else{
             return modifyDriver(dto);
         }
-        return BaseResultUtil.fail("数据有误，请联系管理员");
     }
 
     @Override
@@ -298,17 +297,19 @@ public class CsDriverServiceImpl implements ICsDriverService {
         List<Long> driverIds = driverDao.findCarrierBusyDriver(carrierId);
         //去除已绑定司机
         if(!CollectionUtils.isEmpty(driverIds)){
-            for (Long driverId : driverIds) {
+            for (int i = 0; i < driverIds.size(); i++) {
+                if(null==driverIds.get(i)){
+                    continue;
+                }
                 for (FreeDriverVo vo : freeDriverVos) {
-                    if(driverId.equals(vo.getDriverId())){
+                    if(driverIds.get(i).equals(vo.getDriverId())){
                         freeDriverVos.remove(vo);
                         break;
                     }
                 }
             }
-            return BaseResultUtil.success(freeDriverVos);
         }
-        return BaseResultUtil.fail("数据有误，请联系管理员");
+        return BaseResultUtil.success(freeDriverVos);
     }
     /**
      * 修改承运商下司机与车辆关系

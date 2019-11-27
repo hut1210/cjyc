@@ -162,7 +162,7 @@ public class CouponServiceImpl extends ServiceImpl<ICouponDao,Coupon> implements
                 vo.setSurplusAvailNum(vo.getGrantNum() - consumeNum);
             }else{
                 //未过期
-                if(NOW > vo.getExpireDeleNum()){
+                if(NOW > vo.getEndPeriodDate()){
                     //到期作废张数
                     vo.setExpireDeleNum(0);
                     //剩余可用张数

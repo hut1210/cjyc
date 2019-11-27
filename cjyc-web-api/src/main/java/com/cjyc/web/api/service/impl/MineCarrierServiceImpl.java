@@ -121,10 +121,16 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
             if(vehicle != null){
                 return BaseResultUtil.fail("该车辆已添加，请核对");
             }
+            CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
+                    .eq(CarrierDriverCon::getDriverId, dto.getLoginId())
+                    .eq(CarrierDriverCon::getId, dto.getRoleId()));
+            if(cdc == null){
+                return BaseResultUtil.fail("数据错误，请核对");
+            }
             Vehicle veh = new Vehicle();
             BeanUtils.copyProperties(dto,veh);
             veh.setOwnershipType(VehicleOwnerEnum.CARRIER.code);
-            veh.setCarrierId(dto.getCarrierId());
+            veh.setCarrierId(cdc.getCarrierId());
             veh.setCreateUserId(dto.getLoginId());
             veh.setCreateTime(NOW);
             vehicleDao.insert(veh);

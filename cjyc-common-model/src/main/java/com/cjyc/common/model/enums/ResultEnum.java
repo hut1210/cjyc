@@ -38,6 +38,8 @@ public enum ResultEnum {
     /**业务返回码*/
     NOEXIST_LINE(8001, "该班线不存在"),
     EXIST_LINE(8002, "该班线已存在"),
+    NOEXIST_STORE(8003, "该业务中心不存在"),
+
     CREATE_NEW_CUSTOMER(9001, "个人用户不存在，是否保存为新用户"),
     EXIST_CUSTOMER(9002, "该用户已存在于大客户或者合伙人中"),
     UPGRADE_CUSTOMER(9003, "账号已存在，且为普通用户，是否升级为合伙人"),
