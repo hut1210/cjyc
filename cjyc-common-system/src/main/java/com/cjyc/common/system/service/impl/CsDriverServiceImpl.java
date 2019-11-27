@@ -113,7 +113,14 @@ public class CsDriverServiceImpl implements ICsDriverService {
             CarrierDriverCon carrierDriCon = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
                     .eq(CarrierDriverCon::getDriverId, dto.getLoginId())
                     .eq(CarrierDriverCon::getId, dto.getRoleId()));
-            dto.setCarrierId(carrierDriCon.getCarrierId());
+            if(carrierDriCon == null){
+                Carrier carrier = csSysService.getCarrierByRoleId(dto.getRoleId());
+                if(carrier != null){
+                    dto.setCarrierId(carrier.getId());
+                }
+            }else{
+                dto.setCarrierId(carrierDriCon.getCarrierId());
+            }
         }
         //验证在个人司机池中是否存在
         Integer count = carrierDao.existPersonalCarrier(dto);
@@ -266,14 +273,12 @@ public class CsDriverServiceImpl implements ICsDriverService {
     @Override
     public ResultVo<List<FreeDriverVo>> findCarrierFreeDriver(FreeDto dto) {
         //获取承运商
-        CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
-                .eq(CarrierDriverCon::getId, dto.getRoleId())
-                .eq(CarrierDriverCon::getDriverId, dto.getLoginId()));
+        Carrier carrier = csSysService.getCarrierByRoleId(dto.getRoleId());
         //查询该承运商下的符合的全部司机
         List<FreeDriverVo> freeDriverVos = driverDao.findCarrierDriver(dto);
-        if(cdc != null){
+        if(carrier != null){
             if(!CollectionUtils.isEmpty(freeDriverVos)){
-                return freeDriver(freeDriverVos,cdc.getCarrierId());
+                return freeDriver(freeDriverVos,carrier.getId());
             }
         }
         return BaseResultUtil.success();

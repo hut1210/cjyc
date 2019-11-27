@@ -33,6 +33,13 @@ public class CustomerController {
     @Autowired
     private ICustomerService customerService;
 
+    @ApiOperation(value = "获取客户信息")
+    @PostMapping(value = "/findCustomerInfo")
+    public ResultVo findCustomerInfo(@RequestBody ExistCustomreDto dto){
+        return customerService.findCustomerInfo(dto);
+    }
+
+
     @ApiOperation(value = "验证用户是否存在")
     @PostMapping(value = "/existCustomer")
     public ResultVo existCustomer(@RequestBody ExistCustomreDto dto){

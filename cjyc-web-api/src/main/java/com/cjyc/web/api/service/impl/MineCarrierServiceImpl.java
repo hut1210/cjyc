@@ -19,6 +19,7 @@ import com.cjyc.common.model.vo.web.mineCarrier.MyCarVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyDriverVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyWaybillVo;
 import com.cjyc.common.system.service.ICsDriverService;
+import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.web.api.service.IMineCarrierService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -52,6 +53,8 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
     private IWaybillDao waybillDao;
     @Resource
     private ICsDriverService csDriverService;
+    @Resource
+    private ICsSysService csSysService;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -65,12 +68,10 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
 
     @Override
     public ResultVo<PageVo<MyDriverVo>> findPageDriver(QueryMyDriverDto dto) {
-        CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
-                .eq(CarrierDriverCon::getDriverId, dto.getLoginId())
-                .eq(CarrierDriverCon::getId, dto.getRoleId()));
+        Carrier carrier = csSysService.getCarrierByRoleId(dto.getRoleId());
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        if(cdc != null){
-            dto.setCarrierId(cdc.getCarrierId());
+        if(carrier != null){
+            dto.setCarrierId(carrier.getId());
             List<MyDriverVo> myDriverVos =  driverDao.findMyDriver(dto);
             if(!CollectionUtils.isEmpty(myDriverVos)){
                 for(MyDriverVo vo : myDriverVos){
@@ -121,16 +122,14 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
             if(vehicle != null){
                 return BaseResultUtil.fail("该车辆已添加，请核对");
             }
-            CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
-                    .eq(CarrierDriverCon::getDriverId, dto.getLoginId())
-                    .eq(CarrierDriverCon::getId, dto.getRoleId()));
-            if(cdc == null){
+            Carrier carrier = csSysService.getCarrierByRoleId(dto.getRoleId());
+            if(carrier == null){
                 return BaseResultUtil.fail("数据错误，请核对");
             }
             Vehicle veh = new Vehicle();
             BeanUtils.copyProperties(dto,veh);
             veh.setOwnershipType(VehicleOwnerEnum.CARRIER.code);
-            veh.setCarrierId(cdc.getCarrierId());
+            veh.setCarrierId(carrier.getId());
             veh.setCreateUserId(dto.getLoginId());
             veh.setCreateTime(NOW);
             vehicleDao.insert(veh);
@@ -159,12 +158,10 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
 
     @Override
     public ResultVo<PageVo<MyCarVo>> findPageCar(QueryMyCarDto dto) {
-        CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
-                .eq(CarrierDriverCon::getDriverId, dto.getLoginId())
-                .eq(CarrierDriverCon::getId, dto.getRoleId()));
+        Carrier carrier = csSysService.getCarrierByRoleId(dto.getRoleId());
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        if(cdc != null){
-            dto.setCarrierId(cdc.getCarrierId());
+        if(carrier != null){
+            dto.setCarrierId(carrier.getId());
             List<MyCarVo> myCarVos = vehicleDao.findMyCar(dto);
             PageInfo<MyCarVo> pageInfo = new PageInfo<>(myCarVos);
             return BaseResultUtil.success(pageInfo);
@@ -178,6 +175,11 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
      * @return
      */
     private ResultVo modifyVehicle(CarrierVehicleDto dto) {
+        Vehicle vehicle = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda()
+                .eq(Vehicle::getId, dto.getVehicleId()));
+        vehicle.setDefaultCarryNum(dto.getDefaultCarryNum());
+        vehicleDao.updateById(vehicle);
+
         DriverVehicleCon dvc = driverVehicleConDao.selectOne(new QueryWrapper<DriverVehicleCon>().lambda().eq(DriverVehicleCon::getVehicleId,dto.getVehicleId()));
         if((dvc != null && dto.getDriverId().equals(dvc.getDriverId()))
             || (dvc == null && dto.getDriverId() == null)){

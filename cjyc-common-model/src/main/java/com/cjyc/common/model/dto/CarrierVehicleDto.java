@@ -21,7 +21,7 @@ public class CarrierVehicleDto implements Serializable {
     @ApiModelProperty("司机id(driverId)")
     private Long driverId;
 
-    @ApiModelProperty("承运商管理员角色(d_carrier_driver_con)id")
+    @ApiModelProperty("承运商管理员角色id")
     private Long roleId;
 
     @ApiModelProperty("车辆id")

@@ -10,6 +10,7 @@ import com.cjyc.common.model.vo.web.coupon.CustomerCouponSendVo;
 import com.cjyc.common.model.vo.web.customer.CustomerPartnerVo;
 import com.cjyc.common.model.vo.web.customer.ListKeyCustomerVo;
 import com.cjyc.common.model.vo.web.customer.ShowKeyCustomerVo;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -20,6 +21,12 @@ import java.util.List;
  */
 public interface ICustomerService  extends IService<Customer> {
 
+    /**
+     * 根据手机号获取客户信息
+     * @param dto
+     * @return
+     */
+    ResultVo findCustomerInfo(ExistCustomreDto dto);
     /**
      * 验证用户是否已存在
      * @param dto

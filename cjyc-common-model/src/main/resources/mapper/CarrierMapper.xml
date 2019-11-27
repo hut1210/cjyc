@@ -321,7 +321,7 @@
         SELECT
             dd.id AS id,
             dc.id as carrierId,
-            dcdc.id as driverRoleId,
+            dcdc.id as roleId,
             dd.user_id AS userId,
             dd.real_name AS realName,
             dd.phone AS phone,
