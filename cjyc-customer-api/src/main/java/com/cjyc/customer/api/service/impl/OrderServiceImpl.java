@@ -5,9 +5,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.customer.invoice.InvoiceApplyQueryDto;
+import com.cjyc.common.model.dto.customer.order.OrderDetailDto;
 import com.cjyc.common.model.dto.customer.order.OrderQueryDto;
 import com.cjyc.common.model.dto.customer.order.OrderUpdateDto;
 import com.cjyc.common.model.dto.customer.order.SimpleSaveOrderDto;
+import com.cjyc.common.model.dto.web.order.CommitOrderDto;
 import com.cjyc.common.model.dto.web.order.SaveOrderDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
@@ -130,7 +132,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
     }
 
     @Override
-    public ResultVo<OrderCenterDetailVo> getDetail(OrderUpdateDto dto) {
+    public ResultVo<OrderCenterDetailVo> getDetail(OrderDetailDto dto) {
         OrderCenterDetailVo detailVo = new OrderCenterDetailVo();
         // 查询订单信息
         LambdaQueryWrapper<Order> queryOrderWrapper = new QueryWrapper<Order>().lambda()
@@ -150,7 +152,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         return BaseResultUtil.success(detailVo);
     }
 
-    private void getOrderCar(OrderUpdateDto dto, OrderCenterDetailVo detailVo) {
+    private void getOrderCar(OrderDetailDto dto, OrderCenterDetailVo detailVo) {
         LambdaQueryWrapper<OrderCar> queryCarWrapper = new QueryWrapper<OrderCar>().lambda().eq(OrderCar::getOrderNo,dto.getOrderNo());
         List<OrderCar> orderCarList = orderCarDao.selectList(queryCarWrapper);
         List<OrderCarCenterVo> orderCarCenterVoList = new ArrayList<>(10);
@@ -169,9 +171,9 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
                 // 查询车辆图片
                 this.getCarImg(orderCar, orderCarCenter);
                 //
-                CarSeries carSeries = carSeriesDao.selectOne(new QueryWrapper<CarSeries>().lambda().eq(CarSeries::getModel, orderCar.getModel()));
-                if(carSeries != null)
-                    orderCarCenter.setLogoImg(carSeries.getLogoImg());
+                List<CarSeries> carSeriesList = carSeriesDao.selectList(new QueryWrapper<CarSeries>().lambda().eq(CarSeries::getModel, orderCar.getModel()));
+                if(!CollectionUtils.isEmpty(carSeriesList))
+                    orderCarCenter.setLogoImg(carSeriesList.get(0).getLogoImg());
             }
         }
         detailVo.setOrderCarCenterVoList(orderCarCenterVoList);
@@ -180,11 +182,12 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
 
     private void getCarImg(OrderCar orderCar, OrderCarCenterVo orderCarCenter) {
         List<String> photoImgList = new ArrayList<>(10);
-        WaybillCar waybillCar = waybillCarDao.selectOne(new QueryWrapper<WaybillCar>().lambda()
+        List<WaybillCar> waybillCarList = waybillCarDao.selectList(new QueryWrapper<WaybillCar>().lambda()
                 .eq(WaybillCar::getOrderCarId, orderCar.getId()).select(WaybillCar::getLoadPhotoImg,WaybillCar::getUnloadPhotoImg));
-        if (waybillCar != null) {
-            String loadPhotoImg = waybillCar.getLoadPhotoImg();
-            String unloadPhotoImg = waybillCar.getUnloadPhotoImg();
+        if (!CollectionUtils.isEmpty(waybillCarList)) {
+            WaybillCar waybillCar = waybillCarList.get(0);
+            String loadPhotoImg = waybillCar == null ? "" : waybillCar.getLoadPhotoImg();
+            String unloadPhotoImg = waybillCar == null ? "" : waybillCar.getUnloadPhotoImg();
             if (!StringUtils.isEmpty(loadPhotoImg)) {
                 String[] array = loadPhotoImg.split(",");
                 Collections.addAll(photoImgList,array);
