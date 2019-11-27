@@ -2,7 +2,6 @@ package com.cjyc.customer.api.controller;
 
 import com.cjyc.common.model.dto.customer.order.OrderDetailDto;
 import com.cjyc.common.model.dto.customer.order.OrderQueryDto;
-import com.cjyc.common.model.dto.customer.order.OrderUpdateDto;
 import com.cjyc.common.model.dto.customer.order.SimpleSaveOrderDto;
 import com.cjyc.common.model.dto.web.order.CancelOrderDto;
 import com.cjyc.common.model.dto.web.order.SaveOrderDto;
