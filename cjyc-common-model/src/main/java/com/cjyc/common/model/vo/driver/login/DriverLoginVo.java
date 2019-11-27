@@ -18,9 +18,9 @@ public class DriverLoginVo implements Serializable {
     @JsonSerialize(using= ToStringSerializer.class)
     private Long carrierId;
 
-    @ApiModelProperty("角色id")
+    @ApiModelProperty("司机角色id")
     @JsonSerialize(using= ToStringSerializer.class)
-    private Long roleId;
+    private Long driverRoleId;
 
     @ApiModelProperty("角色：0个人司机，1下属司机，2管理员，3超级管理员")
     private Integer role;
@@ -43,6 +43,9 @@ public class DriverLoginVo implements Serializable {
 
     @ApiModelProperty("营运状态：0营运中(空闲)，1停运中(繁忙)")
     private Integer businessState;
+
+    @ApiModelProperty("状态：0待审核，2已审核，4取消，5冻结  7已驳回，9已停用（CommonStateEnum）")
+    private Integer state;
 
     @ApiModelProperty("公司名称")
     private String companyName;
