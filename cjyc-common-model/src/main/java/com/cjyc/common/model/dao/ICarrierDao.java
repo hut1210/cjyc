@@ -94,4 +94,6 @@ public interface ICarrierDao extends BaseMapper<Carrier> {
      * @return
      */
     List<BaseLoginVo> findDriverLogin(@Param("driverId") Long driverId);
+
+    Carrier findByDeptId(Long deptId);
 }

@@ -7,8 +7,10 @@ package com.cjyc.common.model.enums;
 public enum ResultEnum {
     /** 通用 */
     SUCCESS(0, "成功"),
-    //通用业务失败状态， 可以自定义返回消息msg 如：用户名或密码错误、提交失败等
+    //通用业务失败状态， 可以自定义返回消息msg 如：用户名或密码错误、提交失败等,
     FAIL(1, "处理失败"),
+    //有必要时用
+    SUCCESS_NONE(5, "成功但没有数据"),
 
     TOKEN_EXPIRE(401, "token过期"),
 

@@ -18,6 +18,8 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.entity.defined.FullCity;
 import com.cjyc.common.system.service.*;
+import com.google.common.collect.Sets;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,13 +27,14 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 订单公共业务
  * @author JPG
  */
 @Service
-@Transactional(rollbackFor = RuntimeException.class)
+@Transactional(rollbackFor = Exception.class)
 public class CsOrderServiceImpl implements ICsOrderService {
     @Resource
     private IOrderDao orderDao;
@@ -100,9 +103,27 @@ public class CsOrderServiceImpl implements ICsOrderService {
             orderCarDao.deleteBatchByOrderId(order.getId());
         }
         int noCount = 1;
+        Set<String> vinSet = Sets.newHashSet();
+        Set<String> plateNoSet = Sets.newHashSet();
         for (SaveOrderCarDto dto : carDtoList) {
             if (dto == null) {
                 continue;
+            }
+            //验证vin码是否重复
+            String vin = dto.getVin();
+            if(StringUtils.isNotBlank(vin)){
+                if(vinSet.contains(vin)){
+                    throw new ParameterException("vin码：{0}重复", vin);
+                }
+                vinSet.add(vin);
+            }
+            //验证车牌号是否重复
+            String plateNo = dto.getPlateNo();
+            if(StringUtils.isNotBlank(plateNo)){
+                if(plateNoSet.contains(plateNo)){
+                    throw new ParameterException("车牌号码：{0}重复", plateNo);
+                }
+                plateNoSet.add(plateNo);
             }
 
             OrderCar orderCar = new OrderCar();
@@ -158,7 +179,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
             order.setNo(csSendNoService.getNo(SendNoTypeEnum.ORDER));
         }
         //计算所属业务中心ID
-        if(paramsDto.getStartStoreId() > 0){
+        if(paramsDto.getStartStoreId() != null && paramsDto.getStartStoreId() > 0){
             order.setStartBelongStoreId(paramsDto.getStartStoreId());
         }else{
             //查询地址所属业务中心
@@ -167,7 +188,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 order.setStartBelongStoreId(startBelongStore.getId());
             }
         }
-        if(paramsDto.getEndStoreId() > 0){
+        if(paramsDto.getEndStoreId() != null && paramsDto.getEndStoreId() > 0){
             order.setStartBelongStoreId(paramsDto.getEndStoreId());
         }else{
             //查询地址所属业务中心
@@ -199,9 +220,27 @@ public class CsOrderServiceImpl implements ICsOrderService {
         }
         //费用统计变量
         int noCount = 0;
+        Set<String> vinSet = Sets.newHashSet();
+        Set<String> plateNoSet = Sets.newHashSet();
         for (CommitOrderCarDto dto : carDtoList) {
             if (dto == null) {
                 continue;
+            }
+            //验证vin码是否重复
+            String vin = dto.getVin();
+            if(StringUtils.isNotBlank(vin)){
+                if(vinSet.contains(vin)){
+                    throw new ParameterException("vin码：{0}重复", vin);
+                }
+                vinSet.add(vin);
+            }
+            //验证车牌号是否重复
+            String plateNo = dto.getPlateNo();
+            if(StringUtils.isNotBlank(plateNo)){
+                if(plateNoSet.contains(plateNo)){
+                    throw new ParameterException("车牌号码：{0}重复", plateNo);
+                }
+                plateNoSet.add(plateNo);
             }
             //统计数量
             noCount++;
@@ -230,10 +269,16 @@ public class CsOrderServiceImpl implements ICsOrderService {
         return BaseResultUtil.success();
     }
 
+    /**
+     * 下单验证客户
+     * @author JPG
+     * @since 2019/11/27 14:05
+     * @param paramsDto
+     */
     private ResultVo<Customer> validateCustomer(CommitOrderDto paramsDto) {
         Customer customer = null;
         if (paramsDto.getCustomerId() != null) {
-            customer = csCustomerService.getByUserId(paramsDto.getCustomerId(),true);
+            customer = csCustomerService.getById(paramsDto.getCustomerId(),true);
             if(customer != null && !customer.getName().equals(paramsDto.getCustomerName())){
                 return BaseResultUtil.fail(ResultEnum.CREATE_NEW_CUSTOMER.getCode(),
                         "客户手机号存在，名称不一致：新名称（{0}）旧名称（{1}），请返回订单重新选择客户",
@@ -388,8 +433,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
         if (order == null || order.getState() >= OrderStateEnum.WAIT_RECHECK.code) {
             return BaseResultUtil.fail("订单不允许修改");
         }
-        order.setAllotToUserId(paramsDto.getToUserId());
-        order.setAllotToUserName(paramsDto.getToUserName());
+        order.setAllotToUserId(paramsDto.getToAdminId());
+        order.setAllotToUserName(paramsDto.getToAdminName());
         orderDao.updateById(order);
         return BaseResultUtil.success();
     }

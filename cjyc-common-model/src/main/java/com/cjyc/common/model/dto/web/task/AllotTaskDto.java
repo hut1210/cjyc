@@ -26,6 +26,11 @@ public class AllotTaskDto {
     @ApiModelProperty(value = "司机ID",required = true)
     private Long driverId;
 
+    @ApiModelProperty(value = "指导线路",required = true)
+    private String guideLine;
+
+    @ApiModelProperty(value = "备注",required = true)
+    private String remark;
     @ApiModelProperty(value = "运单车辆ID",required = true)
     private List<Long> waybillCarIdList;
 

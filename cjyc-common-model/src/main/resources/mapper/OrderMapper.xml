@@ -63,6 +63,12 @@
         set state = #{state}
         where id = ${id}
     </update>
+    <update id="updateForReceipt">
+        update w_order
+        set state = 100,
+        set finish_time = #{currentTimeMillis}
+        where id = #{id}
+    </update>
 
     <resultMap id="VinResultMap" type="com.cjyc.common.model.vo.customer.order.OrderCenterVo">
         <!--查询该订单号下的一条车辆信息-->

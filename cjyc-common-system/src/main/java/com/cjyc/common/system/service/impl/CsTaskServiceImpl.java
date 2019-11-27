@@ -66,11 +66,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
     @Resource
     private ICsStorageLogService csStorageLogService;
     @Resource
-    private ICsStoreService csStoreService;
-    @Resource
     private ICsSmsService csSmsService;
-    @Resource
-    private ICsAdminService csAdminService;
 
     @Override
     public String getTaskNo(String waybillNo) {
@@ -124,11 +120,13 @@ public class CsTaskServiceImpl implements ICsTaskService {
             task.setNo("");
             task.setWaybillId(waybill.getId());
             task.setWaybillNo(waybill.getNo());
+            task.setGuideLine(paramsDto.getGuideLine());
             task.setCarNum(paramsDto.getWaybillCarIdList().size());
             task.setState(TaskStateEnum.WAIT_ALLOT_CONFIRM.code);
             task.setDriverId(driver.getId());
             task.setDriverPhone(driver.getPhone());
             task.setDriverName(driver.getName());
+            task.setRemark(paramsDto.getRemark());
             task.setCreateTime(System.currentTimeMillis());
             task.setCreateUser(paramsDto.getLoginName());
             task.setCreateUserId(paramsDto.getLoginId());
@@ -621,7 +619,8 @@ public class CsTaskServiceImpl implements ICsTaskService {
 
         int count = 0;
         Set<Long> waybillCarIdSet = Sets.newHashSet();
-        List<String> customerPhoneSet = Lists.newArrayList();
+        List<String> customerPhoneList = Lists.newArrayList();
+        Set<Long> orderSet = Sets.newHashSet();
         for (Long taskCarId : paramsDto.getTaskCarIdList()) {
             if (taskCarId == null) {
                 continue;
@@ -640,22 +639,20 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 continue;
             }
             Order order = orderDao.findByCarId(waybillCar.getOrderCarId());
-            if(order != null && StringUtils.isNotBlank(order.getBackContactPhone()) && !customerPhoneSet.contains(order.getBackContactPhone())){
-                customerPhoneSet.add(order.getBackContactPhone());
+            if(order != null && StringUtils.isNotBlank(order.getBackContactPhone()) && !customerPhoneList.contains(order.getBackContactPhone())){
+                customerPhoneList.add(order.getBackContactPhone());
             }
 
-            //验证订单是否已经完成
-            int n = orderCarDao.countUnFinishByOrderId(order.getId());
 
             waybillCarIdSet.add(waybillCar.getId());
-
+            orderSet.add(order.getId());
             count++;
         }
-        if(customerPhoneSet.size() > 1){
+        if(customerPhoneList.size() > 1){
             return BaseResultUtil.fail("批量收车不能同时包含多个收车人订单");
         }
 
-        boolean flag = csSmsService.validateCaptcha(customerPhoneSet.get(0), paramsDto.getCaptcha(), CaptchaTypeEnum.CONFIRM_RECEIPT, paramsDto.getClientEnum());
+        boolean flag = csSmsService.validateCaptcha(customerPhoneList.get(0), paramsDto.getCaptcha(), CaptchaTypeEnum.CONFIRM_RECEIPT, paramsDto.getClientEnum());
         if(!flag){
             return BaseResultUtil.fail("收车码错误");
         }
@@ -675,6 +672,16 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 waybillDao.updateStateById(WaybillStateEnum.FINISHED.code, waybill.getId());
             }
         }
+
+        //验证订单是否完成
+        orderSet.forEach(orderId -> {
+            int rows = orderCarDao.countUnFinishByOrderId(orderId);
+            if(rows <= 0){
+                //更新订单状态
+                orderDao.updateForReceipt(orderId, System.currentTimeMillis());
+            }
+        });
+
 
         //TODO 发送收车推送信息
         resultReasonVo.setSuccessList(successSet);
