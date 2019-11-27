@@ -71,9 +71,17 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
     }
 
     @Override
-    public ResultVo SimpleSubmit(SimpleSaveOrderDto paramsDto) {
-        orderDao.selectById(paramsDto.getLoginId());
-        return null;
+    public ResultVo simpleSubmit(SimpleSaveOrderDto paramsDto) {
+        Order order = orderDao.selectById(paramsDto.getLoginId());
+        if(order.getId() == null){
+            return BaseResultUtil.fail("订单不存在");
+        }
+        if(order.getState() > OrderStateEnum.WAIT_SUBMIT.code){
+            return BaseResultUtil.fail("订单已经提交过");
+        }
+        order.setState(OrderStateEnum.SUBMITTED.code);
+        orderDao.updateById(order);
+        return BaseResultUtil.success();
     }
 
     @Override

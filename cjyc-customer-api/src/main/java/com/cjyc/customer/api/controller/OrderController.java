@@ -55,10 +55,8 @@ public class OrderController {
     public ResultVo save(@RequestBody SaveOrderDto reqDto) {
 
         //验证用户存不存在
-        Customer customer = csCustomerService.getById(reqDto.getLoginId(), true);
-        if(customer == null){
-            return BaseResultUtil.fail("用户不存在");
-        }
+        Customer customer = csCustomerService.validate(reqDto.getLoginId());
+        reqDto.setLoginName(customer.getName());
         reqDto.setCreateUserId(customer.getUserId());
         reqDto.setCreateUserName(customer.getName());
 
@@ -75,13 +73,10 @@ public class OrderController {
     public ResultVo submit(@Validated @RequestBody SaveOrderDto reqDto) {
 
         //验证用户存不存在
-        Customer admin = csCustomerService.getById(reqDto.getLoginId(), true);
-        if(admin == null){
-            return BaseResultUtil.fail("用户不存在");
-        }
-        reqDto.setLoginName(admin.getName());
-        reqDto.setCreateUserId(admin.getUserId());
-        reqDto.setCreateUserName(admin.getName());
+        Customer customer = csCustomerService.validate(reqDto.getLoginId());
+        reqDto.setLoginName(customer.getName());
+        reqDto.setCreateUserId(customer.getUserId());
+        reqDto.setCreateUserName(customer.getName());
 
         //发送推送信息
         return orderService.submit(reqDto);
@@ -93,17 +88,14 @@ public class OrderController {
      */
     @ApiOperation(value = "订单简单提交-客户")
     @PostMapping(value = "/simple/submit")
-    public ResultVo submit(@Validated @RequestBody SimpleSaveOrderDto reqDto) {
+    public ResultVo simpleSubmit(@Validated @RequestBody SimpleSaveOrderDto reqDto) {
 
         //验证用户存不存在
-        Customer admin = csCustomerService.getById(reqDto.getLoginId(), true);
-        if(admin == null){
-            return BaseResultUtil.fail("用户不存在");
-        }
-        reqDto.setLoginName(admin.getName());
+        Customer customer = csCustomerService.validate(reqDto.getLoginId());
+        reqDto.setLoginName(customer.getName());
 
         //发送推送信息
-        return orderService.SimpleSubmit(reqDto);
+        return orderService.simpleSubmit(reqDto);
     }
 
     /**

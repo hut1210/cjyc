@@ -79,5 +79,5 @@ public interface IOrderService extends IService<Order> {
      */
     ResultVo submit(SaveOrderDto reqDto);
 
-    ResultVo SimpleSubmit(SimpleSaveOrderDto reqDto);
+    ResultVo simpleSubmit(SimpleSaveOrderDto reqDto);
 }
