@@ -67,12 +67,11 @@
             dd.real_name AS realName,
             dd.phone AS phone,
             dcdc.MODE AS MODE
-      FROM
-          d_vehicle dv
+        FROM
+            d_vehicle dv
         LEFT JOIN d_driver_vehicle_con ddvc ON ddvc.vehicle_id = dv.id
         LEFT JOIN d_driver dd ON dd.id = ddvc.driver_id
         LEFT JOIN d_carrier_driver_con dcdc ON dcdc.driver_id = dd.id
-        LEFT JOIN d_carrier dc ON dc.id = dcdc.carrier_id
         <where>
             <if test="realName != null and realName.trim() != ''">
                 dd.real_name like CONCAT('%',#{realName},'%')
@@ -86,7 +85,7 @@
             <if test="plateNo != null and plateNo.trim() != ''">
                 and  dvr.plate_no = #{plateNo}
             </if>
-            and dv.id = #{carrierId}
+            and dv.carrier_id = #{carrierId}
         </where>
     </select>
 
