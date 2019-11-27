@@ -7,6 +7,7 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.vo.web.coupon.CustomerCouponSendVo;
+import com.cjyc.common.model.vo.web.customer.CustomerInfoVo;
 import com.cjyc.common.model.vo.web.customer.CustomerPartnerVo;
 import com.cjyc.common.model.vo.web.customer.ListKeyCustomerVo;
 import com.cjyc.common.model.vo.web.customer.ShowKeyCustomerVo;
@@ -26,7 +27,7 @@ public interface ICustomerService  extends IService<Customer> {
      * @param dto
      * @return
      */
-    ResultVo findCustomerInfo(ExistCustomreDto dto);
+    ResultVo<CustomerInfoVo> findCustomerInfo(ExistCustomreDto dto);
     /**
      * 验证用户是否已存在
      * @param dto
