@@ -24,7 +24,7 @@ public interface ICarSeriesService extends IService<CarSeries> {
      * @param carSeriesAddDto
      * @return
      */
-    boolean add(CarSeriesAddDto carSeriesAddDto);
+    ResultVo add(CarSeriesAddDto carSeriesAddDto);
 
     /**
      * 修改
@@ -45,7 +45,7 @@ public interface ICarSeriesService extends IService<CarSeries> {
      * @param file
      * @return
      */
-    boolean importExcel(MultipartFile file,Long createUserId);
+    ResultVo importExcel(MultipartFile file,Long createUserId);
 
     /**
      * 导出Excel表格

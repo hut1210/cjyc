@@ -41,4 +41,6 @@ public interface IOrderDao extends BaseMapper<Order> {
     Map<String, Object> countForAllTab(@Param("loginId") Long loginId, @Param("bizScope") Set<Long> bizScope);
 
     int updateStateById(@Param("state") int state, @Param("id") Long id);
+
+    Order findByCarId(Long orderCarId);
 }

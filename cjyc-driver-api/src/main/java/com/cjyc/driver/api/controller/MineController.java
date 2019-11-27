@@ -1,6 +1,7 @@
 package com.cjyc.driver.api.controller;
 
 import com.cjyc.common.model.dto.CarrierDriverDto;
+import com.cjyc.common.model.dto.KeywordDto;
 import com.cjyc.common.model.dto.driver.BaseDriverDto;
 import com.cjyc.common.model.dto.driver.mine.*;
 import com.cjyc.common.model.dto.salesman.sms.CaptchaSendDto;
@@ -90,6 +91,12 @@ public class MineController {
     @PostMapping(value = "/frozenDriver")
     public ResultVo frozenDriver(@Validated @RequestBody FrozenDto dto){
         return mineService.frozenDriver(dto);
+    }
+
+    @ApiOperation(value = "查询没有被绑定的社会车辆信息")
+    @PostMapping(value = "/findPersonFreeVehicle")
+    public ResultVo<List<FreeVehicleVo>> findPersonFreeVehicle(@RequestBody KeywordDto dto){
+        return csVehicleService.findPersonFreeVehicle(dto);
     }
 
     @ApiOperation(value = "个人司机添加/修改车辆信息")

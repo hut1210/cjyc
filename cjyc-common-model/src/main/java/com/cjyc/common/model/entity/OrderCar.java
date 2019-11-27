@@ -1,6 +1,9 @@
 package com.cjyc.common.model.entity;
 
 import java.math.BigDecimal;
+
+import cn.afterturn.easypoi.excel.annotation.Excel;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -36,21 +39,26 @@ public class OrderCar implements Serializable {
     private Long orderId;
 
     @ApiModelProperty(value = "订单编号")
+    @Excel(name = "订单编号", orderNum = "9")
     private String orderNo;
 
     @ApiModelProperty(value = "车辆编码")
+    @Excel(name = "车辆编码", orderNum = "0")
     private String no;
 
     @ApiModelProperty(value = "品牌")
+    @Excel(name = "品牌", orderNum = "9")
     private String brand;
 
     @ApiModelProperty(value = "型号")
+    @Excel(name = "型号", orderNum = "9")
     private String model;
 
     @ApiModelProperty(value = "车牌号")
     private String plateNo;
 
     @ApiModelProperty(value = "vin码")
+    @Excel(name = "vin码", orderNum = "1")
     private String vin;
 
     @ApiModelProperty(value = "是否能动 0-否 1-是")
@@ -70,6 +78,10 @@ public class OrderCar implements Serializable {
 
     @ApiModelProperty(value = "状态：0待路由，5待提车调度，10待提车，12待自送交车，15提车中（待交车），25待干线调度<循环>（提车入库），35待干线提车<循环>，40干线中<循环>（待干线交车），45待配送调度（干线入库），50待配送提车，55配送中（待配送交车），70待自取提车，100已签收")
     private Integer state;
+
+    @Excel(name = "订单状态", orderNum = "9")
+    @TableField(exist = false)
+    private String stateStr;
 
     @ApiModelProperty(value = "提车方式：1调度，2自送，3物流上门")
     private Integer pickMode;
@@ -111,6 +123,7 @@ public class OrderCar implements Serializable {
     private BigDecimal agencyFee;
 
     @ApiModelProperty(value = "单车总费用")
+    @Excel(name = "单车总费用", orderNum = "9")
     private BigDecimal totalFee;
 
     @ApiModelProperty(value = "应收状态：0未支付，1已支付")

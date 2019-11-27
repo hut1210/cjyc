@@ -89,8 +89,9 @@ public class CsSendNoServiceImpl implements ICsSendNoService {
         String driverNo = null;
         String lockKey = getRandomNoKey(type.prefix);
         try {
-            if (!redisLock.lock(lockKey, 86400, 10, 200)) {
-                throw new RuntimeException("获取订单编号失败");
+            String s = redisUtil.get(lockKey);
+            if (!redisLock.lock(lockKey, 20000, 99, 200)) {
+                throw new RuntimeException("服务器繁忙稍后再试");
             }
 
             String setKey = getRandomNoSetKey(type.prefix);
@@ -131,7 +132,7 @@ public class CsSendNoServiceImpl implements ICsSendNoService {
             }
             redisUtil.sAdd(setKey, driverNo);
         }catch(Exception e){
-            throw new ServerException("获取编号失败");
+            throw new ServerException(e.getMessage());
         } finally {
             redisUtil.delete(lockKey);
         }
@@ -152,6 +153,7 @@ public class CsSendNoServiceImpl implements ICsSendNoService {
         String random = null;
         String lockKey = getSendNoKey(sendNoTypeEnum.prefix, time);
         try {
+
             if (!redisLock.lock(lockKey, 86400, 10, 200)) {
                 throw new RuntimeException("获取订单编号失败");
             }

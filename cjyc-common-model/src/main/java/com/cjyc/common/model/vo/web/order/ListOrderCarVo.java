@@ -1,6 +1,8 @@
 package com.cjyc.common.model.vo.web.order;
 
+import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.cjyc.common.model.entity.OrderCar;
 import io.swagger.annotations.ApiModel;
@@ -33,6 +35,7 @@ public class ListOrderCarVo extends OrderCar {
     private Long customerId;
 
     @ApiModelProperty(value = "客户名称")
+    @Excel(name = "客户名称", orderNum = "9")
     private String customerName;
 
     @ApiModelProperty(value = "客户电话")
@@ -54,6 +57,7 @@ public class ListOrderCarVo extends OrderCar {
     private String startProvinceCode;
 
     @ApiModelProperty(value = "市")
+    @Excel(name = "始发城市", orderNum = "9")
     private String startCity;
 
     @ApiModelProperty(value = "市编号")
@@ -78,6 +82,7 @@ public class ListOrderCarVo extends OrderCar {
     private Long startStoreId;
 
     @ApiModelProperty(value = "出发地业务中心名称")
+    @Excel(name = "出发地业务中心", orderNum = "9")
     private String startStoreName;
     @ApiModelProperty(value = "出发地业务所属中心名称")
     private Long startBelongStoreId;
@@ -89,6 +94,7 @@ public class ListOrderCarVo extends OrderCar {
     private String endProvinceCode;
 
     @ApiModelProperty(value = "市")
+    @Excel(name = "目的城市", orderNum = "9")
     private String endCity;
 
     @ApiModelProperty(value = "市编号")
@@ -152,6 +158,10 @@ public class ListOrderCarVo extends OrderCar {
 
     @ApiModelProperty(value = "订单来源：1WEB管理后台, 2业务员APP, 4司机APP, 6用户端APP, 7用户端小程序")
     private Integer source;
+
+    @Excel(name = "订单来源", orderNum = "9")
+    @TableField(exist = false)
+    private String sourceStr;
 
     @ApiModelProperty(value = "创建时间")
     private Long createTime;

@@ -71,7 +71,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
     private IExistDriverDao existDriverDao;
     @Resource
     private ICarrierCityConService carrierCityConService;
-    @Autowired
+    @Resource
     private ISysUserService sysUserService;
     @Resource
     private ICsDriverService csDriverService;
@@ -113,6 +113,11 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
             driver.setSource(DriverSourceEnum.SALEMAN_WEB.code);
             driver.setCreateTime(NOW);
             driver.setCreateUserId(dto.getLoginId());
+            ResultData<Long> saveRd = csDriverService.saveDriverToPlatform(driver);
+            if (!ReturnMsg.SUCCESS.getCode().equals(saveRd.getCode())) {
+                return BaseResultUtil.fail("司机信息保存失败，原因：" + saveRd.getMsg());
+            }
+            driver.setUserId(saveRd.getData());
             super.save(driver);
 
             if(StringUtils.isNotBlank(dto.getPlateNo()) && dto.getVehicleId() != null
@@ -177,12 +182,12 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
             return BaseResultUtil.fail("数据错误");
         }
         //修改司机信息
-        if(cdc.getState() == CommonStateEnum.CHECKED.code){
-            ResultData rd = csDriverService.updateUserToPlatform(driver);
-            if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
-                return BaseResultUtil.fail("司机信息同步失败，原因：" + rd.getMsg());
-            }
+        //if(cdc.getState() == CommonStateEnum.CHECKED.code){
+        ResultData rd = csDriverService.updateUserToPlatform(driver);
+        if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+            return BaseResultUtil.fail("司机信息同步失败，原因：" + rd.getMsg());
         }
+       // }
 
         BeanUtils.copyProperties(dto,driver);
         driver.setName(dto.getRealName());
@@ -268,11 +273,6 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         //审核通过
         if(dto.getFlag() == FlagEnum.AUDIT_PASS.code){
             //保存司机用户到平台，返回用户id
-            ResultData<Long> saveRd = csDriverService.saveDriverToPlatform(driver);
-            if (!ReturnMsg.SUCCESS.getCode().equals(saveRd.getCode())) {
-                return BaseResultUtil.fail("司机信息保存失败，原因：" + saveRd.getMsg());
-            }
-            driver.setUserId(saveRd.getData());
             cdc.setState(CommonStateEnum.CHECKED.code);
             //更新承运商
             carr.setState(CommonStateEnum.CHECKED.code);

@@ -292,7 +292,7 @@
 
     <!--查询该承该运商下的司机-->
     <select id="findMyDriver" resultType="com.cjyc.common.model.vo.web.mineCarrier.MyDriverVo"
-                                parameterType="com.cjyc.common.model.dto.web.mineCarrier.QueryMyDriverDto">
+            parameterType="com.cjyc.common.model.dto.web.mineCarrier.QueryMyDriverDto">
         SELECT
             dd.id AS driverId,
             dcdc.carrier_id AS carrierId,
@@ -320,9 +320,6 @@
             </if>
             <if test="phone != null and phone.trim() != ''">
                 and  dd.phone = #{phone}
-            </if>
-            <if test="idCard != null and idCard.trim() != ''">
-                and  dd.id_card = #{idCard}
             </if>
             <if test="plateNo != null and plateNo.trim() != ''">
                 and  dvr.plate_no = #{plateNo}

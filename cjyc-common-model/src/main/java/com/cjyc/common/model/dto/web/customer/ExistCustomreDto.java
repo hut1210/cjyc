@@ -17,7 +17,6 @@ public class ExistCustomreDto implements Serializable {
 
     @ApiModelProperty(value = "客户手机号",required = true)
     @NotBlank(message = "客户手机号不能未空")
-    @Pattern(regexp = RegexConstant.REGEX_MOBILE_EXACT_LATEST,message = "电话号码格式不对")
     private String phone;
 
 }

@@ -141,7 +141,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
             driver.setCreateUserId(dto.getLoginId());
             driver.setCreateTime(NOW);
             //司机信息保存
-            ResultData<Long> rd = addDriverToPlatform(driver, dto);
+            ResultData<Long> rd = addDriverToPlatform(driver, dto.getCarrierId());
             if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
                 return BaseResultUtil.fail(rd.getMsg());
             }
@@ -182,13 +182,13 @@ public class CsDriverServiceImpl implements ICsDriverService {
     }
 
     @Override
-    public ResultData<Long> addDriverToPlatform(Driver driver, com.cjyc.common.model.dto.CarrierDriverDto dto) {
+    public ResultData<Long> addDriverToPlatform(Driver driver, Long carrierId) {
         List<Driver> existList = driverDao.selectList(new QueryWrapper<Driver>().lambda()
                 .eq(Driver::getPhone, driver.getPhone()));
         if (!CollectionUtils.isEmpty(existList)) {
             return ResultData.failed("手机号已存在，请检查");
         }
-        Carrier carrier = carrierDao.selectById(dto.getCarrierId());
+        Carrier carrier = carrierDao.selectById(carrierId);
         if (null == carrier || carrier.getDeptId() == null || carrier.getDeptId() <= 0L) {
             return ResultData.failed("承运商信息错误，可能因为该承运商未审核通过");
         }
@@ -216,7 +216,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
     }
 
     @Override
-    public ResultData updateDriverToPlatform(com.cjyc.common.model.dto.CarrierDriverDto dto) {
+    public ResultData updateDriverToPlatform(CarrierDriverDto dto) {
         Driver driver = driverDao.selectById(dto.getDriverId());
         if (null == driver) {
             return ResultData.failed("司机信息错误，根据id：" + dto.getDriverId() + "未查询到信息");

@@ -3,19 +3,13 @@ package com.cjyc.customer.api.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.cjyc.common.model.dao.ICouponSendDao;
-import com.cjyc.common.model.dao.IOrderCarDao;
-import com.cjyc.common.model.dao.IOrderDao;
-import com.cjyc.common.model.dao.IWaybillCarDao;
+import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.customer.invoice.InvoiceApplyQueryDto;
 import com.cjyc.common.model.dto.customer.order.OrderQueryDto;
 import com.cjyc.common.model.dto.customer.order.OrderUpdateDto;
 import com.cjyc.common.model.dto.web.order.CommitOrderDto;
 import com.cjyc.common.model.dto.web.order.SaveOrderDto;
-import com.cjyc.common.model.entity.CouponSend;
-import com.cjyc.common.model.entity.Order;
-import com.cjyc.common.model.entity.OrderCar;
-import com.cjyc.common.model.entity.WaybillCar;
+import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -56,6 +50,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
     private ICouponSendDao couponSendDao;
     @Resource
     private IWaybillCarDao waybillCarDao;
+    @Resource
+    private ICarSeriesDao carSeriesDao;
 
     /**
      * 保存订单
@@ -104,7 +100,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         // 查询待确认订单数量
         LambdaQueryWrapper<Order> queryWrapper = new QueryWrapper<Order>().lambda()
                 .eq(Order::getCustomerId,loginId)
-                .le(Order::getState, OrderStateEnum.CHECKED.code);
+                .between(Order::getState, OrderStateEnum.SUBMITTED.code,OrderStateEnum.WAIT_RECHECK.code);
         Integer waitConfirmCount = orderDao.selectCount(queryWrapper);
         if (!Objects.isNull(waitConfirmCount)) {
             map.put("waitConfirmCount",waitConfirmCount);
@@ -113,8 +109,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         // 查询运输中订单数量
         queryWrapper = new QueryWrapper<Order>().lambda()
                 .eq(Order::getCustomerId,loginId)
-                .gt(Order::getState,OrderStateEnum.CHECKED.code)
-                .lt(Order::getState,OrderStateEnum.FINISHED.code);
+                .eq(Order::getState,OrderStateEnum.TRANSPORTING.code);
         Integer inTransitCount = orderDao.selectCount(queryWrapper);
         if (!Objects.isNull(inTransitCount)) {
             map.put("inTransitCount",inTransitCount);
@@ -122,7 +117,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
 
         // 查询已交付订单数量
         queryWrapper = new QueryWrapper<Order>().lambda()
-                .eq(Order::getCustomerId,loginId).eq(Order::getState,OrderStateEnum.FINISHED.code);
+                .eq(Order::getCustomerId,loginId)
+                .eq(Order::getState,OrderStateEnum.FINISHED.code);
         Integer payCount = orderDao.selectCount(queryWrapper);
         if (!Objects.isNull(payCount)) {
             map.put("payCount",payCount);
@@ -131,7 +127,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         // 查询所有订单数量
         queryWrapper = new QueryWrapper<Order>().lambda()
                 .eq(Order::getCustomerId,loginId)
-                .le(Order::getState,OrderStateEnum.FINISHED.code).or().eq(Order::getState,OrderStateEnum.F_CANCEL.code);
+                .between(Order::getState,OrderStateEnum.SUBMITTED.code,OrderStateEnum.F_OBSOLETE.code);
         Integer allCount = orderDao.selectCount(queryWrapper);
         if (!Objects.isNull(allCount)) {
             map.put("allCount",allCount);
@@ -146,8 +142,21 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         LambdaQueryWrapper<Order> queryOrderWrapper = new QueryWrapper<Order>().lambda()
                 .eq(Order::getCustomerId,dto.getLoginId()).eq(Order::getNo,dto.getOrderNo());
         Order order = super.getOne(queryOrderWrapper);
+        if(order == null)
+            return BaseResultUtil.fail("订单号不存在,请检查");
         BeanUtils.copyProperties(order,detailVo);
+
         // 查询车辆信息
+        this.getOrderCar(dto, detailVo);
+
+        // 查询优惠券信息
+        CouponSend couponSend = couponSendDao.selectById(detailVo.getCouponSendId());
+        detailVo.setCouponName(couponSend == null ? "" : couponSend.getCouponName());
+
+        return BaseResultUtil.success(detailVo);
+    }
+
+    private void getOrderCar(OrderUpdateDto dto, OrderCenterDetailVo detailVo) {
         LambdaQueryWrapper<OrderCar> queryCarWrapper = new QueryWrapper<OrderCar>().lambda().eq(OrderCar::getOrderNo,dto.getOrderNo());
         List<OrderCar> orderCarList = orderCarDao.selectList(queryCarWrapper);
         List<OrderCarCenterVo> orderCarCenterVoList = new ArrayList<>(10);
@@ -163,29 +172,23 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
                     // 待确认，已交付，运输中，全部订单车辆信息
                     orderCarCenterVoList.add(orderCarCenter);
                 }
-
                 // 查询车辆图片
-                getCarImg(orderCar, orderCarCenter);
+                this.getCarImg(orderCar, orderCarCenter);
+                //
+                CarSeries carSeries = carSeriesDao.selectOne(new QueryWrapper<CarSeries>().lambda().eq(CarSeries::getModel, orderCar.getModel()));
+                if(carSeries != null)
+                    orderCarCenter.setLogoImg(carSeries.getLogoImg());
             }
         }
-
-        // 查询优惠券信息
-        Long couponSendId = detailVo.getCouponSendId();
-        if (couponSendId != null) {
-            CouponSend couponSend = couponSendDao.selectById(couponSendId);
-            detailVo.setCouponName(couponSend.getCouponName());
-        }
-
         detailVo.setOrderCarCenterVoList(orderCarCenterVoList);
         detailVo.setOrderCarFinishPayList(orderCarFinishPayList);
-        return BaseResultUtil.success(detailVo);
     }
 
     private void getCarImg(OrderCar orderCar, OrderCarCenterVo orderCarCenter) {
+        List<String> photoImgList = new ArrayList<>(10);
         WaybillCar waybillCar = waybillCarDao.selectOne(new QueryWrapper<WaybillCar>().lambda()
                 .eq(WaybillCar::getOrderCarId, orderCar.getId()).select(WaybillCar::getLoadPhotoImg,WaybillCar::getUnloadPhotoImg));
         if (waybillCar != null) {
-            List<String> photoImgList = new ArrayList<>(20);
             String loadPhotoImg = waybillCar.getLoadPhotoImg();
             String unloadPhotoImg = waybillCar.getUnloadPhotoImg();
             if (!StringUtils.isEmpty(loadPhotoImg)) {
@@ -196,8 +199,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
                 String[] array = unloadPhotoImg.split(",");
                 Collections.addAll(photoImgList,array);
             }
-            orderCarCenter.setCarImgList(photoImgList);
         }
+        orderCarCenter.setCarImgList(photoImgList);
     }
 
 /*    @Override

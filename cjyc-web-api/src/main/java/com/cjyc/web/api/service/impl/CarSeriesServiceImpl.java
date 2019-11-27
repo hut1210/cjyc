@@ -3,7 +3,6 @@ package com.cjyc.web.api.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.cjkj.common.utils.ExcelUtil;
 import com.cjyc.common.model.dao.ICarSeriesDao;
 import com.cjyc.common.model.dto.web.carSeries.CarSeriesAddDto;
 import com.cjyc.common.model.dto.web.carSeries.CarSeriesImportExcel;
@@ -11,6 +10,7 @@ import com.cjyc.common.model.dto.web.carSeries.CarSeriesQueryDto;
 import com.cjyc.common.model.dto.web.carSeries.CarSeriesUpdateDto;
 import com.cjyc.common.model.entity.CarSeries;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.ExcelUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.StringUtil;
 import com.cjyc.common.model.vo.ResultVo;
@@ -41,25 +41,28 @@ import java.util.List;
 @Service
 public class CarSeriesServiceImpl extends ServiceImpl<ICarSeriesDao,CarSeries> implements ICarSeriesService {
     @Override
-    public boolean add(CarSeriesAddDto carSeriesAddDto) {
-        List<CarSeries> list = new ArrayList<>(10);
-        String dtoModel = carSeriesAddDto.getModel();
-        if (dtoModel.contains("，")) {
-            dtoModel = dtoModel.replaceAll("，", ",");
-        }
-        String[] models = dtoModel.split(",");
-        for (String model : models) {
-            CarSeries carSeries = new CarSeries();
-            carSeries.setCarCode(StringUtil.getUUID());
-            carSeries.setBrand(carSeriesAddDto.getBrand());
-            carSeries.setModel(model);
-            carSeries.setPinInitial(StringUtil.getFirstPinYinHeadChar(carSeriesAddDto.getBrand()));
-            carSeries.setLogoImg(StringUtil.getCarLogoURL(carSeriesAddDto.getBrand()));
-            carSeries.setCreateTime(System.currentTimeMillis());
-            carSeries.setCreateUserId(carSeriesAddDto.getCreateUserId());
-            list.add(carSeries);
-        }
-        return super.saveBatch(list);
+    public ResultVo add(CarSeriesAddDto carSeriesAddDto) {
+        // 唯一性校验
+        List<CarSeries> list = super.list(new QueryWrapper<CarSeries>().lambda()
+                .eq(CarSeries::getBrand, carSeriesAddDto.getBrand()).eq(CarSeries::getModel, carSeriesAddDto.getModel()));
+        if(!CollectionUtils.isEmpty(list))
+            return BaseResultUtil.fail("该品牌车型已经存在,不能重复添加");
+        // 保存数据
+        CarSeries carSeries = getCarSeries(carSeriesAddDto);
+        boolean result = super.save(carSeries);
+        return result ? BaseResultUtil.success() : BaseResultUtil.fail();
+    }
+
+    private CarSeries getCarSeries(CarSeriesAddDto carSeriesAddDto) {
+        CarSeries carSeries = new CarSeries();
+        carSeries.setCarCode(StringUtil.getUUID());
+        carSeries.setBrand(carSeriesAddDto.getBrand());
+        carSeries.setModel(carSeriesAddDto.getModel());
+        carSeries.setPinInitial(StringUtil.getFirstPinYinHeadChar(carSeriesAddDto.getBrand()));
+        carSeries.setLogoImg(StringUtil.getCarLogoURL(carSeriesAddDto.getBrand()));
+        carSeries.setCreateTime(System.currentTimeMillis());
+        carSeries.setCreateUserId(carSeriesAddDto.getCreateUserId());
+        return carSeries;
     }
 
     @Override
@@ -78,7 +81,7 @@ public class CarSeriesServiceImpl extends ServiceImpl<ICarSeriesDao,CarSeries> i
     }
 
     private List<CarSeries> getCarSeriesList(CarSeriesQueryDto carSeriesQueryDto) {
-        PageHelper.startPage(carSeriesQueryDto.getCurrentPage(), carSeriesQueryDto.getPageSize(), true);
+        PageHelper.startPage(carSeriesQueryDto.getCurrentPage(), carSeriesQueryDto.getPageSize());
         LambdaQueryWrapper<CarSeries> queryWrapper = new QueryWrapper<CarSeries>().lambda()
                 .eq(!StringUtils.isEmpty(carSeriesQueryDto.getBrand()),CarSeries::getBrand,carSeriesQueryDto.getBrand())
                 .eq(!StringUtils.isEmpty(carSeriesQueryDto.getModel()),CarSeries::getModel,carSeriesQueryDto.getModel());
@@ -86,30 +89,49 @@ public class CarSeriesServiceImpl extends ServiceImpl<ICarSeriesDao,CarSeries> i
     }
 
     @Override
-    public boolean importExcel(MultipartFile file,Long createUserId) {
-        boolean result;
+    public ResultVo importExcel(MultipartFile file,Long createUserId) {
+        ResultVo resultVo = null;
         try {
-            List<CarSeriesImportExcel> seriesImportExcelList = ExcelUtil.importExcel(file, 1, 1, CarSeriesImportExcel.class);
+            List<CarSeriesImportExcel> seriesImportExcelList = ExcelUtil.importExcel(file,
+                    1, 1, CarSeriesImportExcel.class,true);
             if (!CollectionUtils.isEmpty(seriesImportExcelList)) {
                 List<CarSeries> list = new ArrayList<>(10);
                 for (CarSeriesImportExcel carSeriesImportExcel : seriesImportExcelList) {
-                    CarSeries carSeries = new CarSeries();
-                    BeanUtils.copyProperties(carSeriesImportExcel,carSeries);
-                    carSeries.setCarCode(StringUtil.getUUID());
-                    carSeries.setLogoImg(StringUtil.getCarLogoURL(carSeries.getBrand()));
-                    carSeries.setCreateTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
-                    carSeries.setCreateUserId(createUserId);
+                    // 唯一性校验
+                    String brand = carSeriesImportExcel.getBrand();
+                    String model = carSeriesImportExcel.getModel();
+                    List<CarSeries> resultList = super.list(new QueryWrapper<CarSeries>().lambda()
+                            .eq(CarSeries::getBrand, brand).eq(CarSeries::getModel, model));
+                    if(!CollectionUtils.isEmpty(resultList))
+                        return BaseResultUtil.fail(brand + "-" + model + "已经存在,不能重复添加");
+                    CarSeries carSeries = getCarSeries(createUserId, carSeriesImportExcel);
                     list.add(carSeries);
                 }
-                result = super.saveBatch(list);
+                boolean saveBatch = super.saveBatch(list);
+                resultVo = saveBatch ? BaseResultUtil.success() : BaseResultUtil.fail();
             } else {
-                result = false;
+                log.error("===导入数据为空===");
+                resultVo = BaseResultUtil.fail("导入数据不能为空");
             }
         } catch (Exception e) {
-            log.error("导入品牌车系失败异常:{}",e);
-            result = false;
+            log.error("导入品牌车系异常:",e);
+            resultVo = BaseResultUtil.fail("导入失败");
         }
-        return result;
+
+        return resultVo;
+    }
+
+    private CarSeries getCarSeries(Long createUserId, CarSeriesImportExcel carSeriesImportExcel) {
+        CarSeries carSeries = new CarSeries();
+        String brand = carSeriesImportExcel.getBrand();
+        carSeries.setBrand(brand);
+        carSeries.setModel(carSeriesImportExcel.getModel());
+        carSeries.setCarCode(StringUtil.getUUID());
+        carSeries.setPinInitial(StringUtil.getFirstPinYinHeadChar(brand));
+        carSeries.setLogoImg(StringUtil.getCarLogoURL(brand));
+        carSeries.setCreateTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
+        carSeries.setCreateUserId(createUserId);
+        return carSeries;
     }
 
     @Override
@@ -133,7 +155,7 @@ public class CarSeriesServiceImpl extends ServiceImpl<ICarSeriesDao,CarSeries> i
             try {
                 ExcelUtil.exportExcel(exportExcelList, title, sheetName, CarSeriesExportExcel.class, fileName, response);
             } catch (IOException e) {
-                log.error("导出品牌车系异常:{}",e);
+                log.error("导出品牌车系异常:",e);
             }
         }
     }
