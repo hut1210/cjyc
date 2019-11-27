@@ -2,8 +2,8 @@ package com.cjyc.customer.api.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.dto.customer.invoice.InvoiceApplyQueryDto;
+import com.cjyc.common.model.dto.customer.order.OrderDetailDto;
 import com.cjyc.common.model.dto.customer.order.OrderQueryDto;
-import com.cjyc.common.model.dto.customer.order.OrderUpdateDto;
 import com.cjyc.common.model.dto.web.order.CommitOrderDto;
 import com.cjyc.common.model.dto.web.order.SaveOrderDto;
 import com.cjyc.common.model.entity.Order;
@@ -41,7 +41,7 @@ public interface IOrderService extends IService<Order> {
      * @param dto
      * @return
      */
-    ResultVo<OrderCenterDetailVo> getDetail(OrderUpdateDto dto);
+    ResultVo<OrderCenterDetailVo> getDetail(OrderDetailDto dto);
 
     /**
      * 确认收车
