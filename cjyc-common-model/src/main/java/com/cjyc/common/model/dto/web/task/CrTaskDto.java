@@ -7,9 +7,10 @@ import lombok.Data;
 @Data
 public class CrTaskDto extends BasePageDto {
 
-    @ApiModelProperty(value = "任务编号")
-    private String userId;
-
+    @ApiModelProperty(value = "角色ID")
+    private Long roleId;
+    @ApiModelProperty(value = "承运商ID（不需要传）")
+    private Long carrierId;
     @ApiModelProperty(value = "任务编号")
     private String taskNo;
 

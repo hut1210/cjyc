@@ -12,7 +12,7 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.waybill.WaitAllotVo;
 import com.cjyc.common.system.service.ICsCarrierService;
-import com.cjyc.driver.api.constant.Constant;
+import com.cjyc.common.model.constant.Constant;
 import com.cjyc.driver.api.service.IWaybillService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;

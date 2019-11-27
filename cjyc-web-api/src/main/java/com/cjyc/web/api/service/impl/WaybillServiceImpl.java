@@ -6,6 +6,7 @@ import com.cjkj.usercenter.dto.common.SelectRoleResp;
 import com.cjyc.common.model.dao.IWaybillCarDao;
 import com.cjyc.common.model.dao.IWaybillDao;
 import com.cjyc.common.model.dto.web.waybill.*;
+import com.cjyc.common.model.entity.Carrier;
 import com.cjyc.common.model.entity.Waybill;
 import com.cjyc.common.model.entity.defined.BizScope;
 import com.cjyc.common.model.enums.BizScopeEnum;
@@ -46,8 +47,6 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
     private IWaybillCarDao waybillCarDao;
     @Resource
     private ICsWaybillService csWaybillService;
-    @Resource
-    private ISysRoleService sysRoleService;
     @Resource
     private ICsSysService csSysService;
 
@@ -114,12 +113,12 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
     @Override
     public ResultVo<PageVo<CrWaybillVo>> crListForMineCarrier(CrWaybillDto paramsDto) {
         //根据角色查询承运商ID
-        ResultData<SelectRoleResp> resultData = sysRoleService.getById(paramsDto.getRoleId());
-        if(resultData == null || resultData.getData() == null){
-            return BaseResultUtil.fail("用户机构不存在");
+        Carrier carrier = csSysService.getCarrierByRoleId(paramsDto.getRoleId());
+        if(carrier == null){
+            return BaseResultUtil.fail("承运商信息不存在");
         }
+        paramsDto.setCarrierId(carrier.getId());
         //查询承运商信息
-
         PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
         List<CrWaybillVo> list = waybillDao.findCrListForMineCarrier(paramsDto);
         PageInfo<CrWaybillVo> pageInfo = new PageInfo<>(list);

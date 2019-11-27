@@ -76,7 +76,7 @@ public class RegexConstant {
     /**
      * 正则：0|1
      */
-    public static final String ZERO_ONE = "[0|1]";
+    public static final String ZERO_ONE = "(0|1)";
     /**
      * 正则：车牌号
      */

@@ -38,5 +38,5 @@ public interface ITaskService extends IService<Task> {
 
     ResultVo<TaskVo> get(Long taskId);
 
-    ResultVo<PageVo<CrTaskVo>> crAllottedList(CrTaskDto reqDto);
+    ResultVo<PageVo<CrTaskVo>> crTaskList(CrTaskDto reqDto);
 }

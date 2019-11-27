@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.dto.customer.invoice.InvoiceApplyQueryDto;
 import com.cjyc.common.model.dto.customer.order.OrderDetailDto;
 import com.cjyc.common.model.dto.customer.order.OrderQueryDto;
-import com.cjyc.common.model.dto.web.order.CommitOrderDto;
+import com.cjyc.common.model.dto.customer.order.SimpleSaveOrderDto;
 import com.cjyc.common.model.dto.web.order.SaveOrderDto;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.vo.PageVo;
@@ -79,13 +79,5 @@ public interface IOrderService extends IService<Order> {
      */
     ResultVo submit(SaveOrderDto reqDto);
 
-    /**
-     * 订单提交-业务员
-     * @author JPG
-     * @since 2019/11/5 8:46
-     * @param reqDto
-     */
-    ResultVo commit(CommitOrderDto reqDto);
-
-
+    ResultVo SimpleSubmit(SimpleSaveOrderDto reqDto);
 }

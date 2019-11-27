@@ -320,21 +320,19 @@
         group by w.id
     </select>
     <select id="findCrListForMineCarrier" resultType="com.cjyc.common.model.vo.web.waybill.CrWaybillVo">
-
         select
-            w.no,
-            w.id,
-            w.type,
-            w.guide_line,
-            w.carrier_name,
-            w.state,
-            w.remark,
-            w.create_time,
-            w.car_num,
-            w.create_user,
+            w.no as waybillNo,
+            w.id as waybillId,
+            w.type as waybillType,
+            w.carrier_name as carrierName,
+            w.state as state,
+            w.remark as remark,
+            w.create_time as createTime,
+            w.car_num as carNum,
+            w.create_user as createUser,
             sum(IFNULL(w.car_num,0)) as hasAllottedNum
         from w_waybill w
-        LEFT JOIN w_task t on w.id = t.waybill_id
+        JOIN w_task t on w.id = t.waybill_id
         <where>
             w.carrier_id = #{paramsDto.carrierId}
             <if test="paramsDto.waybillNo != null and paramsDto.waybillNo != ''">
@@ -348,11 +346,6 @@
             </if>
         </where>
         group by w.id
-<!--        <choose>
-            <if test="paramsDto.allotProgress == 1">
-                having sum(IFNULL(w.car_num,0)) &lt; w.car_num
-            </if>
-        </choose>-->
         order by w.id desc
     </select>
 

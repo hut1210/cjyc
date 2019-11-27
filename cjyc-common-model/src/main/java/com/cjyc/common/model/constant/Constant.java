@@ -1,4 +1,4 @@
-package com.cjyc.driver.api.constant;
+package com.cjyc.common.model.constant;
 
 public class Constant {
 

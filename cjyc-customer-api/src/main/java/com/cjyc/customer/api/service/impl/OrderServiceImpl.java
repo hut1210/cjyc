@@ -7,7 +7,7 @@ import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.customer.invoice.InvoiceApplyQueryDto;
 import com.cjyc.common.model.dto.customer.order.OrderDetailDto;
 import com.cjyc.common.model.dto.customer.order.OrderQueryDto;
-import com.cjyc.common.model.dto.web.order.CommitOrderDto;
+import com.cjyc.common.model.dto.customer.order.SimpleSaveOrderDto;
 import com.cjyc.common.model.dto.web.order.SaveOrderDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
@@ -56,30 +56,24 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
     /**
      * 保存订单
      *
-     * @param reqDto
+     * @param paramsDto
      * @author JPG
      * @since 2019/11/5 8:39
      */
     @Override
-    public ResultVo save(SaveOrderDto reqDto) {
-        return comOrderService.save(reqDto, OrderStateEnum.WAIT_SUBMIT);
+    public ResultVo save(SaveOrderDto paramsDto) {
+        return comOrderService.save(paramsDto, OrderStateEnum.WAIT_SUBMIT);
     }
 
     @Override
-    public ResultVo submit(SaveOrderDto reqDto) {
-        return comOrderService.save(reqDto, OrderStateEnum.SUBMITTED);
+    public ResultVo submit(SaveOrderDto paramsDto) {
+        return comOrderService.save(paramsDto, OrderStateEnum.SUBMITTED);
     }
 
-    /**
-     * 提交订单
-     *
-     * @param reqDto
-     * @author JPG
-     * @since 2019/11/5 8:46
-     */
     @Override
-    public ResultVo commit(CommitOrderDto reqDto) {
-        return comOrderService.commit(reqDto);
+    public ResultVo SimpleSubmit(SimpleSaveOrderDto paramsDto) {
+        orderDao.selectById(paramsDto.getLoginId());
+        return null;
     }
 
     @Override
@@ -142,8 +136,9 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         LambdaQueryWrapper<Order> queryOrderWrapper = new QueryWrapper<Order>().lambda()
                 .eq(Order::getCustomerId,dto.getLoginId()).eq(Order::getNo,dto.getOrderNo());
         Order order = super.getOne(queryOrderWrapper);
-        if(order == null)
+        if(order == null) {
             return BaseResultUtil.fail("订单号不存在,请检查");
+        }
         BeanUtils.copyProperties(order,detailVo);
 
         // 查询车辆信息
@@ -176,8 +171,9 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
                 this.getCarImg(orderCar, orderCarCenter);
                 //
                 List<CarSeries> carSeriesList = carSeriesDao.selectList(new QueryWrapper<CarSeries>().lambda().eq(CarSeries::getModel, orderCar.getModel()));
-                if(!CollectionUtils.isEmpty(carSeriesList))
+                if(!CollectionUtils.isEmpty(carSeriesList)) {
                     orderCarCenter.setLogoImg(carSeriesList.get(0).getLogoImg());
+                }
             }
         }
         detailVo.setOrderCarCenterVoList(orderCarCenterVoList);

@@ -9,6 +9,7 @@ import com.cjyc.common.model.vo.BaseTipVo;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.task.CrTaskVo;
 import com.cjyc.common.model.vo.web.waybill.*;
 import com.cjyc.common.system.service.ICsAdminService;
 import com.cjyc.common.system.service.ICsCarrierService;
@@ -230,11 +231,6 @@ public class WaybillController {
     @ApiOperation(value = "我的运单-承运商")
     @PostMapping(value = "/cr/list")
     public ResultVo<PageVo<CrWaybillVo>> crList(@RequestBody CrWaybillDto reqDto) {
-        //验证用户
-        Driver driver = csDriverService.getById(reqDto.getLoginId(), true);
-        if(driver == null){
-            return BaseResultUtil.fail("用户不存在");
-        }
         return waybillService.crListForMineCarrier(reqDto);
     }
 

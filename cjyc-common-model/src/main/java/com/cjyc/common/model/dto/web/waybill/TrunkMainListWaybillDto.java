@@ -17,4 +17,5 @@ public class TrunkMainListWaybillDto extends BasePageDto {
     private Long beginCreateTime;
     @ApiModelProperty(value = "截止创建时间")
     private Long endCreateTime;
+
 }

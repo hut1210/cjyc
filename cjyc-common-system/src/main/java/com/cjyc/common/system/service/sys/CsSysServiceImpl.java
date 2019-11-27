@@ -3,9 +3,12 @@ package com.cjyc.common.system.service.sys;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.usercenter.dto.common.SelectDeptResp;
 import com.cjkj.usercenter.dto.common.SelectRoleResp;
+import com.cjyc.common.model.dao.ICarrierDao;
+import com.cjyc.common.model.entity.Carrier;
 import com.cjyc.common.model.entity.Store;
 import com.cjyc.common.model.entity.defined.BizScope;
 import com.cjyc.common.model.enums.BizScopeEnum;
+import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysRoleService;
@@ -35,6 +38,8 @@ public class CsSysServiceImpl implements ICsSysService {
     private ISysDeptService sysDeptService;
     @Resource
     private ICsStoreService csStoreService;
+    @Resource
+    private ICarrierDao carrierDao;
 
     /**
      * 获取角色业务范围: 0全国，-1无业务范围，StoreIds逗号分隔字符串
@@ -95,5 +100,14 @@ public class CsSysServiceImpl implements ICsSysService {
         bizScope.setCode(BizScopeEnum.STORE.code);
         bizScope.setStoreIds(set);
         return bizScope;
+    }
+
+    @Override
+    public Carrier getCarrierByRoleId(Long roleId) {
+        ResultData<SelectRoleResp> resultData = sysRoleService.getById(roleId);
+        if(resultData == null || resultData.getData() == null){
+            return null;
+        }
+        return carrierDao.findByDeptId(resultData.getData().getDeptId());
     }
 }

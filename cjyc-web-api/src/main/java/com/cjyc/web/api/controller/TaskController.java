@@ -120,9 +120,9 @@ public class TaskController {
      * 我的运单-承运商
      */
     @ApiOperation(value = "我的运单-承运商")
-    @PostMapping(value = "/cr/alloted/list")
+    @PostMapping(value = "/cr/task/list")
     public ResultVo<PageVo<CrTaskVo>> crAllottedList(@RequestBody CrTaskDto reqDto) {
-        return taskService.crAllottedList(reqDto);
+        return taskService.crTaskList(reqDto);
     }
 
 
