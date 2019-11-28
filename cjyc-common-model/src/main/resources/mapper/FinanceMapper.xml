@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cjyc.common.model.dao.IFinanceDao">
+
+    <select id="getFinanceList" parameterType="com.cjyc.common.model.dto.web.finance.FinanceQueryDto" resultType="com.cjyc.common.model.vo.web.finance.FinanceVo">
+        select woc.no as no,woc.vin as vin,woc.brand,woc.model,woc.order_no as orderNo,
+        wo.input_store_name as inputStoreName,woc.total_fee as freightreceivable,
+        cc.type as type,cc.name as customerName,cc.pay_mode as payMode
+        from w_order_car woc
+        left join w_order wo on woc.order_no = wo.no
+        left join c_customer cc on wo.customer_id = cc.id
+        where 1=1
+        <if test="no != null and no.trim() != ''">
+            and woc.no like concat('%',#{no},'%')
+        </if>
+        <if test="vin != null and vin.trim() != ''">
+            and  woc.vin = #{vin}
+        </if>
+        <if test="orderNo != null and orderNo.trim() != ''">
+            and  woc.order_no like concat('%',#{orderNo},'%')
+        </if>
+
+        <if test="type != null">
+            and cc.type = #{type}
+        </if>
+        <if test="customerName != null  and customerName.trim() != ''">
+            and  cc.name  like concat('%',#{customerName},'%')
+        </if>
+        <if test="payMode != null">
+            and  cc.pay_mode =#{payMode}
+        </if>
+
+        <if test="brand != null and brand.trim() != ''">
+            and cc.brand = #{brand}
+        </if>
+        <if test="model != null and model.trim() != ''">
+            and cc.model = #{model}
+        </if>
+        <if test="inputStoreName != null and inputStoreName.trim() != ''">
+            and wo.input_store_name = #{inputStoreName}
+        </if>
+    </select>
+
+    <select id="getTrunkCostList" parameterType="String" resultType="com.cjyc.common.model.vo.web.finance.TrunkLineVo">
+        select ww.carrier_name as carrierName,wwc.freight_fee as freightFee,ww.complete_time as payTime,
+        dc.settle_type as settleType
+
+        from w_waybill_car wwc
+        left join w_waybill ww on wwc.waybill_no = ww.no
+        left join d_carrier dc on ww.carrier_id = dc.id
+        where wwc.order_car_no = #{orderCarNo}
+    </select>
+
+    <select id="getFinanceReceiptList" parameterType="com.cjyc.common.model.dto.web.finance.FinanceQueryDto"
+            resultType="com.cjyc.common.model.vo.web.finance.FinanceReceiptVo">
+        select woc.no,woc.vin,woc.brand,woc.model,cc.id,cc.type,cc.pay_mode,woc.total_fee,wo.start_province,wo.start_city,
+        wo.start_area,wo.end_province,wo.end_city,wo.end_area,
+        woc.order_no,woc.now_area_code,wo.input_store_id,wo.input_store_name,wt.complete_time
+        from w_order_car woc
+        left join w_order wo on woc.order_id = wo.id
+        left join c_customer cc on cc.id = wo.customer_id
+        left join w_waybill_car wwc on wwc.order_car_no = woc.no
+        left join w_task wt on wt.waybill_no = wwc.waybill_no
+
+        where 1=1
+        <if test="no != null and no.trim() != ''">
+            and woc.no like concat('%',#{no},'%')
+        </if>
+        <if test="vin != null and vin.trim() != ''">
+            and  woc.vin = #{vin}
+        </if>
+        <if test="orderNo != null and orderNo.trim() != ''">
+            and  woc.order_no like concat('%',#{orderNo},'%')
+        </if>
+
+        <if test="type != null">
+            and cc.type = #{type}
+        </if>
+        <if test="customerName != null  and customerName.trim() != ''">
+            and  cc.name  like concat('%',#{customerName},'%')
+        </if>
+        <if test="payMode != null">
+            and  cc.pay_mode =#{payMode}
+        </if>
+
+        <if test="brand != null and brand.trim() != ''">
+            and cc.brand = #{brand}
+        </if>
+        <if test="model != null and model.trim() != ''">
+            and cc.model = #{model}
+        </if>
+        <if test="inputStoreName != null and inputStoreName.trim() != ''">
+            and wo.input_store_name = #{inputStoreName}
+        </if>
+    </select>
+    
+</mapper>
