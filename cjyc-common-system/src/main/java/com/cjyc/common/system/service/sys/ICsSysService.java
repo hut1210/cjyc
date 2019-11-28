@@ -1,5 +1,6 @@
 package com.cjyc.common.system.service.sys;
 
+import com.cjyc.common.model.entity.Carrier;
 import com.cjyc.common.model.entity.defined.BizScope;
 
 /**
@@ -9,4 +10,5 @@ import com.cjyc.common.model.entity.defined.BizScope;
 public interface ICsSysService {
     BizScope getBizScopeByRoleId(Long roleId, boolean isSearchCache);
 
+    Carrier getCarrierByRoleId(Long roleId);
 }

@@ -36,6 +36,9 @@ public class MyDriverVo implements Serializable {
     @ApiModelProperty("身份证反面")
     private String idCardBackImg;
 
+    @ApiModelProperty("运行状态：0空闲，1在途 2繁忙")
+    private Integer runningState;
+
     @ApiModelProperty("营运状态：0营运中，1停运中")
     private Integer businessState;
 

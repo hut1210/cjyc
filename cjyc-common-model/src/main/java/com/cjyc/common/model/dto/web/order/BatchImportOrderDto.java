@@ -9,6 +9,8 @@ import java.math.BigDecimal;
 public class BatchImportOrderDto {
 
 
+    @ApiModelProperty(value = "操作人(不用传)")
+    private String loginName;
     @ApiModelProperty(value = "区编号")
     private String startAreaCode;
     @ApiModelProperty(value = "始发地详细地址")

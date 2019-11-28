@@ -61,8 +61,7 @@ spring:
     #Redis默认情况下有16个分片，这里配置具体使用的分片，默认是0
     database: 0
     timeout: 1000ms
-    #连接池，redis2.x默认连接池
-    lettuce:
+    jedis:
       pool:
         #连接池最大连接数（使用负值表示没有限制） 默认 8
         max-active: 32

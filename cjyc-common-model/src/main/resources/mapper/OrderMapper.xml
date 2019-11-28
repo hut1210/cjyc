@@ -63,6 +63,12 @@
         set state = #{state}
         where id = ${id}
     </update>
+    <update id="updateForReceipt">
+        update w_order
+        set state = 100,
+        set finish_time = #{currentTimeMillis}
+        where id = #{id}
+    </update>
 
     <resultMap id="VinResultMap" type="com.cjyc.common.model.vo.customer.order.OrderCenterVo">
         <!--查询该订单号下的一条车辆信息-->
@@ -334,9 +340,8 @@
             </if>
             /*全部*/
             <if test="state != null and state == 3">
-                and (o.state between ${@com.cjyc.common.model.enums.order.OrderStateEnum@SUBMITTED.code}
-                and ${@com.cjyc.common.model.enums.order.OrderStateEnum@FINISHED.code}
-                or o.state = ${@com.cjyc.common.model.enums.order.OrderStateEnum@F_CANCEL.code})
+                and o.state between ${@com.cjyc.common.model.enums.order.OrderStateEnum@SUBMITTED.code}
+                and ${@com.cjyc.common.model.enums.order.OrderStateEnum@F_OBSOLETE.code}
             </if>
             <if test="startCityCode != null and startCityCode.trim() != ''">
                 and o.start_city_code = #{startCityCode}
@@ -352,6 +357,12 @@
             </if>
         </where>
         order by o.create_time
+    </select>
+    <select id="findByCarId" resultType="com.cjyc.common.model.entity.Order">
+        select o.*
+        from w_order_car oc
+        join w_order o on oc.order_id = o.id
+        where oc.id = #{orderCarId}
     </select>
 
 

@@ -12,6 +12,7 @@ import com.cjyc.common.system.service.ICsVehicleService;
 import com.cjyc.web.api.service.IVehicleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -53,7 +54,7 @@ public class VehicleController {
 
     @ApiOperation(value = "修改车辆车位数")
     @PostMapping(value = "/modifyVehicle")
-    public ResultVo modifyVehicle(@RequestBody ModifyCarryNumDto dto){
+    public ResultVo modifyVehicle(@Validated @RequestBody ModifyCarryNumDto dto){
         return vehicleService.modifyVehicle(dto);
     }
 

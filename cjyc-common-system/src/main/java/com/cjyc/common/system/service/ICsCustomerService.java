@@ -52,4 +52,6 @@ public interface ICsCustomerService {
     ResultData<Boolean> updateCustomerToPlatform(Customer customer, String newPhone);
 
     Customer getById(Long userId, boolean isSearchCache);
+
+    Customer validate(Long loginId);
 }

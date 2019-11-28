@@ -16,4 +16,6 @@ spring:
       #        # 指定配置的后缀，支持 properties、yaml、yml，默认为 properties
       #        file-extension: yml
       discovery:
-        server-addr: 10.253.96.126:8848
+        #server-addr: 10.253.96.137:8848
+        #server-addr: 127.0.0.1:8848
+        server-addr: 10.253.118.228:8848

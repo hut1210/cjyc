@@ -38,8 +38,7 @@ public class CarSeriesController {
     @ApiOperation(value = "新增", notes = "\t 请求接口为json格式")
     @PostMapping("/add")
     public ResultVo add(@RequestBody @Validated CarSeriesAddDto carSeriesAddDto){
-        boolean result = carSeriesService.add(carSeriesAddDto);
-        return result ? BaseResultUtil.success() : BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
+        return carSeriesService.add(carSeriesAddDto);
     }
 
     @ApiOperation(value = "删除", notes = "\t 请求接口为/delete/id格式;只支持单条删除")
@@ -83,8 +82,7 @@ public class CarSeriesController {
     @ApiOperation(value = "导入Excel", notes = "\t 请求接口为/importExcel/createUserId(导入用户ID)格式")
     @PostMapping("/importExcel/{createUserId}")
     public ResultVo importExcel(@RequestParam("file") MultipartFile file,@PathVariable Long createUserId){
-        boolean result = carSeriesService.importExcel(file, createUserId);
-        return result ? BaseResultUtil.success() : BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
+        return carSeriesService.importExcel(file, createUserId);
     }
 
     @ApiOperation(value = "导出Excel", notes = "\t 请求接口为/carSeries/exportExcel?currentPage=1&pageSize=6&brand=宝马&model=BM001")

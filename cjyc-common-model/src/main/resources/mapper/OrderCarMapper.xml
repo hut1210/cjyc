@@ -653,12 +653,10 @@
         where order_id = #{orderId}
     </select>
 
-
-
-
     <!--根据条件查询车辆信息-->
     <select id="selectByCondition" resultType="com.cjyc.common.model.vo.customer.order.OrderCarCenterVo">
         select
+        car.id as id,
         car.model as model,
         car.plate_no as plateNo,
         car.brand as brand,
@@ -895,5 +893,11 @@
                 #{item}
             </foreach>
         </where>
+    </select>
+    <select id="countUnFinishByOrderId" resultType="java.lang.Integer">
+        select count(0)
+        from w_order_car
+        where order_id = #{id}
+        and state &lt; 100
     </select>
 </mapper>

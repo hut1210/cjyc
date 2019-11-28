@@ -292,7 +292,7 @@
 
     <!--查询该承该运商下的司机-->
     <select id="findMyDriver" resultType="com.cjyc.common.model.vo.web.mineCarrier.MyDriverVo"
-                                parameterType="com.cjyc.common.model.dto.web.mineCarrier.QueryMyDriverDto">
+            parameterType="com.cjyc.common.model.dto.web.mineCarrier.QueryMyDriverDto">
         SELECT
             dd.id AS driverId,
             dcdc.carrier_id AS carrierId,
@@ -306,6 +306,7 @@
             dd.id_card_back_img as idCardBackImg,
             dvr.vehicle_id as vehicleId,
             dcdc.state AS state,
+            dvr.running_state as runningState,
             dd.identity AS identity,
             dvr.plate_no AS plateNo,
             dvr.carry_car_num AS defaultCarryNum
@@ -320,9 +321,6 @@
             </if>
             <if test="phone != null and phone.trim() != ''">
                 and  dd.phone = #{phone}
-            </if>
-            <if test="idCard != null and idCard.trim() != ''">
-                and  dd.id_card = #{idCard}
             </if>
             <if test="plateNo != null and plateNo.trim() != ''">
                 and  dvr.plate_no = #{plateNo}
@@ -358,7 +356,7 @@
             <if test="realName != null and realName.trim() != ''">
                 dd.real_name like CONCAT('%',#{realName},'%')
             </if>
-              and dcdc.id = #{roleId} and dcdc.state=2 and dd.id = #{loginId}
+              and dcdc.id = #{roleId} and dd.id = #{loginId} and dcdc.state &lt; 9
         </where>
     </select>
 

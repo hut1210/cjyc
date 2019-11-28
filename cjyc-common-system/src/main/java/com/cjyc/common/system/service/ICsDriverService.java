@@ -47,10 +47,10 @@ public interface ICsDriverService {
     /**
      * 保存承运商下司机
      * @param driver
-     * @param dto
+     * @param carrierId
      * @return
      */
-    ResultData<Long> addDriverToPlatform(Driver driver, com.cjyc.common.model.dto.CarrierDriverDto dto);
+    ResultData<Long> addDriverToPlatform(Driver driver, Long carrierId);
 
     /**
      * 更新承运商下司机信息到物流平台

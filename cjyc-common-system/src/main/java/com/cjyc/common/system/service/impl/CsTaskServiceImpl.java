@@ -6,7 +6,9 @@ import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.driver.task.ReplenishInfoDto;
 import com.cjyc.common.model.dto.web.task.*;
 import com.cjyc.common.model.entity.*;
+import com.cjyc.common.model.enums.CaptchaTypeEnum;
 import com.cjyc.common.model.enums.CarStorageTypeEnum;
+import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.enums.task.TaskStateEnum;
@@ -16,11 +18,13 @@ import com.cjyc.common.model.enums.waybill.WaybillTypeEnum;
 import com.cjyc.common.model.exception.ServerException;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.StringUtil;
 import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.OrderCarVo;
 import com.cjyc.common.system.service.*;
 import com.cjyc.common.system.util.RedisUtils;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -62,11 +66,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
     @Resource
     private ICsStorageLogService csStorageLogService;
     @Resource
-    private ICsStoreService csStoreService;
-    @Resource
     private ICsSmsService csSmsService;
-    @Resource
-    private ICsAdminService csAdminService;
 
     @Override
     public String getTaskNo(String waybillNo) {
@@ -120,11 +120,13 @@ public class CsTaskServiceImpl implements ICsTaskService {
             task.setNo("");
             task.setWaybillId(waybill.getId());
             task.setWaybillNo(waybill.getNo());
+            task.setGuideLine(paramsDto.getGuideLine());
             task.setCarNum(paramsDto.getWaybillCarIdList().size());
             task.setState(TaskStateEnum.WAIT_ALLOT_CONFIRM.code);
             task.setDriverId(driver.getId());
             task.setDriverPhone(driver.getPhone());
             task.setDriverName(driver.getName());
+            task.setRemark(paramsDto.getRemark());
             task.setCreateTime(System.currentTimeMillis());
             task.setCreateUser(paramsDto.getLoginName());
             task.setCreateUserId(paramsDto.getLoginId());
@@ -617,6 +619,8 @@ public class CsTaskServiceImpl implements ICsTaskService {
 
         int count = 0;
         Set<Long> waybillCarIdSet = Sets.newHashSet();
+        List<String> customerPhoneList = Lists.newArrayList();
+        Set<Long> orderSet = Sets.newHashSet();
         for (Long taskCarId : paramsDto.getTaskCarIdList()) {
             if (taskCarId == null) {
                 continue;
@@ -634,21 +638,51 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 failCarNoSet.add(new FailResultReasonVo(waybillCar.getOrderCarNo(), "运单车辆已经签收过", taskCarId));
                 continue;
             }
+            Order order = orderDao.findByCarId(waybillCar.getOrderCarId());
+            if(order != null && StringUtils.isNotBlank(order.getBackContactPhone()) && !customerPhoneList.contains(order.getBackContactPhone())){
+                customerPhoneList.add(order.getBackContactPhone());
+            }
+
 
             waybillCarIdSet.add(waybillCar.getId());
-
+            orderSet.add(order.getId());
             count++;
+        }
+        if(customerPhoneList.size() > 1){
+            return BaseResultUtil.fail("批量收车不能同时包含多个收车人订单");
+        }
+
+        boolean flag = csSmsService.validateCaptcha(customerPhoneList.get(0), paramsDto.getCaptcha(), CaptchaTypeEnum.CONFIRM_RECEIPT, paramsDto.getClientEnum());
+        if(!flag){
+            return BaseResultUtil.fail("收车码错误");
         }
 
         if (CollectionUtils.isEmpty(waybillCarIdSet)) {
             return BaseResultUtil.fail("没有可以卸车的车辆");
         }
-        //更新运单车辆信息
-        waybillCarDao.updateBatchForUnload(waybillCarIdSet, WaybillCarStateEnum.CONFIRMED.code);
-        //更新任务信息
-        taskDao.updateForUnload(task.getId(), count);
-        //更新实时运力信息
-        vehicleRunningDao.updateOccupiedNumForUnload(task.getId(), count);
+        //验证任务是否完成
+        int row = taskCarDao.countUnFinishByTaskId(paramsDto.getTaskId());
+        if(row == 0){
+            //更新任务状态
+            taskDao.updateStateById(task.getId(), TaskStateEnum.FINISHED.code);
+            //验证运单是否完成
+            int n = waybillCarDao.countUnFinishByWaybillId(task.getWaybillId());
+            if(n == 0){
+                //更新运单状态
+                waybillDao.updateStateById(WaybillStateEnum.FINISHED.code, waybill.getId());
+            }
+        }
+
+        //验证订单是否完成
+        orderSet.forEach(orderId -> {
+            int rows = orderCarDao.countUnFinishByOrderId(orderId);
+            if(rows <= 0){
+                //更新订单状态
+                orderDao.updateForReceipt(orderId, System.currentTimeMillis());
+            }
+        });
+
+
         //TODO 发送收车推送信息
         resultReasonVo.setSuccessList(successSet);
         resultReasonVo.setFailList(failCarNoSet);

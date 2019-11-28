@@ -48,8 +48,6 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
     @Resource
     private ICarrierDriverConDao carrierDriverConDao;
     @Resource
-    private ICsSendNoService sendNoService;
-    @Resource
     private ICsDriverService csDriverService;
     @Resource
     private ISysLoginService sysLoginService;
@@ -131,9 +129,8 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
         DriverLoginVo dVo = new DriverLoginVo();
         //架构组和韵车添加数据
         Driver driver = new Driver();
-        String no = sendNoService.getNo(SendNoTypeEnum.DRIVER);
-        driver.setName(no);
-        driver.setRealName(no);
+        driver.setName(phone);
+        driver.setRealName(phone);
         driver.setPhone(phone);
         driver.setType(DriverTypeEnum.SOCIETY.code);
         driver.setIdentity(DriverIdentityEnum.GENERAL_DRIVER.code);
@@ -146,9 +143,9 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
 
         //保存承运商信息
         Carrier carrier = new Carrier();
-        carrier.setName(no);
+        carrier.setName(phone);
         carrier.setType(CarrierTypeEnum.PERSONAL.code);
-        carrier.setLinkman(no);
+        carrier.setLinkman(phone);
         carrier.setLinkmanPhone(phone);
         carrier.setSettleType(ModeTypeEnum.TIME.code);
         carrier.setState(CommonStateEnum.WAIT_CHECK.code);
@@ -165,13 +162,14 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
         //组装数据
         dVo.setId(driver.getId());
         dVo.setRoleId(cdc.getId());
+        dVo.setRole(cdc.getRole());
         dVo.setType(carrier.getType());
         dVo.setUserId(driver.getUserId());
-        dVo.setRealName(driver.getRealName());
+        dVo.setRealName(StringUtils.isBlank(driver.getRealName()) ? "":driver.getRealName());
         dVo.setPhone(driver.getPhone());
-        dVo.setIdentity(DriverRoleEnum.PERSONAL_DRIVER.code);
+        dVo.setIdentity(DriverIdentityEnum.GENERAL_DRIVER.code);
         dVo.setBusinessState(driver.getBusinessState());
-        dVo.setCompanyName(carrier.getName());
+        dVo.setCompanyName(StringUtils.isBlank(carrier.getName()) ? "":carrier.getName());
         return BaseResultUtil.success(dVo);
     }
 }

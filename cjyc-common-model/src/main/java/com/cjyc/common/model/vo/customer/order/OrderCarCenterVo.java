@@ -7,6 +7,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -78,5 +79,8 @@ public class OrderCarCenterVo implements Serializable {
     }
     public String getVin() {
         return vin == null ? "" : vin;
+    }
+    public List<String> getCarImgList() {
+        return carImgList == null ? new ArrayList<>(0) : carImgList;
     }
 }

@@ -22,7 +22,7 @@ public class ChangePriceOrderDto {
     @ApiModelProperty(value = "用户ID",required = true)
     private Long loginId;
     @NotBlank
-    @ApiModelProperty(value = "用户名",required = true)
+    @ApiModelProperty(value = "操作人(不用传)")
     private String loginName;
     @NotNull
     @ApiModelProperty(value = "订单ID",required = true)

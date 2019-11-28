@@ -18,8 +18,8 @@ public class CheckOrderDto {
     @ApiModelProperty(value = "loginId", required = true)
     private Long loginId;
 
-    @ApiModelProperty("loginName")
-    private String userName;
+    @ApiModelProperty(value = "操作人(不用传)")
+    private String loginName;
 
     @NotNull
     @ApiModelProperty(value = "订单ID", required = true)

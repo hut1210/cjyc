@@ -140,4 +140,5 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
      */
     List<TransportInfoOrderCarVo> findTransportStateByOrderId(Long orderId);
 
+    int countUnFinishByOrderId(Long id);
 }

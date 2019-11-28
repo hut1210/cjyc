@@ -7,8 +7,8 @@ package com.cjyc.common.model.enums;
 public enum UserTypeEnum {
 
     /***/
-    ADMIN("管理员", 1),
-    DRIVER("司机/承运商",2),
+    ADMIN("业务员", 1),
+    DRIVER("司机",2),
     CUSTOMER("客户",3);
 
     public String name;

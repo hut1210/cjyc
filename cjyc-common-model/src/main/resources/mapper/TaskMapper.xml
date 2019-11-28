@@ -243,5 +243,36 @@
         group by t.id
         order by t.complete_time desc
     </select>
+    <select id="findListForMineCarrier" resultType="com.cjyc.common.model.vo.web.task.CrTaskVo">
+        select
+        w.carrier_name as carrierName,
+        w.car_num as waybillCarNum,
+        w.type as waybillType,
+        vr.occupied_car_num as occupiedCarNum,
+        vr.carry_car_num as carryCarNum,
+        t.*
+        from w_waybill w
+        LEFT JOIN w_task t on w.id = t.waybill_id
+        left join d_vehicle_running vr on vr.id = t.vehicle_running_id
+        <where>
+            w.carrier_id = #{paramsDto.carrierId}
+            <if test="paramsDto.waybillNo != null and paramsDto.waybillNo != ''">
+                and w.no = #{paramsDto.waybillNo}
+            </if>
+            <if test="paramsDto.taskNo != null and paramsDto.taskNo != ''">
+                and t.no = #{paramsDto.taskNo}
+            </if>
+            <if test="paramsDto.driverName != null and paramsDto.driverName != ''">
+                and t.driver_name  = #{paramsDto.driverName}
+            </if>
+            <if test="paramsDto.driverPhone != null and paramsDto.driverPhone != ''">
+                and t.driver_phone  = #{paramsDto.driverPhone}
+            </if>
+            <if test="paramsDto.vehiclePlateNo != null and paramsDto.vehiclePlateNo != ''">
+                and t.vehicle_plate_no  = #{paramsDto.vehiclePlateNo}
+            </if>
+        </where>
+        order by t.id desc
+    </select>
 
 </mapper>

@@ -27,7 +27,6 @@ import javax.validation.constraints.NotNull;
 @Slf4j
 @RestController
 @RequestMapping(value = "/sms",
-        consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
         produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class SmsController {
 

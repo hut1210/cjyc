@@ -11,7 +11,7 @@ public class RejectOrderDto {
     @ApiModelProperty(value = "loginId", required = true)
     private Long loginId;
 
-    @ApiModelProperty("loginName")
+    @ApiModelProperty(value = "操作人(不用传)")
     private String loginName;
 
     @NotNull
