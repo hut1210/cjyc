@@ -169,6 +169,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         start.append(" ");
         start.append(order.getStartArea() == null ? "" : order.getStartArea());
         detailVo.setStartProvinceCityAreaName(start.toString().trim());
+
         StringBuilder end = new StringBuilder();
         end.append(order.getEndProvince() == null ? "" : order.getEndProvince());
         end.append(" ");
