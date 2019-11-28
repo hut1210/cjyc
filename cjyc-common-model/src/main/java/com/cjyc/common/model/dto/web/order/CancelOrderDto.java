@@ -22,7 +22,7 @@ public class CancelOrderDto {
     @ApiModelProperty(value = "用户ID", required = true)
     private Long loginId;
 
-    @ApiModelProperty("用户名(不用传)")
+    @ApiModelProperty(value = "操作人(不用传)")
     private String loginName;
     @NotNull
     @ApiModelProperty(value = "订单ID", required = true)

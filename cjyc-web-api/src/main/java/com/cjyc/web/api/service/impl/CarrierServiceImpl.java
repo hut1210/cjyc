@@ -10,6 +10,7 @@ import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.carrier.*;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.*;
+import com.cjyc.common.model.enums.driver.DriverIdentityEnum;
 import com.cjyc.common.model.enums.transport.*;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
@@ -60,8 +61,6 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     private ISysUserService sysUserService;
     @Resource
     private ICsCarrierService csCarrierService;
-    @Resource
-    private ICsDriverService csDriverService;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -96,6 +95,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             driver.setName(dto.getName());
             driver.setPhone(dto.getLinkmanPhone());
             driver.setType(DriverTypeEnum.SOCIETY.code);
+            driver.setIdentity(DriverIdentityEnum.CARRIER_MANAGER.code);
             driver.setBusinessState(BusinessStateEnum.BUSINESS.code);
             driver.setSource(DriverSourceEnum.SALEMAN_WEB.code);
             driver.setIdCard(dto.getLegalIdCard());
@@ -103,13 +103,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             driver.setCreateUserId(dto.getLoginId());
             driver.setCreateTime(NOW);
             driverDao.insert(driver);
-            driver = driverDao.selectById(driver.getId());
-            //司机信息保存
-            ResultData<Long> rData = csDriverService.addDriverToPlatform(driver, carrier.getId());
-            if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
-                return BaseResultUtil.fail(rd.getMsg());
-            }
-            driver.setUserId(rData.getData());
+            driver.setUserId(rd.getData().getUserId());
             driver.setId(driver.getId());
             driverDao.updateById(driver);
 

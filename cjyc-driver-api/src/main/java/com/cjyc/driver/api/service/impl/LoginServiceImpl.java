@@ -48,8 +48,6 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
     @Resource
     private ICarrierDriverConDao carrierDriverConDao;
     @Resource
-    private ICsSendNoService sendNoService;
-    @Resource
     private ICsDriverService csDriverService;
     @Resource
     private ISysLoginService sysLoginService;

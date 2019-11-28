@@ -341,4 +341,7 @@
         LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
       where dd.id = #{driverId} and dc.state &lt; 9
     </select>
+    <select id="findByDeptId" resultType="com.cjyc.common.model.entity.Carrier">
+        select * from d_carrier where dept_id = #{deptId}
+    </select>
 </mapper>

@@ -1,11 +1,9 @@
 package com.cjyc.common.model.dto;
 
-import com.cjyc.common.model.constant.RegexConstant;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 @Data
 public class CarrierDriverDto extends CarrierVehicleDto implements Serializable {

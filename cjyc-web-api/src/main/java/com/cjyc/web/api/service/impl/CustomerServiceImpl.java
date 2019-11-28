@@ -91,6 +91,19 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
     @Override
+    public ResultVo<CustomerInfoVo> findCustomerInfo(ExistCustomreDto dto) {
+        Customer customer = customerDao.findByPhone(dto.getPhone());
+        CustomerInfoVo infoVo = new CustomerInfoVo();
+        if(customer != null){
+            infoVo.setCustomerId(customer.getId());
+            infoVo.setContactMan(customer.getContactMan());
+            infoVo.setContactPhone(customer.getContactPhone());
+            return BaseResultUtil.success(infoVo);
+        }
+        return BaseResultUtil.success();
+    }
+
+    @Override
     public ResultVo existCustomer(ExistCustomreDto dto) {
         Customer c = this.getOne(new QueryWrapper<Customer>().lambda()
                         .eq(Customer::getContactPhone, dto.getPhone())

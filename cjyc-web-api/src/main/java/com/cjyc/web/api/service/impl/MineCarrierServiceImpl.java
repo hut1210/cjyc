@@ -9,7 +9,9 @@ import com.cjyc.common.model.dto.web.mineCarrier.*;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.FlagEnum;
+import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.driver.DriverIdentityEnum;
+import com.cjyc.common.model.enums.task.TaskStateEnum;
 import com.cjyc.common.model.enums.transport.*;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
@@ -19,6 +21,7 @@ import com.cjyc.common.model.vo.web.mineCarrier.MyCarVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyDriverVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyWaybillVo;
 import com.cjyc.common.system.service.ICsDriverService;
+import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.web.api.service.IMineCarrierService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -51,7 +54,11 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
     @Resource
     private IWaybillDao waybillDao;
     @Resource
+    private ITaskDao taskDao;
+    @Resource
     private ICsDriverService csDriverService;
+    @Resource
+    private ICsSysService csSysService;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -65,12 +72,10 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
 
     @Override
     public ResultVo<PageVo<MyDriverVo>> findPageDriver(QueryMyDriverDto dto) {
-        CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
-                .eq(CarrierDriverCon::getDriverId, dto.getLoginId())
-                .eq(CarrierDriverCon::getId, dto.getRoleId()));
+        Carrier carrier = csSysService.getCarrierByRoleId(dto.getRoleId());
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        if(cdc != null){
-            dto.setCarrierId(cdc.getCarrierId());
+        if(carrier != null){
+            dto.setCarrierId(carrier.getId());
             List<MyDriverVo> myDriverVos =  driverDao.findMyDriver(dto);
             if(!CollectionUtils.isEmpty(myDriverVos)){
                 for(MyDriverVo vo : myDriverVos){
@@ -121,10 +126,14 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
             if(vehicle != null){
                 return BaseResultUtil.fail("该车辆已添加，请核对");
             }
+            Carrier carrier = csSysService.getCarrierByRoleId(dto.getRoleId());
+            if(carrier == null){
+                return BaseResultUtil.fail("数据错误，请核对");
+            }
             Vehicle veh = new Vehicle();
             BeanUtils.copyProperties(dto,veh);
             veh.setOwnershipType(VehicleOwnerEnum.CARRIER.code);
-            veh.setCarrierId(dto.getCarrierId());
+            veh.setCarrierId(carrier.getId());
             veh.setCreateUserId(dto.getLoginId());
             veh.setCreateTime(NOW);
             vehicleDao.insert(veh);
@@ -153,12 +162,10 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
 
     @Override
     public ResultVo<PageVo<MyCarVo>> findPageCar(QueryMyCarDto dto) {
-        CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
-                .eq(CarrierDriverCon::getDriverId, dto.getLoginId())
-                .eq(CarrierDriverCon::getId, dto.getRoleId()));
+        Carrier carrier = csSysService.getCarrierByRoleId(dto.getRoleId());
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        if(cdc != null){
-            dto.setCarrierId(cdc.getCarrierId());
+        if(carrier != null){
+            dto.setCarrierId(carrier.getId());
             List<MyCarVo> myCarVos = vehicleDao.findMyCar(dto);
             PageInfo<MyCarVo> pageInfo = new PageInfo<>(myCarVos);
             return BaseResultUtil.success(pageInfo);
@@ -172,19 +179,52 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
      * @return
      */
     private ResultVo modifyVehicle(CarrierVehicleDto dto) {
-        DriverVehicleCon dvc = driverVehicleConDao.selectOne(new QueryWrapper<DriverVehicleCon>().lambda().eq(DriverVehicleCon::getVehicleId,dto.getVehicleId()));
+        //更新车辆信息
+        Vehicle vehicle = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda()
+                .eq(Vehicle::getId, dto.getVehicleId()));
+
+        VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda()
+                .eq(dto.getDriverId() != null, VehicleRunning::getDriverId, dto.getDriverId())
+                .eq(dto.getVehicleId() != null, VehicleRunning::getVehicleId, dto.getVehicleId()));
+        vehicle.setDefaultCarryNum(dto.getDefaultCarryNum());
+        vehicleDao.updateById(vehicle);
+
+        DriverVehicleCon dvc = driverVehicleConDao.selectOne(new QueryWrapper<DriverVehicleCon>().lambda()
+                                .eq(DriverVehicleCon::getVehicleId,dto.getVehicleId()));
         if((dvc != null && dto.getDriverId().equals(dvc.getDriverId()))
             || (dvc == null && dto.getDriverId() == null)){
             //选择与之前相同的司机绑定或者之前与现在都没绑定司机
+            if(vr != null){
+                //更新运力
+                vr.setDriverId(dto.getDriverId());
+                vr.setVehicleId(dto.getVehicleId());
+                vr.setCarryCarNum(dto.getDefaultCarryNum());
+                vr.setRunningState(VehicleRunStateEnum.FREE.code);
+                vehicleRunningDao.updateById(vr);
+            }
             return BaseResultUtil.success();
         }
         if(dto.getDriverId() != null){
-            if(dvc != null){
+            if(dvc != null && !dvc.getDriverId().equals(dto.getDriverId())){
                 //之前绑定与现在绑定不相同，先解绑再绑定新的
-                driverVehicleConDao.deleteById(dvc);
-                vehicleRunningDao.updateVehicleRunning(dto.getVehicleId());
+                if (vr != null) {
+                    Task task = taskDao.selectOne(new QueryWrapper<Task>().lambda()
+                            .eq(Task::getVehicleRunningId, vr.getId())
+                            .eq(Task::getState, TaskStateEnum.TRANSPORTING.code));
+                    if (task != null) {
+                        return BaseResultUtil.getVo(ResultEnum.VEHICLE_RUNNING.getCode(), ResultEnum.VEHICLE_RUNNING.getMsg());
+                    }
+                }
+                dvc.setDriverId(dto.getDriverId());
+                driverVehicleConDao.updateById(dvc);
+                //更新运力
+                vr.setDriverId(dto.getDriverId());
+                vr.setVehicleId(dto.getVehicleId());
+                vr.setCarryCarNum(dto.getDefaultCarryNum());
+                vr.setRunningState(VehicleRunStateEnum.FREE.code);
+                vehicleRunningDao.updateById(vr);
             }
-            if(dvc == null || !dto.getDriverId().equals(dvc.getDriverId())){
+            if(dvc == null){
                 //绑定新的
                 csDriverService.bindDriverVeh(dto);
             }

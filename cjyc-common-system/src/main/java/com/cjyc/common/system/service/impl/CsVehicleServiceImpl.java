@@ -6,16 +6,14 @@ import com.cjyc.common.model.dto.FreeDto;
 import com.cjyc.common.model.dto.KeywordDto;
 import com.cjyc.common.model.dto.driver.mine.CarrierDriverNameDto;
 import com.cjyc.common.model.dto.driver.mine.CarrierVehicleNoDto;
-import com.cjyc.common.model.entity.CarrierDriverCon;
-import com.cjyc.common.model.entity.DriverVehicleCon;
-import com.cjyc.common.model.entity.Task;
-import com.cjyc.common.model.entity.VehicleRunning;
+import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.task.TaskStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.FreeVehicleVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.service.ICsVehicleService;
+import com.cjyc.common.system.service.sys.ICsSysService;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -31,6 +29,8 @@ public class CsVehicleServiceImpl implements ICsVehicleService {
     private IDriverVehicleConDao driverVehicleConDao;
     @Resource
     private ICarrierDriverConDao carrierDriverConDao;
+    @Resource
+    private ICsSysService csSysService;
 
     @Override
     public ResultVo<List<FreeVehicleVo>> findPersonFreeVehicle(KeywordDto dto) {
@@ -42,11 +42,9 @@ public class CsVehicleServiceImpl implements ICsVehicleService {
     @Override
     public ResultVo<List<FreeVehicleVo>> findCarrierFreeVehicle(FreeDto dto) {
         //获取承运商
-        CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
-                .eq(CarrierDriverCon::getId, dto.getRoleId())
-                .eq(CarrierDriverCon::getDriverId, dto.getLoginId()));
-        if(cdc != null){
-            List<FreeVehicleVo> freeVehicleVos = vehicleDao.findCarrierVehicle(cdc.getCarrierId(),dto.getPlateNo());
+        Carrier carrier = csSysService.getCarrierByRoleId(dto.getRoleId());
+        if(carrier != null){
+            List<FreeVehicleVo> freeVehicleVos = vehicleDao.findCarrierVehicle(carrier.getId(),dto.getPlateNo());
             return freeVehicles(freeVehicleVos);
         }
         return BaseResultUtil.success();

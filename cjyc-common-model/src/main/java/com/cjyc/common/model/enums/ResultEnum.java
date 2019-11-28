@@ -7,8 +7,10 @@ package com.cjyc.common.model.enums;
 public enum ResultEnum {
     /** 通用 */
     SUCCESS(0, "成功"),
-    //通用业务失败状态， 可以自定义返回消息msg 如：用户名或密码错误、提交失败等
+    //通用业务失败状态， 可以自定义返回消息msg 如：用户名或密码错误、提交失败等,
     FAIL(1, "处理失败"),
+    //有必要时用
+    SUCCESS_NONE(5, "成功但没有数据"),
 
     TOKEN_EXPIRE(401, "token过期"),
 
@@ -38,6 +40,8 @@ public enum ResultEnum {
     /**业务返回码*/
     NOEXIST_LINE(8001, "该班线不存在"),
     EXIST_LINE(8002, "该班线已存在"),
+    NOEXIST_STORE(8003, "该业务中心不存在"),
+
     CREATE_NEW_CUSTOMER(9001, "个人用户不存在，是否保存为新用户"),
     EXIST_CUSTOMER(9002, "该用户已存在于大客户或者合伙人中"),
     UPGRADE_CUSTOMER(9003, "账号已存在，且为普通用户，是否升级为合伙人"),

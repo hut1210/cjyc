@@ -306,6 +306,7 @@
             dd.id_card_back_img as idCardBackImg,
             dvr.vehicle_id as vehicleId,
             dcdc.state AS state,
+            dvr.running_state as runningState,
             dd.identity AS identity,
             dvr.plate_no AS plateNo,
             dvr.carry_car_num AS defaultCarryNum
@@ -355,7 +356,7 @@
             <if test="realName != null and realName.trim() != ''">
                 dd.real_name like CONCAT('%',#{realName},'%')
             </if>
-              and dcdc.id = #{roleId} and dcdc.state=2 and dd.id = #{loginId}
+              and dcdc.id = #{roleId} and dd.id = #{loginId} and dcdc.state &lt; 9
         </where>
     </select>
 

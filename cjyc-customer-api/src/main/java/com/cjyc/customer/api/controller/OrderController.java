@@ -1,12 +1,11 @@
 package com.cjyc.customer.api.controller;
 
+import com.cjyc.common.model.dto.customer.order.OrderDetailDto;
 import com.cjyc.common.model.dto.customer.order.OrderQueryDto;
-import com.cjyc.common.model.dto.customer.order.OrderUpdateDto;
+import com.cjyc.common.model.dto.customer.order.SimpleSaveOrderDto;
 import com.cjyc.common.model.dto.web.order.CancelOrderDto;
-import com.cjyc.common.model.dto.web.order.CommitOrderDto;
 import com.cjyc.common.model.dto.web.order.SaveOrderDto;
 import com.cjyc.common.model.dto.web.task.ReceiptTaskDto;
-import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -56,10 +55,8 @@ public class OrderController {
     public ResultVo save(@RequestBody SaveOrderDto reqDto) {
 
         //验证用户存不存在
-        Customer customer = csCustomerService.getById(reqDto.getLoginId(), true);
-        if(customer == null){
-            return BaseResultUtil.fail("用户不存在");
-        }
+        Customer customer = csCustomerService.validate(reqDto.getLoginId());
+        reqDto.setLoginName(customer.getName());
         reqDto.setCreateUserId(customer.getUserId());
         reqDto.setCreateUserName(customer.getName());
 
@@ -76,35 +73,30 @@ public class OrderController {
     public ResultVo submit(@Validated @RequestBody SaveOrderDto reqDto) {
 
         //验证用户存不存在
-        Customer admin = csCustomerService.getById(reqDto.getLoginId(), true);
-        if(admin == null){
-            return BaseResultUtil.fail("用户不存在");
-        }
-        reqDto.setCreateUserId(admin.getUserId());
-        reqDto.setCreateUserName(admin.getName());
+        Customer customer = csCustomerService.validate(reqDto.getLoginId());
+        reqDto.setLoginName(customer.getName());
+        reqDto.setCreateUserId(customer.getUserId());
+        reqDto.setCreateUserName(customer.getName());
 
         //发送推送信息
         return orderService.submit(reqDto);
     }
+
     /**
-     * 订单提交
+     * 订单提交-客户
      * @author JPG
      */
- /*   @ApiOperation(value = "订单提交-业务员")
-    @PostMapping(value = "/commit")
-    public ResultVo commit(@Validated @RequestBody CommitOrderDto reqDto) {
+    @ApiOperation(value = "订单简单提交-客户")
+    @PostMapping(value = "/simple/submit")
+    public ResultVo simpleSubmit(@Validated @RequestBody SimpleSaveOrderDto reqDto) {
 
         //验证用户存不存在
-        Customer admin = csCustomerService.getById(reqDto.getLoginId(), true);
-        if(admin == null){
-            return BaseResultUtil.fail("用户不存在");
-        }
-        reqDto.setCreateUserId(admin.getUserId());
-        reqDto.setCreateUserName(admin.getName());
+        Customer customer = csCustomerService.validate(reqDto.getLoginId());
+        reqDto.setLoginName(customer.getName());
 
         //发送推送信息
-        return orderService.commit(reqDto);
-    }*/
+        return orderService.simpleSubmit(reqDto);
+    }
 
     /**
      * 功能描述: 分页查询订单列表
@@ -153,7 +145,7 @@ public class OrderController {
      */
     @ApiOperation(value = "查询订单详情", notes = "根据条件查询订单明细：参数orderNo(订单号),loginId(客户ID)", httpMethod = "POST")
     @PostMapping(value = "/getDetail")
-    public ResultVo<OrderCenterDetailVo> getDetail(@RequestBody @Validated({OrderUpdateDto.GetDetail.class}) OrderUpdateDto dto){
+    public ResultVo<OrderCenterDetailVo> getDetail(@RequestBody @Validated OrderDetailDto dto){
         return orderService.getDetail(dto);
     }
 

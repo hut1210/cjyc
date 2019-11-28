@@ -60,7 +60,7 @@
             <if test="endTime != null">
                 and  cc.create_time &lt;= #{endTime}
             </if>
-            <if test="createName != null">
+            <if test="createName != null and createName.trim() != ''">
                 and  ba.name = #{createName}
             </if>
         </where>

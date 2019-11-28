@@ -1,9 +1,11 @@
 package com.cjyc.web.api.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.cjyc.common.model.dao.*;
+import com.cjyc.common.model.dao.ITaskDao;
+import com.cjyc.common.model.dao.IWaybillCarDao;
 import com.cjyc.common.model.dto.web.task.*;
-import com.cjyc.common.model.entity.*;
+import com.cjyc.common.model.entity.Carrier;
+import com.cjyc.common.model.entity.Task;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultReasonVo;
@@ -13,13 +15,15 @@ import com.cjyc.common.model.vo.web.task.ListByWaybillTaskVo;
 import com.cjyc.common.model.vo.web.task.TaskVo;
 import com.cjyc.common.model.vo.web.waybill.WaybillCarVo;
 import com.cjyc.common.system.service.ICsTaskService;
+import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.web.api.service.ITaskService;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.List;
 
 /**
  * <p>
@@ -34,21 +38,13 @@ import java.util.*;
 public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITaskService {
 
     @Resource
-    private IOrderDao orderDao;
-    @Resource
-    private IOrderCarDao orderCarDao;
-    @Resource
-    private IWaybillDao waybillDao;
-    @Resource
     private IWaybillCarDao waybillCarDao;
     @Resource
     private ITaskDao taskDao;
     @Resource
-    private ITaskCarDao taskCarDao;
-    @Resource
-    private IStoreDao storeDao;
-    @Resource
     private ICsTaskService csTaskService;
+    @Resource
+    private ICsSysService csSysService;
 
     @Override
     public ResultVo allot(AllotTaskDto paramsDto) {
@@ -95,11 +91,22 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
     }
 
     @Override
-    public ResultVo<PageVo<CrTaskVo>> crAllottedList(CrTaskDto paramsDto) {
+    public ResultVo<PageVo<CrTaskVo>> crTaskList(CrTaskDto paramsDto) {
+
+        //根据角色查询承运商ID
+        Carrier carrier = csSysService.getCarrierByRoleId(paramsDto.getRoleId());
+        if(carrier == null){
+            return BaseResultUtil.fail("承运商信息不存在");
+        }
+        paramsDto.setCarrierId(carrier.getId());
+
         PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
         List<CrTaskVo> list = taskDao.findListForMineCarrier(paramsDto);
-
-        return null;
+        PageInfo<CrTaskVo> pageInfo = new PageInfo<>(list);
+        if(paramsDto.getCurrentPage() > pageInfo.getPages()){
+            pageInfo.setList(list);
+        }
+        return BaseResultUtil.success(pageInfo);
     }
 
 }

@@ -4,11 +4,8 @@ import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.customer.*;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.web.coupon.CustomerCouponSendVo;
-import com.cjyc.common.model.vo.web.customer.CustomerPartnerVo;
-import com.cjyc.common.model.vo.web.customer.CustomerVo;
+import com.cjyc.common.model.vo.web.customer.*;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.customer.ListKeyCustomerVo;
-import com.cjyc.common.model.vo.web.customer.ShowKeyCustomerVo;
 import com.cjyc.web.api.service.ICustomerService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -32,6 +29,13 @@ public class CustomerController {
 
     @Autowired
     private ICustomerService customerService;
+
+    @ApiOperation(value = "获取客户信息")
+    @PostMapping(value = "/findCustomerInfo")
+    public ResultVo<CustomerInfoVo> findCustomerInfo(@RequestBody ExistCustomreDto dto){
+        return customerService.findCustomerInfo(dto);
+    }
+
 
     @ApiOperation(value = "验证用户是否存在")
     @PostMapping(value = "/existCustomer")

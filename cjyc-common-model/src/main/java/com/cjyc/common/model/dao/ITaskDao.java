@@ -46,7 +46,7 @@ public interface ITaskDao extends BaseMapper<Task> {
 
     String findMaxNo(String waybillNo);
 
-    List<CrTaskVo> findListForMineCarrier(CrTaskDto paramsDto);
+    List<CrTaskVo> findListForMineCarrier(@Param("paramsDto") CrTaskDto paramsDto);
 
     /**
      * 功能描述: 查询已交付任务列表
