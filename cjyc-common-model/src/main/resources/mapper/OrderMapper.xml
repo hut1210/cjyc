@@ -327,7 +327,7 @@
             customer_id = #{loginId}
             /*待确认*/
             <if test="state != null and state == 0">
-                and o.state between ${@com.cjyc.common.model.enums.order.OrderStateEnum@SUBMITTED.code}
+                and o.state between ${@com.cjyc.common.model.enums.order.OrderStateEnum@WAIT_SUBMIT.code}
                 and ${@com.cjyc.common.model.enums.order.OrderStateEnum@WAIT_RECHECK.code}
             </if>
             /*运输中*/
