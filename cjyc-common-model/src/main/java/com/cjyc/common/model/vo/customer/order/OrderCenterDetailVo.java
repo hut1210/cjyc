@@ -51,13 +51,13 @@ public class OrderCenterDetailVo implements Serializable {
     @ApiModelProperty(value = "提车方式:1 自送，2代驾上门，3拖车上门，4物流上门")
     private Integer pickType;
 
-    @ApiModelProperty(value = "省编号")
+    @ApiModelProperty(value = "出发地省编号")
     private String startProvinceCode;
 
-    @ApiModelProperty(value = "市编号")
+    @ApiModelProperty(value = "出发地市编号")
     private String startCityCode;
 
-    @ApiModelProperty(value = "区编号")
+    @ApiModelProperty(value = "出发地区编号")
     private String startAreaCode;
 
     @ApiModelProperty(value = "出发地省市区名称")
@@ -75,16 +75,16 @@ public class OrderCenterDetailVo implements Serializable {
     @ApiModelProperty(value = "送车方式： 1 自提，2代驾上门，3拖车上门，4物流上门")
     private Integer backType;
 
-    @ApiModelProperty(value = "省编号")
+    @ApiModelProperty(value = "收车省编号")
     private String endProvinceCode;
 
-    @ApiModelProperty(value = "市编号")
+    @ApiModelProperty(value = "收车市编号")
     private String endCityCode;
 
-    @ApiModelProperty(value = "区编号")
+    @ApiModelProperty(value = "收车区编号")
     private String endAreaCode;
 
-    @ApiModelProperty(value = "省市区名称")
+    @ApiModelProperty(value = "收车省市区名称")
     private String endProvinceCityAreaName;
 
     @ApiModelProperty(value = "目的地详细地址")
