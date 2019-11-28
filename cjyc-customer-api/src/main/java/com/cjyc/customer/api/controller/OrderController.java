@@ -117,7 +117,7 @@ public class OrderController {
      * @param loginId
      * @return com.cjyc.common.model.vo.ResultVo<java.util.Map<java.lang.String,java.lang.Object>>
      */
-    @ApiOperation(value = "查询每种状态下的订单数量", notes = "查询各种订单状态下的订单数量", httpMethod = "POST")
+    @ApiOperation(value = "查询各种订单状态下的订单数量", notes = "查询各种订单状态下的订单数量", httpMethod = "POST")
     @PostMapping(value = "/getOrderCount/{loginId}")
     public ResultVo<Map<String,Object>> getOrderCount(@PathVariable Long loginId){
         return orderService.getOrderCount(loginId);
