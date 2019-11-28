@@ -132,6 +132,12 @@ public class OrderCenterDetailVo implements Serializable {
     @ApiModelProperty(value = "车辆总数")
     private Integer carNum;
 
+    public String getStartCity() {
+        return startCity == null ? "" : startCity;
+    }
+    public String getEndCity() {
+        return endCity == null ? "" : endCity;
+    }
     public String getStartProvinceCode() {
         return startProvinceCode == null ? "" : startProvinceCode;
     }
