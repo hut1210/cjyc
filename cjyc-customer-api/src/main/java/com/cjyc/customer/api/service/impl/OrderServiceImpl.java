@@ -208,32 +208,6 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         orderCarCenter.setCarImgList(photoImgList);
     }
 
-/*    @Override
-    public ResultVo confirmPickCar(OrderUpdateDto dto) {
-        // 修改车辆状态
-        OrderCar orderCar = new OrderCar();
-        orderCar.setState(OrderCarStateEnum.SIGNED.code);
-        for (Long id : dto.getCarIdList()) {
-            orderCar.setId(id);
-            int i = orderCarDao.updateById(orderCar);
-            if (i == 0) {
-                return BaseResultUtil.fail();
-            }
-        }
-
-        // 修改订单状态
-        LambdaQueryWrapper<OrderCar> queryWrapper = new QueryWrapper<OrderCar>().lambda()
-                .eq(OrderCar::getOrderNo, dto.getOrderNo()).ne(OrderCar::getState,OrderCarStateEnum.SIGNED.code);
-        if (CollectionUtils.isEmpty(orderCarDao.selectList(queryWrapper))) {
-            // 说明已经全部确认收车，更新总订单状态为已交付
-            LambdaUpdateWrapper<Order> updateWrapper = new UpdateWrapper<Order>().lambda().set(Order::getState, OrderStateEnum.FINISHED.code)
-                    .eq(Order::getNo, dto.getOrderNo()).eq(Order::getCustomerId, dto.getLoginId());
-            boolean result = super.update(updateWrapper);
-            return result ? BaseResultUtil.success() : BaseResultUtil.fail();
-        }
-        return BaseResultUtil.success();
-    }*/
-
     @Override
     public ResultVo getUnInvoicePage(InvoiceApplyQueryDto dto) {
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
