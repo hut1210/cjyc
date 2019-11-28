@@ -95,8 +95,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
     @Override
     public ResultVo<Map<String, Object>> getOrderCount(Long loginId) {
         Map<String,Object> map = new HashMap<>(4);
-        map.put("waitConfirm",0);
-        map.put("inTransitCount",0);
+        map.put("waitConfirmCount",0);
+        map.put("transitCount",0);
         map.put("payCount",0);
         map.put("allCount",0);
         // 查询待确认订单数量
@@ -112,9 +112,9 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         queryWrapper = new QueryWrapper<Order>().lambda()
                 .eq(Order::getCustomerId,loginId)
                 .eq(Order::getState,OrderStateEnum.TRANSPORTING.code);
-        Integer inTransitCount = orderDao.selectCount(queryWrapper);
-        if (!Objects.isNull(inTransitCount)) {
-            map.put("inTransitCount",inTransitCount);
+        Integer transitCount = orderDao.selectCount(queryWrapper);
+        if (!Objects.isNull(transitCount)) {
+            map.put("transitCount",transitCount);
         }
 
         // 查询已交付订单数量
