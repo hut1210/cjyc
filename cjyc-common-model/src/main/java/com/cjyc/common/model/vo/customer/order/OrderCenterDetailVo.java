@@ -57,6 +57,9 @@ public class OrderCenterDetailVo implements Serializable {
     @ApiModelProperty(value = "出发地市编号")
     private String startCityCode;
 
+    @ApiModelProperty(value = "出发地市名称")
+    private String startCity;
+
     @ApiModelProperty(value = "出发地区编号")
     private String startAreaCode;
 
@@ -80,6 +83,9 @@ public class OrderCenterDetailVo implements Serializable {
 
     @ApiModelProperty(value = "收车市编号")
     private String endCityCode;
+
+    @ApiModelProperty(value = "收车市名称")
+    private String endCity;
 
     @ApiModelProperty(value = "收车区编号")
     private String endAreaCode;
