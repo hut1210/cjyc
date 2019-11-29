@@ -73,7 +73,7 @@
                 parameterType="com.cjyc.common.model.dto.web.salesman.TypeSalesmanDto">
         SELECT
             admin.id AS adminId,
-            admin.NAME AS NAME,
+            admin.NAME AS name,
             admin.phone AS phone,
             s.NAME AS storeName
         FROM

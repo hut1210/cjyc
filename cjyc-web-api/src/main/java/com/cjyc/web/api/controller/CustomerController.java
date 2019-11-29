@@ -98,7 +98,7 @@ public class CustomerController {
 
     @ApiOperation(value = "根据客户id查看合伙人")
     @PostMapping(value = "/showPartner/{customerId}")
-    public ResultVo showPartner(@PathVariable Long customerId){
+    public ResultVo<ShowPartnerVo> showPartner(@PathVariable Long customerId){
         return customerService.showPartner(customerId);
     }
 

@@ -1,5 +1,6 @@
 package com.cjyc.customer.api.controller;
 
+import com.cjyc.common.model.dto.customer.freightBill.FindStoreDto;
 import com.cjyc.common.model.dto.customer.freightBill.TransportDto;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.customerLine.StoreListVo;
@@ -31,8 +32,8 @@ public class TransportController {
 
     @ApiOperation(value = "获取业务中心")
     @PostMapping(value = "/findStore")
-    public ResultVo<StoreListVo> findStore(){
-        return transportService.findStore();
+    public ResultVo<StoreListVo> findStore(@Validated @RequestBody FindStoreDto dto){
+        return transportService.findStore(dto);
     }
 
 }

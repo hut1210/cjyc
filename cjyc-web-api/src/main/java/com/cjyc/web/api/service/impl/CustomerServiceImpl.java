@@ -466,7 +466,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     }
 
     @Override
-    public ResultVo showPartner(Long customerId) {
+    public ResultVo<ShowPartnerVo> showPartner(Long customerId) {
         ShowPartnerVo partnerVo = customerDao.showPartner(customerId);
         return BaseResultUtil.success(partnerVo);
     }

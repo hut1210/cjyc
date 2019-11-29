@@ -35,7 +35,7 @@ public interface IMineCarrierService extends IService<Carrier> {
      * @param dto
      * @return
      */
-    ResultVo verifyDriver(HandleDto dto);
+    ResultVo verifyDriver(OperateDto dto);
 
     /**
      * 新增承运商下车辆

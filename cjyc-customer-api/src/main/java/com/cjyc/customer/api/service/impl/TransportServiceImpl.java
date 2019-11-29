@@ -3,6 +3,7 @@ package com.cjyc.customer.api.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjyc.common.model.dao.ILineDao;
 import com.cjyc.common.model.dao.IStoreDao;
+import com.cjyc.common.model.dto.customer.freightBill.FindStoreDto;
 import com.cjyc.common.model.dto.customer.freightBill.TransportDto;
 import com.cjyc.common.model.entity.Line;
 import com.cjyc.common.model.entity.Store;
@@ -48,9 +49,10 @@ public class TransportServiceImpl implements ITransportService {
     }
 
     @Override
-    public ResultVo<StoreListVo> findStore() {
+    public ResultVo<StoreListVo> findStore(FindStoreDto dto) {
         List<BusinessStoreVo> storeVos = new ArrayList<>(10);
-        List<Store> stores = storeDao.selectList(new QueryWrapper<Store>().lambda());
+        List<Store> stores = storeDao.selectList(new QueryWrapper<Store>().lambda()
+                                                .eq(Store::getCityCode,dto.getCityCode()));
         if(!CollectionUtils.isEmpty(stores)){
             for(Store store : stores){
                 BusinessStoreVo bsv = new BusinessStoreVo();

@@ -316,20 +316,20 @@ public class CsDriverServiceImpl implements ICsDriverService {
                 //下属司机
                 if(roleResp.getRoleName().equals(RoleNameEnum.COMMON.getName())){
                     roleId = roleResp.getRoleId();
+                    break;
                 }
-                break;
             }else if(cdc.getRole() == RoleNameEnum.ADMINSTRATOR.getValue()){
                 //管理员
                 if(roleResp.getRoleName().equals(RoleNameEnum.ADMINSTRATOR.getName())){
                     roleId = roleResp.getRoleId();
+                    break;
                 }
-                break;
             }else if(cdc.getRole() == RoleNameEnum.SUPER_ADMINSTRATOR.getValue()){
                 //超级管理员
                 if(roleResp.getRoleName().contains(RoleNameEnum.SUPER_ADMINSTRATOR.getName())){
                     roleId = roleResp.getRoleId();
+                    break;
                 }
-                break;
             }
         }
         return BaseResultUtil.success(roleId);

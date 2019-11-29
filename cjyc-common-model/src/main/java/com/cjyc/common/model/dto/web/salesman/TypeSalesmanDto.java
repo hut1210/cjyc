@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 @Data
-public class TypeSalesmanDto extends BasePageDto implements Serializable {
+public class TypeSalesmanDto extends BasePageDto {
     private static final long serialVersionUID = -9045863844526822893L;
 
     @ApiModelProperty("是否分页 0:不分页 1:分页")

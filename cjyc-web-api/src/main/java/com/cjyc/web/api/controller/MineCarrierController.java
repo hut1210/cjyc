@@ -57,7 +57,7 @@ public class MineCarrierController {
 
     @ApiOperation(value = "操作承运商下司机")
     @PostMapping(value = "/verifyDriver")
-    public ResultVo verifyDriver(@RequestBody HandleDto dto){
+    public ResultVo verifyDriver(@RequestBody OperateDto dto){
         return mimeCarrierService.verifyDriver(dto);
     }
 

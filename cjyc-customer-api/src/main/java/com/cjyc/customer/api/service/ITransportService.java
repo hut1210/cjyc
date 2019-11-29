@@ -1,5 +1,6 @@
 package com.cjyc.customer.api.service;
 
+import com.cjyc.common.model.dto.customer.freightBill.FindStoreDto;
 import com.cjyc.common.model.dto.customer.freightBill.TransportDto;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.customerLine.StoreListVo;
@@ -23,5 +24,5 @@ public interface ITransportService {
      * @param
      * @return
      */
-    ResultVo<StoreListVo> findStore();
+    ResultVo<StoreListVo> findStore(FindStoreDto dto);
 }

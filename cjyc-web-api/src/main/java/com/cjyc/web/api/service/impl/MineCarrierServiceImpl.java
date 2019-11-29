@@ -107,10 +107,10 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
     }
 
     @Override
-    public ResultVo verifyDriver(HandleDto dto) {
-        Driver driver = driverDao.selectById(dto.getDriverId());
+    public ResultVo verifyDriver(OperateDto dto) {
+        Driver driver = driverDao.selectById(dto.getId());
         CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
-                .eq(CarrierDriverCon::getDriverId,dto.getDriverId())
+                .eq(CarrierDriverCon::getDriverId,dto.getId())
                 .eq(CarrierDriverCon::getCarrierId,dto.getCarrierId()));
         Carrier carrier = carrierDao.selectById(dto.getCarrierId());
         if(driver == null || cdc == null || carrier == null){
@@ -129,8 +129,8 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
             userId = driver.getUserId();
             roleId = null;
             for(SelectRoleResp roleResp : rd.getData()){
-                //普通司机
-                if(roleResp.getRoleName().equals(RoleNameEnum.COMMON.getName())){
+                //管理员
+                if(roleResp.getRoleName().equals(RoleNameEnum.ADMINSTRATOR.getName())){
                     roleId = roleResp.getRoleId();
                 }
             }
