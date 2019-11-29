@@ -211,7 +211,7 @@ public class PingPayController {
             om.setBack_type(om.getBack_type());
             om.setOrderDetailId(om.getOrderDetailId());
             om.setChannel(om.getChannel());
-            om.setOrderCode(orderCode);
+            om.setOrderCode(om.getOrderCode());
             om.setSubject("订单的收款码功能!");
             om.setBody("生成二维码！");
             om.setChargeType("1");
@@ -253,18 +253,18 @@ public class PingPayController {
             om.setBack_type(om.getBack_type());
             om.setOrderDetailId(om.getOrderDetailId());
             om.setChannel(om.getChannel());
-            om.setOrderCode(orderCode);
+            om.setOrderCode(om.getOrderCode());
             om.setSubject("订单的收款码功能!");
             om.setBody("生成二维码！");
             om.setChargeType("1");//支付尾款
             om.setClientType("user");
             om.setDescription("韵车订单号："+om.getOrderCode());
-            charge = iPingPayService.sweepDriveCode(om);
+            charge = iPingPayService.sweepSalesmanCode(om);
 
         } catch (Exception e) {
             logger.error("扫码支付异常",e);
             return BaseResultUtil.fail(500,"业务员出示二维码，用户扫码支付异常");
         }
-        return BaseResultUtil.success();
+        return BaseResultUtil.success(charge);
     }
 }
