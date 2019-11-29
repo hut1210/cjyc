@@ -1,6 +1,5 @@
 package com.cjyc.common.model.vo;
 
-import com.cjyc.common.model.FailResultReasonVo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 

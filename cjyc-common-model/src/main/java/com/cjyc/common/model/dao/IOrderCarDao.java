@@ -16,6 +16,7 @@ import com.cjyc.common.model.vo.web.order.TransportInfoOrderCarVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -115,7 +116,7 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
 
     int updateTrunkStateById(Long id);
 
-    List<OrderCar> findByIds(@Param("orderCarIdList") List<Long> orderCarIdList);
+    List<OrderCar> findListByIds(@Param("orderCarIdList") List<Long> orderCarIdList);
     List<OrderCarVo> findVoListByIds(@Param("orderCarIdList") List<Long> orderCarIdList);
 
     /**
@@ -141,4 +142,6 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
     List<TransportInfoOrderCarVo> findTransportStateByOrderId(Long orderId);
 
     int countUnFinishByOrderId(Long id);
+
+    int updateForReceiptBatch(@Param("set") Collection<Long> orderCarIdSet);
 }

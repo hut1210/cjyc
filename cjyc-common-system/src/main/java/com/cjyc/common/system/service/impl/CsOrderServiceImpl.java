@@ -49,6 +49,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
     @Resource
     private ICsStoreService csStoreService;
     @Resource
+    private ICsOrderLogService csOrderLogService;
+    @Resource
     private ICsOrderChangeLogService orderChangeLogService;
     @Resource
     private ICsCustomerContactService csCustomerContactService;
@@ -265,8 +267,24 @@ public class CsOrderServiceImpl implements ICsOrderService {
         orderDao.updateById(order);
 
         //记录发车人和收车人
-        csCustomerContactService.saveByOrder(order);
+        csCustomerContactService.asyncSaveByOrder(order);
+
+        //记录订单日志
+        OrderLog orderLog = new OrderLog();
+        orderLog.setOrderId(order.getId());
+        orderLog.setOrderNo(order.getNo());
+        orderLog.setType(0);
+/*        orderLog.setInnerLog(OrderLogEnum.COMMIT.getInnerLog());
+        orderLog.setOuterLog(OrderLogEnum.COMMIT.getOutterLog());*/
+        orderLog.setCreateTime(System.currentTimeMillis());
+        orderLog.setCreateUser(paramsDto.getCreateUserName());
+        orderLog.setCreateUserId(paramsDto.getCreateUserId());
+        orderLog.setCreateUserPhone(paramsDto.getLoginPhone());
+
+        csOrderLogService.asyncSave(orderLog);
+        //记录车辆日志
         return BaseResultUtil.success();
+
     }
 
     /**
@@ -461,7 +479,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         }
         orderDao.updateStateById(OrderStateEnum.WAIT_SUBMIT.code, order.getId());
         //添加操作日志
-        orderChangeLogService.save(order, OrderChangeTypeEnum.REJECT,
+        orderChangeLogService.asyncSave(order, OrderChangeTypeEnum.REJECT,
                 new Object[]{oldState, OrderStateEnum.WAIT_SUBMIT.code, paramsDto.getReason()},
                 new Object[]{paramsDto.getLoginId(), paramsDto.getLoginName()});
         //TODO 发送消息给创建人
@@ -489,7 +507,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         orderDao.updateById(order);
 
         //添加操作日志
-        orderChangeLogService.save(order, OrderChangeTypeEnum.CANCEL,
+        orderChangeLogService.asyncSave(order, OrderChangeTypeEnum.CANCEL,
                 new Object[]{oldState, OrderStateEnum.F_CANCEL.code, paramsDto.getReason()},
                 new Object[]{paramsDto.getLoginId(), paramsDto.getLoginName()});
         //TODO 发送消息
@@ -511,7 +529,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         orderDao.updateById(order);
 
         //添加操作日志
-        orderChangeLogService.save(order, OrderChangeTypeEnum.OBSOLETE,
+        orderChangeLogService.asyncSave(order, OrderChangeTypeEnum.OBSOLETE,
                 new Object[]{oldState, OrderStateEnum.F_OBSOLETE.code, paramsDto.getReason()},
                 new Object[]{paramsDto.getLoginId(), paramsDto.getLoginName()});
 

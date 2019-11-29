@@ -26,15 +26,17 @@ public class ReceiptTaskDto {
     @ApiModelProperty(value = "用户手机号（不用传）")
     private String loginPhone;
 
-    @ApiModelProperty(value = "用户类型：1业务员，2司机，3客户")
+    @ApiModelProperty(value = "用户类型：1业务员，2司机，3客户（不用传）")
     private UserTypeEnum loginType;
-    @ApiModelProperty(value = "客户端类型：1WEB管理后台, 2业务员APP, 3业务员小程序, 4司机APP, 5司机小程序, 6用户端APP, 7用户端小程序")
+
+    @ApiModelProperty(value = "客户端类型：1WEB管理后台, 2业务员APP, 3业务员小程序, 4司机APP, 5司机小程序, 6用户端APP, 7用户端小程序（不用传）")
     private ClientEnum clientEnum;
+
     @NotNull(message = "taskId不能为空")
     @ApiModelProperty(value = "任务ID")
     private String taskId;
 
-    //@NotNull(message = "captcha不能为空")
+    @NotNull(message = "captcha不能为空")
     @ApiModelProperty(value = "验证码")
     private String captcha;
 

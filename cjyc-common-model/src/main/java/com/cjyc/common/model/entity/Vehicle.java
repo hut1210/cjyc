@@ -47,7 +47,7 @@ public class Vehicle implements Serializable {
     private Integer ownershipType;
 
     @ApiModelProperty(value = "位置传感器：0没有，1已安装，4已关闭")
-    private byte[] positionSensorFlag;
+    private Integer positionSensorFlag;
 
     @ApiModelProperty(value = "行车记录仪：0没有，1已安装")
     private Integer tachographFlag;

@@ -28,6 +28,8 @@ public class CommitOrderDto {
     private Long loginId;
     @ApiModelProperty(value = "操作人(不用传)")
     private String loginName;
+    @ApiModelProperty(value = "操作人手机号(不用传)")
+    private String loginPhone;
     @NotNull(message = "createCustomerFlag不能为空")
     @ApiModelProperty(value = "用户不存在，是否创建用户",required = true)
     private Boolean createCustomerFlag;

@@ -72,7 +72,7 @@ public interface ISysRoleService {
     ResultData<List<SelectRoleResp>> getMultiLevelList(@PathVariable(value="deptId") Long deptId);
 
     /**
-     * 查询角色信息：根据部门id查询多级组织下的所有角色
+     * 查询角色信息：根据部门id查询一级组织下的所有角色
      * @author JPG
      * @since 2019/10/21 9:46
      * @param deptId 部门ID

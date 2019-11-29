@@ -1,14 +1,15 @@
 package com.cjyc.common.system.service.impl;
 
 import com.cjkj.common.redis.lock.RedisDistributedLock;
-import com.cjyc.common.model.FailResultReasonVo;
+import com.cjyc.common.model.dto.customer.order.ReceiptBatchDto;
+import com.cjyc.common.model.exception.ParameterException;
+import com.cjyc.common.model.vo.FailResultReasonVo;
 import com.cjyc.common.model.dao.*;
-import com.cjyc.common.model.dto.driver.task.ReplenishInfoDto;
 import com.cjyc.common.model.dto.web.task.*;
 import com.cjyc.common.model.entity.*;
+import com.cjyc.common.model.enums.BizStateEnum;
 import com.cjyc.common.model.enums.CaptchaTypeEnum;
 import com.cjyc.common.model.enums.CarStorageTypeEnum;
-import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.enums.task.TaskStateEnum;
@@ -18,7 +19,6 @@ import com.cjyc.common.model.enums.waybill.WaybillTypeEnum;
 import com.cjyc.common.model.exception.ServerException;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.util.StringUtil;
 import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.OrderCarVo;
@@ -26,6 +26,7 @@ import com.cjyc.common.system.service.*;
 import com.cjyc.common.system.util.RedisUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.sun.javafx.tk.Toolkit;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -106,6 +107,9 @@ public class CsTaskServiceImpl implements ICsTaskService {
             //验证司机信息
             Driver driver = csDriverService.getById(driverId, true);
             if (driver == null) {
+                return BaseResultUtil.fail("司机不存在");
+            }
+            if (driver.getBusinessState() != BizStateEnum.BUSINESS.code) {
                 return BaseResultUtil.fail("司机不在运营中");
             }
 
@@ -117,7 +121,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
 
             Task task = new Task();
             //计算任务编号
-            task.setNo("");
+            task.setNo(getTaskNo(waybill.getNo()));
             task.setWaybillId(waybill.getId());
             task.setWaybillNo(waybill.getNo());
             task.setGuideLine(paramsDto.getGuideLine());
@@ -138,15 +142,21 @@ public class CsTaskServiceImpl implements ICsTaskService {
                     continue;
                 }
                 //加锁
-                String lockKey = RedisKeys.getAllotTaskKey(waybillCar.getOrderCarNo());
+                String lockKey = RedisKeys.getAllotTaskKey(waybillCar.getId());
                 if (!redisLock.lock(lockKey, 20000, 100, 300)) {
-                    throw new ServerException("当前运单的状态，无法分配任务");
+                    throw new ServerException("当前运单车辆{}其他人正在分配，", waybillCar.getOrderCarNo());
                 }
                 lockKeySet.add(lockKey);
 
                 //验证运单车辆状态
                 if (waybillCar.getState() > WaybillCarStateEnum.WAIT_ALLOT.code) {
-                    throw new ServerException("当前运单车辆的状态，无法分配任务");
+                    throw new ServerException("当前运单车辆{}的状态，无法分配任务", waybillCar.getOrderCarNo());
+                }
+
+                //验证是否存在任务明细
+                int n = taskDao.countByTaskIdAndWaybillCarId(task.getId(), waybillCar.getId());
+                if(n > 0){
+                    throw new ServerException("当前运单车辆{}, 已经分配过", waybillCar.getOrderCarNo());
                 }
 
                 TaskCar taskCar = new TaskCar();
@@ -160,6 +170,8 @@ public class CsTaskServiceImpl implements ICsTaskService {
                     waybillCarDao.updateForAllotDriver(waybillCar.getId());
                 }
             }
+            //批量插入任务明细
+
             if (noCount != task.getCarNum()) {
                 task.setCarNum(noCount);
                 taskDao.updateById(task);
@@ -688,6 +700,66 @@ public class CsTaskServiceImpl implements ICsTaskService {
         resultReasonVo.setFailList(failCarNoSet);
         return BaseResultUtil.success(resultReasonVo);
     }
+
+    @Override
+    public ResultVo receiptBatch(ReceiptBatchDto reqDto) {
+        long currentTimeMillis = System.currentTimeMillis();
+        Order order = orderDao.selectById(reqDto.getOrderId());
+        List<Long> orderIdList = Lists.newArrayList();
+        List<OrderCar> list = orderCarDao.findListByIds(reqDto.getOrderCarIdList());
+        Set<Long> waybillIdSet = Sets.newHashSet();
+        Set<Long>  waybillCarIdSet = Sets.newHashSet();
+        Set<Long>  orderCarIdSet = Sets.newHashSet();
+        for (OrderCar orderCar : list) {
+            if(orderCar == null){
+                continue;
+            }
+            Long orderId = orderCar.getOrderId();
+            if(orderCar.getState() >= OrderCarStateEnum.SIGNED.code){
+                continue;
+            }
+            if(orderId != null && !orderIdList.contains(orderId)){
+                orderIdList.add(orderId);
+            }
+            WaybillCar waybillCar =  waybillCarDao.findWaitReceiptByOrderCarId(orderId, order.getEndAddress());
+            if(waybillCar == null){
+                continue;
+            }
+/*
+            waybillCarDao.updateForReceipt(waybillCar.getId());
+            //查询任务
+            taskDao.findBy*/
+
+            waybillIdSet.add(waybillCar.getWaybillId());
+            waybillCarIdSet.add(waybillCar.getId());
+            orderCarIdSet.add(waybillCar.getOrderCarId());
+
+        }
+        if(orderIdList.size() > 0 || !reqDto.getOrderId().equals(orderIdList.get(0))){
+            throw new ParameterException("暂不支持跨订单批量签收");
+        }
+        //更新车辆状态
+        orderCarDao.updateForReceiptBatch(orderCarIdSet);
+        //更新订单状态
+        int n = orderDao.countUnReceipt(reqDto.getOrderId());
+        if(n == 0){
+            orderDao.updateForReceipt(order.getId(), currentTimeMillis);
+        }
+        //更新任务车辆状态
+
+        //更新任务状态
+        //更新运单状态
+
+
+
+
+
+
+
+
+        return null;
+    }
+
 
     private String getFullAddress(String endProvince, String endCity, String endArea, String endAddress) {
        return  (endProvince == null ? "" : endProvince)

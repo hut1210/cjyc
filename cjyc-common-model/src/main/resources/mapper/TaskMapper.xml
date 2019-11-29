@@ -274,5 +274,16 @@
         </where>
         order by t.id desc
     </select>
+    <select id="countByTaskIdAndWaybillCarId" resultType="java.lang.Integer">
+        select count(0)
+        from w_task_car
+        where task_id = #{taskId}
+        and waybill_car_id = #{waybillCarId}
+    </select>
+    <select id="findByWaybillCarId" resultType="com.cjyc.common.model.entity.Task">
+
+
+    </select>
+
 
 </mapper>

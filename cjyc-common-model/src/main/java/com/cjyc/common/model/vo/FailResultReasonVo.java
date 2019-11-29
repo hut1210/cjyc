@@ -1,4 +1,4 @@
-package com.cjyc.common.model;
+package com.cjyc.common.model.vo;
 
 import lombok.Data;
 

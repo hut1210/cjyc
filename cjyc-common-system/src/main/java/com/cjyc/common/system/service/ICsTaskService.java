@@ -1,5 +1,6 @@
 package com.cjyc.common.system.service;
 
+import com.cjyc.common.model.dto.customer.order.ReceiptBatchDto;
 import com.cjyc.common.model.dto.web.task.*;
 import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -18,5 +19,7 @@ public interface ICsTaskService {
     ResultVo<ResultReasonVo> inStore(InStoreTaskDto paramsDto);
 
     ResultVo receipt(ReceiptTaskDto reqDto);
+
+    ResultVo receiptBatch(ReceiptBatchDto reqDto);
 
 }

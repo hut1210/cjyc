@@ -91,12 +91,6 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
         return csWaybillService.trunkMidwayUnload(paramsDto);
     }
 
-    @Override
-    public ResultVo<PageVo<CrWaybillVo>> inStoreList(storeListDto reqDto) {
-
-
-        return null;
-    }
 
     @Override
     public ResultVo<ListVo<BaseTipVo>> cancel(CancelWaybillDto paramsDto) {
@@ -216,6 +210,17 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
         }
         return BaseResultUtil.success(waybillVo);
     }
+
+    @Override
+    public ResultVo<WaybillVo> get(getWaybillDto paramsDto) {
+        WaybillVo waybillVo = waybillDao.findVoById(paramsDto.getWaybillId());
+        List<WaybillCarVo> waybillCarVo = waybillCarDao.findVo(paramsDto);
+        if(waybillCarVo != null){
+            waybillVo.setList(waybillCarVo);
+        }
+        return BaseResultUtil.success(waybillVo);
+    }
+
 
     @Override
     public ResultVo<List<WaybillCarVo> > getCarByType(Long orderCarId, Integer waybillType) {

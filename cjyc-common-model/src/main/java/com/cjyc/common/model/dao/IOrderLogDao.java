@@ -1,6 +1,6 @@
 package com.cjyc.common.model.dao;
 
-import com.cjyc.common.model.entity.OrderCarLog;
+import com.cjyc.common.model.entity.OrderLog;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
@@ -11,6 +11,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author JPG
  * @since 2019-11-28
  */
-public interface IOrderCarLogDao extends BaseMapper<OrderCarLog> {
+public interface IOrderLogDao extends BaseMapper<OrderLog> {
 
 }

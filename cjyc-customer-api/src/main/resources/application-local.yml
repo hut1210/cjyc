@@ -140,6 +140,7 @@ cjyc:
   #支付
   pay:
     ping++:
+      liveMode: test
       businessCode: 200604000004527
       apikey: sk_test_40WD00COyLKOKKCiD8vH04qL
       customer:
@@ -152,10 +153,6 @@ cjyc:
         appid: app_LSm9WLS4SmLSSC48
         webhooks: http://39.106.134.87:80/manycc/pingpay/webhooksNotice
 
-  ##TOKEN
-  token:
-    ##过期时间（秒）
-    expires: 1800
 
 
 

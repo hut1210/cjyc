@@ -3,6 +3,7 @@ package com.cjyc.common.model.dao;
 import com.cjyc.common.model.dto.web.WayBillCarrierDto;
 import com.cjyc.common.model.dto.web.waybill.LocalListWaybillCarDto;
 import com.cjyc.common.model.dto.web.waybill.TrunkListWaybillCarDto;
+import com.cjyc.common.model.dto.web.waybill.getWaybillDto;
 import com.cjyc.common.model.entity.WaybillCar;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.entity.defined.FullWaybillCar;
@@ -86,4 +87,12 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
     int updateStateById(@Param("id") Long id, @Param("state") int state);
 
     int updateForReplenishInfo(@Param("id") Long id, @Param("loadPhotoImg") String loadPhotoImg);
+
+    List<WaybillCarVo> findVo(getWaybillDto paramsDto);
+
+    List<WaybillCar> findWaitReceiptListByOrderCarId(Long orderCarId);
+
+    WaybillCar findWaitReceiptByOrderCarId(@Param("orderId") Long orderId, @Param("endAddress") String endAddress);
+
+    int updateForReceipt(Long id);
 }
