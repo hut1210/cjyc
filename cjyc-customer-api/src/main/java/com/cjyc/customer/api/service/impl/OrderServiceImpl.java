@@ -159,10 +159,14 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         detailVo.setCouponName(couponSend == null ? "" : couponSend.getCouponName());
 
         // 查询出发地，目的地业务中心详细地址
-        Store startStore = storeDao.selectById(order.getStartStoreId());
-        Store endStore = storeDao.selectById(order.getEndStoreId());
-        detailVo.setStartStoreNameDetail(startStore == null ? "" : startStore.getDetailAddr());
-        detailVo.setEndStoreNameDetail(endStore == null ? "" : endStore.getDetailAddr());
+        if (order.getStartStoreId() != null) {
+            Store startStore = storeDao.selectById(order.getStartStoreId());
+            detailVo.setStartStoreNameDetail(startStore == null ? "" : startStore.getDetailAddr());
+        }
+        if (order.getEndStoreId() != null) {
+            Store endStore = storeDao.selectById(order.getEndStoreId());
+            detailVo.setEndStoreNameDetail(endStore == null ? "" : endStore.getDetailAddr());
+        }
 
         return BaseResultUtil.success(detailVo);
     }
