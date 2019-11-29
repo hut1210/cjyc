@@ -18,6 +18,7 @@ import com.cjyc.common.model.dto.web.city.RegionCityDto;
 import com.cjyc.common.model.dto.web.city.RegionQueryDto;
 import com.cjyc.common.model.dto.web.city.RegionUpdateDto;
 import com.cjyc.common.model.entity.City;
+import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.ResultVo;
@@ -95,6 +96,12 @@ public class RegionServiceImpl implements IRegionService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public ResultVo addRegion(RegionAddDto dto) throws Exception {
+        // 验证大区是否存在
+        City region = cityService.getOne(new QueryWrapper<City>().lambda()
+                .eq(City::getLevel, FieldConstant.REGION_LEVEL).eq(City::getName, dto.getRegionName()));
+        if(region != null)
+            return BaseResultUtil.getVo(ResultEnum.EXIST_REGION.getCode(),ResultEnum.EXIST_REGION.getMsg());
+
         // 查询所有大区编码
         List<City> regionList = cityService.list(new QueryWrapper<City>().lambda().eq(City::getLevel, FieldConstant.REGION_LEVEL));
         // 根据编码规则生成新增的大区编码

@@ -129,7 +129,13 @@
         </where>
     </update>
     <update id="updateForReceiptBatch">
-
+        update w_order_car
+        set state = 100
+        where state &lt; 100
+        and id in
+        <foreach collection="collection" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </update>
 
     <delete id="deleteBatchByOrderId">
@@ -361,6 +367,13 @@
             </if>
             <if test="paramsDto.endStoreId != null">
                 and o.end_store_id = #{paramsDto.endStoreId,jdbcType=BIGINT}
+            </if>
+            <if test="paramsDto.fromToCityList != null and paramsDto.fromToCityList.size > 0">
+                and
+                <foreach collection="paramsDto.fromToCityList" index="index" item="item" open="(" separator=" or " close=")">
+                    (o.start_city_code = #{item.fromCityCode}
+                    and o.end_city_code = #{item.toCityCode})
+                </foreach>
             </if>
             <if test="bizScope != null">
                 and  (o.input_store_id or o.end_belong_store_id or oc.now_store_id or wc.end_belong_store_id)  in

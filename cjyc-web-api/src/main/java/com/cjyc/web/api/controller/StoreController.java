@@ -97,8 +97,7 @@ public class StoreController {
     @ApiOperation(value = "新增", notes = "\t 请求接口为json格式")
     @PostMapping("/add")
     public ResultVo add(@RequestBody @Validated StoreAddDto storeAddDto) {
-        boolean result = storeService.add(storeAddDto);
-        return result ? BaseResultUtil.success() : BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
+        return storeService.add(storeAddDto);
     }
 
     @ApiOperation(value = "删除", notes = "\t 请求接口为/remove/id格式")

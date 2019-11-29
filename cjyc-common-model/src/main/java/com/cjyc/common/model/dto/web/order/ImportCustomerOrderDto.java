@@ -4,20 +4,18 @@ import cn.afterturn.easypoi.excel.annotation.Excel;
 import lombok.Data;
 
 import javax.validation.constraints.*;
-import java.io.Serializable;
+import java.util.Date;
 
 /**
  * C端客户订单导入实体
  */
 @Data
-public class ImportCustomerOrderDto implements Serializable {
-    private static final long serialVersionUID = 1L;
-
-    @Excel(name = "订单序号")
-    @NotEmpty(message = "订单序号不能为空")
-//    @Min(1)
-//    @Max(999999999)
-    private String orderNo;
+public class ImportCustomerOrderDto {
+    @Excel(name = "C端客户订单_订单序号")
+    @NotNull(message = "订单序号不能为空")
+    @Max(999999999)
+    @Min(1)
+    private Integer orderNo;
     @Excel(name = "客户名称")
     @NotEmpty(message = "客户名称不能为空")
     private String customerName;
@@ -48,10 +46,12 @@ public class ImportCustomerOrderDto implements Serializable {
     private String endArea;
     @Excel(name = "提车方式")
     @NotEmpty(message = "提车方式不能为空")
+    @Pattern(regexp = "(自送|代驾提车|拖车提车|物流提车)",
+            message = "提车方式只有：自送、代驾提车、拖车提车、物流提车")
     private String pickType;
-    @Excel(name = "提车日期")
-    @NotEmpty(message = "提车日期不能为空")
-    private String pickDate;
+    @Excel(name = "提车日期", importFormat = "yyyy/MM/dd", format = "yyyy/MM/dd")
+    @NotNull(message = "提车日期不能为空")
+    private Date pickDate;
     @Excel(name = "提车联系人")
     @NotEmpty(message = "提车联系人不能为空")
     private String pickPerson;
@@ -64,10 +64,12 @@ public class ImportCustomerOrderDto implements Serializable {
     private String pickAddr;
     @Excel(name = "交付方式")
     @NotEmpty(message = "交付方式不能为空")
+    @Pattern(regexp = "(自提|代驾送车|拖车送车|物流送车)",
+            message = "交付方式只有：自提、代驾送车、拖车送车、物流送车")
     private String deliveryType;
-    @Excel(name = "预计送达日期")
-    @NotEmpty(message = "预计送达日期不能为空")
-    private String sendDate;
+    @Excel(name = "预计送达日期", importFormat = "yyyy/MM/dd", format = "yyyy/MM/dd")
+    @NotNull(message = "预计送达日期不能为空")
+    private Date sendDate;
     @Excel(name = "交付联系人")
     @NotEmpty(message = "交付联系人不能为空")
     private String deliveryPerson;
@@ -80,4 +82,10 @@ public class ImportCustomerOrderDto implements Serializable {
     private String deliveryAddr;
     @Excel(name = "订单备注")
     private String remark;
+    private String startProvinceCode;
+    private String startCityCode;
+    private String startAreaCode;
+    private String endProvinceCode;
+    private String endCityCode;
+    private String endAreaCode;
 }

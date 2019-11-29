@@ -111,6 +111,13 @@
         set state = 55
         where id = #{waybillId} and state = 20
     </update>
+    <update id="updateForReceipt">
+        update w_waybill
+        set state = 100,
+        complete_time = #{currentTimeMillis}
+        where id = #{waybillId}
+        and state &lt; 100
+    </update>
     <select id="findByNo" resultType="com.cjyc.common.model.entity.Waybill">
         select
         <include refid="Base_Column_List"/>

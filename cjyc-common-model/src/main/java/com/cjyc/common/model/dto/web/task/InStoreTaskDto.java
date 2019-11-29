@@ -25,7 +25,7 @@ public class InStoreTaskDto {
 
     @NotNull(message = "任务ID不能为空")
     @ApiModelProperty(value = "任务ID")
-    private String taskId;
+    private Long taskId;
 
     @NotEmpty(message = "任务车辆不能为空")
     @ApiModelProperty(value = "任务车辆ID",required = true)

@@ -2,6 +2,7 @@ package com.cjyc.web.api.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.dto.web.order.*;
+import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
@@ -71,4 +72,7 @@ public interface IOrderService extends IService<Order> {
     List<ListOrderChangeLogVo> getChangeLogVoById(ListOrderChangeLogDto reqDto);
 
     List<TransportInfoOrderCarVo> getTransportInfoVoById(Long orderId);
+
+    void importCustomerOrder(List<ImportCustomerOrderDto> orderList,
+                             List<ImportCustomerOrderCarDto> carList, Admin admin);
 }
