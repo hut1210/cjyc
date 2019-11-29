@@ -129,7 +129,13 @@
         </where>
     </update>
     <update id="updateForReceiptBatch">
-
+        update w_order_car
+        set state = 100
+        where state &lt; 100
+        and id in
+        <foreach collection="collection" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </update>
 
     <delete id="deleteBatchByOrderId">

@@ -3,7 +3,6 @@ package com.cjyc.web.api.controller;
 import com.cjyc.common.model.dto.web.finance.ApplySettlementDto;
 import com.cjyc.common.model.dto.web.finance.FinanceQueryDto;
 import com.cjyc.common.model.dto.web.finance.WaitInvoiceQueryDto;
-import com.cjyc.common.model.entity.FinanceReceipt;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;

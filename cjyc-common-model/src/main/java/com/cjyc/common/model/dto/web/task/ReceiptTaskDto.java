@@ -34,7 +34,7 @@ public class ReceiptTaskDto {
 
     @NotNull(message = "taskId不能为空")
     @ApiModelProperty(value = "任务ID")
-    private String taskId;
+    private Long taskId;
 
     @NotNull(message = "captcha不能为空")
     @ApiModelProperty(value = "验证码")

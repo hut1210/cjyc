@@ -88,4 +88,6 @@ public interface IWaybillDao extends BaseMapper<Waybill> {
     List<WaybillTaskVo> selectWaitHandleTaskPage(BaseDriverDto dto);
 
     int updateForAllotDriver(Long waybillId);
+
+    int updateForReceipt(@Param("id") Long id, @Param("currentTimeMillis") long currentTimeMillis);
 }
