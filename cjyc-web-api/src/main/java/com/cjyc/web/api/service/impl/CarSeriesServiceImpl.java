@@ -9,6 +9,7 @@ import com.cjyc.common.model.dto.web.carSeries.CarSeriesImportExcel;
 import com.cjyc.common.model.dto.web.carSeries.CarSeriesQueryDto;
 import com.cjyc.common.model.dto.web.carSeries.CarSeriesUpdateDto;
 import com.cjyc.common.model.entity.CarSeries;
+import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.ExcelUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
@@ -46,7 +47,8 @@ public class CarSeriesServiceImpl extends ServiceImpl<ICarSeriesDao,CarSeries> i
         List<CarSeries> list = super.list(new QueryWrapper<CarSeries>().lambda()
                 .eq(CarSeries::getBrand, carSeriesAddDto.getBrand()).eq(CarSeries::getModel, carSeriesAddDto.getModel()));
         if(!CollectionUtils.isEmpty(list))
-            return BaseResultUtil.fail("该品牌车型已经存在,不能重复添加");
+            return BaseResultUtil.getVo(ResultEnum.EXIST_CARSERIES.getCode(),ResultEnum.EXIST_CARSERIES.getMsg());
+
         // 保存数据
         CarSeries carSeries = getCarSeries(carSeriesAddDto);
         boolean result = super.save(carSeries);

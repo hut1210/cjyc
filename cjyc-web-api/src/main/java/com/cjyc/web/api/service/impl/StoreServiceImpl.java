@@ -30,6 +30,7 @@ import com.cjyc.common.model.entity.defined.BizScope;
 import com.cjyc.common.model.entity.defined.FullCity;
 import com.cjyc.common.model.enums.BizScopeEnum;
 import com.cjyc.common.model.enums.CommonStateEnum;
+import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.store.StoreCoveredAreaVo;
@@ -120,7 +121,12 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
     }
 
     @Override
-    public boolean add(StoreAddDto storeAddDto) {
+    public ResultVo add(StoreAddDto storeAddDto) {
+        // 验证名称是否重复
+        Store queryStore = super.getOne(new QueryWrapper<Store>().lambda().eq(Store::getName, storeAddDto.getName()));
+        if(queryStore != null)
+            return BaseResultUtil.getVo(ResultEnum.EXIST_STORE.getCode(),ResultEnum.EXIST_STORE.getMsg());
+
         Store store = new Store();
         BeanUtils.copyProperties(storeAddDto,store);
         store.setState(CommonStateEnum.WAIT_CHECK.code);
@@ -133,10 +139,11 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
         ResultData<Long> saveRd = addBizCenterToPlatform(store);
         if (!ReturnMsg.SUCCESS.getCode().equals(saveRd.getCode())) {
             log.error("保存业务中心失败，原因：" + saveRd.getMsg());
-            return false;
+            return BaseResultUtil.fail();
         }
         store.setDeptId(saveRd.getData());
-        return super.save(store);
+        boolean result =  super.save(store);
+        return result ? BaseResultUtil.success() : BaseResultUtil.fail();
     }
 
     @Override
