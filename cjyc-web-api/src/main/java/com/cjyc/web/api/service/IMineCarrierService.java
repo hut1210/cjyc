@@ -7,6 +7,7 @@ import com.cjyc.common.model.dto.web.mineCarrier.*;
 import com.cjyc.common.model.entity.Carrier;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.mineCarrier.HandleDto;
 import com.cjyc.common.model.vo.web.mineCarrier.MyCarVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyDriverVo;
 import com.cjyc.common.model.vo.FreeDriverVo;
@@ -34,7 +35,7 @@ public interface IMineCarrierService extends IService<Carrier> {
      * @param dto
      * @return
      */
-    ResultVo verifyDriver(OperateDto dto);
+    ResultVo verifyDriver(HandleDto dto);
 
     /**
      * 新增承运商下车辆

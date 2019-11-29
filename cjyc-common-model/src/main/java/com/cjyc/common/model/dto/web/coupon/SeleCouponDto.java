@@ -6,7 +6,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 @Data
-public class SeleCouponDto extends BasePageDto implements Serializable {
+public class SeleCouponDto extends BasePageDto {
 
     private static final long serialVersionUID = 1549905775177738505L;
     @ApiModelProperty("优惠券名称")

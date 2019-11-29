@@ -15,10 +15,13 @@ import com.cjyc.customer.api.service.IInquiryService;
 import com.cjyc.customer.api.service.ITransportService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -50,14 +53,18 @@ public class TransportServiceImpl implements ITransportService {
     }
 
     @Override
-    public ResultVo findStore(AreaCodeDto dto) {
-        Store store = storeDao.selectOne(new QueryWrapper<Store>().lambda()
-                .eq(Store::getAreaCode, dto.getAreaCode()));
-        if(store != null){
-            BusinessStoreVo bsv = new BusinessStoreVo();
-            bsv.setStoreId(store.getId());
-            bsv.setName(store.getName());
-            return BaseResultUtil.success(bsv);
+    public ResultVo<List<BusinessStoreVo>> findStore() {
+        List<BusinessStoreVo> storeVos = new ArrayList<>(10);
+        List<Store> stores = storeDao.selectList(new QueryWrapper<Store>().lambda());
+        if(!CollectionUtils.isEmpty(stores)){
+            for(Store store : stores){
+                BusinessStoreVo bsv = new BusinessStoreVo();
+                bsv.setStoreId(store.getId());
+                bsv.setName(store.getName());
+                bsv.setDetailAddr(store.getDetailAddr());
+                storeVos.add(bsv);
+            }
+            return BaseResultUtil.success(storeVos);
         }
         return BaseResultUtil.success();
     }

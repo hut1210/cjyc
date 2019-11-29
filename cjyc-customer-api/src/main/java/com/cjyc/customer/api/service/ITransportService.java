@@ -4,7 +4,11 @@ package com.cjyc.customer.api.service;
 import com.cjyc.common.model.dto.customer.freightBill.AreaCodeDto;
 import com.cjyc.common.model.dto.customer.freightBill.LineDto;
 import com.cjyc.common.model.dto.customer.freightBill.TransportDto;
+import com.cjyc.common.model.entity.Store;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.customer.customerLine.BusinessStoreVo;
+
+import java.util.List;
 
 /**
  *  @author: zj
@@ -22,8 +26,8 @@ public interface ITransportService {
 
     /**
      * 获取业务中心
-     * @param dto
+     * @param
      * @return
      */
-    ResultVo findStore(AreaCodeDto dto);
+    ResultVo<List<BusinessStoreVo>> findStore();
 }

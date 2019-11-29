@@ -36,7 +36,6 @@ public class CustomerController {
         return customerService.findCustomerInfo(dto);
     }
 
-
     @ApiOperation(value = "验证用户是否存在")
     @PostMapping(value = "/existCustomer")
     public ResultVo existCustomer(@RequestBody ExistCustomreDto dto){
