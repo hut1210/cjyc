@@ -102,7 +102,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         // 查询待确认订单数量
         LambdaQueryWrapper<Order> queryWrapper = new QueryWrapper<Order>().lambda()
                 .eq(Order::getCustomerId,loginId)
-                .between(Order::getState, OrderStateEnum.SUBMITTED.code,OrderStateEnum.WAIT_RECHECK.code);
+                .between(Order::getState, OrderStateEnum.WAIT_SUBMIT.code,OrderStateEnum.WAIT_RECHECK.code);
         Integer waitConfirmCount = orderDao.selectCount(queryWrapper);
         if (!Objects.isNull(waitConfirmCount)) {
             map.put("waitConfirmCount",waitConfirmCount);
@@ -128,8 +128,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
 
         // 查询所有订单数量
         queryWrapper = new QueryWrapper<Order>().lambda()
-                .eq(Order::getCustomerId,loginId)
-                .between(Order::getState,OrderStateEnum.SUBMITTED.code,OrderStateEnum.F_OBSOLETE.code);
+                .eq(Order::getCustomerId,loginId);
         Integer allCount = orderDao.selectCount(queryWrapper);
         if (!Objects.isNull(allCount)) {
             map.put("allCount",allCount);
@@ -147,16 +146,36 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         if(order == null) {
             return BaseResultUtil.fail("订单号不存在,请检查");
         }
-        BeanUtils.copyProperties(order,detailVo);
+        // 填充返回数据
+        fillData(detailVo, order);
 
         // 查询车辆信息
-        this.getOrderCar(dto, detailVo);
+        getOrderCar(dto, detailVo);
 
         // 查询优惠券信息
         CouponSend couponSend = couponSendDao.selectById(detailVo.getCouponSendId());
         detailVo.setCouponName(couponSend == null ? "" : couponSend.getCouponName());
 
         return BaseResultUtil.success(detailVo);
+    }
+
+    private void fillData(OrderCenterDetailVo detailVo, Order order) {
+        BeanUtils.copyProperties(order,detailVo);
+        StringBuilder start = new StringBuilder();
+        start.append(order.getStartProvince() == null ? "" : order.getStartProvince());
+        start.append(" ");
+        start.append(order.getStartCity() == null ? "" : order.getStartCity());
+        start.append(" ");
+        start.append(order.getStartArea() == null ? "" : order.getStartArea());
+        detailVo.setStartProvinceCityAreaName(start.toString().trim());
+
+        StringBuilder end = new StringBuilder();
+        end.append(order.getEndProvince() == null ? "" : order.getEndProvince());
+        end.append(" ");
+        end.append(order.getEndCity() == null ? "" : order.getEndCity());
+        end.append(" ");
+        end.append(order.getEndArea() == null ? "" : order.getEndArea());
+        detailVo.setEndProvinceCityAreaName(end.toString().trim());
     }
 
     private void getOrderCar(OrderDetailDto dto, OrderCenterDetailVo detailVo) {
@@ -177,7 +196,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
                 }
                 // 查询车辆图片
                 this.getCarImg(orderCar, orderCarCenter);
-                //
+                // 查询品牌logo图片
                 List<CarSeries> carSeriesList = carSeriesDao.selectList(new QueryWrapper<CarSeries>().lambda().eq(CarSeries::getModel, orderCar.getModel()));
                 if(!CollectionUtils.isEmpty(carSeriesList)) {
                     orderCarCenter.setLogoImg(carSeriesList.get(0).getLogoImg());

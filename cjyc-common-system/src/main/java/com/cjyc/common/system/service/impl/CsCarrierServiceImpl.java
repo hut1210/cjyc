@@ -24,6 +24,7 @@ import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.ICsCarrierService;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -53,6 +54,10 @@ public class CsCarrierServiceImpl implements ICsCarrierService {
         deptReq.setPassword(YmlProperty.get("cjkj.driver.password"));
         if (menuIds != null && menuIds.size() > 0) {
             deptReq.setMenuIdList(menuIds);
+        }
+        List<Long> mgrMenuIds = CarrierProperty.carriesMgrMenuIds;
+        if (!CollectionUtils.isEmpty(mgrMenuIds)) {
+            deptReq.setMgrMenuIdList(mgrMenuIds);
         }
         ResultData<AddDeptAndUserResp> rd = sysDeptService.saveDeptAndUser(deptReq);
         return rd;

@@ -35,7 +35,7 @@ public class OrderCenterDetailVo implements Serializable {
     @ApiModelProperty(value = "托运车辆信息列表")
     private List<OrderCarCenterVo> orderCarCenterVoList;
 
-    @ApiModelProperty(value = "托运车辆信息列表:运输中,已交付车辆")
+    @ApiModelProperty(value = "托运车辆信息列表:已交付车辆")
     private List<OrderCarCenterVo> orderCarFinishPayList;
 
     @ApiModelProperty(value = "提车时间")
@@ -51,6 +51,21 @@ public class OrderCenterDetailVo implements Serializable {
     @ApiModelProperty(value = "提车方式:1 自送，2代驾上门，3拖车上门，4物流上门")
     private Integer pickType;
 
+    @ApiModelProperty(value = "出发地省编号")
+    private String startProvinceCode;
+
+    @ApiModelProperty(value = "出发地市编号")
+    private String startCityCode;
+
+    @ApiModelProperty(value = "出发地市名称")
+    private String startCity;
+
+    @ApiModelProperty(value = "出发地区编号")
+    private String startAreaCode;
+
+    @ApiModelProperty(value = "出发地省市区名称")
+    private String startProvinceCityAreaName;
+
     @ApiModelProperty(value = "出发地详细地址")
     private String startAddress;
 
@@ -62,6 +77,21 @@ public class OrderCenterDetailVo implements Serializable {
 
     @ApiModelProperty(value = "送车方式： 1 自提，2代驾上门，3拖车上门，4物流上门")
     private Integer backType;
+
+    @ApiModelProperty(value = "收车省编号")
+    private String endProvinceCode;
+
+    @ApiModelProperty(value = "收车市编号")
+    private String endCityCode;
+
+    @ApiModelProperty(value = "收车市名称")
+    private String endCity;
+
+    @ApiModelProperty(value = "收车区编号")
+    private String endAreaCode;
+
+    @ApiModelProperty(value = "收车省市区名称")
+    private String endProvinceCityAreaName;
 
     @ApiModelProperty(value = "目的地详细地址")
     private String endAddress;
@@ -102,6 +132,36 @@ public class OrderCenterDetailVo implements Serializable {
     @ApiModelProperty(value = "车辆总数")
     private Integer carNum;
 
+    public String getStartCity() {
+        return startCity == null ? "" : startCity;
+    }
+    public String getEndCity() {
+        return endCity == null ? "" : endCity;
+    }
+    public String getStartProvinceCode() {
+        return startProvinceCode == null ? "" : startProvinceCode;
+    }
+    public String getStartCityCode() {
+        return startCityCode == null ? "" : startCityCode;
+    }
+    public String getStartAreaCode() {
+        return startAreaCode == null ? "" : startAreaCode;
+    }
+    public String getStartProvinceCityAreaName() {
+        return startProvinceCityAreaName == null ? "" : startProvinceCityAreaName;
+    }
+    public String getEndProvinceCode() {
+        return endProvinceCode == null ? "" : endProvinceCode;
+    }
+    public String getEndCityCode() {
+        return endCityCode == null ? "" : endCityCode;
+    }
+    public String getEndAreaCode() {
+        return endAreaCode == null ? "" : endAreaCode;
+    }
+    public String getEndProvinceCityAreaName() {
+        return endProvinceCityAreaName == null ? "" : endProvinceCityAreaName;
+    }
     public Long getCreateTime() {
         return createTime == null ? 0 : createTime;
     }

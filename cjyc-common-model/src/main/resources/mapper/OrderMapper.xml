@@ -327,7 +327,7 @@
             customer_id = #{loginId}
             /*待确认*/
             <if test="state != null and state == 0">
-                and o.state between ${@com.cjyc.common.model.enums.order.OrderStateEnum@SUBMITTED.code}
+                and o.state between ${@com.cjyc.common.model.enums.order.OrderStateEnum@WAIT_SUBMIT.code}
                 and ${@com.cjyc.common.model.enums.order.OrderStateEnum@WAIT_RECHECK.code}
             </if>
             /*运输中*/
@@ -339,10 +339,10 @@
                 and o.state = ${@com.cjyc.common.model.enums.order.OrderStateEnum@FINISHED.code}
             </if>
             /*全部*/
-            <if test="state != null and state == 3">
-                and o.state between ${@com.cjyc.common.model.enums.order.OrderStateEnum@SUBMITTED.code}
+            <!--<if test="state != null and state == 3">
+                and o.state between ${@com.cjyc.common.model.enums.order.OrderStateEnum@WAIT_SUBMIT.code}
                 and ${@com.cjyc.common.model.enums.order.OrderStateEnum@F_OBSOLETE.code}
-            </if>
+            </if>-->
             <if test="startCityCode != null and startCityCode.trim() != ''">
                 and o.start_city_code = #{startCityCode}
             </if>
