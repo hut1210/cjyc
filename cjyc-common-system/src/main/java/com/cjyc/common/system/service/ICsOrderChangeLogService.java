@@ -12,7 +12,7 @@ public interface ICsOrderChangeLogService {
      * @since 2019/11/5 16:12
      * @param orderChangeLog
      */
-    int save(OrderChangeLog orderChangeLog);
+    int asyncSave(OrderChangeLog orderChangeLog);
 
     /**
      * 保存操作记录
@@ -23,5 +23,5 @@ public interface ICsOrderChangeLogService {
      * @param content {旧内容，新内容，原因}
      * @param creator {创建人ID，创建人名称}
      */
-    int save(Order order, OrderChangeTypeEnum changeType,Object[] content, Object[] creator);
+    int asyncSave(Order order, OrderChangeTypeEnum changeType, Object[] content, Object[] creator);
 }

@@ -59,8 +59,8 @@ public class RedisKeys {
         return PROJECT_PREFIX + I + DISPATCH_CAR_LOCK_KEY + I + orderCarNo;
     }
 
-    public static String getAllotTaskKey(String orderCarNo) {
-        return PROJECT_PREFIX + I + ALLOT_CAR_LOCK_KEY + I + orderCarNo;
+    public static String getAllotTaskKey(Long waybillCarId) {
+        return PROJECT_PREFIX + I + ALLOT_CAR_LOCK_KEY + I + waybillCarId;
     }
 
     public static String getUserKey(Long userId) {

@@ -13,7 +13,6 @@ public class DispatchDriverVo implements Serializable {
     @ApiModelProperty(value = "ID")
     @JsonSerialize(using = ToStringSerializer.class)
     private Long carrierId;
-
     @ApiModelProperty(value = "公司名称")
     private String name;
     @ApiModelProperty(value = "承运方式")

@@ -9,10 +9,7 @@ import com.cjkj.usercenter.dto.common.AddUserResp;
 import com.cjkj.usercenter.dto.common.UserResp;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.OperateDto;
-import com.cjyc.common.model.dto.web.driver.BaseCarrierIdDto;
-import com.cjyc.common.model.dto.web.driver.DispatchDriverDto;
-import com.cjyc.common.model.dto.web.driver.DriverDto;
-import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
+import com.cjyc.common.model.dto.web.driver.*;
 import com.cjyc.common.model.dto.web.user.DriverListDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.CommonStateEnum;
@@ -345,11 +342,19 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         PageInfo<DispatchDriverVo> pageInfo = new PageInfo<>(dispatchDriverVos);
         return BaseResultUtil.success(pageInfo);
     }
+    @Override
+    public ResultVo<PageVo<DispatchDriverVo>> carrierDrvierList(CarrierDriverListDto dto) {
+        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize(), true);
+        List<DispatchDriverVo> dispatchDriverVos = driverDao.findCarrierDrvierList(dto);
+        PageInfo<DispatchDriverVo> pageInfo = new PageInfo<>(dispatchDriverVos);
+        return BaseResultUtil.success(pageInfo);
+    }
 
     @Override
     public Driver getById(Long id, boolean isSearchCache) {
         return driverDao.selectById(id);
     }
+
 
     /**
      * 司机与车辆绑定关系

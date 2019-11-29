@@ -1,10 +1,8 @@
 package com.cjyc.web.api.controller;
 
+import com.cjyc.common.model.dto.CarrierDriverDto;
 import com.cjyc.common.model.dto.web.OperateDto;
-import com.cjyc.common.model.dto.web.driver.BaseCarrierIdDto;
-import com.cjyc.common.model.dto.web.driver.DispatchDriverDto;
-import com.cjyc.common.model.dto.web.driver.DriverDto;
-import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
+import com.cjyc.common.model.dto.web.driver.*;
 import com.cjyc.common.model.dto.web.user.DriverListDto;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -91,5 +89,11 @@ public class DriverController {
     @PostMapping(value = "/dispatchDriver")
     public ResultVo<PageVo<DispatchDriverVo>> dispatchDriver(@RequestBody DispatchDriverDto dto){
         return driverService.dispatchDriver(dto);
+    }
+
+    @ApiOperation(value = "查询承运商下属司机")
+    @PostMapping(value = "/carrier/driver/list")
+    public ResultVo<PageVo<DispatchDriverVo>> dispatchDriver(@RequestBody CarrierDriverListDto dto){
+        return driverService.carrierDrvierList(dto);
     }
 }

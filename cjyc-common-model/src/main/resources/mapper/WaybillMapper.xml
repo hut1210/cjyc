@@ -242,6 +242,7 @@
         LEFT JOIN d_driver dr on dr.id = t.driver_id
         left join d_vehicle_running vr on vr.driver_id = t.driver_id
         where w.id = #{id}
+        group by w.id
     </select>
     <select id="findMainListTrunk" resultType="com.cjyc.common.model.vo.web.waybill.TrunkMainListWaybillVo">
         select

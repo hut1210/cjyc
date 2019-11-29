@@ -11,11 +11,11 @@ public class CrTaskVo extends Task {
     @ApiModelProperty(value = "承运商名称")
     private String carrierName;
     @ApiModelProperty(value = "运单类型")
-    private String waybillType;
+    private Integer waybillType;
     @ApiModelProperty(value = "非空车位")
-    private String occupiedCarNum;
+    private Integer occupiedCarNum;
     @ApiModelProperty(value = "承运数")
-    private String carryCarNum;
+    private Integer carryCarNum;
 
 
 }

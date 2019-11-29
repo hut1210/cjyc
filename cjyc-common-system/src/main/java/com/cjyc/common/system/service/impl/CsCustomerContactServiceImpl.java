@@ -22,7 +22,7 @@ public class CsCustomerContactServiceImpl implements ICsCustomerContactService {
 
     @Async
     @Override
-    public void saveByOrder(Order order) {
+    public void asyncSaveByOrder(Order order) {
 
         if (order == null) {
             return;

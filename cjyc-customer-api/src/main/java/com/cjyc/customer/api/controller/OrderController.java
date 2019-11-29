@@ -2,6 +2,7 @@ package com.cjyc.customer.api.controller;
 
 import com.cjyc.common.model.dto.customer.order.OrderDetailDto;
 import com.cjyc.common.model.dto.customer.order.OrderQueryDto;
+import com.cjyc.common.model.dto.customer.order.ReceiptBatchDto;
 import com.cjyc.common.model.dto.customer.order.SimpleSaveOrderDto;
 import com.cjyc.common.model.dto.web.order.CancelOrderDto;
 import com.cjyc.common.model.dto.web.order.SaveOrderDto;
@@ -154,12 +155,12 @@ public class OrderController {
      */
     @ApiOperation(value = "签收")
     @PostMapping(value = "/car/receipt")
-    public ResultVo receipt(@RequestBody ReceiptTaskDto reqDto) {
+    public ResultVo receiptBatch(@RequestBody ReceiptBatchDto reqDto) {
         Customer customer = csCustomerService.validate(reqDto.getLoginId());
         reqDto.setLoginName(customer.getName());
         reqDto.setLoginPhone(customer.getContactPhone());
         reqDto.setLoginType(UserTypeEnum.CUSTOMER);
-        return csTaskService.receipt(reqDto);
+        return csTaskService.receiptBatch(reqDto);
     }
 
 }

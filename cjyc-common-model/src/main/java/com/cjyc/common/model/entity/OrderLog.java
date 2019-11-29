@@ -21,9 +21,9 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("w_order_car_log")
-@ApiModel(value="OrderCarLog对象", description="车辆物流轨迹")
-public class OrderCarLog implements Serializable {
+@TableName("w_order_log")
+@ApiModel(value="OrderLog对象", description="车辆物流轨迹")
+public class OrderLog implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -32,12 +32,12 @@ public class OrderCarLog implements Serializable {
     private Long id;
 
     @ApiModelProperty(value = "订单车辆ID")
-    private Long orderCarId;
+    private Long orderId;
 
     @ApiModelProperty(value = "车辆编号")
-    private String orderCarNo;
+    private String orderNo;
 
-    @ApiModelProperty(value = "日志类型")
+    @ApiModelProperty(value = "日志类型：")
     private Integer type;
 
     @ApiModelProperty(value = "内部日志")
@@ -54,9 +54,6 @@ public class OrderCarLog implements Serializable {
 
     @ApiModelProperty(value = "创建人")
     private String createUser;
-
-    @ApiModelProperty(value = "创建人类型")
-    private Integer createUserType;
 
     @ApiModelProperty(value = "创建人ID")
     private Long createUserId;

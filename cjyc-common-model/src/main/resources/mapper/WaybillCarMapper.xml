@@ -285,6 +285,11 @@
         set load_photo_img = #{loadPhotoImg}
         where id = #{id}
     </update>
+    <update id="updateForReceipt">
+        update w_waybill_car
+        set state = 100
+        where id = #{id}
+    </update>
 
     <select id="findByTaskCarId" resultType="com.cjyc.common.model.entity.WaybillCar">
         select
@@ -784,6 +789,46 @@
         from w_waybill_car
         where waybill_id = #{waybillId}
         and w.state &lt; 100
+    </select>
+    <select id="findVo" resultType="com.cjyc.common.model.vo.web.waybill.WaybillCarVo">
+        select
+        wc.*,
+        (case
+        when wc.state &lt;= 15 then '0' <!-- 待提车 -->
+        when wc.state &gt; 15 and wc.state &lt; 100 then '1' <!-- 已提车 -->
+        when wc.state = 100 then '2' <!-- 已交付 -->
+        end
+        ) as outterState,
+        oc.brand as brand,
+        oc.model as model,
+        oc.plate_no as plateNo,
+        oc.vin as vin,
+        l.default_freight_fee as lineFreightFee,
+        l.kilometer as km,
+        (case when l.id > 0 then true else false end) as hasLine
+        from w_waybill_car wc
+        join w_order_car oc on oc.id= wc.order_car_id
+        left join s_line l on l.from_code = wc.start_city_code and l.to_code = wc.end_city_code
+        where wc.waybill_id = #{waybillId}
+        <if test="state != null">
+            <if test="state = 1">
+                and wc.state = 0
+            </if>
+        </if>
+    </select>
+    <select id="findWaitReceiptListByOrderCarId" resultType="com.cjyc.common.model.entity.WaybillCar">
+
+
+    </select>
+    <select id="findWaitReceiptByOrderCarId" resultType="com.cjyc.common.model.entity.WaybillCar">
+        select
+        wc.*
+        from w_waybill w
+        join w_waybill_car wc on wc.waybill_id = w.id
+        where wc.order_car_id = #{orderId}
+        and wc.state = 90
+        and w.state &lt; 100
+        and w.type = 3 or wc.end_address = #{endAddress}
     </select>
 
 </mapper>

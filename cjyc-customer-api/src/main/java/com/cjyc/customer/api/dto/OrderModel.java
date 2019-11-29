@@ -43,8 +43,9 @@ public class OrderModel extends APIResource {
     private String receiptApp;
     private String serviceApp;
     private List<String> availableMethods;
-     
-    private String channel;	//支付渠道
+
+    /**支付渠道*/
+    private String channel;
     private String orderCode; //平台订单编号
     private String chargeType;	//支付类型 类型：1物流费预付，2物流费全款到付，3物流费分车支付， 11运费支付、12居间服务费支付
     private String batch;	//0:整体支付尾款	 1：批量支付尾款

@@ -7,6 +7,7 @@ import com.cjyc.common.model.dto.driver.mine.CarrierDriverNameDto;
 import com.cjyc.common.model.dto.driver.mine.PersonDriverDto;
 import com.cjyc.common.model.dto.driver.task.DriverQueryDto;
 import com.cjyc.common.model.dto.web.carrier.TransportDto;
+import com.cjyc.common.model.dto.web.driver.CarrierDriverListDto;
 import com.cjyc.common.model.dto.web.driver.DispatchDriverDto;
 import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
 import com.cjyc.common.model.dto.web.mineCarrier.QueryMyDriverDto;
@@ -194,4 +195,11 @@ public interface IDriverDao extends BaseMapper<Driver> {
      */
     Integer existPersonDriver(PersonDriverDto dto);
 
+    /**
+     * 查询承运商下属
+     * @author JPG
+     * @since 2019/11/28 10:23
+     * @param dto
+     */
+    List<DispatchDriverVo> findCarrierDrvierList(CarrierDriverListDto dto);
 }

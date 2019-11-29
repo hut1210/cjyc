@@ -1,26 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.cjyc.common.model.dao.IOrderCarLogDao">
+<mapper namespace="com.cjyc.common.model.dao.IOrderLogDao">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.OrderCarLog">
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.OrderLog">
         <id column="id" property="id" />
-        <result column="order_car_id" property="orderCarId" />
-        <result column="order_car_no" property="orderCarNo" />
+        <result column="order_id" property="orderId" />
+        <result column="order_no" property="orderNo" />
         <result column="type" property="type" />
         <result column="inner_log" property="innerLog" />
         <result column="outer_log" property="outerLog" />
         <result column="remark" property="remark" />
         <result column="create_time" property="createTime" />
         <result column="create_user" property="createUser" />
-        <result column="create_user_type" property="createUserType" />
         <result column="create_user_id" property="createUserId" />
         <result column="create_user_phone" property="createUserPhone" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, order_car_id, order_car_no, type, inner_log, outer_log, remark, create_time, create_user, create_user_type, create_user_id, create_user_phone
+        id, order_id, order_no, type, inner_log, outer_log, remark, create_time, create_user, create_user_id, create_user_phone
     </sql>
 
 </mapper>

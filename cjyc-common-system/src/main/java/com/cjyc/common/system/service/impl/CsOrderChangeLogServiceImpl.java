@@ -26,7 +26,7 @@ public class CsOrderChangeLogServiceImpl implements ICsOrderChangeLogService {
      */
     @Async
     @Override
-    public int save(OrderChangeLog orderChangeLog) {
+    public int asyncSave(OrderChangeLog orderChangeLog) {
         return orderChangeLogDao.insert(orderChangeLog);
     }
 
@@ -40,11 +40,12 @@ public class CsOrderChangeLogServiceImpl implements ICsOrderChangeLogService {
      * @author JPG
      * @since 2019/11/5 16:18
      */
+    @Async
     @Override
-    public int save(Order order, OrderChangeTypeEnum changeType, Object[] content, Object[] creator) {
+    public int asyncSave(Order order, OrderChangeTypeEnum changeType, Object[] content, Object[] creator) {
         OrderChangeLog orderChangeLog = new OrderChangeLog();
-        orderChangeLog.setOrderId(order.getId());
         orderChangeLog.setOrderNo(order.getNo());
+        orderChangeLog.setOrderId(order.getId());
         orderChangeLog.setName(changeType.name);
         orderChangeLog.setType(changeType.code);
         orderChangeLog.setOldContent(content[0].toString());
@@ -52,8 +53,8 @@ public class CsOrderChangeLogServiceImpl implements ICsOrderChangeLogService {
         orderChangeLog.setReason(content[2].toString());
         orderChangeLog.setState(CommonStateEnum.CHECKED.code);
         orderChangeLog.setCreateTime(System.currentTimeMillis());
-        orderChangeLog.setCreateUser(creator[0].toString());
-        orderChangeLog.setCreateUserId(Long.valueOf(creator[1].toString()));
+        orderChangeLog.setCreateUserId(Long.valueOf(creator[0].toString()));
+        orderChangeLog.setCreateUser(creator[1].toString());
         return orderChangeLogDao.insert(orderChangeLog);
     }
 

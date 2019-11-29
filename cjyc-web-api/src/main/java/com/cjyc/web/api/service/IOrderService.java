@@ -20,7 +20,23 @@ import java.util.Map;
 public interface IOrderService extends IService<Order> {
 
 
+    ResultVo save(SaveOrderDto reqDto);
+
     ResultVo commit(CommitOrderDto paramsDto);
+
+    ResultVo check(CheckOrderDto reqDto);
+
+    ResultVo allot(AllotOrderDto paramsDto);
+
+    ResultVo reject(RejectOrderDto reqDto);
+
+    ResultVo cancel(CancelOrderDto paramsDto);
+
+    ResultVo obsolete(CancelOrderDto paramsDto);
+
+    ResultVo changePrice(ChangePriceOrderDto paramsDto);
+
+    ResultVo replenishInfo(ReplenishOrderDto paramsDto);
 
 
     ResultVo<ListVo<Map<String, Object>>> waitDispatchCarCountList();
@@ -42,33 +58,17 @@ public interface IOrderService extends IService<Order> {
 
     OrderVo getVoById(Long orderId);
 
-    ResultVo allot(AllotOrderDto paramsDto);
-
     ResultVo<PageVo<ListOrderVo>> list(ListOrderDto paramsDto);
 
     List<ListOrderVo> listAll(ListOrderDto dto);
 
-    ResultVo cancel(CancelOrderDto paramsDto);
-
-    ResultVo obsolete(CancelOrderDto paramsDto);
-
-    ResultVo changePrice(ChangePriceOrderDto paramsDto);
-
-    ResultVo replenishInfo(ReplenishOrderDto paramsDto);
-
     ResultVo<PageVo<ListOrderCarVo>> carlist(ListOrderCarDto paramsDto);
 
     List<ListOrderCarVo> carListAll(ListOrderCarDto dto);
-
-    ResultVo check(CheckOrderDto reqDto);
-
-    ResultVo save(SaveOrderDto reqDto);
 
     ResultVo<DispatchAddCarVo> getCarFromTo(CarFromToGetDto reqDto);
 
     List<ListOrderChangeLogVo> getChangeLogVoById(ListOrderChangeLogDto reqDto);
 
     List<TransportInfoOrderCarVo> getTransportInfoVoById(Long orderId);
-
-    ResultVo reject(RejectOrderDto reqDto);
 }

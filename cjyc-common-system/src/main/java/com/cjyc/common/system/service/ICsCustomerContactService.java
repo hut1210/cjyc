@@ -10,5 +10,5 @@ public interface ICsCustomerContactService {
      * @since 2019/11/13 13:57
      * @param order
      */
-    void saveByOrder(Order order);
+    void asyncSaveByOrder(Order order);
 }

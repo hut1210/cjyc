@@ -128,6 +128,9 @@
             </if>
         </where>
     </update>
+    <update id="updateForReceiptBatch">
+
+    </update>
 
     <delete id="deleteBatchByOrderId">
         delete from w_order_car
@@ -716,7 +719,7 @@
         join w_order o on o.id = oc.order_id
         where oc.id = #{orderCarId}
     </select>
-    <select id="findByIds" resultType="com.cjyc.common.model.entity.OrderCar">
+    <select id="findListByIds" resultType="com.cjyc.common.model.entity.OrderCar">
         select
         <include refid="Base_Column_List"/>
         from w_order_car

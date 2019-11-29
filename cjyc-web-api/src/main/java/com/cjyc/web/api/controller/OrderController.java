@@ -69,7 +69,9 @@ public class OrderController {
 
         //验证用户存不存在
         Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setCreateUserId(reqDto.getLoginId());
+        reqDto.setLoginName(admin.getName());
+        reqDto.setLoginPhone(admin.getPhone());
+        reqDto.setCreateUserId(admin.getId());
         reqDto.setCreateUserName(admin.getName());
 
         ResultVo resultVo = orderService.commit(reqDto);

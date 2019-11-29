@@ -78,4 +78,8 @@ public interface ITaskDao extends BaseMapper<Task> {
     int updateForUnload(@Param("taskId") Long taskId, @Param("unLoadNum")int unLoadNum);
 
     int updateStateById(@Param("taskId") Long taskId, @Param("state") int state);
+
+    int countByTaskIdAndWaybillCarId(@Param("taskId") Long taskId, @Param("waybillCarId") Long waybillCarId);
+
+    Task findByWaybillCarId(Long waybillCarId);
 }

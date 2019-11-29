@@ -1,10 +1,7 @@
 package com.cjyc.web.api.service;
 
 import com.cjyc.common.model.dto.web.OperateDto;
-import com.cjyc.common.model.dto.web.driver.BaseCarrierIdDto;
-import com.cjyc.common.model.dto.web.driver.DispatchDriverDto;
-import com.cjyc.common.model.dto.web.driver.DriverDto;
-import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
+import com.cjyc.common.model.dto.web.driver.*;
 import com.cjyc.common.model.dto.web.user.DriverListDto;
 import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.vo.PageVo;
@@ -76,4 +73,6 @@ public interface IDriverService {
     ResultVo<PageVo<DispatchDriverVo>> dispatchDriver(DispatchDriverDto dto);
 
     Driver getById(Long id, boolean isSearchCache);
+
+    ResultVo<PageVo<DispatchDriverVo>> carrierDrvierList(CarrierDriverListDto dto);
 }
