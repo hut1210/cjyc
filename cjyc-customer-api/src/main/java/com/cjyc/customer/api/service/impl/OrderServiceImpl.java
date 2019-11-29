@@ -52,6 +52,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
     private IWaybillCarDao waybillCarDao;
     @Resource
     private ICarSeriesDao carSeriesDao;
+    @Resource
+    private IStoreDao storeDao;
 
     /**
      * 保存订单
@@ -155,6 +157,12 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         // 查询优惠券信息
         CouponSend couponSend = couponSendDao.selectById(detailVo.getCouponSendId());
         detailVo.setCouponName(couponSend == null ? "" : couponSend.getCouponName());
+
+        // 查询出发地，目的地业务中心详细地址
+        Store startStore = storeDao.selectById(order.getStartStoreId());
+        Store endStore = storeDao.selectById(order.getEndStoreId());
+        detailVo.setStartStoreNameDetail(startStore == null ? "" : startStore.getDetailAddr());
+        detailVo.setEndStoreNameDetail(endStore == null ? "" : endStore.getDetailAddr());
 
         return BaseResultUtil.success(detailVo);
     }
