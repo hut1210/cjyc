@@ -54,7 +54,7 @@ public class SaveOrderDto {
     private String startAreaCode;
     @ApiModelProperty(value = "始发地详细地址", required = true)
     private String startAddress;
-    @ApiModelProperty(value = "出发地业务中心ID: -1不经过业务中心")
+    @ApiModelProperty(value = "出发地业务中心ID: 0无业务中心，-1有但不经过业务中心，-5用户无主观操作")
     private Long startStoreId;
     @ApiModelProperty(value = "出发地业务中心名称")
     private String startStoreName;
@@ -62,7 +62,7 @@ public class SaveOrderDto {
     private String endAreaCode;
     @ApiModelProperty(value = "目的地详细地址", required = true)
     private String endAddress;
-    @ApiModelProperty(value = "目的地业务中心ID: -1不经过业务中心")
+    @ApiModelProperty(value = "目的地业务中心ID: 0无业务中心，-1有但不经过业务中心，-5用户无主观操作")
     private Long endStoreId;
     @ApiModelProperty(value = "目的地业务中心名称")
     private String endStoreName;
