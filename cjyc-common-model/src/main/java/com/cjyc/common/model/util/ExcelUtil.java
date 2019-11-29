@@ -93,7 +93,7 @@ public class ExcelUtil {
             ImportParams params = new ImportParams();
             params.setTitleRows(titleRows);
             params.setHeadRows(headerRows);
-            params.setNeedVerify(needVerify);
+            params.setNeedVerfiy(needVerify);
             return ExcelImportUtil.importExcel(file.getInputStream(), pojoClass, params);
         }
     }

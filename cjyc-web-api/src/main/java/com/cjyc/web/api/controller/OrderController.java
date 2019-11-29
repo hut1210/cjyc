@@ -1,5 +1,9 @@
 package com.cjyc.web.api.controller;
 
+import cn.afterturn.easypoi.excel.ExcelImportUtil;
+import cn.afterturn.easypoi.excel.entity.ImportParams;
+import cn.afterturn.easypoi.excel.entity.result.ExcelImportResult;
+import com.alibaba.fastjson.JSONObject;
 import com.cjkj.log.monitor.LogUtil;
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.entity.Admin;
@@ -10,13 +14,17 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.order.*;
 import com.cjyc.common.system.service.ICsAdminService;
 import com.cjyc.web.api.service.IOrderService;
+import com.cjyc.web.api.util.CustomerOrderExcelVerifyHandler;
 import com.cjyc.web.api.util.ExcelUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
@@ -37,8 +45,8 @@ public class OrderController {
     private IOrderService orderService;
     @Resource
     private ICsAdminService csAdminService;
-
-
+    @Autowired
+    private CustomerOrderExcelVerifyHandler customerOrderVerifyHandler;
     /**
      * 保存,只保存无验证
      * @author JPG
@@ -317,6 +325,57 @@ public class OrderController {
         return orderService.obsolete(reqDto);
     }
 
+
+    @ApiOperation(value = "c端客户订单导入", notes = "验证失败返回失败Excel文件流，其它情况返回json结果信息")
+    @PostMapping(value = "/importCustomerOrder")
+    public void importCustomerOrder(MultipartFile file, Long loginId, HttpServletResponse response){
+        if (file != null && !file.isEmpty() && loginId != null && loginId > 0L) {
+            ImportParams orderParams = new ImportParams();
+            orderParams.setSheetNum(1);
+            orderParams.setHeadRows(2);
+            orderParams.setNeedVerfiy(true);
+            orderParams.setVerifyHandler(customerOrderVerifyHandler);
+
+            ImportParams carParams = new ImportParams();
+            carParams.setStartSheetIndex(1);
+            carParams.setSheetNum(1);
+            carParams.setHeadRows(2);
+            carParams.setNeedVerfiy(true);
+
+            List<ImportCustomerOrderDto> orderList = null;
+            List<ImportCustomerOrderCarDto> carList = null;
+            try {
+                ExcelImportResult<ImportCustomerOrderDto> orderResult =
+                        ExcelImportUtil.importExcelMore(file.getInputStream(),
+                                ImportCustomerOrderDto.class, orderParams);
+                if (orderResult.isVerfiyFail()) {
+                    String fileName = "验证失败.xlsx";
+                    printExcelResult(orderResult.getFailWorkbook(), fileName, response);
+                } else {
+                    orderList = orderResult.getList();
+                    ExcelImportResult<ImportCustomerOrderCarDto> carResult =
+                            ExcelImportUtil.importExcelMore(file.getInputStream(),
+                                    ImportCustomerOrderCarDto.class, carParams);
+                    if (carResult.isVerfiyFail()) {
+                        String fileName = "验证失败.xlsx";
+                        printExcelResult(carResult.getFailWorkbook(), fileName, response);
+                    } else {
+                        carList = carResult.getList();
+                        //信息保存
+                        Admin admin = csAdminService.validate(loginId);
+                        orderService.importCustomerOrder(orderList, carList, admin);
+                        printJsonResult(BaseResultUtil.success("成功"), response);
+                    }
+                }
+            }catch (Exception e) {
+                e.printStackTrace();
+                printJsonResult(BaseResultUtil.fail("异常: " + e.getMessage()), response);
+            }
+        }else {
+            printJsonResult(BaseResultUtil.fail("参数错误，请检查"), response);
+        }
+    }
+
     /**
      * 检查返回结果是否成功
      * @param resultVo
@@ -329,4 +388,36 @@ public class OrderController {
         return resultVo.getCode() == ResultEnum.SUCCESS.getCode();
     }
 
+    /**
+     * 响应json格式信息
+     * @param resultObj
+     * @param response
+     */
+    private void printJsonResult(Object resultObj, HttpServletResponse response) {
+        try {
+            response.setCharacterEncoding("UTF-8");
+            response.setContentType("application/json");
+            response.getOutputStream().write(JSONObject.toJSONBytes(resultObj));
+        }catch (Exception e) {
+            LogUtil.error("响应信息异常", e);
+        }
+    }
+
+    /**
+     * 响应返回Excel文件信息
+     * @param workbook
+     * @param fileName
+     * @param response
+     */
+    private void printExcelResult(Workbook workbook, String fileName, HttpServletResponse response) {
+        try {
+            response.setCharacterEncoding("UTF-8");
+            response.setContentType("multipart/form-data");
+            response.setHeader("Content-disposition", "attachment; filename="
+                    + new String(fileName.getBytes("UTF-8"), "ISO8859-1"));
+            workbook.write(response.getOutputStream());
+        }catch (Exception e) {
+            LogUtil.error("响应信息异常", e);
+        }
+    }
 }
