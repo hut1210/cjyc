@@ -116,17 +116,23 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
         if(driver == null || cdc == null || carrier == null){
             return BaseResultUtil.fail("数据错误,请联系管理员");
         }
-        //获取架构组角色集合
-        ResultData<List<SelectRoleResp>> rd = sysRoleService.getSingleLevelList(carrier.getDeptId());
-        if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
-            return BaseResultUtil.fail("查询组织下的所有角色失败");
-        }
+        //处理角色
         Long userId = driver.getUserId();
         Long roleId = null;
-        for(SelectRoleResp roleResp : rd.getData()){
-            //普通司机
-            if(roleResp.getRoleName().equals(RoleNameEnum.COMMON.getName())){
-                roleId = roleResp.getRoleId();
+        ResultData<List<SelectRoleResp>> rd = null;
+        if(dto.getFlag() == FlagEnum.ADMINISTRATOR.code || dto.getFlag() == FlagEnum.REMOVE_ADMINISTRATOR.code){
+            //获取架构组角色集合
+            rd = sysRoleService.getSingleLevelList(carrier.getDeptId());
+            if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+                return BaseResultUtil.fail("查询组织下的所有角色失败");
+            }
+            userId = driver.getUserId();
+            roleId = null;
+            for(SelectRoleResp roleResp : rd.getData()){
+                //普通司机
+                if(roleResp.getRoleName().equals(RoleNameEnum.COMMON.getName())){
+                    roleId = roleResp.getRoleId();
+                }
             }
         }
         if(dto.getFlag() == FlagEnum.ADMINISTRATOR.code){

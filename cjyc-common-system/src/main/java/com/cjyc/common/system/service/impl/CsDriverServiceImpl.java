@@ -219,7 +219,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
             }
             //封装获取用户角色
             ResultVo<Long> roleId = csDriverService.findRoleId(resultData.getData(), cdc);
-            List<Long> roleIds = new ArrayList<>(10);
+            List<Long> roleIds = new ArrayList<>(1);
             roleIds.add(roleId.getData());
 
             //司机不存在, 需新增
@@ -317,16 +317,19 @@ public class CsDriverServiceImpl implements ICsDriverService {
                 if(roleResp.getRoleName().equals(RoleNameEnum.COMMON.getName())){
                     roleId = roleResp.getRoleId();
                 }
+                break;
             }else if(cdc.getRole() == RoleNameEnum.ADMINSTRATOR.getValue()){
                 //管理员
                 if(roleResp.getRoleName().equals(RoleNameEnum.ADMINSTRATOR.getName())){
                     roleId = roleResp.getRoleId();
                 }
+                break;
             }else if(cdc.getRole() == RoleNameEnum.SUPER_ADMINSTRATOR.getValue()){
-                //管理员
+                //超级管理员
                 if(roleResp.getRoleName().contains(RoleNameEnum.SUPER_ADMINSTRATOR.getName())){
                     roleId = roleResp.getRoleId();
                 }
+                break;
             }
         }
         return BaseResultUtil.success(roleId);

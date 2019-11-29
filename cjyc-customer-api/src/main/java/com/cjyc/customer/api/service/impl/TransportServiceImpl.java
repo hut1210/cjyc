@@ -3,7 +3,6 @@ package com.cjyc.customer.api.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjyc.common.model.dao.ILineDao;
 import com.cjyc.common.model.dao.IStoreDao;
-import com.cjyc.common.model.dto.customer.freightBill.AreaCodeDto;
 import com.cjyc.common.model.dto.customer.freightBill.TransportDto;
 import com.cjyc.common.model.entity.Line;
 import com.cjyc.common.model.entity.Store;
@@ -11,6 +10,7 @@ import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.customerLine.BusinessStoreVo;
+import com.cjyc.common.model.vo.customer.customerLine.StoreListVo;
 import com.cjyc.customer.api.service.IInquiryService;
 import com.cjyc.customer.api.service.ITransportService;
 import lombok.extern.slf4j.Slf4j;
@@ -24,11 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- *  @author: zj
- *  @Date: 2019/10/12 16:42
- *  @Description:价格相关查询
- */
 @Service
 @Slf4j
 public class TransportServiceImpl implements ITransportService {
@@ -53,7 +48,7 @@ public class TransportServiceImpl implements ITransportService {
     }
 
     @Override
-    public ResultVo<List<BusinessStoreVo>> findStore() {
+    public ResultVo<StoreListVo> findStore() {
         List<BusinessStoreVo> storeVos = new ArrayList<>(10);
         List<Store> stores = storeDao.selectList(new QueryWrapper<Store>().lambda());
         if(!CollectionUtils.isEmpty(stores)){
@@ -64,8 +59,9 @@ public class TransportServiceImpl implements ITransportService {
                 bsv.setDetailAddr(store.getDetailAddr());
                 storeVos.add(bsv);
             }
-            return BaseResultUtil.success(storeVos);
         }
-        return BaseResultUtil.success();
+        StoreListVo storeVoList = new StoreListVo();
+        storeVoList.setStoreVoList(storeVos);
+        return BaseResultUtil.success(storeVoList);
     }
 }

@@ -71,7 +71,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
                     .eq(Driver::getPhone,dto.getLinkmanPhone())
                     .or()
                     .eq(Driver::getIdCard,dto.getLegalIdCard()));
-            if(!CollectionUtils.isEmpty(driverList) && driverList.size() > 0){
+            if(!CollectionUtils.isEmpty(driverList)){
                 return BaseResultUtil.getVo(ResultEnum.EXIST_CARRIER.getCode(),ResultEnum.EXIST_CARRIER.getMsg());
             }
             //添加承运商
