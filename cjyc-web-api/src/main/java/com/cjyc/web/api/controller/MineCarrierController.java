@@ -8,6 +8,7 @@ import com.cjyc.common.model.dto.web.mineCarrier.*;
 import com.cjyc.common.model.vo.FreeVehicleVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.mineCarrier.HandleDto;
 import com.cjyc.common.model.vo.web.mineCarrier.MyCarVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyDriverVo;
 import com.cjyc.common.model.vo.FreeDriverVo;
@@ -56,7 +57,7 @@ public class MineCarrierController {
 
     @ApiOperation(value = "操作承运商下司机")
     @PostMapping(value = "/verifyDriver")
-    public ResultVo verifyDriver(@RequestBody OperateDto dto){
+    public ResultVo verifyDriver(@RequestBody HandleDto dto){
         return mimeCarrierService.verifyDriver(dto);
     }
 
@@ -83,4 +84,5 @@ public class MineCarrierController {
     public ResultVo<List<FreeVehicleVo>> findCarrierFreeVehicle(@RequestBody FreeDto dto){
         return csVehicleService.findCarrierFreeVehicle(dto);
     }
+
 }

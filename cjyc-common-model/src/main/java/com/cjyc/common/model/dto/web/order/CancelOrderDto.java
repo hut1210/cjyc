@@ -28,7 +28,7 @@ public class CancelOrderDto {
     @ApiModelProperty(value = "订单ID", required = true)
     private Long orderId;
 
-    @ApiModelProperty(value = "原因",required = true)
+    @ApiModelProperty(value = "原因", required = true)
     private String reason;
 }
 

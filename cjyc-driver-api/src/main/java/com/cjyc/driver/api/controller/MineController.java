@@ -32,7 +32,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 /**
- * 用户
+ * 司机端
  * @author Zj
  */
 @Api(tags = "我的")
@@ -135,7 +135,7 @@ public class MineController {
         return mineService.addBankCard(dto);
     }
 
-    @ApiOperation(value = "获取验证码")
+    @ApiOperation(value = "获取韵车验证码(非登录)")
     @PostMapping(value = "/send")
     public ResultVo send(@Validated @RequestBody CaptchaSendDto dto) {
         return csSmsService.send(dto.getPhone(), CaptchaTypeEnum.valueOf(dto.getType()), ClientEnum.APP_DRIVER);

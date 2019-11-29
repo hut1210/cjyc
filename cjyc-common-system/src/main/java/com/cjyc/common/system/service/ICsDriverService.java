@@ -1,10 +1,12 @@
 package com.cjyc.common.system.service;
 
 import com.cjkj.common.model.ResultData;
+import com.cjkj.usercenter.dto.common.SelectRoleResp;
 import com.cjyc.common.model.dto.CarrierDriverDto;
 import com.cjyc.common.model.dto.CarrierVehicleDto;
 import com.cjyc.common.model.dto.FreeDto;
 import com.cjyc.common.model.dto.driver.mine.CarrierDriverNameDto;
+import com.cjyc.common.model.entity.CarrierDriverCon;
 import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.vo.FreeDriverVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -74,4 +76,12 @@ public interface ICsDriverService {
      * @return
      */
     ResultVo<List<FreeDriverVo>> findCarrierDriver(CarrierDriverNameDto dto);
+
+    /**
+     * 获取用户角色id
+     * @param roleResps
+     * @param cdc
+     * @return
+     */
+    ResultVo<Long> findRoleId(List<SelectRoleResp> roleResps, CarrierDriverCon cdc);
 }

@@ -2,6 +2,10 @@ package com.cjyc.web.api.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cjkj.common.model.ResultData;
+import com.cjkj.common.model.ReturnMsg;
+import com.cjkj.usercenter.dto.common.SelectRoleResp;
+import com.cjkj.usercenter.dto.common.UpdateUserReq;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.CarrierVehicleDto;
 import com.cjyc.common.model.dto.web.OperateDto;
@@ -11,15 +15,19 @@ import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.FlagEnum;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.driver.DriverIdentityEnum;
+import com.cjyc.common.model.enums.role.RoleNameEnum;
 import com.cjyc.common.model.enums.task.TaskStateEnum;
 import com.cjyc.common.model.enums.transport.*;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.mineCarrier.HandleDto;
 import com.cjyc.common.model.vo.web.mineCarrier.MyCarVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyDriverVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyWaybillVo;
+import com.cjyc.common.system.feign.ISysRoleService;
+import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.ICsDriverService;
 import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.web.api.service.IMineCarrierService;
@@ -33,6 +41,7 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -41,6 +50,8 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
 
     @Resource
     private ICarrierDriverConDao carrierDriverConDao;
+    @Resource
+    private ICarrierDao carrierDao;
     @Resource
     private IDriverDao driverDao;
     @Resource
@@ -59,6 +70,10 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
     private ICsDriverService csDriverService;
     @Resource
     private ICsSysService csSysService;
+    @Resource
+    private ISysRoleService sysRoleService;
+    @Resource
+    private ISysUserService sysUserService;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -92,16 +107,58 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
     }
 
     @Override
-    public ResultVo verifyDriver(OperateDto dto) {
-        Driver driver = driverDao.selectById(dto.getId());
-        CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda().eq(CarrierDriverCon::getDriverId,dto.getId()));
+    public ResultVo verifyDriver(HandleDto dto) {
+        Driver driver = driverDao.selectById(dto.getDriverId());
+        CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
+                .eq(CarrierDriverCon::getDriverId,dto.getDriverId())
+                .eq(CarrierDriverCon::getCarrierId,dto.getCarrierId()));
+        Carrier carrier = carrierDao.selectById(dto.getCarrierId());
+        if(driver == null || cdc == null || carrier == null){
+            return BaseResultUtil.fail("数据错误,请联系管理员");
+        }
+        //处理角色
+        Long userId = driver.getUserId();
+        Long roleId = null;
+        ResultData<List<SelectRoleResp>> rd = null;
+        if(dto.getFlag() == FlagEnum.ADMINISTRATOR.code || dto.getFlag() == FlagEnum.REMOVE_ADMINISTRATOR.code){
+            //获取架构组角色集合
+            rd = sysRoleService.getSingleLevelList(carrier.getDeptId());
+            if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+                return BaseResultUtil.fail("查询组织下的所有角色失败");
+            }
+            userId = driver.getUserId();
+            roleId = null;
+            for(SelectRoleResp roleResp : rd.getData()){
+                //普通司机
+                if(roleResp.getRoleName().equals(RoleNameEnum.COMMON.getName())){
+                    roleId = roleResp.getRoleId();
+                }
+            }
+        }
         if(dto.getFlag() == FlagEnum.ADMINISTRATOR.code){
-            //设为管理员
+            //更新架构组角色
+            List<Long> roleIds = new ArrayList<>(10);
+            roleIds.add(roleId);
+            UpdateUserReq uur = new UpdateUserReq();
+            uur.setUserId(userId);
+            uur.setRoleIdList(roleIds);
+            ResultData update = sysUserService.update(uur);
+            if (!ReturnMsg.SUCCESS.getCode().equals(update.getCode())) {
+                return BaseResultUtil.fail("更新组织下的所有角色失败");
+            }
+            //更新韵车管理员
             driver.setIdentity(DriverIdentityEnum.CARRIER_MANAGER.code);
             //修改身份
             cdc.setRole(DriverRoleEnum.ADMIN.code);
             carrierDriverConDao.updateById(cdc);
         }else if(dto.getFlag() == FlagEnum.REMOVE_ADMINISTRATOR.code){
+            //封装获取用户角色
+            ResultVo<Long> resultVo = csDriverService.findRoleId(rd.getData(), cdc);
+            //调用架构组撤销角色
+            ResultData resultData = sysRoleService.revokeRole(userId, resultVo.getData());
+            if (!ReturnMsg.SUCCESS.getCode().equals(resultData.getCode())) {
+                return BaseResultUtil.fail("解除管理员失败");
+            }
             //解除管理员
             driver.setIdentity(DriverIdentityEnum.GENERAL_DRIVER.code);
             //修改身份

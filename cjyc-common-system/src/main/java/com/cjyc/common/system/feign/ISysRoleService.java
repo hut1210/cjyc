@@ -140,4 +140,13 @@ public interface ISysRoleService {
      */
     @GetMapping("/feign/yc/getBottomMenuIdsByRoleId/{roleId}")
     ResultData<List<Long>> getBottomMenuIdsByRoleId(@PathVariable(value="roleId") Long roleId);
+
+    /**
+     * 撤销指定用户的指定角色
+     * @param userId
+     * @param roleId
+     * @return
+     */
+    @PostMapping("/feign/uc/revokeRole/{userId}/{roleId}")
+    ResultData revokeRole(@PathVariable(value="userId") Long userId,@PathVariable(value="roleId") Long roleId);
 }

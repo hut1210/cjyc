@@ -7,6 +7,7 @@ import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.order.OrderChangeTypeEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.system.service.ICsOrderChangeLogService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -50,7 +51,9 @@ public class CsOrderChangeLogServiceImpl implements ICsOrderChangeLogService {
         orderChangeLog.setType(changeType.code);
         orderChangeLog.setOldContent(content[0].toString());
         orderChangeLog.setNewContent(content[1].toString());
-        orderChangeLog.setReason(content[2].toString());
+        if(content[2] != null){
+            orderChangeLog.setReason(content[2].toString());
+        }
         orderChangeLog.setState(CommonStateEnum.CHECKED.code);
         orderChangeLog.setCreateTime(System.currentTimeMillis());
         orderChangeLog.setCreateUserId(Long.valueOf(creator[0].toString()));

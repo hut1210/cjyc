@@ -15,4 +15,7 @@ public class BusinessStoreVo implements Serializable {
 
     @ApiModelProperty("业务中心名称")
     private String name;
+
+    @ApiModelProperty("详细地址")
+    private String detailAddr;
 }

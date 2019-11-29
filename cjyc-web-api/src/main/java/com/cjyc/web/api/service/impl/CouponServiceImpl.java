@@ -93,10 +93,12 @@ public class CouponServiceImpl extends ServiceImpl<ICouponDao,Coupon> implements
     public ResultVo<PageVo<CouponVo>> getCouponByTerm(SeleCouponDto dto) {
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
         List<CouponVo> couponVos = couponDao.getCouponByTerm(dto);
-        if(!CollectionUtils.isEmpty(couponVos)){
-            couponVos = encapCouponList(couponVos);
-        }
         PageInfo<CouponVo> pageInfo = new PageInfo<>(couponVos);
+        List<CouponVo> pageInfoList = pageInfo.getList();
+        if(!CollectionUtils.isEmpty(pageInfoList)){
+            couponVos = encapCouponList(pageInfoList);
+        }
+        pageInfo.setList(couponVos);
         return BaseResultUtil.success(pageInfo);
     }
 

@@ -3,10 +3,7 @@ package com.cjyc.common.system.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
-import com.cjkj.usercenter.dto.common.AddUserReq;
-import com.cjkj.usercenter.dto.common.AddUserResp;
-import com.cjkj.usercenter.dto.common.UpdateUserReq;
-import com.cjkj.usercenter.dto.common.UserResp;
+import com.cjkj.usercenter.dto.common.*;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.CarrierDriverDto;
 import com.cjyc.common.model.dto.CarrierVehicleDto;
@@ -16,6 +13,7 @@ import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.driver.DriverIdentityEnum;
+import com.cjyc.common.model.enums.role.RoleNameEnum;
 import com.cjyc.common.model.enums.task.TaskStateEnum;
 import com.cjyc.common.model.enums.transport.*;
 import com.cjyc.common.model.exception.ParameterException;
@@ -24,6 +22,7 @@ import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.FreeDriverVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.ICsDriverService;
 import com.cjyc.common.system.service.sys.ICsSysService;
@@ -34,6 +33,7 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -54,6 +54,10 @@ public class CsDriverServiceImpl implements ICsDriverService {
     private ISysUserService sysUserService;
     @Resource
     private ICsSysService csSysService;
+    @Resource
+    private ISysRoleService sysRoleService;
+    @Resource
+    private ICsDriverService csDriverService;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -149,12 +153,6 @@ public class CsDriverServiceImpl implements ICsDriverService {
             }
             driver.setCreateUserId(dto.getLoginId());
             driver.setCreateTime(NOW);
-            //司机信息保存
-            ResultData<Long> rd = addDriverToPlatform(driver, dto.getCarrierId());
-            if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
-                return BaseResultUtil.fail(rd.getMsg());
-            }
-            driver.setUserId(rd.getData());
             driverDao.insert(driver);
 
             //保存司机与承运商关系
@@ -165,6 +163,15 @@ public class CsDriverServiceImpl implements ICsDriverService {
             driverCon.setState(CommonStateEnum.CHECKED.code);
             driverCon.setRole(DriverRoleEnum.SUB_DRIVER.code);
             carrierDriverConDao.insert(driverCon);
+            //司机信息保存
+            ResultData<Long> rd = addDriverToPlatform(driver, dto.getCarrierId());
+            if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+                return BaseResultUtil.fail(rd.getMsg());
+            }
+            //把userId更新到driver
+            driver.setUserId(rd.getData());
+            driverDao.updateById(driver);
+
             //车牌号不为空
             if(StringUtils.isNotBlank(dto.getPlateNo())){
                 //保存司机与车辆关系
@@ -191,11 +198,6 @@ public class CsDriverServiceImpl implements ICsDriverService {
 
     @Override
     public ResultData<Long> addDriverToPlatform(Driver driver, Long carrierId) {
-        List<Driver> existList = driverDao.selectList(new QueryWrapper<Driver>().lambda()
-                .eq(Driver::getPhone, driver.getPhone()));
-        if (!CollectionUtils.isEmpty(existList)) {
-            return ResultData.failed("手机号已存在，请检查");
-        }
         Carrier carrier = carrierDao.selectById(carrierId);
         if (null == carrier || carrier.getDeptId() == null || carrier.getDeptId() <= 0L) {
             return ResultData.failed("承运商信息错误，可能因为该承运商未审核通过");
@@ -208,10 +210,23 @@ public class CsDriverServiceImpl implements ICsDriverService {
             //司机已存在
             return ResultData.ok(rd.getData().getUserId());
         }else {
+            CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
+                    .eq(CarrierDriverCon::getCarrierId, carrierId)
+                    .eq(CarrierDriverCon::getDriverId, driver.getId()));
+            ResultData<List<SelectRoleResp>> resultData = sysRoleService.getSingleLevelList(carrier.getDeptId());
+            if (!ReturnMsg.SUCCESS.getCode().equals(resultData.getCode())) {
+                return ResultData.failed("查询组织下的所有角色失败");
+            }
+            //封装获取用户角色
+            ResultVo<Long> roleId = csDriverService.findRoleId(resultData.getData(), cdc);
+            List<Long> roleIds = new ArrayList<>(1);
+            roleIds.add(roleId.getData());
+
             //司机不存在, 需新增
             AddUserReq userReq = new AddUserReq();
             userReq.setAccount(driver.getPhone());
             userReq.setDeptId(carrier.getDeptId());
+            userReq.setRoleIdList(roleIds);
             userReq.setPassword(YmlProperty.get("cjkj.salesman.password"));
             userReq.setMobile(driver.getPhone());
             userReq.setName(driver.getName());
@@ -291,6 +306,33 @@ public class CsDriverServiceImpl implements ICsDriverService {
            return freeDriver(freeDriverVos,dto.getCarrierId());
         }
         return BaseResultUtil.success();
+    }
+
+    @Override
+    public ResultVo<Long> findRoleId(List<SelectRoleResp> roleResps, CarrierDriverCon cdc) {
+        Long roleId = null;
+        for(SelectRoleResp roleResp : roleResps){
+            if(cdc.getRole() == RoleNameEnum.COMMON.getValue()){
+                //下属司机
+                if(roleResp.getRoleName().equals(RoleNameEnum.COMMON.getName())){
+                    roleId = roleResp.getRoleId();
+                }
+                break;
+            }else if(cdc.getRole() == RoleNameEnum.ADMINSTRATOR.getValue()){
+                //管理员
+                if(roleResp.getRoleName().equals(RoleNameEnum.ADMINSTRATOR.getName())){
+                    roleId = roleResp.getRoleId();
+                }
+                break;
+            }else if(cdc.getRole() == RoleNameEnum.SUPER_ADMINSTRATOR.getValue()){
+                //超级管理员
+                if(roleResp.getRoleName().contains(RoleNameEnum.SUPER_ADMINSTRATOR.getName())){
+                    roleId = roleResp.getRoleId();
+                }
+                break;
+            }
+        }
+        return BaseResultUtil.success(roleId);
     }
 
     /**

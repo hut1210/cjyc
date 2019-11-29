@@ -231,7 +231,6 @@
             <if test="plateNo != null and plateNo.trim() != ''">
                 and  dvr.plate_no = #{plateNo}
             </if>
-                AND dc.state = 2 and dc.business_state = 0
         </where>
     </select>
 

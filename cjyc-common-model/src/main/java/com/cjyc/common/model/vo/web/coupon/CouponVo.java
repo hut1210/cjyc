@@ -32,7 +32,6 @@ public class CouponVo implements Serializable {
     private BigDecimal cutAmount;
 
     @ApiModelProperty(value = "折扣")
-    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal discount;
 
     @ApiModelProperty(value = "发放张数")
