@@ -1,6 +1,8 @@
 package com.cjyc.common.system.service;
 
+import com.cjyc.common.model.dto.AppItemDto;
 import com.cjyc.common.model.dto.sys.SysPictureDto;
+import com.cjyc.common.model.vo.AppItemVo;
 import com.cjyc.common.model.vo.ResultVo;
 
 import java.util.List;
@@ -8,10 +10,10 @@ import java.util.List;
 public interface ICsAppService {
     /**
      * 查询APP端首页轮播图
-     * @param systemPicture
+     * @param dto
      * @return
      */
-    ResultVo<List<String>> getSysPicture(String systemPicture);
+    ResultVo<AppItemVo> getSysPicture(AppItemDto dto);
 
     /**
      * 功能描述: 修改首页轮播图
