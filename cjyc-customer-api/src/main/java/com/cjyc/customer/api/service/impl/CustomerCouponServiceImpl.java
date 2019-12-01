@@ -56,6 +56,6 @@ public class CustomerCouponServiceImpl extends ServiceImpl<ICouponSendDao, Coupo
             }
         }
         PageInfo<CustomerCouponVo> pageInfo = new PageInfo<>(sendVos);
-        return BaseResultUtil.success(pageInfo == null ? new PageInfo<>(Collections.EMPTY_LIST):pageInfo);
+        return BaseResultUtil.success(pageInfo);
     }
 }

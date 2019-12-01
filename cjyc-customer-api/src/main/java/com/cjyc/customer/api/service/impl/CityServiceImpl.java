@@ -34,8 +34,7 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
         //获取热门城市
         List<HotCityVo> hotCity = cityDao.getHotCity();
         List<ProvinceTreeVo> cityTreeVos = cityDao.findThreeCity(dto.getKeyword());
-        if(!CollectionUtils.isEmpty(cityTreeVos)){
-            //List<CityTreeVo> citys = CityTreeUtil.encapTree(cityTreeVos);
+        if(!CollectionUtils.isEmpty(cityTreeVos) && !CollectionUtils.isEmpty(hotCity)){
             cityvo.setHotCityVos(hotCity);
             cityvo.setCityTreeVos(cityTreeVos);
             return BaseResultUtil.success(cityvo);

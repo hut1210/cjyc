@@ -38,6 +38,6 @@ public class CustomerLineServiceImpl extends ServiceImpl<ICustomerLineDao, Custo
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<CustomerLineVo> lineVos = customerLineDao.findCustomerLine(dto.getLoginId());
         PageInfo<CustomerLineVo> pageInfo =  new PageInfo<>(lineVos);
-        return BaseResultUtil.success(pageInfo == null ? new PageInfo<>(Collections.EMPTY_LIST):pageInfo);
+        return BaseResultUtil.success(pageInfo);
     }
 }
