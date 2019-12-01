@@ -1,5 +1,6 @@
 package com.cjyc.common.model.dto.driver.mine;
 
+import com.cjyc.common.model.dto.driver.AppDriverDto;
 import com.cjyc.common.model.dto.driver.BaseDriverDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -9,7 +10,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 
 @Data
-public class SocietyVehicleDto extends BaseDriverDto {
+public class SocietyVehicleDto extends AppDriverDto {
     private static final long serialVersionUID = -1081460106637979401L;
 
     @ApiModelProperty("车牌号id")

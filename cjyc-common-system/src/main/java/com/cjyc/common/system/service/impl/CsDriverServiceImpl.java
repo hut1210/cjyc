@@ -308,6 +308,10 @@ public class CsDriverServiceImpl implements ICsDriverService {
 
     @Override
     public ResultVo<List<FreeDriverVo>> findCarrierDriver(CarrierDriverNameDto dto) {
+        Carrier carrier = carrierDao.selectById(dto.getCarrierId());
+        if(carrier == null){
+            return BaseResultUtil.fail("该承运商不存在，请检查");
+        }
         List<FreeDriverVo> freeDriverVos = driverDao.findCarrierAllDriver(dto);
         if(!CollectionUtils.isEmpty(freeDriverVos)){
            return freeDriver(freeDriverVos,dto.getCarrierId());
