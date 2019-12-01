@@ -5,6 +5,8 @@ import com.cjyc.common.model.dto.customer.freightBill.TransportDto;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.customerLine.StoreListVo;
 
+import java.util.Map;
+
 /**
  *  @author: zj
  *  @Date: 2019/10/12 16:42
@@ -17,7 +19,7 @@ public interface ITransportService {
      * @param dto
      * @return
      */
-    ResultVo linePriceByCode(TransportDto dto);
+    ResultVo<Map<String,Object>> linePriceByCode(TransportDto dto);
 
     /**
      * 获取业务中心

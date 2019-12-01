@@ -1,10 +1,12 @@
 package com.cjyc.customer.api.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.cjyc.common.model.dao.ICustomerDao;
 import com.cjyc.common.model.dao.ILineDao;
 import com.cjyc.common.model.dao.IStoreDao;
 import com.cjyc.common.model.dto.customer.freightBill.FindStoreDto;
 import com.cjyc.common.model.dto.customer.freightBill.TransportDto;
+import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.entity.Line;
 import com.cjyc.common.model.entity.Store;
 import com.cjyc.common.model.enums.ResultEnum;
@@ -30,6 +32,8 @@ import java.util.Map;
 public class TransportServiceImpl implements ITransportService {
 
     @Resource
+    private ICustomerDao customerDao;
+    @Resource
     private ILineDao lineDao;
     @Resource
     private IInquiryService inquiryService;
@@ -37,7 +41,12 @@ public class TransportServiceImpl implements ITransportService {
     private IStoreDao storeDao;
 
     @Override
-    public ResultVo linePriceByCode(TransportDto dto) {
+    public ResultVo<Map<String,Object>> linePriceByCode(TransportDto dto) {
+        Customer customer = customerDao.selectOne(new QueryWrapper<Customer>().lambda()
+                .eq(Customer::getId, dto.getLgoinId()));
+        if(customer == null){
+            return BaseResultUtil.fail("该客户不存在,请检查");
+        }
         Line line = lineDao.getLinePriceByCode(dto.getFromCode(), dto.getToCode());
         if(line == null){
             return BaseResultUtil.getVo(ResultEnum.NOEXIST_LINE.getCode(),ResultEnum.NOEXIST_LINE.getMsg());

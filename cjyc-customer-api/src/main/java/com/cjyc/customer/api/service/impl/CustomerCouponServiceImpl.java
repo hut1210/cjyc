@@ -1,10 +1,13 @@
 package com.cjyc.customer.api.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.dao.ICouponSendDao;
+import com.cjyc.common.model.dao.ICustomerDao;
 import com.cjyc.common.model.dto.CommonDto;
 import com.cjyc.common.model.entity.CouponSend;
+import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.enums.UseStateEnum;
 import com.cjyc.common.model.enums.coupon.CouponLifeTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -30,10 +33,17 @@ import java.util.List;
 public class CustomerCouponServiceImpl extends ServiceImpl<ICouponSendDao, CouponSend> implements ICustomerCouponService {
 
     @Resource
+    private ICustomerDao customerDao;
+    @Resource
     private ICouponSendDao couponSendDao;
 
     @Override
     public ResultVo customerCoupon(CommonDto dto) {
+        Customer customer = customerDao.selectOne(new QueryWrapper<Customer>().lambda()
+                .eq(Customer::getId, dto.getLoginId()));
+        if(customer == null){
+            return BaseResultUtil.fail("该客户不存在,请检查");
+        }
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<CustomerCouponVo> sendVos = couponSendDao.getCustomerCouponById(dto.getLoginId());
         Long now = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());

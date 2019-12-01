@@ -23,7 +23,7 @@ public class CarSeriesServiceImpl extends ServiceImpl<ICarSeriesDao, CarSeries> 
     private ICsCarSeriesService csCarSeriesService;
 
     @Override
-    public ResultVo queryCarSeries(KeywordDto dto) {
+    public ResultVo<List<CarSeriesTree>> queryCarSeries(KeywordDto dto) {
         List<CarSeriesTree> carSeriesTrees =  csCarSeriesService.tree(false,dto.getKeyword());
         return BaseResultUtil.success(carSeriesTrees);
     }

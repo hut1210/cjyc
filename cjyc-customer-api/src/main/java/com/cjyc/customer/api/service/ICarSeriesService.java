@@ -2,6 +2,9 @@ package com.cjyc.customer.api.service;
 
 import com.cjyc.common.model.dto.KeywordDto;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.carSeries.CarSeriesTree;
+
+import java.util.List;
 
 public interface ICarSeriesService {
 
@@ -10,5 +13,5 @@ public interface ICarSeriesService {
      * @param dto
      * @return
      */
-    ResultVo queryCarSeries(KeywordDto dto);
+    ResultVo<List<CarSeriesTree>> queryCarSeries(KeywordDto dto);
 }

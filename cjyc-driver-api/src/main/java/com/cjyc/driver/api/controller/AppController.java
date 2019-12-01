@@ -22,7 +22,7 @@ public class AppController {
     @ApiOperation(value = "查询首页轮播图", notes = "用户端 item传system_picture_customer" +
             "；司机端item传system_picture_driver； 业务员端item传system_picture_sale ", httpMethod = "POST")
     @PostMapping(value = "/getSysPicture")
-    public ResultVo<AppItemVo> getSysPicture(@RequestBody AppItemDto dto){
+    public ResultVo<AppItemVo> getSysPicture(@Validated @RequestBody AppItemDto dto){
         return csAppService.getSysPicture(dto);
     }
 

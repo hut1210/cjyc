@@ -52,19 +52,19 @@ public class MineController {
 
     @ApiOperation(value = "司机的银行卡信息")
     @PostMapping(value = "/findBinkCard")
-    public ResultVo<BinkCardVo> findBinkCard(@RequestBody AppDriverDto dto) {
+    public ResultVo<BinkCardVo> findBinkCard(@Validated @RequestBody AppDriverDto dto) {
         return mineService.findBinkCard(dto);
     }
 
     @ApiOperation(value = "司机管理信息(管理员中的)")
     @PostMapping(value = "/findDriver")
-    public ResultVo<PageVo<DriverInfoVo>> findDriver(@RequestBody BaseDriverDto dto) {
+    public ResultVo<PageVo<DriverInfoVo>> findDriver(@Validated @RequestBody BaseDriverDto dto) {
         return mineService.findDriver(dto);
     }
 
     @ApiOperation(value = "该承运商下空闲车辆(管理员中的司机管理的新增/修改)")
     @PostMapping(value = "/findCarrierVehicle")
-    public ResultVo<CarrierVehicleVo> findCarrierVehicle(@RequestBody CarrierVehicleNoDto dto){
+    public ResultVo<CarrierVehicleVo> findCarrierVehicle(@Validated @RequestBody CarrierVehicleNoDto dto){
         ResultVo<List<FreeVehicleVo>> resultVo = csVehicleService.findCarrierVehicle(dto);
         CarrierVehicleVo vehicleVo = new CarrierVehicleVo();
         vehicleVo.setVehicleVo(resultVo.getData());
@@ -73,7 +73,7 @@ public class MineController {
 
     @ApiOperation(value = "该承运商下空闲司机(管理员中的车辆管理中新增/修改车辆)")
     @PostMapping(value = "/findCarrierDriver")
-    public ResultVo<CarrierDriverVo> findCarrierDriver(@RequestBody CarrierDriverNameDto dto){
+    public ResultVo<CarrierDriverVo> findCarrierDriver(@Validated @RequestBody CarrierDriverNameDto dto){
         ResultVo<List<FreeDriverVo>> resultVo = csDriverService.findCarrierDriver(dto);
         CarrierDriverVo driverVo = new CarrierDriverVo();
         driverVo.setDriverVo(resultVo.getData());
@@ -109,31 +109,31 @@ public class MineController {
 
     @ApiOperation(value = "个人司机添加/修改车辆信息")
     @PostMapping(value = "/saveOrModifyVehicle")
-    public ResultVo saveOrModifyVehicle(@RequestBody SocietyVehicleDto dto) {
+    public ResultVo saveOrModifyVehicle(@Validated @RequestBody SocietyVehicleDto dto) {
         return mineService.saveOrModifyVehicle(dto);
     }
 
     @ApiOperation(value = "个人司机删除车辆绑定关系")
     @PostMapping(value = "/removeVehicle")
-    public ResultVo removeVehicle(@RequestBody RemoveVehicleDto dto) {
+    public ResultVo removeVehicle(@Validated @RequestBody RemoveVehicleDto dto) {
         return mineService.removeVehicle(dto);
     }
 
     @ApiOperation(value = "车辆管理(我的车辆)")
     @PostMapping(value = "/findVehicle")
-    public ResultVo<PageVo<DriverVehicleVo>> findVehicle(@RequestBody BaseDriverDto dto) {
+    public ResultVo<PageVo<DriverVehicleVo>> findVehicle(@Validated @RequestBody BaseDriverDto dto) {
         return mineService.findVehicle(dto);
     }
 
     @ApiOperation(value = "个人司机认证/修改个人信息")
     @PostMapping(value = "/authOrModifyInfo")
-    public ResultVo authOrModifyInfo(@RequestBody SocietyDriverDto dto) {
+    public ResultVo authOrModifyInfo(@Validated @RequestBody SocietyDriverDto dto) {
         return mineService.authOrModifyInfo(dto);
     }
 
     @ApiOperation(value = "个人司机信息(认证通过后)")
     @PostMapping(value = "/showDriverInfo")
-    public ResultVo<SocietyDriverVo> showDriverInfo(@RequestBody AppDriverDto dto) {
+    public ResultVo<SocietyDriverVo> showDriverInfo(@Validated @RequestBody AppDriverDto dto) {
         return mineService.showDriverInfo(dto);
     }
 

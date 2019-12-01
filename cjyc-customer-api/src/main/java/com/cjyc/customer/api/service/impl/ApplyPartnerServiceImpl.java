@@ -42,7 +42,7 @@ public class ApplyPartnerServiceImpl extends ServiceImpl<ICustomerDao, Customer>
     public ResultVo applyPartner(ApplyPartnerDto dto) {
         Customer cust = customerDao.selectById(dto.getLoginId());
         if(cust == null){
-            return BaseResultUtil.fail("该用户不存在,请联系管理员");
+            return BaseResultUtil.fail("该用户不存在,请检查");
         }
         BeanUtils.copyProperties(dto,cust);
         cust.setId(dto.getLoginId());

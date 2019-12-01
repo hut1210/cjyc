@@ -9,6 +9,7 @@ import com.cjyc.customer.api.service.ICustomerLineService;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -29,7 +30,7 @@ public class CustomerLineController {
 
     @ApiOperation(value = "查看用户历史线路")
     @PostMapping(value = "/queryLinePage")
-    public ResultVo<PageVo<CustomerLineVo>> queryLinePage(@RequestBody CommonDto dto){
+    public ResultVo<PageVo<CustomerLineVo>> queryLinePage(@Validated @RequestBody CommonDto dto){
         return customerLineService.queryLinePage(dto);
     }
 }

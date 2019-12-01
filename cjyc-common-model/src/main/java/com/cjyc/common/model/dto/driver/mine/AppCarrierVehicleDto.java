@@ -1,13 +1,13 @@
 package com.cjyc.common.model.dto.driver.mine;
 
+import com.cjyc.common.model.dto.driver.AppDriverDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
 @Data
-public class AppCarrierVehicleDto implements Serializable {
+public class AppCarrierVehicleDto extends AppDriverDto  {
     private static final long serialVersionUID = -345793247315486853L;
 
     @ApiModelProperty(value = "承运商id",required = true)

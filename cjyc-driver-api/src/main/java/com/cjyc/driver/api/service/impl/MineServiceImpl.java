@@ -68,6 +68,8 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
             if(bankCardVo != null){
                 return BaseResultUtil.success(bankCardVo);
             }
+        }else{
+            return BaseResultUtil.fail("该司机不存在,请检查");
         }
         return BaseResultUtil.success();
     }
@@ -81,6 +83,8 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
         List<DriverInfoVo> driverInfo = null;
         if(cdc != null){
             driverInfo = driverDao.findDriverInfo(cdc.getCarrierId());
+        }else{
+            return BaseResultUtil.fail("该司机不存在,请检查");
         }
         PageInfo<DriverInfoVo> pageInfo = new PageInfo(driverInfo);
         return BaseResultUtil.success(pageInfo);
@@ -89,14 +93,14 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
     @Override
     public ResultVo frozenDriver(FrozenDriverDto dto) {
         CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
-                                .eq(CarrierDriverCon::getDriverId,dto.getDriverId())
-                                .eq(CarrierDriverCon::getCarrierId,dto.getCarrierId()));
+                .eq(CarrierDriverCon::getDriverId,dto.getDriverId())
+                .eq(CarrierDriverCon::getId,dto.getRoleId()));
         if(cdc == null){
-            return BaseResultUtil.fail("该司机不存在");
+            return BaseResultUtil.fail("该司机不存在,请检查");
         }
         Driver driver = driverDao.selectOne(new QueryWrapper<Driver>().lambda().eq(Driver::getId, dto.getDriverId()));
         if(driver == null){
-            return BaseResultUtil.fail("该司机不存在");
+            return BaseResultUtil.fail("该司机不存在,请检查");
         }
         driver.setCheckUserId(dto.getLoginId());
         driver.setCheckTime(NOW);
@@ -109,6 +113,12 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
 
     @Override
     public ResultVo saveOrModifyCarrierVehicle(AppCarrierVehicleDto dto) {
+        CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
+                .eq(CarrierDriverCon::getDriverId,dto.getDriverId())
+                .eq(CarrierDriverCon::getId,dto.getRoleId()));
+        if(cdc == null){
+            return BaseResultUtil.fail("该司机不存在,请检查");
+        }
         //根据车牌号查询库中有没有添加
         Vehicle veh = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda().eq(Vehicle::getPlateNo,dto.getPlateNo()));
         if(veh != null && !veh.getId().equals(dto.getVehicleId())){
@@ -170,20 +180,18 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
 
     @Override
     public ResultVo saveOrModifyVehicle(SocietyVehicleDto dto) {
+        CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
+                .eq(CarrierDriverCon::getId, dto.getRoleId())
+                .eq(CarrierDriverCon::getDriverId, dto.getLoginId()));
+        if(cdc == null){
+            return BaseResultUtil.fail("该司机不存在，请检查");
+        }
         Vehicle veh = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda().eq(Vehicle::getPlateNo,dto.getPlateNo()));
         if((dto.getVehicleId() == null && veh != null) || (dto.getVehicleId() != null && !dto.getVehicleId().equals(veh.getId()) && veh != null)){
             return BaseResultUtil.getVo(ResultEnum.EXIST_VEHICLE.getCode(),ResultEnum.EXIST_VEHICLE.getMsg());
         }
         if(dto.getVehicleId() == null){
             //新增
-            //获取carrierId
-            CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
-                    .eq(dto.getRoleId() != null,CarrierDriverCon::getId, dto.getRoleId())
-                    .eq(dto.getLoginId() != null,CarrierDriverCon::getDriverId, dto.getLoginId()));
-            //添加车辆
-            if(cdc == null){
-                return BaseResultUtil.fail("数据错误");
-            }
             saveVehicle(cdc,dto);
         }else{
             //修改
@@ -194,6 +202,12 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
 
     @Override
     public ResultVo removeVehicle(RemoveVehicleDto dto) {
+        CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
+                .eq(CarrierDriverCon::getId, dto.getRoleId())
+                .eq(CarrierDriverCon::getDriverId, dto.getLoginId()));
+        if(cdc == null){
+            return BaseResultUtil.fail("该司机不存在，请检查");
+        }
         //判断该运力是否在运输中
         VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda()
                 .eq(VehicleRunning::getDriverId, dto.getDriverId())
@@ -256,18 +270,26 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
 
     @Override
     public ResultVo<PageVo<DriverVehicleVo>> findVehicle(BaseDriverDto dto) {
-        CarrierDriverCon cdc = carrierDriverConDao.selectById(dto.getRoleId());
-        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        if(cdc != null){
-            List<DriverVehicleVo> vehicleVos = driverDao.findVehicle(cdc.getCarrierId());
-            PageInfo<DriverVehicleVo> pageInfo = new PageInfo(vehicleVos);
-            return BaseResultUtil.success(pageInfo);
+        CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
+                .eq(CarrierDriverCon::getId, dto.getRoleId())
+                .eq(CarrierDriverCon::getDriverId, dto.getLoginId()));
+        if(cdc == null){
+            return BaseResultUtil.fail("该司机不存在，请检查");
         }
-       return BaseResultUtil.success();
+        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
+        List<DriverVehicleVo> vehicleVos = driverDao.findVehicle(cdc.getCarrierId());
+        PageInfo<DriverVehicleVo> pageInfo = new PageInfo(vehicleVos);
+        return BaseResultUtil.success(pageInfo);
     }
 
     @Override
     public ResultVo authOrModifyInfo(SocietyDriverDto dto) {
+        CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
+                .eq(CarrierDriverCon::getId, dto.getRoleId())
+                .eq(CarrierDriverCon::getDriverId, dto.getLoginId()));
+        if(cdc == null){
+            return BaseResultUtil.fail("该司机不存在，请检查");
+        }
         //验证在承运商中是否存在
         Integer count = driverDao.existEnterPriseDriver(dto);
         if(count > 0){
@@ -328,7 +350,7 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
                     return BaseResultUtil.getVo(ResultEnum.VEHICLE_RUNNING.getCode(),ResultEnum.VEHICLE_RUNNING.getMsg());
                 }
             }
-            //先删除，再插入
+            //更新
             vehicleCon.setDriverId(dto.getLoginId());
             vehicleCon.setVehicleId(dto.getVehicleId());
             driverVehicleConDao.updateById(vehicleCon);
@@ -345,15 +367,24 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
 
     @Override
     public ResultVo<SocietyDriverVo> showDriverInfo(AppDriverDto dto) {
-        SocietyDriverVo personInfo = driverDao.findPersonInfo(dto);
-        if(personInfo != null){
-            return BaseResultUtil.success(personInfo);
+        CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
+                .eq(CarrierDriverCon::getId, dto.getRoleId())
+                .eq(CarrierDriverCon::getDriverId, dto.getLoginId()));
+        if(cdc == null){
+            return BaseResultUtil.fail("该司机不存在，请检查");
         }
-        return BaseResultUtil.success();
+        SocietyDriverVo personInfo = driverDao.findPersonInfo(dto);
+        return BaseResultUtil.success(personInfo);
     }
 
     @Override
     public ResultVo addBankCard(BankCardDto dto) {
+        CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
+                .eq(CarrierDriverCon::getId, dto.getRoleId())
+                .eq(CarrierDriverCon::getDriverId, dto.getLoginId()));
+        if(cdc == null){
+            return BaseResultUtil.fail("该司机不存在，请检查");
+        }
         BankCardBind bcb = new BankCardBind();
         bcb.setUserId(dto.getCarrierId());
         bcb.setCardNo(dto.getCardNo());
@@ -371,6 +402,12 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
 
     @Override
     public ResultVo removeBankCard(RemoveBankCardDto dto) {
+        CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
+                .eq(CarrierDriverCon::getId, dto.getRoleId())
+                .eq(CarrierDriverCon::getDriverId, dto.getLoginId()));
+        if(cdc == null){
+            return BaseResultUtil.fail("该司机不存在，请检查");
+        }
         boolean result = csSmsService.validateCaptcha(dto.getPhone(),dto.getCode(),CaptchaTypeEnum.valueOf(dto.getType()), ClientEnum.APP_DRIVER);
         if(!result){
             return BaseResultUtil.fail("验证码与手机号不匹配或者过期，请核对发送");

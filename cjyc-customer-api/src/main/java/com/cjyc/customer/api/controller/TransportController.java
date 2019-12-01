@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 /**
  *  @author: zj
  *  @Date: 2019/10/12 16:36
@@ -26,7 +28,7 @@ public class TransportController {
 
     @ApiOperation(value = "获取运价")
     @PostMapping(value = "/linePriceByCode")
-    public ResultVo linePriceByCode(@Validated @RequestBody TransportDto dto){
+    public ResultVo<Map<String,Object>> linePriceByCode(@Validated @RequestBody TransportDto dto){
         return transportService.linePriceByCode(dto);
     }
 

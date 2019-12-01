@@ -12,10 +12,6 @@ import javax.validation.constraints.Null;
 public class SocietyVehicleDto extends BaseDriverDto {
     private static final long serialVersionUID = -1081460106637979401L;
 
-    @ApiModelProperty(value = "司机id",required = true)
-    @NotNull(message = "司机id不能为空")
-    private Long loginId;
-
     @ApiModelProperty("车牌号id")
     private Long vehicleId;
 
