@@ -6,7 +6,7 @@ import lombok.Data;
 import javax.validation.constraints.Null;
 import java.io.Serializable;
 @Data
-public class DeleteVehicleDto implements Serializable {
+public class RemoveVehicleDto implements Serializable {
     private static final long serialVersionUID = 8223311768840207579L;
     @ApiModelProperty(value = "司机id",required = true)
     @Null(message = "司机id不能为空")

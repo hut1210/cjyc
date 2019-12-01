@@ -324,6 +324,7 @@
             dd.user_id AS userId,
             dd.real_name AS realName,
             dd.phone AS phone,
+            dd.id_card as idCard,
             dd.identity AS identity,
             dd.business_state AS businessState,
             dcdc.state AS state,

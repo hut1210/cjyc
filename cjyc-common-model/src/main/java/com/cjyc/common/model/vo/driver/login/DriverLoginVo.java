@@ -38,6 +38,9 @@ public class DriverLoginVo implements Serializable {
     @ApiModelProperty("手机号")
     private String phone;
 
+    @ApiModelProperty("身份证号")
+    private String idCard;
+
     @ApiModelProperty("司机身份 0：普通司机 1：管理员")
     private Integer identity;
 

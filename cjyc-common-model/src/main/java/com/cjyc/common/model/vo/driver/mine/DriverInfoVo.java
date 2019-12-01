@@ -45,4 +45,11 @@ public class DriverInfoVo implements Serializable {
 
     @ApiModelProperty("车牌号")
     private String plateNo;
+
+    public String getIdCardFrontImg() {
+        return idCardFrontImg == null ? "" : idCardFrontImg;
+    }
+    public String getIdCardBackImg() { return idCardBackImg == null ? "" : idCardBackImg; }
+    public Long getVehicleId() { return vehicleId == null ? 0 : vehicleId; }
+    public String getPlateNo() { return plateNo == null ? "" : plateNo; }
 }

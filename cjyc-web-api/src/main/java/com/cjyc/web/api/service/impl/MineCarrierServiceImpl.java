@@ -117,21 +117,24 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
             return BaseResultUtil.fail("数据错误,请联系管理员");
         }
         //处理角色
-        Long userId = driver.getUserId();
+        Long userId = null;
         Long roleId = null;
         ResultData<List<SelectRoleResp>> rd = null;
         if(dto.getFlag() == FlagEnum.ADMINISTRATOR.code || dto.getFlag() == FlagEnum.REMOVE_ADMINISTRATOR.code){
             //获取架构组角色集合
+            userId = driver.getUserId();
             rd = sysRoleService.getSingleLevelList(carrier.getDeptId());
             if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
                 return BaseResultUtil.fail("查询组织下的所有角色失败");
             }
-            userId = driver.getUserId();
-            roleId = null;
+        }
+        //获取升级为管理员所需的机构id
+        if(dto.getFlag() == FlagEnum.ADMINISTRATOR.code){
             for(SelectRoleResp roleResp : rd.getData()){
                 //管理员
                 if(roleResp.getRoleName().equals(RoleNameEnum.ADMINSTRATOR.getName())){
                     roleId = roleResp.getRoleId();
+                    break;
                 }
             }
         }
@@ -195,7 +198,7 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
             veh.setCreateTime(NOW);
             vehicleDao.insert(veh);
             //选择绑定司机
-            if(StringUtils.isNotBlank(dto.getPlateNo())){
+            if(dto.getDriverId() != null){
                 //有司机，绑定与车辆关系
                 DriverVehicleCon dvc = new DriverVehicleCon();
                 dvc.setDriverId(dto.getDriverId());

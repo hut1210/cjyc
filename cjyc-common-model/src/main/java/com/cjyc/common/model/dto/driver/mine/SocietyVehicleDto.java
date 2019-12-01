@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 
 @Data
-public class PersonVehicleDto extends BaseDriverDto {
+public class SocietyVehicleDto extends BaseDriverDto {
     private static final long serialVersionUID = -1081460106637979401L;
 
     @ApiModelProperty(value = "司机id",required = true)

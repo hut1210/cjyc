@@ -513,7 +513,7 @@
                 LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
                 left join d_carrier_driver_con dcdc on dcdc.driver_id = dd.id
                 left join d_carrier dc on dc.id = dcdc.carrier_id
-            where dc.id = #{carrierId} and dc.type = 2 and dc.state &lt; 9
+            where dc.id = #{carrierId} and dc.state &lt; 9
     </select>
 
     <!--获取该承运商下符合条件的司机-->
@@ -537,8 +537,8 @@
     </select>
 
     <!--司机端查询个人司机信息-->
-    <select id="findPersonInfo" resultType="com.cjyc.common.model.vo.driver.mine.PersonDriverVo"
-                parameterType="com.cjyc.common.model.dto.driver.BaseDriverDto">
+    <select id="findPersonInfo" resultType="com.cjyc.common.model.vo.driver.mine.SocietyDriverVo"
+                parameterType="com.cjyc.common.model.dto.driver.AppDriverDto">
         SELECT
             dd.real_name AS realName,
             dd.phone AS phone,
@@ -562,7 +562,7 @@
 
     <!--验证在企业承运商下是否存在-->
     <select id="existEnterPriseDriver" resultType="java.lang.Integer"
-                        parameterType="com.cjyc.common.model.dto.driver.mine.PersonDriverDto">
+                        parameterType="com.cjyc.common.model.dto.driver.mine.SocietyDriverDto">
         SELECT
             count( dd.id )
         FROM
@@ -577,7 +577,7 @@
 
     <!--验证在个人承运商下是否存在-->
     <select id="existPersonDriver" resultType="java.lang.Integer"
-            parameterType="com.cjyc.common.model.dto.driver.mine.PersonDriverDto">
+            parameterType="com.cjyc.common.model.dto.driver.mine.SocietyDriverDto">
         SELECT
             count( dd.id )
         FROM

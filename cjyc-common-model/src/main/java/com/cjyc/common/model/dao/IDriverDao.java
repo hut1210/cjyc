@@ -2,9 +2,9 @@ package com.cjyc.common.model.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.dto.FreeDto;
-import com.cjyc.common.model.dto.driver.BaseDriverDto;
+import com.cjyc.common.model.dto.driver.AppDriverDto;
 import com.cjyc.common.model.dto.driver.mine.CarrierDriverNameDto;
-import com.cjyc.common.model.dto.driver.mine.PersonDriverDto;
+import com.cjyc.common.model.dto.driver.mine.SocietyDriverDto;
 import com.cjyc.common.model.dto.driver.task.DriverQueryDto;
 import com.cjyc.common.model.dto.web.carrier.TransportDto;
 import com.cjyc.common.model.dto.web.driver.CarrierDriverListDto;
@@ -15,7 +15,7 @@ import com.cjyc.common.model.dto.web.user.DriverListDto;
 import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.vo.driver.mine.DriverInfoVo;
 import com.cjyc.common.model.vo.driver.mine.DriverVehicleVo;
-import com.cjyc.common.model.vo.driver.mine.PersonDriverVo;
+import com.cjyc.common.model.vo.driver.mine.SocietyDriverVo;
 import com.cjyc.common.model.vo.driver.task.TaskDriverVo;
 import com.cjyc.common.model.vo.web.carrier.BaseDriverVo;
 import com.cjyc.common.model.vo.web.carrier.TransportDriverVo;
@@ -179,21 +179,21 @@ public interface IDriverDao extends BaseMapper<Driver> {
      * @param dto
      * @return
      */
-    PersonDriverVo findPersonInfo(BaseDriverDto dto);
+    SocietyDriverVo findPersonInfo(AppDriverDto dto);
 
     /**
      * 验证在企业承运商下是否存在
      * @param dto
      * @return
      */
-    Integer existEnterPriseDriver(PersonDriverDto dto);
+    Integer existEnterPriseDriver(SocietyDriverDto dto);
 
     /**
      * 验证在个人承运商下是否存在
      * @param dto
      * @return
      */
-    Integer existPersonDriver(PersonDriverDto dto);
+    Integer existPersonDriver(SocietyDriverDto dto);
 
     /**
      * 查询承运商下属

@@ -36,4 +36,8 @@ public class DriverVehicleVo implements Serializable {
 
     @ApiModelProperty("非空车位")
     private Integer occupiedCarNum;
+    public Long getVehicleId()  { return vehicleId == null ? 0 : vehicleId; }
+    public String getPlateNo()  { return plateNo == null ? "" : plateNo; }
+    public Integer getCarryCarNum()  { return carryCarNum == null ? 0 : carryCarNum; }
+    public Integer getOccupiedCarNum()  { return occupiedCarNum == null ? 0 : occupiedCarNum; }
 }

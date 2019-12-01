@@ -27,7 +27,6 @@ public class LoginController {
 
     @Resource
     private ILoginService loginService;
-
     @Resource
     private ICsLoginService csLoginService;
 

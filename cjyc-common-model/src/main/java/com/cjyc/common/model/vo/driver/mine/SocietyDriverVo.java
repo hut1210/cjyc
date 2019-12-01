@@ -5,7 +5,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 @Data
-public class PersonDriverVo implements Serializable {
+public class SocietyDriverVo implements Serializable {
     private static final long serialVersionUID = 2046690065713438041L;
     @ApiModelProperty(value = "司机姓名")
     private String realName;
