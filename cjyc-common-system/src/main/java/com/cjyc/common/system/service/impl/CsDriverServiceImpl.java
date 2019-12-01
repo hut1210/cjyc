@@ -137,23 +137,35 @@ public class CsDriverServiceImpl implements ICsDriverService {
             return BaseResultUtil.getVo(ResultEnum.EXIST_ENTERPRISE_CARRIER.getCode(),ResultEnum.EXIST_ENTERPRISE_CARRIER.getMsg());
         }
         if(dto.getDriverId() == null){
-            //保存司机
-            Driver driver = new Driver();
-            BeanUtils.copyProperties(dto,driver);
-            driver.setName(dto.getRealName());
-            driver.setType(DriverTypeEnum.SOCIETY.code);
-            driver.setIdentity(DriverIdentityEnum.GENERAL_DRIVER.code);
-            driver.setBusinessState(BusinessStateEnum.BUSINESS.code);
-            if(dto.getRoleId() == null){
-                //业务员登陆
-                driver.setSource(DriverSourceEnum.SALEMAN_WEB.code);
-            }else{
-                //承运商超级管理员登陆
-                driver.setSource(DriverSourceEnum.CARRIER_ADMIN.code);
+            Driver driver = driverDao.selectOne(new QueryWrapper<Driver>().lambda()
+                            .eq(Driver::getPhone, dto.getPhone()));
+            if(driver == null){
+                //保存司机
+                driver = new Driver();
+                BeanUtils.copyProperties(dto,driver);
+                driver.setName(dto.getRealName());
+                driver.setType(DriverTypeEnum.SOCIETY.code);
+                driver.setIdentity(DriverIdentityEnum.GENERAL_DRIVER.code);
+                driver.setBusinessState(BusinessStateEnum.BUSINESS.code);
+                if(dto.getRoleId() == null){
+                    //业务员登陆
+                    driver.setSource(DriverSourceEnum.SALEMAN_WEB.code);
+                }else{
+                    //承运商超级管理员登陆
+                    driver.setSource(DriverSourceEnum.CARRIER_ADMIN.code);
+                }
+                driver.setCreateUserId(dto.getLoginId());
+                driver.setCreateTime(NOW);
+                driverDao.insert(driver);
+                //司机信息保存
+                ResultData<Long> rd = addDriverToPlatform(driver, dto.getCarrierId());
+                if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+                    return BaseResultUtil.fail(rd.getMsg());
+                }
+                //把userId更新到driver
+                driver.setUserId(rd.getData());
+                driverDao.updateById(driver);
             }
-            driver.setCreateUserId(dto.getLoginId());
-            driver.setCreateTime(NOW);
-            driverDao.insert(driver);
 
             //保存司机与承运商关系
             CarrierDriverCon driverCon = new CarrierDriverCon();
@@ -163,17 +175,12 @@ public class CsDriverServiceImpl implements ICsDriverService {
             driverCon.setState(CommonStateEnum.CHECKED.code);
             driverCon.setRole(DriverRoleEnum.SUB_DRIVER.code);
             carrierDriverConDao.insert(driverCon);
-            //司机信息保存
-            ResultData<Long> rd = addDriverToPlatform(driver, dto.getCarrierId());
-            if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
-                return BaseResultUtil.fail(rd.getMsg());
-            }
-            //把userId更新到driver
-            driver.setUserId(rd.getData());
-            driverDao.updateById(driver);
 
+            //判断该司机是否已绑定
+            DriverVehicleCon vehicleCon = driverVehicleConDao.selectOne(new QueryWrapper<DriverVehicleCon>().lambda()
+                    .eq(driver.getId() != null,DriverVehicleCon::getDriverId, driver.getId()));
             //车牌号不为空
-            if(StringUtils.isNotBlank(dto.getPlateNo())){
+            if(StringUtils.isNotBlank(dto.getPlateNo()) && vehicleCon == null){
                 //保存司机与车辆关系
                 DriverVehicleCon dvc = new DriverVehicleCon();
                 dvc.setVehicleId(dto.getVehicleId());

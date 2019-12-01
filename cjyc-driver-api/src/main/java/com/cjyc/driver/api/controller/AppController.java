@@ -1,9 +1,8 @@
-package com.cjyc.customer.api.controller;
+package com.cjyc.driver.api.controller;
 
 import com.cjyc.common.model.dto.sys.SysPictureDto;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.service.ICsAppService;
-import com.cjyc.customer.api.service.IAppService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +10,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-/**
- * @author leo
- * @date 2019/7/27.
- */
+
 @RestController
 @RequestMapping("/app")
 @Api(tags = "app",description = "查询首页轮播图")
