@@ -35,7 +35,7 @@ public class LoginController {
 
     @ApiOperation(value = "获取验证码")
     @PostMapping("/verifyCode")
-    public ResultVo verifyCode(@RequestBody VerifyCodeDto dto) {
+    public ResultVo verifyCode(@Validated @RequestBody VerifyCodeDto dto) {
         return csLoginService.verifyCode(dto);
     }
 
