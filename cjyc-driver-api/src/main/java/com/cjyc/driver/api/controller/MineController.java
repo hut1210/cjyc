@@ -150,7 +150,7 @@ public class MineController {
     }
 
     @ApiOperation(value = "删除银行卡")
-    @PostMapping(value = "/remove")
+    @PostMapping(value = "/removeBankCard")
     public ResultVo removeBankCard(@Validated @RequestBody RemoveBankCardDto dto) {
         return mineService.removeBankCard(dto);
     }
