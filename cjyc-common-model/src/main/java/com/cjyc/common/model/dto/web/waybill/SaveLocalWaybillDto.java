@@ -36,10 +36,7 @@ public class SaveLocalWaybillDto implements Serializable {
     @ApiModelProperty(value = "备注")
     private String remark;
 
-
-
     /**车辆信息*/
-
     @ApiModelProperty(value = "订单车辆ID")
     private Long orderCarId;
 
@@ -96,6 +93,9 @@ public class SaveLocalWaybillDto implements Serializable {
 
     @ApiModelProperty(value = "收车人电话")
     private String unloadLinkPhone;
+
+    @ApiModelProperty(value = "最后一次运输标识：0否，1是")
+    private Integer receiptFlag;
 
 
 

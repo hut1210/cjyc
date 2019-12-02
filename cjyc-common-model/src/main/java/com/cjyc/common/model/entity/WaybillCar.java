@@ -158,6 +158,9 @@ public class WaybillCar implements Serializable {
     @ApiModelProperty(value = "实际完成卸车时间")
     private Long unloadTime;
 
+    @ApiModelProperty(value = "最后一次运输标识：0否，1是")
+    private Integer receiptFlag;
+
     private Integer sort;
 
     @ApiModelProperty(value = "创建时间")

@@ -26,7 +26,6 @@ import com.cjyc.common.system.service.*;
 import com.cjyc.common.system.util.RedisUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.sun.javafx.tk.Toolkit;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -728,7 +727,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             if(orderId != null && !orderIdList.contains(orderId)){
                 orderIdList.add(orderId);
             }
-            WaybillCar waybillCar =  waybillCarDao.findWaitReceiptByOrderCarId(orderId, order.getEndAddress());
+            WaybillCar waybillCar = waybillCarDao.findWaitReceiptWaybill(orderId);
             if(waybillCar == null){
                 failCarNoSet.add(new FailResultReasonVo(orderCarNo, "车辆，尚未开始配送"));
                 continue;

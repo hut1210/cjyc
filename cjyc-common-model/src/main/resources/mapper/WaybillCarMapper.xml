@@ -47,13 +47,14 @@
         <result column="unload_turn_type" property="unloadTurnType"/>
         <result column="unload_photo_img" property="unloadPhotoImg"/>
         <result column="unload_time" property="unloadTime"/>
+        <result column="receipt_flag" property="receiptFlag" />
         <result column="sort" property="sort"/>
         <result column="create_time" property="createTime"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, waybill_id, waybill_no, order_car_id, order_car_no, freight_fee, start_province, start_province_code, start_city, start_city_code, start_area, start_area_code, start_address, start_store_name, start_store_id, start_belong_store_id, end_province, end_province_code, end_city, end_city_code, end_area, end_area_code, end_address, end_store_name, end_store_id, end_belong_store_id, line_id, state, expect_start_time, expect_end_time, take_type, load_link_name, load_link_user_id, load_link_phone, load_turn_type, load_photo_img, load_time, unload_link_name, unload_link_user_id, unload_link_phone, unload_turn_type, unload_photo_img, unload_time, sort, create_time
+        id, waybill_id, waybill_no, order_car_id, order_car_no, freight_fee, start_province, start_province_code, start_city, start_city_code, start_area, start_area_code, start_address, start_store_name, start_store_id, start_belong_store_id, end_province, end_province_code, end_city, end_city_code, end_area, end_area_code, end_address, end_store_name, end_store_id, end_belong_store_id, line_id, state, expect_start_time, expect_end_time, take_type, load_link_name, load_link_user_id, load_link_phone, load_turn_type, load_photo_img, load_time, unload_link_name, unload_link_user_id, unload_link_phone, unload_turn_type, unload_photo_img, unload_time, receipt_flag, sort, create_time
     </sql>
 
 
@@ -829,6 +830,16 @@
         and wc.state = 90
         and w.state &lt; 100
         and w.type = 3 or wc.end_address = #{endAddress}
+    </select>
+    <select id="findWaitReceiptWaybill" resultType="com.cjyc.common.model.entity.WaybillCar">
+        select
+        wc.*
+        from w_waybill w
+        join w_waybill_car wc on wc.waybill_id = w.id
+        where wc.order_car_id = #{orderId}
+        and wc.state = 90
+        and w.state &lt; 100
+        and receipt_flag = 1
     </select>
 
 </mapper>

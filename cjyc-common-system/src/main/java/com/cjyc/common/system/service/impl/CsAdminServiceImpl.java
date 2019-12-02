@@ -69,6 +69,9 @@ public class CsAdminServiceImpl implements ICsAdminService {
     @Override
     public List<Admin> getListByStoreId(Long storeId) {
         Store store = csStoreService.getById(storeId, true);
+        if(store == null){
+            return null;
+        }
         ResultData<List<SelectUsersByRoleResp>> resultData = sysDeptService.getUsersByDeptId(store.getDeptId());
         if(ResultDataUtil.isEmpty(resultData)){
             return null;

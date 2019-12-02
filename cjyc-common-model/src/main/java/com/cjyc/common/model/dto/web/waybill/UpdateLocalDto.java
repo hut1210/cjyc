@@ -15,8 +15,6 @@ public class UpdateLocalDto {
     @ApiModelProperty(value = "用户userName", required = true)
     private String userName;
 
-
-
     @ApiModelProperty("运单ID")
     private Long id;
 

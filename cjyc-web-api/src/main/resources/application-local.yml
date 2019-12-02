@@ -162,13 +162,3 @@ cjyc:
         webhooks: http://39.106.134.87:80/manycc/pingpay/webhooksNotice
 
 
-    ##SALT
-    #salt:
-    #customer: YCcustomersalt
-    #driver: YCdriversalt
-    #salesman: YCsalesmansalt
-
-  ##TOKEN
-  token:
-    ##过期时间（秒）
-    expires: 1800
