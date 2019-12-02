@@ -157,16 +157,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
                 driver.setCreateUserId(dto.getLoginId());
                 driver.setCreateTime(NOW);
                 driverDao.insert(driver);
-                //司机信息保存
-                ResultData<Long> rd = addDriverToPlatform(driver, dto.getCarrierId());
-                if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
-                    return BaseResultUtil.fail(rd.getMsg());
-                }
-                //把userId更新到driver
-                driver.setUserId(rd.getData());
-                driverDao.updateById(driver);
             }
-
             //保存司机与承运商关系
             CarrierDriverCon driverCon = new CarrierDriverCon();
             driverCon.setCarrierId(dto.getCarrierId());
@@ -175,6 +166,15 @@ public class CsDriverServiceImpl implements ICsDriverService {
             driverCon.setState(CommonStateEnum.CHECKED.code);
             driverCon.setRole(DriverRoleEnum.SUB_DRIVER.code);
             carrierDriverConDao.insert(driverCon);
+
+            //司机信息保存
+            ResultData<Long> rd = addDriverToPlatform(driver, dto.getCarrierId());
+            if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+                return BaseResultUtil.fail(rd.getMsg());
+            }
+            //把userId更新到driver
+            driver.setUserId(rd.getData());
+            driverDao.updateById(driver);
 
             //判断该司机是否已绑定
             DriverVehicleCon vehicleCon = driverVehicleConDao.selectOne(new QueryWrapper<DriverVehicleCon>().lambda()
