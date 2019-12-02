@@ -6,11 +6,14 @@ import com.pingplusplus.exception.*;
 import com.pingplusplus.model.Charge;
 import com.pingplusplus.model.ChargeCollection;
 import com.pingplusplus.net.APIResource;
+import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Data
 public class OrderModel extends APIResource {
     private String id;
     private String object;
@@ -23,7 +26,7 @@ public class OrderModel extends APIResource {
     private String charge;
     private String uid;
     private String merchantOrderNo;
-    private Integer amount;
+    private BigDecimal amount;
     private Integer couponAmount;
     private Integer actualAmount;
     private Integer amountRefunded;
@@ -181,11 +184,11 @@ public class OrderModel extends APIResource {
         this.merchantOrderNo = merchantOrderNo;
     }
 
-    public Integer getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(Integer amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 

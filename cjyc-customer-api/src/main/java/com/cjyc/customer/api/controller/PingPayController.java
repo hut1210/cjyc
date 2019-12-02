@@ -49,6 +49,7 @@ public class PingPayController {
     public ResultVo pay(HttpServletRequest request, OrderModel om){
         Order order = new Order();
         try{
+            logger.debug("pay---------"+om.toString());
             order = iPingPayService.pay(request,om);
         }catch (Exception e){
             logger.error(e.getMessage(),e);
@@ -188,10 +189,8 @@ public class PingPayController {
     @PostMapping("/sweepDriveCode")
     public ResultVo sweepDriveCode(HttpServletRequest request,OrderModel om){
 
-        String clientIp = request.getRemoteAddr();
-        String pingAppId =PingProperty.driverAppId;
-        om.setClientIp(clientIp);
-        om.setPingAppId(pingAppId);
+        om.setClientIp(request.getRemoteAddr());
+        om.setPingAppId(PingProperty.userAppId);
         //创建Charge对象
         Charge charge = new Charge();
         try {
@@ -230,10 +229,8 @@ public class PingPayController {
     @PostMapping("/sweepSalesmanCode")
     public ResultVo sweepSalesmanCode(HttpServletRequest request,OrderModel om) throws Exception{
 
-        String pingAppId = PingProperty.userAppId;//需要支付的端appId
-        String clientIp = request.getRemoteAddr();
-        om.setClientIp(clientIp);
-        om.setPingAppId(pingAppId);
+        om.setClientIp(request.getRemoteAddr());
+        om.setPingAppId(PingProperty.userAppId);
         //创建Charge对象
         Charge charge = new Charge();
         try {
