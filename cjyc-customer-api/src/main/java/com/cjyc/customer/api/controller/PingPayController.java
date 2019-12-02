@@ -46,7 +46,7 @@ public class PingPayController {
 
     @ApiOperation("付款")
     @PostMapping("/pay")
-    public ResultVo pay(HttpServletRequest request, OrderModel om){
+    public ResultVo pay(HttpServletRequest request,@RequestBody OrderModel om){
         Order order = new Order();
         try{
             logger.debug("pay---------"+om.toString());
@@ -187,7 +187,7 @@ public class PingPayController {
 
     @ApiOperation("司机扫码")
     @PostMapping("/sweepDriveCode")
-    public ResultVo sweepDriveCode(HttpServletRequest request,OrderModel om){
+    public ResultVo sweepDriveCode(HttpServletRequest request,@RequestBody OrderModel om){
 
         om.setClientIp(request.getRemoteAddr());
         om.setPingAppId(PingProperty.userAppId);
@@ -227,7 +227,7 @@ public class PingPayController {
 
     @ApiOperation("业务员出示二维码，用户扫码")
     @PostMapping("/sweepSalesmanCode")
-    public ResultVo sweepSalesmanCode(HttpServletRequest request,OrderModel om) throws Exception{
+    public ResultVo sweepSalesmanCode(HttpServletRequest request,@RequestBody OrderModel om){
 
         om.setClientIp(request.getRemoteAddr());
         om.setPingAppId(PingProperty.userAppId);
