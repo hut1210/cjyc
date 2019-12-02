@@ -13,10 +13,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ResourceUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.FileNotFoundException;
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,6 +30,7 @@ import java.util.Map;
  */
 @Service
 @Slf4j
+@Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
 public class PingPayServiceImpl implements IPingPayService {
 
     private static Logger logger = LoggerFactory.getLogger(PingPayServiceImpl.class);
@@ -37,10 +41,8 @@ public class PingPayServiceImpl implements IPingPayService {
     @Override
     public Order pay(HttpServletRequest request, OrderModel om) {
 
-        String clientIp = request.getRemoteAddr();
-        String pingAppId =PingProperty.userAppId;
-        om.setClientIp(clientIp);
-        om.setPingAppId(pingAppId);
+        om.setClientIp(request.getRemoteAddr());
+        om.setPingAppId(PingProperty.userAppId);
 
         Order order = new Order();
         om.setSubject("预付款");
@@ -53,7 +55,7 @@ public class PingPayServiceImpl implements IPingPayService {
         try {
             if(!"balance".equals(channel)){
                 order = payOrder(om);
-                logger.debug(om.toString());
+                logger.debug(order.toString());
                 iTransactionService.saveTransactions(order, "0");
             }
         } catch (Exception e) {
@@ -71,83 +73,6 @@ public class PingPayServiceImpl implements IPingPayService {
             return order;
         }
         return order;
-    }
-
-    @Override
-    public Charge sweepDriveCode(OrderModel om) throws RateLimitException, APIException, ChannelException,InvalidRequestException,
-            APIConnectionException, AuthenticationException,FileNotFoundException{
-
-        initPingApiKey();
-        Map<String, Object> params = new HashMap<String, Object>();
-        Calendar calendar = Calendar.getInstance();
-        params.put("order_no", Integer.toString(calendar.get(Calendar.YEAR)) + System.currentTimeMillis()); // 商户订单号, 必传
-        Map<String, String> app = new HashMap<String, String>();
-        app.put("id", om.getPingAppId());
-        params.put("app", app);
-        params.put("channel", om.getChannel());// alipay_qr 支付宝扫码支付 /wx_pub_qr 微信扫码支付
-        params.put("amount", om.getAmount()); // 订单总金额，单位：分, 必传
-        params.put("client_ip", om.getClientIp()); // 客户端的 IP 地址 (IPv4 格式，要求商户上传真实的，渠道可能会判断), 必传
-        params.put("currency", "cny"); // 仅支持人民币 cny, 必传
-        params.put("subject", om.getSubject()); // 商品的标题, 必传
-        params.put("body", om.getBody()); // 商品的描述信息, 必传
-        params.put("description", om.getDescription()); // 备注：订单号
-        Map<String, Object> meta = new HashMap<String,Object>();
-        meta.put("chargeType", om.getChargeType());//0:定金	1：尾款
-        //自定义存储字段
-        meta.put("code", om.getOrderNo());	//订单号
-        meta.put("orderDetailId",om.getOrderCarId());//订单Id
-        meta.put("driver_code", om.getDriver_code());//司机Code
-        meta.put("order_type", om.getOrder_type());
-        meta.put("driver_name", om.getDriver_name());
-        meta.put("driver_phone", om.getDriver_phone());
-        meta.put("back_type", om.getBack_type());
-        //当为微信支付是需要product_id
-        if("wx_pub_qr".equals(om.getChannel())){
-            Map<String, Object> extra  = new HashMap<String,Object>();
-            extra.put("product_id", Integer.toString(calendar.get(Calendar.YEAR)) + System.currentTimeMillis());
-            params.put("extra", extra);
-        }
-        params.put("metadata",meta);//自定义参数
-        Charge charge = Charge.create(params); // 创建 Charge 对象 方法
-        return charge;
-    }
-
-    @Override
-    public Charge sweepSalesmanCode(OrderModel om) throws RateLimitException,APIException, ChannelException, InvalidRequestException,
-            APIConnectionException, AuthenticationException ,FileNotFoundException{
-        initPingApiKey();
-        Map<String, Object> params = new HashMap<String, Object>();
-        Calendar calendar = Calendar.getInstance();
-        params.put("order_no", Integer.toString(calendar.get(Calendar.YEAR)) + System.currentTimeMillis()); // 商户订单号, 必传
-        Map<String, String> app = new HashMap<String, String>();
-        app.put("id", om.getPingAppId());
-        params.put("app", app);
-        params.put("channel", om.getChannel());// alipay_qr 支付宝扫码支付 /wx_pub_qr 微信扫码支付
-        params.put("amount", om.getAmount()); // 订单总金额，单位：分, 必传
-        params.put("client_ip", om.getClientIp()); // 客户端的 IP 地址 (IPv4 格式，要求商户上传真实的，渠道可能会判断), 必传
-        params.put("currency", "cny"); // 仅支持人民币 cny, 必传
-        params.put("subject", om.getSubject()); // 商品的标题, 必传
-        params.put("body", om.getBody()); // 商品的描述信息, 必传
-        params.put("description", om.getDescription()); // 备注：订单号
-        Map<String, Object> meta = new HashMap<String,Object>();
-        meta.put("chargeType", om.getChargeType());//0:定金	1：尾款
-        //自定义存储字段
-        meta.put("code", om.getOrderNo());	//订单号
-        meta.put("orderDetailId",om.getOrderCarId());//订单Id
-        meta.put("driver_code", om.getDriver_code());//司机Code
-        meta.put("order_type", om.getOrder_type());
-        meta.put("driver_name", om.getDriver_name());
-        meta.put("driver_phone", om.getDriver_phone());
-        meta.put("back_type", om.getBack_type());
-        //当为微信支付是需要product_id
-        if("wx_pub_qr".equals(om.getChannel())){
-            Map<String, Object> extra  = new HashMap<String,Object>();
-            extra.put("product_id", Integer.toString(calendar.get(Calendar.YEAR)) + System.currentTimeMillis());
-            params.put("extra", extra);
-        }
-        params.put("metadata",meta);//自定义参数
-        Charge charge = Charge.create(params); // 创建 Charge 对象 方法
-        return charge;
     }
 
     private Order createOrder(OrderModel om) throws RateLimitException, APIException,
@@ -168,7 +93,7 @@ public class PingPayServiceImpl implements IPingPayService {
 
         Map<String, Object> meta = new HashMap<String,Object>();
         meta.put("chargeType", om.getChargeType());//0:定金	1：尾款    2:居间服务费
-        meta.put("code", om.getOrderNo());	//订单号
+        meta.put("orderNo", om.getOrderNo());	//订单号
         meta.put("batch", om.getBatch());	//是否批量支付尾款
         meta.put("deductFee", om.getDeductFee());	//扣款金额
         meta.put("type", om.getClientType()); //customer 用户  bond 司机保证金  freight 司机运费收入  driver 居间服务费
@@ -193,10 +118,11 @@ public class PingPayServiceImpl implements IPingPayService {
      * @throws APIConnectionException
      * @throws AuthenticationException
      */
-    public Order payOrder(String pingAppId,String channel,int charge_amount,String pingOrderId) throws RateLimitException,
+    public Order payOrder(String pingAppId, String channel, BigDecimal charge_amount, String pingOrderId) throws RateLimitException,
             APIException, ChannelException, InvalidRequestException,FileNotFoundException,
             APIConnectionException, AuthenticationException {
         initPingApiKey();
+        Pingpp.appId = pingAppId;
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("channel", channel);
         params.put("charge_amount", charge_amount);
@@ -286,4 +212,83 @@ public class PingPayServiceImpl implements IPingPayService {
         System.setProperty("https.protocols", "TLSv1.2");//20181023 添加 (TLSv1.2升级配置)
         Pingpp.privateKeyPath = ResourceUtils.getFile(ResourceUtils.CLASSPATH_URL_PREFIX+"your_rsa_private_key_pkcs.pem").getPath();
     }
+
+    @Override
+    public Charge sweepDriveCode(OrderModel om) throws RateLimitException, APIException, ChannelException,InvalidRequestException,
+            APIConnectionException, AuthenticationException,FileNotFoundException{
+
+        initPingApiKey();
+        Map<String, Object> params = new HashMap<String, Object>();
+        Calendar calendar = Calendar.getInstance();
+        params.put("order_no", Integer.toString(calendar.get(Calendar.YEAR)) + System.currentTimeMillis()); // 商户订单号, 必传
+        Map<String, String> app = new HashMap<String, String>();
+        app.put("id", om.getPingAppId());
+        params.put("app", app);
+        params.put("channel", om.getChannel());// alipay_qr 支付宝扫码支付 /wx_pub_qr 微信扫码支付
+        params.put("amount", om.getAmount()); // 订单总金额，单位：分, 必传
+        params.put("client_ip", om.getClientIp()); // 客户端的 IP 地址 (IPv4 格式，要求商户上传真实的，渠道可能会判断), 必传
+        params.put("currency", "cny"); // 仅支持人民币 cny, 必传
+        params.put("subject", om.getSubject()); // 商品的标题, 必传
+        params.put("body", om.getBody()); // 商品的描述信息, 必传
+        params.put("description", om.getDescription()); // 备注：订单号
+        Map<String, Object> meta = new HashMap<String,Object>();
+        meta.put("chargeType", om.getChargeType());//0:定金	1：尾款
+        //自定义存储字段
+        meta.put("orderNo", om.getOrderNo());	//订单号
+        meta.put("orderCarId",om.getOrderCarId());//订单Id
+        meta.put("driver_code", om.getDriver_code());//司机Code
+        meta.put("order_type", om.getOrder_type());
+        meta.put("driver_name", om.getDriver_name());
+        meta.put("driver_phone", om.getDriver_phone());
+        meta.put("back_type", om.getBack_type());
+        //当为微信支付是需要product_id
+        if("wx_pub_qr".equals(om.getChannel())){
+            Map<String, Object> extra  = new HashMap<String,Object>();
+            extra.put("product_id", Integer.toString(calendar.get(Calendar.YEAR)) + System.currentTimeMillis());
+            params.put("extra", extra);
+        }
+        params.put("metadata",meta);//自定义参数
+        Charge charge = Charge.create(params); // 创建 Charge 对象 方法
+        return charge;
+    }
+
+    @Override
+    public Charge sweepSalesmanCode(OrderModel om) throws RateLimitException,APIException, ChannelException, InvalidRequestException,
+            APIConnectionException, AuthenticationException ,FileNotFoundException{
+        initPingApiKey();
+        Map<String, Object> params = new HashMap<String, Object>();
+        Calendar calendar = Calendar.getInstance();
+        params.put("order_no", Integer.toString(calendar.get(Calendar.YEAR)) + System.currentTimeMillis()); // 商户订单号, 必传
+        Map<String, String> app = new HashMap<String, String>();
+        app.put("id", om.getPingAppId());
+        params.put("app", app);
+        params.put("channel", om.getChannel());// alipay_qr 支付宝扫码支付 /wx_pub_qr 微信扫码支付
+        params.put("amount", om.getAmount()); // 订单总金额，单位：分, 必传
+        params.put("client_ip", om.getClientIp()); // 客户端的 IP 地址 (IPv4 格式，要求商户上传真实的，渠道可能会判断), 必传
+        params.put("currency", "cny"); // 仅支持人民币 cny, 必传
+        params.put("subject", om.getSubject()); // 商品的标题, 必传
+        params.put("body", om.getBody()); // 商品的描述信息, 必传
+        params.put("description", om.getDescription()); // 备注：订单号
+        Map<String, Object> meta = new HashMap<String,Object>();
+        meta.put("chargeType", om.getChargeType());//0:定金	1：尾款
+        //自定义存储字段
+        meta.put("orderNo", om.getOrderNo());	//订单号
+        meta.put("orderCarId",om.getOrderCarId());//订单Id
+        meta.put("driver_code", om.getDriver_code());//司机Code
+        meta.put("order_type", om.getOrder_type());
+        meta.put("driver_name", om.getDriver_name());
+        meta.put("driver_phone", om.getDriver_phone());
+        meta.put("back_type", om.getBack_type());
+        //当为微信支付是需要product_id
+        if("wx_pub_qr".equals(om.getChannel())){
+            Map<String, Object> extra  = new HashMap<String,Object>();
+            extra.put("product_id", Integer.toString(calendar.get(Calendar.YEAR)) + System.currentTimeMillis());
+            params.put("extra", extra);
+        }
+        params.put("metadata",meta);//自定义参数
+        Charge charge = Charge.create(params); // 创建 Charge 对象 方法
+        return charge;
+    }
+
+
 }

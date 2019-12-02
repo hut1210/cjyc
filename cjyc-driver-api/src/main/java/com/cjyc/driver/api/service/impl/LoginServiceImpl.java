@@ -115,6 +115,7 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
             return BaseResultUtil.getVo(ResultEnum.LOGIN_FAIL.getCode(),ResultEnum.LOGIN_FAIL.getMsg());
         }
         BeanUtils.copyProperties(baseLoginVo,driverLoginVo);
+        driverLoginVo.setIdCard(StringUtils.isNotBlank(baseLoginVo.getIdCard()) ? baseLoginVo.getIdCard():"");
         driverLoginVo.setUserId(baseLoginVo.getUserId() == null ? 0 : baseLoginVo.getUserId());
         driverLoginVo.setPlateNo(StringUtils.isNotBlank(baseLoginVo.getPlateNo()) ? baseLoginVo.getPlateNo():"");
         driverLoginVo.setPhotoImg(StringUtils.isNotBlank(baseLoginVo.getPhotoImg()) ? baseLoginVo.getPhotoImg():"");

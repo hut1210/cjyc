@@ -1,11 +1,11 @@
 package com.cjyc.common.model.dto.web.city;
 
+import com.cjyc.common.model.dto.BasePageDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -14,7 +14,7 @@ import java.util.List;
  * @Date 2019/11/6 15:52
  **/
 @Data
-public class StoreDto implements Serializable {
+public class StoreDto extends BasePageDto {
     private static final long serialVersionUID = 9177744066955537372L;
     public interface AddAndRemoveCoveredArea{}
     public interface GetStoreAreaList{}
@@ -26,24 +26,6 @@ public class StoreDto implements Serializable {
 
     @ApiModelProperty(value = "区编码")
     private String areaCode;
-
-    @ApiModelProperty(value = "覆盖省编码")
-    private String coveredProvinceCode;
-
-    @ApiModelProperty(value = "覆盖市编码")
-    private String coveredCityCode;
-
-    @ApiModelProperty(value = "覆盖区编码")
-    private String coveredAreaCode;
-
-    @ApiModelProperty(value = "未覆盖省编码")
-    private String noCoveredProvinceCode;
-
-    @ApiModelProperty(value = "未覆盖市编码")
-    private String noCoveredCityCode;
-
-    @ApiModelProperty(value = "未覆盖区编码")
-    private String noCoveredAreaCode;
 
     @ApiModelProperty(value = "业务中心ID")
     @NotNull(groups = {AddAndRemoveCoveredArea.class,GetStoreAreaList.class},message = "业务中心ID不能为空")

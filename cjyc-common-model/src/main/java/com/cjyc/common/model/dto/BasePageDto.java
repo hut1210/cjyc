@@ -1,7 +1,6 @@
 package com.cjyc.common.model.dto;
 
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
 
 import java.io.Serializable;
 
@@ -14,11 +13,11 @@ public class BasePageDto implements Serializable {
     private Integer pageSize;
 
     public Integer getCurrentPage() {
-        return currentPage == null ? 1 : currentPage;
+        return currentPage == null || currentPage == 0 ? 1 : currentPage;
     }
 
     public Integer getPageSize() {
-        return pageSize == null ? 20 : pageSize;
+        return pageSize == null  || pageSize == 0 ? 20 : pageSize;
     }
 
     public void setCurrentPage(Integer currentPage) {

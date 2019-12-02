@@ -46,9 +46,10 @@ public class PingPayController {
 
     @ApiOperation("付款")
     @PostMapping("/pay")
-    public ResultVo pay(HttpServletRequest request, OrderModel om){
+    public ResultVo pay(HttpServletRequest request,@RequestBody OrderModel om){
         Order order = new Order();
         try{
+            logger.debug("pay---------"+om.toString());
             order = iPingPayService.pay(request,om);
         }catch (Exception e){
             logger.error(e.getMessage(),e);
@@ -186,23 +187,13 @@ public class PingPayController {
 
     @ApiOperation("司机扫码")
     @PostMapping("/sweepDriveCode")
-    public ResultVo sweepDriveCode(HttpServletRequest request,OrderModel om){
+    public ResultVo sweepDriveCode(HttpServletRequest request,@RequestBody OrderModel om){
 
-        String clientIp = request.getRemoteAddr();
-        String pingAppId =PingProperty.driverAppId;
-        om.setClientIp(clientIp);
-        om.setPingAppId(pingAppId);
+        om.setClientIp(request.getRemoteAddr());
+        om.setPingAppId(PingProperty.userAppId);
         //创建Charge对象
         Charge charge = new Charge();
         try {
-            //获取orderDetailid(可以是多个)
-            String[] detail_id = new String[0];
-            String orderCode = "";
-            /*//将多个订单金额相加，并且只有一个order_Code
-            for(int i = 0; i < detail_id.length; i++) {
-                List<OrderYccDetailModel> li = orderYccDetailService.queryOrderDetailListByOrderDetailId(detail_id[i]);
-                orderCode =li.get(0).getOrder_code();
-            }*/
             om.setAmount(om.getAmount());
             om.setDriver_code(om.getDriver_code());
             om.setOrder_type(om.getOrder_type());
@@ -228,23 +219,13 @@ public class PingPayController {
 
     @ApiOperation("业务员出示二维码，用户扫码")
     @PostMapping("/sweepSalesmanCode")
-    public ResultVo sweepSalesmanCode(HttpServletRequest request,OrderModel om) throws Exception{
+    public ResultVo sweepSalesmanCode(HttpServletRequest request,@RequestBody OrderModel om){
 
-        String pingAppId = PingProperty.userAppId;//需要支付的端appId
-        String clientIp = request.getRemoteAddr();
-        om.setClientIp(clientIp);
-        om.setPingAppId(pingAppId);
+        om.setClientIp(request.getRemoteAddr());
+        om.setPingAppId(PingProperty.userAppId);
         //创建Charge对象
         Charge charge = new Charge();
         try {
-            //获取orderDetailid(可以是多个)
-            String[] detail_id = om.getOrderCarId().split(",");
-            String orderCode = "";
-            //将多个订单金额相加，并且只有一个order_Code
-            /*for(int i = 0; i < detail_id.length; i++) {
-                List<OrderYccDetailModel>li = orderYccDetailService.queryOrderDetailListByOrderDetailId(detail_id[i]);
-                orderCode =li.get(0).getOrder_code();
-            }*/
             om.setAmount(om.getAmount());
             om.setDriver_code(om.getDriver_code());
             om.setOrder_type(om.getOrder_type());

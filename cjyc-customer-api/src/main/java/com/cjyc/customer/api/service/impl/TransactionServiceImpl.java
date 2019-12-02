@@ -60,10 +60,11 @@ public class TransactionServiceImpl implements ITransactionService {
 
     private TradeBill orderToTransactions(Order order, Event event, String state) {
         TradeBill tb = new TradeBill();
+        tb.setPingPayId(order.getId());
         tb.setSubject(order.getSubject());
         tb.setBody(order.getBody());
         tb.setPingPayNo(order.getMerchantOrderNo());
-        tb.setAmount(order.getAmount()==null?BigDecimal.valueOf(0):BigDecimal.valueOf(order.getAmount()));
+        tb.setAmount(order.getAmount()==null?BigDecimal.valueOf(0):BigDecimal.valueOf(order.getAmount()).multiply(new BigDecimal(100)));
         tb.setCreateTime(order.getCreated());
         tb.setType(1);
         if(order.getLivemode()){
@@ -95,9 +96,9 @@ public class TransactionServiceImpl implements ITransactionService {
             tb.setEventType(event.getType());
         }
         Map<String, Object> map = order.getMetadata();
-        String orderCode = (String)map.get("code");
+        String orderNo = (String)map.get("orderNo");
         tb.setState(Integer.valueOf(state));//待支付/已支付/付款失败
-        tb.setPingPayId(orderCode);
+        tb.setNo(orderNo);
 
         return tb;
     }

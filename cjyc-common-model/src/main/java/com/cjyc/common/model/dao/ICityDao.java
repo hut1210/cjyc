@@ -115,5 +115,23 @@ public interface ICityDao extends BaseMapper<City> {
     List<FullCity> selectStoreAreaList(StoreDto dto);
 
     FullCity findFullCityByCityCode(String cityCode);
+
+    /**
+     * 功能描述: 查询业务中心查询已覆盖区列表
+     * @author liuxingxiang
+     * @date 2019/12/2
+     * @param dto
+     * @return java.util.List<com.cjyc.common.model.entity.defined.FullCity>
+     */
+    List<FullCity> selectCoveredList(StoreDto dto);
+
+    /**
+     * 功能描述: 查询业务中心查询未覆盖区列表
+     * @author liuxingxiang
+     * @date 2019/12/2
+     * @param dto
+     * @return java.util.List<com.cjyc.common.model.entity.defined.FullCity>
+     */
+    List<FullCity> selectNoCoveredList(StoreDto dto);
 }
 

@@ -3,7 +3,6 @@ package com.cjyc.customer.api.controller;
 import com.cjyc.common.model.dto.customer.order.*;
 import com.cjyc.common.model.dto.web.order.CancelOrderDto;
 import com.cjyc.common.model.dto.web.order.SaveOrderDto;
-import com.cjyc.common.model.dto.web.task.ReceiptTaskDto;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.vo.PageVo;
@@ -21,10 +20,12 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.Map;
 
 
 /**
@@ -108,19 +109,6 @@ public class OrderController {
     @PostMapping(value = "/getPage")
     public ResultVo<PageVo<OrderCenterVo>> getPage(@RequestBody @Validated OrderQueryDto dto){
         return orderService.getPage(dto);
-    }
-
-    /**
-     * 功能描述: 查询每种状态下的订单数量
-     * @author liuxingxiang
-     * @date 2019/11/26
-     * @param loginId
-     * @return com.cjyc.common.model.vo.ResultVo<java.util.Map<java.lang.String,java.lang.Object>>
-     */
-    @ApiOperation(value = "查询各种订单状态下的订单数量", notes = "查询各种订单状态下的订单数量", httpMethod = "POST")
-    @PostMapping(value = "/getOrderCount/{loginId}")
-    public ResultVo<Map<String,Object>> getOrderCount(@PathVariable Long loginId){
-        return orderService.getOrderCount(loginId);
     }
 
     /**

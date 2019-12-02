@@ -163,3 +163,6 @@ cjyc:
     ##过期时间（秒）
     expires: 1800
 
+ribbon:
+  ConnectTimeout: 30000
+  ReadTimeout: 30000
