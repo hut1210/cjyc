@@ -33,7 +33,6 @@ import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.store.StoreCoveredAreaVo;
 import com.cjyc.common.model.vo.store.StoreExportExcel;
 import com.cjyc.common.model.vo.store.StoreVo;
 import com.cjyc.common.system.feign.ISysDeptService;
@@ -218,48 +217,19 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
     }
 
     @Override
-    public ResultVo getStoreAreaList(StoreDto dto) {
-        // 根据业务中心ID查询区编码
-        List<StoreCityCon> storeCityConList = storeCityConDao.selectList(new QueryWrapper<StoreCityCon>().lambda()
-                .eq(StoreCityCon::getStoreId, dto.getStoreId())
-                .eq(!StringUtils.isEmpty(dto.getCoveredAreaCode()),StoreCityCon::getAreaCode,dto.getCoveredAreaCode()));
-        // 查询当前业务中心覆盖区域
-        List<FullCity> coveredAreaList = new ArrayList<>(10);
-        if (!CollectionUtils.isEmpty(storeCityConList)) {
-            dto.setProvinceCode(dto.getCoveredProvinceCode());
-            dto.setCityCode(dto.getCoveredCityCode());
-            for (StoreCityCon storeCityCon : storeCityConList) {
-                dto.setAreaCode(storeCityCon.getAreaCode());
-                List<FullCity> list = cityDao.selectStoreAreaList(dto);
-                coveredAreaList.addAll(list);
-            }
-        }
+    public ResultVo getStoreCoveredAreaList(StoreDto dto) {
+        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
+        List<FullCity> list = cityDao.selectCoveredList(dto);
+        PageInfo pageInfo = new PageInfo(list);
+        return BaseResultUtil.success(pageInfo);
+    }
 
-        // 查询所有区
-        dto.setProvinceCode(dto.getNoCoveredProvinceCode());
-        dto.setCityCode(dto.getNoCoveredCityCode());
-        dto.setAreaCode(dto.getNoCoveredAreaCode());
-        List<FullCity> fullCityList = cityDao.selectStoreAreaList(dto);
-
-        // 查询所有已覆盖的区
-        List<StoreCityCon> cityConList = storeCityConDao.selectList(new QueryWrapper<StoreCityCon>());
-
-        // 取出所有未覆盖的区域
-        if (!CollectionUtils.isEmpty(cityConList)) {
-            for (StoreCityCon coveredArea : cityConList) {
-                for (FullCity fullCity : fullCityList) {
-                    if (fullCity.getAreaCode().equals(coveredArea.getAreaCode())) {
-                        fullCityList.remove(fullCity);
-                        break;
-                    }
-                }
-            }
-        }
-
-        StoreCoveredAreaVo areaVo = new StoreCoveredAreaVo();
-        areaVo.setCoveredAreaList(coveredAreaList);
-        areaVo.setNoCoveredCityList(fullCityList);
-        return BaseResultUtil.success(areaVo);
+    @Override
+    public ResultVo getStoreNoCoveredAreaList(StoreDto dto) {
+        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
+        List<FullCity> list = cityDao.selectNoCoveredList(dto);
+        PageInfo pageInfo = new PageInfo(list);
+        return BaseResultUtil.success(pageInfo);
     }
 
     @Override
