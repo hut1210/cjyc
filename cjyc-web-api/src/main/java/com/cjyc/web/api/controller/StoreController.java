@@ -9,10 +9,10 @@ import com.cjyc.common.model.dto.web.store.StoreQueryDto;
 import com.cjyc.common.model.dto.web.store.StoreUpdateDto;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Store;
+import com.cjyc.common.model.entity.defined.FullCity;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.store.StoreCoveredAreaVo;
 import com.cjyc.common.model.vo.store.StoreVo;
 import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.web.api.service.IStoreService;
@@ -143,10 +143,16 @@ public class StoreController {
         return storeService.listAdminsByStoreId(storeId);
     }
 
-    @ApiOperation(value = "根据业务中心ID查询当前业务中心覆盖区和所有业务中心未覆盖区列表")
-    @PostMapping("/getStoreAreaList")
-    public ResultVo<StoreCoveredAreaVo> getStoreAreaList(@RequestBody @Validated({StoreDto.GetStoreAreaList.class}) StoreDto dto) {
-        return storeService.getStoreAreaList(dto);
+    @ApiOperation(value = "根据业务中心ID查询覆盖区列表")
+    @PostMapping("/getStoreCoveredAreaList")
+    public ResultVo<PageInfo<FullCity>> getStoreCoveredAreaList(@RequestBody @Validated({StoreDto.GetStoreAreaList.class}) StoreDto dto) {
+        return storeService.getStoreCoveredAreaList(dto);
+    }
+
+    @ApiOperation(value = "根据业务中心ID查询未覆盖区列表")
+    @PostMapping("/getStoreNoCoveredAreaList")
+    public ResultVo<PageInfo<FullCity>> getStoreNoCoveredAreaList(@RequestBody @Validated({StoreDto.GetStoreAreaList.class}) StoreDto dto) {
+        return storeService.getStoreNoCoveredAreaList(dto);
     }
 
     @ApiOperation(value = "新增前业务中心覆盖区域")
