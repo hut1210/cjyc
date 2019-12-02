@@ -16,6 +16,7 @@ import com.cjyc.common.system.service.ICsAdminService;
 import com.cjyc.web.api.service.IOrderService;
 import com.cjyc.web.api.util.CustomerOrderExcelVerifyHandler;
 import com.cjyc.web.api.util.ExcelUtil;
+import com.cjyc.web.api.util.KeyCustomerOrderExcelVerifyHandler;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -47,6 +48,8 @@ public class OrderController {
     private ICsAdminService csAdminService;
     @Autowired
     private CustomerOrderExcelVerifyHandler customerOrderVerifyHandler;
+    @Autowired
+    private KeyCustomerOrderExcelVerifyHandler keyCustomerOrderVerifyHandler;
     /**
      * 保存,只保存无验证
      * @author JPG
@@ -376,6 +379,52 @@ public class OrderController {
         }
     }
 
+    @ApiOperation(value = "大客户订单导入", notes = "验证失败返回失败Excel文件流，其它情况返回json结果信息")
+    @PostMapping(value = "/importKeyCustomerOrder")
+    public void importKeyCustomerOrder(MultipartFile file, Long loginId, HttpServletResponse response) {
+        if (file != null && !file.isEmpty() && loginId != null && loginId > 0L) {
+            ImportParams orderParams = new ImportParams();
+            orderParams.setSheetNum(1);
+            orderParams.setHeadRows(2);
+            orderParams.setNeedVerfiy(true);
+            orderParams.setVerifyHandler(keyCustomerOrderVerifyHandler);
+
+            ImportParams carParams = new ImportParams();
+            carParams.setSheetNum(1);
+            carParams.setStartSheetIndex(1);
+            carParams.setHeadRows(2);
+            carParams.setNeedVerfiy(true);
+
+            List<ImportKeyCustomerOrderDto> orderList = null;
+            List<ImportKeyCustomerOrderCarDto> carList = null;
+            try {
+                ExcelImportResult<ImportKeyCustomerOrderDto> orderResult = ExcelImportUtil.importExcelMore(file.getInputStream(),
+                        ImportKeyCustomerOrderDto.class, orderParams);
+                if (orderResult.isVerfiyFail()) {
+                    String fileName = "验证失败.xlsx";
+                    printExcelResult(orderResult.getFailWorkbook(), fileName, response);
+                }else {
+                    orderList = orderResult.getList();
+                    ExcelImportResult<ImportKeyCustomerOrderCarDto> carResult = ExcelImportUtil.importExcelMore(file.getInputStream(),
+                            ImportKeyCustomerOrderCarDto.class, carParams);
+                    if (carResult.isVerfiyFail()) {
+                        String fileName = "验证失败.xlsx";
+                        printExcelResult(orderResult.getFailWorkbook(), fileName, response);
+                    }else {
+                        carList = carResult.getList();
+                        //导入操作
+                        Admin admin = csAdminService.validate(loginId);
+                        orderService.importKeyCustomerOrder(orderList, carList, admin);
+                        printJsonResult(BaseResultUtil.success("成功"), response);
+                    }
+                }
+            }catch (Exception e) {
+                e.printStackTrace();
+                LogUtil.error("导入大客户订单异常：", e);
+                printJsonResult(BaseResultUtil.fail("异常: " + e.getMessage()), response);
+            }
+        }
+    }
     /**
      * 检查返回结果是否成功
      * @param resultVo
