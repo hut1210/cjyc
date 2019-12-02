@@ -20,6 +20,6 @@ public interface ICsTaskService {
 
     ResultVo receipt(ReceiptTaskDto reqDto);
 
-    ResultVo receiptBatch(ReceiptBatchDto reqDto);
+    ResultVo<ResultReasonVo> receiptBatch(ReceiptBatchDto reqDto);
 
 }

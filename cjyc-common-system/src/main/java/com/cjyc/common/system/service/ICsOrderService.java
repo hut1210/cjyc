@@ -1,8 +1,11 @@
 package com.cjyc.common.system.service;
 
+import com.cjyc.common.model.dto.customer.order.OrderPayStateDto;
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.vo.ResultVo;
+
+import java.util.Map;
 
 /**
  * 订单公用业务
@@ -68,4 +71,12 @@ public interface ICsOrderService {
      * @param paramsDto
      */
     ResultVo replenishInfo(ReplenishOrderDto paramsDto);
+
+    /**
+     * 验证订单是否支付
+     * @author JPG
+     * @since 2019/12/2 13:30
+     * @param orderId
+     */
+    ResultVo<Map<String, Object>> validatePayState(OrderPayStateDto orderId);
 }

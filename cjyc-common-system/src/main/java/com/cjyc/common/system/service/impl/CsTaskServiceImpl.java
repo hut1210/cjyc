@@ -701,15 +701,15 @@ public class CsTaskServiceImpl implements ICsTaskService {
     }
 
     @Override
-    public ResultVo<FailResultReasonVo> receiptBatch(ReceiptBatchDto reqDto) {
+    public ResultVo<ResultReasonVo> receiptBatch(ReceiptBatchDto reqDto) {
+
         //返回内容
         ResultReasonVo resultReasonVo = new ResultReasonVo();
         Set<FailResultReasonVo> failCarNoSet = Sets.newHashSet();
         Set<String> successSet = Sets.newHashSet();
 
-
         long currentTimeMillis = System.currentTimeMillis();
-        Order order = orderDao.selectById(reqDto.getOrderId());
+        Long orderId = null;
         List<Long> orderIdList = Lists.newArrayList();
         List<OrderCar> list = orderCarDao.findListByIds(reqDto.getOrderCarIdList());
         Set<Long>  orderCarIdSet = Sets.newHashSet();
@@ -717,7 +717,9 @@ public class CsTaskServiceImpl implements ICsTaskService {
             if(orderCar == null){
                 continue;
             }
-            Long orderId = orderCar.getOrderId();
+            if(orderId == null){
+                orderId = orderCar.getOrderId();
+            }
             String orderCarNo = orderCar.getNo();
             if(orderCar.getState() >= OrderCarStateEnum.SIGNED.code){
                 failCarNoSet.add(new FailResultReasonVo(orderCarNo, "车辆，已被签收"));
@@ -748,19 +750,24 @@ public class CsTaskServiceImpl implements ICsTaskService {
             }
 
             orderCarIdSet.add(orderCar.getId());
+            successSet.add(orderCar.getNo());
 
         }
-        if(orderIdList.size() > 0 || !reqDto.getOrderId().equals(orderIdList.get(0))){
+        if(orderIdList.size() > 0){
             throw new ParameterException("暂不支持跨订单批量签收");
         }
+        Order order = orderDao.selectById(orderId);
         //更新车辆状态
         orderCarDao.updateForReceiptBatch(orderCarIdSet);
         //更新订单状态
-        int n = orderDao.countUnReceipt(reqDto.getOrderId());
+        int n = orderDao.countUnReceipt(orderId);
         if(n == 0){
             orderDao.updateForReceipt(order.getId(), currentTimeMillis);
         }
-        return BaseResultUtil.success();
+
+        resultReasonVo.setSuccessList(successSet);
+        resultReasonVo.setFailList(failCarNoSet);
+        return BaseResultUtil.success(resultReasonVo);
     }
 
 

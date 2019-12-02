@@ -2,6 +2,7 @@ package com.cjyc.common.system.service.impl;
 
 import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IOrderDao;
+import com.cjyc.common.model.dto.customer.order.OrderPayStateDto;
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.PayModeEnum;
@@ -14,19 +15,24 @@ import com.cjyc.common.model.enums.order.OrderChangeTypeEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.exception.ParameterException;
 import com.cjyc.common.model.exception.ServerException;
+import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.entity.defined.FullCity;
 import com.cjyc.common.system.service.*;
+import com.cjyc.common.system.util.RedisUtils;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -36,6 +42,8 @@ import java.util.Set;
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class CsOrderServiceImpl implements ICsOrderService {
+    @Resource
+    private RedisUtils redisUtils;
     @Resource
     private IOrderDao orderDao;
     @Resource
@@ -605,6 +613,29 @@ public class CsOrderServiceImpl implements ICsOrderService {
         }
         // TODO 日志
         return BaseResultUtil.success();
+    }
+
+    @Override
+    public ResultVo<Map<String, Object>> validatePayState(OrderPayStateDto paramsDto) {
+        Map<String, Object> resMap = Maps.newHashMap();
+
+        Set<String> lockSet = Sets.newHashSet();
+        boolean isPaied = false;
+        List<OrderCar> carList = orderCarDao.findListByIds(paramsDto.getOrderCarId());
+        for (OrderCar orderCar : carList) {
+            if(orderCar == null || orderCar.getNo() == null){
+                continue;
+            }
+            String key = RedisKeys.getOrderCarPayLockKey(orderCar.getNo());
+            String value = redisUtils.get(key);
+            if(!orderCar.getNo().equals(value)){
+                return BaseResultUtil.fail("订单车辆正在支付中");
+            }
+
+        }
+
+        resMap.put("paied", isPaied);
+        return BaseResultUtil.success(resMap);
     }
 
     /**

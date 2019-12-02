@@ -818,10 +818,6 @@
         </if>
     </select>
     <select id="findWaitReceiptListByOrderCarId" resultType="com.cjyc.common.model.entity.WaybillCar">
-
-
-    </select>
-    <select id="findWaitReceiptByOrderCarId" resultType="com.cjyc.common.model.entity.WaybillCar">
         select
         wc.*
         from w_waybill w
