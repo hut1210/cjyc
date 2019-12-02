@@ -78,4 +78,7 @@ public interface IOrderService extends IService<Order> {
 
     void importKeyCustomerOrder(List<ImportKeyCustomerOrderDto> orderList,
                                 List<ImportKeyCustomerOrderCarDto> carList, Admin admin);
+
+    void importPatCustomerOrder(List<ImportPatCustomerOrderDto> orderList,
+                                List<ImportPatCustomerOrderCarDto> carList, Admin admin);
 }
