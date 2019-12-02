@@ -97,10 +97,10 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
 
     public Map<String, Object> getOrderCount(Long loginId) {
         Map<String,Object> map = new HashMap<>(4);
-        map.put("waitConfirmCount","0");
-        map.put("transitCount","0");
-        map.put("payCount","0");
-        map.put("allCount","0");
+        map.put("waitConfirmCount",0);
+        map.put("transitCount",0);
+        map.put("payCount",0);
+        map.put("allCount",0);
         // 查询待确认订单数量
         LambdaQueryWrapper<Order> queryWrapper = new QueryWrapper<Order>().lambda()
                 .eq(Order::getCustomerId,loginId)
