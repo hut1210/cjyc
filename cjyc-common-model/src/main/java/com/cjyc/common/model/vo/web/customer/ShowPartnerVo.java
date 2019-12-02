@@ -48,28 +48,26 @@ public class ShowPartnerVo implements Serializable {
     private String bankLicence;
     @ApiModelProperty("备注")
     private String description;
+    @ApiModelProperty("身份证号")
+    private String idCard;
 
     @ApiModelProperty("企业执照正面")
     private String businessLicenseFrontImg;
-
     @ApiModelProperty("企业执照反面")
     private String businessLicenseBackImg;
 
     @ApiModelProperty("法人身份证复印件正面")
     private String legalIdcardFrontImg;
-
     @ApiModelProperty("法人身份证复印件反面")
     private String legalIdcardBackImg;
 
     @ApiModelProperty("联系人身份证正面")
     private String linkmanIdcardFrontImg;
-
     @ApiModelProperty("联系人身份证反面")
     private String linkmanIdcardBackImg;
 
     @ApiModelProperty("授权书正面")
     private String authorizationFrontImg;
-
     @ApiModelProperty("授权书反面")
     private String authorizationBackImg;
 }

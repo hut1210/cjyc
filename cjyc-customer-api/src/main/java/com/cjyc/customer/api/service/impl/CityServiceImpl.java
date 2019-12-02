@@ -29,17 +29,13 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
     private ICityDao cityDao;
 
     @Override
-    public ResultVo queryCity(KeywordDto dto) {
+    public ResultVo<CityVo> queryCity(KeywordDto dto) {
         CityVo cityvo = new CityVo();
         //获取热门城市
         List<HotCityVo> hotCity = cityDao.getHotCity();
         List<ProvinceTreeVo> cityTreeVos = cityDao.findThreeCity(dto.getKeyword());
-        if(!CollectionUtils.isEmpty(cityTreeVos)){
-            //List<CityTreeVo> citys = CityTreeUtil.encapTree(cityTreeVos);
-            cityvo.setHotCityVos(hotCity);
-            cityvo.setCityTreeVos(cityTreeVos);
-            return BaseResultUtil.success(cityvo);
-        }
-        return BaseResultUtil.fail("数据有误，请联系管理员");
+        cityvo.setHotCityVos(hotCity);
+        cityvo.setCityTreeVos(cityTreeVos);
+        return BaseResultUtil.success(cityvo);
     }
 }

@@ -40,7 +40,7 @@ public interface IStoreService extends IService<Store> {
      * @param storeAddDto
      * @return
      */
-    boolean add(StoreAddDto storeAddDto);
+    ResultVo add(StoreAddDto storeAddDto);
 
     /**
      * 修改

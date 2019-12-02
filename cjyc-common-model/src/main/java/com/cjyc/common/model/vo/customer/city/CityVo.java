@@ -1,6 +1,5 @@
 package com.cjyc.common.model.vo.customer.city;
 
-import com.cjyc.common.model.vo.CityTreeVo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 

@@ -20,4 +20,7 @@ public interface IPingPayService {
             APIConnectionException, AuthenticationException,FileNotFoundException;
 
     Order pay(HttpServletRequest request, OrderModel om);
+
+    Charge sweepSalesmanCode(OrderModel om) throws RateLimitException, APIException, ChannelException,InvalidRequestException,
+            APIConnectionException, AuthenticationException,FileNotFoundException;
 }

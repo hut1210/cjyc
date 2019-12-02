@@ -88,50 +88,54 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
     @Override
     public ResultVo<PageVo<MyDriverVo>> findPageDriver(QueryMyDriverDto dto) {
         Carrier carrier = csSysService.getCarrierByRoleId(dto.getRoleId());
+        if(carrier == null){
+            return BaseResultUtil.fail("该承运商管理员不存在,请检查");
+        }
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        if(carrier != null){
-            dto.setCarrierId(carrier.getId());
-            List<MyDriverVo> myDriverVos =  driverDao.findMyDriver(dto);
-            if(!CollectionUtils.isEmpty(myDriverVos)){
-                for(MyDriverVo vo : myDriverVos){
-                    CarrierCarCount count = carrierCarCountDao.driverCount(vo.getDriverId());
-                    if(count != null){
-                        vo.setCarNum(count.getCarNum());
-                    }
+        dto.setCarrierId(carrier.getId());
+        List<MyDriverVo> myDriverVos =  driverDao.findMyDriver(dto);
+        if(!CollectionUtils.isEmpty(myDriverVos)){
+            for(MyDriverVo vo : myDriverVos){
+                CarrierCarCount count = carrierCarCountDao.driverCount(vo.getDriverId());
+                if(count != null){
+                    vo.setCarNum(count.getCarNum());
                 }
-                PageInfo<MyDriverVo> pageInfo = new PageInfo<>(myDriverVos);
-                return BaseResultUtil.success(pageInfo);
             }
+            PageInfo<MyDriverVo> pageInfo = new PageInfo<>(myDriverVos);
+            return BaseResultUtil.success(pageInfo);
         }
         return BaseResultUtil.success();
     }
 
     @Override
-    public ResultVo verifyDriver(HandleDto dto) {
-        Driver driver = driverDao.selectById(dto.getDriverId());
+    public ResultVo verifyDriver(OperateDto dto) {
+        Driver driver = driverDao.selectById(dto.getId());
         CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
-                .eq(CarrierDriverCon::getDriverId,dto.getDriverId())
+                .eq(CarrierDriverCon::getDriverId,dto.getId())
                 .eq(CarrierDriverCon::getCarrierId,dto.getCarrierId()));
         Carrier carrier = carrierDao.selectById(dto.getCarrierId());
         if(driver == null || cdc == null || carrier == null){
             return BaseResultUtil.fail("数据错误,请联系管理员");
         }
         //处理角色
-        Long userId = driver.getUserId();
+        Long userId = null;
         Long roleId = null;
         ResultData<List<SelectRoleResp>> rd = null;
         if(dto.getFlag() == FlagEnum.ADMINISTRATOR.code || dto.getFlag() == FlagEnum.REMOVE_ADMINISTRATOR.code){
             //获取架构组角色集合
+            userId = driver.getUserId();
             rd = sysRoleService.getSingleLevelList(carrier.getDeptId());
             if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
                 return BaseResultUtil.fail("查询组织下的所有角色失败");
             }
-            userId = driver.getUserId();
-            roleId = null;
+        }
+        //获取升级为管理员所需的机构id
+        if(dto.getFlag() == FlagEnum.ADMINISTRATOR.code){
             for(SelectRoleResp roleResp : rd.getData()){
-                //普通司机
-                if(roleResp.getRoleName().equals(RoleNameEnum.COMMON.getName())){
+                //管理员
+                if(roleResp.getRoleName().equals(RoleNameEnum.ADMINSTRATOR.getName())){
                     roleId = roleResp.getRoleId();
+                    break;
                 }
             }
         }
@@ -178,14 +182,14 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
 
     @Override
     public ResultVo saveOrModifyVehicle(CarrierVehicleDto dto) {
+        Carrier carrier = csSysService.getCarrierByRoleId(dto.getRoleId());
+        if(carrier == null){
+            return BaseResultUtil.fail("该承运商管理员不存在,请检查");
+        }
         if(dto.getVehicleId() == null){
             Vehicle vehicle = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda().eq(Vehicle::getPlateNo,dto.getPlateNo()));
             if(vehicle != null){
                 return BaseResultUtil.fail("该车辆已添加，请核对");
-            }
-            Carrier carrier = csSysService.getCarrierByRoleId(dto.getRoleId());
-            if(carrier == null){
-                return BaseResultUtil.fail("数据错误，请核对");
             }
             Vehicle veh = new Vehicle();
             BeanUtils.copyProperties(dto,veh);
@@ -195,7 +199,7 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
             veh.setCreateTime(NOW);
             vehicleDao.insert(veh);
             //选择绑定司机
-            if(StringUtils.isNotBlank(dto.getPlateNo())){
+            if(dto.getDriverId() != null){
                 //有司机，绑定与车辆关系
                 DriverVehicleCon dvc = new DriverVehicleCon();
                 dvc.setDriverId(dto.getDriverId());
@@ -220,14 +224,14 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
     @Override
     public ResultVo<PageVo<MyCarVo>> findPageCar(QueryMyCarDto dto) {
         Carrier carrier = csSysService.getCarrierByRoleId(dto.getRoleId());
-        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        if(carrier != null){
-            dto.setCarrierId(carrier.getId());
-            List<MyCarVo> myCarVos = vehicleDao.findMyCar(dto);
-            PageInfo<MyCarVo> pageInfo = new PageInfo<>(myCarVos);
-            return BaseResultUtil.success(pageInfo);
+        if(carrier == null){
+            return BaseResultUtil.fail("该承运商管理员不存在，请检查");
         }
-        return BaseResultUtil.success();
+        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
+        dto.setCarrierId(carrier.getId());
+        List<MyCarVo> myCarVos = vehicleDao.findMyCar(dto);
+        PageInfo<MyCarVo> pageInfo = new PageInfo<>(myCarVos);
+        return BaseResultUtil.success(pageInfo);
     }
 
     /**

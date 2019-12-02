@@ -8,6 +8,7 @@ import com.cjyc.customer.api.service.ICustomerCouponService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -26,7 +27,7 @@ public class CustomerCouponController {
 
     @ApiOperation(value = "客户优惠券")
     @PostMapping(value = "/customerCoupon")
-    public ResultVo<PageVo<CustomerCouponVo>> customerCoupon(@RequestBody CommonDto dto){
+    public ResultVo<PageVo<CustomerCouponVo>> customerCoupon(@Validated @RequestBody CommonDto dto){
         return couponSendService.customerCoupon(dto);
     }
 }

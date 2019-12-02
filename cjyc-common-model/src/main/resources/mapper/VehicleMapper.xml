@@ -44,7 +44,7 @@
         LEFT JOIN b_admin ba ON ba.id = dd.check_user_id
         <where>
             <if test="plateNo != null and plateNo.trim() != ''">
-                ddvc.plate_no = #{plateNo}
+                dv.plate_no = #{plateNo}
             </if>
             <if test="realName != null and realName.trim() != ''">
                 and  dd.real_name = #{realName}

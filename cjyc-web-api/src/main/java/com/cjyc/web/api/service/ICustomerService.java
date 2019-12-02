@@ -7,10 +7,7 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.vo.web.coupon.CustomerCouponSendVo;
-import com.cjyc.common.model.vo.web.customer.CustomerInfoVo;
-import com.cjyc.common.model.vo.web.customer.CustomerPartnerVo;
-import com.cjyc.common.model.vo.web.customer.ListKeyCustomerVo;
-import com.cjyc.common.model.vo.web.customer.ShowKeyCustomerVo;
+import com.cjyc.common.model.vo.web.customer.*;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
@@ -108,7 +105,7 @@ public interface ICustomerService  extends IService<Customer> {
      * @param customerId
      * @return
      */
-    ResultVo showPartner(Long customerId);
+    ResultVo<ShowPartnerVo> showPartner(Long customerId);
 
     Customer selectByPhone(String customerPhone);
 

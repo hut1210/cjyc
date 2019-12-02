@@ -3,6 +3,7 @@ package com.cjyc.common.model.vo.customer.order;
 import com.cjyc.common.model.util.BigDecimalSerizlizer;
 import com.cjyc.common.model.util.DataLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -132,6 +133,44 @@ public class OrderCenterDetailVo implements Serializable {
     @ApiModelProperty(value = "车辆总数")
     private Integer carNum;
 
+    @ApiModelProperty(value = "出发地业务中心id")
+    @JsonSerialize(using= ToStringSerializer.class)
+    private Long startStoreId;
+
+    @ApiModelProperty(value = "出发地业务中心名称")
+    private String startStoreName;
+
+    @ApiModelProperty(value = "出发地业务中心详细地址")
+    private String startStoreNameDetail;
+
+    @ApiModelProperty(value = "目的地业务中心id")
+    @JsonSerialize(using= ToStringSerializer.class)
+    private Long endStoreId;
+
+    @ApiModelProperty(value = "目的地业务中心名称")
+    private String endStoreName;
+
+    @ApiModelProperty(value = "目的地业务中心详细地址")
+    private String endStoreNameDetail;
+
+    public Long getStartStoreId() {
+        return startStoreId == null ? 0 : startStoreId;
+    }
+    public String getStartStoreName() {
+        return startStoreName == null ? "" : startStoreName;
+    }
+    public String getStartStoreNameDetail() {
+        return startStoreNameDetail == null ? "" : startStoreNameDetail;
+    }
+    public Long getEndStoreId() {
+        return endStoreId == null ? 0 : endStoreId;
+    }
+    public String getEndStoreName() {
+        return endStoreName == null ? "" : endStoreName;
+    }
+    public String getEndStoreNameDetail() {
+        return endStoreNameDetail == null ? "" : endStoreNameDetail;
+    }
     public String getStartCity() {
         return startCity == null ? "" : startCity;
     }

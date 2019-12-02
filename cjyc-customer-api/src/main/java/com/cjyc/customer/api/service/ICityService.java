@@ -2,6 +2,7 @@ package com.cjyc.customer.api.service;
 
 import com.cjyc.common.model.dto.KeywordDto;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.customer.city.CityVo;
 
 public interface ICityService {
 
@@ -10,5 +11,5 @@ public interface ICityService {
      * @param dto
      * @return
      */
-    ResultVo queryCity(KeywordDto dto);
+    ResultVo<CityVo> queryCity(KeywordDto dto);
 }

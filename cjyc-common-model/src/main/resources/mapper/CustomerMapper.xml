@@ -213,12 +213,13 @@
             sbcb.card_name AS cardName,
             sbcb.description AS description,
             sbcb.bank_licence AS bankLicence,
+            sbcb.id_card AS idCard,
             ccp.business_license_front_img AS businessLicenseFrontImg,
             ccp.business_license_back_img AS businessLicenseBackImg,
             ccp.legal_idCard_front_img AS legalIdcardFrontImg,
             ccp.legal_idCard_back_img AS legalIdcardBackImg,
             ccp.linkman_idCard_front_img AS linkmanIdcardFrontImg,
-            ccp.linkman_idCard_back_img AS linkmanIdcardFrontImg,
+            ccp.linkman_idCard_back_img AS linkmanIdcardBackImg,
             ccp.authorization_front_img AS authorizationFrontImg,
             ccp.authorization_back_img AS authorizationBackImg
         FROM

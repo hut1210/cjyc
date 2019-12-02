@@ -17,6 +17,9 @@ public class OperateDto implements Serializable {
     @NotNull(message = "主键id不能为空")
     private Long id;
 
+    @ApiModelProperty("承运商id")
+    private Long carrierId;
+
     @ApiModelProperty(value = "操作标志 3：审核通过 4：审核拒绝 5：冻结 6：解冻 7：删除 8：作废 9:关闭开关 10：打开开关" +
             "11：设为管理员 12：解除管理员",required = true)
     @NotNull(message = "操作标志不能为空")

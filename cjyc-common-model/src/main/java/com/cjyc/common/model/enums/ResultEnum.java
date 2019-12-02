@@ -41,6 +41,9 @@ public enum ResultEnum {
     NOEXIST_LINE(8001, "该班线不存在"),
     EXIST_LINE(8002, "该班线已存在"),
     NOEXIST_STORE(8003, "该业务中心不存在"),
+    EXIST_STORE(8004, "该业务中心已存在,请重新输入"),
+    EXIST_REGION(8005, "该大区已存在,请重新输入"),
+    EXIST_CARSERIES(8006, "该品牌车系已存在,请重新输入"),
 
     CREATE_NEW_CUSTOMER(9001, "个人用户不存在，是否保存为新用户"),
     EXIST_CUSTOMER(9002, "该用户已存在于大客户或者合伙人中"),

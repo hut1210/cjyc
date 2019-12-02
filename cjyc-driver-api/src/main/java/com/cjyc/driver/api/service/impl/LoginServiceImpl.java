@@ -167,6 +167,7 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
         dVo.setUserId(driver.getUserId());
         dVo.setRealName(StringUtils.isBlank(driver.getRealName()) ? "":driver.getRealName());
         dVo.setPhone(driver.getPhone());
+        dVo.setIdCard("");
         dVo.setIdentity(DriverIdentityEnum.GENERAL_DRIVER.code);
         dVo.setBusinessState(driver.getBusinessState());
         dVo.setCompanyName(StringUtils.isBlank(carrier.getName()) ? "":carrier.getName());

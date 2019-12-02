@@ -28,7 +28,7 @@ public class CsVehicleServiceImpl implements ICsVehicleService {
     @Resource
     private IDriverVehicleConDao driverVehicleConDao;
     @Resource
-    private ICarrierDriverConDao carrierDriverConDao;
+    private ICarrierDao carrierDao;
     @Resource
     private ICsSysService csSysService;
 
@@ -52,6 +52,10 @@ public class CsVehicleServiceImpl implements ICsVehicleService {
 
     @Override
     public ResultVo<List<FreeVehicleVo>> findCarrierVehicle(CarrierVehicleNoDto dto) {
+        Carrier carrier = carrierDao.selectById(dto.getCarrierId());
+        if(carrier == null){
+            return BaseResultUtil.fail("该承运商不存在，请检查");
+        }
         List<FreeVehicleVo> freeVehicleVos = vehicleDao.findCarrierVehicle(dto.getCarrierId(),dto.getPlateNo());
         if(!CollectionUtils.isEmpty(freeVehicleVos)){
             return freeVehicles(freeVehicleVos);

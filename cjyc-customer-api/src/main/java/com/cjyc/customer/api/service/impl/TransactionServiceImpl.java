@@ -65,6 +65,12 @@ public class TransactionServiceImpl implements ITransactionService {
         tb.setPingPayNo(order.getMerchantOrderNo());
         tb.setAmount(order.getAmount()==null?BigDecimal.valueOf(0):BigDecimal.valueOf(order.getAmount()));
         tb.setCreateTime(order.getCreated());
+        tb.setType(1);
+        if(order.getLivemode()){
+            tb.setLivemode("live");
+        }else{
+            tb.setLivemode("test");
+        }
         ChargeCollection charges = order.getCharges();
         if(charges != null){
             List<Charge> data = charges.getData();
@@ -88,12 +94,10 @@ public class TransactionServiceImpl implements ITransactionService {
             tb.setEventId(event.getId());
             tb.setEventType(event.getType());
         }
-        Map<String, Object> metadata = order.getMetadata();
-        //Object type = metadata.get("type");
-        Object type = null;
-        tb.setType(type==null?null:(Integer) type);
+        Map<String, Object> map = order.getMetadata();
+        String orderCode = (String)map.get("code");
         tb.setState(Integer.valueOf(state));//待支付/已支付/付款失败
-        tb.setPingPayId(order.getId());
+        tb.setPingPayId(orderCode);
 
         return tb;
     }
