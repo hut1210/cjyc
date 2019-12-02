@@ -74,10 +74,6 @@ public class RegexConstant {
      */
     public static final String VERIFY_CODE = "\\d{4}";
     /**
-     * 正则：0|1
-     */
-    public static final String ZERO_ONE = "(0|1)";
-    /**
      * 正则：车牌号
      */
     public static final String PLATE_NO = "^[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领A-Z]{1}[A-Z]{1}(?:(?![A-Z]{4})[A-Z0-9]){4}[A-Z0-9挂学警港澳]{1}$";
