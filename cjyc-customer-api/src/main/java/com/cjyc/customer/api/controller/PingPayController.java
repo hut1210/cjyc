@@ -46,7 +46,7 @@ public class PingPayController {
 
     @ApiOperation("付款")
     @PostMapping("/pay")
-    public ResultVo pay(HttpServletRequest request, OrderModel om){
+    public ResultVo pay(HttpServletRequest request,@RequestBody OrderModel om){
         Order order = new Order();
         try{
             logger.debug("pay---------"+om.toString());

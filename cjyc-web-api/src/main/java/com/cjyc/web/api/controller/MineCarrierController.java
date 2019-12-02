@@ -8,17 +8,14 @@ import com.cjyc.common.model.dto.web.mineCarrier.*;
 import com.cjyc.common.model.vo.FreeVehicleVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.mineCarrier.HandleDto;
 import com.cjyc.common.model.vo.web.mineCarrier.MyCarVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyDriverVo;
 import com.cjyc.common.model.vo.FreeDriverVo;
-import com.cjyc.common.model.vo.web.mineCarrier.MyWaybillVo;
 import com.cjyc.common.system.service.ICsDriverService;
 import com.cjyc.common.system.service.ICsVehicleService;
 import com.cjyc.web.api.service.IMineCarrierService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 

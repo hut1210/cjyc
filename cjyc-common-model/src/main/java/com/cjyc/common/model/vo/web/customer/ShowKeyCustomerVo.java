@@ -1,6 +1,5 @@
 package com.cjyc.common.model.vo.web.customer;
 
-import com.cjyc.common.model.vo.web.customer.CustomerContractVo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 

@@ -1,6 +1,5 @@
 package com.cjyc.common.model.vo.web.customer;
 
-import com.cjyc.common.model.util.DataLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
@@ -29,7 +28,6 @@ public class CustomerContractVo implements Serializable {
     private Integer settlePeriod;
 
     @ApiModelProperty(value = "合同有效期")
-    @JsonSerialize(using = DataLongSerizlizer.class)
     private Long contractLife;
 
     @ApiModelProperty(value = "项目名称")
@@ -72,13 +70,11 @@ public class CustomerContractVo implements Serializable {
     private String projectTeamPer;
 
     @ApiModelProperty(value = "立项日期")
-    @JsonSerialize(using = DataLongSerizlizer.class)
     private Long projectEstabTime;
 
     @ApiModelProperty(value = "主要KPI")
     private String majorKpi;
 
     @ApiModelProperty("创建时间")
-    @JsonSerialize(using = DataLongSerizlizer.class)
     private Long createTime;
 }

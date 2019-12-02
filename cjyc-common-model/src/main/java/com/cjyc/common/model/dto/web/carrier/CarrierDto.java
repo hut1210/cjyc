@@ -24,7 +24,7 @@ public class CarrierDto implements Serializable {
 
     @ApiModelProperty(value = "企业名称",required = true)
     @NotBlank(message = "企业名称不能为空")
-    @Pattern(regexp = RegexConstant.NAME,message = "请输入合法姓名")
+    @Pattern(regexp = RegexConstant.NAME,message = "请输入合法企业名称")
     private String name;
 
     @ApiModelProperty(value = "是否开发票 0：否  1：是",required = true)
@@ -41,7 +41,7 @@ public class CarrierDto implements Serializable {
 
     @ApiModelProperty(value = "联系人姓名",required = true)
     @NotBlank(message = "联系人姓名不能为空")
-    @Pattern(regexp = RegexConstant.NAME,message = "请输入合法姓名")
+    @Pattern(regexp = RegexConstant.NAME,message = "请输入合法联系人")
     private String linkman;
 
     @ApiModelProperty(value = "联系人手机号(作为登陆账号)",required = true)
@@ -69,7 +69,7 @@ public class CarrierDto implements Serializable {
 
     @ApiModelProperty(value = "银行卡户主",required = true)
     @NotBlank(message = "银行卡户主不能为空")
-    @Pattern(regexp = RegexConstant.NAME,message = "请输入合法姓名")
+    @Pattern(regexp = RegexConstant.NAME,message = "请输入合法银行卡户主")
     private String cardName;
 
     @ApiModelProperty(value = "开户行",required = true)
