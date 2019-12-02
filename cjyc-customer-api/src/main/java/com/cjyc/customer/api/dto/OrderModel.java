@@ -46,7 +46,7 @@ public class OrderModel extends APIResource {
 
     /**支付渠道*/
     private String channel;
-    private String orderCode; //平台订单编号
+    private String orderNo; //平台订单编号
     private String chargeType;	//支付类型 类型：1物流费预付，2物流费全款到付，3物流费分车支付， 11运费支付、12居间服务费支付
     private String batch;	//0:整体支付尾款	 1：批量支付尾款
     private int deductFee;	//扣费金额
@@ -54,7 +54,7 @@ public class OrderModel extends APIResource {
     private String pingAppId;
     private Integer deposit;	//定金
     private String orderMan; //当前app登陆人的Id
-    private String orderDetailId;
+    private String orderCarId;
     private String driver_code;
     private String order_type;
     private String driver_name;
@@ -93,15 +93,15 @@ public class OrderModel extends APIResource {
 		this.back_type = back_type;
 	}
 
-	public String getOrderDetailId() {
-		return orderDetailId;
-	}
+    public String getOrderCarId() {
+        return orderCarId;
+    }
 
-	public void setOrderDetailId(String orderDetailId) {
-		this.orderDetailId = orderDetailId;
-	}
+    public void setOrderCarId(String orderCarId) {
+        this.orderCarId = orderCarId;
+    }
 
-	public String getId() {
+    public String getId() {
         return id;
     }
 
@@ -539,15 +539,15 @@ public class OrderModel extends APIResource {
                 null, Charge.class);
     }
 
-	public String getOrderCode() {
-		return orderCode;
-	}
+    public String getOrderNo() {
+        return orderNo;
+    }
 
-	public void setOrderCode(String orderCode) {
-		this.orderCode = orderCode;
-	}
+    public void setOrderNo(String orderNo) {
+        this.orderNo = orderNo;
+    }
 
-	public String getChargeType() {
+    public String getChargeType() {
 		return chargeType;
 	}
 

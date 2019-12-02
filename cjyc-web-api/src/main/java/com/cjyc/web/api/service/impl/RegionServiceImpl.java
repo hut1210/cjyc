@@ -199,8 +199,10 @@ public class RegionServiceImpl implements IRegionService {
         // 将被删除的覆盖省挂在未覆盖大区下
         this.updateOldProvinceList(deleteProvinceList);
         // 修改大区信息
-        boolean update = cityService.update(new UpdateWrapper<City>().lambda().set(City::getRemark,
-                dto.getRemark()).eq(City::getCode, dto.getRegionCode()));
+        boolean update = cityService.update(new UpdateWrapper<City>().lambda()
+                .set(City::getRemark, dto.getRemark())
+                .set(City::getName,dto.getRegionName())
+                .eq(City::getCode, dto.getRegionCode()));
         if (!update) {
             throw new Exception("更新大区信息异常");
         }

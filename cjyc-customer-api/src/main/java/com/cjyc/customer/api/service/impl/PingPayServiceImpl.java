@@ -49,7 +49,7 @@ public class PingPayServiceImpl implements IPingPayService {
         om.setClientType("customer");
         String channel = om.getChannel();
         // 备注：订单号
-        om.setDescription("韵车订单号："+om.getOrderCode());
+        om.setDescription("韵车订单号："+om.getOrderNo());
         try {
             if(!"balance".equals(channel)){
                 order = payOrder(om);
@@ -94,8 +94,8 @@ public class PingPayServiceImpl implements IPingPayService {
         Map<String, Object> meta = new HashMap<String,Object>();
         meta.put("chargeType", om.getChargeType());//0:定金	1：尾款
         //自定义存储字段
-        meta.put("code", om.getOrderCode());	//订单号
-        meta.put("orderDetailId",om.getOrderDetailId());//订单Id
+        meta.put("code", om.getOrderNo());	//订单号
+        meta.put("orderDetailId",om.getOrderCarId());//订单Id
         meta.put("driver_code", om.getDriver_code());//司机Code
         meta.put("order_type", om.getOrder_type());
         meta.put("driver_name", om.getDriver_name());
@@ -132,8 +132,8 @@ public class PingPayServiceImpl implements IPingPayService {
         Map<String, Object> meta = new HashMap<String,Object>();
         meta.put("chargeType", om.getChargeType());//0:定金	1：尾款
         //自定义存储字段
-        meta.put("code", om.getOrderCode());	//订单号
-        meta.put("orderDetailId",om.getOrderDetailId());//订单Id
+        meta.put("code", om.getOrderNo());	//订单号
+        meta.put("orderDetailId",om.getOrderCarId());//订单Id
         meta.put("driver_code", om.getDriver_code());//司机Code
         meta.put("order_type", om.getOrder_type());
         meta.put("driver_name", om.getDriver_name());
@@ -168,7 +168,7 @@ public class PingPayServiceImpl implements IPingPayService {
 
         Map<String, Object> meta = new HashMap<String,Object>();
         meta.put("chargeType", om.getChargeType());//0:定金	1：尾款    2:居间服务费
-        meta.put("code", om.getOrderCode());	//订单号
+        meta.put("code", om.getOrderNo());	//订单号
         meta.put("batch", om.getBatch());	//是否批量支付尾款
         meta.put("deductFee", om.getDeductFee());	//扣款金额
         meta.put("type", om.getClientType()); //customer 用户  bond 司机保证金  freight 司机运费收入  driver 居间服务费

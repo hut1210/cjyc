@@ -209,14 +209,14 @@ public class PingPayController {
             om.setDriver_name(om.getDriver_name());
             om.setDriver_phone(om.getDriver_phone());
             om.setBack_type(om.getBack_type());
-            om.setOrderDetailId(om.getOrderDetailId());
+            om.setOrderCarId(om.getOrderCarId());
             om.setChannel(om.getChannel());
-            om.setOrderCode(om.getOrderCode());
+            om.setOrderNo(om.getOrderNo());
             om.setSubject("订单的收款码功能!");
             om.setBody("生成二维码！");
             om.setChargeType("1");
             om.setClientType("driver");
-            om.setDescription("韵车订单号："+om.getOrderCode());
+            om.setDescription("韵车订单号："+om.getOrderNo());
             charge = iPingPayService.sweepDriveCode(om);
 
         } catch (Exception e) {
@@ -238,7 +238,7 @@ public class PingPayController {
         Charge charge = new Charge();
         try {
             //获取orderDetailid(可以是多个)
-            String[] detail_id = om.getOrderDetailId().split(",");
+            String[] detail_id = om.getOrderCarId().split(",");
             String orderCode = "";
             //将多个订单金额相加，并且只有一个order_Code
             /*for(int i = 0; i < detail_id.length; i++) {
@@ -251,14 +251,14 @@ public class PingPayController {
             om.setDriver_name(om.getDriver_name());
             om.setDriver_phone(om.getDriver_phone());
             om.setBack_type(om.getBack_type());
-            om.setOrderDetailId(om.getOrderDetailId());
+            om.setOrderCarId(om.getOrderCarId());
             om.setChannel(om.getChannel());
-            om.setOrderCode(om.getOrderCode());
+            om.setOrderNo(om.getOrderNo());
             om.setSubject("订单的收款码功能!");
             om.setBody("生成二维码！");
             om.setChargeType("1");//支付尾款
             om.setClientType("user");
-            om.setDescription("韵车订单号："+om.getOrderCode());
+            om.setDescription("韵车订单号："+om.getOrderNo());
             charge = iPingPayService.sweepSalesmanCode(om);
 
         } catch (Exception e) {
