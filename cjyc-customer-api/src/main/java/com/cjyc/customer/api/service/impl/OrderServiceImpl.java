@@ -97,17 +97,17 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
 
     public Map<String, Object> getOrderCount(Long loginId) {
         Map<String,Object> map = new HashMap<>(4);
-        map.put("waitConfirmCount",0);
-        map.put("transitCount",0);
-        map.put("payCount",0);
-        map.put("allCount",0);
+        map.put("waitConfirmCount","0");
+        map.put("transitCount","0");
+        map.put("payCount","0");
+        map.put("allCount","0");
         // 查询待确认订单数量
         LambdaQueryWrapper<Order> queryWrapper = new QueryWrapper<Order>().lambda()
                 .eq(Order::getCustomerId,loginId)
                 .between(Order::getState, OrderStateEnum.WAIT_SUBMIT.code,OrderStateEnum.WAIT_RECHECK.code);
         Integer waitConfirmCount = orderDao.selectCount(queryWrapper);
         if (!Objects.isNull(waitConfirmCount)) {
-            map.put("waitConfirmCount",waitConfirmCount);
+            map.put("waitConfirmCount",waitConfirmCount >= 99 ? "99+" : waitConfirmCount);
         }
 
         // 查询运输中订单数量
@@ -116,7 +116,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
                 .eq(Order::getState,OrderStateEnum.TRANSPORTING.code);
         Integer transitCount = orderDao.selectCount(queryWrapper);
         if (!Objects.isNull(transitCount)) {
-            map.put("transitCount",transitCount);
+            map.put("transitCount",transitCount >= 99 ? "99+" : transitCount);
         }
 
         // 查询已交付订单数量
@@ -125,7 +125,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
                 .eq(Order::getState,OrderStateEnum.FINISHED.code);
         Integer payCount = orderDao.selectCount(queryWrapper);
         if (!Objects.isNull(payCount)) {
-            map.put("payCount",payCount);
+            map.put("payCount",payCount >= 99 ? "99+" : payCount);
         }
 
         // 查询所有订单数量
@@ -133,7 +133,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
                 .eq(Order::getCustomerId,loginId);
         Integer allCount = orderDao.selectCount(queryWrapper);
         if (!Objects.isNull(allCount)) {
-            map.put("allCount",allCount);
+            map.put("allCount",allCount >= 99 ? "99+" : allCount);
         }
         return map;
     }
