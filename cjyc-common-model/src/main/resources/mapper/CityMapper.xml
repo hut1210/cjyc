@@ -284,7 +284,7 @@
             t1.city,
             c3.CODE AS areaCode,
             c3.NAME AS area
-            FROM
+        FROM
             (
             SELECT
             c1.CODE AS provinceCode,
@@ -327,26 +327,26 @@
     <select id="selectCoveredList" parameterType="com.cjyc.common.model.dto.web.city.StoreDto"
             resultType="com.cjyc.common.model.entity.defined.FullCity">
         SELECT
-        t1.provinceCode,
-        t1.province,
-        t1.cityCode,
-        t1.city,
-        c3.CODE AS areaCode,
-        c3.NAME AS area
+            t1.provinceCode,
+            t1.province,
+            t1.cityCode,
+            t1.city,
+            c3.CODE AS areaCode,
+            c3.NAME AS area
         FROM
-        (
-        SELECT
-        c1.CODE AS provinceCode,
-        c1.`name` AS province,
-        c2.CODE AS cityCode,
-        c2.NAME AS city
-        FROM
-        s_city c1
-        JOIN s_city c2 ON c1.CODE = c2.parent_code
-        WHERE
-        c1.LEVEL = 1
-        ) t1
-        JOIN s_city c3 ON t1.cityCode = c3.parent_code
+            (
+            SELECT
+            c1.CODE AS provinceCode,
+            c1.`name` AS province,
+            c2.CODE AS cityCode,
+            c2.NAME AS city
+            FROM
+            s_city c1
+            JOIN s_city c2 ON c1.CODE = c2.parent_code
+            WHERE
+            c1.LEVEL = 1
+            ) t1
+            JOIN s_city c3 ON t1.cityCode = c3.parent_code
         <where>
             c3.code in (select area_code from s_store_city_con where store_id = #{storeId})
             <if test="provinceCode != null and provinceCode.trim() != ''">
@@ -365,26 +365,26 @@
     <select id="selectNoCoveredList" parameterType="com.cjyc.common.model.dto.web.city.StoreDto"
             resultType="com.cjyc.common.model.entity.defined.FullCity">
         SELECT
-        t1.provinceCode,
-        t1.province,
-        t1.cityCode,
-        t1.city,
-        c3.CODE AS areaCode,
-        c3.NAME AS area
+            t1.provinceCode,
+            t1.province,
+            t1.cityCode,
+            t1.city,
+            c3.CODE AS areaCode,
+            c3.NAME AS area
         FROM
-        (
-        SELECT
-        c1.CODE AS provinceCode,
-        c1.`name` AS province,
-        c2.CODE AS cityCode,
-        c2.NAME AS city
-        FROM
-        s_city c1
-        JOIN s_city c2 ON c1.CODE = c2.parent_code
-        WHERE
-        c1.LEVEL = 1
-        ) t1
-        JOIN s_city c3 ON t1.cityCode = c3.parent_code
+            (
+            SELECT
+            c1.CODE AS provinceCode,
+            c1.`name` AS province,
+            c2.CODE AS cityCode,
+            c2.NAME AS city
+            FROM
+            s_city c1
+            JOIN s_city c2 ON c1.CODE = c2.parent_code
+            WHERE
+            c1.LEVEL = 1
+            ) t1
+            JOIN s_city c3 ON t1.cityCode = c3.parent_code
         <where>
             c3.code not in (select area_code from s_store_city_con where store_id = #{storeId})
             <if test="provinceCode != null and provinceCode.trim() != ''">
