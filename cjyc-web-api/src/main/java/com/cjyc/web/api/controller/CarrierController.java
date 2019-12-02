@@ -94,5 +94,4 @@ public class CarrierController {
         return carrierService.trailDriver(dto);
     }
 
-
 }

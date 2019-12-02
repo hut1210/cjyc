@@ -17,6 +17,7 @@ import com.cjyc.web.api.service.IOrderService;
 import com.cjyc.web.api.util.CustomerOrderExcelVerifyHandler;
 import com.cjyc.web.api.util.ExcelUtil;
 import com.cjyc.web.api.util.KeyCustomerOrderExcelVerifyHandler;
+import com.cjyc.web.api.util.PatCustomerOrderExcelVerifyHandler;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -50,6 +51,8 @@ public class OrderController {
     private CustomerOrderExcelVerifyHandler customerOrderVerifyHandler;
     @Autowired
     private KeyCustomerOrderExcelVerifyHandler keyCustomerOrderVerifyHandler;
+    @Autowired
+    private PatCustomerOrderExcelVerifyHandler patCustomerOrderExcelVerifyHandler;
     /**
      * 保存,只保存无验证
      * @author JPG
@@ -415,6 +418,53 @@ public class OrderController {
                         //导入操作
                         Admin admin = csAdminService.validate(loginId);
                         orderService.importKeyCustomerOrder(orderList, carList, admin);
+                        printJsonResult(BaseResultUtil.success("成功"), response);
+                    }
+                }
+            }catch (Exception e) {
+                e.printStackTrace();
+                LogUtil.error("导入大客户订单异常：", e);
+                printJsonResult(BaseResultUtil.fail("异常: " + e.getMessage()), response);
+            }
+        }
+    }
+
+    @ApiOperation(value = "合伙人订单导入", notes = "验证失败返回失败Excel文件流，其它情况返回json结果信息")
+    @PostMapping(value = "importPatCustomerOrder")
+    public void importPatCustomerOrder(MultipartFile file, Long loginId, HttpServletResponse response) {
+        if (file != null && !file.isEmpty() && loginId != null && loginId > 0L) {
+            ImportParams orderParams = new ImportParams();
+            orderParams.setSheetNum(1);
+            orderParams.setHeadRows(2);
+            orderParams.setNeedVerfiy(true);
+            orderParams.setVerifyHandler(patCustomerOrderExcelVerifyHandler);
+
+            ImportParams carParams = new ImportParams();
+            carParams.setSheetNum(1);
+            carParams.setStartSheetIndex(1);
+            carParams.setHeadRows(2);
+            carParams.setNeedVerfiy(true);
+
+            List<ImportPatCustomerOrderDto> orderList = null;
+            List<ImportPatCustomerOrderCarDto> carList = null;
+            try {
+                ExcelImportResult<ImportPatCustomerOrderDto> orderResult = ExcelImportUtil.importExcelMore(file.getInputStream(),
+                        ImportPatCustomerOrderDto.class, orderParams);
+                if (orderResult.isVerfiyFail()) {
+                    String fileName = "验证失败.xlsx";
+                    printExcelResult(orderResult.getFailWorkbook(), fileName, response);
+                }else {
+                    orderList = orderResult.getList();
+                    ExcelImportResult<ImportPatCustomerOrderCarDto> carResult = ExcelImportUtil.importExcelMore(file.getInputStream(),
+                            ImportPatCustomerOrderCarDto.class, carParams);
+                    if (carResult.isVerfiyFail()) {
+                        String fileName = "验证失败.xlsx";
+                        printExcelResult(orderResult.getFailWorkbook(), fileName, response);
+                    }else {
+                        carList = carResult.getList();
+                        //TODO 导入操作
+                        Admin admin = csAdminService.validate(loginId);
+                        orderService.importPatCustomerOrder(orderList, carList, admin);
                         printJsonResult(BaseResultUtil.success("成功"), response);
                     }
                 }

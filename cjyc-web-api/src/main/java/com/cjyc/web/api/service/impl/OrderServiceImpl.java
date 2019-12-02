@@ -187,6 +187,56 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void importPatCustomerOrder(List<ImportPatCustomerOrderDto> orderList,
+                                       List<ImportPatCustomerOrderCarDto> carList, Admin admin) {
+        if (!CollectionUtils.isEmpty(orderList) && !CollectionUtils.isEmpty(carList)) {
+            Map<Integer, ImportPatCustomerOrderDto> orderMap = new HashMap<>();
+            Map<Integer, List<ImportPatCustomerOrderCarDto>> carMap = new HashMap<>();
+            orderList.forEach(o -> {
+                if (!orderMap.containsKey(o.getOrderNo())) {
+                    orderMap.put(o.getOrderNo(), o);
+                }
+            });
+            carList.forEach(c -> {
+                if (carMap.containsKey(c.getOrderNo())) {
+                    carMap.get(c.getOrderNo()).add(c);
+                } else {
+                    carMap.put(c.getOrderNo(), Lists.newArrayList(c));
+                }
+            });
+            //生成订单号并批量保存
+            orderMap.forEach(new BiConsumer<Integer, ImportPatCustomerOrderDto>() {
+                @Override
+                public void accept(Integer integer, ImportPatCustomerOrderDto dto) {
+                    //保存合伙人及车辆信息
+                    String orderNo = csSendNoService.getNo(SendNoTypeEnum.ORDER);
+                    List<ImportPatCustomerOrderCarDto> carList = carMap.get(dto.getOrderNo());
+                    if (!CollectionUtils.isEmpty(carList)) {
+                        BigDecimal totalFee = new BigDecimal(0);
+                        for (ImportPatCustomerOrderCarDto c: carList) {
+                            c.setPickFee(c.getPickFee()==null?new BigDecimal(0): c.getPickFee());
+                            c.setSendFee(c.getSendFee()==null?new BigDecimal(0): c.getSendFee());
+                            totalFee = totalFee.add(c.getPickFee())
+                                    .add(c.getSendFee()).add(c.getWlFee());
+                        }
+                        Order order = packPatCustomerOrderForImport(dto, orderNo, admin,
+                                carList.size(), totalFee);
+                        orderDao.insert(order);
+                        Long orderId = order.getId();
+                        for (int i = 1; i < carList.size() + 1; i++) {
+                            String carNo = csSendNoService.formatNo(orderNo, i, 3);
+                            OrderCar car = packPatCustomerCarForImport(orderNo, orderId,
+                                    carNo, carList.get(i-1));
+                            orderCarDao.insert(car);
+                        }
+                    }
+                }
+            });
+        }
+    }
+
     @Override
     public ResultVo allot(AllotOrderDto paramsDto) {
         return csOrderService.allot(paramsDto);
@@ -718,6 +768,131 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         car.setIsNew("是".equals(dto.getIsNew())?1: 0);
         car.setValuation(dto.getVehicleValue() == null?null: dto.getVehicleValue().intValue());
         car.setState(OrderCarStateEnum.WAIT_ROUTE.code);
+        car.setTrunkFee(dto.getWlFee());
+        return car;
+    }
+
+    /**
+     * 为大客户包装Order信息
+     * @param dto   Order导入主体dto
+     * @param orderNo 订单号
+     * @param admin 操作员
+     * @param totalFee 总费用
+     * @return
+     */
+    private Order packPatCustomerOrderForImport(ImportPatCustomerOrderDto dto, String orderNo,
+                                             Admin admin, int carNum, BigDecimal totalFee) {
+        Order order = new Order();
+        order.setNo(orderNo);
+        order.setState(OrderStateEnum.WAIT_SUBMIT.code);
+        int pickType = 0;
+        switch (dto.getPickType()) {
+            case "自送":
+                pickType = 1;
+                break;
+            case "代驾提车":
+                pickType = 2;
+                break;
+            case "拖车提车":
+                pickType = 3;
+                break;
+            case "物流提车":
+                pickType = 4;
+        }
+        order.setPickType(pickType);
+        int backType = 0;
+        switch (dto.getDeliveryType()) {
+            case "自提":
+                backType = 1;
+                break;
+            case "代驾提车":
+                backType = 2;
+                break;
+            case "拖车提车":
+                backType = 3;
+                break;
+            case "物流提车":
+                backType = 4;
+        }
+        order.setBackType(backType);
+        order.setBackContactName(dto.getDeliveryPerson());
+        order.setBackContactPhone(dto.getDeliveryPhone());
+        //订单来源：1WEB管理后台
+        order.setSource(1);
+        order.setCarNum(carNum);
+        order.setEndArea(dto.getEndArea());
+        order.setEndAreaCode(dto.getEndAreaCode());
+        order.setEndCity(dto.getEndCity());
+        order.setEndCityCode(dto.getEndCityCode());
+        order.setEndProvince(dto.getEndProvince());
+        order.setEndProvinceCode(dto.getEndProvinceCode());
+        order.setStartArea(dto.getStartArea());
+        order.setStartAreaCode(dto.getStartAreaCode());
+        order.setStartCity(dto.getStartCity());
+        order.setStartCityCode(dto.getStartCityCode());
+        order.setStartProvince(dto.getStartProvince());
+        order.setStartProvinceCode(dto.getStartProvinceCode());
+        order.setExpectEndDate(dto.getSendDate().getTime());
+        order.setExpectStartDate(dto.getPickDate().getTime());
+        //创建人信息
+        order.setCreateUserId(admin.getUserId());
+        order.setCreateTime(System.currentTimeMillis());
+        order.setCreateUserName(admin.getName());
+        order.setTotalFee(totalFee);//车辆信息列表：提车费、物流费、送车费总和
+        order.setCustomerName(dto.getCustomerName());
+        order.setCustomerPhone(dto.getCustomerPhone());
+        order.setCustomerType(CustomerTypeEnum.INDIVIDUAL.code);
+        order.setEndAddress(dto.getDeliveryAddr());
+//        order.setEndBelongStoreId();
+//        order.setEndStoreId();
+//        order.setEndStoreName();
+        order.setStartAddress(dto.getPickAddr());
+//        order.setFeeShareType();
+//        order.setFinishTime();
+//        order.setEndLat();
+//        order.setEndLng();
+//        order.setBackFee();
+//        order.setStartBelongStoreId()
+//        order.setAddInsuranceFee();
+//        order.setHurryDays();
+//        order.setInputStoreId();
+//        order.setInputStoreName();
+//        order.setInvoiceFlag();
+//        order.setInvoiceType();
+//        order.setLineId();
+        order.setPayType("到付".equals(dto.getPayType())?0: 1);
+//        order.setStartStoreId();
+//        order.setStartStoreName();
+//        order.setTrunkFee();
+//        order.setWlPayState();
+//        order.setWlPayTime();
+        return order;
+    }
+
+    /**
+     * 合伙人 car信息包装
+     * @param orderNo
+     * @param orderId
+     * @param no
+     * @param dto
+     * @return
+     */
+    private OrderCar packPatCustomerCarForImport(String orderNo, Long orderId, String no,
+                                              ImportPatCustomerOrderCarDto dto) {
+        OrderCar car = new OrderCar();
+        car.setOrderId(orderId);
+        car.setOrderNo(orderNo);
+        car.setNo(no);
+        car.setBrand(dto.getBrand());
+        car.setModel(dto.getModel());
+        car.setPlateNo(dto.getCarNum());
+        car.setVin(dto.getVinCode());
+        car.setIsMove("是".equals(dto.getIsMove())?1: 0);
+        car.setIsNew("是".equals(dto.getIsNew())?1: 0);
+        car.setValuation(dto.getVehicleValue() == null?null: dto.getVehicleValue().intValue());
+        car.setState(OrderCarStateEnum.WAIT_ROUTE.code);
+        car.setPickFee(dto.getPickFee());
+        car.setBackFee(dto.getSendFee());
         car.setTrunkFee(dto.getWlFee());
         return car;
     }

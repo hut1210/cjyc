@@ -91,11 +91,11 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
         List<OrderCenterVo> list = orderDao.selectPage(dto);
         PageInfo<OrderCenterVo> pageInfo = new PageInfo<>(list == null ? new ArrayList<>(0) : list);
-        return BaseResultUtil.success(pageInfo);
+        Map<String, Object> orderCount = getOrderCount(dto.getLoginId());
+        return BaseResultUtil.success(pageInfo,orderCount);
     }
 
-    @Override
-    public ResultVo<Map<String, Object>> getOrderCount(Long loginId) {
+    public Map<String, Object> getOrderCount(Long loginId) {
         Map<String,Object> map = new HashMap<>(4);
         map.put("waitConfirmCount",0);
         map.put("transitCount",0);
@@ -135,7 +135,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         if (!Objects.isNull(allCount)) {
             map.put("allCount",allCount);
         }
-        return BaseResultUtil.success(map);
+        return map;
     }
 
     @Override
