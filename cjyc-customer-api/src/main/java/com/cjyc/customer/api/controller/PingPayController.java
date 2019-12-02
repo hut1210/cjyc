@@ -194,14 +194,6 @@ public class PingPayController {
         //创建Charge对象
         Charge charge = new Charge();
         try {
-            //获取orderDetailid(可以是多个)
-            String[] detail_id = new String[0];
-            String orderCode = "";
-            /*//将多个订单金额相加，并且只有一个order_Code
-            for(int i = 0; i < detail_id.length; i++) {
-                List<OrderYccDetailModel> li = orderYccDetailService.queryOrderDetailListByOrderDetailId(detail_id[i]);
-                orderCode =li.get(0).getOrder_code();
-            }*/
             om.setAmount(om.getAmount());
             om.setDriver_code(om.getDriver_code());
             om.setOrder_type(om.getOrder_type());
@@ -234,14 +226,6 @@ public class PingPayController {
         //创建Charge对象
         Charge charge = new Charge();
         try {
-            //获取orderDetailid(可以是多个)
-            String[] detail_id = om.getOrderCarId().split(",");
-            String orderCode = "";
-            //将多个订单金额相加，并且只有一个order_Code
-            /*for(int i = 0; i < detail_id.length; i++) {
-                List<OrderYccDetailModel>li = orderYccDetailService.queryOrderDetailListByOrderDetailId(detail_id[i]);
-                orderCode =li.get(0).getOrder_code();
-            }*/
             om.setAmount(om.getAmount());
             om.setDriver_code(om.getDriver_code());
             om.setOrder_type(om.getOrder_type());
