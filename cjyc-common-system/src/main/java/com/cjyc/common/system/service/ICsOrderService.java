@@ -79,5 +79,5 @@ public interface ICsOrderService {
      * @since 2019/12/2 13:30
      * @param orderId
      */
-    ResultVo<Map<String, Object>> validatePayState(OrderPayStateDto orderId);
+    ResultVo<Map<String, Object>> carApplyPay(OrderPayStateDto orderId);
 }

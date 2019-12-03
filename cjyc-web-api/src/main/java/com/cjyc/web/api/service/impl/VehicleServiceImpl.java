@@ -112,6 +112,8 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
         //更新车辆
         Vehicle vehicle = vehicleDao.selectById(dto.getVehicleId());
         vehicle.setDefaultCarryNum(dto.getDefaultCarryNum());
+        vehicle.setCreateUserId(dto.getLoginId());
+        vehicle.setCreateTime(NOW);
         vehicleDao.updateById(vehicle);
         return BaseResultUtil.success();
     }

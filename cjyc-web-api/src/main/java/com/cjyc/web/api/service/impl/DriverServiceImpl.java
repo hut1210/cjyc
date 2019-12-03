@@ -189,6 +189,8 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         BeanUtils.copyProperties(dto,driver);
         driver.setName(dto.getRealName());
         driver.setId(dto.getDriverId());
+        driver.setCheckTime(NOW);
+        driver.setCheckUserId(dto.getLoginId());
         super.updateById(driver);
 
         //车牌号不为空 & 之前司机绑定不为空 & 车牌号与之前不同
@@ -291,6 +293,8 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         }
         carr.setCheckTime(NOW);
         carr.setCheckUserId(dto.getLoginId());
+        driver.setCheckUserId(dto.getLoginId());
+        driver.setCheckTime(NOW);
         driverDao.updateById(driver);
         carrierDriverConDao.updateById(cdc);
         carrierDao.updateById(carr);

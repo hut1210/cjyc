@@ -17,7 +17,6 @@ import com.cjyc.common.system.service.ICsTaskService;
 import com.cjyc.customer.api.service.IOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -139,17 +138,19 @@ public class OrderController {
 
 
     /**
-     * 验证是否支付
+     * 按车辆申请支付
      * @author JPG
      */
-   @ApiOperation(value = "验证是否支付")
-    @PostMapping(value = "/pay/state/validate")
-    public ResultVo<Map<String, Object>> validatePayState(@RequestBody OrderPayStateDto reqDto) {
-        return csOrderService.validatePayState(reqDto);
+   @ApiOperation(value = "申请支付")
+    @PostMapping(value = "/car/apply/pay")
+    public ResultVo<Map<String, Object>> applyPay(@RequestBody OrderPayStateDto reqDto) {
+       Customer customer = csCustomerService.validate(reqDto.getLoginId());
+       reqDto.setLoginName(customer.getName());
+       return csOrderService.carApplyPay(reqDto);
     }
 
     /**
-     * 签收-客户
+     * 签收(已支付过)-客户
      * @author JPG
      */
     @ApiOperation(value = "签收")

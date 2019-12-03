@@ -616,13 +616,11 @@ public class CsOrderServiceImpl implements ICsOrderService {
     }
 
     @Override
-    public ResultVo<Map<String, Object>> validatePayState(OrderPayStateDto paramsDto) {
+    public ResultVo<Map<String, Object>> carApplyPay(OrderPayStateDto paramsDto) {
         Map<String, Object> resMap = Maps.newHashMap();
 
-        //Long orderId =
-
-        //Set<String> lockSet = Sets.newHashSet();
-        boolean isPaied = false;
+        boolean ispaied = true;
+        BigDecimal totalFee = BigDecimal.ZERO;
         List<OrderCar> carList = orderCarDao.findListByIds(paramsDto.getOrderCarId());
         for (OrderCar orderCar : carList) {
             if(orderCar == null || orderCar.getNo() == null){
@@ -630,20 +628,20 @@ public class CsOrderServiceImpl implements ICsOrderService {
             }
             String key = RedisKeys.getOrderCarPayLockKey(orderCar.getNo());
             String value = redisUtils.get(key);
-            if(value != null){
-                if(!paramsDto.getLoginId().equals(value)){
-                    return BaseResultUtil.fail("订单车辆{}正在支付中", orderCar.getNo());
-                }
+            if(value != null && !value.equals(paramsDto.getLoginId().toString())){
+               return BaseResultUtil.fail("订单车辆{}正在支付中", orderCar.getNo());
             }
             if(orderCar.getState() >= OrderCarStateEnum.SIGNED.code){
-                return BaseResultUtil.fail("订单车辆{}正在支付中", orderCar.getNo());
+                return BaseResultUtil.fail("订单车辆{}已签收过，请刷新后重试", orderCar.getNo());
             }
-            if(orderCar.getWlPayState() == PayStateEnum.PAID.code){
+            if(PayStateEnum.UNPAID.code == orderCar.getWlPayState()){
+                ispaied = false;
+                totalFee = totalFee.add(orderCar.getTotalFee());
                 return BaseResultUtil.fail("订单车辆{}已支付", orderCar.getNo());
             }
         }
-
-        resMap.put("paied", isPaied);
+        resMap.put("paied", ispaied);
+        resMap.put("totalFee", totalFee);
         return BaseResultUtil.success(resMap);
     }
 

@@ -172,6 +172,8 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         //更新承运商
         BeanUtils.copyProperties(dto,origCarrier);
         origCarrier.setId(dto.getCarrierId());
+        origCarrier.setCheckUserId(dto.getLoginId());
+        origCarrier.setCheckTime(NOW);
         //审核通过的更新到物流平台
         ResultData<Long> rd = csCarrierService.updateCarrierToPlatform(origCarrier, dto);
         if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
@@ -223,14 +225,10 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             //更新司机userID信息
             cdc.setState(CommonStateEnum.CHECKED.code);
             carrier.setState(CommonStateEnum.CHECKED.code);
-            carrier.setCheckUserId(dto.getLoginId());
-            carrier.setCheckTime(NOW);
         }else if(FlagEnum.AUDIT_REJECT.code == dto.getFlag()){
             //审核拒绝
             cdc.setState(CommonStateEnum.REJECT.code);
             carrier.setState(CommonStateEnum.REJECT.code);
-            carrier.setCheckUserId(dto.getLoginId());
-            carrier.setCheckTime(NOW);
         }else if(FlagEnum.FROZEN.code == dto.getFlag()){
             //冻结
             cdc.setState(CommonStateEnum.FROZEN.code);
@@ -242,6 +240,8 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         }
         driver.setCheckUserId(dto.getLoginId());
         driver.setCheckTime(NOW);
+        carrier.setCheckUserId(dto.getLoginId());
+        carrier.setCheckTime(NOW);
         carrierDriverConDao.updateById(cdc);
         driverDao.updateById(driver);
         super.updateById(carrier);

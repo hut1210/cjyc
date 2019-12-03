@@ -1,9 +1,13 @@
 package com.cjyc.customer.api.service.impl;
 
+import com.cjyc.common.model.dto.customer.pingxx.PrePayDto;
+import com.cjyc.common.model.enums.ClientEnum;
+import com.cjyc.common.system.entity.PingCharge;
 import com.cjyc.customer.api.config.PingProperty;
 import com.cjyc.customer.api.dto.OrderModel;
 import com.cjyc.customer.api.service.IPingPayService;
 import com.cjyc.customer.api.service.ITransactionService;
+import com.google.common.collect.Maps;
 import com.pingplusplus.Pingpp;
 import com.pingplusplus.exception.*;
 import com.pingplusplus.model.Charge;
@@ -36,8 +40,30 @@ public class PingPayServiceImpl implements IPingPayService {
     private static Logger logger = LoggerFactory.getLogger(PingPayServiceImpl.class);
 
     @Autowired
-    private ITransactionService iTransactionService;
+    private ITransactionService transactionService;
 
+    @Override
+    public PingCharge prePay(PrePayDto reqDto) {
+        HashMap<String, Object> metaData = Maps.newHashMap();
+        metaData.put("clientType", ClientEnum.APP_CUSTOMER.code);
+        metaData.put("chargeType", 1);
+        metaData.put("orderNo", reqDto.getOrderNo());
+        metaData.put("loginId", reqDto.getLoginId());
+
+        PingCharge charge = new PingCharge();
+        //charge.setAmount();
+        charge.setCurrency("cny");
+        charge.setLivemode(false);
+        charge.setObject("charge");
+        charge.setMetadata(metaData);
+        charge.setChannel(reqDto.getChannel());
+        charge.setApp(PingProperty.customerAppId);
+        charge.setClientIp(reqDto.getIp());
+        charge.setSubject("预付款");
+        charge.setBody("订单预付款");
+        return null;
+    }
+    
     @Override
     public Order pay(HttpServletRequest request, OrderModel om) {
 
@@ -56,7 +82,7 @@ public class PingPayServiceImpl implements IPingPayService {
             if(!"balance".equals(channel)){
                 order = payOrder(om);
                 logger.debug(order.toString());
-                iTransactionService.saveTransactions(order, "0");
+                transactionService.saveTransactions(order, "0");
             }
         } catch (Exception e) {
             logger.error(e.getMessage(),e);
@@ -288,6 +314,7 @@ public class PingPayServiceImpl implements IPingPayService {
         Charge charge = Charge.create(params); // 创建 Charge 对象 方法
         return charge;
     }
+
 
 
 }

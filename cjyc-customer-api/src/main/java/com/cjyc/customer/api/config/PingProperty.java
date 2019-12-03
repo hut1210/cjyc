@@ -19,6 +19,8 @@ public class PingProperty {
 
     public static String driverAppId;
 
+    public static String customerAppId;
+
     @Value("${cjyc.pay.ping++.apikey}")
     public void setApiKey(String apiKey){
         PingProperty.apiKey = apiKey;
@@ -27,6 +29,11 @@ public class PingProperty {
     @Value("${cjyc.pay.ping++.salesman.appid}")
     public void setUserAppId(String userAppId) {
         PingProperty.userAppId = userAppId;
+    }
+
+    @Value("${cjyc.pay.ping++.customer.appid}")
+    public void setCustomerAppId(String customerAppId) {
+        PingProperty.customerAppId = customerAppId;
     }
 
     @Value("${cjyc.pay.ping++.driver.appid}")

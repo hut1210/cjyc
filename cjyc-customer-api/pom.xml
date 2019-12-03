@@ -21,28 +21,8 @@
         <dependency>
             <groupId>com.cjyc</groupId>
             <artifactId>cjyc-common-system</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
-
-        <!--公司jar-->
-        <dependency>
-            <groupId>com.cjkj</groupId>
-            <artifactId>cjkj-log-spring-boot-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.cjkj</groupId>
-            <artifactId>cjkj-common-spring-boot-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.cjkj</groupId>
-            <artifactId>cjkj-redis-spring-boot-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.cjkj</groupId>
-            <artifactId>cjkj-ribbon-spring-boot-starter</artifactId>
-        </dependency>
-
-        <!--本地jar-->
-
         <!--web-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -58,27 +38,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-undertow</artifactId>
         </dependency>
-
         <!--配置工具-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
         </dependency>
-
-        <!--springcloud-->
-        <!--<dependency>-->
-        <!--<groupId>org.springframework.cloud</groupId>-->
-        <!--<artifactId>spring-cloud-starter</artifactId>-->
-        <!--</dependency>-->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
-        </dependency>
-        <!--<dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-security</artifactId>
-        </dependency>-->
         <!--test-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -86,11 +51,7 @@
             <scope>test</scope>
         </dependency>
 
-        <!--nacos-->
-        <!--<dependency>-->
-        <!--<groupId>org.springframework.cloud</groupId>-->
-        <!--<artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>-->
-        <!--</dependency>-->
+
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
@@ -121,49 +82,6 @@
         <dependency>
             <groupId>com.github.xiaoymin</groupId>
             <artifactId>swagger-bootstrap-ui</artifactId>
-        </dependency>
-
-        <!--tools-->
-        <!--redis需要导入该包-->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-pool2</artifactId>
-        </dependency>
-
-        <!--pinyin4j-->
-        <dependency>
-            <groupId>com.belerweb</groupId>
-            <artifactId>pinyin4j</artifactId>
-        </dependency>
-
-        <!-- 极光推送 -->
-        <dependency>
-            <groupId>cn.jpush.api</groupId>
-            <artifactId>jpush-client</artifactId>
-        </dependency>
-
-        <!-- 新Swagger2-ui 开始 使用于本地启用swagger，测试环境上将此注释掉，使用架构组的swagger-->
-        <dependency>
-            <groupId>com.github.xiaoymin</groupId>
-            <artifactId>swagger-bootstrap-ui</artifactId>
-            <version>1.9.2</version>
-        </dependency>
-        <!-- 新Swagger2-ui 结束-->
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-        </dependency>
-        <!--<dependency>
-            <groupId>com.cjyc</groupId>
-            <artifactId>cjyc-web-api</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>-->
-        <dependency>
-            <groupId>Pingplusplus</groupId>
-            <artifactId>pingpp-java</artifactId>
-            <version>2.3.14</version>
-            <type>jar</type>
         </dependency>
     </dependencies>
 

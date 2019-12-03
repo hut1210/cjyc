@@ -9,7 +9,10 @@ import java.io.Serializable;
 public class ModifyCarryNumDto implements Serializable {
     private static final long serialVersionUID = 4811129462747451190L;
 
-    @ApiModelProperty("司机id(driverId)")
+    @ApiModelProperty(value = "登陆用户id",required = true)
+    private Long loginId;
+
+    @ApiModelProperty(value = "司机id(driverId)",required = true)
     private Long driverId;
 
     @ApiModelProperty(value = "车辆id(vehicleId)",required = true)
