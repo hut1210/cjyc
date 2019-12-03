@@ -55,7 +55,7 @@ public class PingPayController {
             logger.error(e.getMessage(),e);
             return BaseResultUtil.fail("预付款异常");
         }
-        return BaseResultUtil.success(order.toString());
+        return BaseResultUtil.success((Object) order.toString());
     }
 
     /**
@@ -212,7 +212,7 @@ public class PingPayController {
             logger.error("扫码支付异常",e);
             return BaseResultUtil.fail(500,"司机扫码支付异常");
         }
-        return BaseResultUtil.success(charge.toString());
+        return BaseResultUtil.success((Object)charge.toString());
     }
 
     @ApiOperation("业务员出示二维码，用户扫码")
@@ -244,6 +244,6 @@ public class PingPayController {
             logger.error("扫码支付异常",e);
             return BaseResultUtil.fail(500,"业务员出示二维码，用户扫码支付异常");
         }
-        return BaseResultUtil.success(charge.toString());
+        return BaseResultUtil.success((Object)charge.toString());
     }
 }
