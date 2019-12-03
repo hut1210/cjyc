@@ -24,5 +24,9 @@ public interface IPingPayService {
     Charge sweepSalesmanCode(OrderModel om) throws RateLimitException, APIException, ChannelException,InvalidRequestException,
             APIConnectionException, AuthenticationException,FileNotFoundException;
 
+<<<<<<< Updated upstream
     PingCharge prePay(PrePayDto reqDto);
+=======
+    void cancelOrderRefund(String orderCode);
+>>>>>>> Stashed changes
 }

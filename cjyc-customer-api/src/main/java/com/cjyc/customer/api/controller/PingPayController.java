@@ -83,7 +83,7 @@ public class PingPayController {
         String jsonpCallback = request.getParameter("jsonpCallback");
         //退款
         try {
-            iTransactionService.cancelOrderRefund(orderCode);
+            iPingPayService.cancelOrderRefund(orderCode);
         } catch (Exception e) {
             log.error("取消订单"+orderCode+"，退款异常",e);
             return BaseResultUtil.fail("取消订单退款异常");
@@ -116,8 +116,13 @@ public class PingPayController {
                     if ("order.succeeded".equals(event.getType())) {//ping++订单支付成功
                         Order order = (Order) data.getObject();
                         if (data.getObject() instanceof Order) {
+<<<<<<< Updated upstream
                             log.debug("------------->order.succeeded");
                             //iTransactionService.update
+=======
+                            logger.debug("------------->order.succeeded");
+                            iTransactionService.updateTransactions((Order)data.getObject(),event,"1");
+>>>>>>> Stashed changes
                         }
                     }else if("charge.succeeded".equals(event.getType())){
                         Charge charge = (Charge)data.getObject();
@@ -226,7 +231,7 @@ public class PingPayController {
             log.error("扫码支付异常",e);
             return BaseResultUtil.fail(500,"司机扫码支付异常");
         }
-        return BaseResultUtil.success((Object) charge.toString());
+        return BaseResultUtil.success(JSONObject.parseObject(charge.toString()));
     }
 
     @ApiOperation("业务员出示二维码，用户扫码")
@@ -258,6 +263,6 @@ public class PingPayController {
             log.error("扫码支付异常",e);
             return BaseResultUtil.fail(500,"业务员出示二维码，用户扫码支付异常");
         }
-        return BaseResultUtil.success((Object)charge.toString());
+        return BaseResultUtil.success(JSONObject.parseObject(charge.toString()));
     }
 }

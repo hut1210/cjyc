@@ -1,8 +1,12 @@
 package com.cjyc.customer.api.service.impl;
 
+<<<<<<< Updated upstream
 import com.cjyc.common.model.dto.customer.pingxx.PrePayDto;
 import com.cjyc.common.model.enums.ClientEnum;
 import com.cjyc.common.system.entity.PingCharge;
+=======
+import com.alibaba.nacos.client.utils.StringUtils;
+>>>>>>> Stashed changes
 import com.cjyc.customer.api.config.PingProperty;
 import com.cjyc.customer.api.dto.OrderModel;
 import com.cjyc.customer.api.service.IPingPayService;
@@ -12,6 +16,8 @@ import com.pingplusplus.Pingpp;
 import com.pingplusplus.exception.*;
 import com.pingplusplus.model.Charge;
 import com.pingplusplus.model.Order;
+import com.pingplusplus.model.OrderRefund;
+import com.pingplusplus.model.OrderRefundCollection;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -315,6 +321,27 @@ public class PingPayServiceImpl implements IPingPayService {
         return charge;
     }
 
+    @Override
+    public void cancelOrderRefund(String orderCode) {
+        try{
+            String description = "订单号：" + orderCode + "，定金退款";
+            if(StringUtils.isBlank(description)){
+                logger.error("定金退款异常，description不能为空。");
+            }else if(StringUtils.isBlank(orderCode)){
+                logger.error("定金退款异常，orderCode不能为空。");
+            }else{
+                String pingPayId = iTransactionService.getTradeBillByOrderNo(orderCode);
+                initPingApiKey();
+                Map<String, Object> params = new HashMap<String, Object>();
+                params.put("description", description); // 必传
+                params.put("refund_mode", "to_source");//退款方式 原路退回
+                OrderRefund.create(pingPayId, params);
+            }
+        }catch (Exception e){
+            logger.error(e.getMessage(),e);
+        }
+    }
 
 
 }
+
