@@ -9,6 +9,7 @@ import com.cjyc.common.model.entity.Dictionary;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.AppItemVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.ItemVo;
 import com.cjyc.common.system.service.ICsAppService;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -28,10 +29,13 @@ public class CsAppServiceImpl implements ICsAppService {
         LambdaQueryWrapper<Dictionary> queryWrapper = new QueryWrapper<Dictionary>().lambda()
                 .eq(Dictionary::getItem,dto.getSystemPicture()).eq(Dictionary::getState,1).select(Dictionary::getItemValue);
         List<Dictionary> dictionaryList = dictionaryDao.selectList(queryWrapper);
-        List<String> list = new ArrayList<>(10);
+        List<ItemVo> list = new ArrayList<>(5);
         if (!CollectionUtils.isEmpty(dictionaryList)) {
-            for (Dictionary dictionary : dictionaryList) {
-                list.add(dictionary.getItemValue());
+            for(Dictionary dictionary : dictionaryList) {
+                ItemVo vo = new ItemVo();
+                vo.setPictureUrl(dictionary.getItemValue());
+                vo.setUrl("");
+                list.add(vo);
             }
         }
         AppItemVo appItemVo = new AppItemVo();

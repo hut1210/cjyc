@@ -149,9 +149,9 @@ public class StoreController {
         return storeService.getStoreCoveredAreaList(dto);
     }
 
-    @ApiOperation(value = "根据业务中心ID查询未覆盖区列表")
+    @ApiOperation(value = "查询未覆盖区列表")
     @PostMapping("/getStoreNoCoveredAreaList")
-    public ResultVo<PageInfo<FullCity>> getStoreNoCoveredAreaList(@RequestBody @Validated({StoreDto.GetStoreAreaList.class}) StoreDto dto) {
+    public ResultVo<PageInfo<FullCity>> getStoreNoCoveredAreaList(@RequestBody StoreDto dto) {
         return storeService.getStoreNoCoveredAreaList(dto);
     }
 

@@ -386,7 +386,7 @@
             ) t1
             JOIN s_city c3 ON t1.cityCode = c3.parent_code
         <where>
-            c3.code not in (select area_code from s_store_city_con where store_id = #{storeId})
+            c3.code not in (select area_code from s_store_city_con)
             <if test="provinceCode != null and provinceCode.trim() != ''">
                 and t1.provinceCode=#{provinceCode}
             </if>
