@@ -4,11 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.FreeDto;
 import com.cjyc.common.model.dto.KeywordDto;
-import com.cjyc.common.model.dto.driver.mine.CarrierDriverNameDto;
 import com.cjyc.common.model.dto.driver.mine.CarrierVehicleNoDto;
+import com.cjyc.common.model.dto.web.vehicle.FreeVehicleDto;
 import com.cjyc.common.model.entity.*;
-import com.cjyc.common.model.enums.ResultEnum;
-import com.cjyc.common.model.enums.task.TaskStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.FreeVehicleVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -46,8 +44,9 @@ public class CsVehicleServiceImpl implements ICsVehicleService {
         if(carrier != null){
             List<FreeVehicleVo> freeVehicleVos = vehicleDao.findCarrierVehicle(carrier.getId(),dto.getPlateNo());
             return  BaseResultUtil.success(freeVehicles(freeVehicleVos));
+        }else{
+            return BaseResultUtil.fail("该承运商管理员不存在,请检查");
         }
-        return BaseResultUtil.success();
     }
 
     @Override
@@ -64,6 +63,12 @@ public class CsVehicleServiceImpl implements ICsVehicleService {
             return BaseResultUtil.success(freeVehicleVos);
         }
         return BaseResultUtil.success();
+    }
+
+    @Override
+    public ResultVo<List<FreeVehicleVo>> findCarrierVehicleById(FreeVehicleDto dto) {
+        List<FreeVehicleVo> freeVehicleVos = vehicleDao.findCarrierVehicle(dto.getCarrierId(),dto.getPlateNo());
+        return BaseResultUtil.success(freeVehicles(freeVehicleVos));
     }
 
     /**

@@ -356,7 +356,7 @@
             <if test="realName != null and realName.trim() != ''">
                 dd.real_name like CONCAT('%',#{realName},'%')
             </if>
-              and dcdc.id = #{roleId} and dd.id = #{loginId} and dcdc.state &lt; 9
+              and dcdc.carrier_id = #{carrierId} and dcdc.state &lt; 9
         </where>
     </select>
 

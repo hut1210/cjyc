@@ -15,4 +15,7 @@ public class FreeDto extends AppDriverDto {
 
     @ApiModelProperty("司机名字")
     private String realName;
+
+    @ApiModelProperty("承运商id,不需要传")
+    private Long carrierId;
 }

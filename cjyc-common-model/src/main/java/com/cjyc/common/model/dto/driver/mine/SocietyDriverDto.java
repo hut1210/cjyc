@@ -33,7 +33,6 @@ public class SocietyDriverDto extends AppDriverDto {
 
     @ApiModelProperty(value = "身份证号",required = true)
     @NotBlank(message = "身份证号不能为空")
-    @Pattern(regexp = RegexConstant.REGEX_ID_CARD18,message = "身份证号码格式不对")
     private String idCard;
 
     @ApiModelProperty(value = "车辆id",required = true)
@@ -42,7 +41,6 @@ public class SocietyDriverDto extends AppDriverDto {
 
     @ApiModelProperty(value = "车牌号",required = true)
     @NotBlank(message = "车牌号不能为空")
-    @Pattern(regexp = RegexConstant.PLATE_NO,message = "车牌号格式不对")
     private String plateNo;
 
     @ApiModelProperty(value = "车位数",required = true)

@@ -1,7 +1,6 @@
 package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.KeywordDto;
-import com.cjyc.common.model.dto.driver.mine.CarrierVehicleNoDto;
 import com.cjyc.common.model.dto.web.vehicle.VehicleDto;
 import com.cjyc.common.model.dto.web.vehicle.*;
 import com.cjyc.common.model.vo.PageVo;
@@ -66,7 +65,7 @@ public class VehicleController {
 
     @ApiOperation(value = "该承运商下空闲车辆")
     @PostMapping(value = "/findCarrierVehicle")
-    public ResultVo<List<FreeVehicleVo>> findCarrierVehicle(@RequestBody CarrierVehicleNoDto dto){
-        return csVehicleService.findCarrierVehicle(dto);
+    public ResultVo<List<FreeVehicleVo>> findCarrierVehicle(@Validated @RequestBody FreeVehicleDto dto){
+        return csVehicleService.findCarrierVehicleById(dto);
     }
 }
