@@ -22,8 +22,8 @@ public class AppController {
     @Autowired
     private ICsAppService csAppService;
 
-    @ApiOperation(value = "查询首页轮播图", notes = "用户端 item传system_picture_customer" +
-            "；司机端item传system_picture_driver； 业务员端item传system_picture_sale ", httpMethod = "POST")
+    @ApiOperation(value = "查询首页轮播图", notes = "用户端 systemPicture传system_picture_customer" +
+            "；司机端systemPicture传system_picture_driver； 业务员端systemPicture传system_picture_sale ", httpMethod = "POST")
     @PostMapping(value = "/getSysPicture")
     public ResultVo<AppItemVo> getSysPicture(@Validated @RequestBody AppItemDto dto){
         return csAppService.getSysPicture(dto);
