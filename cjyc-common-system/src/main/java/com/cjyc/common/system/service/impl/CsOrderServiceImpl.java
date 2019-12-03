@@ -6,6 +6,7 @@ import com.cjyc.common.model.dto.customer.order.OrderPayStateDto;
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.PayModeEnum;
+import com.cjyc.common.model.enums.PayStateEnum;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
 import com.cjyc.common.model.enums.city.CityLevelEnum;
@@ -591,7 +592,6 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
     /**
      * 完善订单信息
-     *
      * @param paramsDto
      * @author JPG
      * @since 2019/11/5 16:51
@@ -619,7 +619,9 @@ public class CsOrderServiceImpl implements ICsOrderService {
     public ResultVo<Map<String, Object>> validatePayState(OrderPayStateDto paramsDto) {
         Map<String, Object> resMap = Maps.newHashMap();
 
-        Set<String> lockSet = Sets.newHashSet();
+        //Long orderId =
+
+        //Set<String> lockSet = Sets.newHashSet();
         boolean isPaied = false;
         List<OrderCar> carList = orderCarDao.findListByIds(paramsDto.getOrderCarId());
         for (OrderCar orderCar : carList) {
@@ -628,10 +630,17 @@ public class CsOrderServiceImpl implements ICsOrderService {
             }
             String key = RedisKeys.getOrderCarPayLockKey(orderCar.getNo());
             String value = redisUtils.get(key);
-            if(!orderCar.getNo().equals(value)){
-                return BaseResultUtil.fail("订单车辆正在支付中");
+            if(value != null){
+                if(!paramsDto.getLoginId().equals(value)){
+                    return BaseResultUtil.fail("订单车辆{}正在支付中", orderCar.getNo());
+                }
             }
-
+            if(orderCar.getState() >= OrderCarStateEnum.SIGNED.code){
+                return BaseResultUtil.fail("订单车辆{}正在支付中", orderCar.getNo());
+            }
+            if(orderCar.getWlPayState() == PayStateEnum.PAID.code){
+                return BaseResultUtil.fail("订单车辆{}已支付", orderCar.getNo());
+            }
         }
 
         resMap.put("paied", isPaied);

@@ -402,9 +402,11 @@
             <if test="idCard != null and idCard.trim() != ''">
                 and d.id_card = #{idCard}
             </if>
-            and d.type = 2
+            AND cr.state = 2
             AND con.state = 2
+            AND cr.type = 1
             AND d.business_state = 0
+            and cr.mode in (3,5,7,9)
         </where>
     </select>
 

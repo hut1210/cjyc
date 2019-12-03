@@ -271,7 +271,7 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
     @Override
     public List<StoreVo> getVoListByRoleId(Long roleId) {
         BizScope bizScope = csSysService.getBizScopeByRoleId(roleId, true);
-        if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code || bizScope.getStoreIds() == null){
+        if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
             return null;
         }else if(bizScope.getCode() == BizScopeEnum.CHINA.code){
             return storeDao.findVoAll();
@@ -283,7 +283,7 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
     @Override
     public List<Store> get(GetStoreDto reqDto) {
         BizScope bizScope = csSysService.getBizScopeByRoleId(reqDto.getRoleId(), true);
-        if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code || bizScope.getStoreIds() == null){
+        if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
             return null;
         }else if(bizScope.getCode() == BizScopeEnum.CHINA.code){
             return storeDao.findByName(reqDto.getStoreName());

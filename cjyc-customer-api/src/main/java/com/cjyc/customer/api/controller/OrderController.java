@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-
+import java.util.Map;
 
 /**
  * 订单
@@ -142,7 +142,7 @@ public class OrderController {
      * 验证是否支付
      * @author JPG
      */
-    @ApiOperation(value = "验证是否支付")
+   @ApiOperation(value = "验证是否支付")
     @PostMapping(value = "/pay/state/validate")
     public ResultVo<Map<String, Object>> validatePayState(@RequestBody OrderPayStateDto reqDto) {
         return csOrderService.validatePayState(reqDto);
