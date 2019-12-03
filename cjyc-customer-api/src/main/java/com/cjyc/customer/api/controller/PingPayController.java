@@ -1,5 +1,6 @@
 package com.cjyc.customer.api.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.nacos.client.utils.StringUtils;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
@@ -55,7 +56,7 @@ public class PingPayController {
             logger.error(e.getMessage(),e);
             return BaseResultUtil.fail("预付款异常");
         }
-        return BaseResultUtil.success((Object) order.toString());
+        return BaseResultUtil.success(JSONObject.parseObject(order.toString()));
     }
 
     /**
@@ -103,7 +104,7 @@ public class PingPayController {
                         Order order = (Order) data.getObject();
                         if (data.getObject() instanceof Order) {
                             logger.debug("------------->order.succeeded");
-                            //pingWebhooksService.handleOrderData((Order) data.getObject(), event, "1");
+                            //iTransactionService.update
                         }
                     }else if("charge.succeeded".equals(event.getType())){
                         Charge charge = (Charge)data.getObject();
