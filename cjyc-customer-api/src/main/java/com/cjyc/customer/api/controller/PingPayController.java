@@ -55,7 +55,7 @@ public class PingPayController {
             logger.error(e.getMessage(),e);
             return BaseResultUtil.fail("预付款异常");
         }
-        return BaseResultUtil.success(order);
+        return BaseResultUtil.success((Object) order.toString());
     }
 
     /**
@@ -101,8 +101,6 @@ public class PingPayController {
                     logger.debug("------event.getType()=" + event.getType());
                     if ("order.succeeded".equals(event.getType())) {//ping++订单支付成功
                         Order order = (Order) data.getObject();
-                        //logger.debug(ObjectTOJSON.JsonString(event.getType(), 0, "ping++回调", event.getId(), order.getMetadata()));
-                        //解析event data数据
                         if (data.getObject() instanceof Order) {
                             logger.debug("------------->order.succeeded");
                             //pingWebhooksService.handleOrderData((Order) data.getObject(), event, "1");
@@ -214,7 +212,7 @@ public class PingPayController {
             logger.error("扫码支付异常",e);
             return BaseResultUtil.fail(500,"司机扫码支付异常");
         }
-        return BaseResultUtil.success(charge);
+        return BaseResultUtil.success((Object)charge.toString());
     }
 
     @ApiOperation("业务员出示二维码，用户扫码")
@@ -246,6 +244,6 @@ public class PingPayController {
             logger.error("扫码支付异常",e);
             return BaseResultUtil.fail(500,"业务员出示二维码，用户扫码支付异常");
         }
-        return BaseResultUtil.success(charge);
+        return BaseResultUtil.success((Object)charge.toString());
     }
 }

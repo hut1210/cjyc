@@ -33,7 +33,7 @@ public class TransactionServiceImpl implements ITransactionService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveTransactions(Object obj, String state) {
-        TradeBill tb = objToTransactions(obj, null, state);;
+        TradeBill tb = objToTransactions(obj, null, state);
         if(tb != null){
             iTradeBillDao.insert(tb);
         }
@@ -49,9 +49,9 @@ public class TransactionServiceImpl implements ITransactionService {
             tb = withdrawalToTransactions((Withdrawal)obj, event,status);
         }else if(obj instanceof Transfer){
             tb = transferToTransactions((Transfer)obj, event,status);
-        }else if(obj instanceof Charge){
+        }*/else if(obj instanceof Charge){
             tb = chargeToTransactions((Charge)obj, event,status);
-        }*/else{
+        }else{
             tb = (TradeBill) obj;
         }
 
@@ -100,6 +100,28 @@ public class TransactionServiceImpl implements ITransactionService {
         tb.setState(Integer.valueOf(state));//待支付/已支付/付款失败
         tb.setNo(orderNo);
 
+        return tb;
+    }
+
+    private TradeBill chargeToTransactions(Charge order,Event event,String status) {
+        TradeBill tb = new TradeBill();
+        tb.setSubject(order.getSubject());
+        tb.setBody(order.getBody());
+        Map<String, Object> metadata = order.getMetadata();
+        Object orderNo = metadata.get("orderNo");
+        tb.setPingPayNo((String)orderNo);
+        tb.setAmount(order.getAmount()==null?BigDecimal.valueOf(0):BigDecimal.valueOf(order.getAmount()).multiply(new BigDecimal(100)));
+        tb.setCreateTime(order.getCreated());
+        tb.setChannel(order.getChannel());
+        tb.setChannelFee(new BigDecimal(0));
+        tb.setReceiverId(0L);
+        if(event != null){
+            tb.setEventId(event.getId());
+            tb.setEventType(event.getType());
+        }
+        tb.setType(0);
+        tb.setState(0);//待支付/已支付/付款失败
+        tb.setPingPayId(order.getId());
         return tb;
     }
 

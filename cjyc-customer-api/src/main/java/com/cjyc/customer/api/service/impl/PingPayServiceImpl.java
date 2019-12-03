@@ -64,8 +64,7 @@ public class PingPayServiceImpl implements IPingPayService {
         return order;
     }
 
-    @Override
-    public Order payOrder(OrderModel om) throws InvalidRequestException, APIException,
+    private Order payOrder(OrderModel om) throws InvalidRequestException, APIException,
             ChannelException, RateLimitException, APIConnectionException, AuthenticationException,FileNotFoundException {
         Order order = createOrder(om);
         if(order != null){

@@ -296,12 +296,16 @@ public class CsDriverServiceImpl implements ICsDriverService {
     public ResultVo<List<FreeDriverVo>> findCarrierFreeDriver(FreeDto dto) {
         //获取承运商
         Carrier carrier = csSysService.getCarrierByRoleId(dto.getRoleId());
-        //查询该承运商下的符合的全部司机
-        List<FreeDriverVo> freeDriverVos = driverDao.findCarrierDriver(dto);
         if(carrier != null){
+            //查询该承运商下的符合的全部司机
+            dto.setCarrierId(carrier.getId());
+            List<FreeDriverVo> freeDriverVos = driverDao.findCarrierDriver(dto);
             if(!CollectionUtils.isEmpty(freeDriverVos)){
-                return freeDriver(freeDriverVos,carrier.getId());
+                freeDriverVos = freeDriver(freeDriverVos,carrier.getId());
+                return BaseResultUtil.success(freeDriverVos);
             }
+        }else{
+            return BaseResultUtil.fail("该承运商管理员不存在，请检查");
         }
         return BaseResultUtil.success();
     }
@@ -316,7 +320,8 @@ public class CsDriverServiceImpl implements ICsDriverService {
         }
         List<FreeDriverVo> freeDriverVos = driverDao.findCarrierAllDriver(cdc.getCarrierId(),dto.getRealName());
         if(!CollectionUtils.isEmpty(freeDriverVos)){
-           return freeDriver(freeDriverVos,cdc.getCarrierId());
+            freeDriverVos = freeDriver(freeDriverVos,cdc.getCarrierId());
+            return BaseResultUtil.success(freeDriverVos);
         }
         return BaseResultUtil.success();
     }
@@ -354,7 +359,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
      * @param carrierId
      * @return
      */
-    private ResultVo freeDriver(List<FreeDriverVo> freeDriverVos,Long carrierId){
+    private List<FreeDriverVo> freeDriver(List<FreeDriverVo> freeDriverVos,Long carrierId){
         //查询已被绑定的司机
         List<Long> driverIds = driverDao.findCarrierBusyDriver(carrierId);
         //去除已绑定司机
@@ -371,7 +376,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
                 }
             }
         }
-        return BaseResultUtil.success(freeDriverVos);
+        return freeDriverVos;
     }
     /**
      * 修改承运商下司机与车辆关系
