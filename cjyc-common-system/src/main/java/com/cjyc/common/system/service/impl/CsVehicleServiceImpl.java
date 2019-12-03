@@ -36,7 +36,7 @@ public class CsVehicleServiceImpl implements ICsVehicleService {
     public ResultVo<List<FreeVehicleVo>> findPersonFreeVehicle(KeywordDto dto) {
         //获取社会所有车辆
         List<FreeVehicleVo> freeVehicleVos = vehicleDao.findPersonVehicle(dto);
-        return freeVehicles(freeVehicleVos);
+        return BaseResultUtil.success(freeVehicles(freeVehicleVos));
     }
 
     @Override
@@ -45,7 +45,7 @@ public class CsVehicleServiceImpl implements ICsVehicleService {
         Carrier carrier = csSysService.getCarrierByRoleId(dto.getRoleId());
         if(carrier != null){
             List<FreeVehicleVo> freeVehicleVos = vehicleDao.findCarrierVehicle(carrier.getId(),dto.getPlateNo());
-            return freeVehicles(freeVehicleVos);
+            return  BaseResultUtil.success(freeVehicles(freeVehicleVos));
         }
         return BaseResultUtil.success();
     }
@@ -60,7 +60,8 @@ public class CsVehicleServiceImpl implements ICsVehicleService {
         }
         List<FreeVehicleVo> freeVehicleVos = vehicleDao.findCarrierVehicle(cdc.getCarrierId(),dto.getPlateNo());
         if(!CollectionUtils.isEmpty(freeVehicleVos)){
-            return freeVehicles(freeVehicleVos);
+            freeVehicleVos = freeVehicles(freeVehicleVos);
+            return BaseResultUtil.success(freeVehicleVos);
         }
         return BaseResultUtil.success();
     }
@@ -70,7 +71,7 @@ public class CsVehicleServiceImpl implements ICsVehicleService {
      * @param freeVehicleVos
      * @return
      */
-    private ResultVo<List<FreeVehicleVo>> freeVehicles(List<FreeVehicleVo> freeVehicleVos){
+    private List<FreeVehicleVo> freeVehicles(List<FreeVehicleVo> freeVehicleVos){
         if(!CollectionUtils.isEmpty(freeVehicleVos)){
             //查询已经绑定的车辆
             List<DriverVehicleCon> driverVehicleCons = driverVehicleConDao.selectList(new QueryWrapper<DriverVehicleCon>().lambda().select(DriverVehicleCon::getVehicleId));
@@ -85,8 +86,8 @@ public class CsVehicleServiceImpl implements ICsVehicleService {
                     }
                 }
             }
-            return BaseResultUtil.success(freeVehicleVos);
+            return freeVehicleVos;
         }
-        return BaseResultUtil.success();
+        return null;
     }
 }

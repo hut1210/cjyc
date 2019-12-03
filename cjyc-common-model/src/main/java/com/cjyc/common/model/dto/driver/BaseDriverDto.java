@@ -14,5 +14,5 @@ public class BaseDriverDto extends BasePageDto {
 
     @ApiModelProperty(value = "角色id",required = true)
     @NotNull(message = "角色id不能为空")
-    private Integer roleId;
+    private Long roleId;
 }
