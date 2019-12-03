@@ -308,13 +308,15 @@ public class CsDriverServiceImpl implements ICsDriverService {
 
     @Override
     public ResultVo<List<FreeDriverVo>> findCarrierDriver(CarrierDriverNameDto dto) {
-        Carrier carrier = carrierDao.selectById(dto.getCarrierId());
-        if(carrier == null){
-            return BaseResultUtil.fail("该承运商不存在，请检查");
+        CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
+                .eq(CarrierDriverCon::getDriverId, dto.getLoginId())
+                .eq(CarrierDriverCon::getId, dto.getRoleId()));
+        if(cdc == null){
+            return BaseResultUtil.fail("该司机不存在，请检查");
         }
-        List<FreeDriverVo> freeDriverVos = driverDao.findCarrierAllDriver(dto);
+        List<FreeDriverVo> freeDriverVos = driverDao.findCarrierAllDriver(cdc.getCarrierId(),dto.getRealName());
         if(!CollectionUtils.isEmpty(freeDriverVos)){
-           return freeDriver(freeDriverVos,dto.getCarrierId());
+           return freeDriver(freeDriverVos,cdc.getCarrierId());
         }
         return BaseResultUtil.success();
     }

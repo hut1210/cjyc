@@ -36,17 +36,14 @@ public class ApplyPartnerDto implements Serializable {
 
     @ApiModelProperty(value = "是否一般纳税人 0：否  1：是",required = true)
     @NotNull(message = "纳税人不能为空")
-    @Pattern(regexp = RegexConstant.ZERO_ONE,message = "只能输入0或者1")
     private Integer isTaxpayer;
 
     @ApiModelProperty(value = "是否可以开票 0：否 1：是",required = true)
     @NotNull(message = "是否可以开票不能为空")
-    @Pattern(regexp = RegexConstant.ZERO_ONE,message = "只能输入0或者1")
     private Integer isInvoice;
 
     @ApiModelProperty(value = "结算方式：0:时付，1:账期",required = true)
     @NotNull(message = "结算方式不能为空")
-    @Pattern(regexp = RegexConstant.ZERO_ONE,message = "只能输入0或者1")
     private Integer settleType;
 
     @ApiModelProperty("账期/天")

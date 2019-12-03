@@ -517,8 +517,7 @@
     </select>
 
     <!--获取该承运商下符合条件的司机-->
-    <select id="findCarrierAllDriver" resultType="com.cjyc.common.model.vo.FreeDriverVo"
-                parameterType="com.cjyc.common.model.dto.driver.mine.CarrierDriverNameDto">
+    <select id="findCarrierAllDriver" resultType="com.cjyc.common.model.vo.FreeDriverVo">
         SELECT
             dd.id AS driverId,
             dd.real_name AS realName,
