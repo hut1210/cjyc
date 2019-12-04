@@ -30,10 +30,7 @@ import java.io.FileNotFoundException;
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @Author:Hut
@@ -61,7 +58,7 @@ public class PingPayServiceImpl implements IPingPayService {
         metaData.put("clientType", ClientEnum.APP_CUSTOMER.code);
         metaData.put("chargeType", 1);
         metaData.put("orderNo", reqDto.getOrderNo());
-        metaData.put("loginId", reqDto.getLoginId());
+        metaData.put("loginId", reqDto.getUid());
 
         PingCharge charge = new PingCharge();
         //charge.setAmount();
@@ -100,7 +97,7 @@ public class PingPayServiceImpl implements IPingPayService {
             om.setClientIp(reqDto.getIp());
             om.setChannel(reqDto.getChannel());
             om.setOrderNo(reqDto.getOrderNo());
-            om.setUid(String.valueOf(reqDto.getLoginId()));
+            om.setUid(String.valueOf(reqDto.getUid()));
             om.setAmount(wlFee);
             om.setSubject("预付款");
             om.setBody("订单预付款");
