@@ -165,6 +165,10 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
         return BaseResultUtil.success(pageInfo);
     }
 
+    @Override
+    public List<TrunkSubListWaybillVo> getTrunkSubAllList(TrunkSubListWaybillDto reqDto) {
+        return waybillDao.findSubListTrunk(reqDto);
+    }
 
 
     @Override

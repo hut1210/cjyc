@@ -61,6 +61,8 @@ public interface IWaybillService extends IService<Waybill> {
 
     ResultVo<PageVo<TrunkSubListWaybillVo>> getTrunkSubList(TrunkSubListWaybillDto reqDto);
 
+    List<TrunkSubListWaybillVo> getTrunkSubAllList(TrunkSubListWaybillDto reqDto);
+
     ResultVo updateLocal(UpdateLocalDto reqDto);
 
     ResultVo updateTrunk(UpdateTrunkWaybillDto reqDto);
