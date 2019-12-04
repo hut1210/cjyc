@@ -15,10 +15,7 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.driver.mine.BinkCardVo;
-import com.cjyc.common.model.vo.driver.mine.DriverInfoVo;
-import com.cjyc.common.model.vo.driver.mine.DriverVehicleVo;
-import com.cjyc.common.model.vo.driver.mine.SocietyDriverVo;
+import com.cjyc.common.model.vo.driver.mine.*;
 import com.cjyc.common.system.service.ICsSmsService;
 import com.cjyc.driver.api.service.IMineService;
 import com.github.pagehelper.PageHelper;
@@ -309,12 +306,11 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
             return BaseResultUtil.getVo(ResultEnum.EXIST_PERSONAL_CARRIER.getCode(),"该司机已存在于个人承运商中，不可创建");
         }
         //获取承运商
-        Carrier carrier = carrierDao.selectById(dto.getCarrierId());
+        Carrier carrier = carrierDao.selectById(cdc.getCarrierId());
         carrier.setName(dto.getRealName());
         carrier.setLinkman(dto.getRealName());
         carrier.setLegalName(dto.getRealName());
         carrier.setLegalIdCard(dto.getIdCard());
-        carrier.setLinkmanPhone(dto.getPhone());
         carrier.setMode(dto.getMode());
         carrierDao.updateById(carrier);
 
@@ -363,6 +359,18 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
             vehicleRunningDao.updateById(vr);
         }
         return BaseResultUtil.success();
+    }
+
+    @Override
+    public ResultVo<AppDriverInfoVo> findNewDriverInfo(AppDriverDto dto) {
+        CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
+                .eq(CarrierDriverCon::getDriverId, dto.getLoginId())
+                .eq(CarrierDriverCon::getId, dto.getRoleId()));
+        if(cdc == null){
+            return BaseResultUtil.fail("该司机不存在，请检查");
+        }
+        AppDriverInfoVo appDriverInfo = carrierDao.findAppDriverInfo(dto.getRoleId(), dto.getLoginId());
+        return BaseResultUtil.success(appDriverInfo);
     }
 
     @Override

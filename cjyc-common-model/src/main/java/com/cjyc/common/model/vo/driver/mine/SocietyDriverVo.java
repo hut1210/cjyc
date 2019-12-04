@@ -2,8 +2,11 @@ package com.cjyc.common.model.vo.driver.mine;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+
 @Data
 public class SocietyDriverVo implements Serializable {
     private static final long serialVersionUID = 2046690065713438041L;
@@ -37,4 +40,13 @@ public class SocietyDriverVo implements Serializable {
     private String taxiLicenceFrontImg;
     @ApiModelProperty("行驶证")
     private String travelLicenceFrontImg;
+
+    public Long getVehicleId(){return vehicleId == null ? 0:vehicleId;}
+    public String getPlateNo(){return StringUtils.isBlank(plateNo) ? "":plateNo;}
+    public String getIdCardFrontImg(){return StringUtils.isBlank(idCardFrontImg) ? "":idCardFrontImg;}
+    public String getIdCardBackImg(){return StringUtils.isBlank(idCardBackImg) ? "":idCardBackImg;}
+    public String getDriverLicenceFrontImg(){return StringUtils.isBlank(driverLicenceFrontImg) ? "":driverLicenceFrontImg;}
+    public String getQualifiCertFrontImg(){return StringUtils.isBlank(qualifiCertFrontImg) ? "":qualifiCertFrontImg;}
+    public String getTaxiLicenceFrontImg(){return StringUtils.isBlank(taxiLicenceFrontImg) ? "":taxiLicenceFrontImg;}
+    public String getTravelLicenceFrontImg(){return StringUtils.isBlank(travelLicenceFrontImg) ? "":travelLicenceFrontImg;}
 }

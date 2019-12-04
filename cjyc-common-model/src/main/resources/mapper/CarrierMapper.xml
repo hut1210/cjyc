@@ -341,6 +341,35 @@
         LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
       where dd.id = #{driverId} and dc.state &lt; 9
     </select>
+
+    <select id="findAppDriverInfo" resultType="com.cjyc.common.model.vo.driver.mine.AppDriverInfoVo">
+          SELECT
+            dd.id AS id,
+            dc.id AS carrierId,
+            dcdc.id AS roleId,
+            dd.user_id AS userId,
+            dd.real_name AS realName,
+            dd.phone AS phone,
+            dd.id_card AS idCard,
+            dd.identity AS identity,
+            dd.business_state AS businessState,
+            dcdc.state AS state,
+            dcdc.role AS role,
+            dc.type AS type,
+            dc.state AS carrierState,
+            dc.NAME AS companyName,
+            dvr.plate_no AS plateNo,
+            dd.photo_img AS photoImg
+        FROM
+            d_carrier dc
+            LEFT JOIN d_carrier_driver_con dcdc ON dcdc.carrier_id = dc.id
+            LEFT JOIN d_driver dd ON dd.id = dcdc.driver_id
+            LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
+        WHERE
+            dcdc.id = #{roleId} and dcdc.driver_id = #{loginId} and dc.state &lt; 9
+    </select>
+
+
     <select id="findByDeptId" resultType="com.cjyc.common.model.entity.Carrier">
         select * from d_carrier where dept_id = #{deptId}
     </select>

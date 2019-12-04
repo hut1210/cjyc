@@ -1,16 +1,12 @@
 package com.cjyc.driver.api.controller;
 
 import com.cjyc.common.model.dto.CarrierDriverDto;
-import com.cjyc.common.model.dto.KeywordDto;
 import com.cjyc.common.model.dto.driver.AppDriverDto;
 import com.cjyc.common.model.dto.driver.BaseDriverDto;
 import com.cjyc.common.model.dto.driver.mine.*;
 import com.cjyc.common.model.dto.salesman.sms.CaptchaSendDto;
 import com.cjyc.common.model.enums.CaptchaTypeEnum;
 import com.cjyc.common.model.enums.ClientEnum;
-import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.vo.FreeDriverVo;
-import com.cjyc.common.model.vo.FreeVehicleVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.mine.*;
@@ -28,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.List;
 
 /**
  * 司机端
@@ -122,7 +117,13 @@ public class MineController {
         return mineService.authOrModifyInfo(dto);
     }
 
-    @ApiOperation(value = "个人司机信息(认证通过后)")
+    @ApiOperation(value = "获取司机最新信息")
+    @PostMapping(value = "/findNewDriverInfo")
+    public ResultVo<AppDriverInfoVo> findNewDriverInfo(@Validated @RequestBody AppDriverDto dto) {
+        return mineService.findNewDriverInfo(dto);
+    }
+
+    @ApiOperation(value = "个人司机信息(认证通过后查看司机信息)")
     @PostMapping(value = "/showDriverInfo")
     public ResultVo<SocietyDriverVo> showDriverInfo(@Validated @RequestBody AppDriverDto dto) {
         return mineService.showDriverInfo(dto);

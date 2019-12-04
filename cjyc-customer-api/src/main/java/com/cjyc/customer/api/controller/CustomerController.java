@@ -1,13 +1,16 @@
 package com.cjyc.customer.api.controller;
 
+import com.cjyc.common.model.dto.customer.AppCustomerDto;
 import com.cjyc.common.model.dto.customer.UpdateCustomerDto;
 import com.cjyc.common.model.dto.web.customer.CustomerfuzzyListDto;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.customer.customerInfo.AppCustomerInfoVo;
 import com.cjyc.customer.api.service.ICustomerService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -47,5 +50,10 @@ public class CustomerController {
         return null;
     }
 
+    @ApiOperation(value = "获取个人最新信息")
+    @PostMapping("/findNewCustomerInfo")
+    public ResultVo<AppCustomerInfoVo> findNewCustomerInfo(@Validated @RequestBody AppCustomerDto dto){
+        return customerService.findNewCustomerInfo(dto);
+    }
 
 }
