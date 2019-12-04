@@ -470,7 +470,7 @@
         ht.contract_no as contractNo,
         ht.settle_period as settlePeriod
         from w_order o
-        left join w_order_car oc on oc.order_id = o.id
+        join w_order_car oc on oc.order_id = o.id
         left join w_waybill_car wc on wc.order_car_id = oc.id
         left join s_store s1 on o.input_store_id = s1.id
         left join s_store s2 on o.start_store_id = s2.id

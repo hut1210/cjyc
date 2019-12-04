@@ -301,7 +301,7 @@ public class Order extends APIResource {
      * 创建 order
      *
      * @param params
-     * @return Order
+     * @return PingOrder
      * @throws AuthenticationException
      * @throws InvalidRequestException
      * @throws APIConnectionException
@@ -319,7 +319,7 @@ public class Order extends APIResource {
      * 查询 order
      *
      * @param id
-     * @return Order
+     * @return PingOrder
      * @throws AuthenticationException
      * @throws InvalidRequestException
      * @throws APIConnectionException
@@ -355,7 +355,7 @@ public class Order extends APIResource {
      * 更新 order
      *
      * @param params
-     * @return Order
+     * @return PingOrder
      * @throws AuthenticationException
      * @throws InvalidRequestException
      * @throws APIConnectionException
@@ -372,7 +372,7 @@ public class Order extends APIResource {
     /**
      * 取消 order
      *
-     * @return Order
+     * @return PingOrder
      * @throws AuthenticationException
      * @throws InvalidRequestException
      * @throws APIConnectionException
@@ -392,7 +392,7 @@ public class Order extends APIResource {
      * 取消 order
      *
      * @param id
-     * @return Order
+     * @return PingOrder
      * @throws AuthenticationException
      * @throws InvalidRequestException
      * @throws APIConnectionException
@@ -412,7 +412,7 @@ public class Order extends APIResource {
      * 支付 order
      *
      * @param params
-     * @return Order
+     * @return PingOrder
      * @throws AuthenticationException
      * @throws InvalidRequestException
      * @throws APIConnectionException
@@ -432,7 +432,7 @@ public class Order extends APIResource {
      *
      * @param id
      * @param params
-     * @return Order
+     * @return PingOrder
      * @throws AuthenticationException
      * @throws InvalidRequestException
      * @throws APIConnectionException

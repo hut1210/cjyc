@@ -11,39 +11,39 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Order extends APIResource {
-    String id;
-    String object;
-    Long created;
-    Boolean livemode;
-    String status;
-    Boolean paid;
-    Boolean refunded;
-    Object app;
-    String charge;
-    String uid;
-    String merchantOrderNo;
-    Integer amount;
-    Integer couponAmount;
-    Integer actualAmount;
-    Integer amountRefunded;
-    Integer amountPaid;
-    String currency;
-    String subject;
-    String body;
-    String clientIp;
-    Long timePaid;
-    Long timeExpire;
-    String coupon;
-    ChargeCollection charges;
-    String description;
-    Map<String, Object> metadata;
-    ChargeEssentials chargeEssentials;
-    Long availableBalance;
-    String receiptApp;
-    String serviceApp;
-    List<String> availableMethods;
-    Integer discountAmount;
+public class PingOrder extends APIResource {
+    private String id;
+    private String object;
+    private Long created;
+    private Boolean livemode;
+    private String status;
+    private Boolean paid;
+    private Boolean refunded;
+    private Object app;
+    private String charge;
+    private String uid;
+    private String merchantOrderNo;
+    private Integer amount;
+    private Integer couponAmount;
+    private Integer actualAmount;
+    private Integer amountRefunded;
+    private Integer amountPaid;
+    private String currency;
+    private String subject;
+    private String body;
+    private String clientIp;
+    private Long timePaid;
+    private Long timeExpire;
+    private String coupon;
+    private ChargeCollection charges;
+    private String description;
+    private Map<String, Object> metadata;
+    private ChargeEssentials chargeEssentials;
+    private Long availableBalance;
+    private String receiptApp;
+    private String serviceApp;
+    private List<String> availableMethods;
+    private Integer discountAmount;
 
     public String getId() {
         return id;
@@ -305,7 +305,7 @@ public class Order extends APIResource {
      * 创建 order
      *
      * @param params
-     * @return Order
+     * @return PingOrder
      * @throws AuthenticationException
      * @throws InvalidRequestException
      * @throws APIConnectionException
@@ -313,17 +313,17 @@ public class Order extends APIResource {
      * @throws ChannelException
      * @throws RateLimitException
      */
-    public static Order create(Map<String, Object> params)
+    public static PingOrder create(Map<String, Object> params)
             throws AuthenticationException, InvalidRequestException,
             APIConnectionException, APIException, ChannelException, RateLimitException {
-        return request(RequestMethod.POST, classURL(Order.class), params, Order.class);
+        return request(RequestMethod.POST, classURL(PingOrder.class), params, PingOrder.class);
     }
 
     /**
      * 查询 order
      *
      * @param id
-     * @return Order
+     * @return PingOrder
      * @throws AuthenticationException
      * @throws InvalidRequestException
      * @throws APIConnectionException
@@ -331,10 +331,10 @@ public class Order extends APIResource {
      * @throws ChannelException
      * @throws RateLimitException
      */
-    public static Order retrieve(String id) throws AuthenticationException,
+    public static PingOrder retrieve(String id) throws AuthenticationException,
             InvalidRequestException, APIConnectionException,
             APIException, ChannelException, RateLimitException {
-        return request(RequestMethod.GET, instanceURL(Order.class, id), null, Order.class);
+        return request(RequestMethod.GET, instanceURL(PingOrder.class, id), null, PingOrder.class);
     }
 
     /**
@@ -352,14 +352,14 @@ public class Order extends APIResource {
     public static OrderCollection list(Map<String, Object> params)
             throws AuthenticationException, InvalidRequestException,
             APIConnectionException, APIException, ChannelException, RateLimitException {
-        return request(RequestMethod.GET, classURL(Order.class), params, OrderCollection.class);
+        return request(RequestMethod.GET, classURL(PingOrder.class), params, OrderCollection.class);
     }
 
     /**
      * 更新 order
      *
      * @param params
-     * @return Order
+     * @return PingOrder
      * @throws AuthenticationException
      * @throws InvalidRequestException
      * @throws APIConnectionException
@@ -367,16 +367,16 @@ public class Order extends APIResource {
      * @throws ChannelException
      * @throws RateLimitException
      */
-    public static Order update(String id, Map<String, Object> params)
+    public static PingOrder update(String id, Map<String, Object> params)
             throws AuthenticationException, InvalidRequestException,
             APIConnectionException, APIException, ChannelException, RateLimitException {
-        return request(RequestMethod.PUT, instanceURL(Order.class, id), params, Order.class);
+        return request(RequestMethod.PUT, instanceURL(PingOrder.class, id), params, PingOrder.class);
     }
 
     /**
      * 取消 order
      *
-     * @return Order
+     * @return PingOrder
      * @throws AuthenticationException
      * @throws InvalidRequestException
      * @throws APIConnectionException
@@ -384,7 +384,7 @@ public class Order extends APIResource {
      * @throws ChannelException
      * @throws RateLimitException
      */
-    public Order cancel()
+    public PingOrder cancel()
             throws AuthenticationException, InvalidRequestException,
             APIConnectionException, APIException, ChannelException, RateLimitException {
         Map<String, Object> params = new HashMap<String, Object>();
@@ -396,7 +396,7 @@ public class Order extends APIResource {
      * 取消 order
      *
      * @param id
-     * @return Order
+     * @return PingOrder
      * @throws AuthenticationException
      * @throws InvalidRequestException
      * @throws APIConnectionException
@@ -404,7 +404,7 @@ public class Order extends APIResource {
      * @throws ChannelException
      * @throws RateLimitException
      */
-    public static Order cancel(String id)
+    public static PingOrder cancel(String id)
             throws AuthenticationException, InvalidRequestException,
             APIConnectionException, APIException, ChannelException, RateLimitException {
         Map<String, Object> params = new HashMap<String, Object>();
@@ -416,7 +416,7 @@ public class Order extends APIResource {
      * 支付 order
      *
      * @param params
-     * @return Order
+     * @return PingOrder
      * @throws AuthenticationException
      * @throws InvalidRequestException
      * @throws APIConnectionException
@@ -424,11 +424,11 @@ public class Order extends APIResource {
      * @throws ChannelException
      * @throws RateLimitException
      */
-    public Order pay(Map<String, Object> params) throws AuthenticationException,
+    public PingOrder pay(Map<String, Object> params) throws AuthenticationException,
             InvalidRequestException, APIConnectionException,
             APIException, ChannelException, RateLimitException {
-        return request(RequestMethod.POST, String.format("%s/pay", instanceURL(Order.class, id)),
-                params, Order.class);
+        return request(RequestMethod.POST, String.format("%s/pay", instanceURL(PingOrder.class, id)),
+                params, PingOrder.class);
     }
 
     /**
@@ -436,7 +436,7 @@ public class Order extends APIResource {
      *
      * @param id
      * @param params
-     * @return Order
+     * @return PingOrder
      * @throws AuthenticationException
      * @throws InvalidRequestException
      * @throws APIConnectionException
@@ -444,11 +444,11 @@ public class Order extends APIResource {
      * @throws ChannelException
      * @throws RateLimitException
      */
-    public static Order pay(String id, Map<String, Object> params) throws AuthenticationException,
+    public static PingOrder pay(String id, Map<String, Object> params) throws AuthenticationException,
             InvalidRequestException, APIConnectionException,
             APIException, ChannelException, RateLimitException {
-        return request(RequestMethod.POST, String.format("%s/pay", instanceURL(Order.class, id)),
-                params, Order.class);
+        return request(RequestMethod.POST, String.format("%s/pay", instanceURL(PingOrder.class, id)),
+                params, PingOrder.class);
     }
 
     /**
@@ -467,7 +467,7 @@ public class Order extends APIResource {
     public static ChargeCollection chargeList(String id, Map<String, Object> params) throws AuthenticationException,
             InvalidRequestException, APIConnectionException,
             APIException, ChannelException, RateLimitException {
-        return request(RequestMethod.GET, String.format("%s/charges", instanceURL(Order.class, id)),
+        return request(RequestMethod.GET, String.format("%s/charges", instanceURL(PingOrder.class, id)),
                 params, ChargeCollection.class);
     }
 
@@ -487,7 +487,7 @@ public class Order extends APIResource {
     public static Charge retrieveCharge(String orderId, String chargeId) throws AuthenticationException,
             InvalidRequestException, APIConnectionException,
             APIException, ChannelException, RateLimitException {
-        return request(RequestMethod.GET, String.format("%s/charges/%s", instanceURL(Order.class, orderId), chargeId),
+        return request(RequestMethod.GET, String.format("%s/charges/%s", instanceURL(PingOrder.class, orderId), chargeId),
                 null, Charge.class);
     }
 }

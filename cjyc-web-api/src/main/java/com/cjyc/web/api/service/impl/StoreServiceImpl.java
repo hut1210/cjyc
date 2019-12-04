@@ -128,8 +128,9 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
     public ResultVo add(StoreAddDto storeAddDto) {
         // 验证名称是否重复
         Store queryStore = super.getOne(new QueryWrapper<Store>().lambda().eq(Store::getName, storeAddDto.getName()));
-        if(queryStore != null)
+        if(queryStore != null){
             return BaseResultUtil.getVo(ResultEnum.EXIST_STORE.getCode(),ResultEnum.EXIST_STORE.getMsg());
+        }
 
         Store store = new Store();
         BeanUtils.copyProperties(storeAddDto,store);

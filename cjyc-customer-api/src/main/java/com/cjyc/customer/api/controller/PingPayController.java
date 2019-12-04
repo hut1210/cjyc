@@ -3,6 +3,7 @@ package com.cjyc.customer.api.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.nacos.client.utils.StringUtils;
 import com.cjyc.common.model.dto.customer.pingxx.PrePayDto;
+import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.entity.PingCharge;
@@ -55,7 +56,7 @@ public class PingPayController {
             log.error(e.getMessage(),e);
             return BaseResultUtil.fail("预付款异常");
         }
-        return BaseResultUtil.success(JSONObject.parseObject(charge.toString()));
+        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(), charge.toString());
     }
 
     @ApiOperation("付款")
