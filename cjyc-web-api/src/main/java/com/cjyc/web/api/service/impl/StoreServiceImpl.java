@@ -97,6 +97,7 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
 
     @Override
     public ResultVo queryPage(StoreQueryDto dto) {
+        PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
         List<Store> list = getStoreList(dto);
         PageInfo<Store> pageInfo = new PageInfo<>(list);
         List<Store> storeVoList = new ArrayList<>(20);
@@ -318,7 +319,6 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
     }
 
     private List<Store> getStoreList(StoreQueryDto storeQueryDto) {
-        PageHelper.startPage(storeQueryDto.getCurrentPage(), storeQueryDto.getPageSize());
         LambdaQueryWrapper<Store> queryWrapper = new QueryWrapper<Store>().lambda()
                 .eq(!StringUtils.isEmpty(storeQueryDto.getProvinceCode()),Store::getProvinceCode,storeQueryDto.getProvinceCode())
                 .eq(!StringUtils.isEmpty(storeQueryDto.getCityCode()),Store::getCityCode,storeQueryDto.getCityCode())
