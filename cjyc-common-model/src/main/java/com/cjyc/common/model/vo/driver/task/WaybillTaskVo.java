@@ -77,4 +77,10 @@ public class WaybillTaskVo implements Serializable {
     public String getVehiclePlateNo() {
         return vehiclePlateNo == null ? "" : vehiclePlateNo;
     }
+    public String getGuideLine() {
+        return guideLine == null ? "" : guideLine;
+    }
+    public Integer getCarNum() {
+        return carNum == null ? 0 : carNum;
+    }
 }

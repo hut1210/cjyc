@@ -2,6 +2,7 @@ package com.cjyc.customer.api.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.nacos.client.utils.StringUtils;
+import com.cjkj.common.utils.IPUtil;
 import com.cjyc.common.model.dto.customer.pingxx.PrePayDto;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -48,7 +49,7 @@ public class PingPayController {
     @ApiOperation("付款")
     @PostMapping("/order/pre/pay")
     public ResultVo pay(HttpServletRequest request,@RequestBody PrePayDto reqDto){
-        reqDto.setIp(request.getRemoteAddr());
+        reqDto.setIp(IPUtil.getIpAddr(request));
         PingCharge charge;
         try{
             charge = pingPayService.prePay(reqDto);
@@ -61,14 +62,15 @@ public class PingPayController {
 
     @ApiOperation("付款")
     @PostMapping("/pay")
-    public ResultVo pay(HttpServletRequest request,@RequestBody OrderModel om){
+    public ResultVo prepay(HttpServletRequest request,@RequestBody PrePayDto reqDto){
+        reqDto.setIp(IPUtil.getIpAddr(request));
         Order order;
         try{
-            log.debug("pay---------"+om.toString());
-            order = pingPayService.pay(request,om);
+            log.debug("pay---------"+reqDto.toString());
+            order = pingPayService.pay(reqDto);
         }catch (Exception e){
             log.error(e.getMessage(),e);
-            return BaseResultUtil.fail("预付款异常");
+            return BaseResultUtil.fail(e.getMessage());
         }
         return BaseResultUtil.success(JSONObject.parseObject(order.toString()));
     }

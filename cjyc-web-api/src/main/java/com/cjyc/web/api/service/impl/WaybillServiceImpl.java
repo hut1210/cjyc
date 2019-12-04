@@ -134,6 +134,11 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
     }
 
     @Override
+    public List<LocalListWaybillCarVo> localAllList(LocalListWaybillCarDto reqDto) {
+        return waybillCarDao.findListLocal(reqDto);
+    }
+
+    @Override
     public ResultVo<PageVo<TrunkMainListWaybillVo>> getTrunkMainList(TrunkMainListWaybillDto paramsDto) {
         PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
         List<TrunkMainListWaybillVo> list = waybillDao.findMainListTrunk(paramsDto);
@@ -142,6 +147,11 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
             pageInfo.setList(null);
         }
         return BaseResultUtil.success(pageInfo);
+    }
+
+    @Override
+    public List<TrunkMainListWaybillVo> getTrunkMainAllList(TrunkMainListWaybillDto reqDto) {
+        return waybillDao.findMainListTrunk(reqDto);
     }
 
     @Override
@@ -155,6 +165,10 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
         return BaseResultUtil.success(pageInfo);
     }
 
+    @Override
+    public List<TrunkSubListWaybillVo> getTrunkSubAllList(TrunkSubListWaybillDto reqDto) {
+        return waybillDao.findSubListTrunk(reqDto);
+    }
 
 
     @Override

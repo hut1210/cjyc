@@ -19,7 +19,7 @@ public interface IPingPayService {
     Charge sweepDriveCode(OrderModel om) throws RateLimitException, APIException, ChannelException,InvalidRequestException,
             APIConnectionException, AuthenticationException,FileNotFoundException;
 
-    Order pay(HttpServletRequest request, OrderModel om);
+    Order pay(PrePayDto reqDto);
 
     Charge sweepSalesmanCode(OrderModel om) throws RateLimitException, APIException, ChannelException,InvalidRequestException,
             APIConnectionException, AuthenticationException,FileNotFoundException;

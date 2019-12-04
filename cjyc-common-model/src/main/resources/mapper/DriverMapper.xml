@@ -544,15 +544,15 @@
             dd.real_name AS realName,
             dd.phone AS phone,
             dd.id_card AS idCard,
-            IFNULL(dvr.vehicle_id,0) AS vehicleId,
-            IFNULL(dvr.plate_no,'') AS plateNo,
+            dvr.vehicle_id AS vehicleId,
+            dvr.plate_no AS plateNo,
             dcdc.MODE AS MODE,
             dd.id_card_front_img AS idCardFrontImg,
             dd.id_card_back_img AS idCardBackImg,
-            IFNULL(dd.driver_licence_front_img,'') AS driverLicenceFrontImg,
-            IFNULL(dd.qualifi_cert_front_img,'') AS qualifiCertFrontImg,
-            IFNULL(dd.taxi_licence_front_img,'') AS taxiLicenceFrontImg,
-            IFNULL(dd.travel_licence_front_img,'') AS travelLicenceFrontImg
+            dd.driver_licence_front_img AS driverLicenceFrontImg,
+            dd.qualifi_cert_front_img AS qualifiCertFrontImg,
+            dd.taxi_licence_front_img AS taxiLicenceFrontImg,
+            dd.travel_licence_front_img AS travelLicenceFrontImg
         FROM
             d_driver dd
             LEFT JOIN d_carrier_driver_con dcdc ON dcdc.driver_id = dd.id

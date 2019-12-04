@@ -77,13 +77,13 @@ public class CarSeriesServiceImpl extends ServiceImpl<ICarSeriesDao,CarSeries> i
 
     @Override
     public ResultVo queryPage(CarSeriesQueryDto carSeriesQueryDto) {
+        PageHelper.startPage(carSeriesQueryDto.getCurrentPage(), carSeriesQueryDto.getPageSize());
         List<CarSeries> list = getCarSeriesList(carSeriesQueryDto);
         PageInfo<CarSeries> pageInfo = new PageInfo<>(list);
         return BaseResultUtil.success(pageInfo);
     }
 
     private List<CarSeries> getCarSeriesList(CarSeriesQueryDto carSeriesQueryDto) {
-        PageHelper.startPage(carSeriesQueryDto.getCurrentPage(), carSeriesQueryDto.getPageSize());
         LambdaQueryWrapper<CarSeries> queryWrapper = new QueryWrapper<CarSeries>().lambda()
                 .eq(!StringUtils.isEmpty(carSeriesQueryDto.getBrand()),CarSeries::getBrand,carSeriesQueryDto.getBrand())
                 .eq(!StringUtils.isEmpty(carSeriesQueryDto.getModel()),CarSeries::getModel,carSeriesQueryDto.getModel());

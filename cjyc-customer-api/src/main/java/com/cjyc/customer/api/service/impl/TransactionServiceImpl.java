@@ -64,7 +64,7 @@ public class TransactionServiceImpl implements ITransactionService {
         tb.setSubject(order.getSubject());
         tb.setBody(order.getBody());
         tb.setPingPayNo(order.getMerchantOrderNo());
-        tb.setAmount(order.getAmount()==null?BigDecimal.valueOf(0):BigDecimal.valueOf(order.getAmount()).multiply(new BigDecimal(100)));
+        tb.setAmount(order.getAmount()==null?BigDecimal.valueOf(0):BigDecimal.valueOf(order.getAmount()));
         tb.setCreateTime(order.getCreated());
         tb.setType(1);
         if(order.getLivemode()){
@@ -133,7 +133,7 @@ public class TransactionServiceImpl implements ITransactionService {
     @Override
     public void updateTransactions(Order order, Event event, String state) {
         /**
-         * 更新f_trade_bill状态，更新车辆付款状态,物流费支付时间
+         * 更新f_trade_bill状态，更新车辆付款状态,物流费支付时间,更新订单状态
          */
         TradeBill tradeBill = new TradeBill();
         tradeBill.setPingPayId(order.getId());
@@ -145,6 +145,7 @@ public class TransactionServiceImpl implements ITransactionService {
         String orderNo = (String) metadata.get("orderNo");
 
         if(orderNo!=null){
+            iTradeBillDao.updateOrderState(orderNo,2,System.currentTimeMillis());
             List<String> list = iTradeBillDao.getOrderCarNoList(orderNo);
             if(list != null){
                 for(int i=0;i<list.size();i++){
@@ -160,8 +161,13 @@ public class TransactionServiceImpl implements ITransactionService {
     }
 
     @Override
-    public String getTradeBillByOrderNo(String orderCode) {
-        return iTradeBillDao.getTradeBillByOrderNo(orderCode);
+    public TradeBill getTradeBillByOrderNo(String orderNo) {
+        return iTradeBillDao.getTradeBillByOrderNo(orderNo);
+    }
+
+    @Override
+    public BigDecimal getAmountByOrderNo(String orderNo) {
+        return iTradeBillDao.getAmountByOrderNo(orderNo);
     }
 
     /**

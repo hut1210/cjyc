@@ -6,9 +6,9 @@ import lombok.Data;
 @Data
 public class PrePayDto {
     @ApiModelProperty(value = "登录人ID")
-    private Long loginId;
+    private String uid;
     @ApiModelProperty(value = "订单No")
-    private Long orderNo;
+    private String orderNo;
     @ApiModelProperty(value = "支付渠道")
     private String channel;
 

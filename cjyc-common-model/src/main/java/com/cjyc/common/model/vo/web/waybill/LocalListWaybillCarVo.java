@@ -1,5 +1,7 @@
 package com.cjyc.common.model.vo.web.waybill;
 
+import cn.afterturn.easypoi.excel.annotation.Excel;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.cjyc.common.model.entity.WaybillCar;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -11,6 +13,7 @@ public class LocalListWaybillCarVo extends WaybillCar {
     private Long carrierId;
     @ApiModelProperty(value = "承运商类型：0承运商，1业务员，2客户自己")
     private Integer carrierType;
+    @Excel(name = "承运商", orderNum = "12")
     @ApiModelProperty(value = "承运商名称")
     private String carrierName;
     @ApiModelProperty(value = "调度人")
@@ -20,27 +23,38 @@ public class LocalListWaybillCarVo extends WaybillCar {
     @ApiModelProperty(value = "运单类型：1提车运单，2干线运单，3送车运单")
     private Integer type;
 
+    @Excel(name = "类型", orderNum = "2")
+    @TableField(exist = false)
+    private String typeDesc;
 
+    @Excel(name = "品牌", orderNum = "6")
     @ApiModelProperty(value = "品牌")
     private String brand;
+    @Excel(name = "车系", orderNum = "7")
     @ApiModelProperty(value = "型号")
     private String model;
     @ApiModelProperty(value = "车牌号")
     private String plateNo;
+    @Excel(name = "VIN码", orderNum = "5")
     @ApiModelProperty(value = "vin码")
     private String vin;
     @ApiModelProperty(value = "是否能动 0-否 1-是")
     private Integer isMove;
     @ApiModelProperty(value = "是否新车 0-否 1-是")
     private Integer isNew;
+    @Excel(name = "是否新车", orderNum = "8")
+    @TableField(exist = false)
+    private String isNewDesc;
 
-
+    @Excel(name = "司机", orderNum = "13")
     @ApiModelProperty(value = "司机名称")
     private String driverName;
+    @Excel(name = "电话", orderNum = "14")
     @ApiModelProperty(value = "司机电话")
     private String driverPhone;
     @ApiModelProperty(value = "司机ID(loginId)")
     private Long driverId;
+    @Excel(name = "车牌号", orderNum = "15")
     @ApiModelProperty(value = "运力车牌号")
     private String vehiclePlateNo;
 }

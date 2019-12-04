@@ -17,10 +17,6 @@ public class SocietyDriverDto extends AppDriverDto {
     @NotNull(message = "标志不能为空")
     private Integer flag;
 
-    @ApiModelProperty(value = "承运商id",required = true)
-    @NotNull(message = "承运商id不能为空")
-    private Long carrierId;
-
     @ApiModelProperty(value = "司机姓名",required = true)
     @NotBlank(message = "司机姓名不能为空")
     @Pattern(regexp = RegexConstant.NAME,message = "请输入合法姓名")
@@ -36,15 +32,12 @@ public class SocietyDriverDto extends AppDriverDto {
     private String idCard;
 
     @ApiModelProperty(value = "车辆id",required = true)
-    @NotNull(message = "车辆id不能为空")
     private Long vehicleId;
 
     @ApiModelProperty(value = "车牌号",required = true)
-    @NotBlank(message = "车牌号不能为空")
     private String plateNo;
 
     @ApiModelProperty(value = "车位数",required = true)
-    @NotNull(message = "车位数不能为空")
     private Integer defaultCarryNum;
 
     @ApiModelProperty(value = "承运方式：2 : 代驾  3 : 干线   4：拖车",required = true)

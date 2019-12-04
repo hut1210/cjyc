@@ -45,6 +45,8 @@ public interface IWaybillService extends IService<Waybill> {
 
     ResultVo<PageVo<LocalListWaybillCarVo>> locallist(LocalListWaybillCarDto reqDto);
 
+    List<LocalListWaybillCarVo> localAllList(LocalListWaybillCarDto reqDto);
+
     ResultVo<PageVo<TrunkListWaybillVo>> trunklist(TrunkListWaybillDto reqDto);
 
     ResultVo<PageVo<TrunkCarListWaybillCarVo>> trunkCarlist(TrunkListWaybillCarDto reqDto);
@@ -55,7 +57,11 @@ public interface IWaybillService extends IService<Waybill> {
 
     ResultVo<PageVo<TrunkMainListWaybillVo>> getTrunkMainList(TrunkMainListWaybillDto reqDto);
 
+    List<TrunkMainListWaybillVo> getTrunkMainAllList(TrunkMainListWaybillDto reqDto);
+
     ResultVo<PageVo<TrunkSubListWaybillVo>> getTrunkSubList(TrunkSubListWaybillDto reqDto);
+
+    List<TrunkSubListWaybillVo> getTrunkSubAllList(TrunkSubListWaybillDto reqDto);
 
     ResultVo updateLocal(UpdateLocalDto reqDto);
 

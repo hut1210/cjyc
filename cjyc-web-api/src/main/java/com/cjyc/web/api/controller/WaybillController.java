@@ -1,7 +1,13 @@
 package com.cjyc.web.api.controller;
 
+import com.cjkj.log.monitor.LogUtil;
 import com.cjyc.common.model.dto.web.waybill.*;
 import com.cjyc.common.model.entity.Admin;
+import com.cjyc.common.model.entity.Driver;
+import com.cjyc.common.model.enums.AdminStateEnum;
+import com.cjyc.common.model.enums.ResultEnum;
+import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.ExcelUtil;
 import com.cjyc.common.model.vo.BaseTipVo;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
@@ -15,8 +21,10 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -148,6 +156,46 @@ public class WaybillController {
         return waybillService.locallist(reqDto);
     }
 
+    @ApiOperation(value = "导出分页同城运单列表")
+    @GetMapping(value = "/local/exportPageList")
+    public ResultVo exportPageLocalList(LocalListWaybillCarDto reqDto,
+                                        HttpServletResponse response) {
+        ResultVo<PageVo<LocalListWaybillCarVo>> vo = waybillService.locallist(reqDto);
+        if (!isResultSuccess(vo)) {
+            return BaseResultUtil.fail("导出数据异常");
+        }
+        PageVo<LocalListWaybillCarVo> data = vo.getData();
+        if (null == data || CollectionUtils.isEmpty(data.getList())) {
+            return BaseResultUtil.success("未查询到数据");
+        }
+        try {
+            ExcelUtil.exportExcel(data.getList(), "运单信息", "运单信息",
+                    LocalListWaybillCarVo.class, System.currentTimeMillis()+"运单信息.xls", response);
+            return null;
+        }catch (Exception e) {
+            LogUtil.error("导出分页同城运单列表信息异常", e);
+            return BaseResultUtil.fail("导出分页同城运单列表信息异常: " + e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "导出全部同城运单列表")
+    @GetMapping(value = "/local/exportAllList")
+    public ResultVo exportAllList(LocalListWaybillCarDto reqDto,
+                                  HttpServletResponse response) {
+        List<LocalListWaybillCarVo> list = waybillService.localAllList(reqDto);
+        if (CollectionUtils.isEmpty(list)) {
+            return BaseResultUtil.success("未查询到数据");
+        }
+        try {
+            ExcelUtil.exportExcel(list, "运单信息", "运单信息",
+                    LocalListWaybillCarVo.class, System.currentTimeMillis()+"运单信息.xls", response);
+            return null;
+        }catch (Exception e) {
+            LogUtil.error("导出全部同城运单列表信息异常", e);
+            return BaseResultUtil.fail("导出全部同城运单列表信息异常: " + e.getMessage());
+        }
+    }
+
     /**
      * 查询干线主运单列表
      */
@@ -157,6 +205,44 @@ public class WaybillController {
         return waybillService.getTrunkMainList(reqDto);
     }
 
+    @ApiOperation(value = "导出分页干线主运单列表")
+    @GetMapping(value = "/trunk/main/exportPageList")
+    public ResultVo exportMainPageList(TrunkMainListWaybillDto reqDto, HttpServletResponse response) {
+        ResultVo<PageVo<TrunkMainListWaybillVo>> vo = waybillService.getTrunkMainList(reqDto);
+        if (!isResultSuccess(vo)) {
+            return BaseResultUtil.fail("导出数据异常");
+        }
+        PageVo<TrunkMainListWaybillVo> data = vo.getData();
+        if (null == data || CollectionUtils.isEmpty(data.getList())) {
+            return BaseResultUtil.success("未查询到数据");
+        }
+        try {
+            ExcelUtil.exportExcel(data.getList(), "运单信息", "运单信息",
+                    TrunkMainListWaybillVo.class, System.currentTimeMillis()+"运单信息.xls", response);
+            return null;
+        }catch (Exception e) {
+            LogUtil.error("导出分页干线主运单列表异常", e);
+            return BaseResultUtil.fail("导出分页干线主运单列表异常: " + e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "导出全部干线主运单列表")
+    @GetMapping(value = "/trunk/main/exportAllList")
+    public ResultVo exportMainAllList(TrunkMainListWaybillDto reqDto, HttpServletResponse response) {
+        List<TrunkMainListWaybillVo> list = waybillService.getTrunkMainAllList(reqDto);
+        if (CollectionUtils.isEmpty(list)) {
+            return BaseResultUtil.success("未查询到数据");
+        }
+        try {
+            ExcelUtil.exportExcel(list, "运单信息-干线", "运单信息-干线",
+                    TrunkMainListWaybillVo.class, System.currentTimeMillis()+"运单信息-干线.xls", response);
+            return null;
+        }catch (Exception e) {
+            LogUtil.error("导出全部干线主运单列表信息异常", e);
+            return BaseResultUtil.fail("导出全部干线主运单列表信息异常: " + e.getMessage());
+        }
+    }
+
     /**
      * 查询干线子运单（任务）列表
      */
@@ -164,6 +250,45 @@ public class WaybillController {
     @PostMapping(value = "/trunk/sub/list")
     public ResultVo<PageVo<TrunkSubListWaybillVo>> getTrunkSubList(@RequestBody TrunkSubListWaybillDto reqDto) {
         return waybillService.getTrunkSubList(reqDto);
+    }
+
+    @ApiOperation(value = "导出分页运单干线子运单列表信息")
+    @GetMapping(value = "/trunk/sub/exportPageList")
+    public ResultVo exportTrunkSubPageList(TrunkSubListWaybillDto reqDto, HttpServletResponse response) {
+        ResultVo<PageVo<TrunkSubListWaybillVo>> vo = waybillService.getTrunkSubList(reqDto);
+        if (!isResultSuccess(vo)) {
+            return BaseResultUtil.fail("导出数据异常");
+        }
+        PageVo<TrunkSubListWaybillVo> data = vo.getData();
+        if (null == data || CollectionUtils.isEmpty(data.getList())) {
+            return BaseResultUtil.success("未查询到数据");
+        }
+
+        try {
+            ExcelUtil.exportExcel(data.getList(), "运单干线子运单信息", "运单干线子运单信息",
+                    TrunkSubListWaybillVo.class, System.currentTimeMillis()+"运单干线子运单信息.xls", response);
+            return null;
+        }catch (Exception e) {
+            LogUtil.error("导出分页运单干线子运单列表异常", e);
+            return BaseResultUtil.fail("导出分页运单干线子运单列表异常: " + e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "导出全部运单干线子运单列表信息")
+    @GetMapping(value = "/trunk/sub/exportAllList")
+    public ResultVo exportTrunkSubAllList(TrunkSubListWaybillDto reqDto, HttpServletResponse response) {
+        List<TrunkSubListWaybillVo> list = waybillService.getTrunkSubAllList(reqDto);
+        if (CollectionUtils.isEmpty(list)) {
+            return BaseResultUtil.success("未查询到数据");
+        }
+        try {
+            ExcelUtil.exportExcel(list, "运单干线子运单信息", "运单干线子运单信息",
+                    TrunkSubListWaybillVo.class, System.currentTimeMillis()+"运单干线子运单信息.xls", response);
+            return null;
+        }catch (Exception e) {
+            LogUtil.error("导出全部运单干线子运单列表异常", e);
+            return BaseResultUtil.fail("导出全部运单干线子运单列表异常: " + e.getMessage());
+        }
     }
 
 
@@ -243,4 +368,15 @@ public class WaybillController {
         return waybillService.inStoreList(reqDto);
     }*/
 
+    /**
+     * 检查返回结果是否成功
+     * @param resultVo
+     * @return
+     */
+    private boolean isResultSuccess(ResultVo resultVo) {
+        if (null == resultVo) {
+            return false;
+        }
+        return resultVo.getCode() == ResultEnum.SUCCESS.getCode();
+    }
 }

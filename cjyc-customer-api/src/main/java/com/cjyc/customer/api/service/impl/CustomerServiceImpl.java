@@ -1,13 +1,16 @@
 package com.cjyc.customer.api.service.impl;
 
 import com.cjyc.common.model.dao.ICustomerDao;
+import com.cjyc.common.model.dto.customer.AppCustomerDto;
 import com.cjyc.common.model.dto.web.customer.CustomerfuzzyListDto;
 import com.cjyc.common.model.entity.Customer;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.customer.customerInfo.AppCustomerInfoVo;
 import com.cjyc.common.model.vo.web.customer.CustomerFuzzyListVo;
 import com.cjyc.customer.api.service.ICustomerService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -35,6 +38,19 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao, Customer> imp
     @Override
     public Customer getByUserId(Long userId) {
         return customerDao.findByUserId(userId);
+    }
+
+    @Override
+    public ResultVo<AppCustomerInfoVo> findNewCustomerInfo(AppCustomerDto dto) {
+        Customer customer = customerDao.selectById(dto.getLoginId());
+        if(customer == null){
+            return BaseResultUtil.fail("该客户不存在，请检查");
+        }
+        AppCustomerInfoVo infoVo = new AppCustomerInfoVo();
+        BeanUtils.copyProperties(customer,infoVo);
+        infoVo.setPhone(customer.getContactPhone());
+        infoVo.setName(customer.getContactMan());
+        return BaseResultUtil.success(infoVo);
     }
 
 }
