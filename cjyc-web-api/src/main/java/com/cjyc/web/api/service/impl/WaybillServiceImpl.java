@@ -150,6 +150,11 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
     }
 
     @Override
+    public List<TrunkMainListWaybillVo> getTrunkMainAllList(TrunkMainListWaybillDto reqDto) {
+        return waybillDao.findMainListTrunk(reqDto);
+    }
+
+    @Override
     public ResultVo<PageVo<TrunkSubListWaybillVo>> getTrunkSubList(TrunkSubListWaybillDto paramsDto) {
         PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
         List<TrunkSubListWaybillVo> list = waybillDao.findSubListTrunk(paramsDto);

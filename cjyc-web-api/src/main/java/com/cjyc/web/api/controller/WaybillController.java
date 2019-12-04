@@ -227,9 +227,20 @@ public class WaybillController {
     }
 
     @ApiOperation(value = "导出全部干线主运单列表")
+    @GetMapping(value = "/trunk/main/exportAllList")
     public ResultVo exportMainAllList(TrunkMainListWaybillDto reqDto, HttpServletResponse response) {
-        //TODO 执行操作
-        return null;
+        List<TrunkMainListWaybillVo> list = waybillService.getTrunkMainAllList(reqDto);
+        if (CollectionUtils.isEmpty(list)) {
+            return BaseResultUtil.success("未查询到数据");
+        }
+        try {
+            ExcelUtil.exportExcel(list, "运单信息-干线", "运单信息-干线",
+                    TrunkMainListWaybillVo.class, System.currentTimeMillis()+"运单信息-干线.xls", response);
+            return null;
+        }catch (Exception e) {
+            LogUtil.error("导出全部干线主运单列表信息异常", e);
+            return BaseResultUtil.fail("导出全部干线主运单列表信息异常: " + e.getMessage());
+        }
     }
 
     /**
