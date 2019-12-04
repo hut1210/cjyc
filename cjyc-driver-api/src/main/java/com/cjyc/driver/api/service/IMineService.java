@@ -7,10 +7,7 @@ import com.cjyc.common.model.dto.driver.BaseDriverDto;
 import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.driver.mine.BinkCardVo;
-import com.cjyc.common.model.vo.driver.mine.DriverInfoVo;
-import com.cjyc.common.model.vo.driver.mine.DriverVehicleVo;
-import com.cjyc.common.model.vo.driver.mine.SocietyDriverVo;
+import com.cjyc.common.model.vo.driver.mine.*;
 
 public interface IMineService extends IService<Driver> {
 
@@ -69,6 +66,13 @@ public interface IMineService extends IService<Driver> {
      * @return
      */
     ResultVo authOrModifyInfo(SocietyDriverDto dto);
+
+    /**
+     * 获取司机状态
+     * @param dto
+     * @return
+     */
+    ResultVo<AppDriverInfoVo> findNewDriverInfo(AppDriverDto dto);
 
     /**
      * 查看认证后的个人司机信息

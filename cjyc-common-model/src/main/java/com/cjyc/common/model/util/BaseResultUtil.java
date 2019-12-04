@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -183,7 +184,6 @@ public class BaseResultUtil<T> {
      * @date 2019/7/31 10:46
      */
     public static <T> ResultVo<ListVo<T>> getListVo(int code, String msg, List<T> list, Long totalRecords, Map<String, Object> countInfo) {
-        list = list == null ? new ArrayList<>() : list;
         if (totalRecords == null) {
             totalRecords = 0L;
             if (countInfo != null) {
@@ -200,8 +200,8 @@ public class BaseResultUtil<T> {
 
         ListVo<T> listVo = ListVo.<T>builder()
                 .totalRecords(totalRecords)
-                .list(list)
-                .countInfo(countInfo)
+                .list(list == null ? new ArrayList<>() : list)
+                .countInfo(countInfo == null ? new HashMap<>() : countInfo)
                 .build();
         return ResultVo.<ListVo<T>>builder()
                 .code(code)
@@ -229,7 +229,7 @@ public class BaseResultUtil<T> {
                 .totalPages(pageInfo.getPages())
                 .currentPage(pageInfo.getPageNum())
                 .pageSize(pageInfo.getSize())
-                .list(pageInfo.getList())
+                .list(pageInfo.getList() == null ? new ArrayList<>() : pageInfo.getList())
                 .build();
 
         return ResultVo.<PageVo<T>>builder()
@@ -259,8 +259,8 @@ public class BaseResultUtil<T> {
                 .totalPages(pageInfo.getPages())
                 .currentPage(pageInfo.getPageNum())
                 .pageSize(pageInfo.getSize())
-                .list(pageInfo.getList())
-                .countInfo(countInfo)
+                .list(pageInfo.getList() == null ? new ArrayList<>() : pageInfo.getList())
+                .countInfo(countInfo == null ? new HashMap<>() : countInfo)
                 .build();
         return ResultVo.<PageVo<T>>builder()
                 .code(code)
@@ -287,7 +287,7 @@ public class BaseResultUtil<T> {
                 .totalPages((int) page.getPages())
                 .currentPage((int) page.getCurrent())
                 .pageSize((int) page.getSize())
-                .list(page.getRecords())
+                .list(page.getRecords() == null ? new ArrayList<>() : page.getRecords())
                 .build();
         return ResultVo.<PageVo<T>>builder()
                 .code(code)
@@ -316,8 +316,8 @@ public class BaseResultUtil<T> {
                 .totalPages((int) page.getPages())
                 .currentPage((int) page.getCurrent())
                 .pageSize((int) page.getSize())
-                .list(page.getRecords())
-                .countInfo(countInfo)
+                .list(page.getRecords() == null ? new ArrayList<>() : page.getRecords())
+                .countInfo(countInfo == null ? new HashMap<>() : countInfo)
                 .build();
         return ResultVo.<PageVo<T>>builder()
                 .code(code)

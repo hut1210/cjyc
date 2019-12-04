@@ -1,31 +1,15 @@
-package com.cjyc.common.model.vo.customer.login;
+package com.cjyc.common.model.vo.customer.customerInfo;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
-
-/**
- * <p>
- * 客户表（登录用户端APP用户）
- * </p>
- *
- * @author JPG
- * @since 2019-10-12
- */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
-@ApiModel
-public class CustomerLoginVo  implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
+public class AppCustomerInfoVo implements Serializable {
+    private static final long serialVersionUID = 1488779158063038194L;
     @ApiModelProperty("用户id")
     @JsonSerialize(using= ToStringSerializer.class)
     private Long id;
@@ -49,6 +33,5 @@ public class CustomerLoginVo  implements Serializable {
     @ApiModelProperty("类型：1个人,3-合伙人")
     private Integer type;
 
-    @ApiModelProperty("token值")
-    private String accessToken;
+    public String getPhotoImg(){return StringUtils.isBlank(photoImg) ? "":photoImg;}
 }

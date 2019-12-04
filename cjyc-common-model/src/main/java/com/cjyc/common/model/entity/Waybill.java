@@ -1,15 +1,18 @@
 package com.cjyc.common.model.entity;
 
-import java.math.BigDecimal;
-import com.baomidou.mybatisplus.annotation.TableName;
+import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.io.Serializable;
+import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * <p>
@@ -32,6 +35,7 @@ public class Waybill implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
+    @Excel(name = "运单单号", orderNum = "0")
     @ApiModelProperty(value = "运单编号")
     private String no;
 
@@ -44,6 +48,7 @@ public class Waybill implements Serializable {
     @ApiModelProperty(value = "指导线路")
     private String guideLine;
 
+    @Excel(name = "运输路线", orderNum = "1")
     @ApiModelProperty(value = "推荐线路")
     private String recommendLine;
 
@@ -53,8 +58,10 @@ public class Waybill implements Serializable {
     @ApiModelProperty(value = "承运商类型：0承运商，1业务员，2客户自己")
     private Integer carrierType;
 
+    @Excel(name = "承运商", orderNum = "3")
     private String carrierName;
 
+    @Excel(name = "运输车辆数", orderNum = "2")
     @ApiModelProperty(value = "车数量")
     private Integer carNum;
 
@@ -76,12 +83,17 @@ public class Waybill implements Serializable {
     @ApiModelProperty(value = "运费是否固定（包板）0否，1是")
     private Boolean fixedFreightFee;
 
+    @Excel(name = "备注信息", orderNum = "8")
     @ApiModelProperty(value = "备注")
     private String remark;
 
     @ApiModelProperty(value = "创建时间")
     private Long createTime;
 
+    @Excel(name = "创建时间", orderNum = "9")
+    @TableField(exist = false)
+    private String createTimeDesc;
+    @Excel(name = "创建人", orderNum = "10")
     @ApiModelProperty(value = "调度人")
     private String createUser;
 
