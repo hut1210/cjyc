@@ -133,7 +133,7 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
 
         Store store = new Store();
         BeanUtils.copyProperties(storeAddDto,store);
-        store.setState(CommonStateEnum.WAIT_CHECK.code);
+        store.setState(CommonStateEnum.CHECKED.code);
         store.setCreateTime(System.currentTimeMillis());
         Admin admin = adminDao.selectOne(new QueryWrapper<Admin>().lambda().eq(Admin::getUserId, storeAddDto.getCreateUserId()).select(Admin::getName));
         if (!Objects.isNull(admin)) {
