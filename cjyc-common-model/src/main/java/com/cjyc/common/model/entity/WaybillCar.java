@@ -38,14 +38,12 @@ public class WaybillCar implements Serializable {
     @ApiModelProperty(value = "运单ID")
     private Long waybillId;
 
-    @Excel(name = "运单单号", orderNum = "1")
     @ApiModelProperty(value = "运单编号")
     private String waybillNo;
 
     @ApiModelProperty(value = "订单车辆ID")
     private Long orderCarId;
 
-    @Excel(name = "车辆编号", orderNum = "3")
     @ApiModelProperty(value = "车辆编号")
     private String orderCarNo;
 
@@ -121,10 +119,6 @@ public class WaybillCar implements Serializable {
 
     @ApiModelProperty(value = "运单车辆状态：0待指派，2已指派，5待装车，15待装车确认，45已装车，70已卸车，90确认交车, 100确认收车, 105待重连，120已重连")
     private Integer state;
-
-    @Excel(name = "运单状态", orderNum = "0")
-    @TableField(exist = false)
-    private String stateDesc;
 
     @ApiModelProperty(value = "预计提车日期")
     private Long expectStartTime;
