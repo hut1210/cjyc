@@ -10,6 +10,8 @@ import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.FreeVehicleVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.driver.mine.CarrierVehicleVo;
+import com.cjyc.common.model.vo.driver.mine.SocietyVehicleVo;
 import com.cjyc.common.system.service.ICsVehicleService;
 import com.cjyc.common.system.service.sys.ICsSysService;
 import org.springframework.stereotype.Service;
@@ -38,6 +40,16 @@ public class CsVehicleServiceImpl implements ICsVehicleService {
     }
 
     @Override
+    public ResultVo<SocietyVehicleVo> findSocietyFreeVehicle(KeywordDto dto) {
+        //获取社会所有车辆
+        List<FreeVehicleVo> freeVehicleVos = vehicleDao.findPersonVehicle(dto);
+        freeVehicleVos = freeVehicles(freeVehicleVos);
+        SocietyVehicleVo vehicleVo = new SocietyVehicleVo();
+        vehicleVo.setVehicleVo(freeVehicleVos);
+        return BaseResultUtil.success(vehicleVo);
+    }
+
+    @Override
     public ResultVo<List<FreeVehicleVo>> findCarrierFreeVehicle(FreeDto dto) {
         //获取承运商
         Carrier carrier = csSysService.getCarrierByRoleId(dto.getRoleId());
@@ -50,7 +62,7 @@ public class CsVehicleServiceImpl implements ICsVehicleService {
     }
 
     @Override
-    public ResultVo<List<FreeVehicleVo>> findCarrierVehicle(CarrierVehicleNoDto dto) {
+    public ResultVo<CarrierVehicleVo> findCompanyFreeVehicle(CarrierVehicleNoDto dto) {
         CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
                 .eq(CarrierDriverCon::getDriverId, dto.getLoginId())
                 .eq(CarrierDriverCon::getId, dto.getRoleId()));
@@ -60,7 +72,9 @@ public class CsVehicleServiceImpl implements ICsVehicleService {
         List<FreeVehicleVo> freeVehicleVos = vehicleDao.findCarrierVehicle(cdc.getCarrierId(),dto.getPlateNo());
         if(!CollectionUtils.isEmpty(freeVehicleVos)){
             freeVehicleVos = freeVehicles(freeVehicleVos);
-            return BaseResultUtil.success(freeVehicleVos);
+            CarrierVehicleVo vehicleVo = new CarrierVehicleVo();
+            vehicleVo.setVehicleVo(freeVehicleVos);
+            return BaseResultUtil.success(vehicleVo);
         }
         return BaseResultUtil.success();
     }
