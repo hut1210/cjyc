@@ -48,7 +48,7 @@ public class AppDriverInfoVo implements Serializable {
     @ApiModelProperty("营运状态：0营运中(空闲)，1停运中(繁忙)")
     private Integer businessState;
 
-    @ApiModelProperty("状态：0待审核，2已审核，4取消，5冻结  7已驳回，9已停用（CommonStateEnum）")
+    @ApiModelProperty("状态：0待审核，1审核中,2已审核，4取消，5冻结  7已驳回，9已停用（CommonStateEnum）")
     private Integer state;
 
     @ApiModelProperty("公司名称")

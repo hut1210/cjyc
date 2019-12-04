@@ -40,6 +40,9 @@ public class BankCardBind implements Serializable {
     @ApiModelProperty(value = "卡类型:1公户，2私户")
     private Integer cardType;
 
+    @ApiModelProperty(value = "颜色类型 1：红色 2：蓝色 3：绿色")
+    private Integer cardColour;
+
     @ApiModelProperty(value = "银行卡户主")
     private String cardName;
 

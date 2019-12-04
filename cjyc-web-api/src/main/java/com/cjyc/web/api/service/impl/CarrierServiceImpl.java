@@ -14,6 +14,7 @@ import com.cjyc.common.model.enums.driver.DriverIdentityEnum;
 import com.cjyc.common.model.enums.transport.*;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
+import com.cjyc.common.model.util.RandomUtil;
 import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -332,6 +333,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         bcb.setUserType(UserTypeEnum.DRIVER.code);
         bcb.setIdCard(dto.getLegalIdCard());
         bcb.setState(UseStateEnum.USABLE.code);
+        bcb.setCardType(RandomUtil.getIntRandom());
         bcb.setCreateTime(NOW);
         bcb.setCardPhone(dto.getLinkmanPhone());
         bankCardBindDao.insert(bcb);

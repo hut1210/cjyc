@@ -4,6 +4,7 @@ public enum CommonStateEnum {
 
     /***/
     WAIT_CHECK("待审核", 0),
+    IN_CHECK("审核中", 1),
     CHECKED("已审核", 2),
     CANCEL("已取消", 4),
     FROZEN("冻结", 5),

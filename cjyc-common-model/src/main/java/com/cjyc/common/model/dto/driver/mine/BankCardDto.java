@@ -5,15 +5,9 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import java.io.Serializable;
 @Data
 public class BankCardDto extends AppDriverDto {
     private static final long serialVersionUID = 5533588799316430410L;
-    @ApiModelProperty(value = "承运商id",required = true)
-    @NotNull(message = "承运商id不能为空")
-    private Long carrierId;
-
     @ApiModelProperty(value = "司机姓名",required = true)
     @NotBlank(message = "司机姓名不能为空")
     private String realName;
