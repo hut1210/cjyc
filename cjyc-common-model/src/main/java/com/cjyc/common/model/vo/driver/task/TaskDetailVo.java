@@ -63,4 +63,7 @@ public class TaskDetailVo implements Serializable {
     public String getVehiclePlateNo() {
         return vehiclePlateNo == null ? "" : vehiclePlateNo;
     }
+    public String getGuideLine() {
+        return guideLine == null ? "" : guideLine;
+    }
 }
