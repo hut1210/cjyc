@@ -771,7 +771,6 @@
         WHERE
             o.customer_id = #{loginId}
             AND t.id IS NULL
-            AND o.invoice_flag = 1
             AND o.state = 100
         ORDER BY
             o.finish_time DESC

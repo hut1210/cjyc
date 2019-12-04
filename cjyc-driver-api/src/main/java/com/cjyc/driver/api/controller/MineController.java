@@ -94,7 +94,7 @@ public class MineController {
 
     @ApiOperation(value = "查询没有被绑定的社会车辆信息")
     @PostMapping(value = "/findSocietyFreeVehicle")
-    public ResultVo<SocietyVehicleVo> findSocietyFreeVehicle(@RequestBody KeywordDto dto){
+    public ResultVo<SocietyVehicleVo> findSocietyFreeVehicle(@RequestBody CarrierVehicleNoDto dto){
         return csVehicleService.findSocietyFreeVehicle(dto);
     }
 

@@ -326,7 +326,7 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
         //运力信息
         DriverVehicleCon vehicleCon = driverVehicleConDao.selectOne(new QueryWrapper<DriverVehicleCon>().lambda()
                 .eq(DriverVehicleCon::getDriverId, dto.getLoginId()));
-        if(dto.getFlag() == 0){
+        if(dto.getFlag() == 0 && dto.getVehicleId() != null && vehicleCon == null){
             vehicleCon = new DriverVehicleCon();
             vehicleCon.setDriverId(dto.getLoginId());
             vehicleCon.setVehicleId(dto.getVehicleId());
@@ -339,7 +339,7 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
             vr.setRunningState(VehicleRunStateEnum.FREE.code);
             vr.setCreateTime(NOW);
             vehicleRunningDao.insert(vr);
-        }else if(dto.getFlag() == 1){
+        }else if(dto.getFlag() == 1 && dto.getVehicleId() != null){
             VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda()
                     .eq(VehicleRunning::getDriverId, dto.getLoginId()));
             if(vr != null){

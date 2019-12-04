@@ -25,7 +25,7 @@ public interface ICsVehicleService {
      * @param dto
      * @return
      */
-    ResultVo<SocietyVehicleVo> findSocietyFreeVehicle(KeywordDto dto);
+    ResultVo<SocietyVehicleVo> findSocietyFreeVehicle(CarrierVehicleNoDto dto);
 
     /**
      * 获取承运商下的空闲车辆

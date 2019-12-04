@@ -18,29 +18,32 @@ public class StoreExportExcel implements Serializable {
     @Excel(name = "业务中心名称" ,orderNum = "0",width = 15)
     private String name;
 
-    @Excel(name = "归属大区" ,orderNum = "1",width = 15)
-    private String region;
+    @Excel(name = "管辖范围" ,orderNum = "1",width = 15)
+    private Integer areaCount;
 
-    @Excel(name = "省份" ,orderNum = "2",width = 15)
+    @Excel(name = "所属大区" ,orderNum = "2",width = 15)
+    private String regionName;
+
+    @Excel(name = "省份" ,orderNum = "3",width = 15)
     private String province;
 
-    @Excel(name = "城市" ,orderNum = "3",width = 15)
+    @Excel(name = "城市" ,orderNum = "4",width = 15)
     private String city;
 
-    @Excel(name = "区/县" ,orderNum = "4",width = 15)
+    @Excel(name = "区/县" ,orderNum = "5",width = 15)
     private String area;
 
-    @Excel(name = "详细地址" ,orderNum = "5",width = 25)
+    @Excel(name = "详细地址" ,orderNum = "6",width = 25)
     private String detailAddr;
 
-    @Excel(name = "操作人" ,orderNum = "6",width = 15)
+    @Excel(name = "操作人" ,orderNum = "7",width = 15)
     private String operationName;
 
     private Long updateTime;
-    @Excel(name = "更新时间" ,orderNum = "7",width = 15)
+    @Excel(name = "更新时间" ,orderNum = "8",width = 15)
     private String updateTimeStr;
 
-    @Excel(name = "备注" ,orderNum = "8",width = 15)
+    @Excel(name = "备注" ,orderNum = "9",width = 15)
     private String remark;
 
     public String getUpdateTimeStr() {

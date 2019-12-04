@@ -101,6 +101,13 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
         PageInfo<Store> pageInfo = new PageInfo<>(list);
         List<Store> storeVoList = new ArrayList<>(20);
         List<Store> pageInfoList = pageInfo.getList();
+        // 查询管辖范围与所属大区
+        this.getAreaCountAndRegion(storeVoList, pageInfoList);
+        pageInfo.setList(storeVoList);
+        return BaseResultUtil.success(pageInfo);
+    }
+
+    private void getAreaCountAndRegion(List<Store> storeVoList, List<Store> pageInfoList) {
         if (!CollectionUtils.isEmpty(pageInfoList)) {
             StoreVo storeVo = null;
             for (Store store : pageInfoList) {
@@ -115,8 +122,6 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
                 storeVoList.add(storeVo);
             }
         }
-        pageInfo.setList(storeVoList);
-        return BaseResultUtil.success(pageInfo);
     }
 
     @Override
@@ -128,7 +133,7 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
 
         Store store = new Store();
         BeanUtils.copyProperties(storeAddDto,store);
-        store.setState(CommonStateEnum.WAIT_CHECK.code);
+        store.setState(CommonStateEnum.CHECKED.code);
         store.setCreateTime(System.currentTimeMillis());
         Admin admin = adminDao.selectOne(new QueryWrapper<Admin>().lambda().eq(Admin::getUserId, storeAddDto.getCreateUserId()).select(Admin::getName));
         if (!Objects.isNull(admin)) {
@@ -176,6 +181,12 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
             for (Store store : storeList) {
                 StoreExportExcel storeExportExcel = new StoreExportExcel();
                 BeanUtils.copyProperties(store,storeExportExcel);
+                // 查询业务中心所属大区
+                City city = cityDao.selectOne(new QueryWrapper<City>().lambda().eq(City::getCode, store.getProvinceCode()));
+                storeExportExcel.setRegionName(city.getParentName());
+                // 查询业务中心管辖区数量
+                Integer count = storeCityConDao.selectCount(new QueryWrapper<StoreCityCon>().lambda().eq(StoreCityCon::getStoreId, store.getId()));
+                storeExportExcel.setAreaCount(count == null ? 0 : count);
                 exportExcelList.add(storeExportExcel);
             }
             String title = "业务中心";

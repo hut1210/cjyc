@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -40,9 +41,16 @@ public class CsVehicleServiceImpl implements ICsVehicleService {
     }
 
     @Override
-    public ResultVo<SocietyVehicleVo> findSocietyFreeVehicle(KeywordDto dto) {
+    public ResultVo<SocietyVehicleVo> findSocietyFreeVehicle(CarrierVehicleNoDto dto) {
+        //获取承运商
+        CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
+                .eq(CarrierDriverCon::getDriverId, dto.getLoginId())
+                .eq(CarrierDriverCon::getId, dto.getRoleId()));
+        if(cdc == null){
+            return BaseResultUtil.fail("该司机不存在,请检查");
+        }
         //获取社会所有车辆
-        List<FreeVehicleVo> freeVehicleVos = vehicleDao.findPersonVehicle(dto);
+        List<FreeVehicleVo> freeVehicleVos = vehicleDao.findSocietyFreeVehicle(cdc.getCarrierId(),dto.getPlateNo());
         freeVehicleVos = freeVehicles(freeVehicleVos);
         SocietyVehicleVo vehicleVo = new SocietyVehicleVo();
         vehicleVo.setVehicleVo(freeVehicleVos);
@@ -107,6 +115,6 @@ public class CsVehicleServiceImpl implements ICsVehicleService {
             }
             return freeVehicleVos;
         }
-        return null;
+        return Collections.emptyList();
     }
 }
