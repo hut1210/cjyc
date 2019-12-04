@@ -1,12 +1,9 @@
 package com.cjyc.customer.api.service.impl;
 
-<<<<<<< Updated upstream
+import com.alibaba.nacos.client.utils.StringUtils;
 import com.cjyc.common.model.dto.customer.pingxx.PrePayDto;
 import com.cjyc.common.model.enums.ClientEnum;
 import com.cjyc.common.system.entity.PingCharge;
-=======
-import com.alibaba.nacos.client.utils.StringUtils;
->>>>>>> Stashed changes
 import com.cjyc.customer.api.config.PingProperty;
 import com.cjyc.customer.api.dto.OrderModel;
 import com.cjyc.customer.api.service.IPingPayService;
@@ -17,7 +14,6 @@ import com.pingplusplus.exception.*;
 import com.pingplusplus.model.Charge;
 import com.pingplusplus.model.Order;
 import com.pingplusplus.model.OrderRefund;
-import com.pingplusplus.model.OrderRefundCollection;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,8 +38,6 @@ import java.util.Map;
 @Slf4j
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
 public class PingPayServiceImpl implements IPingPayService {
-
-    private static Logger logger = LoggerFactory.getLogger(PingPayServiceImpl.class);
 
     @Autowired
     private ITransactionService transactionService;
@@ -81,17 +75,14 @@ public class PingPayServiceImpl implements IPingPayService {
         om.setBody("订单预付款");
         om.setChargeType("1");
         om.setClientType("customer");
-        String channel = om.getChannel();
         // 备注：订单号
         om.setDescription("韵车订单号："+om.getOrderNo());
         try {
-            if(!"balance".equals(channel)){
-                order = payOrder(om);
-                logger.debug(order.toString());
-                transactionService.saveTransactions(order, "0");
-            }
+            order = payOrder(om);
+            log.debug(order.toString());
+            transactionService.saveTransactions(order, "0");
         } catch (Exception e) {
-            logger.error(e.getMessage(),e);
+            log.error(e.getMessage(),e);
         }
         return order;
     }
@@ -326,11 +317,11 @@ public class PingPayServiceImpl implements IPingPayService {
         try{
             String description = "订单号：" + orderCode + "，定金退款";
             if(StringUtils.isBlank(description)){
-                logger.error("定金退款异常，description不能为空。");
+                log.error("定金退款异常，description不能为空。");
             }else if(StringUtils.isBlank(orderCode)){
-                logger.error("定金退款异常，orderCode不能为空。");
+                log.error("定金退款异常，orderCode不能为空。");
             }else{
-                String pingPayId = iTransactionService.getTradeBillByOrderNo(orderCode);
+                String pingPayId = transactionService.getTradeBillByOrderNo(orderCode);
                 initPingApiKey();
                 Map<String, Object> params = new HashMap<String, Object>();
                 params.put("description", description); // 必传
@@ -338,7 +329,7 @@ public class PingPayServiceImpl implements IPingPayService {
                 OrderRefund.create(pingPayId, params);
             }
         }catch (Exception e){
-            logger.error(e.getMessage(),e);
+            log.error(e.getMessage(),e);
         }
     }
 

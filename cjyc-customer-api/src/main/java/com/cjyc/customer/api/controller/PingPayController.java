@@ -32,7 +32,7 @@ import java.security.spec.X509EncodedKeySpec;
  * @Date:2019/11/20 9:32
  */
 @RestController
-@RequestMapping("/pingpay")
+@RequestMapping("/pay")
 @Slf4j
 @Api(tags = "Ping++支付")
 public class PingPayController {
@@ -83,7 +83,7 @@ public class PingPayController {
         String jsonpCallback = request.getParameter("jsonpCallback");
         //退款
         try {
-            iPingPayService.cancelOrderRefund(orderCode);
+            pingPayService.cancelOrderRefund(orderCode);
         } catch (Exception e) {
             log.error("取消订单"+orderCode+"，退款异常",e);
             return BaseResultUtil.fail("取消订单退款异常");
@@ -116,13 +116,8 @@ public class PingPayController {
                     if ("order.succeeded".equals(event.getType())) {//ping++订单支付成功
                         Order order = (Order) data.getObject();
                         if (data.getObject() instanceof Order) {
-<<<<<<< Updated upstream
                             log.debug("------------->order.succeeded");
-                            //iTransactionService.update
-=======
-                            logger.debug("------------->order.succeeded");
                             iTransactionService.updateTransactions((Order)data.getObject(),event,"1");
->>>>>>> Stashed changes
                         }
                     }else if("charge.succeeded".equals(event.getType())){
                         Charge charge = (Charge)data.getObject();
