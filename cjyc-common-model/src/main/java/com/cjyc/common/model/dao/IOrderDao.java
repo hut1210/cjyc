@@ -38,7 +38,7 @@ public interface IOrderDao extends BaseMapper<Order> {
 
     int updateStateForLoad(@Param("orderState") int orderState, @Param("orderIdSet") Set<Long> orderIdSet);
 
-    Map<String, Object> countForAllTab(@Param("loginId") Long loginId, @Param("bizScope") Set<Long> bizScope);
+    Map<String, Object> countForAllTab(@Param("paramsDto") ListOrderDto paramsDto);
 
     int updateStateById(@Param("state") int state, @Param("id") Long id);
 
@@ -48,4 +48,5 @@ public interface IOrderDao extends BaseMapper<Order> {
 
     int countUnReceipt(Long orderId);
 
+    List<Order> findListByCarIds(@Param("list") List<Long> orderCarId);
 }

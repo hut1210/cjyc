@@ -2,6 +2,7 @@ package com.cjyc.customer.api.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.dto.customer.invoice.InvoiceApplyQueryDto;
+import com.cjyc.common.model.dto.customer.order.CarCollectPayDto;
 import com.cjyc.common.model.dto.customer.order.OrderDetailDto;
 import com.cjyc.common.model.dto.customer.order.OrderQueryDto;
 import com.cjyc.common.model.dto.customer.order.SimpleSaveOrderDto;
@@ -11,6 +12,8 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterDetailVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterVo;
+
+import java.util.Map;
 
 /**
  * @auther litan
@@ -71,4 +74,6 @@ public interface IOrderService extends IService<Order> {
     ResultVo submit(SaveOrderDto reqDto);
 
     ResultVo simpleSubmit(SimpleSaveOrderDto reqDto);
+
+    ResultVo<Map<String, Object>> carPayState(CarCollectPayDto reqDto);
 }

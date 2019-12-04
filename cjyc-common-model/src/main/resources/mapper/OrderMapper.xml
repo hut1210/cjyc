@@ -128,9 +128,6 @@
         left join c_customer_contract ht on ht.id = o.customer_contract_id
         <where>
             <choose>
-                <when test="paramsDto.outterState == 0">
-                    and o.state > 0
-                </when>
                 <when test="paramsDto.outterState == 1">
                     and o.state = 0
                     and o.check_user_id = #{paramsDto.loginId}
@@ -157,7 +154,7 @@
                     and o.state = 114
                 </when>
                 <otherwise>
-                    and 1 != 1
+                    and o.state > 0
                 </otherwise>
             </choose>
 
@@ -210,8 +207,17 @@
             <if test="paramsDto.customerName != null and paramsDto.customerName != ''">
                 and o.customer_name = #{paramsDto.customerName}
             </if>
+
             <if test="paramsDto.customerType != null and paramsDto.customerType != ''">
-                and o.customer_type = #{paramsDto.customerType}
+                <choose>
+                    <when test="paramsDto.customerType == 1 or paramsDto.customerType == 2 or paramsDto.customerType == 3">
+                        and o.customer_type = #{paramsDto.customerType}
+                    </when>
+                    <when test="paramsDto.customerType == 5">
+                        and (o.customer_type = 2 or o.customer_type = 3)
+                    </when>
+                </choose>
+
             </if>
             <if test="paramsDto.customerPhone != null and paramsDto.customerPhone != ''">
                 and o.customer_phone = #{paramsDto.customerPhone}
@@ -291,7 +297,7 @@
     <select id="countForAllTab" resultType="java.util.Map">
         select
         sum(case when o.state &gt; 0 then 1 else 0 end ) as totalCount,<!--全部订单-->
-        sum(case when o.state = 0 and o.check_user_id = #{loginId} then 1 else 0 end ) as waitCommitCount,<!--待提交-->
+        sum(case when o.state = 0 and o.create_user_id = #{paramsDto.loginId} then 1 else 0 end ) as waitCommitCount,<!--待提交-->
         sum(case when o.state &gt; 0 and o.state &lt; 15 then 1 else 0 end ) as waitCheckCount,<!--待确认-->
         sum(case when o.state = 15 then 1 else 0 end ) as waitPrePayCount,<!--带预付款-->
         sum(case when o.state = 25 then 1 else 0 end ) as waitDispatchCount,<!--待调度-->
@@ -301,9 +307,15 @@
         sum(case when o.state = 114 then 1 else 0 end ) as obsoleteCount<!--已作废-->
         from w_order o
         <where>
-            <if test="bizScope != null">
+            <if test="paramsDto.countByCustomer != null and paramsDto.countByCustomer == true">
+                and o.customer_id = #{paramsDto.loginId}
+            </if>
+            <if test="paramsDto.countByInputStore != null and paramsDto.countByInputStore == true">
+                and o.input_store_id = #{paramsDto.inputStoreId}
+            </if>
+            <if test="paramsDto.bizScope != null">
                 and o.input_store_id in
-                <foreach collection="bizScope" index="index" item="item" open="(" separator="," close=")">
+                <foreach collection="paramsDto.bizScope" index="index" item="item" open="(" separator="," close=")">
                     #{item}
                 </foreach>
             </if>
@@ -369,6 +381,15 @@
         from w_order_car oc
         where order_id = #{orderId}
         and state &lt; 100
+    </select>
+    <select id="findListByCarIds" resultType="com.cjyc.common.model.entity.Order">
+        select o.* from w_order o
+        join w_order_car oc on oc.order_id = o.id
+        where oc.id in
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        group by o.id
     </select>
 
 

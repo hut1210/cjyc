@@ -40,6 +40,7 @@ public class RedisKeys {
 
     private final static String NEW_TASK_NO_KEY = "new:task:no";
     private final static String WL_PRE_PAY_LOCK = "wl:pre:pay:lock";
+    private final static String WL_COLLECT_PAY_LOCK = "wl:collect:pay:lock";
 
     /**---------------salesman-------------------------------------------------------------------*/
     /**验证码*/
@@ -76,8 +77,8 @@ public class RedisKeys {
         return PROJECT_PREFIX + I + NEW_TASK_NO_KEY + I + waybillNo;
     }
 
-    public static String getOrderCarPayLockKey(String orderCarNo) {
-        return PROJECT_PREFIX + I + NEW_TASK_NO_KEY + I + orderCarNo;
+    public static String getWlCollectPayLock(String carNo) {
+        return  PROJECT_PREFIX + I + WL_COLLECT_PAY_LOCK + I + carNo;
     }
 
     public static String getWlPrePayLock(String orderNo) {

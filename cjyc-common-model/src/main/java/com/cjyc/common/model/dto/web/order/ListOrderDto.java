@@ -121,5 +121,10 @@ public class ListOrderDto extends BasePageDto {
     @ApiModelProperty(value = "业务范围(不用传)")
     private Set<Long> bizScope;
 
+    @ApiModelProperty(value = "是否根据用户类型统计")
+    private boolean countByCustomer;
+
+    @ApiModelProperty(value = "是否根据业务中心统计")
+    private boolean countByInputStore;
 
 }

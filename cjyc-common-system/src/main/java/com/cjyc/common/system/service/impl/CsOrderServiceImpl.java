@@ -1,14 +1,12 @@
 package com.cjyc.common.system.service.impl;
 
+import com.cjkj.common.redis.lock.RedisDistributedLock;
 import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IOrderDao;
-import com.cjyc.common.model.dto.customer.order.OrderPayStateDto;
+import com.cjyc.common.model.dto.customer.order.CarCollectPayDto;
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.entity.*;
-import com.cjyc.common.model.enums.PayModeEnum;
-import com.cjyc.common.model.enums.PayStateEnum;
-import com.cjyc.common.model.enums.ResultEnum;
-import com.cjyc.common.model.enums.SendNoTypeEnum;
+import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.city.CityLevelEnum;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
@@ -20,35 +18,46 @@ import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.entity.defined.FullCity;
+import com.cjyc.common.system.entity.PingOrder;
+import com.cjyc.common.system.entity.PingOrderModel;
 import com.cjyc.common.system.service.*;
 import com.cjyc.common.system.util.RedisUtils;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 订单公共业务
+ *
  * @author JPG
  */
 @Service
+@Slf4j
 @Transactional(rollbackFor = Exception.class)
 public class CsOrderServiceImpl implements ICsOrderService {
     @Resource
     private RedisUtils redisUtils;
     @Resource
+    private RedisDistributedLock redisLock;
+    @Resource
     private IOrderDao orderDao;
     @Resource
     private IOrderCarDao orderCarDao;
+    @Resource
+    private ICsPingxxService csPingxxService;
     @Resource
     private ICsCityService csCityService;
     @Resource
@@ -63,7 +72,6 @@ public class CsOrderServiceImpl implements ICsOrderService {
     private ICsOrderChangeLogService orderChangeLogService;
     @Resource
     private ICsCustomerContactService csCustomerContactService;
-
 
     @Override
     public ResultVo save(SaveOrderDto paramsDto, OrderStateEnum stateEnum) {
@@ -122,16 +130,16 @@ public class CsOrderServiceImpl implements ICsOrderService {
             }
             //验证vin码是否重复
             String vin = dto.getVin();
-            if(StringUtils.isNotBlank(vin)){
-                if(vinSet.contains(vin)){
+            if (StringUtils.isNotBlank(vin)) {
+                if (vinSet.contains(vin)) {
                     throw new ParameterException("vin码：{0}重复", vin);
                 }
                 vinSet.add(vin);
             }
             //验证车牌号是否重复
             String plateNo = dto.getPlateNo();
-            if(StringUtils.isNotBlank(plateNo)){
-                if(plateNoSet.contains(plateNo)){
+            if (StringUtils.isNotBlank(plateNo)) {
+                if (plateNoSet.contains(plateNo)) {
                     throw new ParameterException("车牌号码：{0}重复", plateNo);
                 }
                 plateNoSet.add(plateNo);
@@ -177,10 +185,10 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
         //验证用户
         ResultVo<Customer> validateCustomerResult = validateCustomer(paramsDto);
-        if(ResultEnum.SUCCESS.getCode() != validateCustomerResult.getCode()){
+        if (ResultEnum.SUCCESS.getCode() != validateCustomerResult.getCode()) {
             return validateCustomerResult;
         }
-        Customer customer= validateCustomerResult.getData();
+        Customer customer = validateCustomerResult.getData();
         //订单中添加客户ID
         order.setCustomerId(customer.getId());
         /**1、组装订单数据
@@ -190,25 +198,24 @@ public class CsOrderServiceImpl implements ICsOrderService {
             order.setNo(csSendNoService.getNo(SendNoTypeEnum.ORDER));
         }
         //计算所属业务中心ID
-        if(paramsDto.getStartStoreId() != null && paramsDto.getStartStoreId() > 0){
+        if (paramsDto.getStartStoreId() != null && paramsDto.getStartStoreId() > 0) {
             order.setStartBelongStoreId(paramsDto.getStartStoreId());
-        }else{
+        } else {
             //查询地址所属业务中心
             Store startBelongStore = csStoreService.getOneBelongByAreaCode(order.getStartAreaCode());
-            if(startBelongStore != null){
+            if (startBelongStore != null) {
                 order.setStartBelongStoreId(startBelongStore.getId());
             }
         }
-        if(paramsDto.getEndStoreId() != null && paramsDto.getEndStoreId() > 0){
+        if (paramsDto.getEndStoreId() != null && paramsDto.getEndStoreId() > 0) {
             order.setStartBelongStoreId(paramsDto.getEndStoreId());
-        }else{
+        } else {
             //查询地址所属业务中心
             Store endBelongStore = csStoreService.getOneBelongByAreaCode(order.getEndAreaCode());
-            if(endBelongStore != null){
+            if (endBelongStore != null) {
                 order.setStartBelongStoreId(endBelongStore.getId());
             }
         }
-
 
         order.setState(OrderStateEnum.SUBMITTED.code);
         order.setSource(order.getSource() == null ? paramsDto.getClientId() : order.getSource());
@@ -239,16 +246,16 @@ public class CsOrderServiceImpl implements ICsOrderService {
             }
             //验证vin码是否重复
             String vin = dto.getVin();
-            if(StringUtils.isNotBlank(vin)){
-                if(vinSet.contains(vin)){
+            if (StringUtils.isNotBlank(vin)) {
+                if (vinSet.contains(vin)) {
                     throw new ParameterException("vin码：{0}重复", vin);
                 }
                 vinSet.add(vin);
             }
             //验证车牌号是否重复
             String plateNo = dto.getPlateNo();
-            if(StringUtils.isNotBlank(plateNo)){
-                if(plateNoSet.contains(plateNo)){
+            if (StringUtils.isNotBlank(plateNo)) {
+                if (plateNoSet.contains(plateNo)) {
                     throw new ParameterException("车牌号码：{0}重复", plateNo);
                 }
                 plateNoSet.add(plateNo);
@@ -298,26 +305,27 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
     /**
      * 下单验证客户
+     *
+     * @param paramsDto
      * @author JPG
      * @since 2019/11/27 14:05
-     * @param paramsDto
      */
     private ResultVo<Customer> validateCustomer(CommitOrderDto paramsDto) {
         Customer customer = null;
         if (paramsDto.getCustomerId() != null) {
-            customer = csCustomerService.getById(paramsDto.getCustomerId(),true);
-            if(customer != null && !customer.getName().equals(paramsDto.getCustomerName())){
+            customer = csCustomerService.getById(paramsDto.getCustomerId(), true);
+            if (customer != null && !customer.getName().equals(paramsDto.getCustomerName())) {
                 return BaseResultUtil.fail(ResultEnum.CREATE_NEW_CUSTOMER.getCode(),
                         "客户手机号存在，名称不一致：新名称（{0}）旧名称（{1}），请返回订单重新选择客户",
-                        paramsDto.getCustomerName(),customer.getName());
+                        paramsDto.getCustomerName(), customer.getName());
             }
         }
-        if(customer == null){
-            customer = csCustomerService.getByPhone(paramsDto.getCustomerPhone(),true);
-            if(customer != null && !customer.getName().equals(paramsDto.getCustomerName())){
+        if (customer == null) {
+            customer = csCustomerService.getByPhone(paramsDto.getCustomerPhone(), true);
+            if (customer != null && !customer.getName().equals(paramsDto.getCustomerName())) {
                 return BaseResultUtil.fail(ResultEnum.CREATE_NEW_CUSTOMER.getCode(),
                         "客户手机号存在，名称不一致：新名称（{0}）旧名称（{1}），请返回订单重新选择客户",
-                        paramsDto.getCustomerName(),customer.getName());
+                        paramsDto.getCustomerName(), customer.getName());
             }
         }
         if (customer == null) {
@@ -387,10 +395,10 @@ public class CsOrderServiceImpl implements ICsOrderService {
         }
 
         //根据到付和预付置不同状态
-        if(order.getPayType() != PayModeEnum.PREPAID.code){
+        if (order.getPayType() != PayModeEnum.PREPAY.code) {
             order.setState(OrderStateEnum.WAIT_PREPAY.code);
             //TODO 支付通知
-        }else{
+        } else {
             order.setState(OrderStateEnum.CHECKED.code);
         }
         orderDao.updateById(order);
@@ -403,9 +411,10 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
     /**
      * 验证订单必要信息
+     *
+     * @param order
      * @author JPG
      * @since 2019/11/6 19:45
-     * @param order
      */
     private void validateOrderFeild(Order order) {
         if (order == null) {
@@ -497,9 +506,10 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
     /**
      * 取消订单
+     *
+     * @param paramsDto
      * @author JPG
      * @since 2019/11/5 16:32
-     * @param paramsDto
      */
     @Override
     public ResultVo cancel(CancelOrderDto paramsDto) {
@@ -564,7 +574,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
             //统计数量
             noCount++;
             OrderCar orderCar = orderCarDao.selectById(dto.getId());
-            if(orderCar == null){
+            if (orderCar == null) {
                 throw new ServerException("ID为{}的车辆，不存在", dto.getId());
             }
             //填充数据
@@ -580,7 +590,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                             .add(orderCar.getBackFee())
                             .add(orderCar.getAddInsuranceFee()));
         }
-        if(CustomerTypeEnum.COOPERATOR.code == order.getCustomerType()){
+        if (CustomerTypeEnum.COOPERATOR.code == order.getCustomerType()) {
             totalFee = paramsDto.getTotalFee();
         }
         order.setTotalFee(totalFee);
@@ -592,6 +602,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
     /**
      * 完善订单信息
+     *
      * @param paramsDto
      * @author JPG
      * @since 2019/11/5 16:51
@@ -615,45 +626,17 @@ public class CsOrderServiceImpl implements ICsOrderService {
         return BaseResultUtil.success();
     }
 
-    @Override
-    public ResultVo<Map<String, Object>> carApplyPay(OrderPayStateDto paramsDto) {
-        Map<String, Object> resMap = Maps.newHashMap();
-
-        boolean ispaied = true;
-        BigDecimal totalFee = BigDecimal.ZERO;
-        List<OrderCar> carList = orderCarDao.findListByIds(paramsDto.getOrderCarId());
-        for (OrderCar orderCar : carList) {
-            if(orderCar == null || orderCar.getNo() == null){
-                continue;
-            }
-            String key = RedisKeys.getOrderCarPayLockKey(orderCar.getNo());
-            String value = redisUtils.get(key);
-            if(value != null && !value.equals(paramsDto.getLoginId().toString())){
-               return BaseResultUtil.fail("订单车辆{}正在支付中", orderCar.getNo());
-            }
-            if(orderCar.getState() >= OrderCarStateEnum.SIGNED.code){
-                return BaseResultUtil.fail("订单车辆{}已签收过，请刷新后重试", orderCar.getNo());
-            }
-            if(PayStateEnum.UNPAID.code == orderCar.getWlPayState()){
-                ispaied = false;
-                totalFee = totalFee.add(orderCar.getTotalFee());
-                return BaseResultUtil.fail("订单车辆{}已支付", orderCar.getNo());
-            }
-        }
-        resMap.put("paied", ispaied);
-        resMap.put("totalFee", totalFee);
-        return BaseResultUtil.success(resMap);
-    }
 
     /**
      * 拷贝订单开始城市
-     * @author JPG
-     * @since 2019/11/5 9:06
+     *
      * @param vo
      * @param order
+     * @author JPG
+     * @since 2019/11/5 9:06
      */
     private void copyOrderStartCity(FullCity vo, Order order) {
-        if(vo == null){
+        if (vo == null) {
             return;
         }
         order.setStartProvince(vo.getProvince());
@@ -663,15 +646,17 @@ public class CsOrderServiceImpl implements ICsOrderService {
         order.setStartArea(vo.getArea());
         order.setStartAreaCode(vo.getAreaCode());
     }
+
     /**
      * 拷贝订单结束城市
-     * @author JPG
-     * @since 2019/11/5 9:06
+     *
      * @param vo
      * @param order
+     * @author JPG
+     * @since 2019/11/5 9:06
      */
     private void copyOrderEndCity(FullCity vo, Order order) {
-        if(vo == null){
+        if (vo == null) {
             return;
         }
         order.setEndProvince(vo.getProvince());
@@ -681,6 +666,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         order.setEndArea(vo.getArea());
         order.setEndAreaCode(vo.getAreaCode());
     }
+
     /**
      * 均摊服务费
      *
@@ -727,6 +713,5 @@ public class CsOrderServiceImpl implements ICsOrderService {
             }
         }
     }
-
 
 }

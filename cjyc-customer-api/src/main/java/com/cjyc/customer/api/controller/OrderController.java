@@ -141,12 +141,12 @@ public class OrderController {
      * 按车辆申请支付
      * @author JPG
      */
-   @ApiOperation(value = "申请支付")
-    @PostMapping(value = "/car/apply/pay")
-    public ResultVo<Map<String, Object>> applyPay(@RequestBody OrderPayStateDto reqDto) {
+   @ApiOperation(value = "到付申请支付")
+    @PostMapping(value = "/car/pay/state/validate")
+    public ResultVo<Map<String, Object>> validateCarCollectPay(@RequestBody CarCollectPayDto reqDto) {
        Customer customer = csCustomerService.validate(reqDto.getLoginId());
        reqDto.setLoginName(customer.getName());
-       return csOrderService.carApplyPay(reqDto);
+       return orderService.carPayState(reqDto);
     }
 
     /**
