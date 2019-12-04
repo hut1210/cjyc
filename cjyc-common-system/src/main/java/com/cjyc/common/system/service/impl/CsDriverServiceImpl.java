@@ -35,6 +35,7 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -378,8 +379,9 @@ public class CsDriverServiceImpl implements ICsDriverService {
                     }
                 }
             }
+            return freeDriverVos;
         }
-        return freeDriverVos;
+       return Collections.emptyList();
     }
     /**
      * 修改承运商下司机与车辆关系

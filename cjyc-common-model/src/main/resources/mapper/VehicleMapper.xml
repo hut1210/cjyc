@@ -138,6 +138,22 @@
         </where>
     </select>
 
+    <!-- 获取司机端所有个人车辆 -->
+    <select id="findSocietyFreeVehicle" resultType="com.cjyc.common.model.vo.FreeVehicleVo">
+        SELECT
+            id AS vehicleId,
+            plate_no AS plateNo,
+            default_carry_num AS defaultCarryNum
+        FROM
+          d_vehicle
+        <where>
+            <if test="plateNo != null and plateNo.trim() != ''">
+                plate_no like concat('%',#{plateNo},'%')
+            </if>
+            and ownership_type = 1 and carrier_id = #{carrierId}
+        </where>
+    </select>
+
     <!-- 获取该承运商下的所有车辆 -->
     <select id="findCarrierVehicle" resultType="com.cjyc.common.model.vo.FreeVehicleVo">
         SELECT
