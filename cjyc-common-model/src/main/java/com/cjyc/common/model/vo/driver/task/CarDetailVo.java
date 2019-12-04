@@ -2,6 +2,7 @@ package com.cjyc.common.model.vo.driver.task;
 
 import com.cjyc.common.model.util.DataLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -15,6 +16,10 @@ import java.io.Serializable;
 @Data
 public class CarDetailVo implements Serializable {
     private static final long serialVersionUID = -6283733541452871958L;
+    @ApiModelProperty(value = "提车联系人")
+    @JsonSerialize(using= ToStringSerializer.class)
+    private Long id;
+
     @ApiModelProperty(value = "提车联系人")
     private String loadLinkName;
 
