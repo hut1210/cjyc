@@ -1,9 +1,13 @@
 package com.cjyc.customer.api.service.impl;
 
 import com.alibaba.nacos.client.utils.StringUtils;
+import com.cjkj.common.redis.lock.RedisDistributedLock;
 import com.cjyc.common.model.dto.customer.pingxx.PrePayDto;
+import com.cjyc.common.model.entity.TradeBill;
 import com.cjyc.common.model.enums.ClientEnum;
+import com.cjyc.common.model.exception.CommonException;
 import com.cjyc.common.system.entity.PingCharge;
+import com.cjyc.common.system.util.RedisUtils;
 import com.cjyc.customer.api.config.PingProperty;
 import com.cjyc.customer.api.dto.OrderModel;
 import com.cjyc.customer.api.service.IPingPayService;
@@ -15,20 +19,21 @@ import com.pingplusplus.model.Charge;
 import com.pingplusplus.model.Order;
 import com.pingplusplus.model.OrderRefund;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ResourceUtils;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.annotation.Resource;
 import java.io.FileNotFoundException;
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @Author:Hut
@@ -38,6 +43,12 @@ import java.util.Map;
 @Slf4j
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
 public class PingPayServiceImpl implements IPingPayService {
+
+    @Resource
+    private RedisDistributedLock redisLock;
+
+    @Autowired
+    private RedisUtils redisUtil;
 
     @Autowired
     private ITransactionService transactionService;
@@ -69,19 +80,35 @@ public class PingPayServiceImpl implements IPingPayService {
     }
     
     @Override
-    public Order pay(HttpServletRequest request, OrderModel om) {
-
-        om.setClientIp(request.getRemoteAddr());
-        om.setPingAppId(PingProperty.userAppId);
-
+    public Order pay(PrePayDto reqDto) {
+        String orderNo = reqDto.getOrderNo();
+        OrderModel om = new OrderModel();
         Order order = new Order();
-        om.setSubject("预付款");
-        om.setBody("订单预付款");
-        om.setChargeType("1");
-        om.setClientType("customer");
-        // 备注：订单号
-        om.setDescription("韵车订单号："+om.getOrderNo());
+
+        TradeBill tradeBill = transactionService.getTradeBillByOrderNo(reqDto.getOrderNo());
+        if(tradeBill != null){
+            throw new CommonException("订单已支付完成","1");
+        }else{
+            String lockKey =getRandomNoKey(orderNo);
+            if (!redisLock.lock(lockKey, 1800000, 99, 200)) {
+                throw new CommonException("订单正在支付中","1");
+            }
+        }
         try {
+            BigDecimal wlFee = transactionService.getAmountByOrderNo(reqDto.getOrderNo());
+            om.setPingAppId(PingProperty.customerAppId);
+            om.setClientIp(reqDto.getIp());
+            om.setChannel(reqDto.getChannel());
+            om.setOrderNo(reqDto.getOrderNo());
+            om.setUid(String.valueOf(reqDto.getLoginId()));
+            om.setAmount(wlFee);
+            om.setSubject("预付款");
+            om.setBody("订单预付款");
+            om.setChargeType("1");
+            om.setClientType(String.valueOf(ClientEnum.APP_CUSTOMER.code));
+            // 备注：订单号
+            om.setDescription("韵车订单号："+om.getOrderNo());
+
             order = payOrder(om);
             log.debug(order.toString());
             transactionService.saveTransactions(order, "0");
@@ -89,6 +116,10 @@ public class PingPayServiceImpl implements IPingPayService {
             log.error(e.getMessage(),e);
         }
         return order;
+    }
+
+    private String getRandomNoKey(String prefix) {
+        return "cjyc:random:no:prepay:" + prefix;
     }
 
     private Order payOrder(OrderModel om) throws InvalidRequestException, APIException,
@@ -325,7 +356,8 @@ public class PingPayServiceImpl implements IPingPayService {
             }else if(StringUtils.isBlank(orderCode)){
                 log.error("定金退款异常，orderCode不能为空。");
             }else{
-                String pingPayId = transactionService.getTradeBillByOrderNo(orderCode);
+                TradeBill tradeBill = transactionService.getTradeBillByOrderNo(orderCode);
+                String pingPayId = tradeBill.getPingPayId();
                 initPingApiKey();
                 Map<String, Object> params = new HashMap<String, Object>();
                 params.put("description", description); // 必传

@@ -1,7 +1,10 @@
 package com.cjyc.customer.api.service;
 
+import com.cjyc.common.model.entity.TradeBill;
 import com.pingplusplus.model.Event;
 import com.pingplusplus.model.Order;
+
+import java.math.BigDecimal;
 
 /**
  * @Author:Hut
@@ -14,5 +17,7 @@ public interface ITransactionService {
 
     void updateTransactions(Order object, Event event, String s);
 
-    String getTradeBillByOrderNo(String orderCode);
+    TradeBill getTradeBillByOrderNo(String orderNo);
+
+    BigDecimal getAmountByOrderNo(String orderNo);
 }

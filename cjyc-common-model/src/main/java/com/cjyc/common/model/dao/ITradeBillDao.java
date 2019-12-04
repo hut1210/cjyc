@@ -4,6 +4,7 @@ import com.cjyc.common.model.entity.TradeBill;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -22,5 +23,9 @@ public interface ITradeBillDao extends BaseMapper<TradeBill> {
 
     void updateOrderCar(@Param("orderCarNo") String orderCarNo,@Param("wlPayState") int wlPayState,@Param("wlPayTime") long wlPayTime);
 
-    String getTradeBillByOrderNo(String orderCode);
+    TradeBill getTradeBillByOrderNo(String orderNo);
+
+    BigDecimal getAmountByOrderNo(String orderNo);
+
+    void updateOrderState(@Param("orderNo")String orderNo, @Param("wlPayState") int wlPayState,@Param("wlPayTime") long wlPayTime);
 }

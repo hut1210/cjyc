@@ -44,8 +44,16 @@
         update w_order_car set wl_pay_state = #{wlPayState}, wl_pay_time = #{wlPayTime} where no =#{orderCarNo}
     </update>
 
-    <select id="getTradeBillByOrderNo" parameterType="String" resultType="String">
+    <select id="getTradeBillByOrderNo" parameterType="String" resultType="com.cjyc.common.model.entity.TradeBill">
         select * from f_trade_bill where no = #{orderNo} and state =2 order by create_time desc limit 1
     </select>
+
+    <select id="getAmountByOrderNo" parameterType="String" resultType="java.math.BigDecimal">
+        select (total_fee-agency_fee-coupon_offset_fee) as amount from w_order where no=#{orderNo}
+    </select>
+
+    <update id="updateOrderState" parameterType="map">
+        update w_order set wl_pay_state = #{wlPayState}, wl_pay_time = #{wlPayTime} where no =#{orderNo}
+    </update>
 
 </mapper>

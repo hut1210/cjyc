@@ -1,9 +1,10 @@
 package com.cjyc.common.system.entity;
 
 import com.pingplusplus.model.Charge;
+import lombok.Data;
 
 import java.math.BigDecimal;
-
+@Data
 public class PingCharge extends Charge {
 
     private String orderNo; //平台订单编号
