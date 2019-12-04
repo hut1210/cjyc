@@ -41,11 +41,9 @@ public class LineVo implements Serializable {
     private String toCity;
 
     @ApiModelProperty("上游运费(元)")
-    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal defaultWlFee;
 
     @ApiModelProperty("下游运费(元)")
-    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal defaultFreightFee;
 
     @ApiModelProperty("总里程")

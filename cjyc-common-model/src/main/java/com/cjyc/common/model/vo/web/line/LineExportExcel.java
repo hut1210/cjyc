@@ -42,4 +42,12 @@ public class LineExportExcel implements Serializable {
 
     @Excel(name = "创建人" ,orderNum = "10",width = 15)
     private String createUserName;
+
+    public String getDefaultWlFee() {
+        return defaultWlFee == null ? "0.00" : defaultWlFee.divide(new BigDecimal(100)).toString()+".00";
+    }
+
+    public String getDefaultFreightFee() {
+        return defaultFreightFee == null ? "0.00" : defaultFreightFee.divide(new BigDecimal(100)).toString()+".00";
+    }
 }
