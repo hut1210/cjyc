@@ -8,6 +8,7 @@ import com.cjyc.common.model.enums.AdminStateEnum;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.ExcelUtil;
+import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.BaseTipVo;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
@@ -210,6 +211,7 @@ public class WaybillController {
         return waybillService.getTrunkMainList(reqDto);
     }
 
+    @Deprecated
     @ApiOperation(value = "导出分页干线主运单列表")
     @GetMapping(value = "/trunk/main/exportPageList")
     public ResultVo exportMainPageList(TrunkMainListWaybillDto reqDto, HttpServletResponse response) {
@@ -239,8 +241,9 @@ public class WaybillController {
             return BaseResultUtil.success("未查询到数据");
         }
         try {
-            ExcelUtil.exportExcel(list, "运单信息-干线", "运单信息-干线",
-                    TrunkMainListWaybillVo.class, System.currentTimeMillis()+"运单信息-干线.xls", response);
+            List<ExportTrunkMainListWaybillVo> rsList = dealTrunkMainListForExport(list);
+            ExcelUtil.exportExcel(rsList, "运单信息-干线", "运单信息-干线",
+                    ExportTrunkMainListWaybillVo.class, System.currentTimeMillis()+"运单信息-干线.xls", response);
             return null;
         }catch (Exception e) {
             LogUtil.error("导出全部干线主运单列表信息异常", e);
@@ -409,6 +412,27 @@ public class WaybillController {
         return rsList;
     }
 
+    /**
+     * 导出TrunkMainListWaybillVo对象信息封装
+     * @param list
+     * @return
+     */
+    private List<ExportTrunkMainListWaybillVo> dealTrunkMainListForExport(
+            List<TrunkMainListWaybillVo> list) {
+        if (CollectionUtils.isEmpty(list)) {
+            return null;
+        }
+        List<ExportTrunkMainListWaybillVo> rsList = new ArrayList<>();
+        list.forEach(l -> {
+            ExportTrunkMainListWaybillVo vo = new ExportTrunkMainListWaybillVo();
+            BeanUtils.copyProperties(l, vo);
+            vo.setCreateTimeDesc(l.getCreateTime() == null? null:
+                    LocalDateTimeUtil.formatLDT(LocalDateTimeUtil
+                                    .convertLongToLDT(l.getCreateTime()), "yyyy-MM-dd"));
+            rsList.add(vo);
+        });
+        return rsList;
+    }
 
 
 
