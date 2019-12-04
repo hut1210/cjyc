@@ -1,17 +1,18 @@
 package com.cjyc.common.model.entity;
 
-import java.math.BigDecimal;
-
 import cn.afterturn.easypoi.excel.annotation.Excel;
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.io.Serializable;
+import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * <p>
@@ -90,6 +91,7 @@ public class Waybill implements Serializable {
     private Long createTime;
 
     @Excel(name = "创建时间", orderNum = "9")
+    @TableField(exist = false)
     private String createTimeDesc;
     @Excel(name = "创建人", orderNum = "10")
     @ApiModelProperty(value = "调度人")
