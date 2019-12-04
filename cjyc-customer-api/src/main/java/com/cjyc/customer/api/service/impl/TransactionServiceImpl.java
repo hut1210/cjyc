@@ -1,9 +1,10 @@
 package com.cjyc.customer.api.service.impl;
 
-import com.alibaba.nacos.client.utils.StringUtils;
-import com.cjkj.common.utils.DateUtil;
 import com.cjyc.common.model.dao.ITradeBillDao;
 import com.cjyc.common.model.entity.TradeBill;
+import com.cjyc.common.model.enums.SendNoTypeEnum;
+import com.cjyc.common.system.service.ICsSendNoService;
+import com.cjyc.common.system.service.impl.CsSendNoServiceImpl;
 import com.cjyc.common.system.util.RedisUtils;
 import com.cjyc.customer.api.service.ITransactionService;
 import com.pingplusplus.model.*;
@@ -15,9 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -40,13 +38,20 @@ public class TransactionServiceImpl implements ITransactionService {
     @Autowired
     private ExecutorService executorService;
 
+    @Resource
+    private ICsSendNoService csSendNoService;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveTransactions(Object obj, String state) {
         TradeBill tb = objToTransactions(obj, null, state);
+        int id = 0;
         if(tb != null){
-            iTradeBillDao.insert(tb);
+            id = iTradeBillDao.insert(tb);
         }
+        //TODO 插入交易关联表数据
+        Map<String, Object> metadata = ((Order)obj).getMetadata();
+        Object orderNo = metadata.get("orderNo");
     }
 
     public TradeBill objToTransactions(Object obj,Event event,String status){
@@ -105,10 +110,10 @@ public class TransactionServiceImpl implements ITransactionService {
             tb.setEventId(event.getId());
             tb.setEventType(event.getType());
         }
-        Map<String, Object> map = order.getMetadata();
-        String orderNo = (String)map.get("orderNo");
+        /*Map<String, Object> map = order.getMetadata();
+        String orderNo = (String)map.get("orderNo");*/
         tb.setState(Integer.valueOf(state));//待支付/已支付/付款失败
-        tb.setNo(orderNo);
+        tb.setNo(csSendNoService.getNo(SendNoTypeEnum.RECEIPT));
 
         return tb;
     }

@@ -150,7 +150,7 @@ public class PingPayServiceImpl implements IPingPayService {
         meta.put("deposit", om.getDeposit()); //定金金额
         meta.put("orderMan", om.getOrderMan()); //当前app登陆人的ID
         params.put("metadata",meta);//自定义参数
-        Order order = Order.create(params); // 创建 PingOrder 对象 方法
+        Order order = Order.create(params); // 创建 Order 对象 方法
         return order;
     }
 
@@ -177,7 +177,7 @@ public class PingPayServiceImpl implements IPingPayService {
         params.put("channel", channel);
         params.put("charge_amount", charge_amount);
         params.put("extra", channelExtra(channel));
-        Order order = Order.pay(pingOrderId, params); // 创建支付 PingOrder 对象 方法
+        Order order = Order.pay(pingOrderId, params); // 创建支付 Order 对象 方法
         return order;
     }
 
