@@ -64,5 +64,5 @@ public interface ILineService extends IService<Line> {
      * @param file
      * @return
      */
-    boolean importExcel(MultipartFile file, Long userId);
+    boolean importExcel(MultipartFile file, Long loginId);
 }

@@ -10,6 +10,7 @@ import com.cjyc.common.model.entity.CarrierDriverCon;
 import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.vo.FreeDriverVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.driver.mine.CarrierDriverVo;
 
 import java.util.List;
 
@@ -75,7 +76,7 @@ public interface ICsDriverService {
      * @param dto
      * @return
      */
-    ResultVo<List<FreeDriverVo>> findCarrierDriver(CarrierDriverNameDto dto);
+    ResultVo<CarrierDriverVo> findCompanyFreeDriver(CarrierDriverNameDto dto);
 
     /**
      * 获取用户角色id

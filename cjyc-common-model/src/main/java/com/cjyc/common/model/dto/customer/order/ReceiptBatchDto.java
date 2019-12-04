@@ -21,9 +21,6 @@ public class ReceiptBatchDto {
     @ApiModelProperty(value = "用户类型：1业务员，2司机，3客户(不用传)")
     private UserTypeEnum loginType;
     @NotEmpty
-    @ApiModelProperty(value = "订单ID",required = true)
-    private Long orderId;
-    @NotEmpty
     @ApiModelProperty(value = "订单车辆ID",required = true)
     private List<Long> orderCarIdList;
 }

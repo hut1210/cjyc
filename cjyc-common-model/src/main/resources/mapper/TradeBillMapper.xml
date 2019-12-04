@@ -33,4 +33,19 @@
         id, no, ping_pay_no, ping_pay_id, livemode, subject, body, amount, receiver_id, receier_name, payer_id, payer_name, state, channel, channel_name, channel_fee, type, event_id, event_type, remark, create_time, trade_time
     </sql>
 
+    <update id="updateTradeBillByPingPayId" parameterType="com.cjyc.common.model.entity.TradeBill">
+        update f_trade_bill set state = #{state},trade_time=#{tradeTime} where ping_pay_id=#{pingPayId}
+    </update>
+    <select id="getOrderCarNoList" parameterType="String" resultType="String">
+        select no from w_order_car where order_no = #{orderNo}
+    </select>
+
+    <update id="updateOrderCar" parameterType="map" >
+        update w_order_car set wl_pay_state = #{wlPayState}, wl_pay_time = #{wlPayTime} where no =#{orderCarNo}
+    </update>
+
+    <select id="getTradeBillByOrderNo" parameterType="String" resultType="String">
+        select * from f_trade_bill where no = #{orderNo} and state =2 order by create_time desc limit 1
+    </select>
+
 </mapper>

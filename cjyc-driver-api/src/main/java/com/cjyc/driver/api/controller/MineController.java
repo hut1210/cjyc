@@ -63,21 +63,15 @@ public class MineController {
     }
 
     @ApiOperation(value = "该承运商下空闲车辆(管理员中的司机管理的新增/修改)")
-    @PostMapping(value = "/findCarrierVehicle")
-    public ResultVo<CarrierVehicleVo> findCarrierVehicle(@Validated @RequestBody CarrierVehicleNoDto dto){
-        ResultVo<List<FreeVehicleVo>> resultVo = csVehicleService.findCarrierVehicle(dto);
-        CarrierVehicleVo vehicleVo = new CarrierVehicleVo();
-        vehicleVo.setVehicleVo(resultVo.getData());
-        return BaseResultUtil.success(vehicleVo);
+    @PostMapping(value = "/findCompanyFreeVehicle")
+    public ResultVo<CarrierVehicleVo> findCompanyFreeVehicle(@Validated @RequestBody CarrierVehicleNoDto dto){
+        return csVehicleService.findCompanyFreeVehicle(dto);
     }
 
     @ApiOperation(value = "该承运商下空闲司机(管理员中的车辆管理中新增/修改车辆)")
-    @PostMapping(value = "/findCarrierDriver")
-    public ResultVo<CarrierDriverVo> findCarrierDriver(@Validated @RequestBody CarrierDriverNameDto dto){
-        ResultVo<List<FreeDriverVo>> resultVo = csDriverService.findCarrierDriver(dto);
-        CarrierDriverVo driverVo = new CarrierDriverVo();
-        driverVo.setDriverVo(resultVo.getData());
-        return BaseResultUtil.success(driverVo);
+    @PostMapping(value = "/findCompanyFreeDriver")
+    public ResultVo<CarrierDriverVo> findCompanyFreeDriver(@Validated @RequestBody CarrierDriverNameDto dto){
+        return csDriverService.findCompanyFreeDriver(dto);
     }
 
     @ApiOperation(value = "新增/修改承运商下司机")
@@ -100,11 +94,8 @@ public class MineController {
 
     @ApiOperation(value = "查询没有被绑定的社会车辆信息")
     @PostMapping(value = "/findSocietyFreeVehicle")
-    public ResultVo<SocietyVehicleVo> findSocietyFreeVehicle(@RequestBody KeywordDto dto){
-        ResultVo<List<FreeVehicleVo>> resultVo = csVehicleService.findPersonFreeVehicle(dto);
-        SocietyVehicleVo vehicleVo = new SocietyVehicleVo();
-        vehicleVo.setVehicleVo(resultVo.getData());
-        return BaseResultUtil.success(vehicleVo);
+    public ResultVo<SocietyVehicleVo> findSocietyFreeVehicle(@RequestBody CarrierVehicleNoDto dto){
+        return csVehicleService.findSocietyFreeVehicle(dto);
     }
 
     @ApiOperation(value = "个人司机添加/修改车辆信息")

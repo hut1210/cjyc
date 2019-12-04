@@ -2,8 +2,11 @@ package com.cjyc.customer.api.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.nacos.client.utils.StringUtils;
+import com.cjyc.common.model.dto.customer.pingxx.PrePayDto;
+import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.system.entity.PingCharge;
 import com.cjyc.customer.api.config.PingProperty;
 import com.cjyc.customer.api.dto.OrderModel;
 import com.cjyc.customer.api.service.IPingPayService;
@@ -11,10 +14,8 @@ import com.cjyc.customer.api.service.ITransactionService;
 import com.pingplusplus.model.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.http.HttpRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,34 +27,47 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.security.*;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.List;
 
 /**
  * @Author:Hut
  * @Date:2019/11/20 9:32
  */
 @RestController
-@RequestMapping("/pingpay")
+@RequestMapping("/pay")
+@Slf4j
 @Api(tags = "Ping++支付")
 public class PingPayController {
 
-    private static Logger logger = LoggerFactory.getLogger(PingPayController.class);
 
     @Autowired
-    private IPingPayService iPingPayService;
+    private IPingPayService pingPayService;
 
     @Autowired
     private ITransactionService iTransactionService;
 
     @ApiOperation("付款")
+    @PostMapping("/order/pre/pay")
+    public ResultVo pay(HttpServletRequest request,@RequestBody PrePayDto reqDto){
+        reqDto.setIp(request.getRemoteAddr());
+        PingCharge charge;
+        try{
+            charge = pingPayService.prePay(reqDto);
+        }catch (Exception e){
+            log.error(e.getMessage(),e);
+            return BaseResultUtil.fail("预付款异常");
+        }
+        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(), charge.toString());
+    }
+
+    @ApiOperation("付款")
     @PostMapping("/pay")
     public ResultVo pay(HttpServletRequest request,@RequestBody OrderModel om){
-        Order order = new Order();
+        Order order;
         try{
-            logger.debug("pay---------"+om.toString());
-            order = iPingPayService.pay(request,om);
+            log.debug("pay---------"+om.toString());
+            order = pingPayService.pay(request,om);
         }catch (Exception e){
-            logger.error(e.getMessage(),e);
+            log.error(e.getMessage(),e);
             return BaseResultUtil.fail("预付款异常");
         }
         return BaseResultUtil.success(JSONObject.parseObject(order.toString()));
@@ -70,9 +84,9 @@ public class PingPayController {
         String jsonpCallback = request.getParameter("jsonpCallback");
         //退款
         try {
-            iTransactionService.cancelOrderRefund(orderCode);
+            pingPayService.cancelOrderRefund(orderCode);
         } catch (Exception e) {
-            logger.error("取消订单"+orderCode+"，退款异常",e);
+            log.error("取消订单"+orderCode+"，退款异常",e);
             return BaseResultUtil.fail("取消订单退款异常");
         }
 
@@ -99,17 +113,17 @@ public class PingPayController {
                 if (StringUtils.isNotBlank(buffer.toString())) {
                     Event event = Webhooks.eventParse(buffer.toString());
                     EventData data = event.getData();
-                    logger.debug("------event.getType()=" + event.getType());
+                    log.debug("------event.getType()=" + event.getType());
                     if ("order.succeeded".equals(event.getType())) {//ping++订单支付成功
                         Order order = (Order) data.getObject();
                         if (data.getObject() instanceof Order) {
-                            logger.debug("------------->order.succeeded");
-                            //iTransactionService.update
+                            log.debug("------------->order.succeeded");
+                            iTransactionService.updateTransactions((Order)data.getObject(),event,"1");
                         }
                     }else if("charge.succeeded".equals(event.getType())){
                         Charge charge = (Charge)data.getObject();
                         if(data.getObject() instanceof Charge){
-                            logger.debug("------------->charge.succeeded");
+                            log.debug("------------->charge.succeeded");
                             //将金额存进OrderDeTailId
                             //updateAmount(charge);
                         }
@@ -117,7 +131,7 @@ public class PingPayController {
                 }
             }
         }catch (Exception e){
-            logger.error(e.getMessage(),e);
+            log.error(e.getMessage(),e);
             return BaseResultUtil.fail(500,"ping++订单支付回调异常");
         }
         return BaseResultUtil.success();
@@ -207,13 +221,13 @@ public class PingPayController {
             om.setChargeType("1");
             om.setClientType("driver");
             om.setDescription("韵车订单号："+om.getOrderNo());
-            charge = iPingPayService.sweepDriveCode(om);
+            charge = pingPayService.sweepDriveCode(om);
 
         } catch (Exception e) {
-            logger.error("扫码支付异常",e);
+            log.error("扫码支付异常",e);
             return BaseResultUtil.fail(500,"司机扫码支付异常");
         }
-        return BaseResultUtil.success((Object) charge.toString());
+        return BaseResultUtil.success(JSONObject.parseObject(charge.toString()));
     }
 
     @ApiOperation("业务员出示二维码，用户扫码")
@@ -239,12 +253,12 @@ public class PingPayController {
             om.setChargeType("1");//支付尾款
             om.setClientType("user");
             om.setDescription("韵车订单号："+om.getOrderNo());
-            charge = iPingPayService.sweepSalesmanCode(om);
+            charge = pingPayService.sweepSalesmanCode(om);
 
         } catch (Exception e) {
-            logger.error("扫码支付异常",e);
+            log.error("扫码支付异常",e);
             return BaseResultUtil.fail(500,"业务员出示二维码，用户扫码支付异常");
         }
-        return BaseResultUtil.success((Object)charge.toString());
+        return BaseResultUtil.success(JSONObject.parseObject(charge.toString()));
     }
 }

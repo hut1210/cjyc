@@ -168,7 +168,7 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
     }
 
     @Override
-    public boolean importExcel(MultipartFile file, Long userId) {
+    public boolean importExcel(MultipartFile file, Long loginId) {
         boolean result;
         try {
             List<LineImportExcel> lineImportExcelList = ExcelUtil.importExcel(file, 1, 1, LineImportExcel.class);
@@ -193,7 +193,7 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
                     line.setDefaultFreightFee(lineExcel.getDefaultFreightFee() == null ? BigDecimal.ZERO:lineExcel.getDefaultFreightFee().multiply(new BigDecimal(100)));
                     line.setName(lineExcel.getFromCity()+NoConstant.SEPARATOR+lineExcel.getToCity());
                     line.setCreateTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
-                    line.setCreateUserId(userId);
+                    line.setCreateUserId(loginId);
                     list.add(line);
                 }
                 result = super.saveBatch(list);

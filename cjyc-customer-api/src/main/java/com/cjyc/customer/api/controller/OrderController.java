@@ -1,14 +1,12 @@
 package com.cjyc.customer.api.controller;
 
-import com.cjyc.common.model.dto.customer.order.OrderDetailDto;
-import com.cjyc.common.model.dto.customer.order.OrderQueryDto;
-import com.cjyc.common.model.dto.customer.order.ReceiptBatchDto;
-import com.cjyc.common.model.dto.customer.order.SimpleSaveOrderDto;
+import com.cjyc.common.model.dto.customer.order.*;
 import com.cjyc.common.model.dto.web.order.CancelOrderDto;
 import com.cjyc.common.model.dto.web.order.SaveOrderDto;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.vo.PageVo;
+import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterDetailVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterVo;
@@ -27,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-
+import java.util.Map;
 
 /**
  * 订单
@@ -137,13 +135,27 @@ public class OrderController {
         return orderService.getDetail(dto);
     }
 
+
+
     /**
-     * 签收-客户
+     * 按车辆申请支付
+     * @author JPG
+     */
+   @ApiOperation(value = "申请支付")
+    @PostMapping(value = "/car/apply/pay")
+    public ResultVo<Map<String, Object>> applyPay(@RequestBody OrderPayStateDto reqDto) {
+       Customer customer = csCustomerService.validate(reqDto.getLoginId());
+       reqDto.setLoginName(customer.getName());
+       return csOrderService.carApplyPay(reqDto);
+    }
+
+    /**
+     * 签收(已支付过)-客户
      * @author JPG
      */
     @ApiOperation(value = "签收")
     @PostMapping(value = "/car/receipt")
-    public ResultVo receiptBatch(@RequestBody ReceiptBatchDto reqDto) {
+    public ResultVo<ResultReasonVo> receiptBatch(@RequestBody ReceiptBatchDto reqDto) {
         Customer customer = csCustomerService.validate(reqDto.getLoginId());
         reqDto.setLoginName(customer.getName());
         reqDto.setLoginPhone(customer.getContactPhone());

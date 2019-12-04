@@ -144,4 +144,6 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
     int countUnFinishByOrderId(Long id);
 
     int updateForReceiptBatch(@Param("collection") Collection<Long> orderCarIdSet);
+
+    List<OrderCarWaitDispatchVo> findWaitDispatchCarList(@Param("paramsDto") WaitDispatchListOrderCarDto paramsDto);
 }

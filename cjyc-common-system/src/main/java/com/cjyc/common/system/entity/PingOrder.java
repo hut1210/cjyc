@@ -1,20 +1,17 @@
-package com.cjyc.customer.api.dto;
+package com.cjyc.common.system.entity;
 
-import com.pingplusplus.model.ChargeEssentials;
-import com.pingplusplus.model.OrderCollection;
 import com.pingplusplus.exception.*;
 import com.pingplusplus.model.Charge;
 import com.pingplusplus.model.ChargeCollection;
+import com.pingplusplus.model.ChargeEssentials;
+import com.pingplusplus.model.OrderCollection;
 import com.pingplusplus.net.APIResource;
-import lombok.Data;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Data
-public class OrderModel extends APIResource {
+public class PingOrder extends APIResource {
     private String id;
     private String object;
     private Long created;
@@ -26,7 +23,7 @@ public class OrderModel extends APIResource {
     private String charge;
     private String uid;
     private String merchantOrderNo;
-    private BigDecimal amount;
+    private Integer amount;
     private Integer couponAmount;
     private Integer actualAmount;
     private Integer amountRefunded;
@@ -46,64 +43,7 @@ public class OrderModel extends APIResource {
     private String receiptApp;
     private String serviceApp;
     private List<String> availableMethods;
-
-
-    /**支付渠道*/
-    private String channel;
-    private String orderNo; //平台订单编号
-    private String chargeType;	//支付类型 类型：1物流费预付，2物流费全款到付，3物流费分车支付， 11运费支付、12居间服务费支付
-    private String batch;	//0:整体支付尾款	 1：批量支付尾款
-    private BigDecimal deductFee;	//扣费金额
-    private String clientType;	//客户端类型 customer:用户端	driver:司机端    user:业务员端
-    private String pingAppId;
-    private BigDecimal deposit;	//定金
-    private String orderMan; //当前app登陆人的Id
-    private String orderCarId;
-    private String driver_code;
-    private String order_type;
-    private String driver_name;
-    private String driver_phone;
-    private String back_type;
-
-	public String getOrder_type() {
-		return order_type;
-	}
-
-	public void setOrder_type(String order_type) {
-		this.order_type = order_type;
-	}
-
-	public String getDriver_name() {
-		return driver_name;
-	}
-
-	public void setDriver_name(String driver_name) {
-		this.driver_name = driver_name;
-	}
-
-	public String getDriver_phone() {
-		return driver_phone;
-	}
-
-	public void setDriver_phone(String driver_phone) {
-		this.driver_phone = driver_phone;
-	}
-
-	public String getBack_type() {
-		return back_type;
-	}
-
-	public void setBack_type(String back_type) {
-		this.back_type = back_type;
-	}
-
-    public String getOrderCarId() {
-        return orderCarId;
-    }
-
-    public void setOrderCarId(String orderCarId) {
-        this.orderCarId = orderCarId;
-    }
+    private Integer discountAmount;
 
     public String getId() {
         return id;
@@ -185,11 +125,11 @@ public class OrderModel extends APIResource {
         this.merchantOrderNo = merchantOrderNo;
     }
 
-    public BigDecimal getAmount() {
+    public Integer getAmount() {
         return amount;
     }
 
-    public void setAmount(BigDecimal amount) {
+    public void setAmount(Integer amount) {
         this.amount = amount;
     }
 
@@ -353,6 +293,14 @@ public class OrderModel extends APIResource {
         this.charge = charge;
     }
 
+    public Integer getDiscountAmount() {
+        return discountAmount;
+    }
+
+    public void setDiscountAmount(Integer discountAmount) {
+        this.discountAmount = discountAmount;
+    }
+
     /**
      * 创建 order
      *
@@ -365,10 +313,10 @@ public class OrderModel extends APIResource {
      * @throws ChannelException
      * @throws RateLimitException
      */
-    public static OrderModel create(Map<String, Object> params)
+    public static PingOrder create(Map<String, Object> params)
             throws AuthenticationException, InvalidRequestException,
             APIConnectionException, APIException, ChannelException, RateLimitException {
-        return request(RequestMethod.POST, classURL(OrderModel.class), params, OrderModel.class);
+        return request(RequestMethod.POST, classURL(PingOrder.class), params, PingOrder.class);
     }
 
     /**
@@ -383,10 +331,10 @@ public class OrderModel extends APIResource {
      * @throws ChannelException
      * @throws RateLimitException
      */
-    public static OrderModel retrieve(String id) throws AuthenticationException,
+    public static PingOrder retrieve(String id) throws AuthenticationException,
             InvalidRequestException, APIConnectionException,
             APIException, ChannelException, RateLimitException {
-        return request(RequestMethod.GET, instanceURL(OrderModel.class, id), null, OrderModel.class);
+        return request(RequestMethod.GET, instanceURL(PingOrder.class, id), null, PingOrder.class);
     }
 
     /**
@@ -404,7 +352,7 @@ public class OrderModel extends APIResource {
     public static OrderCollection list(Map<String, Object> params)
             throws AuthenticationException, InvalidRequestException,
             APIConnectionException, APIException, ChannelException, RateLimitException {
-        return request(RequestMethod.GET, classURL(OrderModel.class), params, OrderCollection.class);
+        return request(RequestMethod.GET, classURL(PingOrder.class), params, OrderCollection.class);
     }
 
     /**
@@ -419,10 +367,10 @@ public class OrderModel extends APIResource {
      * @throws ChannelException
      * @throws RateLimitException
      */
-    public static OrderModel update(String id, Map<String, Object> params)
+    public static PingOrder update(String id, Map<String, Object> params)
             throws AuthenticationException, InvalidRequestException,
             APIConnectionException, APIException, ChannelException, RateLimitException {
-        return request(RequestMethod.PUT, instanceURL(OrderModel.class, id), params, OrderModel.class);
+        return request(RequestMethod.PUT, instanceURL(PingOrder.class, id), params, PingOrder.class);
     }
 
     /**
@@ -436,7 +384,7 @@ public class OrderModel extends APIResource {
      * @throws ChannelException
      * @throws RateLimitException
      */
-    public OrderModel cancel()
+    public PingOrder cancel()
             throws AuthenticationException, InvalidRequestException,
             APIConnectionException, APIException, ChannelException, RateLimitException {
         Map<String, Object> params = new HashMap<String, Object>();
@@ -456,7 +404,7 @@ public class OrderModel extends APIResource {
      * @throws ChannelException
      * @throws RateLimitException
      */
-    public static OrderModel cancel(String id)
+    public static PingOrder cancel(String id)
             throws AuthenticationException, InvalidRequestException,
             APIConnectionException, APIException, ChannelException, RateLimitException {
         Map<String, Object> params = new HashMap<String, Object>();
@@ -476,11 +424,11 @@ public class OrderModel extends APIResource {
      * @throws ChannelException
      * @throws RateLimitException
      */
-    public OrderModel pay(Map<String, Object> params) throws AuthenticationException,
+    public PingOrder pay(Map<String, Object> params) throws AuthenticationException,
             InvalidRequestException, APIConnectionException,
             APIException, ChannelException, RateLimitException {
-        return request(RequestMethod.POST, String.format("%s/pay", instanceURL(OrderModel.class, id)),
-                params, OrderModel.class);
+        return request(RequestMethod.POST, String.format("%s/pay", instanceURL(PingOrder.class, id)),
+                params, PingOrder.class);
     }
 
     /**
@@ -496,11 +444,11 @@ public class OrderModel extends APIResource {
      * @throws ChannelException
      * @throws RateLimitException
      */
-    public static OrderModel pay(String id, Map<String, Object> params) throws AuthenticationException,
+    public static PingOrder pay(String id, Map<String, Object> params) throws AuthenticationException,
             InvalidRequestException, APIConnectionException,
             APIException, ChannelException, RateLimitException {
-        return request(RequestMethod.POST, String.format("%s/pay", instanceURL(OrderModel.class, id)),
-                params, OrderModel.class);
+        return request(RequestMethod.POST, String.format("%s/pay", instanceURL(PingOrder.class, id)),
+                params, PingOrder.class);
     }
 
     /**
@@ -519,7 +467,7 @@ public class OrderModel extends APIResource {
     public static ChargeCollection chargeList(String id, Map<String, Object> params) throws AuthenticationException,
             InvalidRequestException, APIConnectionException,
             APIException, ChannelException, RateLimitException {
-        return request(RequestMethod.GET, String.format("%s/charges", instanceURL(OrderModel.class, id)),
+        return request(RequestMethod.GET, String.format("%s/charges", instanceURL(PingOrder.class, id)),
                 params, ChargeCollection.class);
     }
 
@@ -539,87 +487,7 @@ public class OrderModel extends APIResource {
     public static Charge retrieveCharge(String orderId, String chargeId) throws AuthenticationException,
             InvalidRequestException, APIConnectionException,
             APIException, ChannelException, RateLimitException {
-        return request(RequestMethod.GET, String.format("%s/charges/%s", instanceURL(OrderModel.class, orderId), chargeId),
+        return request(RequestMethod.GET, String.format("%s/charges/%s", instanceURL(PingOrder.class, orderId), chargeId),
                 null, Charge.class);
-    }
-
-    public String getOrderNo() {
-        return orderNo;
-    }
-
-    public void setOrderNo(String orderNo) {
-        this.orderNo = orderNo;
-    }
-
-    public String getChargeType() {
-		return chargeType;
-	}
-
-	public void setChargeType(String chargeType) {
-		this.chargeType = chargeType;
-	}
-
-	public String getBatch() {
-		return batch;
-	}
-
-	public void setBatch(String batch) {
-		this.batch = batch;
-	}
-
-	public String getChannel() {
-		return channel;
-	}
-
-	public void setChannel(String channel) {
-		this.channel = channel;
-	}
-
-	public String getClientType() {
-		return clientType;
-	}
-
-	public void setClientType(String clientType) {
-		this.clientType = clientType;
-	}
-
-	public String getPingAppId() {
-		return pingAppId;
-	}
-
-	public void setPingAppId(String pingAppId) {
-		this.pingAppId = pingAppId;
-	}
-
-	public String getOrderMan() {
-		return orderMan;
-	}
-
-	public void setOrderMan(String orderMan) {
-		this.orderMan = orderMan;
-	}
-
-	public String getDriver_code() {
-		return driver_code;
-	}
-
-	public void setDriver_code(String driver_code) {
-		this.driver_code = driver_code;
-	}
-
-    public BigDecimal getDeductFee() {
-        return deductFee;
-    }
-
-    public void setDeductFee(BigDecimal deductFee) {
-        this.deductFee = deductFee;
-    }
-
-    public BigDecimal getDeposit() {
-        return deposit;
-    }
-
-    public void setDeposit(BigDecimal deposit) {
-        this.deposit = deposit;
     }
 }

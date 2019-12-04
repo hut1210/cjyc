@@ -6,9 +6,9 @@ package com.cjyc.common.model.enums;
  */
 public enum PayStateEnum {
 
-    /**结算方式 0到付（默认），1预付，2账期*/
+    /**结算方式 0未支付，1已支付*/
     UNPAID("未支付", 0),
-    PAID("账期", 2);
+    PAID("已支付", 1);
 
     public String name;
     public int code;

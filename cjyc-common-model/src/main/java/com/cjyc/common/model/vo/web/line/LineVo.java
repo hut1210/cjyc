@@ -49,7 +49,6 @@ public class LineVo implements Serializable {
     private BigDecimal defaultFreightFee;
 
     @ApiModelProperty("总里程")
-    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal kilometer;
 
     @ApiModelProperty("总耗时(天)")

@@ -97,11 +97,11 @@ cjkj:
   dept_driver_id: 110000
   dept_admin_id: 120000
   customer:
-    password: cc8$wT^n4L#W4Fii #使用后不能修改
+    password: 123456
   driver:
-    password: cc8$wT^n4L#W4Fii #使用后不能修改
+    password: 123456
   salesman:
-    password: cc8$wT^n4L#W4Fii #使用后不能修改
+    password: 123456
   web:
     clientId: "1186108891007336449"
     clientSecret: acffa1064e9a629d3140e5b36be31bd3
@@ -109,12 +109,14 @@ cjkj:
     password: ${cjkj.salesman.password} #使用后不能修改
   carries_menu_ids: >
     1166601727922446337,
-    1166601979446468610,
-    1169434673131659265
+    1199275446849839105,
+    1199276101425504258,
+    1199275720784027649
   carries_mgr_menu_ids: >
     1166601727922446337,
-    1166601979446468610,
-    1169434673131659265
+    1199275446849839105,
+    1199276101425504258,
+    1199275720784027649
 
 
 cjyc:
@@ -162,13 +164,3 @@ cjyc:
         webhooks: http://39.106.134.87:80/manycc/pingpay/webhooksNotice
 
 
-    ##SALT
-    #salt:
-    #customer: YCcustomersalt
-    #driver: YCdriversalt
-    #salesman: YCsalesmansalt
-
-  ##TOKEN
-  token:
-    ##过期时间（秒）
-    expires: 1800

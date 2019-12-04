@@ -6,6 +6,8 @@ import com.cjyc.common.model.dto.driver.mine.CarrierVehicleNoDto;
 import com.cjyc.common.model.dto.web.vehicle.FreeVehicleDto;
 import com.cjyc.common.model.vo.FreeVehicleVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.driver.mine.CarrierVehicleVo;
+import com.cjyc.common.model.vo.driver.mine.SocietyVehicleVo;
 
 import java.util.List;
 
@@ -19,6 +21,13 @@ public interface ICsVehicleService {
     ResultVo<List<FreeVehicleVo>> findPersonFreeVehicle(KeywordDto dto);
 
     /**
+     * 获取司机端社会空闲车辆
+     * @param dto
+     * @return
+     */
+    ResultVo<SocietyVehicleVo> findSocietyFreeVehicle(CarrierVehicleNoDto dto);
+
+    /**
      * 获取承运商下的空闲车辆
      * @param dto
      * @return
@@ -30,7 +39,7 @@ public interface ICsVehicleService {
      * @param dto
      * @return
      */
-    ResultVo<List<FreeVehicleVo>> findCarrierVehicle(CarrierVehicleNoDto dto);
+    ResultVo<CarrierVehicleVo> findCompanyFreeVehicle(CarrierVehicleNoDto dto);
 
     /**
      * 根据承运商id获取该承运商下的空闲车辆

@@ -211,15 +211,14 @@ public class AdminServiceImpl extends ServiceImpl<IAdminDao, Admin> implements I
             }
             resList.add(adminPageVo);
         }
-        PageVo<AdminPageVo> pageVo = PageVo.<AdminPageVo>builder()
+
+        return PageVo.<AdminPageVo>builder()
                 .totalRecords(resData.getData().getTotal())
                 .pageSize(paramsDto.getPageSize())
                 .currentPage(paramsDto.getCurrentPage())
                 .totalPages(getPages(resData.getData().getTotal(), paramsDto.getPageSize()))
                 .list(resList)
                 .build();
-
-        return pageVo;
 
     }
 
@@ -347,7 +346,7 @@ public class AdminServiceImpl extends ServiceImpl<IAdminDao, Admin> implements I
         }else {
             if (!CollectionUtils.isEmpty(rd.getData())) {
                 idList.addAll(rd.getData().stream()
-                        .map(d -> d.getDeptId()).collect(Collectors.toList()));
+                        .map(SelectDeptResp::getDeptId).collect(Collectors.toList()));
             }
         }
         return idList;

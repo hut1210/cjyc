@@ -2,9 +2,11 @@ package com.cjyc.common.system.service.impl;
 
 import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IOrderDao;
+import com.cjyc.common.model.dto.customer.order.OrderPayStateDto;
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.PayModeEnum;
+import com.cjyc.common.model.enums.PayStateEnum;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
 import com.cjyc.common.model.enums.city.CityLevelEnum;
@@ -14,19 +16,24 @@ import com.cjyc.common.model.enums.order.OrderChangeTypeEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.exception.ParameterException;
 import com.cjyc.common.model.exception.ServerException;
+import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.entity.defined.FullCity;
 import com.cjyc.common.system.service.*;
+import com.cjyc.common.system.util.RedisUtils;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -36,6 +43,8 @@ import java.util.Set;
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class CsOrderServiceImpl implements ICsOrderService {
+    @Resource
+    private RedisUtils redisUtils;
     @Resource
     private IOrderDao orderDao;
     @Resource
@@ -583,7 +592,6 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
     /**
      * 完善订单信息
-     *
      * @param paramsDto
      * @author JPG
      * @since 2019/11/5 16:51
@@ -605,6 +613,36 @@ public class CsOrderServiceImpl implements ICsOrderService {
         }
         // TODO 日志
         return BaseResultUtil.success();
+    }
+
+    @Override
+    public ResultVo<Map<String, Object>> carApplyPay(OrderPayStateDto paramsDto) {
+        Map<String, Object> resMap = Maps.newHashMap();
+
+        boolean ispaied = true;
+        BigDecimal totalFee = BigDecimal.ZERO;
+        List<OrderCar> carList = orderCarDao.findListByIds(paramsDto.getOrderCarId());
+        for (OrderCar orderCar : carList) {
+            if(orderCar == null || orderCar.getNo() == null){
+                continue;
+            }
+            String key = RedisKeys.getOrderCarPayLockKey(orderCar.getNo());
+            String value = redisUtils.get(key);
+            if(value != null && !value.equals(paramsDto.getLoginId().toString())){
+               return BaseResultUtil.fail("订单车辆{}正在支付中", orderCar.getNo());
+            }
+            if(orderCar.getState() >= OrderCarStateEnum.SIGNED.code){
+                return BaseResultUtil.fail("订单车辆{}已签收过，请刷新后重试", orderCar.getNo());
+            }
+            if(PayStateEnum.UNPAID.code == orderCar.getWlPayState()){
+                ispaied = false;
+                totalFee = totalFee.add(orderCar.getTotalFee());
+                return BaseResultUtil.fail("订单车辆{}已支付", orderCar.getNo());
+            }
+        }
+        resMap.put("paied", ispaied);
+        resMap.put("totalFee", totalFee);
+        return BaseResultUtil.success(resMap);
     }
 
     /**

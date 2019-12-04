@@ -12,11 +12,8 @@ import com.cjyc.common.model.vo.BaseTipVo;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.task.CrTaskVo;
 import com.cjyc.common.model.vo.web.waybill.*;
 import com.cjyc.common.system.service.ICsAdminService;
-import com.cjyc.common.system.service.ICsCarrierService;
-import com.cjyc.common.system.service.ICsDriverService;
 import com.cjyc.web.api.annotations.RequestHeaderAndBody;
 import com.cjyc.web.api.service.IWaybillService;
 import io.swagger.annotations.Api;
@@ -45,10 +42,6 @@ public class WaybillController {
     private IWaybillService waybillService;
     @Autowired
     private ICsAdminService csAdminService;
-    @Autowired
-    private ICsDriverService csDriverService;
-    @Autowired
-    private ICsCarrierService csCarrierService;
 
     /**
      * 提送车调度
@@ -60,10 +53,7 @@ public class WaybillController {
     @PostMapping("/local/save")
     public ResultVo saveLocal(@RequestBody SaveLocalDto reqDto) {
         //验证用户
-        Admin admin = csAdminService.getByUserId(reqDto.getLoginId(), true);
-        if (admin == null || admin.getState() != AdminStateEnum.CHECKED.code) {
-            return BaseResultUtil.fail("当前业务员，不在职");
-        }
+        Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
         return waybillService.saveLocal(reqDto);
     }

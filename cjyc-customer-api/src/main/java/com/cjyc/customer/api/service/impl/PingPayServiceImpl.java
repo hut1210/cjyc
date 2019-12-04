@@ -1,13 +1,19 @@
 package com.cjyc.customer.api.service.impl;
 
+import com.alibaba.nacos.client.utils.StringUtils;
+import com.cjyc.common.model.dto.customer.pingxx.PrePayDto;
+import com.cjyc.common.model.enums.ClientEnum;
+import com.cjyc.common.system.entity.PingCharge;
 import com.cjyc.customer.api.config.PingProperty;
 import com.cjyc.customer.api.dto.OrderModel;
 import com.cjyc.customer.api.service.IPingPayService;
 import com.cjyc.customer.api.service.ITransactionService;
+import com.google.common.collect.Maps;
 import com.pingplusplus.Pingpp;
 import com.pingplusplus.exception.*;
 import com.pingplusplus.model.Charge;
 import com.pingplusplus.model.Order;
+import com.pingplusplus.model.OrderRefund;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,11 +39,35 @@ import java.util.Map;
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
 public class PingPayServiceImpl implements IPingPayService {
 
-    private static Logger logger = LoggerFactory.getLogger(PingPayServiceImpl.class);
-
     @Autowired
-    private ITransactionService iTransactionService;
+    private ITransactionService transactionService;
 
+    @Override
+    public PingCharge prePay(PrePayDto reqDto) {
+
+
+        HashMap<String, Object> metaData = Maps.newHashMap();
+        metaData.put("clientType", ClientEnum.APP_CUSTOMER.code);
+        metaData.put("chargeType", 1);
+        metaData.put("orderNo", reqDto.getOrderNo());
+        metaData.put("loginId", reqDto.getLoginId());
+
+        PingCharge charge = new PingCharge();
+        //charge.setAmount();
+        charge.setCurrency("cny");
+        charge.setLivemode(false);
+        charge.setObject("charge");
+        charge.setMetadata(metaData);
+        charge.setChannel(reqDto.getChannel());
+        charge.setApp(PingProperty.customerAppId);
+        charge.setClientIp(reqDto.getIp());
+        charge.setSubject("预付款");
+        charge.setBody("订单预付款");
+
+        //charge.c
+        return null;
+    }
+    
     @Override
     public Order pay(HttpServletRequest request, OrderModel om) {
 
@@ -49,17 +79,14 @@ public class PingPayServiceImpl implements IPingPayService {
         om.setBody("订单预付款");
         om.setChargeType("1");
         om.setClientType("customer");
-        String channel = om.getChannel();
         // 备注：订单号
         om.setDescription("韵车订单号："+om.getOrderNo());
         try {
-            if(!"balance".equals(channel)){
-                order = payOrder(om);
-                logger.debug(order.toString());
-                iTransactionService.saveTransactions(order, "0");
-            }
+            order = payOrder(om);
+            log.debug(order.toString());
+            transactionService.saveTransactions(order, "0");
         } catch (Exception e) {
-            logger.error(e.getMessage(),e);
+            log.error(e.getMessage(),e);
         }
         return order;
     }
@@ -99,7 +126,7 @@ public class PingPayServiceImpl implements IPingPayService {
         meta.put("deposit", om.getDeposit()); //定金金额
         meta.put("orderMan", om.getOrderMan()); //当前app登陆人的ID
         params.put("metadata",meta);//自定义参数
-        Order order = Order.create(params); // 创建 Order 对象 方法
+        Order order = Order.create(params); // 创建 PingOrder 对象 方法
         return order;
     }
 
@@ -126,7 +153,7 @@ public class PingPayServiceImpl implements IPingPayService {
         params.put("channel", channel);
         params.put("charge_amount", charge_amount);
         params.put("extra", channelExtra(channel));
-        Order order = Order.pay(pingOrderId, params); // 创建支付 Order 对象 方法
+        Order order = Order.pay(pingOrderId, params); // 创建支付 PingOrder 对象 方法
         return order;
     }
 
@@ -289,5 +316,27 @@ public class PingPayServiceImpl implements IPingPayService {
         return charge;
     }
 
+    @Override
+    public void cancelOrderRefund(String orderCode) {
+        try{
+            String description = "订单号：" + orderCode + "，定金退款";
+            if(StringUtils.isBlank(description)){
+                log.error("定金退款异常，description不能为空。");
+            }else if(StringUtils.isBlank(orderCode)){
+                log.error("定金退款异常，orderCode不能为空。");
+            }else{
+                String pingPayId = transactionService.getTradeBillByOrderNo(orderCode);
+                initPingApiKey();
+                Map<String, Object> params = new HashMap<String, Object>();
+                params.put("description", description); // 必传
+                params.put("refund_mode", "to_source");//退款方式 原路退回
+                OrderRefund.create(pingPayId, params);
+            }
+        }catch (Exception e){
+            log.error(e.getMessage(),e);
+        }
+    }
+
 
 }
+

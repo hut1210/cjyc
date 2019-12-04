@@ -77,4 +77,16 @@ public class CarDetailVo implements Serializable {
     public String getVin() {
         return vin == null ? "" : vin;
     }
+    public String getLoadLinkName() {
+        return loadLinkName == null ? "" : loadLinkName;
+    }
+    public String getLoadLinkPhone() {
+        return loadLinkPhone == null ? "" : loadLinkPhone;
+    }
+    public String getUnloadLinkName() {
+        return unloadLinkName == null ? "" : unloadLinkName;
+    }
+    public String getUnloadLinkPhone() {
+        return unloadLinkPhone == null ? "" : unloadLinkPhone;
+    }
 }

@@ -283,6 +283,7 @@
         LEFT JOIN s_store s2 on s2.id = o.end_store_id
         LEFT JOIN s_city ct1 on oc.now_area_code = ct1.code
         left join b_admin m on m.id = o.check_user_id
+        left join w_waybill_car wc on wc.order_car_id = oc.id
         <where>
             and o.state >= 25
             <choose>
@@ -375,13 +376,14 @@
                     and o.end_city_code = #{item.toCityCode})
                 </foreach>
             </if>
-            <if test="bizScope != null">
+            <if test="paramsDto.bizScope != null">
                 and  (o.input_store_id or o.end_belong_store_id or oc.now_store_id or wc.end_belong_store_id)  in
-                <foreach collection="bizScope" index="index" item="item" open="(" separator="," close=")">
+                <foreach collection="paramsDto.bizScope" index="index" item="item" open="(" separator="," close=")">
                     #{item}
                 </foreach>
             </if>
         </where>
+        group by oc.id
     </select>
 
     <select id="findByOrderId" resultType="com.cjyc.common.model.entity.OrderCar">
@@ -468,7 +470,7 @@
         ht.contract_no as contractNo,
         ht.settle_period as settlePeriod
         from w_order o
-        left join w_order_car oc on oc.order_id = o.id
+        join w_order_car oc on oc.order_id = o.id
         left join w_waybill_car wc on wc.order_car_id = oc.id
         left join s_store s1 on o.input_store_id = s1.id
         left join s_store s2 on o.start_store_id = s2.id
@@ -769,7 +771,6 @@
         WHERE
             o.customer_id = #{loginId}
             AND t.id IS NULL
-            AND o.invoice_flag = 1
             AND o.state = 100
         ORDER BY
             o.finish_time DESC

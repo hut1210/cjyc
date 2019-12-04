@@ -77,6 +77,8 @@ public class BaseResultUtil<T> {
         return getPageVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(), page, countInfo);
     }
 
+
+
     /**
      * 快速返回失败
      *

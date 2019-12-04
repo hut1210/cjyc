@@ -22,6 +22,7 @@ import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.FreeDriverVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.driver.mine.CarrierDriverVo;
 import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.ICsDriverService;
@@ -34,6 +35,7 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -311,7 +313,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
     }
 
     @Override
-    public ResultVo<List<FreeDriverVo>> findCarrierDriver(CarrierDriverNameDto dto) {
+    public ResultVo<CarrierDriverVo> findCompanyFreeDriver(CarrierDriverNameDto dto) {
         CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
                 .eq(CarrierDriverCon::getDriverId, dto.getLoginId())
                 .eq(CarrierDriverCon::getId, dto.getRoleId()));
@@ -321,7 +323,9 @@ public class CsDriverServiceImpl implements ICsDriverService {
         List<FreeDriverVo> freeDriverVos = driverDao.findCarrierAllDriver(cdc.getCarrierId(),dto.getRealName());
         if(!CollectionUtils.isEmpty(freeDriverVos)){
             freeDriverVos = freeDriver(freeDriverVos,cdc.getCarrierId());
-            return BaseResultUtil.success(freeDriverVos);
+            CarrierDriverVo driverVo = new CarrierDriverVo();
+            driverVo.setDriverVo(freeDriverVos);
+            return BaseResultUtil.success(driverVo);
         }
         return BaseResultUtil.success();
     }
@@ -375,8 +379,9 @@ public class CsDriverServiceImpl implements ICsDriverService {
                     }
                 }
             }
+            return freeDriverVos;
         }
-        return freeDriverVos;
+       return Collections.emptyList();
     }
     /**
      * 修改承运商下司机与车辆关系

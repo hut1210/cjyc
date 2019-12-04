@@ -1,6 +1,7 @@
 package com.cjyc.common.model.dao;
 
 import com.cjyc.common.model.dto.KeywordDto;
+import com.cjyc.common.model.dto.driver.mine.CarrierVehicleNoDto;
 import com.cjyc.common.model.dto.web.carrier.TransportDto;
 import com.cjyc.common.model.dto.web.mineCarrier.QueryMyCarDto;
 import com.cjyc.common.model.dto.web.vehicle.SelectVehicleDto;
@@ -50,6 +51,13 @@ public interface IVehicleDao extends BaseMapper<Vehicle> {
      * @return
      */
     List<FreeVehicleVo> findPersonVehicle(KeywordDto keyword);
+
+    /**
+     * 司机端获取个人司机的空闲车辆
+     * @param
+     * @return
+     */
+    List<FreeVehicleVo> findSocietyFreeVehicle(@Param("carrierId") Long carrierId,@Param("plateNo") String plateNo);
 
     /**
      * 获取该承运商下的车辆

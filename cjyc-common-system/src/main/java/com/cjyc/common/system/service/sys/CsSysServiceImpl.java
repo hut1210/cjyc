@@ -32,6 +32,8 @@ import java.util.stream.Collectors;
 @Service
 public class CsSysServiceImpl implements ICsSysService {
 
+    private static final String YC_DEPT_ADMIN_ID = YmlProperty.get("cjkj.dept_admin_id");
+
     @Resource
     private ISysRoleService sysRoleService;
     @Resource
@@ -64,12 +66,7 @@ public class CsSysServiceImpl implements ICsSysService {
             return bizScope;
         }
         Long deptId = resultData.getData().getDeptId();
-        //查询机构信息
-        ResultData<SelectDeptResp> deptResultDta = sysDeptService.getById(deptId);
-        if(deptResultDta == null || deptResultDta.getData() == null){
-            return bizScope;
-        }
-        if(deptResultDta.getData().getParentId() == null){
+        if(deptId.intValue() == Integer.valueOf(YC_DEPT_ADMIN_ID)){
             //全国权限
             bizScope.setCode(BizScopeEnum.CHINA.code);
             return bizScope;

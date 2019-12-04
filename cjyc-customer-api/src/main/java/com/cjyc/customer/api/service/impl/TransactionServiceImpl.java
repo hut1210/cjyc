@@ -1,12 +1,11 @@
 package com.cjyc.customer.api.service.impl;
 
+import com.alibaba.nacos.client.utils.StringUtils;
+import com.cjkj.common.utils.DateUtil;
 import com.cjyc.common.model.dao.ITradeBillDao;
 import com.cjyc.common.model.entity.TradeBill;
 import com.cjyc.customer.api.service.ITransactionService;
-import com.pingplusplus.model.Charge;
-import com.pingplusplus.model.ChargeCollection;
-import com.pingplusplus.model.Event;
-import com.pingplusplus.model.Order;
+import com.pingplusplus.model.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -15,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -129,4 +129,47 @@ public class TransactionServiceImpl implements ITransactionService {
     public void cancelOrderRefund(String orderCode) {
 
     }
+
+    @Override
+    public void updateTransactions(Order order, Event event, String state) {
+        /**
+         * 更新f_trade_bill状态，更新车辆付款状态,物流费支付时间
+         */
+        TradeBill tradeBill = new TradeBill();
+        tradeBill.setPingPayId(order.getId());
+        tradeBill.setState(2);
+        tradeBill.setTradeTime(System.currentTimeMillis());
+        iTradeBillDao.updateTradeBillByPingPayId(tradeBill);
+
+        Map<String, Object> metadata = order.getMetadata();
+        String orderNo = (String) metadata.get("orderNo");
+
+        if(orderNo!=null){
+            List<String> list = iTradeBillDao.getOrderCarNoList(orderNo);
+            if(list != null){
+                for(int i=0;i<list.size();i++){
+                    String orderCarNo = list.get(i);
+                    if(orderCarNo != null){
+                        iTradeBillDao.updateOrderCar(orderCarNo,1,System.currentTimeMillis());
+                    }
+
+                }
+            }
+        }
+
+    }
+
+    @Override
+    public String getTradeBillByOrderNo(String orderCode) {
+        return iTradeBillDao.getTradeBillByOrderNo(orderCode);
+    }
+
+    /**
+     *扫码付款逻辑操作
+     */
+    public void update(){
+
+    }
+
+
 }

@@ -1,5 +1,7 @@
 package com.cjyc.customer.api.service;
 
+import com.cjyc.common.model.dto.customer.pingxx.PrePayDto;
+import com.cjyc.common.system.entity.PingCharge;
 import com.cjyc.customer.api.dto.OrderModel;
 import com.pingplusplus.exception.*;
 import com.pingplusplus.model.Charge;
@@ -21,4 +23,9 @@ public interface IPingPayService {
 
     Charge sweepSalesmanCode(OrderModel om) throws RateLimitException, APIException, ChannelException,InvalidRequestException,
             APIConnectionException, AuthenticationException,FileNotFoundException;
+
+    PingCharge prePay(PrePayDto reqDto);
+
+    void cancelOrderRefund(String orderCode);
+
 }

@@ -47,7 +47,7 @@ public interface IOrderService extends IService<Order> {
      * @author JPG
      * @since 2019/10/15 20:03
      */
-    ResultVo<PageVo<OrderCarWaitDispatchVo>> waitDispatchCarList(WaitDispatchListOrderCarDto paramsDto, List<Long> bizScopeStoreIds);
+    ResultVo<PageVo<OrderCarWaitDispatchVo>> waitDispatchCarList(WaitDispatchListOrderCarDto paramsDto);
 
     /**
      * 按线路统计待调度车辆（统计列表）

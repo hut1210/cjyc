@@ -39,6 +39,7 @@ public class RedisKeys {
     private final static String ROLE_BIZ_SCOPE_KEY = "role:biz:scope";
 
     private final static String NEW_TASK_NO_KEY = "new:task:no";
+    private final static String WL_PRE_PAY_LOCK = "wl:pre:pay:lock";
 
     /**---------------salesman-------------------------------------------------------------------*/
     /**验证码*/
@@ -75,6 +76,14 @@ public class RedisKeys {
         return PROJECT_PREFIX + I + NEW_TASK_NO_KEY + I + waybillNo;
     }
 
+    public static String getOrderCarPayLockKey(String orderCarNo) {
+        return PROJECT_PREFIX + I + NEW_TASK_NO_KEY + I + orderCarNo;
+    }
+
+    public static String getWlPrePayLock(String orderNo) {
+        return PROJECT_PREFIX + I + WL_PRE_PAY_LOCK + I + orderNo;
+    }
+
     /**
      * 根据客户端判断前缀
      * @param clientEnum
@@ -95,5 +104,6 @@ public class RedisKeys {
         }
         return prefix;
     }
+
 
 }

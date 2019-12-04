@@ -65,7 +65,7 @@ public class DispatchController {
     @ApiOperation(value = "查询待调度车辆列表")
     @PostMapping(value = "/wait/list")
     public ResultVo<PageVo<OrderCarWaitDispatchVo>> waitDispatchCarList(@RequestBody WaitDispatchListOrderCarDto reqDto) {
-        return orderService.waitDispatchCarList(reqDto, null);
+        return orderService.waitDispatchCarList(reqDto);
     }
 
 

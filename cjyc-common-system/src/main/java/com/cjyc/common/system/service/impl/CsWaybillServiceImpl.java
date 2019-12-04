@@ -295,10 +295,10 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
     @Override
     public ResultVo saveTrunk(SaveTrunkWaybillDto paramsDto) {
         Long currentMillisTime = System.currentTimeMillis();
-        Long userId = paramsDto.getLoginId();
+        Long loginId = paramsDto.getLoginId();
         Set<String> lockSet = new HashSet<>();
         //【验证参数】操作人
-        Admin admin = adminDao.findByUserId(userId);
+        Admin admin = adminDao.selectById(loginId);
         if (admin == null || admin.getState() != AdminStateEnum.CHECKED.code) {
             return BaseResultUtil.fail("当前业务员，不在职");
         }
@@ -329,7 +329,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             Waybill waybill = new Waybill();
             waybill.setNo(sendNoService.getNo(SendNoTypeEnum.ORDER));
             waybill.setType(WaybillTypeEnum.TRUNK.code);
-            waybill.setSource(userId.equals(carrierId) ? WaybillSourceEnum.SELF.code : WaybillSourceEnum.MANUAL.code);
+            waybill.setSource(loginId.equals(carrierId) ? WaybillSourceEnum.SELF.code : WaybillSourceEnum.MANUAL.code);
             waybill.setGuideLine(paramsDto.getGuideLine());
             waybill.setCarrierId(carrierId);
             waybill.setCarrierName(carrier.getName());

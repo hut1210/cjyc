@@ -27,11 +27,22 @@
         <dependency>
             <groupId>com.cjkj</groupId>
             <artifactId>cjkj-common-spring-boot-starter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>cn.afterturn</groupId>
+                    <artifactId>easypoi-base</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.cjkj</groupId>
             <artifactId>cjkj-redis-spring-boot-starter</artifactId>
         </dependency>
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>com.cjkj</groupId>
             <artifactId>cjkj-usercenter-dto</artifactId>
@@ -39,7 +50,6 @@
 
 
         <!--web-->
-
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
@@ -53,23 +63,15 @@
             <!--请将 VERSION 换成 SDK 对应的版本号，如：2.2.4-->
             <type>jar</type>
         </dependency>
+
         <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
         </dependency>
+
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
         </dependency>
     </dependencies>
-    <repositories>
-        <repository>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <id>central</id>
-            <name>bintray</name>
-            <url>http://jcenter.bintray.com</url>
-        </repository>
-    </repositories>
 </project>
