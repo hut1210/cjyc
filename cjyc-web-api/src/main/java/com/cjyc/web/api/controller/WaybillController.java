@@ -260,6 +260,7 @@ public class WaybillController {
         return waybillService.getTrunkSubList(reqDto);
     }
 
+    @Deprecated
     @ApiOperation(value = "导出分页运单干线子运单列表信息")
     @GetMapping(value = "/trunk/sub/exportPageList")
     public ResultVo exportTrunkSubPageList(TrunkSubListWaybillDto reqDto, HttpServletResponse response) {
@@ -290,8 +291,9 @@ public class WaybillController {
             return BaseResultUtil.success("未查询到数据");
         }
         try {
-            ExcelUtil.exportExcel(list, "运单干线子运单信息", "运单干线子运单信息",
-                    TrunkSubListWaybillVo.class, System.currentTimeMillis()+"运单干线子运单信息.xls", response);
+            List<ExportTrunkMainListWaybillVo> rsList = dealTrunkSubListForExport(list);
+            ExcelUtil.exportExcel(rsList, "运单干线子运单信息", "运单干线子运单信息",
+                    ExportTrunkMainListWaybillVo.class, System.currentTimeMillis()+"运单干线子运单信息.xls", response);
             return null;
         }catch (Exception e) {
             LogUtil.error("导出全部运单干线子运单列表异常", e);
@@ -434,6 +436,26 @@ public class WaybillController {
         return rsList;
     }
 
-
+    /**
+     * 导出TrunkSubListWaybillVo对象信息封装
+     * @param list
+     * @return
+     */
+    private List<ExportTrunkMainListWaybillVo> dealTrunkSubListForExport(
+            List<TrunkSubListWaybillVo> list) {
+        if (CollectionUtils.isEmpty(list)) {
+            return null;
+        }
+        List<ExportTrunkMainListWaybillVo> rsList = new ArrayList<>();
+        list.forEach(l -> {
+            ExportTrunkMainListWaybillVo vo = new ExportTrunkMainListWaybillVo();
+            BeanUtils.copyProperties(l, vo);
+            vo.setCreateTimeDesc(l.getCreateTime() == null? null:
+                    LocalDateTimeUtil.formatLDT(LocalDateTimeUtil
+                            .convertLongToLDT(l.getCreateTime()), "yyyy-MM-dd"));
+            rsList.add(vo);
+        });
+        return rsList;
+    }
 
 }
