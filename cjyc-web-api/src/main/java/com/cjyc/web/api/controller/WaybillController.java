@@ -16,15 +16,18 @@ import com.cjyc.common.model.vo.web.waybill.*;
 import com.cjyc.common.system.service.ICsAdminService;
 import com.cjyc.web.api.annotations.RequestHeaderAndBody;
 import com.cjyc.web.api.service.IWaybillService;
+import com.cjyc.web.api.util.WaybillValueToDesc;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -156,6 +159,7 @@ public class WaybillController {
         return waybillService.locallist(reqDto);
     }
 
+    @Deprecated
     @ApiOperation(value = "导出分页同城运单列表")
     @GetMapping(value = "/local/exportPageList")
     public ResultVo exportPageLocalList(LocalListWaybillCarDto reqDto,
@@ -187,8 +191,9 @@ public class WaybillController {
             return BaseResultUtil.success("未查询到数据");
         }
         try {
-            ExcelUtil.exportExcel(list, "运单信息", "运单信息",
-                    LocalListWaybillCarVo.class, System.currentTimeMillis()+"运单信息.xls", response);
+            List<ExportLocalListWaybillCarVo> rsList = dealLocalListForExport(list);
+            ExcelUtil.exportExcel(rsList, "运单信息", "运单信息",
+                    ExportLocalListWaybillCarVo.class, System.currentTimeMillis()+"运单信息.xls", response);
             return null;
         }catch (Exception e) {
             LogUtil.error("导出全部同城运单列表信息异常", e);
@@ -379,4 +384,32 @@ public class WaybillController {
         }
         return resultVo.getCode() == ResultEnum.SUCCESS.getCode();
     }
+
+    /**
+     * 导出LocalListWaybillCarVo对象信息封装
+     * @param list
+     * @return
+     */
+    private List<ExportLocalListWaybillCarVo> dealLocalListForExport(List<LocalListWaybillCarVo> list) {
+        List<ExportLocalListWaybillCarVo> rsList = new ArrayList<>();
+        if (CollectionUtils.isEmpty(list)) {
+            return null;
+        }
+        list.forEach(l -> {
+            ExportLocalListWaybillCarVo vo = new ExportLocalListWaybillCarVo();
+            BeanUtils.copyProperties(l, vo);
+            vo.setStateDesc(l.getState() == null?null:
+                    WaybillValueToDesc.convertStateToDesc(l.getState()));
+            vo.setTypeDesc(l.getType() == null? null:
+                    WaybillValueToDesc.convertTypeToDesc(l.getType()));
+            vo.setIsNewDesc(l.getIsNew() == null?null:
+                    WaybillValueToDesc.convertIsNewDesc(l.getIsNew()));
+            rsList.add(vo);
+        });
+        return rsList;
+    }
+
+
+
+
 }

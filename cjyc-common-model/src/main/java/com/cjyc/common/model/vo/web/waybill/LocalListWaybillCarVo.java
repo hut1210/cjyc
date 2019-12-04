@@ -23,28 +23,18 @@ public class LocalListWaybillCarVo extends WaybillCar {
     @ApiModelProperty(value = "运单类型：1提车运单，2干线运单，3送车运单")
     private Integer type;
 
-    @Excel(name = "类型", orderNum = "2")
-    @TableField(exist = false)
-    private String typeDesc;
-
-    @Excel(name = "品牌", orderNum = "6")
     @ApiModelProperty(value = "品牌")
     private String brand;
-    @Excel(name = "车系", orderNum = "7")
     @ApiModelProperty(value = "型号")
     private String model;
     @ApiModelProperty(value = "车牌号")
     private String plateNo;
-    @Excel(name = "VIN码", orderNum = "5")
     @ApiModelProperty(value = "vin码")
     private String vin;
     @ApiModelProperty(value = "是否能动 0-否 1-是")
     private Integer isMove;
     @ApiModelProperty(value = "是否新车 0-否 1-是")
     private Integer isNew;
-    @Excel(name = "是否新车", orderNum = "8")
-    @TableField(exist = false)
-    private String isNewDesc;
 
     @Excel(name = "司机", orderNum = "13")
     @ApiModelProperty(value = "司机名称")

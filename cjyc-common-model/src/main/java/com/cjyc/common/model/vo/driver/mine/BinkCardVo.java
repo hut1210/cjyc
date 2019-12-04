@@ -19,4 +19,7 @@ public class BinkCardVo implements Serializable {
 
     @ApiModelProperty("银行卡号")
     private String cardNo;
+
+    @ApiModelProperty("颜色类型 1：红色 2：蓝色 3：绿色")
+    private Integer cardColour;
 }

@@ -19,6 +19,7 @@ import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.exception.ServerException;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
+import com.cjyc.common.model.util.RandomUtil;
 import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -562,6 +563,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         bcb.setUserId(customer.getId());
         bcb.setCardPhone(customer.getContactPhone());
         bcb.setUserType(UserTypeEnum.CUSTOMER.code);
+        bcb.setCardColour(RandomUtil.getIntRandom());
         bcb.setState(UseStateEnum.USABLE.code);
         bcb.setCreateTime(now);
         bankCardBindDao.insert(bcb);

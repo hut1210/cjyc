@@ -13,6 +13,7 @@ import com.cjyc.common.model.enums.transport.VehicleOwnerEnum;
 import com.cjyc.common.model.enums.transport.VehicleRunStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
+import com.cjyc.common.model.util.RandomUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.mine.*;
@@ -318,7 +319,12 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
         Driver driver = driverDao.selectById(dto.getLoginId());
         BeanUtils.copyProperties(dto,driver);
         driver.setName(dto.getRealName());
+        driver.setCreateUserId(dto.getLoginId());
         driverDao.updateById(driver);
+
+        //更新状态(审核中)
+        cdc.setState(CommonStateEnum.IN_CHECK.code);
+        carrierDriverConDao.updateById(cdc);
         //运力信息
         DriverVehicleCon vehicleCon = driverVehicleConDao.selectOne(new QueryWrapper<DriverVehicleCon>().lambda()
                 .eq(DriverVehicleCon::getDriverId, dto.getLoginId()));
@@ -394,13 +400,14 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
             return BaseResultUtil.fail("该司机不存在，请检查");
         }
         BankCardBind bcb = new BankCardBind();
-        bcb.setUserId(dto.getCarrierId());
+        bcb.setUserId(cdc.getCarrierId());
         bcb.setCardNo(dto.getCardNo());
         bcb.setUserType(UserTypeEnum.DRIVER.code);
         bcb.setCardType(CardTypeEnum.PRIVATE.code);
         bcb.setCardName(dto.getRealName());
         bcb.setCardPhone(dto.getPhone());
         bcb.setIdCard(dto.getIdCard());
+        bcb.setCardType(RandomUtil.getIntRandom());
         bcb.setBankName(dto.getBankName());
         bcb.setState(UseStateEnum.USABLE.code);
         bcb.setCreateTime(NOW);

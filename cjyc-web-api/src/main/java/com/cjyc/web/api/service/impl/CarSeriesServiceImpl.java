@@ -104,8 +104,9 @@ public class CarSeriesServiceImpl extends ServiceImpl<ICarSeriesDao,CarSeries> i
                     String model = carSeriesImportExcel.getModel();
                     List<CarSeries> resultList = super.list(new QueryWrapper<CarSeries>().lambda()
                             .eq(CarSeries::getBrand, brand).eq(CarSeries::getModel, model));
-                    if(!CollectionUtils.isEmpty(resultList))
-                        return BaseResultUtil.fail(brand + "-" + model + "已经存在,不能重复添加");
+                    if(!CollectionUtils.isEmpty(resultList)) {
+                        continue;
+                    }
                     CarSeries carSeries = getCarSeries(createUserId, carSeriesImportExcel);
                     list.add(carSeries);
                 }

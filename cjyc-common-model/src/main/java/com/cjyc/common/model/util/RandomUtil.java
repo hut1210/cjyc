@@ -30,4 +30,12 @@ public class RandomUtil {
         return String.valueOf((int) ((Math.random() * 9 + 1) * Math.pow(10, length - 1)));
     }
 
+    public static int getIntRandom(){
+        int[] cardColor = new int[]{1,2,3};
+        Random rand = new Random();
+        int colorNum = rand.nextInt(3);
+        return cardColor[colorNum];
+    }
+
+
 }

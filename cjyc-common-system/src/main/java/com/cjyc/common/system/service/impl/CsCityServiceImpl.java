@@ -1,12 +1,19 @@
 package com.cjyc.common.system.service.impl;
 
 import com.cjyc.common.model.dao.ICityDao;
+import com.cjyc.common.model.dto.KeywordDto;
 import com.cjyc.common.model.enums.city.CityLevelEnum;
 import com.cjyc.common.model.entity.defined.FullCity;
+import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.customer.city.CityVo;
+import com.cjyc.common.model.vo.customer.city.HotCityVo;
+import com.cjyc.common.model.vo.customer.city.ProvinceTreeVo;
 import com.cjyc.common.system.service.ICsCityService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * 城市公用业务
@@ -49,5 +56,16 @@ public class CsCityServiceImpl implements ICsCityService {
     @Override
     public FullCity findFullCityByCityCode(String cityCode) {
         return cityDao.findFullCityByCityCode(cityCode);
+    }
+
+    @Override
+    public ResultVo<CityVo> queryCity(KeywordDto dto) {
+        CityVo cityvo = new CityVo();
+        //获取热门城市
+        List<HotCityVo> hotCity = cityDao.getHotCity();
+        List<ProvinceTreeVo> cityTreeVos = cityDao.findThreeCity(dto.getKeyword());
+        cityvo.setHotCityVos(hotCity);
+        cityvo.setCityTreeVos(cityTreeVos);
+        return BaseResultUtil.success(cityvo);
     }
 }

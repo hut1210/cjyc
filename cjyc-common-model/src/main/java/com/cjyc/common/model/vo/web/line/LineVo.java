@@ -4,6 +4,7 @@ import com.cjyc.common.model.util.BigDecimalSerizlizer;
 import com.cjyc.common.model.util.DataLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiParam;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -15,6 +16,9 @@ public class LineVo implements Serializable {
     private static final long serialVersionUID = -5565506994979750717L;
     @ApiModelProperty("班线id")
     private Long id;
+
+    @ApiModelProperty("班线编码")
+    private String code;
 
     @ApiModelProperty("起始省编码")
     private String fromProvinceCode;
