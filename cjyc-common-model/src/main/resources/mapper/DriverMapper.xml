@@ -496,6 +496,7 @@
                 )
             </if>
         </where>
+        group by con.driver_id
     </select>
 
     <!--获取司机端我的车辆-->

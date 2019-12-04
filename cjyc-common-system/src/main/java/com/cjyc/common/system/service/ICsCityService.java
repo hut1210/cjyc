@@ -1,7 +1,10 @@
 package com.cjyc.common.system.service;
 
+import com.cjyc.common.model.dto.KeywordDto;
 import com.cjyc.common.model.enums.city.CityLevelEnum;
 import com.cjyc.common.model.entity.defined.FullCity;
+import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.customer.city.CityVo;
 
 /**
  * 城市公用业务类
@@ -18,4 +21,11 @@ public interface ICsCityService {
     FullCity findFullCity(String areaCode, CityLevelEnum cityLevelEnum);
 
     FullCity findFullCityByCityCode(String cityCode);
+
+    /**
+     * 根据关键字查询城市(热门城市/三级城市)
+     * @param dto
+     * @return
+     */
+    ResultVo<CityVo> queryCity(KeywordDto dto);
 }

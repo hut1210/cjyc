@@ -143,7 +143,7 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
     public void exportExcel(HttpServletRequest request, HttpServletResponse response) {
         // 获取参数
         SelectLineDto dto = getSelectLineDto(request);
-        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
+        //PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         // 查询列表
         List<LineVo> lineVos = queryAllByTerm(dto);
         if (!CollectionUtils.isEmpty(lineVos)) {
