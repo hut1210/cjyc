@@ -4,9 +4,11 @@ import com.alibaba.nacos.client.utils.StringUtils;
 import com.cjkj.common.utils.DateUtil;
 import com.cjyc.common.model.dao.ITradeBillDao;
 import com.cjyc.common.model.entity.TradeBill;
+import com.cjyc.common.system.util.RedisUtils;
 import com.cjyc.customer.api.service.ITransactionService;
 import com.pingplusplus.model.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,9 +16,11 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 
 /**
  * @Author:Hut
@@ -29,6 +33,12 @@ public class TransactionServiceImpl implements ITransactionService {
 
     @Resource
     private ITradeBillDao iTradeBillDao;
+
+    @Autowired
+    private RedisUtils redisUtil;
+
+    @Autowired
+    private ExecutorService executorService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -65,7 +75,7 @@ public class TransactionServiceImpl implements ITransactionService {
         tb.setBody(order.getBody());
         tb.setPingPayNo(order.getMerchantOrderNo());
         tb.setAmount(order.getAmount()==null?BigDecimal.valueOf(0):BigDecimal.valueOf(order.getAmount()));
-        tb.setCreateTime(order.getCreated());
+        tb.setCreateTime(System.currentTimeMillis());
         tb.setType(1);
         if(order.getLivemode()){
             tb.setLivemode("live");
@@ -111,7 +121,7 @@ public class TransactionServiceImpl implements ITransactionService {
         Object orderNo = metadata.get("orderNo");
         tb.setPingPayNo((String)orderNo);
         tb.setAmount(order.getAmount()==null?BigDecimal.valueOf(0):BigDecimal.valueOf(order.getAmount()).multiply(new BigDecimal(100)));
-        tb.setCreateTime(order.getCreated());
+        tb.setCreateTime(System.currentTimeMillis());
         tb.setChannel(order.getChannel());
         tb.setChannelFee(new BigDecimal(0));
         tb.setReceiverId(0L);
@@ -157,7 +167,13 @@ public class TransactionServiceImpl implements ITransactionService {
                 }
             }
         }
+        String lockKey =getRandomNoKey(orderNo);
+        redisUtil.delete(lockKey);
 
+    }
+
+    private String getRandomNoKey(String prefix) {
+        return "cjyc:random:no:prepay:" + prefix;
     }
 
     @Override
@@ -168,6 +184,30 @@ public class TransactionServiceImpl implements ITransactionService {
     @Override
     public BigDecimal getAmountByOrderNo(String orderNo) {
         return iTradeBillDao.getAmountByOrderNo(orderNo);
+    }
+
+    @Override
+    public void cancelExpireTrade() {
+        List<TradeBill> list = iTradeBillDao.getAllExpireTradeBill();
+
+        if(list != null && list.size()>0){
+            executorService.execute(new Runnable() {
+                public void run() {
+                    for(int i=0;i<list.size();i++) {
+                        TradeBill tb = list.get(i);
+                        if(tb != null){
+                            TradeBill tradeBill = new TradeBill();
+                            tradeBill.setPingPayId(tb.getPingPayId());
+                            tradeBill.setState(-1);
+                            tradeBill.setTradeTime(tb.getTradeTime());
+                            iTradeBillDao.updateTradeBillByPingPayId(tradeBill);
+                        }
+
+                    }
+                }
+            });
+        }
+
     }
 
     /**

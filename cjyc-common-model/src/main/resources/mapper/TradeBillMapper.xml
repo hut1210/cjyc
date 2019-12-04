@@ -56,4 +56,8 @@
         update w_order set wl_pay_state = #{wlPayState}, wl_pay_time = #{wlPayTime} where no =#{orderNo}
     </update>
 
+    <select id="getAllExpireTradeBill" resultType="com.cjyc.common.model.entity.TradeBill">
+        select * from f_trade_bill where (REPLACE(unix_timestamp(current_timestamp(3)),'.','')-create_time)>=30000 and state=0
+    </select>
+
 </mapper>
