@@ -457,6 +457,7 @@
             dd.id_card_front_img AS idCardFrontImg,
             dd.id_card_back_img AS idCardBackImg,
             dcdc.MODE AS MODE,
+            dcdc.state AS state,
             dd.business_state AS businessState,
             dvr.vehicle_id AS vehicleId,
             dvr.plate_no AS plateNo
@@ -465,7 +466,7 @@
         LEFT JOIN d_carrier_driver_con dcdc ON dcdc.driver_id = dd.id
         LEFT JOIN d_carrier dc ON dc.id = dcdc.carrier_id
         LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
-        where dc.id = #{carrierId} and dc.type = 2 and dc.state &lt; 9
+        where dc.id = #{carrierId} and dc.type = 2 and dc.state &lt; 9 and dcdc.role &lt; 2
     </select>
 
     <!--根据司机所在的承运商id获取司机信息-->

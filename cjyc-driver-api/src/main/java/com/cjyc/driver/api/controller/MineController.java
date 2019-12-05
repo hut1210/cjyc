@@ -75,10 +75,10 @@ public class MineController {
         return csDriverService.saveOrModifyDriver(dto);
     }
 
-    @ApiOperation(value = "新增/修改承运商下车辆")
-    @PostMapping(value = "/saveOrModifyCarrierVehicle")
-    public ResultVo saveOrModifyCarrierVehicle(@Validated @RequestBody AppCarrierVehicleDto dto){
-        return mineService.saveOrModifyCarrierVehicle(dto);
+    @ApiOperation(value = "新增/修改车辆")
+    @PostMapping(value = "/saveOrModifyVehicle")
+    public ResultVo saveOrModifyVehicle(@Validated @RequestBody AppCarrierVehicleDto dto){
+        return mineService.saveOrModifyVehicle(dto);
     }
 
     @ApiOperation(value = "删除(冻结)承运商下司机")
@@ -91,12 +91,6 @@ public class MineController {
     @PostMapping(value = "/findSocietyFreeVehicle")
     public ResultVo<SocietyVehicleVo> findSocietyFreeVehicle(@RequestBody CarrierVehicleNoDto dto){
         return csVehicleService.findSocietyFreeVehicle(dto);
-    }
-
-    @ApiOperation(value = "个人司机添加/修改车辆信息")
-    @PostMapping(value = "/saveOrModifyVehicle")
-    public ResultVo saveOrModifyVehicle(@Validated @RequestBody SocietyVehicleDto dto) {
-        return mineService.saveOrModifyVehicle(dto);
     }
 
     @ApiOperation(value = "个人司机删除车辆绑定关系")

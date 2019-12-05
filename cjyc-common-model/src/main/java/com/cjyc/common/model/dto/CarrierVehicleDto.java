@@ -15,7 +15,7 @@ public class CarrierVehicleDto implements Serializable {
     @NotNull(message = "登陆系统用户id(loginId)不能为空")
     private Long loginId;
 
-    @ApiModelProperty("承运商id")
+    @ApiModelProperty("承运商id,不需要传")
     private Long carrierId;
 
     @ApiModelProperty("司机id(driverId)")

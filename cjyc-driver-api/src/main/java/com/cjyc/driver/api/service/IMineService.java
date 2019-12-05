@@ -37,14 +37,7 @@ public interface IMineService extends IService<Driver> {
      * @param dto
      * @return
      */
-    ResultVo saveOrModifyCarrierVehicle(AppCarrierVehicleDto dto);
-
-    /**
-     * 个人司机新增修改车辆信息
-     * @param dto
-     * @return
-     */
-    ResultVo saveOrModifyVehicle(SocietyVehicleDto dto);
+    ResultVo saveOrModifyVehicle(AppCarrierVehicleDto dto);
 
     /**
      * 删除个人司机车辆信息
