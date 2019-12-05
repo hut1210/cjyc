@@ -2,9 +2,12 @@ package com.cjyc.common.system.service.impl;
 
 import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.SmsSendReq;
+import com.cjyc.common.model.dto.NoticeDto;
 import com.cjyc.common.model.dto.SmsDto;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.system.entity.NoticeReq;
+import com.cjyc.common.system.entity.PushMessageReq;
 import com.cjyc.common.system.feign.IClpMessageService;
 import com.cjyc.common.system.service.IMessageService;
 import com.cjyc.common.system.util.ResultDataUtil;
@@ -66,6 +69,32 @@ public class MessageServiceImpl implements IMessageService {
         ResultData resultData = clpMessageService.sendSms(req);
         if (ResultDataUtil.isSuccess(resultData)) {
             return BaseResultUtil.success("发送成功");
+        }
+        return BaseResultUtil.fail("失败，原因：" + resultData.getMsg());
+    }
+
+    @Override
+    public ResultVo push(PushMessageReq req) {
+        if (StringUtils.isEmpty(req.getApiKey())) {
+            req.setApiKey(apiKey);
+        }
+        ResultData resultData = clpMessageService.pushMsg(req);
+        if (ResultDataUtil.isSuccess(resultData)) {
+            return BaseResultUtil.success("推送消息成功");
+        }
+        return BaseResultUtil.fail("失败，原因：" + resultData.getMsg());
+    }
+
+    @Override
+    public ResultVo notice(NoticeDto dto) {
+        NoticeReq req = new NoticeReq();
+        BeanUtils.copyProperties(dto, req);
+        if (StringUtils.isEmpty(req.getApiKey())) {
+            req.setApiKey(apiKey);
+        }
+        ResultData resultData = clpMessageService.pushNotice(req);
+        if (ResultDataUtil.isSuccess(resultData)) {
+            return BaseResultUtil.success("推送消息成功");
         }
         return BaseResultUtil.fail("失败，原因：" + resultData.getMsg());
     }
