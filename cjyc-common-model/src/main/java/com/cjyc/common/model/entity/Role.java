@@ -53,4 +53,7 @@ public class Role implements Serializable {
 
     @ApiModelProperty(value = "角色状态 1：有效/启用 2: 无效/停用")
     private Integer state;
+
+    @ApiModelProperty(value = "是否可登陆APP 1：可以 2：不可以")
+    private Integer loginApp;
 }
