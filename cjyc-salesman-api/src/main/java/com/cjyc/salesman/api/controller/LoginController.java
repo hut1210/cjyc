@@ -1,11 +1,14 @@
 package com.cjyc.salesman.api.controller;
 
+import com.cjyc.common.model.dto.salesman.login.LoginByPhoneDto;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,7 +20,7 @@ public class LoginController {
 
     @ApiOperation(value = "业务员APP登录")
     @PostMapping
-    public ResultVo login() {
+    public ResultVo login(@Validated @RequestBody LoginByPhoneDto dto) {
         return BaseResultUtil.success();
     }
 }
