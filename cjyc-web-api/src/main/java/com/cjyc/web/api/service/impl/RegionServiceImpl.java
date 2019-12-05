@@ -62,6 +62,7 @@ public class RegionServiceImpl implements IRegionService {
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         LambdaQueryWrapper<City> queryWrapper = new QueryWrapper<City>().lambda()
                 .eq(City::getLevel, FieldConstant.REGION_LEVEL)
+                .ne(City::getCode,FieldConstant.NOT_REGION_CODE)
                 .like(!StringUtils.isEmpty(dto.getRegionName()), City::getName, dto.getRegionName());
         List<City> regionList = cityDao.selectList(queryWrapper);
         PageInfo<City> pageInfo = new PageInfo(regionList);
