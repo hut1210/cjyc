@@ -24,6 +24,7 @@ import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
@@ -57,19 +58,19 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
     @Override
-    public ResultVo<BinkCardVo> findBinkCard(AppDriverDto dto) {
+    public ResultVo<BankCardVos> findBinkCard(AppDriverDto dto) {
         CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
                 .eq(CarrierDriverCon::getDriverId, dto.getLoginId())
                 .eq(CarrierDriverCon::getId, dto.getRoleId()));
-        if(cdc != null){
-            BinkCardVo bankCardVo = bankCardBindDao.findBinkCardInfo(cdc.getCarrierId());
-            if(bankCardVo != null){
-                return BaseResultUtil.success(bankCardVo);
-            }
-        }else{
+        if(cdc == null){
             return BaseResultUtil.fail("该司机不存在,请检查");
         }
-        return BaseResultUtil.success();
+        BankCardVos cardVos = new BankCardVos();
+        List<BankCardVo> bankCardVos = bankCardBindDao.findBinkCardInfo(cdc.getCarrierId());
+        if(!CollectionUtils.isEmpty(bankCardVos)){
+            cardVos.setCardVos(bankCardVos);
+        }
+        return BaseResultUtil.success(cardVos);
     }
 
     @Override
@@ -77,13 +78,11 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
         CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
                 .eq(CarrierDriverCon::getDriverId, dto.getLoginId())
                 .eq(CarrierDriverCon::getId, dto.getRoleId()));
-        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        List<DriverInfoVo> driverInfo = null;
-        if(cdc != null){
-            driverInfo = driverDao.findDriverInfo(cdc.getCarrierId());
-        }else{
-            return BaseResultUtil.fail("该司机不存在,请检查");
+        if(cdc == null){
+            return BaseResultUtil.fail("该司机管理员不存在,请检查");
         }
+        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
+        List<DriverInfoVo> driverInfo = driverDao.findDriverInfo(cdc.getCarrierId());
         PageInfo<DriverInfoVo> pageInfo = new PageInfo(driverInfo);
         return BaseResultUtil.success(pageInfo);
     }
@@ -91,10 +90,10 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
     @Override
     public ResultVo frozenDriver(FrozenDriverDto dto) {
         CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
-                .eq(CarrierDriverCon::getDriverId,dto.getDriverId())
+                .eq(CarrierDriverCon::getDriverId,dto.getLoginId())
                 .eq(CarrierDriverCon::getId,dto.getRoleId()));
         if(cdc == null){
-            return BaseResultUtil.fail("该司机不存在,请检查");
+            return BaseResultUtil.fail("该司机管理员不存在,请检查");
         }
         Driver driver = driverDao.selectOne(new QueryWrapper<Driver>().lambda().eq(Driver::getId, dto.getDriverId()));
         if(driver == null){
@@ -407,7 +406,7 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
         bcb.setCardName(dto.getRealName());
         bcb.setCardPhone(dto.getPhone());
         bcb.setIdCard(dto.getIdCard());
-        bcb.setCardType(RandomUtil.getIntRandom());
+        bcb.setCardColour(RandomUtil.getIntRandom());
         bcb.setBankName(dto.getBankName());
         bcb.setState(UseStateEnum.USABLE.code);
         bcb.setCreateTime(NOW);

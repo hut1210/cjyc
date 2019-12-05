@@ -47,7 +47,7 @@ public class MineController {
 
     @ApiOperation(value = "司机的银行卡信息")
     @PostMapping(value = "/findBinkCard")
-    public ResultVo<BinkCardVo> findBinkCard(@Validated @RequestBody AppDriverDto dto) {
+    public ResultVo<BankCardVos> findBinkCard(@Validated @RequestBody AppDriverDto dto) {
         return mineService.findBinkCard(dto);
     }
 

@@ -333,7 +333,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         bcb.setUserType(UserTypeEnum.DRIVER.code);
         bcb.setIdCard(dto.getLegalIdCard());
         bcb.setState(UseStateEnum.USABLE.code);
-        bcb.setCardType(RandomUtil.getIntRandom());
+        bcb.setCardColour(RandomUtil.getIntRandom());
         bcb.setCreateTime(NOW);
         bcb.setCardPhone(dto.getLinkmanPhone());
         bankCardBindDao.insert(bcb);

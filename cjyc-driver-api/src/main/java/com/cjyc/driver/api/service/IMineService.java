@@ -16,7 +16,7 @@ public interface IMineService extends IService<Driver> {
      * @param dto
      * @return
      */
-    ResultVo<BinkCardVo> findBinkCard(AppDriverDto dto);
+    ResultVo<BankCardVos> findBinkCard(AppDriverDto dto);
 
     /**
      * 查询司机管理信息

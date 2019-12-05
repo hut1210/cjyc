@@ -31,7 +31,7 @@
         delete from s_bank_card_bind where user_id = #{carrierId}
     </delete>
 
-    <select id="findBinkCardInfo" resultType="com.cjyc.common.model.vo.driver.mine.BinkCardVo"
+    <select id="findBinkCardInfo" resultType="com.cjyc.common.model.vo.driver.mine.BankCardVo"
                             parameterType="java.lang.Long">
         SELECT
             sbcb.id AS cardId,
@@ -40,7 +40,7 @@
             sbcb.card_colour AS cardColour
           FROM
               s_bank_card_bind sbcb
-          where user_id = #{carrierId}
+          where user_id = #{carrierId} and sbcb.state = 1
     </select>
 
 </mapper>
