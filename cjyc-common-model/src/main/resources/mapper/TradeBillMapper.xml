@@ -45,7 +45,9 @@
     </update>
 
     <select id="getTradeBillByOrderNo" parameterType="String" resultType="com.cjyc.common.model.entity.TradeBill">
-        select * from f_trade_bill where no = #{orderNo} and state =2 order by create_time desc limit 1
+        select ftb.* from f_trade_bill ftb
+        left join f_trade_bill_detail ftbd on ftb.id = ftbd.trade_bill_id
+        where ftbd.source_no = #{orderNo} and state =2 order by create_time desc limit 1
     </select>
 
     <select id="getAmountByOrderNo" parameterType="String" resultType="java.math.BigDecimal">

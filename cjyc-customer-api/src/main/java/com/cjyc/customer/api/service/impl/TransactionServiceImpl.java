@@ -1,10 +1,11 @@
 package com.cjyc.customer.api.service.impl;
 
 import com.cjyc.common.model.dao.ITradeBillDao;
+import com.cjyc.common.model.dao.ITradeBillDetailDao;
 import com.cjyc.common.model.entity.TradeBill;
+import com.cjyc.common.model.entity.TradeBillDetail;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
 import com.cjyc.common.system.service.ICsSendNoService;
-import com.cjyc.common.system.service.impl.CsSendNoServiceImpl;
 import com.cjyc.common.system.util.RedisUtils;
 import com.cjyc.customer.api.service.ITransactionService;
 import com.pingplusplus.model.*;
@@ -30,7 +31,7 @@ import java.util.concurrent.ExecutorService;
 public class TransactionServiceImpl implements ITransactionService {
 
     @Resource
-    private ITradeBillDao iTradeBillDao;
+    private ITradeBillDao tradeBillDao;
 
     @Autowired
     private RedisUtils redisUtil;
@@ -41,17 +42,24 @@ public class TransactionServiceImpl implements ITransactionService {
     @Resource
     private ICsSendNoService csSendNoService;
 
+    @Resource
+    private ITradeBillDetailDao tradeBillDetailDao;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveTransactions(Object obj, String state) {
         TradeBill tb = objToTransactions(obj, null, state);
         int id = 0;
         if(tb != null){
-            id = iTradeBillDao.insert(tb);
+            id = tradeBillDao.insert(tb);
         }
-        //TODO 插入交易关联表数据
         Map<String, Object> metadata = ((Order)obj).getMetadata();
         Object orderNo = metadata.get("orderNo");
+
+        TradeBillDetail tradeBillDetail = new TradeBillDetail();
+        tradeBillDetail.setTradeBillId(Long.valueOf(id));
+        tradeBillDetail.setSourceNo(orderNo==null?null:String.valueOf(orderNo));
+        tradeBillDetailDao.insert(tradeBillDetail);
     }
 
     public TradeBill objToTransactions(Object obj,Event event,String status){
@@ -154,19 +162,19 @@ public class TransactionServiceImpl implements ITransactionService {
         tradeBill.setPingPayId(order.getId());
         tradeBill.setState(2);
         tradeBill.setTradeTime(System.currentTimeMillis());
-        iTradeBillDao.updateTradeBillByPingPayId(tradeBill);
+        tradeBillDao.updateTradeBillByPingPayId(tradeBill);
 
         Map<String, Object> metadata = order.getMetadata();
         String orderNo = (String) metadata.get("orderNo");
 
         if(orderNo!=null){
-            iTradeBillDao.updateOrderState(orderNo,2,System.currentTimeMillis());
-            List<String> list = iTradeBillDao.getOrderCarNoList(orderNo);
+            tradeBillDao.updateOrderState(orderNo,2,System.currentTimeMillis());
+            List<String> list = tradeBillDao.getOrderCarNoList(orderNo);
             if(list != null){
                 for(int i=0;i<list.size();i++){
                     String orderCarNo = list.get(i);
                     if(orderCarNo != null){
-                        iTradeBillDao.updateOrderCar(orderCarNo,1,System.currentTimeMillis());
+                        tradeBillDao.updateOrderCar(orderCarNo,1,System.currentTimeMillis());
                     }
 
                 }
@@ -183,17 +191,17 @@ public class TransactionServiceImpl implements ITransactionService {
 
     @Override
     public TradeBill getTradeBillByOrderNo(String orderNo) {
-        return iTradeBillDao.getTradeBillByOrderNo(orderNo);
+        return tradeBillDao.getTradeBillByOrderNo(orderNo);
     }
 
     @Override
     public BigDecimal getAmountByOrderNo(String orderNo) {
-        return iTradeBillDao.getAmountByOrderNo(orderNo);
+        return tradeBillDao.getAmountByOrderNo(orderNo);
     }
 
     @Override
     public void cancelExpireTrade() {
-        List<TradeBill> list = iTradeBillDao.getAllExpireTradeBill();
+        List<TradeBill> list = tradeBillDao.getAllExpireTradeBill();
 
         if(list != null && list.size()>0){
             executorService.execute(new Runnable() {
@@ -205,7 +213,7 @@ public class TransactionServiceImpl implements ITransactionService {
                             tradeBill.setPingPayId(tb.getPingPayId());
                             tradeBill.setState(-1);
                             tradeBill.setTradeTime(tb.getTradeTime());
-                            iTradeBillDao.updateTradeBillByPingPayId(tradeBill);
+                            tradeBillDao.updateTradeBillByPingPayId(tradeBill);
                         }
 
                     }
