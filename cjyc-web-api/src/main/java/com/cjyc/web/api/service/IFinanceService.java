@@ -25,7 +25,9 @@ public interface IFinanceService {
 
     void applySettlement(ApplySettlementDto applySettlementDto);
 
-    void confirmSettlement(String orderCarNo);
+    void confirmSettlement(Long invoiceId,String invoice_no);
 
     ResultVo<PageVo<WaitInvoiceVo>> getWaitInvoiceList(WaitQueryDto waitInvoiceQueryDto);
+
+    void cancelSettlement(Long invoiceId);
 }
