@@ -9,11 +9,18 @@ import com.cjyc.common.model.dto.customer.order.CarCollectPayDto;
 import com.cjyc.common.model.dto.customer.order.CarPayStateDto;
 import com.cjyc.common.model.dto.customer.order.ReceiptBatchDto;
 import com.cjyc.common.model.dto.customer.pingxx.PrePayDto;
+import com.cjyc.common.model.dto.customer.pingxx.SweepCodeDto;
+import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.entity.TradeBill;
 import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.exception.CommonException;
+import com.cjyc.common.model.keys.RedisKeys;
+import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.vo.ResultReasonVo;
+import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.customer.order.ValidateReceiptCarPayVo;
 import com.cjyc.common.system.entity.PingCharge;
 import com.cjyc.common.system.service.ICsSendNoService;
 import com.cjyc.common.system.util.RedisUtils;
@@ -534,11 +541,9 @@ public class PingPayServiceImpl implements IPingPayService {
         transactionService.saveTransactions(order, "0");
         return BaseResultUtil.success(order == null ? null : JSON.parseObject(order.toString()));
     }
-
     @Override
     public ResultVo<ResultReasonVo> receiptBatch(ReceiptBatchDto reqDto) {
         return null;
     }
-
 }
 
