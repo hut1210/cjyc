@@ -96,6 +96,7 @@ public class CsAdminServiceImpl implements ICsAdminService {
         return vo;
     }
 
+
     @Override
     public Admin getById(Long userId, boolean isSearchCache) {
         return adminDao.selectById(userId);
@@ -108,5 +109,10 @@ public class CsAdminServiceImpl implements ICsAdminService {
             throw new ParameterException("用户不存在或者已离职");
         }
         return admin;
+    }
+
+    @Override
+    public Admin getAdminByPhone(String phone, boolean isSearchCache) {
+        return adminDao.findByPhone(phone);
     }
 }

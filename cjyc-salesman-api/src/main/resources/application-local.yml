@@ -15,7 +15,9 @@ server:
 #    key-store: classpath:server.jks
 #    key-store-password: Vf1@MFJkhRyOSxm2
 #    keyStoreType: JKS
-
+ribbon:
+  ConnectTimeout: 30000
+  ReadTimeout: 30000
 ##-----------------------------------spring-------------------------------------------
 spring:
   main:
@@ -98,7 +100,7 @@ cjyc:
   salesman:
     clientId: "1186108891007336449"
     clientSecret: acffa1064e9a629d3140e5b36be31bd3
-    grantType: password
+    grantType: mobile
 
   #短信
   sms:

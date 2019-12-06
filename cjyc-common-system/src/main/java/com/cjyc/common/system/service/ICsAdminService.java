@@ -28,4 +28,12 @@ public interface ICsAdminService {
     Admin getById(Long adminId, boolean isSearchCache);
 
     Admin validate(Long adminId);
+
+    /**
+     * 仅查询业务员信息
+     * @param phone
+     * @param isSearchCache
+     * @return
+     */
+    Admin getAdminByPhone(String phone, boolean isSearchCache);
 }
