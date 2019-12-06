@@ -10,6 +10,8 @@ import com.cjyc.common.model.vo.web.coupon.CustomerCouponSendVo;
 import com.cjyc.common.model.vo.web.customer.*;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -139,4 +141,25 @@ public interface ICustomerService  extends IService<Customer> {
      * @return
      */
     ResultVo<List<CustomerCouponSendVo>> getCouponByCustomerId(Long customerId);
+
+    /**
+     * 导出C端客户信息
+     * @param request
+     * @param response
+     */
+    void exportCustomerExcel(HttpServletRequest request, HttpServletResponse response);
+
+    /**
+     * 导出大客户信息
+     * @param request
+     * @param response
+     */
+    void exportKeyExcel(HttpServletRequest request, HttpServletResponse response);
+
+    /**
+     * 导出合伙人信息
+     * @param request
+     * @param response
+     */
+    void exportPartnerExcel(HttpServletRequest request, HttpServletResponse response);
 }

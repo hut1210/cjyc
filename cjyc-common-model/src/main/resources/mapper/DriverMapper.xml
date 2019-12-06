@@ -374,43 +374,41 @@
     <select id="getDispatchDriver" resultType="com.cjyc.common.model.vo.web.driver.DispatchDriverVo"
                                     parameterType="com.cjyc.common.model.dto.web.driver.DispatchDriverDto">
         SELECT
-            cr.id as carrierId,
-            cr.`name` as `name`,
-            d.id AS driverId,
-            d.real_name AS driverName,
-            d.phone AS driverPhone,
-            vr.plate_no AS vehiclePlateNo,
-            d.id_card AS idCard,
-            vr.carry_car_num AS carryCarNum,
-            vr.occupied_car_num AS occupiedCarNum,
-            vr.running_state AS runningState,
-            con.mode as mode
-        FROM d_carrier cr
-        LEFT JOIN d_carrier_driver_con con on con.carrier_id = cr.id
-        LEFT JOIN d_driver d on con.driver_id = d.id
-        LEFT JOIN d_vehicle_running vr ON vr.driver_id = d.id
+            dc.id as carrierId,
+            dc.`name` as `name`,
+            dd.id AS driverId,
+            dd.real_name AS driverName,
+            dd.phone AS driverPhone,
+            dvr.plate_no AS vehiclePlateNo,
+            dd.id_card AS idCard,
+            dvr.carry_car_num AS carryCarNum,
+            dvr.occupied_car_num AS occupiedCarNum,
+            dvr.running_state AS runningState,
+            dcdc.mode as mode
+        FROM d_carrier dc
+        LEFT JOIN d_carrier_driver_con dcdc on dcdc.carrier_id = dc.id
+        LEFT JOIN d_driver dd on dcdc.driver_id = dd.id
+        LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
         <where>
             <if test="realName != null and realName.trim() != ''">
-                and d.real_name like CONCAT('%',#{realName},'%')
+                and dd.real_name like CONCAT('%',#{realName},'%')
             </if>
             <if test="plateNo != null and plateNo.trim() != ''">
-                and vr.plate_no = #{plateNo}
+                and dvr.plate_no = #{plateNo}
             </if>
             <if test="phone != null and phone.trim() != ''">
-                and d.phone = #{phone}
+                and dd.phone = #{phone}
             </if>
             <if test="idCard != null and idCard.trim() != ''">
-                and d.id_card = #{idCard}
+                and dd.id_card = #{idCard}
             </if>
-            AND cr.state = 2
-            AND con.state = 2
-            AND cr.type = 1
-            AND d.business_state = 0
-            and cr.mode in (3,5,7,9)
+            AND dc.state = 2
+            AND dcdc.state = 2
+            AND dc.type = 1
+            and dc.mode in (3,5,7,9)
+            group by dd.phone
         </where>
     </select>
-
-
 
     <!--通过承运商id获取司机-->
     <select id="findDriverByCarrierId" parameterType="java.lang.Long"
@@ -594,38 +592,38 @@
     </select>
     <select id="findCarrierDrvierList" resultType="com.cjyc.common.model.vo.web.driver.DispatchDriverVo">
         SELECT
-            cr.id as carrierId,
-            cr.`name` as `name`,
-            d.id AS driverId,
-            d.real_name AS driverName,
-            d.phone AS driverPhone,
-            vr.plate_no AS vehiclePlateNo,
-            d.id_card AS idCard,
-            vr.carry_car_num AS carryCarNum,
-            vr.occupied_car_num AS occupiedCarNum,
-            vr.running_state AS runningState,
-            con.mode as mode
-        FROM d_carrier cr
-        LEFT JOIN d_carrier_driver_con con on con.carrier_id = cr.id
-        LEFT JOIN d_driver d on con.driver_id = d.id
-        LEFT JOIN d_vehicle_running vr ON vr.driver_id = d.id
-        where cr.id = #{carrierId}
-        and d.type = 2
-        AND con.state = 2
-        AND d.business_state = 0
+            dc.id as carrierId,
+            dc.`name` as `name`,
+            dd.id AS driverId,
+            dd.real_name AS driverName,
+            dd.phone AS driverPhone,
+            dvr.plate_no AS vehiclePlateNo,
+            dd.id_card AS idCard,
+            dvr.carry_car_num AS carryCarNum,
+            dvr.occupied_car_num AS occupiedCarNum,
+            dvr.running_state AS runningState,
+            dcdc.mode as mode
+        FROM d_carrier dc
+        LEFT JOIN d_carrier_driver_con dcdc on dcdc.carrier_id = dc.id
+        LEFT JOIN d_driver dd on dcdc.driver_id = dd.id
+        LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
+        where dc.id = #{carrierId}
+        and dd.type = 2
+        AND dc.state = 2
+        AND dcdc.state = 2
         <if test="driverName != null and driverName.trim() != ''">
-            and d.real_name like CONCAT('%',#{driverName},'%')
+            and dd.real_name like CONCAT('%',#{driverName},'%')
         </if>
         <if test="vehiclePlateNo != null and vehiclePlateNo.trim() != ''">
-            and vr.plate_no = #{vehiclePlateNo}
+            and dvr.plate_no = #{vehiclePlateNo}
         </if>
         <if test="driverPhone != null and driverPhone.trim() != ''">
-            and d.phone = #{driverPhone}
+            and dd.phone = #{driverPhone}
         </if>
         <if test="driverIdCard != null and driverIdCard.trim() != ''">
-            and d.id_card = #{driverIdCard}
+            and dd.id_card = #{driverIdCard}
         </if>
-
+        group by dd.phone
     </select>
 
 </mapper>

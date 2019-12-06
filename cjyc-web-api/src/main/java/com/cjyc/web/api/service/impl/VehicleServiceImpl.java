@@ -61,8 +61,12 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
         vehicle.setOwnershipType(VehicleOwnerEnum.PERSONAL.code);
         vehicle.setCreateUserId(dto.getLoginId());
         vehicle.setCreateTime(NOW);
-        super.save(vehicle);
-        return BaseResultUtil.success();
+        boolean result = super.save(vehicle);
+        if(result){
+            return BaseResultUtil.success();
+        }else{
+            return BaseResultUtil.fail();
+        }
     }
 
     @Override

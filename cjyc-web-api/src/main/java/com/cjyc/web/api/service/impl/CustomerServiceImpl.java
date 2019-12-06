@@ -4,12 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
+import com.cjkj.common.utils.ExcelUtil;
 import com.cjkj.usercenter.dto.common.AddUserReq;
 import com.cjkj.usercenter.dto.common.AddUserResp;
 import com.cjkj.usercenter.dto.common.UpdateUserReq;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.customer.*;
+import com.cjyc.common.model.dto.web.line.SelectLineDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.customer.CustomerPayEnum;
@@ -25,6 +27,8 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.customer.*;
 import com.cjyc.common.model.vo.web.coupon.CustomerCouponSendVo;
+import com.cjyc.common.model.vo.web.line.LineExportExcel;
+import com.cjyc.common.model.vo.web.line.LineVo;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.ICsCustomerService;
 import com.cjyc.common.system.service.ICsSendNoService;
@@ -33,11 +37,15 @@ import com.cjyc.web.api.service.ICustomerService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -176,17 +184,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     @Override
     public ResultVo findCustomer(SelectCustomerDto dto) {
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
-        List<CustomerVo> customerVos = customerDao.findCustomer(dto);
-        if(!CollectionUtils.isEmpty(customerVos)){
-            for(CustomerVo vo : customerVos){
-                CustomerCountVo count = customerCountDao.count(vo.getCustomerId());
-                if(count != null){
-                    vo.setTotalOrder(count.getTotalOrder());
-                    vo.setTotalCar(count.getTotalCar());
-                    vo.setTotalAmount(count.getTotalAmount());
-                }
-            }
-        }
+        List<CustomerVo> customerVos = encapCustomer(dto);
         PageInfo<CustomerVo> pageInfo =  new PageInfo<>(customerVos);
         return BaseResultUtil.success(pageInfo);
     }
@@ -300,17 +298,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     @Override
     public ResultVo<PageVo<ListKeyCustomerVo>> findKeyCustomer(SelectKeyCustomerDto dto) {
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
-        List<ListKeyCustomerVo> keyCustomerList = customerDao.findKeyCustomter(dto);
-        if(!CollectionUtils.isEmpty(keyCustomerList)){
-            for(ListKeyCustomerVo vo : keyCustomerList){
-                CustomerCountVo count = customerCountDao.count(vo.getCustomerId());
-                if(count != null){
-                    vo.setTotalOrder(count.getTotalOrder());
-                    vo.setTotalCar(count.getTotalCar());
-                    vo.setTotalAmount(count.getTotalAmount());
-                }
-            }
-        }
+        List<ListKeyCustomerVo> keyCustomerList = encapKey(dto);
         PageInfo<ListKeyCustomerVo> pageInfo = new PageInfo<>(keyCustomerList);
         return BaseResultUtil.success(pageInfo);
     }
@@ -451,17 +439,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     @Override
     public ResultVo<PageVo<CustomerPartnerVo>> findPartner(CustomerPartnerDto dto) {
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        List<CustomerPartnerVo> partnerVos = customerDao.getPartnerByTerm(dto);
-        if(!CollectionUtils.isEmpty(partnerVos)){
-            for(CustomerPartnerVo partnerVo : partnerVos){
-                CustomerCountVo count = customerCountDao.count(partnerVo.getCustomerId());
-                if(count != null){
-                    partnerVo.setTotalOrder(count.getTotalOrder());
-                    partnerVo.setTotalCar(count.getTotalCar());
-                    partnerVo.setTotalAmount(count.getTotalAmount());
-                }
-            }
-        }
+        List<CustomerPartnerVo> partnerVos = encapPartner(dto);
         PageInfo<CustomerPartnerVo> pageInfo = new PageInfo<>(partnerVos);
         return BaseResultUtil.success(pageInfo);
     }
@@ -542,6 +520,192 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             }
         }
         return BaseResultUtil.success(sendVoList);
+    }
+
+    @Override
+    public void exportCustomerExcel(HttpServletRequest request, HttpServletResponse response) {
+        // 获取参数
+        SelectCustomerDto dto = getSelectCustomerDto(request);
+        List<CustomerVo> customerVos = encapCustomer(dto);
+        if (!CollectionUtils.isEmpty(customerVos)) {
+            // 生成导出数据
+            List<CustomerExportExcel> exportExcelList = new ArrayList<>();
+            for (CustomerVo vo : customerVos) {
+                CustomerExportExcel customerExportExcel = new CustomerExportExcel();
+                BeanUtils.copyProperties(vo, customerExportExcel);
+                exportExcelList.add(customerExportExcel);
+            }
+            String title = "C端客户";
+            String sheetName = "C端客户";
+            String fileName = "C端客户.xls";
+            try {
+                if(!CollectionUtils.isEmpty(exportExcelList)){
+                    ExcelUtil.exportExcel(exportExcelList, title, sheetName, CustomerExportExcel.class, fileName, response);
+                }
+            } catch (IOException e) {
+                log.error("导出C端客户异常:{}",e);
+            }
+        }
+    }
+
+    @Override
+    public void exportKeyExcel(HttpServletRequest request, HttpServletResponse response) {
+        // 获取参数
+        SelectKeyCustomerDto dto = getKeyCustomerDto(request);
+        List<ListKeyCustomerVo> keyCustomerList = encapKey(dto);
+        if (!CollectionUtils.isEmpty(keyCustomerList)) {
+            // 生成导出数据
+            List<KeyExportExcel> exportExcelList = new ArrayList<>();
+            for (ListKeyCustomerVo vo : keyCustomerList) {
+                KeyExportExcel keyExportExcel = new KeyExportExcel();
+                BeanUtils.copyProperties(vo, keyExportExcel);
+                exportExcelList.add(keyExportExcel);
+            }
+            String title = "大客户";
+            String sheetName = "大客户";
+            String fileName = "大客户.xls";
+            try {
+                if(!CollectionUtils.isEmpty(exportExcelList)){
+                    ExcelUtil.exportExcel(exportExcelList, title, sheetName, KeyExportExcel.class, fileName, response);
+                }
+            } catch (IOException e) {
+                log.error("导出大客户异常:{}",e);
+            }
+        }
+    }
+
+    @Override
+    public void exportPartnerExcel(HttpServletRequest request, HttpServletResponse response) {
+        CustomerPartnerDto dto = getPartnerDto(request);
+        List<CustomerPartnerVo> partnerVos = encapPartner(dto);
+        if (!CollectionUtils.isEmpty(partnerVos)) {
+            // 生成导出数据
+            List<PartnerExportExcel> exportExcelList = new ArrayList<>();
+            for (CustomerPartnerVo vo : partnerVos) {
+                PartnerExportExcel partnerExportExcel = new PartnerExportExcel();
+                BeanUtils.copyProperties(vo, partnerExportExcel);
+                exportExcelList.add(partnerExportExcel);
+            }
+            String title = "合伙人";
+            String sheetName = "合伙人";
+            String fileName = "合伙人.xls";
+            try {
+                if(!CollectionUtils.isEmpty(exportExcelList)){
+                    ExcelUtil.exportExcel(exportExcelList, title, sheetName, PartnerExportExcel.class, fileName, response);
+                }
+            } catch (IOException e) {
+                log.error("导出合伙人信息异常:{}",e);
+            }
+        }
+    }
+
+    /**
+     * 封装C端客户excel请求
+     * @param request
+     * @return
+     */
+    private SelectCustomerDto getSelectCustomerDto(HttpServletRequest request) {
+        SelectCustomerDto dto = new SelectCustomerDto();
+        dto.setContactPhone(request.getParameter("contactPhone"));
+        dto.setContactMan(request.getParameter("contactMan"));
+        dto.setIdCard(request.getParameter("idCard"));
+        return dto;
+    }
+
+    /**
+     * 封装大客户excel请求
+     * @param request
+     * @return
+     */
+    private SelectKeyCustomerDto getKeyCustomerDto(HttpServletRequest request){
+        SelectKeyCustomerDto dto = new SelectKeyCustomerDto();
+        dto.setCustomerNo(request.getParameter("customerNo"));
+        dto.setName(request.getParameter("name"));
+        dto.setState(StringUtils.isBlank(request.getParameter("state")) ? null:Integer.valueOf(request.getParameter("state")));
+        dto.setContactMan(request.getParameter("contactMan"));
+        dto.setContactPhone(request.getParameter("contactPhone"));
+        dto.setCustomerNature(StringUtils.isBlank(request.getParameter("customerNature")) ? null:Integer.valueOf(request.getParameter("customerNature")));
+        dto.setCreateUserName(request.getParameter("createUserName"));
+        return dto;
+    }
+    /**
+     * 封装合伙人excel请求
+     * @param request
+     * @return
+     */
+    private CustomerPartnerDto getPartnerDto(HttpServletRequest request){
+        CustomerPartnerDto dto = new CustomerPartnerDto();
+        dto.setCustomerNo(request.getParameter("customerNo"));
+        dto.setName(request.getParameter("name"));
+        dto.setSettleType(StringUtils.isBlank(request.getParameter("settleType")) ? null:Integer.valueOf(request.getParameter("settleType")));
+        dto.setContactMan(request.getParameter("contactMan"));
+        dto.setContactPhone(request.getParameter("contactPhone"));
+        dto.setIsInvoice(StringUtils.isBlank(request.getParameter("isInvoice")) ? null:Integer.valueOf(request.getParameter("isInvoice")));
+        dto.setSource(StringUtils.isBlank(request.getParameter("source")) ? null:Integer.valueOf(request.getParameter("source")));
+        dto.setSocialCreditCode(request.getParameter("source"));
+        return dto;
+    }
+    /**
+     * 封装查询C端客户信息
+     * @param dto
+     * @return
+     */
+    private List<CustomerVo> encapCustomer(SelectCustomerDto dto){
+        List<CustomerVo> customerVos = customerDao.findCustomer(dto);
+        if(!CollectionUtils.isEmpty(customerVos)){
+            for(CustomerVo vo : customerVos){
+                CustomerCountVo count = customerCountDao.count(vo.getCustomerId());
+                if(count != null){
+                    vo.setTotalOrder(count.getTotalOrder());
+                    vo.setTotalCar(count.getTotalCar());
+                    vo.setTotalAmount(count.getTotalAmount());
+                }
+            }
+            return customerVos;
+        }
+        return Collections.emptyList();
+    }
+
+    /**
+     * 封装查询大客户信息
+     * @param dto
+     * @return
+     */
+    private List<ListKeyCustomerVo> encapKey(SelectKeyCustomerDto dto){
+        List<ListKeyCustomerVo> keyCustomerList = customerDao.findKeyCustomter(dto);
+        if(!CollectionUtils.isEmpty(keyCustomerList)){
+            for(ListKeyCustomerVo vo : keyCustomerList){
+                CustomerCountVo count = customerCountDao.count(vo.getCustomerId());
+                if(count != null){
+                    vo.setTotalOrder(count.getTotalOrder());
+                    vo.setTotalCar(count.getTotalCar());
+                    vo.setTotalAmount(count.getTotalAmount());
+                }
+            }
+            return keyCustomerList;
+        }
+       return Collections.emptyList();
+    }
+
+    /**
+     * 封装查询合伙人信息
+     * @param dto
+     * @return
+     */
+    private List<CustomerPartnerVo> encapPartner(CustomerPartnerDto dto){
+        List<CustomerPartnerVo> partnerVos = customerDao.getPartnerByTerm(dto);
+        if(!CollectionUtils.isEmpty(partnerVos)){
+            for(CustomerPartnerVo partnerVo : partnerVos){
+                CustomerCountVo count = customerCountDao.count(partnerVo.getCustomerId());
+                if(count != null){
+                    partnerVo.setTotalOrder(count.getTotalOrder());
+                    partnerVo.setTotalCar(count.getTotalCar());
+                    partnerVo.setTotalAmount(count.getTotalAmount());
+                }
+            }
+            return partnerVos;
+        }
+        return Collections.emptyList();
     }
 
     /**

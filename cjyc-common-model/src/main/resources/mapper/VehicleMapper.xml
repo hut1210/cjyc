@@ -47,10 +47,10 @@
                 dv.plate_no = #{plateNo}
             </if>
             <if test="realName != null and realName.trim() != ''">
-                and  dd.real_name = #{realName}
+                and dd.real_name like CONCAT('%',#{realName},'%')
             </if>
             <if test="phone != null and phone.trim() != ''">
-                and  dd.phone = #{phone}
+                and dd.phone = #{phone}
             </if>
         </where>
     </select>

@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -124,5 +126,25 @@ public class CustomerController {
     @PostMapping(value = "/getCouponByCustomerId/{customerId}")
     public ResultVo<List<CustomerCouponSendVo>> getCouponByCustomerId(@PathVariable @ApiParam(value = "客户customerId",required = true) Long customerId){
         return customerService.getCouponByCustomerId(customerId);
+    }
+
+    @ApiOperation(value = "C端客户导出Excel", notes = "\t 请求接口为/customer/exportCustomerExcel?contactPhone=手机号&contactMan=联系人&idCard=身份证")
+    @GetMapping("/exportCustomerExcel")
+    public void exportCustomerExcel(HttpServletRequest request, HttpServletResponse response){
+        customerService.exportCustomerExcel(request,response);
+    }
+
+    @ApiOperation(value = "大客户导出Excel", notes = "\t 请求接口为/customer/exportKeyExcel?customerNo=编号&name=全称&state=状态&contactMan=联系人&contactPhone=手机号" +
+            "&customerNature=客户类型&createUserName=创建人")
+    @GetMapping("/exportKeyExcel")
+    public void exportKeyExcel(HttpServletRequest request, HttpServletResponse response){
+        customerService.exportKeyExcel(request,response);
+    }
+
+    @ApiOperation(value = "合伙人导出Excel", notes = "\t 请求接口为/customer/exportPartnerExcel?customerNo=编码&name=合伙人名称&settleType=结算方式" +
+            "&contactMan=联系人&contactPhone=电话&isInvoice=是否开票&source=来源&socialCreditCode=社会码")
+    @GetMapping("/exportPartnerExcel")
+    public void exportPartnerExcel(HttpServletRequest request, HttpServletResponse response){
+        customerService.exportPartnerExcel(request,response);
     }
 }
