@@ -90,7 +90,7 @@ public interface ISysRoleService {
      * @return ResultData<List<SelectRoleResp>>
      */
     @GetMapping("/feign/uc/getRoles/{userId}")
-    ResultData<List<SelectRoleResp>> getListByUserId(@PathVariable(value="userId") Integer userId);
+    ResultData<List<SelectRoleResp>> getListByUserId(@PathVariable(value="userId") Long userId);
 
     /**
      * 查询角色信息：根据用户id
