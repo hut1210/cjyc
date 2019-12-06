@@ -2,6 +2,8 @@ package com.cjyc.common.model.vo.web.customer;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -11,6 +13,7 @@ import lombok.Data;
 public class CustomerFuzzyListVo {
 
     @ApiModelProperty(value = "user_id")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long userId;
 
     @ApiModelProperty(value = "客户名称")

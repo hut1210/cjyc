@@ -1,6 +1,8 @@
 package com.cjyc.common.model.vo.salesman.login;
 
 import com.cjyc.common.model.dto.sys.SysRoleDto;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -19,9 +21,11 @@ public class SalemanLoginVo implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     @ApiModelProperty(value = "user_id(查询架构组数据时使用)")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long userId;
 
     @ApiModelProperty(value = "编号")
@@ -49,6 +53,7 @@ public class SalemanLoginVo implements Serializable {
     private Long leaderId;
 
     @ApiModelProperty(value = "所属业务中心ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long storeId;
 
     @ApiModelProperty(value = "头像")
@@ -58,9 +63,11 @@ public class SalemanLoginVo implements Serializable {
     private Long createTime;
 
     @ApiModelProperty(value = "创建人")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long createUserId;
 
     @ApiModelProperty(value = "审核人")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long checkUserId;
 
     @ApiModelProperty(value = "入职时间")

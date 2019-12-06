@@ -48,5 +48,7 @@ public interface IOrderDao extends BaseMapper<Order> {
 
     int countUnReceipt(Long orderId);
 
-    List<Order> findListByCarIds(@Param("list") List<Long> orderCarId);
+    List<Order> findListByCarIds(@Param("list") List<Long> orderCarIds);
+
+    List<Order> findListByCarNos(@Param("list")List<String> orderCarNos);
 }

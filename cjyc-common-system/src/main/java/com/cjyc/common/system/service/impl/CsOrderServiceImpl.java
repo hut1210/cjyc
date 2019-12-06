@@ -3,7 +3,6 @@ package com.cjyc.common.system.service.impl;
 import com.cjkj.common.redis.lock.RedisDistributedLock;
 import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IOrderDao;
-import com.cjyc.common.model.dto.customer.order.CarCollectPayDto;
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.*;
@@ -14,30 +13,22 @@ import com.cjyc.common.model.enums.order.OrderChangeTypeEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.exception.ParameterException;
 import com.cjyc.common.model.exception.ServerException;
-import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.entity.defined.FullCity;
-import com.cjyc.common.system.entity.PingOrder;
-import com.cjyc.common.system.entity.PingOrderModel;
 import com.cjyc.common.system.service.*;
 import com.cjyc.common.system.util.RedisUtils;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * 订单公共业务
@@ -395,7 +386,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         }
 
         //根据到付和预付置不同状态
-        if (order.getPayType() != PayModeEnum.PREPAY.code) {
+        if (PayModeEnum.PREPAY.code == order.getPayType()) {
             order.setState(OrderStateEnum.WAIT_PREPAY.code);
             //TODO 支付通知
         } else {

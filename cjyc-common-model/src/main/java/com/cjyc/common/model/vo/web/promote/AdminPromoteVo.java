@@ -1,5 +1,7 @@
 package com.cjyc.common.model.vo.web.promote;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -20,12 +22,14 @@ public class AdminPromoteVo implements Serializable {
     private String channel;
 
     @ApiModelProperty(value = "分享人ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long userId;
 
     @ApiModelProperty(value = "分享人名称")
     private String userName;
 
     @ApiModelProperty(value = "注册用户ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long customerId;
 
     @ApiModelProperty(value = "注册用户名称")

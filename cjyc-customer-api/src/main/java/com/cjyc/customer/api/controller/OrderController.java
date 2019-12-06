@@ -1,19 +1,17 @@
 package com.cjyc.customer.api.controller;
 
-import com.cjyc.common.model.dto.customer.order.*;
+import com.cjyc.common.model.dto.customer.order.OrderDetailDto;
+import com.cjyc.common.model.dto.customer.order.OrderQueryDto;
+import com.cjyc.common.model.dto.customer.order.SimpleSaveOrderDto;
 import com.cjyc.common.model.dto.web.order.CancelOrderDto;
 import com.cjyc.common.model.dto.web.order.SaveOrderDto;
 import com.cjyc.common.model.entity.Customer;
-import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.vo.PageVo;
-import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterDetailVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterVo;
-import com.cjyc.common.system.service.ICsAdminService;
 import com.cjyc.common.system.service.ICsCustomerService;
 import com.cjyc.common.system.service.ICsOrderService;
-import com.cjyc.common.system.service.ICsTaskService;
 import com.cjyc.customer.api.service.IOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -25,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.Map;
 
 /**
  * 订单
@@ -40,11 +37,7 @@ public class OrderController {
     @Resource
     private ICsCustomerService csCustomerService;
     @Resource
-    private ICsAdminService csAdminService;
-    @Resource
     private ICsOrderService csOrderService;
-    @Resource
-    private ICsTaskService csTaskService;
     /**
      * 保存,只保存无验证
      * @author JPG
@@ -136,31 +129,5 @@ public class OrderController {
     }
 
 
-
-    /**
-     * 按车辆申请支付
-     * @author JPG
-     */
-   @ApiOperation(value = "到付申请支付")
-    @PostMapping(value = "/car/pay/state/validate")
-    public ResultVo<Map<String, Object>> validateCarCollectPay(@RequestBody CarCollectPayDto reqDto) {
-       Customer customer = csCustomerService.validate(reqDto.getLoginId());
-       reqDto.setLoginName(customer.getName());
-       return orderService.carPayState(reqDto);
-    }
-
-    /**
-     * 签收(已支付过)-客户
-     * @author JPG
-     */
-    @ApiOperation(value = "签收")
-    @PostMapping(value = "/car/receipt")
-    public ResultVo<ResultReasonVo> receiptBatch(@RequestBody ReceiptBatchDto reqDto) {
-        Customer customer = csCustomerService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(customer.getName());
-        reqDto.setLoginPhone(customer.getContactPhone());
-        reqDto.setLoginType(UserTypeEnum.CUSTOMER);
-        return csTaskService.receiptBatch(reqDto);
-    }
 
 }

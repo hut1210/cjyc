@@ -1,5 +1,7 @@
 package com.cjyc.common.model.vo.web.customer;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -13,6 +15,7 @@ public class ShowKeyCustomerVo implements Serializable {
     private Long id;
 
     @ApiModelProperty("大客户userId")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long userId;
 
     @ApiModelProperty(value = "客户全称")

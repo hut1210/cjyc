@@ -2,6 +2,8 @@ package com.cjyc.common.model.vo.web.waybill;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.cjyc.common.model.entity.Waybill;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -14,6 +16,7 @@ public class TrunkSubListWaybillVo extends Waybill {
     @ApiModelProperty("任务车辆数量")
     private Integer taskCarNum;
     @ApiModelProperty("司机ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long driverId;
     @Excel(name = "司机", orderNum = "4")
     @ApiModelProperty("司机名称")

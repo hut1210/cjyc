@@ -1,6 +1,8 @@
 package com.cjyc.common.model.vo.web;
 
 import com.cjyc.common.model.dto.BasePageDto;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -63,6 +65,7 @@ public class WayBillCarrierVo extends BasePageDto {
     private String vehicleNo;//车牌号
 
     @ApiModelProperty(value = "提送车业务中心")
+    @JsonSerialize(using = ToStringSerializer.class)
     private String storeId;//提送车业务中心
 
     @ApiModelProperty(value = "订单编号")

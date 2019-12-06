@@ -35,6 +35,7 @@ public class Store implements Serializable {
     private Long id;
 
     @ApiModelProperty(value = "部门ID（架构组sys_dept表）")
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long deptId;
 
     @ApiModelProperty(value = "业务中心名称")

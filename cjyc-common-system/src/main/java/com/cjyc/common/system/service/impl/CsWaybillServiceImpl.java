@@ -385,7 +385,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 /*//验证是否已经调度过,已经调度的为
                 int n = waybillCarDao.countForValidateRepeatTrunkDisPatch(areaList);
                 if (n > 0) {
-                    throw new ParameterException("运单，编号为{1}的车辆，已经调度过", orderCarNo);
+                    throw new ParameterException("运单，编号为{1}的车辆，已经调度过", orderCarNos);
                 }
 
                 //验证出发地与上一次调度目的地是否一致
@@ -586,7 +586,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 /*            if (orderCar.getState() == null
                     || (paramsDto.getType() == WaybillTypeEnum.PICK.code && orderCar.getPickState() <= OrderCarLocalStateEnum.WAIT_DISPATCH.code)
                     || (paramsDto.getType() == WaybillTypeEnum.BACK.code && orderCar.getBackState() <= OrderCarLocalStateEnum.WAIT_DISPATCH.code)) {
-                return BaseResultUtil.fail("运单,编号为{1}的车辆，当前车辆状态不能提车/配送调度", orderCarNo);
+                return BaseResultUtil.fail("运单,编号为{1}的车辆，当前车辆状态不能提车/配送调度", orderCarNos);
             }*/
             //【验证】订单状态
             Order order = orderDao.selectById(orderCar.getOrderId());

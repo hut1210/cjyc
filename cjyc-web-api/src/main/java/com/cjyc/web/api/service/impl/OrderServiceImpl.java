@@ -473,6 +473,9 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     @Override
     public OrderVo getVoById(Long orderId) {
         OrderVo orderVo = orderDao.findVoById(orderId);
+        if(orderVo == null){
+            return null;
+        }
         List<OrderCar> list = orderCarDao.findByOrderId(orderId);
         orderVo.setOrderCarList(list);
         return orderVo;
@@ -499,6 +502,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         Map<String, Object> countInfo = orderDao.countForAllTab(paramsDto);
         return BaseResultUtil.success(pageInfo, countInfo);
     }
+
 
     @Override
     public List<ListOrderVo> listAll(ListOrderDto dto) {

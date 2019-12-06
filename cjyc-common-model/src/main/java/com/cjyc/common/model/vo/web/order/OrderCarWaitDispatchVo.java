@@ -1,6 +1,8 @@
 package com.cjyc.common.model.vo.web.order;
 
 import com.cjyc.common.model.entity.OrderCar;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -29,6 +31,7 @@ public class OrderCarWaitDispatchVo extends OrderCar {
     private Integer backTransportState;
 
     @ApiModelProperty(value = "订单所属业务中心ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long inputStoreId;
 
     @ApiModelProperty(value = "订单所属业务中心名称")
@@ -62,11 +65,13 @@ public class OrderCarWaitDispatchVo extends OrderCar {
     private String startLat;
 
     @ApiModelProperty(value = "出发地业务中心ID: -1不经过业务中心")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long startStoreId;
 
     @ApiModelProperty(value = "出发地业务中心名称")
     private String startStoreName;
     @ApiModelProperty(value = "出发地业务所属中心名称")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long startBelongStoreId;
 
     @ApiModelProperty(value = "省")
@@ -97,11 +102,13 @@ public class OrderCarWaitDispatchVo extends OrderCar {
     private String endLat;
 
     @ApiModelProperty(value = "目的地业务中心ID: -1不经过业务中心")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long endStoreId;
 
     @ApiModelProperty(value = "目的地业务中心名称")
     private String endStoreName;
 
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long endBelongStoreId;
 
     @ApiModelProperty(value = "预计出发时间（提车日期）")
@@ -142,6 +149,7 @@ public class OrderCarWaitDispatchVo extends OrderCar {
     private String checkUserName;
 
     @ApiModelProperty(value = "确认人userid")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long checkUserId;
 
 

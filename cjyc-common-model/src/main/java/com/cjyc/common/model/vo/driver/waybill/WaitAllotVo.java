@@ -1,5 +1,7 @@
 package com.cjyc.common.model.vo.driver.waybill;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -22,6 +24,7 @@ public class WaitAllotVo {
     private String guideLine;
 
     @ApiModelProperty(value = "承运商ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long carrierId;
 
     @ApiModelProperty(value = "承运商类型：0承运商，1业务员，2客户自己")
@@ -52,6 +55,7 @@ public class WaitAllotVo {
     private String createUser;
 
     @ApiModelProperty(value = "调度人ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long createUserId;
 
 }

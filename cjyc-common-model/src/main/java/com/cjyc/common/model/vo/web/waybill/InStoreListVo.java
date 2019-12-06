@@ -1,5 +1,7 @@
 package com.cjyc.common.model.vo.web.waybill;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -53,6 +55,7 @@ public class InStoreListVo {
     private String startAddress;
 
     @ApiModelProperty(value = "出发地业务中心ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long startStoreId;
 
     @ApiModelProperty(value = "起始地是否固定")
@@ -68,6 +71,7 @@ public class InStoreListVo {
     private String endStoreName;
 
     @ApiModelProperty(value = "目的地业务中心ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long endStoreId;
 
     @ApiModelProperty(value = "目的地是否固定")
@@ -80,6 +84,7 @@ public class InStoreListVo {
     private String unloadLinkName;
 
     @ApiModelProperty(value = "收车联系人userId")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long unloadLinkUserId;
 
     @ApiModelProperty(value = "收车人电话")

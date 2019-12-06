@@ -3,11 +3,20 @@ package com.cjyc.customer.api.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.nacos.client.utils.StringUtils;
 import com.cjkj.common.utils.IPUtil;
+import com.cjyc.common.model.dto.customer.order.CarCollectPayDto;
+import com.cjyc.common.model.dto.customer.order.CarPayStateDto;
+import com.cjyc.common.model.dto.customer.order.ReceiptBatchDto;
 import com.cjyc.common.model.dto.customer.pingxx.PrePayDto;
+import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.enums.ResultEnum;
+import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.customer.order.ValidateReceiptCarPayVo;
 import com.cjyc.common.system.entity.PingCharge;
+import com.cjyc.common.system.service.ICsAdminService;
+import com.cjyc.common.system.service.ICsCustomerService;
 import com.cjyc.customer.api.config.PingProperty;
 import com.cjyc.customer.api.dto.OrderModel;
 import com.cjyc.customer.api.service.IPingPayService;
@@ -24,10 +33,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.security.*;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Map;
 
 /**
  * @Author:Hut
@@ -45,6 +56,9 @@ public class PingPayController {
 
     @Autowired
     private ITransactionService transactionService;
+
+    @Resource
+    private ICsCustomerService csCustomerService;
 
     @ApiOperation("付款")
     @PostMapping("/order/pre/pay")
@@ -262,5 +276,45 @@ public class PingPayController {
             return BaseResultUtil.fail(500,"业务员出示二维码，用户扫码支付异常");
         }
         return BaseResultUtil.success(JSONObject.parseObject(charge.toString()));
+    }
+
+
+
+
+    /**
+     * 验证支付状态
+     * @author JPG
+     */
+    @ApiOperation(value = "验证支付状态")
+    @PostMapping(value = "/receipt/car/pay/state/validate")
+    public ResultVo<ValidateReceiptCarPayVo> validateCarPayState(@RequestBody CarPayStateDto reqDto) {
+        Customer customer = csCustomerService.validate(reqDto.getLoginId());
+        reqDto.setLoginName(customer.getName());
+        return pingPayService.validateCarPayState(reqDto, false);
+    }
+    /**
+     * 按车辆申请支付
+     * @author JPG
+     */
+    @ApiOperation(value = "到付申请支付")
+    @PostMapping(value = "/receipt/car/apply/pay")
+    public ResultVo<Map<String, Object>> carCollectPay(HttpServletRequest request, @RequestBody CarCollectPayDto reqDto) {
+        Customer customer = csCustomerService.validate(reqDto.getLoginId());
+        reqDto.setLoginName(customer.getName());
+        reqDto.setIp(IPUtil.getIpAddr(request));
+        return pingPayService.carCollectPay(reqDto);
+    }
+    /**
+     * 签收(已支付过)-客户
+     * @author JPG
+     */
+    @ApiOperation(value = "签收")
+    @PostMapping(value = "/receipt/car")
+    public ResultVo<ResultReasonVo> receiptBatch(@RequestBody ReceiptBatchDto reqDto) {
+        Customer customer = csCustomerService.validate(reqDto.getLoginId());
+        reqDto.setLoginName(customer.getName());
+        reqDto.setLoginPhone(customer.getContactPhone());
+        reqDto.setLoginType(UserTypeEnum.CUSTOMER);
+        return pingPayService.receiptBatch(reqDto);
     }
 }

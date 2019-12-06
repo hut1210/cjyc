@@ -1,6 +1,8 @@
 package com.cjyc.common.model.vo.web;
 
 import com.cjyc.common.model.entity.OrderCar;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -25,6 +27,7 @@ import java.math.BigDecimal;
 public class OrderCarVo extends OrderCar implements Serializable {
 
     @ApiModelProperty(value = "客户ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long customerId;
 
     @ApiModelProperty(value = "客户名称")
@@ -37,6 +40,7 @@ public class OrderCarVo extends OrderCar implements Serializable {
     private Integer customerType;
 
     @ApiModelProperty(value = "订单所属业务中心ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long inputStoreId;
 
     @ApiModelProperty(value = "订单所属业务中心名称")
@@ -64,6 +68,7 @@ public class OrderCarVo extends OrderCar implements Serializable {
     private String startAddress;
 
     @ApiModelProperty(value = "出发地业务中心ID: -1不经过业务中心")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long startStoreId;
 
     @ApiModelProperty(value = "出发地业务中心名称")
@@ -91,6 +96,7 @@ public class OrderCarVo extends OrderCar implements Serializable {
     private String endAddress;
 
     @ApiModelProperty(value = "目的地业务中心ID: -1不经过业务中心")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long endStoreId;
 
     @ApiModelProperty(value = "目的地业务中心名称")

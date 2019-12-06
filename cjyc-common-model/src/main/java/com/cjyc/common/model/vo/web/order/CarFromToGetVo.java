@@ -1,5 +1,7 @@
 package com.cjyc.common.model.vo.web.order;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -80,9 +82,11 @@ public class CarFromToGetVo {
     private String startStoreName;
 
     @ApiModelProperty(value = "出发地业务中心ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long startStoreId;
 
     @ApiModelProperty(value = "起始地所属业务中心ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long startBelongStoreId;
 
     @ApiModelProperty(value = "省")
@@ -110,9 +114,11 @@ public class CarFromToGetVo {
     private String endStoreName;
 
     @ApiModelProperty(value = "目的地业务中心ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long endStoreId;
 
     @ApiModelProperty(value = "目的地所属业务中心ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long endBelongStoreId;
 
     @ApiModelProperty(value = "线路ID")
@@ -134,6 +140,7 @@ public class CarFromToGetVo {
     private String loadLinkName;
 
     @ApiModelProperty(value = "提车联系人userid")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long loadLinkUserId;
 
     @ApiModelProperty(value = "提车联系人电话")
@@ -152,6 +159,7 @@ public class CarFromToGetVo {
     private String unloadLinkName;
 
     @ApiModelProperty(value = "收车联系人userId")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long unloadLinkUserId;
 
     @ApiModelProperty(value = "收车人电话")

@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.cjyc.common.model.entity.OrderCar;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -32,6 +34,7 @@ public class ListOrderCarVo extends OrderCar {
 
 
     @ApiModelProperty(value = "客户ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long customerId;
 
     @ApiModelProperty(value = "客户名称")
@@ -45,6 +48,7 @@ public class ListOrderCarVo extends OrderCar {
     private Integer customerType;
 
     @ApiModelProperty(value = "订单所属业务中心ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long inputStoreId;
 
     @ApiModelProperty(value = "订单所属业务中心名称")
@@ -79,12 +83,14 @@ public class ListOrderCarVo extends OrderCar {
     private String startLat;
 
     @ApiModelProperty(value = "出发地业务中心ID: -1不经过业务中心")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long startStoreId;
 
     @ApiModelProperty(value = "出发地业务中心名称")
     @Excel(name = "出发地业务中心", orderNum = "9")
     private String startStoreName;
     @ApiModelProperty(value = "出发地业务所属中心名称")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long startBelongStoreId;
 
     @ApiModelProperty(value = "省")
@@ -116,11 +122,13 @@ public class ListOrderCarVo extends OrderCar {
     private String endLat;
 
     @ApiModelProperty(value = "目的地业务中心ID: -1不经过业务中心")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long endStoreId;
 
     @ApiModelProperty(value = "目的地业务中心名称")
     private String endStoreName;
 
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long endBelongStoreId;
 
     @ApiModelProperty(value = "预计出发时间（提车日期）")
@@ -170,12 +178,14 @@ public class ListOrderCarVo extends OrderCar {
     private String createUserName;
 
     @ApiModelProperty(value = "创建人userid")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long createUserId;
 
     @ApiModelProperty(value = "被分配给业务员的名称")
     private String allotToUserName;
 
     @ApiModelProperty(value = "被分配给业务员的userid")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long allotToUserId;
 
     @ApiModelProperty(value = "确认时间")
@@ -185,6 +195,7 @@ public class ListOrderCarVo extends OrderCar {
     private String checkUserName;
 
     @ApiModelProperty(value = "确认人userid")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long checkUserId;
 
 /*    @ApiModelProperty(value = "订单状态：0待提交，2待分配，5待确认，10待复确认，15待预付款，25已确认，55运输中，88待付款，100已完成，111原返（待），112异常结束，113取消（待），114作废（待）")

@@ -130,7 +130,7 @@
             <choose>
                 <when test="paramsDto.outterState == 1">
                     and o.state = 0
-                    and o.check_user_id = #{paramsDto.loginId}
+                    and o.create_user_id = #{paramsDto.loginId}
                 </when>
                 <when test="paramsDto.outterState == 5">
                     and o.state &lt;= 10 and o.state &gt; 0
@@ -284,6 +284,9 @@
             <if test="paramsDto.regionCode != null and paramsDto.regionCode != ''">
                 and ct1.parent_code = #{paramsDto.regionCode}
             </if>
+            <if test="paramsDto.countByCustomer != null and paramsDto.countByCustomer == true">
+                and o.customer_id = #{paramsDto.loginId}
+            </if>
             <if test="paramsDto.bizScope != null">
                 and o.input_store_id in
                 <foreach collection="paramsDto.bizScope" item="item" index="index" open="(" separator="," close=")">
@@ -296,15 +299,15 @@
 
     <select id="countForAllTab" resultType="java.util.Map">
         select
-        sum(case when o.state &gt; 0 then 1 else 0 end ) as totalCount,<!--全部订单-->
-        sum(case when o.state = 0 and o.create_user_id = #{paramsDto.loginId} then 1 else 0 end ) as waitCommitCount,<!--待提交-->
-        sum(case when o.state &gt; 0 and o.state &lt; 15 then 1 else 0 end ) as waitCheckCount,<!--待确认-->
-        sum(case when o.state = 15 then 1 else 0 end ) as waitPrePayCount,<!--带预付款-->
-        sum(case when o.state = 25 then 1 else 0 end ) as waitDispatchCount,<!--待调度-->
-        sum(case when o.state = 55 then 1 else 0 end ) as transportingCount,<!--运输中-->
-        sum(case when o.state = 100 then 1 else 0 end ) as finishedCount,<!--运输中-->
-        sum(case when o.state = 113 then 1 else 0 end ) as cancelCount,<!--已取消-->
-        sum(case when o.state = 114 then 1 else 0 end ) as obsoleteCount<!--已作废-->
+        IFNULL(sum(case when o.state &gt; 0 then 1 else 0 end ),0)  as totalCount,<!--全部订单-->
+        IFNULL(sum(case when o.state = 0 and o.create_user_id = #{paramsDto.loginId} then 1 else 0 end ),0) as waitCommitCount,<!--待提交-->
+        IFNULL(sum(case when o.state &gt; 0 and o.state &lt; 15 then 1 else 0 end ),0)  as waitCheckCount,<!--待确认-->
+        IFNULL(sum(case when o.state = 15 then 1 else 0 end ),0)  as waitPrePayCount,<!--带预付款-->
+        IFNULL(sum(case when o.state = 25 then 1 else 0 end ),0)  as waitDispatchCount,<!--待调度-->
+        IFNULL(sum(case when o.state = 55 then 1 else 0 end ),0)  as transportingCount,<!--运输中-->
+        IFNULL(sum(case when o.state = 100 then 1 else 0 end ),0)  as finishedCount,<!--运输中-->
+        IFNULL(sum(case when o.state = 113 then 1 else 0 end ),0)  as cancelCount,<!--已取消-->
+        IFNULL(sum(case when o.state = 114 then 1 else 0 end ),0)  as obsoleteCount<!--已作废-->
         from w_order o
         <where>
             <if test="paramsDto.countByCustomer != null and paramsDto.countByCustomer == true">
@@ -386,6 +389,15 @@
         select o.* from w_order o
         join w_order_car oc on oc.order_id = o.id
         where oc.id in
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        group by o.id
+    </select>
+    <select id="findListByCarNos" resultType="com.cjyc.common.model.entity.Order">
+        select o.* from w_order o
+        join w_order_car oc on oc.order_id = o.id
+        where oc.no in
         <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>

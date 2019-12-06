@@ -6,15 +6,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.redis.lock.RedisDistributedLock;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.customer.invoice.InvoiceApplyQueryDto;
-import com.cjyc.common.model.dto.customer.order.CarCollectPayDto;
-import com.cjyc.common.model.dto.customer.order.OrderDetailDto;
-import com.cjyc.common.model.dto.customer.order.OrderQueryDto;
-import com.cjyc.common.model.dto.customer.order.SimpleSaveOrderDto;
+import com.cjyc.common.model.dto.customer.order.*;
 import com.cjyc.common.model.dto.web.order.SaveOrderDto;
 import com.cjyc.common.model.entity.*;
-import com.cjyc.common.model.enums.ClientEnum;
-import com.cjyc.common.model.enums.PayModeEnum;
-import com.cjyc.common.model.enums.PayStateEnum;
+import com.cjyc.common.model.enums.*;
+import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.keys.RedisKeys;
@@ -25,15 +21,17 @@ import com.cjyc.common.model.vo.customer.invoice.InvoiceOrderVo;
 import com.cjyc.common.model.vo.customer.order.OrderCarCenterVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterDetailVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterVo;
-import com.cjyc.common.system.entity.PingOrder;
-import com.cjyc.common.system.entity.PingOrderModel;
+import com.cjyc.common.model.vo.customer.order.ValidateReceiptCarPayVo;
 import com.cjyc.common.system.service.ICsOrderService;
+import com.cjyc.common.system.service.ICsSendNoService;
 import com.cjyc.common.system.util.RedisUtils;
 import com.cjyc.customer.api.config.PingProperty;
+import com.cjyc.customer.api.dto.OrderModel;
 import com.cjyc.customer.api.service.IOrderService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.google.common.collect.Maps;
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -43,7 +41,6 @@ import org.springframework.util.StringUtils;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @auther litan
@@ -71,6 +68,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
     private ICarSeriesDao carSeriesDao;
     @Resource
     private IStoreDao storeDao;
+    @Resource
+    private ICsSendNoService csSendNoService;
 
     /**
      * 保存订单
@@ -271,71 +270,6 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         PageInfo<InvoiceOrderVo> pageInfo = new PageInfo<>(list);
         return BaseResultUtil.success(pageInfo);
     }
-
-
-    @Override
-    public ResultVo<Map<String, Object>> carPayState(CarCollectPayDto paramsDto) {
-        Map<String, Object> resMap = Maps.newHashMap();
-
-        List<Order> list = orderDao.findListByCarIds(paramsDto.getOrderCarId());
-        if (CollectionUtils.isEmpty(list)) {
-            return BaseResultUtil.fail("订单信息丢失");
-        }
-        if (list.size() > 1) {
-            return BaseResultUtil.fail("仅支持同一订单内的车辆签收");
-        }
-
-        Order order = list.get(0);
-
-        boolean isNeedPay = false;
-        BigDecimal amount = BigDecimal.ZERO;
-        List<OrderCar> carList = orderCarDao.findListByIds(paramsDto.getOrderCarId());
-        for (OrderCar orderCar : carList) {
-            if (orderCar == null || orderCar.getNo() == null) {
-                return BaseResultUtil.fail("订单车辆信息丢失");
-            }
-            if (orderCar.getState() >= OrderCarStateEnum.SIGNED.code) {
-                return BaseResultUtil.fail("订单车辆{}已签收过，请刷新后重试", orderCar.getNo());
-            }
-
-            String lockKey = RedisKeys.getWlCollectPayLock(orderCar.getNo());
-            String value = redisUtils.get(lockKey);
-
-            if (value != null && !value.equals(paramsDto.getLoginId().toString())) {
-                return BaseResultUtil.fail("订单车辆{}正在支付中", orderCar.getNo());
-            }
-            if (value != null) {
-                redisUtils.delete(lockKey);
-            }
-            if (!redisLock.lock(lockKey, 1800000, 100, 300)) {
-                return BaseResultUtil.fail("锁定车辆失败");
-            }
-
-            //是否需要支付
-            if (PayModeEnum.PERIOD.code == order.getPayType()) {
-                //账期
-                isNeedPay = false;
-            } else if (PayModeEnum.PREPAY.code == order.getPayType()) {
-                //预付
-                if (orderCar.getWlPayState() != PayStateEnum.PAID.code) {
-                    return BaseResultUtil.fail("支付车辆{}状态异常，预付未支付", orderCar.getNo());
-                }
-                isNeedPay = false;
-            } else {
-                //时付
-                if (orderCar.getWlPayState() != PayStateEnum.PAID.code) {
-                    return BaseResultUtil.fail("订单车辆{}已支付过，请刷新后重试", orderCar.getNo());
-                }
-                isNeedPay = true;
-                amount = amount.add(orderCar.getTotalFee());
-            }
-        }
-
-        resMap.put("isNeedPay", isNeedPay);
-        resMap.put("amount", amount);
-        return BaseResultUtil.success(resMap);
-    }
-
 
 
 }

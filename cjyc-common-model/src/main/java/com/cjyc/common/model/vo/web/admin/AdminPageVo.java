@@ -22,6 +22,7 @@ public class AdminPageVo {
     @ApiModelProperty("业务中心")
     private String bizCenter;
     @ApiModelProperty("用户标识")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long userId;
     @ApiModelProperty(value = "业务范围描述信息")
     private String bizDesc;

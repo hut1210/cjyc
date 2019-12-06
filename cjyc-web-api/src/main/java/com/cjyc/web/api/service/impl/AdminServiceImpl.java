@@ -106,6 +106,7 @@ public class AdminServiceImpl extends ServiceImpl<IAdminDao, Admin> implements I
 
         SelectPageUsersForSalesmanReq req = new SelectPageUsersForSalesmanReq();
         BeanUtils.copyProperties(paramsDto, req);
+        req.setAccount(paramsDto.getPhone());
 
         //计算业务中心
         List<Long> deptIds= new ArrayList<>();
@@ -183,6 +184,7 @@ public class AdminServiceImpl extends ServiceImpl<IAdminDao, Admin> implements I
             }
             deptIds.add(store.getDeptId());
         }
+
         req.setDeptIdList(deptIds);
         ResultData<PageData<SelectUsersByRoleResp>> resData = sysUserService.getPageUsersForSalesman(req);
         if(resData == null || resData.getData() == null || CollectionUtils.isEmpty(resData.getData().getList())){

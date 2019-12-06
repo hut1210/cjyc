@@ -461,7 +461,11 @@
         when oc.state = 50 then 2
         when oc.state = 55 then 3
         when oc.state &gt;= 100 then 5 end)end ) as backTransportState,
-
+        o.expect_start_date as expectStartDate,
+        o.end_store_id as endStoreId,
+        o.end_store_name as endStoreName,
+        o.start_store_id as startStoreId,
+        o.start_store_name as startStoreName,
         ct1.parent_name as region,
         ct1.parent_code as regionCode,
         s1.detail_addr as inputStoreAddress,
@@ -478,6 +482,7 @@
         left join s_city ct1 on s1.province_code = ct1.code
         left join c_customer_contract ht on ht.id = o.customer_contract_id
         <where>
+            and o.state > 0
             <choose>
                 <when test="paramsDto.outterState == 1">
                     and o.state = 0
@@ -739,7 +744,7 @@
         <include refid="Base_Column_List"/>
         from w_order_car
         <where>
-            id in
+            and id in
             <foreach collection="orderCarIdList" index="index" item = "item" open="(" separator="," close=")">
                 #{item}
             </foreach>
@@ -917,4 +922,18 @@
         where order_id = #{id}
         and state &lt; 100
     </select>
+    <select id="findListByNos" resultType="com.cjyc.common.model.entity.OrderCar">
+        select
+        <include refid="Base_Column_List"/>
+        from w_order_car oc
+        <where>
+            and oc.no in
+            <foreach collection="list" index="index" item = "item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
+
+    </select>
+
+
 </mapper>

@@ -1,6 +1,8 @@
 package com.cjyc.common.model.vo.web.waybill;
 
 import com.cjyc.common.model.entity.WaybillCar;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -13,6 +15,7 @@ public class TrunkCarListWaybillCarVo extends WaybillCar {
     private String outterState;
 
     @ApiModelProperty(value = "承运商ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long carrierId;
 
     @ApiModelProperty(value = "承运商类型：0承运商，1业务员，2客户自己")
@@ -25,6 +28,7 @@ public class TrunkCarListWaybillCarVo extends WaybillCar {
     private String createUser;
 
     @ApiModelProperty(value = "调度人ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long createUserId;
 
     @ApiModelProperty(value = "品牌")
@@ -46,6 +50,7 @@ public class TrunkCarListWaybillCarVo extends WaybillCar {
     private String driverPhone;
 
     @ApiModelProperty(value = "司机ID(loginId)")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long driverId;
 
     @ApiModelProperty(value = "运力车牌号")

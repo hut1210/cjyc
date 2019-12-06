@@ -2,6 +2,10 @@ package com.cjyc.common.model.keys;
 
 import com.cjyc.common.model.enums.CaptchaTypeEnum;
 import com.cjyc.common.model.enums.ClientEnum;
+import com.google.common.collect.Lists;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * RedisKey
@@ -77,8 +81,15 @@ public class RedisKeys {
         return PROJECT_PREFIX + I + NEW_TASK_NO_KEY + I + waybillNo;
     }
 
-    public static String getWlCollectPayLock(String carNo) {
+    public static String getWlCollectPayLockKey(String carNo) {
         return  PROJECT_PREFIX + I + WL_COLLECT_PAY_LOCK + I + carNo;
+    }
+    public static List<String> getWlCollectPayLockKeys(List<String> carNos) {
+        List<String> list = Lists.newArrayList();
+        for (String carNo : carNos) {
+            list.add(PROJECT_PREFIX + I + WL_COLLECT_PAY_LOCK + I + carNo);
+        }
+        return list;
     }
 
     public static String getWlPrePayLock(String orderNo) {

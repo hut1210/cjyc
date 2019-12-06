@@ -3,6 +3,8 @@ package com.cjyc.common.model.vo.web.user;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -28,6 +30,7 @@ public class DriverListVo implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "user_id(查询架构组数据时使用)")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long userId;
 
     @ApiModelProperty(value = "昵称")

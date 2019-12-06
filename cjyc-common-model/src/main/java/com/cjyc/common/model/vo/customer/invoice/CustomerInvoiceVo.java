@@ -1,5 +1,7 @@
 package com.cjyc.common.model.vo.customer.invoice;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -17,6 +19,7 @@ public class CustomerInvoiceVo implements Serializable {
     private Long id;
 
     @ApiModelProperty(value = "客户ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long customerId;
 
     @ApiModelProperty(value = "发票类型 1-普通(个人) ，2-增值普票(企业) ，3-增值专用发票'")

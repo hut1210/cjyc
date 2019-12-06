@@ -116,7 +116,7 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
 
     int updateTrunkStateById(Long id);
 
-    List<OrderCar> findListByIds(@Param("orderCarIdList") List<Long> orderCarIdList);
+
     List<OrderCarVo> findVoListByIds(@Param("orderCarIdList") List<Long> orderCarIdList);
 
     /**
@@ -146,4 +146,8 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
     int updateForReceiptBatch(@Param("collection") Collection<Long> orderCarIdSet);
 
     List<OrderCarWaitDispatchVo> findWaitDispatchCarList(@Param("paramsDto") WaitDispatchListOrderCarDto paramsDto);
+
+    List<OrderCar> findListByIds(@Param("list") List<Long> orderCarIdList);
+
+    List<OrderCar> findListByNos(@Param("list") List<String> orderCarNos);
 }
