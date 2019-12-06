@@ -9,11 +9,6 @@ import java.io.Serializable;
 @Data
 public class DriverVehicleVo implements Serializable {
     private static final long serialVersionUID = 6358499631834729670L;
-
-    @ApiModelProperty("承运商id")
-    @JsonSerialize(using= ToStringSerializer.class)
-    private Long carrierId;
-
     @ApiModelProperty("司机id")
     @JsonSerialize(using= ToStringSerializer.class)
     private Long driverId;

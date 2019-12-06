@@ -37,13 +37,10 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
 
     @Resource
     private IVehicleDao vehicleDao;
-
     @Resource
     private IVehicleRunningDao vehicleRunningDao;
-
     @Resource
     private IDriverVehicleConDao driverVehicleConDao;
-
     @Resource
     private ITaskDao taskDao;
 

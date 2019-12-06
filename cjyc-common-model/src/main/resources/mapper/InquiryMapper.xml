@@ -62,6 +62,7 @@
                 and si.state = #{state}
             </if>
         </where>
+            order by si.inquiry_time DESC
     </select>
 
 </mapper>
