@@ -41,16 +41,11 @@ public class InquiryServiceImpl extends ServiceImpl<IInquiryDao, Inquiry> implem
     @Override
     public ResultVo findInquiry(SelectInquiryDto dto) {
         //日期转Long
-        //当前时间减去一小时
-        Long hourAgo = LocalDateTimeUtil.getMillisByLDT(LocalDateTimeUtil.minus(LocalDateTime.now(),
-                1,
-                ChronoUnit.HOURS));
-        dto.setHourAgo(hourAgo);
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
         List<InquiryVo> inquiryVos = inquiryDao.findInquiry(dto);
         if(!CollectionUtils.isEmpty(inquiryVos)){
             for(InquiryVo vo : inquiryVos){
-                if(InquiryStateEnum.YES_HANDLE.name.equals(vo.getState())){
+                if(InquiryStateEnum.YES_HANDLE.code == vo.getState()){
                     continue;
                 }
                 if(vo.getInquiryTime() != null){

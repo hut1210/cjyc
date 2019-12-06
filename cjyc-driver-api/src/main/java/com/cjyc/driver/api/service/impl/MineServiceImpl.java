@@ -125,7 +125,7 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
         //根据车牌号查询库中有没有添加
         Vehicle veh = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda().eq(Vehicle::getPlateNo,dto.getPlateNo()));
         if(veh != null && !veh.getId().equals(dto.getVehicleId())){
-            return BaseResultUtil.getVo(ResultEnum.EXIST_VEHICLE.getCode(),ResultEnum.EXIST_VEHICLE.getMsg());
+            return BaseResultUtil.fail("该车辆已存在,请检查");
         }
         if(dto.getVehicleId() == null){
             //新增车辆
@@ -150,7 +150,7 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
                         .eq(Task::getVehicleRunningId,vr.getId())
                         .eq(Task::getState,TaskStateEnum.TRANSPORTING.code));
                 if(task != null){
-                    return BaseResultUtil.getVo(ResultEnum.VEHICLE_RUNNING.getCode(),ResultEnum.VEHICLE_RUNNING.getMsg());
+                    return BaseResultUtil.fail("该运力正在运输中，不可修改");
                 }
             }
             //更新车辆
@@ -233,7 +233,7 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
                     .eq(Task::getVehicleRunningId,vr.getId())
                     .eq(Task::getState,TaskStateEnum.TRANSPORTING.code));
             if(task != null){
-                return BaseResultUtil.getVo(ResultEnum.VEHICLE_RUNNING.getCode(),ResultEnum.VEHICLE_RUNNING.getMsg());
+                return BaseResultUtil.fail("该运力正在运输中，不可修改");
             }
         }
         if(dto.getDriverId() != null || dto.getDriverId() != 0){
@@ -279,12 +279,12 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
             existDriver.setExistIdCard(dto.getIdCard());
             existDriver.setCreateTime(NOW);
             existDriverDao.insert(existDriver);
-            return BaseResultUtil.getVo(ResultEnum.EXIST_ENTERPRISE_CARRIER.getCode(),"该司机已存在于企业承运商中，不可创建");
+            return BaseResultUtil.fail("账号已存在于该企业承运商中");
         }
         //验证在个人司机中是否存在
         count = driverDao.existPersonDriver(dto);
         if(count > 0){
-            return BaseResultUtil.getVo(ResultEnum.EXIST_PERSONAL_CARRIER.getCode(),"该司机已存在于个人承运商中，不可创建");
+            return BaseResultUtil.fail("账号已存在于个人司机中");
         }
         //获取承运商
         Carrier carrier = carrierDao.selectById(cdc.getCarrierId());
@@ -329,7 +329,7 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
                         .eq(Task::getVehicleRunningId,vr.getId())
                         .eq(Task::getState,TaskStateEnum.TRANSPORTING.code));
                 if(task != null){
-                    return BaseResultUtil.getVo(ResultEnum.VEHICLE_RUNNING.getCode(),ResultEnum.VEHICLE_RUNNING.getMsg());
+                    return BaseResultUtil.fail("该运力正在运输中，不可修改");
                 }
             }
             //更新

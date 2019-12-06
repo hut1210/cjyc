@@ -61,7 +61,6 @@
             <if test="state != null">
                 and si.state = #{state}
             </if>
-            and si.inquiry_time &lt;= #{hourAgo}
         </where>
     </select>
 

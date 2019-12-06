@@ -54,7 +54,7 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
         //判断车辆是否已有
         Vehicle veh = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda().eq(Vehicle::getPlateNo, dto.getPlateNo()));
         if (veh != null) {
-            return BaseResultUtil.getVo(ResultEnum.EXIST_VEHICLE.getCode(), ResultEnum.EXIST_VEHICLE.getMsg());
+            return BaseResultUtil.fail("该车辆已存在,请检查");
         }
         Vehicle vehicle = new Vehicle();
         BeanUtils.copyProperties(dto, vehicle);
@@ -88,7 +88,7 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
                     .eq(Task::getVehicleRunningId,vr.getId())
                     .eq(Task::getState,TaskStateEnum.TRANSPORTING.code));
             if(task != null){
-                return BaseResultUtil.getVo(ResultEnum.VEHICLE_RUNNING.getCode(),ResultEnum.VEHICLE_RUNNING.getMsg());
+                return BaseResultUtil.fail("该运力正在运输中，不可修改");
             }
         }
         if (dto.getDriverId() != null) {

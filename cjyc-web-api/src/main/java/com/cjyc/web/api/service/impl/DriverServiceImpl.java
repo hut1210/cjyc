@@ -93,10 +93,10 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         ExistCarrierVo carrierVo = carrierDao.existCarrier(dto);
         if(carrierVo != null){
             if(carrierVo.getType() == CarrierTypeEnum.PERSONAL.code){
-                return BaseResultUtil.getVo(ResultEnum.EXIST_PERSONAL_CARRIER.getCode(),ResultEnum.EXIST_PERSONAL_CARRIER.getMsg());
+                return BaseResultUtil.fail("账号已存在于个人司机中");
             }
             if(carrierVo.getType() == CarrierTypeEnum.ENTERPRISE.code){
-                return BaseResultUtil.getVo(ResultEnum.EXIST_ENTERPRISE_CARRIER.getCode(),"该司机已存在于["+carrierVo.getName()+"]不可创建");
+                return BaseResultUtil.fail("该司机已存在于["+carrierVo.getName()+"]不可创建");
             }
         }
         if(dto.getDriverId() == null){
@@ -166,7 +166,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         if(vRun != null){
             Task task = taskDao.selectOne(new QueryWrapper<Task>().lambda().eq(Task::getVehicleRunningId,vRun.getId()));
             if(task != null && task.getState() == TaskStateEnum.TRANSPORTING.code){
-                return BaseResultUtil.getVo(ResultEnum.VEHICLE_RUNNING.getCode(),ResultEnum.VEHICLE_RUNNING.getMsg());
+                return BaseResultUtil.fail("该运力正在运输中，不可修改");
             }
         }
         //更新司机信息

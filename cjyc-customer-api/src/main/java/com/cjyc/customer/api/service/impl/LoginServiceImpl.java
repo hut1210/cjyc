@@ -65,7 +65,7 @@ public class LoginServiceImpl extends SuperServiceImpl<ICustomerDao, Customer> i
            c = addToPlatform(dto.getPhone());
         }
         if(c != null && c.getType() == CustomerTypeEnum.ENTERPRISE.code){
-            return BaseResultUtil.getVo(ResultEnum.ENTERPRISE_NOTLOGIN.getCode(),ResultEnum.ENTERPRISE_NOTLOGIN.getMsg());
+            return BaseResultUtil.fail("大客户不能登陆app");
         }
         //调用架构组验证手机号验证码登陆
         AuthMobileLoginReq req = new AuthMobileLoginReq();

@@ -49,7 +49,7 @@ public class TransportServiceImpl implements ITransportService {
         }
         Line line = lineDao.getLinePriceByCode(dto.getFromCode(), dto.getToCode());
         if(line == null){
-            return BaseResultUtil.getVo(ResultEnum.NOEXIST_LINE.getCode(),ResultEnum.NOEXIST_LINE.getMsg());
+            return BaseResultUtil.fail("该班线不存在");
         }
         Map<String,Object> map = new HashMap<>(10);
         map.put("defaultWlFee",line.getDefaultWlFee() == null ? BigDecimal.ZERO : line.getDefaultWlFee().divide(new BigDecimal(100)));

@@ -98,7 +98,7 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
         if(dto.getLineId() == null){
             line = lineDao.getLinePriceByCode(dto.getFromCode(),dto.getToCode());
             if(line != null){
-                return BaseResultUtil.getVo(ResultEnum.EXIST_LINE.getCode(),ResultEnum.EXIST_LINE.getMsg());
+                return BaseResultUtil.fail("该班线已存在");
             }
             Line addLine = new Line();
             addLine = encapLine(addLine,dto);
@@ -123,7 +123,7 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
     public ResultVo getDefaultWlFeeByCode(String fromCode, String toCode) {
         Line line = lineDao.getLinePriceByCode(fromCode,toCode);
         if(line == null){
-            return BaseResultUtil.getVo(ResultEnum.NOEXIST_LINE.getCode(),ResultEnum.NOEXIST_LINE.getMsg());
+            return BaseResultUtil.fail("该班线不存在");
         }
         Map<String,Object> map = new HashMap<>(10);
         map.put("defaultWlFee",line.getDefaultWlFee() == null ? BigDecimal.ZERO : line.getDefaultWlFee().divide(new BigDecimal(100)));
