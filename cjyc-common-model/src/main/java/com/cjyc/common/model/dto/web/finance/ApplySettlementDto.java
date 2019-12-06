@@ -22,6 +22,9 @@ public class ApplySettlementDto implements Serializable {
     @ApiModelProperty(value = "客户Id")
     private Long customerId;
 
+    @ApiModelProperty(value = "应收总运费")
+    private BigDecimal freightFee;
+
     @ApiModelProperty(value = "结算金额（开票金额）")
     private BigDecimal amount;
 

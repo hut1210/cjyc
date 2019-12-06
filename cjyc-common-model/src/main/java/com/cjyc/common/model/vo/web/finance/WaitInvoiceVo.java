@@ -40,7 +40,7 @@ public class WaitInvoiceVo implements Serializable {
     private String address;
 
     @ApiModelProperty(value = "电话")
-    private String phone;
+    private String tel;
 
     @ApiModelProperty(value = "开户行名称")
     private String bankName;
@@ -49,13 +49,13 @@ public class WaitInvoiceVo implements Serializable {
     private String bankAccout;
 
     @ApiModelProperty(value = "收件人")
-    private String addressee;
+    private String pickUpPerson;
 
     @ApiModelProperty(value = "收件人电话")
-    private String addresseePhone;
+    private String pickUpPhone;
 
     @ApiModelProperty(value = "收件地址")
-    private String mailAddress;
+    private String pickUpAddress;
 
     @ApiModelProperty(value = "申请结算时间")
     private Long applyTime;
@@ -67,7 +67,7 @@ public class WaitInvoiceVo implements Serializable {
     private  String applicant;
 
     @ApiModelProperty(value = "确认开票时间")
-    private Long confirmTime;
+        private Long confirmTime;
 
     @ApiModelProperty(value = "确认开票时间")
     private String confirmTimeStr;

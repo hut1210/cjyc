@@ -38,6 +38,9 @@ public class InvoiceReceipt implements Serializable {
     @ApiModelProperty(value = "客户ID")
     private Long customerId;
 
+    @ApiModelProperty(value = "应收总运费")
+    private BigDecimal freightFee;
+
     @ApiModelProperty(value = "结算金额")
     private BigDecimal amount;
 
@@ -55,5 +58,8 @@ public class InvoiceReceipt implements Serializable {
 
     @ApiModelProperty(value = "申请时间")
     private Long invoiceTime;
+
+    @ApiModelProperty(value = "申请人")
+    private String invoiceMan;
 
 }
