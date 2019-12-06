@@ -6,10 +6,8 @@ import com.cjyc.common.model.dao.IFinanceDao;
 import com.cjyc.common.model.dao.IInvoiceReceiptDao;
 import com.cjyc.common.model.dto.web.finance.ApplySettlementDto;
 import com.cjyc.common.model.dto.web.finance.FinanceQueryDto;
-import com.cjyc.common.model.dto.web.finance.WaitInvoiceQueryDto;
+import com.cjyc.common.model.dto.web.finance.WaitQueryDto;
 import com.cjyc.common.model.entity.CustomerInvoice;
-import com.cjyc.common.model.entity.FinanceReceipt;
-import com.cjyc.common.model.entity.InvoiceApply;
 import com.cjyc.common.model.entity.InvoiceReceipt;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.RandomUtil;
@@ -18,12 +16,11 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.finance.FinanceReceiptVo;
 import com.cjyc.common.model.vo.web.finance.FinanceVo;
 import com.cjyc.common.model.vo.web.finance.TrunkLineVo;
-import com.cjyc.web.api.service.ICustomerService;
+import com.cjyc.common.model.vo.web.finance.WaitInvoiceVo;
 import com.cjyc.web.api.service.IFinanceService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +31,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 /**
  * @Author:Hut
@@ -46,23 +42,23 @@ import java.util.Random;
 public class FinanceServiceImpl implements IFinanceService {
 
     @Resource
-    private IFinanceDao iFinanceDao;
+    private IFinanceDao financeDao;
 
     @Resource
-    private ICustomerInvoiceDao iCustomerInvoiceDao;
+    private ICustomerInvoiceDao customerInvoiceDao;
 
     @Resource
-    private IInvoiceReceiptDao iInvoiceReceiptDao;
+    private IInvoiceReceiptDao invoiceReceiptDao;
 
     @Override
     public ResultVo<PageVo<FinanceVo>> getFinanceList(FinanceQueryDto financeQueryDto) {
         PageHelper.startPage(financeQueryDto.getCurrentPage(), financeQueryDto.getPageSize());
-        List<FinanceVo> financeVoList = iFinanceDao.getFinanceList(financeQueryDto);
+        List<FinanceVo> financeVoList = financeDao.getFinanceList(financeQueryDto);
         for(int i=0;i<financeVoList.size();i++){
             FinanceVo financeVo = financeVoList.get(i);
             if(financeVo != null){
                 String orderCarNo = financeVo.getNo();
-                List<TrunkLineVo> trunkLineVoList = iFinanceDao.getTrunkCostList(orderCarNo);
+                List<TrunkLineVo> trunkLineVoList = financeDao.getTrunkCostList(orderCarNo);
                 financeVo.setTrunkLineVoList(trunkLineVoList);
             }
         }
@@ -77,12 +73,12 @@ public class FinanceServiceImpl implements IFinanceService {
     }
 
     private List<FinanceVo> getAllFinanceList(FinanceQueryDto financeQueryDto) {
-        List<FinanceVo> financeVoList = iFinanceDao.getFinanceList(financeQueryDto);
+        List<FinanceVo> financeVoList = financeDao.getFinanceList(financeQueryDto);
         for(int i=0;i<financeVoList.size();i++){
             FinanceVo financeVo = financeVoList.get(i);
             if(financeVo != null){
                 String orderCarNo = financeVo.getNo();
-                List<TrunkLineVo> trunkLineVoList = iFinanceDao.getTrunkCostList(orderCarNo);
+                List<TrunkLineVo> trunkLineVoList = financeDao.getTrunkCostList(orderCarNo);
                 financeVo.setTrunkLineVoList(trunkLineVoList);
             }
         }
@@ -99,7 +95,7 @@ public class FinanceServiceImpl implements IFinanceService {
     @Override
     public ResultVo<PageVo<FinanceReceiptVo>> getFinanceReceiptList(FinanceQueryDto financeQueryDto) {
         PageHelper.startPage(financeQueryDto.getCurrentPage(), financeQueryDto.getPageSize());
-        List<FinanceReceiptVo> financeVoList = iFinanceDao.getFinanceReceiptList(financeQueryDto);
+        List<FinanceReceiptVo> financeVoList = financeDao.getFinanceReceiptList(financeQueryDto);
         PageInfo<FinanceReceiptVo> pageInfo = new PageInfo<>(financeVoList);
         return BaseResultUtil.success(pageInfo);
     }
@@ -121,7 +117,7 @@ public class FinanceServiceImpl implements IFinanceService {
             customerInvoice.setPickupPerson(applySettlementDto.getAddressee());
             customerInvoice.setPickupPhone(applySettlementDto.getAddresseePhone());
             customerInvoice.setPickupAddress(applySettlementDto.getMailAddress());
-            invoiceId = iCustomerInvoiceDao.insert(customerInvoice);
+            invoiceId = customerInvoiceDao.insert(customerInvoice);
             state="1";
         }
 
@@ -138,7 +134,7 @@ public class FinanceServiceImpl implements IFinanceService {
         builder.append(RandomUtil.getMathRandom(6));
         invoiceReceipt.setSerialNumber(builder.toString());
 
-        iInvoiceReceiptDao.insert(invoiceReceipt);
+        invoiceReceiptDao.insert(invoiceReceipt);
     }
 
     @Override
@@ -147,11 +143,11 @@ public class FinanceServiceImpl implements IFinanceService {
     }
 
     @Override
-    public ResultVo<PageVo<FinanceReceiptVo>> getWaitInvoiceList(WaitInvoiceQueryDto waitInvoiceQueryDto) {
+    public ResultVo<PageVo<WaitInvoiceVo>> getWaitInvoiceList(WaitQueryDto waitInvoiceQueryDto) {
 
         PageHelper.startPage(waitInvoiceQueryDto.getCurrentPage(), waitInvoiceQueryDto.getPageSize());
-        //iInvoiceReceiptDao.getWaitInvoiceList(waitInvoiceQueryDto);
-
-        return null;
+        List<WaitInvoiceVo> waitInvoiceVoList = invoiceReceiptDao.getWaitInvoiceList(waitInvoiceQueryDto);
+        PageInfo<WaitInvoiceVo> pageInfo = new PageInfo<>(waitInvoiceVoList);
+        return BaseResultUtil.success(pageInfo);
     }
 }

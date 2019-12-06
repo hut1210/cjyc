@@ -2,12 +2,13 @@ package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.web.finance.ApplySettlementDto;
 import com.cjyc.common.model.dto.web.finance.FinanceQueryDto;
-import com.cjyc.common.model.dto.web.finance.WaitInvoiceQueryDto;
+import com.cjyc.common.model.dto.web.finance.WaitQueryDto;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.finance.FinanceReceiptVo;
 import com.cjyc.common.model.vo.web.finance.FinanceVo;
+import com.cjyc.common.model.vo.web.finance.WaitInvoiceVo;
 import com.cjyc.web.api.service.IFinanceService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -58,7 +59,7 @@ public class FinanceController {
 
     @ApiOperation(value = "根据条件查询等待开票列表")
     @PostMapping(value = "/getWaitInvoiceList")
-    public ResultVo<PageVo<FinanceReceiptVo>> getWaitInvoiceList(@RequestBody WaitInvoiceQueryDto waitInvoiceQueryDto){
+    public ResultVo<PageVo<WaitInvoiceVo>> getWaitInvoiceList(@RequestBody WaitQueryDto waitInvoiceQueryDto){
         return iFinanceService.getWaitInvoiceList(waitInvoiceQueryDto);
     }
 
@@ -67,6 +68,12 @@ public class FinanceController {
     public ResultVo confirmSettlement(@RequestBody String orderCarNo){
         iFinanceService.confirmSettlement(orderCarNo);
         return BaseResultUtil.success();
+    }
+
+    @ApiOperation(value = "根据条件查询等待回款列表")
+    @PostMapping(value = "/getWaitReceiveList")
+    public ResultVo<PageVo<WaitInvoiceVo>> getWaitReceiveList(@RequestBody WaitQueryDto waitInvoiceQueryDto){
+        return iFinanceService.getWaitInvoiceList(waitInvoiceQueryDto);
     }
 
 }

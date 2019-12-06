@@ -11,7 +11,7 @@ import java.io.Serializable;
  * @Date:2019/11/25 18:27
  */
 @Data
-public class WaitInvoiceQueryDto  extends BasePageDto implements Serializable {
+public class WaitQueryDto extends BasePageDto implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -28,14 +28,33 @@ public class WaitInvoiceQueryDto  extends BasePageDto implements Serializable {
     private  String phone;
 
     @ApiModelProperty(value = "申请结算开始时间")
-    private  Long startTime;
+    private  Long applyStartTime;
 
     @ApiModelProperty(value = "申请结算结束时间")
-    private  Long endTime;
+    private  Long applyEndTime;
 
     @ApiModelProperty(value = "申请人")
     private  String applicant;
 
     @ApiModelProperty(value = "发票类型")
     private  String type;
+
+    @ApiModelProperty(value = "确认开票开始时间")
+    private  Long invoiceStartTime;
+
+    @ApiModelProperty(value = "确认开票结束时间")
+    private  Long invoiceEndTime;
+
+    @ApiModelProperty(value = "确认人")
+    private  String confirmMan;
+
+    @ApiModelProperty(value = "核销开始时间")
+    private  Long writeOffStartTime;
+
+    @ApiModelProperty(value = "核销结束时间")
+    private  Long writeOffEndTime;
+
+    @ApiModelProperty(value = "核销人")
+    private  String writeOffmMan;
+
 }

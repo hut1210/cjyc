@@ -2,11 +2,12 @@ package com.cjyc.web.api.service;
 
 import com.cjyc.common.model.dto.web.finance.ApplySettlementDto;
 import com.cjyc.common.model.dto.web.finance.FinanceQueryDto;
-import com.cjyc.common.model.dto.web.finance.WaitInvoiceQueryDto;
+import com.cjyc.common.model.dto.web.finance.WaitQueryDto;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.finance.FinanceReceiptVo;
 import com.cjyc.common.model.vo.web.finance.FinanceVo;
+import com.cjyc.common.model.vo.web.finance.WaitInvoiceVo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,5 +27,5 @@ public interface IFinanceService {
 
     void confirmSettlement(String orderCarNo);
 
-    ResultVo<PageVo<FinanceReceiptVo>> getWaitInvoiceList(WaitInvoiceQueryDto waitInvoiceQueryDto);
+    ResultVo<PageVo<WaitInvoiceVo>> getWaitInvoiceList(WaitQueryDto waitInvoiceQueryDto);
 }

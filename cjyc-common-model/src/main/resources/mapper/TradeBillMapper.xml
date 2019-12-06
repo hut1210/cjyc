@@ -62,4 +62,7 @@
         select * from f_trade_bill where (REPLACE(unix_timestamp(current_timestamp(3)),'.','')-create_time)>=30000 and state=0
     </select>
 
+    <select id="getAmountByOrderCarIds" parameterType="String" resultType="java.math.BigDecimal">
+        select sum(freight_fee) from w_waybill_car wwc where order_car_id in (#{orderCarIds})
+    </select>
 </mapper>
