@@ -49,7 +49,7 @@
                                 parameterType="com.cjyc.common.model.dto.web.line.SelectLineDto">
         SELECT
             sl.id AS id,
-            s1.code AS code,
+            sl.code AS code,
             sl.from_code AS fromCityCode,
             sl.to_code AS toCityCode,
             sl.default_wl_fee AS defaultWlFee,
