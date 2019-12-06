@@ -58,7 +58,7 @@ public class OrderModel extends APIResource {
     private String pingAppId;
     private BigDecimal deposit;	//定金
     private String orderMan; //当前app登陆人的Id
-    private String orderCarId;
+    private String orderCarIds;
     private String driver_code;
     private String order_type;
     private String driver_name;
@@ -97,12 +97,12 @@ public class OrderModel extends APIResource {
 		this.back_type = back_type;
 	}
 
-    public String getOrderCarId() {
-        return orderCarId;
+    public String getOrderCarIds() {
+        return orderCarIds;
     }
 
-    public void setOrderCarId(String orderCarId) {
-        this.orderCarId = orderCarId;
+    public void setOrderCarIds(String orderCarIds) {
+        this.orderCarIds = orderCarIds;
     }
 
     public String getId() {

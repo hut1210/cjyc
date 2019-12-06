@@ -8,6 +8,8 @@ import com.cjyc.common.model.dto.customer.order.CarPayStateDto;
 import com.cjyc.common.model.dto.customer.order.ReceiptBatchDto;
 import com.cjyc.common.model.dto.customer.pingxx.PrePayDto;
 import com.cjyc.common.model.entity.Customer;
+import com.cjyc.common.model.dto.customer.pingxx.SweepCodeDto;
+import com.cjyc.common.model.enums.ClientEnum;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -214,34 +216,16 @@ public class PingPayController {
         return signature.verify(signatureBytes);
     }
 
-    @ApiOperation("司机扫码")
+    @ApiOperation("司机出示二维码")
     @PostMapping("/sweepDriveCode")
-    public ResultVo sweepDriveCode(HttpServletRequest request,@RequestBody OrderModel om){
-
-        om.setClientIp(request.getRemoteAddr());
-        om.setPingAppId(PingProperty.userAppId);
-        //创建Charge对象
-        Charge charge = new Charge();
+    public ResultVo sweepDriveCode(HttpServletRequest request,@RequestBody SweepCodeDto sweepCodeDto){
+        sweepCodeDto.setIp(IPUtil.getIpAddr(request));
+        Charge charge;
         try {
-            om.setAmount(om.getAmount());
-            om.setDriver_code(om.getDriver_code());
-            om.setOrder_type(om.getOrder_type());
-            om.setDriver_name(om.getDriver_name());
-            om.setDriver_phone(om.getDriver_phone());
-            om.setBack_type(om.getBack_type());
-            om.setOrderCarId(om.getOrderCarId());
-            om.setChannel(om.getChannel());
-            om.setOrderNo(om.getOrderNo());
-            om.setSubject("订单的收款码功能!");
-            om.setBody("生成二维码！");
-            om.setChargeType("1");
-            om.setClientType("driver");
-            om.setDescription("韵车订单号："+om.getOrderNo());
-            charge = pingPayService.sweepDriveCode(om);
-
-        } catch (Exception e) {
-            log.error("扫码支付异常",e);
-            return BaseResultUtil.fail(500,"司机扫码支付异常");
+            charge = pingPayService.sweepDriveCode(sweepCodeDto);
+        }catch (Exception e){
+            log.error(e.getMessage(),e);
+            return BaseResultUtil.fail(500,"司机二维码异常");
         }
         return BaseResultUtil.success(JSONObject.parseObject(charge.toString()));
     }
@@ -261,7 +245,7 @@ public class PingPayController {
             om.setDriver_name(om.getDriver_name());
             om.setDriver_phone(om.getDriver_phone());
             om.setBack_type(om.getBack_type());
-            om.setOrderCarId(om.getOrderCarId());
+            om.setOrderCarIds(om.getOrderCarIds());
             om.setChannel(om.getChannel());
             om.setOrderNo(om.getOrderNo());
             om.setSubject("订单的收款码功能!");

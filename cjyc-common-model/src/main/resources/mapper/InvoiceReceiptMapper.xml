@@ -20,4 +20,9 @@
         id, serial_number,orderCar_no, customer_id, amount, invoice_id, invoice_no, state, invoice_time
     </sql>
 
+    <select id="getWaitInvoiceList" parameterType="com.cjyc.common.model.dto.web.finance.WaitQueryDto"
+            resultType="com.cjyc.common.model.vo.web.finance.WaitInvoiceVo">
+        select * from f_invoice_apply fia
+    </select>
+
 </mapper>

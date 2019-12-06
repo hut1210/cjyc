@@ -1,11 +1,14 @@
 package com.cjyc.common.system.config;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
 
 @Configuration
+@ConditionalOnProperty(prefix = "cjkj", name = {"carries_menu_ids", "carries_mgr_menu_ids"},
+        havingValue = "true")
 public class CarrierProperty {
 
     public static List<Long> carriesMenuIds;

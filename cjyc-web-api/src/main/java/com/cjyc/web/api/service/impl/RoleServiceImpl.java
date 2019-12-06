@@ -116,7 +116,7 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
     @Override
     public ResultVo<List<Role>> getAllList(String roleName) {
         return BaseResultUtil.success(this.list(new QueryWrapper<Role>()
-            .eq(!StringUtils.isEmpty(roleName), "role_name", roleName)));
+            .like(!StringUtils.isEmpty(roleName), "role_name", roleName)));
     }
 
     @Override

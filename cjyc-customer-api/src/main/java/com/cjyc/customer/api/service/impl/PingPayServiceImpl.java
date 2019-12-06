@@ -9,17 +9,11 @@ import com.cjyc.common.model.dto.customer.order.CarCollectPayDto;
 import com.cjyc.common.model.dto.customer.order.CarPayStateDto;
 import com.cjyc.common.model.dto.customer.order.ReceiptBatchDto;
 import com.cjyc.common.model.dto.customer.pingxx.PrePayDto;
-import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.entity.TradeBill;
 import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.exception.CommonException;
-import com.cjyc.common.model.keys.RedisKeys;
-import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.vo.ResultReasonVo;
-import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.customer.order.ValidateReceiptCarPayVo;
 import com.cjyc.common.system.entity.PingCharge;
 import com.cjyc.common.system.service.ICsSendNoService;
 import com.cjyc.common.system.util.RedisUtils;
@@ -293,9 +287,35 @@ public class PingPayServiceImpl implements IPingPayService {
     }
 
     @Override
-    public Charge sweepDriveCode(OrderModel om) throws RateLimitException, APIException, ChannelException,InvalidRequestException,
+    public Charge sweepDriveCode(SweepCodeDto sweepCodeDto) throws RateLimitException, APIException, ChannelException,InvalidRequestException,
             APIConnectionException, AuthenticationException,FileNotFoundException{
+        OrderModel om = new OrderModel();
 
+        om.setClientIp(sweepCodeDto.getIp());
+        om.setPingAppId(PingProperty.driverAppId);
+        //创建Charge对象
+        Charge charge = new Charge();
+        try {
+            BigDecimal freightFee = transactionService.getAmountByOrderCarIds(sweepCodeDto.getOrderCarIds());
+            om.setAmount(freightFee);
+            om.setDriver_code(sweepCodeDto.getPayeeId());
+            om.setOrderCarIds(om.getOrderCarIds());
+            om.setChannel(sweepCodeDto.getChannel());
+            om.setSubject("司机端收款码功能!");
+            om.setBody("生成二维码！");
+            om.setChargeType("2");
+            om.setClientType(String.valueOf(ClientEnum.APP_DRIVER.code));
+            om.setDescription("韵车订单号："+om.getOrderNo());
+            charge = createDriverCode(om);
+
+        } catch (Exception e) {
+            log.error("扫码支付异常",e);
+        }
+        return charge;
+    }
+
+    private Charge createDriverCode(OrderModel om) throws RateLimitException, APIException, ChannelException,InvalidRequestException,
+            APIConnectionException, AuthenticationException,FileNotFoundException{
         initPingApiKey();
         Map<String, Object> params = new HashMap<String, Object>();
         Calendar calendar = Calendar.getInstance();
@@ -314,7 +334,7 @@ public class PingPayServiceImpl implements IPingPayService {
         meta.put("chargeType", om.getChargeType());//0:定金	1：尾款
         //自定义存储字段
         meta.put("orderNo", om.getOrderNo());	//订单号
-        meta.put("orderCarId",om.getOrderCarId());//订单Id
+        meta.put("orderCarIds",om.getOrderCarIds());//订单Id
         meta.put("driver_code", om.getDriver_code());//司机Code
         meta.put("order_type", om.getOrder_type());
         meta.put("driver_name", om.getDriver_name());
@@ -352,7 +372,7 @@ public class PingPayServiceImpl implements IPingPayService {
         meta.put("chargeType", om.getChargeType());//0:定金	1：尾款
         //自定义存储字段
         meta.put("orderNo", om.getOrderNo());	//订单号
-        meta.put("orderCarId",om.getOrderCarId());//订单Id
+        meta.put("orderCarIds",om.getOrderCarIds());//订单Id
         meta.put("driver_code", om.getDriver_code());//司机Code
         meta.put("order_type", om.getOrder_type());
         meta.put("driver_name", om.getDriver_name());
