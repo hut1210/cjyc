@@ -78,13 +78,10 @@ public class CsVehicleServiceImpl implements ICsVehicleService {
             return BaseResultUtil.fail("该司机不存在，请检查");
         }
         List<FreeVehicleVo> freeVehicleVos = vehicleDao.findCarrierVehicle(cdc.getCarrierId(),dto.getPlateNo());
-        if(!CollectionUtils.isEmpty(freeVehicleVos)){
-            freeVehicleVos = freeVehicles(freeVehicleVos);
-            CarrierVehicleVo vehicleVo = new CarrierVehicleVo();
-            vehicleVo.setVehicleVo(freeVehicleVos);
-            return BaseResultUtil.success(vehicleVo);
-        }
-        return BaseResultUtil.success();
+        CarrierVehicleVo vehicleVo = new CarrierVehicleVo();
+        freeVehicleVos = freeVehicles(freeVehicleVos);
+        vehicleVo.setVehicleVo(freeVehicleVos);
+        return BaseResultUtil.success(vehicleVo);
     }
 
     @Override

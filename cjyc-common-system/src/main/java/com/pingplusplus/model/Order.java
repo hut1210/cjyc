@@ -301,7 +301,7 @@ public class Order extends APIResource {
      * 创建 order
      *
      * @param params
-     * @return PingOrder
+     * @return Order
      * @throws AuthenticationException
      * @throws InvalidRequestException
      * @throws APIConnectionException
@@ -313,24 +313,6 @@ public class Order extends APIResource {
             throws AuthenticationException, InvalidRequestException,
             APIConnectionException, APIException, ChannelException, RateLimitException {
         return request(RequestMethod.POST, classURL(Order.class), params, Order.class);
-    }
-
-    /**
-     * 查询 order
-     *
-     * @param id
-     * @return PingOrder
-     * @throws AuthenticationException
-     * @throws InvalidRequestException
-     * @throws APIConnectionException
-     * @throws APIException
-     * @throws ChannelException
-     * @throws RateLimitException
-     */
-    public static Order retrieve(String id) throws AuthenticationException,
-            InvalidRequestException, APIConnectionException,
-            APIException, ChannelException, RateLimitException {
-        return request(RequestMethod.GET, instanceURL(Order.class, id), null, Order.class);
     }
 
     /**
@@ -355,7 +337,7 @@ public class Order extends APIResource {
      * 更新 order
      *
      * @param params
-     * @return PingOrder
+     * @return Order
      * @throws AuthenticationException
      * @throws InvalidRequestException
      * @throws APIConnectionException
@@ -370,9 +352,27 @@ public class Order extends APIResource {
     }
 
     /**
+     * 查询 order
+     *
+     * @param id
+     * @return Order
+     * @throws AuthenticationException
+     * @throws InvalidRequestException
+     * @throws APIConnectionException
+     * @throws APIException
+     * @throws ChannelException
+     * @throws RateLimitException
+     */
+    public static Order retrieve(String id) throws AuthenticationException,
+            InvalidRequestException, APIConnectionException,
+            APIException, ChannelException, RateLimitException {
+        return request(RequestMethod.GET, instanceURL(Order.class, id), null, Order.class);
+    }
+
+    /**
      * 取消 order
      *
-     * @return PingOrder
+     * @return Order
      * @throws AuthenticationException
      * @throws InvalidRequestException
      * @throws APIConnectionException
@@ -392,7 +392,7 @@ public class Order extends APIResource {
      * 取消 order
      *
      * @param id
-     * @return PingOrder
+     * @return Order
      * @throws AuthenticationException
      * @throws InvalidRequestException
      * @throws APIConnectionException
@@ -412,7 +412,7 @@ public class Order extends APIResource {
      * 支付 order
      *
      * @param params
-     * @return PingOrder
+     * @return Order
      * @throws AuthenticationException
      * @throws InvalidRequestException
      * @throws APIConnectionException
@@ -432,7 +432,7 @@ public class Order extends APIResource {
      *
      * @param id
      * @param params
-     * @return PingOrder
+     * @return Order
      * @throws AuthenticationException
      * @throws InvalidRequestException
      * @throws APIConnectionException

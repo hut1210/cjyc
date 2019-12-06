@@ -7,7 +7,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 @Data
-public class BinkCardVo implements Serializable {
+public class BankCardVo implements Serializable {
     private static final long serialVersionUID = 5058249513448361778L;
 
     @ApiModelProperty("绑定银行卡id")

@@ -29,8 +29,11 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.text.Collator;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -165,11 +168,14 @@ public class CarSeriesServiceImpl extends ServiceImpl<ICarSeriesDao,CarSeries> i
 
     @Override
     public ResultVo queryAll() {
-        List<CarSeries> list = super.list(new QueryWrapper<CarSeries>().lambda().groupBy(CarSeries::getBrand).select(CarSeries::getBrand));
+        List<CarSeries> list = super.list(new QueryWrapper<CarSeries>().lambda()
+                .groupBy(CarSeries::getBrand).select(CarSeries::getBrand));
         List<String> brandList = new ArrayList<>(100);
         if (!CollectionUtils.isEmpty(list)) {
             list.stream().forEach(e->brandList.add(e.getBrand()));
         }
+        Comparator cmp = Collator.getInstance(java.util.Locale.CHINA);
+        Collections.sort(brandList,cmp);
         return BaseResultUtil.success(brandList);
     }
 

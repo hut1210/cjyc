@@ -20,4 +20,6 @@ public interface ITransactionService {
     TradeBill getTradeBillByOrderNo(String orderNo);
 
     BigDecimal getAmountByOrderNo(String orderNo);
+
+    void cancelExpireTrade();
 }

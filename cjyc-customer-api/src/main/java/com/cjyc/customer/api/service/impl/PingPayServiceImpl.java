@@ -7,7 +7,6 @@ import com.cjyc.common.model.entity.TradeBill;
 import com.cjyc.common.model.enums.ClientEnum;
 import com.cjyc.common.model.exception.CommonException;
 import com.cjyc.common.system.entity.PingCharge;
-import com.cjyc.common.system.util.RedisUtils;
 import com.cjyc.customer.api.config.PingProperty;
 import com.cjyc.customer.api.dto.OrderModel;
 import com.cjyc.customer.api.service.IPingPayService;
@@ -43,9 +42,6 @@ public class PingPayServiceImpl implements IPingPayService {
 
     @Resource
     private RedisDistributedLock redisLock;
-
-    @Autowired
-    private RedisUtils redisUtil;
 
     @Autowired
     private ITransactionService transactionService;
@@ -87,7 +83,7 @@ public class PingPayServiceImpl implements IPingPayService {
             throw new CommonException("订单已支付完成","1");
         }else{
             String lockKey =getRandomNoKey(orderNo);
-            if (!redisLock.lock(lockKey, 1800000, 99, 200)) {
+            if (!redisLock.lock(lockKey, 30000, 99, 200)) {
                 throw new CommonException("订单正在支付中","1");
             }
         }
@@ -154,7 +150,7 @@ public class PingPayServiceImpl implements IPingPayService {
         meta.put("deposit", om.getDeposit()); //定金金额
         meta.put("orderMan", om.getOrderMan()); //当前app登陆人的ID
         params.put("metadata",meta);//自定义参数
-        Order order = Order.create(params); // 创建 PingOrder 对象 方法
+        Order order = Order.create(params); // 创建 Order 对象 方法
         return order;
     }
 
@@ -181,7 +177,7 @@ public class PingPayServiceImpl implements IPingPayService {
         params.put("channel", channel);
         params.put("charge_amount", charge_amount);
         params.put("extra", channelExtra(channel));
-        Order order = Order.pay(pingOrderId, params); // 创建支付 PingOrder 对象 方法
+        Order order = Order.pay(pingOrderId, params); // 创建支付 Order 对象 方法
         return order;
     }
 

@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 /**
  * <p>
@@ -22,11 +23,12 @@ import javax.validation.constraints.NotNull;
 @ApiModel
 public class LoginByPhoneDto {
 
-    @NotNull
+    @NotNull(message = "手机号码不能为空")
+    @Pattern(regexp = "[1]\\d{10}", message = "手机号格式不正确")
     @ApiModelProperty(value = "手机号", required = true)
     private String phone;
 
-    @NotNull
+    @NotNull(message = "验证码不能为空")
     @ApiModelProperty(value = "验证码", required = true)
     private String captcha;
 

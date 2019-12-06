@@ -1,22 +1,25 @@
 package com.cjyc.customer.api.service.impl;
 
-import com.alibaba.nacos.client.utils.StringUtils;
-import com.cjkj.common.utils.DateUtil;
 import com.cjyc.common.model.dao.ITradeBillDao;
+import com.cjyc.common.model.dao.ITradeBillDetailDao;
 import com.cjyc.common.model.entity.TradeBill;
+import com.cjyc.common.model.entity.TradeBillDetail;
+import com.cjyc.common.model.enums.SendNoTypeEnum;
+import com.cjyc.common.system.service.ICsSendNoService;
+import com.cjyc.common.system.util.RedisUtils;
 import com.cjyc.customer.api.service.ITransactionService;
 import com.pingplusplus.model.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 
 /**
  * @Author:Hut
@@ -28,15 +31,35 @@ import java.util.Map;
 public class TransactionServiceImpl implements ITransactionService {
 
     @Resource
-    private ITradeBillDao iTradeBillDao;
+    private ITradeBillDao tradeBillDao;
+
+    @Autowired
+    private RedisUtils redisUtil;
+
+    @Autowired
+    private ExecutorService executorService;
+
+    @Resource
+    private ICsSendNoService csSendNoService;
+
+    @Resource
+    private ITradeBillDetailDao tradeBillDetailDao;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveTransactions(Object obj, String state) {
         TradeBill tb = objToTransactions(obj, null, state);
+        int id = 0;
         if(tb != null){
-            iTradeBillDao.insert(tb);
+            id = tradeBillDao.insert(tb);
         }
+        Map<String, Object> metadata = ((Order)obj).getMetadata();
+        Object orderNo = metadata.get("orderNo");
+
+        TradeBillDetail tradeBillDetail = new TradeBillDetail();
+        tradeBillDetail.setTradeBillId(Long.valueOf(id));
+        tradeBillDetail.setSourceNo(orderNo==null?null:String.valueOf(orderNo));
+        tradeBillDetailDao.insert(tradeBillDetail);
     }
 
     public TradeBill objToTransactions(Object obj,Event event,String status){
@@ -65,7 +88,7 @@ public class TransactionServiceImpl implements ITransactionService {
         tb.setBody(order.getBody());
         tb.setPingPayNo(order.getMerchantOrderNo());
         tb.setAmount(order.getAmount()==null?BigDecimal.valueOf(0):BigDecimal.valueOf(order.getAmount()));
-        tb.setCreateTime(order.getCreated());
+        tb.setCreateTime(System.currentTimeMillis());
         tb.setType(1);
         if(order.getLivemode()){
             tb.setLivemode("live");
@@ -95,10 +118,10 @@ public class TransactionServiceImpl implements ITransactionService {
             tb.setEventId(event.getId());
             tb.setEventType(event.getType());
         }
-        Map<String, Object> map = order.getMetadata();
-        String orderNo = (String)map.get("orderNo");
+        /*Map<String, Object> map = order.getMetadata();
+        String orderNo = (String)map.get("orderNo");*/
         tb.setState(Integer.valueOf(state));//待支付/已支付/付款失败
-        tb.setNo(orderNo);
+        tb.setNo(csSendNoService.getNo(SendNoTypeEnum.RECEIPT));
 
         return tb;
     }
@@ -111,7 +134,7 @@ public class TransactionServiceImpl implements ITransactionService {
         Object orderNo = metadata.get("orderNo");
         tb.setPingPayNo((String)orderNo);
         tb.setAmount(order.getAmount()==null?BigDecimal.valueOf(0):BigDecimal.valueOf(order.getAmount()).multiply(new BigDecimal(100)));
-        tb.setCreateTime(order.getCreated());
+        tb.setCreateTime(System.currentTimeMillis());
         tb.setChannel(order.getChannel());
         tb.setChannelFee(new BigDecimal(0));
         tb.setReceiverId(0L);
@@ -139,35 +162,65 @@ public class TransactionServiceImpl implements ITransactionService {
         tradeBill.setPingPayId(order.getId());
         tradeBill.setState(2);
         tradeBill.setTradeTime(System.currentTimeMillis());
-        iTradeBillDao.updateTradeBillByPingPayId(tradeBill);
+        tradeBillDao.updateTradeBillByPingPayId(tradeBill);
 
         Map<String, Object> metadata = order.getMetadata();
         String orderNo = (String) metadata.get("orderNo");
 
         if(orderNo!=null){
-            iTradeBillDao.updateOrderState(orderNo,2,System.currentTimeMillis());
-            List<String> list = iTradeBillDao.getOrderCarNoList(orderNo);
+            tradeBillDao.updateOrderState(orderNo,2,System.currentTimeMillis());
+            List<String> list = tradeBillDao.getOrderCarNoList(orderNo);
             if(list != null){
                 for(int i=0;i<list.size();i++){
                     String orderCarNo = list.get(i);
                     if(orderCarNo != null){
-                        iTradeBillDao.updateOrderCar(orderCarNo,1,System.currentTimeMillis());
+                        tradeBillDao.updateOrderCar(orderCarNo,1,System.currentTimeMillis());
                     }
 
                 }
             }
         }
+        String lockKey =getRandomNoKey(orderNo);
+        redisUtil.delete(lockKey);
 
+    }
+
+    private String getRandomNoKey(String prefix) {
+        return "cjyc:random:no:prepay:" + prefix;
     }
 
     @Override
     public TradeBill getTradeBillByOrderNo(String orderNo) {
-        return iTradeBillDao.getTradeBillByOrderNo(orderNo);
+        return tradeBillDao.getTradeBillByOrderNo(orderNo);
     }
 
     @Override
     public BigDecimal getAmountByOrderNo(String orderNo) {
-        return iTradeBillDao.getAmountByOrderNo(orderNo);
+        return tradeBillDao.getAmountByOrderNo(orderNo);
+    }
+
+    @Override
+    public void cancelExpireTrade() {
+        List<TradeBill> list = tradeBillDao.getAllExpireTradeBill();
+
+        if(list != null && list.size()>0){
+            executorService.execute(new Runnable() {
+                public void run() {
+                    for(int i=0;i<list.size();i++) {
+                        TradeBill tb = list.get(i);
+                        if(tb != null){
+                            TradeBill tradeBill = new TradeBill();
+                            tradeBill.setPingPayId(tb.getPingPayId());
+                            tradeBill.setState(-1);
+                            tradeBill.setTradeTime(tb.getTradeTime());
+                            tradeBillDao.updateTradeBillByPingPayId(tradeBill);
+                        }
+
+                    }
+                }
+            });
+        }
+
     }
 
     /**

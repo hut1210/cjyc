@@ -2,7 +2,7 @@ package com.cjyc.common.model.dao;
 
 import com.cjyc.common.model.entity.BankCardBind;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.cjyc.common.model.vo.driver.mine.BinkCardVo;
+import com.cjyc.common.model.vo.driver.mine.BankCardVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -29,6 +29,6 @@ public interface IBankCardBindDao extends BaseMapper<BankCardBind> {
      * @param carrierId
      * @return
      */
-    BinkCardVo findBinkCardInfo(@Param("carrierId") Long carrierId);
+    List<BankCardVo> findBinkCardInfo(@Param("carrierId") Long carrierId);
 
 }

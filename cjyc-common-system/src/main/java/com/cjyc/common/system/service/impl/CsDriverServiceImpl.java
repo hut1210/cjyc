@@ -321,13 +321,10 @@ public class CsDriverServiceImpl implements ICsDriverService {
             return BaseResultUtil.fail("该司机不存在，请检查");
         }
         List<FreeDriverVo> freeDriverVos = driverDao.findCarrierAllDriver(cdc.getCarrierId(),dto.getRealName());
-        if(!CollectionUtils.isEmpty(freeDriverVos)){
-            freeDriverVos = freeDriver(freeDriverVos,cdc.getCarrierId());
-            CarrierDriverVo driverVo = new CarrierDriverVo();
-            driverVo.setDriverVo(freeDriverVos);
-            return BaseResultUtil.success(driverVo);
-        }
-        return BaseResultUtil.success();
+        freeDriverVos = freeDriver(freeDriverVos,cdc.getCarrierId());
+        CarrierDriverVo driverVo = new CarrierDriverVo();
+        driverVo.setDriverVo(freeDriverVos);
+        return BaseResultUtil.success(driverVo);
     }
 
     @Override
@@ -391,6 +388,9 @@ public class CsDriverServiceImpl implements ICsDriverService {
     private ResultVo modifyDriver(CarrierDriverDto dto) {
         //判断司机是否已存在
         Driver dri = driverDao.selectById(dto.getDriverId());
+        if(dri == null){
+            return BaseResultUtil.fail("该司机不存在，请检查");
+        }
         DriverVehicleCon dvc = driverVehicleConDao.selectOne(new QueryWrapper<DriverVehicleCon>().lambda().eq(DriverVehicleCon::getDriverId,dto.getDriverId()));
         VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda().eq(VehicleRunning::getDriverId,dri.getId()));
         if(vr != null) {

@@ -24,6 +24,7 @@ import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
@@ -57,19 +58,19 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
     @Override
-    public ResultVo<BinkCardVo> findBinkCard(AppDriverDto dto) {
+    public ResultVo<BankCardVos> findBinkCard(AppDriverDto dto) {
         CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
                 .eq(CarrierDriverCon::getDriverId, dto.getLoginId())
                 .eq(CarrierDriverCon::getId, dto.getRoleId()));
-        if(cdc != null){
-            BinkCardVo bankCardVo = bankCardBindDao.findBinkCardInfo(cdc.getCarrierId());
-            if(bankCardVo != null){
-                return BaseResultUtil.success(bankCardVo);
-            }
-        }else{
+        if(cdc == null){
             return BaseResultUtil.fail("该司机不存在,请检查");
         }
-        return BaseResultUtil.success();
+        BankCardVos cardVos = new BankCardVos();
+        List<BankCardVo> bankCardVos = bankCardBindDao.findBinkCardInfo(cdc.getCarrierId());
+        if(!CollectionUtils.isEmpty(bankCardVos)){
+            cardVos.setCardVos(bankCardVos);
+        }
+        return BaseResultUtil.success(cardVos);
     }
 
     @Override
@@ -77,13 +78,11 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
         CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
                 .eq(CarrierDriverCon::getDriverId, dto.getLoginId())
                 .eq(CarrierDriverCon::getId, dto.getRoleId()));
-        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        List<DriverInfoVo> driverInfo = null;
-        if(cdc != null){
-            driverInfo = driverDao.findDriverInfo(cdc.getCarrierId());
-        }else{
-            return BaseResultUtil.fail("该司机不存在,请检查");
+        if(cdc == null){
+            return BaseResultUtil.fail("该司机管理员不存在,请检查");
         }
+        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
+        List<DriverInfoVo> driverInfo = driverDao.findDriverInfo(cdc.getCarrierId());
         PageInfo<DriverInfoVo> pageInfo = new PageInfo(driverInfo);
         return BaseResultUtil.success(pageInfo);
     }
@@ -91,10 +90,10 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
     @Override
     public ResultVo frozenDriver(FrozenDriverDto dto) {
         CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
-                .eq(CarrierDriverCon::getDriverId,dto.getDriverId())
+                .eq(CarrierDriverCon::getDriverId,dto.getLoginId())
                 .eq(CarrierDriverCon::getId,dto.getRoleId()));
         if(cdc == null){
-            return BaseResultUtil.fail("该司机不存在,请检查");
+            return BaseResultUtil.fail("该司机管理员不存在,请检查");
         }
         Driver driver = driverDao.selectOne(new QueryWrapper<Driver>().lambda().eq(Driver::getId, dto.getDriverId()));
         if(driver == null){
@@ -104,98 +103,117 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
         driver.setCheckTime(NOW);
         driverDao.updateById(driver);
 
+        cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
+                .eq(CarrierDriverCon::getDriverId,dto.getDriverId())
+                .eq(CarrierDriverCon::getCarrierId,cdc.getCarrierId()));
+        if(cdc == null){
+            return BaseResultUtil.fail("该司机不存在,请检查");
+        }
         cdc.setState(CommonStateEnum.FROZEN.code);
         carrierDriverConDao.updateById(cdc);
         return BaseResultUtil.success();
     }
 
     @Override
-    public ResultVo saveOrModifyCarrierVehicle(AppCarrierVehicleDto dto) {
+    public ResultVo saveOrModifyVehicle(AppCarrierVehicleDto dto) {
         CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
-                .eq(CarrierDriverCon::getDriverId,dto.getDriverId())
+                .eq(CarrierDriverCon::getDriverId,dto.getLoginId())
                 .eq(CarrierDriverCon::getId,dto.getRoleId()));
         if(cdc == null){
-            return BaseResultUtil.fail("该司机不存在,请检查");
+            return BaseResultUtil.fail("该司机管理员不存在,请检查");
         }
         //根据车牌号查询库中有没有添加
         Vehicle veh = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda().eq(Vehicle::getPlateNo,dto.getPlateNo()));
         if(veh != null && !veh.getId().equals(dto.getVehicleId())){
             return BaseResultUtil.getVo(ResultEnum.EXIST_VEHICLE.getCode(),ResultEnum.EXIST_VEHICLE.getMsg());
         }
-        VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda().eq(VehicleRunning::getDriverId, dto.getDriverId()));
         if(dto.getVehicleId() == null){
             //新增车辆
             veh = new Vehicle();
             BeanUtils.copyProperties(dto,veh);
+            veh.setCarrierId(cdc.getCarrierId());
             veh.setOwnershipType(VehicleOwnerEnum.CARRIER.code);
-            veh.setCreateUserId(dto.getCarrierId());
+            veh.setCreateUserId(cdc.getCarrierId());
             veh.setCreateTime(NOW);
             vehicleDao.insert(veh);
-
-            //新增运力
-            VehicleRunning vRun = new VehicleRunning();
-            BeanUtils.copyProperties(dto,vRun);
-            vRun.setVehicleId(veh.getId());
-            vRun.setCarryCarNum(dto.getDefaultCarryNum());
-            vRun.setRunningState(VehicleRunStateEnum.FREE.code);
-            vRun.setCreateTime(NOW);
-            vehicleRunningDao.insert(vRun);
-
-            //新增车辆与司机关系
-            DriverVehicleCon dvc = new DriverVehicleCon();
-            dvc.setDriverId(dto.getDriverId());
-            dvc.setVehicleId(veh.getId());
-            driverVehicleConDao.insert(dvc);
+            if(dto.getDriverId() != null){
+                encapTransport(dto,veh);
+            }
         }else{
-            //判断该运力是否在运输中
-            Task task = taskDao.selectOne(new QueryWrapper<Task>().lambda()
-                               .eq(Task::getVehicleRunningId,vr.getId())
-                               .eq(Task::getState,TaskStateEnum.TRANSPORTING.code));
-            if(task != null){
-                return BaseResultUtil.getVo(ResultEnum.VEHICLE_RUNNING.getCode(),ResultEnum.VEHICLE_RUNNING.getMsg());
+            VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda()
+                                    .eq(VehicleRunning::getVehicleId, dto.getVehicleId()));
+            DriverVehicleCon dvc = driverVehicleConDao.selectOne(new QueryWrapper<DriverVehicleCon>().lambda()
+                    .eq(DriverVehicleCon::getVehicleId, dto.getVehicleId()));
+            if(vr != null && dvc != null){
+                //判断该运力是否在运输中
+                Task task = taskDao.selectOne(new QueryWrapper<Task>().lambda()
+                        .eq(Task::getVehicleRunningId,vr.getId())
+                        .eq(Task::getState,TaskStateEnum.TRANSPORTING.code));
+                if(task != null){
+                    return BaseResultUtil.getVo(ResultEnum.VEHICLE_RUNNING.getCode(),ResultEnum.VEHICLE_RUNNING.getMsg());
+                }
             }
             //更新车辆
             veh = new Vehicle();
             BeanUtils.copyProperties(dto,veh);
-            veh.setCreateUserId(dto.getCarrierId());
+            veh.setCreateUserId(cdc.getCarrierId());
             vehicleDao.updateById(veh);
-
-            //更新司机与车辆
-            DriverVehicleCon vehicleCon = driverVehicleConDao.selectOne(new QueryWrapper<DriverVehicleCon>().lambda()
-                    .eq(DriverVehicleCon::getVehicleId, veh.getId()));
-            vehicleCon.setDriverId(dto.getDriverId());
-            driverVehicleConDao.updateById(vehicleCon);
-            //更新运力
-            VehicleRunning vehicleRunning = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda()
-                    .eq(VehicleRunning::getVehicleId, veh.getId()));
-            BeanUtils.copyProperties(dto,vehicleRunning);
-            vehicleRunning.setRunningState(VehicleRunStateEnum.FREE.code);
-            vehicleRunning.setUpdateTime(NOW);
-            vehicleRunningDao.updateById(vehicleRunning);
+            veh = vehicleDao.selectById(dto.getVehicleId());
+            //新增没有绑定，修改绑定
+            if(dvc == null && dto.getDriverId() != null){
+                encapTransport(dto,veh);
+            }else if(dvc!= null && vr != null && dto.getDriverId() != null && (!dvc.getDriverId().equals(dto.getDriverId()))){
+                //新增与修改时不同的司机
+                updateTransport(dto,veh);
+            }else if(dvc != null && vr != null && dto.getDriverId() == null){
+                //新增时有司机，修改时不绑定
+                vehicleRunningDao.removeRun(dvc.getDriverId(),dvc.getVehicleId());
+                driverVehicleConDao.removeCon(dvc.getDriverId(),dvc.getVehicleId());
+            }
         }
         return BaseResultUtil.success();
     }
 
-    @Override
-    public ResultVo saveOrModifyVehicle(SocietyVehicleDto dto) {
-        CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
-                .eq(CarrierDriverCon::getId, dto.getRoleId())
-                .eq(CarrierDriverCon::getDriverId, dto.getLoginId()));
-        if(cdc == null){
-            return BaseResultUtil.fail("该司机不存在，请检查");
-        }
-        Vehicle veh = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda().eq(Vehicle::getPlateNo,dto.getPlateNo()));
-        if((dto.getVehicleId() == null && veh != null) || (dto.getVehicleId() != null && !dto.getVehicleId().equals(veh.getId()) && veh != null)){
-            return BaseResultUtil.getVo(ResultEnum.EXIST_VEHICLE.getCode(),ResultEnum.EXIST_VEHICLE.getMsg());
-        }
-        if(dto.getVehicleId() == null){
-            //新增
-            saveVehicle(cdc,dto);
-        }else{
-            //修改
-            mofidyVehicle(dto);
-        }
-        return BaseResultUtil.success();
+    /**
+     * 封装运力
+     * @param dto
+     * @param veh
+     */
+    private void encapTransport(AppCarrierVehicleDto dto,Vehicle veh){
+        //新增运力
+        VehicleRunning vRun = new VehicleRunning();
+        BeanUtils.copyProperties(dto,vRun);
+        vRun.setVehicleId(veh.getId());
+        vRun.setCarryCarNum(dto.getDefaultCarryNum());
+        vRun.setRunningState(VehicleRunStateEnum.FREE.code);
+        vRun.setCreateTime(NOW);
+        vehicleRunningDao.insert(vRun);
+
+        //新增车辆与司机关系
+        DriverVehicleCon dvc = new DriverVehicleCon();
+        dvc.setDriverId(dto.getDriverId());
+        dvc.setVehicleId(veh.getId());
+        driverVehicleConDao.insert(dvc);
+    }
+
+    /**
+     * 更新运力
+     * @param dto
+     * @param veh
+     */
+    private void updateTransport(AppCarrierVehicleDto dto,Vehicle veh){
+        //更新司机与车辆
+        DriverVehicleCon dvc = driverVehicleConDao.selectOne(new QueryWrapper<DriverVehicleCon>().lambda()
+                .eq(DriverVehicleCon::getVehicleId, veh.getId()));
+        dvc.setDriverId(dto.getDriverId());
+        driverVehicleConDao.updateById(dvc);
+        //更新运力
+        VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda()
+                .eq(VehicleRunning::getVehicleId, veh.getId()));
+        BeanUtils.copyProperties(dto,vr);
+        vr.setRunningState(VehicleRunStateEnum.FREE.code);
+        vr.setUpdateTime(NOW);
+        vehicleRunningDao.updateById(vr);
     }
 
     @Override
@@ -226,44 +244,6 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
         }
         vehicleDao.deleteById(dto.getVehicleId());
         return BaseResultUtil.success();
-    }
-
-    /**
-     * 保存车辆信息
-     * @param cdc
-     * @param dto
-     */
-    private void saveVehicle(CarrierDriverCon cdc, SocietyVehicleDto dto){
-        //保存车辆信息
-        Vehicle veh = new Vehicle();
-        veh.setCarrierId(cdc.getCarrierId());
-        veh.setPlateNo(dto.getPlateNo());
-        veh.setDefaultCarryNum(dto.getDefaultCarryNum());
-        veh.setOwnershipType(VehicleOwnerEnum.PERSONAL.code);
-        veh.setCreateTime(NOW);
-        veh.setCreateUserId(dto.getLoginId());
-        vehicleDao.insert(veh);
-    }
-
-    /**
-     * 修改个人车辆信息
-     * @param dto
-     */
-    private void mofidyVehicle(SocietyVehicleDto dto){
-        //获取车辆
-        Vehicle vehicle = vehicleDao.selectById(dto.getVehicleId());
-        vehicle.setDefaultCarryNum(dto.getDefaultCarryNum());
-        vehicle.setPlateNo(dto.getPlateNo());
-        vehicleDao.updateById(vehicle);
-        //修改运力
-        VehicleRunning vehr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda()
-                                                .eq(VehicleRunning::getDriverId,dto.getLoginId())
-                                                .eq(VehicleRunning::getVehicleId,dto.getVehicleId()));
-        if(vehr != null){
-            vehr.setPlateNo(dto.getPlateNo());
-            vehr.setCarryCarNum(dto.getDefaultCarryNum());
-            vehicleRunningDao.updateById(vehr);
-        }
     }
 
     @Override
@@ -407,7 +387,7 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
         bcb.setCardName(dto.getRealName());
         bcb.setCardPhone(dto.getPhone());
         bcb.setIdCard(dto.getIdCard());
-        bcb.setCardType(RandomUtil.getIntRandom());
+        bcb.setCardColour(RandomUtil.getIntRandom());
         bcb.setBankName(dto.getBankName());
         bcb.setState(UseStateEnum.USABLE.code);
         bcb.setCreateTime(NOW);

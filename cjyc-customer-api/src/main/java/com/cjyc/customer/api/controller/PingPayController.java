@@ -44,7 +44,7 @@ public class PingPayController {
     private IPingPayService pingPayService;
 
     @Autowired
-    private ITransactionService iTransactionService;
+    private ITransactionService transactionService;
 
     @ApiOperation("付款")
     @PostMapping("/order/pre/pay")
@@ -120,7 +120,7 @@ public class PingPayController {
                         Order order = (Order) data.getObject();
                         if (data.getObject() instanceof Order) {
                             log.debug("------------->order.succeeded");
-                            iTransactionService.updateTransactions((Order)data.getObject(),event,"1");
+                            transactionService.updateTransactions((Order)data.getObject(),event,"1");
                         }
                     }else if("charge.succeeded".equals(event.getType())){
                         Charge charge = (Charge)data.getObject();

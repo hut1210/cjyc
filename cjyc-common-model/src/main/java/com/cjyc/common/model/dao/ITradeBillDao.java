@@ -28,4 +28,6 @@ public interface ITradeBillDao extends BaseMapper<TradeBill> {
     BigDecimal getAmountByOrderNo(String orderNo);
 
     void updateOrderState(@Param("orderNo")String orderNo, @Param("wlPayState") int wlPayState,@Param("wlPayTime") long wlPayTime);
+
+    List<TradeBill> getAllExpireTradeBill();
 }

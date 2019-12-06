@@ -437,7 +437,7 @@
         where
             w.carrier_id in (select carrier_id
             from d_carrier_driver_con
-            where driver_id = #{loginId} and state = ${@com.cjyc.common.model.enums.CommonStateEnum@CHECKED.code})
+            where driver_id = #{loginId} and state &lt; ${@com.cjyc.common.model.enums.CommonStateEnum@DISABLED.code})
             and w.state = ${@com.cjyc.common.model.enums.waybill.WaybillStateEnum@ALLOT_CONFIRM.code}
             group by w.id
     </select>
