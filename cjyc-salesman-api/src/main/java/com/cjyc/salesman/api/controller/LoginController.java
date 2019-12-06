@@ -2,9 +2,11 @@ package com.cjyc.salesman.api.controller;
 
 import com.cjkj.common.model.ResultData;
 import com.cjkj.usercenter.dto.common.SelectRoleResp;
+import com.cjkj.usercenter.dto.common.auth.AuthLoginReq;
 import com.cjkj.usercenter.dto.common.auth.AuthLoginResp;
 import com.cjkj.usercenter.dto.common.auth.AuthMobileLoginReq;
 import com.cjyc.common.model.dto.salesman.login.LoginByPhoneDto;
+import com.cjyc.common.model.dto.salesman.login.LoginByUserNameDto;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Role;
 import com.cjyc.common.model.enums.role.RoleLoginAppEnum;
@@ -32,7 +34,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Api(tags = "业务员APP登录")
@@ -40,6 +41,10 @@ import java.util.stream.Collectors;
 @RequestMapping(value = "/login",
         produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class LoginController {
+    /**
+     * 用户名密码授权方式
+     */
+    private static final String PWD_LOGIN_GRANT_TYPE = "password";
     @Autowired
     private ISysRoleService sysRoleService;
     @Resource
@@ -57,11 +62,65 @@ public class LoginController {
     private String grantType;
 
     @ApiOperation(value = "业务员APP登录")
-    @PostMapping
+    @PostMapping("/mobile")
     public ResultVo<SalesmanAppLoginVo> login(@Validated @RequestBody LoginByPhoneDto dto) {
-        Admin admin = csAdminService.getAdminByPhone(dto.getPhone(), true);
+        ResultData<List<String>> rd = doPreLogin(dto.getPhone());
+        if (ResultDataUtil.isSuccess(rd)) {
+            // 登录
+            AuthMobileLoginReq req = new AuthMobileLoginReq();
+            req.setSmsCode(dto.getCaptcha());
+            req.setMobile(dto.getPhone());
+            req.setClientId(clientId);
+            req.setClientSecret(clientSecret);
+            req.setGrantType(grantType);
+            ResultData<AuthLoginResp> loginRd = sysLoginService.mobileLogin(req);
+            if (ResultDataUtil.isSuccess(loginRd)) {
+                SalesmanAppLoginVo vo = new SalesmanAppLoginVo();
+                BeanUtils.copyProperties(loginRd.getData(), vo);
+                vo.setRoleList(rd.getData());
+                return BaseResultUtil.success(vo);
+            }else {
+                return BaseResultUtil.fail("登录失败，原因：" + loginRd.getMsg());
+            }
+        }else {
+            return BaseResultUtil.fail(rd.getMsg());
+        }
+    }
+
+    @ApiOperation(value = "账号密码登录")
+    @PostMapping("/pwd")
+    public ResultVo<SalesmanAppLoginVo> pwdLogin(@Validated @RequestBody LoginByUserNameDto dto) {
+        ResultData<List<String>> rd = doPreLogin(dto.getUsername());
+        if (ResultDataUtil.isSuccess(rd)) {
+            AuthLoginReq req = new AuthLoginReq();
+            req.setUsername(dto.getUsername());
+            req.setPassword(dto.getPassword());
+            req.setGrantType(PWD_LOGIN_GRANT_TYPE);
+            req.setClientId(clientId);
+            req.setClientSecret(clientSecret);
+            ResultData<AuthLoginResp> loginRd = sysLoginService.getAuthentication(req);
+            if (!ResultDataUtil.isSuccess(loginRd)) {
+                return BaseResultUtil.fail("登录失败，原因：" + loginRd.getMsg());
+            }else {
+                SalesmanAppLoginVo vo = new SalesmanAppLoginVo();
+                BeanUtils.copyProperties(loginRd.getData(), vo);
+                vo.setRoleList(rd.getData());
+                return BaseResultUtil.success(vo);
+            }
+        }else {
+            return BaseResultUtil.fail(rd.getMsg());
+        }
+    }
+
+    /**
+     * 登录前操作
+     * @param account
+     * @return
+     */
+    private ResultData<List<String>> doPreLogin(String account) {
+        Admin admin = csAdminService.getAdminByPhone(account, true);
         if (admin == null || admin.getUserId() == null || admin.getUserId() <= 0L) {
-            return BaseResultUtil.fail("用户信息有误，请确认");
+            return ResultData.failed("用户信息有误，请确认");
         }
         ResultData<List<SelectRoleResp>> roleRd = sysRoleService.getListByUserId(admin.getUserId());
         if (ResultDataUtil.isSuccess(roleRd)) {
@@ -69,7 +128,7 @@ public class LoginController {
                 List<String> roleNameList = roleRd.getData().stream()
                         .map(r -> r.getRoleName()).collect(Collectors.toList());
                 List<String> salesmanRoleNameList = new ArrayList<>();
-                List<Role> ycRoleList = csRoleService.getRoleList();
+                List<Role> ycRoleList = csRoleService.getValidInnerRoleList();
                 roleNameList.forEach(name -> {
                     //判断是否有登录角色
                     List<Role> existList = ycRoleList.stream().filter(r ->
@@ -81,30 +140,15 @@ public class LoginController {
                     }
                 });
                 if (CollectionUtils.isEmpty(salesmanRoleNameList)) {
-                    return BaseResultUtil.fail("此用户不可登录APP");
+                    return ResultData.failed("此用户不可登录APP");
                 }else {
-                    // 登录
-                    AuthMobileLoginReq req = new AuthMobileLoginReq();
-                    req.setSmsCode(dto.getCaptcha());
-                    req.setMobile(dto.getPhone());
-                    req.setClientId(clientId);
-                    req.setClientSecret(clientSecret);
-                    req.setGrantType(grantType);
-                    ResultData<AuthLoginResp> loginRd = sysLoginService.mobileLogin(req);
-                    if (ResultDataUtil.isSuccess(loginRd)) {
-                        SalesmanAppLoginVo vo = new SalesmanAppLoginVo();
-                        BeanUtils.copyProperties(loginRd.getData(), vo);
-                        vo.setRoleList(salesmanRoleNameList);
-                        return BaseResultUtil.success(vo);
-                    }else {
-                        return BaseResultUtil.fail("登录失败，原因：" + loginRd.getMsg());
-                    }
+                    return ResultData.ok(salesmanRoleNameList);
                 }
             }else {
-                return BaseResultUtil.fail("角色信息为空");
+                return ResultData.failed("角色信息为空");
             }
         }else {
-            return BaseResultUtil.fail("角色信息获取失败");
+            return ResultData.failed("角色信息获取失败");
         }
     }
 }

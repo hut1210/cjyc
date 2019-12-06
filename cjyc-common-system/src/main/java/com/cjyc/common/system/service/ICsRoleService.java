@@ -9,5 +9,9 @@ import java.util.List;
  */
 public interface ICsRoleService {
 
-    List<Role> getRoleList();
+    /**
+     * 获取韵车内部角色列表
+     * @return
+     */
+    List<Role> getValidInnerRoleList();
 }
