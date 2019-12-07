@@ -21,11 +21,11 @@ import javax.validation.constraints.NotNull;
 @ApiModel
 public class LoginByUserNameDto {
 
-    @NotNull
-    @ApiModelProperty(value = "用户名", required = true)
+    @NotNull(message = "账号不能为空")
+    @ApiModelProperty(value = "账号", required = true)
     private String username;
 
-    @NotNull
+    @NotNull(message = "密码不能为空")
     @ApiModelProperty(value = "密码", required = true)
     private String password;
 

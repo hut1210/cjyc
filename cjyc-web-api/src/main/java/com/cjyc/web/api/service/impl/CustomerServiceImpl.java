@@ -220,8 +220,10 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             super.save(customer);
             //合同集合
             List<CustomerContractDto> customerConList = dto.getCustContraVos();
-            List<CustomerContract> list = encapCustomerContract(customer.getId(),customerConList);
-            customerContractService.saveBatch(list);
+            if(!CollectionUtils.isEmpty(customerConList)){
+                List<CustomerContract> list = encapCustomerContract(customer.getId(),customerConList);
+                customerContractService.saveBatch(list);
+            }
         }else{
             return modifyKey(dto);
         }
@@ -334,7 +336,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                 .ne(Customer::getType,1)
                 .ne((dto.getCustomerId() != null),Customer::getId,dto.getCustomerId()));
         if(c != null){
-            return BaseResultUtil.getVo(ResultEnum.EXIST_CUSTOMER.getCode(),ResultEnum.EXIST_CUSTOMER.getMsg());
+            return BaseResultUtil.fail("该用户已存在于大客户或者合伙人中");
         }
         //新增/修改时，验证在C端用户中是否存在
         c =  customerDao.selectOne(new QueryWrapper<Customer>().lambda()
@@ -344,7 +346,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             if(dto.getFlag()){
                 if(c.getIsDelete() == DeleteStateEnum.YES_DELETE.code){
                     //已删除
-                    return BaseResultUtil.getVo(ResultEnum.DELETE_CUSTOMER.getCode(),ResultEnum.DELETE_CUSTOMER.getMsg());
+                    return BaseResultUtil.fail("该账号已被禁用");
                 }
                 //前端重置为true，升级为合伙人
                 Customer cu = customerDao.selectById(dto.getCustomerId());

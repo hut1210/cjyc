@@ -34,29 +34,16 @@ public enum ResultEnum {
     //API_ADDRESS_INVALID(2004, "接口地址无效"),
     //API_REQUEST_TIMEOUT(2005, "接口请求超时");
 
-    /**app登陆业务码*/
-    ENTERPRISE_NOTLOGIN(7001, "大客户不能登陆app"),
 
     /**业务返回码*/
-    NOEXIST_LINE(8001, "该班线不存在"),
-    EXIST_LINE(8002, "该班线已存在"),
     NOEXIST_STORE(8003, "该业务中心不存在"),
     EXIST_STORE(8004, "该业务中心已存在,请重新输入"),
     EXIST_REGION(8005, "该大区已存在,请重新输入"),
     EXIST_CARSERIES(8006, "该品牌车系已存在,请重新输入"),
 
     CREATE_NEW_CUSTOMER(9001, "个人用户不存在，是否保存为新用户"),
-    EXIST_CUSTOMER(9002, "该用户已存在于大客户或者合伙人中"),
-    UPGRADE_CUSTOMER(9003, "账号已存在，且为普通用户，是否升级为合伙人"),
-    DELETE_CUSTOMER(9004, "该账号已被禁用"),
+    UPGRADE_CUSTOMER(9003, "账号已存在，且为普通用户，是否升级为合伙人");
 
-
-    EXIST_CARRIER(9101, "该承运商账号已存在"),
-    CARRIER_DRIVER(9102, "该手机号不是承运商下司机，请先添加"),
-    EXIST_PERSONAL_CARRIER(9103, "账号已存在于个人司机中"),
-    EXIST_ENTERPRISE_CARRIER(9104,"账号已存在于该企业承运商中"),
-    VEHICLE_RUNNING(9105, "该运力正在运输中，不可修改"),
-    EXIST_VEHICLE(9106,"该车辆已存在,请检查");
     /**状态码*/
     private Integer code;
 

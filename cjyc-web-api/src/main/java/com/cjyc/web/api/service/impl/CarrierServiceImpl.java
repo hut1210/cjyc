@@ -72,7 +72,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
                     .or()
                     .eq(Driver::getIdCard,dto.getLegalIdCard()));
             if(!CollectionUtils.isEmpty(driverList)){
-                return BaseResultUtil.getVo(ResultEnum.EXIST_CARRIER.getCode(),ResultEnum.EXIST_CARRIER.getMsg());
+                return BaseResultUtil.fail("该承运商账号已存在");
             }
             //添加承运商
             Carrier carrier = new Carrier();
@@ -122,7 +122,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         }else{
             Integer count = carrierDao.existBusinessDriver(dto);
             if(count != 1){
-                return BaseResultUtil.getVo(ResultEnum.CARRIER_DRIVER.getCode(),ResultEnum.CARRIER_DRIVER.getMsg());
+                return BaseResultUtil.fail("该手机号不是承运商下司机，请先添加");
             }
             return modifyCarrier(dto);
         }

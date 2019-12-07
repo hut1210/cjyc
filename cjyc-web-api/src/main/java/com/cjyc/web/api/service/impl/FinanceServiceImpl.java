@@ -9,6 +9,7 @@ import com.cjyc.common.model.dto.web.finance.FinanceQueryDto;
 import com.cjyc.common.model.dto.web.finance.WaitQueryDto;
 import com.cjyc.common.model.entity.CustomerInvoice;
 import com.cjyc.common.model.entity.InvoiceReceipt;
+import com.cjyc.common.model.enums.SendNoTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.RandomUtil;
 import com.cjyc.common.model.vo.PageVo;
@@ -17,6 +18,7 @@ import com.cjyc.common.model.vo.web.finance.FinanceReceiptVo;
 import com.cjyc.common.model.vo.web.finance.FinanceVo;
 import com.cjyc.common.model.vo.web.finance.TrunkLineVo;
 import com.cjyc.common.model.vo.web.finance.WaitInvoiceVo;
+import com.cjyc.common.system.service.ICsSendNoService;
 import com.cjyc.web.api.service.IFinanceService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -49,6 +51,9 @@ public class FinanceServiceImpl implements IFinanceService {
 
     @Resource
     private IInvoiceReceiptDao invoiceReceiptDao;
+
+    @Resource
+    private ICsSendNoService csSendNoService;
 
     @Override
     public ResultVo<PageVo<FinanceVo>> getFinanceList(FinanceQueryDto financeQueryDto) {
@@ -124,22 +129,24 @@ public class FinanceServiceImpl implements IFinanceService {
         InvoiceReceipt invoiceReceipt = new InvoiceReceipt();
         invoiceReceipt.setOrderCarNo(applySettlementDto.getNo());
         invoiceReceipt.setCustomerId(applySettlementDto.getCustomerId());
+        invoiceReceipt.setFreightFee(applySettlementDto.getFreightFee());
         invoiceReceipt.setAmount(applySettlementDto.getAmount().multiply(new BigDecimal(100)));
         invoiceReceipt.setInvoiceId(Long.valueOf(invoiceId));
         invoiceReceipt.setState(state);
         invoiceReceipt.setInvoiceTime(System.currentTimeMillis());
-
-        StringBuilder builder = new StringBuilder("S");
-        builder.append(String.valueOf(DateUtil.format(new Date(),"YYMMdd")));
-        builder.append(RandomUtil.getMathRandom(6));
-        invoiceReceipt.setSerialNumber(builder.toString());
+        invoiceReceipt.setSerialNumber(csSendNoService.getNo(SendNoTypeEnum.RECEIPT));
+        invoiceReceipt.setInvoiceMan("");
 
         invoiceReceiptDao.insert(invoiceReceipt);
     }
 
     @Override
-    public void confirmSettlement(String orderCarNo) {
-
+    public void confirmSettlement(Long invoiceId,String invoice_no) {
+        InvoiceReceipt invoiceReceipt = new InvoiceReceipt();
+        invoiceReceipt.setInvoiceId(invoiceId);
+        invoiceReceipt.setInvoiceNo(invoice_no);
+        invoiceReceipt.setState(invoice_no);
+        invoiceReceiptDao.updateById(invoiceReceipt);
     }
 
     @Override
@@ -149,5 +156,10 @@ public class FinanceServiceImpl implements IFinanceService {
         List<WaitInvoiceVo> waitInvoiceVoList = invoiceReceiptDao.getWaitInvoiceList(waitInvoiceQueryDto);
         PageInfo<WaitInvoiceVo> pageInfo = new PageInfo<>(waitInvoiceVoList);
         return BaseResultUtil.success(pageInfo);
+    }
+
+    @Override
+    public void cancelSettlement(Long invoiceId) {
+
     }
 }

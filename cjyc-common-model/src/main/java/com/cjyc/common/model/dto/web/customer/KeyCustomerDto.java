@@ -47,6 +47,5 @@ public class KeyCustomerDto implements Serializable {
     private Integer customerNature;
 
     @ApiModelProperty(value = "大客户合同")
-    @NotEmpty(message = "合同不能为空")
-    private List<@Valid CustomerContractDto> custContraVos;
+    private List<CustomerContractDto> custContraVos;
 }

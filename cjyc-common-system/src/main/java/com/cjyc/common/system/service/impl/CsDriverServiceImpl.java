@@ -131,12 +131,12 @@ public class CsDriverServiceImpl implements ICsDriverService {
         //验证在个人司机池中是否存在
         Integer count = carrierDao.existPersonalCarrier(dto);
         if(count > 0){
-            return BaseResultUtil.getVo(ResultEnum.EXIST_PERSONAL_CARRIER.getCode(),ResultEnum.EXIST_PERSONAL_CARRIER.getMsg());
+            return BaseResultUtil.fail("账号已存在于个人司机中");
         }
         //验证在该承运商下是否有相同的
         count = carrierDao.existBusinessCarrier(dto);
         if(count > 0){
-            return BaseResultUtil.getVo(ResultEnum.EXIST_ENTERPRISE_CARRIER.getCode(),ResultEnum.EXIST_ENTERPRISE_CARRIER.getMsg());
+            return BaseResultUtil.fail("账号已存在于该企业承运商中");
         }
         if(dto.getDriverId() == null){
             Driver driver = driverDao.selectOne(new QueryWrapper<Driver>().lambda()
@@ -257,8 +257,8 @@ public class CsDriverServiceImpl implements ICsDriverService {
         if (!driver.getPhone().equals(dto.getPhone())) {
             //需要手机号变更操作
             //手机号是否在司机表存在
-            List<Driver> drivers = driverDao.selectList(new QueryWrapper<Driver>()
-                    .eq("", dto.getPhone()));
+            List<Driver> drivers = driverDao.selectList(new QueryWrapper<Driver>().lambda()
+                    .eq(Driver::getPhone, dto.getPhone()));
             if (!CollectionUtils.isEmpty(drivers)) {
                 return ResultData.failed("手机号已使用，请检查");
             }
@@ -398,7 +398,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
                     .eq(Task::getVehicleRunningId,vr.getId())
                     .eq(Task::getState,TaskStateEnum.TRANSPORTING.code));
             if(task != null){
-                return BaseResultUtil.getVo(ResultEnum.VEHICLE_RUNNING.getCode(),ResultEnum.VEHICLE_RUNNING.getMsg());
+                return BaseResultUtil.fail("该运力正在运输中，不可修改");
             }
         }
         //更新司机信息

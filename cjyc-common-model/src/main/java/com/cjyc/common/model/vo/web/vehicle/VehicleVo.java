@@ -1,5 +1,6 @@
 package com.cjyc.common.model.vo.web.vehicle;
 
+import com.cjyc.common.model.util.DataLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
@@ -32,7 +33,8 @@ public class VehicleVo implements Serializable {
     private String phone;
 
     @ApiModelProperty("最后操作时间")
-    private String checkTime;
+    @JsonSerialize(using = DataLongSerizlizer.class)
+    private Long checkTime;
 
     @ApiModelProperty("最后操作人")
     private String checkName;

@@ -3,6 +3,7 @@ package com.cjyc.common.system.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjyc.common.model.dao.IRoleDao;
 import com.cjyc.common.model.entity.Role;
+import com.cjyc.common.model.enums.role.RoleRangeEnum;
 import com.cjyc.common.system.service.ICsRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,9 @@ public class CsRoleServiceImpl implements ICsRoleService {
 
 
     @Override
-    public List<Role> getRoleList() {
-        return roleDao.selectList(new QueryWrapper<Role>());
+    public List<Role> getValidInnerRoleList() {
+        return roleDao.selectList(new QueryWrapper<Role>()
+            .eq("role_range", RoleRangeEnum.INNER.getValue())
+            .eq("state", 1));
     }
 }

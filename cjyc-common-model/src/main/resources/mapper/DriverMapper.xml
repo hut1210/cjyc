@@ -502,20 +502,19 @@
     <select id="findVehicle" resultType="com.cjyc.common.model.vo.driver.mine.DriverVehicleVo"
             parameterType="java.lang.Long">
             SELECT
-                dc.id as carrierId,
+                dv.id AS vehicleId,
+                dv.plate_no AS plateNo,
+                dvr.carry_car_num AS carryCarNum,
+                dvr.occupied_car_num AS occupiedCarNum,
                 dd.id AS driverId,
                 dd.real_name AS realName,
-                dd.phone AS phone,
-                dvr.vehicle_id AS vehicleId,
-                dvr.plate_no AS plateNo,
-                dvr.carry_car_num AS carryCarNum,
-                dvr.occupied_car_num AS occupiedCarNum
+                dd.phone AS phone
             FROM
-                d_driver dd
+                d_vehicle dv
+                LEFT JOIN d_driver_vehicle_con ddvc ON ddvc.vehicle_id = dv.id
+                LEFT JOIN d_driver dd ON dd.id = ddvc.driver_id
                 LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
-                left join d_carrier_driver_con dcdc on dcdc.driver_id = dd.id
-                left join d_carrier dc on dc.id = dcdc.carrier_id
-            where dc.id = #{carrierId} and dc.state &lt; 9
+            where dv.id = #{carrierId}
     </select>
 
     <!--获取该承运商下符合条件的司机-->

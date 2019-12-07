@@ -273,7 +273,7 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
                             .eq(Task::getVehicleRunningId, vr.getId())
                             .eq(Task::getState, TaskStateEnum.TRANSPORTING.code));
                     if (task != null) {
-                        return BaseResultUtil.getVo(ResultEnum.VEHICLE_RUNNING.getCode(), ResultEnum.VEHICLE_RUNNING.getMsg());
+                        return BaseResultUtil.fail("该运力正在运输中，不可修改");
                     }
                 }
                 dvc.setDriverId(dto.getDriverId());

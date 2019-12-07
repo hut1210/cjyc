@@ -2,6 +2,7 @@ package com.cjyc.web.api.controller;
 
 import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
+import com.cjkj.usercenter.dto.yc.SelectUsersByRoleResp;
 import com.cjyc.common.model.dto.web.city.StoreDto;
 import com.cjyc.common.model.dto.web.store.GetStoreDto;
 import com.cjyc.common.model.dto.web.store.StoreAddDto;
@@ -15,12 +16,15 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.store.StoreVo;
 import com.cjyc.common.system.feign.ISysDeptService;
+import com.cjyc.common.system.feign.ISysUserService;
+import com.cjyc.common.system.util.ResultDataUtil;
 import com.cjyc.web.api.service.IStoreService;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,6 +46,8 @@ public class StoreController {
     private IStoreService storeService;
     @Autowired
     private ISysDeptService sysDeptService;
+    @Autowired
+    private ISysUserService sysUserService;
 
     /**
      * 根据二级城市编码查询业务中心
@@ -104,15 +110,24 @@ public class StoreController {
     @PostMapping("/remove/{id}")
     public ResultVo remove(@PathVariable Long id) {
         Store store = storeService.getById(id);
-        if (null == store) {
-            return BaseResultUtil.fail("业务中心不存在，请检查");
+        if (null == store || store.getDeptId() == null || store.getDeptId() <= 0L) {
+            return BaseResultUtil.fail("业务中心信息有误，请检查");
         }
-        ResultData deleteRd = sysDeptService.delete(store.getDeptId());
-        if (!ReturnMsg.SUCCESS.getCode().equals(deleteRd.getCode())) {
-            return BaseResultUtil.fail("业务中心删除失败，原因：" + deleteRd.getMsg());
+        ResultData<List<SelectUsersByRoleResp>> usersRd = sysUserService.getUsersByDeptId(store.getDeptId());
+        if (ResultDataUtil.isSuccess(usersRd)) {
+            if (CollectionUtils.isEmpty(usersRd.getData())) {
+                ResultData deleteRd = sysDeptService.delete(store.getDeptId());
+                if (!ReturnMsg.SUCCESS.getCode().equals(deleteRd.getCode())) {
+                    return BaseResultUtil.fail("业务中心删除失败，原因：" + deleteRd.getMsg());
+                }
+                boolean result = storeService.removeById(id);
+                return result ? BaseResultUtil.success() : BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
+            }else {
+                return BaseResultUtil.fail("此业务中心有关联用户信息，不能删除");
+            }
+        }else {
+            return BaseResultUtil.fail("删除失败，原因：" + usersRd.getMsg());
         }
-        boolean result = storeService.removeById(id);
-        return result ? BaseResultUtil.success() : BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
 
     @ApiOperation(value = "查询详情", notes = "\t 请求接口为/get/id格式")

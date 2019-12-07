@@ -30,50 +30,57 @@ import javax.servlet.http.HttpServletResponse;
 public class FinanceController {
 
     @Autowired
-    private IFinanceService iFinanceService;
+    private IFinanceService financeService;
 
     @ApiOperation(value = "根据条件查询财务总流水列表")
     @PostMapping(value = "/getFinanceList")
     public ResultVo<PageVo<FinanceVo>> getFinanceList(@RequestBody FinanceQueryDto financeQueryDto){
-        return iFinanceService.getFinanceList(financeQueryDto);
+        return financeService.getFinanceList(financeQueryDto);
     }
 
     @ApiOperation(value = "导出Excel")
     @GetMapping("/exportExcel")
     public void exportExcel(HttpServletRequest request, HttpServletResponse response){
-        iFinanceService.exportExcel(request,response);
+        financeService.exportExcel(request,response);
     }
 
     @ApiOperation(value = "根据条件查询财务应收账款列表")
     @PostMapping(value = "/getFinanceReceiptList")
     public ResultVo<PageVo<FinanceReceiptVo>> getFinanceReceiptList(@RequestBody FinanceQueryDto financeQueryDto){
-        return iFinanceService.getFinanceReceiptList(financeQueryDto);
+        return financeService.getFinanceReceiptList(financeQueryDto);
     }
 
     @ApiOperation(value = "申请开票")
     @PostMapping(value = "/applySettlement")
     public ResultVo applySettlement(@RequestBody ApplySettlementDto applySettlementDto){
-        iFinanceService.applySettlement(applySettlementDto);
+        financeService.applySettlement(applySettlementDto);
         return BaseResultUtil.success();
     }
 
     @ApiOperation(value = "根据条件查询等待开票列表")
     @PostMapping(value = "/getWaitInvoiceList")
     public ResultVo<PageVo<WaitInvoiceVo>> getWaitInvoiceList(@RequestBody WaitQueryDto waitInvoiceQueryDto){
-        return iFinanceService.getWaitInvoiceList(waitInvoiceQueryDto);
+        return financeService.getWaitInvoiceList(waitInvoiceQueryDto);
     }
 
     @ApiOperation(value = "确认开票")
-    @PostMapping(value = "/confirmSettlement")
-    public ResultVo confirmSettlement(@RequestBody String orderCarNo){
-        iFinanceService.confirmSettlement(orderCarNo);
+    @PostMapping(value = "/confirm")
+    public ResultVo confirmSettlement(@RequestBody Long invoiceId,@RequestBody String invoice_no){
+        financeService.confirmSettlement(invoiceId,invoice_no);
+        return BaseResultUtil.success();
+    }
+
+    @ApiOperation(value = "确认开票")
+    @PostMapping(value = "/cancel")
+    public ResultVo cancel(@RequestBody Long invoiceId){
+        financeService.cancelSettlement(invoiceId);
         return BaseResultUtil.success();
     }
 
     @ApiOperation(value = "根据条件查询等待回款列表")
     @PostMapping(value = "/getWaitReceiveList")
     public ResultVo<PageVo<WaitInvoiceVo>> getWaitReceiveList(@RequestBody WaitQueryDto waitInvoiceQueryDto){
-        return iFinanceService.getWaitInvoiceList(waitInvoiceQueryDto);
+        return financeService.getWaitInvoiceList(waitInvoiceQueryDto);
     }
 
 }
