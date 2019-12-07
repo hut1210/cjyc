@@ -39,6 +39,7 @@
         <include refid="Base_Column_List"/>
         from d_vehicle_running
         where driver_id = #{driverId}
+        limit 1
     </select>
     <select id="findByDriverId" resultType="com.cjyc.common.model.entity.VehicleRunning">
         select

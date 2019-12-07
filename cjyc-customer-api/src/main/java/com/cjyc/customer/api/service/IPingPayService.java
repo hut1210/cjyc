@@ -37,7 +37,7 @@ public interface IPingPayService {
 
     ResultVo<ValidateReceiptCarPayVo> validateCarPayState(CarPayStateDto reqDto, boolean b);
 
-    ResultVo<Map<String, Object>> carCollectPay(CarCollectPayDto reqDto);
+    ResultVo carCollectPay(CarCollectPayDto reqDto);
 
     ResultVo<ResultReasonVo> receiptBatch(ReceiptBatchDto reqDto);
 }

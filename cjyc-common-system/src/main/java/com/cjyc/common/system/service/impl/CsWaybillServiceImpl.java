@@ -268,9 +268,17 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
                     /**5、更新订单车辆状态*/
                     if(paramsDto.getType() == WaybillTypeEnum.PICK.code){
-                        orderCarDao.updatePickStateById(OrderCarLocalStateEnum.DISPATCHED.code, orderCarId);
+                        OrderCar oc = new OrderCar();
+                        oc.setId(orderCarId);
+                        oc.setState(OrderCarStateEnum.WAIT_PICK.code);
+                        oc.setPickState(OrderCarLocalStateEnum.DISPATCHED.code);
+                        orderCarDao.updateById(oc);
                     }else{
-                        orderCarDao.updateBackStateById(OrderCarLocalStateEnum.DISPATCHED.code, orderCarId);
+                        OrderCar oc = new OrderCar();
+                        oc.setId(orderCarId);
+                        oc.setState(OrderCarStateEnum.WAIT_PICK.code);
+                        oc.setBackState(OrderCarLocalStateEnum.DISPATCHED.code);
+                        orderCarDao.updateById(oc);
                     }
                 }
 
@@ -418,7 +426,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
                 waybillCarIdSet.add(waybillCar.getId());
                 //更新订单车辆状态
-                orderCarDao.updateTrunkStateById(orderCar.getId());
+                orderCarDao.updateStateById(OrderCarTrunkStateEnum.WAIT_NEXT_DISPATCH.code, orderCar.getId());
 
             }
 

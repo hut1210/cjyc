@@ -90,7 +90,7 @@
     <update id="updateTrunkStateById">
         update w_order_car
         set trunk_state = #{state}
-        where id = #{orderCarId}
+        where id = #{id}
     </update>
     <update id="updateStateBatchByIds">
         update w_order_car
@@ -151,8 +151,7 @@
     <select id="countListWaitDispatchCar" resultType="java.util.Map">
         select count(0) as car_num, IFNULL(o.start_city_code,'-1') as cityCode, IFNULL(o.start_city, '无城市') as cityName from w_order o
         join w_order_car c on o.id = c.order_id
-        where o.state BETWEEN 25 and 100
-        and c.state &lt; 5 or c.state = 25 or c.state = 45
+        where o.state BETWEEN 25 and 101
         group by o.start_city_code
     </select>
 
@@ -161,8 +160,7 @@
             select count(0) as carNum
             from w_order o
             join w_order_car c on o.id = c.order_id
-            where o.state BETWEEN 25 and 100
-            and c.state &lt; 5 or c.state = 25 or c.state = 45
+            where o.state BETWEEN 25 and 101
             group by o.start_city_code
         ) as t
     </select>
@@ -177,10 +175,9 @@
             CONCAT(o.start_city,'-',o.end_city) as line
         from w_order o
         join w_order_car c on o.id = c.order_id
-        where o.state BETWEEN 25 and 100
+        where o.state BETWEEN 25 and 101
         and o.start_city_code = #{paramsDto.cityCode}
-        and c.state &lt; 5 or c.state = 25 or c.state = 45
-        group by o.line_id
+        group by o.start_city_code, o.end_city_code
 
     </select>
     <select id="countTotalWaitDispatchCarByStartCity" resultType="java.util.Map">
@@ -188,10 +185,9 @@
             select count(0) as carNum
             from w_order o
             join w_order_car c on o.id = c.order_id
-            where o.state BETWEEN 25 and 100
+            where o.state BETWEEN 25 and 101
             and o.start_city_code = #{paramsDto.cityCode}
-            and c.state &lt; 5 or c.state = 25 or c.state = 45
-            group by o.line_id
+            group by o.start_city_code, o.end_city_code
         ) as t
     </select>
 
@@ -285,15 +281,15 @@
         left join b_admin m on m.id = o.check_user_id
         left join w_waybill_car wc on wc.order_car_id = oc.id
         <where>
-            and o.state >= 25
             <choose>
                 <when test="paramsDto.signState == 1">
                     and o.state between 25 and 99
                 </when>
-                <when test="paramsDto.signState == 1">
+                <when test="paramsDto.signState == 2">
                     and o.state = 100
                 </when>
                 <otherwise>
+                    and o.state >= 25
                 </otherwise>
             </choose>
 

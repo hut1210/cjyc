@@ -114,7 +114,7 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
 
     int updateStateForLoad(@Param("orderCarState") int orderCarState, @Param("orderCarIdSet") Set<Long> orderCarIdSet);
 
-    int updateTrunkStateById(Long id);
+    int updateTrunkStateById(@Param("state") int state, @Param("id") Long id);
 
 
     List<OrderCarVo> findVoListByIds(@Param("orderCarIdList") List<Long> orderCarIdList);

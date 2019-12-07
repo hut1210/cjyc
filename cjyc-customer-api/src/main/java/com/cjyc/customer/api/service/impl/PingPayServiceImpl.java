@@ -498,14 +498,14 @@ public class PingPayServiceImpl implements IPingPayService {
     }
 
     @Override
-    public ResultVo<Map<String, Object>> carCollectPay(CarCollectPayDto reqDto) {
+    public ResultVo carCollectPay(CarCollectPayDto reqDto) {
         OrderModel om = new OrderModel();
         com.pingplusplus.model.Order order = new com.pingplusplus.model.Order();
 
         //验证车辆是否支付
         CarPayStateDto carPayStateDto = new CarPayStateDto();
         carPayStateDto.setLoginId(reqDto.getLoginId());
-        carPayStateDto.setOrderCarNos(reqDto.getOrderCarNos());
+        //carPayStateDto.setOrderCarNos(reqDto.getOrderCarNos());
         ResultVo<ValidateReceiptCarPayVo> resultVo = validateCarPayState(carPayStateDto, true);
         if(ResultEnum.SUCCESS.getCode() != resultVo.getCode()){
             return BaseResultUtil.fail(resultVo.getMsg());

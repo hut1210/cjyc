@@ -282,7 +282,7 @@ public class PingPayController {
      */
     @ApiOperation(value = "到付申请支付")
     @PostMapping(value = "/receipt/car/apply/pay")
-    public ResultVo<Map<String, Object>> carCollectPay(HttpServletRequest request, @RequestBody CarCollectPayDto reqDto) {
+    public ResultVo carCollectPay(HttpServletRequest request, @RequestBody CarCollectPayDto reqDto) {
         Customer customer = csCustomerService.validate(reqDto.getLoginId());
         reqDto.setLoginName(customer.getName());
         reqDto.setIp(IPUtil.getIpAddr(request));

@@ -99,7 +99,7 @@ public class SaveTrunkWaybillCarDto implements Serializable {
     private Integer unloadTurnType;
 
     @ApiModelProperty(value = "最后一次运输标识：0否，1是")
-    private Integer receiptFlag;
+    private Boolean receiptFlag;
 
 
 }
