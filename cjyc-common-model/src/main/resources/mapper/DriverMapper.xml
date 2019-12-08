@@ -514,7 +514,7 @@
                 LEFT JOIN d_driver_vehicle_con ddvc ON ddvc.vehicle_id = dv.id
                 LEFT JOIN d_driver dd ON dd.id = ddvc.driver_id
                 LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
-            where dv.id = #{carrierId}
+            where dv.carrier_id = #{carrierId}
     </select>
 
     <!--获取该承运商下符合条件的司机-->

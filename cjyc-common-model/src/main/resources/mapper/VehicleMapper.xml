@@ -134,7 +134,7 @@
             <if test="keyword != null and keyword.trim() != ''">
                 plate_no like concat('%',#{keyword},'%')
             </if>
-             and ownership_type = 1
+             and ownership_type = 1 and carrier_id is null
         </where>
     </select>
 

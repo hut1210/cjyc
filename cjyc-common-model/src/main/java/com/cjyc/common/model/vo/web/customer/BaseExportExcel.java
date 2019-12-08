@@ -20,7 +20,7 @@ public class BaseExportExcel implements Serializable {
     @Excel(name = "联系人/姓名" ,orderNum = "2",width = 15)
     private String contactMan;
 
-    @Excel(name = "账号来源：1：App注册，2：Applet注册，3：韵车后台 4：升级创建" ,orderNum = "3",width = 15)
+    @Excel(name = "账号来源" ,orderNum = "3",width = 15)
     private Integer source;
 
     @Excel(name = "注册时间" ,orderNum = "4",width = 15)
@@ -39,19 +39,23 @@ public class BaseExportExcel implements Serializable {
     private BigDecimal totalAmount;
 
     public String getSource(){
-        if(source == 1){
-            return "App注册";
-        }else if(source == 2){
-            return "Applet注册";
-        }else if(source == 3){
-            return "韵车后台";
-        }else if(source == 4){
-            return "升级创建";
-        }else{
-            return "";
+        if(source != null){
+            if(source == 1){
+                return "App注册";
+            }else if(source == 2){
+                return "Applet注册";
+            }else if(source == 3){
+                return "韵车后台";
+            }else if(source == 4){
+                return "升级创建";
+            }
         }
+        return "";
     }
     public String getCreateTime(){
-        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(createTime), TimePatternConstant.COMPLEX_TIME_FORMAT);
+        if(createTime != null){
+            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(createTime), TimePatternConstant.COMPLEX_TIME_FORMAT);
+        }
+        return "";
     }
 }

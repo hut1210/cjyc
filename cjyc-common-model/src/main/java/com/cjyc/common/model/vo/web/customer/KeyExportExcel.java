@@ -14,10 +14,40 @@ public class KeyExportExcel extends BaseExportExcel {
     @Excel(name = "全称" ,orderNum = "9",width = 15)
     private String name;
 
-    @Excel(name = "客户类型  0：电商 1：租赁 2：金融公司 3：经销商 4：其他" ,orderNum = "10",width = 60)
+    @Excel(name = "客户类型" ,orderNum = "10",width = 15)
     private Integer customerNature;
 
-    @Excel(name = "状态：0待审核，1未登录，2已审核，3审核拒绝， 7已冻结" ,orderNum = "11",width = 60)
+    @Excel(name = "状态" ,orderNum = "11",width = 15)
     private Integer state;
 
+    public String getCustomerNature(){
+        if(customerNature != null){
+            if(customerNature == 0){
+                return "电商";
+            }else if(customerNature == 1){
+                return "租赁";
+            }else if(customerNature == 2){
+                return "金融公司";
+            }else if(customerNature == 3){
+                return "经销商";
+            }
+        }
+        return "";
+    }
+    public String getState(){
+        if(state != null){
+            if(state == 0){
+                return "待审核";
+            }else if(state == 1){
+                return "审核中";
+            }else if(state == 2){
+                return "已审核";
+            }else if(state == 3){
+                return "审核拒绝";
+            }else if(state == 7){
+                return "已冻结";
+            }
+        }
+        return "";
+    }
 }
