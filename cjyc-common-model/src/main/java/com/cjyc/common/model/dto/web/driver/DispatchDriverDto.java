@@ -7,7 +7,7 @@ import lombok.Data;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 @Data
-public class DispatchDriverDto extends BasePageDto implements Serializable {
+public class DispatchDriverDto extends BasePageDto {
     private static final long serialVersionUID = -2185088130200464543L;
 
     @ApiModelProperty(value = "登陆人id(loginId)",required = true)

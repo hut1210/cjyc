@@ -160,36 +160,34 @@
     <select id="getDispatchCarrier" resultType="com.cjyc.common.model.vo.web.carrier.DispatchCarrierVo"
             parameterType="com.cjyc.common.model.dto.web.carrier.DispatchCarrierDto">
         SELECT
-            c.id AS carrierId,
-            c.NAME AS NAME,
-            c.linkman AS linkman,
-            c.linkman_phone AS linkmanPhone,
-            c.legal_name AS legalName,
-            c.legal_id_card AS legalIdCard,
-            c.settle_type AS settleType,
-            c.settle_period AS settlePeriod,
-            c.MODE AS MODE,
-            c.is_invoice AS isInvoice
+            dc.id AS carrierId,
+            dc.NAME AS NAME,
+            dc.linkman AS linkman,
+            dc.linkman_phone AS linkmanPhone,
+            dc.legal_name AS legalName,
+            dc.legal_id_card AS legalIdCard,
+            dc.settle_type AS settleType,
+            dc.settle_period AS settlePeriod,
+            dc.MODE AS MODE,
+            dc.is_invoice AS isInvoice
         FROM
-            d_carrier c
+            d_carrier dc
         <where>
             <if test="name != null and name.trim() != ''">
-                c.name like CONCAT('%',#{name},'%')
+                dc.name like CONCAT('%',#{name},'%')
             </if>
             <if test="linkman != null and linkman.trim() != ''">
-                and  c.linkman = #{linkman}
+                and  dc.linkman = #{linkman}
             </if>
             <if test="linkmanPhone != null and linkmanPhone.trim() != ''">
-                and  c.linkman_phone = #{linkmanPhone}
+                and  dc.linkman_phone = #{linkmanPhone}
             </if>
             <if test="settleType != null">
-                and  c.settle_type = #{settleType}
+                and  dc.settle_type = #{settleType}
             </if>
-            <if test="linkmanPhone != null and linkmanPhone.trim() != ''">
-                and  c.linkman_phone = #{linkmanPhone}
-            </if>
-            and c.type = 2
-            AND c.business_state = 0 and c.state = 2
+            and dc.type = 2
+            and dc.state = 2
+            group by dc.linkman_phone
         </where>
     </select>
 

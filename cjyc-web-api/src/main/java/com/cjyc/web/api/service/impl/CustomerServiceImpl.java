@@ -273,6 +273,12 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             }else if(FlagEnum.AUDIT_REJECT.code == dto.getFlag()){
                 //审核拒绝
                 customer.setState(CustomerStateEnum.REJECT.code);
+            }else if(FlagEnum.FROZEN.code == dto.getFlag()){
+                //冻结
+                customer.setState(CustomerStateEnum.FROZEN.code);
+            }else if(FlagEnum.THAW.code == dto.getFlag()){
+                //解冻
+                customer.setState(CustomerStateEnum.CHECKED.code);
             }
             customer.setCheckTime(NOW);
             customer.setCheckUserId(dto.getLoginId());

@@ -133,6 +133,12 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
             if(veh != null){
                 return BaseResultUtil.fail("该车辆已存在,请检查");
             }
+            if(dto.getDriverId() != null){
+                boolean result = csVehicleService.verifyDriverVehicle(dto.getDriverId(), null);
+                if(!result){
+                    return BaseResultUtil.fail("该司机已绑定，请检查");
+                }
+            }
             //新增车辆
             veh = new Vehicle();
             BeanUtils.copyProperties(dto,veh);

@@ -19,7 +19,6 @@ public class TypeSalesmanDto extends BasePageDto {
     private String name;
 
     @ApiModelProperty("手机号")
-    @Pattern(regexp = "1[3|4|5|7|8][0-9]\\d{8}",message = "电话号码格式不对")
     private String phone;
 
     @ApiModelProperty("所属业务中心")

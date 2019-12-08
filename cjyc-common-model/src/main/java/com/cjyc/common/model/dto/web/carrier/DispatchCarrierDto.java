@@ -24,5 +24,5 @@ public class DispatchCarrierDto extends BasePageDto {
     private String linkmanPhone;
 
     @ApiModelProperty("1个人承运商，2企业承运商")
-    private String type;
+    private Integer type;
 }

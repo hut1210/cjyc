@@ -406,7 +406,7 @@
             AND dc.state = 2
             AND dcdc.state = 2
             AND dc.type = 1
-            and dc.mode in (3,5,7,9)
+            and dc.mode = 3
             group by dd.phone
         </where>
     </select>
@@ -574,7 +574,6 @@
             dc.type = 2
             AND ( dd.phone = #{phone} OR dd.id_card = #{idCard})
     </select>
-
 
     <!--验证在个人承运商下是否存在-->
     <select id="existPersonDriver" resultType="java.lang.Integer"

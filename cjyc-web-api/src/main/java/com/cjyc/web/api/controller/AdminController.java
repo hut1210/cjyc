@@ -23,6 +23,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -110,7 +111,7 @@ public class AdminController {
 
     @ApiOperation(value = "提送车业务员")
     @PostMapping(value = "/deliverySalesman")
-    public ResultVo deliverySalesman(@RequestBody TypeSalesmanDto dto){
+    public ResultVo deliverySalesman(@Validated @RequestBody TypeSalesmanDto dto){
         return adminService.deliverySalesman(dto);
     }
 }

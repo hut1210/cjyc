@@ -45,8 +45,8 @@
             sc3.NAME AS areaName
         FROM
           s_city sc1
-        JOIN s_city sc2 ON sc2.parent_code = sc1.
-          CODE JOIN s_city sc3 ON sc3.parent_code = sc2.CODE
+        JOIN s_city sc2 ON sc2.parent_code = sc1.CODE
+        JOIN s_city sc3 ON sc3.parent_code = sc2.CODE
         <where>
             <if test="keyword != null and keyword.trim() != ''">
                 (sc1.name like concat('%',#{keyword},'%')  or sc2.name like concat('%',#{keyword},'%') or sc3.name like concat('%',#{keyword},'%'))
