@@ -35,13 +35,13 @@
             dv.default_carry_num AS defaultCarryNum,
             dd.real_name AS realName,
             dd.phone AS phone,
-            dd.check_time AS checkTime,
+            dv.create_time AS checkTime,
             ba.NAME AS checkName
         FROM
           d_vehicle dv
         LEFT JOIN d_driver_vehicle_con ddvc ON ddvc.vehicle_id = dv.id
         LEFT JOIN d_driver dd ON dd.id = ddvc.driver_id
-        LEFT JOIN b_admin ba ON ba.id = dd.check_user_id
+        LEFT JOIN b_admin ba ON ba.id = dv.create_user_id
         <where>
             <if test="plateNo != null and plateNo.trim() != ''">
                 dv.plate_no = #{plateNo}
@@ -53,6 +53,7 @@
                 and dd.phone = #{phone}
             </if>
         </where>
+          group by dv.plate_no
     </select>
 
     <!-- 根据条件查询该承运商下的车辆 -->

@@ -2,22 +2,28 @@ package com.cjyc.common.system.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjyc.common.model.dao.*;
+import com.cjyc.common.model.dto.CarrierVehicleDto;
 import com.cjyc.common.model.dto.FreeDto;
 import com.cjyc.common.model.dto.KeywordDto;
+import com.cjyc.common.model.dto.driver.mine.AppCarrierVehicleDto;
 import com.cjyc.common.model.dto.driver.mine.CarrierVehicleNoDto;
 import com.cjyc.common.model.dto.web.vehicle.FreeVehicleDto;
 import com.cjyc.common.model.entity.*;
+import com.cjyc.common.model.enums.transport.VehicleRunStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.FreeVehicleVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.mine.CarrierVehicleVo;
 import com.cjyc.common.model.vo.driver.mine.SocietyVehicleVo;
 import com.cjyc.common.system.service.ICsVehicleService;
 import com.cjyc.common.system.service.sys.ICsSysService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -31,7 +37,11 @@ public class CsVehicleServiceImpl implements ICsVehicleService {
     @Resource
     private ICarrierDriverConDao carrierDriverConDao;
     @Resource
+    private IVehicleRunningDao vehicleRunningDao;
+    @Resource
     private ICsSysService csSysService;
+
+    private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
     @Override
     public ResultVo<List<FreeVehicleVo>> findPersonFreeVehicle(KeywordDto dto) {
@@ -88,6 +98,68 @@ public class CsVehicleServiceImpl implements ICsVehicleService {
     public ResultVo<List<FreeVehicleVo>> findCarrierVehicleById(FreeVehicleDto dto) {
         List<FreeVehicleVo> freeVehicleVos = vehicleDao.findCarrierVehicle(dto.getCarrierId(),dto.getPlateNo());
         return BaseResultUtil.success(freeVehicles(freeVehicleVos));
+    }
+
+    @Override
+    public boolean verifyDriverVehicle(Long driverId,Long vehicleId) {
+        //验证司机与车辆绑定关系
+        List<DriverVehicleCon> dvc = driverVehicleConDao.selectList(new QueryWrapper<DriverVehicleCon>().lambda()
+                .eq(driverId != null,DriverVehicleCon::getDriverId, driverId)
+                .or()
+                .eq(vehicleId != null,DriverVehicleCon::getVehicleId, vehicleId));
+        //验证运力
+        List<VehicleRunning> vr = vehicleRunningDao.selectList(new QueryWrapper<VehicleRunning>().lambda()
+                .eq(driverId != null,VehicleRunning::getDriverId, driverId)
+                .or()
+                .eq(vehicleId != null,VehicleRunning::getVehicleId, vehicleId));
+        if(CollectionUtils.isEmpty(dvc) && CollectionUtils.isEmpty(vr)){
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void saveTransport(CarrierVehicleDto dto, AppCarrierVehicleDto appDto, Vehicle veh) {
+        //新增运力
+        VehicleRunning vr = new VehicleRunning();
+        vr.setVehicleId(veh.getId());
+        vr.setRunningState(VehicleRunStateEnum.FREE.code);
+        vr.setCreateTime(NOW);
+        //新增车辆与司机关系
+        DriverVehicleCon dvc = new DriverVehicleCon();
+        dvc.setVehicleId(veh.getId());
+        if(dto != null){
+            BeanUtils.copyProperties(dto,vr);
+            vr.setCarryCarNum(dto.getDefaultCarryNum());
+            dvc.setDriverId(dto.getDriverId());
+        }else if(appDto != null){
+            BeanUtils.copyProperties(appDto,vr);
+            vr.setCarryCarNum(appDto.getDefaultCarryNum());
+            dvc.setDriverId(appDto.getDriverId());
+        }
+        vehicleRunningDao.insert(vr);
+        driverVehicleConDao.insert(dvc);
+    }
+
+    @Override
+    public void updateTransport(CarrierVehicleDto dto, AppCarrierVehicleDto appDto, Vehicle veh) {
+        //更新司机与车辆
+        DriverVehicleCon dvc = driverVehicleConDao.selectOne(new QueryWrapper<DriverVehicleCon>().lambda()
+                .eq(veh.getId() != null,DriverVehicleCon::getVehicleId, veh.getId()));
+        //更新运力
+        VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda()
+                .eq(veh.getId() != null,VehicleRunning::getVehicleId, veh.getId()));
+        vr.setRunningState(VehicleRunStateEnum.FREE.code);
+        vr.setUpdateTime(NOW);
+        if(dto != null){
+            dvc.setDriverId(dto.getDriverId());
+            BeanUtils.copyProperties(dto,vr);
+        }else if(appDto != null){
+            dvc.setDriverId(appDto.getDriverId());
+            BeanUtils.copyProperties(appDto,vr);
+        }
+        driverVehicleConDao.updateById(dvc);
+        vehicleRunningDao.updateById(vr);
     }
 
     /**

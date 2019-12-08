@@ -58,6 +58,9 @@ public class DriverVo implements Serializable {
     @ApiModelProperty("驾驶证正面")
     private String driverLicenceFrontImg;
 
+    @ApiModelProperty("驾驶证反面")
+    private String driverLicenceBackImg;
+
     @ApiModelProperty("行驶证正面")
     private String travelLicenceFrontImg;
 

@@ -3,6 +3,7 @@ package com.cjyc.common.model.dto.web.vehicle;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 @Data
@@ -21,5 +22,6 @@ public class ModifyCarryNumDto implements Serializable {
 
     @ApiModelProperty(value = "车位数",required = true)
     @NotNull(message = "车位数不能为空")
+    @Min(value = 1)
     private Integer defaultCarryNum;
 }

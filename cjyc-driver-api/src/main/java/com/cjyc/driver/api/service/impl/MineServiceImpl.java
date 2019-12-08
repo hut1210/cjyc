@@ -18,10 +18,12 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.mine.*;
 import com.cjyc.common.system.service.ICsSmsService;
+import com.cjyc.common.system.service.ICsVehicleService;
 import com.cjyc.driver.api.service.IMineService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -54,6 +56,8 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
     private IExistDriverDao existDriverDao;
     @Resource
     private ICsSmsService csSmsService;
+    @Resource
+    private ICsVehicleService csVehicleService;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -123,11 +127,12 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
             return BaseResultUtil.fail("该司机管理员不存在,请检查");
         }
         //根据车牌号查询库中有没有添加
-        Vehicle veh = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda().eq(Vehicle::getPlateNo,dto.getPlateNo()));
-        if(veh != null && !veh.getId().equals(dto.getVehicleId())){
-            return BaseResultUtil.fail("该车辆已存在,请检查");
-        }
+        Vehicle veh = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda()
+                .eq(StringUtils.isNotBlank(dto.getPlateNo()),Vehicle::getPlateNo,dto.getPlateNo()));
         if(dto.getVehicleId() == null){
+            if(veh != null){
+                return BaseResultUtil.fail("该车辆已存在,请检查");
+            }
             //新增车辆
             veh = new Vehicle();
             BeanUtils.copyProperties(dto,veh);
@@ -137,13 +142,16 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
             veh.setCreateTime(NOW);
             vehicleDao.insert(veh);
             if(dto.getDriverId() != null){
-                encapTransport(dto,veh);
+                csVehicleService.saveTransport(null,dto,veh);
             }
         }else{
+            if(veh != null && !veh.getId().equals(dto.getVehicleId())){
+                return BaseResultUtil.fail("该车辆已存在,请检查");
+            }
             VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda()
-                                    .eq(VehicleRunning::getVehicleId, dto.getVehicleId()));
+                                    .eq(dto.getVehicleId() != null,VehicleRunning::getVehicleId, dto.getVehicleId()));
             DriverVehicleCon dvc = driverVehicleConDao.selectOne(new QueryWrapper<DriverVehicleCon>().lambda()
-                    .eq(DriverVehicleCon::getVehicleId, dto.getVehicleId()));
+                                    .eq(dto.getVehicleId() != null,DriverVehicleCon::getVehicleId, dto.getVehicleId()));
             if(vr != null && dvc != null){
                 //判断该运力是否在运输中
                 Task task = taskDao.selectOne(new QueryWrapper<Task>().lambda()
@@ -161,10 +169,10 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
             veh = vehicleDao.selectById(dto.getVehicleId());
             //新增没有绑定，修改绑定
             if(dvc == null && dto.getDriverId() != null){
-                encapTransport(dto,veh);
+                csVehicleService.saveTransport(null,dto,veh);
             }else if(dvc!= null && vr != null && dto.getDriverId() != null && (!dvc.getDriverId().equals(dto.getDriverId()))){
                 //新增与修改时不同的司机
-                updateTransport(dto,veh);
+                csVehicleService.updateTransport(null,dto,veh);
             }else if(dvc != null && vr != null && dto.getDriverId() == null){
                 //新增时有司机，修改时不绑定
                 vehicleRunningDao.removeRun(dvc.getDriverId(),dvc.getVehicleId());
@@ -172,48 +180,6 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
             }
         }
         return BaseResultUtil.success();
-    }
-
-    /**
-     * 封装运力
-     * @param dto
-     * @param veh
-     */
-    private void encapTransport(AppCarrierVehicleDto dto,Vehicle veh){
-        //新增运力
-        VehicleRunning vRun = new VehicleRunning();
-        BeanUtils.copyProperties(dto,vRun);
-        vRun.setVehicleId(veh.getId());
-        vRun.setCarryCarNum(dto.getDefaultCarryNum());
-        vRun.setRunningState(VehicleRunStateEnum.FREE.code);
-        vRun.setCreateTime(NOW);
-        vehicleRunningDao.insert(vRun);
-
-        //新增车辆与司机关系
-        DriverVehicleCon dvc = new DriverVehicleCon();
-        dvc.setDriverId(dto.getDriverId());
-        dvc.setVehicleId(veh.getId());
-        driverVehicleConDao.insert(dvc);
-    }
-
-    /**
-     * 更新运力
-     * @param dto
-     * @param veh
-     */
-    private void updateTransport(AppCarrierVehicleDto dto,Vehicle veh){
-        //更新司机与车辆
-        DriverVehicleCon dvc = driverVehicleConDao.selectOne(new QueryWrapper<DriverVehicleCon>().lambda()
-                .eq(DriverVehicleCon::getVehicleId, veh.getId()));
-        dvc.setDriverId(dto.getDriverId());
-        driverVehicleConDao.updateById(dvc);
-        //更新运力
-        VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda()
-                .eq(VehicleRunning::getVehicleId, veh.getId()));
-        BeanUtils.copyProperties(dto,vr);
-        vr.setRunningState(VehicleRunStateEnum.FREE.code);
-        vr.setUpdateTime(NOW);
-        vehicleRunningDao.updateById(vr);
     }
 
     @Override

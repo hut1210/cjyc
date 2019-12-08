@@ -84,6 +84,10 @@ public class RegexConstant {
     /**
      * 正则：银行卡号
      */
-    public static final String BINK_CARD = "^([1-9]{1})(\\d{14}|\\d{18})$";
+    public static final String BANK_CARD = "^([1-9]{1})(\\d{14}|\\d{18})$";
+    /**
+     * 正则：大于0
+     */
+    public static final String GT_ZERO = "^([1-9]\\d*(\\.\\d*[1-9])?)|(0\\.\\d*[1-9])$";
 
 }

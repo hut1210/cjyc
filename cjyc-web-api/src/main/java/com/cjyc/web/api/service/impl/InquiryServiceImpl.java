@@ -71,6 +71,7 @@ public class InquiryServiceImpl extends ServiceImpl<IInquiryDao, Inquiry> implem
     public boolean handleInquiry(HandleInquiryDto dto) {
         Inquiry inquiry = new Inquiry();
         BeanUtils.copyProperties(dto,inquiry);
+        inquiry.setState(InquiryStateEnum.YES_HANDLE.code);
         inquiry.setHandleTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
         return super.updateById(inquiry);
     }

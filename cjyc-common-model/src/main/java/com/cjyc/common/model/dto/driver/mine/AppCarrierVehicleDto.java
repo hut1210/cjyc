@@ -4,6 +4,7 @@ import com.cjyc.common.model.dto.driver.AppDriverDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 @Data
@@ -19,6 +20,7 @@ public class AppCarrierVehicleDto extends AppDriverDto  {
 
     @ApiModelProperty(value = "车位数",required = true)
     @NotNull(message = "车位数不能为空")
+    @Min(value = 1)
     private Integer defaultCarryNum;
 
     @ApiModelProperty(value = "司机id",required = true)
@@ -27,6 +29,6 @@ public class AppCarrierVehicleDto extends AppDriverDto  {
     @ApiModelProperty(value = "司机姓名",required = true)
     private String realName;
 
-    @ApiModelProperty(value = "司机i姓名",required = true)
+    @ApiModelProperty(value = "司机手机号",required = true)
     private String phone;
 }

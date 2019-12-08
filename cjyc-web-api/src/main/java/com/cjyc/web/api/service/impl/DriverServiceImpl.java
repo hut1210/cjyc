@@ -31,6 +31,7 @@ import com.cjyc.common.model.vo.web.driver.ShowDriverVo;
 import com.cjyc.common.model.vo.web.user.DriverListVo;
 import com.cjyc.common.system.service.ICsDriverService;
 import com.cjyc.common.system.feign.ISysUserService;
+import com.cjyc.common.system.service.ICsVehicleService;
 import com.cjyc.web.api.service.ICarrierCityConService;
 import com.cjyc.web.api.service.IDriverService;
 import com.github.pagehelper.PageHelper;
@@ -72,6 +73,8 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
     private ISysUserService sysUserService;
     @Resource
     private ICsDriverService csDriverService;
+    @Resource
+    private ICsVehicleService csVehicleService;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -100,6 +103,12 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
             }
         }
         if(dto.getDriverId() == null){
+            if(StringUtils.isNotBlank(dto.getPlateNo()) && dto.getVehicleId() != null){
+                boolean result = csVehicleService.verifyDriverVehicle(null, dto.getVehicleId());
+                if(!result){
+                    return BaseResultUtil.fail("该车辆已绑定，请检查");
+                }
+            }
             //保存散户司机
             Driver driver = new Driver();
             BeanUtils.copyProperties(dto,driver);
@@ -117,12 +126,12 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
             driver.setUserId(saveRd.getData());
             super.save(driver);
 
-            if(StringUtils.isNotBlank(dto.getPlateNo()) && dto.getVehicleId() != null
-                    && dto.getDefaultCarryNum() != null){
-                //保存司机与车辆关系
+            //保存司机与车辆关系
+            if(StringUtils.isNotBlank(dto.getPlateNo()) && dto.getVehicleId() != null){
                 dto.setDriverId(driver.getId());
                 bindDriverVehicle(dto);
             }
+
             //保存个人承运商
             Carrier carrier = new Carrier();
             carrier.setLegalName(dto.getRealName());
@@ -176,7 +185,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
                 .lambda().eq(CarrierDriverCon::getDriverId,driver.getId())
                 .eq(CarrierDriverCon::getCarrierId,carrier.getId()));
         if(carrier == null || driver == null || cdc == null){
-            return BaseResultUtil.fail("数据错误");
+            return BaseResultUtil.fail("数据错误,请检查");
         }
         //修改司机信息
         //if(cdc.getState() == CommonStateEnum.CHECKED.code){

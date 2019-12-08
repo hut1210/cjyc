@@ -26,6 +26,7 @@ import com.cjyc.common.model.vo.driver.mine.CarrierDriverVo;
 import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.ICsDriverService;
+import com.cjyc.common.system.service.ICsVehicleService;
 import com.cjyc.common.system.service.sys.ICsSysService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -60,6 +61,8 @@ public class CsDriverServiceImpl implements ICsDriverService {
     private ISysRoleService sysRoleService;
     @Resource
     private ICsDriverService csDriverService;
+    @Resource
+    private ICsVehicleService csVehicleService;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -139,6 +142,12 @@ public class CsDriverServiceImpl implements ICsDriverService {
             return BaseResultUtil.fail("账号已存在于该企业承运商中");
         }
         if(dto.getDriverId() == null){
+            if(StringUtils.isNotBlank(dto.getPlateNo()) && dto.getVehicleId() != null){
+                boolean result = csVehicleService.verifyDriverVehicle(null, dto.getVehicleId());
+                if(!result){
+                    return BaseResultUtil.fail("该车辆已绑定，请检查");
+                }
+            }
             Driver driver = driverDao.selectOne(new QueryWrapper<Driver>().lambda()
                             .eq(Driver::getPhone, dto.getPhone()));
             if(driver == null){
@@ -178,11 +187,8 @@ public class CsDriverServiceImpl implements ICsDriverService {
             driver.setUserId(rd.getData());
             driverDao.updateById(driver);
 
-            //判断该司机是否已绑定
-            DriverVehicleCon vehicleCon = driverVehicleConDao.selectOne(new QueryWrapper<DriverVehicleCon>().lambda()
-                    .eq(driver.getId() != null,DriverVehicleCon::getDriverId, driver.getId()));
             //车牌号不为空
-            if(StringUtils.isNotBlank(dto.getPlateNo()) && vehicleCon == null){
+            if(StringUtils.isNotBlank(dto.getPlateNo()) && dto.getVehicleId() != null){
                 //保存司机与车辆关系
                 DriverVehicleCon dvc = new DriverVehicleCon();
                 dvc.setVehicleId(dto.getVehicleId());

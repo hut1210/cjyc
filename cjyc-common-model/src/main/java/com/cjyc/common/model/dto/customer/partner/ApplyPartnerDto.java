@@ -60,7 +60,7 @@ public class ApplyPartnerDto implements Serializable {
 
     @ApiModelProperty(value = "银行账号",required = true)
     @NotBlank(message = "银行账号不能为空")
-    @Pattern(regexp = RegexConstant.BINK_CARD,message = "银行卡号格式不正确")
+    @Pattern(regexp = RegexConstant.BANK_CARD,message = "银行卡号格式不正确")
     private String cardNo;
 
     @ApiModelProperty(value = "开户行名称",required = true)

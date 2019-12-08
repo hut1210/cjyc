@@ -1,9 +1,12 @@
 package com.cjyc.common.system.service;
 
+import com.cjyc.common.model.dto.CarrierVehicleDto;
 import com.cjyc.common.model.dto.FreeDto;
 import com.cjyc.common.model.dto.KeywordDto;
+import com.cjyc.common.model.dto.driver.mine.AppCarrierVehicleDto;
 import com.cjyc.common.model.dto.driver.mine.CarrierVehicleNoDto;
 import com.cjyc.common.model.dto.web.vehicle.FreeVehicleDto;
+import com.cjyc.common.model.entity.Vehicle;
 import com.cjyc.common.model.vo.FreeVehicleVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.mine.CarrierVehicleVo;
@@ -47,4 +50,26 @@ public interface ICsVehicleService {
      * @return
      */
     ResultVo<List<FreeVehicleVo>> findCarrierVehicleById(FreeVehicleDto dto);
+
+    /**
+     * 验证司机与车辆之间关系
+     * @return
+     */
+    boolean verifyDriverVehicle(Long driverId,Long vehicleId);
+
+    /**
+     * 封装运力
+     * @param dto
+     * @param appDto
+     * @param veh
+     */
+    void saveTransport(CarrierVehicleDto dto, AppCarrierVehicleDto appDto, Vehicle veh);
+
+    /**
+     * 更新运力
+     * @param dto
+     * @param appDto
+     * @param veh
+     */
+    void updateTransport(CarrierVehicleDto dto, AppCarrierVehicleDto appDto, Vehicle veh);
 }

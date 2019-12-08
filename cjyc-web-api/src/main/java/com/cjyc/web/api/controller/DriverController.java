@@ -60,7 +60,7 @@ public class DriverController {
 
     @ApiOperation(value = "根据id进行审核通过/拒绝/冻结解冻")
     @PostMapping(value = "/verifyDriver")
-    public ResultVo verifyDriver(@RequestBody OperateDto dto){
+    public ResultVo verifyDriver(@Validated @RequestBody OperateDto dto){
         return driverService.verifyDriver(dto);
     }
 

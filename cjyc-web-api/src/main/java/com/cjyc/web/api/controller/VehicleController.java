@@ -35,19 +35,19 @@ public class VehicleController {
 
     @ApiOperation(value = "新增运输车辆")
     @PostMapping(value = "/saveVehicle")
-    public ResultVo saveVehicle(@RequestBody VehicleDto dto){
+    public ResultVo saveVehicle(@Validated @RequestBody VehicleDto dto){
         return vehicleService.saveVehicle(dto);
     }
 
     @ApiOperation(value = "根据条件查询运输车辆信息")
     @PostMapping(value = "/findVehicle")
-    public ResultVo<PageVo<VehicleVo>> findVehicle(@RequestBody SelectVehicleDto dto){
+    public ResultVo<PageVo<VehicleVo>> findVehicle(@Validated @RequestBody SelectVehicleDto dto){
         return vehicleService.findVehicle(dto);
     }
 
     @ApiOperation(value = "删除(如果车辆与司机绑定关系则先解除关系后删除车辆，如果没有绑定关系则直接删除车辆)")
     @PostMapping(value = "/removeVehicle")
-    public ResultVo removeVehicle(@RequestBody RemoveVehicleDto dto){
+    public ResultVo removeVehicle(@Validated @RequestBody RemoveVehicleDto dto){
         return vehicleService.removeVehicle(dto);
     }
 

@@ -114,6 +114,7 @@
             dd.id_card_front_img AS idCardFrontImg,
             dd.id_card_back_img AS idCardBackImg,
             dd.driver_licence_front_img AS driverLicenceFrontImg,
+            dd.driver_licence_back_img AS driverLicenceBackImg,
             dd.travel_licence_front_img AS travelLicenceFrontImg,
             dd.taxi_licence_front_img AS taxiLicenceFrontImg,
             dd.qualifi_cert_front_img AS qualifiCertFrontImg,
@@ -156,7 +157,7 @@
             <if test="mode != null">
                 and  dcdc.mode = #{mode}
             </if>
-            and  dc.type = 1 and dd.identity = 0
+            and  dc.type = 1 and dd.identity = 0 group by dd.phone
         </where>
     </select>
 
@@ -191,7 +192,7 @@
         LEFT JOIN d_driver dd ON dd.id = dcdc.driver_id
         LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
         LEFT JOIN s_bank_card_bind sbcb ON sbcb.user_id = dc.id
-          WHERE
+      WHERE
             dc.id = #{carrierId}
     </select>
 
