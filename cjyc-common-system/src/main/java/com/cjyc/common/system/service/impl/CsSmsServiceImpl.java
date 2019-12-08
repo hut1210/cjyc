@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
-public class ICsSmsServiceImpl implements ICsSmsService {
+public class CsSmsServiceImpl implements ICsSmsService {
 
     @Resource
     private RedisUtils redisUtils;

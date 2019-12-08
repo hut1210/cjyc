@@ -39,6 +39,6 @@ public class CarrierVehicleDto implements Serializable {
     @ApiModelProperty("司机手机号")
     private String phone;
 
-    @ApiModelProperty("承运方式：2 : 代驾  3 : 干线   4：拖车")
+    @ApiModelProperty("承运方式：2 : 代驾  3 : 干线 4：拖车")
     private Integer mode;
 }
