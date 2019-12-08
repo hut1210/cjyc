@@ -511,6 +511,7 @@ public class PingPayServiceImpl implements IPingPayService {
             resVo.setIsNeedPay(isNeedPay);
             resVo.setAmount(amount);
             resVo.setOrderCarNos(orderCarNos);
+            resVo.setOrderNo(order.getNo());
             return BaseResultUtil.success(resVo);
         } finally {
             if(addLock && isNeedPay == 0){
@@ -557,6 +558,7 @@ public class PingPayServiceImpl implements IPingPayService {
         mde.setSourceNos(join);
         mde.setLoginId(reqDto.getLoginId().toString());
         mde.setLoginName(reqDto.getLoginName());
+        mde.setSourceMainNo(resultVo.getData().getOrderNo());
         pm.setMetaDataEntiy(mde);
         // 备注：订单号
         pm.setDescription("韵车订单车辆号：" + join);

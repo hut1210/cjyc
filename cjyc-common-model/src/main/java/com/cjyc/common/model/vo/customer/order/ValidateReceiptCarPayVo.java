@@ -11,4 +11,5 @@ public class ValidateReceiptCarPayVo {
     private Integer isNeedPay;
     private BigDecimal amount;
     private List<String> orderCarNos;
+    private String orderNo;
 }
