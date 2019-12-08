@@ -11,7 +11,9 @@ import com.cjyc.common.model.vo.web.task.ListByWaybillTaskVo;
 import com.cjyc.common.model.vo.web.task.TaskVo;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -82,4 +84,6 @@ public interface ITaskDao extends BaseMapper<Task> {
     int countByTaskIdAndWaybillCarId(@Param("taskId") Long taskId, @Param("waybillCarId") Long waybillCarId);
 
     Task findByWaybillCarId(Long waybillCarId);
+
+    List<Task> findListByWaybillCarIds(@Param("collection") Collection<Long> waybillCarIdSet);
 }

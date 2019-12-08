@@ -1135,4 +1135,5 @@ public class RedisUtils {
 	public Cursor<TypedTuple<String>> zScan(String key, ScanOptions options) {
 		return redisTemplate.opsForZSet().scan(key, options);
 	}
+
 }

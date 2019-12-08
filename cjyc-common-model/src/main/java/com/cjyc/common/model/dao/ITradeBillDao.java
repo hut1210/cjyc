@@ -2,6 +2,7 @@ package com.cjyc.common.model.dao;
 
 import com.cjyc.common.model.entity.TradeBill;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cjyc.common.model.vo.customer.bill.TradeBillVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.math.BigDecimal;
@@ -32,4 +33,8 @@ public interface ITradeBillDao extends BaseMapper<TradeBill> {
     List<TradeBill> getAllExpireTradeBill();
 
     BigDecimal getAmountByOrderCarIds(String orderCarIds);
+
+    int updateForPaySuccess(@Param("no") String no, @Param("tradeTime") Long tradeTime);
+
+    TradeBillVo findVoByNo(String no);
 }

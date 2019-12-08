@@ -18,4 +18,13 @@ public enum UserTypeEnum {
         this.name = name;
         this.code = code;
     }
+
+    public static UserTypeEnum valueOf(int code) {
+        for (UserTypeEnum userTypeEnum : values()) {
+            if(userTypeEnum.code == code){
+                return userTypeEnum;
+            }
+        }
+        throw new IllegalArgumentException("No matching constant for [" + code + "]");
+    }
 }

@@ -2,6 +2,10 @@ package com.cjyc.common.system.service.impl;
 
 import com.cjkj.common.redis.lock.RedisDistributedLock;
 import com.cjyc.common.model.dto.customer.order.ReceiptBatchDto;
+import com.cjyc.common.model.entity.defined.UserInfo;
+import com.cjyc.common.model.enums.log.OrderLogEnum;
+import com.cjyc.common.model.enums.order.OrderChangeTypeEnum;
+import com.cjyc.common.model.enums.order.OrderLogTypeEnum;
 import com.cjyc.common.model.exception.ParameterException;
 import com.cjyc.common.model.vo.FailResultReasonVo;
 import com.cjyc.common.model.dao.*;
@@ -53,6 +57,10 @@ public class CsTaskServiceImpl implements ICsTaskService {
     private IOrderDao orderDao;
     @Resource
     private IOrderCarDao orderCarDao;
+    @Resource
+    private ICsOrderLogService orderLogService;
+    @Resource
+    private ICsOrderCarLogService csOrderCarLogService;
     @Resource
     private IVehicleRunningDao vehicleRunningDao;
     @Resource
@@ -769,7 +777,71 @@ public class CsTaskServiceImpl implements ICsTaskService {
         resultReasonVo.setFailList(failCarNoSet);
         return BaseResultUtil.success(resultReasonVo);
     }
+    /**
+     * 车辆完成更新订单、运单、任务状态
+     * @author JPG
+     * @date 2019/12/8 12:06
+     * @param orderCarNoList 车辆编号列表
+     * @param userInfo
+     * @return
+     */
+    @Override
+    public void updateForCarFinish(List<String> orderCarNoList, UserInfo userInfo) {
 
+        //返回内容
+        long currentTimeMillis = System.currentTimeMillis();
+        Set<Long> orderIdSet = Sets.newHashSet();
+        Set<Long> waybillCarIdSet = Sets.newHashSet();
+        List<OrderCar> orderCarList = Lists.newArrayList();
+        List<OrderCar> list = orderCarDao.findListByNos(orderCarNoList);
+        for (OrderCar orderCar : list) {
+            if(orderCar.getState() >= OrderCarStateEnum.SIGNED.code){
+                continue;
+            }
+            //更新车辆状态
+            orderCarDao.updateForReceipt(orderCar.getId());
+            //处理车辆相关运单车辆
+            WaybillCar waybillCar = waybillCarDao.findWaitReceiptWaybill(orderCar.getId());
+            if(waybillCar == null){
+                continue;
+            }
+            waybillCarDao.updateForReceipt(waybillCar.getId());
+            //提取数据
+            orderIdSet.add(orderCar.getOrderId());
+            orderCarList.add(orderCar);
+            waybillCarIdSet.add(waybillCar.getId());
+        }
+        //处理订单
+        for (Long orderId : orderIdSet) {
+            int count = orderCarDao.countUnFinishByOrderId(orderId);
+            if (count <= 0) {
+                Order order = orderDao.selectById(orderId);
+                orderDao.updateForReceipt(orderId, currentTimeMillis);
+
+                //订单完成日志
+                orderLogService.asyncSave(order, OrderLogTypeEnum.RECEIPT,
+                        new Object[]{OrderLogEnum.RECEIPT.getInnerLog(), OrderLogEnum.RECEIPT.getOutterLog(), order.getNo()},
+                        userInfo);
+            }
+        }
+        //处理任务
+        List<Task> taskList = taskDao.findListByWaybillCarIds(waybillCarIdSet);
+        taskList.forEach(task -> {
+            int count = taskCarDao.countUnFinishByTaskId(task.getId());
+            if(count == 0){
+                //处理运单
+                int countw = waybillCarDao.countUnFinishByWaybillId(task.getWaybillId());
+                if(countw == 0){
+                    waybillDao.updateForReceipt(task.getWaybillId(), currentTimeMillis);
+                }
+            }
+        });
+
+        //车辆完成日志
+        csOrderCarLogService.asyncSave(orderCarList, OrderLogTypeEnum.RECEIPT,
+                new Object[]{},
+                userInfo);
+    }
 
     private String getFullAddress(String endProvince, String endCity, String endArea, String endAddress) {
        return  (endProvince == null ? "" : endProvince)

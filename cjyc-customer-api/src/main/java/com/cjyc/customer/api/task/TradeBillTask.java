@@ -22,7 +22,7 @@ public class TradeBillTask {
     @Autowired
     private ITransactionService transactionService;
 
-    @Scheduled(cron = "0/5 * * * * ?")
+    //@Scheduled(cron = "0/5 * * * * ?")
     //或直接指定时间间隔，例如：5秒
     //@Scheduled(fixedRate=5000)
     private void task() {

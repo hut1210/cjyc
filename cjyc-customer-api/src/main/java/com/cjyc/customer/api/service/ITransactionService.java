@@ -1,8 +1,8 @@
 package com.cjyc.customer.api.service;
 
 import com.cjyc.common.model.entity.TradeBill;
+import com.Pingxx.model.Order;
 import com.pingplusplus.model.Event;
-import com.pingplusplus.model.Order;
 
 import java.math.BigDecimal;
 
@@ -24,4 +24,6 @@ public interface ITransactionService {
     void cancelExpireTrade();
 
     BigDecimal getAmountByOrderCarIds(String orderCarIds);
+
+    int save(Object obj);
 }

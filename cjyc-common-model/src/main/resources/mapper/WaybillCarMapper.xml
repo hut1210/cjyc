@@ -830,12 +830,11 @@
     <select id="findWaitReceiptWaybill" resultType="com.cjyc.common.model.entity.WaybillCar">
         select
         wc.*
-        from w_waybill w
-        join w_waybill_car wc on wc.waybill_id = w.id
-        where wc.order_car_id = #{orderId}
-        and wc.state = 90
-        and w.state &lt; 100
-        and receipt_flag = 1
+        from w_order o
+        join w_order_car oc on oc.order_id = o.id
+        join w_waybill_car wc on wc.order_car_id = oc.id
+        where wc.order_car_id = #{orderCarId}
+        and o.back_contact_phone = wc.unload_link_phone
     </select>
 
 </mapper>

@@ -14,10 +14,13 @@ import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.exception.ParameterException;
 import com.cjyc.common.model.exception.ServerException;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.vo.FailResultReasonVo;
+import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.entity.defined.FullCity;
 import com.cjyc.common.system.service.*;
 import com.cjyc.common.system.util.RedisUtils;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -616,7 +619,6 @@ public class CsOrderServiceImpl implements ICsOrderService {
         // TODO 日志
         return BaseResultUtil.success();
     }
-
 
     /**
      * 拷贝订单开始城市

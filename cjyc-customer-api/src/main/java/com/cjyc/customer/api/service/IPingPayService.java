@@ -1,21 +1,19 @@
 package com.cjyc.customer.api.service;
 
+import com.Pingxx.model.Order;
 import com.cjyc.common.model.dto.customer.order.CarCollectPayDto;
 import com.cjyc.common.model.dto.customer.order.CarPayStateDto;
 import com.cjyc.common.model.dto.customer.order.ReceiptBatchDto;
 import com.cjyc.common.model.dto.customer.pingxx.PrePayDto;
+import com.cjyc.common.model.dto.customer.pingxx.SweepCodeDto;
 import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.ValidateReceiptCarPayVo;
-import com.cjyc.common.model.dto.customer.pingxx.SweepCodeDto;
-import com.cjyc.common.system.entity.PingCharge;
 import com.cjyc.customer.api.dto.OrderModel;
 import com.pingplusplus.exception.*;
 import com.pingplusplus.model.Charge;
-import com.pingplusplus.model.Order;
 
 import java.io.FileNotFoundException;
-import java.util.Map;
 
 /**
  * @Author:Hut
@@ -31,7 +29,7 @@ public interface IPingPayService {
     Charge sweepSalesmanCode(OrderModel om) throws RateLimitException, APIException, ChannelException,InvalidRequestException,
             APIConnectionException, AuthenticationException,FileNotFoundException;
 
-    PingCharge prePay(PrePayDto reqDto);
+    Order prePay(PrePayDto reqDto);
 
     void cancelOrderRefund(String orderCode);
 

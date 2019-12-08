@@ -1,5 +1,7 @@
 package com.cjyc.customer.api.service.impl;
 
+import com.Pingxx.model.MetaDataEntiy;
+import com.Pingxx.model.PingOrderModel;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.nacos.client.utils.StringUtils;
 import com.cjkj.common.redis.lock.RedisDistributedLock;
@@ -18,11 +20,15 @@ import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.exception.CommonException;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.ValidateReceiptCarPayVo;
-import com.cjyc.common.system.entity.PingCharge;
+import com.Pingxx.model.Order;
+import com.Pingxx.model.OrderRefund;
+import com.cjyc.common.system.service.ICsPingxxService;
 import com.cjyc.common.system.service.ICsSendNoService;
+import com.cjyc.common.system.util.RedisLock;
 import com.cjyc.common.system.util.RedisUtils;
 import com.cjyc.customer.api.config.PingProperty;
 import com.cjyc.customer.api.dto.OrderModel;
@@ -30,12 +36,10 @@ import com.cjyc.customer.api.service.IPingPayService;
 import com.cjyc.customer.api.service.ITransactionService;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.pingplusplus.Pingpp;
 import com.pingplusplus.exception.*;
 import com.pingplusplus.model.Charge;
-import com.pingplusplus.model.Order;
-import com.pingplusplus.model.OrderRefund;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,10 +51,11 @@ import org.springframework.util.ResourceUtils;
 import javax.annotation.Resource;
 import java.io.FileNotFoundException;
 import java.math.BigDecimal;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author:Hut
@@ -63,12 +68,14 @@ public class PingPayServiceImpl implements IPingPayService {
     @Resource
     private IOrderDao orderDao;
     @Resource
+    private ICsPingxxService csPingxxService;
+    @Resource
     private IOrderCarDao orderCarDao;
     @Resource
     private ICsSendNoService csSendNoService;
 
     @Resource
-    private RedisDistributedLock redisLock;
+    private RedisLock redisLock;
 
     @Autowired
     private RedisUtils redisUtils;
@@ -77,29 +84,33 @@ public class PingPayServiceImpl implements IPingPayService {
     private ITransactionService transactionService;
 
     @Override
-    public PingCharge prePay(PrePayDto reqDto) {
+    public Order prePay(PrePayDto reqDto) {
 
-
-        HashMap<String, Object> metaData = Maps.newHashMap();
-        metaData.put("clientType", ClientEnum.APP_CUSTOMER.code);
-        metaData.put("chargeType", 1);
-        metaData.put("orderNo", reqDto.getOrderNo());
-        metaData.put("loginId", reqDto.getUid());
-
-        PingCharge charge = new PingCharge();
-        //charge.setAmount();
-        charge.setCurrency("cny");
-        charge.setLivemode(false);
-        charge.setObject("charge");
-        charge.setMetadata(metaData);
-        charge.setChannel(reqDto.getChannel());
-        charge.setApp(PingProperty.customerAppId);
-        charge.setClientIp(reqDto.getIp());
-        charge.setSubject("预付款");
-        charge.setBody("订单预付款");
-
-        //charge.c
-        return null;
+        PingOrderModel pm = new PingOrderModel();
+        pm.setAmount(1000);
+        pm.setCurrency("cny");
+        pm.setMerchantOrderNo(csSendNoService.getNo(SendNoTypeEnum.RECEIPT));
+        pm.setLivemode(false);
+        pm.setObject("charge");
+        pm.setApp(PingProperty.customerAppId);
+        pm.setClientIp(reqDto.getIp());
+        pm.setSubject("预付款");
+        pm.setBody("订单预付款");
+        //meta信息
+        MetaDataEntiy metaDataEntiy = new MetaDataEntiy();
+        metaDataEntiy.setChannel(reqDto.getChannel());
+        metaDataEntiy.setClientId(String.valueOf(ClientEnum.APP_CUSTOMER.code));
+        metaDataEntiy.setChargeType("1");
+        metaDataEntiy.setSourceNos(reqDto.getOrderNo());
+        metaDataEntiy.setLoginId(reqDto.getUid());
+        pm.setMetaDataEntiy(metaDataEntiy);
+        Order pingOrder = null;
+        try {
+            pingOrder = csPingxxService.payOrderByModel(pm);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return pingOrder;
     }
     
     @Override
@@ -421,6 +432,7 @@ public class PingPayServiceImpl implements IPingPayService {
     @Override
     public ResultVo<ValidateReceiptCarPayVo> validateCarPayState(CarPayStateDto paramsDto, boolean addLock) {
 
+
         List<String> orderCarNosList = paramsDto.getOrderCarNos();
         List<com.cjyc.common.model.entity.Order> list = orderDao.findListByCarNos(orderCarNosList);
         if (CollectionUtils.isEmpty(list)) {
@@ -435,111 +447,130 @@ public class PingPayServiceImpl implements IPingPayService {
         int isNeedPay = 0; //0不需要支付，1支付
         BigDecimal amount = BigDecimal.ZERO;
         List<String> orderCarNos = Lists.newArrayList();
-        List<OrderCar> carList = orderCarDao.findListByNos(orderCarNosList);
-        if(CollectionUtils.isEmpty(carList)){
-            return BaseResultUtil.fail("至少包含一辆车");
-        }
-        for (OrderCar orderCar : carList) {
-            if (orderCar == null || orderCar.getNo() == null) {
-                return BaseResultUtil.fail("订单车辆信息丢失");
+        Set<String> lockKeySet = Sets.newHashSet();
+        try {
+            List<OrderCar> carList = orderCarDao.findListByNos(orderCarNosList);
+            if(CollectionUtils.isEmpty(carList)){
+                return BaseResultUtil.fail("至少包含一辆车");
             }
-            if (orderCar.getState() >= OrderCarStateEnum.SIGNED.code) {
-                return BaseResultUtil.fail("订单车辆{0}已签收过，请刷新后重试", orderCar.getNo());
+            for (OrderCar orderCar : carList) {
+                if (orderCar == null || orderCar.getNo() == null) {
+                    return BaseResultUtil.fail("订单车辆信息丢失");
+                }
+                if (orderCar.getState() >= OrderCarStateEnum.SIGNED.code) {
+                    return BaseResultUtil.fail("订单车辆{0}已签收过，请刷新后重试", orderCar.getNo());
+                }
+
+                if(addLock){
+                    String lockKey = RedisKeys.getWlCollectPayLockKey(orderCar.getNo());
+                    String value = redisUtils.get(lockKey);
+                    if (value != null && !value.equals(paramsDto.getLoginId().toString())) {
+                        return BaseResultUtil.fail("订单车辆{0}正在支付中", orderCar.getNo());
+                    }
+                    if (value != null) {
+                        redisUtils.delete(lockKey);
+                    }
+                    if (!redisLock.lock(lockKey, paramsDto.getLoginId(), 1800000, 100, 300)) {
+                        return BaseResultUtil.fail("锁定车辆失败");
+                    }
+                    lockKeySet.add(lockKey);
+                }
+
+                //是否需要支付
+                if (PayModeEnum.PERIOD.code == order.getPayType()) {
+                    //账期
+                    isNeedPay = 0;
+                } else if (PayModeEnum.PREPAY.code == order.getPayType()) {
+                    //预付
+                    if (PayStateEnum.PAID.code != orderCar.getWlPayState()) {
+                        return BaseResultUtil.fail("支付车辆{0}支付状态异常，预付未支付", orderCar.getNo());
+                    }
+                    isNeedPay = 0;
+                } else {
+                    //时付
+                    if (PayStateEnum.PAID.code == orderCar.getWlPayState()) {
+                        return BaseResultUtil.fail("订单车辆{0}已支付过，请刷新后重试", orderCar.getNo());
+                    }
+                    isNeedPay = 1;
+                    if(CustomerTypeEnum.COOPERATOR.code == order.getCustomerType()){
+                        amount = amount.add(orderCar.getTotalFee());
+                    }else{
+                        amount = amount.add(orderCar.getTotalFee()).subtract(orderCar.getCouponOffsetFee());
+                    }
+                }
+                orderCarNos.add(orderCar.getNo());
             }
-
-            if(addLock){
-                String lockKey = RedisKeys.getWlCollectPayLockKey(orderCar.getNo());
-                String value = redisUtils.get(lockKey);
-
-                if (value != null && !value.equals(paramsDto.getLoginId().toString())) {
-                    return BaseResultUtil.fail("订单车辆{0}正在支付中", orderCar.getNo());
-                }
-                if (value != null) {
-                    redisUtils.delete(lockKey);
-                }
-                if (!redisLock.lock(lockKey, 1800000, 100, 300)) {
-                    return BaseResultUtil.fail("锁定车辆失败");
-                }
+            if(CollectionUtils.isEmpty(orderCarNos)){
+                return BaseResultUtil.fail("至少包含一辆车编号");
             }
-
-            //是否需要支付
-            if (PayModeEnum.PERIOD.code == order.getPayType()) {
-                //账期
+            if(amount.compareTo(BigDecimal.ZERO) <= 0){
                 isNeedPay = 0;
-            } else if (PayModeEnum.PREPAY.code == order.getPayType()) {
-                //预付
-                if (PayStateEnum.PAID.code != orderCar.getWlPayState()) {
-                    return BaseResultUtil.fail("支付车辆{0}支付状态异常，预付未支付", orderCar.getNo());
-                }
-                isNeedPay = 0;
-            } else {
-                //时付
-                if (PayStateEnum.PAID.code == orderCar.getWlPayState()) {
-                    return BaseResultUtil.fail("订单车辆{0}已支付过，请刷新后重试", orderCar.getNo());
-                }
-                isNeedPay = 1;
-                if(CustomerTypeEnum.COOPERATOR.code == order.getCustomerType()){
-                    amount = amount.add(orderCar.getTotalFee());
-                }else{
-                    amount = amount.add(orderCar.getTotalFee()).subtract(orderCar.getCouponOffsetFee());
-                }
             }
-            orderCarNos.add(orderCar.getNo());
-        }
-        if(CollectionUtils.isEmpty(orderCarNos)){
-            return BaseResultUtil.fail("至少包含一辆车编号");
-        }
 
-        ValidateReceiptCarPayVo resVo = new ValidateReceiptCarPayVo();
-        resVo.setIsNeedPay(isNeedPay);
-        resVo.setAmount(amount);
-        resVo.setOrderCarNos(Joiner.on(",").join(orderCarNos));
-        return BaseResultUtil.success(resVo);
+            ValidateReceiptCarPayVo resVo = new ValidateReceiptCarPayVo();
+            resVo.setIsNeedPay(isNeedPay);
+            resVo.setAmount(amount);
+            resVo.setOrderCarNos(orderCarNos);
+            return BaseResultUtil.success(resVo);
+        } finally {
+            if(addLock && isNeedPay == 0){
+                //解锁
+                redisLock.releaseLock(lockKeySet);
+            }
+        }
     }
 
     @Override
     public ResultVo carCollectPay(CarCollectPayDto reqDto) {
-        OrderModel om = new OrderModel();
-        com.pingplusplus.model.Order order = new com.pingplusplus.model.Order();
-
         //验证车辆是否支付
         CarPayStateDto carPayStateDto = new CarPayStateDto();
         carPayStateDto.setLoginId(reqDto.getLoginId());
-        //carPayStateDto.setOrderCarNos(reqDto.getOrderCarNos());
+        carPayStateDto.setOrderCarNos(reqDto.getOrderCarNos());
         ResultVo<ValidateReceiptCarPayVo> resultVo = validateCarPayState(carPayStateDto, true);
         if(ResultEnum.SUCCESS.getCode() != resultVo.getCode()){
             return BaseResultUtil.fail(resultVo.getMsg());
         }
         BigDecimal amount = resultVo.getData().getAmount();
         if(amount.compareTo(BigDecimal.ZERO) <= 0){
-            List<String> lockKeys = RedisKeys.getWlCollectPayLockKeys(reqDto.getOrderCarNos());
-            redisUtils.delete(lockKeys);
             return BaseResultUtil.fail("无需支付");
         }
 
-        om.setPingAppId(PingProperty.customerAppId);
-        om.setClientIp(reqDto.getIp());
-        om.setChannel(reqDto.getChannel());
-        om.setOrderNo(csSendNoService.getNo(SendNoTypeEnum.RECEIPT));
-        om.setUid(String.valueOf(reqDto.getLoginId()));
-        om.setAmount(amount);
-        om.setSubject("客户签收支付");
-        om.setBody("客户批量签收");
-        om.setChargeType(String.valueOf(ChargeTypeEnum.COLLECT_PAY.getCode()));
-        om.setClientType(String.valueOf(ClientEnum.APP_CUSTOMER.code));
+        //组装支付数据
+        PingOrderModel pm = new PingOrderModel();
+        Order order = null;
+
+        pm.setApp(PingProperty.customerAppId);
+        pm.setMerchantOrderNo(csSendNoService.getNo(SendNoTypeEnum.RECEIPT));
+        pm.setObject("order");
+        pm.setClientIp(reqDto.getIp());
+        pm.setUid(String.valueOf(reqDto.getLoginId()));
+        pm.setAmount(amount.intValue());
+        pm.setSubject("客户签收支付");
+        pm.setBody("客户批量签收");
+        pm.setTimeExpire(LocalDateTimeUtil.getMillisByLDT(LocalDateTimeUtil.plus(LocalDateTime.now(), 30, ChronoUnit.MINUTES)));
+
+        MetaDataEntiy mde = new MetaDataEntiy();
+        mde.setChannel(reqDto.getChannel());
+        mde.setClientId(String.valueOf(ClientEnum.APP_CUSTOMER.code));
+        mde.setChargeType(String.valueOf(ChargeTypeEnum.COLLECT_PAY.getCode()));
+        String join = Joiner.on(",").join(reqDto.getOrderCarNos());
+        mde.setSourceNos(join);
+        mde.setLoginId(reqDto.getLoginId().toString());
+        mde.setLoginName(reqDto.getLoginName());
+        pm.setMetaDataEntiy(mde);
         // 备注：订单号
-        om.setDescription("韵车订单车辆号：" + resultVo.getData().getOrderCarNos());
+        pm.setDescription("韵车订单车辆号：" + join);
 
         try {
-            order = createOrder(om);
-            if(order != null){
-                order = payOrder(om.getPingAppId(),om.getChannel(), om.getAmount(), order.getId());
-            }
+            order = csPingxxService.payOrderByModel(pm);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
-        transactionService.saveTransactions(order, "0");
-        return BaseResultUtil.success(order == null ? null : JSON.parseObject(order.toString()));
+        if(order == null){
+            BaseResultUtil.fail("操作失败");
+        }
+        transactionService.save(order);
+        return BaseResultUtil.success(JSON.parseObject(order.toString()));
     }
     @Override
     public ResultVo<ResultReasonVo> receiptBatch(ReceiptBatchDto reqDto) {

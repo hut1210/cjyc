@@ -9,7 +9,8 @@ public enum OrderCarLogEnum {
     /***/
     SUBMIT("客户提交日志", "", ""),
     COMMIT("业务员提交日志", "", ""),
-    CHECK("客户提交日志", "", "");
+    CHECK("客户提交日志", "", ""),
+    RECEPIT("客户签收日志", "车辆{0}, 已被签收", "车辆{0}, 已被签收");
 
     private String name;
     private String innerLog;

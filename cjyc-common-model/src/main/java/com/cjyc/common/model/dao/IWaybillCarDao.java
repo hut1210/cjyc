@@ -94,5 +94,5 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
 
     int updateForReceipt(Long id);
 
-    WaybillCar findWaitReceiptWaybill(Long orderId);
+    WaybillCar findWaitReceiptWaybill(Long orderCarId);
 }

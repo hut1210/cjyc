@@ -7,7 +7,8 @@ public enum OrderLogEnum {
     COMMITTED("业务员提交日志", "", ""),
     COMMITTED_self_pick("业务员提交日志", "", ""),
 
-    WAIT_PREPAY("待付款", "订单确认完成，请支付运费", "订单确认完成，待预付物流费")/*,
+    WAIT_PREPAY("待付款", "订单确认完成，请支付运费", "订单确认完成，待预付物流费"),
+    RECEIPT("签收", "订单{0}, 已全部签收", "订单{0}, 已所有车辆全部签收")/*,
     CHECKED("已确认",25),
     TRANSPORTING("运输中",55),
     WAIT_PAY("待付款",88),

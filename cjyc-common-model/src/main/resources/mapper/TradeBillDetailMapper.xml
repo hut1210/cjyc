@@ -13,5 +13,12 @@
     <sql id="Base_Column_List">
         id, trade_bill_id, source_no
     </sql>
+    <insert id="saveBatch">
+       insert into f_trade_bill_detail (trade_bill_id, source_no)
+       values
+       <foreach collection="list" index="index" item="item" separator=",">
+           (#{tradeBillId}, #{item})
+       </foreach>
+    </insert>
 
 </mapper>

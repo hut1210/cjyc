@@ -286,6 +286,15 @@
         join w_task_car tc on tc.task_id = t.id
         where tc.waybill_car_id = #{waybillCarId}
     </select>
+    <select id="findListByWaybillCarIds" resultType="com.cjyc.common.model.entity.Task">
+        select t.*
+        from w_task t
+        join w_task_car tc on tc.task_id = t.id
+        where tc.waybill_car_id in
+        <foreach collection="collection" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
 
 
 </mapper>

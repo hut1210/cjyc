@@ -35,9 +35,6 @@ public class TradeBill implements Serializable {
     @ApiModelProperty(value = "交易单号")
     private String no;
 
-    @ApiModelProperty(value = "ping++流水号")
-    private String pingPayNo;
-
     @ApiModelProperty(value = "ping++支付订单ID")
     private String pingPayId;
 
@@ -65,7 +62,7 @@ public class TradeBill implements Serializable {
     @ApiModelProperty(value = "付款人姓名")
     private String payerName;
 
-    @ApiModelProperty(value = "交易状态： 0未支付， 2支付成功，4支付失败")
+    @ApiModelProperty(value = "交易状态： 0未支付，1支付中， 2支付成功，3支付超时，4支付失败")
     private Integer state;
 
     @ApiModelProperty(value = "支付渠道")
@@ -86,6 +83,9 @@ public class TradeBill implements Serializable {
     @ApiModelProperty(value = "事件类型")
     private String eventType;
 
+    @ApiModelProperty(value = "来源单主单编号")
+    private String sourceMainNo;
+
     @ApiModelProperty(value = "交易备注")
     private String remark;
 
@@ -94,6 +94,5 @@ public class TradeBill implements Serializable {
 
     @ApiModelProperty(value = "交易时间")
     private Long tradeTime;
-
 
 }

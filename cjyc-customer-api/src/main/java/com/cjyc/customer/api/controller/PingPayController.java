@@ -1,5 +1,6 @@
 package com.cjyc.customer.api.controller;
 
+import com.Pingxx.model.Order;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.nacos.client.utils.StringUtils;
 import com.cjkj.common.utils.IPUtil;
@@ -7,23 +8,23 @@ import com.cjyc.common.model.dto.customer.order.CarCollectPayDto;
 import com.cjyc.common.model.dto.customer.order.CarPayStateDto;
 import com.cjyc.common.model.dto.customer.order.ReceiptBatchDto;
 import com.cjyc.common.model.dto.customer.pingxx.PrePayDto;
-import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.dto.customer.pingxx.SweepCodeDto;
-import com.cjyc.common.model.enums.ClientEnum;
-import com.cjyc.common.model.enums.ResultEnum;
+import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.ValidateReceiptCarPayVo;
-import com.cjyc.common.system.entity.PingCharge;
-import com.cjyc.common.system.service.ICsAdminService;
 import com.cjyc.common.system.service.ICsCustomerService;
+import com.cjyc.common.system.service.ICsPingxxService;
 import com.cjyc.customer.api.config.PingProperty;
 import com.cjyc.customer.api.dto.OrderModel;
 import com.cjyc.customer.api.service.IPingPayService;
 import com.cjyc.customer.api.service.ITransactionService;
-import com.pingplusplus.model.*;
+import com.pingplusplus.model.Charge;
+import com.pingplusplus.model.Event;
+import com.pingplusplus.model.EventData;
+import com.pingplusplus.model.Webhooks;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +41,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.security.*;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.Map;
 
 /**
  * @Author:Hut
@@ -61,20 +61,22 @@ public class PingPayController {
 
     @Resource
     private ICsCustomerService csCustomerService;
+    @Resource
+    private ICsPingxxService csPingxxService;
 
-    @ApiOperation("付款")
+/*    @ApiOperation("付款")
     @PostMapping("/order/pre/pay")
     public ResultVo pay(HttpServletRequest request,@RequestBody PrePayDto reqDto){
         reqDto.setIp(IPUtil.getIpAddr(request));
-        PingCharge charge;
+        Order pingOrder;
         try{
-            charge = pingPayService.prePay(reqDto);
+            pingOrder = pingPayService.prePay(reqDto);
         }catch (Exception e){
             log.error(e.getMessage(),e);
             return BaseResultUtil.fail("预付款异常");
         }
-        return BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(), charge.toString());
-    }
+        return BaseResultUtil.success(JSONObject.parseObject(pingOrder.toString()));
+    }*/
 
     @ApiOperation("付款")
     @PostMapping("/pay")
@@ -266,10 +268,10 @@ public class PingPayController {
 
 
     /**
-     * 验证支付状态
+     * 签收-验证支付状态
      * @author JPG
      */
-    @ApiOperation(value = "验证支付状态")
+    @ApiOperation(value = "签收-验证支付状态")
     @PostMapping(value = "/receipt/car/pay/state/validate")
     public ResultVo<ValidateReceiptCarPayVo> validateCarPayState(@RequestBody CarPayStateDto reqDto) {
         Customer customer = csCustomerService.validate(reqDto.getLoginId());
@@ -277,10 +279,10 @@ public class PingPayController {
         return pingPayService.validateCarPayState(reqDto, false);
     }
     /**
-     * 按车辆申请支付
+     * 签收-按车辆申请支付
      * @author JPG
      */
-    @ApiOperation(value = "到付申请支付")
+    @ApiOperation(value = "签收-按车辆申请支付")
     @PostMapping(value = "/receipt/car/apply/pay")
     public ResultVo carCollectPay(HttpServletRequest request, @RequestBody CarCollectPayDto reqDto) {
         Customer customer = csCustomerService.validate(reqDto.getLoginId());
@@ -288,11 +290,12 @@ public class PingPayController {
         reqDto.setIp(IPUtil.getIpAddr(request));
         return pingPayService.carCollectPay(reqDto);
     }
+
     /**
-     * 签收(已支付过)-客户
+     * 签收-无需支付
      * @author JPG
      */
-    @ApiOperation(value = "签收")
+    @ApiOperation(value = "签收-无需支付")
     @PostMapping(value = "/receipt/car")
     public ResultVo<ResultReasonVo> receiptBatch(@RequestBody ReceiptBatchDto reqDto) {
         Customer customer = csCustomerService.validate(reqDto.getLoginId());
