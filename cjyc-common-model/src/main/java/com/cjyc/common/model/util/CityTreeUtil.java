@@ -19,7 +19,7 @@ public class CityTreeUtil {
             for(CityTreeVo nodeTwo:cityTreeVos){
                 if(nodeOne.getParentCode().equals(nodeTwo.getCode())){
                     mark = true;
-                    if(nodeTwo.getCityVos()==null){
+                    if(nodeTwo.getCityVos() == null){
                         nodeTwo.setCityVos(new ArrayList<>());
                     }
                     nodeTwo.getCityVos().add(nodeOne);
