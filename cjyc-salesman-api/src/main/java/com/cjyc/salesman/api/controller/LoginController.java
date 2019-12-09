@@ -33,7 +33,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Api(tags = "业务员APP登录")
@@ -128,6 +130,7 @@ public class LoginController {
                 List<String> roleNameList = roleRd.getData().stream()
                         .map(r -> r.getRoleName()).collect(Collectors.toList());
                 List<String> salesmanRoleNameList = new ArrayList<>();
+                Set<String> btnSet = new HashSet<>();
                 List<Role> ycRoleList = csRoleService.getValidInnerRoleList();
                 roleNameList.forEach(name -> {
                     //判断是否有登录角色
@@ -139,6 +142,7 @@ public class LoginController {
                         }
                     }
                 });
+                salesmanRoleNameList.addAll(btnSet);
                 if (CollectionUtils.isEmpty(salesmanRoleNameList)) {
                     return ResultData.failed("此用户不可登录APP");
                 }else {
