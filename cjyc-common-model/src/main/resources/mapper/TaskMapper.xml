@@ -312,7 +312,7 @@
             w.type AS type,
             sum(car.freight_fee) AS freightFee
         FROM
-            ( SELECT task.id, task.waybill_id, task.waybill_no, task.guide_line,
+            ( SELECT task.id, task.waybill_id, task.no, task.guide_line,
             task.car_num,task.state,task.create_time,tc.waybill_car_id
             FROM w_task task
             LEFT JOIN w_task_car tc ON task.id = tc.task_id
@@ -334,7 +334,6 @@
                     AND (task.state = ${@com.cjyc.common.model.enums.task.TaskStateEnum@WAIT_LOAD.code}
                     OR task.state = ${@com.cjyc.common.model.enums.task.TaskStateEnum@TRANSPORTING.code})
                 </if>
-
                 <if test="startAddress != null and startAddress.trim() != ''">
                     and task.guide_line like concat('%',#{startAddress},'%')
                 </if>
