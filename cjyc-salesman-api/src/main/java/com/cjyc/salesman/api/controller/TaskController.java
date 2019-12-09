@@ -1,8 +1,10 @@
 package com.cjyc.salesman.api.controller;
 
+import com.cjyc.common.model.dto.driver.task.DetailQueryDto;
 import com.cjyc.common.model.dto.salesman.task.TaskQueryConditionDto;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.driver.task.TaskDetailVo;
 import com.cjyc.common.model.vo.salesman.task.TaskBillVo;
 import com.cjyc.salesman.api.service.ITaskService;
 import io.swagger.annotations.Api;
@@ -27,9 +29,31 @@ public class TaskController {
     @Autowired
     private ITaskService taskService;
 
-    @ApiOperation(value = "提送车列表分页查询")
+    /**
+     * 功能描述: 查询提送车列表分页
+     * @author liuxingxiang
+     * @date 2019/12/9
+     * @param dto
+     * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.vo.PageVo<com.cjyc.common.model.vo.salesman.task.TaskBillVo>>
+     */
+    @ApiOperation(value = "查询提送车列表分页")
     @PostMapping("/getCarryPage")
     public ResultVo<PageVo<TaskBillVo>> getCarryPage(@RequestBody @Validated TaskQueryConditionDto dto) {
        return taskService.getCarryPage(dto);
     }
+
+    /**
+     * 功能描述: 查询提送车任务详情
+     * @author liuxingxiang
+     * @date 2019/12/9
+     * @param dto
+     * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.vo.driver.task.TaskDetailVo>
+     */
+    @ApiOperation(value = "查询提送车任务详情")
+    @PostMapping("/getCarryDetail")
+    public ResultVo<TaskDetailVo> getCarryDetail(@RequestBody @Validated({DetailQueryDto.GetHistoryDetail.class}) DetailQueryDto dto) {
+        return taskService.getCarryDetail(dto);
+    }
+
+
 }
