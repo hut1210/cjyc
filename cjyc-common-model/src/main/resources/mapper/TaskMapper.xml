@@ -192,7 +192,7 @@
         select
             t.id as taskId,
             t.waybill_id as waybillId,
-            t.waybill_no as waybillNo,
+            t.no as waybillNo,
             t.guide_line as guideLine,
             t.car_num as carNum,
             t.complete_time as completeTime,
