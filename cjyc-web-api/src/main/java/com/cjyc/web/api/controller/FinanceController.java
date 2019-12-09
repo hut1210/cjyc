@@ -6,9 +6,7 @@ import com.cjyc.common.model.dto.web.finance.WaitQueryDto;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.finance.FinanceReceiptVo;
-import com.cjyc.common.model.vo.web.finance.FinanceVo;
-import com.cjyc.common.model.vo.web.finance.WaitInvoiceVo;
+import com.cjyc.common.model.vo.web.finance.*;
 import com.cjyc.web.api.service.IFinanceService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -79,14 +77,14 @@ public class FinanceController {
 
     @ApiOperation(value = "根据条件查询等待回款列表")
     @PostMapping(value = "/getWaitForBackList")
-    public ResultVo<PageVo<WaitInvoiceVo>> getWaitForBackList(@RequestBody WaitQueryDto waitInvoiceQueryDto){
+    public ResultVo<PageVo<WaitForBackVo>> getWaitForBackList(@RequestBody WaitQueryDto waitInvoiceQueryDto){
         return financeService.getWaitForBackList(waitInvoiceQueryDto);
     }
 
     @ApiOperation(value = "核销")
-    @PostMapping(value = "/writeoff")
-    public ResultVo writeoff(@RequestBody String serialNumber){
-        financeService.writeoff(serialNumber);
+    @PostMapping(value = "/writeOff")
+    public ResultVo writeOff(@RequestBody String serialNumber,@RequestBody String invoiceNo){
+        financeService.writeOff(serialNumber,invoiceNo);
         return BaseResultUtil.success();
     }
 
@@ -95,6 +93,18 @@ public class FinanceController {
     public ResultVo detail(@RequestBody String serialNumber){
         financeService.detail(serialNumber);
         return BaseResultUtil.success();
+    }
+
+    @ApiOperation(value = "根据条件查询已收款(账期)列表")
+    @PostMapping(value = "/getReceivableList")
+    public ResultVo<PageVo<ReceivableVo>> getReceivableList(@RequestBody WaitQueryDto waitInvoiceQueryDto){
+        return financeService.getReceivableList(waitInvoiceQueryDto);
+    }
+
+    @ApiOperation(value = "根据条件查询已收款(实付)列表")
+    @PostMapping(value = "/getPaymentList")
+    public ResultVo<PageVo<PaymentVo>> getPaymentList(@RequestBody FinanceQueryDto financeQueryDto){
+        return financeService.getPaymentList(financeQueryDto);
     }
 
 }

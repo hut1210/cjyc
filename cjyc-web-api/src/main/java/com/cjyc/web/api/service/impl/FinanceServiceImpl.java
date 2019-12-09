@@ -14,10 +14,7 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.RandomUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.finance.FinanceReceiptVo;
-import com.cjyc.common.model.vo.web.finance.FinanceVo;
-import com.cjyc.common.model.vo.web.finance.TrunkLineVo;
-import com.cjyc.common.model.vo.web.finance.WaitInvoiceVo;
+import com.cjyc.common.model.vo.web.finance.*;
 import com.cjyc.common.system.service.ICsSendNoService;
 import com.cjyc.web.api.service.IFinanceService;
 import com.github.pagehelper.PageHelper;
@@ -146,6 +143,8 @@ public class FinanceServiceImpl implements IFinanceService {
         invoiceReceipt.setSerialNumber(serialNumber);
         invoiceReceipt.setInvoiceNo(invoiceNo);
         invoiceReceipt.setState("2");
+        invoiceReceipt.setConfirmMan("");
+        invoiceReceipt.setConfirmTime(System.currentTimeMillis());
         invoiceReceiptDao.confirmSettlement(invoiceReceipt);
     }
 
@@ -167,23 +166,42 @@ public class FinanceServiceImpl implements IFinanceService {
     }
 
     @Override
-    public ResultVo<PageVo<WaitInvoiceVo>> getWaitForBackList(WaitQueryDto waitInvoiceQueryDto) {
+    public ResultVo<PageVo<WaitForBackVo>> getWaitForBackList(WaitQueryDto waitInvoiceQueryDto) {
         PageHelper.startPage(waitInvoiceQueryDto.getCurrentPage(), waitInvoiceQueryDto.getPageSize());
-        List<WaitInvoiceVo> waitInvoiceVoList = invoiceReceiptDao.getWaitForBackList(waitInvoiceQueryDto);
-        PageInfo<WaitInvoiceVo> pageInfo = new PageInfo<>(waitInvoiceVoList);
+        List<WaitForBackVo> waitInvoiceVoList = invoiceReceiptDao.getWaitForBackList(waitInvoiceQueryDto);
+        PageInfo<WaitForBackVo> pageInfo = new PageInfo<>(waitInvoiceVoList);
         return BaseResultUtil.success(pageInfo);
     }
 
     @Override
-    public void writeoff(String serialNumber) {
+    public void writeOff(String serialNumber,String invoiceNo) {
         InvoiceReceipt invoiceReceipt = new InvoiceReceipt();
         invoiceReceipt.setSerialNumber(serialNumber);
+        invoiceReceipt.setInvoiceNo(invoiceNo);
         invoiceReceipt.setState("3");
-        invoiceReceiptDao.writeoff(invoiceReceipt);
+        invoiceReceipt.setWriteOffMan("");
+        invoiceReceipt.setWriteOffTime(System.currentTimeMillis());
+        invoiceReceiptDao.writeOff(invoiceReceipt);
     }
 
     @Override
     public void detail(String serialNumber) {
 
+    }
+
+    @Override
+    public ResultVo<PageVo<ReceivableVo>> getReceivableList(WaitQueryDto waitInvoiceQueryDto) {
+        PageHelper.startPage(waitInvoiceQueryDto.getCurrentPage(), waitInvoiceQueryDto.getPageSize());
+        List<ReceivableVo> waitInvoiceVoList = invoiceReceiptDao.getReceivableList(waitInvoiceQueryDto);
+        PageInfo<ReceivableVo> pageInfo = new PageInfo<>(waitInvoiceVoList);
+        return BaseResultUtil.success(pageInfo);
+    }
+
+    @Override
+    public ResultVo<PageVo<PaymentVo>> getPaymentList(FinanceQueryDto financeQueryDto) {
+        PageHelper.startPage(financeQueryDto.getCurrentPage(), financeQueryDto.getPageSize());
+        List<PaymentVo> financeVoList = financeDao.getPaymentList(financeQueryDto);
+        PageInfo<PaymentVo> pageInfo = new PageInfo<>(financeVoList);
+        return BaseResultUtil.success(pageInfo);
     }
 }

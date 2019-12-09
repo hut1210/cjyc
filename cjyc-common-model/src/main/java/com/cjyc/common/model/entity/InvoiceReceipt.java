@@ -62,4 +62,16 @@ public class InvoiceReceipt implements Serializable {
     @ApiModelProperty(value = "申请人")
     private String invoiceMan;
 
+    @ApiModelProperty(value = "确认时间")
+    private Long confirmTime;
+
+    @ApiModelProperty(value = "确认人")
+    private String confirmMan;
+
+    @ApiModelProperty(value = "核销时间")
+    private Long writeOffTime;
+
+    @ApiModelProperty(value = "核销人")
+    private String writeOffMan;
+
 }

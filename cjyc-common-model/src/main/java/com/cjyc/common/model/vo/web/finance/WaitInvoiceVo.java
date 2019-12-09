@@ -67,7 +67,7 @@ public class WaitInvoiceVo implements Serializable {
     private  String applicant;
 
     @ApiModelProperty(value = "确认开票时间")
-        private Long confirmTime;
+    private Long confirmTime;
 
     @ApiModelProperty(value = "确认开票时间")
     private String confirmTimeStr;

@@ -96,7 +96,10 @@
     </select>
 
     <select id="getAmountByOrderCarIds" parameterType="String" resultType="java.math.BigDecimal">
-        select sum(freight_fee) from w_waybill_car wwc where order_car_id in (#{orderCarIds})
+        select sum(freight_fee) from w_waybill_car wwc where order_car_id in
+        <foreach collection="orderCarIds.split(',')" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </select>
     <select id="findVoByNo" resultMap="VoResultMap">
         select tb.*, tbd.source_no
