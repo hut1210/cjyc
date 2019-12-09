@@ -69,7 +69,9 @@ public class InvoiceController {
         CustomerInvoice invoice = customerInvoiceService.getOne(new QueryWrapper<CustomerInvoice>().lambda()
                 .eq(CustomerInvoice::getId, invoiceId).eq(CustomerInvoice::getCustomerId,loginId));
         CustomerInvoiceVo vo = new CustomerInvoiceVo();
-        BeanUtils.copyProperties(invoice,vo);
+        if (invoice != null) {
+            BeanUtils.copyProperties(invoice,vo);
+        }
         return BaseResultUtil.success(vo);
     }
 

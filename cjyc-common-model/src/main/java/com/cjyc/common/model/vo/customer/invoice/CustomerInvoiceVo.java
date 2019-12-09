@@ -58,46 +58,45 @@ public class CustomerInvoiceVo implements Serializable {
     @ApiModelProperty(value = "收票地址")
     private String pickupAddress;
 
+    public Long getId() {
+        return id == null ? 0 : id;
+    }
+    public Long getCustomerId() {
+        return customerId == null ? 0 : customerId;
+    }
+    public Integer getDefaultFlag() {
+        return defaultFlag == null ? 0 : defaultFlag;
+    }
     public String getTitle() {
         return title == null ? "" : title;
     }
-
     public String getName() {
         return name == null ? "" : name;
     }
-
     public String getTaxCode() {
         return taxCode == null ? "" : taxCode;
     }
-
     public String getInvoiceAddress() {
         return invoiceAddress == null ? "" : invoiceAddress;
     }
-
     public String getTel() {
         return tel == null ? "" : tel;
     }
-
     public String getBankName() {
         return bankName == null ? "" : bankName;
     }
-
     public String getBankAccount() {
         return bankAccount == null ? "" : bankAccount;
     }
-
     public String getPickupPerson() {
         return pickupPerson == null ? "" : pickupPerson;
     }
-
     public String getPickupPhone() {
         return pickupPhone == null ? "" : pickupPhone;
     }
-
     public String getPickupAddress() {
         return pickupAddress == null ? "" : pickupAddress;
     }
-
     public Integer getType() {
         return type == null ? -1 : type;
     }

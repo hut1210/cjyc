@@ -108,7 +108,7 @@
         SELECT
             t.id AS taskId,
             t.waybill_id AS waybillId,
-            t.waybill_no AS waybillNo,
+            t.no AS waybillNo,
             t.guide_line AS guideLine,
             t.car_num AS carNum,
             w.type AS type,
@@ -139,7 +139,7 @@
         select
             t.id as taskId,
             t.waybill_id as waybillId,
-            t.waybill_no as waybillNo,
+            t.no as waybillNo,
             t.guide_line as guideLine,
             t.car_num as carNum,
             t.complete_time as completeTime,
