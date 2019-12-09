@@ -53,7 +53,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
 
     @Override
     public ResultVo<PageVo<WaybillTaskVo>> getWaitHandleTaskPage(BaseDriverDto dto) {
-        // 分页查询待分配的运动信息
+        // 分页查询待分配的运单信息
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<WaybillTaskVo> taskList = waybillDao.selectWaitHandleTaskPage(dto);
         PageInfo pageInfo = new PageInfo(taskList);
@@ -116,9 +116,14 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
         // 查询运单信息
         Long waybillId = dto.getWaybillId();
         if (waybillId == 0) {
+            log.error("运单ID参数错误");
             return BaseResultUtil.fail("运单ID参数错误");
         }
         Waybill waybill = waybillDao.selectById(waybillId);
+        if (waybill == null) {
+            log.error("未查询到运单信息");
+            return BaseResultUtil.fail("未查询到运单信息");
+        }
         BeanUtils.copyProperties(waybill,taskDetailVo);
 
         // 查询车辆信息
@@ -131,6 +136,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
             taskDetailVo.setDriverPhone(task.getDriverPhone());
             taskDetailVo.setVehiclePlateNo(task.getVehiclePlateNo());
             taskDetailVo.setGuideLine(task.getGuideLine());
+            taskDetailVo.setCreateTime(task.getCreateTime());
 
             LambdaQueryWrapper<TaskCar> queryWrapper = new QueryWrapper<TaskCar>().lambda().eq(TaskCar::getTaskId,taskId);
             List<TaskCar> taskCarList = taskCarDao.selectList(queryWrapper);

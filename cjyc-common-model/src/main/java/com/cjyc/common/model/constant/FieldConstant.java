@@ -92,4 +92,18 @@ public class FieldConstant {
      * 已交付
      */
     public static final String FINISH_TASK = "4";
+
+    /*******业务员端任务状态请求常量 不能删除  XML中使用******/
+    /**
+     * 全部
+     */
+    public static final String ALL_TASK = "0";
+    /**
+     * 待提车
+     */
+    public static final String WAIT_PICK_CAR = "1";
+    /**
+     * 待交车
+     */
+    public static final String WAIT_GIVE_CAR = "2";
 }

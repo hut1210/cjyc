@@ -29,8 +29,11 @@ public class TaskBillVo implements Serializable {
     @ApiModelProperty(value = "运单编号")
     private String waybillNo;
 
-    @ApiModelProperty(value = "任务状态：")
+    @ApiModelProperty(value = "任务状态：5待提车，55待交车")
     private Integer taskState;
+
+    @ApiModelProperty(value = "运单类型：1提车运单，2干线运单，3送车运单")
+    private Integer type;
 
     @ApiModelProperty(value = "指导线路")
     private String guideLine;
@@ -41,7 +44,7 @@ public class TaskBillVo implements Serializable {
 
     @ApiModelProperty(value = "接单时间")
     @JsonSerialize(using = DataLongSerizlizer.class)
-    private Long receiveBillTime;
+    private Long createTime;
 
     @ApiModelProperty(value = "车辆数")
     private Integer carNum;
