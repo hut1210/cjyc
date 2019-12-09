@@ -296,5 +296,12 @@
         </foreach>
     </select>
 
+    <!--查询待提车，待交车列表-->
+    <select id="selectCarryList" parameterType="com.cjyc.common.model.dto.salesman.task.TaskQueryConditionDto"
+            resultType="com.cjyc.common.model.vo.salesman.task.TaskBillVo">
+
+
+    </select>
+
 
 </mapper>

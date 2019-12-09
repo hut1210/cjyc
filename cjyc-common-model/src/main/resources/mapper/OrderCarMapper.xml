@@ -800,7 +800,6 @@
             o.customer_id = #{loginId}
             AND con.invoice_apply_id = #{invoiceApplyId}
             AND con.id IS NOT NULL
-            AND o.invoice_flag = 1
             AND o.state = 100
         ORDER BY
             o.finish_time DESC

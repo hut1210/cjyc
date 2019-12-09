@@ -1,9 +1,13 @@
 package com.cjyc.salesman.api.controller;
 
 import com.cjyc.common.model.dto.salesman.task.TaskQueryConditionDto;
+import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.salesman.task.TaskBillVo;
+import com.cjyc.salesman.api.service.ITaskService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,10 +24,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "/task", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class TaskController {
+    @Autowired
+    private ITaskService taskService;
 
     @ApiOperation(value = "提送车列表分页查询")
     @PostMapping("/getCarryPage")
-    public ResultVo getCarryPage(@RequestBody @Validated TaskQueryConditionDto dto) {
-       return null;
+    public ResultVo<PageVo<TaskBillVo>> getCarryPage(@RequestBody @Validated TaskQueryConditionDto dto) {
+       return taskService.getCarryPage(dto);
     }
 }
