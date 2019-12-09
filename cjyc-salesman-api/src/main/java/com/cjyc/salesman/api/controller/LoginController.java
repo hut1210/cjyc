@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -137,8 +138,14 @@ public class LoginController {
                     List<Role> existList = ycRoleList.stream().filter(r ->
                             r.getRoleName().equals(name)).collect(Collectors.toList());
                     if (!CollectionUtils.isEmpty(existList)) {
-                        if (RoleLoginAppEnum.CAN_LOGIN_APP.getFlag() == existList.get(0).getLoginApp()) {
-                            salesmanRoleNameList.add(name);
+                        Role r = existList.get(0);
+                        if (RoleLoginAppEnum.CAN_LOGIN_APP.getFlag() == r.getLoginApp()) {
+                            if (!StringUtils.isEmpty(r.getAppBtns())) {
+                                String[] btns = r.getAppBtns().split(",");
+                                for (String btn: btns) {
+                                    btnSet.add(btn);
+                                }
+                            }
                         }
                     }
                 });
