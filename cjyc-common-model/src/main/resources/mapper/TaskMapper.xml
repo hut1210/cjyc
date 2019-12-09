@@ -116,7 +116,7 @@
             car.expect_start_time AS expectStartTime,
             sum(car.freight_fee) AS freightFee
         FROM
-            ( SELECT task.id, task.waybill_id, task.waybill_no, task.guide_line, task.car_num,
+            ( SELECT task.id, task.waybill_id, task.no, task.guide_line, task.car_num,
             task.state,task.create_time,tc.waybill_car_id
             FROM w_task task
             LEFT JOIN w_task_car tc ON task.id = tc.task_id
