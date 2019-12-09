@@ -13,7 +13,7 @@ import javax.validation.constraints.Pattern;
  * @Date 2019/12/9 10:44
  **/
 @Data
-public class QueryConditionDto extends BasePageDto {
+public class TaskQueryConditionDto extends BasePageDto {
     @ApiModelProperty(value = "用户登录id")
     @NotNull(message = "用户登录id不能为空")
     private Long loginId;

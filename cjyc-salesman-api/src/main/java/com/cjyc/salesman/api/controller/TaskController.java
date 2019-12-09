@@ -1,6 +1,6 @@
 package com.cjyc.salesman.api.controller;
 
-import com.cjyc.common.model.dto.salesman.task.QueryConditionDto;
+import com.cjyc.common.model.dto.salesman.task.TaskQueryConditionDto;
 import com.cjyc.common.model.vo.ResultVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -23,7 +23,7 @@ public class TaskController {
 
     @ApiOperation(value = "提送车列表分页查询")
     @PostMapping("/getCarryPage")
-    public ResultVo getCarryPage(@RequestBody @Validated QueryConditionDto dto) {
+    public ResultVo getCarryPage(@RequestBody @Validated TaskQueryConditionDto dto) {
        return null;
     }
 }
