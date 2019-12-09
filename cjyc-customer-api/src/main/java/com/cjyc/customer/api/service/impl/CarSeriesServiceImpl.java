@@ -7,6 +7,8 @@ import com.cjyc.common.model.entity.CarSeries;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.carSeries.CarSeriesTree;
+import com.cjyc.common.system.config.LogoImgProperty;
+import com.cjyc.common.system.config.MiaoxinProperty;
 import com.cjyc.common.system.service.ICsCarSeriesService;
 import com.cjyc.customer.api.service.ICarSeriesService;
 import lombok.extern.slf4j.Slf4j;

@@ -104,6 +104,8 @@ cjkj:
       1166601979446468610,
       1169434673131659265
 
+
+
 ribbon:
   ConnectTimeout: 30000
   ReadTimeout: 30000
@@ -154,8 +156,9 @@ cjyc:
         webhooks: http://39.106.134.87:80/manycc/pingpay/webhooksNotice
 
 
-
-
+  #车系logo
+  carSeries:
+    logoImg: https://cjwl-test-bucket.obs.cn-north-1.myhuaweicloud.com:443/
 
 
 
