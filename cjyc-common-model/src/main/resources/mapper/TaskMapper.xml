@@ -318,6 +318,9 @@
             LEFT JOIN w_task_car tc ON task.id = tc.task_id
             <where>
                 task.driver_id = #{loginId}
+                <if test="receiveOrderTime != null and receiveOrderTime.trim() != ''">
+                    AND task.create_time = #{receiveOrderTime}
+                </if>
                 <if test="waybillNo != null and waybillNo.trim() != ''">
                     AND task.no = concat('%',#{waybillNo},'%')
                 </if>
@@ -330,6 +333,16 @@
                 <if test="taskState != null and taskState == @com.cjyc.common.model.constant.FieldConstant@ALL_TASK">
                     AND (task.state = ${@com.cjyc.common.model.enums.task.TaskStateEnum@WAIT_LOAD.code}
                     OR task.state = ${@com.cjyc.common.model.enums.task.TaskStateEnum@TRANSPORTING.code})
+                </if>
+
+                <if test="startAddress != null and startAddress.trim() != ''">
+                    and task.guide_line like concat('%',#{startAddress},'%')
+                </if>
+                <if test="(startAddress != null and startAddress.trim() != '') and (endAddress != null and endAddress.trim() != '')">
+                    and task.guide_line like concat('%',#{endAddress},'%')
+                </if>
+                <if test="(startAddress == null or startAddress.trim() == '') and (endAddress != null and endAddress.trim() != '')">
+                    and task.guide_line like concat('%-',#{endAddress},'%')
                 </if>
             </where>
         ) t
