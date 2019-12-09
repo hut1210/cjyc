@@ -33,10 +33,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @Api(tags = "业务员APP登录")
@@ -48,6 +46,14 @@ public class LoginController {
      * 用户名密码授权方式
      */
     private static final String PWD_LOGIN_GRANT_TYPE = "password";
+    /**
+     * 登录前数据处理返回结果,admin实体key
+     */
+    private static final String PRE_LOGIN_ADMIN_KEY = "admin";
+    /**
+     * 登录前数据处理返回结果, APP可操作按钮列表
+     */
+    private static final String PRE_LOGIN_BTN_LIST_KEY = "btnList";
     @Autowired
     private ISysRoleService sysRoleService;
     @Resource
@@ -67,7 +73,7 @@ public class LoginController {
     @ApiOperation(value = "业务员APP登录")
     @PostMapping("/mobile")
     public ResultVo<SalesmanAppLoginVo> login(@Validated @RequestBody LoginByPhoneDto dto) {
-        ResultData<List<String>> rd = doPreLogin(dto.getPhone());
+        ResultData<Map<String, Object>> rd = doPreLogin(dto.getPhone());
         if (ResultDataUtil.isSuccess(rd)) {
             // 登录
             AuthMobileLoginReq req = new AuthMobileLoginReq();
@@ -78,9 +84,9 @@ public class LoginController {
             req.setGrantType(grantType);
             ResultData<AuthLoginResp> loginRd = sysLoginService.mobileLogin(req);
             if (ResultDataUtil.isSuccess(loginRd)) {
-                SalesmanAppLoginVo vo = new SalesmanAppLoginVo();
-                BeanUtils.copyProperties(loginRd.getData(), vo);
-                vo.setRoleList(rd.getData());
+                SalesmanAppLoginVo vo = packSalesmanAppLoginInfo(loginRd.getData(),
+                        (List<String>) rd.getData().get(PRE_LOGIN_BTN_LIST_KEY),
+                        (Admin)rd.getData().get(PRE_LOGIN_ADMIN_KEY));
                 return BaseResultUtil.success(vo);
             }else {
                 return BaseResultUtil.fail("登录失败，原因：" + loginRd.getMsg());
@@ -93,7 +99,7 @@ public class LoginController {
     @ApiOperation(value = "账号密码登录")
     @PostMapping("/pwd")
     public ResultVo<SalesmanAppLoginVo> pwdLogin(@Validated @RequestBody LoginByUserNameDto dto) {
-        ResultData<List<String>> rd = doPreLogin(dto.getUsername());
+        ResultData<Map<String, Object>> rd = doPreLogin(dto.getUsername());
         if (ResultDataUtil.isSuccess(rd)) {
             AuthLoginReq req = new AuthLoginReq();
             req.setUsername(dto.getUsername());
@@ -105,9 +111,9 @@ public class LoginController {
             if (!ResultDataUtil.isSuccess(loginRd)) {
                 return BaseResultUtil.fail("登录失败，原因：" + loginRd.getMsg());
             }else {
-                SalesmanAppLoginVo vo = new SalesmanAppLoginVo();
-                BeanUtils.copyProperties(loginRd.getData(), vo);
-                vo.setRoleList(rd.getData());
+                SalesmanAppLoginVo vo = packSalesmanAppLoginInfo(loginRd.getData(),
+                        (List<String>) rd.getData().get(PRE_LOGIN_BTN_LIST_KEY),
+                        (Admin)rd.getData().get(PRE_LOGIN_ADMIN_KEY));
                 return BaseResultUtil.success(vo);
             }
         }else {
@@ -120,7 +126,7 @@ public class LoginController {
      * @param account
      * @return
      */
-    private ResultData<List<String>> doPreLogin(String account) {
+    private ResultData<Map<String, Object>> doPreLogin(String account) {
         Admin admin = csAdminService.getAdminByPhone(account, true);
         if (admin == null || admin.getUserId() == null || admin.getUserId() <= 0L) {
             return ResultData.failed("用户信息有误，请确认");
@@ -130,9 +136,11 @@ public class LoginController {
             if (!CollectionUtils.isEmpty(roleRd.getData())) {
                 List<String> roleNameList = roleRd.getData().stream()
                         .map(r -> r.getRoleName()).collect(Collectors.toList());
-                List<String> salesmanRoleNameList = new ArrayList<>();
+                List<String> btnNameList = new ArrayList<>();
                 Set<String> btnSet = new HashSet<>();
                 List<Role> ycRoleList = csRoleService.getValidInnerRoleList();
+                //是否可登录业务员APP，只需当前用户中有一个角色可登录APP即可登录APP
+                AtomicBoolean canLogin = new AtomicBoolean(false);
                 roleNameList.forEach(name -> {
                     //判断是否有登录角色
                     List<Role> existList = ycRoleList.stream().filter(r ->
@@ -140,6 +148,7 @@ public class LoginController {
                     if (!CollectionUtils.isEmpty(existList)) {
                         Role r = existList.get(0);
                         if (RoleLoginAppEnum.CAN_LOGIN_APP.getFlag() == r.getLoginApp()) {
+                            canLogin.set(true);
                             if (!StringUtils.isEmpty(r.getAppBtns())) {
                                 String[] btns = r.getAppBtns().split(",");
                                 for (String btn: btns) {
@@ -149,11 +158,14 @@ public class LoginController {
                         }
                     }
                 });
-                salesmanRoleNameList.addAll(btnSet);
-                if (CollectionUtils.isEmpty(salesmanRoleNameList)) {
+                btnNameList.addAll(btnSet);
+                if (!canLogin.get()) {
                     return ResultData.failed("此用户不可登录APP");
                 }else {
-                    return ResultData.ok(salesmanRoleNameList);
+                    Map<String, Object> rsMap = new HashMap<>();
+                    rsMap.put(PRE_LOGIN_ADMIN_KEY, admin);
+                    rsMap.put(PRE_LOGIN_BTN_LIST_KEY,btnNameList);
+                    return ResultData.ok(rsMap);
                 }
             }else {
                 return ResultData.failed("角色信息为空");
@@ -161,5 +173,21 @@ public class LoginController {
         }else {
             return ResultData.failed("角色信息获取失败");
         }
+    }
+
+    /**
+     * 业务员登录信息包装
+     * @param loginResp
+     * @param roleList
+     * @param admin
+     * @return
+     */
+    private SalesmanAppLoginVo packSalesmanAppLoginInfo(AuthLoginResp loginResp,
+                                                        List<String> roleList, Admin admin) {
+        SalesmanAppLoginVo vo = new SalesmanAppLoginVo();
+        BeanUtils.copyProperties(loginResp, vo);
+        vo.setRoleList(roleList);
+        vo.setAdmin(admin);
+        return vo;
     }
 }
