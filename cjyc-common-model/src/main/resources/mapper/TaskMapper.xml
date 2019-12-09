@@ -318,7 +318,7 @@
             LEFT JOIN w_task_car tc ON task.id = tc.task_id
             <where>
                 task.driver_id = #{loginId}
-                <if test="receiveOrderTime != null and receiveOrderTime.trim() != ''">
+                <if test="receiveOrderTime != null and receiveOrderTime != 0">
                     AND task.create_time = #{receiveOrderTime}
                 </if>
                 <if test="waybillNo != null and waybillNo.trim() != ''">
