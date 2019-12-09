@@ -49,6 +49,8 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
     @Autowired
     private IOrderCarDao orderCarDao;
     @Autowired
+    private IOrderDao orderDao;
+    @Autowired
     private IDriverDao driverDao;
 
     @Override
@@ -151,6 +153,9 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                     OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
                     BeanUtils.copyProperties(orderCar,carDetailVo);
                     carDetailVo.setCompleteTime(task.getCompleteTime());
+                    // 查询支付方式
+                    Order order = orderDao.selectById(orderCar.getOrderId());
+                    carDetailVo.setPayType(order.getPayType());
                     carDetailVoList.add(carDetailVo);
                 }
             }
