@@ -13,4 +13,10 @@ import java.util.List;
  */
 public interface IInvoiceReceiptDao extends BaseMapper<InvoiceReceipt> {
     List<WaitInvoiceVo> getWaitInvoiceList(WaitQueryDto waitInvoiceQueryDto);
+
+    List<WaitInvoiceVo> getWaitForBackList(WaitQueryDto waitInvoiceQueryDto);
+
+    void confirmSettlement(InvoiceReceipt invoiceReceipt);
+
+    void writeoff(InvoiceReceipt invoiceReceipt);
 }

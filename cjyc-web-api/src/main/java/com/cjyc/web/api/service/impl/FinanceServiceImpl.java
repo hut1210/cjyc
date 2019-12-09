@@ -141,12 +141,12 @@ public class FinanceServiceImpl implements IFinanceService {
     }
 
     @Override
-    public void confirmSettlement(Long invoiceId,String invoice_no) {
+    public void confirmSettlement(String serialNumber,String invoiceNo) {
         InvoiceReceipt invoiceReceipt = new InvoiceReceipt();
-        invoiceReceipt.setInvoiceId(invoiceId);
-        invoiceReceipt.setInvoiceNo(invoice_no);
-        invoiceReceipt.setState(invoice_no);
-        invoiceReceiptDao.updateById(invoiceReceipt);
+        invoiceReceipt.setSerialNumber(serialNumber);
+        invoiceReceipt.setInvoiceNo(invoiceNo);
+        invoiceReceipt.setState("2");
+        invoiceReceiptDao.confirmSettlement(invoiceReceipt);
     }
 
     @Override
@@ -159,7 +159,31 @@ public class FinanceServiceImpl implements IFinanceService {
     }
 
     @Override
-    public void cancelSettlement(Long invoiceId) {
+    public void cancelSettlement(String serialNumber) {
+        InvoiceReceipt invoiceReceipt = new InvoiceReceipt();
+        invoiceReceipt.setSerialNumber(serialNumber);
+        invoiceReceipt.setState("1");
+        invoiceReceiptDao.confirmSettlement(invoiceReceipt);
+    }
+
+    @Override
+    public ResultVo<PageVo<WaitInvoiceVo>> getWaitForBackList(WaitQueryDto waitInvoiceQueryDto) {
+        PageHelper.startPage(waitInvoiceQueryDto.getCurrentPage(), waitInvoiceQueryDto.getPageSize());
+        List<WaitInvoiceVo> waitInvoiceVoList = invoiceReceiptDao.getWaitForBackList(waitInvoiceQueryDto);
+        PageInfo<WaitInvoiceVo> pageInfo = new PageInfo<>(waitInvoiceVoList);
+        return BaseResultUtil.success(pageInfo);
+    }
+
+    @Override
+    public void writeoff(String serialNumber) {
+        InvoiceReceipt invoiceReceipt = new InvoiceReceipt();
+        invoiceReceipt.setSerialNumber(serialNumber);
+        invoiceReceipt.setState("3");
+        invoiceReceiptDao.writeoff(invoiceReceipt);
+    }
+
+    @Override
+    public void detail(String serialNumber) {
 
     }
 }

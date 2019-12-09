@@ -31,7 +31,7 @@
         from f_invoice_apply fia
         left join w_waybill_car wwc on fia.order_car_no = wwc.order_car_no
         left join c_customer_invoice cci on fia.invoice_id = cci.id
-        where 1=1
+        where fia.state=1
         <if test="serialNumber != null and serialNumber.trim() != ''">
             and fia.serial_number like concat('%',#{serialNumber},'%')
         </if>
@@ -53,6 +53,59 @@
         </if>
         <if test="applicant != null and applicant.trim() != ''">
             and fia.invoice_man like concat('%',#{applicant},'%')
+        </if>
+        <if test="type != null and type.trim() != ''">
+            and cci.type = #{type}
+        </if>
+
+    </select>
+
+
+    <select id="getWaitForBackList" parameterType="com.cjyc.common.model.dto.web.finance.WaitQueryDto"
+            resultType="com.cjyc.common.model.vo.web.finance.WaitInvoiceVo">
+        select fia.serial_number as serialNumber,wwc.freight_fee as freightreceivable,fia.amount as amount,
+        cci.type,cci.name as customerName,
+        cci.tax_code as taxPayerNumber,cci.tel ,cci.invoice_address as address,cci.bank_name as bankName,cci.bank_account as bankAccout,
+        cci.pickup_person as pickUpPerson,cci.pickup_phone as pickUpPhone,cci.pickup_address as pickUpAddress,
+        fia.invoice_time as applyTime,fia.invoice_man as applicant,
+        fia.confirm_time as confirmTime,fia.confirm_man as confirmMan,fia.writeoff_time as writeOffTime,fia.writeoff_man as writeOffMan
+        from f_invoice_apply fia
+        left join w_waybill_car wwc on fia.order_car_no = wwc.order_car_no
+        left join c_customer_invoice cci on fia.invoice_id = cci.id
+        where fia.state=2
+        <if test="serialNumber != null and serialNumber.trim() != ''">
+            and fia.serial_number like concat('%',#{serialNumber},'%')
+        </if>
+        <if test="taxPayerNumber != null and taxPayerNumber.trim() != ''">
+            and cci.tax_code like concat('%',#{taxPayerNumber},'%')
+        </if>
+        <if test="customerName != null and customerName.trim() != ''">
+            and cci.name like concat('%',#{customerName},'%')
+        </if>
+
+        <if test="phone != null and phone.trim() != ''">
+            and cci.tel like concat('%',#{phone},'%')
+        </if>
+        <if test="applyStartTime != null">
+            and fia.invoice_time &gt;= #{applyStartTime}
+        </if>
+        <if test="applyEndTime != null ">
+            and fia.invoice_time &lt;= #{applyEndTime}
+        </if>
+        <if test="applicant != null and applicant.trim() != ''">
+            and fia.invoice_man like concat('%',#{applicant},'%')
+        </if>
+        <if test="type != null and type.trim() != ''">
+            and cci.type = #{type}
+        </if>
+        <if test="invoiceStartTime != null">
+            and fia.confirm_time &gt;= #{invoiceStartTime}
+        </if>
+        <if test="invoiceEndTime != null ">
+            and fia.confirm_time &lt;= #{invoiceEndTime}
+        </if>
+        <if test="confirmMan != null and confirmMan.trim() != ''">
+            and fia.confirm_man like concat('%',#{confirmMan},'%')
         </if>
 
     </select>

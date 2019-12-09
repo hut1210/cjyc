@@ -65,22 +65,36 @@ public class FinanceController {
 
     @ApiOperation(value = "确认开票")
     @PostMapping(value = "/confirm")
-    public ResultVo confirmSettlement(@RequestBody Long invoiceId,@RequestBody String invoice_no){
-        financeService.confirmSettlement(invoiceId,invoice_no);
+    public ResultVo confirmSettlement(@RequestBody String serialNumber,@RequestBody String invoiceNo){
+        financeService.confirmSettlement(serialNumber,invoiceNo);
         return BaseResultUtil.success();
     }
 
-    @ApiOperation(value = "确认开票")
+    @ApiOperation(value = "撤回")
     @PostMapping(value = "/cancel")
-    public ResultVo cancel(@RequestBody Long invoiceId){
-        financeService.cancelSettlement(invoiceId);
+    public ResultVo cancel(@RequestBody String serialNumber){
+        financeService.cancelSettlement(serialNumber);
         return BaseResultUtil.success();
     }
 
     @ApiOperation(value = "根据条件查询等待回款列表")
-    @PostMapping(value = "/getWaitReceiveList")
-    public ResultVo<PageVo<WaitInvoiceVo>> getWaitReceiveList(@RequestBody WaitQueryDto waitInvoiceQueryDto){
-        return financeService.getWaitInvoiceList(waitInvoiceQueryDto);
+    @PostMapping(value = "/getWaitForBackList")
+    public ResultVo<PageVo<WaitInvoiceVo>> getWaitForBackList(@RequestBody WaitQueryDto waitInvoiceQueryDto){
+        return financeService.getWaitForBackList(waitInvoiceQueryDto);
+    }
+
+    @ApiOperation(value = "核销")
+    @PostMapping(value = "/writeoff")
+    public ResultVo writeoff(@RequestBody String serialNumber){
+        financeService.writeoff(serialNumber);
+        return BaseResultUtil.success();
+    }
+
+    @ApiOperation(value = "结算明细")
+    @PostMapping(value = "/detail")
+    public ResultVo detail(@RequestBody String serialNumber){
+        financeService.detail(serialNumber);
+        return BaseResultUtil.success();
     }
 
 }

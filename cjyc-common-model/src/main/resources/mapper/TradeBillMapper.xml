@@ -78,7 +78,7 @@
     </select>
 
     <select id="getAmountByOrderNo" parameterType="String" resultType="java.math.BigDecimal">
-        select (total_fee-agency_fee-coupon_offset_fee) as amount from w_order where no=#{orderNo}
+        select if(customer_type=3,(total_fee-agency_fee),total_fee) as amount from w_order where no=#{orderNo}
     </select>
 
     <update id="updateOrderState" parameterType="map">

@@ -25,9 +25,15 @@ public interface IFinanceService {
 
     void applySettlement(ApplySettlementDto applySettlementDto);
 
-    void confirmSettlement(Long invoiceId,String invoice_no);
+    void confirmSettlement(String serialNumber,String invoiceNo);
 
     ResultVo<PageVo<WaitInvoiceVo>> getWaitInvoiceList(WaitQueryDto waitInvoiceQueryDto);
 
-    void cancelSettlement(Long invoiceId);
+    void cancelSettlement(String serialNumber);
+
+    ResultVo<PageVo<WaitInvoiceVo>> getWaitForBackList(WaitQueryDto waitInvoiceQueryDto);
+
+    void writeoff(String serialNumber);
+
+    void detail(String serialNumber);
 }
