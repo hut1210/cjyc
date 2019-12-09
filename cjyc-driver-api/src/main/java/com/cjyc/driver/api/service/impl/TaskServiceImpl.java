@@ -160,6 +160,8 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                     // 查询支付方式
                     Order order = orderDao.selectById(orderCar.getOrderId());
                     carDetailVo.setPayType(order.getPayType());
+
+                    carDetailVo.setId(waybillCar.getId());
                     carDetailVoList.add(carDetailVo);
                 }
             }
@@ -175,9 +177,11 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                 for (WaybillCar waybillCar : waybillCarList) {
                     carDetailVo = new CarDetailVo();
                     freightFee.add(waybillCar.getFreightFee());
-                    BeanUtils.copyProperties(waybillCar,carDetailVo);
+
                     OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
                     BeanUtils.copyProperties(orderCar,carDetailVo);
+
+                    BeanUtils.copyProperties(waybillCar,carDetailVo);
                     carDetailVoList.add(carDetailVo);
                 }
             }

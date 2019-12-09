@@ -97,7 +97,7 @@ public class TaskServiceImpl implements ITaskService {
                 WaybillCar waybillCar = waybillCarDao.selectById(taskCar.getWaybillCarId());
                 carDetailVo = new CarDetailVo();
                 freightFee.add(waybillCar.getFreightFee());
-                BeanUtils.copyProperties(waybillCar,carDetailVo);
+
                 // 查询品牌车系信息
                 OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
                 BeanUtils.copyProperties(orderCar,carDetailVo);
@@ -105,6 +105,8 @@ public class TaskServiceImpl implements ITaskService {
                 // 查询支付方式
                 Order order = orderDao.selectById(orderCar.getOrderId());
                 carDetailVo.setPayType(order.getPayType());
+
+                BeanUtils.copyProperties(waybillCar,carDetailVo);
                 carDetailVoList.add(carDetailVo);
             }
         }
