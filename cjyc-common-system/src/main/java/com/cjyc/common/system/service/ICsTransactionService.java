@@ -10,7 +10,7 @@ import java.math.BigDecimal;
  * @Author:Hut
  * @Date:2019/11/20 16:40
  */
-public interface ITransactionService {
+public interface ICsTransactionService {
     void saveTransactions(Object obj, String state);
 
     void cancelOrderRefund(String orderCode);

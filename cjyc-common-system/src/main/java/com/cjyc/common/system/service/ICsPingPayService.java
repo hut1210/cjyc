@@ -10,7 +10,7 @@ import java.io.FileNotFoundException;
  * @Author: Hut
  * @Date: 2019/12/9 19:27
  */
-public interface IPingPayService {
+public interface ICsPingPayService {
     Charge sweepDriveCode(SweepCodeDto sweepCodeDto) throws RateLimitException, APIException, ChannelException, InvalidRequestException,
             APIConnectionException, AuthenticationException, FileNotFoundException;
 }

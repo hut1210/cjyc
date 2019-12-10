@@ -5,7 +5,7 @@ import com.cjkj.common.utils.IPUtil;
 import com.cjyc.common.model.dto.customer.pingxx.SweepCodeDto;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.system.service.IPingPayService;
+import com.cjyc.common.system.service.ICsPingPayService;
 import com.pingplusplus.model.Charge;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -29,7 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 public class PingPayController {
 
     @Autowired
-    private IPingPayService pingPayService;
+    private ICsPingPayService pingPayService;
 
     @ApiOperation("司机出示二维码")
     @PostMapping("/sweepDriveCode")

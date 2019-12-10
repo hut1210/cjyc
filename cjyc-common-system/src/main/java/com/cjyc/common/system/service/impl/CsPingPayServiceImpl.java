@@ -4,8 +4,8 @@ import com.Pingxx.model.OrderModel;
 import com.cjyc.common.model.dto.customer.pingxx.SweepCodeDto;
 import com.cjyc.common.model.enums.ClientEnum;
 import com.cjyc.common.system.config.PingProperty;
-import com.cjyc.common.system.service.IPingPayService;
-import com.cjyc.common.system.service.ITransactionService;
+import com.cjyc.common.system.service.ICsPingPayService;
+import com.cjyc.common.system.service.ICsTransactionService;
 import com.pingplusplus.Pingpp;
 import com.pingplusplus.exception.*;
 import com.pingplusplus.model.Charge;
@@ -29,10 +29,10 @@ import java.util.Map;
 @Service
 @Slf4j
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
-public class PingPayServiceImpl implements IPingPayService {
+public class CsPingPayServiceImpl implements ICsPingPayService {
 
     @Autowired
-    private ITransactionService transactionService;
+    private ICsTransactionService cStransactionService;
 
     @Override
     public Charge sweepDriveCode(SweepCodeDto sweepCodeDto) throws RateLimitException, APIException, ChannelException, InvalidRequestException,
@@ -44,7 +44,7 @@ public class PingPayServiceImpl implements IPingPayService {
         //创建Charge对象
         Charge charge = new Charge();
         try {
-            BigDecimal freightFee = transactionService.getAmountByOrderCarIds(sweepCodeDto.getOrderCarIds());
+            BigDecimal freightFee = cStransactionService.getAmountByOrderCarIds(sweepCodeDto.getOrderCarIds());
             om.setAmount(freightFee);
             om.setDriver_code(sweepCodeDto.getPayeeId());
             om.setOrderCarIds(om.getOrderCarIds());

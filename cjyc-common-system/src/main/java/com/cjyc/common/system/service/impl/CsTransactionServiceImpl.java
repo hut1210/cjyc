@@ -15,8 +15,8 @@ import com.cjyc.common.model.enums.SendNoTypeEnum;
 import com.cjyc.common.model.util.BeanMapUtil;
 import com.cjyc.common.system.service.ICsSendNoService;
 import com.cjyc.common.system.service.ICsTaskService;
+import com.cjyc.common.system.service.ICsTransactionService;
 import com.cjyc.common.system.service.ICsUserService;
-import com.cjyc.common.system.service.ITransactionService;
 import com.cjyc.common.system.util.RedisUtils;
 import com.pingplusplus.model.Charge;
 import com.pingplusplus.model.ChargeCollection;
@@ -41,7 +41,7 @@ import java.util.concurrent.ExecutorService;
 @Service
 @Slf4j
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
-public class TransactionServiceImpl implements ITransactionService {
+public class CsTransactionServiceImpl implements ICsTransactionService {
 
     @Resource
     private ITradeBillDao tradeBillDao;
