@@ -69,7 +69,7 @@
         left join w_waybill_car wwc on wwc.order_car_no = woc.no
         left join w_task wt on wt.waybill_no = wwc.waybill_no
 
-        where 1=1
+        where cc.pay_mode=1
         <if test="no != null and no.trim() != ''">
             and woc.no like concat('%',#{no},'%')
         </if>
