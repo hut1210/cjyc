@@ -174,16 +174,17 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
         tb.setAmount(order.getAmount()==null?BigDecimal.valueOf(0):BigDecimal.valueOf(order.getAmount()));
         tb.setCreateTime(System.currentTimeMillis());
         tb.setType(1);
-        if(order.getLivemode()){
-            tb.setLivemode("live");
-        }else{
-            tb.setLivemode("test");
-        }
+        tb.setLivemode(order.getLivemode() ? LiveModeEnum.LIVE.getTag() : LiveModeEnum.TEST.getTag());
         ChargeCollection charges = order.getCharges();
         if(charges != null){
             List<Charge> data = charges.getData();
             Charge charge = data.get(0);
             tb.setChannel(charge.getChannel());
+            //支付渠道名
+            ChannelEnum channelEnum = ChannelEnum.valueOfTag(charge.getChannel());
+            if(channelEnum != null){
+                tb.setChannelName(channelEnum.getName());
+            }
             //TODO
             //添加通道费率@JPG
             //BigDecimal channelFee = dictionaryService.getChannelFee(charge.getChannel(), order.getAmount().toString());

@@ -45,6 +45,9 @@ public class FinanceQueryDto extends BasePageDto implements Serializable {
     @ApiModelProperty(value = "客户类型")
     private Integer type;
 
+    @ApiModelProperty(value = "客户账号")
+    private String contactPhone;
+
     @ApiModelProperty(value = "客户名称")
     private String customerName;
 

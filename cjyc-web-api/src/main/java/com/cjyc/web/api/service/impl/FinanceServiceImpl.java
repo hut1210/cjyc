@@ -1,6 +1,5 @@
 package com.cjyc.web.api.service.impl;
 
-import com.cjkj.common.utils.DateUtil;
 import com.cjyc.common.model.dao.ICustomerInvoiceDao;
 import com.cjyc.common.model.dao.IFinanceDao;
 import com.cjyc.common.model.dao.IInvoiceReceiptDao;
@@ -11,7 +10,6 @@ import com.cjyc.common.model.entity.CustomerInvoice;
 import com.cjyc.common.model.entity.InvoiceReceipt;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.util.RandomUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.finance.*;
@@ -28,7 +26,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -115,7 +112,7 @@ public class FinanceServiceImpl implements IFinanceService {
             customerInvoice.setInvoiceAddress(applySettlementDto.getAddress());
             customerInvoice.setTel(applySettlementDto.getPhone());
             customerInvoice.setBankName(applySettlementDto.getBankName());
-            customerInvoice.setBankAccount(applySettlementDto.getBankAccout());
+            customerInvoice.setBankAccount(applySettlementDto.getBankAccount());
             customerInvoice.setPickupPerson(applySettlementDto.getAddressee());
             customerInvoice.setPickupPhone(applySettlementDto.getAddresseePhone());
             customerInvoice.setPickupAddress(applySettlementDto.getMailAddress());
@@ -185,8 +182,20 @@ public class FinanceServiceImpl implements IFinanceService {
     }
 
     @Override
-    public void detail(String serialNumber) {
+    public SettlementDetailVo detail(Long Id) {
+        SettlementDetailVo settlementDetailVo = new SettlementDetailVo();
+        InvoiceReceipt invoiceReceipt = invoiceReceiptDao.selectDetailById(Id);
+        if(invoiceReceipt != null){
+            CustomerInvoice customerInvoice = customerInvoiceDao.selectById(invoiceReceipt.getInvoiceId());
 
+            settlementDetailVo.setCustomerInvoice(customerInvoice);
+            settlementDetailVo.setAmount(invoiceReceipt.getAmount());
+            settlementDetailVo.setFreightFee(invoiceReceipt.getFreightFee());
+            settlementDetailVo.setInvoiceNo(invoiceReceipt.getInvoiceNo());
+            settlementDetailVo.setWriteOffTime(invoiceReceipt.getWriteOffTime());
+        }
+
+        return settlementDetailVo;
     }
 
     @Override
