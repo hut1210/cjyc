@@ -264,9 +264,6 @@ public class PingPayController {
         return BaseResultUtil.success(JSONObject.parseObject(charge.toString()));
     }
 
-
-
-
     /**
      * 签收-验证支付状态
      * @author JPG

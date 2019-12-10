@@ -547,7 +547,7 @@ public class PingPayServiceImpl implements IPingPayService {
         pm.setUid(String.valueOf(reqDto.getLoginId()));
         pm.setAmount(amount.intValue());
         pm.setSubject("客户签收支付");
-        pm.setBody("客户批量签收");
+        pm.setBody("客户按车辆收银台支付");
         pm.setTimeExpire(LocalDateTimeUtil.getMillisByLDT(LocalDateTimeUtil.plus(LocalDateTime.now(), 30, ChronoUnit.MINUTES)));
 
         MetaDataEntiy mde = new MetaDataEntiy();

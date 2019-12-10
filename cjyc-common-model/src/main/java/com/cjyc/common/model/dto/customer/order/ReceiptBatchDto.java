@@ -18,9 +18,9 @@ public class ReceiptBatchDto {
     private String loginName;
     @ApiModelProperty(value = "用户手机号（不用传）")
     private String loginPhone;
-    @ApiModelProperty(value = "用户类型：1业务员，2司机，3客户(不用传)")
+    @ApiModelProperty(value = "用户类型(不用传)")
     private UserTypeEnum loginType;
     @NotEmpty
-    @ApiModelProperty(value = "订单车辆ID",required = true)
-    private List<Long> orderCarIdList;
+    @ApiModelProperty(value = "订单车辆编号",required = true)
+    private List<String> orderCarNos;
 }

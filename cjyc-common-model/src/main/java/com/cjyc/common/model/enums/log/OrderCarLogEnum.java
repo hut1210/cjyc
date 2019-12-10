@@ -7,11 +7,11 @@ package com.cjyc.common.model.enums.log;
 public enum OrderCarLogEnum {
 
     /***/
-    SUBMIT("客户提交日志", "", "", 1),
-    COMMIT("业务员提交日志", "", "", 2),
-    CHECK("客户提交日志", "", "", 3),
-    IN_STORE("客户提交日志", "", "", 3),
-    RECEIPT("客户签收日志", "车辆{0}, 已被签收", "车辆{0}, 已被签收", 4);
+    SUBMIT("客户提交", "", "", 1),
+    COMMIT("业务员提交", "", "", 2),
+    CHECK("客户提交", "", "", 3),
+    IN_STORE("车辆入库", "车辆{0}, 已在{1}入库", "车辆{0}, 已在{1}入库", 3),
+    RECEIPT("客户签收", "车辆{0}, 已被签收", "车辆{0}, 已被签收", 4);
 
     private String name;
     private String innerLog;

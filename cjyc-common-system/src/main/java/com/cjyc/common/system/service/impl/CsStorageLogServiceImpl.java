@@ -6,6 +6,7 @@ import com.cjyc.common.system.service.ICsStorageLogService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.Collection;
@@ -31,6 +32,9 @@ public class CsStorageLogServiceImpl implements ICsStorageLogService {
     @Async
     @Override
     public void asyncSaveBatch(Collection<CarStorageLog> storageLogSet) {
+        if(CollectionUtils.isEmpty(storageLogSet)){
+            return;
+        }
         try {
             storageLogSet.forEach(s -> carStorageLogDao.insert(s));
         } catch (Exception e) {
