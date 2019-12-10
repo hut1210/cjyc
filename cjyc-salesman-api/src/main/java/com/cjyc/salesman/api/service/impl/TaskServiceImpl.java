@@ -75,10 +75,12 @@ public class TaskServiceImpl implements ITaskService {
         Task task = taskDao.selectById(taskId);
         BeanUtils.copyProperties(task,taskDetailVo);
 
-        // 查询车辆信息
-        List<CarDetailVo> carDetailVoList = new ArrayList<>(10);
+        // 任务单车辆
         LambdaQueryWrapper<TaskCar> queryWrapper = new QueryWrapper<TaskCar>().lambda().eq(TaskCar::getTaskId,taskId);
         List<TaskCar> taskCarList = taskCarDao.selectList(queryWrapper);
+
+        // 查询车辆信息
+        List<CarDetailVo> carDetailVoList = new ArrayList<>(10);
         BigDecimal freightFee = new BigDecimal(0);
         if (!CollectionUtils.isEmpty(taskCarList)) {
             CarDetailVo carDetailVo = null;
