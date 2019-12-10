@@ -361,7 +361,7 @@
     </select>
 
     <select id="findListStockTask" resultType="com.cjyc.common.model.vo.salesman.mine.StockTaskVo"
-                parameterType="com.cjyc.common.model.dto.salesman.mine.StockCarDetailDto">
+                parameterType="com.cjyc.common.model.dto.salesman.BaseSalesDto">
         SELECT
             wt.NO AS taskNo,
             ww.type AS type,

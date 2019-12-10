@@ -2,7 +2,7 @@ package com.cjyc.common.model.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.dto.customer.invoice.InvoiceApplyQueryDto;
-import com.cjyc.common.model.dto.salesman.mine.StockCarDetailDto;
+import com.cjyc.common.model.dto.salesman.BaseSalesDto;
 import com.cjyc.common.model.dto.salesman.mine.StockCarDto;
 import com.cjyc.common.model.dto.web.order.ChangePriceOrderCarDto;
 import com.cjyc.common.model.dto.web.order.LineWaitDispatchCountListOrderCarDto;
@@ -175,5 +175,5 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
      * @param dto
      * @return
      */
-    StockCarDetailVo findOrderCar(StockCarDetailDto dto);
+    StockCarDetailVo findOrderCar(BaseSalesDto dto);
 }

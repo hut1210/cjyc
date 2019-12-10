@@ -1,16 +1,11 @@
 package com.cjyc.common.model.dto.salesman.mine;
 
-import com.cjyc.common.model.dto.BasePageDto;
+import com.cjyc.common.model.dto.salesman.PageSalesDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
-
 @Data
-public class StockCarDto extends BasePageDto {
-    @ApiModelProperty(value = "登陆业务员id",required = true)
-    @NotNull(message = "登陆业务员id不能为空")
-    private Long loginId;
+public class StockCarDto extends PageSalesDto {
     @ApiModelProperty(value = "vin码")
     private String vin;
     @ApiModelProperty(value = "起始地")

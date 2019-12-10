@@ -177,10 +177,29 @@ public class LocalDateTimeUtil {
      * @param format
      * @return
      */
-    public static Long convertToLong(String dateStr, String format) {
+    public static LocalDate convertToLocalDate(String dateStr, String format) {
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern(format);
-        LocalDate date = LocalDate.parse(dateStr, fmt);
-        return date.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
+        LocalDate localDate = LocalDate.parse(dateStr, fmt);
+        return localDate;
+    }
+
+    /**
+     * 获取num个月后的日期
+     * @param localDate
+     * @param num
+     * @return
+     */
+    public static LocalDate getNextMouth(LocalDate localDate,int num){
+        return localDate.plusMonths(num);
+    }
+
+    /**
+     * LocalDate转时间戳
+     * @param localDate
+     * @return
+     */
+    public static Long convertToLong(LocalDate localDate){
+        return localDate.atStartOfDay(ZoneId.systemDefault()).toInstant().getEpochSecond();
     }
 
 }

@@ -120,7 +120,7 @@
             <if test="operateName != null and operateName.trim() != ''">
                 and  ba.name like CONCAT('%',#{operateName},'%')
             </if>
-             and dc.type = 2 group by dc.id
+             and dc.type = 2 and dcdc.role >= 2 group by dc.id
         </where>
     </select>
 

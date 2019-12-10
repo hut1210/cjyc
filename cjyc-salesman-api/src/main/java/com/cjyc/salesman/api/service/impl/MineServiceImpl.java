@@ -5,7 +5,8 @@ import com.cjyc.common.model.dao.ICarSeriesDao;
 import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.ITaskDao;
 import com.cjyc.common.model.dao.IWaybillCarDao;
-import com.cjyc.common.model.dto.salesman.mine.StockCarDetailDto;
+import com.cjyc.common.model.dto.salesman.BaseSalesDto;
+import com.cjyc.common.model.dto.salesman.mine.AchieveDto;
 import com.cjyc.common.model.dto.salesman.mine.StockCarDto;
 import com.cjyc.common.model.entity.WaybillCar;
 import com.cjyc.common.model.enums.waybill.WaybillTypeEnum;
@@ -57,7 +58,7 @@ public class MineServiceImpl extends ServiceImpl<IWaybillCarDao, WaybillCar> imp
     }
 
     @Override
-    public ResultVo<StockCarDetailVo> findStockCarDetail(StockCarDetailDto dto) {
+    public ResultVo<StockCarDetailVo> findStockCarDetail(BaseSalesDto dto) {
         String logoImg = LogoImgProperty.logoImg;
         //订单车辆信息
         StockCarDetailVo orderCarVo = orderCarDao.findOrderCar(dto);
@@ -80,5 +81,17 @@ public class MineServiceImpl extends ServiceImpl<IWaybillCarDao, WaybillCar> imp
             orderCarVo.setTrunkStockVos(trunkStockVos);
         }
         return BaseResultUtil.success(orderCarVo);
+    }
+
+    @Override
+    public ResultVo achieveCount(AchieveDto dto) {
+
+        Map<String,Object> mapCount = new HashMap<>(5);
+        mapCount.put("orderCount",1);
+        mapCount.put("confirmedCount",1);
+        mapCount.put("deliveredCount",1);
+        mapCount.put("pickCarCount",1);
+        mapCount.put("backCarCount",1);
+        return BaseResultUtil.success(mapCount);
     }
 }

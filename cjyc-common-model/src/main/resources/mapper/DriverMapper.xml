@@ -145,9 +145,6 @@
             <if test="plateNo != null and plateNo.trim() != ''">
                 and  dv.plate_no = #{plateNo}
             </if>
-            <if test="identity != null">
-                and  dd.identity = #{identity}
-            </if>
             <if test="runningState != null">
                 and  dvr.running_state = #{runningState}
             </if>

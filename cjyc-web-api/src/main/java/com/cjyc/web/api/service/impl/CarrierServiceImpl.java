@@ -217,7 +217,8 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         Driver driver = findDriver(carrier.getId());
         CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
                                 .eq(CarrierDriverCon::getCarrierId, carrier.getId())
-                                .eq(CarrierDriverCon::getRole, DriverRoleEnum.SUPERADMIN.code));
+                                .eq(CarrierDriverCon::getDriverId, driver.getId())
+                                .ge(CarrierDriverCon::getRole, DriverRoleEnum.ADMIN.code));
         if (null == carrier || null == driver || cdc == null) {
             return BaseResultUtil.fail("承运商信息错误，请检查");
         }

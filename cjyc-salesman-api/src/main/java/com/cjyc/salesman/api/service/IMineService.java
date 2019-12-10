@@ -1,7 +1,8 @@
 package com.cjyc.salesman.api.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.cjyc.common.model.dto.salesman.mine.StockCarDetailDto;
+import com.cjyc.common.model.dto.salesman.BaseSalesDto;
+import com.cjyc.common.model.dto.salesman.mine.AchieveDto;
 import com.cjyc.common.model.dto.salesman.mine.StockCarDto;
 import com.cjyc.common.model.entity.WaybillCar;
 import com.cjyc.common.model.vo.PageVo;
@@ -23,5 +24,12 @@ public interface IMineService extends IService<WaybillCar> {
      * @param dto
      * @return
      */
-    ResultVo<StockCarDetailVo> findStockCarDetail(StockCarDetailDto dto);
+    ResultVo<StockCarDetailVo> findStockCarDetail(BaseSalesDto dto);
+
+    /**
+     * 业绩统计
+     * @param dto
+     * @return
+     */
+    ResultVo achieveCount(AchieveDto dto);
 }

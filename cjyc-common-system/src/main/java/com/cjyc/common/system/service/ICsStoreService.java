@@ -1,6 +1,9 @@
 package com.cjyc.common.system.service;
 
+import com.cjyc.common.model.dto.customer.freightBill.FindStoreDto;
 import com.cjyc.common.model.entity.Store;
+import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.customer.customerLine.StoreListVo;
 
 import java.util.List;
 
@@ -57,4 +60,5 @@ public interface ICsStoreService {
 
     Long getBelongStoreId(Long storeId, String areaCode);
 
+    ResultVo<StoreListVo> findStore(FindStoreDto dto);
 }

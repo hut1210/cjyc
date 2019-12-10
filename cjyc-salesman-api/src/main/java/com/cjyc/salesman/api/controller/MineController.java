@@ -1,6 +1,7 @@
 package com.cjyc.salesman.api.controller;
 
-import com.cjyc.common.model.dto.salesman.mine.StockCarDetailDto;
+import com.cjyc.common.model.dto.salesman.BaseSalesDto;
+import com.cjyc.common.model.dto.salesman.mine.AchieveDto;
 import com.cjyc.common.model.dto.salesman.mine.StockCarDto;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -35,8 +36,14 @@ public class MineController {
 
     @ApiOperation(value = "库存车辆详情")
     @PostMapping(value = "/findStockCarDetail")
-    public ResultVo<StockCarDetailVo> findStockCarDetail(@Validated @RequestBody StockCarDetailDto dto) {
+    public ResultVo<StockCarDetailVo> findStockCarDetail(@Validated @RequestBody BaseSalesDto dto) {
         return mineService.findStockCarDetail(dto);
+    }
+
+    @ApiOperation(value = "业绩统计")
+    @PostMapping(value = "/achieveCount")
+    public ResultVo achieveCount(@Validated @RequestBody AchieveDto dto) {
+        return mineService.achieveCount(dto);
     }
 
 }

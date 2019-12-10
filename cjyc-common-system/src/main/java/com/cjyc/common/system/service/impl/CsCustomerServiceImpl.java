@@ -5,12 +5,14 @@ import com.cjkj.common.model.ReturnMsg;
 import com.cjkj.common.redis.template.StringRedisUtil;
 import com.cjkj.usercenter.dto.common.*;
 import com.cjyc.common.model.dao.ICustomerDao;
+import com.cjyc.common.model.dto.salesman.customer.SalesCustomerDto;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.enums.driver.DriverTypeEnum;
 import com.cjyc.common.model.exception.ParameterException;
 import com.cjyc.common.model.exception.ServerException;
 import com.cjyc.common.model.util.YmlProperty;
+import com.cjyc.common.model.vo.salesman.customer.SalesCustomerVo;
 import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.model.vo.ResultVo;
@@ -155,6 +157,12 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
             throw new ParameterException("用户不存在");
         }
         return customer;
+    }
+
+    @Override
+    public ResultVo<SalesCustomerVo> findCustomer(SalesCustomerDto dto) {
+        customerDao.findCustomer(dto);
+        return null;
     }
 
 }

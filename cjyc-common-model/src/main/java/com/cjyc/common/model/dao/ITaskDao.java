@@ -3,7 +3,7 @@ package com.cjyc.common.model.dao;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.dto.driver.task.NoFinishTaskQueryDto;
 import com.cjyc.common.model.dto.driver.task.TaskQueryDto;
-import com.cjyc.common.model.dto.salesman.mine.StockCarDetailDto;
+import com.cjyc.common.model.dto.salesman.BaseSalesDto;
 import com.cjyc.common.model.dto.salesman.task.TaskQueryConditionDto;
 import com.cjyc.common.model.dto.web.task.CrTaskDto;
 import com.cjyc.common.model.entity.Task;
@@ -104,5 +104,5 @@ public interface ITaskDao extends BaseMapper<Task> {
      * @param dto
      * @return
      */
-    List<StockTaskVo> findListStockTask(StockCarDetailDto dto);
+    List<StockTaskVo> findListStockTask(BaseSalesDto dto);
 }

@@ -1,14 +1,19 @@
 package com.cjyc.common.model.dto.salesman.mine;
 
+import com.cjyc.common.model.dto.salesman.BaseSalesDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
+
 @Data
-public class StockCarDetailDto implements Serializable {
-    private static final long serialVersionUID = -1560969906609895793L;
+public class AchieveDto extends BaseSalesDto {
     @ApiModelProperty(value = "车辆id",required = true)
     @NotNull(message = "车辆id不能为空")
     private Long orderCarId;
+
+    @ApiModelProperty(value = "日期,格式为yyyy-MM-dd",required = true)
+    @NotBlank(message = "日期不能为空")
+    private String date;
 }
