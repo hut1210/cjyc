@@ -18,12 +18,12 @@ public class TaskQueryConditionDto extends BasePageDto {
     @NotNull(message = "用户登录id不能为空")
     private Long loginId;
 
-    @ApiModelProperty(value = "任务状态：0全部,1待提车,2待交车")
-    @Pattern(regexp = "[0|1|2]",message = "任务状态只能是0,1,2中的一位数")
+    @ApiModelProperty(value = "任务状态：0全部,1待提车,2待交车,3历史记录")
+    @Pattern(regexp = "[0|1|2|3]",message = "任务状态只能是0,1,2,3中的一位数")
     private String taskState;
 
     @ApiModelProperty(value = "接单日期")
-    private Long receiveOrderTime;
+    private Long creatTime;
 
     @ApiModelProperty(value = "运单号")
     private String waybillNo;
@@ -33,4 +33,10 @@ public class TaskQueryConditionDto extends BasePageDto {
 
     @ApiModelProperty(value = "目的地")
     private String endAddress;
+
+    @ApiModelProperty(value = "交车日期开始")
+    private Long completeTimeS;
+
+    @ApiModelProperty(value = "交车日期结束")
+    private Long completeTimeE;
 }

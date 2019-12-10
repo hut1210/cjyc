@@ -64,10 +64,6 @@ public class TaskServiceImpl implements ITaskService {
             return BaseResultUtil.fail("运单ID参数错误");
         }
         Waybill waybill = waybillDao.selectById(waybillId);
-        if (waybill == null) {
-            log.error("未查询到运单信息");
-            return BaseResultUtil.fail("未查询到运单信息");
-        }
         taskDetailVo.setType(waybill.getType());
 
         // 查询任务单信息
@@ -77,13 +73,7 @@ public class TaskServiceImpl implements ITaskService {
             return BaseResultUtil.fail("任务单ID参数错误");
         }
         Task task = taskDao.selectById(taskId);
-        if (task == null) {
-            log.error("未查询到任务单信息");
-            return BaseResultUtil.fail("未查询到任务单信息");
-        }
-        taskDetailVo.setGuideLine(task.getGuideLine());
-        taskDetailVo.setCreateTime(task.getCreateTime());
-        taskDetailVo.setNo(task.getNo());
+        BeanUtils.copyProperties(task,taskDetailVo);
 
         // 查询车辆信息
         List<CarDetailVo> carDetailVoList = new ArrayList<>(10);
@@ -102,7 +92,7 @@ public class TaskServiceImpl implements ITaskService {
                 // 查询品牌车系信息
                 OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
                 BeanUtils.copyProperties(orderCar,carDetailVo);
-                carDetailVo.setCompleteTime(task.getCompleteTime());
+
                 // 查询支付方式
                 Order order = orderDao.selectById(orderCar.getOrderId());
                 carDetailVo.setPayType(order.getPayType());

@@ -14,9 +14,9 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.task.CarDetailVo;
+import com.cjyc.common.model.vo.driver.task.TaskBillVo;
 import com.cjyc.common.model.vo.driver.task.TaskDetailVo;
 import com.cjyc.common.model.vo.driver.task.TaskDriverVo;
-import com.cjyc.common.model.vo.driver.task.TaskBillVo;
 import com.cjyc.driver.api.service.ITaskService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -114,7 +114,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
     }
 
     @Override
-    public ResultVo<TaskDetailVo> getDetail(DetailQueryDto dto) {
+    public ResultVo<TaskDetailVo> getNoHandleDetail(DetailQueryDto dto) {
         TaskDetailVo taskDetailVo = new TaskDetailVo();
         // 查询运单信息
         Long waybillId = dto.getWaybillId();
@@ -123,74 +123,85 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
             return BaseResultUtil.fail("运单ID参数错误");
         }
         Waybill waybill = waybillDao.selectById(waybillId);
-        if (waybill == null) {
-            log.error("未查询到运单信息");
-            return BaseResultUtil.fail("未查询到运单信息");
-        }
         BeanUtils.copyProperties(waybill,taskDetailVo);
 
+        // 查询运单车辆信息
+        LambdaQueryWrapper<WaybillCar> queryWrapper = new QueryWrapper<WaybillCar>().lambda().eq(WaybillCar::getWaybillId, waybillId);
+        List<WaybillCar> waybillCarList = waybillCarDao.selectList(queryWrapper);
         List<CarDetailVo> carDetailVoList = new ArrayList<>(10);
         BigDecimal freightFee = new BigDecimal(0);
-        Long taskId = dto.getTaskId();
-        if (taskId != null && taskId != 0) {// 已分配的任务
-            // 查询任务单信息信息
-            Task task = taskDao.selectById(taskId);
-            taskDetailVo.setDriverName(task.getDriverName());
-            taskDetailVo.setDriverPhone(task.getDriverPhone());
-            taskDetailVo.setVehiclePlateNo(task.getVehiclePlateNo());
-            taskDetailVo.setGuideLine(task.getGuideLine());
-            taskDetailVo.setCreateTime(task.getCreateTime());
-            taskDetailVo.setNo(task.getNo());
+        CarDetailVo carDetailVo = null;
+        if (!CollectionUtils.isEmpty(waybillCarList)) {
+            for (WaybillCar waybillCar : waybillCarList) {
+                carDetailVo = new CarDetailVo();
+                BeanUtils.copyProperties(waybillCar,carDetailVo);
+                freightFee = freightFee.add(waybillCar.getFreightFee());
 
-            // 查询车辆信息
-            LambdaQueryWrapper<TaskCar> queryWrapper = new QueryWrapper<TaskCar>().lambda().eq(TaskCar::getTaskId,taskId);
-            List<TaskCar> taskCarList = taskCarDao.selectList(queryWrapper);
-            if (!CollectionUtils.isEmpty(taskCarList)) {
-                CarDetailVo carDetailVo = null;
-                for (TaskCar taskCar : taskCarList) {
-                    // 查询任务单车辆信息
-                    WaybillCar waybillCar = waybillCarDao.selectById(taskCar.getWaybillCarId());
-                    carDetailVo = new CarDetailVo();
-                    BeanUtils.copyProperties(waybillCar,carDetailVo);
-                    freightFee = freightFee.add(waybillCar.getFreightFee());
+                // 查询品牌车系信息
+                OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
+                BeanUtils.copyProperties(orderCar,carDetailVo);
 
-                    // 查询品牌车系信息
-                    OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
-                    BeanUtils.copyProperties(orderCar,carDetailVo);
-                    carDetailVo.setCompleteTime(task.getCompleteTime());
-
-                    // 查询支付方式
-                    Order order = orderDao.selectById(orderCar.getOrderId());
-                    carDetailVo.setPayType(order.getPayType());
-
-                    carDetailVo.setId(waybillCar.getId());
-                    carDetailVoList.add(carDetailVo);
-                }
-            }
-        } else {// 待分配的任务
-            // 查询运单车辆信息
-            LambdaQueryWrapper<WaybillCar> queryWrapper = new QueryWrapper<WaybillCar>().lambda().eq(WaybillCar::getWaybillId, waybillId);
-            List<WaybillCar> waybillCarList = waybillCarDao.selectList(queryWrapper);
-
-            // 查询品牌车系信息
-            CarDetailVo carDetailVo = null;
-            if (!CollectionUtils.isEmpty(waybillCarList)) {
-                for (WaybillCar waybillCar : waybillCarList) {
-                    carDetailVo = new CarDetailVo();
-                    BeanUtils.copyProperties(waybillCar,carDetailVo);
-                    freightFee = freightFee.add(waybillCar.getFreightFee());
-
-                    // 查询支付方式
-                    OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
-                    BeanUtils.copyProperties(orderCar,carDetailVo);
-
-                    carDetailVo.setId(waybillCar.getId());
-                    carDetailVoList.add(carDetailVo);
-                }
+                carDetailVo.setId(waybillCar.getId());
+                carDetailVoList.add(carDetailVo);
             }
         }
+
         taskDetailVo.setFreightFee(freightFee);
         taskDetailVo.setCarDetailVoList(carDetailVoList);
         return BaseResultUtil.success(taskDetailVo);
     }
+
+    @Override
+    public ResultVo<TaskDetailVo> getHistoryDetail(DetailQueryDto dto) {
+        TaskDetailVo taskDetailVo = new TaskDetailVo();
+        // 查询运单信息
+        Long waybillId = dto.getWaybillId();
+        if (waybillId == 0) {
+            log.error("运单ID参数错误");
+            return BaseResultUtil.fail("运单ID参数错误");
+        }
+        Waybill waybill = waybillDao.selectById(waybillId);
+        taskDetailVo.setType(waybill.getType());
+
+        // 查询任务单信息信息
+        Long taskId = dto.getTaskId();
+        if (taskId == 0) {
+            log.error("任务单ID参数错误");
+            return BaseResultUtil.fail("任务单ID参数错误");
+        }
+        Task task = taskDao.selectById(taskId);
+        BeanUtils.copyProperties(task,taskDetailVo);
+
+        // 查询车辆信息
+        LambdaQueryWrapper<TaskCar> queryWrapper = new QueryWrapper<TaskCar>().lambda().eq(TaskCar::getTaskId, taskId);
+        List<TaskCar> taskCarList = taskCarDao.selectList(queryWrapper);
+        List<CarDetailVo> carDetailVoList = new ArrayList<>(10);
+        BigDecimal freightFee = new BigDecimal(0);
+        if (!CollectionUtils.isEmpty(taskCarList)) {
+            CarDetailVo carDetailVo = null;
+            for (TaskCar taskCar : taskCarList) {
+                // 查询任务单车辆信息
+                WaybillCar waybillCar = waybillCarDao.selectById(taskCar.getWaybillCarId());
+                carDetailVo = new CarDetailVo();
+                BeanUtils.copyProperties(waybillCar,carDetailVo);
+                freightFee = freightFee.add(waybillCar.getFreightFee());
+
+                // 查询品牌车系信息
+                OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
+                BeanUtils.copyProperties(orderCar,carDetailVo);
+
+                // 查询支付方式
+                Order order = orderDao.selectById(orderCar.getOrderId());
+                carDetailVo.setPayType(order.getPayType());
+
+                carDetailVo.setId(waybillCar.getId());
+                carDetailVoList.add(carDetailVo);
+            }
+        }
+
+        taskDetailVo.setFreightFee(freightFee);
+        taskDetailVo.setCarDetailVoList(carDetailVoList);
+        return BaseResultUtil.success(taskDetailVo);
+    }
+
 }

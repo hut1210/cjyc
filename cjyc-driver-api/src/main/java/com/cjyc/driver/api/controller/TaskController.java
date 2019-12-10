@@ -81,7 +81,7 @@ public class TaskController {
     @ApiOperation(value = "查询待分配任务明细", notes = "\t 请求接口为json格式")
     @PostMapping("/getNoHandleDetail")
     public ResultVo<TaskDetailVo> getNoHandleDetail(@RequestBody @Validated({DetailQueryDto.GetNoHandleDetail.class}) DetailQueryDto dto) {
-        return taskService.getDetail(dto);
+        return taskService.getNoHandleDetail(dto);
     }
 
     /**
@@ -94,7 +94,7 @@ public class TaskController {
     @ApiOperation(value = "查询已分配任务明细", notes = "\t 请求接口为json格式")
     @PostMapping("/getHistoryDetail")
     public ResultVo<TaskDetailVo> getHistoryDetail(@RequestBody @Validated({DetailQueryDto.GetHistoryDetail.class}) DetailQueryDto dto) {
-        return taskService.getDetail(dto);
+        return taskService.getHistoryDetail(dto);
     }
 
     /**

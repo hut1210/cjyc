@@ -46,6 +46,14 @@ public class TaskWaybillVo implements Serializable {
     @JsonSerialize(using = DataLongSerizlizer.class)
     private Long createTime;
 
+    @ApiModelProperty(value = "交车时间")
+    @JsonSerialize(using = DataLongSerizlizer.class)
+    private Long completeTime;
+
     @ApiModelProperty(value = "车辆数")
     private Integer carNum;
+
+    public Long getCompleteTime() {
+        return completeTime ==null ? 0 : completeTime;
+    }
 }

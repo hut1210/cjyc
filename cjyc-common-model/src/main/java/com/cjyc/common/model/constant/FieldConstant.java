@@ -106,4 +106,8 @@ public class FieldConstant {
      * 待交车
      */
     public static final String WAIT_GIVE_CAR = "2";
+    /**
+     * 已交付：历史记录
+     */
+    public static final String FINISH_PAY = "3";
 }

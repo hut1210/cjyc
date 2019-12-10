@@ -42,9 +42,9 @@ public class CarDetailVo implements Serializable {
     @JsonSerialize(using = DataLongSerizlizer.class)
     private Long expectStartTime;
 
-    @ApiModelProperty(value = "交车日期:已交付的运单")
+    @ApiModelProperty(value = "交车日期")
     @JsonSerialize(using = DataLongSerizlizer.class)
-    private Long completeTime;
+    private Long unloadTime;
 
     @ApiModelProperty(value = "提车图片地址，逗号分隔")
     private String loadPhotoImg;
@@ -73,8 +73,8 @@ public class CarDetailVo implements Serializable {
     public Long getExpectStartTime() {
         return expectStartTime == null ? 0 : expectStartTime;
     }
-    public Long getCompleteTime() {
-        return completeTime == null ? 0 : completeTime;
+    public Long getUnloadTime() {
+        return unloadTime == null ? 0 : unloadTime;
     }
     public String getLoadPhotoImg() {
         return loadPhotoImg == null ? "" : loadPhotoImg;

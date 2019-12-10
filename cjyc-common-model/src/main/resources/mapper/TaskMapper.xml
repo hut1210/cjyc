@@ -308,18 +308,19 @@
             t.guide_line AS guideLine,
             t.car_num AS carNum,
             t.create_time AS createTime,
+            t.complete_time AS completeTime,
             t.state AS taskState,
             w.type AS type,
             sum(car.freight_fee) AS freightFee
         FROM
             ( SELECT task.id, task.waybill_id, task.no, task.guide_line,
-            task.car_num,task.state,task.create_time,tc.waybill_car_id
+            task.car_num,task.state,task.create_time,task.complete_time,tc.waybill_car_id
             FROM w_task task
             LEFT JOIN w_task_car tc ON task.id = tc.task_id
             <where>
                 task.driver_id = #{loginId}
-                <if test="receiveOrderTime != null and receiveOrderTime != 0">
-                    AND task.create_time = #{receiveOrderTime}
+                <if test="creatTime != null and creatTime != 0">
+                    AND task.create_time = #{creatTime}
                 </if>
                 <if test="waybillNo != null and waybillNo.trim() != ''">
                     AND task.no = concat('%',#{waybillNo},'%')
@@ -334,6 +335,9 @@
                     AND (task.state = ${@com.cjyc.common.model.enums.task.TaskStateEnum@WAIT_LOAD.code}
                     OR task.state = ${@com.cjyc.common.model.enums.task.TaskStateEnum@TRANSPORTING.code})
                 </if>
+                <if test="taskState != null and taskState == @com.cjyc.common.model.constant.FieldConstant@FINISH_PAY">
+                    AND task.state = ${@com.cjyc.common.model.enums.task.TaskStateEnum@FINISHED.code}
+                </if>
                 <if test="startAddress != null and startAddress.trim() != ''">
                     and task.guide_line like concat('%',#{startAddress},'%')
                 </if>
@@ -342,6 +346,12 @@
                 </if>
                 <if test="(startAddress == null or startAddress.trim() == '') and (endAddress != null and endAddress.trim() != '')">
                     and task.guide_line like concat('%-',#{endAddress},'%')
+                </if>
+                <if test="completeTimeS != null and completeTimeS != 0">
+                    and task.complete_time >= #{completeTimeS}
+                </if>
+                <if test="completeTimeE != null and completeTimeE != 0">
+                    and task.complete_time &lt;= #{completeTimeE}
                 </if>
             </where>
         ) t

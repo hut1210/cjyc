@@ -30,13 +30,22 @@ public interface ITaskService extends IService<Task> {
     ResultVo<PageVo<TaskBillVo>> getFinishTaskPage(TaskQueryDto dto);
 
     /**
-     * 功能描述: 查询任务详情
+     * 功能描述: 查询待分配任务明细
      * @author liuxingxiang
      * @date 2019/11/20
      * @param dto
      * @return com.cjyc.common.model.vo.ResultVo<com.github.pagehelper.PageInfo<com.cjyc.common.model.vo.driver.task.TaskDetailVo>>
      */
-    ResultVo<TaskDetailVo> getDetail(DetailQueryDto dto);
+    ResultVo<TaskDetailVo> getNoHandleDetail(DetailQueryDto dto);
+
+    /**
+     * 功能描述: 查询已分配任务明细
+     * @author liuxingxiang
+     * @date 2019/11/20
+     * @param dto
+     * @return com.cjyc.common.model.vo.ResultVo<com.github.pagehelper.PageInfo<com.cjyc.common.model.vo.driver.task.TaskDetailVo>>
+     */
+    ResultVo<TaskDetailVo> getHistoryDetail(DetailQueryDto dto);
 
     /**
      * 功能描述: 分页查询待分配任务列表
