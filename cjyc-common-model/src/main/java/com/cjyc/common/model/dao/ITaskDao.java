@@ -3,9 +3,11 @@ package com.cjyc.common.model.dao;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.dto.driver.task.NoFinishTaskQueryDto;
 import com.cjyc.common.model.dto.driver.task.TaskQueryDto;
+import com.cjyc.common.model.dto.salesman.task.TaskQueryConditionDto;
 import com.cjyc.common.model.dto.web.task.CrTaskDto;
 import com.cjyc.common.model.entity.Task;
 import com.cjyc.common.model.vo.driver.task.WaybillTaskVo;
+import com.cjyc.common.model.vo.salesman.task.TaskBillVo;
 import com.cjyc.common.model.vo.web.task.CrTaskVo;
 import com.cjyc.common.model.vo.web.task.ListByWaybillTaskVo;
 import com.cjyc.common.model.vo.web.task.TaskVo;
@@ -13,7 +15,6 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 /**
  * <p>
@@ -86,4 +87,13 @@ public interface ITaskDao extends BaseMapper<Task> {
     Task findByWaybillCarId(Long waybillCarId);
 
     List<Task> findListByWaybillCarIds(@Param("collection") Collection<Long> waybillCarIdSet);
+
+    /**
+     * 功能描述: 查询待提车，待交车列表
+     * @author liuxingxiang
+     * @date 2019/12/9
+     * @param dto
+     * @return java.util.List<com.cjyc.common.model.vo.salesman.task.TaskBillVo>
+     */
+    List<TaskBillVo> selectCarryList(TaskQueryConditionDto dto);
 }

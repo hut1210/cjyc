@@ -45,6 +45,7 @@ public class CsCarrierServiceImpl implements ICsCarrierService {
 
     @Override
     public ResultData<AddDeptAndUserResp> saveCarrierToPlatform(Carrier carrier) {
+
         List<Long> menuIds = CarrierProperty.carriesMenuIds;
         AddDeptAndUserReq deptReq = new AddDeptAndUserReq();
         deptReq.setName(carrier.getName());

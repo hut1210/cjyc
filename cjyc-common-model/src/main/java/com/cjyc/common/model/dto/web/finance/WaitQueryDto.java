@@ -55,6 +55,6 @@ public class WaitQueryDto extends BasePageDto implements Serializable {
     private  Long writeOffEndTime;
 
     @ApiModelProperty(value = "核销人")
-    private  String writeOffmMan;
+    private  String writeOffMan;
 
 }

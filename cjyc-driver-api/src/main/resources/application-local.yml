@@ -107,6 +107,8 @@ cjkj:
       1166601979446468610,
       1169434673131659265
 
+
+
 cjyc:
   swagger:
     enabled: true
@@ -150,6 +152,10 @@ cjyc:
       salesman:
         appid: app_LSm9WLS4SmLSSC48
         webhooks: http://39.106.134.87:80/manycc/pingpay/webhooksNotice
+
+  #车系logo
+  carSeries:
+    logoImg: https://cjwl-test-bucket.obs.cn-north-1.myhuaweicloud.com:443/
 
 
   ##SALT

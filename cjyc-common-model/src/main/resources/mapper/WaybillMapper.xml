@@ -431,14 +431,13 @@
             w.car_num as carNum,
             w.type as type,
             w.freight_fee as freightFee,
-            car.expect_start_time as expectStartTime
+            w.create_time as createTime
         from
             w_waybill w
-            left join w_waybill_car car on w.id = car.waybill_id
         where
             w.carrier_id in (select carrier_id
-            from d_carrier_driver_con
-            where driver_id = #{loginId} and state = ${@com.cjyc.common.model.enums.CommonStateEnum@CHECKED.code})
+                            from d_carrier_driver_con
+                            where driver_id = #{loginId} and state = ${@com.cjyc.common.model.enums.CommonStateEnum@CHECKED.code})
             and w.state = ${@com.cjyc.common.model.enums.waybill.WaybillStateEnum@ALLOT_CONFIRM.code}
             group by w.id
     </select>

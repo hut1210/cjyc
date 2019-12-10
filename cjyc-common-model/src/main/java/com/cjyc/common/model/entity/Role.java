@@ -56,4 +56,7 @@ public class Role implements Serializable {
 
     @ApiModelProperty(value = "是否可登陆APP 1：可以 2：不可以")
     private Integer loginApp;
+
+    @ApiModelProperty(value = "多个用英文逗号隔开，目前数据有：分配订单、提车调度、干线调度、送车调度")
+    private String appBtns;
 }

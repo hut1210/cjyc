@@ -30,7 +30,7 @@ public class FinanceReceiptVo implements Serializable {
     @ApiModelProperty(value = "剩余账期")
     private int remindDay;
     @ApiModelProperty(value = "应收运费")
-    private BigDecimal freightreceivable;
+    private BigDecimal freightReceivable;
     @ApiModelProperty(value = "订单编号")
     private String orderNo;
     @ApiModelProperty(value = "订单所属大区")
@@ -59,4 +59,7 @@ public class FinanceReceiptVo implements Serializable {
     private String customTypeName;
     @ApiModelProperty(value = "客户名称")
     private String customerName;
+
+    @ApiModelProperty(value = "客户账号")
+    private String phone;
 }

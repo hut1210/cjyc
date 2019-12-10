@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.dto.web.finance.FinanceQueryDto;
 import com.cjyc.common.model.vo.web.finance.FinanceReceiptVo;
 import com.cjyc.common.model.vo.web.finance.FinanceVo;
+import com.cjyc.common.model.vo.web.finance.PaymentVo;
 import com.cjyc.common.model.vo.web.finance.TrunkLineVo;
 
 import java.util.List;
@@ -19,4 +20,6 @@ public interface IFinanceDao extends BaseMapper {
     List<TrunkLineVo> getTrunkCostList(String orderCarNo);
 
     List<FinanceReceiptVo> getFinanceReceiptList(FinanceQueryDto financeQueryDto);
+
+    List<PaymentVo> getPaymentList(FinanceQueryDto financeQueryDto);
 }

@@ -1,6 +1,7 @@
 package com.cjyc.common.model.vo.salesman.login;
 
 import com.cjkj.usercenter.dto.common.auth.AuthLoginResp;
+import com.cjyc.common.model.entity.Admin;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -17,4 +18,6 @@ import java.util.List;
 public class SalesmanAppLoginVo extends AuthLoginResp {
     @ApiModelProperty(value = "角色列表")
     private List<String> roleList;
+    @ApiModelProperty(value = "业务员信息")
+    private Admin admin;
 }

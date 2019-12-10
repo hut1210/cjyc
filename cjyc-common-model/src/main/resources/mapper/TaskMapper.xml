@@ -102,20 +102,22 @@
         select max(no) from w_task where waybill_no = #{waybillNo}
     </select>
 
-    <!--查询提车，交车任务列表-->
+    <!--司机端：查询提车，交车任务列表-->
     <select id="selectNoFinishTaskPage" parameterType="com.cjyc.common.model.dto.driver.task.NoFinishTaskQueryDto"
             resultType="com.cjyc.common.model.vo.driver.task.WaybillTaskVo">
         SELECT
             t.id AS taskId,
             t.waybill_id AS waybillId,
-            t.waybill_no AS waybillNo,
+            t.no AS waybillNo,
             t.guide_line AS guideLine,
             t.car_num AS carNum,
+            t.create_time AS createTime,
             w.type AS type,
             car.expect_start_time AS expectStartTime,
             sum(car.freight_fee) AS freightFee
         FROM
-            ( SELECT task.id, task.waybill_id, task.waybill_no, task.guide_line, task.car_num,task.state,tc.waybill_car_id
+            ( SELECT task.id, task.waybill_id, task.no, task.guide_line, task.car_num,
+            task.state,task.create_time,tc.waybill_car_id
             FROM w_task task
             LEFT JOIN w_task_car tc ON task.id = tc.task_id
             <where>
@@ -139,14 +141,14 @@
         select
             t.id as taskId,
             t.waybill_id as waybillId,
-            t.waybill_no as waybillNo,
+            t.no as waybillNo,
             t.guide_line as guideLine,
             t.car_num as carNum,
             t.complete_time as completeTime,
             w.type as type,
             sum(car.freight_fee) as freightFee
         from
-            (select task.id, task.waybill_id, task.waybill_no, task.guide_line, task.car_num,task.state,task.complete_time,tc.waybill_car_id
+            (select task.id, task.waybill_id, task.no, task.guide_line, task.car_num,task.state,task.complete_time,tc.waybill_car_id
             from w_task task
             left join w_task_car tc on task.id = tc.task_id
             where task.driver_id = #{loginId} and task.state = ${@com.cjyc.common.model.enums.task.TaskStateEnum@FINISHED.code}
@@ -155,7 +157,7 @@
             left join w_waybill_car car on t.waybill_car_id = car.id
         <where>
             <if test="waybillNo != null and waybillNo.trim() != ''">
-                and t.waybill_no like concat('%',#{waybillNo},'%')
+                and t.no like concat('%',#{waybillNo},'%')
             </if>
             <if test="type != null and type != 0">
                 and w.type = #{type}
@@ -192,19 +194,19 @@
         select
             t.id as taskId,
             t.waybill_id as waybillId,
-            t.waybill_no as waybillNo,
+            t.no as waybillNo,
             t.guide_line as guideLine,
             t.car_num as carNum,
-            t.complete_time as completeTime,
+            t.create_time as createTime,
             t.driver_name as driverName,
             t.driver_phone as driverPhone,
             t.vehicle_plate_no as vehiclePlateNo,
             w.type as type,
-            car.expect_start_time as expectStartTime,
             sum(car.freight_fee) as freightFee
         from
-            (select task.id, task.waybill_id, task.waybill_no, task.guide_line, task.car_num,
-            task.state,task.complete_time,task.driver_name,task.driver_phone,task.vehicle_plate_no,tc.waybill_car_id
+            (select task.id, task.waybill_id, task.no, task.guide_line, task.car_num,
+            task.state,task.complete_time,task.create_time,task.driver_name,task.driver_phone,
+            task.vehicle_plate_no,tc.waybill_car_id
             from w_task task
             left join w_task_car tc on task.id = tc.task_id
             where task.create_user_id = #{loginId}
@@ -213,7 +215,7 @@
             left join w_waybill_car car on t.waybill_car_id = car.id
         <where>
             <if test="waybillNo != null and waybillNo.trim() != ''">
-                and t.waybill_no like concat('%',#{waybillNo},'%')
+                and t.no like concat('%',#{waybillNo},'%')
             </if>
             <if test="type != null and type != 0">
                 and w.type = #{type}
@@ -294,6 +296,58 @@
         <foreach collection="collection" index="index" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>
+    </select>
+
+    <!--业务员端：查询待提车，待交车列表-->
+    <select id="selectCarryList" parameterType="com.cjyc.common.model.dto.salesman.task.TaskQueryConditionDto"
+            resultType="com.cjyc.common.model.vo.salesman.task.TaskBillVo">
+        SELECT
+            t.id AS taskId,
+            t.waybill_id AS waybillId,
+            t.no AS waybillNo,
+            t.guide_line AS guideLine,
+            t.car_num AS carNum,
+            t.create_time AS createTime,
+            t.state AS taskState,
+            w.type AS type,
+            sum(car.freight_fee) AS freightFee
+        FROM
+            ( SELECT task.id, task.waybill_id, task.no, task.guide_line,
+            task.car_num,task.state,task.create_time,tc.waybill_car_id
+            FROM w_task task
+            LEFT JOIN w_task_car tc ON task.id = tc.task_id
+            <where>
+                task.driver_id = #{loginId}
+                <if test="receiveOrderTime != null and receiveOrderTime != 0">
+                    AND task.create_time = #{receiveOrderTime}
+                </if>
+                <if test="waybillNo != null and waybillNo.trim() != ''">
+                    AND task.no = concat('%',#{waybillNo},'%')
+                </if>
+                <if test="taskState != null and taskState == @com.cjyc.common.model.constant.FieldConstant@WAIT_PICK_CAR">
+                    AND task.state = ${@com.cjyc.common.model.enums.task.TaskStateEnum@WAIT_LOAD.code}
+                </if>
+                <if test="taskState != null and taskState == @com.cjyc.common.model.constant.FieldConstant@WAIT_GIVE_CAR">
+                    AND task.state = ${@com.cjyc.common.model.enums.task.TaskStateEnum@TRANSPORTING.code}
+                </if>
+                <if test="taskState != null and taskState == @com.cjyc.common.model.constant.FieldConstant@ALL_TASK">
+                    AND (task.state = ${@com.cjyc.common.model.enums.task.TaskStateEnum@WAIT_LOAD.code}
+                    OR task.state = ${@com.cjyc.common.model.enums.task.TaskStateEnum@TRANSPORTING.code})
+                </if>
+                <if test="startAddress != null and startAddress.trim() != ''">
+                    and task.guide_line like concat('%',#{startAddress},'%')
+                </if>
+                <if test="(startAddress != null and startAddress.trim() != '') and (endAddress != null and endAddress.trim() != '')">
+                    and task.guide_line like concat('%',#{endAddress},'%')
+                </if>
+                <if test="(startAddress == null or startAddress.trim() == '') and (endAddress != null and endAddress.trim() != '')">
+                    and task.guide_line like concat('%-',#{endAddress},'%')
+                </if>
+            </where>
+        ) t
+        LEFT JOIN w_waybill w ON t.waybill_id = w.id
+        LEFT JOIN w_waybill_car car ON t.waybill_car_id = car.id
+        GROUP BY t.id
     </select>
 
 

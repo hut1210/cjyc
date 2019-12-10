@@ -14,10 +14,7 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.RandomUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.finance.FinanceReceiptVo;
-import com.cjyc.common.model.vo.web.finance.FinanceVo;
-import com.cjyc.common.model.vo.web.finance.TrunkLineVo;
-import com.cjyc.common.model.vo.web.finance.WaitInvoiceVo;
+import com.cjyc.common.model.vo.web.finance.*;
 import com.cjyc.common.system.service.ICsSendNoService;
 import com.cjyc.web.api.service.IFinanceService;
 import com.github.pagehelper.PageHelper;
@@ -141,12 +138,14 @@ public class FinanceServiceImpl implements IFinanceService {
     }
 
     @Override
-    public void confirmSettlement(Long invoiceId,String invoice_no) {
+    public void confirmSettlement(String serialNumber,String invoiceNo) {
         InvoiceReceipt invoiceReceipt = new InvoiceReceipt();
-        invoiceReceipt.setInvoiceId(invoiceId);
-        invoiceReceipt.setInvoiceNo(invoice_no);
-        invoiceReceipt.setState(invoice_no);
-        invoiceReceiptDao.updateById(invoiceReceipt);
+        invoiceReceipt.setSerialNumber(serialNumber);
+        invoiceReceipt.setInvoiceNo(invoiceNo);
+        invoiceReceipt.setState("2");
+        invoiceReceipt.setConfirmMan("");
+        invoiceReceipt.setConfirmTime(System.currentTimeMillis());
+        invoiceReceiptDao.confirmSettlement(invoiceReceipt);
     }
 
     @Override
@@ -159,7 +158,50 @@ public class FinanceServiceImpl implements IFinanceService {
     }
 
     @Override
-    public void cancelSettlement(Long invoiceId) {
+    public void cancelSettlement(String serialNumber) {
+        InvoiceReceipt invoiceReceipt = new InvoiceReceipt();
+        invoiceReceipt.setSerialNumber(serialNumber);
+        invoiceReceipt.setState("1");
+        invoiceReceiptDao.confirmSettlement(invoiceReceipt);
+    }
 
+    @Override
+    public ResultVo<PageVo<WaitForBackVo>> getWaitForBackList(WaitQueryDto waitInvoiceQueryDto) {
+        PageHelper.startPage(waitInvoiceQueryDto.getCurrentPage(), waitInvoiceQueryDto.getPageSize());
+        List<WaitForBackVo> waitInvoiceVoList = invoiceReceiptDao.getWaitForBackList(waitInvoiceQueryDto);
+        PageInfo<WaitForBackVo> pageInfo = new PageInfo<>(waitInvoiceVoList);
+        return BaseResultUtil.success(pageInfo);
+    }
+
+    @Override
+    public void writeOff(String serialNumber,String invoiceNo) {
+        InvoiceReceipt invoiceReceipt = new InvoiceReceipt();
+        invoiceReceipt.setSerialNumber(serialNumber);
+        invoiceReceipt.setInvoiceNo(invoiceNo);
+        invoiceReceipt.setState("3");
+        invoiceReceipt.setWriteOffMan("");
+        invoiceReceipt.setWriteOffTime(System.currentTimeMillis());
+        invoiceReceiptDao.writeOff(invoiceReceipt);
+    }
+
+    @Override
+    public void detail(String serialNumber) {
+
+    }
+
+    @Override
+    public ResultVo<PageVo<ReceivableVo>> getReceivableList(WaitQueryDto waitInvoiceQueryDto) {
+        PageHelper.startPage(waitInvoiceQueryDto.getCurrentPage(), waitInvoiceQueryDto.getPageSize());
+        List<ReceivableVo> waitInvoiceVoList = invoiceReceiptDao.getReceivableList(waitInvoiceQueryDto);
+        PageInfo<ReceivableVo> pageInfo = new PageInfo<>(waitInvoiceVoList);
+        return BaseResultUtil.success(pageInfo);
+    }
+
+    @Override
+    public ResultVo<PageVo<PaymentVo>> getPaymentList(FinanceQueryDto financeQueryDto) {
+        PageHelper.startPage(financeQueryDto.getCurrentPage(), financeQueryDto.getPageSize());
+        List<PaymentVo> financeVoList = financeDao.getPaymentList(financeQueryDto);
+        PageInfo<PaymentVo> pageInfo = new PageInfo<>(financeVoList);
+        return BaseResultUtil.success(pageInfo);
     }
 }

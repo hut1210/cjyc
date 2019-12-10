@@ -78,7 +78,7 @@
     </select>
 
     <select id="getAmountByOrderNo" parameterType="String" resultType="java.math.BigDecimal">
-        select (total_fee-agency_fee-coupon_offset_fee) as amount from w_order where no=#{orderNo}
+        select if(customer_type=3,(total_fee-agency_fee),total_fee) as amount from w_order where no=#{orderNo}
     </select>
 
     <update id="updateOrderState" parameterType="map">
@@ -96,7 +96,10 @@
     </select>
 
     <select id="getAmountByOrderCarIds" parameterType="String" resultType="java.math.BigDecimal">
-        select sum(freight_fee) from w_waybill_car wwc where order_car_id in (#{orderCarIds})
+        select sum(freight_fee) from w_waybill_car wwc where order_car_id in
+        <foreach collection="orderCarIds.split(',')" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </select>
     <select id="findVoByNo" resultMap="VoResultMap">
         select tb.*, tbd.source_no

@@ -32,7 +32,7 @@ public interface ITradeBillDao extends BaseMapper<TradeBill> {
 
     List<TradeBill> getAllExpireTradeBill();
 
-    BigDecimal getAmountByOrderCarIds(String orderCarIds);
+    BigDecimal getAmountByOrderCarIds(@Param("orderCarIds")String orderCarIds);
 
     int updateForPaySuccess(@Param("no") String no, @Param("tradeTime") Long tradeTime);
 

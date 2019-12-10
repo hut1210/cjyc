@@ -54,6 +54,16 @@ public class TaskDetailVo implements Serializable {
 
     @ApiModelProperty(value = "车辆信息列表")
     private List<CarDetailVo> carDetailVoList;
+
+    public Integer getState() {
+        return state == null ? -1 : state;
+    }
+    public Long getCreateTime() {
+        return createTime == null ? 0 : createTime;
+    }
+    public Long getCarrierId() {
+        return carrierId == null ? 0 : carrierId;
+    }
     public String getDriverName() {
         return driverName == null ? "" : driverName;
     }

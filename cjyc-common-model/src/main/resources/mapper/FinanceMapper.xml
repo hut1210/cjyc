@@ -55,14 +55,57 @@
             resultType="com.cjyc.common.model.vo.web.finance.FinanceReceiptVo">
         select woc.no,woc.vin,woc.brand,woc.model,cc.id,cc.type,cc.pay_mode,woc.total_fee,wo.start_province,wo.start_city,
         wo.start_area,wo.end_province,wo.end_city,wo.end_area,
-        woc.order_no,woc.now_area_code,wo.input_store_id,wo.input_store_name,wt.complete_time
+        woc.order_no,woc.now_area_code,wo.input_store_id,wo.input_store_name,wt.complete_time,cc.phone
         from w_order_car woc
         left join w_order wo on woc.order_id = wo.id
         left join c_customer cc on cc.id = wo.customer_id
         left join w_waybill_car wwc on wwc.order_car_no = woc.no
         left join w_task wt on wt.waybill_no = wwc.waybill_no
 
-        where 1=1
+        where cc.pay_mode = 1
+        <if test="no != null and no.trim() != ''">
+            and woc.no like concat('%',#{no},'%')
+        </if>
+        <if test="vin != null and vin.trim() != ''">
+            and  woc.vin = #{vin}
+        </if>
+        <if test="orderNo != null and orderNo.trim() != ''">
+            and  woc.order_no like concat('%',#{orderNo},'%')
+        </if>
+
+        <if test="type != null">
+            and cc.type = #{type}
+        </if>
+        <if test="customerName != null  and customerName.trim() != ''">
+            and  cc.name  like concat('%',#{customerName},'%')
+        </if>
+        <if test="payMode != null">
+            and  cc.pay_mode =#{payMode}
+        </if>
+
+        <if test="brand != null and brand.trim() != ''">
+            and cc.brand = #{brand}
+        </if>
+        <if test="model != null and model.trim() != ''">
+            and cc.model = #{model}
+        </if>
+        <if test="inputStoreName != null and inputStoreName.trim() != ''">
+            and wo.input_store_name = #{inputStoreName}
+        </if>
+    </select>
+
+    <select id="getPaymentList" parameterType="com.cjyc.common.model.dto.web.finance.FinanceQueryDto"
+            resultType="com.cjyc.common.model.vo.web.finance.PaymentVo">
+        select woc.no,woc.vin,woc.brand,woc.model,cc.id,cc.type,cc.pay_mode,woc.total_fee,wo.start_province,wo.start_city,
+        wo.start_area,wo.end_province,wo.end_city,wo.end_area,
+        woc.order_no,woc.now_area_code,wo.input_store_id,wo.input_store_name,wt.complete_time,cc.phone
+        from w_order_car woc
+        left join w_order wo on woc.order_id = wo.id
+        left join c_customer cc on cc.id = wo.customer_id
+        left join w_waybill_car wwc on wwc.order_car_no = woc.no
+        left join w_task wt on wt.waybill_no = wwc.waybill_no
+
+        where cc.pay_mode = 1
         <if test="no != null and no.trim() != ''">
             and woc.no like concat('%',#{no},'%')
         </if>

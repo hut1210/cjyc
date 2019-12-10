@@ -16,7 +16,7 @@ import java.io.Serializable;
 @Data
 public class CarDetailVo implements Serializable {
     private static final long serialVersionUID = -6283733541452871958L;
-    @ApiModelProperty(value = "提车联系人")
+    @ApiModelProperty(value = "运单车辆ID")
     @JsonSerialize(using= ToStringSerializer.class)
     private Long id;
 
@@ -64,6 +64,12 @@ public class CarDetailVo implements Serializable {
     @ApiModelProperty(value = "vin码")
     private String vin;
 
+    @ApiModelProperty(value = "客户付款方式：0到付（默认），1预付，2账期")
+    private Integer payType;
+
+    public Integer getPayType() {
+        return payType == null ? -1 : payType;
+    }
     public Long getExpectStartTime() {
         return expectStartTime == null ? 0 : expectStartTime;
     }

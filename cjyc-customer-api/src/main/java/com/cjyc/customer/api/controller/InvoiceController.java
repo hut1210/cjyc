@@ -69,11 +69,13 @@ public class InvoiceController {
         CustomerInvoice invoice = customerInvoiceService.getOne(new QueryWrapper<CustomerInvoice>().lambda()
                 .eq(CustomerInvoice::getId, invoiceId).eq(CustomerInvoice::getCustomerId,loginId));
         CustomerInvoiceVo vo = new CustomerInvoiceVo();
-        BeanUtils.copyProperties(invoice,vo);
+        if (invoice != null) {
+            BeanUtils.copyProperties(invoice,vo);
+        }
         return BaseResultUtil.success(vo);
     }
 
-    @ApiOperation(value = "根据登录ID和发票类型-查询开票历史开票信息", notes = "\t 请求参数:loginId-客户登录ID-必传;invoiceId-发票信息ID-必传")
+    @ApiOperation(value = "根据登录ID和发票类型-查询开票历史开票信息", notes = "\t 请求参数:loginId-客户登录ID-必传;type-发票类型-必传")
     @PostMapping("/getInvoice/{loginId}/{type}")
     public ResultVo<CustomerInvoiceVo> getInvoice(@PathVariable Long loginId,@PathVariable Integer type){
         List<CustomerInvoice> list = customerInvoiceService.list(new QueryWrapper<CustomerInvoice>().lambda()
