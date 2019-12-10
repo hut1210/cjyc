@@ -10,6 +10,10 @@ import lombok.Data;
 @Data
 public class LocalListWaybillCarVo extends WaybillCar {
 
+    @ApiModelProperty(value = "状态")
+    private String outterState;
+    @ApiModelProperty(value = "提送车业务中心")
+    private String localStoreName;
     @ApiModelProperty(value = "承运商ID")
     @JsonSerialize(using = ToStringSerializer.class)
     private Long carrierId;

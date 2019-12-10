@@ -33,6 +33,7 @@ import com.cjyc.web.api.service.IAdminService;
 import com.cjyc.web.api.service.IRoleService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -109,81 +110,80 @@ public class AdminServiceImpl extends ServiceImpl<IAdminDao, Admin> implements I
         req.setAccount(paramsDto.getPhone());
 
         //计算业务中心
-        List<Long> deptIds= new ArrayList<>();
-        //查询机构
-        ResultData<SelectRoleResp> resultData = sysRoleService.getById(paramsDto.getRoleId());
-        if(resultData == null || resultData.getData() == null){
-            return null;
-        }
-        ResultData<List<SelectDeptResp>> resultDeptData = sysDeptService.getMultiLevelDeptList(resultData.getData().getDeptId());
-        if(resultDeptData == null || CollectionUtils.isEmpty(resultDeptData.getData())){
-            return null;
-        }
-        //范围
-        List<Long> baseList = resultDeptData.getData().stream().map(SelectDeptResp::getDeptId).collect(Collectors.toList());
-        if(CollectionUtils.isEmpty(baseList)){
-            return null;
-        }
-
-        if(paramsDto.getStoreId() == null || StringUtils.isBlank(paramsDto.getRoleName())){
-
-            deptIds.add(resultData.getData().getDeptId());
-        }else if(paramsDto.getStoreId() == null || StringUtils.isNotBlank(paramsDto.getRoleName())){
-            Role role = roleDao.findByName(paramsDto.getRoleName());
-            if(role == null){
+        List<Long> deptIds = Lists.newArrayList();
+        if(paramsDto.getStoreId() == null){
+            //查询机构
+            ResultData<SelectRoleResp> resultData = sysRoleService.getById(paramsDto.getRoleId());
+            if(resultData == null || resultData.getData() == null){
                 return null;
             }
-            if(role.getRoleLevel() == RoleLevelEnum.COUNTRY_LEVEL.getLevel()){
-                deptIds.add(BIZ_TOP_DEPT_ID);
-            }else if(role.getRoleLevel() == RoleLevelEnum.REGION_LEVEL.getLevel()){
-                List<Long> list = getRegionGovIdList();
-                if(CollectionUtils.isEmpty(list)){
-                    return null;
-                }
-                baseList.forEach(deptId -> {
-                    if(list.contains(deptId)){
-                        deptIds.add(deptId);
-                    }
-                });
-
-            }else if(role.getRoleLevel() == RoleLevelEnum.PROVINCE_LEVEL.getLevel()){
-                List<Long> list = getProvinceGovIdList();
-                if(CollectionUtils.isEmpty(list)){
-                    return null;
-                }
-                baseList.forEach(deptId -> {
-                    if(list.contains(deptId)){
-                        deptIds.add(deptId);
-                    }
-                });
-            }else if(role.getRoleLevel() == RoleLevelEnum.CITY_LEVEL.getLevel()){
-                List<Long> list = getCityGovIdList();
-                if(CollectionUtils.isEmpty(list)){
-                    return null;
-                }
-                baseList.forEach(deptId -> {
-                    if(list.contains(deptId)){
-                        deptIds.add(deptId);
-                    }
-                });
-            }else{
-                List<Long> list = getBizCenterGovIdList();
-                if(CollectionUtils.isEmpty(list)){
-                    return null;
-                }
-                baseList.forEach(deptId -> {
-                    if(list.contains(deptId)){
-                        deptIds.add(deptId);
-                    }
-                });
+            ResultData<List<SelectDeptResp>> resultDeptData = sysDeptService.getMultiLevelDeptList(resultData.getData().getDeptId());
+            if(resultDeptData == null || CollectionUtils.isEmpty(resultDeptData.getData())){
+                return null;
             }
+            //范围
+            List<Long> baseList = resultDeptData.getData().stream().map(SelectDeptResp::getDeptId).collect(Collectors.toList());
+            if(CollectionUtils.isEmpty(baseList)){
+                return null;
+            }
+            if(StringUtils.isBlank(paramsDto.getRoleName())){
+                deptIds.add(resultData.getData().getDeptId());
+            }else{
+                Role role = roleDao.findByName(paramsDto.getRoleName());
+                if(role == null){
+                    return null;
+                }
+                if(role.getRoleLevel() == RoleLevelEnum.COUNTRY_LEVEL.getLevel()){
+                    deptIds.add(BIZ_TOP_DEPT_ID);
+                }else if(role.getRoleLevel() == RoleLevelEnum.REGION_LEVEL.getLevel()){
+                    List<Long> list = getRegionGovIdList();
+                    if(CollectionUtils.isEmpty(list)){
+                        return null;
+                    }
+                    baseList.forEach(deptId -> {
+                        if(list.contains(deptId)){
+                            deptIds.add(deptId);
+                        }
+                    });
+
+                }else if(role.getRoleLevel() == RoleLevelEnum.PROVINCE_LEVEL.getLevel()){
+                    List<Long> list = getProvinceGovIdList();
+                    if(CollectionUtils.isEmpty(list)){
+                        return null;
+                    }
+                    baseList.forEach(deptId -> {
+                        if(list.contains(deptId)){
+                            deptIds.add(deptId);
+                        }
+                    });
+                }else if(role.getRoleLevel() == RoleLevelEnum.CITY_LEVEL.getLevel()){
+                    List<Long> list = getCityGovIdList();
+                    if(CollectionUtils.isEmpty(list)){
+                        return null;
+                    }
+                    baseList.forEach(deptId -> {
+                        if(list.contains(deptId)){
+                            deptIds.add(deptId);
+                        }
+                    });
+                }else{
+                    List<Long> list = getBizCenterGovIdList();
+                    if(CollectionUtils.isEmpty(list)){
+                        return null;
+                    }
+                    baseList.forEach(deptId -> {
+                        if(list.contains(deptId)){
+                            deptIds.add(deptId);
+                        }
+                    });
+                }
+            }
+
         }else{
             Store store = csStoreService.getById(paramsDto.getStoreId(), true);
-            if(!baseList.contains(store.getDeptId())){
-                return null;
-            }
             deptIds.add(store.getDeptId());
         }
+
 
         req.setDeptIdList(deptIds);
         ResultData<PageData<SelectUsersByRoleResp>> resData = sysUserService.getPageUsersForSalesman(req);

@@ -210,17 +210,10 @@
         load_time = #{currentTimeMillis}
         <where>
             and state &lt; #{state}
-            <choose>
-                <when test="set != null and set.size > 0">
-                    and id in
-                    <foreach collection="set" index="index" item="item" open="(" separator="," close=")">
-                        #{item}
-                    </foreach>
-                </when>
-                <otherwise>
-                    and 1 != 1
-                </otherwise>
-            </choose>
+            and id in
+            <foreach collection="set" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
         </where>
     </update>
     <update id="updateForAllotDriver">
@@ -290,6 +283,13 @@
         update w_waybill_car
         set state = 100
         where id = #{id}
+    </update>
+    <update id="updateForLoad">
+        update w_waybill_car
+        set state = #{state},
+        load_time = #{currentTimeMillis}
+        where state &lt; #{state}
+        and id = #{id}
     </update>
 
     <select id="findByTaskCarId" resultType="com.cjyc.common.model.entity.WaybillCar">
@@ -400,6 +400,11 @@
         w.create_user as createUser,
         w.create_user_id as createUserId,
         w.type,
+        (
+        case when w.type = 1 then wc.end_store_name
+        when w.type = 3 then wc.start_store_name
+        end
+        ) as localStoreName,
         oc.brand as brand,
         oc.model as model,
         oc.plate_no as plateNo,

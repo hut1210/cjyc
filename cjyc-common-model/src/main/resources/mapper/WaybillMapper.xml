@@ -193,6 +193,7 @@
         join w_waybill w on wc.waybill_id = w.id
         where wc.order_car_id = #{orderCarId}
         and w.type = 3
+        and w.state &lt;= 100
         GROUP BY w.id
     </select>
 

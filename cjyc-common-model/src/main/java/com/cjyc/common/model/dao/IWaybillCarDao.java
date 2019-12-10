@@ -79,6 +79,7 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
     int updateBatchForUnload(@Param("set")Set<Long> waybillCarIdSet, @Param("state")int state);
 
     int updateBatchForLoad(@Param("set") Set<Long> waybillCarIdSet, @Param("state") int state, @Param("currentTimeMillis") long currentTimeMillis);
+    int updateForLoad(@Param("id")Long id,  @Param("state") int state, @Param("currentTimeMillis") long currentTimeMillis);
 
     int updateStateBatchByIds(@Param("set") Set<Long> waybillCarIdSet, @Param("state") int state);
 
@@ -95,4 +96,6 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
     int updateForReceipt(Long id);
 
     WaybillCar findWaitReceiptWaybill(Long orderCarId);
+
+
 }
