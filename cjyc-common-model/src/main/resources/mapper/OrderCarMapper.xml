@@ -936,5 +936,87 @@
 
     </select>
 
+    <select id="findStockCar" resultType="com.cjyc.common.model.vo.salesman.mine.StockCarVo"
+            parameterType="com.cjyc.common.model.dto.salesman.mine.StockCarDto">
+      SELECT
+        woc.id AS orderCarId,
+        woc.brand AS brand,
+        woc.model AS model,
+        wo.expect_start_date AS expectStartDate,
+        woc.vin AS vin
+      FROM
+	    w_order_car woc
+	  LEFT JOIN w_order wo ON woc.order_id = wo.id
+        <where>
+            <if test="vin != null and vin.trim() != ''">
+                  woc.vin = #{vin}
+            </if>
+            <if test="startCity != null and startCity.trim() != ''">
+                and wo.startCity = #{startCity}
+            </if>
+            <if test="endCity != null and endCity.trim() != ''">
+                and wo.endCity = #{endCity}
+            </if>
+            <if test="startTime != null">
+                and wo.expect_start_date >= #{startTime}
+            </if>
+            <if test="endTime != null">
+                and wo.expect_start_date &lt;= #{endTime}
+            </if>
+           <!-- and woc.now_store_id in
+            <foreach collection="codeSet" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>-->
+             and woc.state in (25,35,45,50)
+        </where>
+    </select>
+
+    <select id="stockCarCount" resultType="java.lang.Integer"
+            parameterType="com.cjyc.common.model.dto.salesman.mine.StockCarDto">
+        SELECT
+          count(woc.id)
+        FROM
+          w_order_car woc
+        LEFT JOIN w_order wo ON woc.order_id = wo.id
+        <where>
+            <if test="vin != null and vin.trim() != ''">
+                woc.vin = #{vin}
+            </if>
+            <if test="startCity != null and startCity.trim() != ''">
+                and wo.startCity = #{startCity}
+            </if>
+            <if test="endCity != null and endCity.trim() != ''">
+                and wo.endCity = #{endCity}
+            </if>
+            <if test="startTime != null">
+                and wo.expect_start_date >= #{startTime}
+            </if>
+            <if test="endTime != null">
+                and wo.expect_start_date &lt;= #{endTime}
+            </if>
+        </where>
+    </select>
+
+    <select id="findStockCarDetail" resultType="com.cjyc.common.model.vo.salesman.mine.StockCarDetailVo"
+                            parameterType="com.cjyc.common.model.dto.salesman.mine.StockCarDetailDto">
+          SELECT
+            wo.start_city AS startCity,
+            wo.end_city AS endCity,
+            wo.pick_contact_name AS pickContactName,
+            wo.pick_contact_phone AS pickContactPhone,
+            wo.start_address AS startAddress,
+            wo.back_contact_name AS backContactName,
+            wo.back_contact_phone AS backContactPhone,
+            wo.end_address AS endAddress,
+            woc.brand AS brand,
+            woc.model AS model,
+            wo.expect_start_date AS expectStartDate,
+            woc.vin AS vin
+        FROM
+            w_order_car woc
+        LEFT JOIN w_order wo ON woc.order_id = wo.id
+        WHERE woc.id = #{orderCarId}
+    </select>
+
 
 </mapper>
