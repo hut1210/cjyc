@@ -151,8 +151,9 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                     // 查询任务单车辆信息
                     WaybillCar waybillCar = waybillCarDao.selectById(taskCar.getWaybillCarId());
                     carDetailVo = new CarDetailVo();
-                    freightFee.add(waybillCar.getFreightFee());
                     BeanUtils.copyProperties(waybillCar,carDetailVo);
+                    freightFee = freightFee.add(waybillCar.getFreightFee());
+
                     // 查询品牌车系信息
                     OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
                     BeanUtils.copyProperties(orderCar,carDetailVo);
@@ -176,12 +177,13 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
             if (!CollectionUtils.isEmpty(waybillCarList)) {
                 for (WaybillCar waybillCar : waybillCarList) {
                     carDetailVo = new CarDetailVo();
-                    freightFee.add(waybillCar.getFreightFee());
+                    BeanUtils.copyProperties(waybillCar,carDetailVo);
+                    freightFee = freightFee.add(waybillCar.getFreightFee());
 
                     OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
                     BeanUtils.copyProperties(orderCar,carDetailVo);
 
-                    BeanUtils.copyProperties(waybillCar,carDetailVo);
+                    carDetailVo.setId(waybillCar.getId());
                     carDetailVoList.add(carDetailVo);
                 }
             }
