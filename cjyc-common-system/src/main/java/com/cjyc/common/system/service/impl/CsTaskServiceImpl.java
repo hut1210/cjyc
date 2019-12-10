@@ -833,11 +833,11 @@ public class CsTaskServiceImpl implements ICsTaskService {
             waybillCarDao.updateForReceipt(waybillCar.getId());
 
             //添加日志
-            csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.IN_STORE,
-                    new String[]{MessageFormat.format(OrderCarLogEnum.IN_STORE.getInnerLog(), orderCar.getNo(), waybillCar.getEndStoreName()),
-                            MessageFormat.format(OrderCarLogEnum.IN_STORE.getOutterLog(), orderCar.getNo(), waybillCar.getEndStoreName())},
-                    userInfo);
-            //提取数据
+            //            csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.IN_STORE,
+            //                    new String[]{MessageFormat.format(OrderCarLogEnum.IN_STORE.getInnerLog(), orderCar.getNo(), waybillCar.getEndStoreName()),
+            //                            MessageFormat.format(OrderCarLogEnum.IN_STORE.getOutterLog(), orderCar.getNo(), waybillCar.getEndStoreName())},
+            //                    userInfo);
+            //            //提取数据
             orderIdSet.add(orderCar.getOrderId());
             orderCarList.add(orderCar);
             waybillCarIdSet.add(waybillCar.getId());

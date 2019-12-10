@@ -29,7 +29,10 @@ public class ListOrderCarVo extends OrderCar {
     private Integer trunkTransportState;
     @ApiModelProperty("送车运输状态")
     private Integer backTransportState;
-
+    @ApiModelProperty("出发地址（全）")
+    private String startFullAddress;
+    @ApiModelProperty("目的地址（全）")
+    private String endFullAddress;
 
 
 
@@ -257,5 +260,6 @@ public class ListOrderCarVo extends OrderCar {
 
     @ApiModelProperty(value = "优惠券id")
     private Long couponSendId;
+
 
 }
