@@ -19,7 +19,7 @@ public class WaitInvoiceVo implements Serializable {
     private  String serialNumber;
 
     @ApiModelProperty(value = "应收运费")
-    private BigDecimal freightreceivable;
+    private BigDecimal freightReceivable;
 
     @ApiModelProperty(value = "结算金额（开票金额）")
     private BigDecimal amount;
@@ -46,7 +46,7 @@ public class WaitInvoiceVo implements Serializable {
     private String bankName;
 
     @ApiModelProperty(value = "银行账号")
-    private String bankAccout;
+    private String bankAccount;
 
     @ApiModelProperty(value = "收件人")
     private String pickUpPerson;
