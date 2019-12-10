@@ -18,20 +18,13 @@ public class CsOrderLogServiceImpl implements ICsOrderLogService {
 
     @Async
     @Override
-    public void asyncSave(OrderLog order) {
-
-
-    }
-
-    @Async
-    @Override
-    public void asyncSave(Order order, OrderLogTypeEnum type, Object[] objects, UserInfo userInfo) {
+    public void asyncSave(Order order, OrderLogTypeEnum type, String[] logs, UserInfo userInfo) {
         OrderLog orderLog = new OrderLog();
         orderLog.setOrderId(order.getId());
         orderLog.setOrderNo(order.getNo());
         orderLog.setType(type.getCode());
-        orderLog.setInnerLog(String.valueOf(objects[0]));
-        orderLog.setOuterLog(String.valueOf(objects[1]));
+        orderLog.setInnerLog(logs[0]);
+        orderLog.setOuterLog(logs[1]);
         orderLog.setCreateTime(System.currentTimeMillis());
         if(userInfo != null){
             orderLog.setCreateUser(userInfo.getName());

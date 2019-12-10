@@ -1,5 +1,6 @@
 package com.cjyc.common.model.dto.web.task;
 
+import com.cjyc.common.model.enums.UserTypeEnum;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -16,9 +17,12 @@ import java.util.List;
 public class OutStoreTaskDto {
     @ApiModelProperty(value = "登录用户ID", required = true)
     private Long loginId;
-
     @ApiModelProperty(value = "登录用户名(不用传)")
     private String loginName;
+    @ApiModelProperty(value = "(不用传)")
+    private String loginPhone;
+    @ApiModelProperty(value = "(不用传)")
+    private UserTypeEnum loginType;
 
     @ApiModelProperty(value = "任务ID", required = true)
     private String taskId;

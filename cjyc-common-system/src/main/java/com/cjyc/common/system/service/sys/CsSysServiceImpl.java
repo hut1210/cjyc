@@ -14,6 +14,7 @@ import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.service.ICsStoreService;
 import com.google.common.base.Joiner;
+import com.google.common.collect.Sets;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -53,6 +54,7 @@ public class CsSysServiceImpl implements ICsSysService {
     @Override
     public BizScope getBizScopeByRoleId(Long roleId, boolean isSearchCache) {
         BizScope bizScope = new BizScope();
+        //默认无权限
         bizScope.setCode(BizScopeEnum.NONE.code);
 
         Set<Long> set = new HashSet<>();
@@ -97,6 +99,23 @@ public class CsSysServiceImpl implements ICsSysService {
         bizScope.setCode(BizScopeEnum.STORE.code);
         bizScope.setStoreIds(set);
         return bizScope;
+    }
+
+    /**
+     * 根据用户ID查询业务范围
+     * @author JPG
+     * @since 2019/12/10 18:33
+     * @param loginId
+     * @param isSearchCache
+     */
+    @Override
+    public BizScope getBizScopeByLoginId(Long loginId, boolean isSearchCache) {
+        BizScope bizScope = new BizScope();
+        //默认无权限
+        bizScope.setCode(BizScopeEnum.NONE.code);
+        Set<Long> storeIds = Sets.newHashSet();
+
+        return null;
     }
 
     @Override

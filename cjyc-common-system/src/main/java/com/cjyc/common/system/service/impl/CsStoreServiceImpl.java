@@ -25,6 +25,10 @@ public class CsStoreServiceImpl implements ICsStoreService {
         return storeDao.findOneBelongByAreaCode(areaCode);
     }
 
+    @Override
+    public Store getOneBelongByCityCode(String cityCode) {
+        return storeDao.findOneBelongByCityCode(cityCode);
+    }
     /**
      * 查询区县所属业务中心列表-业务范围
      *
@@ -89,4 +93,5 @@ public class CsStoreServiceImpl implements ICsStoreService {
         }
         return storeId;
     }
+
 }

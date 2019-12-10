@@ -57,4 +57,5 @@ public interface ICsStoreService {
 
     Long getBelongStoreId(Long storeId, String areaCode);
 
+    Store getOneBelongByCityCode(String cityCode);
 }

@@ -93,8 +93,7 @@ public class AdminController {
     @ApiOperation(value = "分页查询指定业务中心下的业务员")
     @PostMapping(value = "/page")
     public ResultVo<PageVo<AdminPageVo>> listByRoleId(@RequestBody AdminPageDto reqDto) {
-        PageVo<AdminPageVo> page = adminService.page(reqDto);
-        return BaseResultUtil.success(page);
+        return adminService.page(reqDto);
     }
     @Deprecated
     @ApiOperation(value = "分页查询指定业务中心下的业务员")

@@ -6,7 +6,5 @@ import com.cjyc.common.model.entity.defined.UserInfo;
 import com.cjyc.common.model.enums.log.OrderLogTypeEnum;
 
 public interface ICsOrderLogService {
-    void asyncSave(OrderLog order);
-
-    void asyncSave(Order order, OrderLogTypeEnum reject, Object[] objects, UserInfo userInfo);
+    void asyncSave(Order order, OrderLogTypeEnum reject, String[] logs, UserInfo userInfo);
 }

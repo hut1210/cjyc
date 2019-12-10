@@ -101,12 +101,12 @@ public class AdminServiceImpl extends ServiceImpl<IAdminDao, Admin> implements I
     }
 
     @Override
-    public PageVo<AdminPageVo> page(AdminPageDto paramsDto) {
-
+    public ResultVo<PageVo<AdminPageVo>> page(AdminPageDto paramsDto) {
         List<AdminPageVo> resList = new ArrayList<>();
-
         SelectPageUsersForSalesmanReq req = new SelectPageUsersForSalesmanReq();
         BeanUtils.copyProperties(paramsDto, req);
+        req.setPageNum(paramsDto.getCurrentPage());
+        req.setPageSize(paramsDto.getPageSize());
         req.setAccount(paramsDto.getPhone());
 
         //计算业务中心
@@ -115,30 +115,30 @@ public class AdminServiceImpl extends ServiceImpl<IAdminDao, Admin> implements I
             //查询机构
             ResultData<SelectRoleResp> resultData = sysRoleService.getById(paramsDto.getRoleId());
             if(resultData == null || resultData.getData() == null){
-                return null;
+                return BaseResultUtil.success(PageVo.<AdminPageVo>builder().build());
             }
             ResultData<List<SelectDeptResp>> resultDeptData = sysDeptService.getMultiLevelDeptList(resultData.getData().getDeptId());
             if(resultDeptData == null || CollectionUtils.isEmpty(resultDeptData.getData())){
-                return null;
+                return BaseResultUtil.success(PageVo.<AdminPageVo>builder().build());
             }
             //范围
             List<Long> baseList = resultDeptData.getData().stream().map(SelectDeptResp::getDeptId).collect(Collectors.toList());
             if(CollectionUtils.isEmpty(baseList)){
-                return null;
+                return BaseResultUtil.success(PageVo.<AdminPageVo>builder().build());
             }
             if(StringUtils.isBlank(paramsDto.getRoleName())){
                 deptIds.add(resultData.getData().getDeptId());
             }else{
                 Role role = roleDao.findByName(paramsDto.getRoleName());
                 if(role == null){
-                    return null;
+                    return BaseResultUtil.success(PageVo.<AdminPageVo>builder().build());
                 }
                 if(role.getRoleLevel() == RoleLevelEnum.COUNTRY_LEVEL.getLevel()){
                     deptIds.add(BIZ_TOP_DEPT_ID);
                 }else if(role.getRoleLevel() == RoleLevelEnum.REGION_LEVEL.getLevel()){
                     List<Long> list = getRegionGovIdList();
                     if(CollectionUtils.isEmpty(list)){
-                        return null;
+                        return BaseResultUtil.success();
                     }
                     baseList.forEach(deptId -> {
                         if(list.contains(deptId)){
@@ -149,7 +149,7 @@ public class AdminServiceImpl extends ServiceImpl<IAdminDao, Admin> implements I
                 }else if(role.getRoleLevel() == RoleLevelEnum.PROVINCE_LEVEL.getLevel()){
                     List<Long> list = getProvinceGovIdList();
                     if(CollectionUtils.isEmpty(list)){
-                        return null;
+                        return BaseResultUtil.success(PageVo.<AdminPageVo>builder().build());
                     }
                     baseList.forEach(deptId -> {
                         if(list.contains(deptId)){
@@ -159,7 +159,7 @@ public class AdminServiceImpl extends ServiceImpl<IAdminDao, Admin> implements I
                 }else if(role.getRoleLevel() == RoleLevelEnum.CITY_LEVEL.getLevel()){
                     List<Long> list = getCityGovIdList();
                     if(CollectionUtils.isEmpty(list)){
-                        return null;
+                        return BaseResultUtil.success(PageVo.<AdminPageVo>builder().build());
                     }
                     baseList.forEach(deptId -> {
                         if(list.contains(deptId)){
@@ -169,7 +169,7 @@ public class AdminServiceImpl extends ServiceImpl<IAdminDao, Admin> implements I
                 }else{
                     List<Long> list = getBizCenterGovIdList();
                     if(CollectionUtils.isEmpty(list)){
-                        return null;
+                        return BaseResultUtil.success(PageVo.<AdminPageVo>builder().build());
                     }
                     baseList.forEach(deptId -> {
                         if(list.contains(deptId)){
@@ -182,13 +182,14 @@ public class AdminServiceImpl extends ServiceImpl<IAdminDao, Admin> implements I
         }else{
             Store store = csStoreService.getById(paramsDto.getStoreId(), true);
             deptIds.add(store.getDeptId());
+            req.setBizCenterId(store.getDeptId());
         }
 
 
         req.setDeptIdList(deptIds);
         ResultData<PageData<SelectUsersByRoleResp>> resData = sysUserService.getPageUsersForSalesman(req);
         if(resData == null || resData.getData() == null || CollectionUtils.isEmpty(resData.getData().getList())){
-            return null;
+            return BaseResultUtil.success(PageVo.<AdminPageVo>builder().build());
         }
 
 
@@ -196,7 +197,7 @@ public class AdminServiceImpl extends ServiceImpl<IAdminDao, Admin> implements I
         Set<Long> collect = list.stream().map(SelectUsersByRoleResp::getUserId).collect(Collectors.toSet());
         List<Admin> adminList = adminDao.findListByUserIds(collect);
         if(CollectionUtils.isEmpty(adminList)){
-            return null;
+            return BaseResultUtil.success(PageVo.<AdminPageVo>builder().build());
         }
         //附加数据
         for (SelectUsersByRoleResp selectUsersByRoleResp : list) {
@@ -214,13 +215,13 @@ public class AdminServiceImpl extends ServiceImpl<IAdminDao, Admin> implements I
             resList.add(adminPageVo);
         }
 
-        return PageVo.<AdminPageVo>builder()
+        return BaseResultUtil.success(PageVo.<AdminPageVo>builder()
                 .totalRecords(resData.getData().getTotal())
                 .pageSize(paramsDto.getPageSize())
                 .currentPage(paramsDto.getCurrentPage())
                 .totalPages(getPages(resData.getData().getTotal(), paramsDto.getPageSize()))
                 .list(resList)
-                .build();
+                .build());
 
     }
 

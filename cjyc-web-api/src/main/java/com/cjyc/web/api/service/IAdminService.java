@@ -23,7 +23,7 @@ public interface IAdminService extends IService<Admin> {
 
     ResultVo deliverySalesman(TypeSalesmanDto dto);
 
-    PageVo<AdminPageVo> page(AdminPageDto reqDto);
+    ResultVo<PageVo<AdminPageVo>> page(AdminPageDto reqDto);
 
     CacheData getCacheData(Long userId, Long roleId);
 }

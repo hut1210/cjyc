@@ -16,7 +16,6 @@ import java.util.List;
 public class LoadTaskDto {
     @ApiModelProperty(value = "登录用户ID",required = true)
     private Long loginId;
-
     @ApiModelProperty(value = "(不用传)")
     private String loginName;
     @ApiModelProperty(value = "(不用传)")

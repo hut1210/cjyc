@@ -19,25 +19,44 @@ public class CsOrderCarLogServiceImpl implements ICsOrderCarLogService {
     @Resource
     private IOrderCarLogDao orderCarLogDao;
 
+    /**
+     * 车辆日志
+     *
+     * @param orderCar    车辆
+     * @param logTypeEnum 日志类型
+     * @param log         日志内容
+     * @param userInfo    用户信息
+     * @author JPG
+     * @since 2019/12/9 19:59
+     */
+    @Override
+    public void asyncSave(OrderCar orderCar, OrderCarLogEnum logTypeEnum, String[] log, UserInfo userInfo) {
+        if(orderCar == null){
+            return;
+        }
+        OrderCarLog orderCarLog = new OrderCarLog();
+        orderCarLog.setOrderCarId(orderCar.getId());
+        orderCarLog.setOrderCarNo(orderCar.getNo());
+        orderCarLog.setType(logTypeEnum.getCode());
+        orderCarLog.setInnerLog(String.valueOf(log[0]));
+        orderCarLog.setOuterLog(String.valueOf(log[1]));
+        orderCarLog.setCreateTime(System.currentTimeMillis());
+        orderCarLog.setCreateUser(userInfo.getName());
+        orderCarLog.setCreateUserType(userInfo.getUserType().code);
+        orderCarLog.setCreateUserId(userInfo.getId());
+        orderCarLog.setCreateUserPhone(userInfo.getPhone());
+        orderCarLogDao.insert(orderCarLog);
+    }
+
+
     @Async
     @Override
-    public void asyncSave(List<OrderCar> orderCarList, OrderCarLogEnum type, Object[] objects, UserInfo userInfo) {
+    public void asyncSave(List<OrderCar> orderCarList, OrderCarLogEnum logTypeEnum, String[] log, Object[] args, UserInfo userInfo) {
         if(CollectionUtils.isEmpty(orderCarList)){
             return;
         }
         orderCarList.forEach(orderCar -> {
-            OrderCarLog orderCarLog = new OrderCarLog();
-            orderCarLog.setOrderCarId(orderCar.getId());
-            orderCarLog.setOrderCarNo(orderCar.getNo());
-            orderCarLog.setType(type.getCode());
-            orderCarLog.setInnerLog(String.valueOf(objects[0]));
-            orderCarLog.setOuterLog(String.valueOf(objects[1]));
-            orderCarLog.setCreateTime(System.currentTimeMillis());
-            orderCarLog.setCreateUser(userInfo.getName());
-            orderCarLog.setCreateUserType(userInfo.getUserType().code);
-            orderCarLog.setCreateUserId(userInfo.getId());
-            orderCarLog.setCreateUserPhone(userInfo.getPhone());
-            orderCarLogDao.insert(orderCarLog);
+            asyncSave(orderCar, logTypeEnum, log, userInfo);
         });
     }
 }

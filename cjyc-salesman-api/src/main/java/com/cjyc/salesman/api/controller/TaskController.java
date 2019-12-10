@@ -53,6 +53,7 @@ public class TaskController {
         //验证用户
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
+        reqDto.setLoginType(UserTypeEnum.ADMIN);
         return csTaskService.replenishInfo(reqDto);
     }
 
@@ -81,6 +82,8 @@ public class TaskController {
         //验证用户
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
+        reqDto.setLoginPhone(admin.getPhone());
+        reqDto.setLoginType(UserTypeEnum.ADMIN);
         return csTaskService.unload(reqDto);
     }
 
@@ -94,6 +97,8 @@ public class TaskController {
         //验证用户
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
+        reqDto.setLoginPhone(admin.getPhone());
+        reqDto.setLoginType(UserTypeEnum.ADMIN);
         return csTaskService.outStore(reqDto);
     }
 
@@ -108,6 +113,8 @@ public class TaskController {
         //验证用户
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
+        reqDto.setLoginPhone(admin.getPhone());
+        reqDto.setLoginType(UserTypeEnum.ADMIN);
         return csTaskService.inStore(reqDto);
     }
 

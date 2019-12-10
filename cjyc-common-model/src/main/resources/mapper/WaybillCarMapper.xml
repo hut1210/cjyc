@@ -227,17 +227,10 @@
         set state = #{state}
         <where>
             and state &lt; #{state}
-            <choose>
-                <when test="set != null and set.size > 0">
-                    and id in
-                    <foreach collection="set" index="index" item="item" open="(" separator="," close=")">
-                        #{item}
-                    </foreach>
-                </when>
-                <otherwise>
-                    and 1 != 1
-                </otherwise>
-            </choose>
+            and id in
+            <foreach collection="set" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
         </where>
     </update>
     <update id="updateStateBatchByIds">

@@ -130,7 +130,8 @@
     </update>
     <update id="updateForReceipt">
         update w_order_car
-        set state = 100
+        set state = 100,
+        wl_pay_state = 1
         where state &lt; 100
         and id = #{id}
     </update>

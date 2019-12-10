@@ -90,8 +90,6 @@ public class OrderController {
 
         ResultVo resultVo = orderService.commit(reqDto);
 
-        //发送消息给用户
-        //csPushMsgService.send(reqDto.getCustomerPhone(), PushMessageEnum.COMMIT_ORDER.getMsg(resultVo.getData().toString()));
         //发送短信
         return resultVo;
     }
@@ -136,6 +134,7 @@ public class OrderController {
     public ResultVo reject(@RequestBody RejectOrderDto reqDto) {
         //验证用户存不存在
         Admin admin = csAdminService.validate(reqDto.getLoginId());
+        reqDto.setLoginName(admin.getName());
         return orderService.reject(reqDto);
     }
 
@@ -286,8 +285,6 @@ public class OrderController {
         //验证用户存不存在
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
-        Admin toAdmin = csAdminService.validate(reqDto.getToAdminId());
-        reqDto.setToAdminName(toAdmin.getName());
         return orderService.allot(reqDto);
     }
 
