@@ -175,5 +175,5 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
      * @param dto
      * @return
      */
-    StockCarDetailVo findStockCarDetail(StockCarDetailDto dto);
+    StockCarDetailVo findOrderCar(StockCarDetailDto dto);
 }

@@ -3,10 +3,12 @@ package com.cjyc.common.model.dao;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.dto.driver.task.NoFinishTaskQueryDto;
 import com.cjyc.common.model.dto.driver.task.TaskQueryDto;
+import com.cjyc.common.model.dto.salesman.mine.StockCarDetailDto;
 import com.cjyc.common.model.dto.salesman.task.TaskQueryConditionDto;
 import com.cjyc.common.model.dto.web.task.CrTaskDto;
 import com.cjyc.common.model.entity.Task;
 import com.cjyc.common.model.vo.driver.task.WaybillTaskVo;
+import com.cjyc.common.model.vo.salesman.mine.StockTaskVo;
 import com.cjyc.common.model.vo.salesman.task.TaskBillVo;
 import com.cjyc.common.model.vo.web.task.CrTaskVo;
 import com.cjyc.common.model.vo.web.task.ListByWaybillTaskVo;
@@ -96,4 +98,11 @@ public interface ITaskDao extends BaseMapper<Task> {
      * @return java.util.List<com.cjyc.common.model.vo.salesman.task.TaskBillVo>
      */
     List<TaskBillVo> selectCarryList(TaskQueryConditionDto dto);
+
+    /**
+     * 查询库存提干送详情
+     * @param dto
+     * @return
+     */
+    List<StockTaskVo> findListStockTask(StockCarDetailDto dto);
 }

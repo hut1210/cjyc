@@ -350,5 +350,31 @@
         GROUP BY t.id
     </select>
 
+    <select id="findListStockTask" resultType="com.cjyc.common.model.vo.salesman.mine.StockTaskVo"
+                parameterType="com.cjyc.common.model.dto.salesman.mine.StockCarDetailDto">
+        SELECT
+            wt.NO AS taskNo,
+            ww.type AS type,
+            wwc.start_city AS startCity,
+            wwc.end_city AS endCity,
+            ww.carrier_name AS carrierName,
+            wt.driver_name AS driverName,
+            wt.driver_phone AS driverPhone,
+            wt.vehicle_plate_no AS vehiclePlateNo,
+            wwc.load_link_name AS loadLinkName,
+            wwc.load_link_phone AS loadLinkPhone,
+            wwc.start_address AS startAddress,
+            wwc.unload_link_name AS unloadLinkName,
+            wwc.unload_link_phone AS unloadLinkPhone,
+            wwc.end_address AS endAddress
+      FROM
+	    w_task wt
+    LEFT JOIN w_task_car wtc ON wt.id = wtc.task_id
+    LEFT JOIN w_waybill_car wwc ON wtc.waybill_car_id = wwc.id
+    LEFT JOIN w_waybill ww ON wwc.waybill_id = ww.id
+    WHERE wwc.order_car_id = #{orderCarId}
+    GROUP BY wt.no
+    </select>
+
 
 </mapper>
