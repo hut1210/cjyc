@@ -16,6 +16,9 @@ public class OrderCarCenterVo implements Serializable {
     @ApiModelProperty(value = "车辆id")
     private Long id;
 
+    @ApiModelProperty("车辆编码")
+    private String no;
+
     @ApiModelProperty(value = "车辆估值/万")
     private Integer valuation;
 

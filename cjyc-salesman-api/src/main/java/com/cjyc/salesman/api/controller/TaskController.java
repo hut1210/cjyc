@@ -10,7 +10,7 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.task.TaskDetailVo;
-import com.cjyc.common.model.vo.salesman.task.TaskBillVo;
+import com.cjyc.common.model.vo.salesman.task.TaskWaybillVo;
 import com.cjyc.common.system.service.ICsAdminService;
 import com.cjyc.common.system.service.ICsTaskService;
 import com.cjyc.salesman.api.service.ITaskService;
@@ -135,7 +135,7 @@ public class TaskController {
      */
     @ApiOperation(value = "查询提送车列表分页")
     @PostMapping("/getCarryPage")
-    public ResultVo<PageVo<TaskBillVo>> getCarryPage(@RequestBody @Validated TaskQueryConditionDto dto) {
+    public ResultVo<PageVo<TaskWaybillVo>> getCarryPage(@RequestBody @Validated TaskQueryConditionDto dto) {
        return taskService.getCarryPage(dto);
     }
 

@@ -3,11 +3,13 @@ package com.cjyc.common.model.dao;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.dto.driver.task.NoFinishTaskQueryDto;
 import com.cjyc.common.model.dto.driver.task.TaskQueryDto;
+import com.cjyc.common.model.dto.salesman.mine.StockCarDetailDto;
 import com.cjyc.common.model.dto.salesman.task.TaskQueryConditionDto;
 import com.cjyc.common.model.dto.web.task.CrTaskDto;
 import com.cjyc.common.model.entity.Task;
-import com.cjyc.common.model.vo.driver.task.WaybillTaskVo;
-import com.cjyc.common.model.vo.salesman.task.TaskBillVo;
+import com.cjyc.common.model.vo.driver.task.TaskBillVo;
+import com.cjyc.common.model.vo.salesman.mine.StockTaskVo;
+import com.cjyc.common.model.vo.salesman.task.TaskWaybillVo;
 import com.cjyc.common.model.vo.web.task.CrTaskVo;
 import com.cjyc.common.model.vo.web.task.ListByWaybillTaskVo;
 import com.cjyc.common.model.vo.web.task.TaskVo;
@@ -56,27 +58,27 @@ public interface ITaskDao extends BaseMapper<Task> {
      * @author liuxingxiang
      * @date 2019/11/19
      * @param dto
-     * @return java.util.List<com.cjyc.common.model.vo.driver.task.WaybillTaskVo>
+     * @return java.util.List<com.cjyc.common.model.vo.driver.task.TaskBillVo>
      */
-    List<WaybillTaskVo> selectFinishTaskPage(TaskQueryDto dto);
+    List<TaskBillVo> selectFinishTaskPage(TaskQueryDto dto);
 
     /**
      * 功能描述: 查询提车，交车任务列表
      * @author liuxingxiang
      * @date 2019/11/20
      * @param dto
-     * @return java.util.List<com.cjyc.common.model.vo.driver.task.WaybillTaskVo>
+     * @return java.util.List<com.cjyc.common.model.vo.driver.task.TaskBillVo>
      */
-    List<WaybillTaskVo> selectNoFinishTaskPage(NoFinishTaskQueryDto dto);
+    List<TaskBillVo> selectNoFinishTaskPage(NoFinishTaskQueryDto dto);
 
     /**
      * 功能描述: 查询历史任务记录列表
      * @author liuxingxiang
      * @date 2019/11/21
      * @param dto
-     * @return java.util.List<com.cjyc.common.model.vo.driver.task.WaybillTaskVo>
+     * @return java.util.List<com.cjyc.common.model.vo.driver.task.TaskBillVo>
      */
-    List<WaybillTaskVo> selectHistoryTaskPage(TaskQueryDto dto);
+    List<TaskBillVo> selectHistoryTaskPage(TaskQueryDto dto);
 
     int updateForUnload(@Param("taskId") Long taskId, @Param("unLoadNum")int unLoadNum);
 
@@ -95,5 +97,12 @@ public interface ITaskDao extends BaseMapper<Task> {
      * @param dto
      * @return java.util.List<com.cjyc.common.model.vo.salesman.task.TaskBillVo>
      */
-    List<TaskBillVo> selectCarryList(TaskQueryConditionDto dto);
+    List<TaskWaybillVo> selectCarryList(TaskQueryConditionDto dto);
+
+    /**
+     * 查询库存提干送详情
+     * @param dto
+     * @return
+     */
+    List<StockTaskVo> findListStockTask(StockCarDetailDto dto);
 }

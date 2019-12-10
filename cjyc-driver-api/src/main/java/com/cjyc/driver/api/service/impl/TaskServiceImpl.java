@@ -16,7 +16,7 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.task.CarDetailVo;
 import com.cjyc.common.model.vo.driver.task.TaskDetailVo;
 import com.cjyc.common.model.vo.driver.task.TaskDriverVo;
-import com.cjyc.common.model.vo.driver.task.WaybillTaskVo;
+import com.cjyc.common.model.vo.driver.task.TaskBillVo;
 import com.cjyc.driver.api.service.ITaskService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -55,19 +55,19 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
     private IDriverDao driverDao;
 
     @Override
-    public ResultVo<PageVo<WaybillTaskVo>> getWaitHandleTaskPage(BaseDriverDto dto) {
+    public ResultVo<PageVo<TaskBillVo>> getWaitHandleTaskPage(BaseDriverDto dto) {
         // 分页查询待分配的运单信息
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        List<WaybillTaskVo> taskList = waybillDao.selectWaitHandleTaskPage(dto);
+        List<TaskBillVo> taskList = waybillDao.selectWaitHandleTaskPage(dto);
         PageInfo pageInfo = new PageInfo(taskList);
         return BaseResultUtil.success(pageInfo);
     }
 
     @Override
-    public ResultVo<PageVo<WaybillTaskVo>> getNoFinishTaskPage(NoFinishTaskQueryDto dto) {
+    public ResultVo<PageVo<TaskBillVo>> getNoFinishTaskPage(NoFinishTaskQueryDto dto) {
         // 分页查询提车，交车任务信息
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        List<WaybillTaskVo> taskList = taskDao.selectNoFinishTaskPage(dto);
+        List<TaskBillVo> taskList = taskDao.selectNoFinishTaskPage(dto);
         PageInfo pageInfo = new PageInfo(taskList);
         return BaseResultUtil.success(pageInfo);
     }
@@ -98,17 +98,17 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
     }
 
     @Override
-    public ResultVo<PageVo<WaybillTaskVo>> getHistoryTaskPage(TaskQueryDto dto) {
+    public ResultVo<PageVo<TaskBillVo>> getHistoryTaskPage(TaskQueryDto dto) {
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        List<WaybillTaskVo> taskList = taskDao.selectHistoryTaskPage(dto);
+        List<TaskBillVo> taskList = taskDao.selectHistoryTaskPage(dto);
         PageInfo pageInfo = new PageInfo(taskList);
         return BaseResultUtil.success(pageInfo);
     }
 
     @Override
-    public ResultVo<PageVo<WaybillTaskVo>> getFinishTaskPage(TaskQueryDto dto) {
+    public ResultVo<PageVo<TaskBillVo>> getFinishTaskPage(TaskQueryDto dto) {
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        List<WaybillTaskVo> taskList = taskDao.selectFinishTaskPage(dto);
+        List<TaskBillVo> taskList = taskDao.selectFinishTaskPage(dto);
         PageInfo pageInfo = new PageInfo(taskList);
         return BaseResultUtil.success(pageInfo);
     }

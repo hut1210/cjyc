@@ -1,13 +1,12 @@
-package com.cjyc.customer.api.config;
+package com.cjyc.common.system.config;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * @Author:Hut
- * @Date:2019/11/20 13:52
+ * @Author: Hut
+ * @Date: 2019/12/9 19:37
  */
 @Configuration
 @RefreshScope

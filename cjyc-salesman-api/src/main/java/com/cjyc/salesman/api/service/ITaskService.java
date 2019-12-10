@@ -5,7 +5,7 @@ import com.cjyc.common.model.dto.salesman.task.TaskQueryConditionDto;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.task.TaskDetailVo;
-import com.cjyc.common.model.vo.salesman.task.TaskBillVo;
+import com.cjyc.common.model.vo.salesman.task.TaskWaybillVo;
 
 /**
  * @Description 任务业务接口
@@ -20,7 +20,7 @@ public interface ITaskService {
      * @param dto
      * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.vo.salesman.task.TaskBillVo>
      */
-    ResultVo<PageVo<TaskBillVo>> getCarryPage(TaskQueryConditionDto dto);
+    ResultVo<PageVo<TaskWaybillVo>> getCarryPage(TaskQueryConditionDto dto);
 
     /**
      * 功能描述: 提送车任务详情查询
