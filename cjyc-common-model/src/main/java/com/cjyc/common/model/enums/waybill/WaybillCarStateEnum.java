@@ -13,11 +13,11 @@ public enum WaybillCarStateEnum {
     WAIT_ALLOT("待指派", 0),
     ALLOTED("已指派", 2),
     WAIT_LOAD("待装车", 5),
-    WAIT_LOAD_TURN("待装车交接,待确认出库", 15),
-    LOADED("已装车", 45),
+    WAIT_LOAD_TURN("待装车交接,待确认出库", 15),// 待出库
+    LOADED("已装车", 45),// 已出库
     UNLOADED("已卸车", 70),
-    APPLY_CONFIRM("确认交车", 90),
-    CONFIRMED("确认收车", 100),
+    APPLY_CONFIRM("确认交车", 90),// 待入库
+    CONFIRMED("确认收车", 100),// 已入库
     WAIT_CONNECT("待重连", 105);
 
     public String name;

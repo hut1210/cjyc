@@ -4,7 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.driver.task.DetailQueryDto;
-import com.cjyc.common.model.dto.salesman.task.TaskQueryConditionDto;
+import com.cjyc.common.model.dto.salesman.task.OutAndInStorageQueryDto;
+import com.cjyc.common.model.dto.salesman.task.TaskWaybillQueryDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
@@ -47,7 +48,7 @@ public class TaskServiceImpl implements ITaskService {
     private IOrderDao orderDao;
 
     @Override
-    public ResultVo<PageVo<TaskWaybillVo>> getCarryPage(TaskQueryConditionDto dto) {
+    public ResultVo<PageVo<TaskWaybillVo>> getCarryPage(TaskWaybillQueryDto dto) {
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<TaskWaybillVo> list = taskDao.selectCarryList(dto);
         PageInfo<TaskWaybillVo> pageInfo = new PageInfo<>(list);
@@ -57,7 +58,7 @@ public class TaskServiceImpl implements ITaskService {
     @Override
     public ResultVo<TaskDetailVo> getCarryDetail(DetailQueryDto dto) {
         TaskDetailVo taskDetailVo = new TaskDetailVo();
-        // 查询运单信息
+        // 查询运单类型
         Long waybillId = dto.getWaybillId();
         if (waybillId == 0) {
             log.error("运单ID参数错误");
@@ -106,5 +107,20 @@ public class TaskServiceImpl implements ITaskService {
         taskDetailVo.setFreightFee(freightFee);
         taskDetailVo.setCarDetailVoList(carDetailVoList);
         return BaseResultUtil.success(taskDetailVo);
+    }
+
+    @Override
+    public ResultVo<PageVo<TaskWaybillVo>> getOutAndInStoragePage(OutAndInStorageQueryDto dto) {
+        // 根据登录ID查询业务中心编号
+
+        // 没权限直接返回
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("11,12,13");
+        dto.setStoreId(sb.toString());
+        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
+        List<TaskWaybillVo> list = taskDao.selectOutAndInStorageList(dto);
+        PageInfo<TaskWaybillVo> pageInfo = new PageInfo<>(list);
+        return BaseResultUtil.success(pageInfo);
     }
 }

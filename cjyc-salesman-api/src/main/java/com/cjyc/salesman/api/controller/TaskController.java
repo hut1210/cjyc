@@ -2,7 +2,8 @@ package com.cjyc.salesman.api.controller;
 
 import com.cjyc.common.model.dto.driver.task.DetailQueryDto;
 import com.cjyc.common.model.dto.driver.task.ReplenishInfoDto;
-import com.cjyc.common.model.dto.salesman.task.TaskQueryConditionDto;
+import com.cjyc.common.model.dto.salesman.task.OutAndInStorageQueryDto;
+import com.cjyc.common.model.dto.salesman.task.TaskWaybillQueryDto;
 import com.cjyc.common.model.dto.web.task.*;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.enums.UserTypeEnum;
@@ -135,7 +136,7 @@ public class TaskController {
      */
     @ApiOperation(value = "查询提送车,提送车历史记录列表分页")
     @PostMapping("/getCarryPage")
-    public ResultVo<PageVo<TaskWaybillVo>> getCarryPage(@RequestBody @Validated TaskQueryConditionDto dto) {
+    public ResultVo<PageVo<TaskWaybillVo>> getCarryPage(@RequestBody @Validated TaskWaybillQueryDto dto) {
        return taskService.getCarryPage(dto);
     }
 
@@ -150,6 +151,19 @@ public class TaskController {
     @PostMapping("/getCarryDetail")
     public ResultVo<TaskDetailVo> getCarryDetail(@RequestBody @Validated({DetailQueryDto.GetHistoryDetail.class}) DetailQueryDto dto) {
         return taskService.getCarryDetail(dto);
+    }
+
+    /**
+     * 功能描述: 查询出入库,出入库历史记录列表分页
+     * @author liuxingxiang
+     * @date 2019/12/9
+     * @param dto
+     * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.vo.PageVo<com.cjyc.common.model.vo.salesman.task.TaskWaybillVo>>
+     */
+    @ApiOperation(value = "查询出入库,出入库历史记录列表分页")
+    @PostMapping("/getOutAndInStoragePage")
+    public ResultVo<PageVo<TaskWaybillVo>> getOutAndInStoragePage(@RequestBody @Validated OutAndInStorageQueryDto dto) {
+        return taskService.getOutAndInStoragePage(dto);
     }
 
 

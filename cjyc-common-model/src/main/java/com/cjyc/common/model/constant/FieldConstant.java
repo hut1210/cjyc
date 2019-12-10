@@ -99,15 +99,15 @@ public class FieldConstant {
      */
     public static final String ALL_TASK = "0";
     /**
-     * 待提车
+     * 待提车;待入库
      */
     public static final String WAIT_PICK_CAR = "1";
     /**
-     * 待交车
+     * 待交车;待出库
      */
     public static final String WAIT_GIVE_CAR = "2";
     /**
      * 已交付：历史记录
      */
-    public static final String FINISH_PAY = "3";
+    public static final String FINISH = "3";
 }
