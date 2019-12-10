@@ -15,6 +15,7 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.ValidateReceiptCarPayVo;
+import com.cjyc.common.system.config.PingProperty;
 import com.cjyc.common.system.service.ICsCustomerService;
 import com.cjyc.common.system.service.ICsPingxxService;
 import com.cjyc.customer.api.dto.OrderModel;
