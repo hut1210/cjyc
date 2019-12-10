@@ -33,7 +33,7 @@ public interface IFinanceService {
 
     void writeOff(String serialNumber,String invoiceNo);
 
-    void detail(String serialNumber);
+    SettlementDetailVo detail(Long Id);
 
     ResultVo<PageVo<ReceivableVo>> getReceivableList(WaitQueryDto waitInvoiceQueryDto);
 

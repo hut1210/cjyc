@@ -90,9 +90,9 @@ public class FinanceController {
 
     @ApiOperation(value = "结算明细")
     @PostMapping(value = "/detail")
-    public ResultVo detail(@RequestBody String serialNumber){
-        financeService.detail(serialNumber);
-        return BaseResultUtil.success();
+    public ResultVo detail(@RequestBody Long Id){
+        SettlementDetailVo settlementDetailVo = financeService.detail(Id);
+        return BaseResultUtil.success(settlementDetailVo);
     }
 
     @ApiOperation(value = "根据条件查询已收款(账期)列表")

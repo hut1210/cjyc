@@ -41,11 +41,11 @@ public class OrderCarVo implements Serializable {
     @ApiModelProperty(value = "客户名称")
     private String customerName;
     @ApiModelProperty(value = "结算类型")
-    private String  payode;
+    private String  payMode;
     @ApiModelProperty(value = "订单分摊金额")
     private BigDecimal feeShare;
     @ApiModelProperty(value = "应收运费")
-    private BigDecimal freightreceivable;
+    private BigDecimal freightReceivable;
     @ApiModelProperty(value = "开票金额")
     private BigDecimal invoiceFee;
     @ApiModelProperty(value = "差额")

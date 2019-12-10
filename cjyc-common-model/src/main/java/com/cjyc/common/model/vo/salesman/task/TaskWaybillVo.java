@@ -32,6 +32,9 @@ public class TaskWaybillVo implements Serializable {
     @ApiModelProperty(value = "任务状态：5待提车，55待交车")
     private Integer taskState;
 
+    @ApiModelProperty(value = "库存状态：15待出库，90待入库，45已出库，100已入库")
+    private Integer storageState;
+
     @ApiModelProperty(value = "运单类型：1提车运单，2干线运单，3送车运单")
     private Integer type;
 
@@ -50,9 +53,29 @@ public class TaskWaybillVo implements Serializable {
     @JsonSerialize(using = DataLongSerizlizer.class)
     private Long completeTime;
 
+    @ApiModelProperty(value = "入库时间")
+    @JsonSerialize(using = DataLongSerizlizer.class)
+    private Long unloadTime;
+
+    @ApiModelProperty(value = "出库时间")
+    @JsonSerialize(using = DataLongSerizlizer.class)
+    private Long loadTime;
+
     @ApiModelProperty(value = "车辆数")
     private Integer carNum;
 
+    public Long getUnloadTime() {
+        return unloadTime ==null ? 0 : unloadTime;
+    }
+    public Long getLoadTime() {
+        return loadTime ==null ? 0 : loadTime;
+    }
+    public Integer getTaskState() {
+        return taskState == null ? -1 : taskState;
+    }
+    public Integer getStorageState() {
+        return storageState == null ? -1 : storageState;
+    }
     public Long getCompleteTime() {
         return completeTime ==null ? 0 : completeTime;
     }
