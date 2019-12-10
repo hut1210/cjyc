@@ -1,6 +1,7 @@
 package com.cjyc.common.system.service;
 
 import com.cjyc.common.model.dto.customer.order.ReceiptBatchDto;
+import com.cjyc.common.model.dto.driver.task.ReplenishInfoDto;
 import com.cjyc.common.model.dto.web.task.*;
 import com.cjyc.common.model.entity.defined.UserInfo;
 import com.cjyc.common.model.vo.ResultReasonVo;
@@ -9,7 +10,21 @@ import com.cjyc.common.model.vo.ResultVo;
 import java.util.List;
 
 public interface ICsTaskService {
+    /**
+     * 获取任务编号
+     * @author JPG
+     * @since 2019/12/9 18:10
+     * @param waybillNo
+     */
     String getTaskNo(String waybillNo);
+
+    /**
+     * 完善提车信息
+     * @author JPG
+     * @since 2019/12/9 18:10
+     * @param reqDto
+     */
+    ResultVo replenishInfo(ReplenishInfoDto reqDto);
 
     ResultVo allot(AllotTaskDto paramsDto);
 
@@ -34,4 +49,6 @@ public interface ICsTaskService {
      * @return
      */
     void updateForCarFinish(List<String> orderCarNoList, UserInfo userInfo);
+
+
 }

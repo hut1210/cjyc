@@ -49,29 +49,4 @@ public class WaybillServiceImpl implements IWaybillService {
         }
         return null;
     }
-
-    @Override
-    public ResultVo replenishInfo(ReplenishInfoDto reqDto) {
-        WaybillCar waybillCar = waybillCarDao.selectById(reqDto.getWaybillCarId());
-        if(waybillCar == null){
-            return BaseResultUtil.fail("运单车辆不存在");
-        }
-        String[] split = reqDto.getLoadPhotoImg().split(",");
-        if(split.length < Constant.MIN_LOAD_PHOTO_NUM){
-            return BaseResultUtil.fail("照片数量不足8张");
-        }
-        if(split.length > Constant.MAX_LOAD_PHOTO_NUM){
-            return BaseResultUtil.fail("照片数量不能超过20张");
-        }
-        //更新车辆信息
-        OrderCar orderCar = new OrderCar();
-        orderCar.setId(waybillCar.getOrderCarId());
-        orderCar.setVin(reqDto.getVin());
-        orderCar.setBrand(reqDto.getBrand());
-        orderCar.setModel(reqDto.getModel());
-        orderCar.setPlateNo(reqDto.getPlateNo());
-        orderCarDao.updateById(orderCar);
-        waybillCarDao.updateForReplenishInfo(waybillCar.getId(), reqDto.getLoadPhotoImg());
-        return BaseResultUtil.success();
-    }
 }

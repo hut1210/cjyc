@@ -32,7 +32,6 @@ public interface IDictionaryService {
      */
     ResultVo queryPage(SelectDictionaryDto dto);
 
-    ResultVo<Map<String, Object>> getInsurance(int valuation);
 
     /**
      * 查询所有系统配置

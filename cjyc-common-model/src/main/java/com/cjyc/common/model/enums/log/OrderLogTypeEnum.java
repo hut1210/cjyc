@@ -1,4 +1,4 @@
-package com.cjyc.common.model.enums.order;
+package com.cjyc.common.model.enums.log;
 
 public enum OrderLogTypeEnum {
 

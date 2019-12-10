@@ -201,7 +201,7 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
         //查询角色业务中心范围
         BizScope bizScope = csSysService.getBizScopeByRoleId(paramsDto.getRoleId(), true);
         if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
-            return null;
+            return BaseResultUtil.fail("无数据权限");
         }
         paramsDto.setBizScope(bizScope.getCode() == 0 ? null : bizScope.getStoreIds());
 

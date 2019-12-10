@@ -22,4 +22,14 @@ public enum WaybillStateEnum {
         this.name = name;
         this.code = code;
     }
+
+    public static WaybillStateEnum valueOf(int code){
+        for (WaybillStateEnum resEnum : values()) {
+            if(resEnum.code == code){
+                return resEnum;
+            }
+        }
+        throw new IllegalArgumentException("No matching constant for [" + code + "]");
+    }
+
 }

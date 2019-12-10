@@ -42,12 +42,4 @@ public class DictionaryController {
     public ResultVo<PageVo<Dictionary>> queryPage(@RequestBody SelectDictionaryDto dto){
         return dictionaryService.queryPage(dto);
     }
-
-    @ApiOperation(value = "根据估值获取保险费")
-    @PostMapping(value = "/insurance/get/{valuation}")
-    public ResultVo<Map<String, Object>> getInsurance(@ApiParam(value = "估值") @PathVariable int valuation){
-        return dictionaryService.getInsurance(valuation);
-    }
-
-
 }

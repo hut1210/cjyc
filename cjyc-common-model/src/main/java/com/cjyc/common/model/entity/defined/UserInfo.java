@@ -9,4 +9,14 @@ public class UserInfo {
     private String name;
     private String phone;
     private UserTypeEnum userType;
+
+    public UserInfo() {
+    }
+
+    public UserInfo(Long id, String name, String phone, UserTypeEnum userType) {
+        this.id = id;
+        this.name = name;
+        this.phone = phone;
+        this.userType = userType;
+    }
 }

@@ -10,14 +10,14 @@ public class ReplenishInfoDto {
     private String loginName;
 
     private Long waybillCarId;
-    @ApiModelProperty(value = "品牌",required = true)
+    @ApiModelProperty(value = "品牌")
     private String brand;
-    @ApiModelProperty(value = "型号",required = true)
+    @ApiModelProperty(value = "型号")
     private String model;
     @ApiModelProperty(value = "车牌号")
     private String plateNo;
-    @ApiModelProperty(value = "vin码")
+    @ApiModelProperty(value = "vin码",required = true)
     private String vin;
-    @ApiModelProperty(value = "提车图片")
+    @ApiModelProperty(value = "提车图片",required = true)
     private String loadPhotoImg;
 }
