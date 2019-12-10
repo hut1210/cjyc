@@ -147,7 +147,7 @@ public class TaskController {
      * @param dto
      * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.vo.driver.task.TaskDetailVo>
      */
-    @ApiOperation(value = "查询提送车,提送车历史记录任务详情")
+    @ApiOperation(value = "查询提送车,提送车历史记录任务详情；查询出入库,出入库历史记录任务详情")
     @PostMapping("/getCarryDetail")
     public ResultVo<TaskDetailVo> getCarryDetail(@RequestBody @Validated({DetailQueryDto.GetHistoryDetail.class}) DetailQueryDto dto) {
         return taskService.getCarryDetail(dto);
