@@ -9,7 +9,7 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.task.TaskDetailVo;
 import com.cjyc.common.model.vo.driver.task.TaskDriverVo;
-import com.cjyc.common.model.vo.driver.task.WaybillTaskVo;
+import com.cjyc.common.model.vo.driver.task.TaskBillVo;
 import com.cjyc.driver.api.service.ITaskService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -37,11 +37,11 @@ public class TaskController {
      * @author liuxingxiang
      * @date 2019/11/28
      * @param dto
-     * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.vo.PageVo<com.cjyc.common.model.vo.driver.task.WaybillTaskVo>>
+     * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.vo.PageVo<com.cjyc.common.model.vo.driver.task.TaskBillVo>>
      */
     @ApiOperation(value = "分页查询待分配任务列表", notes = "\t 请求接口为json格式")
     @PostMapping("/getWaitHandleTaskPage")
-    public ResultVo<PageVo<WaybillTaskVo>> getWaitHandleTaskPage(@RequestBody @Validated BaseDriverDto dto) {
+    public ResultVo<PageVo<TaskBillVo>> getWaitHandleTaskPage(@RequestBody @Validated BaseDriverDto dto) {
         return taskService.getWaitHandleTaskPage(dto);
     }
 
@@ -50,11 +50,11 @@ public class TaskController {
      * @author liuxingxiang
      * @date 2019/11/28
      * @param dto
-     * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.vo.PageVo<com.cjyc.common.model.vo.driver.task.WaybillTaskVo>>
+     * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.vo.PageVo<com.cjyc.common.model.vo.driver.task.TaskBillVo>>
      */
     @ApiOperation(value = "分页查询提车,交车任务列表", notes = "\t 请求接口为json格式")
     @PostMapping("/getNoFinishTaskPage")
-    public ResultVo<PageVo<WaybillTaskVo>> getNoFinishTaskPage(@RequestBody @Validated NoFinishTaskQueryDto dto) {
+    public ResultVo<PageVo<TaskBillVo>> getNoFinishTaskPage(@RequestBody @Validated NoFinishTaskQueryDto dto) {
         return taskService.getNoFinishTaskPage(dto);
     }
 
@@ -63,11 +63,11 @@ public class TaskController {
      * @author liuxingxiang
      * @date 2019/11/28
      * @param dto
-     * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.vo.PageVo<com.cjyc.common.model.vo.driver.task.WaybillTaskVo>>
+     * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.vo.PageVo<com.cjyc.common.model.vo.driver.task.TaskBillVo>>
      */
     @ApiOperation(value = "分页查询已交付任务列表", notes = "\t 请求接口为json格式")
     @PostMapping("/getFinishTaskPage")
-    public ResultVo<PageVo<WaybillTaskVo>> getFinishTaskPage(@RequestBody @Validated TaskQueryDto dto) {
+    public ResultVo<PageVo<TaskBillVo>> getFinishTaskPage(@RequestBody @Validated TaskQueryDto dto) {
         return taskService.getFinishTaskPage(dto);
     }
 
@@ -115,11 +115,11 @@ public class TaskController {
      * @author liuxingxiang
      * @date 2019/11/28
      * @param dto
-     * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.vo.PageVo<com.cjyc.common.model.vo.driver.task.WaybillTaskVo>>
+     * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.vo.PageVo<com.cjyc.common.model.vo.driver.task.TaskBillVo>>
      */
     @ApiOperation(value = "分页查询历史记录列表", notes = "\t 请求接口为json格式")
     @PostMapping("/getHistoryTaskPage")
-    public ResultVo<PageVo<WaybillTaskVo>> getHistoryTaskPage(@RequestBody @Validated TaskQueryDto dto) {
+    public ResultVo<PageVo<TaskBillVo>> getHistoryTaskPage(@RequestBody @Validated TaskQueryDto dto) {
         return taskService.getHistoryTaskPage(dto);
     }
 

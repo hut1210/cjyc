@@ -104,7 +104,7 @@
 
     <!--司机端：查询提车，交车任务列表-->
     <select id="selectNoFinishTaskPage" parameterType="com.cjyc.common.model.dto.driver.task.NoFinishTaskQueryDto"
-            resultType="com.cjyc.common.model.vo.driver.task.WaybillTaskVo">
+            resultType="com.cjyc.common.model.vo.driver.task.TaskBillVo">
         SELECT
             t.id AS taskId,
             t.waybill_id AS waybillId,
@@ -137,7 +137,7 @@
 
     <!--查询已交付任务列表-->
     <select id="selectFinishTaskPage" parameterType="com.cjyc.common.model.dto.driver.task.TaskQueryDto"
-            resultType="com.cjyc.common.model.vo.driver.task.WaybillTaskVo">
+            resultType="com.cjyc.common.model.vo.driver.task.TaskBillVo">
         select
             t.id as taskId,
             t.waybill_id as waybillId,
@@ -190,7 +190,7 @@
 
     <!--查询历史任务记录列表-->
     <select id="selectHistoryTaskPage" parameterType="com.cjyc.common.model.dto.driver.task.TaskQueryDto"
-            resultType="com.cjyc.common.model.vo.driver.task.WaybillTaskVo">
+            resultType="com.cjyc.common.model.vo.driver.task.TaskBillVo">
         select
             t.id as taskId,
             t.waybill_id as waybillId,

@@ -6,7 +6,7 @@ import com.cjyc.common.model.dto.web.mineCarrier.MyWaybillDto;
 import com.cjyc.common.model.dto.web.waybill.*;
 import com.cjyc.common.model.entity.Waybill;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.driver.task.WaybillTaskVo;
+import com.cjyc.common.model.vo.driver.task.TaskBillVo;
 import com.cjyc.common.model.vo.driver.waybill.WaitAllotVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyWaybillVo;
 import com.cjyc.common.model.vo.web.waybill.*;
@@ -83,9 +83,9 @@ public interface IWaybillDao extends BaseMapper<Waybill> {
      * @author liuxingxiang
      * @date 2019/11/20
      * @param dto
-     * @return java.util.List<com.cjyc.common.model.vo.driver.task.WaybillTaskVo>
+     * @return java.util.List<com.cjyc.common.model.vo.driver.task.TaskBillVo>
      */
-    List<WaybillTaskVo> selectWaitHandleTaskPage(BaseDriverDto dto);
+    List<TaskBillVo> selectWaitHandleTaskPage(BaseDriverDto dto);
 
     int updateForAllotDriver(Long waybillId);
 
