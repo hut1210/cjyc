@@ -9,6 +9,7 @@ import com.cjyc.common.model.enums.log.OrderLogTypeEnum;
 import com.cjyc.common.system.service.ICsOrderCarLogService;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -21,6 +22,9 @@ public class CsOrderCarLogServiceImpl implements ICsOrderCarLogService {
     @Async
     @Override
     public void asyncSave(List<OrderCar> orderCarList, OrderCarLogEnum type, Object[] objects, UserInfo userInfo) {
+        if(CollectionUtils.isEmpty(orderCarList)){
+            return;
+        }
         orderCarList.forEach(orderCar -> {
             OrderCarLog orderCarLog = new OrderCarLog();
             orderCarLog.setOrderCarId(orderCar.getId());

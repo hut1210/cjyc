@@ -777,38 +777,40 @@ public class CsTaskServiceImpl implements ICsTaskService {
         if(orderIdSet.size() > 1){
             throw new ParameterException("暂不支持跨订单批量签收");
         }
-        if(CollectionUtils.isEmpty(waybillCarIdSet)){
-            resultReasonVo.setSuccessList(successSet);
-            resultReasonVo.setFailList(failCarNoSet);
-            return BaseResultUtil.success(resultReasonVo);
-        }
         //用户信息
         UserInfo userInfo = new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), paramsDto.getLoginType());
-        //处理订单
-        orderIdSet.forEach(orderId -> {
-            int count = orderCarDao.countUnFinishByOrderId(orderId);
-            if (count <= 0) {
-                Order order = orderDao.selectById(orderId);
-                orderDao.updateForReceipt(orderId, currentTimeMillis);
+        if(CollectionUtils.isEmpty(orderIdSet)){
+            //处理订单
+            orderIdSet.forEach(orderId -> {
+                int count = orderCarDao.countUnFinishByOrderId(orderId);
+                if (count <= 0) {
+                    Order order = orderDao.selectById(orderId);
+                    orderDao.updateForReceipt(orderId, currentTimeMillis);
 
-                //订单完成日志
-                orderLogService.asyncSave(order, OrderLogTypeEnum.RECEIPT,
-                        new Object[]{OrderLogEnum.RECEIPT.getInnerLog(), OrderLogEnum.RECEIPT.getOutterLog(), order.getNo()},
-                        userInfo);
-            }
-        });
-        //处理任务
-        List<Task> taskList = taskDao.findListByWaybillCarIds(waybillCarIdSet);
-        taskList.forEach(task -> {
-            int count = taskCarDao.countUnFinishByTaskId(task.getId());
-            if(count == 0){
-                //处理运单
-                int countw = waybillCarDao.countUnFinishByWaybillId(task.getWaybillId());
-                if(countw == 0){
-                    waybillDao.updateForReceipt(task.getWaybillId(), currentTimeMillis);
+                    //订单完成日志
+                    orderLogService.asyncSave(order, OrderLogTypeEnum.RECEIPT,
+                            new Object[]{OrderLogEnum.RECEIPT.getInnerLog(), OrderLogEnum.RECEIPT.getOutterLog(), order.getNo()},
+                            userInfo);
                 }
-            }
-        });
+            });
+
+        }
+
+        //是否处理任务
+        if(!CollectionUtils.isEmpty(waybillCarIdSet)){
+            //处理任务
+            List<Task> taskList = taskDao.findListByWaybillCarIds(waybillCarIdSet);
+            taskList.forEach(task -> {
+                int count = taskCarDao.countUnFinishByTaskId(task.getId());
+                if(count == 0){
+                    //处理运单
+                    int countw = waybillCarDao.countUnFinishByWaybillId(task.getWaybillId());
+                    if(countw == 0){
+                        waybillDao.updateForReceipt(task.getWaybillId(), currentTimeMillis);
+                    }
+                }
+            });
+        }
 
         //车辆完成日志
         csOrderCarLogService.asyncSave(orderCarList, OrderCarLogEnum.RECEIPT,
