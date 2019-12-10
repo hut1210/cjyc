@@ -277,13 +277,17 @@
         concat(s1.province, s1.city, s1.area, s1.detail_addr) as startStoreFullAddress,
         concat(s2.province, s2.city, s2.area, s2.detail_addr) as endStoreFullAddress,
         ct1.parent_name as nowCityName,
+        ct2.parent_code as regionCode,
+        ct2.parent_name as region,
         m.phone as checkUserPhone,
         oc.*
         from w_order o
         join w_order_car oc on oc.order_id = o.id
         LEFT JOIN s_store s1 on s1.id = o.start_store_id
         LEFT JOIN s_store s2 on s2.id = o.end_store_id
+        LEFT JOIN s_store s3 on s3.id = o.input_store_id
         LEFT JOIN s_city ct1 on oc.now_area_code = ct1.code
+        LEFT JOIN s_city ct2 on s3.city_code = ct2.code
         left join b_admin m on m.id = o.check_user_id
         left join w_waybill_car wc on wc.order_car_id = oc.id
         <where>
@@ -295,7 +299,7 @@
                     and o.state = 100
                 </when>
                 <otherwise>
-                    and o.state >= 25
+                    and o.state between 25 and 101
                 </otherwise>
             </choose>
 
@@ -516,42 +520,42 @@
                 <!--1指定提车日期，2预计到达时间，3创建时间，4确认时间，5完结时间-->
                 <when test="paramsDto.timeType == 1">
                     <if test="paramsDto.beginTime != null">
-                        and o.expect_start_date &gt; #{paramsDto.beginTime}
+                        and o.expect_start_date &gt;= #{paramsDto.beginTime}
                     </if>
                     <if test="paramsDto.endTime != null">
-                        and o.expect_start_date &lt; #{paramsDto.endTime}
+                        and o.expect_start_date &lt;= #{paramsDto.endTime}
                     </if>
                 </when>
                 <when test="paramsDto.timeType == 2">
                     <if test="paramsDto.beginTime != null">
-                        and o.expect_end_date &gt; #{paramsDto.beginTime}
+                        and o.expect_end_date &gt;= #{paramsDto.beginTime}
                     </if>
                     <if test="paramsDto.endTime != null">
-                        and o.expect_end_date &lt; #{paramsDto.endTime}
+                        and o.expect_end_date &lt;= #{paramsDto.endTime}
                     </if>
                 </when>
                 <when test="paramsDto.timeType == 3">
                     <if test="paramsDto.beginTime != null">
-                        and o.create_time &gt; #{paramsDto.beginTime}
+                        and o.create_time &gt;= #{paramsDto.beginTime}
                     </if>
                     <if test="paramsDto.endTime != null">
-                        and o.create_time &lt; #{paramsDto.endTime}
+                        and o.create_time &lt;= #{paramsDto.endTime}
                     </if>
                 </when>
                 <when test="paramsDto.timeType == 4">
                     <if test="paramsDto.beginTime != null">
-                        and o.check_time &gt; #{paramsDto.beginTime}
+                        and o.check_time &gt;= #{paramsDto.beginTime}
                     </if>
                     <if test="paramsDto.endTime != null">
-                        and o.check_time &lt; #{paramsDto.endTime}
+                        and o.check_time &lt;= #{paramsDto.endTime}
                     </if>
                 </when>
                 <when test="paramsDto.timeType == 5">
                     <if test="paramsDto.beginTime != null">
-                        and o.finish_time &gt; #{paramsDto.beginTime}
+                        and o.finish_time &gt;= #{paramsDto.beginTime}
                     </if>
                     <if test="paramsDto.endTime != null">
-                        and o.finish_time &lt; #{paramsDto.endTime}
+                        and o.finish_time &lt;= #{paramsDto.endTime}
                     </if>
                 </when>
             </choose>
@@ -560,16 +564,16 @@
             </if>
 
             <if test="paramsDto.orderNo != null and paramsDto.orderNo != ''">
-                and o.no = #{paramsDto.orderNo}
+                and o.no like concat("%", #{paramsDto.orderNo},"%")
             </if>
             <if test="paramsDto.customerName != null and paramsDto.customerName != ''">
-                and o.customer_name = #{paramsDto.customerName}
+                and o.customer_name like concat("%", #{paramsDto.customerName},"%")
             </if>
             <if test="paramsDto.customerType != null and paramsDto.customerType != ''">
                 and o.customer_type = #{paramsDto.customerType}
             </if>
             <if test="paramsDto.customerPhone != null and paramsDto.customerPhone != ''">
-                and o.customer_phone = #{paramsDto.customerPhone}
+                and o.customer_phone like concat("%", #{paramsDto.customerPhone},"%")
             </if>
             <if test="paramsDto.inputStoreId != null">
                 and o.input_store_id = #{paramsDto.inputStoreId}
@@ -598,12 +602,11 @@
             <if test="paramsDto.endStoreId != null">
                 and o.end_store_id = #{paramsDto.endStoreId}
             </if>
-
             <if test="paramsDto.pickContactName != null and paramsDto.pickContactName != ''">
-                and o.pick_contact_name = #{paramsDto.pickContactName}
+                and o.pick_contact_name like concat("%", #{paramsDto.pickContactName},"%")
             </if>
             <if test="paramsDto.pickContactPhone != null and paramsDto.pickContactPhone != ''">
-                and o.pick_contact_phone = #{paramsDto.pickContactPhone}
+                and o.pick_contact_phone like concat("%", #{paramsDto.pickContactPhone},"%")
             </if>
             <if test="paramsDto.pickType != null">
                 and o.pick_type = #{paramsDto.pickType}
@@ -612,10 +615,10 @@
                 and o.back_type = #{paramsDto.backType}
             </if>
             <if test="paramsDto.backContactName != null and paramsDto.backContactName != ''">
-                and o.back_contact_name = #{paramsDto.backContactName}
+                and o.back_contact_name like concat("%", #{paramsDto.backContactName},"%")
             </if>
             <if test="paramsDto.backContactPhone != null and paramsDto.backContactPhone != ''">
-                and o.back_contact_phone = #{paramsDto.backContactPhone}
+                and o.back_contact_phone like concat("%", #{paramsDto.backContactPhone},"%")
             </if>
             <if test="paramsDto.lineId != null">
                 and o.line_id = #{paramsDto.lineId}
@@ -623,18 +626,15 @@
             <if test="paramsDto.source != null and paramsDto.source != ''">
                 and o.source = #{paramsDto.source}
             </if>
-
             <if test="paramsDto.createUserName != null and paramsDto.createUserName != ''">
-                and o.create_user_name = #{paramsDto.createUserName}
+                and o.create_user_name like concat("%", #{paramsDto.createUserName},"%")
             </if>
             <if test="paramsDto.payType != null">
                 and o.pay_type = #{paramsDto.payType}
             </if>
             <if test="paramsDto.regionCode != null and paramsDto.regionCode != ''">
-                and ct1.paren = #{paramsDto.regionCode}
+                and ct1.parent = #{paramsDto.regionCode}
             </if>
-
-
             <if test="paramsDto.isMove != null">
                 and oc.is_move = #{paramsDto.isMove}
             </if>
@@ -642,7 +642,7 @@
                 and oc.is_new = #{paramsDto.isNew}
             </if>
             <if test="paramsDto.carNo != null and paramsDto.carNo != ''">
-                and oc.no = #{paramsDto.carNo}
+                and oc.no like concat("%", #{paramsDto.carNo},"%")
             </if>
             <if test="paramsDto.brand != null and paramsDto.brand != ''">
                 and oc.brand = #{paramsDto.brand}
@@ -651,10 +651,10 @@
                 and oc.model = #{paramsDto.model}
             </if>
             <if test="paramsDto.plateNo != null and paramsDto.plateNo != ''">
-                and oc.plate_no = #{paramsDto.plateNo}
+                and oc.plate_no like concat("%", #{paramsDto.plateNo},"%")
             </if>
             <if test="paramsDto.vin != null and paramsDto.vin != ''">
-                and oc.vin = #{paramsDto.vin}
+                and oc.vin like concat("%", #{paramsDto.vin},"%")
             </if>
             <if test="paramsDto.bizScope != null">
                 and o.input_store_id in
@@ -664,6 +664,7 @@
             </if>
 
         </where>
+        order by o.id desc
     </select>
     <select id="findListByWaybillId" resultType="com.cjyc.common.model.entity.OrderCar">
         select oc.*
@@ -934,6 +935,88 @@
             </foreach>
         </where>
 
+    </select>
+
+    <select id="findStockCar" resultType="com.cjyc.common.model.vo.salesman.mine.StockCarVo"
+            parameterType="com.cjyc.common.model.dto.salesman.mine.StockCarDto">
+      SELECT
+        woc.id AS orderCarId,
+        woc.brand AS brand,
+        woc.model AS model,
+        wo.expect_start_date AS expectStartDate,
+        woc.vin AS vin
+      FROM
+	    w_order_car woc
+	  LEFT JOIN w_order wo ON woc.order_id = wo.id
+        <where>
+            <if test="vin != null and vin.trim() != ''">
+                  woc.vin = #{vin}
+            </if>
+            <if test="startCity != null and startCity.trim() != ''">
+                and wo.startCity = #{startCity}
+            </if>
+            <if test="endCity != null and endCity.trim() != ''">
+                and wo.endCity = #{endCity}
+            </if>
+            <if test="startTime != null">
+                and wo.expect_start_date >= #{startTime}
+            </if>
+            <if test="endTime != null">
+                and wo.expect_start_date &lt;= #{endTime}
+            </if>
+           <!-- and woc.now_store_id in
+            <foreach collection="codeSet" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>-->
+             and woc.state in (25,35,45,50)
+        </where>
+    </select>
+
+    <select id="stockCarCount" resultType="java.lang.Integer"
+            parameterType="com.cjyc.common.model.dto.salesman.mine.StockCarDto">
+        SELECT
+          count(woc.id)
+        FROM
+          w_order_car woc
+        LEFT JOIN w_order wo ON woc.order_id = wo.id
+        <where>
+            <if test="vin != null and vin.trim() != ''">
+                woc.vin = #{vin}
+            </if>
+            <if test="startCity != null and startCity.trim() != ''">
+                and wo.startCity = #{startCity}
+            </if>
+            <if test="endCity != null and endCity.trim() != ''">
+                and wo.endCity = #{endCity}
+            </if>
+            <if test="startTime != null">
+                and wo.expect_start_date >= #{startTime}
+            </if>
+            <if test="endTime != null">
+                and wo.expect_start_date &lt;= #{endTime}
+            </if>
+        </where>
+    </select>
+
+    <select id="findStockCarDetail" resultType="com.cjyc.common.model.vo.salesman.mine.StockCarDetailVo"
+                            parameterType="com.cjyc.common.model.dto.salesman.mine.StockCarDetailDto">
+          SELECT
+            wo.start_city AS startCity,
+            wo.end_city AS endCity,
+            wo.pick_contact_name AS pickContactName,
+            wo.pick_contact_phone AS pickContactPhone,
+            wo.start_address AS startAddress,
+            wo.back_contact_name AS backContactName,
+            wo.back_contact_phone AS backContactPhone,
+            wo.end_address AS endAddress,
+            woc.brand AS brand,
+            woc.model AS model,
+            wo.expect_start_date AS expectStartDate,
+            woc.vin AS vin
+        FROM
+            w_order_car woc
+        LEFT JOIN w_order wo ON woc.order_id = wo.id
+        WHERE woc.id = #{orderCarId}
     </select>
 
 

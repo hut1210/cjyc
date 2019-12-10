@@ -16,7 +16,7 @@ import java.io.Serializable;
 @Data
 public class CarDetailVo implements Serializable {
     private static final long serialVersionUID = -6283733541452871958L;
-    @ApiModelProperty(value = "提车联系人")
+    @ApiModelProperty(value = "运单车辆ID")
     @JsonSerialize(using= ToStringSerializer.class)
     private Long id;
 

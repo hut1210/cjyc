@@ -2,6 +2,8 @@ package com.cjyc.common.model.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.dto.customer.invoice.InvoiceApplyQueryDto;
+import com.cjyc.common.model.dto.salesman.mine.StockCarDetailDto;
+import com.cjyc.common.model.dto.salesman.mine.StockCarDto;
 import com.cjyc.common.model.dto.web.order.ChangePriceOrderCarDto;
 import com.cjyc.common.model.dto.web.order.LineWaitDispatchCountListOrderCarDto;
 import com.cjyc.common.model.dto.web.order.ListOrderCarDto;
@@ -9,6 +11,8 @@ import com.cjyc.common.model.dto.web.order.WaitDispatchListOrderCarDto;
 import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.vo.customer.invoice.InvoiceOrderVo;
 import com.cjyc.common.model.vo.customer.order.OrderCarCenterVo;
+import com.cjyc.common.model.vo.salesman.mine.StockCarDetailVo;
+import com.cjyc.common.model.vo.salesman.mine.StockCarVo;
 import com.cjyc.common.model.vo.web.OrderCarVo;
 import com.cjyc.common.model.vo.web.order.ListOrderCarVo;
 import com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo;
@@ -151,4 +155,25 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
     List<OrderCar> findListByIds(@Param("list") List<Long> orderCarIdList);
 
     List<OrderCar> findListByNos(@Param("list") List<String> orderCarNos);
+
+    /**
+     * 业务员端我的库存车辆
+     * @param dto
+     * @return
+     */
+    List<StockCarVo> findStockCar(StockCarDto dto);
+
+    /**
+     * 库存数量
+     * @param dto
+     * @return
+     */
+    Integer stockCarCount(StockCarDto dto);
+
+    /**
+     * 根据车辆id获取车辆信息
+     * @param dto
+     * @return
+     */
+    StockCarDetailVo findStockCarDetail(StockCarDetailDto dto);
 }

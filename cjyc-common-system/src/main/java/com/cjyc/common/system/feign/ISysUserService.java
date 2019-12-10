@@ -112,5 +112,11 @@ public interface ISysUserService {
     @PostMapping("/feign/yc/getPageUsersForSalesman")
     ResultData<PageData<SelectUsersByRoleResp>> getPageUsersForSalesman(@RequestBody SelectPageUsersForSalesmanReq req);
 
-
+    /**
+     * 业务员APP：根据机构及用户条件查询机构下所有角色的关联用户列表(分页)
+     * @param req
+     * @return
+     */
+    @PostMapping("/feign/yc/getPageUsersForSalesmanApp")
+    ResultData<PageData<SelectUsersByRoleResp>> getPageUsersForSalesmanApp(@RequestBody SelectPageUsersForSalesmanReq req);
 }

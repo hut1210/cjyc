@@ -4,7 +4,8 @@ import com.cjyc.common.model.dao.IOrderCarLogDao;
 import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.entity.OrderCarLog;
 import com.cjyc.common.model.entity.defined.UserInfo;
-import com.cjyc.common.model.enums.order.OrderLogTypeEnum;
+import com.cjyc.common.model.enums.log.OrderCarLogEnum;
+import com.cjyc.common.model.enums.log.OrderLogTypeEnum;
 import com.cjyc.common.system.service.ICsOrderCarLogService;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,7 @@ public class CsOrderCarLogServiceImpl implements ICsOrderCarLogService {
 
     @Async
     @Override
-    public void asyncSave(List<OrderCar> orderCarList, OrderLogTypeEnum type, Object[] objects, UserInfo userInfo) {
+    public void asyncSave(List<OrderCar> orderCarList, OrderCarLogEnum type, Object[] objects, UserInfo userInfo) {
         orderCarList.forEach(orderCar -> {
             OrderCarLog orderCarLog = new OrderCarLog();
             orderCarLog.setOrderCarId(orderCar.getId());

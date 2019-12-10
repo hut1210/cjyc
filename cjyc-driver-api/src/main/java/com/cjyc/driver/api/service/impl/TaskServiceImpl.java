@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -130,15 +131,17 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
 
         // 查询车辆信息
         List<CarDetailVo> carDetailVoList = new ArrayList<>(10);
+        BigDecimal freightFee = new BigDecimal(0);
         Long taskId = dto.getTaskId();
         if (taskId != null && taskId != 0) {// 已分配的任务
-            // 查询司机信息
+            // 查询任务单信息信息
             Task task = taskDao.selectById(taskId);
             taskDetailVo.setDriverName(task.getDriverName());
             taskDetailVo.setDriverPhone(task.getDriverPhone());
             taskDetailVo.setVehiclePlateNo(task.getVehiclePlateNo());
             taskDetailVo.setGuideLine(task.getGuideLine());
             taskDetailVo.setCreateTime(task.getCreateTime());
+            taskDetailVo.setNo(task.getNo());
 
             LambdaQueryWrapper<TaskCar> queryWrapper = new QueryWrapper<TaskCar>().lambda().eq(TaskCar::getTaskId,taskId);
             List<TaskCar> taskCarList = taskCarDao.selectList(queryWrapper);
@@ -149,6 +152,8 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                     WaybillCar waybillCar = waybillCarDao.selectById(taskCar.getWaybillCarId());
                     carDetailVo = new CarDetailVo();
                     BeanUtils.copyProperties(waybillCar,carDetailVo);
+                    freightFee = freightFee.add(waybillCar.getFreightFee());
+
                     // 查询品牌车系信息
                     OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
                     BeanUtils.copyProperties(orderCar,carDetailVo);
@@ -156,6 +161,8 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                     // 查询支付方式
                     Order order = orderDao.selectById(orderCar.getOrderId());
                     carDetailVo.setPayType(order.getPayType());
+
+                    carDetailVo.setId(waybillCar.getId());
                     carDetailVoList.add(carDetailVo);
                 }
             }
@@ -171,13 +178,17 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                 for (WaybillCar waybillCar : waybillCarList) {
                     carDetailVo = new CarDetailVo();
                     BeanUtils.copyProperties(waybillCar,carDetailVo);
+                    freightFee = freightFee.add(waybillCar.getFreightFee());
+
                     OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
                     BeanUtils.copyProperties(orderCar,carDetailVo);
+
+                    carDetailVo.setId(waybillCar.getId());
                     carDetailVoList.add(carDetailVo);
                 }
             }
         }
-
+        taskDetailVo.setFreightFee(freightFee);
         taskDetailVo.setCarDetailVoList(carDetailVoList);
         return BaseResultUtil.success(taskDetailVo);
     }

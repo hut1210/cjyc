@@ -45,7 +45,6 @@ public class AdminController {
     private ICsAdminService csAdminService;
     @Resource
     private ISysUserService sysUserService;
-
     @Resource
     private IAdminService adminService;
 

@@ -58,7 +58,7 @@ public class WaybillController {
             return BaseResultUtil.fail("当前用户不存在");
         }
         reqDto.setLoginName(driver.getName());
-        return waybillService.replenishInfo(reqDto);
+        return csTaskService.replenishInfo(reqDto);
     }
     /**
      * 分配任务

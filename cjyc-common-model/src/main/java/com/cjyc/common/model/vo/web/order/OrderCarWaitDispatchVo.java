@@ -16,6 +16,12 @@ public class OrderCarWaitDispatchVo extends OrderCar {
 
     @ApiModelProperty(value = "始发业务中心地址")
     private String startStoreFullAddress;
+    @ApiModelProperty(value = "大区编码")
+    private String regionCode;
+    @ApiModelProperty(value = "大区")
+    private String region;
+    @ApiModelProperty(value = "来源")
+    private Integer source;
 
     @ApiModelProperty(value = "目的业务中心地址")
     private String endStoreFullAddress;
@@ -141,7 +147,8 @@ public class OrderCarWaitDispatchVo extends OrderCar {
     @ApiModelProperty(value = "收车人联系方式")
     private String backContactPhone;
 
-
+    @ApiModelProperty(value = "确认时间")
+    private Long checkTime;
     @ApiModelProperty(value = "确认人手机号")
     private Long checkUserPhone;
 
@@ -151,6 +158,17 @@ public class OrderCarWaitDispatchVo extends OrderCar {
     @ApiModelProperty(value = "确认人userid")
     @JsonSerialize(using = ToStringSerializer.class)
     private Long checkUserId;
+
+    @ApiModelProperty(value = "创建时间")
+    private Long createTime;
+
+    @ApiModelProperty(value = "创建人：客户/业务员")
+    private String createUserName;
+
+    @ApiModelProperty(value = "创建人userid")
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long createUserId;
+
 
 
 

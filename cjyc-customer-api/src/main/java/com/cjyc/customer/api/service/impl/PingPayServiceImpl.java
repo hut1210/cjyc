@@ -4,7 +4,6 @@ import com.Pingxx.model.MetaDataEntiy;
 import com.Pingxx.model.PingOrderModel;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.nacos.client.utils.StringUtils;
-import com.cjkj.common.redis.lock.RedisDistributedLock;
 import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IOrderDao;
 import com.cjyc.common.model.dto.customer.order.CarCollectPayDto;
@@ -28,6 +27,7 @@ import com.Pingxx.model.Order;
 import com.Pingxx.model.OrderRefund;
 import com.cjyc.common.system.service.ICsPingxxService;
 import com.cjyc.common.system.service.ICsSendNoService;
+import com.cjyc.common.system.service.ICsTaskService;
 import com.cjyc.common.system.util.RedisLock;
 import com.cjyc.common.system.util.RedisUtils;
 import com.cjyc.customer.api.config.PingProperty;
@@ -53,9 +53,7 @@ import java.io.FileNotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author:Hut
@@ -73,6 +71,8 @@ public class PingPayServiceImpl implements IPingPayService {
     private IOrderCarDao orderCarDao;
     @Resource
     private ICsSendNoService csSendNoService;
+    @Resource
+    private ICsTaskService csTaskService;
 
     @Resource
     private RedisLock redisLock;
@@ -576,7 +576,7 @@ public class PingPayServiceImpl implements IPingPayService {
     }
     @Override
     public ResultVo<ResultReasonVo> receiptBatch(ReceiptBatchDto reqDto) {
-        return null;
+        return csTaskService.receiptBatch(reqDto);
     }
 }
 
