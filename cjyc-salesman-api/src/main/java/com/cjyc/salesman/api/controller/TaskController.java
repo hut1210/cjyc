@@ -131,7 +131,7 @@ public class TaskController {
      * @author liuxingxiang
      * @date 2019/12/9
      * @param dto
-     * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.vo.PageVo<com.cjyc.common.model.vo.salesman.task.TaskBillVo>>
+     * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.vo.PageVo<com.cjyc.common.model.vo.salesman.task.TaskWaybillVo>>
      */
     @ApiOperation(value = "查询提送车列表分页")
     @PostMapping("/getCarryPage")

@@ -70,9 +70,7 @@ public class TaskServiceImpl implements ITaskService {
         }
         taskDetailVo.setType(waybill.getType());
 
-        // 查询车辆信息
-        List<CarDetailVo> carDetailVoList = new ArrayList<>(10);
-        // 查询任务单信息信息
+        // 查询任务单信息
         Long taskId = dto.getTaskId();
         if (taskId == 0) {
             log.error("任务单ID参数错误");
@@ -87,6 +85,8 @@ public class TaskServiceImpl implements ITaskService {
         taskDetailVo.setCreateTime(task.getCreateTime());
         taskDetailVo.setNo(task.getNo());
 
+        // 查询车辆信息
+        List<CarDetailVo> carDetailVoList = new ArrayList<>(10);
         LambdaQueryWrapper<TaskCar> queryWrapper = new QueryWrapper<TaskCar>().lambda().eq(TaskCar::getTaskId,taskId);
         List<TaskCar> taskCarList = taskCarDao.selectList(queryWrapper);
         BigDecimal freightFee = new BigDecimal(0);

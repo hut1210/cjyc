@@ -129,7 +129,6 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
         }
         BeanUtils.copyProperties(waybill,taskDetailVo);
 
-        // 查询车辆信息
         List<CarDetailVo> carDetailVoList = new ArrayList<>(10);
         BigDecimal freightFee = new BigDecimal(0);
         Long taskId = dto.getTaskId();
@@ -143,6 +142,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
             taskDetailVo.setCreateTime(task.getCreateTime());
             taskDetailVo.setNo(task.getNo());
 
+            // 查询车辆信息
             LambdaQueryWrapper<TaskCar> queryWrapper = new QueryWrapper<TaskCar>().lambda().eq(TaskCar::getTaskId,taskId);
             List<TaskCar> taskCarList = taskCarDao.selectList(queryWrapper);
             if (!CollectionUtils.isEmpty(taskCarList)) {
@@ -158,6 +158,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                     OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
                     BeanUtils.copyProperties(orderCar,carDetailVo);
                     carDetailVo.setCompleteTime(task.getCompleteTime());
+
                     // 查询支付方式
                     Order order = orderDao.selectById(orderCar.getOrderId());
                     carDetailVo.setPayType(order.getPayType());
@@ -166,7 +167,6 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                     carDetailVoList.add(carDetailVo);
                 }
             }
-
         } else {// 待分配的任务
             // 查询运单车辆信息
             LambdaQueryWrapper<WaybillCar> queryWrapper = new QueryWrapper<WaybillCar>().lambda().eq(WaybillCar::getWaybillId, waybillId);
@@ -180,6 +180,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                     BeanUtils.copyProperties(waybillCar,carDetailVo);
                     freightFee = freightFee.add(waybillCar.getFreightFee());
 
+                    // 查询支付方式
                     OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
                     BeanUtils.copyProperties(orderCar,carDetailVo);
 
