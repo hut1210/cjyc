@@ -9,6 +9,7 @@ import com.cjyc.common.model.dto.web.task.CrTaskDto;
 import com.cjyc.common.model.entity.Task;
 import com.cjyc.common.model.vo.driver.task.TaskBillVo;
 import com.cjyc.common.model.vo.salesman.mine.StockTaskVo;
+import com.cjyc.common.model.vo.salesman.task.TaskWaybillVo;
 import com.cjyc.common.model.vo.web.task.CrTaskVo;
 import com.cjyc.common.model.vo.web.task.ListByWaybillTaskVo;
 import com.cjyc.common.model.vo.web.task.TaskVo;
@@ -96,7 +97,7 @@ public interface ITaskDao extends BaseMapper<Task> {
      * @param dto
      * @return java.util.List<com.cjyc.common.model.vo.salesman.task.TaskBillVo>
      */
-    List<TaskBillVo> selectCarryList(TaskQueryConditionDto dto);
+    List<TaskWaybillVo> selectCarryList(TaskQueryConditionDto dto);
 
     /**
      * 查询库存提干送详情

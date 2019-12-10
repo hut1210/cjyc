@@ -11,7 +11,7 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.task.CarDetailVo;
 import com.cjyc.common.model.vo.driver.task.TaskDetailVo;
-import com.cjyc.common.model.vo.salesman.task.TaskBillVo;
+import com.cjyc.common.model.vo.salesman.task.TaskWaybillVo;
 import com.cjyc.salesman.api.service.ITaskService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -47,10 +47,10 @@ public class TaskServiceImpl implements ITaskService {
     private IOrderDao orderDao;
 
     @Override
-    public ResultVo<PageVo<TaskBillVo>> getCarryPage(TaskQueryConditionDto dto) {
+    public ResultVo<PageVo<TaskWaybillVo>> getCarryPage(TaskQueryConditionDto dto) {
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        List<TaskBillVo> list = taskDao.selectCarryList(dto);
-        PageInfo<TaskBillVo> pageInfo = new PageInfo<>(list);
+        List<TaskWaybillVo> list = taskDao.selectCarryList(dto);
+        PageInfo<TaskWaybillVo> pageInfo = new PageInfo<>(list);
         return BaseResultUtil.success(pageInfo);
     }
 

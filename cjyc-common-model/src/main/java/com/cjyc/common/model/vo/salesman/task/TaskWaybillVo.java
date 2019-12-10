@@ -16,7 +16,7 @@ import java.math.BigDecimal;
  * @Date 2019/11/19 11:34
  **/
 @Data
-public class TaskBillVo implements Serializable {
+public class TaskWaybillVo implements Serializable {
     private static final long serialVersionUID = -5688740696634356580L;
     @ApiModelProperty(value = "运单id")
     @JsonSerialize(using= ToStringSerializer.class)

@@ -300,7 +300,7 @@
 
     <!--业务员端：查询待提车，待交车列表-->
     <select id="selectCarryList" parameterType="com.cjyc.common.model.dto.salesman.task.TaskQueryConditionDto"
-            resultType="com.cjyc.common.model.vo.salesman.task.TaskBillVo">
+            resultType="com.cjyc.common.model.vo.salesman.task.TaskWaybillVo">
         SELECT
             t.id AS taskId,
             t.waybill_id AS waybillId,
