@@ -1,7 +1,6 @@
 package com.cjyc.common.system.service.impl;
 
 import com.cjyc.common.model.dao.IStoreDao;
-import com.cjyc.common.model.dto.customer.freightBill.FindStoreDto;
 import com.cjyc.common.model.entity.Store;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
@@ -30,6 +29,16 @@ public class CsStoreServiceImpl implements ICsStoreService {
         return storeDao.findOneBelongByAreaCode(areaCode);
     }
 
+    /**
+     * 根据地址城市查询业务中心
+     * @author JPG
+     * @since 2019/12/11 8:38
+     * @param cityCode
+     */
+    @Override
+    public Store getOneBelongByCityCode(String cityCode) {
+        return storeDao.findOneBelongByCityCode(cityCode);
+    }
     /**
      * 查询区县所属业务中心列表-业务范围
      *
@@ -103,9 +112,6 @@ public class CsStoreServiceImpl implements ICsStoreService {
         return BaseResultUtil.success(storeVoList);
     }
 
-    @Override
-    public Store getOneBelongByCityCode(String cityCode) {
-        return null;
-    }
+
 
 }
