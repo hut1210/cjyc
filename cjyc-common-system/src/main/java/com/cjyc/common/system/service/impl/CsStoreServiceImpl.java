@@ -1,6 +1,7 @@
 package com.cjyc.common.system.service.impl;
 
 import com.cjyc.common.model.dao.IStoreDao;
+import com.cjyc.common.model.dto.customer.freightBill.FindStoreDto;
 import com.cjyc.common.model.entity.Store;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
@@ -100,6 +101,11 @@ public class CsStoreServiceImpl implements ICsStoreService {
         StoreListVo storeVoList = new StoreListVo();
         storeVoList.setStoreVoList(storeVos);
         return BaseResultUtil.success(storeVoList);
+    }
+
+    @Override
+    public Store getOneBelongByCityCode(String cityCode) {
+        return null;
     }
 
 }

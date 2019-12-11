@@ -4,8 +4,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.dto.driver.task.NoFinishTaskQueryDto;
 import com.cjyc.common.model.dto.driver.task.TaskQueryDto;
 import com.cjyc.common.model.dto.salesman.BaseSalesDto;
-import com.cjyc.common.model.dto.salesman.task.TaskQueryConditionDto;
-import com.cjyc.common.model.dto.salesman.mine.StockCarDetailDto;
 import com.cjyc.common.model.dto.salesman.task.OutAndInStorageQueryDto;
 import com.cjyc.common.model.dto.salesman.task.TaskWaybillQueryDto;
 import com.cjyc.common.model.dto.web.task.CrTaskDto;
@@ -100,7 +98,7 @@ public interface ITaskDao extends BaseMapper<Task> {
      * @param dto
      * @return java.util.List<com.cjyc.common.model.vo.salesman.task.TaskBillVo>
      */
-    List<TaskWaybillVo> selectCarryList(TaskQueryConditionDto dto);
+    List<TaskWaybillVo> selectCarryList(TaskWaybillQueryDto dto);
 
     /**
      * 查询库存提干送详情
@@ -108,7 +106,6 @@ public interface ITaskDao extends BaseMapper<Task> {
      * @return
      */
     List<StockTaskVo> findListStockTask(BaseSalesDto dto);
-    List<StockTaskVo> findListStockTask(StockCarDetailDto dto);
 
     /**
      * 功能描述: 查询出入库,出入库历史记录列表
