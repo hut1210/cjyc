@@ -54,4 +54,8 @@ public class AddDto implements Serializable {
     private Long storeId;
     @ApiModelProperty(value = "用户状态：0审核中，2在职，4已驳回，7已离职")
     private Integer state;
+    @ApiModelProperty(value = "创建人姓名")
+    private String createUser;
+    @ApiModelProperty(value = "创建人id")
+    private Long createUserId;
 }

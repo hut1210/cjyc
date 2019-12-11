@@ -53,6 +53,8 @@ public class SalesmanServiceImpl extends ServiceImpl<IAdminDao, Admin> implement
         //物流平台用户创建调用
         if (dto.getId() != null && dto.getId() > 0L) {
             //更新
+            admin.setCreateUser(null);
+            admin.setCreateUserId(null);
             return updateUser(admin, dto);
         }else {
             //新增
