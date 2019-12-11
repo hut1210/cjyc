@@ -112,6 +112,10 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
         user.setMobile(customer.getContactPhone());
         user.setDeptId(Long.parseLong(YmlProperty.get("cjkj.dept_customer_id")));
         user.setPassword(YmlProperty.get("cjkj.customer.password"));
+        if (CustomerTypeEnum.COOPERATOR.code == customer.getType()) {
+            user.setRoleIdList(Arrays.asList(
+                    Long.parseLong(YmlProperty.get("cjkj.customer.partner_role_id"))));
+        }
         ResultData<AddUserResp> saveRd = sysUserService.save(user);
         if (!ReturnMsg.SUCCESS.getCode().equals(saveRd.getCode())) {
             return ResultData.failed("保存客户信息失败，原因：" + saveRd.getMsg());

@@ -1033,5 +1033,21 @@
         WHERE woc.id = #{orderCarId}
     </select>
 
+    <!--查询业务中心下所有车辆的出发地和目的地-->
+    <select id="selectAllCarCity" parameterType="java.lang.String" resultType="com.cjyc.common.model.vo.salesman.dispatch.StartCityVo">
+        SELECT
+            car.order_id AS orderId,
+            car.id AS orderCarId,
+            o.start_city_code AS startCityCode,
+            o.start_city AS startCity,
+            o.end_city_code AS endCityCode,
+            o.end_city AS endCity
+        FROM
+            w_order_car car
+            LEFT JOIN w_order o ON car.order_id = o.id
+        WHERE
+            o.input_store_id IN ( #{storeIds} )
+    </select>
+
 
 </mapper>

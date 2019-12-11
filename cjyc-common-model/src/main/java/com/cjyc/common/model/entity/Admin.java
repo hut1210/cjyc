@@ -4,6 +4,9 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -29,9 +32,11 @@ public class Admin implements Serializable {
 
     @ApiModelProperty(value = "ID")
     @TableId(value = "id", type = IdType.ID_WORKER)
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     @ApiModelProperty(value = "user_id(查询架构组数据时使用)")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long userId;
 
     @ApiModelProperty(value = "编号")
@@ -72,9 +77,11 @@ public class Admin implements Serializable {
     @ApiModelProperty(value = "创建人")
     private String createUser;
     @ApiModelProperty(value = "创建人")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long createUserId;
 
     @ApiModelProperty(value = "审核人")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long checkUserId;
 
     @ApiModelProperty(value = "入职时间")
@@ -84,6 +91,7 @@ public class Admin implements Serializable {
     private Long leaveTime;
 
     @ApiModelProperty(value = "资金账户ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long accountId;
 
     @ApiModelProperty(value = "1Web，2App")

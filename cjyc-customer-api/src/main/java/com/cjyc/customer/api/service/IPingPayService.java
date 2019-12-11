@@ -21,13 +21,13 @@ import java.io.FileNotFoundException;
  */
 public interface IPingPayService {
 
-    Charge sweepDriveCode(SweepCodeDto sweepCodeDto) throws RateLimitException, APIException, ChannelException,InvalidRequestException,
-            APIConnectionException, AuthenticationException,FileNotFoundException;
+    /*Charge sweepDriveCode(SweepCodeDto sweepCodeDto) throws RateLimitException, APIException, ChannelException,InvalidRequestException,
+            APIConnectionException, AuthenticationException,FileNotFoundException;*/
 
     Order pay(PrePayDto reqDto);
 
-    Charge sweepSalesmanCode(OrderModel om) throws RateLimitException, APIException, ChannelException,InvalidRequestException,
-            APIConnectionException, AuthenticationException,FileNotFoundException;
+    /*Charge sweepSalesmanCode(OrderModel om) throws RateLimitException, APIException, ChannelException,InvalidRequestException,
+            APIConnectionException, AuthenticationException,FileNotFoundException;*/
 
     Order prePay(PrePayDto reqDto);
 

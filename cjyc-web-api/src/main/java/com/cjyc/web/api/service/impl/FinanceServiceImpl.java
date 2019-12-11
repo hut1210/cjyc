@@ -5,6 +5,7 @@ import com.cjyc.common.model.dao.IFinanceDao;
 import com.cjyc.common.model.dao.IInvoiceReceiptDao;
 import com.cjyc.common.model.dto.web.finance.ApplySettlementDto;
 import com.cjyc.common.model.dto.web.finance.FinanceQueryDto;
+import com.cjyc.common.model.dto.web.finance.PayMentQueryDto;
 import com.cjyc.common.model.dto.web.finance.WaitQueryDto;
 import com.cjyc.common.model.entity.CustomerInvoice;
 import com.cjyc.common.model.entity.InvoiceReceipt;
@@ -211,6 +212,14 @@ public class FinanceServiceImpl implements IFinanceService {
         PageHelper.startPage(financeQueryDto.getCurrentPage(), financeQueryDto.getPageSize());
         List<PaymentVo> financeVoList = financeDao.getPaymentList(financeQueryDto);
         PageInfo<PaymentVo> pageInfo = new PageInfo<>(financeVoList);
+        return BaseResultUtil.success(pageInfo);
+    }
+
+    @Override
+    public ResultVo<PageVo<PaidVo>> getPaidList(PayMentQueryDto payMentQueryDto) {
+        PageHelper.startPage(payMentQueryDto.getCurrentPage(), payMentQueryDto.getPageSize());
+        List<PaidVo> financeVoList = financeDao.getPaidList(payMentQueryDto);
+        PageInfo<PaidVo> pageInfo = new PageInfo<>(financeVoList);
         return BaseResultUtil.success(pageInfo);
     }
 }
