@@ -151,5 +151,43 @@
             and wo.input_store_name = #{inputStoreName}
         </if>
     </select>
-    
+    <select id="getPaidList" parameterType="com.cjyc.common.model.dto.web.finance.PayMentQueryDto"
+            resultType="com.cjyc.common.model.vo.web.finance.PaidVo">
+        select ww.no as waybillNo,ww.complete_time as completeTime,
+        ww.freight_fee as freightFee,ww.type,dc.settle_type as settleType,
+        ww.guide_line as guideLine,ww.carrier_id,
+        ww.carrier_name as carrierName,
+        wt.driver_name as driverName,
+        wt.driver_phone as driverPhone,
+        wt.vehicle_plate_no as vehiclePlateNo
+        from w_waybill ww
+        left join d_carrier dc on dc.id=ww.carrier_id
+        left join w_task wt on wt.waybill_id = ww.id
+        where dc.settle_type=0
+        <if test="waybillNo != null and waybillNo.trim() != ''">
+            and ww.no like concat('%',#{waybillNo},'%')
+        </if>
+        <if test="completeStartTime!= null">
+            and ww.complete_time &gt;= #{ww.completeStartTime}
+        </if>
+        <if test="completeEndTime!= null">
+            and ww.complete_time &lt;= #{ww.completeEndTime}
+        </if>
+        <if test="waybillType!= null">
+            and ww.type =#{waybillType}
+        </if>
+        <if test="invoiceNo!= null and invoiceNo.trim() != ''">
+        </if>
+        <if test="pingPayNo!= null and pingPayNo.trim() != ''">
+        </if>
+        <if test="carrierName!= null and carrierName.trim() != ''">
+            and ww.carrier_name like concat('%',#{carrierName},'%')
+        </if>
+        <if test="driverName!= null and driverName.trim() != ''">
+            and wt.driver_name like concat('%',#{driverName},'%')
+        </if>
+        <if test="driverPhone!= null and driverPhone.trim() != ''">
+            and wt.driver_phone like concat('%',#{driverPhone},'%')
+        </if>
+    </select>
 </mapper>

@@ -2,6 +2,7 @@ package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.web.finance.ApplySettlementDto;
 import com.cjyc.common.model.dto.web.finance.FinanceQueryDto;
+import com.cjyc.common.model.dto.web.finance.PayMentQueryDto;
 import com.cjyc.common.model.dto.web.finance.WaitQueryDto;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
@@ -30,7 +31,7 @@ public class FinanceController {
     @Autowired
     private IFinanceService financeService;
 
-    @ApiOperation(value = "根据条件查询财务总流水列表")
+    @ApiOperation(value = "财务总流水列表")
     @PostMapping(value = "/getFinanceList")
     public ResultVo<PageVo<FinanceVo>> getFinanceList(@RequestBody FinanceQueryDto financeQueryDto){
         return financeService.getFinanceList(financeQueryDto);
@@ -42,7 +43,7 @@ public class FinanceController {
         financeService.exportExcel(request,response);
     }
 
-    @ApiOperation(value = "根据条件查询财务应收账款列表")
+    @ApiOperation(value = "财务应收账款列表")
     @PostMapping(value = "/getFinanceReceiptList")
     public ResultVo<PageVo<FinanceReceiptVo>> getFinanceReceiptList(@RequestBody FinanceQueryDto financeQueryDto){
         return financeService.getFinanceReceiptList(financeQueryDto);
@@ -55,7 +56,7 @@ public class FinanceController {
         return BaseResultUtil.success();
     }
 
-    @ApiOperation(value = "根据条件查询等待开票列表")
+    @ApiOperation(value = "等待开票列表")
     @PostMapping(value = "/getWaitInvoiceList")
     public ResultVo<PageVo<WaitInvoiceVo>> getWaitInvoiceList(@RequestBody WaitQueryDto waitInvoiceQueryDto){
         return financeService.getWaitInvoiceList(waitInvoiceQueryDto);
@@ -75,7 +76,7 @@ public class FinanceController {
         return BaseResultUtil.success();
     }
 
-    @ApiOperation(value = "根据条件查询等待回款列表")
+    @ApiOperation(value = "等待回款列表")
     @PostMapping(value = "/getWaitForBackList")
     public ResultVo<PageVo<WaitForBackVo>> getWaitForBackList(@RequestBody WaitQueryDto waitInvoiceQueryDto){
         return financeService.getWaitForBackList(waitInvoiceQueryDto);
@@ -95,16 +96,22 @@ public class FinanceController {
         return BaseResultUtil.success(settlementDetailVo);
     }
 
-    @ApiOperation(value = "根据条件查询已收款(账期)列表")
+    @ApiOperation(value = "已收款(账期)列表")
     @PostMapping(value = "/getReceivableList")
     public ResultVo<PageVo<ReceivableVo>> getReceivableList(@RequestBody WaitQueryDto waitInvoiceQueryDto){
         return financeService.getReceivableList(waitInvoiceQueryDto);
     }
 
-    @ApiOperation(value = "根据条件查询已收款(实付)列表")
+    @ApiOperation(value = "已收款(时付)列表")
     @PostMapping(value = "/getPaymentList")
     public ResultVo<PageVo<PaymentVo>> getPaymentList(@RequestBody FinanceQueryDto financeQueryDto){
         return financeService.getPaymentList(financeQueryDto);
+    }
+
+    @ApiOperation(value = "已付款(时付)列表")
+    @PostMapping(value = "/getPaidList")
+    public ResultVo<PageVo<PaidVo>> getPaidList(@RequestBody PayMentQueryDto payMentQueryDto){
+        return financeService.getPaidList(payMentQueryDto);
     }
 
 }

@@ -304,7 +304,7 @@ public class PingPayServiceImpl implements IPingPayService {
         Pingpp.privateKeyPath = ResourceUtils.getFile(ResourceUtils.CLASSPATH_URL_PREFIX+"your_rsa_private_key_pkcs.pem").getPath();
     }
 
-    @Override
+    /*@Override
     public Charge sweepDriveCode(SweepCodeDto sweepCodeDto) throws RateLimitException, APIException, ChannelException,InvalidRequestException,
             APIConnectionException, AuthenticationException,FileNotFoundException{
         OrderModel om = new OrderModel();
@@ -405,7 +405,7 @@ public class PingPayServiceImpl implements IPingPayService {
         params.put("metadata",meta);//自定义参数
         Charge charge = Charge.create(params); // 创建 Charge 对象 方法
         return charge;
-    }
+    }*/
 
     @Override
     public void cancelOrderRefund(String orderCode) {

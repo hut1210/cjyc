@@ -8,7 +8,8 @@ import java.math.BigDecimal;
 
 /**
  * @Author: Hut
- * @Date: 2019/12/9 15:41
+ * @Date: 2019/12/9 15:
+ * 已收款（时付）
  */
 @Data
 public class PaymentVo implements Serializable {

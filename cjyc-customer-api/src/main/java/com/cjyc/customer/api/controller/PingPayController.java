@@ -218,7 +218,7 @@ public class PingPayController {
         return signature.verify(signatureBytes);
     }
 
-    @ApiOperation("司机出示二维码")
+    /*@ApiOperation("司机出示二维码")
     @PostMapping("/sweepDriveCode")
     public ResultVo sweepDriveCode(HttpServletRequest request,@RequestBody SweepCodeDto sweepCodeDto){
         sweepCodeDto.setIp(IPUtil.getIpAddr(request));
@@ -262,7 +262,7 @@ public class PingPayController {
             return BaseResultUtil.fail(500,"业务员出示二维码，用户扫码支付异常");
         }
         return BaseResultUtil.success(JSONObject.parseObject(charge.toString()));
-    }
+    }*/
 
     /**
      * 签收-验证支付状态

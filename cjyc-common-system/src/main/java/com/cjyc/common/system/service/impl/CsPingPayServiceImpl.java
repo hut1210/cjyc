@@ -44,9 +44,9 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         //创建Charge对象
         Charge charge = new Charge();
         try {
-            BigDecimal freightFee = cStransactionService.getAmountByOrderCarIds(sweepCodeDto.getOrderCarIds());
-            om.setAmount(freightFee);
-            om.setDriver_code(sweepCodeDto.getPayeeId());
+            //BigDecimal freightFee = cStransactionService.getAmountByOrderCarIds(sweepCodeDto.getOrderCarIds());
+            om.setAmount(BigDecimal.ONE);
+            om.setDriver_code("");
             om.setOrderCarIds(om.getOrderCarIds());
             om.setChannel(sweepCodeDto.getChannel());
             om.setSubject("司机端收款码功能!");
