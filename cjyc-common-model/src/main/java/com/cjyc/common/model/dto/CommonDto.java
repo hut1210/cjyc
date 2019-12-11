@@ -8,8 +8,7 @@ import java.io.Serializable;
 @Data
 public class CommonDto extends BasePageDto implements Serializable {
 
-    @ApiModelProperty(value = "登陆id(loginId)",required = true)
-    @NotNull(message = "登陆人id(loginId)不能为空")
+    @ApiModelProperty(value = "客户id",required = true)
     private Long loginId;
 
 }

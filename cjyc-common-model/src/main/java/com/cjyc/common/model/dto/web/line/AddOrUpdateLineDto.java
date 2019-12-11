@@ -1,13 +1,11 @@
 package com.cjyc.common.model.dto.web.line;
 
-import com.cjyc.common.model.constant.RegexConstant;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -40,7 +38,7 @@ public class AddOrUpdateLineDto implements Serializable {
 
     @ApiModelProperty(value = "总里程",required = true)
     @NotNull(message = "总里程不能为空")
-    @DecimalMin(value = "@Min")
+    @DecimalMin(value = "0.01")
     private BigDecimal kilometer;
 
     @ApiModelProperty(value = "总耗时(天)",required = true)

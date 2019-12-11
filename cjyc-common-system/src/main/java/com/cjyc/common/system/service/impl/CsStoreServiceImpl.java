@@ -1,7 +1,12 @@
 package com.cjyc.common.system.service.impl;
 
 import com.cjyc.common.model.dao.IStoreDao;
+import com.cjyc.common.model.dto.customer.freightBill.FindStoreDto;
 import com.cjyc.common.model.entity.Store;
+import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.customer.customerLine.BusinessStoreVo;
+import com.cjyc.common.model.vo.customer.customerLine.StoreListVo;
 import com.cjyc.common.system.service.ICsStoreService;
 import org.springframework.stereotype.Service;
 
@@ -99,5 +104,15 @@ public class CsStoreServiceImpl implements ICsStoreService {
         }
         return storeId;
     }
+
+    @Override
+    public ResultVo<StoreListVo> findStore(FindStoreDto dto) {
+        List<BusinessStoreVo> storeVos = storeDao.findStore(dto);
+        StoreListVo storeVoList = new StoreListVo();
+        storeVoList.setStoreVoList(storeVos);
+        return BaseResultUtil.success(storeVoList);
+    }
+
+
 
 }

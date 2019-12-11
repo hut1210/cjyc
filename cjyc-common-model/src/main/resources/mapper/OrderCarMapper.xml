@@ -1013,7 +1013,7 @@
     </select>
 
     <select id="findOrderCar" resultType="com.cjyc.common.model.vo.salesman.mine.StockCarDetailVo"
-                            parameterType="com.cjyc.common.model.dto.salesman.mine.StockCarDetailDto">
+                            parameterType="com.cjyc.common.model.dto.salesman.BaseSalesDto">
           SELECT
             wo.start_city AS startCity,
             wo.end_city AS endCity,

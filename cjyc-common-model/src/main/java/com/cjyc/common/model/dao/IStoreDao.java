@@ -1,7 +1,9 @@
 package com.cjyc.common.model.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cjyc.common.model.dto.customer.freightBill.FindStoreDto;
 import com.cjyc.common.model.entity.Store;
+import com.cjyc.common.model.vo.customer.customerLine.BusinessStoreVo;
 import com.cjyc.common.model.vo.store.StoreVo;
 import org.apache.ibatis.annotations.Param;
 
@@ -43,5 +45,9 @@ public interface IStoreDao extends BaseMapper<Store> {
 
     List<Store> findByNameAndIds(@Param("storeName") String storeName, @Param("storeIds") Set<Long> storeIds);
 
+    List<BusinessStoreVo> findStore(FindStoreDto dto);
+
+
     Store findOneBelongByCityCode(String cityCode);
+
 }

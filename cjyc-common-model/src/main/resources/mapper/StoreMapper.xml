@@ -136,9 +136,30 @@
             </if>
         </where>
     </select>
+
+    <select id="findStore" resultType="com.cjyc.common.model.vo.customer.customerLine.BusinessStoreVo"
+            parameterType="com.cjyc.common.model.dto.customer.freightBill.FindStoreDto">
+      SELECT
+        id AS storeId,
+        NAME AS NAME,
+        detail_addr AS detailAddr
+      FROM
+        s_store
+    <where>
+        <if test="name != null and name.trim() != ''">
+           name like concat('%', #{name},'%')
+        </if>
+        <if test="cityCode != null and cityCode.trim() != ''">
+            and city_code = #{cityCode}
+        </if>
+    </where>
+    </select>
+
+
     <select id="findOneBelongByCityCode" resultType="com.cjyc.common.model.entity.Store">
         select * from s_store where city_code = #{cityCode}
     </select>
+
 
 
 </mapper>

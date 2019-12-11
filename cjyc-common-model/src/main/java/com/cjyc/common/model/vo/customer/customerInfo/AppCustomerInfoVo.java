@@ -18,7 +18,7 @@ public class AppCustomerInfoVo implements Serializable {
     @JsonSerialize(using= ToStringSerializer.class)
     private Long userId;
 
-    @ApiModelProperty("状态：0待审核，1未登录，2已审核，3审核拒绝， 7已冻结")
+    @ApiModelProperty("状态：0待审核，1审核中，2已审核，3审核拒绝， 7已冻结")
     private Integer state;
 
     @ApiModelProperty("用户名")

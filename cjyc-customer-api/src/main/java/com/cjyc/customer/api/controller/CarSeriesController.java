@@ -3,7 +3,7 @@ package com.cjyc.customer.api.controller;
 import com.cjyc.common.model.dto.KeywordDto;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.carSeries.CarSeriesTree;
-import com.cjyc.customer.api.service.ICarSeriesService;
+import com.cjyc.common.system.service.ICsCarSeriesService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
@@ -23,12 +23,12 @@ import java.util.List;
 public class CarSeriesController {
 
     @Resource
-    private ICarSeriesService carSeriesService;
+    private ICsCarSeriesService csCarSeriesService;
 
     @ApiOperation(value = "查看品牌车系")
     @PostMapping(value = "/queryCarSeries")
     public ResultVo<List<CarSeriesTree>> queryCarSeries(@RequestBody KeywordDto dto){
-        return carSeriesService.queryCarSeries(dto);
+        return csCarSeriesService.tree(false,dto.getKeyword());
     }
 
 }

@@ -1,11 +1,13 @@
 package com.cjyc.common.model.dao;
 
+import com.cjyc.common.model.dto.salesman.customer.SalesCustomerDto;
 import com.cjyc.common.model.dto.web.customer.CustomerPartnerDto;
 import com.cjyc.common.model.dto.web.customer.CustomerfuzzyListDto;
 import com.cjyc.common.model.dto.web.customer.SelectCustomerDto;
 import com.cjyc.common.model.dto.web.customer.SelectKeyCustomerDto;
 import com.cjyc.common.model.entity.Customer;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cjyc.common.model.vo.salesman.customer.SalesCustomerVo;
 import com.cjyc.common.model.vo.web.customer.*;
 import org.apache.ibatis.annotations.Param;
 
@@ -79,4 +81,6 @@ public interface ICustomerDao extends BaseMapper<Customer> {
     Customer findByUserId(@Param("userId") Long userId);
 
     List<String> findAllNo();
+
+    SalesCustomerVo findCustomer(SalesCustomerDto dto);
 }

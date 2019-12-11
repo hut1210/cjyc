@@ -1,15 +1,18 @@
 package com.cjyc.customer.api.controller;
 
+import com.cjyc.common.model.dao.IStoreDao;
 import com.cjyc.common.model.dto.customer.freightBill.FindStoreDto;
 import com.cjyc.common.model.dto.customer.freightBill.TransportDto;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.customerLine.StoreListVo;
+import com.cjyc.common.system.service.ICsStoreService;
 import com.cjyc.customer.api.service.ITransportService;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.Map;
 
 /**
@@ -25,6 +28,8 @@ public class TransportController {
 
     @Autowired
     private ITransportService transportService;
+    @Resource
+    private ICsStoreService csStoreService;
 
     @ApiOperation(value = "获取运价")
     @PostMapping(value = "/linePriceByCode")
@@ -35,7 +40,7 @@ public class TransportController {
     @ApiOperation(value = "获取业务中心")
     @PostMapping(value = "/findStore")
     public ResultVo<StoreListVo> findStore(@Validated @RequestBody FindStoreDto dto){
-        return transportService.findStore(dto);
+        return csStoreService.findStore(dto);
     }
 
 }
