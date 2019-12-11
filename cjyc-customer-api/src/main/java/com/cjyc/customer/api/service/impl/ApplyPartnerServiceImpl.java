@@ -15,6 +15,7 @@ import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.UseStateEnum;
 import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.enums.customer.CustomerSourceEnum;
+import com.cjyc.common.model.enums.customer.CustomerStateEnum;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
@@ -67,7 +68,7 @@ public class ApplyPartnerServiceImpl extends ServiceImpl<ICustomerDao, Customer>
         cust.setAlias(dto.getName());
         cust.setType(CustomerTypeEnum.COOPERATOR.code);
         cust.setSource(CustomerSourceEnum.UPGRADE.code);
-        cust.setState(CommonStateEnum.IN_CHECK.code);
+        cust.setState(CustomerStateEnum.WAIT_LOGIN.code);
         super.updateById(cust);
         //合伙人附加信息
         CustomerPartner cp = new CustomerPartner();

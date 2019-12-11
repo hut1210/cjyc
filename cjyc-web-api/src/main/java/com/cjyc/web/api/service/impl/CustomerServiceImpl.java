@@ -257,6 +257,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     public ResultVo verifyCustomer(OperateDto dto) {
         Customer customer = customerDao.selectById(dto.getId());
         if(customer != null){
+            //合伙人
             if(customer.getType() == CustomerTypeEnum.COOPERATOR.code){
                 //冻结/审核拒绝/解冻
                 if(FlagEnum.AUDIT_REJECT.code == dto.getFlag() || FlagEnum.FROZEN.code == dto.getFlag() || FlagEnum.THAW.code == dto.getFlag()){
@@ -295,6 +296,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                     }
                 }
             }
+            //C端客户/大客户
             if(customer.getType() != CustomerTypeEnum.COOPERATOR.code){
                 if(FlagEnum.AUDIT_PASS.code == dto.getFlag()){
                     //审核通过
@@ -381,8 +383,8 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         if(c != null){
             if(dto.getFlag()){
                 if((c.getState() == CustomerStateEnum.FROZEN.code) || (c.getState() == CustomerStateEnum.REJECT.code)){
-                    //已删除
-                    return BaseResultUtil.fail("该账号已被冻结或被审核拒绝");
+                    //冻结/审核拒绝
+                    return BaseResultUtil.fail("该账号已被冻结或被审核拒绝,不可升级");
                 }
                 //前端重置为true，升级为合伙人
                 UpdateUserReq uur = new UpdateUserReq();
@@ -398,7 +400,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                 c.setAlias(dto.getName());
                 c.setType(CustomerTypeEnum.COOPERATOR.code);
                 c.setSource(CustomerSourceEnum.UPGRADE.code);
-                c.setState(CommonStateEnum.WAIT_CHECK.code);
+                c.setState(CustomerStateEnum.WAIT_LOGIN.code);
                 c.setCreateUserId(dto.getLoginId());
                 c.setCreateTime(NOW);
                 super.updateById(c);
