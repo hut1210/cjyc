@@ -318,11 +318,11 @@ public class TransactionServiceImpl implements ITransactionService {
 
     }
 
-    @Override
+    /*@Override
     public BigDecimal getAmountByOrderCarIds(String orderCarIds) {
 
         return tradeBillDao.getAmountByOrderCarIds(orderCarIds);
-    }
+    }*/
 
 
 

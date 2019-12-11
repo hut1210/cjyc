@@ -154,7 +154,8 @@
     <select id="getPaidList" parameterType="com.cjyc.common.model.dto.web.finance.PayMentQueryDto"
             resultType="com.cjyc.common.model.vo.web.finance.PaidVo">
         select ww.no as waybillNo,ww.complete_time as completeTime,
-        ww.freight_fee as freightFee,ww.type,dc.settle_type as settleType,
+        ww.freight_fee as freightFee,ww.type,
+        if(dc.settle_type=0,'时付','账期') as settleType,
         ww.guide_line as guideLine,ww.carrier_id,
         ww.carrier_name as carrierName,
         wt.driver_name as driverName,

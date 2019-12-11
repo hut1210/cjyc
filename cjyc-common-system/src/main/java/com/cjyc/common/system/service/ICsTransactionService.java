@@ -5,6 +5,7 @@ import com.cjyc.common.model.entity.TradeBill;
 import com.pingplusplus.model.Event;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @Author:Hut
@@ -21,7 +22,9 @@ public interface ICsTransactionService {
 
     BigDecimal getAmountByOrderNo(String orderNo);
 
-    BigDecimal getAmountByOrderCarIds(String orderCarIds);
+    BigDecimal getAmountByOrderCarNos(List<String> orderCarNos);
 
     int save(Object obj);
+
+    List<String> getOrderCarNosByTaskId(Long taskId);
 }

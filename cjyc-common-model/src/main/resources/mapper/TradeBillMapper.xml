@@ -95,9 +95,9 @@
         select * from f_trade_bill where (REPLACE(unix_timestamp(current_timestamp(3)),'.','')-create_time)>=30000 and state=0
     </select>
 
-    <select id="getAmountByOrderCarIds" parameterType="String" resultType="java.math.BigDecimal">
+    <select id="getAmountByOrderCarNos" parameterType="String" resultType="java.math.BigDecimal">
         select sum(freight_fee) from w_waybill_car wwc where order_car_id in
-        <foreach collection="orderCarIds.split(',')" index="index" item="item" open="(" separator="," close=")">
+        <foreach collection="orderCarNos" index="index" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>
     </select>
@@ -106,5 +106,12 @@
         from f_trade_bill tb
         left join f_trade_bill_detail tbd on tbd.trade_bill_id = tb.id
         where tb.no = #{no}
+    </select>
+
+    <select id="getOrderCarNosByTaskId" parameterType="java.lang.Long" resultType="java.lang.String">
+        select wwc.order_car_no
+        from w_task wt
+        left join w_waybill_car wwc on wt.waybill_id = wwc.waybill_id
+        where wt.id=#{taskId}
     </select>
 </mapper>

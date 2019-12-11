@@ -2,9 +2,14 @@ package com.cjyc.driver.api.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.cjkj.common.utils.IPUtil;
+import com.cjyc.common.model.dto.customer.order.CarCollectPayDto;
 import com.cjyc.common.model.dto.customer.pingxx.SweepCodeDto;
+import com.cjyc.common.model.dto.customer.pingxx.ValidateSweepCodeDto;
+import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.customer.order.ValidateReceiptCarPayVo;
+import com.cjyc.common.model.vo.customer.order.ValidateSweepCodePayVo;
 import com.cjyc.common.system.service.ICsPingPayService;
 import com.pingplusplus.model.Charge;
 import io.swagger.annotations.Api;
@@ -44,4 +49,12 @@ public class PingPayController {
         }
         return BaseResultUtil.success(JSONObject.parseObject(charge.toString()));
     }
+
+    @ApiOperation(value = "验证支付状态")
+    @PostMapping(value = "/validate")
+    public ResultVo<ValidateSweepCodePayVo> validateCarPayState(@RequestBody ValidateSweepCodeDto validateSweepCodeDto) {
+
+        return pingPayService.validateCarPayState(validateSweepCodeDto, false);
+    }
+
 }
