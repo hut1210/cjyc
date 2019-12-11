@@ -11,6 +11,7 @@ import com.cjyc.common.model.dto.web.order.WaitDispatchListOrderCarDto;
 import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.vo.customer.invoice.InvoiceOrderVo;
 import com.cjyc.common.model.vo.customer.order.OrderCarCenterVo;
+import com.cjyc.common.model.vo.salesman.dispatch.StartCityVo;
 import com.cjyc.common.model.vo.salesman.mine.StockCarDetailVo;
 import com.cjyc.common.model.vo.salesman.mine.StockCarVo;
 import com.cjyc.common.model.vo.web.OrderCarVo;
@@ -177,4 +178,13 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
      * @return
      */
     StockCarDetailVo findOrderCar(BaseSalesDto dto);
+
+    /**
+     * 功能描述: 查询业务中心下所有车辆的出发地和目的地
+     * @author liuxingxiang
+     * @date 2019/12/11
+     * @param storeIds
+     * @return java.util.List<com.cjyc.common.model.vo.salesman.dispatch.StartCityVo>
+     */
+    List<StartCityVo> selectAllCarCity(@Param("storeIds") String storeIds);
 }

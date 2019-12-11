@@ -14,6 +14,7 @@ import javax.validation.constraints.Pattern;
  **/
 @Data
 public class OutAndInStorageQueryDto extends BasePageDto {
+    private static final long serialVersionUID = 6432279430431382992L;
     @ApiModelProperty(value = "用户登录id")
     @NotNull(message = "用户登录id不能为空")
     private Long loginId;

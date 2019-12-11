@@ -14,6 +14,7 @@ import javax.validation.constraints.Pattern;
  **/
 @Data
 public class TaskWaybillQueryDto extends BasePageDto {
+    private static final long serialVersionUID = -2721299893054273617L;
     @ApiModelProperty(value = "用户登录id")
     @NotNull(message = "用户登录id不能为空")
     private Long loginId;
