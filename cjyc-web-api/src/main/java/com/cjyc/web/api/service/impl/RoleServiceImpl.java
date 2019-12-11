@@ -325,6 +325,11 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
     private ResultVo doAddRole(AddRoleDto dto) {
         if (RoleRangeEnum.INNER.getValue() == dto.getRoleRange()) {
             //内部机构
+            List<Role> list = baseMapper.selectList(new QueryWrapper<Role>()
+                    .eq("role_name", dto.getRoleName()));
+            if (!CollectionUtils.isEmpty(list)) {
+                return BaseResultUtil.fail("角色名称重复，请检查");
+            }
             ResultData rd = doInnerAdd(dto);
             if (!isResultDataSuccess(rd)) {
                 return BaseResultUtil.fail("保存角色信息失败");
