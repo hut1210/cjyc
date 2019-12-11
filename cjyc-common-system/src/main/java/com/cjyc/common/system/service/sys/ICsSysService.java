@@ -10,5 +10,7 @@ import com.cjyc.common.model.entity.defined.BizScope;
 public interface ICsSysService {
     BizScope getBizScopeByRoleId(Long roleId, boolean isSearchCache);
 
+    BizScope getBizScopeByLoginId(Long loginId, boolean isSearchCache);
+
     Carrier getCarrierByRoleId(Long roleId);
 }

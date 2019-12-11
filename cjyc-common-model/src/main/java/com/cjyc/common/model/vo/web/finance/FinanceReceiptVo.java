@@ -61,5 +61,5 @@ public class FinanceReceiptVo implements Serializable {
     private String customerName;
 
     @ApiModelProperty(value = "客户账号")
-    private String phone;
+    private String contactPhone;
 }

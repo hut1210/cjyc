@@ -177,4 +177,18 @@
         </if>
 
     </select>
+
+    <select id="selectDetailById" parameterType="Long" resultType="com.cjyc.common.model.entity.InvoiceReceipt">
+        select id as Id,
+         serial_number as serialNumber,
+         order_car_no as orderCarNo,
+         customer_id as customerId,
+         freight_fee as freightFee,
+         amount,
+         invoice_id as invoiceId,
+         invoice_no as invoiceNo,
+         state,
+         writeoff_time as writeOffTime
+        from f_invoice_apply where id = #{id}
+    </select>
 </mapper>

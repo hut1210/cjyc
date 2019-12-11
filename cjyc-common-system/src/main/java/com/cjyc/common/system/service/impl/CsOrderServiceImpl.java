@@ -27,6 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -196,7 +197,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
             order.setStartBelongStoreId(paramsDto.getStartStoreId());
         } else {
             //查询地址所属业务中心
-            Store startBelongStore = csStoreService.getOneBelongByAreaCode(order.getStartAreaCode());
+            Store startBelongStore = csStoreService.getOneBelongByCityCode(order.getStartCityCode());
             if (startBelongStore != null) {
                 order.setStartBelongStoreId(startBelongStore.getId());
             }
@@ -205,7 +206,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
             order.setStartBelongStoreId(paramsDto.getEndStoreId());
         } else {
             //查询地址所属业务中心
-            Store endBelongStore = csStoreService.getOneBelongByAreaCode(order.getEndAreaCode());
+            Store endBelongStore = csStoreService.getOneBelongByCityCode(order.getEndCityCode());
             if (endBelongStore != null) {
                 order.setStartBelongStoreId(endBelongStore.getId());
             }
@@ -291,7 +292,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         orderLog.setCreateUserId(paramsDto.getCreateUserId());
         orderLog.setCreateUserPhone(paramsDto.getLoginPhone());
 
-        csOrderLogService.asyncSave(orderLog);
+        //csOrderLogService.asyncSave(orderLog);
         //记录车辆日志
         return BaseResultUtil.success();
 
@@ -361,10 +362,24 @@ public class CsOrderServiceImpl implements ICsOrderService {
         validateOrderFeild(order);
 
         List<OrderCar> orderCarList = orderCarDao.findByOrderId(order.getId());
-        if (orderCarList == null || orderCarList.isEmpty()) {
+        if (CollectionUtils.isEmpty(orderCarList)) {
             return BaseResultUtil.fail("[订单车辆]-为空");
         }
-
+        //合计费用：提、干、送、保险
+        BigDecimal pickFee = BigDecimal.ZERO;
+        BigDecimal trunkFee = BigDecimal.ZERO;
+        BigDecimal backFee = BigDecimal.ZERO;
+        BigDecimal addInsuranceFee = BigDecimal.ZERO;
+        for (OrderCar orderCar : orderCarList) {
+            pickFee = pickFee.add(orderCar.getPickFee());
+            trunkFee = trunkFee.add(orderCar.getTrunkFee());
+            backFee = backFee.add(orderCar.getBackFee());
+            addInsuranceFee = addInsuranceFee.add(orderCar.getAddInsuranceFee());
+        }
+        order.setPickFee(pickFee);
+        order.setTrunkFee(trunkFee);
+        order.setBackFee(backFee);
+        order.setAddInsuranceFee(addInsuranceFee);
         //验证物流券费用
         /*BigDecimal wlTotalFee = orderCarDao.getWLTotalFee(reqDto.getOrderId());
         BigDecimal couponAmount = BigDecimal.ZERO;

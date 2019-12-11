@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.dto.web.finance.WaitQueryDto;
 import com.cjyc.common.model.entity.InvoiceReceipt;
 import com.cjyc.common.model.vo.web.finance.ReceivableVo;
+import com.cjyc.common.model.vo.web.finance.SettlementDetailVo;
 import com.cjyc.common.model.vo.web.finance.WaitForBackVo;
 import com.cjyc.common.model.vo.web.finance.WaitInvoiceVo;
 
@@ -23,4 +24,6 @@ public interface IInvoiceReceiptDao extends BaseMapper<InvoiceReceipt> {
     void writeOff(InvoiceReceipt invoiceReceipt);
 
     List<ReceivableVo> getReceivableList(WaitQueryDto waitInvoiceQueryDto);
+
+    InvoiceReceipt selectDetailById(Long id);
 }

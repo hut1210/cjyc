@@ -67,7 +67,7 @@ public interface IOrderService extends IService<Order> {
 
     List<ListOrderCarVo> carListAll(ListOrderCarDto dto);
 
-    ResultVo<DispatchAddCarVo> getCarFromTo(CarFromToGetDto reqDto);
+    ResultVo<DispatchAddCarVo> getWaybillCarEndpoint(CarFromToGetDto reqDto);
 
     List<ListOrderChangeLogVo> getChangeLogVoById(ListOrderChangeLogDto reqDto);
 

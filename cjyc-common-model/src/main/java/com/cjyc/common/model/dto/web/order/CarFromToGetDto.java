@@ -13,10 +13,6 @@ import java.util.List;
 @Accessors(chain = true)
 @ApiModel
 public class CarFromToGetDto {
-
-    @ApiModelProperty(value = "业务中心ID", required = true)
-    private Long storeId;
-
     @ApiModelProperty(value = "车辆ID列表",required = true)
     private List<Long> orderCarIdList;
 }

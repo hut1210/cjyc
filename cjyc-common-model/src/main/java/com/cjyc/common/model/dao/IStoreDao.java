@@ -48,4 +48,6 @@ public interface IStoreDao extends BaseMapper<Store> {
     List<BusinessStoreVo> findStore(FindStoreDto dto);
 
 
+
+    Store findOneBelongByCityCode(String cityCode);
 }

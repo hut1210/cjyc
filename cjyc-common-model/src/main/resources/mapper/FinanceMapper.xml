@@ -53,16 +53,23 @@
 
     <select id="getFinanceReceiptList" parameterType="com.cjyc.common.model.dto.web.finance.FinanceQueryDto"
             resultType="com.cjyc.common.model.vo.web.finance.FinanceReceiptVo">
-        select woc.no,woc.vin,woc.brand,woc.model,cc.id,cc.type,cc.pay_mode,woc.total_fee,wo.start_province,wo.start_city,
+        select woc.no,woc.vin,woc.brand,woc.model,cc.id,cc.type,
+        cc.pay_mode as payMode,
+        if(cc.pay_mode=0,'时付','账期') as payModeName,
+        wwc.freight_fee as freightReceivable,
+        wo.start_province,wo.start_city,
         wo.start_area,wo.end_province,wo.end_city,wo.end_area,
-        woc.order_no,woc.now_area_code,wo.input_store_id,wo.input_store_name,wt.complete_time,cc.phone
+        woc.order_no,woc.now_area_code,wo.input_store_id,
+        wo.input_store_name,wt.complete_time,
+        cc.contact_phone as contactPhone,
+        wo.customer_name as customerName
         from w_order_car woc
         left join w_order wo on woc.order_id = wo.id
         left join c_customer cc on cc.id = wo.customer_id
         left join w_waybill_car wwc on wwc.order_car_no = woc.no
         left join w_task wt on wt.waybill_no = wwc.waybill_no
 
-        where cc.pay_mode = 1
+        where cc.pay_mode=1
         <if test="no != null and no.trim() != ''">
             and woc.no like concat('%',#{no},'%')
         </if>
@@ -96,16 +103,24 @@
 
     <select id="getPaymentList" parameterType="com.cjyc.common.model.dto.web.finance.FinanceQueryDto"
             resultType="com.cjyc.common.model.vo.web.finance.PaymentVo">
-        select woc.no,woc.vin,woc.brand,woc.model,cc.id,cc.type,cc.pay_mode,woc.total_fee,wo.start_province,wo.start_city,
-        wo.start_area,wo.end_province,wo.end_city,wo.end_area,
-        woc.order_no,woc.now_area_code,wo.input_store_id,wo.input_store_name,wt.complete_time,cc.phone
+        select woc.no,woc.vin,woc.brand,woc.model,woc.wl_pay_time as paymentTime,
+        cc.id,cc.type,
+        if(cc.pay_mode=0,'时付','账期') as payModeName,woc.total_fee as freightReceivable,
+        woc.total_fee as freightPay,
+        woc.order_no as orderNo,
+        wo.start_province,wo.start_city,
+        wo.start_address as startAddress,
+        wo.end_address as endAddress,
+        woc.now_area_code,wo.input_store_id,
+        wo.input_store_name as inputStoreName,
+        wt.complete_time as deliveryDate,wo.customer_name as customerName
         from w_order_car woc
         left join w_order wo on woc.order_id = wo.id
         left join c_customer cc on cc.id = wo.customer_id
         left join w_waybill_car wwc on wwc.order_car_no = woc.no
         left join w_task wt on wt.waybill_no = wwc.waybill_no
 
-        where cc.pay_mode = 1
+        where cc.pay_mode = 0
         <if test="no != null and no.trim() != ''">
             and woc.no like concat('%',#{no},'%')
         </if>

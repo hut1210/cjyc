@@ -998,7 +998,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             if (waybillCar == null) {
                 throw new ParameterException("ID为{}的车辆不存在", waybillCarId);
             }
-            if (waybillCar.getState() > WaybillCarStateEnum.CONFIRMED.code) {
+            if (waybillCar.getState() > WaybillCarStateEnum.UNLOADED.code) {
                 throw new ParameterException("已完成", waybillCarId);
             }
 

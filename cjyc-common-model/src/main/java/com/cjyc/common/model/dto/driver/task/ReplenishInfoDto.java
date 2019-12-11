@@ -1,14 +1,18 @@
 package com.cjyc.common.model.dto.driver.task;
 
+import com.cjyc.common.model.enums.UserTypeEnum;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
 public class ReplenishInfoDto {
     private Long loginId;
-
+    @ApiModelProperty(value = "用户名(不用传)")
     private String loginName;
-
+    @ApiModelProperty(value = "用户类型(不用传)")
+    private UserTypeEnum loginType;
+    @ApiModelProperty(value = "运单车辆ID")
     private Long waybillCarId;
     @ApiModelProperty(value = "品牌")
     private String brand;

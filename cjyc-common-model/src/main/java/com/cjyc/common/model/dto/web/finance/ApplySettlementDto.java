@@ -50,7 +50,7 @@ public class ApplySettlementDto implements Serializable {
     private String bankName;
 
     @ApiModelProperty(value = "银行账号")
-    private String bankAccout;
+    private String bankAccount;
 
     @ApiModelProperty(value = "收件人")
     private String addressee;
