@@ -25,6 +25,12 @@ public class CsStoreServiceImpl implements ICsStoreService {
         return storeDao.findOneBelongByAreaCode(areaCode);
     }
 
+    /**
+     * 根据地址城市查询业务中心
+     * @author JPG
+     * @since 2019/12/11 8:38
+     * @param cityCode
+     */
     @Override
     public Store getOneBelongByCityCode(String cityCode) {
         return storeDao.findOneBelongByCityCode(cityCode);
