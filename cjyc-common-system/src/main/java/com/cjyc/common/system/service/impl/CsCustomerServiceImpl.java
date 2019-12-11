@@ -6,14 +6,14 @@ import com.cjkj.common.redis.template.StringRedisUtil;
 import com.cjkj.usercenter.dto.common.*;
 import com.cjyc.common.model.dao.ICustomerDao;
 import com.cjyc.common.model.dto.salesman.customer.SalesCustomerDto;
+import com.cjyc.common.model.vo.salesman.customer.SalesCustomerListVo;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
-import com.cjyc.common.model.enums.driver.DriverTypeEnum;
 import com.cjyc.common.model.exception.ParameterException;
 import com.cjyc.common.model.exception.ServerException;
+import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.salesman.customer.SalesCustomerVo;
-import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.feign.ISysUserService;
@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -160,9 +159,11 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
     }
 
     @Override
-    public ResultVo<SalesCustomerVo> findCustomer(SalesCustomerDto dto) {
-        customerDao.findCustomer(dto);
-        return null;
+    public ResultVo<SalesCustomerListVo> findCustomer(SalesCustomerDto dto) {
+        List<SalesCustomerVo> customerVos = customerDao.findCustomerPhoneName(dto);
+        SalesCustomerListVo listVo = new SalesCustomerListVo();
+        listVo.setList(customerVos);
+        return BaseResultUtil.success(listVo);
     }
 
 }

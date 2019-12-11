@@ -404,27 +404,8 @@
         group by o.id
     </select>
 
-    <select id="findDraftOrder" resultType="com.cjyc.common.model.vo.salesman.order.AppOrderVo"
-                parameterType="com.cjyc.common.model.dto.salesman.PageSalesDto">
-        SELECT
-            wo.no AS orderNo,
-            wo.pay_type AS payType,
-            wo.start_city AS startCity,
-            wo.end_city AS endCity,
-            wo.state AS state,
-            wo.total_fee AS totalFee,
-            wo.allot_to_user_name as allotToUserName,
-            wo.expect_start_date AS expectStartDate,
-            wo.customer_type AS customerType,
-            wo.car_num AS carNum
-        FROM
-            w_order wo
-        WHERE
-            wo.state = 0
-    </select>
-
-    <select id="findOrder" resultType="com.cjyc.common.model.vo.salesman.order.AppOrderVo"
-                parameterType="com.cjyc.common.model.dto.salesman.order.AppOrderQueryDto">
+    <select id="findOrder" resultType="com.cjyc.common.model.vo.salesman.order.SalesOrderVo"
+                parameterType="com.cjyc.common.model.dto.salesman.order.SalesOrderQueryDto">
         SELECT
             wo.no AS orderNo,
             wo.pay_type AS payType,
@@ -440,10 +421,13 @@
             w_order wo
         <where>
             <if test="flag != null and flag == 0">
-                 wo.state between 2 and 15
+                wo.state = 0
             </if>
             <if test="flag != null and flag == 1">
-                and wo.state >= 15
+                 and wo.state between 2 and 15
+            </if>
+            <if test="flag != null and flag == 2">
+                 and wo.state >= 15
             </if>
             <if test="orderNo != null and orderNo.trim() != ''">
                 and wo.no like concat('%',#{orderNo},'%')

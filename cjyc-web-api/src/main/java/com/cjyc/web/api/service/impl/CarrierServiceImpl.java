@@ -111,7 +111,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             CarrierDriverCon cdc = new CarrierDriverCon();
             cdc.setDriverId(driver.getId());
             cdc.setCarrierId(carrier.getId());
-            cdc.setMode(2);
+            cdc.setMode(dto.getMode());
             cdc.setState(CommonStateEnum.WAIT_CHECK.code);
             cdc.setRole(DriverRoleEnum.SUPERADMIN.code);
             carrierDriverConDao.insert(cdc);

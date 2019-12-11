@@ -82,5 +82,5 @@ public interface ICustomerDao extends BaseMapper<Customer> {
 
     List<String> findAllNo();
 
-    SalesCustomerVo findCustomer(SalesCustomerDto dto);
+    List<SalesCustomerVo> findCustomerPhoneName(SalesCustomerDto dto);
 }

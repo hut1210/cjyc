@@ -11,7 +11,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Data
-public class AppOrderVo implements Serializable {
+public class SalesOrderVo implements Serializable {
     private static final long serialVersionUID = -4665142592352685826L;
     @ApiModelProperty(value = "订单编号")
     private String orderNo;

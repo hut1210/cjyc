@@ -294,4 +294,22 @@
     <select id="findAllNo" resultType="java.lang.String">
         select customer_no from c_customer
     </select>
+
+    <select id="findCustomerPhoneName" resultType="com.cjyc.common.model.vo.salesman.customer.SalesCustomerVo"
+            parameterType="com.cjyc.common.model.dto.salesman.customer.SalesCustomerDto">
+        SELECT
+            cc.id AS customerId,
+            cc.contact_man AS contactMan,
+            cc.contact_phone AS contactPhone
+        FROM
+	      c_customer cc
+        <where>
+            <if test="phone != null and phone.trim() !=''">
+                cc.contact_phone like concat('%',#{phone},'%')
+            </if>
+            <if test="name != null and name.trim() !=''">
+                and cc.contact_man like concat('%',#{name},'%')
+            </if>
+        </where>
+    </select>
 </mapper>

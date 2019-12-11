@@ -2,9 +2,9 @@ package com.cjyc.common.system.service;
 
 import com.cjkj.common.model.ResultData;
 import com.cjyc.common.model.dto.salesman.customer.SalesCustomerDto;
+import com.cjyc.common.model.vo.salesman.customer.SalesCustomerListVo;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.salesman.customer.SalesCustomerVo;
 
 /**
  * 客户公用接口
@@ -59,5 +59,5 @@ public interface ICsCustomerService {
 
     Customer validate(Long loginId);
 
-    ResultVo<SalesCustomerVo> findCustomer(SalesCustomerDto dto);
+    ResultVo<SalesCustomerListVo> findCustomer(SalesCustomerDto dto);
 }

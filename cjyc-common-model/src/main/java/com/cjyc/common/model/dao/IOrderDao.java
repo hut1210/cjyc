@@ -3,11 +3,11 @@ package com.cjyc.common.model.dao;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.dto.customer.order.OrderQueryDto;
 import com.cjyc.common.model.dto.salesman.PageSalesDto;
-import com.cjyc.common.model.dto.salesman.order.AppOrderQueryDto;
+import com.cjyc.common.model.dto.salesman.order.SalesOrderQueryDto;
 import com.cjyc.common.model.dto.web.order.ListOrderDto;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.vo.customer.order.OrderCenterVo;
-import com.cjyc.common.model.vo.salesman.order.AppOrderVo;
+import com.cjyc.common.model.vo.salesman.order.SalesOrderVo;
 import com.cjyc.common.model.vo.web.order.ListOrderVo;
 import com.cjyc.common.model.vo.web.order.OrderVo;
 import org.apache.ibatis.annotations.Param;
@@ -56,16 +56,9 @@ public interface IOrderDao extends BaseMapper<Order> {
     List<Order> findListByCarNos(@Param("list")List<String> orderCarNos);
 
     /**
-     * 查询业务员端草稿列表
-     * @param dto
-     * @return
-     */
-    List<AppOrderVo> findDraftOrder(PageSalesDto dto);
-
-    /**
      * 查询业务员端接单和全部列表
      * @param dto
      * @return
      */
-    List<AppOrderVo> findOrder(AppOrderQueryDto dto);
+    List<SalesOrderVo> findOrder(SalesOrderQueryDto dto);
 }
