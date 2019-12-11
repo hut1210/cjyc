@@ -127,7 +127,7 @@ public class AdminServiceImpl extends ServiceImpl<IAdminDao, Admin> implements I
                 return BaseResultUtil.success(PageVo.<AdminPageVo>builder().build());
             }
             if(StringUtils.isBlank(paramsDto.getRoleName())){
-                deptIds.add(resultData.getData().getDeptId());
+                deptIds.addAll(baseList);
             }else{
                 Role role = roleDao.findByName(paramsDto.getRoleName());
                 if(role == null){
@@ -238,7 +238,6 @@ public class AdminServiceImpl extends ServiceImpl<IAdminDao, Admin> implements I
         if(userTypeData == null || userTypeData.getData() == null){
             return null;
         }
-        //
         Integer userType = userTypeData.getData();
         if(userType == UserTypeEnum.ADMIN.code){
             Admin admin = adminDao.findByUserId(userId);

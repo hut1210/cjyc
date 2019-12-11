@@ -12,7 +12,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel
-public class CarFromToGetDto {
+public class ComputeCarEndpointDto {
     @ApiModelProperty(value = "车辆ID列表",required = true)
     private List<Long> orderCarIdList;
 }

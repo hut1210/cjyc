@@ -132,6 +132,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                     isOneDriver = true;
                     driverId = dto.getLoadLinkUserId();
                     driverName = dto.getLoadLinkName();
+                } else{
+                    throw new ParameterException("序号为{0}运单，编号为{1}的车辆，其他人正在调度", idx, orderCarNo);
                 }
 
                 /**验证运单车辆信息*/
@@ -478,7 +480,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
      * @since 2019/11/5 17:33
      */
     @Override
-    public ResultVo cancelDispatch(CancelWaybillDto paramsDto) {
+    public ResultVo cancel(CancelWaybillDto paramsDto) {
         //取消运单
         List<Long> waybillIdList = paramsDto.getWaybillIdList();
         List<Waybill> waybillList = waybillDao.findListByIds(waybillIdList);

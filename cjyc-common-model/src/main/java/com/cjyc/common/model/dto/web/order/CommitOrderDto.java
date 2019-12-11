@@ -71,9 +71,9 @@ public class CommitOrderDto {
     @ApiModelProperty(value = "订单所属业务中心名称")
     private String inputStoreName;
     @ApiModelProperty(value = "期望提车日期")
-    private String expectStartDate;
+    private Long expectStartDate;
     @ApiModelProperty(value = "期望到达日期")
-    private String expectEndDate;
+    private Long expectEndDate;
     @ApiModelProperty(value = "车辆总数")
     private Integer carNum;
     @ApiModelProperty(value = "线路ID")

@@ -31,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -252,7 +253,7 @@ public class OrderController {
         if (CollectionUtils.isEmpty(carList)) {
             return BaseResultUtil.success("未查询到结果");
         }
-        carList = carList.stream().filter(c -> c != null).collect(Collectors.toList());
+        carList = carList.stream().filter(Objects::nonNull).collect(Collectors.toList());
         try {
             ExcelUtil.exportExcel(carList, "车辆信息", "车辆信息",
                     ListOrderCarVo.class, System.currentTimeMillis()+"车辆信息.xls", response);

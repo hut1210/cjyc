@@ -262,7 +262,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
 
 
     @Override
-    public ResultVo<DispatchAddCarVo> getWaybillCarEndpoint(CarFromToGetDto reqDto) {
+    public ResultVo<DispatchAddCarVo> getWaybillCarEndpoint(ComputeCarEndpointDto reqDto) {
         DispatchAddCarVo dispatchAddCarVo = new DispatchAddCarVo();
         Store store = storeDao.selectById(2L);
         //业务范围

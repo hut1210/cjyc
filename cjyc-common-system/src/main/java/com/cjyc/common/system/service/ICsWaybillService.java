@@ -32,7 +32,7 @@ public interface ICsWaybillService {
      * @since 2019/11/5 17:33
      * @param paramsDto
      */
-    ResultVo<ListVo<BaseTipVo>> cancelDispatch(CancelWaybillDto paramsDto);
+    ResultVo<ListVo<BaseTipVo>> cancel(CancelWaybillDto paramsDto);
 
     /**
      * 修改同城运单

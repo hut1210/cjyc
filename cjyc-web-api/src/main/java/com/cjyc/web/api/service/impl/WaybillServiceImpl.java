@@ -1,8 +1,6 @@
 package com.cjyc.web.api.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.cjkj.common.model.ResultData;
-import com.cjkj.usercenter.dto.common.SelectRoleResp;
 import com.cjyc.common.model.dao.IWaybillCarDao;
 import com.cjyc.common.model.dao.IWaybillDao;
 import com.cjyc.common.model.dto.web.waybill.*;
@@ -16,7 +14,6 @@ import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.waybill.*;
-import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.service.ICsWaybillService;
 import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.web.api.service.IWaybillService;
@@ -94,7 +91,7 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
 
     @Override
     public ResultVo<ListVo<BaseTipVo>> cancel(CancelWaybillDto paramsDto) {
-        return csWaybillService.cancelDispatch(paramsDto);
+        return csWaybillService.cancel(paramsDto);
     }
 
 

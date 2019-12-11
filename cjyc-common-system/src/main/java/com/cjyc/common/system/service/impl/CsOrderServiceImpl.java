@@ -1,10 +1,13 @@
 package com.cjyc.common.system.service.impl;
 
 import com.cjkj.common.redis.lock.RedisDistributedLock;
+import com.cjyc.common.model.constant.TimeConstant;
+import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IOrderDao;
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.entity.*;
+import com.cjyc.common.model.entity.defined.FullWaybillCar;
 import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.city.CityLevelEnum;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
@@ -14,10 +17,14 @@ import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.exception.ParameterException;
 import com.cjyc.common.model.exception.ServerException;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.FailResultReasonVo;
 import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.entity.defined.FullCity;
+import com.cjyc.common.model.vo.web.OrderCarVo;
+import com.cjyc.common.model.vo.web.order.DispatchAddCarVo;
+import com.cjyc.common.model.vo.web.waybill.WaybillCarVo;
 import com.cjyc.common.system.service.*;
 import com.cjyc.common.system.util.RedisUtils;
 import com.google.common.collect.Lists;
@@ -31,6 +38,10 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -55,6 +66,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
     private ICsPingxxService csPingxxService;
     @Resource
     private ICsCityService csCityService;
+    @Resource
+    private ICsLineService csLineService;
     @Resource
     private ICsSendNoService csSendNoService;
     @Resource
@@ -177,6 +190,17 @@ public class CsOrderServiceImpl implements ICsOrderService {
         copyOrderStartCity(startFullCity, order);
         FullCity endFullCity = csCityService.findFullCity(paramsDto.getEndAreaCode(), CityLevelEnum.PROVINCE);
         copyOrderEndCity(endFullCity, order);
+        //计算线路
+        if(paramsDto.getLineId() != null){
+            Line line = csLineService.getLineByCity(order.getStartCityCode(), order.getEndCityCode(), true);
+        }
+/*        if(line != null){
+            order.setLineId(line.getId());
+            //计算预计到达时间
+            if(paramsDto.getExpectStartDate() != null && line.getDays() != null){
+                order.setExpectEndDate(paramsDto.getExpectStartDate() + line.getDays().intValue() * TimeConstant.MILLS_OF_ONE_DAY);
+            }
+        }*/
 
         //验证用户
         ResultVo<Customer> validateCustomerResult = validateCustomer(paramsDto);
@@ -294,7 +318,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
         //csOrderLogService.asyncSave(orderLog);
         //记录车辆日志
-        return BaseResultUtil.success();
+        return BaseResultUtil.success("下单成功，订单编号", order.getNo());
 
     }
 
@@ -633,6 +657,19 @@ public class CsOrderServiceImpl implements ICsOrderService {
         }
         // TODO 日志
         return BaseResultUtil.success();
+    }
+
+    /**
+     * 计算车辆起始目的地
+     *
+     * @param paramsDto
+     * @author JPG
+     * @since 2019/12/11 13:43
+     */
+    @Override
+    public ResultVo<DispatchAddCarVo> computerCarEndpoint(ComputeCarEndpointDto paramsDto) {
+
+        return null;
     }
 
     /**

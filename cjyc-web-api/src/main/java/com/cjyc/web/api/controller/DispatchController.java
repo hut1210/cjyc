@@ -1,6 +1,6 @@
 package com.cjyc.web.api.controller;
 
-import com.cjyc.common.model.dto.web.order.CarFromToGetDto;
+import com.cjyc.common.model.dto.web.order.ComputeCarEndpointDto;
 import com.cjyc.common.model.dto.web.order.LineWaitDispatchCountListOrderCarDto;
 import com.cjyc.common.model.dto.web.order.WaitDispatchListOrderCarDto;
 import com.cjyc.common.model.vo.ListVo;
@@ -71,7 +71,7 @@ public class DispatchController {
      */
     @ApiOperation(value = "根据订单车辆ID查询可调度起始地和目的地")
     @PostMapping(value = "/car/from/to/get")
-    public ResultVo<DispatchAddCarVo> getCarFromTo(@RequestBody CarFromToGetDto reqDto) {
+    public ResultVo<DispatchAddCarVo> getCarFromTo(@RequestBody ComputeCarEndpointDto reqDto) {
         return orderService.getWaybillCarEndpoint(reqDto);
     }
 
