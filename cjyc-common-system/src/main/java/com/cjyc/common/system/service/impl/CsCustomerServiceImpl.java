@@ -6,6 +6,7 @@ import com.cjkj.common.redis.template.StringRedisUtil;
 import com.cjkj.usercenter.dto.common.*;
 import com.cjyc.common.model.dao.ICustomerDao;
 import com.cjyc.common.model.dto.salesman.customer.SalesCustomerDto;
+import com.cjyc.common.model.enums.role.RoleNameEnum;
 import com.cjyc.common.model.vo.salesman.customer.SalesCustomerListVo;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
@@ -20,8 +21,10 @@ import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.ICsCustomerService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -170,4 +173,18 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
         return BaseResultUtil.success(listVo);
     }
 
+    @Override
+    public ResultVo<Long> findRoleId(List<SelectRoleResp> roleResps) {
+        Long roleId = null;
+        if(!CollectionUtils.isEmpty(roleResps)){
+            for(SelectRoleResp roleResp : roleResps){
+                //合伙人
+                if(roleResp.getRoleName().equals(RoleNameEnum.PARTNER.getName())){
+                    roleId = roleResp.getRoleId();
+                    break;
+                }
+            }
+        }
+        return BaseResultUtil.success(roleId);
+    }
 }

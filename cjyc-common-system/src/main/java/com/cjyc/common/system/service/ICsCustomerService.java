@@ -1,10 +1,13 @@
 package com.cjyc.common.system.service;
 
 import com.cjkj.common.model.ResultData;
+import com.cjkj.usercenter.dto.common.SelectRoleResp;
 import com.cjyc.common.model.dto.salesman.customer.SalesCustomerDto;
 import com.cjyc.common.model.vo.salesman.customer.SalesCustomerListVo;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.vo.ResultVo;
+
+import java.util.List;
 
 /**
  * 客户公用接口
@@ -60,4 +63,6 @@ public interface ICsCustomerService {
     Customer validate(Long loginId);
 
     ResultVo<SalesCustomerListVo> findCustomer(SalesCustomerDto dto);
+
+    ResultVo<Long> findRoleId(List<SelectRoleResp> roleResps);
 }

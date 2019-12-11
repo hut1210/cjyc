@@ -1,6 +1,9 @@
 package com.cjyc.customer.api.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cjkj.common.model.ResultData;
+import com.cjkj.common.model.ReturnMsg;
+import com.cjkj.usercenter.dto.common.UpdateUserReq;
 import com.cjyc.common.model.dao.IBankCardBindDao;
 import com.cjyc.common.model.dao.ICustomerDao;
 import com.cjyc.common.model.dao.ICustomerPartnerDao;
@@ -15,7 +18,10 @@ import com.cjyc.common.model.enums.customer.CustomerSourceEnum;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
+import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.system.feign.ISysUserService;
+import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.customer.api.service.IApplyPartnerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -24,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 @Service
 @Slf4j
@@ -35,6 +42,8 @@ public class ApplyPartnerServiceImpl extends ServiceImpl<ICustomerDao, Customer>
     private IBankCardBindDao bankCardBindDao;
     @Resource
     private ICustomerDao customerDao;
+    @Resource
+    private ISysUserService sysUserService;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -43,6 +52,14 @@ public class ApplyPartnerServiceImpl extends ServiceImpl<ICustomerDao, Customer>
         Customer cust = customerDao.selectById(dto.getLoginId());
         if(cust == null){
             return BaseResultUtil.fail("该用户不存在,请检查");
+        }
+        UpdateUserReq uur = new UpdateUserReq();
+        uur.setUserId(cust.getUserId());
+        uur.setRoleIdList(Arrays.asList(
+                Long.parseLong(YmlProperty.get("cjkj.customer.partner_role_id"))));
+        ResultData update = sysUserService.update(uur);
+        if (!ReturnMsg.SUCCESS.getCode().equals(update.getCode())) {
+            return BaseResultUtil.fail("更新组织下的所有角色失败");
         }
         BeanUtils.copyProperties(dto,cust);
         cust.setId(dto.getLoginId());

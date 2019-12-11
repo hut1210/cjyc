@@ -104,7 +104,6 @@ public class LoginServiceImpl extends SuperServiceImpl<ICustomerDao, Customer> i
         c.setCustomerNo(no);
         c.setPayMode(CustomerPayEnum.TIME_PAY.code);
         c.setType(CustomerTypeEnum.INDIVIDUAL.code);
-        c.setIsDelete(DeleteStateEnum.NO_DELETE.code);
         c.setState(CommonStateEnum.CHECKED.code);
         c.setSource(CustomerSourceEnum.APP.code);
         c.setRegisterTime(NOW);

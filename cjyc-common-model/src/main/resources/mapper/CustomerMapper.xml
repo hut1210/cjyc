@@ -25,7 +25,6 @@
         <result column="company_id" property="companyId" />
         <result column="state" property="state" />
         <result column="pay_mode" property="payMode" />
-        <result column="is_delete" property="isDelete" />
         <result column="register_time" property="registerTime" />
         <result column="create_user_id" property="createUserId" />
         <result column="create_time" property="createTime" />
@@ -35,7 +34,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, user_id, customer_no, name, alias, contact_man, contact_phone, contact_address, customer_nature, social_credit_code, initial, photo_img, sex, id_card, id_card_front_img, id_card_back_img, type, source, company_id, state, pay_mode, is_delete, register_time, create_user_id, create_time, check_time, check_user_id
+        id, user_id, customer_no, name, alias, contact_man, contact_phone, contact_address, customer_nature, social_credit_code, initial, photo_img, sex, id_card, id_card_front_img, id_card_back_img, type, source, company_id, state, pay_mode, register_time, create_user_id, create_time, check_time, check_user_id
     </sql>
 
     <!-- 根据用户userId查询用户 -->
@@ -74,7 +73,7 @@
             <if test="idCard != null and idCard.trim() != ''">
                 and  cc.id_card = #{idCard}
             </if>
-                and cc.type = 1 and cc.is_delete = 0
+                and cc.type = 1
         </where>
     </select>
 
@@ -93,7 +92,6 @@
             c_customer
         WHERE
             type = 2
-            AND is_delete = 0
     </select>
 
     <!-- 通过客户编号，客户全称，客户简称等条件查询 -->
@@ -136,7 +134,7 @@
             <if test="customerNature != null ">
                 and cc.customer_nature = #{customerNature}
             </if>
-                and cc.type = 2 and cc.is_delete = 0
+                and cc.type = 2
         </where>
     </select>
 
@@ -189,7 +187,7 @@
             <if test="isInvoice != null">
                 and  ccp.is_invoice = #{isInvoice}
             </if>
-            and cc.type = 3 and cc.is_delete = 0
+            and cc.type = 3
         </where>
     </select>
 
