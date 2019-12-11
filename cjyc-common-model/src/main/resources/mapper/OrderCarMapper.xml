@@ -1033,20 +1033,44 @@
         WHERE woc.id = #{orderCarId}
     </select>
 
-    <!--查询业务中心下所有车辆的出发地和目的地-->
-    <select id="selectAllCarCity" parameterType="java.lang.String" resultType="com.cjyc.common.model.vo.salesman.dispatch.StartCityVo">
+    <!--查询出发地相同的车辆数量-->
+    <select id="selectStartCityCarCount" parameterType="java.lang.String" resultType="com.cjyc.common.model.vo.salesman.dispatch.CityCarCountVo">
         SELECT
-            car.order_id AS orderId,
-            car.id AS orderCarId,
             o.start_city_code AS startCityCode,
             o.start_city AS startCity,
-            o.end_city_code AS endCityCode,
-            o.end_city AS endCity
+            count( o.start_city_code ) AS carCount
         FROM
             w_order_car car
             LEFT JOIN w_order o ON car.order_id = o.id
         WHERE
             o.input_store_id IN ( #{storeIds} )
+            AND car.pick_state = 1
+            AND car.trunk_state = 1
+            AND car.back_state =1
+        GROUP BY
+            o.start_city_code
+    </select>
+
+    <!--查询出发地与目的地相同的车辆数量-->
+    <select id="selectStartAndEndCityCarCount" parameterType="java.lang.String" resultType="com.cjyc.common.model.vo.salesman.dispatch.StartAndEndCityCountVo">
+        SELECT
+            o.start_city_code AS startCityCode,
+            o.start_city AS startCity,
+            o.end_city_code AS endCityCode,
+            o.end_city AS endCity,
+            count( o.end_city_code ) AS carCount
+        FROM
+            w_order_car car
+            LEFT JOIN w_order o ON car.order_id = o.id
+        WHERE
+            o.input_store_id IN ( 2 )
+            AND car.pick_state = 1
+            AND car.trunk_state = 1
+            AND car.back_state = 1
+            AND o.start_city_code = #{startCityCode}
+        GROUP BY
+            o.start_city_code,
+            o.end_city_code
     </select>
 
 
