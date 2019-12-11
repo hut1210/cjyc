@@ -14,6 +14,7 @@ import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.service.ICsStoreService;
 import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 
 /**
  * fegin接口传参和返回值处理接口
+ *
  * @author JPG
  */
 @Service
@@ -46,10 +48,11 @@ public class CsSysServiceImpl implements ICsSysService {
 
     /**
      * 获取角色业务范围: 0全国，-1无业务范围，StoreIds逗号分隔字符串
-     * @author JPG
-     * @since 2019/11/7 11:46
+     *
      * @param roleId
      * @param isSearchCache
+     * @author JPG
+     * @since 2019/11/7 11:46
      */
     @Override
     public BizScope getBizScopeByRoleId(Long roleId, boolean isSearchCache) {
@@ -68,14 +71,14 @@ public class CsSysServiceImpl implements ICsSysService {
             return bizScope;
         }
         Long deptId = resultData.getData().getDeptId();
-        if(deptId.intValue() == Integer.valueOf(YC_DEPT_ADMIN_ID)){
+        if (deptId.intValue() == Long.valueOf(YC_DEPT_ADMIN_ID)) {
             //全国权限
             bizScope.setCode(BizScopeEnum.CHINA.code);
             return bizScope;
         }
         //查询当前角色机构下的所有机构
         ResultData<List<SelectDeptResp>> multiLevelResultData = sysDeptService.getMultiLevelDeptList(deptId);
-        if(multiLevelResultData == null || CollectionUtils.isEmpty(multiLevelResultData.getData())){
+        if (multiLevelResultData == null || CollectionUtils.isEmpty(multiLevelResultData.getData())) {
             return bizScope;
         }
         List<SelectDeptResp> data = multiLevelResultData.getData();
@@ -84,16 +87,16 @@ public class CsSysServiceImpl implements ICsSysService {
 
         //查询全部业务中心ID
         List<Store> storeList = csStoreService.getAll();
-        if(storeList == null){
+        if (storeList == null) {
             return bizScope;
         }
         //计算当前机构下包含的业务中心
         for (Store store : storeList) {
-            if(collect.contains(store.getDeptId())){
+            if (collect.contains(store.getDeptId())) {
                 set.add(store.getId());
             }
         }
-        if(CollectionUtils.isEmpty(set)){
+        if (CollectionUtils.isEmpty(set)) {
             return bizScope;
         }
         bizScope.setCode(BizScopeEnum.STORE.code);
@@ -103,17 +106,66 @@ public class CsSysServiceImpl implements ICsSysService {
 
     /**
      * 根据用户ID查询业务范围
-     * @author JPG
-     * @since 2019/12/10 18:33
+     *
      * @param loginId
      * @param isSearchCache
+     * @author JPG
+     * @since 2019/12/10 18:33
      */
     @Override
     public BizScope getBizScopeByLoginId(Long loginId, boolean isSearchCache) {
+        //返回实体
         BizScope bizScope = new BizScope();
         //默认无权限
         bizScope.setCode(BizScopeEnum.NONE.code);
-        Set<Long> storeIds = Sets.newHashSet();
+        //业务中心ID集合
+        Set<Long> set = Sets.newHashSet();
+        ResultData<List<SelectRoleResp>> resData = sysRoleService.getListByUserId(loginId);
+        if (resData == null || resData.getData() == null) {
+            return bizScope;
+        }
+        //查询用户角色列表
+        List<SelectRoleResp> roleList = resData.getData();
+        Set<Long> collect = roleList.stream().map(SelectRoleResp::getDeptId).collect(Collectors.toSet());
+        if (CollectionUtils.isEmpty(collect)) {
+            return bizScope;
+        }
+        if(collect.contains(Long.valueOf(YC_DEPT_ADMIN_ID))){
+            //全国权限
+            bizScope.setCode(BizScopeEnum.CHINA.code);
+            return bizScope;
+        }
+
+        //查询机构下所有业务中心
+        Set<Long> deptIds = Sets.newHashSet();
+        for (Long deptId : collect) {
+            ResultData<List<SelectDeptResp>> deptResData = sysDeptService.getMultiLevelDeptList(deptId);
+            if(deptResData == null || deptResData.getData() == null){
+                continue;
+            }
+            Set<Long> oneRoleAllLevelDeptIds = deptResData.getData().stream().map(SelectDeptResp::getDeptId).collect(Collectors.toSet());
+            deptIds.addAll(oneRoleAllLevelDeptIds);
+        }
+        if(CollectionUtils.isEmpty(deptIds) ){
+            return bizScope;
+        }
+
+        //查询全部业务中心ID
+        List<Store> storeList = csStoreService.getAll();
+        if (storeList == null) {
+            return bizScope;
+        }
+        //计算当前机构下包含的业务中心
+        for (Store store : storeList) {
+            if (collect.contains(store.getDeptId())) {
+                set.add(store.getId());
+            }
+        }
+        if (CollectionUtils.isEmpty(set)) {
+            return bizScope;
+        }
+        bizScope.setCode(BizScopeEnum.STORE.code);
+        bizScope.setStoreIds(set);
 
         return null;
     }
@@ -121,7 +173,7 @@ public class CsSysServiceImpl implements ICsSysService {
     @Override
     public Carrier getCarrierByRoleId(Long roleId) {
         ResultData<SelectRoleResp> resultData = sysRoleService.getById(roleId);
-        if(resultData == null || resultData.getData() == null){
+        if (resultData == null || resultData.getData() == null) {
             return null;
         }
         return carrierDao.findByDeptId(resultData.getData().getDeptId());

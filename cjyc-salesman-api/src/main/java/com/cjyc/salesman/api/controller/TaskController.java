@@ -50,7 +50,7 @@ public class TaskController {
      */
     @ApiOperation(value = "提车完善信息")
     @PostMapping(value = "/replenish/info/update")
-    public ResultVo replenishInfo(@RequestBody ReplenishInfoDto reqDto) {
+    public ResultVo replenishInfo(@Validated @RequestBody ReplenishInfoDto reqDto) {
         //验证用户
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
@@ -79,7 +79,7 @@ public class TaskController {
      */
     @ApiOperation(value = "卸车")
     @PostMapping(value = "/car/unload")
-    public ResultVo<ResultReasonVo> unload(@RequestBody UnLoadTaskDto reqDto) {
+    public ResultVo<ResultReasonVo> unload(@Validated @RequestBody UnLoadTaskDto reqDto) {
         //验证用户
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
@@ -94,7 +94,7 @@ public class TaskController {
      */
     @ApiOperation(value = "确认出库")
     @PostMapping(value = "/car/out/store")
-    public ResultVo<ResultReasonVo> outStore(@RequestBody OutStoreTaskDto reqDto) {
+    public ResultVo<ResultReasonVo> outStore(@Validated @RequestBody OutStoreTaskDto reqDto) {
         //验证用户
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
@@ -125,7 +125,7 @@ public class TaskController {
      */
     @ApiOperation(value = "签收")
     @PostMapping(value = "/car/receipt")
-    public ResultVo receipt(@RequestBody ReceiptTaskDto reqDto) {
+    public ResultVo receipt(@Validated @RequestBody ReceiptTaskDto reqDto) {
         //验证用户
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
