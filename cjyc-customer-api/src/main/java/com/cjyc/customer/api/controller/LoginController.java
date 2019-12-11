@@ -29,7 +29,6 @@ public class LoginController {
 
     @Autowired
     private ILoginService loginService;
-
     @Resource
     private ICsLoginService csLoginService;
 

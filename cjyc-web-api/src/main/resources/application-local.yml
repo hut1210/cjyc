@@ -98,7 +98,7 @@ cjkj:
   dept_admin_id: 120000
   customer:
     password: 123456
-    partner_role_id: 1204691365000458242
+    partner_role_id: "1204691365000458242"
   driver:
     password: 123456
   salesman:
