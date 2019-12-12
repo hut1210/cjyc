@@ -5,7 +5,6 @@ import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IWaybillCarDao;
 import com.cjyc.common.model.dto.salesman.dispatch.DispatchListDto;
 import com.cjyc.common.model.entity.defined.BizScope;
-import com.cjyc.common.model.enums.BizScopeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -43,9 +42,9 @@ public class DispatchServiceImpl implements IDispatchService {
     private IWaybillCarDao waybillCarDao;
 
     @Override
-    public ResultVo getAllCityCarCount(Long loginId) {
+    public ResultVo getCityCarCount(Long loginId) {
         // 根据登录ID查询当前业务员所在业务中心ID
-        BizScope bizScope = csSysService.getBizScopeByLoginId(loginId, true);
+        /*BizScope bizScope = csSysService.getBizScopeByLoginId(loginId, true);
 
         // 判断当前登录人是否有权限访问
         int code = bizScope.getCode();
@@ -54,23 +53,21 @@ public class DispatchServiceImpl implements IDispatchService {
         }
         if (BizScopeEnum.CHINA.code == code) {
             return BaseResultUtil.fail("暂不支持全国数据访问");
-        }
+        }*/
 
         List<CityCarCountVo> returnList = new ArrayList<>(10);
 
         // 获取业务中心ID
-        String storeIds = getStoreIds(bizScope);
-        // 查询出发地相同的车辆数量：提车，干线，送车均未调度的车辆
+        //String storeIds = getStoreIds(bizScope);
+        String storeIds = "2,3,4,6";
+        // 查询 出发城市和车辆数量
         List<CityCarCountVo> notDispatchList = orderCarDao.selectStartCityCarCount(storeIds);
         // 查询出发地，目的地相同的车辆数量
         for (CityCarCountVo cityCarCountVo : notDispatchList) {
             List<StartAndEndCityCountVo> startAndEndCityCountList = orderCarDao.selectStartAndEndCityCarCount(cityCarCountVo.getStartCityCode());
             cityCarCountVo.setStartAndEndCityCountList(startAndEndCityCountList);
         }
-
         returnList.addAll(notDispatchList);
-
-
         return BaseResultUtil.success(returnList);
     }
 

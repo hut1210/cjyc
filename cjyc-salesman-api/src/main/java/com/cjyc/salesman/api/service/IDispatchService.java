@@ -25,4 +25,5 @@ public interface IDispatchService {
      * @return
      */
     PageVo<DispatchListVo> getPageList(DispatchListDto dto);
+    ResultVo getCityCarCount(Long loginId);
 }

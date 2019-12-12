@@ -95,4 +95,7 @@ public class Store implements Serializable {
     @TableField(exist = false)
     @ApiModelProperty(value = "全地址")
     private String fullAddress;
+
+    @ApiModelProperty(value = "删除标志 0正常，1删除")
+    private Integer isDelete;
 }

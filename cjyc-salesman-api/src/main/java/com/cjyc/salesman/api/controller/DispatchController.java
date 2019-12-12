@@ -12,7 +12,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @Description 调度模块接口控制层
@@ -34,9 +37,9 @@ public class DispatchController {
      * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.vo.PageVo<com.cjyc.common.model.vo.salesman.task.TaskWaybillVo>>
      */
     @ApiOperation(value = "查询所有出发城市-目的地城市的车辆数量")
-    @PostMapping("/getAllCityCarCount/{loginId}")
-    public ResultVo getAllCityCarCount(@PathVariable Long loginId) {
-        return dispatchService.getAllCityCarCount(loginId);
+    @PostMapping("/getCityCarCount/{loginId}")
+    public ResultVo getCityCarCount(@PathVariable Long loginId) {
+        return dispatchService.getCityCarCount(loginId);
     }
 
     @ApiOperation(value = "调度列表信息")

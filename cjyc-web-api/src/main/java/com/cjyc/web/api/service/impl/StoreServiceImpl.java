@@ -30,6 +30,7 @@ import com.cjyc.common.model.entity.defined.BizScope;
 import com.cjyc.common.model.entity.defined.FullCity;
 import com.cjyc.common.model.enums.BizScopeEnum;
 import com.cjyc.common.model.enums.CommonStateEnum;
+import com.cjyc.common.model.enums.DeleteStateEnum;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
@@ -39,6 +40,7 @@ import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.sys.ICsSysService;
+import com.cjyc.common.system.util.ResultDataUtil;
 import com.cjyc.web.api.service.IStoreService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -135,6 +137,7 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
 
         Store store = new Store();
         BeanUtils.copyProperties(storeAddDto,store);
+        store.setIsDelete(DeleteStateEnum.NO_DELETE.code);
         store.setState(CommonStateEnum.CHECKED.code);
         store.setCreateTime(System.currentTimeMillis());
         Admin admin = adminDao.selectOne(new QueryWrapper<Admin>().lambda().eq(Admin::getUserId, storeAddDto.getCreateUserId()).select(Admin::getName));
@@ -294,6 +297,30 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
     }
 
     @Override
+    public ResultVo remove(Long id) {
+        Store store = super.getById(id);
+        if (null == store || store.getDeptId() == null || store.getDeptId() <= 0L) {
+            return BaseResultUtil.fail("业务中心信息有误，请检查");
+        }
+        ResultData<List<SelectUsersByRoleResp>> usersRd = sysUserService.getUsersByDeptId(store.getDeptId());
+        if (ResultDataUtil.isSuccess(usersRd)) {
+            if (CollectionUtils.isEmpty(usersRd.getData())) {
+                ResultData deleteRd = sysDeptService.delete(store.getDeptId());
+                if (!ReturnMsg.SUCCESS.getCode().equals(deleteRd.getCode())) {
+                    return BaseResultUtil.fail("业务中心删除失败，原因：" + deleteRd.getMsg());
+                }
+                boolean result = super.update(new UpdateWrapper<Store>().lambda()
+                        .set(Store::getIsDelete, DeleteStateEnum.YES_DELETE.code).eq(Store::getId,id));
+                return result ? BaseResultUtil.success() : BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
+            }else {
+                return BaseResultUtil.fail("此业务中心有关联用户信息，不能删除");
+            }
+        }else {
+            return BaseResultUtil.fail("删除失败，原因：" + usersRd.getMsg());
+        }
+    }
+
+    @Override
     public List<Store> get(GetStoreDto reqDto) {
         BizScope bizScope = csSysService.getBizScopeByRoleId(reqDto.getRoleId(), true);
         if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
@@ -323,6 +350,7 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
                 .eq(!StringUtils.isEmpty(storeQueryDto.getProvinceCode()),Store::getProvinceCode,storeQueryDto.getProvinceCode())
                 .eq(!StringUtils.isEmpty(storeQueryDto.getCityCode()),Store::getCityCode,storeQueryDto.getCityCode())
                 .eq(!StringUtils.isEmpty(storeQueryDto.getAreaCode()),Store::getAreaCode,storeQueryDto.getAreaCode())
+                .eq(Store::getIsDelete,DeleteStateEnum.NO_DELETE.code)
                 .like(!StringUtils.isEmpty(storeQueryDto.getName()),Store::getName,storeQueryDto.getName());
         return super.list(queryWrapper);
     }
