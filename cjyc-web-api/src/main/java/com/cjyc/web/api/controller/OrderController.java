@@ -60,7 +60,7 @@ public class OrderController {
      */
     @ApiOperation(value = "订单保存")
     @PostMapping(value = "/save")
-    public ResultVo save(@RequestBody SaveOrderDto reqDto) {
+    public ResultVo save(@Validated @RequestBody SaveOrderDto reqDto) {
 
         //验证用户存不存在
         Admin admin = csAdminService.validate(reqDto.getLoginId());
@@ -150,7 +150,6 @@ public class OrderController {
         OrderVo orderVo = orderService.getVoById(orderId);
         return BaseResultUtil.success(orderVo);
     }
-
 
     /**
      * 查询订单取消记录-根据ID

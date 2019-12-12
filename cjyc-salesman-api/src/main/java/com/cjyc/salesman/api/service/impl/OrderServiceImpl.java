@@ -7,6 +7,7 @@ import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IOrderDao;
 import com.cjyc.common.model.dto.salesman.order.SalesOrderDetailDto;
 import com.cjyc.common.model.dto.salesman.order.SalesOrderQueryDto;
+import com.cjyc.common.model.dto.web.order.CommitOrderDto;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -68,4 +69,5 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         detailVo.setCarVoList(carVoList);
         return BaseResultUtil.success(detailVo);
     }
+
 }

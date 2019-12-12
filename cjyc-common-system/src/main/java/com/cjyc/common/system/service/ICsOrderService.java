@@ -25,6 +25,13 @@ public interface ICsOrderService {
     ResultVo check(CheckOrderDto reqDto);
 
     /**
+     * 提交并审核
+     * @param reqDto
+     * @return
+     */
+    ResultVo commitAndCheck(CommitOrderDto reqDto);
+
+    /**
      * 分配订单
      * @author JPG
      * @since 2019/11/5 16:05
@@ -79,4 +86,5 @@ public interface ICsOrderService {
      * @param paramsDto
      */
     ResultVo<DispatchAddCarVo> computerCarEndpoint(ComputeCarEndpointDto paramsDto);
+
 }

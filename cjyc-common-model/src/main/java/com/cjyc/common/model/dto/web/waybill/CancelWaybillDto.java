@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -14,8 +16,14 @@ import java.util.List;
 @ApiModel
 public class CancelWaybillDto {
 
+    @NotNull(message = "loginId不能为空")
     @ApiModelProperty(value = "用户ID",required = true)
     private Long loginId;
-    @ApiModelProperty(value = "运单号", required = true)
+
+    @ApiModelProperty(hidden = true)
+    private String loginName;
+
+    @NotEmpty(message = "waybillIdList不能为空")
+    @ApiModelProperty(value = "运单ID列表", required = true)
     private List<Long> waybillIdList;
 }
