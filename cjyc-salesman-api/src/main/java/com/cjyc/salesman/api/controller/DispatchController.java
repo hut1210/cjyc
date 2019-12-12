@@ -1,21 +1,16 @@
 package com.cjyc.salesman.api.controller;
 
-import com.cjyc.common.model.dto.web.order.ComputeCarEndpointDto;
 import com.cjyc.common.model.dto.salesman.dispatch.DispatchListDto;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.order.DispatchAddCarVo;
 import com.cjyc.common.model.vo.salesman.dispatch.DispatchListVo;
 import com.cjyc.salesman.api.service.IDispatchService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @Description 调度模块接口控制层
