@@ -4,16 +4,10 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import java.util.List;
 
-/**
- * @Author: Hut
- * @Date: 2019/12/11 15:19
- */
 @Data
-public class SweepCodeDto {
-
-    @ApiModelProperty(value = "支付渠道")
-    private String channel;
+public class ValidateSweepCodeDto {
 
     @ApiModelProperty(value = "用户ID",required = true)
     private Long loginId;
@@ -21,10 +15,8 @@ public class SweepCodeDto {
     @ApiModelProperty(value = "任务Id")
     private Long taskId;
 
-    @ApiModelProperty(value = "ip")
-    private String ip;
-
     @ApiModelProperty(value = "验证码",required = true)
     @NotBlank(message = "验证码不能为空")
     private String code;
+
 }

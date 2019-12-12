@@ -1,13 +1,14 @@
 package com.cjyc.salesman.api.controller;
 
-import com.cjyc.common.model.dto.salesman.PageSalesDto;
-import com.cjyc.common.model.dto.salesman.order.AppOrderQueryDto;
+import com.cjyc.common.model.dto.salesman.order.SalesOrderDetailDto;
+import com.cjyc.common.model.dto.salesman.order.SalesOrderQueryDto;
 import com.cjyc.common.model.dto.salesman.order.SalesmanQueryDto;
 import com.cjyc.common.model.dto.web.order.ComputeCarEndpointDto;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.salesman.order.AppOrderVo;
+import com.cjyc.common.model.vo.salesman.order.SalesOrderDetailVo;
+import com.cjyc.common.model.vo.salesman.order.SalesOrderVo;
 import com.cjyc.common.model.vo.web.admin.AdminPageVo;
 import com.cjyc.common.model.vo.web.order.DispatchAddCarVo;
 import com.cjyc.common.system.service.ICsOrderService;
@@ -44,15 +45,9 @@ public class OrderController {
         return BaseResultUtil.success(adminService.listPage(dto));
     }
 
-    @ApiOperation(value = "草稿列表")
-    @PostMapping("/findDraftOrder")
-    public ResultVo<PageVo<AppOrderVo>> findDraftOrder(@Valid @RequestBody PageSalesDto dto) {
-        return orderService.findDraftOrder(dto);
-    }
-
-    @ApiOperation(value = "接单/全部列表")
+    @ApiOperation(value = "草稿/接单/全部列表")
     @PostMapping("/findOrder")
-    public ResultVo<PageVo<AppOrderVo>> findOrder(@Valid @RequestBody AppOrderQueryDto dto) {
+    public ResultVo<PageVo<SalesOrderVo>> findOrder(@Valid @RequestBody SalesOrderQueryDto dto) {
         return orderService.findOrder(dto);
     }
 
@@ -66,5 +61,11 @@ public class OrderController {
         return csOrderService.computerCarEndpoint(reqDto);
     }
 
+
+    @ApiOperation(value = "订单详情")
+    @PostMapping("/findOrderDetail")
+    public ResultVo<SalesOrderDetailVo> findOrderDetail(@Valid @RequestBody SalesOrderDetailDto dto) {
+        return orderService.findOrderDetail(dto);
+    }
 
 }

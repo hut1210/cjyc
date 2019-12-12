@@ -7,6 +7,7 @@ import com.cjkj.common.model.ReturnMsg;
 import com.cjkj.common.utils.ExcelUtil;
 import com.cjkj.usercenter.dto.common.AddUserReq;
 import com.cjkj.usercenter.dto.common.AddUserResp;
+import com.cjkj.usercenter.dto.common.SelectRoleResp;
 import com.cjkj.usercenter.dto.common.UpdateUserReq;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.OperateDto;
@@ -29,6 +30,7 @@ import com.cjyc.common.model.vo.web.customer.*;
 import com.cjyc.common.model.vo.web.coupon.CustomerCouponSendVo;
 import com.cjyc.common.model.vo.web.line.LineExportExcel;
 import com.cjyc.common.model.vo.web.line.LineVo;
+import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.ICsCustomerService;
 import com.cjyc.common.system.service.ICsSendNoService;
@@ -60,42 +62,32 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
 
     @Resource
     private ICustomerDao customerDao;
-
     @Resource
     private ICustomerContractDao customerContractDao;
-
     @Resource
     private ICustomerContractService customerContractService;
-
     @Resource
     private ISysUserService sysUserService;
-
     @Resource
     private ICustomerPartnerDao customerPartnerDao;
-
     @Resource
     private IBankCardBindDao bankCardBindDao;
-
     @Resource
     private ICouponDao couponDao;
-
     @Resource
     private ICouponSendDao couponSendDao;
-
     @Resource
     private IAdminDao adminDao;
-
     @Resource
     private IDriverDao driverDao;
-
     @Resource
     private ICustomerCountDao customerCountDao;
-
     @Resource
     private ICsSendNoService sendNoService;
-
     @Resource
     private ICsCustomerService csCustomerService;
+    @Resource
+    private ISysRoleService sysRoleService;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -135,7 +127,6 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         customer.setCustomerNo(sendNoService.getNo(SendNoTypeEnum.CUSTOMER));
         customer.setAlias(dto.getContactMan());
         customer.setName(dto.getContactMan());
-        customer.setIsDelete(DeleteStateEnum.NO_DELETE.code);
         customer.setType(CustomerTypeEnum.INDIVIDUAL.code);
         customer.setState(CustomerStateEnum.CHECKED.code);
         customer.setPayMode(CustomerPayEnum.TIME_PAY.code);
@@ -202,7 +193,6 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             BeanUtils.copyProperties(dto,customer);
             customer.setCustomerNo(sendNoService.getNo(SendNoTypeEnum.CUSTOMER));
             customer.setAlias(dto.getName());
-            customer.setIsDelete(DeleteStateEnum.NO_DELETE.code);
             customer.setType(CustomerTypeEnum.ENTERPRISE.code);
             customer.setState(CustomerStateEnum.WAIT_LOGIN.code);
             customer.setSource(CustomerSourceEnum.WEB.code);
@@ -267,21 +257,60 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     public ResultVo verifyCustomer(OperateDto dto) {
         Customer customer = customerDao.selectById(dto.getId());
         if(customer != null){
-            if(FlagEnum.DELETE.code == dto.getFlag()){
-               //假删除
-                customer.setIsDelete(DeleteStateEnum.YES_DELETE.code);
-            }else if(FlagEnum.AUDIT_PASS.code == dto.getFlag()){
-                //审核通过
-                customer.setState(CustomerStateEnum.CHECKED.code);
-            }else if(FlagEnum.AUDIT_REJECT.code == dto.getFlag()){
-                //审核拒绝
-                customer.setState(CustomerStateEnum.REJECT.code);
-            }else if(FlagEnum.FROZEN.code == dto.getFlag()){
-                //冻结
-                customer.setState(CustomerStateEnum.FROZEN.code);
-            }else if(FlagEnum.THAW.code == dto.getFlag()){
-                //解冻
-                customer.setState(CustomerStateEnum.CHECKED.code);
+            //合伙人
+            if(customer.getType() == CustomerTypeEnum.COOPERATOR.code){
+                //冻结/审核拒绝/解冻
+                if(FlagEnum.AUDIT_REJECT.code == dto.getFlag() || FlagEnum.FROZEN.code == dto.getFlag() || FlagEnum.THAW.code == dto.getFlag()){
+                    Long userId = customer.getUserId();
+                    ResultData<List<SelectRoleResp>> rd = sysRoleService.getListByUserId(userId);
+                    if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+                        return BaseResultUtil.fail("查询该用户下所有角色失败");
+                    }
+                    ResultVo<Long> resultVo = csCustomerService.findRoleId(rd.getData());
+                    if(FlagEnum.AUDIT_REJECT.code == dto.getFlag() || FlagEnum.FROZEN.code == dto.getFlag()){
+                        //调用架构组撤销角色
+                        ResultData resultData = sysRoleService.revokeRole(userId, resultVo.getData());
+                        if (!ReturnMsg.SUCCESS.getCode().equals(resultData.getCode())) {
+                            return BaseResultUtil.fail("解除合伙人角色失败");
+                        }
+                    }
+                    if(FlagEnum.AUDIT_REJECT.code == dto.getFlag()){
+                        //审核拒绝
+                        customer.setState(CustomerStateEnum.REJECT.code);
+                    }else if(FlagEnum.FROZEN.code == dto.getFlag()){
+                        //冻结
+                        customer.setState(CustomerStateEnum.FROZEN.code);
+                    }
+                    if(FlagEnum.THAW.code == dto.getFlag()){
+                        //解冻
+                        //更新架构组角色
+                        UpdateUserReq uur = new UpdateUserReq();
+                        uur.setUserId(userId);
+                        uur.setRoleIdList(Arrays.asList(
+                                Long.parseLong(YmlProperty.get("cjkj.customer.partner_role_id"))));
+                        ResultData update = sysUserService.update(uur);
+                        if (!ReturnMsg.SUCCESS.getCode().equals(update.getCode())) {
+                            return BaseResultUtil.fail("更新组织下的所有角色失败");
+                        }
+                        customer.setState(CustomerStateEnum.CHECKED.code);
+                    }
+                }
+            }
+            //C端客户/大客户
+            if(customer.getType() != CustomerTypeEnum.COOPERATOR.code){
+                if(FlagEnum.AUDIT_PASS.code == dto.getFlag()){
+                    //审核通过
+                    customer.setState(CustomerStateEnum.CHECKED.code);
+                }else if(FlagEnum.AUDIT_REJECT.code == dto.getFlag()){
+                    //审核拒绝
+                    customer.setState(CustomerStateEnum.REJECT.code);
+                }else if(FlagEnum.FROZEN.code == dto.getFlag()){
+                    //冻结
+                    customer.setState(CustomerStateEnum.FROZEN.code);
+                }else if(FlagEnum.THAW.code == dto.getFlag()){
+                    //解冻
+                    customer.setState(CustomerStateEnum.CHECKED.code);
+                }
             }
             customer.setCheckTime(NOW);
             customer.setCheckUserId(dto.getLoginId());
@@ -353,22 +382,25 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                 .eq(Customer::getType,1));
         if(c != null){
             if(dto.getFlag()){
-                if(c.getIsDelete() == DeleteStateEnum.YES_DELETE.code){
-                    //已删除
-                    return BaseResultUtil.fail("该账号已被禁用");
+                if((c.getState() == CustomerStateEnum.FROZEN.code) || (c.getState() == CustomerStateEnum.REJECT.code)){
+                    //冻结/审核拒绝
+                    return BaseResultUtil.fail("该账号已被冻结或被审核拒绝,不可升级");
                 }
                 //前端重置为true，升级为合伙人
-                Customer cu = customerDao.selectById(dto.getCustomerId());
-                if(cu != null){
-                    cu.setIsDelete(DeleteStateEnum.YES_DELETE.code);
-                    super.updateById(cu);
+                UpdateUserReq uur = new UpdateUserReq();
+                uur.setUserId(c.getUserId());
+                uur.setRoleIdList(Arrays.asList(
+                        Long.parseLong(YmlProperty.get("cjkj.customer.partner_role_id"))));
+                ResultData update = sysUserService.update(uur);
+                if (!ReturnMsg.SUCCESS.getCode().equals(update.getCode())) {
+                    return BaseResultUtil.fail("更新组织下的所有角色失败");
                 }
+
                 BeanUtils.copyProperties(dto,c);
                 c.setAlias(dto.getName());
                 c.setType(CustomerTypeEnum.COOPERATOR.code);
                 c.setSource(CustomerSourceEnum.UPGRADE.code);
-                c.setState(CommonStateEnum.WAIT_CHECK.code);
-                c.setIsDelete(DeleteStateEnum.NO_DELETE.code);
+                c.setState(CustomerStateEnum.WAIT_LOGIN.code);
                 c.setCreateUserId(dto.getLoginId());
                 c.setCreateTime(NOW);
                 super.updateById(c);
@@ -399,7 +431,6 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         BeanUtils.copyProperties(dto,customer);
         customer.setAlias(dto.getName());
         customer.setCustomerNo(sendNoService.getNo(SendNoTypeEnum.CUSTOMER));
-        customer.setIsDelete(DeleteStateEnum.NO_DELETE.code);
         customer.setSource(CustomerSourceEnum.WEB.code);
         customer.setType(CustomerTypeEnum.COOPERATOR.code);
         customer.setState(CommonStateEnum.WAIT_CHECK.code);

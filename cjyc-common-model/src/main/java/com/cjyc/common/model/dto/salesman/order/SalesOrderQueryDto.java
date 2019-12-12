@@ -7,8 +7,8 @@ import lombok.Data;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class AppOrderQueryDto extends PageSalesDto {
-    @ApiModelProperty(value = "标志 0：接单 1：全部")
+public class SalesOrderQueryDto extends PageSalesDto {
+    @ApiModelProperty(value = "标志 0：下单 1：接单 2：全部")
     @NotNull(message = "标志不能为空")
     private Integer flag;
 

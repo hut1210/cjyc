@@ -6,20 +6,22 @@ import com.cjkj.common.redis.template.StringRedisUtil;
 import com.cjkj.usercenter.dto.common.*;
 import com.cjyc.common.model.dao.ICustomerDao;
 import com.cjyc.common.model.dto.salesman.customer.SalesCustomerDto;
+import com.cjyc.common.model.enums.role.RoleNameEnum;
+import com.cjyc.common.model.vo.salesman.customer.SalesCustomerListVo;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
-import com.cjyc.common.model.enums.driver.DriverTypeEnum;
 import com.cjyc.common.model.exception.ParameterException;
 import com.cjyc.common.model.exception.ServerException;
+import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.salesman.customer.SalesCustomerVo;
-import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.ICsCustomerService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.Arrays;
@@ -113,6 +115,10 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
         user.setMobile(customer.getContactPhone());
         user.setDeptId(Long.parseLong(YmlProperty.get("cjkj.dept_customer_id")));
         user.setPassword(YmlProperty.get("cjkj.customer.password"));
+        if (CustomerTypeEnum.COOPERATOR.code == customer.getType()) {
+            user.setRoleIdList(Arrays.asList(
+                    Long.parseLong(YmlProperty.get("cjkj.customer.partner_role_id"))));
+        }
         ResultData<AddUserResp> saveRd = sysUserService.save(user);
         if (!ReturnMsg.SUCCESS.getCode().equals(saveRd.getCode())) {
             return ResultData.failed("保存客户信息失败，原因：" + saveRd.getMsg());
@@ -160,9 +166,25 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
     }
 
     @Override
-    public ResultVo<SalesCustomerVo> findCustomer(SalesCustomerDto dto) {
-        customerDao.findCustomer(dto);
-        return null;
+    public ResultVo<SalesCustomerListVo> findCustomer(SalesCustomerDto dto) {
+        List<SalesCustomerVo> customerVos = customerDao.findCustomerPhoneName(dto);
+        SalesCustomerListVo listVo = new SalesCustomerListVo();
+        listVo.setList(customerVos);
+        return BaseResultUtil.success(listVo);
     }
 
+    @Override
+    public ResultVo<Long> findRoleId(List<SelectRoleResp> roleResps) {
+        Long roleId = null;
+        if(!CollectionUtils.isEmpty(roleResps)){
+            for(SelectRoleResp roleResp : roleResps){
+                //合伙人
+                if(roleResp.getRoleName().equals(RoleNameEnum.PARTNER.getName())){
+                    roleId = roleResp.getRoleId();
+                    break;
+                }
+            }
+        }
+        return BaseResultUtil.success(roleId);
+    }
 }

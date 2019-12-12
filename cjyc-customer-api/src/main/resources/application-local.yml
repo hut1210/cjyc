@@ -86,6 +86,7 @@ cjkj:
   dept_admin_id: 120000
   customer:
     password: cc8$wT^n4L#W4Fii #使用后不能修改
+    partner_role_id: "1204691365000458242"
   driver:
     password: cc8$wT^n4L#W4Fii #使用后不能修改
   salesman:

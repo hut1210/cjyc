@@ -4,12 +4,12 @@ import com.cjyc.common.model.dto.CommonDto;
 import com.cjyc.common.model.dto.KeywordDto;
 import com.cjyc.common.model.dto.customer.freightBill.FindStoreDto;
 import com.cjyc.common.model.dto.salesman.customer.SalesCustomerDto;
+import com.cjyc.common.model.vo.salesman.customer.SalesCustomerListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.city.CityVo;
 import com.cjyc.common.model.vo.customer.customerLine.CustomerLineVo;
 import com.cjyc.common.model.vo.customer.customerLine.StoreListVo;
-import com.cjyc.common.model.vo.salesman.customer.SalesCustomerVo;
 import com.cjyc.common.model.vo.web.carSeries.CarSeriesTree;
 import com.cjyc.common.system.service.*;
 import io.swagger.annotations.Api;
@@ -41,13 +41,13 @@ public class BasicController {
     private ICsCustomerService csCustomerService;
 
     @ApiOperation(value = "查看品牌车系")
-    @PostMapping(value = "/queryCarSeries")
+    @PostMapping(value = "/findCarSeries")
     public ResultVo<List<CarSeriesTree>> queryCarSeries(@RequestBody KeywordDto dto){
         return csCarSeriesService.tree(false,dto.getKeyword());
     }
 
     @ApiOperation(value = "查看城市")
-    @PostMapping(value = "/queryCity")
+    @PostMapping(value = "/findCity")
     public ResultVo<CityVo> queryCity(@RequestBody KeywordDto dto)
     {
         return csCityService.queryCity(dto);
@@ -60,14 +60,14 @@ public class BasicController {
     }
 
     @ApiOperation(value = "查看用户历史线路")
-    @PostMapping(value = "/queryLinePage")
+    @PostMapping(value = "/findLine")
     public ResultVo<PageVo<CustomerLineVo>> queryLinePage(@RequestBody CommonDto dto){
         return csCustomerLineService.queryLinePage(dto);
     }
 
     @ApiOperation(value = "客户信息")
     @PostMapping(value = "/findCustomer")
-    public ResultVo<SalesCustomerVo> findCustomer(@RequestBody SalesCustomerDto dto){
+    public ResultVo<SalesCustomerListVo> findCustomer(@RequestBody SalesCustomerDto dto){
         return csCustomerService.findCustomer(dto);
     }
 

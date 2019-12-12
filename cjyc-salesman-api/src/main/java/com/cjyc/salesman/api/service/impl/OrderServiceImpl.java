@@ -2,13 +2,14 @@ package com.cjyc.salesman.api.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.dao.IOrderDao;
-import com.cjyc.common.model.dto.salesman.PageSalesDto;
-import com.cjyc.common.model.dto.salesman.order.AppOrderQueryDto;
+import com.cjyc.common.model.dto.salesman.order.SalesOrderDetailDto;
+import com.cjyc.common.model.dto.salesman.order.SalesOrderQueryDto;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.salesman.order.AppOrderVo;
+import com.cjyc.common.model.vo.salesman.order.SalesOrderDetailVo;
+import com.cjyc.common.model.vo.salesman.order.SalesOrderVo;
 import com.cjyc.salesman.api.service.IOrderService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -24,18 +25,16 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     private IOrderDao orderDao;
 
     @Override
-    public ResultVo<PageVo<AppOrderVo>> findDraftOrder(PageSalesDto dto) {
+    public ResultVo<PageVo<SalesOrderVo>> findOrder(SalesOrderQueryDto dto) {
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        List<AppOrderVo> draftOrderVos = orderDao.findDraftOrder(dto);
-        PageInfo<AppOrderVo> pageInfo = new PageInfo(draftOrderVos);
+        List<SalesOrderVo> orderVos = orderDao.findOrder(dto);
+        PageInfo<SalesOrderVo> pageInfo = new PageInfo(orderVos);
         return BaseResultUtil.success(pageInfo);
     }
 
     @Override
-    public ResultVo<PageVo<AppOrderVo>> findOrder(AppOrderQueryDto dto) {
-        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        List<AppOrderVo> orderVos = orderDao.findOrder(dto);
-        PageInfo<AppOrderVo> pageInfo = new PageInfo(orderVos);
-        return BaseResultUtil.success(pageInfo);
+    public ResultVo<SalesOrderDetailVo> findOrderDetail(SalesOrderDetailDto dto) {
+
+        return null;
     }
 }

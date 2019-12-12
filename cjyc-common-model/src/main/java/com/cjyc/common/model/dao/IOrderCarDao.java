@@ -11,6 +11,8 @@ import com.cjyc.common.model.dto.web.order.WaitDispatchListOrderCarDto;
 import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.vo.customer.invoice.InvoiceOrderVo;
 import com.cjyc.common.model.vo.customer.order.OrderCarCenterVo;
+import com.cjyc.common.model.vo.salesman.dispatch.CityCarCountVo;
+import com.cjyc.common.model.vo.salesman.dispatch.StartAndEndCityCountVo;
 import com.cjyc.common.model.vo.salesman.mine.StockCarDetailVo;
 import com.cjyc.common.model.vo.salesman.mine.StockCarVo;
 import com.cjyc.common.model.vo.web.OrderCarVo;
@@ -177,4 +179,22 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
      * @return
      */
     StockCarDetailVo findOrderCar(BaseSalesDto dto);
+
+    /**
+     * 功能描述: 查询出发地相同的车辆数量
+     * @author liuxingxiang
+     * @date 2019/12/11
+     * @param storeIds
+     * @return java.util.List<com.cjyc.common.model.vo.salesman.dispatch.CityCarCountVo>
+     */
+    List<CityCarCountVo> selectStartCityCarCount(@Param("storeIds") String storeIds);
+
+    /**
+     * 功能描述: 查询出发地与目的地相同的车辆数量
+     * @author liuxingxiang
+     * @date 2019/12/11
+     * @param startCityCode
+     * @return java.util.List<com.cjyc.common.model.vo.salesman.dispatch.StartAndEndCityCountVo>
+     */
+    List<StartAndEndCityCountVo> selectStartAndEndCityCarCount(@Param("startCityCode") String startCityCode);
 }

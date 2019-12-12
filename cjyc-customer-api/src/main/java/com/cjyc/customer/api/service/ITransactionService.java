@@ -23,7 +23,7 @@ public interface ITransactionService {
 
     void cancelExpireTrade();
 
-    BigDecimal getAmountByOrderCarIds(String orderCarIds);
+    //BigDecimal getAmountByOrderCarIds(String orderCarIds);
 
     int save(Object obj);
 }

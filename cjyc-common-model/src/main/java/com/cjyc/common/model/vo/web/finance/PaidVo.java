@@ -23,7 +23,7 @@ public class PaidVo implements Serializable {
     private Long completeTime;
 
     @ApiModelProperty(value = "结算类型")
-    private Integer settleType;
+    private String settleType;
 
     @ApiModelProperty(value = "应付运费")
     private BigDecimal freightFee;

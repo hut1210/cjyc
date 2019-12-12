@@ -1,0 +1,19 @@
+package com.cjyc.salesman.api.service;
+
+import com.cjyc.common.model.vo.ResultVo;
+
+/**
+ * @Description 调度业务接口
+ * @Author Liu Xing Xiang
+ * @Date 2019/12/11 13:34
+ **/
+public interface IDispatchService {
+    /**
+     * 功能描述: 查询所有出发城市-目的地城市的车辆数量
+     * @author liuxingxiang
+     * @date 2019/12/11
+     * @param loginId
+     * @return com.cjyc.common.model.vo.ResultVo
+     */
+    ResultVo getAllCityCarCount(Long loginId);
+}

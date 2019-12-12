@@ -64,8 +64,13 @@ public class LoginServiceImpl extends SuperServiceImpl<ICustomerDao, Customer> i
             //添加数据
            c = addToPlatform(dto.getPhone());
         }
-        if(c != null && c.getType() == CustomerTypeEnum.ENTERPRISE.code){
-            return BaseResultUtil.fail("大客户不能登陆app");
+        if(c != null){
+            if(c.getType() == CustomerTypeEnum.ENTERPRISE.code){
+                return BaseResultUtil.fail("大客户不能登录app");
+            }
+            if((c.getState() == CustomerStateEnum.REJECT.code) || (c.getState() == CustomerStateEnum.FROZEN.code)){
+                return BaseResultUtil.fail("账号处于冻结/审核拒绝不能登录app");
+            }
         }
         //调用架构组验证手机号验证码登陆
         AuthMobileLoginReq req = new AuthMobileLoginReq();
@@ -104,7 +109,6 @@ public class LoginServiceImpl extends SuperServiceImpl<ICustomerDao, Customer> i
         c.setCustomerNo(no);
         c.setPayMode(CustomerPayEnum.TIME_PAY.code);
         c.setType(CustomerTypeEnum.INDIVIDUAL.code);
-        c.setIsDelete(DeleteStateEnum.NO_DELETE.code);
         c.setState(CommonStateEnum.CHECKED.code);
         c.setSource(CustomerSourceEnum.APP.code);
         c.setRegisterTime(NOW);
