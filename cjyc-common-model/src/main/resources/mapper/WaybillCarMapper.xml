@@ -834,5 +834,73 @@
         where wc.order_car_id = #{orderCarId}
         and o.back_contact_phone = wc.unload_link_phone
     </select>
+    <select id="findCarEndpoint" resultType="com.cjyc.common.model.entity.defined.FullWaybillCar">
+        select
+        shell.*,
+        l.default_freight_fee as lineFreightFee,
+        l.id as lineId
+        case when
+        from (
+            select
+            oc.brand as brand,
+            oc.model as model,
+            oc.plate_no as plateNo,
+            oc.vin as vin,
+            /*line_freight_fee as lineFreightFee*/
+            oc.state as state,
+            oc.id as orderCarId,
+            oc.no as orderCarNo,
+            (case when temp.id is not null then temp.end_province else o.start_province end) as startProvince,
+            (case when temp.id is not null then temp.end_province_code else o.start_province_code end) as startProvinceCode,
+            (case when temp.id is not null then temp.end_city else o.start_city end) as startCity,
+            (case when temp.id is not null then temp.end_city_code else o.start_city_code end) as startCityCode,
+            (case when temp.id is not null then temp.end_area else o.start_area end) as startArea,
+            (case when temp.id is not null then temp.end_area_code else o.start_area_code end) as startAreaCode,
+            (case when temp.id is not null then temp.end_address else o.start_address end) as startAddress,
+            (case when temp.id is not null then temp.end_store_name else o.start_store_name end) as startStoreName,
+            (case when temp.id is not null then temp.end_store_id else o.start_store_id end) as startStoreId,
+            (case when temp.id is not null then temp.end_belong_store_id else o.start_belong_store_id end) as startBelongStoreId,
+            (case when temp.id is not null then true else false end) as startFixedFlag,
+            false as end endFixedFlag,
+            o.end_province as endProvince,
+            o.end_province_code as endProvinceCode,
+            o.end_city as endCity,
+            o.end_city_code as endCityCode,
+            o.end_area as endArea,
+            o.end_area_code as endAreaCode,
+            o.end_address as endAddress,
+            o.end_store_name as endStoreName,
+            o.end_store_id as endStoreId,
+            o.end_belong_store_id as endBelongStoreId,
+            o.expect_start_date as expectStartTime,
+            o.expect_end_date as expectEndTime,
+            (case when temp.id is not null then temp.load_link_name else o.pick_contact_name end) as loadLinkName,
+            (case when temp.id is not null then temp.load_link_user_id else null end) as loadLinkUserId,
+            (case when temp.id is not null then temp.load_link_phone else o.pick_contact_phone end) as loadLinkPhone,
+            o.back_contact_name as unloadLinkUserId,
+            o.back_contact_phone as unloadLinkPhone
+            from w_order o
+            join w_order_car oc on o.id = oc.order_id
+            left join (
+                select
+                wc.*,
+                concat(s1.province, s1.city, s1.area,s1.detail_addr) as startStoreFullAddress,
+                concat(s2.province, s2.city, s2.area,s2.detail_addr) as endStoreFullAddress
+                from w_waybill w
+                join w_waybill_car wc on wc.waybill_id = w.id
+                left join s_store s1 on s1.id = wc.start_store_id
+                left join s_store s2 on s2.id = wc.end_store_id
+                where
+                    wc.id in
+                    (
+                    SELECT MAX(wc1.id)
+                    FROM w_waybill_car wc1
+                    where wc1.order_car_id = 178
+                    and wc1.state &lt;= 100
+                    GROUP BY wc1.order_car_id
+                    )
+            ) as temp on temp.order_car_id = oc.id ) as shell
+        left join s_line l on shell.startCityCode = l.from_code and shell.endCityCode = l.to_code
+    </select>
 
 </mapper>

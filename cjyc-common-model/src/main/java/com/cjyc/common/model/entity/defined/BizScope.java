@@ -10,6 +10,12 @@ import java.util.Set;
  */
 @Data
 public class BizScope {
+    /**
+     *
+     * @author JPG
+     * @since 2019/12/11 16:42
+     * @see com.cjyc.common.model.enums.BizScopeEnum
+     */
     private int code;
     private Set<Long> storeIds;
 

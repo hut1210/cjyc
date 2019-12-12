@@ -89,10 +89,8 @@ public class OrderController {
         reqDto.setCreateUserId(admin.getId());
         reqDto.setCreateUserName(admin.getName());
 
-        ResultVo resultVo = orderService.commit(reqDto);
-
         //发送短信
-        return resultVo;
+        return orderService.commit(reqDto);
     }
 
 
