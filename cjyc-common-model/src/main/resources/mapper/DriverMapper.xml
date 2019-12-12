@@ -354,7 +354,7 @@
             <if test="realName != null and realName.trim() != ''">
                 dd.real_name like CONCAT('%',#{realName},'%')
             </if>
-              and dcdc.carrier_id = #{carrierId} and dcdc.state &lt; 9
+              and dcdc.carrier_id = #{carrierId} and dcdc.state = 2
         </where>
     </select>
 
@@ -530,7 +530,7 @@
                  dd.real_name like CONCAT('%',#{realName},'%')
             </if>
             and dcdc.carrier_id = #{carrierId}
-            and dcdc.state &lt; 9
+            and dcdc.state = 2
         </where>
     </select>
 
@@ -555,7 +555,7 @@
             LEFT JOIN d_carrier_driver_con dcdc ON dcdc.driver_id = dd.id
             LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
         where dcdc.id = #{roleId} and dd.id = #{loginId}
-            and dcdc.state &lt; 9
+            and dcdc.state &lt;= 2
     </select>
 
     <!--验证在企业承运商下是否存在-->
