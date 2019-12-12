@@ -789,6 +789,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                 CustomerContract custCont = new CustomerContract();
                 BeanUtils.copyProperties(dto,custCont);
                 custCont.setCustomerId(customerId);
+                custCont.setCreateTime(NOW);
                 list.add(custCont);
             }
         }
