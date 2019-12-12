@@ -371,7 +371,7 @@
                 and o.create_time &lt;= #{endDate}
             </if>
         </where>
-        order by o.create_time
+        order by o.create_time desc
     </select>
     <select id="findByCarId" resultType="com.cjyc.common.model.entity.Order">
         select o.*
