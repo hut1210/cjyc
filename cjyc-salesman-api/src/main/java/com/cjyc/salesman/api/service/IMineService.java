@@ -7,6 +7,7 @@ import com.cjyc.common.model.dto.salesman.mine.StockCarDto;
 import com.cjyc.common.model.entity.WaybillCar;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.salesman.mine.QRCodeVo;
 import com.cjyc.common.model.vo.salesman.mine.StockCarDetailVo;
 import com.cjyc.common.model.vo.salesman.mine.StockCarVo;
 
@@ -32,4 +33,11 @@ public interface IMineService extends IService<WaybillCar> {
      * @return
      */
     ResultVo achieveCount(AchieveDto dto);
+
+    /**
+     * 二维码
+     * @param dto
+     * @return
+     */
+    ResultVo<QRCodeVo> findQrCode(BaseSalesDto dto);
 }

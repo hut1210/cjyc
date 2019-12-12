@@ -9,10 +9,6 @@ import javax.validation.constraints.NotNull;
 
 @Data
 public class AchieveDto extends BaseSalesDto {
-    @ApiModelProperty(value = "车辆id",required = true)
-    @NotNull(message = "车辆id不能为空")
-    private Long orderCarId;
-
     @ApiModelProperty(value = "日期,格式为yyyy-MM-dd",required = true)
     @NotBlank(message = "日期不能为空")
     private String date;

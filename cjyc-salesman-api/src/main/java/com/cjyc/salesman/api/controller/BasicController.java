@@ -47,7 +47,7 @@ public class BasicController {
         return csCarSeriesService.tree(false,dto.getKeyword());
     }
 
-    @ApiOperation(value = "查看城市")
+    @ApiOperation(value = "城市三级列表")
     @PostMapping(value = "/findCity")
     public ResultVo<CityVo> queryCity(@RequestBody KeywordDto dto)
     {

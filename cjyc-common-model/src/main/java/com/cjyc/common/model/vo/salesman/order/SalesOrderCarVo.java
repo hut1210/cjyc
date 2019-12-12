@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -14,7 +15,7 @@ public class SalesOrderCarVo implements Serializable {
     private static final long serialVersionUID = -8119244731311513499L;
     @ApiModelProperty(value = "车辆id")
     @JsonSerialize(using= ToStringSerializer.class)
-    private Long carId;
+    private Long orderCarId;
     @ApiModelProperty(value = "品牌")
     private String brand;
     @ApiModelProperty(value = "型号")
@@ -49,4 +50,19 @@ public class SalesOrderCarVo implements Serializable {
     @ApiModelProperty(value = "单车总运费")
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal totalFee;
+
+    public String getBrand(){return StringUtils.isBlank(brand) ? "":brand;}
+    public String getModel(){return StringUtils.isBlank(model) ? "":model;}
+    public String getLogoImg(){return StringUtils.isBlank(logoImg) ? "":logoImg;}
+    public Integer getIsNew(){return isNew == null ? 0:isNew;}
+    public Integer getIsMove(){return isMove == null ? 0:isMove;}
+    public Integer getValuation(){return valuation == null ? 0:valuation;}
+    public Integer getAddInsuranceAmount(){return addInsuranceAmount == null ? 0:addInsuranceAmount;}
+    public String getVin(){return StringUtils.isBlank(vin) ? "":vin;}
+    public String getPlateNo(){return StringUtils.isBlank(plateNo) ? "":plateNo;}
+    public BigDecimal getPickFee(){return pickFee == null ? BigDecimal.ZERO:pickFee;}
+    public BigDecimal getBackFee(){return backFee == null ? BigDecimal.ZERO:backFee;}
+    public BigDecimal getAddInsuranceFee(){return addInsuranceFee == null ? BigDecimal.ZERO:addInsuranceFee;}
+    public BigDecimal getTrunkFee(){return trunkFee == null ? BigDecimal.ZERO:trunkFee;}
+    public BigDecimal getTotalFee(){return totalFee == null ? BigDecimal.ZERO:totalFee;}
 }

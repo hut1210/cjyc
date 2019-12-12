@@ -144,7 +144,7 @@ public class OrderController {
         return BaseResultUtil.success(adminService.listPage(dto));
     }
 
-    @ApiOperation(value = "草稿/接单/全部列表")
+    @ApiOperation(value = "下单/接单/全部列表")
     @PostMapping("/findOrder")
     public ResultVo<PageVo<SalesOrderVo>> findOrder(@Valid @RequestBody SalesOrderQueryDto dto) {
         return orderService.findOrder(dto);

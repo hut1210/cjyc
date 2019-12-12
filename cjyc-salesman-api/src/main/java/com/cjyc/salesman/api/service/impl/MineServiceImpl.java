@@ -1,18 +1,19 @@
 package com.cjyc.salesman.api.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.cjyc.common.model.dao.ICarSeriesDao;
-import com.cjyc.common.model.dao.IOrderCarDao;
-import com.cjyc.common.model.dao.ITaskDao;
-import com.cjyc.common.model.dao.IWaybillCarDao;
+import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.salesman.BaseSalesDto;
 import com.cjyc.common.model.dto.salesman.mine.AchieveDto;
 import com.cjyc.common.model.dto.salesman.mine.StockCarDto;
+import com.cjyc.common.model.entity.Admin;
+import com.cjyc.common.model.entity.Dictionary;
 import com.cjyc.common.model.entity.WaybillCar;
 import com.cjyc.common.model.enums.waybill.WaybillTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.salesman.mine.QRCodeVo;
 import com.cjyc.common.model.vo.salesman.mine.StockCarDetailVo;
 import com.cjyc.common.model.vo.salesman.mine.StockCarVo;
 import com.cjyc.common.model.vo.salesman.mine.StockTaskVo;
@@ -38,6 +39,10 @@ public class MineServiceImpl extends ServiceImpl<IWaybillCarDao, WaybillCar> imp
     private ICarSeriesDao carSeriesDao;
     @Resource
     private ITaskDao taskDao;
+    @Resource
+    private IDictionaryDao dictionaryDao;
+    @Resource
+    private IAdminDao adminDao;
 
     @Override
     public ResultVo<PageVo<StockCarVo>> findStockCar(StockCarDto dto) {
@@ -93,5 +98,22 @@ public class MineServiceImpl extends ServiceImpl<IWaybillCarDao, WaybillCar> imp
         mapCount.put("pickCarCount",1);
         mapCount.put("backCarCount",1);
         return BaseResultUtil.success(mapCount);
+    }
+
+    @Override
+    public ResultVo<QRCodeVo> findQrCode(BaseSalesDto dto) {
+        Admin admin = adminDao.selectById(dto.getLoginId());
+        if(admin == null){
+            return BaseResultUtil.fail("该业务员不存在，请检查");
+        }
+        Dictionary dictionary = dictionaryDao.selectOne(new QueryWrapper<Dictionary>().lambda()
+                .eq(Dictionary::getItem, "system_picture_qrcode")
+                .eq(Dictionary::getState, 1)
+                .select(Dictionary::getItemValue));
+        QRCodeVo vo = new QRCodeVo();
+        vo.setSalesmanId(admin.getId());
+        vo.setPhone(admin.getPhone());
+        vo.setQrCodeUrl(dictionary.getItemValue());
+        return BaseResultUtil.success(vo);
     }
 }
