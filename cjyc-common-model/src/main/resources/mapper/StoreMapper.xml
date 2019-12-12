@@ -157,7 +157,7 @@
 
 
     <select id="findOneBelongByCityCode" resultType="com.cjyc.common.model.entity.Store">
-        select * from s_store where city_code = #{cityCode}
+        select * from s_store where city_code = #{cityCode} limit 1
     </select>
 
 

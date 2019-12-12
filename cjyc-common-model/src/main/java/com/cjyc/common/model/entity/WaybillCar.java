@@ -173,7 +173,7 @@ public class WaybillCar implements Serializable {
     private Long unloadTime;
 
     @ApiModelProperty(value = "最后一次运输标识：0否，1是")
-    private Integer receiptFlag;
+    private Boolean receiptFlag;
 
     @Excel(name = "实际交付日期", orderNum = "11")
     @TableField(exist = false)

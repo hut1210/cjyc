@@ -83,6 +83,18 @@ public class OrderController {
         //发送短信
         return csOrderService.commitAndCheck(reqDto);
     }
+    /**
+     * 审核订单
+     * @author JPG
+     */
+    @ApiOperation(value = "审核订单")
+    @PostMapping(value = "/check")
+    public ResultVo check(@RequestBody CheckOrderDto reqDto) {
+        //验证用户存不存在
+        Admin admin = csAdminService.validate(reqDto.getLoginId());
+        reqDto.setLoginName(admin.getName());
+        return csOrderService.check(reqDto);
+    }
 
 
     /**
