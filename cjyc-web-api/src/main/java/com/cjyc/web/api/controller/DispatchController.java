@@ -1,6 +1,6 @@
 package com.cjyc.web.api.controller;
 
-import com.cjyc.common.model.dto.web.order.CarFromToGetDto;
+import com.cjyc.common.model.dto.web.order.ComputeCarEndpointDto;
 import com.cjyc.common.model.dto.web.order.LineWaitDispatchCountListOrderCarDto;
 import com.cjyc.common.model.dto.web.order.WaitDispatchListOrderCarDto;
 import com.cjyc.common.model.vo.ListVo;
@@ -8,6 +8,7 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.order.DispatchAddCarVo;
 import com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo;
+import com.cjyc.common.system.service.ICsOrderService;
 import com.cjyc.web.api.service.IOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -32,6 +33,8 @@ public class DispatchController {
 
     @Resource
     private IOrderService orderService;
+    @Resource
+    private ICsOrderService csOrderService;
 
 
     /**
@@ -71,9 +74,8 @@ public class DispatchController {
      */
     @ApiOperation(value = "根据订单车辆ID查询可调度起始地和目的地")
     @PostMapping(value = "/car/from/to/get")
-    public ResultVo<DispatchAddCarVo> getCarFromTo(@RequestBody CarFromToGetDto reqDto) {
-        return orderService.getWaybillCarEndpoint(reqDto);
+    public ResultVo<DispatchAddCarVo> computerCarEndpoint(@RequestBody ComputeCarEndpointDto reqDto) {
+        return csOrderService.computerCarEndpoint(reqDto);
     }
-
 
 }

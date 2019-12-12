@@ -70,7 +70,7 @@ public class WaybillController {
      */
     @ApiOperation(value = "修改同城调度", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @PostMapping("/local/update")
-    public ResultVo updateLocal(@RequestHeaderAndBody UpdateLocalDto reqDto) {
+    public ResultVo updateLocal(@RequestBody UpdateLocalDto reqDto) {
         return waybillService.updateLocal(reqDto);
     }
 

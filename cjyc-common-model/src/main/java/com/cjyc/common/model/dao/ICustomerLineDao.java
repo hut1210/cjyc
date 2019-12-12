@@ -21,5 +21,5 @@ public interface ICustomerLineDao extends BaseMapper<CustomerLine>{
      * @param customerId
      * @return
      */
-    List<CustomerLineVo> findCustomerLine(@Param("customerId") Long customerId);
+    List<CustomerLineVo> findCustomerLine(@Param("customerId") Long customerId,@Param("flag") Integer flag);
 }

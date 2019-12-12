@@ -100,6 +100,7 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
 
     WaybillCar findWaitReceiptWaybill(Long orderCarId);
 
+    List<WaybillCarVo> findCarEndpoint(@Param("list") List<Long> orderCarIds);
     List<DispatchListVo> getDispatchList(Page<DispatchListVo> page,
                                          @Param("param") DispatchListDto dto);
 }

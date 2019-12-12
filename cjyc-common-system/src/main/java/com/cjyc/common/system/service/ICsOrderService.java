@@ -3,6 +3,7 @@ package com.cjyc.common.system.service;
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.order.DispatchAddCarVo;
 
 import java.util.List;
 
@@ -22,6 +23,13 @@ public interface ICsOrderService {
      * @param reqDto
      */
     ResultVo check(CheckOrderDto reqDto);
+
+    /**
+     * 提交并审核
+     * @param reqDto
+     * @return
+     */
+    ResultVo commitAndCheck(CommitOrderDto reqDto);
 
     /**
      * 分配订单
@@ -70,5 +78,13 @@ public interface ICsOrderService {
      * @param paramsDto
      */
     ResultVo replenishInfo(ReplenishOrderDto paramsDto);
+
+    /**
+     * 计算车辆起始目的地
+     * @author JPG
+     * @since 2019/12/11 13:43
+     * @param paramsDto
+     */
+    ResultVo<DispatchAddCarVo> computerCarEndpoint(ComputeCarEndpointDto paramsDto);
 
 }

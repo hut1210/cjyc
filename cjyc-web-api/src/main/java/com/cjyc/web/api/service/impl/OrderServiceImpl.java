@@ -262,7 +262,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
 
 
     @Override
-    public ResultVo<DispatchAddCarVo> getWaybillCarEndpoint(CarFromToGetDto reqDto) {
+    public ResultVo<DispatchAddCarVo> getWaybillCarEndpoint(ComputeCarEndpointDto reqDto) {
         DispatchAddCarVo dispatchAddCarVo = new DispatchAddCarVo();
         Store store = storeDao.selectById(2L);
         //业务范围
@@ -486,7 +486,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
 
         //查询角色业务中心范围
         BizScope bizScope = csSysService.getBizScopeByRoleId(paramsDto.getRoleId(), true);
-        if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
+        if(bizScope == null || BizScopeEnum.NONE.code == bizScope.getCode()){
             return BaseResultUtil.fail("没有数据权限");
         }
         paramsDto.setBizScope(bizScope.getCode() == 0 ? null : bizScope.getStoreIds());

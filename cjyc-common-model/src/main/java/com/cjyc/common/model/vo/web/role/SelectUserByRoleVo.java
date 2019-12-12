@@ -33,4 +33,6 @@ public class SelectUserByRoleVo implements Serializable {
     @ApiModelProperty("创建时间")
     @JsonSerialize(using = DataLongSerizlizer.class)
     private Long createTime;
+
+    private String bizDesc;
 }

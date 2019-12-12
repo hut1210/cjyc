@@ -1,5 +1,6 @@
 package com.cjyc.common.system.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.cjkj.common.redis.lock.RedisDistributedLock;
 import com.cjkj.common.redis.template.StringRedisUtil;
 import com.cjyc.common.model.dao.*;
@@ -31,6 +32,7 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -132,6 +134,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                     isOneDriver = true;
                     driverId = dto.getLoadLinkUserId();
                     driverName = dto.getLoadLinkName();
+                } else{
+                    throw new ParameterException("序号为{0}运单，编号为{1}的车辆，其他人正在调度", idx, orderCarNo);
                 }
 
                 /**验证运单车辆信息*/
@@ -478,7 +482,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
      * @since 2019/11/5 17:33
      */
     @Override
-    public ResultVo cancelDispatch(CancelWaybillDto paramsDto) {
+    public ResultVo cancel(CancelWaybillDto paramsDto) {
         //取消运单
         List<Long> waybillIdList = paramsDto.getWaybillIdList();
         List<Waybill> waybillList = waybillDao.findListByIds(waybillIdList);
@@ -714,7 +718,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                         }
                     }
                     //task.setRemark(paramsDto.getRemark());
-                    task.setCreateUser(paramsDto.getUserName());
+                    task.setCreateUser(paramsDto.getLoginName());
                     task.setCreateUserId(paramsDto.getLoginId());
                     task.setCreateTime(System.currentTimeMillis());
                     taskDao.insert(task);

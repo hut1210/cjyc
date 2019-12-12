@@ -88,7 +88,7 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
             return BaseResultUtil.success();
         }
         List<SelectUserByRoleVo> rsList = new ArrayList<>();
-        list.stream().forEach(l -> {
+        list.forEach(l -> {
             if (RoleLevelEnum.BIZ_CENTER_LEVEL.getLevel() == role.getRoleLevel()) {
                 l.setBizCenter(l.getBizCity());
                 l.setBizCity(null);
@@ -100,6 +100,7 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
             if (null != admin) {
                 vo.setCreateUser(admin.getCreateUser());
                 vo.setCreateTime(admin.getCreateTime());
+                vo.setBizDesc(admin.getBizDesc());
             }
             rsList.add(vo);
         });

@@ -29,11 +29,14 @@ public class CsCustomerLineServiceImpl implements ICsCustomerLineService {
     public ResultVo<PageVo<CustomerLineVo>> queryLinePage(CommonDto dto) {
         Customer customer = customerDao.selectOne(new QueryWrapper<Customer>().lambda()
                 .eq(Customer::getId, dto.getLoginId()));
+        Integer flag = 0;
         if(customer == null){
-            return BaseResultUtil.fail("该客户不存在,请检查");
+            flag = 0;
+        }else{
+            flag = 1;
         }
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        List<CustomerLineVo> lineVos = customerLineDao.findCustomerLine(dto.getLoginId());
+        List<CustomerLineVo> lineVos = customerLineDao.findCustomerLine(dto.getLoginId(),flag);
         PageInfo<CustomerLineVo> pageInfo =  new PageInfo<>(lineVos);
         return BaseResultUtil.success(pageInfo);
     }

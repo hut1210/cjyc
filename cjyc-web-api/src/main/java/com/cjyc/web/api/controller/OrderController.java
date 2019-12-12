@@ -31,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -59,7 +60,7 @@ public class OrderController {
      */
     @ApiOperation(value = "订单保存")
     @PostMapping(value = "/save")
-    public ResultVo save(@RequestBody SaveOrderDto reqDto) {
+    public ResultVo save(@Validated @RequestBody SaveOrderDto reqDto) {
 
         //验证用户存不存在
         Admin admin = csAdminService.validate(reqDto.getLoginId());
@@ -88,10 +89,8 @@ public class OrderController {
         reqDto.setCreateUserId(admin.getId());
         reqDto.setCreateUserName(admin.getName());
 
-        ResultVo resultVo = orderService.commit(reqDto);
-
         //发送短信
-        return resultVo;
+        return orderService.commit(reqDto);
     }
 
 
@@ -151,7 +150,6 @@ public class OrderController {
         OrderVo orderVo = orderService.getVoById(orderId);
         return BaseResultUtil.success(orderVo);
     }
-
 
     /**
      * 查询订单取消记录-根据ID
@@ -252,7 +250,7 @@ public class OrderController {
         if (CollectionUtils.isEmpty(carList)) {
             return BaseResultUtil.success("未查询到结果");
         }
-        carList = carList.stream().filter(c -> c != null).collect(Collectors.toList());
+        carList = carList.stream().filter(Objects::nonNull).collect(Collectors.toList());
         try {
             ExcelUtil.exportExcel(carList, "车辆信息", "车辆信息",
                     ListOrderCarVo.class, System.currentTimeMillis()+"车辆信息.xls", response);

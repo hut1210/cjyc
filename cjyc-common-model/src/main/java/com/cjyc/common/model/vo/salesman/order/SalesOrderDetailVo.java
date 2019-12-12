@@ -14,6 +14,9 @@ import java.util.List;
 @Data
 public class SalesOrderDetailVo implements Serializable {
     private static final long serialVersionUID = -3343355785560447452L;
+    @ApiModelProperty(value = "订单id")
+    @JsonSerialize(using= ToStringSerializer.class)
+    private Long orderId;
     @ApiModelProperty(value = "订单编号")
     private String orderNo;
     @ApiModelProperty(value = "创建时间")
@@ -103,5 +106,8 @@ public class SalesOrderDetailVo implements Serializable {
 
     @ApiModelProperty(value = "车辆详情")
     private List<SalesOrderCarVo> carVoList;
+    public Long getEndBelongStoreId(){return endBelongStoreId == null ? 0:endBelongStoreId;}
+    public Long getExpectStartDate(){return expectStartDate == null ? 0:expectStartDate;}
+    public Long getExpectEndDate(){return expectEndDate == null ? 0:expectEndDate;}
 
 }

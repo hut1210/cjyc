@@ -10,4 +10,5 @@ public class TimeConstant {
     public static final Integer SEC_OF_ONE_MINUTE = 60;
     public static final Integer SEC_OF_ONE_HOUR = 3600;
     public static final Integer SEC_OF_ONE_DAY = 86400;
+    public static final Integer MILLS_OF_ONE_DAY = 86400000;
 }
