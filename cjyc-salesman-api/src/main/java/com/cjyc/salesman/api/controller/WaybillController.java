@@ -11,6 +11,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,7 +41,7 @@ public class WaybillController {
      */
     @ApiOperation("提送车调度")
     @PostMapping("/local/save")
-    public ResultVo saveLocal(@RequestBody SaveLocalDto reqDto) {
+    public ResultVo saveLocal(@Validated @RequestBody SaveLocalDto reqDto) {
         //验证用户
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
@@ -55,7 +56,7 @@ public class WaybillController {
      */
     @ApiOperation(value = "修改同城调度", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @PostMapping("/local/update")
-    public ResultVo updateLocal(@RequestBody UpdateLocalDto reqDto) {
+    public ResultVo updateLocal(@Validated @RequestBody UpdateLocalDto reqDto) {
         return csWaybillService.updateLocal(reqDto);
     }
 
@@ -68,7 +69,7 @@ public class WaybillController {
      */
     @ApiOperation("干线调度")
     @PostMapping("/trunk/save")
-    public ResultVo saveTrunk(@RequestBody SaveTrunkWaybillDto reqDto) {
+    public ResultVo saveTrunk(@Validated @RequestBody SaveTrunkWaybillDto reqDto) {
         return csWaybillService.saveTrunk(reqDto);
     }
 
@@ -80,7 +81,7 @@ public class WaybillController {
      */
     @ApiOperation("修改干线调度")
     @PostMapping("/trunk/update")
-    public ResultVo updateTrunk(@RequestBody UpdateTrunkWaybillDto reqDto) {
+    public ResultVo updateTrunk(@Validated @RequestBody UpdateTrunkWaybillDto reqDto) {
         return csWaybillService.updateTrunk(reqDto);
     }
 
@@ -93,7 +94,7 @@ public class WaybillController {
      */
     @ApiOperation("中途卸载车辆")
     @PostMapping("/trunk/midway/unload")
-    public ResultVo trunkMidwayUnload(@RequestBody TrunkMidwayUnload reqDto) {
+    public ResultVo trunkMidwayUnload(@Validated @RequestBody TrunkMidwayUnload reqDto) {
         return csWaybillService.trunkMidwayUnload(reqDto);
     }
 
@@ -105,7 +106,7 @@ public class WaybillController {
      */
     @ApiOperation("取消调度")
     @PostMapping("/cancel")
-    public ResultVo<ListVo<BaseTipVo>> cancel(@RequestBody CancelWaybillDto reqDto) {
+    public ResultVo<ListVo<BaseTipVo>> cancel(@Validated @RequestBody CancelWaybillDto reqDto) {
         return csWaybillService.cancel(reqDto);
     }
 

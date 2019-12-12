@@ -834,19 +834,18 @@
         where wc.order_car_id = #{orderCarId}
         and o.back_contact_phone = wc.unload_link_phone
     </select>
-    <select id="findCarEndpoint" resultType="com.cjyc.common.model.entity.defined.FullWaybillCar">
+    <select id="findCarEndpoint" resultType="com.cjyc.common.model.vo.web.waybill.WaybillCarVo">
         select
         shell.*,
         l.default_freight_fee as lineFreightFee,
-        l.id as lineId
-        case when
+        l.id as lineId,
+        (case when l.id is not null then true else false end) as hasLine
         from (
             select
             oc.brand as brand,
             oc.model as model,
             oc.plate_no as plateNo,
             oc.vin as vin,
-            /*line_freight_fee as lineFreightFee*/
             oc.state as state,
             oc.id as orderCarId,
             oc.no as orderCarNo,
@@ -861,7 +860,7 @@
             (case when temp.id is not null then temp.end_store_id else o.start_store_id end) as startStoreId,
             (case when temp.id is not null then temp.end_belong_store_id else o.start_belong_store_id end) as startBelongStoreId,
             (case when temp.id is not null then true else false end) as startFixedFlag,
-            false as end endFixedFlag,
+            false as endFixedFlag,
             o.end_province as endProvince,
             o.end_province_code as endProvinceCode,
             o.end_city as endCity,
@@ -877,7 +876,7 @@
             (case when temp.id is not null then temp.load_link_name else o.pick_contact_name end) as loadLinkName,
             (case when temp.id is not null then temp.load_link_user_id else null end) as loadLinkUserId,
             (case when temp.id is not null then temp.load_link_phone else o.pick_contact_phone end) as loadLinkPhone,
-            o.back_contact_name as unloadLinkUserId,
+            o.back_contact_name as unloadLinkName,
             o.back_contact_phone as unloadLinkPhone
             from w_order o
             join w_order_car oc on o.id = oc.order_id
@@ -895,11 +894,19 @@
                     (
                     SELECT MAX(wc1.id)
                     FROM w_waybill_car wc1
-                    where wc1.order_car_id = 178
+                    where wc1.order_car_id in
+                    <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
                     and wc1.state &lt;= 100
                     GROUP BY wc1.order_car_id
                     )
-            ) as temp on temp.order_car_id = oc.id ) as shell
+                ) as temp on temp.order_car_id = oc.id
+            where oc.id in
+            <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        ) as shell
         left join s_line l on shell.startCityCode = l.from_code and shell.endCityCode = l.to_code
     </select>
 

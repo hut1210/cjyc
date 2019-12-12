@@ -21,30 +21,31 @@ public class SaveTrunkWaybillDto {
     @ApiModelProperty(value = "用户Id", required = true)
     private Long loginId;
 
-    @ApiModelProperty(value = "运单ID（修改时传）", required = true)
-    private String waybillId;
+    @ApiModelProperty(hidden = true)
+    private String loginName;
 
-    @ApiModelProperty(value = "指导线路", required = true)
+    @ApiModelProperty(value = "指导线路")
     private String guideLine;
 
-    @ApiModelProperty(value = "推荐线路")
-    private String recommendLine;
-
+    @NotNull(message = "运费不能为空")
     @ApiModelProperty(value = "运单总运费", required = true)
     private BigDecimal freightFee;
 
+    @NotNull(message = "承运商不能为空")
     @ApiModelProperty(value = "承运商ID", required = true)
     private Long carrierId;
 
     @ApiModelProperty(value = "司机ID")
     private Long driverId;
 
+    @NotNull(message = "是否包板不能为空")
     @ApiModelProperty(value = "运费是否固定（包板）0否，1是", required = true)
     private Boolean fixedFreightFee;
 
     @ApiModelProperty(value = "备注")
     private String remark;
 
-    @ApiModelProperty(value = "调度内容", required = true)
+    @NotEmpty(message = "车辆列表不能为空")
+    @ApiModelProperty(value = "调度车辆列表", required = true)
     private List<SaveTrunkWaybillCarDto> list;
 }

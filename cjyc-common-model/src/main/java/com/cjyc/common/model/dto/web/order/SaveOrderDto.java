@@ -20,14 +20,16 @@ import java.util.List;
 @ApiModel
 public class SaveOrderDto {
 
-    @NotNull
+    @NotNull(message = "客户端类型不能为空")
     @ApiModelProperty(value = "1WEB管理后台, 2业务员APP, 4司机APP, 6用户端APP, 7用户端小程序", required = true)
     private int clientId;
-    @NotNull
+    @NotNull(message = "操作人id不能为空")
     @ApiModelProperty(value = "操作人id", required = true)
     private Long loginId;
-    @ApiModelProperty(value = "操作人(不用传)")
+    @ApiModelProperty(hidden = true)
     private String loginName;
+    @ApiModelProperty(hidden = true)
+    private Integer state;
     @ApiModelProperty(value = "物流券抵消金额")
     private BigDecimal couponOffsetFee;
     @ApiModelProperty(value = "车辆列表")
@@ -42,24 +44,25 @@ public class SaveOrderDto {
     private int customerType;
     @ApiModelProperty(value = "客户id")
     private Long customerId;
-    @NotBlank
+    @NotBlank(message = "客户电话不能为空")
     @ApiModelProperty(value = "客户电话", required = true)
     private String customerPhone;
-    @NotBlank
+    @NotBlank(message = "客户姓名不能为空")
     @ApiModelProperty(value = "客户姓名", required = true)
     private String customerName;
-    @NotBlank
+    @NotBlank(message = "出发城市不能为空")
     @ApiModelProperty(value = "区编号", required = true)
     private String startAreaCode;
-    @ApiModelProperty(value = "始发地详细地址", required = true)
+    @ApiModelProperty(value = "始发地详细地址")
     private String startAddress;
     @ApiModelProperty(value = "出发地业务中心ID: 0无业务中心，-1有但不经过业务中心，-5用户无主观操作")
     private Long startStoreId;
     @ApiModelProperty(value = "出发地业务中心名称")
     private String startStoreName;
+    @NotBlank(message = "出发城市不能为空")
     @ApiModelProperty(value = "区编号", required = true)
     private String endAreaCode;
-    @ApiModelProperty(value = "目的地详细地址", required = true)
+    @ApiModelProperty(value = "目的地详细地址")
     private String endAddress;
     @ApiModelProperty(value = "目的地业务中心ID: 0无业务中心，-1有但不经过业务中心，-5用户无主观操作")
     private Long endStoreId;
@@ -106,10 +109,7 @@ public class SaveOrderDto {
     private Integer payType;
     @ApiModelProperty(value = "优惠券id")
     private Long couponSendId;
-    @NotNull
-    @ApiModelProperty(value = "应收总价：收车后客户应支付平台的费用", required = true)
+    @ApiModelProperty(value = "应收总价：收车后客户应支付平台的费用")
     private BigDecimal totalFee;
 
-    @ApiModelProperty(value = "状态（不需要传）")
-    private Integer state;
 }

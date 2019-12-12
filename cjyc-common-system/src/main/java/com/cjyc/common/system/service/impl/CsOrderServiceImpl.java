@@ -6,8 +6,6 @@ import com.cjyc.common.model.dao.IOrderDao;
 import com.cjyc.common.model.dao.IWaybillCarDao;
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.entity.*;
-import com.cjyc.common.model.entity.defined.BizScope;
-import com.cjyc.common.model.entity.defined.FullWaybillCar;
 import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.city.CityLevelEnum;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
@@ -19,7 +17,6 @@ import com.cjyc.common.model.exception.ServerException;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.entity.defined.FullCity;
-import com.cjyc.common.model.vo.web.OrderCarVo;
 import com.cjyc.common.model.vo.web.order.DispatchAddCarVo;
 import com.cjyc.common.model.vo.web.waybill.WaybillCarVo;
 import com.cjyc.common.system.service.*;
@@ -35,8 +32,6 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -184,72 +179,33 @@ public class CsOrderServiceImpl implements ICsOrderService {
             order = new Order();
         }
         BeanUtils.copyProperties(paramsDto, order);
-        //查询三级城市
-        FullCity startFullCity = csCityService.findFullCity(paramsDto.getStartAreaCode(), CityLevelEnum.PROVINCE);
-        copyOrderStartCity(startFullCity, order);
-        FullCity endFullCity = csCityService.findFullCity(paramsDto.getEndAreaCode(), CityLevelEnum.PROVINCE);
-        copyOrderEndCity(endFullCity, order);
-        //计算线路
-        if(paramsDto.getLineId() != null){
-            Line line = csLineService.getLineByCity(order.getStartCityCode(), order.getEndCityCode(), true);
-        }
-/*        if(line != null){
-            order.setLineId(line.getId());
-            //计算预计到达时间
-            if(paramsDto.getExpectStartDate() != null && line.getDays() != null){
-                order.setExpectEndDate(paramsDto.getExpectStartDate() + line.getDays().intValue() * TimeConstant.MILLS_OF_ONE_DAY);
-            }
-        }*/
-
-        //验证用户
+        //城市信息
+        fillOrderCityInfo(order, paramsDto.getStartAreaCode(), paramsDto.getEndAreaCode());
+        //业务中心信息
+        fillOrderStoreInfo(order);
+        //客户信息
         ResultVo<Customer> validateCustomerResult = validateCustomer(paramsDto);
         if (ResultEnum.SUCCESS.getCode() != validateCustomerResult.getCode()) {
             return validateCustomerResult;
         }
         Customer customer = validateCustomerResult.getData();
-        //订单中添加客户ID
         order.setCustomerId(customer.getId());
-        /**1、组装订单数据
-         *
-         */
+        //订单编号
         if (newOrderFlag) {
             order.setNo(csSendNoService.getNo(SendNoTypeEnum.ORDER));
         }
-        //计算所属业务中心ID
-        if (paramsDto.getStartStoreId() != null && paramsDto.getStartStoreId() > 0) {
-            order.setStartBelongStoreId(paramsDto.getStartStoreId());
-        } else {
-            //查询地址所属业务中心
-            Store startBelongStore = csStoreService.getOneBelongByCityCode(order.getStartCityCode());
-            if (startBelongStore != null) {
-                order.setStartBelongStoreId(startBelongStore.getId());
-            }
-        }
-        if (paramsDto.getEndStoreId() != null && paramsDto.getEndStoreId() > 0) {
-            order.setStartBelongStoreId(paramsDto.getEndStoreId());
-        } else {
-            //查询地址所属业务中心
-            Store endBelongStore = csStoreService.getOneBelongByCityCode(order.getEndCityCode());
-            if (endBelongStore != null) {
-                order.setStartBelongStoreId(endBelongStore.getId());
-            }
-        }
 
         order.setState(OrderStateEnum.SUBMITTED.code);
-        order.setSource(order.getSource() == null ? paramsDto.getClientId() : order.getSource());
+        if(order.getSource() == null){
+            order.setSource(paramsDto.getClientId());
+        }
         order.setCreateTime(System.currentTimeMillis());
 
         //更新或插入订单
         int row = newOrderFlag ? orderDao.insert(order) : orderDao.updateById(order);
-        if (row <= 0) {
-            return BaseResultUtil.fail("订单未修改，提交失败");
-        }
 
         /**2、更新或保存车辆信息*/
         List<CommitOrderCarDto> carDtoList = paramsDto.getOrderCarList();
-        if (carDtoList == null || carDtoList.isEmpty()) {
-            throw new ParameterException("订单车辆不能为空");
-        }
         //删除旧的车辆数据
         if (!newOrderFlag) {
             orderCarDao.deleteBatchByOrderId(order.getId());
@@ -319,6 +275,48 @@ public class CsOrderServiceImpl implements ICsOrderService {
         //记录车辆日志
         return BaseResultUtil.success("下单成功，订单编号{0}", order.getNo());
 
+    }
+
+    /**
+     * 城市信息赋值
+     * @author JPG
+     * @since 2019/12/12 13:11
+     * @param order
+     * @param startAreaCode
+     * @param endAreaCode
+     */
+    private void fillOrderCityInfo(Order order, String startAreaCode, String endAreaCode) {
+        FullCity startFullCity = csCityService.findFullCity(startAreaCode, CityLevelEnum.PROVINCE);
+        copyOrderStartCity(startFullCity, order);
+        FullCity endFullCity = csCityService.findFullCity(endAreaCode, CityLevelEnum.PROVINCE);
+        copyOrderEndCity(endFullCity, order);
+    }
+
+    /**
+     * 业务中心信息赋值
+     * @author JPG
+     * @since 2019/12/12 11:55
+     * @param order
+     */
+    private void fillOrderStoreInfo(Order order) {
+        if (order.getStartStoreId() != null && order.getStartStoreId() > 0) {
+            order.setStartBelongStoreId(order.getStartStoreId());
+        } else {
+            //查询地址所属业务中心
+            Store startBelongStore = csStoreService.getOneBelongByCityCode(order.getStartCityCode());
+            if (startBelongStore != null) {
+                order.setStartBelongStoreId(startBelongStore.getId());
+            }
+        }
+        if (order.getEndStoreId() != null && order.getEndStoreId() > 0) {
+            order.setStartBelongStoreId(order.getEndStoreId());
+        } else {
+            //查询地址所属业务中心
+            Store endBelongStore = csStoreService.getOneBelongByCityCode(order.getEndCityCode());
+            if (endBelongStore != null) {
+                order.setStartBelongStoreId(endBelongStore.getId());
+            }
+        }
     }
 
     /**
@@ -439,6 +437,16 @@ public class CsOrderServiceImpl implements ICsOrderService {
         //TODO 路由轨迹
 
         return BaseResultUtil.success();
+    }
+    /**
+     * 提交并审核
+     *
+     * @param reqDto
+     * @return
+     */
+    @Override
+    public ResultVo commitAndCheck(CommitOrderDto reqDto) {
+        return null;
     }
 
     /**
@@ -668,115 +676,23 @@ public class CsOrderServiceImpl implements ICsOrderService {
     @Override
     public ResultVo<DispatchAddCarVo> computerCarEndpoint(ComputeCarEndpointDto paramsDto) {
         DispatchAddCarVo dispatchAddCarVo = new DispatchAddCarVo();
-        List<WaybillCarVo> childList = new ArrayList<>();
 
         //业务范围
-        BizScope bizScope = csSysService.getBizScopeByLoginId(paramsDto.getLoginId(), true);
+        /*BizScope bizScope = csSysService.getBizScopeByLoginId(paramsDto.getLoginId(), true);
         if(BizScopeEnum.NONE.code == bizScope.getCode()){
             return BaseResultUtil.fail("无数据权限");
         }
-        paramsDto.setBizScope(bizScope.getCode() == 0 ? null : bizScope.getStoreIds());
+        paramsDto.setBizScope(bizScope.getCode() == 0 ? null : bizScope.getStoreIds());*/
 
         //查询车辆信息
-        List<OrderCarVo> list = orderCarDao.findVoListByIds(paramsDto.getOrderCarIdList());
-        if(CollectionUtils.isEmpty(list)){
-            return BaseResultUtil.fail("车辆不存在");
-        }
-        for (OrderCarVo orderCarVo : list) {
-            if(orderCarVo == null){
-                continue;
-            }
-            WaybillCarVo waybillCarVo = new WaybillCarVo();
-            copyOrderCarToWaybillCar(orderCarVo, waybillCarVo);
-            //查询线路价卡
-            Line line = csLineService.getLineByCity(waybillCarVo.getStartCityCode(), waybillCarVo.getEndCityCode(), true);
-            if(line != null){
-                waybillCarVo.setLineFreightFee(line.getDefaultFreightFee());
-                waybillCarVo.setLineId(line.getId());
-                waybillCarVo.setHasLine(true);
-            }
-            childList.add(waybillCarVo);
-        }
-        dispatchAddCarVo.setList(childList);
-        Set<String> citySet = new HashSet<>();
-        for (WaybillCarVo waybillCarVo : childList) {
-            citySet.add(waybillCarVo.getStartCity());
-            citySet.add(waybillCarVo.getEndCity());
-        }
+        List<WaybillCarVo> childList = waybillCarDao.findCarEndpoint(paramsDto.getOrderCarIdList());
         //计算推荐线路
         /*List<String> guideLines = csLineNodeService.getGuideLine(citySet, store.getCity());
         dispatchAddCarVo.setGuideLine(guideLines == null ? store.getCity() : guideLines.get(0));*/
+
+        dispatchAddCarVo.setList(childList);
         return BaseResultUtil.success(dispatchAddCarVo);
-        //return null;
     }
-
-    private void copyStartToWaybillCarVo(FullCity fullCity, WaybillCarVo waybillCarVo) {
-        waybillCarVo.setStartProvince(fullCity.getProvince());
-        waybillCarVo.setStartProvinceCode(fullCity.getProvinceCode());
-        waybillCarVo.setStartCity(fullCity.getCity());
-        waybillCarVo.setStartCityCode(fullCity.getCityCode());
-        waybillCarVo.setStartArea(fullCity.getArea());
-        waybillCarVo.setStartAreaCode(fullCity.getAreaCode());
-    }
-
-    private void copyEndToWaybillCarVo(FullCity fullCity, WaybillCarVo waybillCarVo) {
-        waybillCarVo.setEndProvince(fullCity.getProvince());
-        waybillCarVo.setEndProvinceCode(fullCity.getProvinceCode());
-        waybillCarVo.setEndCity(fullCity.getCity());
-        waybillCarVo.setEndCityCode(fullCity.getCityCode());
-        waybillCarVo.setEndArea(fullCity.getArea());
-        waybillCarVo.setEndAreaCode(fullCity.getAreaCode());
-    }
-
-    private void copyOrderCarToWaybillCar(OrderCarVo orderCarVo, WaybillCarVo waybillCarVo) {
-        BeanUtils.copyProperties(orderCarVo, waybillCarVo);
-        waybillCarVo.setOrderCarId(orderCarVo.getId());
-        waybillCarVo.setOrderCarNo(orderCarVo.getNo());
-        waybillCarVo.setFreightFee(orderCarVo.getTrunkFee());
-        waybillCarVo.setLineId(orderCarVo.getLineId());
-        waybillCarVo.setExpectStartTime(orderCarVo.getExpectStartDate());
-        waybillCarVo.setLoadLinkName(orderCarVo.getPickContactName());
-        waybillCarVo.setLoadLinkPhone(orderCarVo.getPickContactPhone());
-        waybillCarVo.setUnloadLinkName(orderCarVo.getBackContactName());
-        waybillCarVo.setUnloadLinkPhone(orderCarVo.getBackContactPhone());
-    }
-    private void copyPrevInfo(FullWaybillCar prevWaybillCar, WaybillCarVo carFromToGetVo) {
-        if(prevWaybillCar == null){
-            return;
-        }
-        carFromToGetVo.setStartProvince(prevWaybillCar.getEndProvince());
-        carFromToGetVo.setStartProvinceCode(prevWaybillCar.getEndProvinceCode());
-        carFromToGetVo.setStartCity(prevWaybillCar.getEndCity());
-        carFromToGetVo.setStartCityCode(prevWaybillCar.getEndCityCode());
-        carFromToGetVo.setStartArea(prevWaybillCar.getEndArea());
-        carFromToGetVo.setStartAreaCode(prevWaybillCar.getEndAreaCode());
-        carFromToGetVo.setStartAddress(prevWaybillCar.getEndAddress());
-        carFromToGetVo.setStartStoreId(prevWaybillCar.getEndStoreId());
-        carFromToGetVo.setStartStoreName(prevWaybillCar.getEndStoreName());
-        //carFromToGetVo.setStartStoreFullAddress(prevWaybillCar.getEndStoreFullAddress());
-        carFromToGetVo.setLoadLinkName(prevWaybillCar.getUnloadLinkName());
-        carFromToGetVo.setLoadLinkPhone(prevWaybillCar.getUnloadLinkPhone());
-        carFromToGetVo.setLoadLinkUserId(prevWaybillCar.getUnloadLinkUserId());
-    }
-    private void copyNextInfo(FullWaybillCar nextWaybillCar, WaybillCarVo carFromToGetVo) {
-        if(nextWaybillCar == null){
-            return;
-        }
-        carFromToGetVo.setEndProvince(nextWaybillCar.getStartProvince());
-        carFromToGetVo.setEndProvinceCode(nextWaybillCar.getStartProvinceCode());
-        carFromToGetVo.setEndCity(nextWaybillCar.getStartCity());
-        carFromToGetVo.setEndCityCode(nextWaybillCar.getStartCityCode());
-        carFromToGetVo.setEndArea(nextWaybillCar.getStartArea());
-        carFromToGetVo.setEndAreaCode(nextWaybillCar.getStartAreaCode());
-        carFromToGetVo.setEndAddress(nextWaybillCar.getStartAddress());
-        carFromToGetVo.setEndStoreId(nextWaybillCar.getStartStoreId());
-        carFromToGetVo.setEndStoreName(nextWaybillCar.getStartStoreName());
-        //carFromToGetVo.setEndStoreFullAddress(nextWaybillCar.getStartStoreFullAddress());
-        carFromToGetVo.setUnloadLinkName(nextWaybillCar.getLoadLinkName());
-        carFromToGetVo.setUnloadLinkPhone(nextWaybillCar.getLoadLinkPhone());
-        carFromToGetVo.setUnloadLinkUserId(nextWaybillCar.getLoadLinkUserId());
-    }
-
 
     /**
      * 拷贝订单开始城市
