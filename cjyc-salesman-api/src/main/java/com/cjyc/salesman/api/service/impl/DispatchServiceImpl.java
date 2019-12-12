@@ -19,9 +19,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @Description 调度业务接口实现
@@ -63,8 +61,11 @@ public class DispatchServiceImpl implements IDispatchService {
         // 查询 出发城市和车辆数量
         List<CityCarCountVo> notDispatchList = orderCarDao.selectStartCityCarCount(storeIds);
         // 查询出发地，目的地相同的车辆数量
+        Map<String,Object> map = new HashMap<>(2);
+        map.put("storeIds",storeIds);
         for (CityCarCountVo cityCarCountVo : notDispatchList) {
-            List<StartAndEndCityCountVo> startAndEndCityCountList = orderCarDao.selectStartAndEndCityCarCount(cityCarCountVo.getStartCityCode());
+            map.put("startCityCode",cityCarCountVo.getStartCityCode());
+            List<StartAndEndCityCountVo> startAndEndCityCountList = orderCarDao.selectStartAndEndCityCarCount(map);
             cityCarCountVo.setStartAndEndCityCountList(startAndEndCityCountList);
         }
         returnList.addAll(notDispatchList);

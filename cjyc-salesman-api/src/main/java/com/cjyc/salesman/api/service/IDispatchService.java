@@ -18,12 +18,12 @@ public interface IDispatchService {
      * @param loginId
      * @return com.cjyc.common.model.vo.ResultVo
      */
-    ResultVo getAllCityCarCount(Long loginId);
+    ResultVo getCityCarCount(Long loginId);
 
     /**
      * 调度列表
      * @return
      */
     PageVo<DispatchListVo> getPageList(DispatchListDto dto);
-    ResultVo getCityCarCount(Long loginId);
+
 }

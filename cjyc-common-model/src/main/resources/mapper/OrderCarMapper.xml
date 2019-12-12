@@ -1084,7 +1084,7 @@
     </select>
 
     <!--查询出发地与目的地相同的车辆数量-->
-    <select id="selectStartAndEndCityCarCount" parameterType="java.lang.String" resultType="com.cjyc.common.model.vo.salesman.dispatch.StartAndEndCityCountVo">
+    <select id="selectStartAndEndCityCarCount" parameterType="java.util.Map" resultType="com.cjyc.common.model.vo.salesman.dispatch.StartAndEndCityCountVo">
         /*查询未调度的 始发城市-目的城市 车辆数量*/
         SELECT
             o.start_city_code AS startCityCode,
