@@ -1,5 +1,7 @@
 package com.cjyc.common.model.dao;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.cjyc.common.model.dto.salesman.dispatch.DispatchListDto;
 import com.cjyc.common.model.dto.web.WayBillCarrierDto;
 import com.cjyc.common.model.dto.web.waybill.LocalListWaybillCarDto;
 import com.cjyc.common.model.dto.web.waybill.TrunkListWaybillCarDto;
@@ -7,6 +9,7 @@ import com.cjyc.common.model.dto.web.waybill.getWaybillDto;
 import com.cjyc.common.model.entity.WaybillCar;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.entity.defined.FullWaybillCar;
+import com.cjyc.common.model.vo.salesman.dispatch.DispatchListVo;
 import com.cjyc.common.model.vo.web.WayBillCarrierVo;
 import com.cjyc.common.model.vo.web.waybill.WaybillCarVo;
 import com.cjyc.common.model.vo.web.waybill.LocalListWaybillCarVo;
@@ -98,4 +101,6 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
     WaybillCar findWaitReceiptWaybill(Long orderCarId);
 
     List<WaybillCarVo> findCarEndpoint(@Param("list") List<Long> orderCarIds);
+    List<DispatchListVo> getDispatchList(Page<DispatchListVo> page,
+                                         @Param("param") DispatchListDto dto);
 }

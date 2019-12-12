@@ -229,6 +229,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 //计算所属业务中心
                 waybillCar.setStartBelongStoreId(csStoreService.getBelongStoreId(dto.getStartStoreId(), dto.getStartAreaCode()));
                 waybillCar.setEndBelongStoreId(csStoreService.getBelongStoreId(dto.getEndStoreId(), dto.getEndAreaCode()));
+                waybillCar.setReceiptFlag(waybillCar.getUnloadLinkPhone().equals(order.getBackContactPhone()));
                 //运单车辆状态
                 waybillCar.setState(isOneDriver ? WaybillCarStateEnum.ALLOTED.code : WaybillCarStateEnum.WAIT_ALLOT.code);
                 waybillCar.setExpectStartTime(dto.getExpectStartTime());
@@ -424,7 +425,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 if (isOneDriver) {
                     waybillCar.setState(WaybillCarStateEnum.ALLOTED.code);
                 }
-                waybillCar.setTakeType(2);
+                waybillCar.setReceiptFlag(waybillCar.getUnloadLinkPhone().equals(order.getBackContactPhone()));
                 waybillCar.setCreateTime(currentMillisTime);
                 waybillCarDao.insert(waybillCar);
 
@@ -670,6 +671,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             BeanUtils.copyProperties(paramsDto.getCarDto(), waybillCar);
             waybillCar.setWaybillId(waybill.getId());
             waybillCar.setWaybillNo(waybill.getNo());
+            waybillCar.setReceiptFlag(waybillCar.getUnloadLinkPhone().equals(order.getBackContactPhone()));
             waybillCar.setFreightFee(paramsDto.getType() == WaybillTypeEnum.PICK.code ? orderCar.getPickFee() : orderCar.getPickFee());
             //地址赋值
             FullCity startFullCity = csCityService.findFullCity(paramsDto.getCarDto().getStartAreaCode(), CityLevelEnum.PROVINCE);
@@ -832,6 +834,26 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 String orderCarNo = carDto.getOrderCarNo();
                 Long orderCarId = carDto.getOrderCarId();
 
+                //验证订单车辆状态
+                OrderCar orderCar = orderCarDao.selectById(orderCarId);
+                if (orderCar == null) {
+                    throw new ParameterException("运单，编号为{1}的车辆，不存在", orderCarNo);
+                }
+                if (orderCar.getState() == null) {
+                    throw new ParameterException("运单，编号为{1}的车辆，无法提车调度", orderCarNo);
+                }
+                //验证订单状态
+                Order order = orderDao.selectById(orderCar.getOrderId());
+                if (order == null) {
+                    throw new ParameterException("运单，编号为{1}的车辆，所属订单车辆不存在", orderCarNo);
+                }
+
+                if (order.getState() == null
+                        || order.getState() < OrderStateEnum.CHECKED.code
+                        || order.getState() > OrderStateEnum.FINISHED.code) {
+                    throw new ParameterException("运单，编号为{1}的车辆，所属订单状态无法干线调度", orderCarNo);
+                }
+
                 //加锁
                 String lockKey = RedisKeys.getDispatchLock(orderCarNo);
                 if (!redisLock.lock(lockKey, 20000, 100, 300L)) {
@@ -847,6 +869,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 //车辆数据
                 waybillCar.setWaybillId(waybill.getId());
                 waybillCar.setWaybillNo(waybill.getNo());
+                waybillCar.setReceiptFlag(waybillCar.getUnloadLinkPhone().equals(order.getBackContactPhone()));
                 //地址赋值
                 FullCity sVo = csCityService.findFullCity(carDto.getStartAreaCode(), CityLevelEnum.PROVINCE);
                 copyWaybillCarStartCity(sVo, waybillCar);
@@ -1021,7 +1044,9 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                         endStoreName = store.getName();
                     }
                 }
+
                 waybillCar.setEndStoreId(endStoreId);
+                waybillCar.setReceiptFlag(false);
                 waybillCar.setEndStoreName(endStoreName);
                 //车辆运输到中途卸车算调度单业务中心
                 waybillCar.setEndBelongStoreId(waybillCar.getStartBelongStoreId());

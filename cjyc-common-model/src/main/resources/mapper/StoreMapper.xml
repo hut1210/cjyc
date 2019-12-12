@@ -24,12 +24,13 @@
         <result column="operation_name" property="operationName" />
         <result column="update_time" property="updateTime" />
         <result column="remark" property="remark" />
+        <result column="is_delete" property="isDelete" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id, dept_id, name, province, province_code, city, city_code, area, area_code, detail_addr, lng, lat, state, contact_admin_id, contact_admin,
-        create_user_id, create_time, operation_name, update_time, remark
+        create_user_id, create_time, operation_name, update_time, remark,is_delete
     </sql>
     <select id="findByCityCode" resultType="com.cjyc.common.model.entity.Store">
         select
@@ -157,7 +158,7 @@
 
 
     <select id="findOneBelongByCityCode" resultType="com.cjyc.common.model.entity.Store">
-        select * from s_store where city_code = #{cityCode}
+        select * from s_store where city_code = #{cityCode} limit 1
     </select>
 
 

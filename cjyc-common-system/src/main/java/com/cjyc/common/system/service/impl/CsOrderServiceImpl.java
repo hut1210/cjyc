@@ -264,7 +264,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         orderLog.setOrderId(order.getId());
         orderLog.setOrderNo(order.getNo());
         orderLog.setType(0);
-/*        orderLog.setInnerLog(OrderLogEnum.COMMIT.getInnerLog());
+/*      orderLog.setInnerLog(OrderLogEnum.COMMIT.getInnerLog());
         orderLog.setOuterLog(OrderLogEnum.COMMIT.getOutterLog());*/
         orderLog.setCreateTime(System.currentTimeMillis());
         orderLog.setCreateUser(paramsDto.getCreateUserName());
@@ -387,20 +387,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
             return BaseResultUtil.fail("[订单车辆]-为空");
         }
         //合计费用：提、干、送、保险
-        BigDecimal pickFee = BigDecimal.ZERO;
-        BigDecimal trunkFee = BigDecimal.ZERO;
-        BigDecimal backFee = BigDecimal.ZERO;
-        BigDecimal addInsuranceFee = BigDecimal.ZERO;
-        for (OrderCar orderCar : orderCarList) {
-            pickFee = pickFee.add(orderCar.getPickFee());
-            trunkFee = trunkFee.add(orderCar.getTrunkFee());
-            backFee = backFee.add(orderCar.getBackFee());
-            addInsuranceFee = addInsuranceFee.add(orderCar.getAddInsuranceFee());
-        }
-        order.setPickFee(pickFee);
-        order.setTrunkFee(trunkFee);
-        order.setBackFee(backFee);
-        order.setAddInsuranceFee(addInsuranceFee);
+        fillOrderFeeInfo(order, orderCarList);
         //验证物流券费用
         /*BigDecimal wlTotalFee = orderCarDao.getWLTotalFee(reqDto.getOrderId());
         BigDecimal couponAmount = BigDecimal.ZERO;
@@ -438,15 +425,151 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
         return BaseResultUtil.success();
     }
+
+    /**
+     * 费用信息赋值
+     * @author JPG
+     * @since 2019/12/12 14:41
+     * @param order
+     * @param orderCarList
+     */
+    private void fillOrderFeeInfo(Order order, List<OrderCar> orderCarList) {
+        BigDecimal pickFee = BigDecimal.ZERO;
+        BigDecimal trunkFee = BigDecimal.ZERO;
+        BigDecimal backFee = BigDecimal.ZERO;
+        BigDecimal addInsuranceFee = BigDecimal.ZERO;
+        for (OrderCar orderCar : orderCarList) {
+            pickFee = pickFee.add(orderCar.getPickFee());
+            trunkFee = trunkFee.add(orderCar.getTrunkFee());
+            backFee = backFee.add(orderCar.getBackFee());
+            addInsuranceFee = addInsuranceFee.add(orderCar.getAddInsuranceFee());
+        }
+        order.setPickFee(pickFee);
+        order.setTrunkFee(trunkFee);
+        order.setBackFee(backFee);
+        order.setAddInsuranceFee(addInsuranceFee);
+    }
+
     /**
      * 提交并审核
      *
-     * @param reqDto
+     * @param paramsDto
      * @return
      */
     @Override
-    public ResultVo commitAndCheck(CommitOrderDto reqDto) {
-        return null;
+    public ResultVo commitAndCheck(CommitOrderDto paramsDto) {
+        //获取参数
+        Long orderId = paramsDto.getOrderId();
+
+        Order order = null;
+        boolean newOrderFlag = false;
+        if (orderId != null) {
+            //更新订单
+            order = orderDao.selectById(orderId);
+        }
+        if (order == null) {
+            //新建订单
+            newOrderFlag = true;
+            order = new Order();
+        }
+        BeanUtils.copyProperties(paramsDto, order);
+        //城市信息
+        fillOrderCityInfo(order, paramsDto.getStartAreaCode(), paramsDto.getEndAreaCode());
+        //业务中心信息
+        fillOrderStoreInfo(order);
+        //客户信息
+        ResultVo<Customer> validateCustomerResult = validateCustomer(paramsDto);
+        if (ResultEnum.SUCCESS.getCode() != validateCustomerResult.getCode()) {
+            return validateCustomerResult;
+        }
+        Customer customer = validateCustomerResult.getData();
+        order.setCustomerId(customer.getId());
+        //订单编号
+        if (newOrderFlag) {
+            order.setNo(csSendNoService.getNo(SendNoTypeEnum.ORDER));
+        }
+
+        order.setState(OrderStateEnum.SUBMITTED.code);
+        if(order.getSource() == null){
+            order.setSource(paramsDto.getClientId());
+        }
+        order.setCreateTime(System.currentTimeMillis());
+
+        //验证必要信息是否完全
+        validateOrderFeild(order);
+        //更新或插入订单
+        int row = newOrderFlag ? orderDao.insert(order) : orderDao.updateById(order);
+
+        /**2、更新或保存车辆信息*/
+        List<CommitOrderCarDto> carDtoList = paramsDto.getOrderCarList();
+        //删除旧的车辆数据
+        if (!newOrderFlag) {
+            orderCarDao.deleteBatchByOrderId(order.getId());
+        }
+        //费用统计变量
+        int noCount = 0;
+        Set<String> vinSet = Sets.newHashSet();
+        Set<String> plateNoSet = Sets.newHashSet();
+        for (CommitOrderCarDto dto : carDtoList) {
+            if (dto == null) {
+                continue;
+            }
+            //验证vin码是否重复
+            String vin = dto.getVin();
+            if (StringUtils.isNotBlank(vin)) {
+                if (vinSet.contains(vin)) {
+                    throw new ParameterException("vin码：{0}重复", vin);
+                }
+                vinSet.add(vin);
+            }
+            //验证车牌号是否重复
+            String plateNo = dto.getPlateNo();
+            if (StringUtils.isNotBlank(plateNo)) {
+                if (plateNoSet.contains(plateNo)) {
+                    throw new ParameterException("车牌号码：{0}重复", plateNo);
+                }
+                plateNoSet.add(plateNo);
+            }
+            //统计数量
+            noCount++;
+            OrderCar orderCar = new OrderCar();
+            //复制数据
+            BeanUtils.copyProperties(dto, orderCar);
+            //填充数据
+            orderCar.setOrderNo(order.getNo());
+            orderCar.setOrderId(order.getId());
+            orderCar.setNo(csSendNoService.formatNo(order.getNo(), noCount, 3));
+            orderCar.setState(OrderCarStateEnum.WAIT_ROUTE.code);
+            orderCar.setPickFee(dto.getPickFee() == null ? BigDecimal.ZERO : dto.getPickFee());
+            orderCar.setTrunkFee(dto.getTrunkFee() == null ? BigDecimal.ZERO : dto.getTrunkFee());
+            orderCar.setBackFee(dto.getBackFee() == null ? BigDecimal.ZERO : dto.getBackFee());
+            orderCar.setAddInsuranceFee(dto.getAddInsuranceFee() == null ? BigDecimal.ZERO : dto.getAddInsuranceFee());
+            orderCarDao.insert(orderCar);
+        }
+        order.setCarNum(noCount);
+        if (noCount == 0) {
+            throw new ParameterException("订单至少包含一辆车");
+        }
+        orderDao.updateById(order);
+
+        //记录发车人和收车人
+        csCustomerContactService.asyncSaveByOrder(order);
+
+        //记录订单日志
+        OrderLog orderLog = new OrderLog();
+        orderLog.setOrderId(order.getId());
+        orderLog.setOrderNo(order.getNo());
+        orderLog.setType(0);
+/*        orderLog.setInnerLog(OrderLogEnum.COMMIT.getInnerLog());
+        orderLog.setOuterLog(OrderLogEnum.COMMIT.getOutterLog());*/
+        orderLog.setCreateTime(System.currentTimeMillis());
+        orderLog.setCreateUser(paramsDto.getCreateUserName());
+        orderLog.setCreateUserId(paramsDto.getCreateUserId());
+        orderLog.setCreateUserPhone(paramsDto.getLoginPhone());
+
+        //csOrderLogService.asyncSave(orderLog);
+        //记录车辆日志
+        return BaseResultUtil.success("操作成功，订单编号{0}", order.getNo());
     }
 
     /**

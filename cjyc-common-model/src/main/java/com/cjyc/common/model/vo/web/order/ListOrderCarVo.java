@@ -260,6 +260,9 @@ public class ListOrderCarVo extends OrderCar {
 
     @ApiModelProperty(value = "优惠券id")
     private Long couponSendId;
-
+    @ApiModelProperty(value = "订单状态")
+    private String outterState;
+    @ApiModelProperty(value = "大区")
+    private String region;
 
 }

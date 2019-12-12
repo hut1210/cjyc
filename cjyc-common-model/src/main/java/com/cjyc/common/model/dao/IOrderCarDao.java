@@ -193,8 +193,8 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
      * 功能描述: 查询出发地与目的地相同的车辆数量
      * @author liuxingxiang
      * @date 2019/12/11
-     * @param startCityCode
+     * @param map
      * @return java.util.List<com.cjyc.common.model.vo.salesman.dispatch.StartAndEndCityCountVo>
      */
-    List<StartAndEndCityCountVo> selectStartAndEndCityCarCount(@Param("startCityCode") String startCityCode);
+    List<StartAndEndCityCountVo> selectStartAndEndCityCarCount(Map<String,Object> map);
 }

@@ -227,8 +227,8 @@
     <select id="findWaitDispatchCarList" resultType="com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo">
         select
         (case
-        when oc.pick_mode = 3 then 100
-        when oc.pick_mode = 2 then
+        when o.pick_type = 3 then 100
+        when o.pick_type = 1 then
         (case
         when oc.state &lt;= 5 then 21
         when oc.state = 15 then 23
@@ -249,10 +249,9 @@
         when oc.state = 35 then 2
         when oc.state = 40 then 3
         when oc.state &gt; 40 then 5 end)end ) as trunkTransportState,
-
         (case
-        when oc.back_mode = 3 then 100
-        when oc.back_mode = 2 then (case
+        when o.back_type = 3 then 100
+        when o.back_type = 1 then (case
         when oc.state = 45 then 21
         when oc.state = 55 then 23
         when oc.state &gt;= 100 then 25 end)
@@ -263,6 +262,8 @@
         when oc.state = 55 then 3
         when oc.state &gt;= 100 then 5 end)end ) as backTransportState,
         o.source as source,
+        o.pick_type as pickType,
+        o.back_type as backType,
         o.start_store_id as startStoreId,
         o.start_store_name as startStoreName,
         o.end_store_id as endStoreId,
@@ -293,14 +294,25 @@
         left join w_waybill_car wc on wc.order_car_id = oc.id
         <where>
             <choose>
+                <when test="paramsDto.dispatchType == 1">
+                    and oc.pick_state = 1 and oc.state &lt;= 5
+                </when>
+                <when test="paramsDto.dispatchType == 2">
+                    and oc.trunk_state &lt;= 2 and oc.state &lt; 45
+                </when>
+                <when test="paramsDto.dispatchType == 3">
+                    and oc.back_state = 1 and oc.state between 45 and 99
+                </when>
+            </choose>
+            <choose>
                 <when test="paramsDto.signState == 1">
-                    and o.state between 25 and 99
+                    and oc.state &lt; 100
                 </when>
                 <when test="paramsDto.signState == 2">
-                    and o.state = 100
+                    and oc.state = 100
                 </when>
                 <otherwise>
-                    and o.state between 25 and 101
+                    and oc.state &lt;= 100
                 </otherwise>
             </choose>
 
@@ -329,46 +341,46 @@
                 and o.end_store_id = #{paramsDto.endStoreId,jdbcType=BIGINT}
             </if>
             <if test="paramsDto.orderNo != null and paramsDto.orderNo != ''">
-                and oc.order_no = #{paramsDto.orderNo,jdbcType=VARCHAR}
+                and oc.order_no like concat("%", #{paramsDto.orderNo,jdbcType=VARCHAR}, "%")
             </if>
             <if test="paramsDto.carNo != null and paramsDto.carNo != ''">
-                and oc.no = #{paramsDto.carNo,jdbcType=VARCHAR}
+                and oc.no like concat("%", #{paramsDto.carNo,jdbcType=VARCHAR}, "%")
             </if>
             <if test="paramsDto.vin != null and paramsDto.vin != ''">
-                and oc.vin = #{paramsDto.vin,jdbcType=VARCHAR}
+                and oc.vin like concat("%", #{paramsDto.vin,jdbcType=VARCHAR}, "%")
             </if>
             <if test="paramsDto.beginExpectStartDate != null">
-                and o.expect_start_date &gt; #{paramsDto.beginExpectStartDate,jdbcType=BIGINT}
+                and o.expect_start_date &gt;= #{paramsDto.beginExpectStartDate,jdbcType=BIGINT}
             </if>
             <if test="paramsDto.endExpectStartDate != null">
-                and o.expect_start_date &lt; #{paramsDto.endExpectStartDate,jdbcType=BIGINT}
+                and o.expect_start_date &lt;= #{paramsDto.endExpectStartDate,jdbcType=BIGINT}
             </if>
             <if test="paramsDto.pickType != null">
                 and o.pick_type = #{paramsDto.pickType,jdbcType=TINYINT}
             </if>
             <if test="paramsDto.pickContactName != null and paramsDto.pickContactName != ''">
-                and o.pick_contact_name = #{paramsDto.pickContactName,jdbcType=VARCHAR}
+                and o.pick_contact_name like concat("%", #{paramsDto.pickContactName,jdbcType=VARCHAR}, "%")
             </if>
             <if test="paramsDto.pickContactPhone != null and paramsDto.pickContactPhone != ''">
-                and o.pick_contact_phone = #{paramsDto.pickContactPhone,jdbcType=VARCHAR}
+                and o.pick_contact_phone like concat("%", #{paramsDto.pickContactPhone,jdbcType=VARCHAR}, "%")
             </if>
             <if test="paramsDto.backType != null">
                 and o.back_type = #{paramsDto.backType,jdbcType=TINYINT}
             </if>
             <if test="paramsDto.backContactName != null and paramsDto.backContactName != ''">
-                and o.back_contact_name = #{paramsDto.backContactName,jdbcType=VARCHAR}
+                and o.back_contact_name like concat("%", #{paramsDto.backContactName,jdbcType=VARCHAR}, "%")
             </if>
             <if test="paramsDto.backContactPhone != null and paramsDto.backContactPhone != ''">
-                and o.back_contact_phone = #{paramsDto.backContactPhone,jdbcType=VARCHAR}
+                and o.back_contact_phone like concat("%", #{paramsDto.backContactPhone,jdbcType=VARCHAR}, "%")
             </if>
             <if test="paramsDto.brand != null and paramsDto.brand != ''">
-                and oc.brand = #{paramsDto.brand,jdbcType=VARCHAR}
+                and oc.brand like concat("%", #{paramsDto.brand,jdbcType=VARCHAR}, "%")
             </if>
             <if test="paramsDto.model != null and paramsDto.model != ''">
-                and oc.model = #{paramsDto.model,jdbcType=VARCHAR}
+                and oc.model like concat("%", #{paramsDto.model,jdbcType=VARCHAR}, "%")
             </if>
             <if test="paramsDto.plateNo != null and paramsDto.plateNo != ''">
-                and oc.plate_no = #{paramsDto.plateNo,jdbcType=VARCHAR}
+                and oc.plate_no like concat("%", #{paramsDto.plateNo,jdbcType=VARCHAR}, "%")
             </if>
             <if test="paramsDto.startStoreId != null">
                 and o.start_store_id = #{paramsDto.startStoreId,jdbcType=BIGINT}
@@ -378,19 +390,21 @@
             </if>
             <if test="paramsDto.fromToCityList != null and paramsDto.fromToCityList.size > 0">
                 and
-                <foreach collection="paramsDto.fromToCityList" index="index" item="item" open="(" separator=" or " close=")">
+                <foreach collection="paramsDto.fromToCityList" index="index" item="item" open="(" separator=" or "
+                         close=")">
                     (o.start_city_code = #{item.fromCityCode}
                     and o.end_city_code = #{item.toCityCode})
                 </foreach>
             </if>
             <if test="paramsDto.bizScope != null">
-                and  (o.input_store_id or o.end_belong_store_id or oc.now_store_id or wc.end_belong_store_id)  in
+                and (o.input_store_id or o.end_belong_store_id or oc.now_store_id or wc.end_belong_store_id) in
                 <foreach collection="paramsDto.bizScope" index="index" item="item" open="(" separator="," close=")">
                     #{item}
                 </foreach>
             </if>
         </where>
         group by oc.id
+
     </select>
 
     <select id="findByOrderId" resultType="com.cjyc.common.model.entity.OrderCar">
@@ -433,8 +447,8 @@
         ) as outterState,
 
         (case
-        when oc.pick_mode = 3 then 100
-        when oc.pick_mode = 2 then
+        when o.pick_type = 3 then 100
+        when o.pick_type = 1 then
         (case
         when oc.state &lt;= 5 then 21
         when oc.state = 15 then 23
@@ -457,8 +471,8 @@
         when oc.state &gt; 40 then 5 end)end ) as trunkTransportState,
 
         (case
-        when oc.back_mode = 3 then 100
-        when oc.back_mode = 2 then (case
+        when o.back_type = 3 then 100
+        when o.back_type = 1 then (case
         when oc.state = 45 then 21
         when oc.state = 55 then 23
         when oc.state &gt;= 100 then 25 end)
@@ -468,6 +482,11 @@
         when oc.state = 50 then 2
         when oc.state = 55 then 3
         when oc.state &gt;= 100 then 5 end)end ) as backTransportState,
+        o.source as source,
+        o.customer_name as customerName,
+        o.customer_phone as customerPhone,
+        o.start_city as startCity,
+        o.end_city as endCity,
         o.pick_type as pickType,
         o.back_type as backType,
         o.pick_contact_name as pickContactName,
@@ -828,8 +847,8 @@
 
         select
             (case
-            when oc.pick_mode = 3 then 100
-            when oc.pick_mode = 2 then
+            when o.pick_type = 3 then 100
+            when o.pick_type = 1 then
             (case
             when oc.state &lt;= 5 then 21
             when oc.state = 15 then 23
@@ -852,8 +871,8 @@
             when oc.state &gt; 40 then 5 end)end ) as trunkTransportState,
 
             (case
-            when oc.back_mode = 3 then 100
-            when oc.back_mode = 2 then (case
+            when o.back_type = 3 then 100
+            when o.back_type = 1 then (case
             when oc.state = 45 then 21
             when oc.state = 55 then 23
             when oc.state &gt;= 100 then 25 end)
@@ -866,7 +885,7 @@
             oc.*,
             t.state,
             t.driver_id as driverId,
-            CONCAT(t.driver_name," ",t.driver_phone," ",t.vehicle_plate_no) as nowDriver,
+            CONCAT(t.driver_name," ",t.driver_phone," ", t.vehicle_plate_no) as nowDriver,
             s.city as nowCity
         from w_order_car oc
         left join s_store s on s.id = oc.now_store_id
@@ -1035,6 +1054,7 @@
 
     <!--查询出发地相同的车辆数量-->
     <select id="selectStartCityCarCount" parameterType="java.lang.String" resultType="com.cjyc.common.model.vo.salesman.dispatch.CityCarCountVo">
+        /*查询未调度的 始发城市和车辆数*/
         SELECT
             o.start_city_code AS startCityCode,
             o.start_city AS startCity,
@@ -1049,10 +1069,42 @@
             AND car.back_state =1
         GROUP BY
             o.start_city_code
+
+        UNION ALL
+        /*经过城市作为始发城市：查询经过城市的 始发城市和车辆数量*/
+        SELECT
+            billCar.end_city_code AS startCityCode,
+            billCar.end_city AS startCity,
+            count( billCar.end_city_code ) AS carCount
+        FROM
+            w_order_car orderCar
+            JOIN w_order o ON orderCar.order_id = o.id
+            JOIN (
+        SELECT
+            car.order_car_id,
+            car.end_city_code,
+            car.end_city
+        FROM
+            (
+        SELECT
+            max( id ) AS waybill_car_id
+        FROM
+            w_waybill_car
+        WHERE
+            end_belong_store_id IN ( #{storeIds} )
+            AND receipt_flag = 0
+        GROUP BY
+            order_car_id
+            ) t
+            LEFT JOIN w_waybill_car car ON t.waybill_car_id = car.id
+            ) billCar ON orderCar.id = billCar.order_car_id
+        GROUP BY
+            billCar.end_city_code
     </select>
 
     <!--查询出发地与目的地相同的车辆数量-->
-    <select id="selectStartAndEndCityCarCount" parameterType="java.lang.String" resultType="com.cjyc.common.model.vo.salesman.dispatch.StartAndEndCityCountVo">
+    <select id="selectStartAndEndCityCarCount" parameterType="java.util.Map" resultType="com.cjyc.common.model.vo.salesman.dispatch.StartAndEndCityCountVo">
+        /*查询未调度的 始发城市-目的城市 车辆数量*/
         SELECT
             o.start_city_code AS startCityCode,
             o.start_city AS startCity,
@@ -1063,7 +1115,7 @@
             w_order_car car
             LEFT JOIN w_order o ON car.order_id = o.id
         WHERE
-            o.input_store_id IN ( 2 )
+            o.input_store_id IN ( #{storeIds} )
             AND car.pick_state = 1
             AND car.trunk_state = 1
             AND car.back_state = 1
@@ -1071,6 +1123,41 @@
         GROUP BY
             o.start_city_code,
             o.end_city_code
+
+        UNION ALL
+        /*当前业务中心城市作为经过城市：查询经过城市的 始发地-目的地 车辆数量*/
+        SELECT
+            billCar.end_city_code AS startCityCode,
+            billCar.end_city AS startCity,
+            o.end_city_code AS endCityCode,
+            o.end_city AS endCity,
+            count( billCar.end_city_code ) AS carCount
+        FROM
+            w_order_car orderCar
+            JOIN w_order o ON orderCar.order_id = o.id
+            JOIN (
+        SELECT
+            car.order_car_id,
+            car.end_city_code,
+            car.end_city
+        FROM
+            (
+        SELECT
+            max( id ) AS waybill_car_id
+        FROM
+            w_waybill_car
+        WHERE
+            end_belong_store_id IN ( #{storeIds} )
+            AND receipt_flag = 0
+        GROUP BY
+            order_car_id
+            ) t
+            LEFT JOIN w_waybill_car car ON t.waybill_car_id = car.id
+            ) billCar ON orderCar.id = billCar.order_car_id
+        WHERE
+            billCar.end_city_code = #{startCityCode}
+        GROUP BY
+            billCar.end_city_code
     </select>
 
 
