@@ -187,4 +187,12 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
         }
         return BaseResultUtil.success(roleId);
     }
+
+    @Override
+    public ResultVo<SalesCustomerListVo> findKeyCustomer(SalesCustomerDto dto) {
+        List<SalesCustomerVo> salesKeyCustomter = customerDao.findSalesKeyCustomter(dto);
+        SalesCustomerListVo listVo = new SalesCustomerListVo();
+        listVo.setList(salesKeyCustomter);
+        return BaseResultUtil.success(listVo);
+    }
 }

@@ -104,4 +104,13 @@ public interface IStoreService extends IService<Store> {
     List<Store> get(GetStoreDto reqDto);
 
     List<StoreVo> getVoListByRoleId(Long roleId);
+
+    /**
+     * 功能描述: 删除业务中心
+     * @author liuxingxiang
+     * @date 2019/12/12
+     * @param id
+     * @return com.cjyc.common.model.vo.ResultVo
+     */
+    ResultVo remove(Long id);
 }

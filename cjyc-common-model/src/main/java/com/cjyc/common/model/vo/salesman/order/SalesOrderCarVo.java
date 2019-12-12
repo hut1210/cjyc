@@ -2,6 +2,7 @@ package com.cjyc.common.model.vo.salesman.order;
 
 import com.cjyc.common.model.util.BigDecimalSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -11,6 +12,9 @@ import java.math.BigDecimal;
 @Data
 public class SalesOrderCarVo implements Serializable {
     private static final long serialVersionUID = -8119244731311513499L;
+    @ApiModelProperty(value = "车辆id")
+    @JsonSerialize(using= ToStringSerializer.class)
+    private Long carId;
     @ApiModelProperty(value = "品牌")
     private String brand;
     @ApiModelProperty(value = "型号")

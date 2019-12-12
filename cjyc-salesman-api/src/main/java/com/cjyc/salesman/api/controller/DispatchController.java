@@ -1,8 +1,10 @@
 package com.cjyc.salesman.api.controller;
 
-import com.cjyc.common.model.dto.web.order.ComputeCarEndpointDto;
+import com.cjyc.common.model.dto.salesman.dispatch.DispatchListDto;
+import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.order.DispatchAddCarVo;
+import com.cjyc.common.model.vo.salesman.dispatch.DispatchListVo;
 import com.cjyc.salesman.api.service.IDispatchService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -30,9 +32,15 @@ public class DispatchController {
      * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.vo.PageVo<com.cjyc.common.model.vo.salesman.task.TaskWaybillVo>>
      */
     @ApiOperation(value = "查询所有出发城市-目的地城市的车辆数量")
-    @PostMapping("/getAllCityCarCount/{loginId}")
-    public ResultVo getAllCityCarCount(@PathVariable Long loginId) {
-        return dispatchService.getAllCityCarCount(loginId);
+    @PostMapping("/getCityCarCount/{loginId}")
+    public ResultVo getCityCarCount(@PathVariable Long loginId) {
+        return dispatchService.getCityCarCount(loginId);
+    }
+
+    @ApiOperation(value = "调度列表信息")
+    @PostMapping("/list")
+    public ResultVo<PageVo<DispatchListVo>> list(@RequestBody DispatchListDto dto) {
+        return BaseResultUtil.success(dispatchService.getPageList(dto));
     }
 
 }

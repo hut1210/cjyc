@@ -33,6 +33,9 @@ public class CustomerLine implements Serializable {
     @ApiModelProperty(value = "客户id")
     private Long customerId;
 
+    @ApiModelProperty(value = "操作人id")
+    private Long operateId;
+
     @ApiModelProperty(value = "班线编号")
     private String lineCode;
 

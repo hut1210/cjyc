@@ -6,6 +6,7 @@
     <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.CustomerLine">
         <id column="id" property="id" />
         <result column="customer_id" property="customerId" />
+        <result column="operate_id" property="operateId" />
         <result column="line_code" property="lineCode" />
         <result column="start_adress" property="startAdress" />
         <result column="start_contact" property="startContact" />
@@ -18,12 +19,11 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, customer_id, line_code, start_adress, start_contact, start_contact_phone, end_adress, end_contact, end_contact_phone, create_time
+        id, customer_id, operate_id, line_code, start_adress, start_contact, start_contact_phone, end_adress, end_contact, end_contact_phone, create_time
     </sql>
 
     <!-- 根据客户id获取历史线路 -->
-    <select id="findCustomerLine" resultType="com.cjyc.common.model.vo.customer.customerLine.CustomerLineVo"
-                                    parameterType="java.lang.Long">
+    <select id="findCustomerLine" resultType="com.cjyc.common.model.vo.customer.customerLine.CustomerLineVo">
         SELECT
             id AS id,
             start_adress AS startAdress,
@@ -34,9 +34,15 @@
             end_contact_phone AS endContactPhone
         FROM
             c_customer_line
-        WHERE
-            customer_id = #{customerId}
-            order by id asc
+        <where>
+            <if test="flag != null and flag == 0">
+                customer_id = #{customerId}
+            </if>
+            <if test="flag != null and flag == 1">
+                and operate_id = #{customerId}
+            </if>
+              order by id asc
+        </where>
     </select>
 
 </mapper>

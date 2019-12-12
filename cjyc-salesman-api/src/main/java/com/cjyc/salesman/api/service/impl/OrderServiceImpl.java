@@ -52,6 +52,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         SalesOrderDetailVo detailVo = new SalesOrderDetailVo();
         List<SalesOrderCarVo> carVoList = new ArrayList<>();
         Order order = orderDao.selectById(dto.getOrderId());
+        detailVo.setOrderId(order.getId());
         detailVo.setOrderNo(order.getNo());
         BeanUtils.copyProperties(order,detailVo);
         List<OrderCar> orderCars = orderCarDao.selectList(new QueryWrapper<OrderCar>().lambda().eq(OrderCar::getOrderId, order.getId()));
@@ -59,6 +60,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
             for(OrderCar orderCar : orderCars){
                 logoImg += carSeriesDao.getLogoImgByBraMod(orderCar.getBrand(), orderCar.getModel());
                 SalesOrderCarVo carVo = new SalesOrderCarVo();
+                carVo.setCarId(orderCar.getId());
                 carVo.setLogoImg(logoImg);
                 BeanUtils.copyProperties(orderCar,carVo);
                 carVoList.add(carVo);
