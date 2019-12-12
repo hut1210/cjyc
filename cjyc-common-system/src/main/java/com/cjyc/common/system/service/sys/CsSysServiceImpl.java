@@ -4,24 +4,21 @@ import com.cjkj.common.model.ResultData;
 import com.cjkj.usercenter.dto.common.SelectDeptResp;
 import com.cjkj.usercenter.dto.common.SelectRoleResp;
 import com.cjyc.common.model.dao.ICarrierDao;
+import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Carrier;
 import com.cjyc.common.model.entity.Store;
 import com.cjyc.common.model.entity.defined.BizScope;
 import com.cjyc.common.model.enums.BizScopeEnum;
-import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysRoleService;
+import com.cjyc.common.system.service.ICsAdminService;
 import com.cjyc.common.system.service.ICsStoreService;
-import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -37,6 +34,8 @@ public class CsSysServiceImpl implements ICsSysService {
 
     private static final String YC_DEPT_ADMIN_ID = YmlProperty.get("cjkj.dept_admin_id");
 
+    @Resource
+    private ICsAdminService csAdminService;
     @Resource
     private ISysRoleService sysRoleService;
     @Resource
@@ -114,13 +113,14 @@ public class CsSysServiceImpl implements ICsSysService {
      */
     @Override
     public BizScope getBizScopeByLoginId(Long loginId, boolean isSearchCache) {
+        Admin admin = csAdminService.getById(loginId, true);
         //返回实体
         BizScope bizScope = new BizScope();
         //默认无权限
         bizScope.setCode(BizScopeEnum.NONE.code);
         //业务中心ID集合
         Set<Long> set = Sets.newHashSet();
-        ResultData<List<SelectRoleResp>> resData = sysRoleService.getListByUserId(loginId);
+        ResultData<List<SelectRoleResp>> resData = sysRoleService.getListByUserId(admin.getUserId());
         if (resData == null || resData.getData() == null) {
             return bizScope;
         }

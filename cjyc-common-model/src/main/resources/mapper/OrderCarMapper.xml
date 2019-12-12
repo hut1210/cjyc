@@ -719,9 +719,11 @@
         car.model as model,
         car.plate_no as plateNo,
         car.brand as brand,
-        car.vin as vin
+        car.vin as vin,
+        CONCAT('${@com.cjyc.common.system.config.LogoImgProperty@logoImg}', t.logo_img) as logoImg
         from
         w_order_car car
+        left join(select brand,logo_img from s_car_series group by brand) t on car.brand=t.brand
         <where>
             <if test="orderNo != null and orderNo.trim() != ''">
                 and car.order_no = #{orderNo}
@@ -1062,14 +1064,16 @@
         FROM
             w_order_car car
             LEFT JOIN w_order o ON car.order_id = o.id
-        WHERE
-            o.input_store_id IN ( #{storeIds} )
-            AND car.pick_state = 1
+        <where>
+            car.pick_state = 1
             AND car.trunk_state = 1
             AND car.back_state =1
+            <if test="storeIds != null and storeIds.trim() != ''">
+                AND o.input_store_id IN ( #{storeIds} )
+            </if>
+        </where>
         GROUP BY
             o.start_city_code
-
         UNION ALL
         /*经过城市作为始发城市：查询经过城市的 始发城市和车辆数量*/
         SELECT
@@ -1090,9 +1094,12 @@
             max( id ) AS waybill_car_id
         FROM
             w_waybill_car
-        WHERE
-            end_belong_store_id IN ( #{storeIds} )
-            AND receipt_flag = 0
+        <where>
+            receipt_flag = 0
+            <if test="storeIds != null and storeIds.trim() != ''">
+                AND end_belong_store_id IN ( #{storeIds} )
+            </if>
+        </where>
         GROUP BY
             order_car_id
             ) t
@@ -1114,12 +1121,16 @@
         FROM
             w_order_car car
             LEFT JOIN w_order o ON car.order_id = o.id
-        WHERE
-            o.input_store_id IN ( #{storeIds} )
-            AND car.pick_state = 1
+        <where>
+            car.pick_state = 1
             AND car.trunk_state = 1
-            AND car.back_state = 1
+            AND car.back_state =1
             AND o.start_city_code = #{startCityCode}
+            <if test="storeIds != null and storeIds.trim() != ''">
+                AND o.input_store_id IN ( #{storeIds} )
+            </if>
+        </where>
+
         GROUP BY
             o.start_city_code,
             o.end_city_code
@@ -1146,9 +1157,12 @@
             max( id ) AS waybill_car_id
         FROM
             w_waybill_car
-        WHERE
-            end_belong_store_id IN ( #{storeIds} )
-            AND receipt_flag = 0
+        <where>
+            receipt_flag = 0
+            <if test="storeIds != null and storeIds.trim() != ''">
+                AND end_belong_store_id IN ( #{storeIds} )
+            </if>
+        </where>
         GROUP BY
             order_car_id
             ) t
