@@ -1,6 +1,9 @@
 package com.cjyc.salesman.api.service;
 
+import com.cjyc.common.model.dto.salesman.dispatch.DispatchListDto;
+import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.salesman.dispatch.DispatchListVo;
 
 /**
  * @Description 调度业务接口
@@ -16,4 +19,10 @@ public interface IDispatchService {
      * @return com.cjyc.common.model.vo.ResultVo
      */
     ResultVo getAllCityCarCount(Long loginId);
+
+    /**
+     * 调度列表
+     * @return
+     */
+    PageVo<DispatchListVo> getPageList(DispatchListDto dto);
 }
