@@ -282,7 +282,7 @@
                 c_customer_contract contract
                 LEFT JOIN c_customer customer ON customer.id = contract.customer_id
             WHERE
-                customer.id = #{customerId}  and contract.contract_life > #{now}
+                customer.id = #{customerId}  and contract.contract_life > #{now} and contract.project_status = 1
     </select>
 
     <select id="findByUserId" resultType="com.cjyc.common.model.entity.Customer">
@@ -310,6 +310,25 @@
             <if test="name != null and name.trim() !=''">
                 and cc.contact_man like concat('%',#{name},'%')
             </if>
+        </where>
+    </select>
+
+    <select id="findSalesKeyCustomter" resultType="com.cjyc.common.model.vo.salesman.customer.SalesCustomerVo"
+            parameterType="com.cjyc.common.model.dto.salesman.customer.SalesCustomerDto">
+        SELECT
+            cc.id AS customerId,
+            cc.contact_man AS contactMan,
+            cc.contact_phone AS contactPhone
+        FROM
+          c_customer cc
+        <where>
+            <if test="phone != null and phone.trim() !=''">
+                cc.contact_phone like concat('%',#{phone},'%')
+            </if>
+            <if test="name != null and name.trim() !=''">
+                and cc.contact_man like concat('%',#{name},'%')
+            </if>
+            and cc.type = 2 and cc.state = 2
         </where>
     </select>
 </mapper>

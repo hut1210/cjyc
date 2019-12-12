@@ -2,7 +2,10 @@ package com.cjyc.common.system.service;
 
 import com.cjkj.common.model.ResultData;
 import com.cjkj.usercenter.dto.common.SelectRoleResp;
+import com.cjyc.common.model.dto.CommonDto;
 import com.cjyc.common.model.dto.salesman.customer.SalesCustomerDto;
+import com.cjyc.common.model.vo.PageVo;
+import com.cjyc.common.model.vo.customer.customerLine.CustomerLineVo;
 import com.cjyc.common.model.vo.salesman.customer.SalesCustomerListVo;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.vo.ResultVo;
@@ -65,4 +68,6 @@ public interface ICsCustomerService {
     ResultVo<SalesCustomerListVo> findCustomer(SalesCustomerDto dto);
 
     ResultVo<Long> findRoleId(List<SelectRoleResp> roleResps);
+
+    ResultVo<SalesCustomerListVo> findKeyCustomer(SalesCustomerDto dto);
 }

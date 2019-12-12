@@ -15,6 +15,7 @@ import com.cjyc.common.system.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -59,16 +60,22 @@ public class BasicController {
         return csStoreService.findStore(dto);
     }
 
-    @ApiOperation(value = "查看用户历史线路")
-    @PostMapping(value = "/findLine")
-    public ResultVo<PageVo<CustomerLineVo>> queryLinePage(@RequestBody CommonDto dto){
-        return csCustomerLineService.queryLinePage(dto);
-    }
-
-    @ApiOperation(value = "客户信息")
+    @ApiOperation(value = "根据手机号或姓名客户信息")
     @PostMapping(value = "/findCustomer")
     public ResultVo<SalesCustomerListVo> findCustomer(@RequestBody SalesCustomerDto dto){
         return csCustomerService.findCustomer(dto);
+    }
+
+    @ApiOperation(value = "查看用户历史线路")
+    @PostMapping(value = "/findLine")
+    public ResultVo<PageVo<CustomerLineVo>> queryLinePage(@Validated @RequestBody CommonDto dto){
+        return csCustomerLineService.queryLinePage(dto);
+    }
+
+    @ApiOperation(value = "模糊查询大客户信息")
+    @PostMapping(value = "/findKeyCustomer")
+    public ResultVo<SalesCustomerListVo> findKeyCustomer(@RequestBody SalesCustomerDto dto){
+        return csCustomerService.findKeyCustomer(dto);
     }
 
 }
