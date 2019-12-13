@@ -140,7 +140,7 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
         store.setIsDelete(DeleteStateEnum.NO_DELETE.code);
         store.setState(CommonStateEnum.CHECKED.code);
         store.setCreateTime(System.currentTimeMillis());
-        Admin admin = adminDao.selectOne(new QueryWrapper<Admin>().lambda().eq(Admin::getUserId, storeAddDto.getCreateUserId()).select(Admin::getName));
+        Admin admin = adminDao.selectOne(new QueryWrapper<Admin>().lambda().eq(Admin::getId, storeAddDto.getCreateUserId()).select(Admin::getName));
         if (!Objects.isNull(admin)) {
             store.setOperationName(admin.getName());
         }
@@ -160,7 +160,7 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
         Store store = new Store();
         BeanUtils.copyProperties(storeUpdateDto,store);
         store.setUpdateTime(System.currentTimeMillis());
-        Admin admin = adminDao.selectOne(new QueryWrapper<Admin>().lambda().eq(Admin::getUserId, storeUpdateDto.getUpdateUserId()).select(Admin::getName));
+        Admin admin = adminDao.selectOne(new QueryWrapper<Admin>().lambda().eq(Admin::getId, storeUpdateDto.getUpdateUserId()).select(Admin::getName));
         if (!Objects.isNull(admin)) {
             store.setOperationName(admin.getName());
         }

@@ -49,5 +49,6 @@ public class DispatchListVo {
     private List<String> trunkModeList;
     @ApiModelProperty(value = "干线调度节点状态列表 0：未调度 1：已调度")
     private List<String> trunkStateList;
-
+    @ApiModelProperty(value = "品牌logo图片路径")
+    private String logoImgPath;
 }

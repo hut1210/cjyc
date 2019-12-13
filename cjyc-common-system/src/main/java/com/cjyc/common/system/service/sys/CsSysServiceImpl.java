@@ -167,7 +167,7 @@ public class CsSysServiceImpl implements ICsSysService {
         bizScope.setCode(BizScopeEnum.STORE.code);
         bizScope.setStoreIds(set);
 
-        return null;
+        return bizScope;
     }
 
     @Override

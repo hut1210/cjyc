@@ -1,6 +1,7 @@
 package com.cjyc.salesman.api.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.cjyc.common.model.dao.ICarSeriesDao;
 import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IWaybillCarDao;
 import com.cjyc.common.model.dto.salesman.dispatch.DispatchListDto;
@@ -12,6 +13,7 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.salesman.dispatch.CityCarCountVo;
 import com.cjyc.common.model.vo.salesman.dispatch.DispatchListVo;
 import com.cjyc.common.model.vo.salesman.dispatch.StartAndEndCityCountVo;
+import com.cjyc.common.system.config.LogoImgProperty;
 import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.salesman.api.service.IDispatchService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +41,8 @@ public class DispatchServiceImpl implements IDispatchService {
     private IOrderCarDao orderCarDao;
     @Resource
     private IWaybillCarDao waybillCarDao;
+    @Resource
+    private ICarSeriesDao carSeriesDao;
 
     @Override
     public ResultVo getCityCarCount(Long loginId) {
@@ -47,30 +51,38 @@ public class DispatchServiceImpl implements IDispatchService {
 
         // 判断当前登录人是否有权限访问
         int code = bizScope.getCode();
-        if (BizScopeEnum.NONE.code == code) {
-            return BaseResultUtil.fail("无权访问");
-        }
-        List<CityCarCountVo> returnList = new ArrayList<>(10);
+        /*if (BizScopeEnum.NONE.code == code) {
+            return BaseResultUtil.fail("您没有访问权限!");
+        }*/
 
         // 获取业务中心ID
         String storeIds = getStoreIds(bizScope);
         //String storeIds = "2,3,4,6";
+        //String storeIds = null;
         // 查询 出发地 以及车辆数量
-        List<CityCarCountVo> notDispatchList = orderCarDao.selectStartCityCarCount(storeIds);
+        List<CityCarCountVo> list = orderCarDao.selectStartCityCarCount(storeIds);
         // 查询出 发地-目的地 以及车辆数量
         Map<String,Object> map = new HashMap<>(2);
         map.put("storeIds",storeIds);
-        for (CityCarCountVo cityCarCountVo : notDispatchList) {
+        for (CityCarCountVo cityCarCountVo : list) {
             map.put("startCityCode",cityCarCountVo.getStartCityCode());
             List<StartAndEndCityCountVo> startAndEndCityCountList = orderCarDao.selectStartAndEndCityCarCount(map);
             cityCarCountVo.setStartAndEndCityCountList(startAndEndCityCountList);
         }
-        returnList.addAll(notDispatchList);
-        return BaseResultUtil.success(returnList);
+        return BaseResultUtil.success(list);
     }
 
     @Override
-    public PageVo<DispatchListVo> getPageList(DispatchListDto dto) {
+    public ResultVo<PageVo<DispatchListVo>> getPageList(DispatchListDto dto) {
+        // 根据登录ID查询当前业务员所在业务中心ID
+        BizScope bizScope = csSysService.getBizScopeByLoginId(dto.getLoginId(), true);
+
+        // 判断当前登录人是否有权限访问
+        int code = bizScope.getCode();
+        if (BizScopeEnum.NONE.code == code) {
+            return BaseResultUtil.fail("无权访问");
+        }
+        dto.setBizStoreIds(getStoreIds(bizScope));
         Page<DispatchListVo> page = new Page<>();
         page.setCurrent(dto.getCurrentPage());
         page.setSize(dto.getPageSize());
@@ -104,15 +116,20 @@ public class DispatchServiceImpl implements IDispatchService {
                     v.setTrunkModeList(modeList);
                     v.setTrunkStateList(stateList);
                 }
+                //品牌logo图片：LogoImgProperty
+                String logoImg = carSeriesDao.getLogoImgByBraMod(v.getBrand(), v.getModel());
+                if (!StringUtils.isEmpty(logoImg)) {
+                    v.setLogoImgPath(LogoImgProperty.logoImg + logoImg);
+                }
             });
         }
-        return PageVo.<DispatchListVo>builder()
+        return BaseResultUtil.success(PageVo.<DispatchListVo>builder()
                 .totalRecords(page.getTotal())
                 .totalPages(page.getTotal() % page.getSize() == 0?
                         (int)(page.getTotal()/page.getSize()): (int)(page.getTotal()/page.getSize()+1))
                 .pageSize((int)page.getSize())
                 .currentPage((int)page.getCurrent())
-                .list(list).build();
+                .list(list).build());
     }
 
     private String getStoreIds(BizScope bizScope) {

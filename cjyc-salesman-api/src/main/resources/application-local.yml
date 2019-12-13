@@ -88,6 +88,10 @@ logging:
 
 
 ##-----------------------------------cjyc-------------------------------------------
+cjkj:
+  dept_customer_id: 100000
+  dept_driver_id: 110000
+  dept_admin_id: 120000
 cjyc:
   swagger:
     enabled: true

@@ -24,6 +24,7 @@ import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.web.api.service.IAdminService;
 import com.cjyc.web.api.service.IRoleService;
+import com.google.common.collect.Sets;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,7 @@ import org.springframework.util.StringUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -95,6 +97,21 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
             }
             SelectUserByRoleVo vo = new SelectUserByRoleVo();
             BeanUtils.copyProperties(l, vo);
+            if (!StringUtils.isEmpty(vo.getRoles())) {
+                String[] roles = vo.getRoles().split(",");
+                Set<String> rSet;
+                if (roles.length > 1) {
+                    rSet = Sets.newHashSet(roles);
+                    StringBuilder sb = new StringBuilder();
+                    rSet.forEach(r -> {
+                        if (sb.length() > 0) {
+                            sb.append(",");
+                        }
+                        sb.append(r);
+                    });
+                    vo.setRoles(sb.toString());
+                }
+            }
             Admin admin = adminService.getOne(new QueryWrapper<Admin>()
                     .eq("phone", l.getAccount()));
             if (null != admin) {

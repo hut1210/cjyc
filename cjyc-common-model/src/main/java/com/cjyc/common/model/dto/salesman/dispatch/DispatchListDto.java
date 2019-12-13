@@ -5,6 +5,10 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.springframework.validation.annotation.Validated;
+
+import javax.validation.constraints.NotNull;
+import java.util.List;
+
 /**
  * 调度信息列表实体
  */
@@ -13,6 +17,9 @@ import org.springframework.validation.annotation.Validated;
 @ApiModel
 @Validated
 public class DispatchListDto extends BasePageDto {
+    @NotNull(message = "用户标识不能为空")
+    @ApiModelProperty(value = "用户标识", required = true)
+    private Long loginId;
     @ApiModelProperty(value = "开始城市")
     private String startCity;
     @ApiModelProperty(value = "目的城市")
@@ -31,4 +38,6 @@ public class DispatchListDto extends BasePageDto {
     private String brand;
     @ApiModelProperty(value = "车系")
     private String model;
+    @ApiModelProperty(hidden = true)
+    private String bizStoreIds;
 }
