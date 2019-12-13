@@ -47,26 +47,25 @@ public class DispatchServiceImpl implements IDispatchService {
 
         // 判断当前登录人是否有权限访问
         int code = bizScope.getCode();
-        if (BizScopeEnum.NONE.code == code) {
-            return BaseResultUtil.fail("无权访问");
-        }
-        List<CityCarCountVo> returnList = new ArrayList<>(10);
+        /*if (BizScopeEnum.NONE.code == code) {
+            return BaseResultUtil.fail("您没有访问权限!");
+        }*/
 
         // 获取业务中心ID
-        String storeIds = getStoreIds(bizScope);
+        //String storeIds = getStoreIds(bizScope);
         //String storeIds = "2,3,4,6";
+        String storeIds = null;
         // 查询 出发地 以及车辆数量
-        List<CityCarCountVo> notDispatchList = orderCarDao.selectStartCityCarCount(storeIds);
+        List<CityCarCountVo> list = orderCarDao.selectStartCityCarCount(storeIds);
         // 查询出 发地-目的地 以及车辆数量
         Map<String,Object> map = new HashMap<>(2);
         map.put("storeIds",storeIds);
-        for (CityCarCountVo cityCarCountVo : notDispatchList) {
+        for (CityCarCountVo cityCarCountVo : list) {
             map.put("startCityCode",cityCarCountVo.getStartCityCode());
             List<StartAndEndCityCountVo> startAndEndCityCountList = orderCarDao.selectStartAndEndCityCarCount(map);
             cityCarCountVo.setStartAndEndCityCountList(startAndEndCityCountList);
         }
-        returnList.addAll(notDispatchList);
-        return BaseResultUtil.success(returnList);
+        return BaseResultUtil.success(list);
     }
 
     @Override

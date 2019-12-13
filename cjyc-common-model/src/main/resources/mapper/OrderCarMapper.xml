@@ -1058,120 +1058,125 @@
     <select id="selectStartCityCarCount" parameterType="java.lang.String" resultType="com.cjyc.common.model.vo.salesman.dispatch.CityCarCountVo">
         /*查询未调度的 始发城市和车辆数*/
         SELECT
-            o.start_city_code AS startCityCode,
-            o.start_city AS startCity,
-            count( o.start_city_code ) AS carCount
+            t1.startCityCode,
+            t1.startCity,
+            count( t1.startCityCode ) AS carCount
         FROM
-            w_order_car car
-            LEFT JOIN w_order o ON car.order_id = o.id
-        <where>
-            car.pick_state = 1
-            AND car.trunk_state = 1
-            AND car.back_state =1
-            <if test="storeIds != null and storeIds.trim() != ''">
-                AND o.input_store_id IN ( #{storeIds} )
-            </if>
-        </where>
+            (SELECT
+                o.start_city_code AS startCityCode,
+                o.start_city AS startCity
+            FROM
+                w_order_car car
+                LEFT JOIN w_order o ON car.order_id = o.id
+            <where>
+                car.pick_state = 1
+                AND car.trunk_state = 1
+                AND car.back_state =1
+                <if test="storeIds != null and storeIds.trim() != ''">
+                    AND o.input_store_id IN ( #{storeIds} )
+                </if>
+            </where>
+            UNION ALL
+            /*经过城市作为始发城市：查询经过城市的 始发城市和车辆数量*/
+            SELECT
+                billCar.end_city_code AS startCityCode,
+                billCar.end_city AS startCity
+            FROM
+                w_order_car orderCar
+                JOIN w_order o ON orderCar.order_id = o.id
+                JOIN (
+            SELECT
+                car.order_car_id,
+                car.end_city_code,
+                car.end_city
+            FROM
+                (
+            SELECT
+                max( id ) AS waybill_car_id
+            FROM
+                w_waybill_car
+            <where>
+                receipt_flag = 0
+                <if test="storeIds != null and storeIds.trim() != ''">
+                    AND end_belong_store_id IN ( #{storeIds} )
+                </if>
+            </where>
+            GROUP BY
+                order_car_id
+                ) t
+                LEFT JOIN w_waybill_car car ON t.waybill_car_id = car.id
+                ) billCar ON orderCar.id = billCar.order_car_id
+            ) t1
         GROUP BY
-            o.start_city_code
-        UNION ALL
-        /*经过城市作为始发城市：查询经过城市的 始发城市和车辆数量*/
-        SELECT
-            billCar.end_city_code AS startCityCode,
-            billCar.end_city AS startCity,
-            count( billCar.end_city_code ) AS carCount
-        FROM
-            w_order_car orderCar
-            JOIN w_order o ON orderCar.order_id = o.id
-            JOIN (
-        SELECT
-            car.order_car_id,
-            car.end_city_code,
-            car.end_city
-        FROM
-            (
-        SELECT
-            max( id ) AS waybill_car_id
-        FROM
-            w_waybill_car
-        <where>
-            receipt_flag = 0
-            <if test="storeIds != null and storeIds.trim() != ''">
-                AND end_belong_store_id IN ( #{storeIds} )
-            </if>
-        </where>
-        GROUP BY
-            order_car_id
-            ) t
-            LEFT JOIN w_waybill_car car ON t.waybill_car_id = car.id
-            ) billCar ON orderCar.id = billCar.order_car_id
-        GROUP BY
-            billCar.end_city_code
+            t1.startCityCode
     </select>
 
     <!--查询出发地与目的地相同的车辆数量-->
     <select id="selectStartAndEndCityCarCount" parameterType="java.util.Map" resultType="com.cjyc.common.model.vo.salesman.dispatch.StartAndEndCityCountVo">
         /*查询未调度的 始发城市-目的城市 车辆数量*/
         SELECT
-            o.start_city_code AS startCityCode,
-            o.start_city AS startCity,
-            o.end_city_code AS endCityCode,
-            o.end_city AS endCity,
-            count( o.end_city_code ) AS carCount
+            t1.startCityCode,
+            t1.startCity,
+            t1.endCityCode,
+            t1.endCity,
+            COUNT( startCityCode ) AS carCount
         FROM
-            w_order_car car
-            LEFT JOIN w_order o ON car.order_id = o.id
-        <where>
-            car.pick_state = 1
-            AND car.trunk_state = 1
-            AND car.back_state =1
-            AND o.start_city_code = #{startCityCode}
-            <if test="storeIds != null and storeIds.trim() != ''">
-                AND o.input_store_id IN ( #{storeIds} )
-            </if>
-        </where>
-
+            (SELECT
+                o.start_city_code AS startCityCode,
+                o.start_city AS startCity,
+                o.end_city_code AS endCityCode,
+                o.end_city AS endCity
+            FROM
+                w_order_car car
+                LEFT JOIN w_order o ON car.order_id = o.id
+            <where>
+                car.pick_state = 1
+                AND car.trunk_state = 1
+                AND car.back_state =1
+                AND o.start_city_code = #{startCityCode}
+                <if test="storeIds != null and storeIds.trim() != ''">
+                    AND o.input_store_id IN ( #{storeIds} )
+                </if>
+            </where>
+            UNION ALL
+            /*当前业务中心城市作为经过城市：查询经过城市的 始发地-目的地 车辆数量*/
+            SELECT
+                billCar.end_city_code AS startCityCode,
+                billCar.end_city AS startCity,
+                o.end_city_code AS endCityCode,
+                o.end_city AS endCity
+            FROM
+                w_order_car orderCar
+                JOIN w_order o ON orderCar.order_id = o.id
+                JOIN (
+            SELECT
+                car.order_car_id,
+                car.end_city_code,
+                car.end_city
+            FROM
+                (
+            SELECT
+                max( id ) AS waybill_car_id
+            FROM
+                w_waybill_car
+            <where>
+                receipt_flag = 0
+                <if test="storeIds != null and storeIds.trim() != ''">
+                    AND end_belong_store_id IN ( #{storeIds} )
+                </if>
+            </where>
+            GROUP BY
+                order_car_id
+                ) t
+                LEFT JOIN w_waybill_car car ON t.waybill_car_id = car.id
+                ) billCar ON orderCar.id = billCar.order_car_id
+            WHERE
+                billCar.end_city_code != o.end_city_code
+                AND billCar.end_city_code = #{startCityCode}
+                ) t1
         GROUP BY
-            o.start_city_code,
-            o.end_city_code
-
-        UNION ALL
-        /*当前业务中心城市作为经过城市：查询经过城市的 始发地-目的地 车辆数量*/
-        SELECT
-            billCar.end_city_code AS startCityCode,
-            billCar.end_city AS startCity,
-            o.end_city_code AS endCityCode,
-            o.end_city AS endCity,
-            count( billCar.end_city_code ) AS carCount
-        FROM
-            w_order_car orderCar
-            JOIN w_order o ON orderCar.order_id = o.id
-            JOIN (
-        SELECT
-            car.order_car_id,
-            car.end_city_code,
-            car.end_city
-        FROM
-            (
-        SELECT
-            max( id ) AS waybill_car_id
-        FROM
-            w_waybill_car
-        <where>
-            receipt_flag = 0
-            <if test="storeIds != null and storeIds.trim() != ''">
-                AND end_belong_store_id IN ( #{storeIds} )
-            </if>
-        </where>
-        GROUP BY
-            order_car_id
-            ) t
-            LEFT JOIN w_waybill_car car ON t.waybill_car_id = car.id
-            ) billCar ON orderCar.id = billCar.order_car_id
-        WHERE
-            billCar.end_city_code = #{startCityCode}
-        GROUP BY
-            billCar.end_city_code
+            t1.startCityCode,
+            t1.endCityCode
     </select>
 
 
