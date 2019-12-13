@@ -7,6 +7,7 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.salesman.dispatch.CityCarCountVo;
 import com.cjyc.common.model.vo.salesman.dispatch.DispatchCarDetailVo;
 import com.cjyc.common.model.vo.salesman.dispatch.DispatchListVo;
+import com.cjyc.common.model.vo.salesman.dispatch.HistoryDispatchRecordVo;
 import com.cjyc.salesman.api.service.IDispatchService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -60,9 +61,16 @@ public class DispatchController {
         return dispatchService.getCarDetail(carNo);
     }
 
+    /**
+     * 功能描述: 查询历史调度记录列表分页
+     * @author liuxingxiang
+     * @date 2019/12/13
+     * @param dto
+     * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.vo.salesman.dispatch.HistoryDispatchRecordVo>
+     */
     @ApiOperation(value = "查询历史调度记录列表分页")
     @PostMapping("/getHistoryRecord")
-    public ResultVo getHistoryRecord(@RequestBody HistoryDispatchRecordDto dto) {
+    public ResultVo<HistoryDispatchRecordVo> getHistoryRecord(@RequestBody HistoryDispatchRecordDto dto) {
         return dispatchService.getHistoryRecord(dto);
     }
 
