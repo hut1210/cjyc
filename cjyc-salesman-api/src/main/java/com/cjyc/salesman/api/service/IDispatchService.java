@@ -26,4 +26,12 @@ public interface IDispatchService {
      */
     ResultVo<PageVo<DispatchListVo>> getPageList(DispatchListDto dto);
 
+    /**
+     * 功能描述: 根据车辆编号查询车辆明细
+     * @author liuxingxiang
+     * @date 2019/12/13
+     * @param carNo
+     * @return com.cjyc.common.model.vo.ResultVo
+     */
+    ResultVo getCarDetail(String carNo);
 }

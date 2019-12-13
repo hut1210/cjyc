@@ -1,21 +1,24 @@
 package com.cjyc.salesman.api.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cjyc.common.model.dao.ICarSeriesDao;
 import com.cjyc.common.model.dao.IOrderCarDao;
+import com.cjyc.common.model.dao.IOrderDao;
 import com.cjyc.common.model.dao.IWaybillCarDao;
 import com.cjyc.common.model.dto.salesman.dispatch.DispatchListDto;
+import com.cjyc.common.model.entity.Order;
+import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.entity.defined.BizScope;
 import com.cjyc.common.model.enums.BizScopeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.salesman.dispatch.CityCarCountVo;
-import com.cjyc.common.model.vo.salesman.dispatch.DispatchListVo;
-import com.cjyc.common.model.vo.salesman.dispatch.StartAndEndCityCountVo;
+import com.cjyc.common.model.vo.salesman.dispatch.*;
 import com.cjyc.common.system.config.LogoImgProperty;
 import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.salesman.api.service.IDispatchService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -40,6 +43,8 @@ public class DispatchServiceImpl implements IDispatchService {
     @Resource
     private IOrderCarDao orderCarDao;
     @Resource
+    private IOrderDao orderDao;
+    @Resource
     private IWaybillCarDao waybillCarDao;
     @Resource
     private ICarSeriesDao carSeriesDao;
@@ -51,14 +56,12 @@ public class DispatchServiceImpl implements IDispatchService {
 
         // 判断当前登录人是否有权限访问
         int code = bizScope.getCode();
-        /*if (BizScopeEnum.NONE.code == code) {
+        if (BizScopeEnum.NONE.code == code) {
             return BaseResultUtil.fail("您没有访问权限!");
-        }*/
+        }
 
         // 获取业务中心ID
         String storeIds = getStoreIds(bizScope);
-        //String storeIds = "2,3,4,6";
-        //String storeIds = null;
         // 查询 出发地 以及车辆数量
         List<CityCarCountVo> list = orderCarDao.selectStartCityCarCount(storeIds);
         // 查询出 发地-目的地 以及车辆数量
@@ -130,6 +133,23 @@ public class DispatchServiceImpl implements IDispatchService {
                 .pageSize((int)page.getSize())
                 .currentPage((int)page.getCurrent())
                 .list(list).build());
+    }
+
+    @Override
+    public ResultVo getCarDetail(String carNo) {
+        // 查询车辆信息
+        DispatchCarDetailVo detail = new DispatchCarDetailVo();
+        OrderCar orderCar = orderCarDao.selectOne(new QueryWrapper<OrderCar>().lambda().eq(OrderCar::getNo, carNo));
+        String logoImg = carSeriesDao.getLogoImgByBraMod(orderCar.getBrand(), orderCar.getModel());
+        detail.setLogoImg(LogoImgProperty.logoImg+logoImg);
+        BeanUtils.copyProperties(orderCar,detail);
+        // 查询订单信息
+        Order order = orderDao.selectById(orderCar.getOrderId());
+        BeanUtils.copyProperties(order,detail);
+        // 查询调度记录
+        List<DispatchRecordVo> dispatchRecordVoList = waybillCarDao.selectWaybillRecordList(orderCar.getId());
+        detail.setDispatchRecordVoList(dispatchRecordVoList);
+        return BaseResultUtil.success(detail);
     }
 
     private String getStoreIds(BizScope bizScope) {

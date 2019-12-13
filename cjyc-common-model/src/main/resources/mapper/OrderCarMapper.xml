@@ -715,23 +715,23 @@
     <!--根据条件查询车辆信息-->
     <select id="selectByCondition" resultType="com.cjyc.common.model.vo.customer.order.OrderCarCenterVo">
         select
-        car.id as id,
-        car.model as model,
-        car.plate_no as plateNo,
-        car.brand as brand,
-        car.vin as vin,
-        CONCAT('${@com.cjyc.common.system.config.LogoImgProperty@logoImg}', t.logo_img) as logoImg
+            car.id as id,
+            car.model as model,
+            car.plate_no as plateNo,
+            car.brand as brand,
+            car.vin as vin,
+            CONCAT('${@com.cjyc.common.system.config.LogoImgProperty@logoImg}', t.logo_img) as logoImg
         from
-        w_order_car car
-        left join(select brand,logo_img from s_car_series group by brand) t on car.brand=t.brand
-        <where>
-            <if test="orderNo != null and orderNo.trim() != ''">
-                and car.order_no = #{orderNo}
-            </if>
-            <if test="model != null and model.trim() != ''">
-                and car.model = #{model}
-            </if>
-        </where>
+            w_order_car car
+            left join(select brand,logo_img from s_car_series group by brand) t on car.brand=t.brand
+            <where>
+                <if test="orderNo != null and orderNo.trim() != ''">
+                    and car.order_no = #{orderNo}
+                </if>
+                <if test="model != null and model.trim() != ''">
+                    and car.model = #{model}
+                </if>
+            </where>
         limit 0,1
     </select>
 

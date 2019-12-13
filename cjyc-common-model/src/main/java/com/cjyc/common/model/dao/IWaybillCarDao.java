@@ -10,6 +10,7 @@ import com.cjyc.common.model.entity.WaybillCar;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.entity.defined.FullWaybillCar;
 import com.cjyc.common.model.vo.salesman.dispatch.DispatchListVo;
+import com.cjyc.common.model.vo.salesman.dispatch.DispatchRecordVo;
 import com.cjyc.common.model.vo.web.WayBillCarrierVo;
 import com.cjyc.common.model.vo.web.waybill.WaybillCarVo;
 import com.cjyc.common.model.vo.web.waybill.LocalListWaybillCarVo;
@@ -103,4 +104,13 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
     List<WaybillCarVo> findCarEndpoint(@Param("list") List<Long> orderCarIds);
     List<DispatchListVo> getDispatchList(Page<DispatchListVo> page,
                                          @Param("param") DispatchListDto dto);
+
+    /**
+     * 功能描述: 查询车辆调度记录
+     * @author liuxingxiang
+     * @date 2019/12/13
+     * @param id
+     * @return java.util.List<com.cjyc.common.model.vo.salesman.dispatch.DispatchRecordVo>
+     */
+    List<DispatchRecordVo> selectWaybillRecordList(@Param("id") Long id);
 }

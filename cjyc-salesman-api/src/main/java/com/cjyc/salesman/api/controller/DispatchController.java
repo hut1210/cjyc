@@ -1,9 +1,10 @@
 package com.cjyc.salesman.api.controller;
 
 import com.cjyc.common.model.dto.salesman.dispatch.DispatchListDto;
-import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.salesman.dispatch.CityCarCountVo;
+import com.cjyc.common.model.vo.salesman.dispatch.DispatchCarDetailVo;
 import com.cjyc.common.model.vo.salesman.dispatch.DispatchListVo;
 import com.cjyc.salesman.api.service.IDispatchService;
 import io.swagger.annotations.Api;
@@ -35,7 +36,7 @@ public class DispatchController {
      */
     @ApiOperation(value = "查询所有出发城市-目的地城市的车辆数量")
     @PostMapping("/getCityCarCount/{loginId}")
-    public ResultVo getCityCarCount(@PathVariable Long loginId) {
+    public ResultVo<CityCarCountVo> getCityCarCount(@PathVariable Long loginId) {
         return dispatchService.getCityCarCount(loginId);
     }
 
@@ -43,6 +44,19 @@ public class DispatchController {
     @PostMapping("/list")
     public ResultVo<PageVo<DispatchListVo>> list(@Valid @RequestBody DispatchListDto dto) {
         return dispatchService.getPageList(dto);
+    }
+
+    /**
+     * 功能描述: 根据车辆编号查询车辆明细
+     * @author liuxingxiang
+     * @date 2019/12/13
+     * @param carNo
+     * @return com.cjyc.common.model.vo.ResultVo
+     */
+    @ApiOperation(value = "根据车辆编号查询车辆明细")
+    @PostMapping("/getCarDetail/{carNo}")
+    public ResultVo<DispatchCarDetailVo> getCarDetail(@PathVariable String carNo) {
+        return dispatchService.getCarDetail(carNo);
     }
 
 }

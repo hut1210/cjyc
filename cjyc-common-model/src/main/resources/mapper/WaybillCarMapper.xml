@@ -1230,4 +1230,40 @@
                 </choose>
             </if>
     </select>
+
+    <select id="selectWaybillRecordList" parameterType="java.lang.Long"
+            resultType="com.cjyc.common.model.vo.salesman.dispatch.DispatchRecordVo">
+        select
+            t.guide_line as guideLine,
+            t.type as type,
+            t.no as waybillNo,
+            t.load_link_name as loadLinkName,
+            t.load_link_phone as loadLinkPhone,
+            t.start_address as startAddress,
+            t.unload_link_name as unloadLinkName,
+            t.unload_link_phone as unloadLinkPhone,
+            t.end_address as endAddress,
+            carr.linkman as linkMan,
+            carr.linkman_phone as linkmanPhone
+        from
+            (select
+                w.carrier_id,
+                w.guide_line,
+                w.type,
+                w.no,
+                car.load_link_name,
+                car.load_link_phone,
+                car.start_address,
+                car.unload_link_name,
+                car.unload_link_phone,
+                car.end_address
+            from
+                w_waybill_car car
+                left join w_waybill w on car.waybill_id=w.id
+            where
+                order_car_id=#{id}
+            ) t
+            left join d_carrier carr on t.carrier_id=carr.id
+    </select>
+
 </mapper>
