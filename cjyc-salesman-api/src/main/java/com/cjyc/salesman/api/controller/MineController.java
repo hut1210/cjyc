@@ -5,6 +5,7 @@ import com.cjyc.common.model.dto.salesman.mine.AchieveDto;
 import com.cjyc.common.model.dto.salesman.mine.StockCarDto;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.salesman.mine.QRCodeVo;
 import com.cjyc.common.model.vo.salesman.mine.StockCarDetailVo;
 import com.cjyc.common.model.vo.salesman.mine.StockCarVo;
 import com.cjyc.salesman.api.service.IMineService;
@@ -46,4 +47,9 @@ public class MineController {
         return mineService.achieveCount(dto);
     }
 
+    @ApiOperation(value = "二维码")
+    @PostMapping(value = "/findQrCode")
+    public ResultVo<QRCodeVo> findQrCode(@Validated @RequestBody BaseSalesDto dto) {
+        return mineService.findQrCode(dto);
+    }
 }

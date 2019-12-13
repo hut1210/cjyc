@@ -5,6 +5,7 @@ import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IWaybillCarDao;
 import com.cjyc.common.model.dto.salesman.dispatch.DispatchListDto;
 import com.cjyc.common.model.entity.defined.BizScope;
+import com.cjyc.common.model.enums.BizScopeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -42,25 +43,21 @@ public class DispatchServiceImpl implements IDispatchService {
     @Override
     public ResultVo getCityCarCount(Long loginId) {
         // 根据登录ID查询当前业务员所在业务中心ID
-        /*BizScope bizScope = csSysService.getBizScopeByLoginId(loginId, true);
+        BizScope bizScope = csSysService.getBizScopeByLoginId(loginId, true);
 
         // 判断当前登录人是否有权限访问
         int code = bizScope.getCode();
         if (BizScopeEnum.NONE.code == code) {
             return BaseResultUtil.fail("无权访问");
         }
-        if (BizScopeEnum.CHINA.code == code) {
-            return BaseResultUtil.fail("暂不支持全国数据访问");
-        }*/
-
         List<CityCarCountVo> returnList = new ArrayList<>(10);
 
         // 获取业务中心ID
-        //String storeIds = getStoreIds(bizScope);
-        String storeIds = "2,3,4,6";
-        // 查询 出发城市和车辆数量
+        String storeIds = getStoreIds(bizScope);
+        //String storeIds = "2,3,4,6";
+        // 查询 出发地 以及车辆数量
         List<CityCarCountVo> notDispatchList = orderCarDao.selectStartCityCarCount(storeIds);
-        // 查询出发地，目的地相同的车辆数量
+        // 查询出 发地-目的地 以及车辆数量
         Map<String,Object> map = new HashMap<>(2);
         map.put("storeIds",storeIds);
         for (CityCarCountVo cityCarCountVo : notDispatchList) {
@@ -119,6 +116,9 @@ public class DispatchServiceImpl implements IDispatchService {
     }
 
     private String getStoreIds(BizScope bizScope) {
+        if (bizScope.getCode() == BizScopeEnum.CHINA.code) {
+            return null;
+        }
         Set<Long> storeIds = bizScope.getStoreIds();
         StringBuilder sb = new StringBuilder();
         for (Long storeId : storeIds) {

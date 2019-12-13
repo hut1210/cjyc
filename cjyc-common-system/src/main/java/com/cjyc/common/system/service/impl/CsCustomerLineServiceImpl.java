@@ -29,7 +29,7 @@ public class CsCustomerLineServiceImpl implements ICsCustomerLineService {
     public ResultVo<PageVo<CustomerLineVo>> queryLinePage(CommonDto dto) {
         Customer customer = customerDao.selectOne(new QueryWrapper<Customer>().lambda()
                 .eq(Customer::getId, dto.getLoginId()));
-        Integer flag = 0;
+        Integer flag;
         if(customer == null){
             flag = 0;
         }else{

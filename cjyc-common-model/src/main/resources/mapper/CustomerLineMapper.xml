@@ -36,7 +36,7 @@
             c_customer_line
         <where>
             <if test="flag != null and flag == 0">
-                customer_id = #{customerId}
+                customer_id = #{customerId} and operate_id = #{customerId}
             </if>
             <if test="flag != null and flag == 1">
                 and operate_id = #{customerId}

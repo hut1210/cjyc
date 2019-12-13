@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -106,8 +107,33 @@ public class SalesOrderDetailVo implements Serializable {
 
     @ApiModelProperty(value = "车辆详情")
     private List<SalesOrderCarVo> carVoList;
+
     public Long getEndBelongStoreId(){return endBelongStoreId == null ? 0:endBelongStoreId;}
     public Long getExpectStartDate(){return expectStartDate == null ? 0:expectStartDate;}
     public Long getExpectEndDate(){return expectEndDate == null ? 0:expectEndDate;}
-
+    public Long getInputStoreId(){return inputStoreId == null ? 0:inputStoreId;}
+    public String getInputStoreName() {return StringUtils.isBlank(inputStoreName) ? "":inputStoreName;}
+    public Long getStartBelongStoreId(){return startBelongStoreId == null ? 0:startBelongStoreId;}
+    public String getStartStoreName(){return StringUtils.isBlank(startStoreName) ? "":startStoreName;}
+    public String getEndStoreName(){return StringUtils.isBlank(endStoreName) ? "":endStoreName;}
+    public String getPickContactName(){return StringUtils.isBlank(pickContactName) ? "":pickContactName;}
+    public String getPickContactPhone(){return StringUtils.isBlank(pickContactPhone) ? "":pickContactPhone;}
+    public String getStartProvinceCode(){return StringUtils.isBlank(startProvinceCode) ? "":startProvinceCode;}
+    public String getStartProvince(){return StringUtils.isBlank(startProvince) ? "":startProvince;}
+    public String getStartCityCode(){return StringUtils.isBlank(startCityCode) ? "":startCityCode;}
+    public String getStartAreaCode(){return StringUtils.isBlank(startAreaCode) ? "":startAreaCode;}
+    public String getStartArea(){return StringUtils.isBlank(startArea) ? "":startArea;}
+    public String getStartAddress(){return StringUtils.isBlank(startAddress) ? "":startAddress;}
+    public String getEndProvinceCode(){return StringUtils.isBlank(endProvinceCode) ? "":endProvinceCode;}
+    public String getEndProvince(){return StringUtils.isBlank(endProvince) ? "":endProvince;}
+    public String getEndCityCode(){return StringUtils.isBlank(endCityCode) ? "":endCityCode;}
+    public String getEndCity() {return StringUtils.isBlank(endCity) ? "":endCity;}
+    public String getEndAreaCode(){return StringUtils.isBlank(endAreaCode) ? "":endAreaCode;}
+    public String getEndArea(){return StringUtils.isBlank(endArea) ? "":endArea;}
+    public String getEndAddress(){return StringUtils.isBlank(endAddress) ? "":endAddress;}
+    public BigDecimal getPickFee(){return pickFee == null ? BigDecimal.ZERO:pickFee;}
+    public BigDecimal getBackFee(){return backFee == null ? BigDecimal.ZERO:backFee;}
+    public BigDecimal getAddInsuranceFee(){return addInsuranceFee == null ? BigDecimal.ZERO:addInsuranceFee;}
+    public BigDecimal getTrunkFee(){return trunkFee == null ? BigDecimal.ZERO:trunkFee;}
+    public BigDecimal getTotalFee(){return totalFee == null ? BigDecimal.ZERO:totalFee;}
 }
