@@ -24,6 +24,6 @@ public interface IDispatchService {
      * 调度列表
      * @return
      */
-    PageVo<DispatchListVo> getPageList(DispatchListDto dto);
+    ResultVo<PageVo<DispatchListVo>> getPageList(DispatchListDto dto);
 
 }

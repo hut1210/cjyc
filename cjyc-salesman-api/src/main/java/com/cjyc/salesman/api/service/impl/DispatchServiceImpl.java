@@ -70,10 +70,19 @@ public class DispatchServiceImpl implements IDispatchService {
     }
 
     @Override
-    public PageVo<DispatchListVo> getPageList(DispatchListDto dto) {
+    public ResultVo<PageVo<DispatchListVo>> getPageList(DispatchListDto dto) {
         Page<DispatchListVo> page = new Page<>();
         page.setCurrent(dto.getCurrentPage());
         page.setSize(dto.getPageSize());
+        // 根据登录ID查询当前业务员所在业务中心ID
+        BizScope bizScope = csSysService.getBizScopeByLoginId(dto.getLoginId(), true);
+
+        // 判断当前登录人是否有权限访问
+        int code = bizScope.getCode();
+        if (BizScopeEnum.NONE.code == code) {
+            return BaseResultUtil.fail("无权访问");
+        }
+        dto.setBizStoreIds(getStoreIds(bizScope));
         List<DispatchListVo> list = waybillCarDao.getDispatchList(page, dto);
         if (!CollectionUtils.isEmpty(list)) {
             list.forEach(v -> {
@@ -106,13 +115,13 @@ public class DispatchServiceImpl implements IDispatchService {
                 }
             });
         }
-        return PageVo.<DispatchListVo>builder()
+        return BaseResultUtil.success(PageVo.<DispatchListVo>builder()
                 .totalRecords(page.getTotal())
                 .totalPages(page.getTotal() % page.getSize() == 0?
                         (int)(page.getTotal()/page.getSize()): (int)(page.getTotal()/page.getSize()+1))
                 .pageSize((int)page.getSize())
                 .currentPage((int)page.getCurrent())
-                .list(list).build();
+                .list(list).build());
     }
 
     private String getStoreIds(BizScope bizScope) {

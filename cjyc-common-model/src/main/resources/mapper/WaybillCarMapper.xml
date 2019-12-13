@@ -1171,6 +1171,9 @@
                 WHERE
                 wo.state IN (25, 55, 88)
                 AND wwc.state != 0
+                <if test="param.bizStoreIds != null and param.bizStoreIds !=''">
+                    and wo.input_store_id IN (#{param.bizStoreIds})
+                </if>
                 ) a
                 GROUP BY
                 a.woc_no

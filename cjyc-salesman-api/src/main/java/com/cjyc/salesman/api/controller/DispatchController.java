@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 /**
  * @Description 调度模块接口控制层
  * @Author Liu Xing Xiang
@@ -39,8 +41,8 @@ public class DispatchController {
 
     @ApiOperation(value = "调度列表信息")
     @PostMapping("/list")
-    public ResultVo<PageVo<DispatchListVo>> list(@RequestBody DispatchListDto dto) {
-        return BaseResultUtil.success(dispatchService.getPageList(dto));
+    public ResultVo<PageVo<DispatchListVo>> list(@Valid @RequestBody DispatchListDto dto) {
+        return dispatchService.getPageList(dto);
     }
 
 }
