@@ -36,6 +36,6 @@ public class TrunkMidwayUnload {
     @ApiModelProperty(value = "运费")
     private BigDecimal freightFee;
 
-
+    @ApiModelProperty(value = "运单车辆ID列表")
     List<Long> waybillCarIdList;
 }

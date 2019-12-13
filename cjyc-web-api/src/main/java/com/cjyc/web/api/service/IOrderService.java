@@ -7,6 +7,7 @@ import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.OrderCarVo;
 import com.cjyc.common.model.vo.web.order.*;
 import com.cjyc.common.model.dto.web.order.CommitOrderDto;
 
@@ -82,4 +83,5 @@ public interface IOrderService extends IService<Order> {
     void importPatCustomerOrder(List<ImportPatCustomerOrderDto> orderList,
                                 List<ImportPatCustomerOrderCarDto> carList, Admin admin);
 
+    OrderCarVo getCarVoById(Long orderCarId);
 }

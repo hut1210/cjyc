@@ -27,8 +27,8 @@ public class CsOrderChangeLogServiceImpl implements ICsOrderChangeLogService {
      */
     @Async
     @Override
-    public int asyncSave(OrderChangeLog orderChangeLog) {
-        return orderChangeLogDao.insert(orderChangeLog);
+    public void asyncSave(OrderChangeLog orderChangeLog) {
+        orderChangeLogDao.insert(orderChangeLog);
     }
 
     /**
@@ -43,7 +43,7 @@ public class CsOrderChangeLogServiceImpl implements ICsOrderChangeLogService {
      */
     @Async
     @Override
-    public int asyncSave(Order order, OrderChangeTypeEnum changeType, Object[] content, Object[] creator) {
+    public void asyncSave(Order order, OrderChangeTypeEnum changeType, Object[] content, Object[] creator) {
         OrderChangeLog orderChangeLog = new OrderChangeLog();
         orderChangeLog.setOrderNo(order.getNo());
         orderChangeLog.setOrderId(order.getId());
@@ -56,7 +56,7 @@ public class CsOrderChangeLogServiceImpl implements ICsOrderChangeLogService {
         orderChangeLog.setCreateTime(System.currentTimeMillis());
         orderChangeLog.setCreateUserId(Long.valueOf(creator[0].toString()));
         orderChangeLog.setCreateUser(creator[1].toString());
-        return orderChangeLogDao.insert(orderChangeLog);
+        orderChangeLogDao.insert(orderChangeLog);
     }
 
 }

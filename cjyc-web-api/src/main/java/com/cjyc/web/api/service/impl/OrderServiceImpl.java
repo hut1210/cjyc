@@ -238,6 +238,11 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     }
 
     @Override
+    public OrderCarVo getCarVoById(Long orderCarId) {
+        return orderCarDao.findVoById(orderCarId);
+    }
+
+    @Override
     public ResultVo allot(AllotOrderDto paramsDto) {
         return csOrderService.allot(paramsDto);
     }

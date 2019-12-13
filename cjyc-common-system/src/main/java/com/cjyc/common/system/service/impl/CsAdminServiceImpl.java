@@ -105,7 +105,7 @@ public class CsAdminServiceImpl implements ICsAdminService {
     @Override
     public Admin validate(Long adminId) {
         Admin admin = getById(adminId, true);
-        if(admin == null || admin.getState() != AdminStateEnum.CHECKED.code){
+        if(admin == null || AdminStateEnum.CHECKED.code != admin.getState()){
             throw new ParameterException("用户不存在或者已离职");
         }
         return admin;

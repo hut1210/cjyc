@@ -615,9 +615,9 @@ public class CsOrderServiceImpl implements ICsOrderService {
         }
         orderDao.updateStateById(OrderStateEnum.WAIT_SUBMIT.code, order.getId());
         //添加操作日志
-/*        orderChangeLogService.asyncSave(order, OrderChangeTypeEnum.REJECT,
-                new Object[]{oldState, OrderStateEnum.WAIT_SUBMIT.code, paramsDto.getReason()},
-                new Object[]{paramsDto.getLoginId(), paramsDto.getLoginName()});*/
+        orderChangeLogService.asyncSave(order, OrderChangeTypeEnum.REJECT,
+                new Object[]{oldState, order.getState(), paramsDto.getReason()},
+                new Object[]{paramsDto.getLoginId(), paramsDto.getLoginName()});
         //TODO 发送消息给创建人
         return BaseResultUtil.success();
     }
@@ -644,9 +644,9 @@ public class CsOrderServiceImpl implements ICsOrderService {
         orderDao.updateById(order);
 
         //添加操作日志
-/*        orderChangeLogService.asyncSave(order, OrderChangeTypeEnum.CANCEL,
-                new Object[]{oldState, OrderStateEnum.F_CANCEL.code, paramsDto.getReason()},
-                new Object[]{paramsDto.getLoginId(), paramsDto.getLoginName()});*/
+        orderChangeLogService.asyncSave(order, OrderChangeTypeEnum.CANCEL,
+                new Object[]{oldState, order.getState(), paramsDto.getReason()},
+                new Object[]{paramsDto.getLoginId(), paramsDto.getLoginName()});
         //TODO 发送消息
         return BaseResultUtil.success();
     }

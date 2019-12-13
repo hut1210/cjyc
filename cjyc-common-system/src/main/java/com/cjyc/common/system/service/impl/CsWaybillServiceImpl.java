@@ -135,7 +135,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                     driverId = dto.getLoadLinkUserId();
                     driverName = dto.getLoadLinkName();
                 } else{
-                    throw new ParameterException("序号为{0}运单，编号为{1}的车辆，其他人正在调度", idx, orderCarNo);
+                    throw new ParameterException("无法识别的司机类型", idx, orderCarNo);
                 }
 
                 /**验证运单车辆信息*/
@@ -153,8 +153,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 }
 
                 if (orderCar.getState() == null
-                        || (paramsDto.getType() == WaybillTypeEnum.PICK.code && orderCar.getPickState() >= OrderCarLocalStateEnum.WAIT_DISPATCH.code)
-                        || (paramsDto.getType() == WaybillTypeEnum.BACK.code && orderCar.getBackState() >= OrderCarLocalStateEnum.WAIT_DISPATCH.code)) {
+                        || (paramsDto.getType() == WaybillTypeEnum.PICK.code && orderCar.getPickState() > OrderCarLocalStateEnum.WAIT_DISPATCH.code)
+                        || (paramsDto.getType() == WaybillTypeEnum.BACK.code && orderCar.getBackState() > OrderCarLocalStateEnum.WAIT_DISPATCH.code)) {
                     throw new ParameterException("序号为{0}运单,编号为{1}的车辆，当前车辆状态不能提车/配送调度", idx, orderCarNo);
                 }
                 //【验证】订单状态

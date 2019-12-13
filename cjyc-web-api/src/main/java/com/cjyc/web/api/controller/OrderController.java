@@ -11,6 +11,7 @@ import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.OrderCarVo;
 import com.cjyc.common.model.vo.web.order.*;
 import com.cjyc.common.system.service.ICsAdminService;
 import com.cjyc.web.api.service.IOrderService;
@@ -151,6 +152,18 @@ public class OrderController {
     public ResultVo<OrderVo> get(@PathVariable Long orderId) {
         OrderVo orderVo = orderService.getVoById(orderId);
         return BaseResultUtil.success(orderVo);
+    }
+
+
+    /**
+     * 查询订单-根据车辆ID
+     * @author JPG
+     */
+    @ApiOperation(value = "查询订单-根据ID")
+    @PostMapping(value = "/car/vo/get/{orderCarId}")
+    public ResultVo<OrderCarVo> getCarVo(@PathVariable Long orderCarId) {
+        OrderCarVo vo = orderService.getCarVoById(orderCarId);
+        return BaseResultUtil.success(vo);
     }
 
     /**
