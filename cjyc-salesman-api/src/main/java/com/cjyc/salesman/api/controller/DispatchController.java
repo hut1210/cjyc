@@ -42,6 +42,13 @@ public class DispatchController {
         return dispatchService.getCityCarCount(loginId);
     }
 
+    /**
+     * 功能描述: 调度列表信息
+     * @author zhangcangman
+     * @date 2019/12/13
+     * @param dto
+     * @return com.cjyc.common.model.vo.ResultVo<PageVo<DispatchListVo>>
+     */
     @ApiOperation(value = "调度列表信息")
     @PostMapping("/list")
     public ResultVo<PageVo<DispatchListVo>> list(@Valid @RequestBody DispatchListDto dto) {
