@@ -4,7 +4,6 @@ import com.cjyc.common.model.enums.CaptchaTypeEnum;
 import com.cjyc.common.model.enums.ClientEnum;
 import com.google.common.collect.Lists;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,7 +34,8 @@ public class RedisKeys {
     /**验证码*/
     private final static String SMS_COUNT_KEY = "sms:count";
 
-    private final static String DISPATCH_CAR_LOCK_KEY = "dispatch:car:lock";
+    private final static String DISPATCH_LOCK_CAR_KEY = "dispatch:lock:car";
+    private final static String DISPATCH_LOCK_ORDER_UPDATE = "dispatch:lock:order:update";
     private final static String ALLOT_CAR_LOCK_KEY = "allot:car:lock";
 
     private final static String USER_KEY = "user";
@@ -62,7 +62,7 @@ public class RedisKeys {
     }
 
     public static String getDispatchLock(String orderCarNo) {
-        return PROJECT_PREFIX + I + DISPATCH_CAR_LOCK_KEY + I + orderCarNo;
+        return PROJECT_PREFIX + I + DISPATCH_LOCK_CAR_KEY + I + orderCarNo;
     }
 
     public static String getAllotTaskKey(Long waybillCarId) {
@@ -117,5 +117,7 @@ public class RedisKeys {
         return prefix;
     }
 
-
+    public static String getDispatchLockForOrderUpdate(String orderNo) {
+        return PROJECT_PREFIX + I + DISPATCH_LOCK_ORDER_UPDATE + I + orderNo;
+    }
 }

@@ -218,7 +218,6 @@
                </if>
                    and order_no = #{orderNo}
            </where>
-
     </select>
     <!--查询待调度车辆列表-->
     <!--提：1待调度，2待提车，3待交车，5已完成，21自送待调度，23自送待交车，25自送已交付，100物流上门
@@ -227,7 +226,7 @@
     <select id="findWaitDispatchCarList" resultType="com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo">
         select
         (case
-        when o.pick_type = 3 then 100
+        when o.pick_type = 4 then 100
         when o.pick_type = 1 then
         (case
         when oc.state &lt;= 5 then 21
@@ -241,7 +240,7 @@
         when oc.state &gt;= 25 then 5 end)end ) as pickTransportState,
 
         (case
-        when oc.trunk_state = 10 then 100
+        when oc.trunk_state = 7 then 100
         when oc.trunk_state = 5 then 5
         else (case
         when oc.state &lt;= 25 and oc.trunk_state = 1 then 1
@@ -250,7 +249,7 @@
         when oc.state = 40 then 3
         when oc.state &gt; 40 then 5 end)end ) as trunkTransportState,
         (case
-        when o.back_type = 3 then 100
+        when o.back_type = 4 then 100
         when o.back_type = 1 then (case
         when oc.state = 45 then 21
         when oc.state = 55 then 23
@@ -261,18 +260,52 @@
         when oc.state = 50 then 2
         when oc.state = 55 then 3
         when oc.state &gt;= 100 then 5 end)end ) as backTransportState,
-        o.source as source,
-        o.pick_type as pickType,
-        o.back_type as backType,
+        o.customer_id as customerId,
+        o.customer_name as customerName,
+        o.customer_phone as customerPhone,
+        o.customer_type as customerType,
+        o.input_store_id as inputStoreId,
+        o.input_store_name as inputStoreName,
+        o.start_province as startProvince,
+        o.start_province_code as startProvinceCode,
+        o.start_city as startCity,
+        o.start_city_code as startCityCode,
+        o.start_area as startArea,
+        o.start_area_code as startAreaCode,
+        o.start_address as startAddress,
+        o.start_lng as startLng,
+        o.start_lat as startLat,
         o.start_store_id as startStoreId,
         o.start_store_name as startStoreName,
+        o.start_belong_store_id as startBelongStoreId,
+        o.end_province as endProvince,
+        o.end_province_code as endProvinceCode,
+        o.end_city as endCity,
+        o.end_city_code as endCityCode,
+        o.end_area as endArea,
+        o.end_area_code as endAreaCode,
+        o.end_address as endAddress,
+        o.end_lng as endLng,
+        o.end_lat as endLat,
         o.end_store_id as endStoreId,
         o.end_store_name as endStoreName,
-        o.start_city as startCity,
-        o.end_city as endCity,
+        o.end_belong_store_id as endBelongStoreId,
+        o.expect_start_date as expectStartDate,
+        o.expect_end_date as expectEndDate,
+        o.car_num as carNum,
+        o.line_id as lineId,
+        o.pick_type as pickType,
+        o.pick_contact_name as pickContactName,
+        o.pick_contact_phone as pickContactPhone,
+        o.back_type as backType,
+        o.back_contact_name as backContactName,
+        o.back_contact_phone as backContactPhone,
+        o.source as source,
         o.create_time as createTime,
         o.create_user_name as createUserName,
         o.create_user_id as createUserId,
+        o.allot_to_user_name as allotToUserName,
+        o.allot_to_user_id as allotToUserId,
         o.check_time as checkTime,
         o.check_user_name as checkUserName,
         o.check_user_id as checkUserId,
@@ -295,13 +328,18 @@
         <where>
             <choose>
                 <when test="paramsDto.dispatchType == 1">
-                    and oc.pick_state = 1 and oc.state &lt;= 5
+                    and oc.pick_state = 1 and oc.state &lt; 5 and o.pick_type &lt; 4
                 </when>
                 <when test="paramsDto.dispatchType == 2">
                     and oc.trunk_state &lt;= 2 and oc.state &lt; 45
                 </when>
                 <when test="paramsDto.dispatchType == 3">
-                    and oc.back_state = 1 and oc.state between 45 and 99
+                    and oc.back_state = 1 and oc.state between 45 and 99 and o.pick_type &lt; 4
+                </when>
+                <when test="paramsDto.dispatchType == 4">
+                    and oc.back_state >= 5
+                    and oc.trunk_state >= 5
+                    and oc.back_state >= 5
                 </when>
             </choose>
             <choose>
@@ -433,85 +471,83 @@
         干：1待调度，2待提车，3待交车，5已完成, 100无干线
         送：1待调度，2待提车，3待交车，5已完成，21自提待调度，23自提待交车，25自提已交付，100物流上门*/-->
         select
-        oc.*,
-        (case
-        when o.state = 0 then '预订单'
-        when o.state &gt; 0 and o.state &lt; 15 then '待确认'
-        when o.state = 15 then '待付款'
-        when o.state = 25 then '待调度'
-        when o.state = 55 then '运输中'
-        when o.state = 100 then '已交付'
-        when o.state = 113 then '已取消'
-        when o.state = 114 then '已作废'
-        end
-        ) as outterState,
+            oc.*,
+            (case
+            when o.state = 0 then '预订单'
+            when o.state &gt; 0 and o.state &lt; 15 then '待确认'
+            when o.state = 15 then '待付款'
+            when o.state = 25 then '待调度'
+            when o.state = 55 then '运输中'
+            when o.state = 100 then '已交付'
+            when o.state = 113 then '已取消'
+            when o.state = 114 then '已作废'
+            end
+            ) as outterState,
+            (case
+            when o.pick_type = 4 then 100
+            when o.pick_type = 1 then
+            (case
+            when oc.state &lt;= 5 then 21
+            when oc.state = 15 then 23
+            when oc.state &gt;= 25 then 25 end)
+            else
+            (case
+            when oc.state &lt;= 5 then 1
+            when oc.state = 10 then 2
+            when oc.state = 15 then 3
+            when oc.state &gt;= 25 then 5 end)end ) as pickTransportState,
 
-        (case
-        when o.pick_type = 3 then 100
-        when o.pick_type = 1 then
-        (case
-        when oc.state &lt;= 5 then 21
-        when oc.state = 15 then 23
-        when oc.state &gt;= 25 then 25 end)
-        else
-        (case
-        when oc.state &lt;= 5 then 1
-        when oc.state = 10 then 2
-        when oc.state = 15 then 3
-        when oc.state &gt;= 25 then 5 end)end ) as pickTransportState,
-
-        (case
-        when oc.trunk_state = 10 then 100
-        when oc.trunk_state = 5 then 5
-        else (case
-        when oc.state &lt;= 25 and oc.trunk_state = 1 then 1
-        when oc.state &lt;= 25 and oc.trunk_state > 1 then 2
-        when oc.state = 35 then 2
-        when oc.state = 40 then 3
-        when oc.state &gt; 40 then 5 end)end ) as trunkTransportState,
-
-        (case
-        when o.back_type = 3 then 100
-        when o.back_type = 1 then (case
-        when oc.state = 45 then 21
-        when oc.state = 55 then 23
-        when oc.state &gt;= 100 then 25 end)
-        else (case
-        when oc.state &lt;= 45 and oc.back_state = 1 then 1
-        when oc.state &lt;= 45 and oc.back_state > 1 then 2
-        when oc.state = 50 then 2
-        when oc.state = 55 then 3
-        when oc.state &gt;= 100 then 5 end)end ) as backTransportState,
-        o.source as source,
-        o.customer_name as customerName,
-        o.customer_phone as customerPhone,
-        o.start_city as startCity,
-        o.end_city as endCity,
-        o.pick_type as pickType,
-        o.back_type as backType,
-        o.pick_contact_name as pickContactName,
-        o.back_contact_name as backContactName,
-        o.pick_contact_phone as pickContactPhone,
-        o.back_contact_phone as backContactPhone,
-        o.expect_start_date as expectStartDate,
-        o.expect_end_date AS expectEndDate,
-        CONCAT(o.start_province,o.start_city,o.start_area,o.start_address) as startFullAddress,
-        CONCAT(o.end_province,o.end_city,o.end_area,o.end_address) as endFullAddress,
-        o.create_time as createTime,
-        o.create_user_name as createUserName,
-        o.check_time as checkTime,
-        o.check_user_name as checkUserName,
-        o.end_store_id as endStoreId,
-        o.end_store_name as endStoreName,
-        o.start_store_id as startStoreId,
-        o.start_store_name as startStoreName,
-        ct1.parent_name as region,
-        ct1.parent_code as regionCode,
-        s1.detail_addr as inputStoreAddress,
-        s2.detail_addr as startStoreAddress,
-        s3.detail_addr as endStoreAddress,
-        ht.contract_no as contractNo,
-        ht.settle_period as settlePeriod
+            (case
+            when oc.trunk_state = 7 then 100
+            when oc.trunk_state = 5 then 5
+            else (case
+            when oc.state &lt;= 25 and oc.trunk_state = 1 then 1
+            when oc.state &lt;= 25 and oc.trunk_state > 1 then 2
+            when oc.state = 35 then 2
+            when oc.state = 40 then 3
+            when oc.state &gt; 40 then 5 end)end ) as trunkTransportState,
+            (case
+            when o.back_type = 4 then 100
+            when o.back_type = 1 then (case
+            when oc.state = 45 then 21
+            when oc.state = 55 then 23
+            when oc.state &gt;= 100 then 25 end)
+            else (case
+            when oc.state &lt;= 45 and oc.back_state = 1 then 1
+            when oc.state &lt;= 45 and oc.back_state > 1 then 2
+            when oc.state = 50 then 2
+            when oc.state = 55 then 3
+            when oc.state &gt;= 100 then 5 end)end ) as backTransportState,
+            o.source as source,
+            o.customer_name as customerName,
+            o.customer_phone as customerPhone,
+            o.start_city as startCity,
+            o.end_city as endCity,
+            o.pick_type as pickType,
+            o.back_type as backType,
+            o.pick_contact_name as pickContactName,
+            o.back_contact_name as backContactName,
+            o.pick_contact_phone as pickContactPhone,
+            o.back_contact_phone as backContactPhone,
+            o.expect_start_date as expectStartDate,
+            o.expect_end_date AS expectEndDate,
+            CONCAT(o.start_province,o.start_city,o.start_area,o.start_address) as startFullAddress,
+            CONCAT(o.end_province,o.end_city,o.end_area,o.end_address) as endFullAddress,
+            o.create_time as createTime,
+            o.create_user_name as createUserName,
+            o.check_time as checkTime,
+            o.check_user_name as checkUserName,
+            o.end_store_id as endStoreId,
+            o.end_store_name as endStoreName,
+            o.start_store_id as startStoreId,
+            o.start_store_name as startStoreName,
+            ct1.parent_name as region,
+            ct1.parent_code as regionCode,
+            s1.detail_addr as inputStoreAddress,
+            s2.detail_addr as startStoreAddress,
+            s3.detail_addr as endStoreAddress,
+            ht.contract_no as contractNo,
+            ht.settle_period as settlePeriod
         from w_order o
         join w_order_car oc on oc.order_id = o.id
         left join w_waybill_car wc on wc.order_car_id = oc.id
@@ -849,7 +885,7 @@
 
         select
             (case
-            when o.pick_type = 3 then 100
+            when o.pick_type = 4 then 100
             when o.pick_type = 1 then
             (case
             when oc.state &lt;= 5 then 21
@@ -863,7 +899,7 @@
             when oc.state &gt;= 25 then 5 end)end ) as pickTransportState,
 
             (case
-            when oc.trunk_state = 10 then 100
+            when oc.trunk_state = 7 then 100
             when oc.trunk_state = 5 then 5
             else (case
             when oc.state &lt;= 25 and oc.trunk_state = 1 then 1
@@ -871,9 +907,8 @@
             when oc.state = 35 then 2
             when oc.state = 40 then 3
             when oc.state &gt; 40 then 5 end)end ) as trunkTransportState,
-
             (case
-            when o.back_type = 3 then 100
+            when o.back_type = 4 then 100
             when o.back_type = 1 then (case
             when oc.state = 45 then 21
             when oc.state = 55 then 23
@@ -890,6 +925,7 @@
             CONCAT(t.driver_name," ",t.driver_phone," ", t.vehicle_plate_no) as nowDriver,
             s.city as nowCity
         from w_order_car oc
+        join w_order o on o.id = oc.order_id
         left join s_store s on s.id = oc.now_store_id
         left join (
                 select

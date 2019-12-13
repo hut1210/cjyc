@@ -51,9 +51,7 @@ public class CsOrderChangeLogServiceImpl implements ICsOrderChangeLogService {
         orderChangeLog.setType(changeType.code);
         orderChangeLog.setOldContent(content[0].toString());
         orderChangeLog.setNewContent(content[1].toString());
-        if(content[2] != null){
-            orderChangeLog.setReason(content[2].toString());
-        }
+        orderChangeLog.setReason(content[2].toString());
         orderChangeLog.setState(CommonStateEnum.CHECKED.code);
         orderChangeLog.setCreateTime(System.currentTimeMillis());
         orderChangeLog.setCreateUserId(Long.valueOf(creator[0].toString()));

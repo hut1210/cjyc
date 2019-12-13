@@ -32,7 +32,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, user_id, no, name, phone, tel, type, state, id_number, sex, leader_id, store_id, photo_img, create_time, create_user_id, check_user_id, hire_time, leave_time, account_id, client_type, biz_scope, biz_desc
+        id, user_id, no, name, phone, tel, type, state, id_number, sex, leader_id, store_id, photo_img, create_time, create_user, create_user_id, check_user_id, hire_time, leave_time, account_id, client_type, biz_scope, biz_desc
     </sql>
 
 

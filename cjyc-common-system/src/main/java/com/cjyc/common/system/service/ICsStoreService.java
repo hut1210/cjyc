@@ -61,5 +61,6 @@ public interface ICsStoreService {
     Long getBelongStoreId(Long storeId, String areaCode);
 
     ResultVo<StoreListVo> findStore(FindStoreDto dto);
+
     Store getOneBelongByCityCode(String cityCode);
 }

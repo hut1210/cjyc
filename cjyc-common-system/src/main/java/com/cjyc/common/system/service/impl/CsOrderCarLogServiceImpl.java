@@ -5,7 +5,6 @@ import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.entity.OrderCarLog;
 import com.cjyc.common.model.entity.defined.UserInfo;
 import com.cjyc.common.model.enums.log.OrderCarLogEnum;
-import com.cjyc.common.model.enums.log.OrderLogTypeEnum;
 import com.cjyc.common.system.service.ICsOrderCarLogService;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;

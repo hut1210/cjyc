@@ -169,8 +169,12 @@ public class OrderCarWaitDispatchVo extends OrderCar {
     @JsonSerialize(using = ToStringSerializer.class)
     private Long createUserId;
 
+    private Long customerId;
 
+    private String customerName;
 
+    private String customerPhone;
 
+    private Integer customerType;
 
 }

@@ -14,7 +14,6 @@ import com.cjyc.common.model.enums.CarStorageTypeEnum;
 import com.cjyc.common.model.enums.PayStateEnum;
 import com.cjyc.common.model.enums.log.OrderCarLogEnum;
 import com.cjyc.common.model.enums.log.OrderLogEnum;
-import com.cjyc.common.model.enums.log.OrderLogTypeEnum;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.enums.task.TaskStateEnum;
@@ -771,7 +770,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                     orderDao.updateForReceipt(orderId, currentTimeMillis);
 
                     //订单完成日志
-                    orderLogService.asyncSave(order, OrderLogTypeEnum.RECEIPT,
+                    orderLogService.asyncSave(order, OrderLogEnum.RECEIPT,
                             new String[]{MessageFormat.format(OrderLogEnum.RECEIPT.getInnerLog(), order.getNo()),
                                     MessageFormat.format(OrderLogEnum.RECEIPT.getOutterLog(), order.getNo())},
                             userInfo);
@@ -851,7 +850,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                     orderDao.updateForReceipt(orderId, currentTimeMillis);
 
                     //订单完成日志
-                    orderLogService.asyncSave(order, OrderLogTypeEnum.RECEIPT,
+                    orderLogService.asyncSave(order, OrderLogEnum.RECEIPT,
                             new String[]{MessageFormat.format(OrderLogEnum.RECEIPT.getInnerLog(), order.getNo()),
                                     MessageFormat.format(OrderLogEnum.RECEIPT.getOutterLog(), order.getNo())},
                             userInfo);

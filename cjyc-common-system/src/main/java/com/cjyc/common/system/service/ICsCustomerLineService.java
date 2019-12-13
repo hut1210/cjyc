@@ -1,6 +1,7 @@
 package com.cjyc.common.system.service;
 
 import com.cjyc.common.model.dto.CommonDto;
+import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.customerLine.CustomerLineVo;
@@ -13,4 +14,6 @@ public interface ICsCustomerLineService {
      * @return
      */
     ResultVo<PageVo<CustomerLineVo>> queryLinePage(CommonDto dto);
+
+    void asyncSave(Order order);
 }
