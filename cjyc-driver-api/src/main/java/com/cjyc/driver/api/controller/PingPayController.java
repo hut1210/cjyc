@@ -6,6 +6,7 @@ import com.cjyc.common.model.dto.customer.order.CarCollectPayDto;
 import com.cjyc.common.model.dto.customer.pingxx.SweepCodeDto;
 import com.cjyc.common.model.dto.customer.pingxx.ValidateSweepCodeDto;
 import com.cjyc.common.model.entity.Customer;
+import com.cjyc.common.model.enums.ClientEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.ValidateReceiptCarPayVo;
@@ -42,6 +43,7 @@ public class PingPayController {
         sweepCodeDto.setIp(IPUtil.getIpAddr(request));
         Charge charge;
         try {
+            sweepCodeDto.setClientType(ClientEnum.APP_DRIVER.code);
             charge = pingPayService.sweepDriveCode(sweepCodeDto);
         }catch (Exception e){
             log.error(e.getMessage(),e);

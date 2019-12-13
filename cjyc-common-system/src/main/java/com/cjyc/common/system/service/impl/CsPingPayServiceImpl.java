@@ -82,7 +82,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         OrderModel om = new OrderModel();
 
         om.setClientIp(sweepCodeDto.getIp());
-        om.setPingAppId(PingProperty.driverAppId);
+        om.setPingAppId(sweepCodeDto.getClientType()==ClientEnum.APP_DRIVER.code?PingProperty.driverAppId:PingProperty.userAppId);
         //创建Charge对象
         Charge charge = new Charge();
         try {
@@ -92,10 +92,15 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             om.setDriver_code(String.valueOf(sweepCodeDto.getLoginId()));
             om.setOrderCarIds(orderCarNosList);
             om.setChannel(sweepCodeDto.getChannel());
-            om.setSubject("司机端收款码功能!");
-            om.setBody("生成二维码！");
+            if(sweepCodeDto.getClientType()==ClientEnum.APP_DRIVER.code){
+                om.setSubject("司机端收款码功能!");
+                om.setBody("司机端生成二维码！");
+            }else{
+                om.setSubject("业务员收款码功能!");
+                om.setBody("业务员端生成二维码！");
+            }
             om.setChargeType("2");
-            om.setClientType(String.valueOf(ClientEnum.APP_DRIVER.code));
+            om.setClientType(String.valueOf(sweepCodeDto.getClientType()));
             om.setDescription("韵车订单号："+om.getOrderNo());
             charge = createDriverCode(om);
 
@@ -244,6 +249,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
 
     @Override
     public Charge sweepSalesCode(SweepCodeDto sweepCodeDto) throws RateLimitException, APIException, ChannelException, InvalidRequestException, APIConnectionException, AuthenticationException, FileNotFoundException {
-        return null;
+        sweepCodeDto.setClientType(ClientEnum.APP_SALESMAN.code);
+        return sweepDriveCode(sweepCodeDto);
     }
 }

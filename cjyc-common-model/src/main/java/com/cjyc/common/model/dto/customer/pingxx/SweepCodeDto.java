@@ -29,5 +29,5 @@ public class SweepCodeDto {
     private String code;
 
     @ApiModelProperty("1为司机端出示 2为业务员端出示")
-    private String clientType;
+    private int clientType;
 }
