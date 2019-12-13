@@ -927,30 +927,10 @@
                 a.ww_id AS wayBillId,
                 a.ww_no AS wayBillNo,
                 a.pickType AS liftCarMode,
-                (
-                CASE
-                WHEN GROUP_CONCAT(
-                a.trunkType
-                ORDER BY
-                a.waybill_id ASC SEPARATOR ','
-                ) IS NULL
-                OR GROUP_CONCAT(
-                a.trunkType
-                ORDER BY
-                a.waybill_id ASC SEPARATOR ','
-                ) = '' THEN
-                CONCAT(
-                a.wo_start_city,
-                '-',
-                a.wo_end_city
-                )
-                ELSE
                 GROUP_CONCAT(
                 a.trunkType
                 ORDER BY
                 a.waybill_id ASC SEPARATOR ','
-                )
-                END
                 ) trunkMode,
                 a.backType AS deliveryMode,
                 a.pickState AS liftCarState,
