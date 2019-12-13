@@ -1,6 +1,7 @@
 package com.cjyc.salesman.api.service;
 
 import com.cjyc.common.model.dto.salesman.dispatch.DispatchListDto;
+import com.cjyc.common.model.dto.salesman.dispatch.HistoryDispatchRecordDto;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.salesman.dispatch.DispatchListVo;
@@ -34,4 +35,13 @@ public interface IDispatchService {
      * @return com.cjyc.common.model.vo.ResultVo
      */
     ResultVo getCarDetail(String carNo);
+
+    /**
+     * 功能描述: 查询历史调度记录列表分页
+     * @author liuxingxiang
+     * @date 2019/12/13
+     * @param dto
+     * @return com.cjyc.common.model.vo.ResultVo
+     */
+    ResultVo getHistoryRecord(HistoryDispatchRecordDto dto);
 }

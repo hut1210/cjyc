@@ -2,11 +2,9 @@ package com.cjyc.salesman.api.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.cjyc.common.model.dao.ICarSeriesDao;
-import com.cjyc.common.model.dao.IOrderCarDao;
-import com.cjyc.common.model.dao.IOrderDao;
-import com.cjyc.common.model.dao.IWaybillCarDao;
+import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.salesman.dispatch.DispatchListDto;
+import com.cjyc.common.model.dto.salesman.dispatch.HistoryDispatchRecordDto;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.entity.defined.BizScope;
@@ -18,6 +16,8 @@ import com.cjyc.common.model.vo.salesman.dispatch.*;
 import com.cjyc.common.system.config.LogoImgProperty;
 import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.salesman.api.service.IDispatchService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -48,6 +48,8 @@ public class DispatchServiceImpl implements IDispatchService {
     private IWaybillCarDao waybillCarDao;
     @Resource
     private ICarSeriesDao carSeriesDao;
+    @Resource
+    private IWaybillDao waybillDao;
 
     @Override
     public ResultVo getCityCarCount(Long loginId) {
@@ -150,6 +152,24 @@ public class DispatchServiceImpl implements IDispatchService {
         List<DispatchRecordVo> dispatchRecordVoList = waybillCarDao.selectWaybillRecordList(orderCar.getId());
         detail.setDispatchRecordVoList(dispatchRecordVoList);
         return BaseResultUtil.success(detail);
+    }
+
+    @Override
+    public ResultVo getHistoryRecord(HistoryDispatchRecordDto dto) {
+        // 查询业务中心ID
+        // 根据登录ID查询当前业务员所在业务中心ID
+        BizScope bizScope = csSysService.getBizScopeByLoginId(dto.getLoginId(), true);
+
+        // 判断当前登录人是否有权限访问
+        int code = bizScope.getCode();
+        if (BizScopeEnum.NONE.code == code) {
+            return BaseResultUtil.fail("无权访问");
+        }
+        dto.setBizStoreIds(getStoreIds(bizScope));
+        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
+        List<HistoryDispatchRecordVo> list = waybillDao.selectHistoryDispatchRecord(dto);
+        PageInfo pageInfo = new PageInfo(list);
+        return BaseResultUtil.success(pageInfo);
     }
 
     private String getStoreIds(BizScope bizScope) {

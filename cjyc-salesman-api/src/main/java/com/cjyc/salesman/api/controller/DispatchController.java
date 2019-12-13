@@ -1,6 +1,7 @@
 package com.cjyc.salesman.api.controller;
 
 import com.cjyc.common.model.dto.salesman.dispatch.DispatchListDto;
+import com.cjyc.common.model.dto.salesman.dispatch.HistoryDispatchRecordDto;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.salesman.dispatch.CityCarCountVo;
@@ -57,6 +58,12 @@ public class DispatchController {
     @PostMapping("/getCarDetail/{carNo}")
     public ResultVo<DispatchCarDetailVo> getCarDetail(@PathVariable String carNo) {
         return dispatchService.getCarDetail(carNo);
+    }
+
+    @ApiOperation(value = "查询历史调度记录列表分页")
+    @PostMapping("/getHistoryRecord")
+    public ResultVo getHistoryRecord(@RequestBody HistoryDispatchRecordDto dto) {
+        return dispatchService.getHistoryRecord(dto);
     }
 
 }
