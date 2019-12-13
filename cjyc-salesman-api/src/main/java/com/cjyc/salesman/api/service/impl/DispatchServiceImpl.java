@@ -71,9 +71,6 @@ public class DispatchServiceImpl implements IDispatchService {
 
     @Override
     public ResultVo<PageVo<DispatchListVo>> getPageList(DispatchListDto dto) {
-        Page<DispatchListVo> page = new Page<>();
-        page.setCurrent(dto.getCurrentPage());
-        page.setSize(dto.getPageSize());
         // 根据登录ID查询当前业务员所在业务中心ID
         BizScope bizScope = csSysService.getBizScopeByLoginId(dto.getLoginId(), true);
 
@@ -83,6 +80,9 @@ public class DispatchServiceImpl implements IDispatchService {
             return BaseResultUtil.fail("无权访问");
         }
         dto.setBizStoreIds(getStoreIds(bizScope));
+        Page<DispatchListVo> page = new Page<>();
+        page.setCurrent(dto.getCurrentPage());
+        page.setSize(dto.getPageSize());
         List<DispatchListVo> list = waybillCarDao.getDispatchList(page, dto);
         if (!CollectionUtils.isEmpty(list)) {
             list.forEach(v -> {
