@@ -1,6 +1,7 @@
 package com.cjyc.salesman.api.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.cjyc.common.model.dao.ICarSeriesDao;
 import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IWaybillCarDao;
 import com.cjyc.common.model.dto.salesman.dispatch.DispatchListDto;
@@ -12,6 +13,7 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.salesman.dispatch.CityCarCountVo;
 import com.cjyc.common.model.vo.salesman.dispatch.DispatchListVo;
 import com.cjyc.common.model.vo.salesman.dispatch.StartAndEndCityCountVo;
+import com.cjyc.common.system.config.LogoImgProperty;
 import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.salesman.api.service.IDispatchService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +41,8 @@ public class DispatchServiceImpl implements IDispatchService {
     private IOrderCarDao orderCarDao;
     @Resource
     private IWaybillCarDao waybillCarDao;
+    @Resource
+    private ICarSeriesDao carSeriesDao;
 
     @Override
     public ResultVo getCityCarCount(Long loginId) {
@@ -112,6 +116,11 @@ public class DispatchServiceImpl implements IDispatchService {
                     }
                     v.setTrunkModeList(modeList);
                     v.setTrunkStateList(stateList);
+                }
+                //品牌logo图片：LogoImgProperty
+                String logoImg = carSeriesDao.getLogoImgByBraMod(v.getBrand(), v.getModel());
+                if (!StringUtils.isEmpty(logoImg)) {
+                    v.setLogoImgPath(LogoImgProperty.logoImg + logoImg);
                 }
             });
         }
