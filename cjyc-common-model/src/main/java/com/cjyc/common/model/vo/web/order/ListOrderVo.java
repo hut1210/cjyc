@@ -44,7 +44,7 @@ public class ListOrderVo extends Order {
     private String contractNo;
     @ApiModelProperty("账期/天")
     @Excel(name = "账期/天", orderNum = "9")
-    private String settlePerio;
+    private String settlePeriod;
     @ApiModelProperty("总服务费")
     @Excel(name = "总服务费", orderNum = "10")
     private String totalAgencyFee;

@@ -219,21 +219,9 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 continue;
             }
             //验证vin码是否重复
-            String vin = dto.getVin();
-            if (StringUtils.isNotBlank(vin)) {
-                if (vinSet.contains(vin)) {
-                    throw new ParameterException("vin码：{0}重复", vin);
-                }
-                vinSet.add(vin);
-            }
+            validateOrderCarVinInfo(vinSet, dto.getVin());
             //验证车牌号是否重复
-            String plateNo = dto.getPlateNo();
-            if (StringUtils.isNotBlank(plateNo)) {
-                if (plateNoSet.contains(plateNo)) {
-                    throw new ParameterException("车牌号码：{0}重复", plateNo);
-                }
-                plateNoSet.add(plateNo);
-            }
+            validateOrderCarPlateNoInfo(plateNoSet, dto.getPlateNo());
             //统计数量
             noCount++;
             OrderCar orderCar = new OrderCar();
@@ -276,6 +264,28 @@ public class CsOrderServiceImpl implements ICsOrderService {
         return BaseResultUtil.success("下单成功，订单编号{0}", order.getNo());
 
     }
+
+    private void validateOrderCarPlateNoInfo(Set<String> plateNoSet, String plateNo) {
+        //验证车牌号是否重复
+        if (StringUtils.isNotBlank(plateNo)) {
+            if (plateNoSet.contains(plateNo)) {
+                throw new ParameterException("车牌号码：{0}重复", plateNo);
+            }
+            plateNoSet.add(plateNo);
+        }
+    }
+
+    private void validateOrderCarVinInfo(Set<String> vinSet, String vin) {
+        //验证vin码是否重复
+        if (StringUtils.isNotBlank(vin)) {
+            if (vinSet.contains(vin)) {
+                throw new ParameterException("vin码：{0}重复", vin);
+            }
+            vinSet.add(vin);
+        }
+    }
+
+
 
     /**
      * 城市信息赋值
@@ -372,13 +382,13 @@ public class CsOrderServiceImpl implements ICsOrderService {
     /**
      * 审核订单
      *
-     * @param reqDto
+     * @param paramsDto
      * @author JPG
      * @since 2019/11/5 15:03
      */
     @Override
-    public ResultVo check(CheckOrderDto reqDto) {
-        Order order = orderDao.selectById(reqDto.getOrderId());
+    public ResultVo check(CheckOrderDto paramsDto) {
+        Order order = orderDao.selectById(paramsDto.getOrderId());
         //验证必要信息是否完全
         validateOrderFeild(order);
 
@@ -389,7 +399,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         //合计费用：提、干、送、保险
         fillOrderFeeInfo(order, orderCarList);
         //验证物流券费用
-        /*BigDecimal wlTotalFee = orderCarDao.getWLTotalFee(reqDto.getOrderId());
+        /*BigDecimal wlTotalFee = orderCarDao.getWLTotalFee(paramsDto.getOrderId());
         BigDecimal couponAmount = BigDecimal.ZERO;
         if (order.getCouponSendId() != null) {
             couponAmount = couponSendService.getAmountById(order.getCouponSendId(), wlTotalFee);
@@ -418,6 +428,9 @@ public class CsOrderServiceImpl implements ICsOrderService {
         } else {
             order.setState(OrderStateEnum.CHECKED.code);
         }
+        order.setCheckTime(System.currentTimeMillis());
+        order.setCheckUserName(paramsDto.getLoginName());
+        order.setCheckUserId(paramsDto.getLoginId());
         orderDao.updateById(order);
 
         //TODO 处理优惠券为使用状态，优惠券有且仅能验证一次，修改时怎么保证
