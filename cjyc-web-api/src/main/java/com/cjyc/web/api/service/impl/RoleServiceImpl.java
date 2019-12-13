@@ -104,9 +104,12 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
                     rSet = Sets.newHashSet(roles);
                     StringBuilder sb = new StringBuilder();
                     rSet.forEach(r -> {
-                        sb.append(r + ",");
+                        if (sb.length() > 0) {
+                            sb.append(",");
+                        }
+                        sb.append(r);
                     });
-                    vo.setRoles(sb.substring(0, sb.length() - 1));
+                    vo.setRoles(sb.toString());
                 }
             }
             Admin admin = adminService.getOne(new QueryWrapper<Admin>()
