@@ -27,4 +27,7 @@ public class SweepCodeDto {
     @ApiModelProperty(value = "验证码",required = true)
     @NotBlank(message = "验证码不能为空")
     private String code;
+
+    @ApiModelProperty("1为司机端出示 2为业务员端出示")
+    private String clientType;
 }

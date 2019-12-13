@@ -20,4 +20,6 @@ public interface ICsPingPayService {
 
     ResultVo<ValidateSweepCodePayVo> validateCarPayState(ValidateSweepCodeDto validateSweepCodeDto, boolean b);
 
+    Charge sweepSalesCode(SweepCodeDto sweepCodeDto) throws RateLimitException, APIException, ChannelException, InvalidRequestException,
+            APIConnectionException, AuthenticationException, FileNotFoundException;
 }
