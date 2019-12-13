@@ -52,9 +52,9 @@ public class DispatchServiceImpl implements IDispatchService {
         }*/
 
         // 获取业务中心ID
-        //String storeIds = getStoreIds(bizScope);
+        String storeIds = getStoreIds(bizScope);
         //String storeIds = "2,3,4,6";
-        String storeIds = null;
+        //String storeIds = null;
         // 查询 出发地 以及车辆数量
         List<CityCarCountVo> list = orderCarDao.selectStartCityCarCount(storeIds);
         // 查询出 发地-目的地 以及车辆数量
