@@ -2,15 +2,19 @@ package com.cjyc.salesman.api.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.salesman.BaseSalesDto;
 import com.cjyc.common.model.dto.salesman.mine.AchieveDto;
+import com.cjyc.common.model.dto.salesman.mine.SalesAchieveDto;
 import com.cjyc.common.model.dto.salesman.mine.StockCarDto;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Dictionary;
 import com.cjyc.common.model.entity.WaybillCar;
 import com.cjyc.common.model.enums.waybill.WaybillTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.LocalDateTimeUtil;
+import com.cjyc.common.model.util.QRCodeUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.salesman.mine.QRCodeVo;
@@ -25,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -90,6 +95,15 @@ public class MineServiceImpl extends ServiceImpl<IWaybillCarDao, WaybillCar> imp
 
     @Override
     public ResultVo achieveCount(AchieveDto dto) {
+        //转成localDate
+        LocalDate localDate = LocalDateTimeUtil.convertToLocalDate(dto.getDate(), TimePatternConstant.DATE);
+        //获取下一个月起始日
+        LocalDate nextMonth = LocalDateTimeUtil.getNextMouth(localDate,1);
+        Long thisMonthTime = LocalDateTimeUtil.convertToLong(localDate);
+        Long nextMonthTime = LocalDateTimeUtil.convertToLong(nextMonth);
+        SalesAchieveDto achieveDto = new SalesAchieveDto();
+        achieveDto.setThisMonthTime(thisMonthTime);
+        achieveDto.setNextMonthTime(nextMonthTime);
 
         Map<String,Object> mapCount = new HashMap<>(5);
         mapCount.put("orderCount",1);
@@ -97,7 +111,7 @@ public class MineServiceImpl extends ServiceImpl<IWaybillCarDao, WaybillCar> imp
         mapCount.put("deliveredCount",1);
         mapCount.put("pickCarCount",1);
         mapCount.put("backCarCount",1);
-        return BaseResultUtil.success(mapCount);
+        return BaseResultUtil.success(achieveDto);
     }
 
     @Override
@@ -110,10 +124,18 @@ public class MineServiceImpl extends ServiceImpl<IWaybillCarDao, WaybillCar> imp
                 .eq(Dictionary::getItem, "system_picture_qrcode")
                 .eq(Dictionary::getState, 1)
                 .select(Dictionary::getItemValue));
+        String imagePath = "D:\\2.jpg";
+        String logo = dictionary.getItemValue();
+        String content = "http://customertest.yunchelogistics.com/cjyc/customer/swagger-ui.html?phone=18513107259";
+        try{
+            QRCodeUtil.encodeimage(imagePath, "JPEG", content, 430, 430 , logo);
+        }catch (Exception e){
+            return BaseResultUtil.fail("异常");
+        }
         QRCodeVo vo = new QRCodeVo();
         vo.setSalesmanId(admin.getId());
         vo.setPhone(admin.getPhone());
-        vo.setQrCodeUrl(dictionary.getItemValue());
+        vo.setQrCodeUrl(imagePath+"?"+admin.getPhone());
         return BaseResultUtil.success(vo);
     }
 }

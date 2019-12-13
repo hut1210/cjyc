@@ -68,7 +68,7 @@ public class CustomerController {
         return customerService.saveOrModifyKey(dto);
     }
 
-    @ApiOperation(value = "根据主键id/当前登陆用户loginId删除/审核用户")
+    @ApiOperation(value = "当前登陆用户loginId冻结/解冻/审核用户")
     @PostMapping(value = "/verifyCustomer")
     public ResultVo verifyCustomer(@RequestBody OperateDto dto){
         return customerService.verifyCustomer(dto);

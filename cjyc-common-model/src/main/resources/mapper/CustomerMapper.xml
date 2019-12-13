@@ -74,6 +74,9 @@
             <if test="idCard != null and idCard.trim() != ''">
                 and  cc.id_card = #{idCard}
             </if>
+            <if test="flag != null and flag == 0">
+                and  cc.state = 2
+            </if>
                 and cc.type = 1
         </where>
     </select>
@@ -135,6 +138,9 @@
             <if test="customerNature != null ">
                 and cc.customer_nature = #{customerNature}
             </if>
+            <if test="flag != null and flag == 0">
+                and  cc.state = 2
+            </if>
                 and cc.type = 2
         </where>
     </select>
@@ -187,6 +193,9 @@
             </if>
             <if test="isInvoice != null">
                 and  ccp.is_invoice = #{isInvoice}
+            </if>
+            <if test="flag != null and flag == 0">
+                and  cc.state = 2
             </if>
             and cc.type = 3
         </where>

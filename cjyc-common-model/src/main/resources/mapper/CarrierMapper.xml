@@ -229,6 +229,7 @@
             <if test="plateNo != null and plateNo.trim() != ''">
                 and  dvr.plate_no = #{plateNo}
             </if>
+            and dc.state = 2 and dcdc.state = 2 group by dc.id
         </where>
     </select>
 
