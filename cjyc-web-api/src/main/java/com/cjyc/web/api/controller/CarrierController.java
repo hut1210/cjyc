@@ -15,6 +15,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  *  @author: zj
@@ -92,6 +94,13 @@ public class CarrierController {
     @PostMapping(value = "/traileDriver")
     public ResultVo<PageVo<TrailCarrierVo>> trailDriver(@RequestBody TrailCarrierDto dto){
         return carrierService.trailDriver(dto);
+    }
+
+    @ApiOperation(value = "承运商管理导出Excel", notes = "\t 请求接口为/carrier/exportCarrierExcel?name=企业名称&linkman=联系人&linkmanPhone=联系电话" +
+            "&cardNo=银行卡号&legalName=法人姓名&legalIdCard=法人身份证号&isInvoice=是否开发票&settleType=结算方式&state=状态&operateName=操作人")
+    @GetMapping("/exportCarrierExcel")
+    public void exportCarrierExcel(HttpServletRequest request, HttpServletResponse response){
+        carrierService.exportCarrierExcel(request,response);
     }
 
 }

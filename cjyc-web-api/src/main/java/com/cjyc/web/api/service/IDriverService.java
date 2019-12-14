@@ -11,6 +11,8 @@ import com.cjyc.common.model.vo.web.driver.DriverVo;
 import com.cjyc.common.model.vo.web.driver.ExistDriverVo;
 import com.cjyc.common.model.vo.web.user.DriverListVo;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 public interface IDriverService {
@@ -75,4 +77,11 @@ public interface IDriverService {
     Driver getById(Long id, boolean isSearchCache);
 
     ResultVo<PageVo<DispatchDriverVo>> carrierDrvierList(CarrierDriverListDto dto);
+
+    /**
+     * 导出司机信息至excel
+     * @param request
+     * @param response
+     */
+    void exportDriverExcel(HttpServletRequest request, HttpServletResponse response);
 }

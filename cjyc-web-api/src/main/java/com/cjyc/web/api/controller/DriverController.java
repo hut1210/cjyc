@@ -1,6 +1,5 @@
 package com.cjyc.web.api.controller;
 
-import com.cjyc.common.model.dto.CarrierDriverDto;
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.driver.*;
 import com.cjyc.common.model.dto.web.user.DriverListDto;
@@ -20,6 +19,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -28,9 +29,8 @@ import java.util.List;
  */
 @Api(tags = "司机")
 @RestController
-@RequestMapping(value = "/driver",
-        consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
-        produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@CrossOrigin
+@RequestMapping(value = "/driver")
 public class DriverController {
 
     @Resource
@@ -95,5 +95,12 @@ public class DriverController {
     @PostMapping(value = "/carrier/driver/list")
     public ResultVo<PageVo<DispatchDriverVo>> dispatchDriver(@RequestBody CarrierDriverListDto dto){
         return driverService.carrierDrvierList(dto);
+    }
+
+    @ApiOperation(value = "司机管理导出Excel", notes = "\t 请求接口为/driver/exportDriverExcel?realName=司机姓名&phone=司机手机号&idCard=司机身份证号" +
+            "&plateNo=车牌号&identity=身份&runningState=运行状态&state=状态&mode=承运方式")
+    @GetMapping("/exportDriverExcel")
+    public void exportDriverExcel(HttpServletRequest request, HttpServletResponse response){
+        driverService.exportDriverExcel(request,response);
     }
 }

@@ -2,10 +2,12 @@ package com.cjyc.web.api.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cjkj.common.utils.ExcelUtil;
 import com.cjyc.common.model.dao.IDriverVehicleConDao;
 import com.cjyc.common.model.dao.ITaskDao;
 import com.cjyc.common.model.dao.IVehicleDao;
 import com.cjyc.common.model.dao.IVehicleRunningDao;
+import com.cjyc.common.model.dto.web.customer.CustomerPartnerDto;
 import com.cjyc.common.model.dto.web.vehicle.VehicleDto;
 import com.cjyc.common.model.dto.web.vehicle.*;
 import com.cjyc.common.model.entity.Task;
@@ -18,17 +20,25 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.customer.CustomerPartnerVo;
+import com.cjyc.common.model.vo.web.customer.PartnerExportExcel;
+import com.cjyc.common.model.vo.web.vehicle.VehicleExportExcel;
 import com.cjyc.common.model.vo.web.vehicle.VehicleVo;
 import com.cjyc.web.api.service.IVehicleService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -116,5 +126,43 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
         vehicle.setCreateTime(NOW);
         vehicleDao.updateById(vehicle);
         return BaseResultUtil.success();
+    }
+
+    @Override
+    public void exportVehicleExcel(HttpServletRequest request, HttpServletResponse response) {
+        SelectVehicleDto dto = getVehicleDto(request);
+        List<VehicleVo> vehicleVos = vehicleDao.findVehicle(dto);
+        if (!CollectionUtils.isEmpty(vehicleVos)) {
+            // 生成导出数据
+            List<VehicleExportExcel> exportExcelList = new ArrayList<>();
+            for (VehicleVo vo : vehicleVos) {
+                VehicleExportExcel vehicleExportExcel = new VehicleExportExcel();
+                BeanUtils.copyProperties(vo, vehicleExportExcel);
+                exportExcelList.add(vehicleExportExcel);
+            }
+            String title = "车辆管理";
+            String sheetName = "车辆管理";
+            String fileName = "车辆管理.xls";
+            try {
+                if(!CollectionUtils.isEmpty(exportExcelList)){
+                    ExcelUtil.exportExcel(exportExcelList, title, sheetName, VehicleExportExcel.class, fileName, response);
+                }
+            } catch (IOException e) {
+                log.error("导出车辆管理信息异常:{}",e);
+            }
+        }
+    }
+
+    /**
+     * 封装车辆excel请求
+     * @param request
+     * @return
+     */
+    private SelectVehicleDto getVehicleDto(HttpServletRequest request){
+        SelectVehicleDto dto = new SelectVehicleDto();
+        dto.setPlateNo(request.getParameter("plateNo"));
+        dto.setRealName(request.getParameter("realName"));
+        dto.setPhone(request.getParameter("phone"));
+        return dto;
     }
 }

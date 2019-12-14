@@ -9,6 +9,9 @@ import com.cjyc.common.model.vo.web.carrier.TrailCarrierVo;
 import com.cjyc.common.model.vo.web.carrier.TransportDriverVo;
 import com.cjyc.common.model.vo.web.carrier.TransportVehicleVo;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 /**
  *  @author: zj
  *  @Date: 2019/10/18 15:22
@@ -78,4 +81,11 @@ public interface ICarrierService {
      * @return
      */
     ResultVo<PageVo<TrailCarrierVo>> trailDriver(TrailCarrierDto dto);
+
+    /**
+     * 承运商管理导出至excel
+     * @param request
+     * @param response
+     */
+    void exportCarrierExcel(HttpServletRequest request, HttpServletResponse response);
 }
