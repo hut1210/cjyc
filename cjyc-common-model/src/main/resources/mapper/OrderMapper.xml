@@ -448,6 +448,7 @@
             <if test="createEndTime != null and createEndTime != 0">
                 and wo.create_time &lt;= #{createEndTime}
             </if>
+            order by wo.create_time desc,wo.check_time desc
         </where>
     </select>
 

@@ -77,7 +77,7 @@
             <if test="flag != null and flag == 0">
                 and  cc.state = 2
             </if>
-                and cc.type = 1
+                and cc.type = 1 order by cc.create_time desc,cc.check_time desc
         </where>
     </select>
 
@@ -141,7 +141,7 @@
             <if test="flag != null and flag == 0">
                 and  cc.state = 2
             </if>
-                and cc.type = 2
+                and cc.type = 2 order by cc.create_time desc,cc.check_time desc
         </where>
     </select>
 
@@ -197,7 +197,7 @@
             <if test="flag != null and flag == 0">
                 and  cc.state = 2
             </if>
-            and cc.type = 3
+            and cc.type = 3 order by cc.create_time desc,cc.check_time desc
         </where>
     </select>
 

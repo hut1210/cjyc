@@ -82,13 +82,13 @@ public class CarrierController {
         return carrierService.transportVehicle(dto);
     }
 
-    @ApiOperation(value = "调度承运商信息")
+    @ApiOperation(value = "调度中心中干线调度承运商(个人/企业)信息")
     @PostMapping(value = "/dispatchCarrier")
     public ResultVo dispatchCarrier(@RequestBody DispatchCarrierDto dto){
         return carrierService.dispatchCarrier(dto);
     }
 
-    @ApiOperation(value = "调度中心中提车干线调度中代驾和拖车列表")
+    @ApiOperation(value = "调度中心中提车/送车调度中代驾和拖车列表")
     @PostMapping(value = "/traileDriver")
     public ResultVo<PageVo<TrailCarrierVo>> trailDriver(@RequestBody TrailCarrierDto dto){
         return carrierService.trailDriver(dto);

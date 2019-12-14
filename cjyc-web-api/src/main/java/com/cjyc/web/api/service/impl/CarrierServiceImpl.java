@@ -172,6 +172,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         }
         //更新承运商
         BeanUtils.copyProperties(dto,origCarrier);
+        origCarrier.setState(CommonStateEnum.WAIT_CHECK.code);
         origCarrier.setId(dto.getCarrierId());
         origCarrier.setCheckUserId(dto.getLoginId());
         origCarrier.setCheckTime(NOW);
@@ -306,7 +307,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     @Override
     public ResultVo dispatchCarrier(DispatchCarrierDto dto) {
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        List<DispatchCarrierVo> carrierVos = carrierDao.getDispatchCarrier(dto);
+        List<DispatchCarrierVo> carrierVos = carrierDao.findDispatchCarrier(dto);
         PageInfo<DispatchCarrierVo> pageInfo = new PageInfo<>(carrierVos);
         return BaseResultUtil.success(pageInfo);
     }

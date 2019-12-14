@@ -121,6 +121,7 @@
                 and  ba.name like CONCAT('%',#{operateName},'%')
             </if>
              and dc.type = 2 and dcdc.role >= 2 group by dc.id
+            order by dc.create_time desc,dc.check_time desc
         </where>
     </select>
 
@@ -157,7 +158,7 @@
     </select>
 
     <!-- 调度出符合条件的承运商 -->
-    <select id="getDispatchCarrier" resultType="com.cjyc.common.model.vo.web.carrier.DispatchCarrierVo"
+    <select id="findDispatchCarrier" resultType="com.cjyc.common.model.vo.web.carrier.DispatchCarrierVo"
             parameterType="com.cjyc.common.model.dto.web.carrier.DispatchCarrierDto">
         SELECT
             dc.id AS carrierId,
@@ -185,9 +186,11 @@
             <if test="settleType != null">
                 and  dc.settle_type = #{settleType}
             </if>
-            and dc.type = 2
             and dc.state = 2
-            group by dc.linkman_phone
+            and dc.type = 2
+            and dc.business_state = 0
+            group by dc.id
+            order by dc.create_time desc, dc.check_time desc
         </where>
     </select>
 
@@ -229,7 +232,11 @@
             <if test="plateNo != null and plateNo.trim() != ''">
                 and  dvr.plate_no = #{plateNo}
             </if>
-            and dc.state = 2 and dcdc.state = 2 group by dc.id
+            and dc.state = 2
+            and dc.business_state = 0
+            and dcdc.state = 2
+            group by dc.id
+            order by dc.create_time desc,dc.check_time desc
         </where>
     </select>
 

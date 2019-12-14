@@ -281,26 +281,24 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             }
             //合伙人
             if(customer.getType() == CustomerTypeEnum.COOPERATOR.code){
-                //冻结/审核拒绝/解冻
-                if(FlagEnum.AUDIT_REJECT.code == dto.getFlag() || FlagEnum.FROZEN.code == dto.getFlag() || FlagEnum.THAW.code == dto.getFlag()){
+                if(FlagEnum.AUDIT_REJECT.code == dto.getFlag()){
+                    //审核拒绝
+                    customer.setState(CustomerStateEnum.REJECT.code);
+                }
+                //冻结/解冻
+                if(FlagEnum.FROZEN.code == dto.getFlag() || FlagEnum.THAW.code == dto.getFlag()){
                     Long userId = customer.getUserId();
                     ResultData<List<SelectRoleResp>> rd = sysRoleService.getListByUserId(userId);
                     if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
                         return BaseResultUtil.fail("查询该用户下所有角色失败");
                     }
                     ResultVo<Long> resultVo = csCustomerService.findRoleId(rd.getData());
-                    if(FlagEnum.AUDIT_REJECT.code == dto.getFlag() || FlagEnum.FROZEN.code == dto.getFlag()){
-                        //调用架构组撤销角色
+                    if(FlagEnum.FROZEN.code == dto.getFlag()){
+                        //冻结则调用架构组撤销角色
                         ResultData resultData = sysRoleService.revokeRole(userId, resultVo.getData());
                         if (!ReturnMsg.SUCCESS.getCode().equals(resultData.getCode())) {
                             return BaseResultUtil.fail("解除合伙人角色失败");
                         }
-                    }
-                    if(FlagEnum.AUDIT_REJECT.code == dto.getFlag()){
-                        //审核拒绝
-                        customer.setState(CustomerStateEnum.REJECT.code);
-                    }else if(FlagEnum.FROZEN.code == dto.getFlag()){
-                        //冻结
                         customer.setState(CustomerStateEnum.FROZEN.code);
                     }
                     if(FlagEnum.THAW.code == dto.getFlag()){
@@ -476,7 +474,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                 }
             }
             if(customer.getUserId() != null){
-                //解除角色
+                //获取角色
                 ResultData<List<SelectRoleResp>> rd = sysRoleService.getListByUserId(customer.getUserId());
                 if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
                     return BaseResultUtil.fail("查询该用户下所有角色失败");
@@ -492,6 +490,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             }
             BeanUtils.copyProperties(dto,customer);
             customer.setAlias(dto.getName());
+            customer.setState(CustomerStateEnum.WAIT_LOGIN.code);
             super.updateById(customer);
             //删除合伙人附加信息
             customerPartnerDao.removeByCustomerId(customer.getId());

@@ -49,7 +49,7 @@ public interface ICarrierDao extends BaseMapper<Carrier> {
      * @param dto
      * @return
      */
-    List<DispatchCarrierVo> getDispatchCarrier(DispatchCarrierDto dto);
+    List<DispatchCarrierVo> findDispatchCarrier(DispatchCarrierDto dto);
 
     /**
      * 调度中心中提车干线调度中代驾和拖车列表
