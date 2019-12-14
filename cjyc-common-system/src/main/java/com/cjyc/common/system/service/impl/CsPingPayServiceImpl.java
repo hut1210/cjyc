@@ -91,6 +91,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             om.setAmount(freightFee);
             om.setDriver_code(String.valueOf(sweepCodeDto.getLoginId()));
             om.setOrderCarIds(orderCarNosList);
+            om.setTaskId(sweepCodeDto.getTaskId());
             om.setChannel(sweepCodeDto.getChannel());
             if(sweepCodeDto.getClientType()==ClientEnum.APP_DRIVER.code){
                 om.setSubject("司机端收款码功能!");
@@ -137,6 +138,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         meta.put("driver_name", om.getDriver_name());
         meta.put("driver_phone", om.getDriver_phone());
         meta.put("back_type", om.getBack_type());
+        meta.put("taskId",om.getTaskId());
         //当为微信支付是需要product_id
         if("wx_pub_qr".equals(om.getChannel())){
             Map<String, Object> extra  = new HashMap<String,Object>();

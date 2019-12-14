@@ -2,6 +2,7 @@ package com.cjyc.customer.api.service;
 
 import com.cjyc.common.model.entity.TradeBill;
 import com.Pingxx.model.Order;
+import com.pingplusplus.model.Charge;
 import com.pingplusplus.model.Event;
 
 import java.math.BigDecimal;
@@ -26,4 +27,6 @@ public interface ITransactionService {
     //BigDecimal getAmountByOrderCarIds(String orderCarIds);
 
     int save(Object obj);
+
+    void update(Charge object, Event event, String s);
 }

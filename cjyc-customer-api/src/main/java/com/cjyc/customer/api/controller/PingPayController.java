@@ -145,7 +145,7 @@ public class PingPayController {
                         if(data.getObject() instanceof Charge){
                             log.debug("------------->charge.succeeded");
                             //将金额存进OrderDeTailId
-                            //updateAmount(charge);
+                            transactionService.update((Charge)data.getObject(),event,"1");
                         }
                     }
                 }

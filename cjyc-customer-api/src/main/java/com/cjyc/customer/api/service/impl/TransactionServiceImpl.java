@@ -88,6 +88,11 @@ public class TransactionServiceImpl implements ITransactionService {
     }
 
     @Override
+    public void update(Charge object, Event event, String s) {
+
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveTransactions(Object obj, String state) {
         TradeBill tb;
@@ -163,8 +168,6 @@ public class TransactionServiceImpl implements ITransactionService {
             tb.setEventId(event.getId());
             tb.setEventType(event.getType());
         }
-
-
 
         return tb;
     }
@@ -315,23 +318,5 @@ public class TransactionServiceImpl implements ITransactionService {
                 }
             });
         }
-
     }
-
-    /*@Override
-    public BigDecimal getAmountByOrderCarIds(String orderCarIds) {
-
-        return tradeBillDao.getAmountByOrderCarIds(orderCarIds);
-    }*/
-
-
-
-    /**
-     *扫码付款逻辑操作
-     */
-    public void update(){
-
-    }
-
-
 }

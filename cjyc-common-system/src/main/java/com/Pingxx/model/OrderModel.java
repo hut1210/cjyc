@@ -66,6 +66,15 @@ public class OrderModel extends APIResource {
     private String driver_name;
     private String driver_phone;
     private String back_type;
+    private Long taskId;
+
+    public Long getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(Long taskId) {
+        this.taskId = taskId;
+    }
 
     public String getOrder_type() {
         return order_type;
