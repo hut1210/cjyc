@@ -117,24 +117,25 @@ public class CsDriverServiceImpl implements ICsDriverService {
 
     @Override
     public ResultVo saveOrModifyDriver(CarrierDriverDto dto) {
-        if(dto.getCarrierId() != null){
-            Carrier carrier = carrierDao.selectById(dto.getCarrierId());
-            if(carrier.getState() != CommonStateEnum.CHECKED.code){
-                return BaseResultUtil.fail("该承运商审核未通过，不可添加司机");
-            }
-        }
         if(dto.getCarrierId() == null && dto.getRoleId() != null){
-            //web承运商管理员登陆
             CarrierDriverCon carrierDriCon = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
                     .eq(CarrierDriverCon::getDriverId, dto.getLoginId())
                     .eq(CarrierDriverCon::getId, dto.getRoleId()));
             if(carrierDriCon == null){
+                //web承运商管理员登陆
                 Carrier carrier = csSysService.getCarrierByRoleId(dto.getRoleId());
                 if(carrier != null){
                     dto.setCarrierId(carrier.getId());
                 }
             }else{
+                //司机端app管理员登录
                 dto.setCarrierId(carrierDriCon.getCarrierId());
+            }
+        }
+        if(dto.getCarrierId() != null){
+            Carrier carrier = carrierDao.selectById(dto.getCarrierId());
+            if(carrier.getState() != CommonStateEnum.CHECKED.code){
+                return BaseResultUtil.fail("该承运商审核未通过，不可添加司机");
             }
         }
         //验证在个人司机池中是否存在
