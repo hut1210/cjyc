@@ -117,6 +117,12 @@ public class CsDriverServiceImpl implements ICsDriverService {
 
     @Override
     public ResultVo saveOrModifyDriver(CarrierDriverDto dto) {
+        if(dto.getCarrierId() != null){
+            Carrier carrier = carrierDao.selectById(dto.getCarrierId());
+            if(carrier.getState() != CommonStateEnum.CHECKED.code){
+                return BaseResultUtil.fail("该承运商审核未通过，不可添加司机");
+            }
+        }
         if(dto.getCarrierId() == null && dto.getRoleId() != null){
             //web承运商管理员登陆
             CarrierDriverCon carrierDriCon = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
