@@ -9,8 +9,7 @@ public enum OrderCarLocalStateEnum {
     /***/
     WAIT_DISPATCH("待调度",1),
     DISPATCHED("已调度",5),
-    F_SELF("自提自送",7),
-    F_WL("物流上门",10);
+    F_WL("物流上门",7);
 
     public String name;
     public int code;

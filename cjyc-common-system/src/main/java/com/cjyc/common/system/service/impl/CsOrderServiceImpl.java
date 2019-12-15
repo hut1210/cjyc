@@ -230,6 +230,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
             //填充数据
             orderCar.setOrderNo(order.getNo());
             orderCar.setOrderId(order.getId());
+            orderCar.setPickType(order.getPickType());
+            orderCar.setBackType(order.getBackType());
             orderCar.setNo(csSendNoService.formatNo(order.getNo(), noCount, 3));
             orderCar.setState(OrderCarStateEnum.WAIT_ROUTE.code);
             orderCar.setPickFee(dto.getPickFee() == null ? BigDecimal.ZERO : dto.getPickFee());

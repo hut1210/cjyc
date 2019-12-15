@@ -69,16 +69,6 @@ public class DispatchController {
         return orderService.waitDispatchCarList(reqDto);
     }
 
-    /**
-     * 查询待调度车辆列表（数据列表）
-     * @author JPG
-     */
-    @ApiOperation(value = "查询待调度车辆列表")
-    @PostMapping(value = "/wait/list")
-    public ResultVo<PageVo<OrderCarWaitDispatchVo>> waitDispatchCarListV2(@RequestBody WaitDispatchListOrderCarDto reqDto) {
-        return orderService.waitDispatchCarListV2(reqDto);
-    }
-
 
 
     /**

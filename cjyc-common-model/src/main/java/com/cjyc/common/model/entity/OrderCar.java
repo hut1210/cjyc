@@ -104,6 +104,13 @@ public class OrderCar implements Serializable {
     @ApiModelProperty(value = "车辆应收送车费")
     private BigDecimal backFee;
 
+    @ApiModelProperty(value = "实际提车类型")
+    private Integer pickType;
+
+    @ApiModelProperty(value = "实际送车类型")
+    private Integer backType;
+
+
     @ApiModelProperty(value = "车辆应收保险费")
     private BigDecimal addInsuranceFee;
 

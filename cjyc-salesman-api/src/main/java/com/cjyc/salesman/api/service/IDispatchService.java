@@ -44,4 +44,6 @@ public interface IDispatchService {
      * @return com.cjyc.common.model.vo.ResultVo
      */
     ResultVo getHistoryRecord(HistoryDispatchRecordDto dto);
+
+    ResultVo<PageVo<DispatchListVo>> waitDispatchCarList(DispatchListDto reqDto);
 }

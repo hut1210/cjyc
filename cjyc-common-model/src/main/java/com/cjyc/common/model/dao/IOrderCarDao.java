@@ -3,6 +3,7 @@ package com.cjyc.common.model.dao;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.dto.customer.invoice.InvoiceApplyQueryDto;
 import com.cjyc.common.model.dto.salesman.BaseSalesDto;
+import com.cjyc.common.model.dto.salesman.dispatch.DispatchListDto;
 import com.cjyc.common.model.dto.salesman.mine.StockCarDto;
 import com.cjyc.common.model.dto.web.order.ChangePriceOrderCarDto;
 import com.cjyc.common.model.dto.web.order.LineWaitDispatchCountListOrderCarDto;
@@ -12,6 +13,7 @@ import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.vo.customer.invoice.InvoiceOrderVo;
 import com.cjyc.common.model.vo.customer.order.OrderCarCenterVo;
 import com.cjyc.common.model.vo.salesman.dispatch.CityCarCountVo;
+import com.cjyc.common.model.vo.salesman.dispatch.DispatchListVo;
 import com.cjyc.common.model.vo.salesman.dispatch.StartAndEndCityCountVo;
 import com.cjyc.common.model.vo.salesman.mine.StockCarDetailVo;
 import com.cjyc.common.model.vo.salesman.mine.StockCarVo;
@@ -39,57 +41,66 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
 
     /**
      * 按地级城市统计待调度车辆数量
+     *
+     * @param
      * @author JPG
      * @since 2019/10/15 14:12
-     * @param
      */
     List<Map<String, Object>> countListWaitDispatchCar();
 
     /**
      * 统计全部待调度车辆数量
+     *
+     * @param
      * @author JPG
      * @since 2019/10/15 14:54
-     * @param
      */
     Map<String, Object> countTotalWaitDispatchCar();
 
     /**
      * 查询待调度车辆列表
-     * @author JPG
-     * @since 2019/10/16 8:29
+     *
      * @param
      * @param paramsDto
      * @param bizScope
+     * @author JPG
+     * @since 2019/10/16 8:29
      */
     List<OrderCarWaitDispatchVo> findWaitDispatchCarList(@Param("paramsDto") WaitDispatchListOrderCarDto paramsDto, @Param("bizScope") List<Long> bizScope);
 
     /**
      * 按线路统计待调度车辆（统计列表）
+     *
+     * @param paramsDto 参数条件
      * @author JPG
      * @since 2019/10/16 10:26
-     * @param paramsDto 参数条件
      */
     List<Map<String, Object>> findlineWaitDispatchCarCountList(@Param("paramsDto") LineWaitDispatchCountListOrderCarDto paramsDto);
 
-   /**
-    * 更新状态
-    * @author JPG
-    * @since 2019/10/18 15:22
-    * @param state
-    * @param orderCarId
-    */
+    /**
+     * 更新状态
+     *
+     * @param state
+     * @param orderCarId
+     * @author JPG
+     * @since 2019/10/18 15:22
+     */
     int updateStateById(@Param("state") int state, @Param("orderCarId") Long orderCarId);
 
     int updatePickStateById(@Param("state") int state, Long orderCarId);
+
     void updateBackStateById(@Param("state") int state, Long orderCarId);
+
     /**
      * 批量更新状态
-     * @author JPG
-     * @since 2019/10/18 15:22
+     *
      * @param state
      * @param list
+     * @author JPG
+     * @since 2019/10/18 15:22
      */
     int updateStateBatchByIds(@Param("state") int state, List<Long> list);
+
     void updateTrunkStateBatchByIds(@Param("state") int state, List<Long> list);
 
     int saveBatch(@Param("orderCarlist") List<OrderCar> orderCarlist);
@@ -110,6 +121,7 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
 
     /**
      * 根据条件查询车辆信息
+     *
      * @param orderNo
      * @param model
      * @return
@@ -122,11 +134,11 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
 
     int updateTrunkStateById(@Param("state") int state, @Param("id") Long id);
 
-
     List<OrderCarVo> findVoListByIds(@Param("orderCarIdList") List<Long> orderCarIdList);
 
     /**
      * 查询未开发票订单列表
+     *
      * @param loginId
      * @return
      */
@@ -134,6 +146,7 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
 
     /**
      * 查询发票申请信息订单明细
+     *
      * @param dto
      * @return
      */
@@ -141,9 +154,10 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
 
     /**
      * 查询车辆运输信息
+     *
+     * @param orderId
      * @author JPG
      * @since 2019/11/6 18:40
-     * @param orderId
      */
     List<TransportInfoOrderCarVo> findTransportStateByOrderId(Long orderId);
 
@@ -161,6 +175,7 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
 
     /**
      * 业务员端我的库存车辆
+     *
      * @param dto
      * @return
      */
@@ -168,6 +183,7 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
 
     /**
      * 库存数量
+     *
      * @param dto
      * @return
      */
@@ -175,6 +191,7 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
 
     /**
      * 根据车辆id获取车辆信息
+     *
      * @param dto
      * @return
      */
@@ -182,21 +199,25 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
 
     /**
      * 功能描述: 查询出发地相同的车辆数量
-     * @author liuxingxiang
-     * @date 2019/12/11
+     *
      * @param storeIds
      * @return java.util.List<com.cjyc.common.model.vo.salesman.dispatch.CityCarCountVo>
+     * @author liuxingxiang
+     * @date 2019/12/11
      */
     List<CityCarCountVo> selectStartCityCarCount(@Param("storeIds") String storeIds);
 
     /**
      * 功能描述: 查询出发地与目的地相同的车辆数量
-     * @author liuxingxiang
-     * @date 2019/12/11
+     *
      * @param map
      * @return java.util.List<com.cjyc.common.model.vo.salesman.dispatch.StartAndEndCityCountVo>
+     * @author liuxingxiang
+     * @date 2019/12/11
      */
-    List<StartAndEndCityCountVo> selectStartAndEndCityCarCount(Map<String,Object> map);
+    List<StartAndEndCityCountVo> selectStartAndEndCityCarCount(Map<String, Object> map);
 
     int updateForDispatchTrunk(@Param("id") Long id, @Param("pickState") Integer pickState, @Param("trunkState") Integer trunkState);
+
+    List<DispatchListVo> findWaitDispatchCarListForApp(DispatchListDto dto);
 }

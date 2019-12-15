@@ -120,6 +120,12 @@
             </foreach>
         </where>
     </delete>
+    <delete id="cancelAfterWaybillCar">
+        update w_waybill_car wc
+        set state = 113
+        where wc.order_car_no = #{orderCarNo}
+        and wc.id >= #{id}
+    </delete>
 
 
     <select id="getWayBillCarrier" parameterType="com.cjyc.common.model.vo.web.WayBillCarrierVo"
@@ -1280,6 +1286,49 @@
     </select>
     <select id="findFirstTrunkWaybillCar" resultType="com.cjyc.common.model.entity.WaybillCar">
         select * from w_waybill where type = 2 and state &lt;= 100 limit 1
+    </select>
+    <select id="countPrevTrunk" resultType="java.lang.Integer">
+        select * from w_waybill_car wc
+        join w_waybill w on w.id = wc.waybill_id
+        where order_car_id = (select order_car_no from w_waybill_car where id = #{id})
+        and w.state &lt;= 100
+        and wc.id &lt; #{id}
+        and w.type = 2
+    </select>
+    <select id="findCarIdsByWaybillId" resultType="java.lang.Long">
+        select id from w_waybill_car
+        where waybill_id = #{waybillId}
+        and state &lt;= 100;
+    </select>
+    <select id="findListByIds" resultType="com.cjyc.common.model.entity.WaybillCar">
+        select *
+        from w_waybill_car
+        <where>
+            id in
+            <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
+
+    </select>
+    <select id="findWaitCancelListByUnCancelIds" resultType="com.cjyc.common.model.entity.WaybillCar">
+        select *
+        from w_waybill_car
+        <where>
+            and waybill_id = #{waybillId}
+            and id not in
+            <foreach collection="set" item="item" index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
+
+    </select>
+    <select id="countTrunkWaybillCar" resultType="java.lang.Integer">
+        select count(0)
+        from w_waybill w
+        join w_waybill_car wc on wc.waybill_id = w.id
+        where wc.order_car_no = #{orderCarNo}
+        and w.type = 2
     </select>
 
 </mapper>

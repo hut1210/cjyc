@@ -18,9 +18,11 @@
         <result column="now_store_id" property="nowStoreId" />
         <result column="now_area_code" property="nowAreaCode" />
         <result column="state" property="state" />
+        <result column="pick_type" property="pickType" />
         <result column="pick_state" property="pickState" />
         <result column="trunk_state" property="trunkState" />
         <result column="back_state" property="backState" />
+        <result column="back_type" property="backType" />
         <result column="description" property="description" />
         <result column="pick_fee" property="pickFee" />
         <result column="trunk_fee" property="trunkFee" />
@@ -36,8 +38,9 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, order_id, order_no, no, brand, model, plate_no, vin, is_move, is_new, valuation, now_store_id, now_area_code, location_update_time, state, pick_state, trunk_state, back_state, description, pick_fee, trunk_fee, back_fee, add_insurance_fee, add_insurance_amount, coupon_offset_fee, agency_fee, total_fee, wl_pay_state, wl_pay_time
+        id, order_id, order_no, no, brand, model, plate_no, vin, is_move, is_new, valuation, now_store_id, now_area_code, state, pick_type, pick_state, trunk_state, back_state, back_type, description, pick_fee, trunk_fee, back_fee, add_insurance_fee, add_insurance_amount, coupon_offset_fee, agency_fee, total_fee, wl_pay_state, wl_pay_time
     </sql>
+
     <insert id="saveBatch">
         insert into w_order_car
         (order_id, order_no, no, brand, model, plate_no, vin, is_move, is_new, valuation, now_store_id,
@@ -237,7 +240,7 @@
     <select id="findWaitDispatchCarList" resultType="com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo">
         select
         (case
-        when o.pick_type = 3 then 100
+        when o.pick_type = 4 then 100
         when o.pick_type = 1 then
         (case
         when oc.state &lt;= 5 then 21
@@ -251,7 +254,7 @@
         when oc.state &gt;= 25 then 5 end)end ) as pickTransportState,
 
         (case
-        when oc.trunk_state = 10 then 100
+        when oc.trunk_state = 7 then 100
         when oc.trunk_state = 5 then 5
         else (case
         when oc.state &lt;= 25 and oc.trunk_state = 1 then 1
@@ -260,7 +263,7 @@
         when oc.state = 40 then 3
         when oc.state &gt; 40 then 5 end)end ) as trunkTransportState,
         (case
-        when o.back_type = 3 then 100
+        when o.back_type = 4 then 100
         when o.back_type = 1 then (case
         when oc.state = 45 then 21
         when oc.state = 55 then 23
@@ -272,8 +275,8 @@
         when oc.state = 55 then 3
         when oc.state &gt;= 100 then 5 end)end ) as backTransportState,
         o.source as source,
-        o.pick_type as pickType,
-        o.back_type as backType,
+        oc.pick_type as pickType,
+        oc.back_type as backType,
         o.start_store_id as startStoreId,
         o.start_store_name as startStoreName,
         o.end_store_id as endStoreId,
@@ -301,6 +304,7 @@
         LEFT JOIN s_city ct1 on oc.now_area_code = ct1.code
         LEFT JOIN s_city ct2 on s3.city_code = ct2.code
         left join b_admin m on m.id = o.check_user_id
+        left join w_waybill_car wc on wc.order_car_id = oc.id
         <where>
             <choose>
                 <when test="paramsDto.dispatchType == 1">
@@ -415,7 +419,6 @@
         group by oc.id
 
     </select>
-
     <select id="findByOrderId" resultType="com.cjyc.common.model.entity.OrderCar">
         select
         <include refid="Base_Column_List"/>
@@ -456,7 +459,7 @@
         ) as outterState,
 
         (case
-        when o.pick_type = 3 then 100
+        when o.pick_type = 4 then 100
         when o.pick_type = 1 then
         (case
         when oc.state &lt;= 5 then 21
@@ -470,7 +473,7 @@
         when oc.state &gt;= 25 then 5 end)end ) as pickTransportState,
 
         (case
-        when oc.trunk_state = 10 then 100
+        when oc.trunk_state = 7 then 100
         when oc.trunk_state = 5 then 5
         else (case
         when oc.state &lt;= 25 and oc.trunk_state = 1 then 1
@@ -480,7 +483,7 @@
         when oc.state &gt; 40 then 5 end)end ) as trunkTransportState,
 
         (case
-        when o.back_type = 3 then 100
+        when o.back_type = 4 then 100
         when o.back_type = 1 then (case
         when oc.state = 45 then 21
         when oc.state = 55 then 23
@@ -858,7 +861,7 @@
 
         select
             (case
-            when o.pick_type = 3 then 100
+            when o.pick_type = 4 then 100
             when o.pick_type = 1 then
             (case
             when oc.state &lt;= 5 then 21
@@ -872,7 +875,7 @@
             when oc.state &gt;= 25 then 5 end)end ) as pickTransportState,
 
             (case
-            when oc.trunk_state = 10 then 100
+            when oc.trunk_state = 7 then 100
             when oc.trunk_state = 5 then 5
             else (case
             when oc.state &lt;= 25 and oc.trunk_state = 1 then 1
@@ -882,7 +885,7 @@
             when oc.state &gt; 40 then 5 end)end ) as trunkTransportState,
 
             (case
-            when o.back_type = 3 then 100
+            when o.back_type = 4 then 100
             when o.back_type = 1 then (case
             when oc.state = 45 then 21
             when oc.state = 55 then 23
@@ -1187,6 +1190,85 @@
         GROUP BY
             t1.startCityCode,
             t1.endCityCode
+    </select>
+    <select id="findWaitDispatchCarListForApp" resultType="com.cjyc.common.model.vo.salesman.dispatch.DispatchListVo">
+        select * from (
+            /*订单所属地提车*/
+            select oc.*
+            from w_order o
+            join w_order_car oc on oc.order_id = o.id
+            where o.state between 25 and 99
+            and o.input_store_id in(2222)
+            and oc.pick_state &lt;= 1
+
+            union all
+            /*订单所属地干线*/
+            select oc.*
+            from w_order o
+            join w_order_car oc on oc.order_id = o.id
+            where o.state between 25 and 99
+            and o.input_store_id in(2222)
+            and oc.trunk_state &lt;= 1
+
+            union all
+            /*#运单目的地干线或送车*/
+            select oc.*
+            from w_order o
+            join w_order_car oc on oc.order_id = o.id
+            where o.state between 25 and 99
+            and EXISTS
+            (
+                select t.order_car_id
+                from
+                (
+                select wc.order_car_id
+                from w_waybill w
+                join w_waybill_car wc on wc.waybill_id = w.id
+                where w.state &lt;= 100
+                and w.type = 2
+                and wc.end_belong_store_id in (2222)
+                and not EXISTS
+                (select wc1.id from w_waybill_car wc1 where wc1.start_belong_store_id = wc.end_belong_store_id and wc1.state &lt;=100)
+            ) as t
+            where t.order_car_id = oc.id
+            )
+
+        ) as tb ORDER BY tb.order_id
+
+
+
+<!--
+        select GROUP_CONCAT(ci) as line from (
+        select wc.id,GROUP_CONCAT(CONCAT(left(wc.start_city,2),"-",left(wc.end_city,2))) as ci
+        from w_waybill w
+        join w_waybill_car wc on wc.waybill_id = w.id
+        where order_car_id = 197
+        and w.state <= 100
+        and wc.state <= 100
+
+        union
+
+        select wc.id,
+        (case
+        when wc.id is null then CONCAT(left(o.start_city,2),"-",left(o.end_city,2))
+        when wc.id is not null and wc.end_city != o.end_city then CONCAT(left(wc.end_city,2),"-",left(o.end_city,2))
+        else null end) as ci
+        from w_order o
+        join w_order_car oc on oc.order_id = o.id
+        left join w_waybill_car wc on wc.order_car_id = oc.id
+        and wc.id =
+        (select max(wc.id)
+        from w_waybill w
+        join w_waybill_car wc on wc.waybill_id = w.id
+        where order_car_id = 197
+        and w.state <= 100
+        and wc.state <= 100)
+        where oc.id = 197
+        ) as t
+-->
+
+
+
     </select>
 
 

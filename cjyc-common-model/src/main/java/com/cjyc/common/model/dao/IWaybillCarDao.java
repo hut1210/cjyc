@@ -117,4 +117,16 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
     WaybillCar findLastByOderCarId(Long orderCarId);
 
     WaybillCar findFirstTrunkWaybillCar(Long orderCarId);
+
+    int countPrevTrunk(@Param("id") Long id);
+
+    List<Long> findCarIdsByWaybillId(Long waybillId);
+
+    List<WaybillCar> findListByIds(@Param("list") List<Long> waitDeleteWaybillCarIds);
+
+    List<WaybillCar> findWaitCancelListByUnCancelIds(@Param("set") Set<Long> unDeleteWaybillCarIds, @Param("waybillId") Long waybillId);
+
+    int cancelAfterWaybillCar(@Param("id") Long id, @Param("orderCarNo") String orderCarNo);
+
+    int countTrunkWaybillCar(String orderCarNo);
 }

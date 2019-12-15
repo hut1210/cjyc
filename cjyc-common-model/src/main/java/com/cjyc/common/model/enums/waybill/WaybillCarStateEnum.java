@@ -18,7 +18,8 @@ public enum WaybillCarStateEnum {
     //UNLOADED("已卸车", 70),
     WAIT_UNLOAD_CONFIRM("确认交车", 90),
     UNLOADED("确认收车", 100),
-    WAIT_CONNECT("待重连", 105);
+    WAIT_CONNECT("待重连", 105),
+    F_CANCEL("已取消", 113);
 
     public String name;
     public int code;

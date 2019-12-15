@@ -2,12 +2,14 @@ package com.cjyc.salesman.api.controller;
 
 import com.cjyc.common.model.dto.salesman.dispatch.DispatchListDto;
 import com.cjyc.common.model.dto.salesman.dispatch.HistoryDispatchRecordDto;
+import com.cjyc.common.model.dto.web.order.WaitDispatchListOrderCarDto;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.salesman.dispatch.CityCarCountVo;
 import com.cjyc.common.model.vo.salesman.dispatch.DispatchCarDetailVo;
 import com.cjyc.common.model.vo.salesman.dispatch.DispatchListVo;
 import com.cjyc.common.model.vo.salesman.dispatch.HistoryDispatchRecordVo;
+import com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo;
 import com.cjyc.salesman.api.service.IDispatchService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -53,6 +55,16 @@ public class DispatchController {
     @PostMapping("/list")
     public ResultVo<PageVo<DispatchListVo>> list(@Valid @RequestBody DispatchListDto dto) {
         return dispatchService.getPageList(dto);
+    }
+
+    /**
+     * 查询待调度车辆列表（数据列表）
+     * @author JPG
+     */
+    @ApiOperation(value = "查询待调度车辆列表")
+    @PostMapping(value = "/wait/list")
+    public ResultVo<PageVo<DispatchListVo>> waitDispatchCarList(@RequestBody DispatchListDto reqDto) {
+        return dispatchService.waitDispatchCarList(reqDto);
     }
 
     /**
