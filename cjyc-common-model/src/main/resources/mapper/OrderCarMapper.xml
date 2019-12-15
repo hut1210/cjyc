@@ -1013,6 +1013,7 @@
                 #{item}
             </foreach>-->
              and woc.state in (25,35,45,50)
+            order by wo.create_time desc,wo.check_time desc
         </where>
     </select>
 

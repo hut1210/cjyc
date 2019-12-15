@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
+import com.cjkj.common.utils.ExcelUtil;
 import com.cjkj.usercenter.dto.common.AddUserReq;
 import com.cjkj.usercenter.dto.common.AddUserResp;
 import com.cjkj.usercenter.dto.common.UserResp;
@@ -11,6 +12,7 @@ import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.driver.*;
 import com.cjyc.common.model.dto.web.user.DriverListDto;
+import com.cjyc.common.model.dto.web.vehicle.SelectVehicleDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.FlagEnum;
@@ -24,11 +26,10 @@ import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.carrier.ExistCarrierVo;
-import com.cjyc.common.model.vo.web.driver.DispatchDriverVo;
-import com.cjyc.common.model.vo.web.driver.DriverVo;
-import com.cjyc.common.model.vo.web.driver.ExistDriverVo;
-import com.cjyc.common.model.vo.web.driver.ShowDriverVo;
+import com.cjyc.common.model.vo.web.driver.*;
 import com.cjyc.common.model.vo.web.user.DriverListVo;
+import com.cjyc.common.model.vo.web.vehicle.VehicleExportExcel;
+import com.cjyc.common.model.vo.web.vehicle.VehicleVo;
 import com.cjyc.common.system.service.ICsDriverService;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.ICsVehicleService;
@@ -44,7 +45,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -254,16 +259,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
     @Override
     public ResultVo<PageVo<DriverVo>> findDriver(SelectDriverDto dto) {
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
-        List<DriverVo> driverVos = driverDao.getDriverByTerm(dto);
-        if(!CollectionUtils.isEmpty(driverVos)){
-            for(DriverVo vo : driverVos){
-                CarrierCarCount count = carrierCarCountDao.count(vo.getCarrierId());
-                if(count != null){
-                    vo.setCarNum(count.getCarNum());
-                    vo.setTotalIncome(count.getIncome());
-                }
-            }
-        }
+        List<DriverVo> driverVos = encapDriver(dto);
         PageInfo<DriverVo> pageInfo = new PageInfo<>(driverVos);
         return BaseResultUtil.success(pageInfo);
     }
@@ -361,6 +357,68 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         List<DispatchDriverVo> dispatchDriverVos = driverDao.findCarrierDrvierList(dto);
         PageInfo<DispatchDriverVo> pageInfo = new PageInfo<>(dispatchDriverVos);
         return BaseResultUtil.success(pageInfo);
+    }
+
+    @Override
+    public void exportDriverExcel(HttpServletRequest request, HttpServletResponse response) {
+        SelectDriverDto dto = getDriverDto(request);
+        List<DriverVo> driverVos = encapDriver(dto);
+        if (!CollectionUtils.isEmpty(driverVos)) {
+            // 生成导出数据
+            List<DriverExportExcel> exportExcelList = new ArrayList<>();
+            for (DriverVo vo : driverVos) {
+                DriverExportExcel driverExportExcel = new DriverExportExcel();
+                BeanUtils.copyProperties(vo, driverExportExcel);
+                exportExcelList.add(driverExportExcel);
+            }
+            String title = "司机管理";
+            String sheetName = "司机管理";
+            String fileName = "司机管理.xls";
+            try {
+                if(!CollectionUtils.isEmpty(exportExcelList)){
+                    ExcelUtil.exportExcel(exportExcelList, title, sheetName, DriverExportExcel.class, fileName, response);
+                }
+            } catch (IOException e) {
+                log.error("导出司机管理信息异常:{}",e);
+            }
+        }
+    }
+
+    /**
+     * 封装司机excel请求
+     * @param request
+     * @return
+     */
+    private SelectDriverDto getDriverDto(HttpServletRequest request){
+        SelectDriverDto dto = new SelectDriverDto();
+        dto.setRealName(request.getParameter("realName"));
+        dto.setPhone(request.getParameter("phone"));
+        dto.setIdCard(request.getParameter("idCard"));
+        dto.setPlateNo(request.getParameter("plateNo"));
+        dto.setIdentity(StringUtils.isBlank(request.getParameter("identity")) ? null:Integer.valueOf(request.getParameter("identity")));
+        dto.setRunningState(StringUtils.isBlank(request.getParameter("runningState")) ? null:Integer.valueOf(request.getParameter("runningState")));
+        dto.setState(StringUtils.isBlank(request.getParameter("state")) ? null:Integer.valueOf(request.getParameter("state")));
+        dto.setMode(StringUtils.isBlank(request.getParameter("mode")) ? null:Integer.valueOf(request.getParameter("mode")));
+        return dto;
+    }
+
+    /**
+     * 封装司机信息
+     * @param dto
+     * @return
+     */
+    private List<DriverVo> encapDriver(SelectDriverDto dto){
+        List<DriverVo> driverVos = driverDao.getDriverByTerm(dto);
+        if(!CollectionUtils.isEmpty(driverVos)){
+            for(DriverVo vo : driverVos){
+                CarrierCarCount count = carrierCarCountDao.count(vo.getCarrierId());
+                if(count != null){
+                    vo.setCarNum(count.getCarNum());
+                    vo.setTotalIncome(count.getIncome());
+                }
+            }
+        }
+        return driverVos;
     }
 
     @Override

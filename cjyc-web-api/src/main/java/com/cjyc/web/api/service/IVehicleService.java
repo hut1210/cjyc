@@ -6,6 +6,9 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.vehicle.VehicleVo;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 /**
  *  @author: zj
  *  @Date: 2019/10/18 15:22
@@ -40,4 +43,11 @@ public interface IVehicleService {
      * @return
      */
     ResultVo modifyVehicle(ModifyCarryNumDto dto);
+
+    /**
+     * 车辆管理导出
+     * @param request
+     * @param response
+     */
+    void exportVehicleExcel(HttpServletRequest request, HttpServletResponse response);
 }

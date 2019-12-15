@@ -37,7 +37,7 @@ public class CarrierVo implements Serializable {
     @ApiModelProperty("法人身份证号")
     private String legalIdCard;
 
-    @ApiModelProperty("计算类型 0时付，1账期")
+    @ApiModelProperty("结算类型 0时付，1账期")
     private Integer settleType;
 
     @ApiModelProperty("账期时间/天")

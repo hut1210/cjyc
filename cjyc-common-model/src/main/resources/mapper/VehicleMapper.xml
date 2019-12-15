@@ -54,6 +54,7 @@
             </if>
         </where>
           group by dv.plate_no
+          order by dv.create_time desc
     </select>
 
     <!-- 根据条件查询该承运商下的车辆 -->
@@ -87,6 +88,8 @@
                 and  dvr.plate_no = #{plateNo}
             </if>
             and dv.carrier_id = #{carrierId}
+            group by dv.id
+            order by dv.create_time desc
         </where>
     </select>
 
@@ -136,6 +139,7 @@
                 plate_no like concat('%',#{keyword},'%')
             </if>
              and ownership_type = 1 and carrier_id is null
+             order by create_time desc
         </where>
     </select>
 
@@ -152,6 +156,7 @@
                 plate_no like concat('%',#{plateNo},'%')
             </if>
             and ownership_type = 1 and carrier_id = #{carrierId}
+            order by create_time desc
         </where>
     </select>
 
@@ -168,6 +173,7 @@
                 plate_no like concat('%',#{plateNo},'%')
             </if>
                 and ownership_type = 2 and carrier_id = #{carrierId}
+                order by create_time desc
         </where>
     </select>
 </mapper>

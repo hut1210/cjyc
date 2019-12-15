@@ -40,7 +40,8 @@
             sbcb.card_colour AS cardColour
           FROM
               s_bank_card_bind sbcb
-          where user_id = #{carrierId} and sbcb.state = 1
+          where sbcb.user_id = #{carrierId} and sbcb.state = 1
+            order by sbcb.create_time desc
     </select>
 
 </mapper>

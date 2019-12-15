@@ -83,7 +83,7 @@ public class DriverVo implements Serializable {
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal totalIncome;
 
-    @ApiModelProperty("状态：0待审核，2审核通过，4已驳回(审核不通过)，7已冻结")
+    @ApiModelProperty("状态：0待审核，1:审核中 2已审核，4取消，5冻结  7已驳回(审核拒绝)，9已停用")
     private Integer state;
 
     @ApiModelProperty("最后操作时间")

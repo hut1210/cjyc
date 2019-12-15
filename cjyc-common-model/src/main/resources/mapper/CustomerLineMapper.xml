@@ -41,7 +41,7 @@
             <if test="flag != null and flag == 1">
                 and operate_id = #{customerId}
             </if>
-              order by id asc
+              order by create_time desc
         </where>
     </select>
 
