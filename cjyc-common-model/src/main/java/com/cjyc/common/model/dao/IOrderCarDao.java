@@ -197,4 +197,6 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
      * @return java.util.List<com.cjyc.common.model.vo.salesman.dispatch.StartAndEndCityCountVo>
      */
     List<StartAndEndCityCountVo> selectStartAndEndCityCarCount(Map<String,Object> map);
+
+    int updateForDispatchTrunk(@Param("id") Long id, @Param("pickState") Integer pickState, @Param("trunkState") Integer trunkState);
 }

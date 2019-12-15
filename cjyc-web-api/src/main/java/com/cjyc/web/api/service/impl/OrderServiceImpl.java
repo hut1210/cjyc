@@ -237,6 +237,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         }
     }
 
+
     @Override
     public ResultVo allot(AllotOrderDto paramsDto) {
         return csOrderService.allot(paramsDto);
@@ -453,6 +454,23 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     @Override
     public ResultVo<PageVo<OrderCarWaitDispatchVo>> waitDispatchCarList(WaitDispatchListOrderCarDto paramsDto) {
 
+        //查询角色业务中心范围
+        BizScope bizScope = csSysService.getBizScopeByRoleId(paramsDto.getRoleId(), true);
+        if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
+            return BaseResultUtil.fail("没有数据权限");
+        }
+        paramsDto.setBizScope(bizScope.getCode() == 0 ? null : bizScope.getStoreIds());
+
+        PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
+        List<OrderCarWaitDispatchVo> list = orderCarDao.findWaitDispatchCarList(paramsDto);
+        PageInfo<OrderCarWaitDispatchVo> pageInfo = new PageInfo<>(list);
+        if (paramsDto.getCurrentPage() > pageInfo.getPages()) {
+            pageInfo.setList(null);
+        }
+        return BaseResultUtil.success(pageInfo);
+    }
+    @Override
+    public ResultVo<PageVo<OrderCarWaitDispatchVo>> waitDispatchCarListV2(WaitDispatchListOrderCarDto paramsDto) {
         //查询角色业务中心范围
         BizScope bizScope = csSysService.getBizScopeByRoleId(paramsDto.getRoleId(), true);
         if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){

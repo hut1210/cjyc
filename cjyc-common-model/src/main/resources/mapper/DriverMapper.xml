@@ -94,6 +94,7 @@
         from d_driver d
         join d_carrier_driver_con con
         where con.carrier_id = #{carrierId}
+        and con.state = 2
         limit 1
     </select>
 

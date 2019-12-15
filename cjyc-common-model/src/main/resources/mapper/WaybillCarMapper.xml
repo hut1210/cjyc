@@ -1265,5 +1265,21 @@
             ) t
             left join d_carrier carr on t.carrier_id=carr.id
     </select>
+    <select id="findLastByOderCarId" resultType="com.cjyc.common.model.entity.WaybillCar">
+        select
+        wc.*
+        from w_waybill w
+        join w_waybill_car wc on wc.waybill_id = w.id
+        left join s_store s1 on s1.id = wc.start_store_id
+        left join s_store s2 on s2.id = wc.end_store_id
+        where wc.order_car_id = #{orderCarId}
+        and w.state &lt;= 100
+        and w.type &lt; 3
+        order by w.id, wc.id desc
+        limit 1
+    </select>
+    <select id="findFirstTrunkWaybillCar" resultType="com.cjyc.common.model.entity.WaybillCar">
+        select * from w_waybill where type = 2 and state &lt;= 100 limit 1
+    </select>
 
 </mapper>

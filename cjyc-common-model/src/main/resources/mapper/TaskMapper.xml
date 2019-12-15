@@ -51,17 +51,8 @@
     </update>
     <delete id="cancelBywaybillId">
         update w_task
-        set state = #{newState}
-        <where>
-            <choose>
-                <when test="waybillId != null">
-                    waybill_id = #{waybillId}
-                </when>
-                <otherwise>
-                    1 != 1
-                </otherwise>
-            </choose>
-        </where>
+        set state = 113
+        where waybill_id = #{waybillId}
     </delete>
     <delete id="deleteByWaybillId">
         delete t,tc
@@ -292,7 +283,8 @@
         select t.*
         from w_task t
         join w_task_car tc on tc.task_id = t.id
-        where tc.waybill_car_id in
+        where t.state &lt;= 100
+        and tc.waybill_car_id in
         <foreach collection="collection" index="index" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>

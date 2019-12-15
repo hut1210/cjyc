@@ -113,4 +113,8 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
      * @return java.util.List<com.cjyc.common.model.vo.salesman.dispatch.DispatchRecordVo>
      */
     List<DispatchRecordVo> selectWaybillRecordList(@Param("id") Long id);
+
+    WaybillCar findLastByOderCarId(Long orderCarId);
+
+    WaybillCar findFirstTrunkWaybillCar(Long orderCarId);
 }

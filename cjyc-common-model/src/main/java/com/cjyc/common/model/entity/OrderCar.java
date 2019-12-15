@@ -83,17 +83,11 @@ public class OrderCar implements Serializable {
     @TableField(exist = false)
     private String stateStr;
 
-    @ApiModelProperty(value = "提车方式：1调度，2自送，3物流上门")
-    private Integer pickMode;
-
     @ApiModelProperty(value = "提车状态(调度状态)：1待调度，5已调度，7无需调度")
     private Integer pickState;
 
     @ApiModelProperty(value = "干线状态(调度状态)：1待调度，2节点调度，5已调度，7无需调度")
     private Integer trunkState;
-
-    @ApiModelProperty(value = "送车方式：1送车，2自送，3物流上门")
-    private Integer backMode;
 
     @ApiModelProperty(value = "送车状态(调度状态)：1待调度，5已调度，7无需调度")
     private Integer backState;
