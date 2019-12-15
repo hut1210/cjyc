@@ -13,6 +13,8 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  *  @author: zj
@@ -39,6 +41,13 @@ public class InquiryController  {
     public ResultVo handleInquiry(@RequestBody HandleInquiryDto dto){
         boolean result= inquiryService.handleInquiry(dto);
         return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
+    }
+
+    @ApiOperation(value = "询价管理导出Excel", notes = "\t 请求接口为/inquiry/exportInquiryExcel?fromCity=起始地&toCity=目的地&state=状态" +
+            "&startStamp=开始时间戳&endStamp=结束时间戳")
+    @GetMapping("/exportInquiryExcel")
+    public void exportInquiryExcel(HttpServletRequest request, HttpServletResponse response){
+        inquiryService.exportInquiryExcel(request,response);
     }
 
 }

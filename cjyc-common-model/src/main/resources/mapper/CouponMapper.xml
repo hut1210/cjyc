@@ -63,8 +63,8 @@
             <if test="createName != null and createName.trim() != ''">
                 and  ba.name = #{createName}
             </if>
-            order by cc.create_time desc
         </where>
+          order by cc.create_time desc
     </select>
 
     <!-- 查询优惠券消耗明细 -->
