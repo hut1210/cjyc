@@ -94,6 +94,7 @@
         from d_driver d
         join d_carrier_driver_con con
         where con.carrier_id = #{carrierId}
+        and con.state = 2
         limit 1
     </select>
 
@@ -155,6 +156,7 @@
                 and  dcdc.mode = #{mode}
             </if>
             and  dc.type = 1 and dd.identity = 0 group by dd.phone
+            order by dc.create_time desc,dc.check_time desc
         </where>
     </select>
 
@@ -336,6 +338,8 @@
                 and  dcdc.mode = #{mode}
             </if>
             and dc.id = #{carrierId} and dc.type = 2 and dc.state &lt; 9
+            group by dd.id
+            order by dd.create_time desc,dd.check_time desc
         </where>
     </select>
 
@@ -462,7 +466,8 @@
         LEFT JOIN d_carrier_driver_con dcdc ON dcdc.driver_id = dd.id
         LEFT JOIN d_carrier dc ON dc.id = dcdc.carrier_id
         LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
-        where dc.id = #{carrierId} and dc.type = 2 and dc.state &lt; 9 and dcdc.role &lt; 2
+        where dc.id = #{carrierId} and dc.type = 2 and dc.state &lt; 4 and dcdc.role &lt; 2
+        order by dd.create_time desc,dd.check_time desc
     </select>
 
     <!--根据司机所在的承运商id获取司机信息-->
@@ -513,6 +518,7 @@
                 LEFT JOIN d_driver dd ON dd.id = ddvc.driver_id
                 LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
             where dv.carrier_id = #{carrierId}
+            order by dv.create_time desc
     </select>
 
     <!--获取该承运商下符合条件的司机-->
@@ -531,6 +537,7 @@
             </if>
             and dcdc.carrier_id = #{carrierId}
             and dcdc.state = 2
+            order by dd.create_time desc,dd.check_time desc
         </where>
     </select>
 
@@ -605,6 +612,7 @@
         LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
         where dc.id = #{carrierId}
         and dd.type = 2
+        and dc.type = 1
         AND dc.state = 2
         AND dcdc.state = 2
         <if test="driverName != null and driverName.trim() != ''">

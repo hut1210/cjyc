@@ -4,39 +4,43 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.OrderCar">
-        <id column="id" property="id"/>
-        <result column="order_id" property="orderId"/>
-        <result column="order_no" property="orderNo"/>
-        <result column="no" property="no"/>
-        <result column="brand" property="brand"/>
-        <result column="model" property="model"/>
-        <result column="plate_no" property="plateNo"/>
-        <result column="vin" property="vin"/>
-        <result column="is_move" property="isMove"/>
-        <result column="is_new" property="isNew"/>
-        <result column="valuation" property="valuation"/>
-        <result column="now_store_id" property="nowStoreId"/>
-        <result column="now_area_code" property="nowAreaCode"/>
-        <result column="state" property="state"/>
-        <result column="pick_state" property="pickState"/>
-        <result column="trunk_state" property="trunkState"/>
-        <result column="back_state" property="backState"/>
-        <result column="description" property="description"/>
-        <result column="pick_fee" property="pickFee"/>
-        <result column="trunk_fee" property="trunkFee"/>
-        <result column="back_fee" property="backFee"/>
-        <result column="add_insurance_fee" property="addInsuranceFee"/>
-        <result column="add_insurance_amount" property="addInsuranceAmount"/>
-        <result column="coupon_offset_fee" property="couponOffsetFee"/>
-        <result column="agency_fee" property="agencyFee"/>
-        <result column="total_fee" property="totalFee"/>
-        <result column="wl_pay_state" property="wlPayState"/>
+        <id column="id" property="id" />
+        <result column="order_id" property="orderId" />
+        <result column="order_no" property="orderNo" />
+        <result column="no" property="no" />
+        <result column="brand" property="brand" />
+        <result column="model" property="model" />
+        <result column="plate_no" property="plateNo" />
+        <result column="vin" property="vin" />
+        <result column="is_move" property="isMove" />
+        <result column="is_new" property="isNew" />
+        <result column="valuation" property="valuation" />
+        <result column="now_store_id" property="nowStoreId" />
+        <result column="now_area_code" property="nowAreaCode" />
+        <result column="state" property="state" />
+        <result column="pick_type" property="pickType" />
+        <result column="pick_state" property="pickState" />
+        <result column="trunk_state" property="trunkState" />
+        <result column="back_state" property="backState" />
+        <result column="back_type" property="backType" />
+        <result column="description" property="description" />
+        <result column="pick_fee" property="pickFee" />
+        <result column="trunk_fee" property="trunkFee" />
+        <result column="back_fee" property="backFee" />
+        <result column="add_insurance_fee" property="addInsuranceFee" />
+        <result column="add_insurance_amount" property="addInsuranceAmount" />
+        <result column="coupon_offset_fee" property="couponOffsetFee" />
+        <result column="agency_fee" property="agencyFee" />
+        <result column="total_fee" property="totalFee" />
+        <result column="wl_pay_state" property="wlPayState" />
+        <result column="wl_pay_time" property="wlPayTime" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, order_id, order_no, no, brand, model, plate_no, vin, is_move, is_new, valuation, now_store_id, now_area_code, state, pick_state, trunk_state, back_state, description, pick_fee, trunk_fee, back_fee, add_insurance_fee, add_insurance_amount, coupon_offset_fee, agency_fee, total_fee, wl_pay_state
+        id, order_id, order_no, no, brand, model, plate_no, vin, is_move, is_new, valuation, now_store_id, now_area_code, state, pick_type, pick_state, trunk_state, back_state, back_type, description, pick_fee, trunk_fee, back_fee, add_insurance_fee, add_insurance_amount, coupon_offset_fee, agency_fee, total_fee, wl_pay_state, wl_pay_time
     </sql>
+
     <insert id="saveBatch">
         insert into w_order_car
         (order_id, order_no, no, brand, model, plate_no, vin, is_move, is_new, valuation, now_store_id,
@@ -143,6 +147,15 @@
         <foreach collection="collection" index="index" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>
+    </update>
+    <update id="updateForDispatchTrunk">
+        update w_order_car
+        set
+        <if test="pickState != null">
+            pick_state = #{pickState},
+        </if>
+        trunk_state = #{trunkState}
+        where id = #{id}
     </update>
 
     <delete id="deleteBatchByOrderId">
@@ -275,6 +288,9 @@
         o.start_address as startAddress,
         o.start_lng as startLng,
         o.start_lat as startLat,
+        o.source as source,
+        oc.pick_type as pickType,
+        oc.back_type as backType,
         o.start_store_id as startStoreId,
         o.start_store_name as startStoreName,
         o.start_belong_store_id as startBelongStoreId,
@@ -445,7 +461,6 @@
         group by oc.id
 
     </select>
-
     <select id="findByOrderId" resultType="com.cjyc.common.model.entity.OrderCar">
         select
         <include refid="Base_Column_List"/>
@@ -472,83 +487,85 @@
         干：1待调度，2待提车，3待交车，5已完成, 100无干线
         送：1待调度，2待提车，3待交车，5已完成，21自提待调度，23自提待交车，25自提已交付，100物流上门*/-->
         select
-            oc.*,
-            (case
-            when o.state = 0 then '预订单'
-            when o.state &gt; 0 and o.state &lt; 15 then '待确认'
-            when o.state = 15 then '待付款'
-            when o.state = 25 then '待调度'
-            when o.state = 55 then '运输中'
-            when o.state = 100 then '已交付'
-            when o.state = 113 then '已取消'
-            when o.state = 114 then '已作废'
-            end
-            ) as outterState,
-            (case
-            when o.pick_type = 4 then 100
-            when o.pick_type = 1 then
-            (case
-            when oc.state &lt;= 5 then 21
-            when oc.state = 15 then 23
-            when oc.state &gt;= 25 then 25 end)
-            else
-            (case
-            when oc.state &lt;= 5 then 1
-            when oc.state = 10 then 2
-            when oc.state = 15 then 3
-            when oc.state &gt;= 25 then 5 end)end ) as pickTransportState,
+        oc.*,
+        (case
+        when o.state = 0 then '预订单'
+        when o.state &gt; 0 and o.state &lt; 15 then '待确认'
+        when o.state = 15 then '待付款'
+        when o.state = 25 then '待调度'
+        when o.state = 55 then '运输中'
+        when o.state = 100 then '已交付'
+        when o.state = 113 then '已取消'
+        when o.state = 114 then '已作废'
+        end
+        ) as outterState,
 
-            (case
-            when oc.trunk_state = 7 then 100
-            when oc.trunk_state = 5 then 5
-            else (case
-            when oc.state &lt;= 25 and oc.trunk_state = 1 then 1
-            when oc.state &lt;= 25 and oc.trunk_state > 1 then 2
-            when oc.state = 35 then 2
-            when oc.state = 40 then 3
-            when oc.state &gt; 40 then 5 end)end ) as trunkTransportState,
-            (case
-            when o.back_type = 4 then 100
-            when o.back_type = 1 then (case
-            when oc.state = 45 then 21
-            when oc.state = 55 then 23
-            when oc.state &gt;= 100 then 25 end)
-            else (case
-            when oc.state &lt;= 45 and oc.back_state = 1 then 1
-            when oc.state &lt;= 45 and oc.back_state > 1 then 2
-            when oc.state = 50 then 2
-            when oc.state = 55 then 3
-            when oc.state &gt;= 100 then 5 end)end ) as backTransportState,
-            o.source as source,
-            o.customer_name as customerName,
-            o.customer_phone as customerPhone,
-            o.start_city as startCity,
-            o.end_city as endCity,
-            o.pick_type as pickType,
-            o.back_type as backType,
-            o.pick_contact_name as pickContactName,
-            o.back_contact_name as backContactName,
-            o.pick_contact_phone as pickContactPhone,
-            o.back_contact_phone as backContactPhone,
-            o.expect_start_date as expectStartDate,
-            o.expect_end_date AS expectEndDate,
-            CONCAT(o.start_province,o.start_city,o.start_area,o.start_address) as startFullAddress,
-            CONCAT(o.end_province,o.end_city,o.end_area,o.end_address) as endFullAddress,
-            o.create_time as createTime,
-            o.create_user_name as createUserName,
-            o.check_time as checkTime,
-            o.check_user_name as checkUserName,
-            o.end_store_id as endStoreId,
-            o.end_store_name as endStoreName,
-            o.start_store_id as startStoreId,
-            o.start_store_name as startStoreName,
-            ct1.parent_name as region,
-            ct1.parent_code as regionCode,
-            s1.detail_addr as inputStoreAddress,
-            s2.detail_addr as startStoreAddress,
-            s3.detail_addr as endStoreAddress,
-            ht.contract_no as contractNo,
-            ht.settle_period as settlePeriod
+        (case
+        when o.pick_type = 4 then 100
+        when o.pick_type = 1 then
+        (case
+        when oc.state &lt;= 5 then 21
+        when oc.state = 15 then 23
+        when oc.state &gt;= 25 then 25 end)
+        else
+        (case
+        when oc.state &lt;= 5 then 1
+        when oc.state = 10 then 2
+        when oc.state = 15 then 3
+        when oc.state &gt;= 25 then 5 end)end ) as pickTransportState,
+
+        (case
+        when oc.trunk_state = 7 then 100
+        when oc.trunk_state = 5 then 5
+        else (case
+        when oc.state &lt;= 25 and oc.trunk_state = 1 then 1
+        when oc.state &lt;= 25 and oc.trunk_state > 1 then 2
+        when oc.state = 35 then 2
+        when oc.state = 40 then 3
+        when oc.state &gt; 40 then 5 end)end ) as trunkTransportState,
+
+        (case
+        when o.back_type = 4 then 100
+        when o.back_type = 1 then (case
+        when oc.state = 45 then 21
+        when oc.state = 55 then 23
+        when oc.state &gt;= 100 then 25 end)
+        else (case
+        when oc.state &lt;= 45 and oc.back_state = 1 then 1
+        when oc.state &lt;= 45 and oc.back_state > 1 then 2
+        when oc.state = 50 then 2
+        when oc.state = 55 then 3
+        when oc.state &gt;= 100 then 5 end)end ) as backTransportState,
+        o.source as source,
+        o.customer_name as customerName,
+        o.customer_phone as customerPhone,
+        o.start_city as startCity,
+        o.end_city as endCity,
+        o.pick_type as pickType,
+        o.back_type as backType,
+        o.pick_contact_name as pickContactName,
+        o.back_contact_name as backContactName,
+        o.pick_contact_phone as pickContactPhone,
+        o.back_contact_phone as backContactPhone,
+        o.expect_start_date as expectStartDate,
+        o.expect_end_date AS expectEndDate,
+        CONCAT(o.start_province,o.start_city,o.start_area,o.start_address) as startFullAddress,
+        CONCAT(o.end_province,o.end_city,o.end_area,o.end_address) as endFullAddress,
+        o.create_time as createTime,
+        o.create_user_name as createUserName,
+        o.check_time as checkTime,
+        o.check_user_name as checkUserName,
+        o.end_store_id as endStoreId,
+        o.end_store_name as endStoreName,
+        o.start_store_id as startStoreId,
+        o.start_store_name as startStoreName,
+        ct1.parent_name as region,
+        ct1.parent_code as regionCode,
+        s1.detail_addr as inputStoreAddress,
+        s2.detail_addr as startStoreAddress,
+        s3.detail_addr as endStoreAddress,
+        ht.contract_no as contractNo,
+        ht.settle_period as settlePeriod
         from w_order o
         join w_order_car oc on oc.order_id = o.id
         left join w_waybill_car wc on wc.order_car_id = oc.id
@@ -752,23 +769,23 @@
     <!--根据条件查询车辆信息-->
     <select id="selectByCondition" resultType="com.cjyc.common.model.vo.customer.order.OrderCarCenterVo">
         select
-        car.id as id,
-        car.model as model,
-        car.plate_no as plateNo,
-        car.brand as brand,
-        car.vin as vin,
-        CONCAT('${@com.cjyc.common.system.config.LogoImgProperty@logoImg}', t.logo_img) as logoImg
+            car.id as id,
+            car.model as model,
+            car.plate_no as plateNo,
+            car.brand as brand,
+            car.vin as vin,
+            CONCAT('${@com.cjyc.common.system.config.LogoImgProperty@logoImg}', t.logo_img) as logoImg
         from
-        w_order_car car
-        left join(select brand,logo_img from s_car_series group by brand) t on car.brand=t.brand
-        <where>
-            <if test="orderNo != null and orderNo.trim() != ''">
-                and car.order_no = #{orderNo}
-            </if>
-            <if test="model != null and model.trim() != ''">
-                and car.model = #{model}
-            </if>
-        </where>
+            w_order_car car
+            left join(select brand,logo_img from s_car_series group by brand) t on car.brand=t.brand
+            <where>
+                <if test="orderNo != null and orderNo.trim() != ''">
+                    and car.order_no = #{orderNo}
+                </if>
+                <if test="model != null and model.trim() != ''">
+                    and car.model = #{model}
+                </if>
+            </where>
         limit 0,1
     </select>
 
@@ -1041,6 +1058,7 @@
                 #{item}
             </foreach>-->
              and woc.state in (25,35,45,50)
+            order by wo.create_time desc,wo.check_time desc
         </where>
     </select>
 
@@ -1256,6 +1274,85 @@
         from w_order o
         join w_order_car oc on o.id= oc.order_id
         where oc.id = #{orderCarId}
+    </select>
+    <select id="findWaitDispatchCarListForApp" resultType="com.cjyc.common.model.vo.salesman.dispatch.DispatchListVo">
+        select * from (
+            /*订单所属地提车*/
+            select oc.*
+            from w_order o
+            join w_order_car oc on oc.order_id = o.id
+            where o.state between 25 and 99
+            and o.input_store_id in(2222)
+            and oc.pick_state &lt;= 1
+
+            union all
+            /*订单所属地干线*/
+            select oc.*
+            from w_order o
+            join w_order_car oc on oc.order_id = o.id
+            where o.state between 25 and 99
+            and o.input_store_id in(2222)
+            and oc.trunk_state &lt;= 1
+
+            union all
+            /*#运单目的地干线或送车*/
+            select oc.*
+            from w_order o
+            join w_order_car oc on oc.order_id = o.id
+            where o.state between 25 and 99
+            and EXISTS
+            (
+                select t.order_car_id
+                from
+                (
+                select wc.order_car_id
+                from w_waybill w
+                join w_waybill_car wc on wc.waybill_id = w.id
+                where w.state &lt;= 100
+                and w.type = 2
+                and wc.end_belong_store_id in (2222)
+                and not EXISTS
+                (select wc1.id from w_waybill_car wc1 where wc1.start_belong_store_id = wc.end_belong_store_id and wc1.state &lt;=100)
+            ) as t
+            where t.order_car_id = oc.id
+            )
+
+        ) as tb ORDER BY tb.order_id
+
+
+
+<!--
+        select GROUP_CONCAT(ci) as line from (
+        select wc.id,GROUP_CONCAT(CONCAT(left(wc.start_city,2),"-",left(wc.end_city,2))) as ci
+        from w_waybill w
+        join w_waybill_car wc on wc.waybill_id = w.id
+        where order_car_id = 197
+        and w.state <= 100
+        and wc.state <= 100
+
+        union
+
+        select wc.id,
+        (case
+        when wc.id is null then CONCAT(left(o.start_city,2),"-",left(o.end_city,2))
+        when wc.id is not null and wc.end_city != o.end_city then CONCAT(left(wc.end_city,2),"-",left(o.end_city,2))
+        else null end) as ci
+        from w_order o
+        join w_order_car oc on oc.order_id = o.id
+        left join w_waybill_car wc on wc.order_car_id = oc.id
+        and wc.id =
+        (select max(wc.id)
+        from w_waybill w
+        join w_waybill_car wc on wc.waybill_id = w.id
+        where order_car_id = 197
+        and w.state <= 100
+        and wc.state <= 100)
+        where oc.id = 197
+        ) as t
+-->
+
+
+
     </select>
 
 

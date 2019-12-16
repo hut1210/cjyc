@@ -96,7 +96,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
         String taskNo = null;
         String lockKey = RedisKeys.getNewTaskNoKey(waybillNo);
         if (!redisLock.lock(lockKey, 30000, 100, 300)) {
-            return null;
+            throw new ServerException("获取任务编号失败");
         }
         String maxNo = taskDao.findMaxNo(waybillNo);
         if (maxNo == null) {

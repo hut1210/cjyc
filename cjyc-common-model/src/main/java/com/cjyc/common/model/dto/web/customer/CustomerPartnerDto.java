@@ -8,6 +8,8 @@ import java.io.Serializable;
 @Data
 public class CustomerPartnerDto extends BasePageDto implements Serializable {
     private static final long serialVersionUID = -4471541673400527556L;
+    @ApiModelProperty(value = "标志 0:订单 1:客户")
+    private Integer flag;
 
     @ApiModelProperty("客户编码")
     private String customerNo;

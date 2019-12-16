@@ -75,6 +75,7 @@
             <if test="lineCode != null and lineCode.trim() != ''">
                 and sl.code = #{lineCode}
             </if>
+            order by sl.create_time desc,sl.update_time desc
         </where>
     </select>
 

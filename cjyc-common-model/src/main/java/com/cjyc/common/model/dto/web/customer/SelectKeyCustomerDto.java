@@ -10,6 +10,9 @@ import java.io.Serializable;
 public class SelectKeyCustomerDto extends BasePageDto implements Serializable {
 
     private static final long serialVersionUID = -3635364908902130729L;
+    @ApiModelProperty(value = "标志 0:订单 1:客户")
+    private Integer flag;
+
     @ApiModelProperty(value = "大客户编号")
     private String customerNo;
 

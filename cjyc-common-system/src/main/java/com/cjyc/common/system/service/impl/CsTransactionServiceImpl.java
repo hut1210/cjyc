@@ -112,14 +112,13 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
                 id = tradeBillDao.insert(tb);
             }
 
-            Map<String, Object> metadata = ((Order)obj).getMetadata();
-            Object orderCarIds = metadata.get("orderCarIds");
+            Map<String, Object> metadata = ((Charge)obj).getMetadata();
+            List<String> orderCarIds = (List<String>) metadata.get("orderCarIds");
             if(orderCarIds != null){
-                String[] ids =((String)orderCarIds).split(",");
-                for(int i=0;i<ids.length;i++){
+                for(int i=0;i<orderCarIds.size();i++){
                     TradeBillDetail tradeBillDetail = new TradeBillDetail();
                     tradeBillDetail.setTradeBillId(Long.valueOf(id));
-                    tradeBillDetail.setSourceNo(ids[i]==null?null:ids[i]);
+                    tradeBillDetail.setSourceNo(orderCarIds.get(i)==null?null:orderCarIds.get(i));
                     tradeBillDetailDao.insert(tradeBillDetail);
                 }
             }
@@ -209,25 +208,29 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
         return tb;
     }
 
-    private TradeBill chargeToTransactions(Charge charge,Event event,String status) {
+    private TradeBill chargeToTransactions(Charge charge,Event event,String state) {
         TradeBill tb = new TradeBill();
         tb.setSubject(charge.getSubject());
         tb.setBody(charge.getBody());
-        /*Map<String, Object> metadata = charge.getMetadata();
-        Object orderNo = metadata.get("orderNo");
-        tb.setPingPayNo((String)orderNo);*/
-        tb.setAmount(charge.getAmount()==null?BigDecimal.valueOf(0):BigDecimal.valueOf(charge.getAmount()).multiply(new BigDecimal(100)));
+        tb.setAmount(charge.getAmount()==null?BigDecimal.valueOf(0):BigDecimal.valueOf(charge.getAmount()));
         tb.setCreateTime(System.currentTimeMillis());
         tb.setChannel(charge.getChannel());
+        //支付渠道名
+        ChannelEnum channelEnum = ChannelEnum.valueOfTag(charge.getChannel());
+        if(channelEnum != null){
+            tb.setChannelName(channelEnum.getName());
+        }
         tb.setChannelFee(new BigDecimal(0));
         tb.setReceiverId(0L);
+        tb.setLivemode(charge.getLivemode() ? LiveModeEnum.LIVE.getTag() : LiveModeEnum.TEST.getTag());
         if(event != null){
             tb.setEventId(event.getId());
             tb.setEventType(event.getType());
         }
         tb.setType(0);
-        tb.setState(0);//待支付/已支付/付款失败
         tb.setPingPayId(charge.getId());
+        tb.setState(Integer.valueOf(state));//待支付/已支付/付款失败
+        tb.setNo(csSendNoService.getNo(SendNoTypeEnum.RECEIPT));
         return tb;
     }
 

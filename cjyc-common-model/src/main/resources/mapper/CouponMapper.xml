@@ -64,6 +64,7 @@
                 and  ba.name = #{createName}
             </if>
         </where>
+          order by cc.create_time desc
     </select>
 
     <!-- 查询优惠券消耗明细 -->

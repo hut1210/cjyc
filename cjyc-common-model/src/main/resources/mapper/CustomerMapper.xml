@@ -74,7 +74,10 @@
             <if test="idCard != null and idCard.trim() != ''">
                 and  cc.id_card = #{idCard}
             </if>
-                and cc.type = 1
+            <if test="flag != null and flag == 0">
+                and  cc.state = 2
+            </if>
+                and cc.type = 1 order by cc.create_time desc,cc.check_time desc
         </where>
     </select>
 
@@ -135,7 +138,10 @@
             <if test="customerNature != null ">
                 and cc.customer_nature = #{customerNature}
             </if>
-                and cc.type = 2
+            <if test="flag != null and flag == 0">
+                and  cc.state = 2
+            </if>
+                and cc.type = 2 order by cc.create_time desc,cc.check_time desc
         </where>
     </select>
 
@@ -188,7 +194,10 @@
             <if test="isInvoice != null">
                 and  ccp.is_invoice = #{isInvoice}
             </if>
-            and cc.type = 3
+            <if test="flag != null and flag == 0">
+                and  cc.state = 2
+            </if>
+            and cc.type = 3 order by cc.create_time desc,cc.check_time desc
         </where>
     </select>
 

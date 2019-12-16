@@ -11,6 +11,8 @@ import java.io.Serializable;
 public class SelectCustomerDto extends BasePageDto implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    @ApiModelProperty(value = "标志 0:订单 1:客户")
+    private Integer flag;
 
     @ApiModelProperty(value = "手机号(账号)")
     private String contactPhone;

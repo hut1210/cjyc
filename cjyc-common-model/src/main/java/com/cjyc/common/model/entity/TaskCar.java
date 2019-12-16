@@ -37,5 +37,4 @@ public class TaskCar implements Serializable {
     @ApiModelProperty(value = "运单车辆ID")
     private Long waybillCarId;
 
-
 }

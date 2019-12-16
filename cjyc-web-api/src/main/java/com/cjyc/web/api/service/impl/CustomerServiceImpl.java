@@ -257,28 +257,48 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     public ResultVo verifyCustomer(OperateDto dto) {
         Customer customer = customerDao.selectById(dto.getId());
         if(customer != null){
+            if(FlagEnum.AUDIT_PASS.code == dto.getFlag() && customer.getType() == CustomerTypeEnum.COOPERATOR.code){
+                //审核通过
+                //新增用户信息到物流平台
+                if(customer.getUserId() == null){
+                    ResultData<Long> rd = csCustomerService.addCustomerToPlatform(customer);
+                    if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+                        return BaseResultUtil.fail(rd.getMsg());
+                    }
+                    customer.setUserId(rd.getData());
+                }else if(customer.getUserId() != null){
+                    //更新到物流平台（升级为合伙人）
+                    UpdateUserReq uur = new UpdateUserReq();
+                    uur.setUserId(customer.getUserId());
+                    uur.setRoleIdList(Arrays.asList(
+                            Long.parseLong(YmlProperty.get("cjkj.customer.partner_role_id"))));
+                    ResultData update = sysUserService.update(uur);
+                    if (!ReturnMsg.SUCCESS.getCode().equals(update.getCode())) {
+                        return BaseResultUtil.fail("更新组织下的所有角色失败");
+                    }
+                }
+                customer.setState(CustomerStateEnum.CHECKED.code);
+            }
             //合伙人
             if(customer.getType() == CustomerTypeEnum.COOPERATOR.code){
-                //冻结/审核拒绝/解冻
-                if(FlagEnum.AUDIT_REJECT.code == dto.getFlag() || FlagEnum.FROZEN.code == dto.getFlag() || FlagEnum.THAW.code == dto.getFlag()){
+                if(FlagEnum.AUDIT_REJECT.code == dto.getFlag()){
+                    //审核拒绝
+                    customer.setState(CustomerStateEnum.REJECT.code);
+                }
+                //冻结/解冻
+                if(FlagEnum.FROZEN.code == dto.getFlag() || FlagEnum.THAW.code == dto.getFlag()){
                     Long userId = customer.getUserId();
                     ResultData<List<SelectRoleResp>> rd = sysRoleService.getListByUserId(userId);
                     if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
                         return BaseResultUtil.fail("查询该用户下所有角色失败");
                     }
                     ResultVo<Long> resultVo = csCustomerService.findRoleId(rd.getData());
-                    if(FlagEnum.AUDIT_REJECT.code == dto.getFlag() || FlagEnum.FROZEN.code == dto.getFlag()){
-                        //调用架构组撤销角色
+                    if(FlagEnum.FROZEN.code == dto.getFlag()){
+                        //冻结则调用架构组撤销角色
                         ResultData resultData = sysRoleService.revokeRole(userId, resultVo.getData());
                         if (!ReturnMsg.SUCCESS.getCode().equals(resultData.getCode())) {
                             return BaseResultUtil.fail("解除合伙人角色失败");
                         }
-                    }
-                    if(FlagEnum.AUDIT_REJECT.code == dto.getFlag()){
-                        //审核拒绝
-                        customer.setState(CustomerStateEnum.REJECT.code);
-                    }else if(FlagEnum.FROZEN.code == dto.getFlag()){
-                        //冻结
                         customer.setState(CustomerStateEnum.FROZEN.code);
                     }
                     if(FlagEnum.THAW.code == dto.getFlag()){
@@ -387,15 +407,6 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                     return BaseResultUtil.fail("该账号已被冻结或被审核拒绝,不可升级");
                 }
                 //前端重置为true，升级为合伙人
-                UpdateUserReq uur = new UpdateUserReq();
-                uur.setUserId(c.getUserId());
-                uur.setRoleIdList(Arrays.asList(
-                        Long.parseLong(YmlProperty.get("cjkj.customer.partner_role_id"))));
-                ResultData update = sysUserService.update(uur);
-                if (!ReturnMsg.SUCCESS.getCode().equals(update.getCode())) {
-                    return BaseResultUtil.fail("更新组织下的所有角色失败");
-                }
-
                 BeanUtils.copyProperties(dto,c);
                 c.setAlias(dto.getName());
                 c.setType(CustomerTypeEnum.COOPERATOR.code);
@@ -437,13 +448,6 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         customer.setRegisterTime(NOW);
         customer.setCreateTime(NOW);
         customer.setCreateUserId(dto.getLoginId());
-
-        //新增用户信息到物流平台
-        ResultData<Long> rd = csCustomerService.addCustomerToPlatform(customer);
-        if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
-            return BaseResultUtil.fail(rd.getMsg());
-        }
-        customer.setUserId(rd.getData());
         customerDao.insert(customer);
         encapPartner(dto,customer,NOW);
         return BaseResultUtil.success();
@@ -458,17 +462,35 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         Customer customer = customerDao.selectById(dto.getCustomerId());
         if(customer != null){
             //判断手机号是否存在
-            ResultData<Boolean> updateRd = csCustomerService.updateCustomerToPlatform(customer, dto.getContactPhone());
-            if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
-                log.error("修改用户信息失败，原因：" + updateRd.getMsg());
-                return BaseResultUtil.fail("修改用户信息失败，原因：" + updateRd.getMsg());
+            if(customer.getState() == CustomerStateEnum.CHECKED.code || customer.getUserId() != null){
+                ResultData<Boolean> updateRd = csCustomerService.updateCustomerToPlatform(customer, dto.getContactPhone());
+                if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
+                    log.error("修改用户信息失败，原因：" + updateRd.getMsg());
+                    return BaseResultUtil.fail("修改用户信息失败，原因：" + updateRd.getMsg());
+                }
+                if (updateRd.getData()) {
+                    //需要同步手机号信息
+                    syncPhone(customer.getContactPhone(), dto.getContactPhone());
+                }
             }
-            if (updateRd.getData()) {
-                //需要同步手机号信息
-                syncPhone(customer.getContactPhone(), dto.getContactPhone());
+            if(customer.getUserId() != null){
+                //获取角色
+                ResultData<List<SelectRoleResp>> rd = sysRoleService.getListByUserId(customer.getUserId());
+                if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+                    return BaseResultUtil.fail("查询该用户下所有角色失败");
+                }
+                if(!CollectionUtils.isEmpty(rd.getData())){
+                    ResultVo<Long> resultVo = csCustomerService.findRoleId(rd.getData());
+                    //调用架构组撤销角色
+                    ResultData resultData = sysRoleService.revokeRole(customer.getUserId(), resultVo.getData());
+                    if (!ReturnMsg.SUCCESS.getCode().equals(resultData.getCode())) {
+                        return BaseResultUtil.fail("解除合伙人角色失败");
+                    }
+                }
             }
             BeanUtils.copyProperties(dto,customer);
             customer.setAlias(dto.getName());
+            customer.setState(CustomerStateEnum.WAIT_LOGIN.code);
             super.updateById(customer);
             //删除合伙人附加信息
             customerPartnerDao.removeByCustomerId(customer.getId());

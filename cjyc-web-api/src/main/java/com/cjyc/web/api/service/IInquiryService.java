@@ -8,6 +8,9 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.inquiry.InquiryVo;
 import com.github.pagehelper.PageInfo;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * <p>
  *  服务类
@@ -31,5 +34,12 @@ public interface IInquiryService extends IService<Inquiry> {
      * @return
      */
     boolean handleInquiry(HandleInquiryDto dto);
+
+    /**
+     * 询价管理导出至excel
+     * @param request
+     * @param response
+     */
+    void exportInquiryExcel(HttpServletRequest request, HttpServletResponse response);
 
 }

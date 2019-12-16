@@ -58,7 +58,7 @@ public interface ICsStoreService {
      */
     List<Long> getAllDeptId();
 
-    Long getBelongStoreId(Long storeId, String areaCode);
+    Long getBelongStoreId(Long storeId, String cityCode);
 
     ResultVo<StoreListVo> findStore(FindStoreDto dto);
 

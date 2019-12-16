@@ -10,8 +10,8 @@ public enum WaybillCarrierTypeEnum {
     LOCAL_CONSIGN("同城-拖车", 5),
     SELF("客户自己", 6);
 
-    public String name;
-    public int code;
+    public final String name;
+    public final int code;
 
     WaybillCarrierTypeEnum(String name, int code) {
         this.name = name;

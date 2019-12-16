@@ -190,6 +190,10 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
         if(carrier == null){
             return BaseResultUtil.fail("该承运商管理员不存在,请检查");
         }
+        carrier = carrierDao.selectById(carrier.getId());
+        if(carrier.getState() != CommonStateEnum.CHECKED.code){
+            return BaseResultUtil.fail("该承运商审核未通过，不可添加车辆");
+        }
         if(dto.getVehicleId() == null){
             Vehicle vehicle = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda().eq(Vehicle::getPlateNo,dto.getPlateNo()));
             if(vehicle != null){

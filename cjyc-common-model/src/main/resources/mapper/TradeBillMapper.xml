@@ -95,8 +95,8 @@
         select * from f_trade_bill where (REPLACE(unix_timestamp(current_timestamp(3)),'.','')-create_time)>=30000 and state=0
     </select>
 
-    <select id="getAmountByOrderCarNos" parameterType="String" resultType="java.math.BigDecimal">
-        select sum(freight_fee) from w_waybill_car wwc where order_car_id in
+    <select id="getAmountByOrderCarNos" parameterType="java.util.List" resultType="java.math.BigDecimal">
+        select sum(freight_fee) from w_waybill_car wwc where order_car_no in
         <foreach collection="orderCarNos" index="index" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>

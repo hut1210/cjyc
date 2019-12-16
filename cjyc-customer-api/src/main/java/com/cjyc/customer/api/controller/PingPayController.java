@@ -145,7 +145,7 @@ public class PingPayController {
                         if(data.getObject() instanceof Charge){
                             log.debug("------------->charge.succeeded");
                             //将金额存进OrderDeTailId
-                            //updateAmount(charge);
+                            transactionService.update((Charge)data.getObject(),event,"1");
                         }
                     }
                 }
@@ -163,8 +163,8 @@ public class PingPayController {
      * @throws Exception
      */
     public static PublicKey getPubKey() throws Exception {
-        File file = ResourceUtils.getFile(ResourceUtils.CLASSPATH_URL_PREFIX+"pingpp_public_key.pem");
-        String pubKeyPath = file.getPath();
+        //File file = ResourceUtils.getFile(ResourceUtils.CLASSPATH_URL_PREFIX+"pingpp_public_key.pem");
+        String pubKeyPath = PingPayController.class.getClassLoader().getResource("pingpp_public_key.pem").getPath();
         String pubKeyString = getStringFromFile(pubKeyPath);
         pubKeyString = pubKeyString.replaceAll("(-+BEGIN PUBLIC KEY-+\\r?\\n|-+END PUBLIC KEY-+\\r?\\n?)", "");
         byte[] keyBytes = Base64.decodeBase64(pubKeyString);

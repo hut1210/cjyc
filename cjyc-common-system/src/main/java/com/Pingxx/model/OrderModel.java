@@ -60,12 +60,21 @@ public class OrderModel extends APIResource {
     private String pingAppId;
     private BigDecimal deposit;	//定金
     private String orderMan; //当前app登陆人的Id
-    private String orderCarIds;
+    private List<String> orderCarIds;
     private String driver_code;
     private String order_type;
     private String driver_name;
     private String driver_phone;
     private String back_type;
+    private Long taskId;
+
+    public Long getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(Long taskId) {
+        this.taskId = taskId;
+    }
 
     public String getOrder_type() {
         return order_type;
@@ -99,11 +108,11 @@ public class OrderModel extends APIResource {
         this.back_type = back_type;
     }
 
-    public String getOrderCarIds() {
+    public List<String> getOrderCarIds() {
         return orderCarIds;
     }
 
-    public void setOrderCarIds(String orderCarIds) {
+    public void setOrderCarIds(List<String> orderCarIds) {
         this.orderCarIds = orderCarIds;
     }
 

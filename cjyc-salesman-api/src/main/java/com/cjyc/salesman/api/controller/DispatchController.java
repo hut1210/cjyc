@@ -1,10 +1,15 @@
 package com.cjyc.salesman.api.controller;
 
 import com.cjyc.common.model.dto.salesman.dispatch.DispatchListDto;
-import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.dto.salesman.dispatch.HistoryDispatchRecordDto;
+import com.cjyc.common.model.dto.web.order.WaitDispatchListOrderCarDto;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.salesman.dispatch.CityCarCountVo;
+import com.cjyc.common.model.vo.salesman.dispatch.DispatchCarDetailVo;
 import com.cjyc.common.model.vo.salesman.dispatch.DispatchListVo;
+import com.cjyc.common.model.vo.salesman.dispatch.HistoryDispatchRecordVo;
+import com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo;
 import com.cjyc.salesman.api.service.IDispatchService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -35,14 +40,57 @@ public class DispatchController {
      */
     @ApiOperation(value = "查询所有出发城市-目的地城市的车辆数量")
     @PostMapping("/getCityCarCount/{loginId}")
-    public ResultVo getCityCarCount(@PathVariable Long loginId) {
+    public ResultVo<CityCarCountVo> getCityCarCount(@PathVariable Long loginId) {
         return dispatchService.getCityCarCount(loginId);
     }
 
+    /**
+     * 功能描述: 调度列表信息
+     * @author zhangcangman
+     * @date 2019/12/13
+     * @param dto
+     * @return com.cjyc.common.model.vo.ResultVo<PageVo<DispatchListVo>>
+     */
     @ApiOperation(value = "调度列表信息")
     @PostMapping("/list")
     public ResultVo<PageVo<DispatchListVo>> list(@Valid @RequestBody DispatchListDto dto) {
         return dispatchService.getPageList(dto);
+    }
+
+    /**
+     * 查询待调度车辆列表（数据列表）
+     * @author JPG
+     */
+    @ApiOperation(value = "查询待调度车辆列表")
+    @PostMapping(value = "/wait/list")
+    public ResultVo<PageVo<DispatchListVo>> waitDispatchCarList(@RequestBody DispatchListDto reqDto) {
+        return dispatchService.waitDispatchCarList(reqDto);
+    }
+
+    /**
+     * 功能描述: 根据车辆编号查询车辆明细
+     * @author liuxingxiang
+     * @date 2019/12/13
+     * @param carNo
+     * @return com.cjyc.common.model.vo.ResultVo
+     */
+    @ApiOperation(value = "根据车辆编号查询车辆明细")
+    @PostMapping("/getCarDetail/{carNo}")
+    public ResultVo<DispatchCarDetailVo> getCarDetail(@PathVariable String carNo) {
+        return dispatchService.getCarDetail(carNo);
+    }
+
+    /**
+     * 功能描述: 查询历史调度记录列表分页
+     * @author liuxingxiang
+     * @date 2019/12/13
+     * @param dto
+     * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.vo.salesman.dispatch.HistoryDispatchRecordVo>
+     */
+    @ApiOperation(value = "查询历史调度记录列表分页")
+    @PostMapping("/getHistoryRecord")
+    public ResultVo<HistoryDispatchRecordVo> getHistoryRecord(@RequestBody HistoryDispatchRecordDto dto) {
+        return dispatchService.getHistoryRecord(dto);
     }
 
 }

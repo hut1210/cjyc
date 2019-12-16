@@ -15,6 +15,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -67,5 +69,11 @@ public class VehicleController {
     @PostMapping(value = "/findCarrierVehicle")
     public ResultVo<List<FreeVehicleVo>> findCarrierVehicle(@Validated @RequestBody FreeVehicleDto dto){
         return csVehicleService.findCarrierVehicleById(dto);
+    }
+
+    @ApiOperation(value = "车辆管理导出Excel", notes = "\t 请求接口为/vehicle/exportVehicleExcel?plateNo=车牌号&realName=司机姓名&phone=司机手机号")
+    @GetMapping("/exportVehicleExcel")
+    public void exportVehicleExcel(HttpServletRequest request, HttpServletResponse response){
+        vehicleService.exportVehicleExcel(request,response);
     }
 }

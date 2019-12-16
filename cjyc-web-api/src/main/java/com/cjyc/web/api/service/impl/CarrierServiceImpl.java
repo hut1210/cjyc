@@ -4,10 +4,12 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
+import com.cjkj.common.utils.ExcelUtil;
 import com.cjkj.usercenter.dto.yc.AddDeptAndUserResp;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.carrier.*;
+import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.driver.DriverIdentityEnum;
@@ -19,6 +21,8 @@ import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.carrier.*;
+import com.cjyc.common.model.vo.web.driver.DriverExportExcel;
+import com.cjyc.common.model.vo.web.driver.DriverVo;
 import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.ICsCarrierService;
@@ -27,6 +31,7 @@ import com.cjyc.web.api.service.ICarrierService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,7 +39,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -55,8 +64,6 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     private IVehicleDao vehicleDao;
     @Resource
     private ICarrierCityConService carrierCityConService;
-    @Autowired
-    private ISysDeptService sysDeptService;
     @Autowired
     private ISysUserService sysUserService;
     @Resource
@@ -172,6 +179,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         }
         //更新承运商
         BeanUtils.copyProperties(dto,origCarrier);
+        origCarrier.setState(CommonStateEnum.WAIT_CHECK.code);
         origCarrier.setId(dto.getCarrierId());
         origCarrier.setCheckUserId(dto.getLoginId());
         origCarrier.setCheckTime(NOW);
@@ -196,16 +204,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     @Override
     public ResultVo findCarrier(SeleCarrierDto dto) {
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
-        List<CarrierVo> carrierVos = carrierDao.getCarrierByTerm(dto);
-        if(!CollectionUtils.isEmpty(carrierVos)){
-            for(CarrierVo vo : carrierVos){
-                CarrierCarCount count = carrierCarCountDao.count(vo.getCarrierId());
-                if(count != null){
-                    vo.setCarNum(count.getCarNum());
-                    vo.setTotalIncome(count.getIncome());
-                }
-            }
-        }
+        List<CarrierVo> carrierVos = encapCarrier(dto);
         PageInfo<CarrierVo> pageInfo =  new PageInfo<>(carrierVos);
         return BaseResultUtil.success(pageInfo);
     }
@@ -306,7 +305,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     @Override
     public ResultVo dispatchCarrier(DispatchCarrierDto dto) {
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        List<DispatchCarrierVo> carrierVos = carrierDao.getDispatchCarrier(dto);
+        List<DispatchCarrierVo> carrierVos = carrierDao.findDispatchCarrier(dto);
         PageInfo<DispatchCarrierVo> pageInfo = new PageInfo<>(carrierVos);
         return BaseResultUtil.success(pageInfo);
     }
@@ -319,6 +318,68 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         return BaseResultUtil.success(pageInfo);
     }
 
+    @Override
+    public void exportCarrierExcel(HttpServletRequest request, HttpServletResponse response) {
+        SeleCarrierDto dto = getCarrierDto(request);
+        List<CarrierVo> carrierVos = encapCarrier(dto);
+        if (!CollectionUtils.isEmpty(carrierVos)) {
+            // 生成导出数据
+            List<CarrierExportExcel> exportExcelList = new ArrayList<>();
+            for (CarrierVo vo : carrierVos) {
+                CarrierExportExcel carrierExportExcel = new CarrierExportExcel();
+                BeanUtils.copyProperties(vo, carrierExportExcel);
+                exportExcelList.add(carrierExportExcel);
+            }
+            String title = "承运商管理";
+            String sheetName = "承运商管理";
+            String fileName = "承运商管理.xls";
+            try {
+                if(!CollectionUtils.isEmpty(exportExcelList)){
+                    ExcelUtil.exportExcel(exportExcelList, title, sheetName, CarrierExportExcel.class, fileName, response);
+                }
+            } catch (IOException e) {
+                log.error("导出承运商管理信息异常:{}",e);
+            }
+        }
+    }
+
+    /**
+     * 封装承运商excel请求
+     * @param request
+     * @return
+     */
+    private SeleCarrierDto getCarrierDto(HttpServletRequest request){
+        SeleCarrierDto dto = new SeleCarrierDto();
+        dto.setName(request.getParameter("name"));
+        dto.setLinkman(request.getParameter("linkman"));
+        dto.setLinkmanPhone(request.getParameter("linkmanPhone"));
+        dto.setCardNo(request.getParameter("cardNo"));
+        dto.setLegalName(request.getParameter("legalName"));
+        dto.setLegalIdCard(request.getParameter("legalIdCard"));
+        dto.setIsInvoice(StringUtils.isBlank(request.getParameter("isInvoice")) ? null:Integer.valueOf(request.getParameter("isInvoice")));
+        dto.setSettleType(StringUtils.isBlank(request.getParameter("settleType")) ? null:Integer.valueOf(request.getParameter("settleType")));
+        dto.setState(StringUtils.isBlank(request.getParameter("state")) ? null:Integer.valueOf(request.getParameter("state")));
+        return dto;
+    }
+
+    /**
+     * 封装承运商
+     * @param dto
+     * @return
+     */
+    private List<CarrierVo> encapCarrier(SeleCarrierDto dto){
+        List<CarrierVo> carrierVos = carrierDao.getCarrierByTerm(dto);
+        if(!CollectionUtils.isEmpty(carrierVos)){
+            for(CarrierVo vo : carrierVos){
+                CarrierCarCount count = carrierCarCountDao.count(vo.getCarrierId());
+                if(count != null){
+                    vo.setCarNum(count.getCarNum());
+                    vo.setTotalIncome(count.getIncome());
+                }
+            }
+        }
+        return carrierVos;
+    }
     /**
      * 保存银行卡信息
      * @param dto

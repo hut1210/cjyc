@@ -55,6 +55,7 @@
         <commons.io.version>2.4</commons.io.version>
         <commons.lang.version>2.6</commons.lang.version>
         <snakeyaml.version>1.24</snakeyaml.version>
+        <zxing.version>3.3.0</zxing.version>
 
     </properties>
 
@@ -222,6 +223,18 @@
                 <groupId>cn.jpush.api</groupId>
                 <artifactId>jpush-client</artifactId>
                 <version>3.3.10</version>
+            </dependency>
+
+            <!-- 二维码 -->
+            <dependency>
+                <groupId>com.google.zxing</groupId>
+                <artifactId>core</artifactId>
+                <version>${zxing.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.zxing</groupId>
+                <artifactId>javase</artifactId>
+                <version>${zxing.version}</version>
             </dependency>
 
         </dependencies>

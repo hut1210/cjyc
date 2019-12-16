@@ -17,6 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 /**
  *  @author: zj
  *  @Date: 2019/10/16 16:14
@@ -55,4 +58,10 @@ public class CouponController {
         return couponService.getConsumeDetail(dto);
     }
 
+    @ApiOperation(value = "优惠券管理导出Excel", notes = "\t 请求接口为/coupon/exportCouponExcel?name=优惠券名称&type=类型&state=状态" +
+            "&startTime=开始时间戳&endTime=结束时间戳&createName=创建人")
+    @GetMapping("/exportCouponExcel")
+    public void exportCouponExcel(HttpServletRequest request, HttpServletResponse response){
+        couponService.exportCouponExcel(request,response);
+    }
 }

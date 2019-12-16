@@ -54,14 +54,6 @@ public class ApplyPartnerServiceImpl extends ServiceImpl<ICustomerDao, Customer>
         if(cust == null){
             return BaseResultUtil.fail("该用户不存在,请检查");
         }
-        UpdateUserReq uur = new UpdateUserReq();
-        uur.setUserId(cust.getUserId());
-        uur.setRoleIdList(Arrays.asList(
-                Long.parseLong(YmlProperty.get("cjkj.customer.partner_role_id"))));
-        ResultData update = sysUserService.update(uur);
-        if (!ReturnMsg.SUCCESS.getCode().equals(update.getCode())) {
-            return BaseResultUtil.fail("更新组织下的所有角色失败");
-        }
         BeanUtils.copyProperties(dto,cust);
         cust.setId(dto.getLoginId());
         cust.setName(dto.getName());

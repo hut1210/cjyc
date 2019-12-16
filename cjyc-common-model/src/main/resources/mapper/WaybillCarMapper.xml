@@ -120,6 +120,12 @@
             </foreach>
         </where>
     </delete>
+    <delete id="cancelAfterWaybillCar">
+        update w_waybill_car wc
+        set state = 113
+        where wc.order_car_no = #{orderCarNo}
+        and wc.id >= #{id}
+    </delete>
 
 
     <select id="getWayBillCarrier" parameterType="com.cjyc.common.model.vo.web.WayBillCarrierVo"
@@ -1230,4 +1236,99 @@
                 </choose>
             </if>
     </select>
+
+    <select id="selectWaybillRecordList" parameterType="java.lang.Long"
+            resultType="com.cjyc.common.model.vo.salesman.dispatch.DispatchRecordVo">
+        select
+            t.guide_line as guideLine,
+            t.type as type,
+            t.no as waybillNo,
+            t.load_link_name as loadLinkName,
+            t.load_link_phone as loadLinkPhone,
+            t.start_address as startAddress,
+            t.unload_link_name as unloadLinkName,
+            t.unload_link_phone as unloadLinkPhone,
+            t.end_address as endAddress,
+            carr.linkman as linkMan,
+            carr.linkman_phone as linkmanPhone
+        from
+            (select
+                w.carrier_id,
+                w.guide_line,
+                w.type,
+                w.no,
+                car.load_link_name,
+                car.load_link_phone,
+                car.start_address,
+                car.unload_link_name,
+                car.unload_link_phone,
+                car.end_address
+            from
+                w_waybill_car car
+                left join w_waybill w on car.waybill_id=w.id
+            where
+                order_car_id=#{id}
+            ) t
+            left join d_carrier carr on t.carrier_id=carr.id
+    </select>
+    <select id="findLastByOderCarId" resultType="com.cjyc.common.model.entity.WaybillCar">
+        select
+        wc.*
+        from w_waybill w
+        join w_waybill_car wc on wc.waybill_id = w.id
+        left join s_store s1 on s1.id = wc.start_store_id
+        left join s_store s2 on s2.id = wc.end_store_id
+        where wc.order_car_id = #{orderCarId}
+        and w.state &lt;= 100
+        and w.type &lt; 3
+        order by w.id, wc.id desc
+        limit 1
+    </select>
+    <select id="findFirstTrunkWaybillCar" resultType="com.cjyc.common.model.entity.WaybillCar">
+        select * from w_waybill where type = 2 and state &lt;= 100 limit 1
+    </select>
+    <select id="countPrevTrunk" resultType="java.lang.Integer">
+        select * from w_waybill_car wc
+        join w_waybill w on w.id = wc.waybill_id
+        where order_car_id = (select order_car_no from w_waybill_car where id = #{id})
+        and w.state &lt;= 100
+        and wc.id &lt; #{id}
+        and w.type = 2
+    </select>
+    <select id="findCarIdsByWaybillId" resultType="java.lang.Long">
+        select id from w_waybill_car
+        where waybill_id = #{waybillId}
+        and state &lt;= 100;
+    </select>
+    <select id="findListByIds" resultType="com.cjyc.common.model.entity.WaybillCar">
+        select *
+        from w_waybill_car
+        <where>
+            id in
+            <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
+
+    </select>
+    <select id="findWaitCancelListByUnCancelIds" resultType="com.cjyc.common.model.entity.WaybillCar">
+        select *
+        from w_waybill_car
+        <where>
+            and waybill_id = #{waybillId}
+            and id not in
+            <foreach collection="set" item="item" index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
+
+    </select>
+    <select id="countTrunkWaybillCar" resultType="java.lang.Integer">
+        select count(0)
+        from w_waybill w
+        join w_waybill_car wc on wc.waybill_id = w.id
+        where wc.order_car_no = #{orderCarNo}
+        and w.type = 2
+    </select>
+
 </mapper>

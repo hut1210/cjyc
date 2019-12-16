@@ -82,20 +82,26 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         OrderModel om = new OrderModel();
 
         om.setClientIp(sweepCodeDto.getIp());
-        om.setPingAppId(PingProperty.driverAppId);
+        om.setPingAppId(sweepCodeDto.getClientType()==ClientEnum.APP_DRIVER.code?PingProperty.driverAppId:PingProperty.userAppId);
         //创建Charge对象
         Charge charge = new Charge();
         try {
             List<String> orderCarNosList = cStransactionService.getOrderCarNosByTaskId(sweepCodeDto.getTaskId());
             BigDecimal freightFee = cStransactionService.getAmountByOrderCarNos(orderCarNosList);
             om.setAmount(freightFee);
-            om.setDriver_code("");
-            om.setOrderCarIds(om.getOrderCarIds());
+            om.setDriver_code(String.valueOf(sweepCodeDto.getLoginId()));
+            om.setOrderCarIds(orderCarNosList);
+            om.setTaskId(sweepCodeDto.getTaskId());
             om.setChannel(sweepCodeDto.getChannel());
-            om.setSubject("司机端收款码功能!");
-            om.setBody("生成二维码！");
+            if(sweepCodeDto.getClientType()==ClientEnum.APP_DRIVER.code){
+                om.setSubject("司机端收款码功能!");
+                om.setBody("司机端生成二维码！");
+            }else{
+                om.setSubject("业务员收款码功能!");
+                om.setBody("业务员端生成二维码！");
+            }
             om.setChargeType("2");
-            om.setClientType(String.valueOf(ClientEnum.APP_DRIVER.code));
+            om.setClientType(String.valueOf(sweepCodeDto.getClientType()));
             om.setDescription("韵车订单号："+om.getOrderNo());
             charge = createDriverCode(om);
 
@@ -132,6 +138,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         meta.put("driver_name", om.getDriver_name());
         meta.put("driver_phone", om.getDriver_phone());
         meta.put("back_type", om.getBack_type());
+        meta.put("taskId",om.getTaskId());
         //当为微信支付是需要product_id
         if("wx_pub_qr".equals(om.getChannel())){
             Map<String, Object> extra  = new HashMap<String,Object>();
@@ -185,13 +192,13 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                 if(addLock){
                     String lockKey = RedisKeys.getWlCollectPayLockKey(orderCar.getNo());
                     String value = redisUtils.get(lockKey);
-                    if (value != null && !value.equals(validateSweepCodeDto.getLoginId().toString())) {
+                    if (value != null && !value.equals(validateSweepCodeDto.getTaskId().toString())) {
                         return BaseResultUtil.fail("订单车辆{0}正在支付中", orderCar.getNo());
                     }
                     if (value != null) {
                         redisUtils.delete(lockKey);
                     }
-                    if (!redisLock.lock(lockKey, validateSweepCodeDto.getLoginId(), 1800000, 100, 300)) {
+                    if (!redisLock.lock(lockKey, validateSweepCodeDto.getTaskId(), 1800000, 100, 300)) {
                         return BaseResultUtil.fail("锁定车辆失败");
                     }
                     lockKeySet.add(lockKey);
@@ -240,5 +247,11 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             }
         }
 
+    }
+
+    @Override
+    public Charge sweepSalesCode(SweepCodeDto sweepCodeDto) throws RateLimitException, APIException, ChannelException, InvalidRequestException, APIConnectionException, AuthenticationException, FileNotFoundException {
+        sweepCodeDto.setClientType(ClientEnum.APP_SALESMAN.code);
+        return sweepDriveCode(sweepCodeDto);
     }
 }
