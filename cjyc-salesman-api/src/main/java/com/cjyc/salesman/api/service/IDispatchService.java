@@ -5,6 +5,7 @@ import com.cjyc.common.model.dto.salesman.dispatch.HistoryDispatchRecordDto;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.salesman.dispatch.DispatchListVo;
+import com.cjyc.common.model.vo.salesman.dispatch.WaitDispatchCarListVo;
 
 /**
  * @Description 调度业务接口
@@ -45,5 +46,5 @@ public interface IDispatchService {
      */
     ResultVo getHistoryRecord(HistoryDispatchRecordDto dto);
 
-    ResultVo<PageVo<DispatchListVo>> waitDispatchCarList(DispatchListDto reqDto);
+    ResultVo<PageVo<WaitDispatchCarListVo>> waitDispatchCarList(DispatchListDto reqDto);
 }

@@ -34,8 +34,6 @@ public class ListOrderCarVo extends OrderCar {
     @ApiModelProperty("目的地址（全）")
     private String endFullAddress;
 
-
-
     @ApiModelProperty(value = "客户ID")
     @JsonSerialize(using = ToStringSerializer.class)
     private Long customerId;

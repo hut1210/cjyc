@@ -243,7 +243,7 @@
         when o.pick_type = 1 then
         (case
         when oc.state &lt;= 5 then 21
-        when oc.state = 15 then 23
+        when oc.state > 5 and oc.state &lt; 25 then 23
         when oc.state &gt;= 25 then 25 end)
         else
         (case
@@ -288,7 +288,6 @@
         o.start_address as startAddress,
         o.start_lng as startLng,
         o.start_lat as startLat,
-        o.source as source,
         oc.pick_type as pickType,
         oc.back_type as backType,
         o.start_store_id as startStoreId,
@@ -310,10 +309,8 @@
         o.expect_end_date as expectEndDate,
         o.car_num as carNum,
         o.line_id as lineId,
-        o.pick_type as pickType,
         o.pick_contact_name as pickContactName,
         o.pick_contact_phone as pickContactPhone,
-        o.back_type as backType,
         o.back_contact_name as backContactName,
         o.back_contact_phone as backContactPhone,
         o.source as source,
@@ -325,11 +322,17 @@
         o.check_time as checkTime,
         o.check_user_name as checkUserName,
         o.check_user_id as checkUserId,
+        concat(o.start_province, o.start_city, o.start_area, o.start_address) as startFullAddress,
+        concat(o.end_province, o.end_city, o.end_area, o.end_address) as endFullAddress,
         concat(s1.province, s1.city, s1.area, s1.detail_addr) as startStoreFullAddress,
         concat(s2.province, s2.city, s2.area, s2.detail_addr) as endStoreFullAddress,
         ct1.parent_name as nowCityName,
         ct2.parent_code as regionCode,
         ct2.parent_name as region,
+        s1.area_code as startStoreAreaCode,
+        s1.detail_addr as startStoreAddress,
+        s2.area_code as endStoreAreaCode,
+        s2.detail_addr as endStoreAddress,
         m.phone as checkUserPhone,
         oc.*
         from w_order o
@@ -345,13 +348,13 @@
             and o.state between 25 and 100
             <choose>
                 <when test="paramsDto.dispatchType == 1">
-                    and oc.pick_state = 1 and oc.state &lt; 5 and o.pick_type &lt; 4
+                    and oc.pick_state &lt;= 1 and oc.state &lt; 5 and o.pick_type &lt; 4
                 </when>
                 <when test="paramsDto.dispatchType == 2">
                     and oc.trunk_state &lt;= 2 and oc.state &lt; 45
                 </when>
                 <when test="paramsDto.dispatchType == 3">
-                    and oc.back_state = 1 and oc.state between 45 and 99 and o.pick_type &lt; 4
+                    and oc.back_state &lt;= 1 and oc.state between 45 and 99 and o.pick_type &lt; 4
                 </when>
                 <when test="paramsDto.dispatchType == 4">
                     and oc.back_state >= 5
@@ -459,6 +462,7 @@
             </if>
         </where>
         group by oc.id
+        order by oc.id desc
 
     </select>
     <select id="findByOrderId" resultType="com.cjyc.common.model.entity.OrderCar">
@@ -505,7 +509,7 @@
         when o.pick_type = 1 then
         (case
         when oc.state &lt;= 5 then 21
-        when oc.state = 15 then 23
+        when oc.state > 5 and oc.state &lt; 25 then 23
         when oc.state &gt;= 25 then 25 end)
         else
         (case
@@ -562,8 +566,6 @@
         ct1.parent_name as region,
         ct1.parent_code as regionCode,
         s1.detail_addr as inputStoreAddress,
-        s2.detail_addr as startStoreAddress,
-        s3.detail_addr as endStoreAddress,
         ht.contract_no as contractNo,
         ht.settle_period as settlePeriod
         from w_order o
@@ -907,7 +909,7 @@
             when o.pick_type = 1 then
             (case
             when oc.state &lt;= 5 then 21
-            when oc.state = 15 then 23
+            when oc.state > 5 and oc.state &lt; 25 then 23
             when oc.state &gt;= 25 then 25 end)
             else
             (case

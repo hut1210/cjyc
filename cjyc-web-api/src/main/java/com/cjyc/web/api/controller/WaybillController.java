@@ -3,8 +3,6 @@ package com.cjyc.web.api.controller;
 import com.cjkj.log.monitor.LogUtil;
 import com.cjyc.common.model.dto.web.waybill.*;
 import com.cjyc.common.model.entity.Admin;
-import com.cjyc.common.model.entity.Driver;
-import com.cjyc.common.model.enums.AdminStateEnum;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.ExcelUtil;
@@ -15,7 +13,6 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.waybill.*;
 import com.cjyc.common.system.service.ICsAdminService;
-import com.cjyc.web.api.annotations.RequestHeaderAndBody;
 import com.cjyc.web.api.service.IWaybillService;
 import com.cjyc.web.api.util.WaybillValueToDesc;
 import io.swagger.annotations.Api;
@@ -57,7 +54,7 @@ public class WaybillController {
      */
     @ApiOperation("提送车调度")
     @PostMapping("/local/save")
-    public ResultVo saveLocal(@Validated @RequestBody SaveLocalDto reqDto) {
+    public ResultVo saveLocal(@Valid @RequestBody SaveLocalDto reqDto) {
         //验证用户
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());

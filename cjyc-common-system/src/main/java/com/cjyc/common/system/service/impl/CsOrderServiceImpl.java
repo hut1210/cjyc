@@ -184,7 +184,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         //提交订单
         Order order = commitOrder(paramsDto);
 
-        return BaseResultUtil.success("下单成功，订单编号{0}", order.getNo());
+        return BaseResultUtil.success("下单{0}成功", order.getNo());
 
     }
 
@@ -415,7 +415,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         Order order = commitOrder(paramsDto);
         //审核订单
         check(new CheckOrderDto(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), order.getId()));
-        return BaseResultUtil.success("下单成功，订单编号{0}", order.getNo());
+        return BaseResultUtil.success("下单{0}成功", order.getNo());
     }
 
     private Order commitOrder(CommitOrderDto paramsDto) {
@@ -487,6 +487,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 //填充数据
                 orderCar.setOrderNo(order.getNo());
                 orderCar.setOrderId(order.getId());
+                orderCar.setPickType(order.getPickType());
+                orderCar.setBackType(order.getBackType());
                 orderCar.setNowAreaCode(order.getStartAreaCode());
                 orderCar.setNo(csSendNoService.formatNo(order.getNo(), count, 3));
                 orderCar.setState(OrderCarStateEnum.WAIT_ROUTE.code);

@@ -5,7 +5,10 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -14,6 +17,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel
+@Validated
 public class SaveLocalDto {
 
     @NotNull(message = "登录人不能为空")
@@ -29,5 +33,6 @@ public class SaveLocalDto {
 
     @NotEmpty(message = "调度内容不能为空")
     @ApiModelProperty(value = "调度运单列表", required = true)
+    @Valid
     private List<SaveLocalWaybillDto> list;
 }

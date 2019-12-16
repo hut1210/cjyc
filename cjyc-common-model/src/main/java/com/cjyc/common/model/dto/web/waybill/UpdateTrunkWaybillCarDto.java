@@ -115,6 +115,6 @@ public class UpdateTrunkWaybillCarDto {
     private String unloadLinkPhone;
 
     @ApiModelProperty(value = "最后一次运输标识：0否，1是")
-    private Integer receiptFlag;
+    private boolean receiptFlag;
 
 }

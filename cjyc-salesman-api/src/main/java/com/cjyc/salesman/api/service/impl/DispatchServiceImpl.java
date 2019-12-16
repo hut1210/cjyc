@@ -139,7 +139,7 @@ public class DispatchServiceImpl implements IDispatchService {
 
 
     @Override
-    public ResultVo<PageVo<DispatchListVo>> waitDispatchCarList(DispatchListDto dto) {
+    public ResultVo<PageVo<WaitDispatchCarListVo>> waitDispatchCarList(DispatchListDto dto) {
         // 根据登录ID查询当前业务员所在业务中心ID
         BizScope bizScope = csSysService.getBizScopeByLoginId(dto.getLoginId(), true);
         // 判断当前登录人是否有权限访问

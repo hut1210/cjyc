@@ -64,7 +64,6 @@ public class CommitOrderDto {
     @NotBlank(message = "出发不能为空地址")
     @ApiModelProperty(value = "始发地详细地址", required = true)
     private String startAddress;
-    @NotNull(message = "startStoreId不能为空")
     @ApiModelProperty(value = "出发地业务中心ID:  0无业务中心，-1有但不经过业务中心，-5用户无主观操作")
     private Long startStoreId;
     @ApiModelProperty(value = "出发地业务中心名称")
@@ -76,7 +75,6 @@ public class CommitOrderDto {
     @NotBlank(message = "目的地址不能为空")
     @ApiModelProperty(value = "目的地详细地址", required = true)
     private String endAddress;
-    @NotNull(message = "endStoreId不能为空")
     @ApiModelProperty(value = "目的地业务中心ID:  0无业务中心，-1有但不经过业务中心，-5用户无主观操作")
     private Long endStoreId;
     @ApiModelProperty(value = "目的地业务中心名称")
