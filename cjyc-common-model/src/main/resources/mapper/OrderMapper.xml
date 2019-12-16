@@ -490,7 +490,7 @@
                 and wo.create_time &lt; #{createEndTime}
             </if>
             <if test="storeIds != null and storeIds.trim() != ''">
-                AND wo.input_store_id IN ( #{storeIds} )
+                and wo.input_store_id in ( #{storeIds} )
             </if>
             order by wo.create_time desc,wo.check_time desc
         </where>

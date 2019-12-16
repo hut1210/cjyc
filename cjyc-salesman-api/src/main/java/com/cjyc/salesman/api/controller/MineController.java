@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.Map;
 
 @Api(tags = "业务员APP我的")
 @RestController
@@ -43,7 +44,7 @@ public class MineController {
 
     @ApiOperation(value = "业绩统计")
     @PostMapping(value = "/achieveCount")
-    public ResultVo achieveCount(@Validated @RequestBody AchieveDto dto) {
+    public ResultVo<Map<String,Object>> achieveCount(@Validated @RequestBody AchieveDto dto) {
         return mineService.achieveCount(dto);
     }
 

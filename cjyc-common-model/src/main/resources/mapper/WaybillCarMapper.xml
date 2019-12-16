@@ -1331,4 +1331,44 @@
         and w.type = 2
     </select>
 
+    <!--业务员端提送车完成台数-->
+    <select id="waybillCarCount" resultType="java.lang.Integer">
+        SELECT
+            count( wwc.id )
+        FROM
+            w_waybill_car wwc
+            LEFT JOIN w_task_car wtc ON wtc.waybill_car_id = wwc.waybill_id
+            LEFT JOIN w_task wt ON wt.waybill_id = wtc.task_id
+            LEFT JOIN w_waybill ww ON ww.id = wt.waybill_id
+        WHERE
+            ww.type = #{type}
+            AND wt.state = 100
+            AND wt.driver_id = #{driverId}
+    </select>
+
+    <!--业务员端我确认/下单我送车任务交付客户-->
+    <select id="deliveredCarCount" resultType="java.lang.Integer"
+            parameterType="java.lang.Integer">
+        SELECT
+            count( wwc.id )
+        FROM
+            w_waybill_car wwc
+            LEFT JOIN w_task_car wtc ON wtc.waybill_car_id = wwc.waybill_id
+            LEFT JOIN w_task wt ON wt.waybill_id = wtc.task_id
+            LEFT JOIN w_waybill ww ON ww.id = wt.waybill_id
+        WHERE
+            ww.type = 3
+            AND wt.state = 100
+            AND wwc.order_car_id IN (
+        SELECT
+            woc.id
+        FROM
+            w_order_car woc
+            LEFT JOIN w_order wo ON wo.id = woc.order_id
+        WHERE
+            wo.check_user_id = #{userId}
+            OR wo.create_user_id = #{userId}
+            )
+    </select>
+
 </mapper>

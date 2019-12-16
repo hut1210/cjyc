@@ -214,4 +214,12 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
     int updateForDispatchTrunk(@Param("id") Long id, @Param("pickState") Integer pickState, @Param("trunkState") Integer trunkState);
 
     List<DispatchListVo> findWaitDispatchCarListForApp(DispatchListDto dto);
+
+    /**
+     * 业务员端我下的订单车辆台数
+     * @param flag
+     * @param userId
+     * @return
+     */
+    Integer orderCarCount(@Param("flag") Integer flag,@Param("userId") Long userId);
 }
