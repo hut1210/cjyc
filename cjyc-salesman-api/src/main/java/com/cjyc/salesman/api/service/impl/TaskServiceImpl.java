@@ -16,7 +16,6 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.task.CarDetailVo;
 import com.cjyc.common.model.vo.driver.task.TaskDetailVo;
 import com.cjyc.common.model.vo.salesman.task.TaskWaybillVo;
-import com.cjyc.common.system.service.ICsStoreService;
 import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.salesman.api.service.ITaskService;
 import com.github.pagehelper.PageHelper;
@@ -30,6 +29,7 @@ import org.springframework.util.CollectionUtils;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @Description 任务业务接口实现类
@@ -53,8 +53,6 @@ public class TaskServiceImpl implements ITaskService {
     private IOrderDao orderDao;
     @Autowired
     private ICsSysService csSysService;
-    @Autowired
-    private ICsStoreService csStoreService;
 
     @Override
     public ResultVo<PageVo<TaskWaybillVo>> getCarryPage(TaskWaybillQueryDto dto) {
@@ -138,12 +136,26 @@ public class TaskServiceImpl implements ITaskService {
         if (BizScopeEnum.NONE.code == code) {
             return BaseResultUtil.fail("您没有访问权限!");
         }
-        String storeIds = csStoreService.getStoreIds(bizScope);
 
-        dto.setStoreId(storeIds);
+        dto.setStoreId(getStoreIds(bizScope));
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<TaskWaybillVo> list = taskDao.selectOutAndInStorageList(dto);
         PageInfo<TaskWaybillVo> pageInfo = new PageInfo<>(list);
         return BaseResultUtil.success(pageInfo);
+    }
+
+    private String getStoreIds(BizScope bizScope) {
+        if (bizScope.getCode() == BizScopeEnum.CHINA.code) {
+            return null;
+        }
+        Set<Long> storeIds = bizScope.getStoreIds();
+        StringBuilder sb = new StringBuilder();
+        for (Long storeId : storeIds) {
+            if (sb.length() > 0) {
+                sb.append(",");
+            }
+            sb.append(storeId);
+        }
+        return sb.toString();
     }
 }
