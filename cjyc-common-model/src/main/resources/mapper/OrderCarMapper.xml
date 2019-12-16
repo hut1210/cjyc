@@ -238,41 +238,7 @@
         送：1待调度，2待提车，3待交车，5已完成，21自提待调度，23自提待交车，25自提已交付，100物流上门-->
     <select id="findWaitDispatchCarList" resultType="com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo">
         select
-        (case
-        when o.pick_type = 4 then 100
-        when o.pick_type = 1 then
-        (case
-        when oc.state &lt;= 5 then 21
-        when oc.state > 5 and oc.state &lt; 25 then 23
-        when oc.state &gt;= 25 then 25 end)
-        else
-        (case
-        when oc.state &lt;= 5 then 1
-        when oc.state = 10 then 2
-        when oc.state = 15 then 3
-        when oc.state &gt;= 25 then 5 end)end ) as pickTransportState,
-
-        (case
-        when oc.trunk_state = 7 then 100
-        when oc.trunk_state = 5 then 5
-        else (case
-        when oc.state &lt;= 25 and oc.trunk_state = 1 then 1
-        when oc.state &lt;= 25 and oc.trunk_state > 1 then 2
-        when oc.state = 35 then 2
-        when oc.state = 40 then 3
-        when oc.state &gt; 40 then 5 end)end ) as trunkTransportState,
-        (case
-        when o.back_type = 4 then 100
-        when o.back_type = 1 then (case
-        when oc.state = 45 then 21
-        when oc.state = 55 then 23
-        when oc.state &gt;= 100 then 25 end)
-        else (case
-        when oc.state &lt;= 45 and oc.back_state = 1 then 1
-        when oc.state &lt;= 45 and oc.back_state > 1 then 2
-        when oc.state = 50 then 2
-        when oc.state = 55 then 3
-        when oc.state &gt;= 100 then 5 end)end ) as backTransportState,
+        <include refid="transport_state"/>
         o.customer_id as customerId,
         o.customer_name as customerName,
         o.customer_phone as customerPhone,
@@ -504,42 +470,7 @@
         end
         ) as outterState,
 
-        (case
-        when o.pick_type = 4 then 100
-        when o.pick_type = 1 then
-        (case
-        when oc.state &lt;= 5 then 21
-        when oc.state > 5 and oc.state &lt; 25 then 23
-        when oc.state &gt;= 25 then 25 end)
-        else
-        (case
-        when oc.state &lt;= 5 then 1
-        when oc.state = 10 then 2
-        when oc.state = 15 then 3
-        when oc.state &gt;= 25 then 5 end)end ) as pickTransportState,
-
-        (case
-        when oc.trunk_state = 7 then 100
-        when oc.trunk_state = 5 then 5
-        else (case
-        when oc.state &lt;= 25 and oc.trunk_state = 1 then 1
-        when oc.state &lt;= 25 and oc.trunk_state > 1 then 2
-        when oc.state = 35 then 2
-        when oc.state = 40 then 3
-        when oc.state &gt; 40 then 5 end)end ) as trunkTransportState,
-
-        (case
-        when o.back_type = 4 then 100
-        when o.back_type = 1 then (case
-        when oc.state = 45 then 21
-        when oc.state = 55 then 23
-        when oc.state &gt;= 100 then 25 end)
-        else (case
-        when oc.state &lt;= 45 and oc.back_state = 1 then 1
-        when oc.state &lt;= 45 and oc.back_state > 1 then 2
-        when oc.state = 50 then 2
-        when oc.state = 55 then 3
-        when oc.state &gt;= 100 then 5 end)end ) as backTransportState,
+        <include refid="transport_state"/>
         o.source as source,
         o.customer_name as customerName,
         o.customer_phone as customerPhone,
@@ -896,17 +827,10 @@
         ORDER BY
             o.finish_time DESC
     </select>
-    <select id="findTransportStateByOrderId"
-            resultType="com.cjyc.common.model.vo.web.order.TransportInfoOrderCarVo">
-
-        <!--提：1待调度，2待提车，3待交车，5已完成，21自送待调度，23自送待交车，25自送已交付，100物流上门
-        干：1待调度，2待提车，3待交车，5已完成, 100无干线
-        送：1待调度，2待提车，3待交车，5已完成，21自提待调度，23自提待交车，25自提已交付，100物流上门*/-->
-
-        select
-            (case
-            when o.pick_type = 4 then 100
-            when o.pick_type = 1 then
+    <sql id="transport_state">
+        (case
+            when oc.pick_type = 4 then 100
+            when oc.pick_type &lt;= 1 then
             (case
             when oc.state &lt;= 5 then 21
             when oc.state > 5 and oc.state &lt; 25 then 23
@@ -922,16 +846,17 @@
             when oc.trunk_state = 7 then 100
             when oc.trunk_state = 5 then 5
             else (case
-            when oc.state &lt;= 25 and oc.trunk_state = 1 then 1
+            when oc.state &lt;= 25 and oc.trunk_state &lt;= 1 then 1
             when oc.state &lt;= 25 and oc.trunk_state > 1 then 2
             when oc.state = 35 then 2
             when oc.state = 40 then 3
             when oc.state &gt; 40 then 5 end)end ) as trunkTransportState,
             (case
-            when o.back_type = 4 then 100
-            when o.back_type = 1 then (case
+            when oc.back_type = 4 then 100
+            when oc.back_type &lt;= 1 then
+            (case
             when oc.state = 45 then 21
-            when oc.state = 55 then 23
+            when oc.state > 45 and oc.state &lt; 100 then 23
             when oc.state &gt;= 100 then 25 end)
             else (case
             when oc.state &lt;= 45 and oc.back_state = 1 then 1
@@ -939,6 +864,16 @@
             when oc.state = 50 then 2
             when oc.state = 55 then 3
             when oc.state &gt;= 100 then 5 end)end ) as backTransportState,
+    </sql>
+    <select id="findTransportStateByOrderId"
+            resultType="com.cjyc.common.model.vo.web.order.TransportInfoOrderCarVo">
+
+        <!--提：1待调度，2待提车，3待交车，5已完成，21自送待调度，23自送待交车，25自送已交付，100物流上门
+        干：1待调度，2待提车，3待交车，5已完成, 100无干线
+        送：1待调度，2待提车，3待交车，5已完成，21自提待调度，23自提待交车，25自提已交付，100物流上门*/-->
+
+        select
+            <include refid="transport_state"/>
             oc.*,
             t.state,
             t.driver_id as driverId,

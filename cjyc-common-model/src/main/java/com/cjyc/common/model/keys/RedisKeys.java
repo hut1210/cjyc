@@ -37,6 +37,7 @@ public class RedisKeys {
     private final static String DISPATCH_LOCK_CAR_KEY = "dispatch:lock:car";
     private final static String DISPATCH_LOCK_ORDER_UPDATE = "dispatch:lock:order:update";
     private final static String ALLOT_CAR_LOCK_KEY = "allot:car:lock";
+    private final static String LOOP_ALLOT_ADMIN_KEY = "loop:allot:admin";
 
     private final static String USER_KEY = "user";
 
@@ -119,5 +120,9 @@ public class RedisKeys {
 
     public static String getDispatchLockForOrderUpdate(String orderNo) {
         return PROJECT_PREFIX + I + DISPATCH_LOCK_ORDER_UPDATE + I + orderNo;
+    }
+
+    public static String getLoopAllotKey(Long startStoreId) {
+        return null;
     }
 }

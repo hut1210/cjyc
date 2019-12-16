@@ -14,6 +14,7 @@ import com.cjyc.common.model.entity.Store;
 import com.cjyc.common.model.enums.AdminStateEnum;
 import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.exception.ParameterException;
+import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.vo.web.admin.AdminVo;
 import com.cjyc.common.model.vo.web.admin.CacheData;
 import com.cjyc.common.system.feign.ISysDeptService;
@@ -114,5 +115,11 @@ public class CsAdminServiceImpl implements ICsAdminService {
     @Override
     public Admin getAdminByPhone(String phone, boolean isSearchCache) {
         return adminDao.findByPhone(phone);
+    }
+
+    @Override
+    public Admin findLoop(Long startStoreId) {
+        Admin admin = adminDao.selectById(1L);
+        return admin;
     }
 }

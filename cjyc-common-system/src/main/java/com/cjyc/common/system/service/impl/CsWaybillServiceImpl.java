@@ -22,12 +22,14 @@ import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.service.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.lang.reflect.Parameter;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.HashSet;
@@ -77,6 +79,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
     private ICsTaskService csTaskService;
     @Resource
     private ICsLineService csLineService;
+    @Resource
+    private ICsAdminService csAdminService;
 
     /**
      * 同城调度
@@ -156,8 +160,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                     throw new ParameterException("编号为{0}的车辆，车辆所属订单车辆不存在", orderCarNo);
                 }
 
-                if ((paramsDto.getType() == WaybillTypeEnum.PICK.code && orderCar.getPickState() >= OrderCarLocalStateEnum.WAIT_DISPATCH.code)
-                        || (paramsDto.getType() == WaybillTypeEnum.BACK.code && orderCar.getBackState() >= OrderCarLocalStateEnum.WAIT_DISPATCH.code)) {
+                if ((paramsDto.getType() == WaybillTypeEnum.PICK.code && orderCar.getPickState() > OrderCarLocalStateEnum.WAIT_DISPATCH.code)
+                        || (paramsDto.getType() == WaybillTypeEnum.BACK.code && orderCar.getBackState() > OrderCarLocalStateEnum.WAIT_DISPATCH.code)) {
                     throw new ParameterException("编号为{0}的车辆，当前车辆状态不能提车/配送调度", orderCarNo);
                 }
                 //【验证】订单状态
@@ -202,9 +206,9 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 //【验证】配送调度，需验证干线调度是否完成
                 if (paramsDto.getType() == WaybillTypeEnum.BACK.code) {
                     WaybillCar waybillCar = waybillCarDao.findLastTrunkWaybillCar(order.getEndCityCode(), orderCarId);
-                    if (!waybillCar.getEndCityCode().equals(order.getEndCityCode())) {
+                    /*if ( || !waybillCar.getEndCityCode().equals(order.getEndCityCode())) {
                         throw new ParameterException("编号为{0}的车辆，干线尚未调度完成", orderCarNo);
-                    }
+                    }*/
                 }
                 //TODO 验证提车和送车人是否与订单一致
 
@@ -237,6 +241,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 waybillCar.setWaybillId(waybill.getId());
                 waybillCar.setWaybillNo(waybill.getNo());
                 waybillCar.setFreightFee(waybill.getFreightFee());
+                //提送车业务员
+                fillWaybillCarAdmin(waybillCar, waybill.getType());
                 //城市信息赋值
                 fillWaybillCarCityInfo(waybillCar);
                 //业务中心信息赋值
@@ -286,23 +292,23 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                     taskCar.setTaskId(task.getId());
                     taskCar.setWaybillCarId(waybillCar.getId());
                     taskCarDao.insert(taskCar);
+                }
 
-                    /**5、更新订单车辆状态*/
-                    if (paramsDto.getType() == WaybillTypeEnum.PICK.code) {
-                        OrderCar oc = new OrderCar();
-                        oc.setId(orderCarId);
-                        oc.setState(OrderCarStateEnum.WAIT_PICK.code);
-                        oc.setPickType(getPickType(waybill.getCarrierType()));
-                        oc.setPickState(OrderCarLocalStateEnum.DISPATCHED.code);
-                        orderCarDao.updateById(oc);
-                    } else {
-                        OrderCar oc = new OrderCar();
-                        oc.setId(orderCarId);
-                        oc.setState(OrderCarStateEnum.WAIT_PICK.code);
-                        oc.setPickType(getPickType(waybill.getCarrierType()));
-                        oc.setBackState(OrderCarLocalStateEnum.DISPATCHED.code);
-                        orderCarDao.updateById(oc);
-                    }
+                /**5、更新订单车辆状态*/
+                if (paramsDto.getType() == WaybillTypeEnum.PICK.code) {
+                    OrderCar oc = new OrderCar();
+                    oc.setId(orderCarId);
+                    oc.setState(OrderCarStateEnum.WAIT_PICK.code);
+                    oc.setPickType(getPickType(waybill.getCarrierType()));
+                    oc.setPickState(OrderCarLocalStateEnum.DISPATCHED.code);
+                    orderCarDao.updateById(oc);
+                } else {
+                    OrderCar oc = new OrderCar();
+                    oc.setId(orderCarId);
+                    oc.setState(OrderCarStateEnum.WAIT_PICK.code);
+                    oc.setBackType(getPickType(waybill.getCarrierType()));
+                    oc.setBackState(OrderCarLocalStateEnum.DISPATCHED.code);
+                    orderCarDao.updateById(oc);
                 }
 
             }
@@ -312,6 +318,30 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             }
         }
         return BaseResultUtil.success();
+    }
+
+    private void fillWaybillCarAdmin(WaybillCar waybillCar, Integer type) {
+        if(WaybillTypeEnum.PICK.code == type){
+            if(StringUtils.isBlank(waybillCar.getUnloadLinkPhone())){
+                Admin admin = csAdminService.findLoop(waybillCar.getStartStoreId());
+                if(admin == null){
+                    throw new ParameterException("业务中心无人员");
+                }
+                waybillCar.setUnloadLinkUserId(admin.getUserId());
+                waybillCar.setUnloadLinkName(admin.getName());
+                waybillCar.setUnloadLinkPhone(admin.getPhone());
+            }
+        }else{
+            if(StringUtils.isBlank(waybillCar.getLoadLinkPhone())){
+                Admin admin = csAdminService.findLoop(waybillCar.getStartStoreId());
+                if(admin == null){
+                    throw new ParameterException("业务中心无人员");
+                }
+                waybillCar.setLoadLinkUserId(admin.getUserId());
+                waybillCar.setLoadLinkName(admin.getName());
+                waybillCar.setLoadLinkPhone(admin.getPhone());
+            }
+        }
     }
 
     private Integer getPickType(Integer carrierType) {
@@ -433,6 +463,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             waybillCar.setWaybillId(waybill.getId());
             waybillCar.setWaybillNo(waybill.getNo());
             waybillCar.setFreightFee(waybill.getFreightFee());
+            //提送车业务员
+            fillWaybillCarAdmin(waybillCar, waybill.getType());
             //城市信息赋值
             fillWaybillCarCityInfo(waybillCar);
             //业务中心信息赋值
@@ -488,7 +520,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             } else {
                 OrderCar oc = new OrderCar();
                 oc.setId(orderCarId);
-                oc.setPickType(getPickType(waybill.getCarrierType()));
+                oc.setBackType(getPickType(waybill.getCarrierType()));
                 orderCarDao.updateById(oc);
             }
         } finally {

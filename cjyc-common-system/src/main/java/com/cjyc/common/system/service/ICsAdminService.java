@@ -36,4 +36,6 @@ public interface ICsAdminService {
      * @return
      */
     Admin getAdminByPhone(String phone, boolean isSearchCache);
+
+    Admin findLoop(Long startStoreId);
 }
