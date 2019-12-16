@@ -100,10 +100,10 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
 
     @Override
     public ResultVo<PageVo<TaskBillVo>> getHistoryTaskPage(TaskQueryDto dto) {
-        if (dto.getCompleteTimeE() != null) {
+        if (dto.getCompleteTimeE() != null && dto.getCompleteTimeE() != 0) {
             dto.setCompleteTimeE(TimeStampUtil.convertEndTime(dto.getCompleteTimeE()));
         }
-        if (dto.getExpectStartDateE() != null) {
+        if (dto.getExpectStartDateE() != null && dto.getExpectStartDateE() != 0) {
             dto.setExpectStartDateE(TimeStampUtil.convertEndTime(dto.getExpectStartDateE()));
         }
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
@@ -114,10 +114,10 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
 
     @Override
     public ResultVo<PageVo<TaskBillVo>> getFinishTaskPage(TaskQueryDto dto) {
-        if (dto.getCompleteTimeE() != null) {
+        if (dto.getCompleteTimeE() != null && dto.getCompleteTimeE() != 0) {
             dto.setCompleteTimeE(TimeStampUtil.convertEndTime(dto.getCompleteTimeE()));
         }
-        if (dto.getExpectStartDateE() != null) {
+        if (dto.getExpectStartDateE() != null && dto.getExpectStartDateE() != 0) {
             dto.setExpectStartDateE(TimeStampUtil.convertEndTime(dto.getExpectStartDateE()));
         }
 

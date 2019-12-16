@@ -39,4 +39,7 @@ public class MyWaybillVo implements Serializable {
 
     @ApiModelProperty("创建人")
     private String createUser;
+    public String getGuideLine() {
+        return guideLine == null ? "" : guideLine;
+    }
 }

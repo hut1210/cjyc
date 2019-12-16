@@ -56,7 +56,7 @@ public class TaskServiceImpl implements ITaskService {
 
     @Override
     public ResultVo<PageVo<TaskWaybillVo>> getCarryPage(TaskWaybillQueryDto dto) {
-        if (dto.getCompleteTimeE() != null) {
+        if (dto.getCompleteTimeE() != null && dto.getCompleteTimeE() != 0) {
             dto.setCompleteTimeE(TimeStampUtil.convertEndTime(dto.getCompleteTimeE()));
         }
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
@@ -121,10 +121,10 @@ public class TaskServiceImpl implements ITaskService {
 
     @Override
     public ResultVo<PageVo<TaskWaybillVo>> getOutAndInStoragePage(OutAndInStorageQueryDto dto) {
-        if (dto.getInStorageTimeE() != null) {
+        if (dto.getInStorageTimeE() != null && dto.getInStorageTimeE() != 0) {
             dto.setInStorageTimeE(TimeStampUtil.convertEndTime(dto.getInStorageTimeE()));
         }
-        if (dto.getOutStorageTimeE() != null) {
+        if (dto.getOutStorageTimeE() != null && dto.getOutStorageTimeE() != 0) {
             dto.setOutStorageTimeE(TimeStampUtil.convertEndTime(dto.getOutStorageTimeE()));
         }
 

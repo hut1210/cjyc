@@ -73,10 +73,10 @@ public class InvoiceApplyServiceImpl extends ServiceImpl<IInvoiceApplyDao, Invoi
     }
 
     private List<InvoiceApply> getInvoiceApplyList(InvoiceQueryDto dto) {
-        if (dto.getApplyTimeEnd() != null) {
+        if (dto.getApplyTimeEnd() != null && dto.getApplyTimeEnd() != 0) {
             dto.setApplyTimeEnd(TimeStampUtil.convertEndTime(dto.getApplyTimeEnd()));
         }
-        if (dto.getInvoiceTimeEnd() != null) {
+        if (dto.getInvoiceTimeEnd() != null && dto.getInvoiceTimeEnd() != 0) {
             dto.setInvoiceTimeEnd(TimeStampUtil.convertEndTime(dto.getInvoiceTimeEnd()));
         }
 

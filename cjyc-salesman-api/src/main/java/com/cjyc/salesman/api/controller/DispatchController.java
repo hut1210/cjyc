@@ -4,9 +4,7 @@ import com.cjyc.common.model.dto.salesman.dispatch.DispatchListDto;
 import com.cjyc.common.model.dto.salesman.dispatch.HistoryDispatchRecordDto;
 import com.cjyc.common.model.dto.web.carrier.DispatchCarrierDto;
 import com.cjyc.common.model.dto.web.carrier.TrailCarrierDto;
-import com.cjyc.common.model.dto.web.driver.CarrierDriverListDto;
 import com.cjyc.common.model.dto.web.driver.DispatchDriverDto;
-import com.cjyc.common.model.dto.web.order.WaitDispatchListOrderCarDto;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.salesman.dispatch.CityCarCountVo;
@@ -16,7 +14,6 @@ import com.cjyc.common.model.vo.salesman.dispatch.HistoryDispatchRecordVo;
 import com.cjyc.common.model.vo.web.carrier.DispatchCarrierVo;
 import com.cjyc.common.model.vo.web.carrier.TrailCarrierVo;
 import com.cjyc.common.model.vo.web.driver.DispatchDriverVo;
-import com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo;
 import com.cjyc.common.system.service.ICsCarrierService;
 import com.cjyc.common.system.service.ICsDriverService;
 import com.cjyc.salesman.api.service.IDispatchService;
@@ -24,6 +21,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -103,7 +101,7 @@ public class DispatchController {
      */
     @ApiOperation(value = "查询历史调度记录列表分页")
     @PostMapping("/getHistoryRecord")
-    public ResultVo<HistoryDispatchRecordVo> getHistoryRecord(@RequestBody HistoryDispatchRecordDto dto) {
+    public ResultVo<HistoryDispatchRecordVo> getHistoryRecord(@RequestBody @Validated HistoryDispatchRecordDto dto) {
         return dispatchService.getHistoryRecord(dto);
     }
 

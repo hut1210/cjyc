@@ -45,4 +45,8 @@ public class DispatchRecordVo implements Serializable {
 
     @ApiModelProperty(value = "交车地址")
     private String endAddress;
+
+    public String getGuideLine() {
+        return guideLine == null ? "" : guideLine;
+    }
 }

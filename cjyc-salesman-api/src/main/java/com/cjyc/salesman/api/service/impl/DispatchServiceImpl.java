@@ -173,7 +173,7 @@ public class DispatchServiceImpl implements IDispatchService {
 
     @Override
     public ResultVo getHistoryRecord(HistoryDispatchRecordDto dto) {
-        if (dto.getCreateTimeE() != null) {
+        if (dto.getCreateTimeE() != null && dto.getCreateTimeE() != 0) {
             dto.setCreateTimeE(TimeStampUtil.convertEndTime(dto.getCreateTimeE()));
         }
         // 根据登录ID查询当前业务员所在业务中心ID

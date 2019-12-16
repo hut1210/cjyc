@@ -42,4 +42,8 @@ public class HistoryDispatchRecordVo implements Serializable {
 
     @ApiModelProperty(value = "承运商手机号")
     private String linkmanPhone;
+
+    public String getGuideLine() {
+        return guideLine == null ? "" : guideLine;
+    }
 }

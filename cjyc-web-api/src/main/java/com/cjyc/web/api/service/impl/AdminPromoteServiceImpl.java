@@ -31,7 +31,7 @@ public class AdminPromoteServiceImpl extends ServiceImpl<IAdminPromoteDao, Admin
 
     @Override
     public ResultVo getPage(AdminPromoteQueryDto dto) {
-        if (dto.getRegisterTimeEnd() != null) {
+        if (dto.getRegisterTimeEnd() != null && dto.getRegisterTimeEnd() != 0) {
             dto.setRegisterTimeEnd(TimeStampUtil.convertEndTime(dto.getRegisterTimeEnd()));
         }
 

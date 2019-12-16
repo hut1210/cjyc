@@ -453,8 +453,8 @@
             w.car_num as carNum,
             w.freight_fee as freightFee,
             w.create_time as createTime,
-            w.linkman as linkMan,
-            w.linkman_phone as linkmanPhone
+            carrier.linkman as linkMan,
+            carrier.linkman_phone as linkmanPhone
         from
             w_waybill w
             left join d_carrier carrier on w.carrier_id=carrier.id
@@ -465,14 +465,14 @@
             <if test="key != null and key.trim() != ''">
                 and (w.linkman_phone like CONCAT('%',#{key},'%') or w.no like CONCAT('%',#{key},'%'))
             </if>
-            <if test="type != null and type.trim() != '0'">
+            <if test="type != null and type.trim() != 0">
                 and w.type=#{type}
             </if>
             <if test="createTimeS != null and createTimeS != 0">
-                and w.createTime >= #{createTimeS}
+                and w.create_time >= #{createTimeS}
             </if>
             <if test="createTimeE != null and createTimeE != 0">
-                and w.createTime &lt; #{createTimeE}
+                and w.create_time &lt;= #{createTimeE}
             </if>
             <if test="startCity != null and startCity.trim() != ''">
                 and w.guide_line like concat('%',#{startCity},'%')

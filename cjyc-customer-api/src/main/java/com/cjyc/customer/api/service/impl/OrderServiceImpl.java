@@ -96,7 +96,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
 
     @Override
     public ResultVo<PageVo<OrderCenterVo>> getPage(OrderQueryDto dto) {
-        if (dto.getEndDate() != null) {
+        if (dto.getEndDate() != null && dto.getEndDate() != 0) {
             dto.setEndDate(TimeStampUtil.convertEndTime(dto.getEndDate()));
         }
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
