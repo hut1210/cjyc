@@ -7,7 +7,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.math.BigDecimal;
 
 @Data
 @ApiModel
@@ -129,17 +128,11 @@ public class OrderCarWaitDispatchVo extends OrderCar {
     @ApiModelProperty(value = "线路ID")
     private Long lineId;
 
-    @ApiModelProperty(value = "提车方式:1 自送，2代驾上门，3拖车上门，4物流上门")
-    private Integer pickType;
-
     @ApiModelProperty(value = "发车人")
     private String pickContactName;
 
     @ApiModelProperty(value = "发车人联系方式")
     private String pickContactPhone;
-
-    @ApiModelProperty(value = "送车方式： 1 自提，2代驾上门，3拖车上门，4物流上门")
-    private Integer backType;
 
     @ApiModelProperty(value = "收车人")
     private String backContactName;
