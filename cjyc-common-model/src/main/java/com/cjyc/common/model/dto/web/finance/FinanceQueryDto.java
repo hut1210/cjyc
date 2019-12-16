@@ -68,4 +68,10 @@ public class FinanceQueryDto extends BasePageDto implements Serializable {
 
     @ApiModelProperty(value = "业务中心")
     private String inputStoreName;
+
+    @ApiModelProperty(value = "交付日期开始时间")
+    private Long completeStartTime;
+
+    @ApiModelProperty(value = "交付日期结束时间")
+    private Long completeEndTime;
 }
