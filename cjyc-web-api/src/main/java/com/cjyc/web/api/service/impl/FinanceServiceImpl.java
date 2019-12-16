@@ -3,10 +3,7 @@ package com.cjyc.web.api.service.impl;
 import com.cjyc.common.model.dao.ICustomerInvoiceDao;
 import com.cjyc.common.model.dao.IFinanceDao;
 import com.cjyc.common.model.dao.IInvoiceReceiptDao;
-import com.cjyc.common.model.dto.web.finance.ApplySettlementDto;
-import com.cjyc.common.model.dto.web.finance.FinanceQueryDto;
-import com.cjyc.common.model.dto.web.finance.PayMentQueryDto;
-import com.cjyc.common.model.dto.web.finance.WaitQueryDto;
+import com.cjyc.common.model.dto.web.finance.*;
 import com.cjyc.common.model.entity.CustomerInvoice;
 import com.cjyc.common.model.entity.InvoiceReceipt;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
@@ -220,6 +217,14 @@ public class FinanceServiceImpl implements IFinanceService {
         PageHelper.startPage(payMentQueryDto.getCurrentPage(), payMentQueryDto.getPageSize());
         List<PaidVo> financeVoList = financeDao.getPaidList(payMentQueryDto);
         PageInfo<PaidVo> pageInfo = new PageInfo<>(financeVoList);
+        return BaseResultUtil.success(pageInfo);
+    }
+
+    @Override
+    public ResultVo<PageVo<CollectReceiveVo>> getCollectReceiveList(CollectReceiveQueryDto collectReceiveQueryDto) {
+        PageHelper.startPage(collectReceiveQueryDto.getCurrentPage(), collectReceiveQueryDto.getPageSize());
+        List<CollectReceiveVo> collectReceiveList = financeDao.getCollectReceiveList(collectReceiveQueryDto);
+        PageInfo<CollectReceiveVo> pageInfo = new PageInfo<>(collectReceiveList);
         return BaseResultUtil.success(pageInfo);
     }
 }

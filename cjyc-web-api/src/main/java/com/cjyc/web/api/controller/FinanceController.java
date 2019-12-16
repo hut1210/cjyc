@@ -1,9 +1,6 @@
 package com.cjyc.web.api.controller;
 
-import com.cjyc.common.model.dto.web.finance.ApplySettlementDto;
-import com.cjyc.common.model.dto.web.finance.FinanceQueryDto;
-import com.cjyc.common.model.dto.web.finance.PayMentQueryDto;
-import com.cjyc.common.model.dto.web.finance.WaitQueryDto;
+import com.cjyc.common.model.dto.web.finance.*;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -100,6 +97,12 @@ public class FinanceController {
     @PostMapping(value = "/getReceivableList")
     public ResultVo<PageVo<ReceivableVo>> getReceivableList(@RequestBody WaitQueryDto waitInvoiceQueryDto){
         return financeService.getReceivableList(waitInvoiceQueryDto);
+    }
+
+    @ApiOperation(value = "代收款(时付)列表")
+    @PostMapping(value = "/getCollectReceiveList")
+    public ResultVo<PageVo<CollectReceiveVo>> getCollectReceiveList(@RequestBody CollectReceiveQueryDto collectReceiveQueryDto){
+        return financeService.getCollectReceiveList(collectReceiveQueryDto);
     }
 
     @ApiOperation(value = "已收款(时付)列表")

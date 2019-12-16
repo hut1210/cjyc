@@ -1,9 +1,6 @@
 package com.cjyc.web.api.service;
 
-import com.cjyc.common.model.dto.web.finance.ApplySettlementDto;
-import com.cjyc.common.model.dto.web.finance.FinanceQueryDto;
-import com.cjyc.common.model.dto.web.finance.PayMentQueryDto;
-import com.cjyc.common.model.dto.web.finance.WaitQueryDto;
+import com.cjyc.common.model.dto.web.finance.*;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.finance.*;
@@ -41,4 +38,6 @@ public interface IFinanceService {
     ResultVo<PageVo<PaymentVo>> getPaymentList(FinanceQueryDto financeQueryDto);
 
     ResultVo<PageVo<PaidVo>> getPaidList(PayMentQueryDto payMentQueryDto);
+
+    ResultVo<PageVo<CollectReceiveVo>> getCollectReceiveList(CollectReceiveQueryDto collectReceiveQueryDto);
 }

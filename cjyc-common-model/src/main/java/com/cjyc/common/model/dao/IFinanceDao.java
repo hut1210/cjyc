@@ -1,6 +1,7 @@
 package com.cjyc.common.model.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cjyc.common.model.dto.web.finance.CollectReceiveQueryDto;
 import com.cjyc.common.model.dto.web.finance.FinanceQueryDto;
 import com.cjyc.common.model.dto.web.finance.PayMentQueryDto;
 import com.cjyc.common.model.vo.web.finance.*;
@@ -22,4 +23,6 @@ public interface IFinanceDao extends BaseMapper {
     List<PaymentVo> getPaymentList(FinanceQueryDto financeQueryDto);
 
     List<PaidVo> getPaidList(PayMentQueryDto payMentQueryDto);
+
+    List<CollectReceiveVo> getCollectReceiveList(CollectReceiveQueryDto collectReceiveQueryDto);
 }
