@@ -3,6 +3,8 @@ package com.cjyc.common.system.service.impl;
 import com.cjyc.common.model.dao.IStoreDao;
 import com.cjyc.common.model.dto.customer.freightBill.FindStoreDto;
 import com.cjyc.common.model.entity.Store;
+import com.cjyc.common.model.entity.defined.BizScope;
+import com.cjyc.common.model.enums.BizScopeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.customerLine.BusinessStoreVo;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class CsStoreServiceImpl implements ICsStoreService {
@@ -40,6 +43,23 @@ public class CsStoreServiceImpl implements ICsStoreService {
     public Store getOneBelongByCityCode(String cityCode) {
         return storeDao.findOneBelongByCityCode(cityCode);
     }
+
+    @Override
+    public String getStoreIds(BizScope bizScope) {
+        if (bizScope.getCode() == BizScopeEnum.CHINA.code) {
+            return null;
+        }
+        Set<Long> storeIds = bizScope.getStoreIds();
+        StringBuilder sb = new StringBuilder();
+        for (Long storeId : storeIds) {
+            if (sb.length() > 0) {
+                sb.append(",");
+            }
+            sb.append(storeId);
+        }
+        return sb.toString();
+    }
+
     /**
      * 查询区县所属业务中心列表-业务范围
      *

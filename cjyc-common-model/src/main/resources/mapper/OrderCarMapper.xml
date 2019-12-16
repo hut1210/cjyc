@@ -1051,7 +1051,7 @@
                 and wo.expect_start_date >= #{startTime}
             </if>
             <if test="endTime != null">
-                and wo.expect_start_date &lt;= #{endTime}
+                and wo.expect_start_date &lt; #{endTime}
             </if>
            <!-- and woc.now_store_id in
             <foreach collection="codeSet" item="item" index="index" open="(" close=")" separator=",">
@@ -1059,32 +1059,6 @@
             </foreach>-->
              and woc.state in (25,35,45,50)
             order by wo.create_time desc,wo.check_time desc
-        </where>
-    </select>
-
-    <select id="stockCarCount" resultType="java.lang.Integer"
-            parameterType="com.cjyc.common.model.dto.salesman.mine.StockCarDto">
-        SELECT
-          count(woc.id)
-        FROM
-          w_order_car woc
-        LEFT JOIN w_order wo ON woc.order_id = wo.id
-        <where>
-            <if test="vin != null and vin.trim() != ''">
-                woc.vin = #{vin}
-            </if>
-            <if test="startCity != null and startCity.trim() != ''">
-                and wo.startCity = #{startCity}
-            </if>
-            <if test="endCity != null and endCity.trim() != ''">
-                and wo.endCity = #{endCity}
-            </if>
-            <if test="startTime != null">
-                and wo.expect_start_date >= #{startTime}
-            </if>
-            <if test="endTime != null">
-                and wo.expect_start_date &lt;= #{endTime}
-            </if>
         </where>
     </select>
 

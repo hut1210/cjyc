@@ -2,14 +2,12 @@ package com.cjyc.web.api.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.utils.ExcelUtil;
-import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.dao.ICouponDao;
 import com.cjyc.common.model.dao.ICouponSendDao;
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.coupon.ConsumeCouponDto;
 import com.cjyc.common.model.dto.web.coupon.CouponDto;
 import com.cjyc.common.model.dto.web.coupon.SeleCouponDto;
-import com.cjyc.common.model.dto.web.inquiry.SelectInquiryDto;
 import com.cjyc.common.model.entity.Coupon;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.FlagEnum;
@@ -18,13 +16,12 @@ import com.cjyc.common.model.enums.coupon.CouponLifeTypeEnum;
 import com.cjyc.common.model.enums.coupon.CouponTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
+import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.coupon.ConsumeCouponVo;
 import com.cjyc.common.model.vo.web.coupon.CouponExportExcel;
 import com.cjyc.common.model.vo.web.coupon.CouponVo;
-import com.cjyc.common.model.vo.web.inquiry.InquiryExportExcel;
-import com.cjyc.common.model.vo.web.inquiry.InquiryVo;
 import com.cjyc.web.api.service.ICouponService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -101,6 +98,9 @@ public class CouponServiceImpl extends ServiceImpl<ICouponDao,Coupon> implements
     @Override
     public ResultVo<PageVo<CouponVo>> getCouponByTerm(SeleCouponDto dto) {
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
+        if(dto.getEndTime() != null){
+            dto.setEndTime(TimeStampUtil.addDays(dto.getEndTime(),1));
+        }
         List<CouponVo> couponVos = couponDao.getCouponByTerm(dto);
         PageInfo<CouponVo> pageInfo = new PageInfo<>(couponVos);
         List<CouponVo> pageInfoList = pageInfo.getList();
@@ -158,7 +158,7 @@ public class CouponServiceImpl extends ServiceImpl<ICouponDao,Coupon> implements
         dto.setState(StringUtils.isBlank(request.getParameter("type")) ? null:Integer.valueOf(request.getParameter("type")));
         dto.setState(StringUtils.isBlank(request.getParameter("state")) ? null:Integer.valueOf(request.getParameter("state")));
         dto.setStartTime(StringUtils.isBlank(request.getParameter("startTime")) ? null:Long.valueOf(request.getParameter("startTime")));
-        dto.setEndTime(StringUtils.isBlank(request.getParameter("endTime")) ? null:Long.valueOf(request.getParameter("endTime")));
+        dto.setEndTime(StringUtils.isBlank(request.getParameter("endTime")) ? null:TimeStampUtil.addDays(Long.valueOf(request.getParameter("endTime")),1));
         dto.setCreateName(request.getParameter("createName"));
         return dto;
     }

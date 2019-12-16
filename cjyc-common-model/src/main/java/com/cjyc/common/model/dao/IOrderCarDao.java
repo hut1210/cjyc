@@ -182,14 +182,6 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
     List<StockCarVo> findStockCar(StockCarDto dto);
 
     /**
-     * 库存数量
-     *
-     * @param dto
-     * @return
-     */
-    Integer stockCarCount(StockCarDto dto);
-
-    /**
      * 根据车辆id获取车辆信息
      *
      * @param dto

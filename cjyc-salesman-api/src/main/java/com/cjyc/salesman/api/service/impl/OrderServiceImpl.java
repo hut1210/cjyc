@@ -10,13 +10,18 @@ import com.cjyc.common.model.dto.salesman.order.SalesOrderQueryDto;
 import com.cjyc.common.model.dto.web.order.CommitOrderDto;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.entity.OrderCar;
+import com.cjyc.common.model.entity.defined.BizScope;
+import com.cjyc.common.model.enums.BizScopeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.salesman.order.SalesOrderCarVo;
 import com.cjyc.common.model.vo.salesman.order.SalesOrderDetailVo;
 import com.cjyc.common.model.vo.salesman.order.SalesOrderVo;
 import com.cjyc.common.system.config.LogoImgProperty;
+import com.cjyc.common.system.service.ICsStoreService;
+import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.salesman.api.service.IOrderService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -37,9 +42,31 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     private IOrderCarDao orderCarDao;
     @Resource
     private ICarSeriesDao carSeriesDao;
+    @Resource
+    private ICsSysService csSysService;
+    @Resource
+    private ICsStoreService csStoreService;
 
     @Override
     public ResultVo<PageVo<SalesOrderVo>> findOrder(SalesOrderQueryDto dto) {
+        // 根据登录ID查询当前业务员所在业务中心ID
+        BizScope bizScope = csSysService.getBizScopeByLoginId(dto.getLoginId(), true);
+
+        // 判断当前登录人是否有权限访问
+        int code = bizScope.getCode();
+        if (BizScopeEnum.NONE.code == code) {
+            return BaseResultUtil.fail("您没有访问权限!");
+        }
+
+        // 获取业务中心ID
+        String storeIds = csStoreService.getStoreIds(bizScope);
+        dto.setStoreIds(storeIds);
+        if(dto.getCreateEndTime() != null){
+            dto.setCreateEndTime(TimeStampUtil.addDays(dto.getCreateEndTime(),1));
+        }
+        if(dto.getExpectEndTime() != null){
+            dto.setExpectEndTime(TimeStampUtil.addDays(dto.getExpectEndTime(),1));
+        }
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<SalesOrderVo> orderVos = orderDao.findOrder(dto);
         PageInfo<SalesOrderVo> pageInfo = new PageInfo(orderVos);

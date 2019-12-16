@@ -47,9 +47,9 @@ public class MineController {
         return mineService.achieveCount(dto);
     }
 
-    @ApiOperation(value = "二维码")
+ /*   @ApiOperation(value = "二维码")
     @PostMapping(value = "/findQrCode")
     public ResultVo<QRCodeVo> findQrCode(@Validated @RequestBody BaseSalesDto dto) {
         return mineService.findQrCode(dto);
-    }
+    }*/
 }

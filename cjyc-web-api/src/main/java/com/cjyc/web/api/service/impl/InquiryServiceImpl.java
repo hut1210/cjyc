@@ -3,17 +3,15 @@ package com.cjyc.web.api.service.impl;
 import com.cjkj.common.utils.ExcelUtil;
 import com.cjyc.common.model.dto.web.inquiry.HandleInquiryDto;
 import com.cjyc.common.model.dto.web.inquiry.SelectInquiryDto;
-import com.cjyc.common.model.dto.web.vehicle.SelectVehicleDto;
 import com.cjyc.common.model.entity.Inquiry;
 import com.cjyc.common.model.dao.IInquiryDao;
 import com.cjyc.common.model.enums.inquiry.InquiryStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
+import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.inquiry.InquiryExportExcel;
 import com.cjyc.common.model.vo.web.inquiry.InquiryVo;
-import com.cjyc.common.model.vo.web.vehicle.VehicleExportExcel;
-import com.cjyc.common.model.vo.web.vehicle.VehicleVo;
 import com.cjyc.web.api.service.IInquiryService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
@@ -102,7 +100,7 @@ public class InquiryServiceImpl extends ServiceImpl<IInquiryDao, Inquiry> implem
         dto.setToCity(request.getParameter("toCity"));
         dto.setState(StringUtils.isBlank(request.getParameter("state")) ? null:Integer.valueOf(request.getParameter("state")));
         dto.setStartStamp(StringUtils.isBlank(request.getParameter("startStamp")) ? null:Long.valueOf(request.getParameter("startStamp")));
-        dto.setEndStamp(StringUtils.isBlank(request.getParameter("endStamp")) ? null:Long.valueOf(request.getParameter("endStamp")));
+        dto.setEndStamp(StringUtils.isBlank(request.getParameter("endStamp")) ? null:TimeStampUtil.addDays(Long.valueOf(request.getParameter("endStamp")),1));
         return dto;
     }
 
@@ -112,6 +110,9 @@ public class InquiryServiceImpl extends ServiceImpl<IInquiryDao, Inquiry> implem
      * @return
      */
     private List<InquiryVo> encapInquiry(SelectInquiryDto dto){
+        if(dto.getEndStamp() != null){
+            dto.setEndStamp(TimeStampUtil.addDays(dto.getEndStamp(),1));
+        }
         List<InquiryVo> inquiryVos = inquiryDao.findInquiry(dto);
         if(!CollectionUtils.isEmpty(inquiryVos)){
             for(InquiryVo vo : inquiryVos){

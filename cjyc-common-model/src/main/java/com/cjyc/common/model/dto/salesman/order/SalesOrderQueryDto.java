@@ -35,4 +35,7 @@ public class SalesOrderQueryDto extends PageSalesDto {
 
     @ApiModelProperty(value = "下单结束时间")
     private Long createEndTime;
+
+    @ApiModelProperty(value = "业务中心ids，不需要传")
+    private String storeIds;
 }
