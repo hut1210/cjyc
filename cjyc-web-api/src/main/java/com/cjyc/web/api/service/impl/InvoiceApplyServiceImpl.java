@@ -19,6 +19,7 @@ import com.cjyc.common.model.entity.InvoiceApply;
 import com.cjyc.common.model.entity.InvoiceOrderCon;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.invoice.InvoiceApplyVo;
 import com.cjyc.common.model.vo.web.invoice.InvoiceApplyExportExcel;
@@ -59,6 +60,7 @@ public class InvoiceApplyServiceImpl extends ServiceImpl<IInvoiceApplyDao, Invoi
 
     @Override
     public ResultVo getInvoiceApplyPage(InvoiceQueryDto dto) {
+        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<InvoiceApply> list = getInvoiceApplyList(dto);
         List<InvoiceApplyVo> returnList = new ArrayList<>(10);
         for (InvoiceApply invoiceApply : list) {
@@ -71,8 +73,14 @@ public class InvoiceApplyServiceImpl extends ServiceImpl<IInvoiceApplyDao, Invoi
     }
 
     private List<InvoiceApply> getInvoiceApplyList(InvoiceQueryDto dto) {
+        if (dto.getApplyTimeEnd() != null) {
+            dto.setApplyTimeEnd(TimeStampUtil.convertEndTime(dto.getApplyTimeEnd()));
+        }
+        if (dto.getInvoiceTimeEnd() != null) {
+            dto.setInvoiceTimeEnd(TimeStampUtil.convertEndTime(dto.getInvoiceTimeEnd()));
+        }
+
         LambdaQueryWrapper<InvoiceApply> queryWrapper = getInvoiceApplyLambdaQueryWrapper(dto);
-        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         return super.list(queryWrapper);
     }
 

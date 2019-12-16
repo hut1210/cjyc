@@ -10,6 +10,7 @@ import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.entity.defined.BizScope;
 import com.cjyc.common.model.enums.BizScopeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.salesman.dispatch.*;
@@ -172,7 +173,9 @@ public class DispatchServiceImpl implements IDispatchService {
 
     @Override
     public ResultVo getHistoryRecord(HistoryDispatchRecordDto dto) {
-        // 查询业务中心ID
+        if (dto.getCreateTimeE() != null) {
+            dto.setCreateTimeE(TimeStampUtil.convertEndTime(dto.getCreateTimeE()));
+        }
         // 根据登录ID查询当前业务员所在业务中心ID
         BizScope bizScope = csSysService.getBizScopeByLoginId(dto.getLoginId(), true);
 

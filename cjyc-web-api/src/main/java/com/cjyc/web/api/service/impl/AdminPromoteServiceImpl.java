@@ -5,6 +5,7 @@ import com.cjyc.common.model.dao.IAdminPromoteDao;
 import com.cjyc.common.model.dto.promote.AdminPromoteQueryDto;
 import com.cjyc.common.model.entity.AdminPromote;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.promote.AdminPromoteVo;
 import com.cjyc.web.api.service.IAdminPromoteService;
@@ -30,6 +31,10 @@ public class AdminPromoteServiceImpl extends ServiceImpl<IAdminPromoteDao, Admin
 
     @Override
     public ResultVo getPage(AdminPromoteQueryDto dto) {
+        if (dto.getRegisterTimeEnd() != null) {
+            dto.setRegisterTimeEnd(TimeStampUtil.convertEndTime(dto.getRegisterTimeEnd()));
+        }
+
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<AdminPromoteVo> list = adminPromoteDao.selectPage(dto);
         PageInfo pageInfo = new PageInfo(list);

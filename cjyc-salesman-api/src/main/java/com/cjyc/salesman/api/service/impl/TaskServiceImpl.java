@@ -7,12 +7,17 @@ import com.cjyc.common.model.dto.driver.task.DetailQueryDto;
 import com.cjyc.common.model.dto.salesman.task.OutAndInStorageQueryDto;
 import com.cjyc.common.model.dto.salesman.task.TaskWaybillQueryDto;
 import com.cjyc.common.model.entity.*;
+import com.cjyc.common.model.entity.defined.BizScope;
+import com.cjyc.common.model.enums.BizScopeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.task.CarDetailVo;
 import com.cjyc.common.model.vo.driver.task.TaskDetailVo;
 import com.cjyc.common.model.vo.salesman.task.TaskWaybillVo;
+import com.cjyc.common.system.service.ICsStoreService;
+import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.salesman.api.service.ITaskService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -46,9 +51,16 @@ public class TaskServiceImpl implements ITaskService {
     private IOrderCarDao orderCarDao;
     @Autowired
     private IOrderDao orderDao;
+    @Autowired
+    private ICsSysService csSysService;
+    @Autowired
+    private ICsStoreService csStoreService;
 
     @Override
     public ResultVo<PageVo<TaskWaybillVo>> getCarryPage(TaskWaybillQueryDto dto) {
+        if (dto.getCompleteTimeE() != null) {
+            dto.setCompleteTimeE(TimeStampUtil.convertEndTime(dto.getCompleteTimeE()));
+        }
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<TaskWaybillVo> list = taskDao.selectCarryList(dto);
         PageInfo<TaskWaybillVo> pageInfo = new PageInfo<>(list);
@@ -111,13 +123,24 @@ public class TaskServiceImpl implements ITaskService {
 
     @Override
     public ResultVo<PageVo<TaskWaybillVo>> getOutAndInStoragePage(OutAndInStorageQueryDto dto) {
-        // 根据登录ID查询业务中心编号
+        if (dto.getInStorageTimeE() != null) {
+            dto.setInStorageTimeE(TimeStampUtil.convertEndTime(dto.getInStorageTimeE()));
+        }
+        if (dto.getOutStorageTimeE() != null) {
+            dto.setOutStorageTimeE(TimeStampUtil.convertEndTime(dto.getOutStorageTimeE()));
+        }
 
-        // 没权限直接返回
+        // 根据登录ID查询当前业务员所在业务中心ID
+        BizScope bizScope = csSysService.getBizScopeByLoginId(dto.getLoginId(), true);
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("11,12,13");
-        dto.setStoreId(sb.toString());
+        // 判断当前登录人是否有权限访问
+        int code = bizScope.getCode();
+        if (BizScopeEnum.NONE.code == code) {
+            return BaseResultUtil.fail("您没有访问权限!");
+        }
+        String storeIds = csStoreService.getStoreIds(bizScope);
+
+        dto.setStoreId(storeIds);
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<TaskWaybillVo> list = taskDao.selectOutAndInStorageList(dto);
         PageInfo<TaskWaybillVo> pageInfo = new PageInfo<>(list);
