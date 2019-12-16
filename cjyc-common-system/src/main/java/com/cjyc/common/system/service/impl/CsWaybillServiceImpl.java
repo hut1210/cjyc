@@ -29,7 +29,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.lang.reflect.Parameter;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.HashSet;
@@ -299,14 +298,14 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                     OrderCar oc = new OrderCar();
                     oc.setId(orderCarId);
                     oc.setState(OrderCarStateEnum.WAIT_PICK.code);
-                    oc.setPickType(getPickType(waybill.getCarrierType()));
+                    oc.setPickType(getLocalCarryType(waybill.getCarrierType()));
                     oc.setPickState(OrderCarLocalStateEnum.DISPATCHED.code);
                     orderCarDao.updateById(oc);
                 } else {
                     OrderCar oc = new OrderCar();
                     oc.setId(orderCarId);
                     oc.setState(OrderCarStateEnum.WAIT_PICK.code);
-                    oc.setBackType(getPickType(waybill.getCarrierType()));
+                    oc.setBackType(getLocalCarryType(waybill.getCarrierType()));
                     oc.setBackState(OrderCarLocalStateEnum.DISPATCHED.code);
                     orderCarDao.updateById(oc);
                 }
@@ -344,7 +343,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         }
     }
 
-    private Integer getPickType(Integer carrierType) {
+    private Integer getLocalCarryType(Integer carrierType) {
         switch (carrierType){
             case 3: return OrderPickTypeEnum.PILOT.code;
             case 4: return OrderPickTypeEnum.PILOT.code;
@@ -515,12 +514,12 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             if (paramsDto.getType() == WaybillTypeEnum.PICK.code) {
                 OrderCar oc = new OrderCar();
                 oc.setId(orderCarId);
-                oc.setPickType(getPickType(waybill.getCarrierType()));
+                oc.setPickType(getLocalCarryType(waybill.getCarrierType()));
                 orderCarDao.updateById(oc);
             } else {
                 OrderCar oc = new OrderCar();
                 oc.setId(orderCarId);
-                oc.setBackType(getPickType(waybill.getCarrierType()));
+                oc.setBackType(getLocalCarryType(waybill.getCarrierType()));
                 orderCarDao.updateById(oc);
             }
         } finally {
