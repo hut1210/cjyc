@@ -11,7 +11,10 @@ import lombok.Data;
 @Data
 @ApiModel
 public class OrderCarWaitDispatchVo extends OrderCar {
-
+    @ApiModelProperty(value = "目的业务中心地址")
+    private String startFullAddress;
+    @ApiModelProperty(value = "目的业务中心地址")
+    private String endFullAddress;
 
     @ApiModelProperty(value = "始发业务中心地址")
     private String startStoreFullAddress;
@@ -21,6 +24,15 @@ public class OrderCarWaitDispatchVo extends OrderCar {
     private String region;
     @ApiModelProperty(value = "来源")
     private Integer source;
+    @ApiModelProperty("出发地")
+    private String startStoreAreaCode;
+    @ApiModelProperty("出发地")
+    private String startStoreAddress;
+    @ApiModelProperty("目的地业务中心code")
+    private String endStoreAreaCode;
+    @ApiModelProperty("目的地址")
+    private String endStoreAddress;
+
 
     @ApiModelProperty(value = "目的业务中心地址")
     private String endStoreFullAddress;
@@ -72,7 +84,6 @@ public class OrderCarWaitDispatchVo extends OrderCar {
     @ApiModelProperty(value = "出发地业务中心ID: -1不经过业务中心")
     @JsonSerialize(using = ToStringSerializer.class)
     private Long startStoreId;
-
     @ApiModelProperty(value = "出发地业务中心名称")
     private String startStoreName;
     @ApiModelProperty(value = "出发地业务所属中心名称")

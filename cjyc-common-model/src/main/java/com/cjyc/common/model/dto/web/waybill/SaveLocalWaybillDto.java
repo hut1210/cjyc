@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -26,15 +27,14 @@ public class SaveLocalWaybillDto implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @NotNull(message = "carrierId不能为空")
     @ApiModelProperty(value = "承运商ID", required = true)
     private Long carrierId;
 
-    @NotNull(message = "carrierType不能为空")
+    @NotNull(message = "承运类型不能为空")
     @ApiModelProperty(value = "承运商类型：1干线-个人承运商，2干线-企业承运商，3同城-业务员，4同城-代驾，5同城-拖车，6客户自己", required = true)
     private Integer carrierType;
 
-    @NotBlank(message = "carrierName不能为空")
+    //@NotBlank(message = "carrierName不能为空")
     @ApiModelProperty(value = "承运商名称")
     private String carrierName;
 
@@ -42,17 +42,17 @@ public class SaveLocalWaybillDto implements Serializable {
     private String remark;
 
     /**车辆信息*/
-    @NotNull(message = "orderCarId不能为空")
+    @NotNull(message = "车辆ID不能为空")
     @ApiModelProperty(value = "订单车辆ID")
     private Long orderCarId;
 
-    @NotBlank(message = "orderCarNo不能为空")
+    @NotBlank(message = "车辆编号不能为空")
     @ApiModelProperty(value = "车辆编号")
     private String orderCarNo;
-    @NotBlank(message = "startAreaCode不能为空")
+    @NotBlank(message = "装车区县编码不能为空")
     @ApiModelProperty(value = "区县编码")
     private String startAreaCode;
-    @NotBlank(message = "startAddress不能为空")
+    @NotBlank(message = "装车地址不能为空")
     @ApiModelProperty(value = "装车地址")
     private String startAddress;
 
@@ -62,10 +62,10 @@ public class SaveLocalWaybillDto implements Serializable {
     @ApiModelProperty(value = "出发地业务中心ID")
     private Long startStoreId;
 
-    @NotBlank(message = "endAreaCode不能为空")
+    @NotBlank(message = "卸车区县编码不能为空")
     @ApiModelProperty(value = "区县编码")
     private String endAreaCode;
-    @NotBlank(message = "endAddress不能为空")
+    @NotBlank(message = "卸车地址不能为空")
     @ApiModelProperty(value = "卸车地址")
     private String endAddress;
     @ApiModelProperty(value = "目的地业务中心名称")
@@ -73,30 +73,30 @@ public class SaveLocalWaybillDto implements Serializable {
 
     @ApiModelProperty(value = "目的地业务中心ID")
     private Long endStoreId;
-    @NotNull(message = "expectStartTime不能为空")
+    @NotNull(message = "预计提车日期不能为空")
     @ApiModelProperty(value = "预计提车日期")
     private Long expectStartTime;
 
     @ApiModelProperty(value = "预计到达时间")
     private Long expectEndTime;
 
-    @NotBlank(message = "endAreaCode不能为空")
+    @NotBlank(message = "提车联系人名称不能为空")
     @ApiModelProperty(value = "提车联系人")
     private String loadLinkName;
 
-    @ApiModelProperty(value = "提车联系人userid")
+    @ApiModelProperty(value = "提车联系人ID")
     private Long loadLinkUserId;
-    @NotNull(message = "loadLinkPhone不能为空")
+    @NotBlank(message = "提车联系人电话不能为空")
     @ApiModelProperty(value = "提车联系人电话")
     private String loadLinkPhone;
 
-    @NotBlank(message = "unloadLinkName不能为空")
+    @NotBlank(message = "接收人名称能为空")
     @ApiModelProperty(value = "收车人名称")
     private String unloadLinkName;
 
     @ApiModelProperty(value = "收车联系人userId")
     private Long unloadLinkUserId;
-    @NotNull(message = "unloadLinkPhone不能为空")
+    @NotBlank(message = "接收人电话不能为空")
     @ApiModelProperty(value = "收车人电话")
     private String unloadLinkPhone;
 

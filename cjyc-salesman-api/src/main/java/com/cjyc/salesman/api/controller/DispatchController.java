@@ -7,6 +7,8 @@ import com.cjyc.common.model.dto.web.carrier.TrailCarrierDto;
 import com.cjyc.common.model.dto.web.driver.DispatchDriverDto;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.salesman.dispatch.*;
+import com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo;
 import com.cjyc.common.model.vo.salesman.dispatch.CityCarCountVo;
 import com.cjyc.common.model.vo.salesman.dispatch.DispatchCarDetailVo;
 import com.cjyc.common.model.vo.salesman.dispatch.DispatchListVo;
@@ -75,7 +77,7 @@ public class DispatchController {
      */
     @ApiOperation(value = "查询待调度车辆列表")
     @PostMapping(value = "/wait/list")
-    public ResultVo<PageVo<DispatchListVo>> waitDispatchCarList(@RequestBody DispatchListDto reqDto) {
+    public ResultVo<PageVo<WaitDispatchCarListVo>> waitDispatchCarList(@RequestBody DispatchListDto reqDto) {
         return dispatchService.waitDispatchCarList(reqDto);
     }
 

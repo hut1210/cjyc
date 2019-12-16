@@ -94,22 +94,22 @@ public class UpdateLocalCarDto{
     @ApiModelProperty(value = "预计到达时间")
     private Long expectEndTime;
 
-    @NotNull(message = "loadLinkName不能为空")
+    @NotBlank(message = "loadLinkName不能为空")
     @ApiModelProperty(value = "提车联系人")
     private String loadLinkName;
 
     @ApiModelProperty(value = "提车联系人userid")
     private Long loadLinkUserId;
-    @NotNull(message = "loadLinkPhone不能为空")
+    @NotBlank(message = "loadLinkPhone不能为空")
     @ApiModelProperty(value = "提车联系人电话")
     private String loadLinkPhone;
-    @NotNull(message = "unloadLinkName不能为空")
+    @NotBlank(message = "unloadLinkName不能为空")
     @ApiModelProperty(value = "收车人名称")
     private String unloadLinkName;
 
     @ApiModelProperty(value = "收车联系人userId")
     private Long unloadLinkUserId;
-    @NotNull(message = "unloadLinkPhone不能为空")
+    @NotBlank(message = "unloadLinkPhone不能为空")
     @ApiModelProperty(value = "收车人电话")
     private String unloadLinkPhone;
 
