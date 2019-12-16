@@ -440,6 +440,51 @@
                             where driver_id = #{loginId} and state = ${@com.cjyc.common.model.enums.CommonStateEnum@CHECKED.code})
             and w.state = ${@com.cjyc.common.model.enums.waybill.WaybillStateEnum@ALLOT_CONFIRM.code}
             group by w.id
+        order by w.create_time desc
+    </select>
+
+    <!--查询历史调度记录列表分页-->
+    <select id="selectHistoryDispatchRecord" parameterType="com.cjyc.common.model.dto.salesman.dispatch.HistoryDispatchRecordDto"
+            resultType="com.cjyc.common.model.vo.salesman.dispatch.HistoryDispatchRecordVo">
+        select
+            w.id as waybillId,
+            w.no as waybillNo,
+            w.guide_line as guideLine,
+            w.car_num as carNum,
+            w.freight_fee as freightFee,
+            w.create_time as createTime,
+            w.linkman as linkMan,
+            w.linkman_phone as linkmanPhone
+        from
+            w_waybill w
+            left join d_carrier carrier on w.carrier_id=carrier.id
+        <where>
+            <if test="bizStoreIds != null and bizStoreIds.trim() != ''">
+                and input_store_id in(#{bizStoreIds})
+            </if>
+            <if test="key != null and key.trim() != ''">
+                and (w.linkman_phone like CONCAT('%',#{key},'%') or w.no like CONCAT('%',#{key},'%'))
+            </if>
+            <if test="type != null and type.trim() != '0'">
+                and w.type=#{type}
+            </if>
+            <if test="createTimeS != null and createTimeS != 0">
+                and w.createTime >= #{createTimeS}
+            </if>
+            <if test="createTimeE != null and createTimeE != 0">
+                and w.createTime &lt; #{createTimeE}
+            </if>
+            <if test="startCity != null and startCity.trim() != ''">
+                and w.guide_line like concat('%',#{startCity},'%')
+            </if>
+            <if test="(startCity != null and startCity.trim() != '') and (endCity != null and endCity.trim() != '')">
+                and w.guide_line like concat('%',#{endCity},'%')
+            </if>
+            <if test="(startCity == null or startCity.trim() == '') and (endCity != null and endCity.trim() != '')">
+                and w.guide_line like concat('%-',#{endCity},'%')
+            </if>
+        </where>
+        order by w.id desc
     </select>
 
 </mapper>

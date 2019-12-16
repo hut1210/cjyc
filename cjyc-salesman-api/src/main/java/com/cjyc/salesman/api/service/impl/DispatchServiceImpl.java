@@ -191,7 +191,6 @@ public class DispatchServiceImpl implements IDispatchService {
         return BaseResultUtil.success(pageInfo);
     }
 
-
     private String getStoreIds(BizScope bizScope) {
         if (bizScope.getCode() == BizScopeEnum.CHINA.code) {
             return null;
