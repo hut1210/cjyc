@@ -6,11 +6,14 @@ import com.cjyc.common.model.dto.CarrierDriverDto;
 import com.cjyc.common.model.dto.CarrierVehicleDto;
 import com.cjyc.common.model.dto.FreeDto;
 import com.cjyc.common.model.dto.driver.mine.CarrierDriverNameDto;
+import com.cjyc.common.model.dto.web.driver.DispatchDriverDto;
 import com.cjyc.common.model.entity.CarrierDriverCon;
 import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.vo.FreeDriverVo;
+import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.mine.CarrierDriverVo;
+import com.cjyc.common.model.vo.web.driver.DispatchDriverVo;
 
 import java.util.List;
 
@@ -85,4 +88,11 @@ public interface ICsDriverService {
      * @return
      */
     ResultVo<Long> findRoleId(List<SelectRoleResp> roleResps, CarrierDriverCon cdc);
+
+    /**
+     * 调度个人司机
+     * @param dto
+     * @return
+     */
+    ResultVo<PageVo<DispatchDriverVo>> dispatchDriver(DispatchDriverDto dto);
 }

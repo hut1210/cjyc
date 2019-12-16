@@ -299,22 +299,6 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     }
 
     @Override
-    public ResultVo dispatchCarrier(DispatchCarrierDto dto) {
-        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        List<DispatchCarrierVo> carrierVos = carrierDao.findDispatchCarrier(dto);
-        PageInfo<DispatchCarrierVo> pageInfo = new PageInfo<>(carrierVos);
-        return BaseResultUtil.success(pageInfo);
-    }
-
-    @Override
-    public ResultVo<PageVo<TrailCarrierVo>> trailDriver(TrailCarrierDto dto) {
-        PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
-        List<TrailCarrierVo> carrierVos = carrierDao.findTrailDriver(dto);
-        PageInfo<TrailCarrierVo> pageInfo =  new PageInfo<>(carrierVos);
-        return BaseResultUtil.success(pageInfo);
-    }
-
-    @Override
     public void exportCarrierExcel(HttpServletRequest request, HttpServletResponse response) {
         SeleCarrierDto dto = getCarrierDto(request);
         List<CarrierVo> carrierVos = encapCarrier(dto);

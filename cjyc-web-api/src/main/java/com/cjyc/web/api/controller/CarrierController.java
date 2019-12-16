@@ -6,6 +6,7 @@ import com.cjyc.common.model.dto.web.carrier.*;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.carrier.*;
+import com.cjyc.common.system.service.ICsCarrierService;
 import com.cjyc.common.system.service.ICsDriverService;
 import com.cjyc.web.api.service.ICarrierService;
 import io.swagger.annotations.Api;
@@ -33,6 +34,8 @@ public class CarrierController {
     private ICarrierService carrierService;
     @Resource
     private ICsDriverService csDriverService;
+    @Resource
+    private ICsCarrierService csCarrierService;
 
     @ApiOperation(value = "新增/修改承运商")
     @PostMapping(value = "/saveOrModifyCarrier")
@@ -84,16 +87,16 @@ public class CarrierController {
         return carrierService.transportVehicle(dto);
     }
 
-    @ApiOperation(value = "调度中心中干线调度承运商(个人/企业)信息")
+    @ApiOperation(value = "调度中心中干线调度承运商信息")
     @PostMapping(value = "/dispatchCarrier")
-    public ResultVo dispatchCarrier(@RequestBody DispatchCarrierDto dto){
-        return carrierService.dispatchCarrier(dto);
+    public ResultVo<PageVo<DispatchCarrierVo>> dispatchCarrier(@RequestBody DispatchCarrierDto dto){
+        return csCarrierService.dispatchCarrier(dto);
     }
 
     @ApiOperation(value = "调度中心中提车/送车调度中代驾和拖车列表")
     @PostMapping(value = "/traileDriver")
     public ResultVo<PageVo<TrailCarrierVo>> trailDriver(@RequestBody TrailCarrierDto dto){
-        return carrierService.trailDriver(dto);
+        return csCarrierService.trailDriver(dto);
     }
 
     @ApiOperation(value = "承运商管理导出Excel", notes = "\t 请求接口为/carrier/exportCarrierExcel?name=企业名称&linkman=联系人&linkmanPhone=联系电话" +

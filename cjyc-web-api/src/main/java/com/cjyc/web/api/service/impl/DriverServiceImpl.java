@@ -340,13 +340,6 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
     }
 
     @Override
-    public ResultVo dispatchDriver(DispatchDriverDto dto) {
-        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        List<DispatchDriverVo> dispatchDriverVos = driverDao.getDispatchDriver(dto);
-        PageInfo<DispatchDriverVo> pageInfo = new PageInfo<>(dispatchDriverVos);
-        return BaseResultUtil.success(pageInfo);
-    }
-    @Override
     public ResultVo<PageVo<DispatchDriverVo>> carrierDrvierList(CarrierDriverListDto dto) {
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize(), true);
         List<DispatchDriverVo> dispatchDriverVos = driverDao.findCarrierDrvierList(dto);

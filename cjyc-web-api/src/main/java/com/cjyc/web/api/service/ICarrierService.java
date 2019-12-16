@@ -4,6 +4,7 @@ import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.carrier.*;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.carrier.DispatchCarrierVo;
 import com.cjyc.common.model.vo.web.carrier.TrailCarrierVo;
 
 import com.cjyc.common.model.vo.web.carrier.TransportDriverVo;
@@ -67,20 +68,6 @@ public interface ICarrierService {
      * @return
      */
     ResultVo<PageVo<TransportVehicleVo>> transportVehicle(TransportDto dto);
-
-    /**
-     * 调度承运商信息
-     * @param dto
-     * @return
-     */
-    ResultVo dispatchCarrier(DispatchCarrierDto dto);
-
-    /**
-     * 调度中心中提车干线调度中代驾和拖车列表
-     * @param dto
-     * @return
-     */
-    ResultVo<PageVo<TrailCarrierVo>> trailDriver(TrailCarrierDto dto);
 
     /**
      * 承运商管理导出至excel
