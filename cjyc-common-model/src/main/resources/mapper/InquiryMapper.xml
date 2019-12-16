@@ -50,7 +50,7 @@
                 si.inquiry_time >= #{startStamp}
             </if>
             <if test="endStamp != null ">
-                and  si.inquiry_time &lt;= #{endStamp}
+                and  si.inquiry_time &lt; #{endStamp}
             </if>
             <if test="fromCity != null  and fromCity.trim() != ''">
                 and si.from_city like concat('%',#{fromCity},'%')

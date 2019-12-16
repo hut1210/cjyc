@@ -6,6 +6,9 @@ import lombok.Data;
 
 @Data
 public class CarrierDriverListDto extends BasePageDto {
+    @ApiModelProperty("登陆id(loginId)")
+    private Long loginId;
+
     private Long carrierId;
 
     @ApiModelProperty("司机姓名")

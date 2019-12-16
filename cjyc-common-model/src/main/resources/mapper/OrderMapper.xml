@@ -481,13 +481,16 @@
                 and wo.expect_start_date &gt;= #{expectStartTime}
             </if>
             <if test="expectEndTime != null and expectEndTime != 0">
-                and wo.expect_start_date &lt;= #{expectEndTime}
+                and wo.expect_start_date &lt; #{expectEndTime}
             </if>
             <if test="createStartTime != null and createStartTime != 0">
                 and wo.create_time &gt;= #{createStartTime}
             </if>
             <if test="createEndTime != null and createEndTime != 0">
-                and wo.create_time &lt;= #{createEndTime}
+                and wo.create_time &lt; #{createEndTime}
+            </if>
+            <if test="storeIds != null and storeIds.trim() != ''">
+                and wo.input_store_id in ( #{storeIds} )
             </if>
             order by wo.create_time desc,wo.check_time desc
         </where>

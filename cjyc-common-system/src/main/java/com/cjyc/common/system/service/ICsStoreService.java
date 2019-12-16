@@ -2,6 +2,7 @@ package com.cjyc.common.system.service;
 
 import com.cjyc.common.model.dto.customer.freightBill.FindStoreDto;
 import com.cjyc.common.model.entity.Store;
+import com.cjyc.common.model.entity.defined.BizScope;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.customerLine.StoreListVo;
 
@@ -63,4 +64,6 @@ public interface ICsStoreService {
     ResultVo<StoreListVo> findStore(FindStoreDto dto);
 
     Store getOneBelongByCityCode(String cityCode);
+
+    String getStoreIds(BizScope bizScope);
 }

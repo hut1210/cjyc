@@ -13,16 +13,25 @@ import com.cjyc.common.model.dao.ICarrierDao;
 import com.cjyc.common.model.dao.ICarrierDriverConDao;
 import com.cjyc.common.model.dao.IDriverDao;
 import com.cjyc.common.model.dto.web.carrier.CarrierDto;
+import com.cjyc.common.model.dto.web.carrier.DispatchCarrierDto;
+import com.cjyc.common.model.dto.web.carrier.TrailCarrierDto;
 import com.cjyc.common.model.entity.Carrier;
 import com.cjyc.common.model.entity.CarrierDriverCon;
 import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.transport.DriverRoleEnum;
+import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.YmlProperty;
+import com.cjyc.common.model.vo.PageVo;
+import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.carrier.DispatchCarrierVo;
+import com.cjyc.common.model.vo.web.carrier.TrailCarrierVo;
 import com.cjyc.common.system.config.CarrierProperty;
 import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.ICsCarrierService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -169,5 +178,21 @@ public class CsCarrierServiceImpl implements ICsCarrierService {
             return ResultData.ok("数据未同步到物流平台，不需要变更");
         }
         return ResultData.ok("无变更：数据不存在");
+    }
+
+    @Override
+    public ResultVo<PageVo<TrailCarrierVo>> trailDriver(TrailCarrierDto dto) {
+        PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
+        List<TrailCarrierVo> carrierVos = carrierDao.findTrailDriver(dto);
+        PageInfo<TrailCarrierVo> pageInfo =  new PageInfo<>(carrierVos);
+        return BaseResultUtil.success(pageInfo);
+    }
+
+    @Override
+    public ResultVo<PageVo<DispatchCarrierVo>> dispatchCarrier(DispatchCarrierDto dto) {
+        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
+        List<DispatchCarrierVo> carrierVos = carrierDao.findDispatchCarrier(dto);
+        PageInfo<DispatchCarrierVo> pageInfo = new PageInfo<>(carrierVos);
+        return BaseResultUtil.success(pageInfo);
     }
 }

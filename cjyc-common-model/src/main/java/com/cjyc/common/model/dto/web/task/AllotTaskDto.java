@@ -33,5 +33,4 @@ public class AllotTaskDto {
     private String remark;
     @ApiModelProperty(value = "运单车辆ID",required = true)
     private List<Long> waybillCarIdList;
-
 }

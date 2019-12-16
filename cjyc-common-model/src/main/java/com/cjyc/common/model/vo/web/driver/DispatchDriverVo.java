@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 @Data
@@ -42,4 +43,13 @@ public class DispatchDriverVo implements Serializable {
 
     @ApiModelProperty("运行状态：0空闲，1在途 2繁忙")
     private Integer runningState;
+
+    public String getDriverName(){return StringUtils.isBlank(driverName) ? "":driverName;}
+    public String getDriverPhone(){return StringUtils.isBlank(driverPhone) ? "":driverPhone;}
+    public String getIdCard(){return StringUtils.isBlank(idCard) ? "":idCard;}
+    public String getVehiclePlateNo(){return StringUtils.isBlank(vehiclePlateNo) ? "":vehiclePlateNo;}
+    public Integer getCarryCarNum(){return carryCarNum == null ? 0:carryCarNum;}
+    public Integer getOccupiedCarNum(){return occupiedCarNum == null ? 0:occupiedCarNum;}
+
+
 }

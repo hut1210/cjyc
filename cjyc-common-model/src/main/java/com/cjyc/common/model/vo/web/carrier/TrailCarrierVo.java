@@ -3,7 +3,9 @@ package com.cjyc.common.model.vo.web.carrier;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.models.auth.In;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 @Data
@@ -40,4 +42,13 @@ public class TrailCarrierVo implements Serializable {
 
     @ApiModelProperty("运行状态：0空闲，1在途 2繁忙")
     private Integer runningState;
+
+    public String getName(){return StringUtils.isBlank(name) ? "":name;}
+    public String getBusinessName(){return StringUtils.isBlank(businessName) ? "":businessName;}
+    public String getPhone(){return StringUtils.isBlank(phone) ? "":phone;}
+    public String getIdCard(){return StringUtils.isBlank(idCard) ? "":idCard;}
+    public String getPlateNo(){return StringUtils.isBlank(plateNo) ? "":plateNo;}
+    public Integer getCarryCarNum(){return carryCarNum == null ? 0:carryCarNum;}
+    public Integer getOccupiedCarNum(){return occupiedCarNum == null ? 0:occupiedCarNum;}
+    public Integer getRunningState(){return runningState == null ? 0:runningState;}
 }

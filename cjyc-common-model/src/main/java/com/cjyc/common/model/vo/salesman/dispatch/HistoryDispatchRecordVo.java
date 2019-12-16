@@ -17,6 +17,9 @@ import java.math.BigDecimal;
 @Data
 public class HistoryDispatchRecordVo implements Serializable {
     private static final long serialVersionUID = 7800535148779633095L;
+    @ApiModelProperty(value = "运单id")
+    private String waybillId;
+
     @ApiModelProperty(value = "运单编号")
     private String waybillNo;
 
@@ -39,4 +42,8 @@ public class HistoryDispatchRecordVo implements Serializable {
 
     @ApiModelProperty(value = "承运商手机号")
     private String linkmanPhone;
+
+    public String getGuideLine() {
+        return guideLine == null ? "" : guideLine;
+    }
 }

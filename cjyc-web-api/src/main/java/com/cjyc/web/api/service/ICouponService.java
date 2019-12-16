@@ -8,7 +8,6 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.coupon.ConsumeCouponVo;
 import com.cjyc.common.model.vo.web.coupon.CouponVo;
-import com.github.pagehelper.PageInfo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

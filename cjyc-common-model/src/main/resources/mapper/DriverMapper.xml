@@ -612,7 +612,6 @@
         LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
         where dc.id = #{carrierId}
         and dd.type = 2
-        and dc.type = 1
         AND dc.state = 2
         AND dcdc.state = 2
         <if test="driverName != null and driverName.trim() != ''">

@@ -12,6 +12,7 @@ import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.invoice.InvoiceOrderVo;
@@ -95,6 +96,9 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
 
     @Override
     public ResultVo<PageVo<OrderCenterVo>> getPage(OrderQueryDto dto) {
+        if (dto.getEndDate() != null && dto.getEndDate() != 0) {
+            dto.setEndDate(TimeStampUtil.convertEndTime(dto.getEndDate()));
+        }
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
         List<OrderCenterVo> list = orderDao.selectPage(dto);
         PageInfo<OrderCenterVo> pageInfo = new PageInfo<>(list == null ? new ArrayList<>(0) : list);

@@ -16,4 +16,6 @@ public class StockCarDto extends PageSalesDto {
     private Long startTime;
     @ApiModelProperty(value = "提车结束日期")
     private Long endTime;
+    @ApiModelProperty(value = "业务中心ids，不需要传")
+    private String storeIds;
 }

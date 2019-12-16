@@ -8,7 +8,6 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.vo.web.coupon.CustomerCouponSendVo;
 import com.cjyc.common.model.vo.web.customer.*;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

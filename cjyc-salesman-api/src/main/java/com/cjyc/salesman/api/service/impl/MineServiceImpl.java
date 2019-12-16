@@ -11,10 +11,13 @@ import com.cjyc.common.model.dto.salesman.mine.StockCarDto;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Dictionary;
 import com.cjyc.common.model.entity.WaybillCar;
+import com.cjyc.common.model.entity.defined.BizScope;
+import com.cjyc.common.model.enums.BizScopeEnum;
 import com.cjyc.common.model.enums.waybill.WaybillTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.QRCodeUtil;
+import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.salesman.mine.QRCodeVo;
@@ -22,6 +25,8 @@ import com.cjyc.common.model.vo.salesman.mine.StockCarDetailVo;
 import com.cjyc.common.model.vo.salesman.mine.StockCarVo;
 import com.cjyc.common.model.vo.salesman.mine.StockTaskVo;
 import com.cjyc.common.system.config.LogoImgProperty;
+import com.cjyc.common.system.service.ICsStoreService;
+import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.salesman.api.service.IMineService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -48,9 +53,26 @@ public class MineServiceImpl extends ServiceImpl<IWaybillCarDao, WaybillCar> imp
     private IDictionaryDao dictionaryDao;
     @Resource
     private IAdminDao adminDao;
+    @Resource
+    private IWaybillCarDao waybillCarDao;
+    @Resource
+    private ICsSysService csSysService;
+    @Resource
+    private ICsStoreService csStoreService;
 
     @Override
     public ResultVo<PageVo<StockCarVo>> findStockCar(StockCarDto dto) {
+        // 根据登录ID查询当前业务员所在业务中心ID
+        BizScope bizScope = csSysService.getBizScopeByLoginId(dto.getLoginId(), true);
+        // 判断当前登录人是否有权限访问
+        if (BizScopeEnum.NONE.code == bizScope.getCode()) {
+            return BaseResultUtil.fail("您没有访问权限!");
+        }
+        // 获取业务中心ID
+        dto.setStoreIds(csStoreService.getStoreIds(bizScope));
+        if(dto.getEndTime() != null){
+            dto.setEndTime(TimeStampUtil.addDays(dto.getEndTime(),1));
+        }
         String logoImg = LogoImgProperty.logoImg;
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<StockCarVo> stockCarVos = orderCarDao.findStockCar(dto);
@@ -60,9 +82,8 @@ public class MineServiceImpl extends ServiceImpl<IWaybillCarDao, WaybillCar> imp
                 vo.setLogoImg(logoImg);
             }
         }
-        Integer carStockCount = orderCarDao.stockCarCount(dto);
         Map<String,Object> map = new HashMap<String,Object>(1);
-        map.put("carStockCount",carStockCount == null ? 0 : carStockCount);
+        map.put("carStockCount",stockCarVos.size());
         PageInfo<StockCarVo> pageInfo = new PageInfo(stockCarVos);
         return BaseResultUtil.success(pageInfo,map);
     }
@@ -94,24 +115,34 @@ public class MineServiceImpl extends ServiceImpl<IWaybillCarDao, WaybillCar> imp
     }
 
     @Override
-    public ResultVo achieveCount(AchieveDto dto) {
+    public ResultVo<Map<String,Object>> achieveCount(AchieveDto dto) {
+        Admin admin = adminDao.selectById(dto.getLoginId());
+        if(admin == null){
+            return BaseResultUtil.fail("该用户不存在，请检查");
+        }
         //转成localDate
         LocalDate localDate = LocalDateTimeUtil.convertToLocalDate(dto.getDate(), TimePatternConstant.DATE);
         //获取下一个月起始日
         LocalDate nextMonth = LocalDateTimeUtil.getNextMouth(localDate,1);
         Long thisMonthTime = LocalDateTimeUtil.convertToLong(localDate);
-        Long nextMonthTime = LocalDateTimeUtil.convertToLong(nextMonth);
+        Long nextMonthTime = TimeStampUtil.addDays(LocalDateTimeUtil.convertToLong(nextMonth),1);
         SalesAchieveDto achieveDto = new SalesAchieveDto();
         achieveDto.setThisMonthTime(thisMonthTime);
         achieveDto.setNextMonthTime(nextMonthTime);
-
+        Long userId = admin.getUserId();
+        Long driverId = admin.getId();
         Map<String,Object> mapCount = new HashMap<>(5);
-        mapCount.put("orderCount",1);
-        mapCount.put("confirmedCount",1);
-        mapCount.put("deliveredCount",1);
-        mapCount.put("pickCarCount",1);
-        mapCount.put("backCarCount",1);
-        return BaseResultUtil.success(achieveDto);
+        //我下的订单的台数
+        mapCount.put("orderCarCount",orderCarDao.orderCarCount(0,userId));
+        //我确认过的全部订单的车辆
+        mapCount.put("confirmedCarCount",orderCarDao.orderCarCount(1,userId));
+        //我下的确认过的订单送车任务交付客户
+        mapCount.put("deliveredCarCount",waybillCarDao.deliveredCarCount(userId));
+        //我已经完成提车的台数
+        mapCount.put("pickCarCount",waybillCarDao.waybillCarCount(1, driverId));
+        //我已完成送车的台数
+        mapCount.put("backCarCount",waybillCarDao.waybillCarCount(3, driverId));
+        return BaseResultUtil.success(mapCount);
     }
 
     @Override
@@ -138,4 +169,5 @@ public class MineServiceImpl extends ServiceImpl<IWaybillCarDao, WaybillCar> imp
         vo.setQrCodeUrl(imagePath+"?"+admin.getPhone());
         return BaseResultUtil.success(vo);
     }
+
 }

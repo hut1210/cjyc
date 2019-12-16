@@ -7,4 +7,15 @@ public class TimeStampUtil {
     public static Long addDays(Long time, int days) {
         return time + days * TimeConstant.MILLS_OF_ONE_DAY;
     }
+
+    /**
+     * 功能描述: 给传入的时间加上23小时59分59秒的毫秒值
+     * @author liuxingxiang
+     * @date 2019/12/16
+     * @param time
+     * @return java.lang.Long
+     */
+    public static Long convertEndTime(Long time) {
+        return time + TimeConstant.MILLS_OF_ONE_DAY_1;
+    }
 }

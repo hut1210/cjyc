@@ -1,6 +1,5 @@
 package com.cjyc.web.api.service;
 
-import com.cjyc.common.model.dto.web.inquiry.SelectInquiryDto;
 import com.cjyc.common.model.dto.web.line.AddOrUpdateLineDto;
 import com.cjyc.common.model.dto.web.line.ListLineDto;
 import com.cjyc.common.model.dto.web.line.SelectLineDto;

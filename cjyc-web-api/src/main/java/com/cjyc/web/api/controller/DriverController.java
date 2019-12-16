@@ -10,11 +10,11 @@ import com.cjyc.common.model.vo.web.driver.DriverVo;
 import com.cjyc.common.model.vo.web.driver.ExistDriverVo;
 import com.cjyc.common.model.vo.web.driver.ShowDriverVo;
 import com.cjyc.common.model.vo.web.user.DriverListVo;
+import com.cjyc.common.system.service.ICsDriverService;
 import com.cjyc.web.api.service.IDriverService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,6 +35,8 @@ public class DriverController {
 
     @Resource
     private IDriverService driverService;
+    @Resource
+    private ICsDriverService csDriverService;
 
     /**
      * 查询司机列表
@@ -88,7 +90,7 @@ public class DriverController {
     @ApiOperation(value = "调度个人司机信息")
     @PostMapping(value = "/dispatchDriver")
     public ResultVo<PageVo<DispatchDriverVo>> dispatchDriver(@RequestBody DispatchDriverDto dto){
-        return driverService.dispatchDriver(dto);
+        return csDriverService.dispatchDriver(dto);
     }
 
     @ApiOperation(value = "查询承运商下属司机")

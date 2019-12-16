@@ -9,7 +9,6 @@ import com.cjkj.usercenter.dto.yc.AddDeptAndUserResp;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.carrier.*;
-import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.driver.DriverIdentityEnum;
@@ -21,9 +20,6 @@ import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.carrier.*;
-import com.cjyc.common.model.vo.web.driver.DriverExportExcel;
-import com.cjyc.common.model.vo.web.driver.DriverVo;
-import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.ICsCarrierService;
 import com.cjyc.web.api.service.ICarrierCityConService;
@@ -299,22 +295,6 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<TransportVehicleVo> transportVehicleVos = vehicleDao.findTransportVehicle(dto);
         PageInfo<TransportVehicleVo> pageInfo = new PageInfo<>(transportVehicleVos);
-        return BaseResultUtil.success(pageInfo);
-    }
-
-    @Override
-    public ResultVo dispatchCarrier(DispatchCarrierDto dto) {
-        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        List<DispatchCarrierVo> carrierVos = carrierDao.findDispatchCarrier(dto);
-        PageInfo<DispatchCarrierVo> pageInfo = new PageInfo<>(carrierVos);
-        return BaseResultUtil.success(pageInfo);
-    }
-
-    @Override
-    public ResultVo<PageVo<TrailCarrierVo>> trailDriver(TrailCarrierDto dto) {
-        PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
-        List<TrailCarrierVo> carrierVos = carrierDao.findTrailDriver(dto);
-        PageInfo<TrailCarrierVo> pageInfo =  new PageInfo<>(carrierVos);
         return BaseResultUtil.success(pageInfo);
     }
 

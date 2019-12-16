@@ -57,5 +57,7 @@ public class WaitAllotVo {
     @ApiModelProperty(value = "调度人ID")
     @JsonSerialize(using = ToStringSerializer.class)
     private Long createUserId;
-
+    public String getGuideLine() {
+        return guideLine == null ? "" : guideLine;
+    }
 }

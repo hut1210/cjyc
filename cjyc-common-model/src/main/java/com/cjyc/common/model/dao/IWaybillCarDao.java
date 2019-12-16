@@ -129,4 +129,19 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
     int cancelAfterWaybillCar(@Param("id") Long id, @Param("orderCarNo") String orderCarNo);
 
     int countTrunkWaybillCar(String orderCarNo);
+
+    /**
+     * 业务员端我确认/下单我送车任务交付客户
+     * @param driverId
+     * @return
+     */
+    Integer deliveredCarCount(@Param("driverId") Long driverId);
+
+    /**
+     * 获取业务员端提送车完成台数
+     * @param type
+     * @param driverId
+     * @return
+     */
+    Integer waybillCarCount(@Param("type") Integer type,@Param("driverId") Long driverId);
 }

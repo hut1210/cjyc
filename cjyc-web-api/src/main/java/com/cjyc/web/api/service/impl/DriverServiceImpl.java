@@ -12,11 +12,9 @@ import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.driver.*;
 import com.cjyc.common.model.dto.web.user.DriverListDto;
-import com.cjyc.common.model.dto.web.vehicle.SelectVehicleDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.FlagEnum;
-import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.driver.DriverIdentityEnum;
 import com.cjyc.common.model.enums.task.TaskStateEnum;
 import com.cjyc.common.model.enums.transport.*;
@@ -28,8 +26,6 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.carrier.ExistCarrierVo;
 import com.cjyc.common.model.vo.web.driver.*;
 import com.cjyc.common.model.vo.web.user.DriverListVo;
-import com.cjyc.common.model.vo.web.vehicle.VehicleExportExcel;
-import com.cjyc.common.model.vo.web.vehicle.VehicleVo;
 import com.cjyc.common.system.service.ICsDriverService;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.ICsVehicleService;
@@ -40,7 +36,6 @@ import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -344,13 +339,6 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         return BaseResultUtil.success();
     }
 
-    @Override
-    public ResultVo dispatchDriver(DispatchDriverDto dto) {
-        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        List<DispatchDriverVo> dispatchDriverVos = driverDao.getDispatchDriver(dto);
-        PageInfo<DispatchDriverVo> pageInfo = new PageInfo<>(dispatchDriverVos);
-        return BaseResultUtil.success(pageInfo);
-    }
     @Override
     public ResultVo<PageVo<DispatchDriverVo>> carrierDrvierList(CarrierDriverListDto dto) {
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize(), true);

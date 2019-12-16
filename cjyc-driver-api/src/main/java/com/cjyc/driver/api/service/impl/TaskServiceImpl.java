@@ -11,6 +11,7 @@ import com.cjyc.common.model.dto.driver.task.NoFinishTaskQueryDto;
 import com.cjyc.common.model.dto.driver.task.TaskQueryDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.task.CarDetailVo;
@@ -99,6 +100,12 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
 
     @Override
     public ResultVo<PageVo<TaskBillVo>> getHistoryTaskPage(TaskQueryDto dto) {
+        if (dto.getCompleteTimeE() != null && dto.getCompleteTimeE() != 0) {
+            dto.setCompleteTimeE(TimeStampUtil.convertEndTime(dto.getCompleteTimeE()));
+        }
+        if (dto.getExpectStartDateE() != null && dto.getExpectStartDateE() != 0) {
+            dto.setExpectStartDateE(TimeStampUtil.convertEndTime(dto.getExpectStartDateE()));
+        }
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<TaskBillVo> taskList = taskDao.selectHistoryTaskPage(dto);
         PageInfo pageInfo = new PageInfo(taskList);
@@ -107,6 +114,13 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
 
     @Override
     public ResultVo<PageVo<TaskBillVo>> getFinishTaskPage(TaskQueryDto dto) {
+        if (dto.getCompleteTimeE() != null && dto.getCompleteTimeE() != 0) {
+            dto.setCompleteTimeE(TimeStampUtil.convertEndTime(dto.getCompleteTimeE()));
+        }
+        if (dto.getExpectStartDateE() != null && dto.getExpectStartDateE() != 0) {
+            dto.setExpectStartDateE(TimeStampUtil.convertEndTime(dto.getExpectStartDateE()));
+        }
+
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<TaskBillVo> taskList = taskDao.selectFinishTaskPage(dto);
         PageInfo pageInfo = new PageInfo(taskList);

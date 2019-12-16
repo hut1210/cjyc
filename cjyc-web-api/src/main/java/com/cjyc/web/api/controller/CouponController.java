@@ -4,8 +4,6 @@ import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.coupon.ConsumeCouponDto;
 import com.cjyc.common.model.dto.web.coupon.CouponDto;
 import com.cjyc.common.model.dto.web.coupon.SeleCouponDto;
-import com.cjyc.common.model.enums.ResultEnum;
-import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.coupon.ConsumeCouponVo;

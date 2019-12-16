@@ -67,13 +67,6 @@ public interface IDriverService {
      */
     ResultVo resetState(Long id, Integer flag);
 
-    /**
-     * 调度个人司机
-     * @param dto
-     * @return
-     */
-    ResultVo<PageVo<DispatchDriverVo>> dispatchDriver(DispatchDriverDto dto);
-
     Driver getById(Long id, boolean isSearchCache);
 
     ResultVo<PageVo<DispatchDriverVo>> carrierDrvierList(CarrierDriverListDto dto);

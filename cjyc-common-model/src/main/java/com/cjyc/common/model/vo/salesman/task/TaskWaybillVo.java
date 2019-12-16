@@ -63,7 +63,9 @@ public class TaskWaybillVo implements Serializable {
 
     @ApiModelProperty(value = "车辆数")
     private Integer carNum;
-
+    public String getGuideLine() {
+        return guideLine == null ? "" : guideLine;
+    }
     public Long getUnloadTime() {
         return unloadTime ==null ? 0 : unloadTime;
     }

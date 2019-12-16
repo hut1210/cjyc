@@ -11,6 +11,8 @@ import com.cjyc.common.model.vo.salesman.mine.QRCodeVo;
 import com.cjyc.common.model.vo.salesman.mine.StockCarDetailVo;
 import com.cjyc.common.model.vo.salesman.mine.StockCarVo;
 
+import java.util.Map;
+
 public interface IMineService extends IService<WaybillCar> {
 
     /**
@@ -32,7 +34,7 @@ public interface IMineService extends IService<WaybillCar> {
      * @param dto
      * @return
      */
-    ResultVo achieveCount(AchieveDto dto);
+    ResultVo<Map<String,Object>> achieveCount(AchieveDto dto);
 
     /**
      * 二维码

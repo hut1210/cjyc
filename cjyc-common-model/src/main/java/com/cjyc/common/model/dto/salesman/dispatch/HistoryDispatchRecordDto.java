@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 /**
  * @Description 历史调度记录参数对象
@@ -21,8 +22,9 @@ public class HistoryDispatchRecordDto extends BasePageDto {
     @ApiModelProperty(value = "运单编号/承运商手机号")
     private String key;
 
-    @ApiModelProperty(value = "运单类型：1提车，2干线运输，3送车，0全部")
-    private Integer type;
+    @ApiModelProperty(value = "运单类型：0全部，1提车，2干线运输，3送车")
+    @Pattern(regexp = "[0|1|2|3]",message = "运单类型只能是0,1,2,3中的一位数")
+    private String type;
 
     @ApiModelProperty("起始城市")
     private String startCity;

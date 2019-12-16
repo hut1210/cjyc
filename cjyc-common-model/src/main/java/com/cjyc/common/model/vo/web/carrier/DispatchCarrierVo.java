@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 @Data
@@ -40,5 +41,11 @@ public class DispatchCarrierVo implements Serializable {
 
     @ApiModelProperty("是否开发票 0：否  1：是")
     private Integer isInvoice;
+
+    public String getName(){return StringUtils.isBlank(name) ? "":name;}
+    public String getLinkman(){return StringUtils.isBlank(linkman) ? "":linkman;}
+    public String getLinkmanPhone(){return StringUtils.isBlank(linkmanPhone) ? "":linkmanPhone;}
+    public Integer getSettlePeriod(){return settlePeriod == null ? 0:settlePeriod;}
+    public Integer getIsInvoice(){return isInvoice == null ? 0:isInvoice;}
 
 }
