@@ -47,4 +47,13 @@ public interface IDispatchService {
     ResultVo getHistoryRecord(HistoryDispatchRecordDto dto);
 
     ResultVo<PageVo<WaitDispatchCarListVo>> waitDispatchCarList(DispatchListDto reqDto);
+
+    /**
+     * 功能描述: 根据运单ID查询运单明细
+     * @author liuxingxiang
+     * @date 2019/12/16
+     * @param waybillId
+     * @return com.cjyc.common.model.vo.ResultVo
+     */
+    ResultVo getWaybillDetail(Long waybillId);
 }

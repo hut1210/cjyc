@@ -1242,36 +1242,23 @@
     <select id="selectWaybillRecordList" parameterType="java.lang.Long"
             resultType="com.cjyc.common.model.vo.salesman.dispatch.DispatchRecordVo">
         select
-            t.guide_line as guideLine,
-            t.type as type,
-            t.no as waybillNo,
-            t.load_link_name as loadLinkName,
-            t.load_link_phone as loadLinkPhone,
-            t.start_address as startAddress,
-            t.unload_link_name as unloadLinkName,
-            t.unload_link_phone as unloadLinkPhone,
-            t.end_address as endAddress,
-            carr.linkman as linkMan,
-            carr.linkman_phone as linkmanPhone
+            w.carrier_id as carrierId,
+            w.guide_line as guideLine,
+            w.type as type,
+            w.no as waybillNo,
+            w.carrier_name as carrierName,
+            w.carrier_type as carrierType,
+            car.load_link_name as loadLinkName,
+            car.load_link_phone as loadLinkPhone,
+            car.start_address as startAddress,
+            car.unload_link_name as unloadLinkName,
+            car.unload_link_phone as unloadLinkPhone,
+            car.end_address as endAddress
         from
-            (select
-                w.carrier_id,
-                w.guide_line,
-                w.type,
-                w.no,
-                car.load_link_name,
-                car.load_link_phone,
-                car.start_address,
-                car.unload_link_name,
-                car.unload_link_phone,
-                car.end_address
-            from
-                w_waybill_car car
-                left join w_waybill w on car.waybill_id=w.id
-            where
-                order_car_id=#{id}
-            ) t
-            left join d_carrier carr on t.carrier_id=carr.id
+            w_waybill_car car
+            left join w_waybill w on car.waybill_id=w.id
+        where
+            order_car_id=#{id}
     </select>
     <select id="findLastByOderCarId" resultType="com.cjyc.common.model.entity.WaybillCar">
         select

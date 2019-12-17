@@ -1,18 +1,20 @@
 package com.cjyc.salesman.api.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.salesman.dispatch.DispatchListDto;
 import com.cjyc.common.model.dto.salesman.dispatch.HistoryDispatchRecordDto;
-import com.cjyc.common.model.entity.Order;
-import com.cjyc.common.model.entity.OrderCar;
+import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.entity.defined.BizScope;
 import com.cjyc.common.model.enums.BizScopeEnum;
+import com.cjyc.common.model.enums.waybill.WaybillCarrierTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.driver.task.CarDetailVo;
 import com.cjyc.common.model.vo.salesman.dispatch.*;
 import com.cjyc.common.system.config.LogoImgProperty;
 import com.cjyc.common.system.service.sys.ICsSysService;
@@ -51,6 +53,12 @@ public class DispatchServiceImpl implements IDispatchService {
     private ICarSeriesDao carSeriesDao;
     @Resource
     private IWaybillDao waybillDao;
+    @Resource
+    private ICarrierDao carrierDao;
+    @Resource
+    private IAdminDao adminDao;
+    @Resource
+    private ICustomerDao customerDao;
 
     @Override
     public ResultVo getCityCarCount(Long loginId) {
@@ -155,6 +163,71 @@ public class DispatchServiceImpl implements IDispatchService {
     }
 
     @Override
+    public ResultVo getWaybillDetail(Long waybillId) {
+        WaybillDetailVo detail = new WaybillDetailVo();
+        // 查询运单信息
+        Waybill waybill = waybillDao.selectById(waybillId);
+        if (waybill != null) {
+            return BaseResultUtil.fail("运单ID错误");
+        }
+        BeanUtils.copyProperties(waybill,detail);
+        // 查询承运商管理员手机号
+        getCarrierPhone(detail, waybill);
+
+        // 查询车辆信息
+        LambdaQueryWrapper<WaybillCar> queryWrapper = new QueryWrapper<WaybillCar>().lambda().eq(WaybillCar::getWaybillId, waybillId);
+        List<WaybillCar> waybillCarList = waybillCarDao.selectList(queryWrapper);
+        List<CarDetailVo> carDetailVoList = new ArrayList<>(10);
+        CarDetailVo carDetailVo = null;
+        if (!CollectionUtils.isEmpty(waybillCarList)) {
+            for (WaybillCar waybillCar : waybillCarList) {
+                carDetailVo = new CarDetailVo();
+                BeanUtils.copyProperties(waybillCar,carDetailVo);
+
+                // 查询品牌车系信息
+                OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
+                BeanUtils.copyProperties(orderCar,carDetailVo);
+
+                carDetailVo.setId(waybillCar.getId());
+                carDetailVoList.add(carDetailVo);
+            }
+        }
+        detail.setCarDetailVoList(carDetailVoList);
+
+        return BaseResultUtil.success(detail);
+    }
+
+    private void getCarrierPhone(WaybillDetailVo detail, Waybill waybill) {
+        int code1 = WaybillCarrierTypeEnum.TRUNK_INDIVIDUAL.code;
+        int code2 = WaybillCarrierTypeEnum.TRUNK_ENTERPRISE.code;
+        int code3 = WaybillCarrierTypeEnum.LOCAL_ADMIN.code;
+        int code4 = WaybillCarrierTypeEnum.LOCAL_PILOT.code;
+        int code5 = WaybillCarrierTypeEnum.LOCAL_CONSIGN.code;
+        int code6 = WaybillCarrierTypeEnum.SELF.code;
+
+        Integer carrierType = waybill.getCarrierType();
+        boolean b = carrierType == code1 || carrierType == code2 || carrierType == code4 || carrierType == code5;
+        if (b) {
+            Carrier carrier = carrierDao.selectById(waybill.getCarrierId());
+            if (carrier != null) {
+                detail.setLinkmanPhone(carrier.getLinkmanPhone());
+            }
+        }
+        if (carrierType == code3) {
+            Admin admin = adminDao.selectById(waybill.getCarrierId());
+            if (admin != null) {
+                detail.setLinkmanPhone(admin.getPhone());
+            }
+        }
+        if (carrierType == code6) {
+            Customer customer = customerDao.selectById(waybill.getCarrierId());
+            if (customer != null) {
+                detail.setLinkmanPhone(customer.getContactPhone());
+            }
+        }
+    }
+
+    @Override
     public ResultVo getCarDetail(String carNo) {
         // 查询车辆信息
         DispatchCarDetailVo detail = new DispatchCarDetailVo();
@@ -167,6 +240,7 @@ public class DispatchServiceImpl implements IDispatchService {
         BeanUtils.copyProperties(order,detail);
         // 查询调度记录
         List<DispatchRecordVo> dispatchRecordVoList = waybillCarDao.selectWaybillRecordList(orderCar.getId());
+        // TODO
         detail.setDispatchRecordVoList(dispatchRecordVoList);
         return BaseResultUtil.success(detail);
     }

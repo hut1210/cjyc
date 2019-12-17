@@ -13,6 +13,9 @@ import java.io.Serializable;
 @Data
 public class DispatchRecordVo implements Serializable {
     private static final long serialVersionUID = -4832183796204894651L;
+    @ApiModelProperty(value = "承运商ID")
+    private String carrierId;
+
     @ApiModelProperty(value = "运单编号")
     private String waybillNo;
 
@@ -32,7 +35,11 @@ public class DispatchRecordVo implements Serializable {
     private String startAddress;
 
     @ApiModelProperty(value = "承运商联系人")
-    private String linkMan;
+    private String carrierName;
+
+    @ApiModelProperty(value = "承运商类型：1干线-个人承运商，2干线-企业承运商，" +
+            "3同城-业务员，4同城-代驾，5同城-拖车，6客户自己")
+    private Integer carrierType;
 
     @ApiModelProperty(value = "承运商手机号")
     private String linkmanPhone;
