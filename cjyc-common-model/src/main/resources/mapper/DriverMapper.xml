@@ -473,23 +473,24 @@
     <!--根据司机所在的承运商id获取司机信息-->
     <select id="selectDriverList" parameterType="com.cjyc.common.model.dto.driver.task.DriverQueryDto"
             resultType="com.cjyc.common.model.vo.driver.task.TaskDriverVo">
-        select
-            con.role as role,
-            con.driver_id as driverId,
-            run.carry_car_num as carryCarNum,
-            run.occupied_car_num as occupiedCarNum,
-            run.plate_no as plateNo,
-            run.running_state as runningState,
-            d.real_name as realName,
-            d.id_card as idCard,
-            d.phone as phone,
-            d.id as loginId
-        from
-            d_vehicle_running run
-            left join d_driver d on run.driver_id=d.id
-            left join d_carrier_driver_con con on run.driver_id=con.driver_id
+        SELECT
+            con.role AS role,
+            con.driver_id AS driverId,
+            run.carry_car_num AS carryCarNum,
+            run.occupied_car_num AS occupiedCarNum,
+            run.plate_no AS plateNo,
+            run.running_state AS runningState,
+            d.real_name AS realName,
+            d.id_card AS idCard,
+            d.phone AS phone,
+            d.id AS loginId
+        FROM
+            d_driver d
+            LEFT JOIN d_carrier_driver_con con ON d.id = con.driver_id
+            LEFT JOIN d_vehicle_running run ON d.id = run.driver_id
         <where>
-            run.state= 1 and con.state = ${@com.cjyc.common.model.enums.CommonStateEnum@CHECKED.code} and con.carrier_id=#{carrierId}
+            con.state = ${@com.cjyc.common.model.enums.CommonStateEnum@CHECKED.code}
+            and con.carrier_id=#{carrierId}
             <if test="keyword != null and keyword.trim() != ''">
                 and (
                 d.real_name like CONCAT('%',#{keyword},'%')
@@ -498,7 +499,6 @@
                 )
             </if>
         </where>
-        group by con.driver_id
     </select>
 
     <!--获取司机端我的车辆-->
