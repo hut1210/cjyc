@@ -28,12 +28,26 @@ public class RegionController {
     @Autowired
     private IRegionService regionService;
 
+    /**
+     * 功能描述: 分页查询大区列表
+     * @author liuxingxiang
+     * @date 2019/12/17
+     * @param dto
+     * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.vo.PageVo<com.cjyc.common.model.vo.web.city.RegionVo>>
+     */
     @ApiOperation(value = "分页查询大区列表")
     @PostMapping("/getRegionPage")
     public ResultVo<PageVo<RegionVo>> getRegionPage(@RequestBody RegionQueryDto dto){
         return regionService.getRegionPage(dto);
     }
 
+    /**
+     * 功能描述: 新增大区
+     * @author liuxingxiang
+     * @date 2019/12/17
+     * @param dto
+     * @return com.cjyc.common.model.vo.ResultVo
+     */
     @ApiOperation(value = "新增大区")
     @PostMapping("/addRegion")
     public ResultVo addRegion(@RequestBody @Validated RegionAddDto dto){
@@ -47,6 +61,13 @@ public class RegionController {
         return resultVo;
     }
 
+    /**
+     * 功能描述: 修改大区
+     * @author liuxingxiang
+     * @date 2019/12/17
+     * @param dto
+     * @return com.cjyc.common.model.vo.ResultVo
+     */
     @ApiOperation(value = "修改大区")
     @PostMapping("/modifyRegion")
     public ResultVo modifyRegion(@RequestBody @Validated RegionUpdateDto dto){
@@ -60,6 +81,13 @@ public class RegionController {
         return resultVo;
     }
 
+    /**
+     * 功能描述: 删除大区
+     * @author liuxingxiang
+     * @date 2019/12/17
+     * @param regionCode
+     * @return com.cjyc.common.model.vo.ResultVo
+     */
     @ApiOperation(value = "删除大区")
     @PostMapping("/removeRegion/{regionCode}")
     public ResultVo removeRegion(@PathVariable String regionCode){

@@ -42,6 +42,7 @@ public class TransportServiceImpl implements ITransportService {
         }
         Map<String,Object> map = new HashMap<>(10);
         map.put("defaultWlFee",line.getDefaultWlFee() == null ? BigDecimal.ZERO : line.getDefaultWlFee().divide(new BigDecimal(100)));
+        map.put("lineId",line.getId() == null ? "":line.getId());
         inquiryService.saveInquiry(dto,line.getDefaultWlFee());
         return BaseResultUtil.success(map);
     }

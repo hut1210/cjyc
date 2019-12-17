@@ -8,10 +8,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
 import com.cjkj.common.utils.ExcelUtil;
-import com.cjkj.usercenter.dto.common.AddDeptReq;
 import com.cjkj.usercenter.dto.common.AddDeptResp;
 import com.cjkj.usercenter.dto.common.SelectDeptResp;
 import com.cjkj.usercenter.dto.common.UpdateDeptReq;
+import com.cjkj.usercenter.dto.yc.AddInnerDeptAndFillReq;
 import com.cjkj.usercenter.dto.yc.SelectUsersByRoleResp;
 import com.cjyc.common.model.dao.IAdminDao;
 import com.cjyc.common.model.dao.ICityDao;
@@ -37,7 +37,6 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.store.StoreExportExcel;
 import com.cjyc.common.model.vo.store.StoreVo;
 import com.cjyc.common.system.feign.ISysDeptService;
-import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.common.system.util.ResultDataUtil;
@@ -47,6 +46,7 @@ import com.github.pagehelper.PageInfo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -74,10 +74,6 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
     private ISysDeptService sysDeptService;
     @Autowired
     private ISysUserService sysUserService;
-    @Autowired
-    private ISysRoleService sysRoleService;
-    @Autowired
-    private ICsSysService sysService;
     @Resource
     private IAdminDao adminDao;
     @Resource
@@ -127,10 +123,13 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public ResultVo add(StoreAddDto storeAddDto) {
-        // 验证名称是否重复
-        Store queryStore = super.getOne(new QueryWrapper<Store>().lambda().eq(Store::getName, storeAddDto.getName()));
+        // 验证业务中心名称是否重复
+        Store queryStore = super.getOne(new QueryWrapper<Store>().lambda()
+                .eq(Store::getName, storeAddDto.getName())
+                .eq(Store::getIsDelete,DeleteStateEnum.NO_DELETE.code));
         if(queryStore != null){
             return BaseResultUtil.getVo(ResultEnum.EXIST_STORE.getCode(),ResultEnum.EXIST_STORE.getMsg());
         }
@@ -140,21 +139,34 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
         store.setIsDelete(DeleteStateEnum.NO_DELETE.code);
         store.setState(CommonStateEnum.CHECKED.code);
         store.setCreateTime(System.currentTimeMillis());
+
+        // 查询操作人姓名
         Admin admin = adminDao.selectOne(new QueryWrapper<Admin>().lambda().eq(Admin::getId, storeAddDto.getCreateUserId()).select(Admin::getName));
         if (!Objects.isNull(admin)) {
             store.setOperationName(admin.getName());
         }
+
+        // 查询历史业务中心未删除的数据
+        List<Store> list = super.list(new QueryWrapper<Store>().lambda()
+                .eq(Store::getIsDelete, DeleteStateEnum.NO_DELETE.code));
+        if (!CollectionUtils.isEmpty(list)) {
+            store.setDeptId(list.get(0).getDeptId());
+        }
+
         //将业务中心信息添加到物流平台
         ResultData<Long> saveRd = addBizCenterToPlatform(store);
         if (!ReturnMsg.SUCCESS.getCode().equals(saveRd.getCode())) {
             log.error("保存业务中心失败，原因：" + saveRd.getMsg());
             return BaseResultUtil.fail();
         }
+
+        // 保存业务中心到韵车系统
         store.setDeptId(saveRd.getData());
         boolean result =  super.save(store);
         return result ? BaseResultUtil.success() : BaseResultUtil.fail();
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public boolean modify(StoreUpdateDto storeUpdateDto) {
         Store store = new Store();
@@ -248,6 +260,7 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
         return BaseResultUtil.success(pageInfo);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public ResultVo addCoveredArea(StoreDto dto) {
         StoreCityCon storeCityCon = new StoreCityCon();
@@ -263,6 +276,7 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
         return BaseResultUtil.success();
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public ResultVo removeCoveredArea(StoreDto dto) {
         LambdaUpdateWrapper<StoreCityCon> updateWrapper = null;
@@ -284,6 +298,7 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
             return storeDao.findByIds(bizScope.getStoreIds());
         }
     }
+
     @Override
     public List<StoreVo> getVoListByRoleId(Long roleId) {
         BizScope bizScope = csSysService.getBizScopeByRoleId(roleId, true);
@@ -296,6 +311,7 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public ResultVo remove(Long id) {
         Store store = super.getById(id);
@@ -332,8 +348,6 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
         }
     }
 
-
-
     private StoreQueryDto getStoreQueryDto(HttpServletRequest request) {
         StoreQueryDto storeQueryDto = new StoreQueryDto();
         storeQueryDto.setCurrentPage(Integer.valueOf(request.getParameter("currentPage")));
@@ -366,10 +380,11 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
             return ResultData.failed("根据城市编码查询机构信息错误，原因：" + deptRd.getMsg());
         }
         Long parentId = deptRd.getData().getDeptId();
-        AddDeptReq deptReq = new AddDeptReq();
+        AddInnerDeptAndFillReq deptReq = new AddInnerDeptAndFillReq();
         deptReq.setName(store.getName());
         deptReq.setParentId(parentId);
-        ResultData<AddDeptResp> saveRd = sysDeptService.save(deptReq);
+        deptReq.setTemplateDeptId(store.getDeptId());
+        ResultData<AddDeptResp> saveRd = sysDeptService.addInnerDeptAndFill(deptReq);
         if (!ReturnMsg.SUCCESS.getCode().equals(saveRd.getCode())) {
             return ResultData.failed("保存业务中心失败，原因：" + saveRd.getMsg());
         }

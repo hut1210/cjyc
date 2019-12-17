@@ -1324,13 +1324,13 @@
 
     <!--业务员端提送车完成台数-->
     <select id="waybillCarCount" resultType="java.lang.Integer">
-        SELECT
+       SELECT
             count( wwc.id )
         FROM
-            w_waybill_car wwc
-            LEFT JOIN w_task_car wtc ON wtc.waybill_car_id = wwc.waybill_id
-            LEFT JOIN w_task wt ON wt.waybill_id = wtc.task_id
-            LEFT JOIN w_waybill ww ON ww.id = wt.waybill_id
+            w_task wt
+		LEFT JOIN w_task_car wtc ON wtc.task_id = wt.id
+		LEFT JOIN w_waybill_car wwc ON wwc.id = wtc.waybill_car_id
+		LEFT JOIN w_waybill ww ON ww.id = wwc.waybill_id
         WHERE
             ww.type = #{type}
             AND wt.state = 100
@@ -1343,10 +1343,10 @@
         SELECT
             count( wwc.id )
         FROM
-            w_waybill_car wwc
-            LEFT JOIN w_task_car wtc ON wtc.waybill_car_id = wwc.waybill_id
-            LEFT JOIN w_task wt ON wt.waybill_id = wtc.task_id
-            LEFT JOIN w_waybill ww ON ww.id = wt.waybill_id
+            w_task wt
+		LEFT JOIN w_task_car wtc ON wtc.task_id = wt.id
+		LEFT JOIN w_waybill_car wwc ON wwc.id = wtc.waybill_car_id
+		LEFT JOIN w_waybill ww ON ww.id = wwc.waybill_id
         WHERE
             ww.type = 3
             AND wt.state = 100

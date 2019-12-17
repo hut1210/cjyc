@@ -41,5 +41,8 @@ public class DriverCarCount implements Serializable {
     @ApiModelProperty(value = "收入/分")
     private BigDecimal income;
 
+    @ApiModelProperty(value = "创建时间")
+    private Long createTime;
+
 
 }

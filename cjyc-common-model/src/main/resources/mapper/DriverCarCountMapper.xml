@@ -8,11 +8,12 @@
         <result column="driver_id" property="driverId" />
         <result column="car_num" property="carNum" />
         <result column="income" property="income" />
+        <result column="create_time" property="createTime" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, driver_id, car_num, income
+        id, driver_id, car_num, income, create_time
     </sql>
 
 </mapper>

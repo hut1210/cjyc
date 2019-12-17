@@ -28,7 +28,7 @@ public class CarSeriesController {
     @ApiOperation(value = "查看品牌车系")
     @PostMapping(value = "/queryCarSeries")
     public ResultVo<List<CarSeriesTree>> queryCarSeries(@RequestBody KeywordDto dto){
-        return csCarSeriesService.tree(false,dto.getKeyword());
+        return csCarSeriesService.tree(true,dto.getKeyword());
     }
 
 }

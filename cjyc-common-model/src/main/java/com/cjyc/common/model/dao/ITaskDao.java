@@ -12,6 +12,7 @@ import com.cjyc.common.model.vo.driver.task.TaskBillVo;
 import com.cjyc.common.model.vo.salesman.mine.StockTaskVo;
 import com.cjyc.common.model.vo.salesman.task.TaskWaybillVo;
 import com.cjyc.common.model.vo.web.task.CrTaskVo;
+import com.cjyc.common.model.vo.web.task.DriverCarCountVo;
 import com.cjyc.common.model.vo.web.task.ListByWaybillTaskVo;
 import com.cjyc.common.model.vo.web.task.TaskVo;
 import org.apache.ibatis.annotations.Param;
@@ -115,4 +116,6 @@ public interface ITaskDao extends BaseMapper<Task> {
      * @return java.util.List<com.cjyc.common.model.vo.salesman.task.TaskWaybillVo>
      */
     List<TaskWaybillVo> selectOutAndInStorageList(OutAndInStorageQueryDto dto);
+
+    List<DriverCarCountVo> findDriverCarCount(@Param("beforeStartDay") Long beforeStartDay,@Param("beforeEndDay") Long beforeEndDay);
 }
