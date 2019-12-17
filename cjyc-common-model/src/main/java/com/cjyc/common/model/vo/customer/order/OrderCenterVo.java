@@ -1,11 +1,13 @@
 package com.cjyc.common.model.vo.customer.order;
 
+import com.cjyc.common.model.util.BigDecimalSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +28,8 @@ public class OrderCenterVo implements Serializable {
     private String endCity;
 
     @ApiModelProperty(value = "订单总价")
-    private String totalFee;
+    @JsonSerialize(using= BigDecimalSerizlizer.class)
+    private BigDecimal totalFee;
 
     @ApiModelProperty(value = "车辆总数")
     private Integer carNum;
@@ -57,8 +60,8 @@ public class OrderCenterVo implements Serializable {
     public String getState() {
         return state == null ? "-1" : state;
     }
-    public String getTotalFee() {
-        return totalFee == null ? "0.00" : totalFee;
+    public BigDecimal getTotalFee() {
+        return totalFee == null ? new BigDecimal(0) : totalFee;
     }
     public Integer getCarNum() {
         return carNum == null ? 0 : carNum;
