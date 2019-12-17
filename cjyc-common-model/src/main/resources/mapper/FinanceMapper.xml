@@ -4,7 +4,7 @@
 
     <select id="getFinanceList" parameterType="com.cjyc.common.model.dto.web.finance.FinanceQueryDto" resultType="com.cjyc.common.model.vo.web.finance.FinanceVo">
         select woc.no as no,woc.vin as vin,woc.brand,woc.model,woc.order_no as orderNo,
-        wo.input_store_name as inputStoreName,woc.total_fee as freightreceivable,
+        wo.input_store_name as inputStoreName,woc.total_fee as freightReceivable,
         cc.type as type,cc.name as customerName,cc.pay_mode as payMode
         from w_order_car woc
         left join w_order wo on woc.order_no = wo.no
@@ -218,79 +218,8 @@
 
     <select id="getCollectReceiveList" parameterType="com.cjyc.common.model.dto.web.finance.CollectReceiveQueryDto"
             resultType="com.cjyc.common.model.vo.web.finance.CollectReceiveVo">
-        select woc.no,woc.vin,wt.complete_time as completeTime,
-        cc.id,cc.type,
-        if(cc.pay_mode=0,'时付','账期') as payModeName,woc.total_fee as freightReceivable,
-        woc.total_fee as freightPay,
-        woc.order_no as orderNo,
-        wo.start_address as startAddress,
-        wo.end_address as endAddress,
-        woc.now_area_code as largeArea,wo.input_store_id,
-        wo.input_store_name as inputStoreName,
-        wo.customer_name as customerName
-        from w_order_car woc
-        left join w_order wo on woc.order_id = wo.id
-        left join c_customer cc on cc.id = wo.customer_id
-        left join w_waybill_car wwc on wwc.order_car_no = woc.no
-        left join w_task wt on wt.waybill_no = wwc.waybill_no
-
-        where cc.pay_mode = 0
-        <if test="no != null and no.trim() != ''">
-            and woc.no like concat('%',#{no},'%')
-        </if>
-        <if test="vin != null and vin.trim() != ''">
-            and  woc.vin = #{vin}
-        </if>
-        <if test="orderNo != null and orderNo.trim() != ''">
-            and  woc.order_no like concat('%',#{orderNo},'%')
-        </if>
-        <if test="completeStartTime!= null">
-            and wt.complete_time &gt;= #{completeStartTime}
-        </if>
-        <if test="completeEndTime!= null">
-            and wt.complete_time &lt;= #{completeEndTime}
-        </if>
-
-        <if test="type != null">
-            and cc.type = #{type}
-        </if>
-        <if test="customerName != null  and customerName.trim() != ''">
-            and  cc.name  like concat('%',#{customerName},'%')
-        </if>
-        <if test="contactPhone != null  and contactPhone.trim() != ''">
-            and cc.contact_phone like concat('%',#{contactPhone},'%')
-        </if>
-        <if test="inputStoreName != null and inputStoreName.trim() != ''">
-            and wo.input_store_name = #{inputStoreName}
-        </if>
-
-        <if test="brand != null and brand.trim() != ''">
-            and cc.brand = #{brand}
-        </if>
-        <if test="model != null and model.trim() != ''">
-            and cc.model = #{model}
-        </if>
-        <if test="area != null and area.trim() != ''">
-            and woc.now_area_code like concat('%',#{area},'%')
-        </if>
-        <if test="startProvinceCode != null and startProvinceCode.trim() != ''">
-            and wo.start_province = #{startProvinceCode}
-        </if>
-        <if test="startCityCode != null and startCityCode.trim() != ''">
-            and wo.start_city = #{startCityCode}
-        </if>
-        <if test="startAreaCode != null and startAreaCode.trim() != ''">
-            and wo.start_area = #{startAreaCode}
-        </if>
-        <if test="endProvinceCode != null and endProvinceCode.trim() != ''">
-            and wo.end_province = #{endProvinceCode}
-        </if>
-        <if test="endCityCode != null and endCityCode.trim() != ''">
-            and wo.end_city = #{endCityCode}
-        </if>
-        <if test="endAreaCode != null and endAreaCode.trim() != ''">
-            and wo.end_area = #{endAreaCode}
-        </if>
+        select ww.no as wayBillNo,ww.type as wayBillType
+        from w_waybill ww
 
     </select>
 </mapper>

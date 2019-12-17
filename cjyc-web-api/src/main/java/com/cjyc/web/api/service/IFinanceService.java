@@ -40,4 +40,8 @@ public interface IFinanceService {
     ResultVo<PageVo<PaidVo>> getPaidList(PayMentQueryDto payMentQueryDto);
 
     ResultVo<PageVo<CollectReceiveVo>> getCollectReceiveList(CollectReceiveQueryDto collectReceiveQueryDto);
+
+    ResultVo<CashSettlementDetailVo> settleDetail(String wayBillNo);
+
+    ResultVo updateBackState(String wayBillNo);
 }
