@@ -8,12 +8,6 @@ import com.cjyc.common.model.dto.web.driver.DispatchDriverDto;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.salesman.dispatch.*;
-import com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo;
-import com.cjyc.common.model.vo.salesman.dispatch.CityCarCountVo;
-import com.cjyc.common.model.vo.salesman.dispatch.DispatchCarDetailVo;
-import com.cjyc.common.model.vo.salesman.dispatch.DispatchListVo;
-import com.cjyc.common.model.vo.salesman.dispatch.HistoryDispatchRecordVo;
-import com.cjyc.common.model.vo.salesman.dispatch.*;
 import com.cjyc.common.model.vo.web.carrier.DispatchCarrierVo;
 import com.cjyc.common.model.vo.web.carrier.TrailCarrierVo;
 import com.cjyc.common.model.vo.web.driver.DispatchDriverVo;
@@ -127,13 +121,13 @@ public class DispatchController {
     }
 
     /**
-     * 功能描述: 根据运单ID查询运单明细
+     * 功能描述: 根据运单ID查询历史调度记录明细
      * @author liuxingxiang
      * @date 2019/12/16
      * @param waybillId
      * @return com.cjyc.common.model.vo.ResultVo
      */
-    @ApiOperation(value = "根据运单ID查询运单明细")
+    @ApiOperation(value = "根据运单ID查询历史调度记录明细")
     @PostMapping(value = "/getWaybillDetail/{waybillId}")
     public ResultVo<WaybillDetailVo> getWaybillDetail(@PathVariable Long waybillId){
         return dispatchService.getWaybillDetail(waybillId);

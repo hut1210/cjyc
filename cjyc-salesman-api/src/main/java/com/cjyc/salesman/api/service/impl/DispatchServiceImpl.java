@@ -167,7 +167,7 @@ public class DispatchServiceImpl implements IDispatchService {
         WaybillDetailVo detail = new WaybillDetailVo();
         // 查询运单信息
         Waybill waybill = waybillDao.selectById(waybillId);
-        if (waybill != null) {
+        if (waybill == null) {
             return BaseResultUtil.fail("运单ID错误");
         }
         BeanUtils.copyProperties(waybill,detail);
