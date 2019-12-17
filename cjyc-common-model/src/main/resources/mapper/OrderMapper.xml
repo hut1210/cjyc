@@ -385,11 +385,12 @@
             /*待确认*/
             <if test="state != null and state == 0">
                 and o.state between ${@com.cjyc.common.model.enums.order.OrderStateEnum@WAIT_SUBMIT.code}
-                and ${@com.cjyc.common.model.enums.order.OrderStateEnum@WAIT_PREPAY.code}
+                and ${@com.cjyc.common.model.enums.order.OrderStateEnum@CHECKED.code}
             </if>
             /*运输中*/
             <if test="state != null and state == 1">
-                and o.state = ${@com.cjyc.common.model.enums.order.OrderStateEnum@TRANSPORTING.code}
+                and o.state > ${@com.cjyc.common.model.enums.order.OrderStateEnum@CHECKED.code}
+                and o.state &lt; ${@com.cjyc.common.model.enums.order.OrderStateEnum@FINISHED.code}
             </if>
             /*已交付*/
             <if test="state != null and state == 2">
