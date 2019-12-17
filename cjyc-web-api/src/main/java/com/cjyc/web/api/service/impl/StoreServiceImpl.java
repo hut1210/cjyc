@@ -37,7 +37,6 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.store.StoreExportExcel;
 import com.cjyc.common.model.vo.store.StoreVo;
 import com.cjyc.common.system.feign.ISysDeptService;
-import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.common.system.util.ResultDataUtil;
@@ -47,6 +46,7 @@ import com.github.pagehelper.PageInfo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -74,10 +74,6 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
     private ISysDeptService sysDeptService;
     @Autowired
     private ISysUserService sysUserService;
-    @Autowired
-    private ISysRoleService sysRoleService;
-    @Autowired
-    private ICsSysService sysService;
     @Resource
     private IAdminDao adminDao;
     @Resource
@@ -127,6 +123,7 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public ResultVo add(StoreAddDto storeAddDto) {
         // 验证业务中心名称是否重复
@@ -169,6 +166,7 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
         return result ? BaseResultUtil.success() : BaseResultUtil.fail();
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public boolean modify(StoreUpdateDto storeUpdateDto) {
         Store store = new Store();
@@ -262,6 +260,7 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
         return BaseResultUtil.success(pageInfo);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public ResultVo addCoveredArea(StoreDto dto) {
         StoreCityCon storeCityCon = new StoreCityCon();
@@ -277,6 +276,7 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
         return BaseResultUtil.success();
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public ResultVo removeCoveredArea(StoreDto dto) {
         LambdaUpdateWrapper<StoreCityCon> updateWrapper = null;
@@ -298,6 +298,7 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
             return storeDao.findByIds(bizScope.getStoreIds());
         }
     }
+
     @Override
     public List<StoreVo> getVoListByRoleId(Long roleId) {
         BizScope bizScope = csSysService.getBizScopeByRoleId(roleId, true);
@@ -310,6 +311,7 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public ResultVo remove(Long id) {
         Store store = super.getById(id);
@@ -345,8 +347,6 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
             return storeDao.findByNameAndIds(reqDto.getStoreName(), bizScope.getStoreIds());
         }
     }
-
-
 
     private StoreQueryDto getStoreQueryDto(HttpServletRequest request) {
         StoreQueryDto storeQueryDto = new StoreQueryDto();
