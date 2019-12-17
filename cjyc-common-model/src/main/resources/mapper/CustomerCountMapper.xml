@@ -7,11 +7,12 @@
         <id column="id" property="id" />
         <result column="customer_id" property="customerId" />
         <result column="order_no" property="orderNo" />
+        <result column="create_time" property="createTime" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, customer_id, order_no
+        id, customer_id, order_no, create_time
     </sql>
 
     <!-- 根据用户userId统计用户下单量，运车量，总金额-->

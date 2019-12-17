@@ -18,4 +18,14 @@ public class TimeStampUtil {
     public static Long convertEndTime(Long time) {
         return time + TimeConstant.MILLS_OF_ONE_DAY_1;
     }
+
+    /**
+     * 获取前一天开始时间
+     * @param time
+     * @param days
+     * @return
+     */
+    public static Long subtractDays(Long time, int days) {
+        return time - days * TimeConstant.MILLS_OF_ONE_DAY;
+    }
 }

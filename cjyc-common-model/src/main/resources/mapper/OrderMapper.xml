@@ -496,5 +496,11 @@
         </where>
     </select>
 
-
+    <!--获取一天的所有订单-->
+    <select id="findDayOrder" resultType="com.cjyc.common.model.entity.Order">
+        select
+        <include refid="Base_Column_List"/>
+          from w_order
+        where create_time between #{beforeStartDay} and #{beforeEndDay}
+    </select>
 </mapper>

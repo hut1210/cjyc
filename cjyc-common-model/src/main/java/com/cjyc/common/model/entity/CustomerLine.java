@@ -57,6 +57,7 @@ public class CustomerLine implements Serializable {
     @ApiModelProperty(value = "目的地联系人电话")
     private String endContactPhone;
 
+    @ApiModelProperty(value = "创建时间")
     private Long createTime;
 
 
