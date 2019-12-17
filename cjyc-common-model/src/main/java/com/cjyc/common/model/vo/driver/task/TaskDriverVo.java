@@ -47,6 +47,33 @@ public class TaskDriverVo implements Serializable {
     @ApiModelProperty(value = "司机角色：0个人司机，1下属司机，2管理员，3超级管理员")
     private Integer role;
 
+    public String getPhone() {
+        return phone == null ? "" : phone;
+    }
+    public String getIdCard() {
+        return idCard == null ? "" : idCard;
+    }
+    public String getRealName() {
+        return realName == null ? "" : realName;
+    }
+    public Integer getRunningState() {
+        return runningState == null ? -1 : runningState;
+    }
+    public String getPlateNo() {
+        return plateNo == null ? "" : plateNo;
+    }
+    public Integer getCarryCarNum() {
+        return carryCarNum == null ? 0 : carryCarNum;
+    }
+    public Long getDriverId() {
+        return driverId == null ? 0 : driverId;
+    }
+    public Long getLoginId() {
+        return loginId == null ? 0 : loginId;
+    }
+    public Integer getRole() {
+        return role == null ? 0 : role;
+    }
     public Integer getOccupiedCarNum() {
         return occupiedCarNum == null ? 0 : occupiedCarNum;
     }
