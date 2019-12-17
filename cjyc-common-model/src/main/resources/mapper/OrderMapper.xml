@@ -376,6 +376,7 @@
             o.end_city as endCity,
             o.total_fee as totalFee,
             o.car_num as carNum,
+            o.line_id as lineId,
             #{model} as model
         from
             w_order o

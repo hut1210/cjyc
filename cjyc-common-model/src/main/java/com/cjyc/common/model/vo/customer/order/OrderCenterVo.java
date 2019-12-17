@@ -1,5 +1,7 @@
 package com.cjyc.common.model.vo.customer.order;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -11,6 +13,7 @@ import java.util.List;
 public class OrderCenterVo implements Serializable {
     private static final long serialVersionUID = -5418843717123216878L;
     @ApiModelProperty("订单主键ID")
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long id;
 
     @ApiModelProperty("订单编号")
@@ -27,6 +30,10 @@ public class OrderCenterVo implements Serializable {
 
     @ApiModelProperty(value = "车辆总数")
     private Integer carNum;
+
+    @ApiModelProperty(value = "线路ID")
+    @JsonSerialize(using= ToStringSerializer.class)
+    private Long lineId;
 
     @ApiModelProperty(value = "订单状态：0待提交，2待分配，5待确认，10待复确认，15待预付款，25已确认，55运输中，" +
             "88待付款，100已完成，111原返（待），112异常结束，113取消（待），114作废（待）")
