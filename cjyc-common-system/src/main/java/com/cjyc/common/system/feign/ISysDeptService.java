@@ -4,12 +4,7 @@ import com.cjkj.common.constant.ServiceNameConstants;
 import com.cjkj.common.feign.fallback.UserServiceFallbackFactory;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.usercenter.dto.common.*;
-import com.cjkj.usercenter.dto.yc.AddDeptAndUserReq;
-import com.cjkj.usercenter.dto.yc.AddDeptAndUserResp;
-import com.cjkj.usercenter.dto.yc.SelectUsersByRoleResp;
-import com.cjkj.usercenter.dto.yc.UpdateDeptManagerReq;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import com.cjkj.usercenter.dto.yc.*;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -116,4 +111,12 @@ public interface ISysDeptService {
      */
     @GetMapping("/feign/yc/getUsersByDeptId/{deptId}")
     ResultData<List<SelectUsersByRoleResp>> getUsersByDeptId(@PathVariable(value = "deptId") Long deptId);
+
+    /**
+     * 新增业务中心 或 新增大区
+     * @param addInnerDeptAndFillReq
+     * @return
+     */
+    @PostMapping("/feign/yc/addInnerDeptAndFill")
+    ResultData<AddDeptResp> addInnerDeptAndFill(@RequestBody AddInnerDeptAndFillReq addInnerDeptAndFillReq);
 }
