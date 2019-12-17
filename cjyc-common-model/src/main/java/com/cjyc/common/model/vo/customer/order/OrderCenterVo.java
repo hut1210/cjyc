@@ -42,6 +42,9 @@ public class OrderCenterVo implements Serializable {
     @ApiModelProperty(value = "车辆信息列表")
     private List<OrderCarCenterVo> orderCarCenterVoList;
 
+    public Long getLineId() {
+        return lineId == null ? 0 : lineId;
+    }
     public String getNo() {
         return no == null ? "" : no;
     }
