@@ -1,8 +1,6 @@
 package com.cjyc.common.system.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.cjyc.common.model.constant.TimeConstant;
-import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
@@ -43,7 +41,7 @@ public class CsCronTaskServiceImpl implements ICsCronTaskService {
 
     @Override
     public void saveCustomerOrder() {
-        System.out.println("保存前一日客户下单统计开始执行。。。。。");
+        System.out.println("保存前一天客户下单统计开始执行。。。。。");
         //查询前一天所有下的单
         List<Order> dayOrders = findBeforeDayOrder();
         if(!CollectionUtils.isEmpty(dayOrders)){
@@ -59,7 +57,7 @@ public class CsCronTaskServiceImpl implements ICsCronTaskService {
 
     @Override
     public void saveDriverCar() {
-        System.out.println("保存前一日司机完成运车统计开始执行。。。。。");
+        System.out.println("保存前一天司机完成运车统计开始执行。。。。。");
         //获取当天的开始时间
         LocalDateTime dayStartByLong = LocalDateTimeUtil.getDayStartByLong(NOW);
         //获取前一天开始时间
@@ -81,16 +79,16 @@ public class CsCronTaskServiceImpl implements ICsCronTaskService {
 
     @Override
     public void saveCustomerLine() {
-        System.out.println("前一日客户路线开始执行。。。。。");
+        System.out.println("保存前一天客户路线开始执行。。。。。");
         List<Order> dayOrders = findBeforeDayOrder();
         if(!CollectionUtils.isEmpty(dayOrders)){
             for(Order order : dayOrders){
                 Long createId = null;
                 Admin admin = adminDao.selectOne(new QueryWrapper<Admin>().lambda().eq(Admin::getUserId, order.getCreateUserId()));
                 Customer customer= customerDao.selectOne(new QueryWrapper<Customer>().lambda().eq(Customer::getUserId,order.getCreateUserId()));
-                if(customer == null){
+                if(admin != null){
                     createId = admin.getId();
-                }else{
+                }else if(customer != null){
                     createId = customer.getId();
                 }
                 CustomerLine customerLine = customerLineDao.selectOne(new QueryWrapper<CustomerLine>().lambda()

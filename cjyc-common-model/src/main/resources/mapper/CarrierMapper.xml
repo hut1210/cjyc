@@ -189,6 +189,7 @@
             and dc.type = 2
             and dc.state = 2
             and dc.business_state = 0
+            and dc.type in (3,5,7,9)
             group by dc.id
             order by dc.create_time desc, dc.check_time desc
         </where>

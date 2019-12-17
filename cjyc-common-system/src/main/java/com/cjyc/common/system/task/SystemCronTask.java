@@ -36,6 +36,7 @@ public class SystemCronTask {
      * 每天凌晨三点执行
      */
     @Scheduled(cron = "0 0 3 * * ?")
+    //@Scheduled(cron = "0/5 * * * * ?")
     void saveCustomerLine(){
         csCronTaskService.saveCustomerLine();
     }

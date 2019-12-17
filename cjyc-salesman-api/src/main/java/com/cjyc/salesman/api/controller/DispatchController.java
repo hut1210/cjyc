@@ -108,7 +108,7 @@ public class DispatchController {
         return csCarrierService.dispatchCarrier(dto);
     }
 
-    @ApiOperation(value = "调度个人司机信息")
+    @ApiOperation(value = "干线调度个人(承运商)司机信息")
     @PostMapping(value = "/dispatchDriver")
     public ResultVo<PageVo<DispatchDriverVo>> dispatchDriver(@RequestBody DispatchDriverDto dto){
         return csDriverService.dispatchDriver(dto);
