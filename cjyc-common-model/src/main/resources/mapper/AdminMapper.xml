@@ -128,5 +128,8 @@
         where phone = #{phone}
 
     </select>
+    <select id="findNext" resultType="com.cjyc.common.model.entity.Admin">
+
+    </select>
 
 </mapper>

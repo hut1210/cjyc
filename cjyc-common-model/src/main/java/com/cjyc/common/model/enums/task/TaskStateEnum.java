@@ -6,7 +6,7 @@ package com.cjyc.common.model.enums.task;
  */
 public enum TaskStateEnum {
     /**0待承接，5待装车，55运输中，100已完成，113已取消，115已拒接*/
-    WAIT_ALLOT_CONFIRM("待承接", 0),
+    //WAIT_ALLOT_CONFIRM("待承接", 0),
     WAIT_LOAD("待装车", 5),
     TRANSPORTING("运输中", 55),
     FINISHED("已完成", 100),

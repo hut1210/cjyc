@@ -1,12 +1,14 @@
 package com.cjyc.common.system.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.cjkj.common.redis.lock.RedisDistributedLock;
 import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IOrderDao;
 import com.cjyc.common.model.dao.IWaybillCarDao;
 import com.cjyc.common.model.dto.web.order.*;
-import com.cjyc.common.model.entity.*;
+import com.cjyc.common.model.entity.Customer;
+import com.cjyc.common.model.entity.Order;
+import com.cjyc.common.model.entity.OrderCar;
+import com.cjyc.common.model.entity.Store;
 import com.cjyc.common.model.entity.defined.FullCity;
 import com.cjyc.common.model.entity.defined.UserInfo;
 import com.cjyc.common.model.enums.PayModeEnum;
@@ -24,7 +26,6 @@ import com.cjyc.common.model.exception.ServerException;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.OrderCarVo;
 import com.cjyc.common.model.vo.web.order.DispatchAddCarVo;
 import com.cjyc.common.model.vo.web.order.OrderVo;
 import com.cjyc.common.model.vo.web.waybill.WaybillCarVo;

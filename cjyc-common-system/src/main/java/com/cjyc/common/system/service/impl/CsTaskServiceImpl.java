@@ -175,7 +175,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             task.setWaybillNo(waybill.getNo());
             task.setGuideLine(paramsDto.getGuideLine());
             task.setCarNum(paramsDto.getWaybillCarIdList().size());
-            task.setState(TaskStateEnum.WAIT_ALLOT_CONFIRM.code);
+            task.setState(TaskStateEnum.WAIT_LOAD.code);
             task.setDriverId(driver.getId());
             task.setDriverPhone(driver.getPhone());
             task.setDriverName(driver.getName());
@@ -245,7 +245,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
         if (waybill == null) {
             return BaseResultUtil.fail("运单不存在");
         }
-        if (waybill.getState() >= WaybillStateEnum.FINISHED.code || waybill.getState() <= WaybillStateEnum.WAIT_ALLOT_CONFIRM.code) {
+        if (waybill.getState() >= WaybillStateEnum.FINISHED.code || waybill.getState() <= WaybillStateEnum.ALLOT_CONFIRM.code) {
             return BaseResultUtil.fail("运单已完结");
         }
 
@@ -361,7 +361,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
         if (waybill == null) {
             return BaseResultUtil.fail("运单不存在");
         }
-        if (waybill.getState() >= WaybillStateEnum.FINISHED.code || waybill.getState() <= WaybillStateEnum.WAIT_ALLOT_CONFIRM.code) {
+        if (waybill.getState() >= WaybillStateEnum.FINISHED.code || waybill.getState() <= WaybillStateEnum.ALLOT_CONFIRM.code) {
             return BaseResultUtil.fail("运单已完结");
         }
 
@@ -422,7 +422,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
         if (waybill == null) {
             return BaseResultUtil.fail("运单不存在");
         }
-        if (waybill.getState() >= WaybillStateEnum.FINISHED.code || waybill.getState() <= WaybillStateEnum.WAIT_ALLOT_CONFIRM.code) {
+        if (waybill.getState() >= WaybillStateEnum.FINISHED.code || waybill.getState() <= WaybillStateEnum.ALLOT_CONFIRM.code) {
             return BaseResultUtil.fail("运单已完结");
         }
 
@@ -519,7 +519,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
         if (waybill == null) {
             return BaseResultUtil.fail("运单不存在");
         }
-        if (waybill.getState() >= WaybillStateEnum.FINISHED.code || waybill.getState() <= WaybillStateEnum.WAIT_ALLOT_CONFIRM.code) {
+        if (waybill.getState() >= WaybillStateEnum.FINISHED.code || waybill.getState() <= WaybillStateEnum.ALLOT_CONFIRM.code) {
             return BaseResultUtil.fail("运单已完结");
         }
 
@@ -640,7 +640,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
         if (waybill == null) {
             return BaseResultUtil.fail("运单不存在");
         }
-        if (waybill.getState() >= WaybillStateEnum.FINISHED.code || waybill.getState() <= WaybillStateEnum.WAIT_ALLOT_CONFIRM.code) {
+        if (waybill.getState() >= WaybillStateEnum.FINISHED.code || waybill.getState() <= WaybillStateEnum.ALLOT_CONFIRM.code) {
             return BaseResultUtil.fail("运单已完结");
         }
 

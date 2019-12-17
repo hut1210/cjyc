@@ -2,30 +2,21 @@ package com.cjyc.common.system.service.impl;
 
 import com.cjkj.common.model.ResultData;
 import com.cjkj.common.redis.template.StringRedisUtil;
-import com.cjkj.usercenter.dto.common.AddUserResp;
-import com.cjkj.usercenter.dto.common.SelectRoleResp;
 import com.cjkj.usercenter.dto.common.UserResp;
 import com.cjkj.usercenter.dto.yc.SelectUsersByRoleResp;
 import com.cjyc.common.model.dao.IAdminDao;
 import com.cjyc.common.model.entity.Admin;
-import com.cjyc.common.model.entity.Customer;
-import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.entity.Store;
 import com.cjyc.common.model.enums.AdminStateEnum;
-import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.exception.ParameterException;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.vo.web.admin.AdminVo;
-import com.cjyc.common.model.vo.web.admin.CacheData;
 import com.cjyc.common.system.feign.ISysDeptService;
-import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.*;
-import com.cjyc.common.system.service.sys.ICsSysService;
+import com.cjyc.common.system.util.RedisUtils;
 import com.cjyc.common.system.util.ResultDataUtil;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -48,7 +39,7 @@ public class CsAdminServiceImpl implements ICsAdminService {
     @Resource
     private ISysUserService sysUserService;
     @Resource
-    private StringRedisUtil redisUtil;
+    private RedisUtils redisUtil;
     /**
      * @param userId
      * @param isSearchCache
@@ -119,7 +110,15 @@ public class CsAdminServiceImpl implements ICsAdminService {
 
     @Override
     public Admin findLoop(Long startStoreId) {
-        Admin admin = adminDao.selectById(1L);
-        return admin;
+/*        String key = RedisKeys.getLoopAllotAdminKey(startStoreId);
+        String adminId = redisUtil.get(key);
+        Admin admin = null;
+        if(adminId != null){
+            admin = adminDao.findNext(startStoreId, Long.valueOf(adminId));
+        }
+        if(admin == null){
+            adminDao.findTop(startStoreId);
+        }*/
+        return adminDao.selectById(1L);
     }
 }
