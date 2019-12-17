@@ -1,5 +1,7 @@
 package com.cjyc.common.model.vo.salesman.dispatch;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -14,7 +16,8 @@ import java.io.Serializable;
 public class DispatchRecordVo implements Serializable {
     private static final long serialVersionUID = -4832183796204894651L;
     @ApiModelProperty(value = "承运商ID")
-    private String carrierId;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long carrierId;
 
     @ApiModelProperty(value = "运单编号")
     private String waybillNo;

@@ -172,7 +172,8 @@ public class DispatchServiceImpl implements IDispatchService {
         }
         BeanUtils.copyProperties(waybill,detail);
         // 查询承运商管理员手机号
-        getCarrierPhone(detail, waybill);
+        String carrierPhone = getCarrierPhone(waybill.getCarrierId(), waybill.getCarrierType());
+        detail.setLinkmanPhone(carrierPhone);
 
         // 查询车辆信息
         LambdaQueryWrapper<WaybillCar> queryWrapper = new QueryWrapper<WaybillCar>().lambda().eq(WaybillCar::getWaybillId, waybillId);
@@ -197,34 +198,34 @@ public class DispatchServiceImpl implements IDispatchService {
         return BaseResultUtil.success(detail);
     }
 
-    private void getCarrierPhone(WaybillDetailVo detail, Waybill waybill) {
+    private String getCarrierPhone(Long carrierId,Integer carrierType) {
         int code1 = WaybillCarrierTypeEnum.TRUNK_INDIVIDUAL.code;
         int code2 = WaybillCarrierTypeEnum.TRUNK_ENTERPRISE.code;
         int code3 = WaybillCarrierTypeEnum.LOCAL_ADMIN.code;
         int code4 = WaybillCarrierTypeEnum.LOCAL_PILOT.code;
         int code5 = WaybillCarrierTypeEnum.LOCAL_CONSIGN.code;
         int code6 = WaybillCarrierTypeEnum.SELF.code;
-
-        Integer carrierType = waybill.getCarrierType();
+        String phone = "";
         boolean b = carrierType == code1 || carrierType == code2 || carrierType == code4 || carrierType == code5;
         if (b) {
-            Carrier carrier = carrierDao.selectById(waybill.getCarrierId());
+            Carrier carrier = carrierDao.selectById(carrierId);
             if (carrier != null) {
-                detail.setLinkmanPhone(carrier.getLinkmanPhone());
+                phone = carrier.getLinkmanPhone();
             }
         }
         if (carrierType == code3) {
-            Admin admin = adminDao.selectById(waybill.getCarrierId());
+            Admin admin = adminDao.selectById(carrierId);
             if (admin != null) {
-                detail.setLinkmanPhone(admin.getPhone());
+                phone = admin.getPhone();
             }
         }
         if (carrierType == code6) {
-            Customer customer = customerDao.selectById(waybill.getCarrierId());
+            Customer customer = customerDao.selectById(carrierId);
             if (customer != null) {
-                detail.setLinkmanPhone(customer.getContactPhone());
+                phone = customer.getContactPhone();
             }
         }
+        return phone;
     }
 
     @Override
@@ -240,7 +241,14 @@ public class DispatchServiceImpl implements IDispatchService {
         BeanUtils.copyProperties(order,detail);
         // 查询调度记录
         List<DispatchRecordVo> dispatchRecordVoList = waybillCarDao.selectWaybillRecordList(orderCar.getId());
-        // TODO
+        // 查询承运商手机号
+        if (!CollectionUtils.isEmpty(dispatchRecordVoList)) {
+            for (DispatchRecordVo dispatchRecordVo : dispatchRecordVoList) {
+                String carrierPhone = getCarrierPhone(dispatchRecordVo.getCarrierId(), dispatchRecordVo.getCarrierType());
+                dispatchRecordVo.setLinkmanPhone(carrierPhone);
+            }
+        }
+
         detail.setDispatchRecordVoList(dispatchRecordVoList);
         return BaseResultUtil.success(detail);
     }

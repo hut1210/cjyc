@@ -384,7 +384,7 @@
             /*待确认*/
             <if test="state != null and state == 0">
                 and o.state between ${@com.cjyc.common.model.enums.order.OrderStateEnum@WAIT_SUBMIT.code}
-                and ${@com.cjyc.common.model.enums.order.OrderStateEnum@WAIT_RECHECK.code}
+                and ${@com.cjyc.common.model.enums.order.OrderStateEnum@WAIT_PREPAY.code}
             </if>
             /*运输中*/
             <if test="state != null and state == 1">
