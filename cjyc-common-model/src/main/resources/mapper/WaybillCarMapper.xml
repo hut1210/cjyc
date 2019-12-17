@@ -404,6 +404,7 @@
         when w.type = 3 then wc.start_store_name
         end
         ) as localStoreName,
+        oc.order_no as orderNo,
         oc.brand as brand,
         oc.model as model,
         oc.plate_no as plateNo,
@@ -850,6 +851,7 @@
         (case when l.id is not null then true else false end) as hasLine
         from (
             select
+            oc.id as id,
             oc.brand as brand,
             oc.model as model,
             oc.plate_no as plateNo,

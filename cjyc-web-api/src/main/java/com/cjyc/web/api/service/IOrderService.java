@@ -84,4 +84,6 @@ public interface IOrderService extends IService<Order> {
                                 List<ImportPatCustomerOrderCarDto> carList, Admin admin);
 
     OrderCarVo getCarVoById(Long orderCarId);
+
+    ResultVo<PageVo<ListOrderVo>> listForHhr(ListOrderDto reqDto);
 }

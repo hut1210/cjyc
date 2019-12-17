@@ -79,6 +79,7 @@ public class SaveOrderDto {
     private Long expectEndDate;
     @ApiModelProperty(value = "车辆总数")
     private Integer carNum;
+    @NotNull(message = "线路ID不能为空")
     @ApiModelProperty(value = "线路ID")
     private Long lineId;
     @ApiModelProperty(value = "提车方式:1 自送，2代驾上门，3拖车上门, 4.物流上门")

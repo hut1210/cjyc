@@ -218,7 +218,7 @@
                 dc.name like CONCAT('%',#{name},'%')
             </if>
             <if test="mode != null ">
-                and  dc.mode = #{mode}
+                and  dcdc.mode = #{mode}
             </if>
             <if test="type != null">
                 and  dc.type = #{type}
