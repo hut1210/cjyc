@@ -10,6 +10,7 @@ import com.cjkj.usercenter.dto.common.AddDeptReq;
 import com.cjkj.usercenter.dto.common.AddDeptResp;
 import com.cjkj.usercenter.dto.common.SelectDeptResp;
 import com.cjkj.usercenter.dto.common.UpdateDeptReq;
+import com.cjkj.usercenter.dto.yc.AddInnerDeptAndFillReq;
 import com.cjyc.common.model.constant.FieldConstant;
 import com.cjyc.common.model.constant.NoConstant;
 import com.cjyc.common.model.dao.ICityDao;
@@ -105,14 +106,27 @@ public class RegionServiceImpl implements IRegionService {
 
         // 查询所有大区编码
         List<City> regionList = cityService.list(new QueryWrapper<City>().lambda().eq(City::getLevel, FieldConstant.REGION_LEVEL));
+        Long oldDeptId = null;
+        if (!CollectionUtils.isEmpty(regionList)) {
+            ResultData<SelectDeptResp> regionData = sysDeptService.getDeptByCityCode(regionList.get(0).getCode());
+            SelectDeptResp data = regionData.getData();
+            if (ReturnMsg.SUCCESS.getCode().equals(regionData.getCode()) && !Objects.isNull(data)) {
+                oldDeptId = data.getDeptId();
+            }
+        }
+
         // 根据编码规则生成新增的大区编码
         String regionCode = getRegionCode(regionList);
+
         // 调用架构中心-保存大区且返回大区机构ID
-        Long regionDeptId = saveRegion(dto.getRegionName(), regionCode);
+        Long regionDeptId = saveRegion(dto.getRegionName(), regionCode,oldDeptId);
+
         // 调用架构中心-修改省份上级机构为当前大区
         this.updateProvince(dto, regionDeptId);
+
         // 在城市表中新增大区信息和给新增大区添加覆盖省份
         this.addRegionAndUpdateCity(regionCode,dto);
+
         return BaseResultUtil.success();
     }
 
@@ -142,18 +156,19 @@ public class RegionServiceImpl implements IRegionService {
         }
     }
 
-    private Long saveRegion(String regionName, String regionCode) throws Exception {
+    private Long saveRegion(String regionName, String regionCode,Long oldDeptId) throws Exception {
         // 根据编码查询大区信息是否存在
         ResultData<SelectDeptResp> regionData = sysDeptService.getDeptByCityCode(regionCode);
         SelectDeptResp data = regionData.getData();
         if (ReturnMsg.SUCCESS.getCode().equals(regionData.getCode()) && !Objects.isNull(data)) {
             return data.getDeptId();
         }
-        AddDeptReq addDeptReq = new AddDeptReq();
+        AddInnerDeptAndFillReq addDeptReq = new AddInnerDeptAndFillReq();
         addDeptReq.setName(regionName);
         addDeptReq.setParentId(Long.parseLong(YmlProperty.get("cjkj.dept_admin_id")));
         addDeptReq.setRemark(regionCode);
-        ResultData<AddDeptResp> result = sysDeptService.save(addDeptReq);
+        addDeptReq.setTemplateDeptId(oldDeptId);
+        ResultData<AddDeptResp> result = sysDeptService.addInnerDeptAndFill(addDeptReq);
         if (!ReturnMsg.SUCCESS.getCode().equals(result.getCode())) {
             throw new Exception("调用物流平台-保存大区信息异常:"+result.getMsg());
         }
