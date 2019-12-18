@@ -448,11 +448,6 @@ public class RegionServiceImpl implements IRegionService {
     private String getRegionCode(List<City> regionList) {
         StringBuilder regionCode = new StringBuilder();
         if (!CollectionUtils.isEmpty(regionList)) {
-            if (regionList.size() == 1 && NoConstant.REGION_CODE_NO_COVER.equals(regionList.get(0).getCode())) {
-                regionCode.append(NoConstant.REGION_CODE_START);
-                return regionCode.toString();
-            }
-
             City city0 = regionList.get(0);
             int codeLength = city0.getCode().length();
             List<Integer> list = new ArrayList<>(10);
@@ -469,6 +464,9 @@ public class RegionServiceImpl implements IRegionService {
                     regionCode.append(str);
                     break;
                 }
+            }
+            if (regionCode.length() != codeLength) {
+                regionCode.append(NoConstant.REGION_CODE_START);
             }
         } else {
             regionCode.append(NoConstant.REGION_CODE_START);
