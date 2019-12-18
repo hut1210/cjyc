@@ -8,13 +8,11 @@ import com.cjkj.usercenter.dto.common.SelectRoleResp;
 import com.cjkj.usercenter.dto.common.UpdateUserReq;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.CarrierVehicleDto;
-import com.cjyc.common.model.dto.driver.mine.AppCarrierVehicleDto;
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.mineCarrier.*;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.FlagEnum;
-import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.driver.DriverIdentityEnum;
 import com.cjyc.common.model.enums.role.RoleNameEnum;
 import com.cjyc.common.model.enums.task.TaskStateEnum;
@@ -23,7 +21,7 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.mineCarrier.HandleDto;
+import com.cjyc.common.model.vo.web.mineCarrier.SettlementDetailVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyCarVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyDriverVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyWaybillVo;
@@ -36,7 +34,6 @@ import com.cjyc.web.api.service.IMineCarrierService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -293,5 +290,13 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
             }
         }
         return BaseResultUtil.success();
+    }
+
+    @Override
+    public ResultVo<PageVo<SettlementDetailVo>> getSettlementDetail(SettlementDetailQueryDto settlementDetailQueryDto) {
+        PageHelper.startPage(settlementDetailQueryDto.getCurrentPage(),settlementDetailQueryDto.getPageSize());
+        List<SettlementDetailVo> settlementDetailVoList = waybillDao.getSettlementDetail(settlementDetailQueryDto);
+        PageInfo<SettlementDetailVo> pageInfo = new PageInfo<>(settlementDetailVoList);
+        return BaseResultUtil.success(pageInfo);
     }
 }

@@ -8,6 +8,7 @@ import com.cjyc.common.model.dto.web.mineCarrier.*;
 import com.cjyc.common.model.vo.FreeVehicleVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.mineCarrier.SettlementDetailVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyCarVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyDriverVo;
 import com.cjyc.common.model.vo.FreeDriverVo;
@@ -80,6 +81,12 @@ public class MineCarrierController {
     @PostMapping(value = "/findCarrierFreeVehicle")
     public ResultVo<List<FreeVehicleVo>> findCarrierFreeVehicle(@RequestBody FreeDto dto){
         return csVehicleService.findCarrierFreeVehicle(dto);
+    }
+
+    @ApiOperation(value = "我的公司-结算明细")
+    @PostMapping(value = "/getSettlementDetail")
+    public ResultVo<PageVo<SettlementDetailVo>> getSettlementDetail(@RequestBody SettlementDetailQueryDto settlementDetailQueryDto){
+        return mimeCarrierService.getSettlementDetail(settlementDetailQueryDto);
     }
 
 }

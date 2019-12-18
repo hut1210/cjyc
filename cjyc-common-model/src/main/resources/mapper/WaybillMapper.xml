@@ -489,4 +489,18 @@
         order by w.id desc
     </select>
 
+    <select id="getSettlementDetail" parameterType="com.cjyc.common.model.dto.web.mineCarrier.SettlementDetailQueryDto"
+            resultType="com.cjyc.common.model.vo.web.mineCarrier.SettlementDetailVo">
+        select ww.no,wt.car_num,wt.complete_time,dc.settle_type,ww.freight_pay_time,
+        ww.freight_pay_state,ww.freight_fee,ww.type,wt.guide_line,ww.carrier_name,
+        wt.driver_name,wt.driver_phone
+        from w_task wt
+        left join w_waybill ww on wt.waybill_no = ww.no
+        left join d_carrier dc on ww.carrier_id = dc.id
+        left join d_driver dd on dd.id = wt.driver_id
+
+        where dc.id = #{carrierId}
+
+    </select>
+
 </mapper>

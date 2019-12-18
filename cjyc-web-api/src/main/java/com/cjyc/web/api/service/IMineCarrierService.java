@@ -7,13 +7,10 @@ import com.cjyc.common.model.dto.web.mineCarrier.*;
 import com.cjyc.common.model.entity.Carrier;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.mineCarrier.HandleDto;
+import com.cjyc.common.model.vo.web.mineCarrier.SettlementDetailVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyCarVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyDriverVo;
-import com.cjyc.common.model.vo.FreeDriverVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyWaybillVo;
-
-import java.util.List;
 
 public interface IMineCarrierService extends IService<Carrier> {
 
@@ -50,4 +47,11 @@ public interface IMineCarrierService extends IService<Carrier> {
      * @return
      */
     ResultVo<PageVo<MyCarVo>> findPageCar(QueryMyCarDto dto);
+
+    /**
+     * 分页查询结算明细
+     * @param settlementDetailQueryDto
+     * @return
+     */
+    ResultVo<PageVo<SettlementDetailVo>> getSettlementDetail(SettlementDetailQueryDto settlementDetailQueryDto);
 }

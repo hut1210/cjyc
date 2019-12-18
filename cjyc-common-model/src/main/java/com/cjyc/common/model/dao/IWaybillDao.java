@@ -4,12 +4,14 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.dto.driver.BaseDriverDto;
 import com.cjyc.common.model.dto.salesman.dispatch.HistoryDispatchRecordDto;
 import com.cjyc.common.model.dto.web.mineCarrier.MyWaybillDto;
+import com.cjyc.common.model.dto.web.mineCarrier.SettlementDetailQueryDto;
 import com.cjyc.common.model.dto.web.waybill.*;
 import com.cjyc.common.model.entity.Waybill;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.task.TaskBillVo;
 import com.cjyc.common.model.vo.driver.waybill.WaitAllotVo;
 import com.cjyc.common.model.vo.salesman.dispatch.HistoryDispatchRecordVo;
+import com.cjyc.common.model.vo.web.mineCarrier.SettlementDetailVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyWaybillVo;
 import com.cjyc.common.model.vo.web.waybill.*;
 import org.apache.ibatis.annotations.Param;
@@ -101,4 +103,6 @@ public interface IWaybillDao extends BaseMapper<Waybill> {
      * @return java.util.List<com.cjyc.common.model.vo.salesman.dispatch.HistoryDispatchRecordVo>
      */
     List<HistoryDispatchRecordVo> selectHistoryDispatchRecord(HistoryDispatchRecordDto dto);
+
+    List<SettlementDetailVo> getSettlementDetail(SettlementDetailQueryDto settlementDetailQueryDto);
 }
