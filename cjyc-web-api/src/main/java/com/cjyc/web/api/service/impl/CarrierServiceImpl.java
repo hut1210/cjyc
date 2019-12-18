@@ -70,6 +70,10 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     @Override
     public ResultVo saveOrModifyCarrier(CarrierDto dto) {
         if(dto.getCarrierId() == null){
+            Carrier carr = carrierDao.selectOne(new QueryWrapper<Carrier>().lambda().eq(Carrier::getName, dto.getName()));
+            if(carr != null){
+                return BaseResultUtil.fail("该企业名称已存在,不可添加");
+            }
             List<Driver> driverList = driverDao.selectList(new QueryWrapper<Driver>().lambda()
                     .eq(Driver::getPhone,dto.getLinkmanPhone())
                     .or()
@@ -88,7 +92,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             //审核通过将承运商信息同步到物流平台
             ResultData<AddDeptAndUserResp> rd = csCarrierService.saveCarrierToPlatform(carrier);
             if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
-                return BaseResultUtil.fail("承运商机构添加失败");
+                return BaseResultUtil.fail(rd.getMsg());
             }
             carrier.setDeptId(rd.getData().getDeptId());
             super.save(carrier);

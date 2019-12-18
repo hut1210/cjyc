@@ -1,7 +1,13 @@
 package com.cjyc.common.system.service.impl;
 
+import com.cjkj.common.model.ResultData;
+import com.cjkj.common.model.ReturnMsg;
+import com.cjkj.usercenter.dto.common.SelectRoleResp;
+import com.cjyc.common.model.dao.IAdminDao;
 import com.cjyc.common.model.dao.ICityDao;
 import com.cjyc.common.model.dto.KeywordDto;
+import com.cjyc.common.model.dto.ThreeCityDto;
+import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.enums.city.CityLevelEnum;
 import com.cjyc.common.model.entity.defined.FullCity;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -9,6 +15,7 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.city.CityVo;
 import com.cjyc.common.model.vo.customer.city.HotCityVo;
 import com.cjyc.common.model.vo.customer.city.ProvinceTreeVo;
+import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.service.ICsCityService;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +30,10 @@ import java.util.List;
 public class CsCityServiceImpl implements ICsCityService {
     @Resource
     private ICityDao cityDao;
+    @Resource
+    private ISysRoleService sysRoleService;
+    @Resource
+    private IAdminDao adminDao;
 
     /**
      * 查询全字段城市对象
@@ -67,5 +78,28 @@ public class CsCityServiceImpl implements ICsCityService {
         cityvo.setHotCityVos(hotCity);
         cityvo.setCityTreeVos(cityTreeVos);
         return BaseResultUtil.success(cityvo);
+    }
+
+    @Override
+    public ResultVo<CityVo> findCityTree(ThreeCityDto dto) {
+        if(dto.getRoleId() != null){
+            //web端查询机构信息
+            ResultData<SelectRoleResp> roleResp = sysRoleService.getById(dto.getRoleId());
+            if (!ReturnMsg.SUCCESS.getCode().equals(roleResp.getCode())) {
+                return BaseResultUtil.fail(roleResp.getMsg());
+            }
+        }else{
+            //业务员端app获取机构信息
+            Admin admin = adminDao.selectById(dto.getLoginId());
+            if(admin == null || admin.getUserId() == null){
+                return BaseResultUtil.fail("该用户不存在,请检查");
+            }
+            ResultData<List<SelectRoleResp>> roleRespList = sysRoleService.getListByUserId(admin.getUserId());
+            if (!ReturnMsg.SUCCESS.getCode().equals(roleRespList.getCode())) {
+                return BaseResultUtil.fail(roleRespList.getMsg());
+            }
+        }
+
+        return null;
     }
 }

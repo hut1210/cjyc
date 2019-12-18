@@ -1,6 +1,7 @@
 package com.cjyc.common.system.service;
 
 import com.cjyc.common.model.dto.KeywordDto;
+import com.cjyc.common.model.dto.ThreeCityDto;
 import com.cjyc.common.model.enums.city.CityLevelEnum;
 import com.cjyc.common.model.entity.defined.FullCity;
 import com.cjyc.common.model.vo.ResultVo;
@@ -28,4 +29,11 @@ public interface ICsCityService {
      * @return
      */
     ResultVo<CityVo> queryCity(KeywordDto dto);
+
+    /**
+     *  根据角色id或登录id获取三级城市列表
+     * @param dto
+     * @return
+     */
+    ResultVo<CityVo> findCityTree(ThreeCityDto dto);
 }

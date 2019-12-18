@@ -143,6 +143,7 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
         //保存承运商信息
         Carrier carrier = new Carrier();
         carrier.setName(phone);
+        carrier.setBusinessState(BusinessStateEnum.BUSINESS.code);
         carrier.setType(CarrierTypeEnum.PERSONAL.code);
         carrier.setLinkman(phone);
         carrier.setLinkmanPhone(phone);
