@@ -180,7 +180,7 @@ public class InvoiceApplyServiceImpl extends ServiceImpl<IInvoiceApplyDao, Invoi
             try {
                 ExcelUtil.exportExcel(exportExcelList, title, sheetName, InvoiceApplyExportExcel.class, fileName, response);
             } catch (IOException e) {
-                log.error("发票申请记录表异常:{}",e);
+                log.error("发票申请记录表异常:",e);
             }
         }
     }
