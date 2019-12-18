@@ -10,6 +10,7 @@ import com.cjyc.common.model.dto.driver.task.DriverQueryDto;
 import com.cjyc.common.model.dto.driver.task.NoFinishTaskQueryDto;
 import com.cjyc.common.model.dto.driver.task.TaskQueryDto;
 import com.cjyc.common.model.entity.*;
+import com.cjyc.common.model.enums.waybill.WaybillCarStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.PageVo;
@@ -140,7 +141,8 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
         BeanUtils.copyProperties(waybill,taskDetailVo);
 
         // 查询运单车辆信息
-        LambdaQueryWrapper<WaybillCar> queryWrapper = new QueryWrapper<WaybillCar>().lambda().eq(WaybillCar::getWaybillId, waybillId);
+        LambdaQueryWrapper<WaybillCar> queryWrapper = new QueryWrapper<WaybillCar>().lambda()
+                .eq(WaybillCar::getWaybillId, waybillId).eq(WaybillCar::getState, WaybillCarStateEnum.WAIT_ALLOT.code);
         List<WaybillCar> waybillCarList = waybillCarDao.selectList(queryWrapper);
         List<CarDetailVo> carDetailVoList = new ArrayList<>(10);
         BigDecimal freightFee = new BigDecimal(0);
