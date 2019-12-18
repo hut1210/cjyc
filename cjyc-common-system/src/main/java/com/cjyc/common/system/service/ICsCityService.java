@@ -1,7 +1,7 @@
 package com.cjyc.common.system.service;
 
 import com.cjyc.common.model.dto.KeywordDto;
-import com.cjyc.common.model.dto.ThreeCityDto;
+import com.cjyc.common.model.dto.AdminDto;
 import com.cjyc.common.model.enums.city.CityLevelEnum;
 import com.cjyc.common.model.entity.defined.FullCity;
 import com.cjyc.common.model.vo.ResultVo;
@@ -35,5 +35,5 @@ public interface ICsCityService {
      * @param dto
      * @return
      */
-    ResultVo<CityVo> findRoleTreeCity(ThreeCityDto dto);
+    ResultVo<CityVo> findThreeCityByAdmin(AdminDto dto);
 }

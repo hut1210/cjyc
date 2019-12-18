@@ -2,7 +2,7 @@ package com.cjyc.web.api.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.cjyc.common.model.dto.KeywordDto;
-import com.cjyc.common.model.dto.ThreeCityDto;
+import com.cjyc.common.model.dto.AdminDto;
 import com.cjyc.common.model.dto.salesman.city.CityPageDto;
 import com.cjyc.common.model.dto.web.city.CityQueryDto;
 import com.cjyc.common.model.entity.City;
@@ -12,6 +12,7 @@ import com.cjyc.common.model.vo.CityTreeVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.city.CityVo;
+import com.cjyc.common.system.config.CarrierProperty;
 import com.cjyc.common.system.service.ICsCityService;
 import com.cjyc.web.api.service.ICityService;
 import io.swagger.annotations.Api;
@@ -106,10 +107,10 @@ public class CityController {
         return cityService.getProvinceList(dto);
     }
 
-    @ApiOperation(value = "查询省/城市区树形结构")
-    @PostMapping(value = "/findRoleTreeCity")
-    public ResultVo<CityVo> findRoleTreeCity(@RequestBody ThreeCityDto dto) {
-        return csCityService.findRoleTreeCity(dto);
+    @ApiOperation(value = "根据roleId/loginId查询省/城市区树形结构")
+    @PostMapping(value = "/findThreeCityByAdmin")
+    public ResultVo<CityVo> findThreeCityByAdmin(@RequestBody AdminDto dto) {
+        return csCityService.findThreeCityByAdmin(dto);
     }
 
 }

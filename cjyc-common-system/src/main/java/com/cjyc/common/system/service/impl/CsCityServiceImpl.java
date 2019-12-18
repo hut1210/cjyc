@@ -8,7 +8,7 @@ import com.cjyc.common.model.constant.Constant;
 import com.cjyc.common.model.dao.IAdminDao;
 import com.cjyc.common.model.dao.ICityDao;
 import com.cjyc.common.model.dto.KeywordDto;
-import com.cjyc.common.model.dto.ThreeCityDto;
+import com.cjyc.common.model.dto.AdminDto;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.enums.city.CityLevelEnum;
 import com.cjyc.common.model.entity.defined.FullCity;
@@ -26,8 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -94,7 +92,7 @@ public class CsCityServiceImpl implements ICsCityService {
     }
 
     @Override
-    public ResultVo<CityVo> findRoleTreeCity(ThreeCityDto dto) {
+    public ResultVo<CityVo> findThreeCityByAdmin(AdminDto dto) {
         //保存用户的deptId
         StringBuffer adminDeptIds = new StringBuffer();
         //保存大区deptId
@@ -177,7 +175,7 @@ public class CsCityServiceImpl implements ICsCityService {
                     }
                 }
                 if(StringUtils.isBlank(regionDeptIds.toString())){
-                    //
+                    //大区deptId为空
                     cityTreeVos = Collections.EMPTY_LIST;
                 }else{
                     cityTreeVos = cityDao.findThreeCity("",regionDeptIds.substring(0, regionDeptIds.length()-1));

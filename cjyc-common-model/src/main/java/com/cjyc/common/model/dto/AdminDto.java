@@ -5,7 +5,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 @Data
-public class ThreeCityDto implements Serializable {
+public class AdminDto implements Serializable {
     private static final long serialVersionUID = 4260332178119799044L;
 
     @ApiModelProperty(value = "角色id,web端传",required = true)
