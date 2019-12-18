@@ -58,13 +58,15 @@ public class InvoiceApplyServiceImpl extends ServiceImpl<IInvoiceApplyDao, Invoi
     public ResultVo getInvoiceApplyPage(InvoiceQueryDto dto) {
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<InvoiceApply> list = getInvoiceApplyList(dto);
+        PageInfo pageInfo = new PageInfo(list);
+        List<InvoiceApply> pageInfoList = pageInfo.getList();
         List<InvoiceApplyVo> returnList = new ArrayList<>(10);
-        for (InvoiceApply invoiceApply : list) {
+        for (InvoiceApply invoiceApply : pageInfoList) {
             InvoiceApplyVo vo = new InvoiceApplyVo();
             BeanUtils.copyProperties(invoiceApply,vo);
             returnList.add(vo);
         }
-        PageInfo pageInfo = new PageInfo(returnList);
+        pageInfo.setList(returnList);
         return BaseResultUtil.success(pageInfo);
     }
 
