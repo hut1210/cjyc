@@ -41,10 +41,6 @@ public class NoConstant {
      */
     public static final String REGION_CODE_START = "000001";
     /**
-     * 未覆盖大区编码
-     */
-    public static final String REGION_CODE_NO_COVER = "000008";
-    /**
      * 大区编号前缀
      */
     public static final String REGION_CODE_PREFIX = "0";

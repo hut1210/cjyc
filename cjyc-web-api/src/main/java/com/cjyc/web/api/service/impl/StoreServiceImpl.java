@@ -13,7 +13,7 @@ import com.cjkj.usercenter.dto.common.SelectDeptResp;
 import com.cjkj.usercenter.dto.common.UpdateDeptReq;
 import com.cjkj.usercenter.dto.yc.AddInnerDeptAndFillReq;
 import com.cjkj.usercenter.dto.yc.SelectUsersByRoleResp;
-import com.cjyc.common.model.constant.NoConstant;
+import com.cjyc.common.model.constant.FieldConstant;
 import com.cjyc.common.model.dao.IAdminDao;
 import com.cjyc.common.model.dao.ICityDao;
 import com.cjyc.common.model.dao.IStoreCityConDao;
@@ -115,7 +115,7 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
                 BeanUtils.copyProperties(store,storeVo);
                 // 查询业务中心所属大区
                 City city = cityDao.selectOne(new QueryWrapper<City>().lambda().eq(City::getCode, store.getProvinceCode()));
-                if (NoConstant.REGION_CODE_NO_COVER.equals(city.getParentCode())) {
+                if (FieldConstant.NOT_REGION_CODE.equals(city.getParentCode())) {
                     storeVo.setRegionName("无");
                 } else {
                     storeVo.setRegionName(city.getParentName());
