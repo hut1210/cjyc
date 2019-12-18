@@ -118,4 +118,6 @@ public interface ITaskDao extends BaseMapper<Task> {
     List<TaskWaybillVo> selectOutAndInStorageList(OutAndInStorageQueryDto dto);
 
     List<DriverCarCountVo> findDriverCarCount(@Param("beforeStartDay") Long beforeStartDay,@Param("beforeEndDay") Long beforeEndDay);
+
+    int updateForLoad(Long id);
 }

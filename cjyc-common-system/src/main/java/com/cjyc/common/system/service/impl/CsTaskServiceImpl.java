@@ -213,6 +213,10 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 return BaseResultUtil.fail("司机不在运营中");
             }
 
+            /*if(){
+
+            }*/
+
             Task task = new Task();
             //计算任务编号
             task.setNo(getTaskNo(waybill.getNo()));
@@ -358,12 +362,23 @@ public class CsTaskServiceImpl implements ICsTaskService {
 
             //更新空车位数
             vehicleRunningDao.updateOccupiedNumForLoad(paramsDto.getLoginId(), count);
-            //更新订单状态
-            if (!CollectionUtils.isEmpty(orderIdSet)) {
-                orderDao.updateStateForLoad(OrderStateEnum.TRANSPORTING.code, orderIdSet);
-            }
+
             successSet.add(orderCar.getNo());
             count++;
+        }
+
+        //更新订单状态
+        if (!CollectionUtils.isEmpty(orderIdSet)) {
+            orderDao.updateStateForLoad(OrderStateEnum.TRANSPORTING.code, orderIdSet);
+        }
+
+        //更新任务状态
+        if(task.getState() < TaskStateEnum.TRANSPORTING.code){
+            taskDao.updateForLoad(task.getId());
+        }
+        //更新运单状态
+        if(waybill.getState() < WaybillStateEnum.TRANSPORTING.code){
+            waybillDao.updateForLoad(waybill.getId());
         }
         resultReasonVo.setSuccessList(successSet);
         resultReasonVo.setFailList(failCarNoSet);

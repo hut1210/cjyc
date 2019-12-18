@@ -504,7 +504,6 @@
         ht.settle_period as settlePeriod
         from w_order o
         join w_order_car oc on oc.order_id = o.id
-        left join w_waybill_car wc on wc.order_car_id = oc.id
         left join s_store s1 on o.input_store_id = s1.id
         left join s_store s2 on o.start_store_id = s2.id
         left join s_store s3 on o.end_store_id = s3.id
@@ -687,6 +686,7 @@
             </if>
 
         </where>
+        group by oc.id
         order by o.id desc
     </select>
     <select id="findListByWaybillId" resultType="com.cjyc.common.model.entity.OrderCar">

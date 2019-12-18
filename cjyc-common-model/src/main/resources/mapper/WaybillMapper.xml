@@ -118,6 +118,12 @@
         where id = #{waybillId}
         and state &lt; 100
     </update>
+    <update id="updateForLoad">
+        update w_waybill
+        set state = 55
+        where id = #{id}
+        and state &lt; 55
+    </update>
     <select id="findByNo" resultType="com.cjyc.common.model.entity.Waybill">
         select
         <include refid="Base_Column_List"/>

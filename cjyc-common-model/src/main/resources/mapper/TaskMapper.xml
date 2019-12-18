@@ -49,6 +49,12 @@
         where id = #{taskId}
         and state &lt; 100
     </update>
+    <update id="updateForLoad">
+        update w_task
+        set state = 55
+        where id = #{id}
+        where state &lt; 55
+    </update>
     <delete id="cancelBywaybillId">
         update w_task
         set state = 113

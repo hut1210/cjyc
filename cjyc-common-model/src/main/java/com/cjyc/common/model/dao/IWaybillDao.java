@@ -105,4 +105,6 @@ public interface IWaybillDao extends BaseMapper<Waybill> {
     List<HistoryDispatchRecordVo> selectHistoryDispatchRecord(HistoryDispatchRecordDto dto);
 
     List<SettlementDetailVo> getSettlementDetail(SettlementDetailQueryDto settlementDetailQueryDto);
+
+    int updateForLoad(Long id);
 }
