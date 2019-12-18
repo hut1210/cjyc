@@ -164,7 +164,7 @@ public class StoreController {
 
     /**
      * 功能描述: 业务中心下用户列表信息
-     * @author liuxingxiang
+     * @author zhangcangman
      * @date 2019/12/17
      * @param storeId
      * @return com.cjyc.common.model.vo.ResultVo<java.util.List<com.cjyc.common.model.entity.Admin>>
