@@ -1,5 +1,6 @@
 package com.cjyc.common.system.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.cjyc.common.model.dao.IOrderChangeLogDao;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.entity.OrderChangeLog;
@@ -49,13 +50,13 @@ public class CsOrderChangeLogServiceImpl implements ICsOrderChangeLogService {
         orderChangeLog.setOrderId(order.getId());
         orderChangeLog.setName(changeType.name);
         orderChangeLog.setType(changeType.code);
-        orderChangeLog.setOldContent(content[0].toString());
-        orderChangeLog.setNewContent(content[1].toString());
-        orderChangeLog.setReason(content[2].toString());
+        orderChangeLog.setOldContent(JSON.toJSONString(content[0]));
+        orderChangeLog.setNewContent(JSON.toJSONString(content[1]));
+        orderChangeLog.setReason(String.valueOf(content[2]));
         orderChangeLog.setState(CommonStateEnum.CHECKED.code);
         orderChangeLog.setCreateTime(System.currentTimeMillis());
-        orderChangeLog.setCreateUserId(Long.valueOf(creator[0].toString()));
-        orderChangeLog.setCreateUser(creator[1].toString());
+        orderChangeLog.setCreateUserId(Long.valueOf(String.valueOf(creator[0])));
+        orderChangeLog.setCreateUser(String.valueOf(creator[1]));
         orderChangeLogDao.insert(orderChangeLog);
     }
 

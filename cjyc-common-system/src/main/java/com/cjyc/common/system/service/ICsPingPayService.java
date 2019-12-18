@@ -7,6 +7,7 @@ import com.cjyc.common.model.vo.customer.order.ValidateReceiptCarPayVo;
 import com.cjyc.common.model.vo.customer.order.ValidateSweepCodePayVo;
 import com.pingplusplus.exception.*;
 import com.pingplusplus.model.Charge;
+import com.pingplusplus.model.Transfer;
 
 import java.io.FileNotFoundException;
 
@@ -22,4 +23,6 @@ public interface ICsPingPayService {
 
     Charge sweepSalesCode(SweepCodeDto sweepCodeDto) throws RateLimitException, APIException, ChannelException, InvalidRequestException,
             APIConnectionException, AuthenticationException, FileNotFoundException;
+
+    Transfer allinpayToDriver(Long waybillId) throws AuthenticationException, InvalidRequestException, APIConnectionException, APIException, ChannelException, RateLimitException, FileNotFoundException ;
 }

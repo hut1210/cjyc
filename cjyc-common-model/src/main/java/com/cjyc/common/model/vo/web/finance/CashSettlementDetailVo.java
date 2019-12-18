@@ -4,24 +4,19 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @Author: Hut
- * @Date: 2019/12/16 15:23
+ * @Date: 2019/12/17 16:07
+ * 现金结算明细
  */
 @Data
-public class CollectReceiveVo implements Serializable {
+public class CashSettlementDetailVo implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @ApiModelProperty(value = "运单单号")
-    private String wayBillNo;
-
-    @ApiModelProperty(value = "运单类型")
-    private int wayBillType;
-
-    @ApiModelProperty(value = "代收款时间")
-    private Long  collectReceiveTime;
+    @ApiModelProperty(value = "车辆明细")
+    List<CashCarDetailVo> cashCarDetailVoList;
 
     @ApiModelProperty(value = "代收款人")
     private String  collectReceiveMan;
@@ -29,10 +24,10 @@ public class CollectReceiveVo implements Serializable {
     @ApiModelProperty(value = "代收款电话")
     private String  collectReceivePhone;
 
+    @ApiModelProperty(value = "代收款金额")
+    private String  collectReceiveMoney;
+
     @ApiModelProperty(value = "备注")
     private String  remark;
-
-    @ApiModelProperty(value = "回款状态")
-    private String  state;
 
 }

@@ -465,5 +465,21 @@
         GROUP BY t.id
     </select>
 
+    <!--司机完成运车统计-->
+    <select id="findDriverCarCount" resultType="com.cjyc.common.model.vo.web.task.DriverCarCountVo">
+          SELECT
+            wt.id,
+            wt.driver_id,
+            wwc.order_car_id
+        FROM
+            w_task wt
+            LEFT JOIN w_task_car wtc ON wtc.task_id = wt.id
+            LEFT JOIN w_waybill_car wwc ON wwc.id = wtc.waybill_car_id
+            LEFT JOIN w_waybill ww ON ww.id = wwc.waybill_id
+        WHERE
+            wt.state = 100
+            AND ( wt.complete_time BETWEEN #{beforeStartDay} AND #{beforeEndDay} )
+            AND ww.carrier_type IN ( 1, 2, 4, 5 )
+    </select>
 
 </mapper>

@@ -1,11 +1,14 @@
 package com.cjyc.common.system.service.impl;
 
 import com.Pingxx.model.OrderModel;
+import com.cjyc.common.model.dao.ICarrierDao;
 import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IOrderDao;
+import com.cjyc.common.model.dao.IWaybillDao;
 import com.cjyc.common.model.dto.customer.pingxx.SweepCodeDto;
 import com.cjyc.common.model.dto.customer.pingxx.ValidateSweepCodeDto;
 import com.cjyc.common.model.entity.OrderCar;
+import com.cjyc.common.model.entity.Waybill;
 import com.cjyc.common.model.enums.ClientEnum;
 import com.cjyc.common.model.enums.PayModeEnum;
 import com.cjyc.common.model.enums.PayStateEnum;
@@ -18,6 +21,7 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.ValidateReceiptCarPayVo;
 import com.cjyc.common.model.vo.customer.order.ValidateSweepCodePayVo;
+import com.cjyc.common.model.vo.web.carrier.BaseCarrierVo;
 import com.cjyc.common.system.config.PingProperty;
 import com.cjyc.common.system.service.ICsPingPayService;
 import com.cjyc.common.system.service.ICsTransactionService;
@@ -28,6 +32,7 @@ import com.google.common.collect.Sets;
 import com.pingplusplus.Pingpp;
 import com.pingplusplus.exception.*;
 import com.pingplusplus.model.Charge;
+import com.pingplusplus.model.Transfer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,7 +48,7 @@ import java.util.*;
 
 /**
  * @Author: Hut
- * @Date: 2019/12/9 19:29
+ * @Date: 2019/12/9 19:291
  */
 @Service
 @Slf4j
@@ -64,6 +69,12 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
 
     @Autowired
     private RedisUtils redisUtils;
+
+    @Resource
+    private IWaybillDao waybillDao;
+
+    @Resource
+    private ICarrierDao carrierDao;
 
     @Override
     public Charge sweepDriveCode(SweepCodeDto sweepCodeDto) throws RateLimitException, APIException, ChannelException, InvalidRequestException,
@@ -253,5 +264,73 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
     public Charge sweepSalesCode(SweepCodeDto sweepCodeDto) throws RateLimitException, APIException, ChannelException, InvalidRequestException, APIConnectionException, AuthenticationException, FileNotFoundException {
         sweepCodeDto.setClientType(ClientEnum.APP_SALESMAN.code);
         return sweepDriveCode(sweepCodeDto);
+    }
+
+    @Override
+    public Transfer allinpayToDriver(Long waybillId) throws AuthenticationException, InvalidRequestException, APIConnectionException, APIException, ChannelException, RateLimitException, FileNotFoundException {
+        Transfer transfer = new Transfer();
+        List<Long> waybillIdList = new ArrayList<>();
+        waybillIdList.add(waybillId);
+        List<Waybill> waybillList = waybillDao.findListByIds(waybillIdList);
+        if(waybillList!=null&&waybillList.size()>0){
+            Waybill waybill = waybillList.get(0);
+            Long carrierId = waybill.getCarrierId();
+            BaseCarrierVo baseCarrierVo = carrierDao.showCarrierById(carrierId);
+            transfer = allinpayTransferDriverCreate(baseCarrierVo,waybill);
+        }
+
+        return transfer;
+    }
+
+    public Transfer allinpayTransferDriverCreate(BaseCarrierVo baseCarrierVo,Waybill waybill) throws AuthenticationException, InvalidRequestException,
+            APIConnectionException, APIException, ChannelException, RateLimitException, FileNotFoundException {
+        initPingApiKey();
+        Map<String, Object> params = new HashMap<>();
+        Map<String, Object> app = new HashMap<>();
+        app.put("id", PingProperty.driverAppId);
+        params.put("app", app);
+        // 付款使用的商户内部订单号。 allinpay 限长20-40位不能重复的数字字母组合，必须以签约的通联的商户号开头（建议组合格式：通联商户号 + 时间戳 + 固定位数顺序流水号，不包含+号）
+        params.put("order_no", PingProperty.businessCode + System.currentTimeMillis());
+
+        // 订单总金额, 人民币单位：分（如订单总金额为 1 元，此处请填 100,企业付款最小发送金额为1 元）
+        //确认手续费
+        BigDecimal amount = waybill.getFreightFee();
+        BigDecimal src_amount = amount;
+        params.put("amount", amount);
+        // 目前支持 支付宝：alipay，银联：unionpay，微信公众号：wx_pub，通联：allinpay，京东：jdpay 余额：balance
+        params.put("channel", "allinpay");
+        params.put("type", "b2c");//付款类型，转账到个人用户为 b2c，转账到企业用户为 b2b（wx、wx_pub、wx_lite 和 balance 渠道的企业付款，仅支持 b2c）
+        params.put("currency", "cny");
+        params.put("description", "通联代付司机运费");
+
+        Map<String, String> extra = new HashMap<String, String>();
+        //1~100位，收款人姓名。必须
+        extra.put("user_name", baseCarrierVo.getCardName());
+
+        //1~32位，收款人银行卡号或者存折号。 必须
+        extra.put("card_number", baseCarrierVo.getCardNo());
+        //4位，开户银行编号，详情请参考通联代付银行编号说明。 必须
+        extra.put("open_bank_code",baseCarrierVo.getBankName());
+
+        params.put("extra", extra);
+
+        Map<String, String> metadata = new HashMap<String,String>();
+        metadata.put("type", "driverFreight");
+        metadata.put("uid", String.valueOf(baseCarrierVo.getCarrierId()));
+        metadata.put("order_detail_id", "");
+        params.put("metadata", metadata);
+
+        Transfer obj = Transfer.create(params);
+        if(Pingpp.apiKey.contains("_test_")){//test模式调用查询相当于企业付款成功
+            obj = transferRetrieve(obj.getId());
+        }
+        obj.setAmount(Integer.parseInt(src_amount.multiply(new BigDecimal(100)).toString()));
+        return obj;
+    }
+
+    public Transfer transferRetrieve(String transferId) throws AuthenticationException, InvalidRequestException, APIConnectionException, APIException, ChannelException, RateLimitException{
+        // 参数: transfer id
+        Transfer obj = Transfer.retrieve(transferId);
+        return obj;
     }
 }

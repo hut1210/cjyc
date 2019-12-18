@@ -37,5 +37,8 @@ public class CustomerCount implements Serializable {
     @ApiModelProperty(value = "订单编号")
     private String orderNo;
 
+    @ApiModelProperty(value = "创建时间")
+    private Long createTime;
+
 
 }

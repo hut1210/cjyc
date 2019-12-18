@@ -122,7 +122,7 @@ public class RedisKeys {
         return PROJECT_PREFIX + I + DISPATCH_LOCK_ORDER_UPDATE + I + orderNo;
     }
 
-    public static String getLoopAllotKey(Long startStoreId) {
-        return null;
+    public static String getLoopAllotAdminKey(Long startStoreId) {
+        return PROJECT_PREFIX + I + LOOP_ALLOT_ADMIN_KEY + I + startStoreId;
     }
 }

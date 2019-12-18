@@ -31,6 +31,8 @@ public class CommitOrderDto {
     private String loginName;
     @ApiModelProperty(hidden = true)
     private String loginPhone;
+    @ApiModelProperty(value = "操作人类型", required = true)
+    private Integer loginType;
     @ApiModelProperty(hidden = true)
     private Integer state;
     @ApiModelProperty(hidden = true)

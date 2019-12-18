@@ -9,6 +9,7 @@ import lombok.experimental.Accessors;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.List;
 
 /**
@@ -26,6 +27,8 @@ public class SaveOrderDto {
     @NotNull(message = "操作人id不能为空")
     @ApiModelProperty(value = "操作人id", required = true)
     private Long loginId;
+    @ApiModelProperty(value = "操作人类型", required = true)
+    private Integer loginType;
     @ApiModelProperty(hidden = true)
     private String loginName;
     @ApiModelProperty(hidden = true)
@@ -79,6 +82,7 @@ public class SaveOrderDto {
     private Long expectEndDate;
     @ApiModelProperty(value = "车辆总数")
     private Integer carNum;
+    @NotNull(message = "线路ID不能为空")
     @ApiModelProperty(value = "线路ID")
     private Long lineId;
     @ApiModelProperty(value = "提车方式:1 自送，2代驾上门，3拖车上门, 4.物流上门")

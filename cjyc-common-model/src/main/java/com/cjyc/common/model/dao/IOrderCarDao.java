@@ -105,7 +105,7 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
 
     int saveBatch(@Param("orderCarlist") List<OrderCar> orderCarlist);
 
-    List<OrderCar> findByOrderId(Long orderId);
+    List<OrderCar> findListByOrderId(Long orderId);
 
     int deleteBatchByOrderId(@Param("orderId") Long orderId);
 

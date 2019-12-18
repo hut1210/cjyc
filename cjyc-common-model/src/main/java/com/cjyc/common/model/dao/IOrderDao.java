@@ -61,4 +61,12 @@ public interface IOrderDao extends BaseMapper<Order> {
      * @return
      */
     List<SalesOrderVo> findOrder(SalesOrderQueryDto dto);
+
+    /**
+     * 获取一天的所有订单
+     * @param beforeStartDay
+     * @param beforeEndDay
+     * @return
+     */
+    List<Order> findDayOrder(@Param("beforeStartDay") Long beforeStartDay,@Param("beforeEndDay") Long beforeEndDay);
 }

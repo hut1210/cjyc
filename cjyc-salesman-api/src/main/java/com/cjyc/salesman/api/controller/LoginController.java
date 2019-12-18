@@ -5,6 +5,7 @@ import com.cjkj.usercenter.dto.common.SelectRoleResp;
 import com.cjkj.usercenter.dto.common.auth.AuthLoginReq;
 import com.cjkj.usercenter.dto.common.auth.AuthLoginResp;
 import com.cjkj.usercenter.dto.common.auth.AuthMobileLoginReq;
+import com.cjyc.common.model.dto.VerifyCodeDto;
 import com.cjyc.common.model.dto.salesman.login.LoginByPhoneDto;
 import com.cjyc.common.model.dto.salesman.login.LoginByUserNameDto;
 import com.cjyc.common.model.entity.Admin;
@@ -16,6 +17,7 @@ import com.cjyc.common.model.vo.salesman.login.SalesmanAppLoginVo;
 import com.cjyc.common.system.feign.ISysLoginService;
 import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.service.ICsAdminService;
+import com.cjyc.common.system.service.ICsLoginService;
 import com.cjyc.common.system.service.ICsRoleService;
 import com.cjyc.common.system.util.ResultDataUtil;
 import io.swagger.annotations.Api;
@@ -62,6 +64,8 @@ public class LoginController {
     private ICsRoleService csRoleService;
     @Resource
     private ISysLoginService sysLoginService;
+    @Resource
+    private ICsLoginService csLoginService;
 
     @Value("${cjyc.salesman.clientId}")
     private String clientId;
@@ -69,6 +73,12 @@ public class LoginController {
     private String clientSecret;
     @Value("${cjyc.salesman.grantType}")
     private String grantType;
+
+    @ApiOperation(value = "获取验证码")
+    @PostMapping("/verifyCode")
+    public ResultVo verifyCode(@Validated @RequestBody VerifyCodeDto dto) {
+        return csLoginService.verifyCode(dto);
+    }
 
     @ApiOperation(value = "业务员APP登录")
     @PostMapping("/mobile")

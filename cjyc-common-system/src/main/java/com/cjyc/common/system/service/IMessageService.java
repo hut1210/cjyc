@@ -9,6 +9,7 @@ import com.cjyc.common.system.entity.PushMessageReq;
  * 调用消息服务组件
  */
 public interface IMessageService {
+    void sendSms(String phone, String message);
     /**
      * 手机短信码发送
      * @return

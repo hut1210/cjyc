@@ -203,12 +203,12 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                     }
                 }*/
                 //【验证】配送调度，需验证干线调度是否完成
-                if (paramsDto.getType() == WaybillTypeEnum.BACK.code) {
+                /*if (paramsDto.getType() == WaybillTypeEnum.BACK.code) {
                     WaybillCar waybillCar = waybillCarDao.findLastTrunkWaybillCar(order.getEndCityCode(), orderCarId);
-                    /*if ( || !waybillCar.getEndCityCode().equals(order.getEndCityCode())) {
+                    if (waybillCar == null || !waybillCar.getEndCityCode().equals(order.getEndCityCode())) {
                         throw new ParameterException("编号为{0}的车辆，干线尚未调度完成", orderCarNo);
-                    }*/
-                }
+                    }
+                }*/
                 //TODO 验证提车和送车人是否与订单一致
 
                 /**1、添加运单信息*/
@@ -221,7 +221,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 waybill.setCarrierType(dto.getCarrierType());
                 waybill.setCarrierName(dto.getCarrierName());
                 waybill.setCarNum(1);
-                waybill.setState(WaybillStateEnum.WAIT_ALLOT_CONFIRM.code);
+                waybill.setState(waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code ? WaybillStateEnum.TRANSPORTING.code : WaybillStateEnum.ALLOT_CONFIRM.code);
                 //提送车费用逻辑，调度时不允许修改提送车费用，需要到订单中修改提送车费用，多则返还，少则后补
                 waybill.setFreightFee(paramsDto.getType() == WaybillTypeEnum.PICK.code ? orderCar.getPickFee() : orderCar.getPickFee());
                 waybill.setRemark(dto.getRemark());
@@ -230,7 +230,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 waybill.setCreateUserId(paramsDto.getLoginId());
                 waybill.setFixedFreightFee(false);
                 waybill.setInputStoreId(paramsDto.getType() == WaybillTypeEnum.PICK.code ? order.getStartBelongStoreId() : order.getEndBelongStoreId());
-                waybill.setFreightFee(paramsDto.getType() == WaybillTypeEnum.PICK.code ? orderCar.getPickFee() : orderCar.getPickFee());
+                waybill.setFreightFee(waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code ? BigDecimal.ZERO : (paramsDto.getType() == WaybillTypeEnum.PICK.code ? orderCar.getPickFee() : orderCar.getPickFee()));
                 //waybill.setGuideLine(dto.);
                 waybillDao.insert(waybill);
 
@@ -250,7 +250,10 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 fillWaybillCarExpectEndTime(waybillCar);
                 waybillCar.setReceiptFlag(waybillCar.getUnloadLinkPhone().equals(order.getBackContactPhone()));
                 //运单车辆状态
-                waybillCar.setState(isOneDriver ? WaybillCarStateEnum.ALLOTED.code : WaybillCarStateEnum.WAIT_ALLOT.code);
+                waybillCar.setState(isOneDriver ?
+                        (waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code ? WaybillCarStateEnum.LOADED.code : WaybillCarStateEnum.ALLOTED.code)
+                        : WaybillCarStateEnum.WAIT_ALLOT.code);
+
                 waybillCar.setCreateTime(currentMillisTime);
                 waybillCarDao.insert(waybillCar);
 
@@ -269,7 +272,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                     task.setWaybillNo(waybill.getNo());
                     task.setGuideLine(waybill.getGuideLine());
                     task.setCarNum(1);
-                    task.setState(TaskStateEnum.WAIT_ALLOT_CONFIRM.code);
+                    task.setState(waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code ? TaskStateEnum.TRANSPORTING.code : TaskStateEnum.WAIT_LOAD.code);
                     task.setDriverId(driverId);
                     task.setDriverName(driverName);
                     task.setDriverPhone(driverPhone);
@@ -297,14 +300,14 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 if (paramsDto.getType() == WaybillTypeEnum.PICK.code) {
                     OrderCar oc = new OrderCar();
                     oc.setId(orderCarId);
-                    oc.setState(OrderCarStateEnum.WAIT_PICK.code);
+                    oc.setState(waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code ? OrderCarStateEnum.PICKING.code : OrderCarStateEnum.WAIT_PICK.code);
                     oc.setPickType(getLocalCarryType(waybill.getCarrierType()));
                     oc.setPickState(OrderCarLocalStateEnum.DISPATCHED.code);
                     orderCarDao.updateById(oc);
                 } else {
                     OrderCar oc = new OrderCar();
                     oc.setId(orderCarId);
-                    oc.setState(OrderCarStateEnum.WAIT_PICK.code);
+                    oc.setState(waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code ? OrderCarStateEnum.BACKING.code : OrderCarStateEnum.WAIT_BACK.code);
                     oc.setBackType(getLocalCarryType(waybill.getCarrierType()));
                     oc.setBackState(OrderCarLocalStateEnum.DISPATCHED.code);
                     orderCarDao.updateById(oc);
@@ -446,11 +449,12 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             if (waybill.getState() > WaybillStateEnum.TRANSPORTING.code) {
                 return BaseResultUtil.fail("运单已经在运输中不能修改");
             }
+            waybill.setState(waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code ? WaybillStateEnum.TRANSPORTING.code : WaybillStateEnum.ALLOT_CONFIRM.code);
             waybill.setSource(WaybillSourceEnum.MANUAL.code);
             waybill.setCarrierId(carrierId);
             waybill.setCarrierType(paramsDto.getCarrierType());
             waybill.setCarrierName(paramsDto.getCarrierName());
-            waybill.setFreightFee(paramsDto.getType() == WaybillTypeEnum.PICK.code ? orderCar.getPickFee() : orderCar.getPickFee());
+            waybill.setFreightFee(waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code ? BigDecimal.ZERO : (paramsDto.getType() == WaybillTypeEnum.PICK.code ? orderCar.getPickFee() : orderCar.getPickFee()));
             waybill.setFixedFreightFee(false);
             waybill.setRemark(paramsDto.getRemark());
             waybillDao.updateById(waybill);
@@ -472,7 +476,9 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             fillWaybillCarExpectEndTime(waybillCar);
             waybillCar.setReceiptFlag(waybillCar.getUnloadLinkPhone().equals(order.getBackContactPhone()));
             //运单车辆状态
-            waybillCar.setState(isOneDriver ? WaybillCarStateEnum.ALLOTED.code : WaybillCarStateEnum.WAIT_ALLOT.code);
+            waybillCar.setState(isOneDriver ?
+                    (waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code ? WaybillCarStateEnum.LOADED.code : WaybillCarStateEnum.ALLOTED.code)
+                    : WaybillCarStateEnum.WAIT_ALLOT.code);
             //TODO 计算预计到达时间，计算线路是否存在
             waybillCarDao.updateById(waybillCar);
 
@@ -490,7 +496,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                     task.setWaybillNo(waybill.getNo());
                     task.setGuideLine(waybill.getGuideLine());
                     task.setCarNum(waybill.getCarNum());
-                    task.setState(TaskStateEnum.WAIT_LOAD.code);
+                    task.setState(waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code ? TaskStateEnum.TRANSPORTING.code : TaskStateEnum.WAIT_LOAD.code);
                     task.setDriverName(driverName);
                     task.setDriverPhone(driverPhone);
                     task.setDriverId(driverId);
@@ -514,11 +520,13 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             if (paramsDto.getType() == WaybillTypeEnum.PICK.code) {
                 OrderCar oc = new OrderCar();
                 oc.setId(orderCarId);
+                oc.setState(waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code ? OrderCarStateEnum.PICKING.code : OrderCarStateEnum.WAIT_PICK.code);
                 oc.setPickType(getLocalCarryType(waybill.getCarrierType()));
                 orderCarDao.updateById(oc);
             } else {
                 OrderCar oc = new OrderCar();
                 oc.setId(orderCarId);
+                oc.setState(waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code ? OrderCarStateEnum.BACKING.code : OrderCarStateEnum.WAIT_BACK.code);
                 oc.setBackType(getLocalCarryType(waybill.getCarrierType()));
                 orderCarDao.updateById(oc);
             }
@@ -620,7 +628,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             waybill.setCarrierName(carrier.getName());
             waybill.setCarrierType(carrier.getType());
             waybill.setCarNum(carList.size());
-            waybill.setState(WaybillStateEnum.WAIT_ALLOT_CONFIRM.code);
+            waybill.setState(WaybillStateEnum.ALLOT_CONFIRM.code);
             //提送车费用逻辑，调度时不允许修改提送车费用，需要到订单中修改提送车费用，多则返还，少则后补
             waybill.setFreightFee(paramsDto.getFreightFee());
             waybill.setFixedFreightFee(paramsDto.getFixedFreightFee());
@@ -732,7 +740,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 task.setWaybillNo(waybill.getNo());
                 task.setGuideLine(waybill.getGuideLine());
                 task.setCarNum(carList.size());
-                task.setState(TaskStateEnum.WAIT_ALLOT_CONFIRM.code);
+                task.setState(TaskStateEnum.WAIT_LOAD.code);
                 task.setDriverId(driver.getId());
                 task.setDriverName(driver.getName());
                 task.setDriverPhone(driver.getPhone());
@@ -936,7 +944,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 task.setWaybillNo(waybill.getNo());
                 task.setGuideLine(waybill.getGuideLine());
                 task.setCarNum(waybill.getCarNum());
-                task.setState(TaskStateEnum.WAIT_ALLOT_CONFIRM.code);
+                task.setState(TaskStateEnum.WAIT_LOAD.code);
                 task.setDriverId(driver.getId());
                 task.setDriverName(driver.getName());
                 task.setDriverPhone(driver.getPhone());
@@ -1094,7 +1102,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         if (waybill == null) {
             return BaseResultUtil.fail("运单不存在");
         }
-        if (waybill.getState() <= WaybillStateEnum.WAIT_ALLOT_CONFIRM.code || waybill.getState() >= WaybillStateEnum.FINISHED.code) {
+        if (waybill.getState() <= WaybillStateEnum.WAIT_ALLOT.code || waybill.getState() >= WaybillStateEnum.FINISHED.code) {
             return BaseResultUtil.fail("运单未开始或已完结");
         }
 

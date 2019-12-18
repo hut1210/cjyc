@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
 
+import com.cjyc.common.model.util.BigDecimalSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModel;
@@ -209,27 +210,35 @@ public class Order implements Serializable {
     private Integer invoiceType;
 
     @ApiModelProperty(value = "应收提车费")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal pickFee;
 
     @ApiModelProperty(value = "应收干线费")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal trunkFee;
 
     @ApiModelProperty(value = "应收配送费")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal backFee;
 
     @ApiModelProperty(value = "应收追加保险费")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal addInsuranceFee;
 
     @ApiModelProperty(value = "物流券抵消金额")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal couponOffsetFee;
 
     @ApiModelProperty(value = "代收中介费（为资源合伙人代收），计算值")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal agencyFee;
 
     @ApiModelProperty(value = "应收总价：收车后客户应支付平台的费用，计算值")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal totalFee;
 
     @ApiModelProperty(value = "应收订单定金（保留字段）")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal depositFee;
 
     @ApiModelProperty(value = "车辆均摊费用（提车费/送车费/中转费）方式：0均分余数散列（默认），1不均分")

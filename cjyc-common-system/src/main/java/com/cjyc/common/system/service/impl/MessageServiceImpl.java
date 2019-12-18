@@ -10,6 +10,7 @@ import com.cjyc.common.system.entity.NoticeReq;
 import com.cjyc.common.system.entity.PushMessageReq;
 import com.cjyc.common.system.feign.IClpMessageService;
 import com.cjyc.common.system.service.IMessageService;
+import com.cjyc.common.system.util.MiaoxinSmsUtil;
 import com.cjyc.common.system.util.ResultDataUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 
 /**
  * 消息发送：调用消息服务完成短信、极光消息发送
@@ -41,6 +43,15 @@ public class MessageServiceImpl implements IMessageService {
 
     @Resource
     private IClpMessageService clpMessageService;
+
+    @Override
+    public void sendSms(String phone, String message) {
+        try {
+            MiaoxinSmsUtil.send(phone, message);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public ResultVo sendSms(SmsDto dto) {

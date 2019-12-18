@@ -18,8 +18,8 @@ public interface ICsOrderService {
     ResultVo commit(CommitOrderDto reqDto);
     /**
      * 审核订单
-     * @author JPG
-     * @since 2019/11/5 15:03
+     * @author JPG03
+     * @since 2019/11/5 15:
      * @param reqDto
      */
     ResultVo check(CheckOrderDto reqDto);

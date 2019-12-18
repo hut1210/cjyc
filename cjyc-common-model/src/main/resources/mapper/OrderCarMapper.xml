@@ -314,18 +314,21 @@
             and o.state between 25 and 100
             <choose>
                 <when test="paramsDto.dispatchType == 1">
-                    and oc.pick_state &lt;= 1 and oc.state &lt; 5 and o.pick_type &lt; 4
+                    and oc.pick_state &lt;= 1 and oc.state &lt; 5 and oc.pick_type &lt; 4
                 </when>
                 <when test="paramsDto.dispatchType == 2">
                     and oc.trunk_state &lt;= 2 and oc.state &lt; 45
                 </when>
                 <when test="paramsDto.dispatchType == 3">
-                    and oc.back_state &lt;= 1 and oc.state between 45 and 99 and o.pick_type &lt; 4
+                    and oc.back_state &lt;= 1 and oc.state &lt; 99 and oc.back_type &lt; 4
                 </when>
                 <when test="paramsDto.dispatchType == 4">
-                    and oc.back_state >= 5
-                    and oc.trunk_state >= 5
-                    and oc.back_state >= 5
+                    and (
+                        (oc.back_state >= 5 or oc.pick_type = 4)
+                        and (oc.trunk_state >= 5)
+                        and (oc.back_state >= 5 or oc.back_type &lt; 4)
+                        )
+                    or oc.state >= 100
                 </when>
             </choose>
             <choose>
@@ -431,7 +434,7 @@
         order by oc.id desc
 
     </select>
-    <select id="findByOrderId" resultType="com.cjyc.common.model.entity.OrderCar">
+    <select id="findListByOrderId" resultType="com.cjyc.common.model.entity.OrderCar">
         select
         <include refid="Base_Column_List"/>
         from w_order_car
@@ -829,40 +832,43 @@
     </select>
     <sql id="transport_state">
         (case
-            when oc.pick_type = 4 then 100
-            when oc.pick_type &lt;= 1 then
+        when oc.pick_type = 4 then 100
+        when oc.pick_type &lt;= 1 then
             (case
             when oc.state &lt;= 5 then 21
             when oc.state > 5 and oc.state &lt; 25 then 23
             when oc.state &gt;= 25 then 25 end)
-            else
+        else
             (case
             when oc.state &lt;= 5 then 1
             when oc.state = 10 then 2
             when oc.state = 15 then 3
             when oc.state &gt;= 25 then 5 end)end ) as pickTransportState,
 
+        (case
+        when oc.state &lt;= 25 then
             (case
+            when oc.trunk_state &lt;= 1 then 1
+            when oc.trunk_state > 1 and oc.trunk_state &lt; 7 then 2
             when oc.trunk_state = 7 then 100
-            when oc.trunk_state = 5 then 5
-            else (case
-            when oc.state &lt;= 25 and oc.trunk_state &lt;= 1 then 1
-            when oc.state &lt;= 25 and oc.trunk_state > 1 then 2
-            when oc.state = 35 then 2
-            when oc.state = 40 then 3
-            when oc.state &gt; 40 then 5 end)end ) as trunkTransportState,
+        when oc.state = 35 then 2
+        when oc.state > 35 and oc.state &lt; 45 then 3
+        when oc.state &gt;= 45 then 5 end)end ) as trunkTransportState,
+
+        (case
+        when oc.back_type = 4 then 100
+        when oc.back_type &lt;= 1 then
             (case
-            when oc.back_type = 4 then 100
-            when oc.back_type &lt;= 1 then
-            (case
-            when oc.state = 45 then 21
+            when oc.state &lt;= 45 and oc.back_state &lt;= 1 then 21
+            when oc.state &lt;= 45 and oc.back_state > 1 then 23
             when oc.state > 45 and oc.state &lt; 100 then 23
             when oc.state &gt;= 100 then 25 end)
-            else (case
-            when oc.state &lt;= 45 and oc.back_state = 1 then 1
+        else
+            (case
+            when oc.state &lt;= 45 and oc.back_state &lt;= 1 then 1
             when oc.state &lt;= 45 and oc.back_state > 1 then 2
-            when oc.state = 50 then 2
-            when oc.state = 55 then 3
+            when oc.state > 45 and oc.state &lt;= 50 then 2
+            when oc.state > 50 and oc.state &lt; 100  then 3
             when oc.state &gt;= 100 then 5 end)end ) as backTransportState,
     </sql>
     <select id="findTransportStateByOrderId"

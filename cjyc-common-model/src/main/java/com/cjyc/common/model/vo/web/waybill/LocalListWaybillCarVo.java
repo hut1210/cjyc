@@ -29,7 +29,8 @@ public class LocalListWaybillCarVo extends WaybillCar {
     private Long createUserId;
     @ApiModelProperty(value = "运单类型：1提车运单，2干线运单，3送车运单")
     private Integer type;
-
+    @ApiModelProperty(value = "订单编号")
+    private String orderNo;
     @ApiModelProperty(value = "品牌")
     private String brand;
     @ApiModelProperty(value = "型号")

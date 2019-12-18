@@ -2,11 +2,15 @@ package com.cjyc.common.model.vo.web.order;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.cjyc.common.model.entity.Order;
+import com.cjyc.common.model.util.BigDecimalSerizlizer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import java.math.BigDecimal;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -47,7 +51,8 @@ public class ListOrderVo extends Order {
     private String settlePeriod;
     @ApiModelProperty("总服务费")
     @Excel(name = "总服务费", orderNum = "10")
-    private String totalAgencyFee;
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
+    private BigDecimal totalAgencyFee;
 
 
 }

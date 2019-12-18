@@ -10,6 +10,8 @@ import lombok.Data;
 @Data
 public class TrunkMainListWaybillVo extends Waybill {
 
+    @ApiModelProperty("编号")
+    private String wtNo;
     @ApiModelProperty("司机ID")
     @JsonSerialize(using = ToStringSerializer.class)
     private Long driverId;
@@ -18,7 +20,7 @@ public class TrunkMainListWaybillVo extends Waybill {
     @ApiModelProperty("手机号")
     private String driverPhone;
     @ApiModelProperty("车牌号")
-    private String plateNo;
+    private String vehiclePlateNo;
     @ApiModelProperty("车位总数")
     private String carryCarNum;
     @ApiModelProperty("被占车位")

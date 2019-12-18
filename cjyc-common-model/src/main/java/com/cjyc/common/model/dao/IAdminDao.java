@@ -42,4 +42,8 @@ public interface IAdminDao extends BaseMapper<Admin> {
     List<AdminPageVo> findList(AdminPageDto paramsDto, Set<Long> collect);
 
     AdminVo findVoByPhone(String phone);
+
+    Admin findNext(@Param("startStoreId") Long startStoreId, Long valueOf);
+
+    Admin findTop(Long startStoreId);
 }

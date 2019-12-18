@@ -244,6 +244,20 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     }
 
     @Override
+    public ResultVo<PageVo<ListOrderVo>> listForHhr(ListOrderDto paramsDto) {
+        //分页查询
+        PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
+        List<ListOrderVo> list = orderDao.findListSelective(paramsDto);
+        PageInfo<ListOrderVo> pageInfo = new PageInfo<>(list);
+        if (paramsDto.getCurrentPage() > pageInfo.getPages()) {
+            pageInfo.setList(null);
+        }
+        //查询统计
+        Map<String, Object> countInfo = orderDao.countForAllTab(paramsDto);
+        return BaseResultUtil.success(pageInfo, countInfo);
+    }
+
+    @Override
     public ResultVo allot(AllotOrderDto paramsDto) {
         return csOrderService.allot(paramsDto);
     }
@@ -482,7 +496,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         if(orderVo == null){
             return null;
         }
-        List<OrderCar> list = orderCarDao.findByOrderId(orderId);
+        List<OrderCar> list = orderCarDao.findListByOrderId(orderId);
         orderVo.setOrderCarList(list);
         return orderVo;
     }

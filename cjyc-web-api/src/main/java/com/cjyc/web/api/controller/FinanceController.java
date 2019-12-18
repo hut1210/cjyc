@@ -105,6 +105,18 @@ public class FinanceController {
         return financeService.getCollectReceiveList(collectReceiveQueryDto);
     }
 
+    @ApiOperation(value = "代收款(确认回款)")
+    @PostMapping(value = "/updateBackState")
+    public ResultVo updateBackState(@RequestBody String wayBillNo){
+        return financeService.updateBackState(wayBillNo);
+    }
+
+    @ApiOperation(value = "代收款(结算明细)")
+    @PostMapping(value = "/settleDetail")
+    public ResultVo<CashSettlementDetailVo> settleDetail(@RequestBody String wayBillNo){
+        return financeService.settleDetail(wayBillNo);
+    }
+
     @ApiOperation(value = "已收款(时付)列表")
     @PostMapping(value = "/getPaymentList")
     public ResultVo<PageVo<PaymentVo>> getPaymentList(@RequestBody FinanceQueryDto financeQueryDto){

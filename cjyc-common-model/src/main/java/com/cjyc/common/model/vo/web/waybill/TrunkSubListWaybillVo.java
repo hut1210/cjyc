@@ -12,7 +12,7 @@ public class TrunkSubListWaybillVo extends Waybill {
 
 
     @ApiModelProperty("任务编号")
-    private String taskNo;
+    private String wtNo;
     @ApiModelProperty("任务车辆数量")
     private Integer taskCarNum;
     @ApiModelProperty("司机ID")
@@ -26,7 +26,7 @@ public class TrunkSubListWaybillVo extends Waybill {
     private String driverPhone;
     @Excel(name = "车牌号", orderNum = "6")
     @ApiModelProperty("车牌号")
-    private String plateNo;
+    private String vehiclePlateNo;
     @ApiModelProperty("车位总数")
     private Integer carryCarNum;
     @Excel(name = "动态车位", orderNum = "7")

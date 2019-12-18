@@ -24,6 +24,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -226,5 +227,18 @@ public class FinanceServiceImpl implements IFinanceService {
         List<CollectReceiveVo> collectReceiveList = financeDao.getCollectReceiveList(collectReceiveQueryDto);
         PageInfo<CollectReceiveVo> pageInfo = new PageInfo<>(collectReceiveList);
         return BaseResultUtil.success(pageInfo);
+    }
+
+    @Override
+    public ResultVo<CashSettlementDetailVo> settleDetail(String wayBillNo) {
+        CashSettlementDetailVo cashSettlementDetailVo = new CashSettlementDetailVo();
+        List<CashCarDetailVo> cashCarDetailVos = new ArrayList<>();
+        cashSettlementDetailVo.setCashCarDetailVoList(cashCarDetailVos);
+        return BaseResultUtil.success(cashSettlementDetailVo);
+    }
+
+    @Override
+    public ResultVo updateBackState(String wayBillNo) {
+        return BaseResultUtil.success();
     }
 }

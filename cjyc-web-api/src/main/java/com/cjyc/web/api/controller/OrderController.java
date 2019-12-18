@@ -7,13 +7,16 @@ import com.alibaba.fastjson.JSONObject;
 import com.cjkj.log.monitor.LogUtil;
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.entity.Admin;
+import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.enums.ResultEnum;
+import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.OrderCarVo;
 import com.cjyc.common.model.vo.web.order.*;
 import com.cjyc.common.system.service.ICsAdminService;
+import com.cjyc.common.system.service.ICsCustomerService;
 import com.cjyc.web.api.service.IOrderService;
 import com.cjyc.web.api.util.CustomerOrderExcelVerifyHandler;
 import com.cjyc.web.api.util.ExcelUtil;
@@ -49,6 +52,8 @@ public class OrderController {
     private IOrderService orderService;
     @Resource
     private ICsAdminService csAdminService;
+    @Resource
+    private ICsCustomerService csCustomerService;
     @Autowired
     private CustomerOrderExcelVerifyHandler customerOrderVerifyHandler;
     @Autowired
@@ -62,12 +67,19 @@ public class OrderController {
     @ApiOperation(value = "订单保存")
     @PostMapping(value = "/save")
     public ResultVo save(@Validated @RequestBody SaveOrderDto reqDto) {
-
-        //验证用户存不存在
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
-        reqDto.setCreateUserId(admin.getId());
-        reqDto.setCreateUserName(admin.getName());
+        if(UserTypeEnum.CUSTOMER.code == reqDto.getLoginType()){
+            //验证用户存不存在
+            Customer customer = csCustomerService.validate(reqDto.getLoginId());
+            reqDto.setLoginName(customer.getName());
+            reqDto.setCreateUserId(customer.getId());
+            reqDto.setCreateUserName(customer.getName());
+        }else{
+            //验证用户存不存在
+            Admin admin = csAdminService.validate(reqDto.getLoginId());
+            reqDto.setLoginName(admin.getName());
+            reqDto.setCreateUserId(admin.getId());
+            reqDto.setCreateUserName(admin.getName());
+        }
 
         ResultVo resultVo = orderService.save(reqDto);
         //发送推送信息
@@ -82,14 +94,21 @@ public class OrderController {
     @ApiOperation(value = "订单提交")
     @PostMapping(value = "/commit")
     public ResultVo commit(@Validated @RequestBody CommitOrderDto reqDto) {
-
-        //验证用户存不存在
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
-        reqDto.setLoginPhone(admin.getPhone());
-        reqDto.setCreateUserId(admin.getId());
-        reqDto.setCreateUserName(admin.getName());
-
+        if(UserTypeEnum.CUSTOMER.code == reqDto.getLoginType()){
+            //验证用户存不存在
+            Customer customer = csCustomerService.validate(reqDto.getLoginId());
+            reqDto.setLoginName(customer.getName());
+            reqDto.setLoginPhone(customer.getContactPhone());
+            reqDto.setCreateUserId(customer.getId());
+            reqDto.setCreateUserName(customer.getName());
+        }else{
+            //验证用户存不存在
+            Admin admin = csAdminService.validate(reqDto.getLoginId());
+            reqDto.setLoginName(admin.getName());
+            reqDto.setLoginPhone(admin.getPhone());
+            reqDto.setCreateUserId(admin.getId());
+            reqDto.setCreateUserName(admin.getName());
+        }
         //发送短信
         return orderService.commit(reqDto);
     }
