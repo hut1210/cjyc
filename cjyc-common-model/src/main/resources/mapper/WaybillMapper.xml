@@ -435,7 +435,7 @@
             w.create_time as createTime
         from
             w_waybill_car wcar
-            left join w_waybill w wcar.waybill_id = w.id
+            left join w_waybill w on wcar.waybill_id = w.id
         where
             w.carrier_id in (select carrier_id
                             from d_carrier_driver_con
