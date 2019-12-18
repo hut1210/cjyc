@@ -203,12 +203,12 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                     }
                 }*/
                 //【验证】配送调度，需验证干线调度是否完成
-                if (paramsDto.getType() == WaybillTypeEnum.BACK.code) {
+                /*if (paramsDto.getType() == WaybillTypeEnum.BACK.code) {
                     WaybillCar waybillCar = waybillCarDao.findLastTrunkWaybillCar(order.getEndCityCode(), orderCarId);
                     if (waybillCar == null || !waybillCar.getEndCityCode().equals(order.getEndCityCode())) {
                         throw new ParameterException("编号为{0}的车辆，干线尚未调度完成", orderCarNo);
                     }
-                }
+                }*/
                 //TODO 验证提车和送车人是否与订单一致
 
                 /**1、添加运单信息*/
