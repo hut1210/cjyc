@@ -405,6 +405,7 @@
                 and dd.id_card = #{idCard}
             </if>
             AND dc.state = 2
+            and dc.business_state = 0
             AND dcdc.state = 2
             AND dc.type = 1
             and dc.mode = 3

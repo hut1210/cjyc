@@ -12,6 +12,7 @@ import com.cjyc.common.model.vo.CityTreeVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.city.CityVo;
+import com.cjyc.common.system.service.ICsCityService;
 import com.cjyc.web.api.service.ICityService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -22,6 +23,7 @@ import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +37,8 @@ public class CityController {
 
     @Autowired
     private ICityService cityService;
+    @Resource
+    private ICsCityService csCityService;
 
     @ApiOperation(value = "根据code查询城市", notes = " ")
     @PostMapping(value = "/get/{code}")
@@ -102,10 +106,10 @@ public class CityController {
         return cityService.getProvinceList(dto);
     }
 
-/*    @ApiOperation(value = "根据web端roleId查询省/城市区")
-    @PostMapping(value = "/findCityTree/{roleId}")
+    @ApiOperation(value = "查询省/城市区树形结构")
+    @PostMapping(value = "/findCityTree")
     public ResultVo<CityVo> findCityTree(@RequestBody ThreeCityDto dto) {
-        return cityService.findCityTree(dto);
-    }*/
+        return csCityService.findCityTree(dto);
+    }
 
 }

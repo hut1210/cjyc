@@ -126,7 +126,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         customer.setName(dto.getContactMan());
         customer.setType(CustomerTypeEnum.INDIVIDUAL.code);
         customer.setState(CustomerStateEnum.CHECKED.code);
-        customer.setPayMode(CustomerPayEnum.TIME_PAY.code);
+        customer.setPayMode(PayModeEnum.COLLECT.code);
         customer.setSource(CustomerSourceEnum.WEB.code);
         customer.setRegisterTime(NOW);
         customer.setCreateUserId(dto.getLoginId());

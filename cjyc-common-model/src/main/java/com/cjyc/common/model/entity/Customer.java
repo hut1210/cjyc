@@ -88,7 +88,7 @@ public class Customer implements Serializable {
     @ApiModelProperty(value = "状态：0待审核，1未登录，2已审核，3审核拒绝， 7已冻结")
     private Integer state;
 
-    @ApiModelProperty(value = "结算方式 0：时付  1：账期")
+    @ApiModelProperty(value = "结算方式：0时付，1账期")
     private Integer payMode;
 
     @ApiModelProperty(value = "注册时间，用户自己注册APP或者首次登陆操作APP时间")
