@@ -32,24 +32,53 @@ public class InvoiceApplyController {
     @Autowired
     private IInvoiceApplyService invoiceApplyService;
 
+    /**
+     * 功能描述: 分页查询发票申请信息列表
+     * @author liuxingxiang
+     * @date 2019/12/18
+     * @param dto
+     * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.vo.PageVo<java.util.List<com.cjyc.common.model.vo.customer.invoice.InvoiceApplyVo>>>
+     */
     @ApiOperation(value = "分页查询发票申请信息列表")
     @PostMapping("/getInvoicePage")
     public ResultVo<PageVo<List<InvoiceApplyVo>>> getInvoiceApplyPage(@RequestBody InvoiceQueryDto dto){
         return invoiceApplyService.getInvoiceApplyPage(dto);
     }
 
-    @ApiOperation(value = "查看明细")
+    /**
+     * 功能描述: 查看开票明细
+     * @author liuxingxiang
+     * @date 2019/12/18
+     * @param dto
+     * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.vo.web.invoice.InvoiceDetailVo>
+     */
+    @ApiOperation(value = "查看开票明细")
     @PostMapping("/getDetail")
     public ResultVo<InvoiceDetailVo> getDetail(@RequestBody @Validated({InvoiceDetailAndConfirmDto.GetDetail.class}) InvoiceDetailAndConfirmDto dto){
         return invoiceApplyService.getDetail(dto);
     }
 
+    /**
+     * 功能描述: 确认开票
+     * @author liuxingxiang
+     * @date 2019/12/18
+     * @param dto
+     * @return com.cjyc.common.model.vo.ResultVo
+     */
     @ApiOperation(value = "确认开票")
     @PostMapping("/confirmInvoice")
     public ResultVo confirmInvoice(@RequestBody @Validated({InvoiceDetailAndConfirmDto.ConfirmInvoice.class}) InvoiceDetailAndConfirmDto dto){
         return invoiceApplyService.confirmInvoice(dto);
     }
 
+    /**
+     * 功能描述: 导出Excel
+     * @author liuxingxiang
+     * @date 2019/12/18
+     * @param request
+     * @param response
+     * @return void
+     */
     @ApiOperation(value = "导出Excel")
     @GetMapping("/exportExcel")
     public void exportExcel(HttpServletRequest request, HttpServletResponse response){
