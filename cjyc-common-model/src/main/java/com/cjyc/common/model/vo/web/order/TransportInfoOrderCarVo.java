@@ -18,8 +18,10 @@ public class TransportInfoOrderCarVo extends OrderCar {
     private Integer backTransportState;
 
     @ApiModelProperty("当前归属者")
-    private Integer nowDriver;
+    private String nowDriver;
     @ApiModelProperty("当前所在地")
-    private Integer nowCity;
+    private String nowCity;
+    @ApiModelProperty("当前所在业务中心")
+    private String nowStore;
 
 }

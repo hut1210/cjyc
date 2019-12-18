@@ -883,11 +883,13 @@
             oc.*,
             t.state,
             t.driver_id as driverId,
-            CONCAT(t.driver_name," ",t.driver_phone," ", t.vehicle_plate_no) as nowDriver,
-            s.city as nowCity
+            CONCAT(IFNULL(t.driver_name,"")," ",IFNULL(t.driver_phone,"")," ", IFNULL(t.vehicle_plate_no,"")) as nowDriver,
+            ct.parent_name as nowCity,
+            s.`name` as nowStore
         from w_order_car oc
         join w_order o on o.id = oc.order_id
         left join s_store s on s.id = oc.now_store_id
+        left join s_city ct on ct.`code` = oc.now_area_code
         left join (
                 select
                 wc.order_car_id as order_car_id,
