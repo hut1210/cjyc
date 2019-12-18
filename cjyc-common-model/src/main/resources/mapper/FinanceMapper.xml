@@ -9,12 +9,15 @@
         wo.input_store_name as inputStoreName,wo.start_address as startAddress,
         wo.end_address as endAddress,
         wt.complete_time as deliveryDate,
-        woc.total_fee as freightReceivable,
+
         wo.customer_id as customerId,
         wo.customer_type as type,cc.name as customerName,
         cc.pay_mode as payMode,
-        wwc.freight_fee as freightReceivable,
-        woc.wl_pay_time as receivedTime
+        if(wo.customer_type=3,woc.total_fee,0) as feeShare,
+        if(wo.customer_type=3,(woc.total_fee-woc.agency_fee),woc.total_fee) as freightReceivable,
+        woc.wl_pay_time as receivedTime,
+
+        wwc.freight_fee as totalCost
 
         from w_order_car woc
         left join w_order wo on woc.order_no = wo.no
@@ -92,14 +95,24 @@
 
     </select>
 
-    <select id="getTrunkCostList" parameterType="String" resultType="com.cjyc.common.model.vo.web.finance.TrunkLineVo">
-        select ww.carrier_name as carrierName,wwc.freight_fee as freightFee,ww.complete_time as payTime,
+    <select id="getFee" parameterType="map" resultType="java.math.BigDecimal">
+        select IFNULL(sum(wwc.freight_fee),0)
+
+        from w_waybill_car wwc
+        left join w_waybill ww on wwc.waybill_no = ww.no
+        left join d_carrier dc on ww.carrier_id = dc.id
+        where wwc.order_car_no = #{orderCarNo} and ww.type = #{type}
+        order by ww.create_time desc
+    </select>
+
+    <select id="getTrunkCostList" parameterType="map" resultType="com.cjyc.common.model.vo.web.finance.TrunkLineVo">
+        select ww.carrier_name as name,wwc.freight_fee as freightFee,ww.freight_pay_time as payTime,
         dc.settle_type as settleType
 
         from w_waybill_car wwc
         left join w_waybill ww on wwc.waybill_no = ww.no
         left join d_carrier dc on ww.carrier_id = dc.id
-        where wwc.order_car_no = #{orderCarNo}
+        where wwc.order_car_no = #{orderCarNo} and ww.type = #{type}
         order by ww.create_time desc
     </select>
 

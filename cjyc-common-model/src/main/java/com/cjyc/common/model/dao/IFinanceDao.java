@@ -5,7 +5,9 @@ import com.cjyc.common.model.dto.web.finance.CollectReceiveQueryDto;
 import com.cjyc.common.model.dto.web.finance.FinanceQueryDto;
 import com.cjyc.common.model.dto.web.finance.PayMentQueryDto;
 import com.cjyc.common.model.vo.web.finance.*;
+import org.apache.ibatis.annotations.Param;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -16,7 +18,7 @@ public interface IFinanceDao extends BaseMapper {
 
     List<FinanceVo> getFinanceList(FinanceQueryDto financeQueryDto);
 
-    List<TrunkLineVo> getTrunkCostList(String orderCarNo);
+    List<TrunkLineVo> getTrunkCostList(@Param("orderCarNo") String orderCarNo,@Param("type") int type);
 
     List<FinanceReceiptVo> getFinanceReceiptList(FinanceQueryDto financeQueryDto);
 
@@ -25,4 +27,6 @@ public interface IFinanceDao extends BaseMapper {
     List<PaidVo> getPaidList(PayMentQueryDto payMentQueryDto);
 
     List<CollectReceiveVo> getCollectReceiveList(CollectReceiveQueryDto collectReceiveQueryDto);
+
+    BigDecimal getFee(@Param("orderCarNo") String orderCarNo,@Param("type") int type);
 }

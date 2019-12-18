@@ -72,5 +72,21 @@ public class FinanceVo implements Serializable {
     @ApiModelProperty(value = "毛利")
     private BigDecimal GrossProfit;
 
+    @ApiModelProperty(value = "提车成本")
+    private BigDecimal pickUpCarFee;
+
+    @ApiModelProperty(value = "干线成本")
+    private BigDecimal trunkLineFee;
+
+    @ApiModelProperty(value = "送车成本")
+    private BigDecimal carryCarFee;
+
+    @ApiModelProperty(value = "提车成本列表")
+    private List<TrunkLineVo> pickUpCarList;
+
+    @ApiModelProperty(value = "干线成本列表")
     private List<TrunkLineVo> trunkLineVoList;
+
+    @ApiModelProperty(value = "送车成本列表")
+    private List<TrunkLineVo> carryCarList;
 }

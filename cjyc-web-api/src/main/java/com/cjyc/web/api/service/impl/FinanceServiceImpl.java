@@ -12,7 +12,9 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.finance.*;
 import com.cjyc.common.system.service.ICsSendNoService;
+import com.cjyc.web.api.service.ICustomerService;
 import com.cjyc.web.api.service.IFinanceService;
+import com.cjyc.web.api.service.IOrderService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -48,16 +50,38 @@ public class FinanceServiceImpl implements IFinanceService {
     @Resource
     private ICsSendNoService csSendNoService;
 
+    @Resource
+    private ICustomerService customerService;
+
+    @Resource
+    private IOrderService orderService;
+
     @Override
     public ResultVo<PageVo<FinanceVo>> getFinanceList(FinanceQueryDto financeQueryDto) {
         PageHelper.startPage(financeQueryDto.getCurrentPage(), financeQueryDto.getPageSize());
         List<FinanceVo> financeVoList = financeDao.getFinanceList(financeQueryDto);
         for(int i=0;i<financeVoList.size();i++){
             FinanceVo financeVo = financeVoList.get(i);
+
             if(financeVo != null){
+                //TODO 实收金额  收入合计
+
                 String orderCarNo = financeVo.getNo();
-                List<TrunkLineVo> trunkLineVoList = financeDao.getTrunkCostList(orderCarNo);
+                BigDecimal pickUpCarFee = financeDao.getFee(orderCarNo,1);
+                BigDecimal trunkLineFee = financeDao.getFee(orderCarNo,2);
+                BigDecimal carryCarFee = financeDao.getFee(orderCarNo,3);
+
+                financeVo.setPickUpCarFee(pickUpCarFee);
+                financeVo.setTrunkLineFee(trunkLineFee);
+                financeVo.setCarryCarFee(carryCarFee);
+
+                List<TrunkLineVo> pickUpCarList = financeDao.getTrunkCostList(orderCarNo,1);
+                List<TrunkLineVo> trunkLineVoList = financeDao.getTrunkCostList(orderCarNo,2);
+                List<TrunkLineVo> carryCarList = financeDao.getTrunkCostList(orderCarNo,3);
+
+                financeVo.setPickUpCarList(pickUpCarList);
                 financeVo.setTrunkLineVoList(trunkLineVoList);
+                financeVo.setCarryCarList(carryCarList);
             }
         }
         PageInfo<FinanceVo> pageInfo = new PageInfo<>(financeVoList);
@@ -76,7 +100,7 @@ public class FinanceServiceImpl implements IFinanceService {
             FinanceVo financeVo = financeVoList.get(i);
             if(financeVo != null){
                 String orderCarNo = financeVo.getNo();
-                List<TrunkLineVo> trunkLineVoList = financeDao.getTrunkCostList(orderCarNo);
+                List<TrunkLineVo> trunkLineVoList = financeDao.getTrunkCostList(orderCarNo,0);
                 financeVo.setTrunkLineVoList(trunkLineVoList);
             }
         }
