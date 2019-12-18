@@ -26,7 +26,6 @@
             JOIN c_customer_count ccc ON ccc.order_no = wo.NO
         WHERE
             ccc.customer_id = #{customerId}
-            AND wo.state = 100
             group by ccc.customer_id
     </select>
 

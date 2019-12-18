@@ -75,8 +75,8 @@
             <if test="lineCode != null and lineCode.trim() != ''">
                 and sl.code = #{lineCode}
             </if>
-            order by sl.create_time desc,sl.update_time desc
         </where>
+        order by sl.create_time desc,sl.update_time desc
     </select>
 
     <select id="findOneByCity" resultType="com.cjyc.common.model.entity.Line">

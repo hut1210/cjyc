@@ -2,6 +2,7 @@ package com.cjyc.web.api.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.cjyc.common.model.dto.KeywordDto;
+import com.cjyc.common.model.dto.ThreeCityDto;
 import com.cjyc.common.model.dto.salesman.city.CityPageDto;
 import com.cjyc.common.model.dto.web.city.CityQueryDto;
 import com.cjyc.common.model.entity.City;
@@ -10,6 +11,7 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.CityTreeVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.customer.city.CityVo;
 import com.cjyc.web.api.service.ICityService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -99,5 +101,11 @@ public class CityController {
     public ResultVo<List<City>> getProvinceList(@RequestBody KeywordDto dto) {
         return cityService.getProvinceList(dto);
     }
+
+/*    @ApiOperation(value = "根据web端roleId查询省/城市区")
+    @PostMapping(value = "/findCityTree/{roleId}")
+    public ResultVo<CityVo> findCityTree(@RequestBody ThreeCityDto dto) {
+        return cityService.findCityTree(dto);
+    }*/
 
 }
