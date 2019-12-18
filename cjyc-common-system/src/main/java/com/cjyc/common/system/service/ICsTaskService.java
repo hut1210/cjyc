@@ -1,6 +1,7 @@
 package com.cjyc.common.system.service;
 
 import com.cjyc.common.model.dto.customer.order.ReceiptBatchDto;
+import com.cjyc.common.model.dto.driver.task.PickLoadDto;
 import com.cjyc.common.model.dto.driver.task.ReplenishInfoDto;
 import com.cjyc.common.model.dto.web.task.*;
 import com.cjyc.common.model.entity.defined.UserInfo;
@@ -50,5 +51,5 @@ public interface ICsTaskService {
      */
     void updateForCarFinish(List<String> orderCarNoList, UserInfo userInfo);
 
-
+    ResultVo<ResultReasonVo>  loadForLocal(PickLoadDto reqDto);
 }

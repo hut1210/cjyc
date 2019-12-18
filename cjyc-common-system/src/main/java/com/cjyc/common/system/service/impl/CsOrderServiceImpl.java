@@ -25,7 +25,6 @@ import com.cjyc.common.model.exception.ParameterException;
 import com.cjyc.common.model.exception.ServerException;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.util.StringUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.order.DispatchAddCarVo;
 import com.cjyc.common.model.vo.web.order.OrderVo;
@@ -314,9 +313,9 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 csCustomerLineService.asyncSave(order);
             }
             //记录订单日志
-            csOrderLogService.asyncSave(order, OrderLogEnum.COMMITTED,
-                    new String[]{MessageFormat.format(OrderLogEnum.COMMITTED.getInnerLog(), order.getNo()),
-                            MessageFormat.format(OrderLogEnum.COMMITTED.getInnerLog(), order.getNo())},
+            csOrderLogService.asyncSave(order, OrderLogEnum.COMMIT,
+                    new String[]{MessageFormat.format(OrderLogEnum.COMMIT.getInnerLog(), order.getNo()),
+                            MessageFormat.format(OrderLogEnum.COMMIT.getInnerLog(), order.getNo())},
                     new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), UserTypeEnum.ADMIN));
         } finally {
             if (!newOrderFlag) {
@@ -485,11 +484,10 @@ public class CsOrderServiceImpl implements ICsOrderService {
         orderDao.updateById(order);
 
         //记录订单日志
-        UserInfo userInfo = new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), UserTypeEnum.ADMIN);
-        csOrderLogService.asyncSave(order, OrderLogEnum.CHECKED,
-                new String[]{MessageFormat.format(OrderLogEnum.CHECKED.getInnerLog(), order.getNo()),
-                        MessageFormat.format(OrderLogEnum.CHECKED.getInnerLog(), order.getNo())},
-                userInfo);
+        csOrderLogService.asyncSave(order, OrderLogEnum.CHECK,
+                new String[]{MessageFormat.format(OrderLogEnum.CHECK.getInnerLog(), order.getNo()),
+                        MessageFormat.format(OrderLogEnum.CHECK.getInnerLog(), order.getNo())},
+                new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), UserTypeEnum.ADMIN));
         //TODO 处理优惠券为使用状态，优惠券有且仅能验证一次，修改时怎么保证
 
         //TODO 路由轨迹
@@ -511,10 +509,10 @@ public class CsOrderServiceImpl implements ICsOrderService {
         BigDecimal backFee = BigDecimal.ZERO;
         BigDecimal addInsuranceFee = BigDecimal.ZERO;
         for (OrderCar orderCar : orderCarList) {
-            pickFee = pickFee.add(orderCar.getPickFee());
-            trunkFee = trunkFee.add(orderCar.getTrunkFee());
-            backFee = backFee.add(orderCar.getBackFee());
-            addInsuranceFee = addInsuranceFee.add(orderCar.getAddInsuranceFee());
+            pickFee = pickFee.add(orderCar.getPickFee() == null ? BigDecimal.ZERO : orderCar.getPickFee());
+            trunkFee = trunkFee.add(orderCar.getTrunkFee() == null ? BigDecimal.ZERO : orderCar.getTrunkFee());
+            backFee = backFee.add(orderCar.getBackFee() == null ? BigDecimal.ZERO : orderCar.getBackFee());
+            addInsuranceFee = addInsuranceFee.add(orderCar.getAddInsuranceFee() == null? BigDecimal.ZERO : orderCar.getAddInsuranceFee());
         }
         order.setPickFee(pickFee);
         order.setTrunkFee(trunkFee);

@@ -1,7 +1,6 @@
 package com.cjyc.common.model.dto.driver.task;
 
 import com.cjyc.common.model.enums.UserTypeEnum;
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -11,16 +10,19 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
-public class ReplenishInfoDto {
-    @NotNull(message = "登录人不能为空")
+public class PickLoadDto {
+
+    @ApiModelProperty(value = "登录用户ID",required = true)
     private Long loginId;
     @ApiModelProperty(hidden = true)
     private String loginName;
     @ApiModelProperty(hidden = true)
+    private String loginPhone;
+    @ApiModelProperty(hidden = true)
     private UserTypeEnum loginType;
     @NotNull(message = "运单ID")
     @ApiModelProperty(value = "运单车辆ID")
-    private Long waybillCarId;
+    private Long taskCarId;
     @ApiModelProperty(value = "品牌")
     private String brand;
     @ApiModelProperty(value = "型号")

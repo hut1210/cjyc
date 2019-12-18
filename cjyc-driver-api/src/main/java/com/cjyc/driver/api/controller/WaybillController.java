@@ -1,7 +1,7 @@
 package com.cjyc.driver.api.controller;
 
+import com.cjyc.common.model.dto.driver.task.PickLoadDto;
 import com.cjyc.common.model.dto.driver.task.ReplenishInfoDto;
-import com.cjyc.common.model.dto.web.order.ReplenishOrderDto;
 import com.cjyc.common.model.dto.web.task.*;
 import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -10,7 +10,6 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.service.ICsAdminService;
 import com.cjyc.common.system.service.ICsDriverService;
 import com.cjyc.common.system.service.ICsTaskService;
-import com.cjyc.common.system.service.ICsWaybillService;
 import com.cjyc.driver.api.service.IWaybillService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -59,6 +58,19 @@ public class WaybillController {
         }
         reqDto.setLoginName(driver.getName());
         return csTaskService.replenishInfo(reqDto);
+    }
+
+    /**
+     * 提车装车并完善信息
+     * @author JPG
+     */
+    @ApiOperation(value = "提车完善信息")
+    @PostMapping(value = "/replenish/info/update")
+    public ResultVo<ResultReasonVo> replenishInfo(@RequestBody PickLoadDto reqDto) {
+        //验证用户
+        Driver driver = csDriverService.validate(reqDto.getLoginId());
+        reqDto.setLoginName(driver.getName());
+        return csTaskService.loadForLocal(reqDto);
     }
     /**
      * 分配任务

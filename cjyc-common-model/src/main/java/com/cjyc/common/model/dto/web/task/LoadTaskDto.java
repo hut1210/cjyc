@@ -3,6 +3,7 @@ package com.cjyc.common.model.dto.web.task;
 import com.cjyc.common.model.enums.UserTypeEnum;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -24,7 +25,7 @@ public class LoadTaskDto {
     private UserTypeEnum loginType;
 
     @ApiModelProperty(value = "任务ID",required = true)
-    private String taskId;
+    private Long taskId;
 
     @ApiModelProperty(value = "任务车辆ID",required = true)
     private List<Long> taskCarIdList;

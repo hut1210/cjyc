@@ -243,12 +243,12 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 waybillCar.setWaybillId(waybill.getId());
                 waybillCar.setWaybillNo(waybill.getNo());
                 waybillCar.setFreightFee(waybill.getFreightFee());
-                //提送车业务员
-                fillWaybillCarAdmin(waybillCar, waybill.getType());
                 //城市信息赋值
                 fillWaybillCarCityInfo(waybillCar);
                 //业务中心信息赋值
                 fillWaybillcarStoreInfo(waybillCar);
+                //提送车业务员
+                fillWaybillCarAdmin(waybillCar, waybill.getType());
                 //计算预计到达时间
                 fillWaybillCarExpectEndTime(waybillCar);
                 waybillCar.setReceiptFlag(waybillCar.getUnloadLinkPhone().equals(order.getBackContactPhone()));
@@ -347,7 +347,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
     private void fillWaybillCarAdmin(WaybillCar waybillCar, Integer type) {
         if(WaybillTypeEnum.PICK.code == type){
             if(StringUtils.isBlank(waybillCar.getUnloadLinkPhone())){
-                Admin admin = csAdminService.findLoop(waybillCar.getStartStoreId());
+                Admin admin = csAdminService.findLoop(waybillCar.getEndStoreId());
                 if(admin == null){
                     throw new ParameterException("业务中心无人员");
                 }
@@ -488,12 +488,12 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             waybillCar.setWaybillId(waybill.getId());
             waybillCar.setWaybillNo(waybill.getNo());
             waybillCar.setFreightFee(waybill.getFreightFee());
-            //提送车业务员
-            fillWaybillCarAdmin(waybillCar, waybill.getType());
             //城市信息赋值
             fillWaybillCarCityInfo(waybillCar);
             //业务中心信息赋值
             fillWaybillcarStoreInfo(waybillCar);
+            //提送车业务员
+            fillWaybillCarAdmin(waybillCar, waybill.getType());
             //计算预计到达时间
             fillWaybillCarExpectEndTime(waybillCar);
             waybillCar.setReceiptFlag(waybillCar.getUnloadLinkPhone().equals(order.getBackContactPhone()));

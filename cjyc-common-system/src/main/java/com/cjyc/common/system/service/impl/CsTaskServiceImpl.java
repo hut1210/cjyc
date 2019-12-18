@@ -4,6 +4,7 @@ import com.cjkj.common.redis.lock.RedisDistributedLock;
 import com.cjyc.common.model.constant.Constant;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.customer.order.ReceiptBatchDto;
+import com.cjyc.common.model.dto.driver.task.PickLoadDto;
 import com.cjyc.common.model.dto.driver.task.ReplenishInfoDto;
 import com.cjyc.common.model.dto.web.task.*;
 import com.cjyc.common.model.entity.*;
@@ -39,6 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.HashSet;
@@ -141,6 +143,48 @@ public class CsTaskServiceImpl implements ICsTaskService {
         waybillCarDao.updateForReplenishInfo(waybillCar.getId(), Joiner.on(",").join(loadPhotoImgs));
         return BaseResultUtil.success();
     }
+
+    @Override
+    public ResultVo<ResultReasonVo>  loadForLocal(PickLoadDto reqDto) {
+        Long taskCarId = reqDto.getTaskCarId();
+        WaybillCar waybillCar = waybillCarDao.findByTaskCarId(taskCarId);
+        if (waybillCar == null) {
+            return BaseResultUtil.fail("运单车辆不存在");
+        }
+        List<String> loadPhotoImgs = reqDto.getLoadPhotoImgs();
+        if (loadPhotoImgs.size() < Constant.MIN_LOAD_PHOTO_NUM) {
+            return BaseResultUtil.fail("照片数量不足8张");
+        }
+        if (loadPhotoImgs.size() > Constant.MAX_LOAD_PHOTO_NUM) {
+            return BaseResultUtil.fail("照片数量不能超过20张");
+        }
+        //更新车辆信息
+        OrderCar oc = new OrderCar();
+        oc.setId(waybillCar.getOrderCarId());
+        oc.setVin(reqDto.getVin());
+        oc.setBrand(reqDto.getBrand());
+        oc.setModel(reqDto.getModel());
+        oc.setPlateNo(reqDto.getPlateNo());
+        orderCarDao.updateById(oc);
+        //更新运单车辆信息
+        waybillCarDao.updateForReplenishInfo(waybillCar.getId(), Joiner.on(",").join(loadPhotoImgs));
+
+        TaskCar taskCar = taskCarDao.selectById(taskCarId);
+        LoadTaskDto loadTaskDto = new LoadTaskDto();
+        loadTaskDto.setLoginId(reqDto.getLoginId());
+        loadTaskDto.setLoginName(reqDto.getLoginName());
+        loadTaskDto.setLoginPhone(reqDto.getLoginPhone());
+        loadTaskDto.setLoginType(reqDto.getLoginType());
+        loadTaskDto.setTaskId(taskCar.getTaskId());
+        loadTaskDto.setTaskCarIdList(Lists.newArrayList(taskCarId));
+
+        return load(loadTaskDto);
+
+    }
+
+
+
+
 
     @Override
     public ResultVo allot(AllotTaskDto paramsDto) {
@@ -874,4 +918,5 @@ public class CsTaskServiceImpl implements ICsTaskService {
         }
 
     }
+
 }
