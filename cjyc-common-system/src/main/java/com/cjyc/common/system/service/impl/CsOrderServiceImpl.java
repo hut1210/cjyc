@@ -25,6 +25,7 @@ import com.cjyc.common.model.exception.ParameterException;
 import com.cjyc.common.model.exception.ServerException;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.StringUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.order.DispatchAddCarVo;
 import com.cjyc.common.model.vo.web.order.OrderVo;
@@ -109,6 +110,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         BeanUtils.copyProperties(paramsDto, order);
         //查询三级城市
         fillOrderCityInfo(order);
+        fillOrderInputStore(order);
 
         /**1、组装订单数据
          */
@@ -165,6 +167,25 @@ public class CsOrderServiceImpl implements ICsOrderService {
         return BaseResultUtil.success("下单成功，订单编号{0}", order.getNo());
     }
 
+    private void fillOrderInputStore(Order order) {
+        if(order.getInputStoreId() != null){
+            return;
+        }
+        //根据业务范围查询业务中心
+        Store store = null;
+        if(StringUtils.isNotBlank(order.getStartAreaCode())){
+            store = csStoreService.getOneBelongByAreaCode(order.getStartAreaCode());
+        }
+        //根据城市查询业务中心
+        if(store == null && StringUtils.isNotBlank(order.getStartCityCode())){
+            store = csStoreService.getOneBelongByCityCode(order.getStartCityCode());
+        }
+        if(store != null){
+            order.setInputStoreId(store.getId());
+            order.setInputStoreName(store.getName());
+        }
+    }
+
     @Override
     public ResultVo commit(CommitOrderDto paramsDto) {
         //验证客户
@@ -203,6 +224,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 order = new Order();
             }
             BeanUtils.copyProperties(paramsDto, order);
+            fillOrderInputStore(order);
             //城市信息
             fillOrderCityInfo(order);
             //业务中心信息
@@ -358,9 +380,10 @@ public class CsOrderServiceImpl implements ICsOrderService {
             //查询地址所属业务中心
             Store store = csStoreService.getOneBelongByCityCode(order.getStartCityCode());
             if (store != null) {
-                if (order.getStartStoreId() == -5) {
+                if (order.getStartStoreId() == null || order.getStartStoreId() == -5) {
                     //无主观操作
                     order.setStartStoreId(store.getId());
+                    order.setStartStoreName(store.getName());
                 }
                 order.setStartBelongStoreId(store.getId());
             }
@@ -371,9 +394,10 @@ public class CsOrderServiceImpl implements ICsOrderService {
             //查询地址所属业务中心
             Store store = csStoreService.getOneBelongByCityCode(order.getEndCityCode());
             if (store != null) {
-                if (order.getEndStoreId() == -5) {
+                if (order.getEndStoreId() == null || order.getEndStoreId() == -5) {
                     //无主观操作
                     order.setEndStoreId(store.getId());
+                    order.setEndStoreName(store.getName());
                 }
                 order.setEndBelongStoreId(store.getId());
             }

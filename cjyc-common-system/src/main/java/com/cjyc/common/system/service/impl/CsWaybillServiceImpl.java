@@ -203,12 +203,12 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                     }
                 }*/
                 //【验证】配送调度，需验证干线调度是否完成
-                /*if (paramsDto.getType() == WaybillTypeEnum.BACK.code) {
+                if (paramsDto.getType() == WaybillTypeEnum.BACK.code) {
                     WaybillCar waybillCar = waybillCarDao.findLastTrunkWaybillCar(order.getEndCityCode(), orderCarId);
                     if (waybillCar == null || !waybillCar.getEndCityCode().equals(order.getEndCityCode())) {
                         throw new ParameterException("编号为{0}的车辆，干线尚未调度完成", orderCarNo);
                     }
-                }*/
+                }
                 //TODO 验证提车和送车人是否与订单一致
 
                 /**1、添加运单信息*/
@@ -251,7 +251,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 waybillCar.setReceiptFlag(waybillCar.getUnloadLinkPhone().equals(order.getBackContactPhone()));
                 //运单车辆状态
                 waybillCar.setState(isOneDriver ?
-                        (waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code ? WaybillCarStateEnum.LOADED.code : WaybillCarStateEnum.ALLOTED.code)
+                        (waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code ? WaybillCarStateEnum.LOADED.code : WaybillCarStateEnum.WAIT_LOAD.code)
                         : WaybillCarStateEnum.WAIT_ALLOT.code);
 
                 waybillCar.setCreateTime(currentMillisTime);
@@ -477,7 +477,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             waybillCar.setReceiptFlag(waybillCar.getUnloadLinkPhone().equals(order.getBackContactPhone()));
             //运单车辆状态
             waybillCar.setState(isOneDriver ?
-                    (waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code ? WaybillCarStateEnum.LOADED.code : WaybillCarStateEnum.ALLOTED.code)
+                    (waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code ? WaybillCarStateEnum.LOADED.code : WaybillCarStateEnum.WAIT_LOAD.code)
                     : WaybillCarStateEnum.WAIT_ALLOT.code);
             //TODO 计算预计到达时间，计算线路是否存在
             waybillCarDao.updateById(waybillCar);
@@ -701,7 +701,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 //计算预计到达时间
                 fillWaybillCarExpectEndTime(waybillCar);
                 waybillCar.setReceiptFlag(waybillCar.getUnloadLinkPhone().equals(order.getBackContactPhone()));
-                waybillCar.setState(isOneDriver ? WaybillCarStateEnum.ALLOTED.code : WaybillCarStateEnum.WAIT_ALLOT.code);
+                waybillCar.setState(isOneDriver ? WaybillCarStateEnum.WAIT_LOAD.code : WaybillCarStateEnum.WAIT_ALLOT.code);
                 waybillCar.setCreateTime(currentMillisTime);
                 waybillCarDao.insert(waybillCar);
 
@@ -915,7 +915,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 //计算预计到达时间
                 fillWaybillCarExpectEndTime(waybillCar);
                 waybillCar.setReceiptFlag(waybillCar.getUnloadLinkPhone().equals(order.getBackContactPhone()));
-                waybillCar.setState(isOneDriver ? WaybillCarStateEnum.ALLOTED.code : WaybillCarStateEnum.WAIT_ALLOT.code);
+                waybillCar.setState(isOneDriver ? WaybillCarStateEnum.WAIT_LOAD.code : WaybillCarStateEnum.WAIT_ALLOT.code);
                 waybillCar.setTakeType(1);
                 waybillCar.setCreateTime(currentMillisTime);
                 if (isNewWaybillCar) {

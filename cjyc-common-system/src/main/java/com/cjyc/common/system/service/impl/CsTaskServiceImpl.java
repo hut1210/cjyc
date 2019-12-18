@@ -215,7 +215,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 noCount++;
 
                 //更新运单车辆状态
-                if (waybillCar.getState() < WaybillCarStateEnum.ALLOTED.code) {
+                if (waybillCar.getState() < WaybillCarStateEnum.WAIT_LOAD.code) {
                     waybillCarDao.updateForAllotDriver(waybillCar.getId());
                 }
             }

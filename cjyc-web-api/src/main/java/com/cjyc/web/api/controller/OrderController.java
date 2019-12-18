@@ -67,7 +67,8 @@ public class OrderController {
     @ApiOperation(value = "订单保存")
     @PostMapping(value = "/save")
     public ResultVo save(@Validated @RequestBody SaveOrderDto reqDto) {
-        if(UserTypeEnum.CUSTOMER.code == reqDto.getLoginType()){
+
+        if(reqDto.getLoginType() != null && UserTypeEnum.CUSTOMER.code == reqDto.getLoginType()){
             //验证用户存不存在
             Customer customer = csCustomerService.validate(reqDto.getLoginId());
             reqDto.setLoginName(customer.getName());
@@ -94,7 +95,7 @@ public class OrderController {
     @ApiOperation(value = "订单提交")
     @PostMapping(value = "/commit")
     public ResultVo commit(@Validated @RequestBody CommitOrderDto reqDto) {
-        if(UserTypeEnum.CUSTOMER.code == reqDto.getLoginType()){
+        if(reqDto.getLoginType() != null && UserTypeEnum.CUSTOMER.code == reqDto.getLoginType()){
             //验证用户存不存在
             Customer customer = csCustomerService.validate(reqDto.getLoginId());
             reqDto.setLoginName(customer.getName());

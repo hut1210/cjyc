@@ -224,9 +224,9 @@
     </update>
     <update id="updateForAllotDriver">
         update w_waybill_car
-        set state = 2
+        set state = 5
         where id =#{id}
-        and state &lt; 2
+        and state &lt; 5
     </update>
     <update id="updateBatchForUnload">
         update w_waybill_car

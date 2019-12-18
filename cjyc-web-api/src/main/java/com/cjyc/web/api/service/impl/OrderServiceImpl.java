@@ -437,10 +437,6 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     }
 
 
-
-
-
-
     @Override
     public ResultVo<ListVo<Map<String, Object>>> waitDispatchCarCountList() {
         List<Map<String, Object>> list = orderCarDao.countListWaitDispatchCar();

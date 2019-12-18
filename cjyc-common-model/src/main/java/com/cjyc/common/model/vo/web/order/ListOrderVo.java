@@ -27,7 +27,8 @@ public class ListOrderVo extends Order {
 
     @ApiModelProperty("总物流费")
     @Excel(name = "总物流费", orderNum = "2")
-    private String wlTotalFee;
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
+    private BigDecimal wlTotalFee;
     @ApiModelProperty("大区")
     @Excel(name = "大区", orderNum = "3")
     private String region;
