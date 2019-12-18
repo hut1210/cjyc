@@ -39,14 +39,14 @@ public class FinanceVo implements Serializable {
 
     @ApiModelProperty(value = "客户Id")
     private Long customerId;
-    @ApiModelProperty(value = "客户类型")
+    @ApiModelProperty(value = "客户类型：1个人，2企业，3合伙人 ")
     private Integer type;
 
     private String customTypeName;
 
     @ApiModelProperty(value = "客户名称")
     private String customerName;
-    @ApiModelProperty(value = "结算类型")
+    @ApiModelProperty(value = "结算类型(0：时付  1：账期)")
     private Integer  payMode;
 
     private String payModeName;
