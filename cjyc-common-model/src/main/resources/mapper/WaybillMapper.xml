@@ -441,7 +441,6 @@
                             from d_carrier_driver_con
                             where driver_id = #{loginId} and state = ${@com.cjyc.common.model.enums.CommonStateEnum@CHECKED.code})
             and wcar.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_ALLOT.code}
-            and w.carrier_type=${@com.cjyc.common.model.enums.transport.CarrierTypeEnum@ENTERPRISE.code}
         group by w.id
         order by w.create_time desc
     </select>
