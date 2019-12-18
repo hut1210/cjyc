@@ -107,9 +107,9 @@ public class CityController {
     }
 
     @ApiOperation(value = "查询省/城市区树形结构")
-    @PostMapping(value = "/findCityTree")
-    public ResultVo<CityVo> findCityTree(@RequestBody ThreeCityDto dto) {
-        return csCityService.findCityTree(dto);
+    @PostMapping(value = "/findRoleTreeCity")
+    public ResultVo<CityVo> findRoleTreeCity(@RequestBody ThreeCityDto dto) {
+        return csCityService.findRoleTreeCity(dto);
     }
 
 }

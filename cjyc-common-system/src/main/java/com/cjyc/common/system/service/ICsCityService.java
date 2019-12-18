@@ -35,5 +35,5 @@ public interface ICsCityService {
      * @param dto
      * @return
      */
-    ResultVo<CityVo> findCityTree(ThreeCityDto dto);
+    ResultVo<CityVo> findRoleTreeCity(ThreeCityDto dto);
 }
