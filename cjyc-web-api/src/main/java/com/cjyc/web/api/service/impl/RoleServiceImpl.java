@@ -22,6 +22,8 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.role.SelectUserByRoleVo;
 import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysRoleService;
+import com.cjyc.common.system.util.ClpDeptUtil;
+import com.cjyc.common.system.util.ResultDataUtil;
 import com.cjyc.web.api.service.IAdminService;
 import com.cjyc.web.api.service.IRoleService;
 import com.google.common.collect.Sets;
@@ -32,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -56,6 +59,8 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
     private ISysDeptService sysDeptService;
     @Autowired
     private IAdminService adminService;
+    @Resource
+    private ClpDeptUtil clpDeptUtil;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -140,7 +145,7 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
     @Override
     public ResultVo<Integer> getUserTypeByRole(Long roleId) {
         ResultData<SelectRoleResp> byIdRd = sysRoleService.getById(roleId);
-        if (!isResultDataSuccess(byIdRd)) {
+        if (!ResultDataUtil.isSuccess(byIdRd)) {
             return BaseResultUtil.fail("角色信息查询错误，原因：" + byIdRd.getMsg());
         }
         if (null == byIdRd.getData()) {
@@ -149,7 +154,7 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
         Long roleDeptId = byIdRd.getData().getDeptId();
         ResultData<List<SelectDeptResp>> multiDeptRd =
                 sysDeptService.getMultiLevelDeptList(Long.parseLong(YmlProperty.get("cjkj.dept_customer_id")));
-        if (!isResultDataSuccess(multiDeptRd)) {
+        if (!ResultDataUtil.isSuccess(multiDeptRd)) {
             return BaseResultUtil.fail("机构信息查询失败，原因：" + multiDeptRd.getMsg());
         }
         //个人用户判断
@@ -164,16 +169,16 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
         if (roleDeptId.equals(BIZ_TOP_DEPT_ID)) {
             return BaseResultUtil.success(UserTypeEnum.ADMIN.code);
         }
-        if (getRegionGovIdList().contains(roleDeptId)) {
+        if (clpDeptUtil.getRegionGovIdList().contains(roleDeptId)) {
             return BaseResultUtil.success(UserTypeEnum.ADMIN.code);
         }
-        if (getProvinceGovIdList().contains(roleDeptId)) {
+        if (clpDeptUtil.getProvinceGovIdList().contains(roleDeptId)) {
             return BaseResultUtil.success(UserTypeEnum.ADMIN.code);
         }
-        if (getCityGovIdList().contains(roleDeptId)) {
+        if (clpDeptUtil.getCityGovIdList().contains(roleDeptId)) {
             return BaseResultUtil.success(UserTypeEnum.ADMIN.code);
         }
-        if (getBizCenterGovIdList() != null && getBizCenterGovIdList().contains(roleDeptId)) {
+        if (clpDeptUtil.getBizCenterGovIdList() != null && clpDeptUtil.getBizCenterGovIdList().contains(roleDeptId)) {
             return BaseResultUtil.success(UserTypeEnum.ADMIN.code);
         }
         return BaseResultUtil.success(UserTypeEnum.DRIVER.code);
@@ -194,7 +199,7 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
         req.setMenuIdList(dto.getMenuIdList());
         req.setRoleName(role.getRoleName());
         ResultData rd = sysRoleService.batchUpdateRoleMenus(req);
-        if (!isResultDataSuccess(rd)) {
+        if (!ResultDataUtil.isSuccess(rd)) {
             return BaseResultUtil.fail("变更角色菜单列表失败，原因: " + rd.getMsg());
         }
         return BaseResultUtil.success();
@@ -212,7 +217,7 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
         }
         ResultData<List<SelectRoleResp>> rolesRd =
                 sysRoleService.getSingleLevelList(deptIdList.get(0));
-        if (!isResultDataSuccess(rolesRd)) {
+        if (!ResultDataUtil.isSuccess(rolesRd)) {
             return BaseResultUtil.fail("查询角色信息错误，原因：" + rolesRd.getMsg());
         }
         if (CollectionUtils.isEmpty(rolesRd.getData())) {
@@ -228,7 +233,7 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
             return BaseResultUtil.fail("查询角色信息错误，机构下无此角色");
         }
         ResultData<List<Long>> rsRd = sysRoleService.getBottomMenuIdsByRoleId(finalRoleId.get());
-        if (!isResultDataSuccess(rsRd)) {
+        if (!ResultDataUtil.isSuccess(rsRd)) {
             return BaseResultUtil.fail("查询错误，原因：" + rsRd.getMsg());
         }
         if (CollectionUtils.isEmpty(rsRd.getData())) {
@@ -269,13 +274,13 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
         if (RoleLevelEnum.COUNTRY_LEVEL.getLevel() == level) {
             return Arrays.asList(BIZ_TOP_DEPT_ID);
         }else if (RoleLevelEnum.REGION_LEVEL.getLevel() == level) {
-            return getRegionGovIdList();
+            return clpDeptUtil.getRegionGovIdList();
         }else if (RoleLevelEnum.PROVINCE_LEVEL.getLevel() == level) {
-            return getProvinceGovIdList();
+            return clpDeptUtil.getProvinceGovIdList();
         }else if (RoleLevelEnum.CITY_LEVEL.getLevel() == level) {
-            return getCityGovIdList();
+            return clpDeptUtil.getCityGovIdList();
         }else if (RoleLevelEnum.BIZ_CENTER_LEVEL.getLevel() == level) {
-            return getBizCenterGovIdList();
+            return clpDeptUtil.getBizCenterGovIdList();
         }else {
             return null;
         }
@@ -289,7 +294,7 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
     private ResultVo doDeleteRole(Role role) {
         if (RoleRangeEnum.INNER.getValue() == role.getRoleRange()) {
             ResultData rd = doInnerDelete(role);
-            if (!isResultDataSuccess(rd)) {
+            if (!ResultDataUtil.isSuccess(rd)) {
                 return BaseResultUtil.fail("删除角色失败，原因: " + rd.getMsg());
             }
         }else if (RoleRangeEnum.OUTER.getValue() == role.getRoleRange()) {
@@ -314,13 +319,13 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
             idList = new ArrayList<>();
             idList.add(BIZ_TOP_DEPT_ID);
         }else if (RoleLevelEnum.REGION_LEVEL.getLevel() == level) {
-            idList = getRegionGovIdList();
+            idList = clpDeptUtil.getRegionGovIdList();
         }else if (RoleLevelEnum.PROVINCE_LEVEL.getLevel() == level) {
-            idList = getProvinceGovIdList();
+            idList = clpDeptUtil.getProvinceGovIdList();
         }else if (RoleLevelEnum.CITY_LEVEL.getLevel() == level) {
-            idList = getCityGovIdList();
+            idList = clpDeptUtil.getCityGovIdList();
         }else if (RoleLevelEnum.BIZ_CENTER_LEVEL.getLevel() == level) {
-            idList = getBizCenterGovIdList();
+            idList = clpDeptUtil.getBizCenterGovIdList();
         }else {
             return ResultData.failed("角色级别：" + role.getRoleLevel() + "无效，请检查数据");
         }
@@ -348,7 +353,7 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
                 return BaseResultUtil.fail("角色名称重复，请检查");
             }
             ResultData rd = doInnerAdd(dto);
-            if (!isResultDataSuccess(rd)) {
+            if (!ResultDataUtil.isSuccess(rd)) {
                 return BaseResultUtil.fail("保存角色信息失败");
             }
         }else if (RoleRangeEnum.OUTER.getValue() == dto.getRoleRange()) {
@@ -438,7 +443,7 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
      * @return
      */
     private ResultData addRoleForProvinceGov(AddRoleDto dto) {
-        List<Long> idList = getProvinceGovIdList();
+        List<Long> idList = clpDeptUtil.getProvinceGovIdList();
         if (null == idList) {
             return ResultData.failed("获取省机构列表信息错误，请检查");
         }
@@ -457,7 +462,7 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
      * @return
      */
     private ResultData addRoleForCityGov(AddRoleDto dto) {
-        List<Long> idList = getCityGovIdList();
+        List<Long> idList = clpDeptUtil.getCityGovIdList();
         if (null == idList) {
             return ResultData.failed("获取城市机构列表信息错误，请检查");
         }
@@ -476,7 +481,7 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
      * @return
      */
     private ResultData addRoleForBizCenterGov(AddRoleDto dto) {
-        List<Long> idList = getBizCenterGovIdList();
+        List<Long> idList = clpDeptUtil.getBizCenterGovIdList();
         if (null == idList) {
             return ResultData.failed("获取业务中心机构列表信息错误，请检查");
         }
@@ -487,83 +492,5 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
         BeanUtils.copyProperties(dto, role);
         role.setDeptIdList(idList);
         return sysRoleService.saveBatch(role);
-    }
-
-    /**
-     * 获取大区机构id列表
-     * @return
-     */
-    private List<Long> getRegionGovIdList() {
-        ResultData<List<SelectDeptResp>> regionGovListRd =
-                sysDeptService.getSingleLevelDeptList(BIZ_TOP_DEPT_ID);
-        if (!ReturnMsg.SUCCESS.getCode().equals(regionGovListRd.getCode())) {
-            return null;
-        }
-        if (CollectionUtils.isEmpty(regionGovListRd.getData())) {
-            return null;
-        }
-        return regionGovListRd.getData().stream()
-                .map(r -> r.getDeptId()).collect(Collectors.toList());
-    }
-
-    /**
-     * 获取省机构id列表
-     * @return
-     */
-    private List<Long> getProvinceGovIdList() {
-        //大区信息
-        List<Long> regionIdList = getRegionGovIdList();
-        return batchQuery(regionIdList);
-    }
-
-    /**
-     * 获取城市机构id列表信息
-     * @return
-     */
-    private List<Long> getCityGovIdList() {
-        List<Long> provinceGovIds = getProvinceGovIdList();
-        return batchQuery(provinceGovIds);
-    }
-
-    /**
-     * 获取业务中心id列表信息
-     * @return
-     */
-    private List<Long> getBizCenterGovIdList() {
-        List<Long> cityGovIds = getCityGovIdList();
-        return batchQuery(cityGovIds);
-    }
-
-    /**
-     * 返回结果状态是否正确
-     * @param rd
-     * @return
-     */
-    private boolean isResultDataSuccess(ResultData rd) {
-        return ReturnMsg.SUCCESS.getCode().equals(rd.getCode())?true: false;
-    }
-
-    /**
-     * 根据父id列表查询子机构列表信息
-     * @param parentIdList
-     * @return
-     */
-    private List<Long> batchQuery(List<Long> parentIdList) {
-        if (CollectionUtils.isEmpty(parentIdList)) {
-            return null;
-        }
-        List<Long> idList = new ArrayList<>();
-        SelectDeptListByParentIdsReq req = new SelectDeptListByParentIdsReq();
-        req.setParentIdList(parentIdList);
-        ResultData<List<SelectDeptResp>> rd = sysDeptService.getSonDeptsByParentIds(req);
-        if (!isResultDataSuccess(rd)) {
-            return null;
-        }else {
-            if (!CollectionUtils.isEmpty(rd.getData())) {
-                idList.addAll(rd.getData().stream()
-                        .map(d -> d.getDeptId()).collect(Collectors.toList()));
-            }
-        }
-        return idList;
     }
 }
