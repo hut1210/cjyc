@@ -7,17 +7,11 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.utils.ExcelUtil;
 import com.cjyc.common.model.constant.FieldConstant;
-import com.cjyc.common.model.dao.ICustomerInvoiceDao;
-import com.cjyc.common.model.dao.IInvoiceApplyDao;
-import com.cjyc.common.model.dao.IInvoiceOrderConDao;
-import com.cjyc.common.model.dao.IOrderDao;
+import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.customer.invoice.OrderAmountDto;
 import com.cjyc.common.model.dto.web.invoice.InvoiceDetailAndConfirmDto;
 import com.cjyc.common.model.dto.web.invoice.InvoiceQueryDto;
-import com.cjyc.common.model.entity.CustomerInvoice;
-import com.cjyc.common.model.entity.InvoiceApply;
-import com.cjyc.common.model.entity.InvoiceOrderCon;
-import com.cjyc.common.model.entity.Order;
+import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.ResultVo;
@@ -57,6 +51,8 @@ public class InvoiceApplyServiceImpl extends ServiceImpl<IInvoiceApplyDao, Invoi
     private IInvoiceOrderConDao invoiceOrderConDao;
     @Autowired
     private IOrderDao orderDao;
+    @Autowired
+    private IAdminDao adminDao;
 
     @Override
     public ResultVo getInvoiceApplyPage(InvoiceQueryDto dto) {
@@ -146,13 +142,18 @@ public class InvoiceApplyServiceImpl extends ServiceImpl<IInvoiceApplyDao, Invoi
         // 验证是否已经开过票
         InvoiceApply invoiceApply = super.getById(dto.getInvoiceApplyId());
         if (!Objects.isNull(invoiceApply) && FieldConstant.INVOICE_FINISH == invoiceApply.getState()) {
-            return BaseResultUtil.fail("该发票单已开过票,不能重复开票哦");
+            return BaseResultUtil.fail("该发票单已经开过票,不能重复开票!");
         }
+
+        // 根据登录ID查询操作人名称
+        Admin admin = adminDao.selectById(dto.getLoginId());
+
+        // 更新开票信息
         LambdaUpdateWrapper<InvoiceApply> updateWrapper = new UpdateWrapper<InvoiceApply>().lambda()
                 .set(InvoiceApply::getInvoiceNo, dto.getInvoiceNo())
                 .set(InvoiceApply::getState, FieldConstant.INVOICE_FINISH)
                 .set(InvoiceApply::getInvoiceTime, System.currentTimeMillis())
-                .set(InvoiceApply::getOperationName, dto.getOperationName())
+                .set(InvoiceApply::getOperationName, admin.getName())
                 .eq(InvoiceApply::getId, dto.getInvoiceApplyId())
                 .eq(InvoiceApply::getCustomerId, dto.getLoginId());
         boolean result = super.update(updateWrapper);
@@ -179,7 +180,7 @@ public class InvoiceApplyServiceImpl extends ServiceImpl<IInvoiceApplyDao, Invoi
             try {
                 ExcelUtil.exportExcel(exportExcelList, title, sheetName, InvoiceApplyExportExcel.class, fileName, response);
             } catch (IOException e) {
-                log.error("发票申请记录表异常:{}",e);
+                log.error("发票申请记录表异常:",e);
             }
         }
     }
