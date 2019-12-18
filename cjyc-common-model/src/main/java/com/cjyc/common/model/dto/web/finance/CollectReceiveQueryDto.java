@@ -27,12 +27,7 @@ public class CollectReceiveQueryDto extends BasePageDto implements Serializable 
     @ApiModelProperty(value = "代收款人电话")
     private String collectManPhone;
 
-    @ApiModelProperty(value = "收款金额")
-    private BigDecimal amount;
-
     @ApiModelProperty(value = "回款状态")
     private String returnStatus;
 
-    @ApiModelProperty(value = "备注")
-    private String remark;
 }

@@ -2,13 +2,26 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.cjyc.common.model.dao.IFinanceDao">
 
-    <select id="getFinanceList" parameterType="com.cjyc.common.model.dto.web.finance.FinanceQueryDto" resultType="com.cjyc.common.model.vo.web.finance.FinanceVo">
-        select woc.no as no,woc.vin as vin,woc.brand,woc.model,woc.order_no as orderNo,
-        wo.input_store_name as inputStoreName,woc.total_fee as freightReceivable,
-        cc.type as type,cc.name as customerName,cc.pay_mode as payMode
+    <select id="getFinanceList" parameterType="com.cjyc.common.model.dto.web.finance.FinanceQueryDto"
+            resultType="com.cjyc.common.model.vo.web.finance.FinanceVo">
+        select woc.no,woc.vin,woc.brand,woc.model,woc.order_no as orderNo,
+        woc.now_area_code as largeArea,
+        wo.input_store_name as inputStoreName,wo.start_address as startAddress,
+        wo.end_address as endAddress,
+        wt.complete_time as deliveryDate,
+        woc.total_fee as freightReceivable,
+        wo.customer_id as customerId,
+        wo.customer_type as type,cc.name as customerName,
+        cc.pay_mode as payMode,
+        wwc.freight_fee as freightReceivable,
+        woc.wl_pay_time as receivedTime
+
         from w_order_car woc
         left join w_order wo on woc.order_no = wo.no
         left join c_customer cc on wo.customer_id = cc.id
+        left join w_waybill_car wwc on woc.id = wwc.order_car_id
+        left join w_task_car wtc on wtc.waybill_car_id = wwc.id
+        left join w_task wt on wtc.task_id = wt.id
         where 1=1
         <if test="no != null and no.trim() != ''">
             and woc.no like concat('%',#{no},'%')
@@ -18,6 +31,31 @@
         </if>
         <if test="orderNo != null and orderNo.trim() != ''">
             and  woc.order_no like concat('%',#{orderNo},'%')
+        </if>
+        <if test="completeStartTime!= null">
+            and wt.complete_time &gt;= #{completeStartTime}
+        </if>
+        <if test="completeEndTime!= null">
+            and wt.complete_time &lt;= #{completeEndTime}
+        </if>
+
+        <if test="startProvinceCode != null and startProvinceCode.trim() != ''">
+            and wo.start_province = #{startProvinceCode}
+        </if>
+        <if test="startCityCode != null and startCityCode.trim() != ''">
+            and wo.start_city = #{startCityCode}
+        </if>
+        <if test="startAreaCode != null and startAreaCode.trim() != ''">
+            and wo.start_area = #{startAreaCode}
+        </if>
+        <if test="endProvinceCode != null and endProvinceCode.trim() != ''">
+            and wo.end_province = #{endProvinceCode}
+        </if>
+        <if test="endCityCode != null and endCityCode.trim() != ''">
+            and wo.end_city = #{endCityCode}
+        </if>
+        <if test="endAreaCode != null and endAreaCode.trim() != ''">
+            and wo.end_area = #{endAreaCode}
         </if>
 
         <if test="type != null">
@@ -39,6 +77,17 @@
         <if test="inputStoreName != null and inputStoreName.trim() != ''">
             and wo.input_store_name = #{inputStoreName}
         </if>
+
+        <if test="state != null and state.trim() !=''">
+            and woc.wl_pay_state = #{state}
+        </if>
+        <if test="receiveStartTime!= null">
+            and wt.wl_pay_time &lt;= #{receiveStartTime}
+        </if>
+        <if test="receiveEndTime!= null">
+            and wt.wl_pay_time &lt;= #{receiveEndTime}
+        </if>
+
     </select>
 
     <select id="getTrunkCostList" parameterType="String" resultType="com.cjyc.common.model.vo.web.finance.TrunkLineVo">
@@ -49,6 +98,7 @@
         left join w_waybill ww on wwc.waybill_no = ww.no
         left join d_carrier dc on ww.carrier_id = dc.id
         where wwc.order_car_no = #{orderCarNo}
+        order by ww.create_time desc
     </select>
 
     <select id="getFinanceReceiptList" parameterType="com.cjyc.common.model.dto.web.finance.FinanceQueryDto"
@@ -79,6 +129,31 @@
         <if test="orderNo != null and orderNo.trim() != ''">
             and  woc.order_no like concat('%',#{orderNo},'%')
         </if>
+        <if test="completeStartTime!= null">
+            and wt.complete_time &gt;= #{completeStartTime}
+        </if>
+        <if test="completeEndTime!= null">
+            and wt.complete_time &lt;= #{completeEndTime}
+        </if>
+
+        <if test="startProvinceCode != null and startProvinceCode.trim() != ''">
+            and wo.start_province = #{startProvinceCode}
+        </if>
+        <if test="startCityCode != null and startCityCode.trim() != ''">
+            and wo.start_city = #{startCityCode}
+        </if>
+        <if test="startAreaCode != null and startAreaCode.trim() != ''">
+            and wo.start_area = #{startAreaCode}
+        </if>
+        <if test="endProvinceCode != null and endProvinceCode.trim() != ''">
+            and wo.end_province = #{endProvinceCode}
+        </if>
+        <if test="endCityCode != null and endCityCode.trim() != ''">
+            and wo.end_city = #{endCityCode}
+        </if>
+        <if test="endAreaCode != null and endAreaCode.trim() != ''">
+            and wo.end_area = #{endAreaCode}
+        </if>
 
         <if test="type != null">
             and cc.type = #{type}
@@ -99,6 +174,7 @@
         <if test="inputStoreName != null and inputStoreName.trim() != ''">
             and wo.input_store_name = #{inputStoreName}
         </if>
+
     </select>
 
     <select id="getPaymentList" parameterType="com.cjyc.common.model.dto.web.finance.FinanceQueryDto"
@@ -220,6 +296,23 @@
             resultType="com.cjyc.common.model.vo.web.finance.CollectReceiveVo">
         select ww.no as wayBillNo,ww.type as wayBillType
         from w_waybill ww
+
+        where 1=1
+        <if test="waybillNo != null and waybillNo.trim() != ''">
+            and ww.no like concat('%',#{waybillNo},'%')
+        </if>
+        <if test="wayBillType!= null">
+            and ww.type = #{wayBillType}
+        </if>
+        <if test="collectMan !=null and collectMan.trim() !=''">
+
+        </if>
+        <if test="collectManPhone !=null and collectManPhone.trim() !=''">
+
+        </if>
+        <if test="returnStatus !=null and returnStatus.trim() !=''">
+
+        </if>
 
     </select>
 </mapper>

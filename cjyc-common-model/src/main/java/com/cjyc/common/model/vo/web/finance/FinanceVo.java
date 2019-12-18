@@ -31,12 +31,14 @@ public class FinanceVo implements Serializable {
     @ApiModelProperty(value = "订单所属业务中心")
     private String inputStoreName;
     @ApiModelProperty(value = "订单始发地")
-    private String start_address;
+    private String startAddress;
     @ApiModelProperty(value = "订单目的地")
-    private String end_address;
+    private String endAddress;
     @ApiModelProperty(value = "交付日期")
     private String deliveryDate;
 
+    @ApiModelProperty(value = "客户Id")
+    private Long customerId;
     @ApiModelProperty(value = "客户类型")
     private Integer type;
 
@@ -66,6 +68,9 @@ public class FinanceVo implements Serializable {
     private BigDecimal totalIncome;
     @ApiModelProperty(value = "成本合计")
     private BigDecimal totalCost;
+
+    @ApiModelProperty(value = "毛利")
+    private BigDecimal GrossProfit;
 
     private List<TrunkLineVo> trunkLineVoList;
 }
