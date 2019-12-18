@@ -2,6 +2,7 @@ package com.cjyc.salesman.api.controller;
 
 import com.cjyc.common.model.dto.CommonDto;
 import com.cjyc.common.model.dto.KeywordDto;
+import com.cjyc.common.model.dto.ThreeCityDto;
 import com.cjyc.common.model.dto.customer.freightBill.FindStoreDto;
 import com.cjyc.common.model.dto.salesman.customer.SalesCustomerDto;
 import com.cjyc.common.model.vo.salesman.customer.SalesCustomerListVo;
@@ -52,6 +53,12 @@ public class BasicController {
     public ResultVo<CityVo> queryCity(@RequestBody KeywordDto dto)
     {
         return csCityService.queryCity(dto);
+    }
+
+    @ApiOperation(value = "查询省/城市区树形结构")
+    @PostMapping(value = "/findRoleTreeCity")
+    public ResultVo<CityVo> findRoleTreeCity(@RequestBody ThreeCityDto dto) {
+        return csCityService.findRoleTreeCity(dto);
     }
 
     @ApiOperation(value = "获取业务中心")

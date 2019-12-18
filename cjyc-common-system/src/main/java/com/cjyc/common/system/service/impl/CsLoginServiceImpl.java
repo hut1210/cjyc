@@ -21,7 +21,7 @@ public class CsLoginServiceImpl implements ICsLoginService {
     public ResultVo verifyCode(VerifyCodeDto dto) {
         ResultData rd = sysLoginService.verifyCode(dto.getPhone());
         if(!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())){
-            return BaseResultUtil.fail("超时，请联系管理员");
+            return BaseResultUtil.fail(rd.getMsg());
         }
         return BaseResultUtil.success(rd.getData());
     }

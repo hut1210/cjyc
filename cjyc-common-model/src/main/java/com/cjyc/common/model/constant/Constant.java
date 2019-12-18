@@ -8,4 +8,6 @@ public class Constant {
     //二维码生成颜色图片
     public static final int QRCODE_BLACK = 0xFF000000;
     public static final int QRCODE_WHITE = 0xFFFFFFFF;
+
+    public static final String SOCIAL_VEHICLE_DEPT = "120000";
 }
