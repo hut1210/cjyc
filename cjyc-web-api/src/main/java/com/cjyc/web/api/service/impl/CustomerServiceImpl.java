@@ -236,6 +236,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             BeanUtils.copyProperties(dto,customer);
             customer.setId(dto.getCustomerId());
             customer.setAlias(dto.getName());
+            customer.setState(CustomerStateEnum.WAIT_LOGIN.code);
             super.updateById(customer);
 
             List<CustomerContractDto> contractDtos = dto.getCustContraVos();
