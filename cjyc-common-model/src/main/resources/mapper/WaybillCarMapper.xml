@@ -519,8 +519,8 @@
     <select id="findVoByType" resultType="com.cjyc.common.model.vo.web.waybill.WaybillCarVo">
         select
             (case
-            when wc.state &lt;= 15 then '待提车'
-            when wc.state &gt; 15 and wc.state &lt; 100 then '已提车'
+            when wc.state &lt;= 15 then '未运输'
+            when wc.state &gt; 15 and wc.state &lt; 100 then '运输中'
             when wc.state = 100 then '已交付'
             end
             ) as outterState,

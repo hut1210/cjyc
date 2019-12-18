@@ -64,9 +64,9 @@ public class WaybillController {
      * 提车装车并完善信息
      * @author JPG
      */
-    @ApiOperation(value = "提车完善信息")
-    @PostMapping(value = "/replenish/info/update")
-    public ResultVo<ResultReasonVo> replenishInfo(@RequestBody PickLoadDto reqDto) {
+    @ApiOperation(value = "同城装车")
+    @PostMapping(value = "/load/for/local")
+    public ResultVo<ResultReasonVo> loadForLocal(@RequestBody PickLoadDto reqDto) {
         //验证用户
         Driver driver = csDriverService.validate(reqDto.getLoginId());
         reqDto.setLoginName(driver.getName());
