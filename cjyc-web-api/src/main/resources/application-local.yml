@@ -15,8 +15,8 @@ server:
 #    key-store-password: Vf1@MFJkhRyOSxm2
 #    keyStoreType: JKS
 ribbon:
-  ConnectTimeout: 30000
-  ReadTimeout: 30000
+  ConnectTimeout: 600000
+  ReadTimeout: 600000
 
 spring:
   main:
