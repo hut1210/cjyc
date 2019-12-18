@@ -5,6 +5,9 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
+import java.util.List;
+
 @Data
 public class ReplenishInfoDto {
     private Long loginId;
@@ -22,6 +25,7 @@ public class ReplenishInfoDto {
     private String plateNo;
     @ApiModelProperty(value = "vin码",required = true)
     private String vin;
+    @NotEmpty(message = "图片不能为空")
     @ApiModelProperty(value = "提车图片",required = true)
-    private String loadPhotoImg;
+    private List<String> loadPhotoImgs;
 }

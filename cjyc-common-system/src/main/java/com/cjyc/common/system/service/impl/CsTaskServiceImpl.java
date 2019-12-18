@@ -30,6 +30,7 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.OrderCarVo;
 import com.cjyc.common.system.service.*;
 import com.cjyc.common.system.util.RedisUtils;
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.apache.commons.lang3.StringUtils;
@@ -121,11 +122,11 @@ public class CsTaskServiceImpl implements ICsTaskService {
         if (waybillCar == null) {
             return BaseResultUtil.fail("运单车辆不存在");
         }
-        String[] split = reqDto.getLoadPhotoImg().split(",");
-        if (split.length < Constant.MIN_LOAD_PHOTO_NUM) {
+        List<String> loadPhotoImgs = reqDto.getLoadPhotoImgs();
+        if (loadPhotoImgs.size() < Constant.MIN_LOAD_PHOTO_NUM) {
             return BaseResultUtil.fail("照片数量不足8张");
         }
-        if (split.length > Constant.MAX_LOAD_PHOTO_NUM) {
+        if (loadPhotoImgs.size() > Constant.MAX_LOAD_PHOTO_NUM) {
             return BaseResultUtil.fail("照片数量不能超过20张");
         }
         //更新车辆信息
@@ -137,7 +138,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
         orderCar.setPlateNo(reqDto.getPlateNo());
         orderCarDao.updateById(orderCar);
         //更新运单车辆信息
-        waybillCarDao.updateForReplenishInfo(waybillCar.getId(), reqDto.getLoadPhotoImg());
+        waybillCarDao.updateForReplenishInfo(waybillCar.getId(), Joiner.on(",").join(loadPhotoImgs));
         return BaseResultUtil.success();
     }
 

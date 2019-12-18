@@ -18,6 +18,7 @@ import com.cjyc.common.model.exception.ServerException;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
+import com.cjyc.common.model.util.StringUtil;
 import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.service.*;
@@ -30,10 +31,12 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.text.Collator;
 import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 运单业务类
@@ -205,8 +208,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 //【验证】配送调度，需验证干线调度是否完成
                 if (paramsDto.getType() == WaybillTypeEnum.BACK.code) {
                     WaybillCar waybillCar = waybillCarDao.findLastTrunkWaybillCar(order.getEndCityCode(), orderCarId);
-                    if (waybillCar == null || !waybillCar.getEndCityCode().equals(order.getEndCityCode())) {
-                        throw new ParameterException("编号为{0}的车辆，干线尚未调度完成", orderCarNo);
+                    if (!validateIsArriveEndCity(order, waybillCar)) {
+                        throw new ParameterException("编号为{0}的车辆，尚未到达目的地所属业务中心或目的地城市范围内", orderCarNo);
                     }
                 }
                 //TODO 验证提车和送车人是否与订单一致
@@ -320,6 +323,25 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             }
         }
         return BaseResultUtil.success();
+    }
+
+    private boolean validateIsArriveEndCity(Order order, WaybillCar waybillCar) {
+        if(waybillCar == null){
+            return false;
+        }
+        //先验证是否到达所属业务中心
+        if(order.getEndStoreId() != null){
+            List<Store> storeList = csStoreService.getBelongByAreaCode(waybillCar.getEndAreaCode());
+            if(!CollectionUtils.isEmpty(storeList) && storeList.stream().map(Store::getId).collect(Collectors.toList()).contains(order.getEndStoreId())){
+                return true;
+            }
+        }
+        //其次验证城市
+        if(order.getEndCityCode().equals(waybillCar.getEndCityCode())){
+            return true;
+        }
+        return false;
+
     }
 
     private void fillWaybillCarAdmin(WaybillCar waybillCar, Integer type) {
@@ -775,17 +797,13 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
     @Override
     public ResultVo updateTrunk(UpdateTrunkWaybillDto paramsDto) {
         Long currentMillisTime = System.currentTimeMillis();
-        Long userId = paramsDto.getLoginId();
         Set<String> lockSet = new HashSet<>();
         //【验证参数】操作人
-        Admin admin = adminDao.findByUserId(userId);
+        Admin admin = adminDao.selectById(paramsDto.getLoginId());
         if (admin == null || admin.getState() != AdminStateEnum.CHECKED.code) {
             return BaseResultUtil.fail("当前业务员，不在职");
         }
-        //【验证参数】业务中心ID
-        //Store store = csStoreService.getById(paramsDto.getStoreId(), true);
-        //List<String> areaList = csStoreService.getAreaBizScope(store.getId());
-        // TODO 验证用户角色
+        //TODO 验证用户角色
         try {
             Waybill waybill = waybillDao.selectById(paramsDto.getId());
             if (waybill == null) {
