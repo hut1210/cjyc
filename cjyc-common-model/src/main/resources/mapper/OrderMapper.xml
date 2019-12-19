@@ -150,7 +150,7 @@
         CONCAT(start_province,start_city,start_area,start_address) as startFullAddress,
         CONCAT(end_province,end_city,end_area,end_address) as endFullAddress,
         (sum(IFNULL(oc.pick_fee,0)) + sum(IFNULL(oc.trunk_fee,0)) + sum(IFNULL(oc.back_fee,0)) +sum(IFNULL(oc.add_insurance_fee,0))) as wlTotalFee,
-        (case when o.customer_type =3 then(sum(IFNULL(oc.pick_fee,0)) + sum(IFNULL(oc.trunk_fee,0)) + sum(IFNULL(oc.back_fee,0)) +sum(IFNULL(oc.add_insurance_fee,0)) + IFNULL(o.coupon_offset_fee,0))
+        (case when o.customer_type =3 then IFNULL(o.total_fee,0) - ((sum(IFNULL(oc.pick_fee,0)) + sum(IFNULL(oc.trunk_fee,0)) + sum(IFNULL(oc.back_fee,0)) +sum(IFNULL(oc.add_insurance_fee,0)) + IFNULL(o.coupon_offset_fee,0)))
         else 0 end
         ) as totalAgencyFee,
         ct1.parent_name as region,

@@ -399,32 +399,25 @@ public class CsTaskServiceImpl implements ICsTaskService {
             }
             WaybillCar waybillCar = waybillCarDao.findByTaskCarId(taskCarId);
             if (waybillCar == null) {
-                failCarNoSet.add(new FailResultReasonVo(taskCarId, "任务ID为{0}对应的运单车辆不存在", taskCarId));
-                continue;
+                throw new ParameterException("任务ID为{0}对应的运单车辆不存在", taskCarId);
             }
             if (waybillCar.getState() < WaybillCarStateEnum.LOADED.code) {
-                failCarNoSet.add(new FailResultReasonVo(waybillCar.getOrderCarNo(), "运单车辆尚未装车", taskCarId));
-                continue;
+                throw new ParameterException("运单车辆{0}尚未装车", waybillCar.getOrderCarNo());
             }
             if (waybillCar.getState() >= WaybillCarStateEnum.UNLOADED.code) {
-                failCarNoSet.add(new FailResultReasonVo(waybillCar.getOrderCarNo(), "运单车辆已经卸过车", taskCarId));
-                continue;
+                throw new ParameterException("运单车辆{0}已经卸过车", waybillCar.getOrderCarNo());
             }
-            //卸车时间以收车人确认收货为准
-            //waybillCar.setUnloadTime(currentTimeMillis);
             waybillCarIdSet.add(waybillCar.getId());
             count++;
         }
 
-        if (!CollectionUtils.isEmpty(waybillCarIdSet)) {
-            //更新运单车辆信息
-            waybillCarDao.updateBatchForUnload(waybillCarIdSet, WaybillCarStateEnum.WAIT_UNLOAD_CONFIRM.code);
-            //更新任务信息
-            taskDao.updateNumForUnload(task.getId(), count);
-            //更新实时运力信息
-            vehicleRunningDao.updateOccupiedNumForUnload(task.getId(), count);
-            //TODO 发送收车推送信息
-        }
+        //更新运单车辆信息
+        waybillCarDao.updateBatchForUnload(waybillCarIdSet, WaybillCarStateEnum.WAIT_UNLOAD_CONFIRM.code);
+        //更新任务信息
+        taskDao.updateNumForUnload(task.getId(), count);
+        //更新实时运力信息
+        vehicleRunningDao.updateOccupiedNumForUnload(task.getId(), count);
+        //TODO 发送收车推送信息
         resultReasonVo.setSuccessList(successSet);
         resultReasonVo.setFailList(failCarNoSet);
         return BaseResultUtil.success(resultReasonVo);
