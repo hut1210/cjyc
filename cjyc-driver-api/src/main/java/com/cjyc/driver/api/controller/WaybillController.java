@@ -26,23 +26,11 @@ import javax.annotation.Resource;
 @Api(tags = "运单")
 @RequestMapping(value = "/waybill", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class WaybillController {
-
-    @Resource
-    private IWaybillService waybillService;
-
     @Resource
     private ICsTaskService csTaskService;
     @Resource
     private ICsDriverService csDriverService;
-    @Resource
-    private ICsAdminService csAdminService;
 
-
-/*    @ApiOperation(value = "分页查询待分配运单列表")
-    @PostMapping("/wait/allot/page")
-    public ResultVo<PageVo<WaitAllotVo>> getWaitAllot(@RequestBody WaitAllotDto dto) {
-        return waybillService.getWaitAllotPage(dto);
-    }*/
 
     /**
      * 提车完善信息
@@ -66,10 +54,10 @@ public class WaybillController {
      */
     @ApiOperation(value = "同城装车")
     @PostMapping(value = "/load/for/local")
-    public ResultVo<ResultReasonVo> loadForLocal(@RequestBody PickLoadDto reqDto) {
+    public ResultVo<ResultReasonVo> loadForLocal(@RequestBody ReplenishInfoDto reqDto) {
         //验证用户
-        /*Driver driver = csDriverService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(driver.getName());*/
+        Driver driver = csDriverService.validate(reqDto.getLoginId());
+        reqDto.setLoginName(driver.getName());
         return csTaskService.loadForLocal(reqDto);
     }
     /**

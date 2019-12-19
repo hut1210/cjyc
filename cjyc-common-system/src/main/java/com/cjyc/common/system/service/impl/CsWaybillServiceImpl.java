@@ -352,7 +352,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 if(admin == null){
                     throw new ParameterException("业务中心无人员");
                 }
-                waybillCar.setUnloadLinkUserId(admin.getUserId());
+                waybillCar.setUnloadLinkUserId(admin.getId());
                 waybillCar.setUnloadLinkName(admin.getName());
                 waybillCar.setUnloadLinkPhone(admin.getPhone());
             }
@@ -362,7 +362,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 if(admin == null){
                     throw new ParameterException("业务中心无人员");
                 }
-                waybillCar.setLoadLinkUserId(admin.getUserId());
+                waybillCar.setLoadLinkUserId(admin.getId());
                 waybillCar.setLoadLinkName(admin.getName());
                 waybillCar.setLoadLinkPhone(admin.getPhone());
             }

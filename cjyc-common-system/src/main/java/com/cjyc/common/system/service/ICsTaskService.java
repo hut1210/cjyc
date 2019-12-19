@@ -51,5 +51,5 @@ public interface ICsTaskService {
      */
     void updateForCarFinish(List<String> orderCarNoList, UserInfo userInfo);
 
-    ResultVo<ResultReasonVo>  loadForLocal(PickLoadDto reqDto);
+    ResultVo<ResultReasonVo>  loadForLocal(ReplenishInfoDto paramsDto);
 }

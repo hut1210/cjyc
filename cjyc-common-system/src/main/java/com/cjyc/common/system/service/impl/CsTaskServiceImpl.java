@@ -4,15 +4,11 @@ import com.cjkj.common.redis.lock.RedisDistributedLock;
 import com.cjyc.common.model.constant.Constant;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.customer.order.ReceiptBatchDto;
-import com.cjyc.common.model.dto.driver.task.PickLoadDto;
 import com.cjyc.common.model.dto.driver.task.ReplenishInfoDto;
 import com.cjyc.common.model.dto.web.task.*;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.entity.defined.UserInfo;
-import com.cjyc.common.model.enums.BizStateEnum;
-import com.cjyc.common.model.enums.CaptchaTypeEnum;
-import com.cjyc.common.model.enums.CarStorageTypeEnum;
-import com.cjyc.common.model.enums.PayStateEnum;
+import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.log.OrderCarLogEnum;
 import com.cjyc.common.model.enums.log.OrderLogEnum;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
@@ -35,6 +31,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -119,7 +116,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
      */
     @Override
     public ResultVo replenishInfo(ReplenishInfoDto reqDto) {
-        WaybillCar waybillCar = waybillCarDao.selectById(reqDto.getWaybillCarId());
+        WaybillCar waybillCar = waybillCarDao.findByTaskCarId(reqDto.getTaskCarId());
         if (waybillCar == null) {
             return BaseResultUtil.fail("运单车辆不存在");
         }
@@ -144,38 +141,18 @@ public class CsTaskServiceImpl implements ICsTaskService {
     }
 
     @Override
-    public ResultVo<ResultReasonVo>  loadForLocal(PickLoadDto reqDto) {
-        Long taskCarId = reqDto.getTaskCarId();
-        WaybillCar waybillCar = waybillCarDao.findByTaskCarId(taskCarId);
-        if (waybillCar == null) {
-            return BaseResultUtil.fail("运单车辆不存在");
+    public ResultVo<ResultReasonVo>  loadForLocal(ReplenishInfoDto paramsDto) {
+        //提车上传信息
+        ResultVo resultVo = replenishInfo(paramsDto);
+        if(ResultEnum.SUCCESS.getCode() != resultVo.getCode()){
+            return BaseResultUtil.fail(resultVo.getMsg());
         }
-        List<String> loadPhotoImgs = reqDto.getLoadPhotoImgs();
-        if (loadPhotoImgs.size() < Constant.MIN_LOAD_PHOTO_NUM) {
-            return BaseResultUtil.fail("照片数量不足8张");
-        }
-        if (loadPhotoImgs.size() > Constant.MAX_LOAD_PHOTO_NUM) {
-            return BaseResultUtil.fail("照片数量不能超过20张");
-        }
-        //更新车辆信息
-        OrderCar oc = new OrderCar();
-        oc.setId(waybillCar.getOrderCarId());
-        oc.setVin(reqDto.getVin());
-        oc.setBrand(reqDto.getBrand());
-        oc.setModel(reqDto.getModel());
-        oc.setPlateNo(reqDto.getPlateNo());
-        orderCarDao.updateById(oc);
-        //更新运单车辆信息
-        waybillCarDao.updateForReplenishInfo(waybillCar.getId(), Joiner.on(",").join(loadPhotoImgs));
-
-        TaskCar taskCar = taskCarDao.selectById(taskCarId);
+        //提车
+        TaskCar taskCar = taskCarDao.selectById(paramsDto.getTaskCarId());
         LoadTaskDto loadTaskDto = new LoadTaskDto();
-        loadTaskDto.setLoginId(reqDto.getLoginId());
-        loadTaskDto.setLoginName(reqDto.getLoginName());
-        loadTaskDto.setLoginPhone(reqDto.getLoginPhone());
-        loadTaskDto.setLoginType(reqDto.getLoginType());
+        BeanUtils.copyProperties(paramsDto, loadTaskDto);
         loadTaskDto.setTaskId(taskCar.getTaskId());
-        loadTaskDto.setTaskCarIdList(Lists.newArrayList(taskCarId));
+        loadTaskDto.setTaskCarIdList(Lists.newArrayList(taskCar.getTaskId()));
 
         return load(loadTaskDto);
 
@@ -228,13 +205,15 @@ public class CsTaskServiceImpl implements ICsTaskService {
             task.setDriverId(driver.getId());
             task.setDriverPhone(driver.getPhone());
             task.setDriverName(driver.getName());
+            //查询实时运力
+            task.setVehiclePlateNo(vr.getPlateNo());
+            task.setVehicleRunningId(vr.getId());
             task.setRemark(paramsDto.getRemark());
             task.setCreateTime(System.currentTimeMillis());
             task.setCreateUser(paramsDto.getLoginName());
             task.setCreateUserId(paramsDto.getLoginId());
             taskDao.insert(task);
 
-            int noCount = 0;
             for (WaybillCar waybillCar : list) {
                 if (waybillCar == null) {
                     continue;
@@ -261,7 +240,6 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 taskCar.setTaskId(task.getId());
                 taskCar.setWaybillCarId(waybillCar.getId());
                 taskCarDao.insert(taskCar);
-                noCount++;
 
                 //更新运单车辆状态
                 if (waybillCar.getState() < WaybillCarStateEnum.WAIT_LOAD.code) {
@@ -286,7 +264,10 @@ public class CsTaskServiceImpl implements ICsTaskService {
         if (task == null) {
             return BaseResultUtil.fail("任务不存在");
         }
-        //TODO 验证司机是否匹配
+        //验证司机是否匹配
+        if(!paramsDto.getLoginId().equals(task.getDriverId())){
+            return BaseResultUtil.fail("不是自己的任务");
+        }
         //验证运单
         Waybill waybill = waybillDao.selectById(task.getWaybillId());
         if (waybill == null) {
@@ -313,19 +294,13 @@ public class CsTaskServiceImpl implements ICsTaskService {
             OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
             if (orderCar == null) {
                 throw new ParameterException("订单车辆不存在");
-                /*failCarNoSet.add(new FailResultReasonVo(waybillCar.getOrderCarNo(), "订单车辆不存在"));
-                continue;*/
             }
 
             //验证运单车辆信息是否完全
             if (!validateOrderCarInfo(orderCar)) {
-                /*failCarNoSet.add(new FailResultReasonVo(waybillCar.getOrderCarNo(), "订单车辆信息不完整"));
-                continue;*/
                 throw new ParameterException("订单车辆{}信息不完整", orderCar.getNo());
             }
             if (!validateWaybillCarInfo(waybillCar)) {
-                /*failCarNoSet.add(new FailResultReasonVo(waybillCar.getOrderCarNo(), "运单车辆信息不完整"));
-                continue;*/
                 throw new ParameterException("运单车辆{}信息不完整", orderCar.getNo());
             }
 

@@ -34,7 +34,6 @@ public class SaveLocalWaybillDto implements Serializable {
     @ApiModelProperty(value = "承运商类型：1干线-个人承运商，2干线-企业承运商，3同城-业务员，4同城-代驾，5同城-拖车，6客户自己", required = true)
     private Integer carrierType;
 
-    //@NotBlank(message = "carrierName不能为空")
     @ApiModelProperty(value = "承运商名称")
     private String carrierName;
 
@@ -80,23 +79,19 @@ public class SaveLocalWaybillDto implements Serializable {
     @ApiModelProperty(value = "预计到达时间")
     private Long expectEndTime;
 
-    //@NotBlank(message = "提车联系人名称不能为空")
     @ApiModelProperty(value = "提车联系人")
     private String loadLinkName;
 
     @ApiModelProperty(value = "提车联系人ID")
     private Long loadLinkUserId;
-    //@NotBlank(message = "提车联系人电话不能为空")
     @ApiModelProperty(value = "提车联系人电话")
     private String loadLinkPhone;
 
-    //@NotBlank(message = "接收人名称能为空")
     @ApiModelProperty(value = "收车人名称")
     private String unloadLinkName;
 
     @ApiModelProperty(value = "收车联系人userId")
     private Long unloadLinkUserId;
-    //@NotBlank(message = "接收人电话不能为空")
     @ApiModelProperty(value = "收车人电话")
     private String unloadLinkPhone;
 

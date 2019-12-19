@@ -17,10 +17,12 @@ public class ReplenishInfoDto {
     @ApiModelProperty(hidden = true)
     private String loginName;
     @ApiModelProperty(hidden = true)
+    private String loginPhone;
+    @ApiModelProperty(hidden = true)
     private UserTypeEnum loginType;
     @NotNull(message = "运单ID")
     @ApiModelProperty(value = "运单车辆ID")
-    private Long waybillCarId;
+    private Long taskCarId;
     @ApiModelProperty(value = "品牌")
     private String brand;
     @ApiModelProperty(value = "型号")
