@@ -72,24 +72,24 @@
     <select id="deliverySalesman" resultType="com.cjyc.common.model.vo.web.admin.TypeSalesmanVo"
                 parameterType="com.cjyc.common.model.dto.web.salesman.TypeSalesmanDto">
         SELECT
-            admin.id AS adminId,
-            admin.NAME AS name,
-            admin.phone AS phone,
-            s.NAME AS storeName
+            ba.id AS adminId,
+            ba.NAME AS name,
+            ba.phone AS phone,
+            ba.biz_desc AS storeName
         FROM
-          b_admin admin
-        LEFT JOIN s_store s ON s.id = admin.store_id
+          b_admin ba
         <where>
             <if test="name != null and name.trim() != ''">
-                admin.name like CONCAT('%',#{name},'%')
+                ba.name like CONCAT('%',#{name},'%')
             </if>
             <if test="phone != null and phone.trim() != ''">
-                and  admin.phone = #{phone}
+                and  ba.phone = #{phone}
             </if>
-            <if test="storeId != null">
-                and  admin.store_id = #{storeId}
+            <if test="storeName != null and storeName.trim() != ''">
+                and  ba.biz_desc like CONCAT('%',#{storeName},'%')
             </if>
-            and admin.state = 2
+            and ba.state = 2
+            and ba.biz_desc LIKE CONCAT( '%', ( SELECT ss.NAME FROM s_store ss WHERE ss.id = #{pickBackStoreId} ), '%' )
         </where>
     </select>
     <select id="findByPhone" resultType="com.cjyc.common.model.entity.Admin">

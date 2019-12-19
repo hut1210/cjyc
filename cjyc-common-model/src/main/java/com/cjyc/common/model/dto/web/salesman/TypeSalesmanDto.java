@@ -21,7 +21,10 @@ public class TypeSalesmanDto extends BasePageDto {
     @ApiModelProperty("手机号")
     private String phone;
 
-    @ApiModelProperty("所属业务中心")
-    private Long storeId;
+    @ApiModelProperty("业务中心名称")
+    private String storeName;
+
+    @ApiModelProperty("提送车业务中心id")
+    private Long pickBackStoreId;
 
 }

@@ -219,9 +219,6 @@
             <if test="name != null and name.trim() != ''">
                 dc.name like CONCAT('%',#{name},'%')
             </if>
-            <if test="mode != null and mode.trim() != ''">
-                and  dc.mode in (#{mode})
-            </if>
             <if test="type != null">
                 and  dc.type = #{type}
             </if>
@@ -234,6 +231,10 @@
             <if test="plateNo != null and plateNo.trim() != ''">
                 and  dvr.plate_no = #{plateNo}
             </if>
+            and dc.mode in
+            <foreach collection="mode" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
             and dc.state = 2
             and dc.business_state = 0
             and dcdc.state = 2
