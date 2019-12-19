@@ -123,7 +123,7 @@ public class CsVehicleServiceImpl implements ICsVehicleService {
         //新增运力
         VehicleRunning vr = new VehicleRunning();
         vr.setVehicleId(veh.getId());
-        vr.setRunningState(VehicleRunStateEnum.FREE.code);
+        vr.setRunningState(VehicleRunStateEnum.WAY.code);
         vr.setCreateTime(NOW);
         //新增车辆与司机关系
         DriverVehicleCon dvc = new DriverVehicleCon();
@@ -149,7 +149,7 @@ public class CsVehicleServiceImpl implements ICsVehicleService {
         //更新运力
         VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda()
                 .eq(veh.getId() != null,VehicleRunning::getVehicleId, veh.getId()));
-        vr.setRunningState(VehicleRunStateEnum.FREE.code);
+        vr.setRunningState(VehicleRunStateEnum.WAY.code);
         vr.setUpdateTime(NOW);
         if(dto != null){
             dvc.setDriverId(dto.getDriverId());
