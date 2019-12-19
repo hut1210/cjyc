@@ -3,6 +3,7 @@ package com.cjyc.web.api.controller;
 import com.cjyc.common.model.dto.web.task.*;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Driver;
+import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultReasonVo;
@@ -79,6 +80,8 @@ public class TaskController {
         //验证用户
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
+        reqDto.setLoginPhone(admin.getPhone());
+        reqDto.setLoginType(UserTypeEnum.ADMIN);
         return taskService.inStore(reqDto);
     }
 

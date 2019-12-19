@@ -262,14 +262,7 @@
         set state = #{state}
         <where>
             and state &lt; #{state}
-            <choose>
-                <when test="set != null and set.size > 0">
-                    and id = #{id}
-                </when>
-                <otherwise>
-                    and 1 != 1
-                </otherwise>
-            </choose>
+            and id = #{id}
         </where>
 
     </update>
@@ -316,8 +309,8 @@
         join w_waybill_car wc on wc.waybill_id = w.id
         where w.state &lt; 100
         and wc.state &lt;= 5
-        and wc.order_car_id = #{orderCarId}
-        and and wc.start_city = #{cityCode}
+        and wc.start_store_id = #{inStoreId}
+        and wc.start_city = #{cityCode}
     </select>
     <select id="findUnConnectCar" resultType="com.cjyc.common.model.entity.WaybillCar">
         select
@@ -794,7 +787,7 @@
         select count(0)
         from w_waybill_car
         where waybill_id = #{waybillId}
-        and w.state &lt; 100
+        and state &lt; 100
     </select>
     <select id="findVo" resultType="com.cjyc.common.model.vo.web.waybill.WaybillCarVo">
         select
@@ -846,6 +839,7 @@
         shell.*,
         l.default_freight_fee as lineFreightFee,
         l.id as lineId,
+        l.default_freight_fee as freightFee,
         (case when l.id is not null then true else false end) as hasLine
         from (
             select

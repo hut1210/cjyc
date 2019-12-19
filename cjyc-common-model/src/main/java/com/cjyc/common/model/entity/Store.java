@@ -74,9 +74,6 @@ public class Store implements Serializable {
     @ApiModelProperty(value = "联系人ID")
     private Long contactAdminId;
 
-    @ApiModelProperty(value = "联系人名称")
-    private String contactAdmin;
-
     @ApiModelProperty(value = "创建人ID")
     private Long createUserId;
 

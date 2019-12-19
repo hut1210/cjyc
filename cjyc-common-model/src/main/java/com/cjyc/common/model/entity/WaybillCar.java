@@ -8,6 +8,9 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -77,9 +80,11 @@ public class WaybillCar implements Serializable {
     private String startStoreName;
 
     @ApiModelProperty(value = "出发地业务中心ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long startStoreId;
 
     @ApiModelProperty(value = "起始地所属业务中心ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long startBelongStoreId;
 
     @ApiModelProperty(value = "省")
@@ -109,9 +114,11 @@ public class WaybillCar implements Serializable {
     private String endStoreName;
 
     @ApiModelProperty(value = "目的地业务中心ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long endStoreId;
 
     @ApiModelProperty(value = "目的地所属业务中心ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long endBelongStoreId;
 
     @ApiModelProperty(value = "线路ID")

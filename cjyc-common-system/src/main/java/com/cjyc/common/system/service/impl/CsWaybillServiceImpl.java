@@ -854,6 +854,9 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                     isReAllotDriver = true;
                 }
             }
+            if(waybill.getState() >= WaybillStateEnum.TRANSPORTING.code && isReAllotDriver){
+                return BaseResultUtil.fail("运输中运单不允许变更司机，请使用卸载车辆功能");
+            }
 
             /**1、组装运单信息*/
             waybill.setGuideLine(paramsDto.getGuideLine());
@@ -866,7 +869,6 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             waybill.setCarrierType(carrier.getType());
             waybill.setCarrierName(carrier.getName());
             waybill.setFreightFee(paramsDto.getFreightFee());
-            //提送车费用逻辑，调度时不允许修改提送车费用，需要到订单中修改提送车费用，多则返还，少则后补
             waybill.setFixedFreightFee(paramsDto.getFixedFreightFee());
             waybill.setRemark(paramsDto.getRemark());
             waybillDao.updateById(waybill);
@@ -941,9 +943,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 fillWaybillcarStoreInfo(waybillCar);
                 //计算预计到达时间
                 fillWaybillCarExpectEndTime(waybillCar);
-                waybillCar.setReceiptFlag(waybillCar.getUnloadLinkPhone().equals(order.getBackContactPhone()));
+                //新车添加车辆状态
                 waybillCar.setState(isOneDriver ? WaybillCarStateEnum.WAIT_LOAD.code : WaybillCarStateEnum.WAIT_ALLOT.code);
-                waybillCar.setTakeType(1);
                 waybillCar.setCreateTime(currentMillisTime);
                 if (isNewWaybillCar) {
                     waybillCarDao.insert(waybillCar);

@@ -489,6 +489,8 @@
         o.expect_end_date AS expectEndDate,
         CONCAT(o.start_province,o.start_city,o.start_area,o.start_address) as startFullAddress,
         CONCAT(o.end_province,o.end_city,o.end_area,o.end_address) as endFullAddress,
+        o.remark as remark,
+        o.pay_type as payType,
         o.create_time as createTime,
         o.create_user_name as createUserName,
         o.check_time as checkTime,

@@ -22,4 +22,7 @@ public class StoreVo extends Store {
 
     @ApiModelProperty(value = "联系人手机号")
     private String contactAdminPhone;
+
+    @ApiModelProperty(value = "联系人手机号")
+    private String contactAdmin;
 }

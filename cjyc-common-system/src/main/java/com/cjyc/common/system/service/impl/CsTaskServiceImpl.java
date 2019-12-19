@@ -564,17 +564,22 @@ public class CsTaskServiceImpl implements ICsTaskService {
             }
 
             //计算车辆状态
-            OrderCarVo orderCarVo = orderCarDao.findExtraById(waybillCar.getOrderCarId());
-            if (orderCarVo == null) {
+            OrderCar oc = orderCarDao.selectById(waybillCar.getOrderCarId());
+            if (oc == null) {
                 failCarNoSet.add(new FailResultReasonVo(waybillCar.getOrderCarNo(), "车辆不存在"));
                 continue;
             }
             //当前状态
             int newState;
             //下一段是否调度
+            Order order = orderDao.selectById(oc.getOrderId());
+            if(order == null){
+                failCarNoSet.add(new FailResultReasonVo(waybillCar.getOrderCarNo(), "订单不存在"));
+                continue;
+            }
             int m = waybillCarDao.countByStartCityAndOrderCar(waybillCar.getEndCityCode(), waybillCar.getEndStoreId());
             //计算是否到达目的地城市范围
-            if (waybillCar.getEndCityCode().equals(orderCarVo.getEndCityCode())) {
+            if (waybillCar.getEndCityCode().equals(order.getEndCityCode())) {
                 //配送
                 newState = m == 0 ? OrderCarStateEnum.WAIT_BACK_DISPATCH.code : OrderCarStateEnum.WAIT_BACK.code;
             } else {
@@ -616,9 +621,9 @@ public class CsTaskServiceImpl implements ICsTaskService {
             storageLogSet.add(carStorageLog);
 
             //添加物流日志
-            csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.IN_STORE,
-                    new String[]{MessageFormat.format(OrderCarLogEnum.IN_STORE.getInnerLog(), orderCar.getNo(), waybillCar.getEndStoreName()),
-                            MessageFormat.format(OrderCarLogEnum.IN_STORE.getOutterLog(), orderCar.getNo(), waybillCar.getEndStoreName())},
+            csOrderCarLogService.asyncSave(oc, OrderCarLogEnum.IN_STORE,
+                    new String[]{MessageFormat.format(OrderCarLogEnum.IN_STORE.getInnerLog(), oc.getNo(), waybillCar.getEndStoreName()),
+                            MessageFormat.format(OrderCarLogEnum.IN_STORE.getOutterLog(), oc.getNo(), waybillCar.getEndStoreName())},
                     new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), paramsDto.getLoginType()));
         }
 

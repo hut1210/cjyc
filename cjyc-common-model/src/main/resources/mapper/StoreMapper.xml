@@ -18,7 +18,6 @@
         <result column="lat" property="lat" />
         <result column="state" property="state" />
         <result column="contact_admin_id" property="contactAdminId" />
-        <result column="contact_admin" property="contactAdmin" />
         <result column="create_user_id" property="createUserId" />
         <result column="create_time" property="createTime" />
         <result column="operation_name" property="operationName" />
@@ -29,7 +28,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, dept_id, name, province, province_code, city, city_code, area, area_code, detail_addr, lng, lat, state, contact_admin_id, contact_admin,
+        id, dept_id, name, province, province_code, city, city_code, area, area_code, detail_addr, lng, lat, state, contact_admin_id,
         create_user_id, create_time, operation_name, update_time, remark,is_delete
     </sql>
     <select id="findByCityCode" resultType="com.cjyc.common.model.entity.Store">
@@ -84,7 +83,8 @@
     <select id="findVoAll" resultType="com.cjyc.common.model.vo.store.StoreVo">
         select
         s.*,
-        m.phone as  contactAdminPhone
+        m.phone as  contactAdminPhone,
+        m.name as contactAdmin
         from s_store s
         left join b_admin m on m.id = s.contact_admin_id
         where s.is_delete = 0
@@ -109,7 +109,8 @@
     <select id="findVoByIds" resultType="com.cjyc.common.model.vo.store.StoreVo">
         select
         s.*,
-        m.phone as contactAdminPhone
+        m.phone as contactAdminPhone,
+        m.name as contactAdmin
         from s_store s
         left join b_admin m on m.id = s.contact_admin_id
         <where>
