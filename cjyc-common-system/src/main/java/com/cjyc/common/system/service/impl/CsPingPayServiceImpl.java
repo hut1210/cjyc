@@ -5,6 +5,7 @@ import com.cjyc.common.model.dao.ICarrierDao;
 import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IOrderDao;
 import com.cjyc.common.model.dao.IWaybillDao;
+import com.cjyc.common.model.dto.customer.pingxx.PrePayDto;
 import com.cjyc.common.model.dto.customer.pingxx.SweepCodeDto;
 import com.cjyc.common.model.dto.customer.pingxx.ValidateSweepCodeDto;
 import com.cjyc.common.model.entity.OrderCar;
@@ -280,6 +281,38 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         }
 
         return transfer;
+    }
+
+    @Override
+    public Charge prePay(PrePayDto prePayDto) throws RateLimitException, APIException, ChannelException, InvalidRequestException, APIConnectionException, AuthenticationException, FileNotFoundException {
+
+        OrderModel om = new OrderModel();
+        //创建Charge对象
+        Charge charge = new Charge();
+        try {
+            om.setClientIp(prePayDto.getIp());
+            om.setPingAppId(PingProperty.userAppId);
+            BigDecimal wlFee = cStransactionService.getAmountByOrderNo(prePayDto.getOrderNo());
+            om.setPingAppId(PingProperty.customerAppId);
+            om.setClientIp(prePayDto.getIp());
+            om.setChannel(prePayDto.getChannel());
+            om.setOrderNo(prePayDto.getOrderNo());
+            om.setUid(String.valueOf(prePayDto.getUid()));
+            om.setAmount(wlFee);
+            om.setSubject("后台收款码");
+            om.setBody("订单预付款");
+            om.setChargeType("1");
+            om.setClientType(String.valueOf(ClientEnum.APP_CUSTOMER.code));
+            // 备注：订单号
+            om.setDescription("韵车订单号："+om.getOrderNo());
+
+            charge = createDriverCode(om);
+
+            cStransactionService.saveTransactions(charge, "0");
+        } catch (Exception e) {
+            log.error("后台出示二维码异常",e);
+        }
+        return charge;
     }
 
     public Transfer allinpayTransferDriverCreate(BaseCarrierVo baseCarrierVo,Waybill waybill) throws AuthenticationException, InvalidRequestException,

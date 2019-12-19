@@ -21,10 +21,7 @@ import com.cjyc.common.system.service.ICsPingxxService;
 import com.cjyc.customer.api.dto.OrderModel;
 import com.cjyc.customer.api.service.IPingPayService;
 import com.cjyc.customer.api.service.ITransactionService;
-import com.pingplusplus.model.Charge;
-import com.pingplusplus.model.Event;
-import com.pingplusplus.model.EventData;
-import com.pingplusplus.model.Webhooks;
+import com.pingplusplus.model.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -140,12 +137,27 @@ public class PingPayController {
                             log.debug("------------->order.succeeded");
                             transactionService.updateTransactions((Order)data.getObject(),event,"1");
                         }
+                    }else if("order.refunded".equals(event.getType())){
+                        Order order = (Order) data.getObject();
+                        if(data.getObject() instanceof Charge){
+                            log.debug("------------->charge.succeeded");
+                            //将金额存进OrderDeTailId
+                            //transactionService.update((Charge)data.getObject(),event,"1");
+                        }
                     }else if("charge.succeeded".equals(event.getType())){
                         Charge charge = (Charge)data.getObject();
                         if(data.getObject() instanceof Charge){
                             log.debug("------------->charge.succeeded");
                             //将金额存进OrderDeTailId
                             transactionService.update((Charge)data.getObject(),event,"1");
+                        }
+                    }else if("transfer.succeeded".equals(event.getType())){//通联支付司机运费
+                        if(data.getObject() instanceof Transfer){
+                            log.debug("------------->transfer.succeeded");
+                        }
+                    } else if("transfer.failed".equals(event.getType())){//通联支付司机运费
+                        if(data.getObject() instanceof Transfer){
+                            log.debug("---------------->transfer.failed");
                         }
                     }
                 }
