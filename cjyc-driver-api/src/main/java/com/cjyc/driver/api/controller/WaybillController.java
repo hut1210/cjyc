@@ -68,8 +68,8 @@ public class WaybillController {
     @PostMapping(value = "/load/for/local")
     public ResultVo<ResultReasonVo> loadForLocal(@RequestBody PickLoadDto reqDto) {
         //验证用户
-        Driver driver = csDriverService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(driver.getName());
+        /*Driver driver = csDriverService.validate(reqDto.getLoginId());
+        reqDto.setLoginName(driver.getName());*/
         return csTaskService.loadForLocal(reqDto);
     }
     /**

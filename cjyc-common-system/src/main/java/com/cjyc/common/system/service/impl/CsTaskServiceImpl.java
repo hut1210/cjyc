@@ -303,12 +303,10 @@ public class CsTaskServiceImpl implements ICsTaskService {
         for (Long taskCarId : paramsDto.getTaskCarIdList()) {
             WaybillCar waybillCar = waybillCarDao.findByTaskCarId(taskCarId);
             if (waybillCar == null) {
-                failCarNoSet.add(new FailResultReasonVo(taskCarId, "运单车辆不存在"));
-                continue;
+                throw new ParameterException("运单车辆不存在");
             }
             if (waybillCar.getState() >= WaybillCarStateEnum.WAIT_LOAD_CONFIRM.code) {
-                failCarNoSet.add(new FailResultReasonVo(waybillCar.getOrderCarId(), "运单车辆已经装过车"));
-                continue;
+                throw new ParameterException("运单车辆已经装过车");
             }
 
             //验证车辆当前所在地是否与出发区县匹配
@@ -317,10 +315,6 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 throw new ParameterException("订单车辆不存在");
                 /*failCarNoSet.add(new FailResultReasonVo(waybillCar.getOrderCarNo(), "订单车辆不存在"));
                 continue;*/
-            }
-            if (!waybillCar.getStartAreaCode().equals(orderCar.getNowAreaCode())) {
-                //failCarNoSet.add(new FailResultReasonVo(waybillCar.getOrderCarNo(), "订单车辆区县范围内"));
-                throw new ParameterException("订单车辆{}区县范围内", orderCar.getNo());
             }
 
             //验证运单车辆信息是否完全
@@ -363,9 +357,6 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 orderIdSet.add(orderCar.getOrderId());
             }
 
-            //更新空车位数
-            vehicleRunningDao.updateOccupiedNumForLoad(paramsDto.getLoginId(), count);
-
             successSet.add(orderCar.getNo());
             count++;
         }
@@ -376,6 +367,9 @@ public class CsTaskServiceImpl implements ICsTaskService {
         taskDao.updateForLoad(task.getId());
         //更新运单状态
         waybillDao.updateForLoad(waybill.getId());
+
+        //更新空车位数
+        vehicleRunningDao.updateOccupiedNumForLoad(paramsDto.getLoginId(), count);
 
         resultReasonVo.setSuccessList(successSet);
         resultReasonVo.setFailList(failCarNoSet);
@@ -418,7 +412,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
         if (waybill == null) {
             return BaseResultUtil.fail("运单不存在");
         }
-        if (waybill.getState() >= WaybillStateEnum.FINISHED.code || waybill.getState() <= WaybillStateEnum.ALLOT_CONFIRM.code) {
+        if (waybill.getState() >= WaybillStateEnum.FINISHED.code || waybill.getState() < WaybillStateEnum.ALLOT_CONFIRM.code) {
             return BaseResultUtil.fail("运单已完结");
         }
 
@@ -451,7 +445,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             //更新运单车辆信息
             waybillCarDao.updateBatchForUnload(waybillCarIdSet, WaybillCarStateEnum.WAIT_UNLOAD_CONFIRM.code);
             //更新任务信息
-            taskDao.updateForUnload(task.getId(), count);
+            taskDao.updateNumForUnload(task.getId(), count);
             //更新实时运力信息
             vehicleRunningDao.updateOccupiedNumForUnload(task.getId(), count);
             //TODO 发送收车推送信息
