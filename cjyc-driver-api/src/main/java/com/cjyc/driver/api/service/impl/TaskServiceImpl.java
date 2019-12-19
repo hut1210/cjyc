@@ -11,6 +11,7 @@ import com.cjyc.common.model.dto.driver.task.NoFinishTaskQueryDto;
 import com.cjyc.common.model.dto.driver.task.TaskQueryDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.waybill.WaybillCarStateEnum;
+import com.cjyc.common.model.enums.waybill.WaybillTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.PageVo;
@@ -26,6 +27,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -151,7 +153,12 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
             for (WaybillCar waybillCar : waybillCarList) {
                 carDetailVo = new CarDetailVo();
                 BeanUtils.copyProperties(waybillCar,carDetailVo);
+
+                // 获取运单车辆费用
                 freightFee = freightFee.add(waybillCar.getFreightFee());
+
+                // 如果指导路线为空，且运单是提车或者送车，将始发成和结束城市用“-”拼接
+                fillGuideLine(taskDetailVo,waybillCar);
 
                 // 查询品牌车系信息
                 OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
@@ -167,6 +174,13 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
         return BaseResultUtil.success(taskDetailVo);
     }
 
+    private void fillGuideLine(TaskDetailVo taskDetailVo,WaybillCar waybillCar) {
+        boolean b = WaybillTypeEnum.PICK.code == taskDetailVo.getType() || WaybillTypeEnum.BACK.code == taskDetailVo.getType();
+        if (b && StringUtils.isEmpty(taskDetailVo.getGuideLine())) {
+            taskDetailVo.setGuideLine(waybillCar.getStartCity() + "-" + waybillCar.getEndCity());
+        }
+    }
+
     @Override
     public ResultVo<TaskDetailVo> getHistoryDetail(DetailQueryDto dto) {
         TaskDetailVo taskDetailVo = new TaskDetailVo();
@@ -178,6 +192,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
         }
         Waybill waybill = waybillDao.selectById(waybillId);
         taskDetailVo.setType(waybill.getType());
+        taskDetailVo.setGuideLine(waybill.getGuideLine());
 
         // 查询任务单信息信息
         Long taskId = dto.getTaskId();
@@ -201,6 +216,9 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                 carDetailVo = new CarDetailVo();
                 BeanUtils.copyProperties(waybillCar,carDetailVo);
                 freightFee = freightFee.add(waybillCar.getFreightFee());
+
+                // 如果指导路线为空，且运单是提车或者送车，将始发成和结束城市用“-”拼接
+                fillGuideLine(taskDetailVo,waybillCar);
 
                 // 查询品牌车系信息
                 OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
