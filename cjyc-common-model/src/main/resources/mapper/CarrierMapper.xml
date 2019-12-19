@@ -195,7 +195,7 @@
         </where>
     </select>
 
-    <!-- 调度中心中提车干线调度中代驾和拖车列表 -->
+    <!-- 调度中心中提车送车调度中代驾和拖车列表 -->
     <select id="findTrailDriver" resultType="com.cjyc.common.model.vo.web.carrier.TrailCarrierVo"
                  parameterType="com.cjyc.common.model.dto.web.carrier.TrailCarrierDto">
         SELECT

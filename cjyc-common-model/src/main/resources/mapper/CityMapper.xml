@@ -105,6 +105,7 @@
         FROM
             s_city
         where level >= #{startLevel} and level &lt;= #{endLevel}
+        and code != '000008'
     </select>
 
     <!--根据关键字获取省/城市集合 -->

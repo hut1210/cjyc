@@ -1,5 +1,6 @@
 package com.cjyc.common.system.service;
 
+import com.cjyc.common.model.dto.customer.pingxx.PrePayDto;
 import com.cjyc.common.model.dto.customer.pingxx.SweepCodeDto;
 import com.cjyc.common.model.dto.customer.pingxx.ValidateSweepCodeDto;
 import com.cjyc.common.model.vo.ResultVo;
@@ -25,4 +26,7 @@ public interface ICsPingPayService {
             APIConnectionException, AuthenticationException, FileNotFoundException;
 
     Transfer allinpayToDriver(Long waybillId) throws AuthenticationException, InvalidRequestException, APIConnectionException, APIException, ChannelException, RateLimitException, FileNotFoundException ;
+
+    Charge prePay(PrePayDto prePayDto) throws RateLimitException, APIException, ChannelException, InvalidRequestException,
+            APIConnectionException, AuthenticationException, FileNotFoundException;
 }

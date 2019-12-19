@@ -67,6 +67,9 @@ public class CarDetailVo implements Serializable {
     @ApiModelProperty(value = "客户付款方式：0到付（默认），1预付，2账期")
     private Integer payType;
 
+    @ApiModelProperty(value = "最后一次运输标识：0否，1是")
+    private Boolean receiptFlag;
+
     public Integer getPayType() {
         return payType == null ? -1 : payType;
     }
@@ -99,5 +102,11 @@ public class CarDetailVo implements Serializable {
     }
     public String getUnloadLinkPhone() {
         return unloadLinkPhone == null ? "" : unloadLinkPhone;
+    }
+    public Integer getReceiptFlag() {
+        if (receiptFlag == null) {
+            return -1;
+        }
+        return receiptFlag == false ? 0 : 1;
     }
 }
