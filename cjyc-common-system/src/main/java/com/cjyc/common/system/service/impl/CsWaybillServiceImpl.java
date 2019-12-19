@@ -311,7 +311,9 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 } else {
                     OrderCar oc = new OrderCar();
                     oc.setId(orderCarId);
-                    oc.setState(waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code ? OrderCarStateEnum.BACKING.code : OrderCarStateEnum.WAIT_BACK.code);
+                    if(oc.getState() == OrderCarStateEnum.WAIT_BACK.code){
+                        oc.setState(waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code ? OrderCarStateEnum.BACKING.code : OrderCarStateEnum.WAIT_BACK.code);
+                    }
                     oc.setBackType(getLocalCarryType(waybill.getCarrierType()));
                     oc.setBackState(OrderCarLocalStateEnum.DISPATCHED.code);
                     orderCarDao.updateById(oc);

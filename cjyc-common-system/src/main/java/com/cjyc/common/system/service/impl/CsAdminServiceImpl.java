@@ -116,6 +116,9 @@ public class CsAdminServiceImpl implements ICsAdminService {
 
     @Override
     public Admin findLoop(Long storeId) {
+        if(storeId == null){
+            return null;
+        }
 
         String key = RedisKeys.getLoopAllotAdminKey(storeId);
         String value = redisUtil.get(key);
