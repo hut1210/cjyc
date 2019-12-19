@@ -192,7 +192,6 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
         }
         Waybill waybill = waybillDao.selectById(waybillId);
         taskDetailVo.setType(waybill.getType());
-        taskDetailVo.setGuideLine(waybill.getGuideLine());
 
         // 查询任务单信息信息
         Long taskId = dto.getTaskId();
