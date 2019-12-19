@@ -10,8 +10,8 @@ public class TrailCarrierDto extends BasePageDto {
     @ApiModelProperty("登陆id(loginId)")
     private Long loginId;
 
-    @ApiModelProperty("承运方式：2 : 代驾 4：拖车")
-    private Integer mode;
+    @ApiModelProperty("承运方式: 代驾:2,5,6,9 拖车:4,6,7,9")
+    private String mode;
 
     @ApiModelProperty("姓名")
     private String name;

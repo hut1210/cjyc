@@ -204,6 +204,7 @@
             dc.linkman AS NAME,
             dc.linkman_phone AS phone,
             dc.type AS type,
+            dc.mode AS mode,
             dvr.plate_no AS plateNo,
             dc.legal_id_card AS idCard,
             dvr.carry_car_num AS carryCarNum,
@@ -218,8 +219,8 @@
             <if test="name != null and name.trim() != ''">
                 dc.name like CONCAT('%',#{name},'%')
             </if>
-            <if test="mode != null ">
-                and  dcdc.mode = #{mode}
+            <if test="mode != null and mode.trim() != ''">
+                and  dc.mode in (#{mode})
             </if>
             <if test="type != null">
                 and  dc.type = #{type}

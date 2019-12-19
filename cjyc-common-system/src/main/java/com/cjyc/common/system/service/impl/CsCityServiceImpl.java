@@ -85,7 +85,7 @@ public class CsCityServiceImpl implements ICsCityService {
         CityVo cityvo = new CityVo();
         //获取热门城市
         List<HotCityVo> hotCity = cityDao.getHotCity();
-        List<ProvinceTreeVo> cityTreeVos = cityDao.findThreeCity(dto.getKeyword(),"");
+        List<ProvinceTreeVo> cityTreeVos = cityDao.findThreeCity(dto.getKeyword(),Constant.EMPTY_STRING);
         cityvo.setHotCityVos(hotCity);
         cityvo.setCityTreeVos(cityTreeVos);
         return BaseResultUtil.success(cityvo);
@@ -141,7 +141,7 @@ public class CsCityServiceImpl implements ICsCityService {
         }
         if(result){
             //是全国范围，则查询所有省市区
-            cityTreeVos = cityDao.findThreeCity("","");
+            cityTreeVos = cityDao.findThreeCity(Constant.EMPTY_STRING,Constant.EMPTY_STRING);
             cityVo.setCityTreeVos(cityTreeVos);
         }else{
             //获取所有大区机构id
@@ -178,7 +178,7 @@ public class CsCityServiceImpl implements ICsCityService {
                     //大区deptId为空
                     cityTreeVos = Collections.EMPTY_LIST;
                 }else{
-                    cityTreeVos = cityDao.findThreeCity("",regionDeptIds.substring(0, regionDeptIds.length()-1));
+                    cityTreeVos = cityDao.findThreeCity(Constant.EMPTY_STRING,regionDeptIds.substring(0, regionDeptIds.length()-1));
                 }
                 cityVo.setCityTreeVos(cityTreeVos);
             }

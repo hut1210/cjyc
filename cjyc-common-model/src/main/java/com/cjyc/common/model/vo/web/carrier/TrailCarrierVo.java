@@ -40,6 +40,9 @@ public class TrailCarrierVo implements Serializable {
     @ApiModelProperty("非空车位")
     private Integer occupiedCarNum;
 
+    @ApiModelProperty("承运方式：2 : 代驾  3 : 干线   4：拖车   5：代驾+干线  6：代驾+拖车  7：干线+拖车  9：代驾+干线+拖车")
+    private Integer mode;
+
     @ApiModelProperty("运行状态：0空闲，1在途 2繁忙")
     private Integer runningState;
 
@@ -51,4 +54,5 @@ public class TrailCarrierVo implements Serializable {
     public Integer getCarryCarNum(){return carryCarNum == null ? 0:carryCarNum;}
     public Integer getOccupiedCarNum(){return occupiedCarNum == null ? 0:occupiedCarNum;}
     public Integer getRunningState(){return runningState == null ? 0:runningState;}
+    public Integer getMode(){return mode == null ? 0 : mode;}
 }
