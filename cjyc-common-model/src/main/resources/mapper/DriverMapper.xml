@@ -338,6 +338,7 @@
                 and  dcdc.mode = #{mode}
             </if>
             and dc.id = #{carrierId} and dc.type = 2 and dc.state &lt; 9
+            and dcdc.mode &lt;= 4
             group by dd.id
             order by dd.create_time desc,dd.check_time desc
         </where>

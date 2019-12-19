@@ -214,7 +214,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
                 vr.setVehicleId(dto.getVehicleId());
                 vr.setPlateNo(dto.getPlateNo());
                 vr.setCarryCarNum(dto.getDefaultCarryNum());
-                vr.setRunningState(VehicleRunStateEnum.FREE.code);
+                vr.setRunningState(VehicleRunStateEnum.WAY.code);
                 vr.setCreateTime(NOW);
                 vehicleRunningDao.insert(vr);
             }
@@ -473,7 +473,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
         vr.setVehicleId(dto.getVehicleId());
         vr.setPlateNo(dto.getPlateNo());
         vr.setCarryCarNum(dto.getDefaultCarryNum());
-        vr.setRunningState(VehicleRunStateEnum.FREE.code);
+        vr.setRunningState(VehicleRunStateEnum.WAY.code);
         vr.setCreateTime(NOW);
         vehicleRunningDao.insert(vr);
     }

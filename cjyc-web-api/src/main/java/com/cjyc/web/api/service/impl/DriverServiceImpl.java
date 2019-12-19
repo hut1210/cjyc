@@ -432,7 +432,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         vr.setPlateNo(dto.getPlateNo());
         vr.setCarryCarNum(dto.getDefaultCarryNum());
         vr.setOccupiedCarNum(0);
-        vr.setRunningState(VehicleRunStateEnum.FREE.code);
+        vr.setRunningState(VehicleRunStateEnum.WAY.code);
         vr.setCreateTime(NOW);
         vehicleRunningDao.insert(vr);
     }
