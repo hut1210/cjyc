@@ -234,8 +234,8 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
 
 
     @Override
-    public ResultVo<List<WaybillCarVo> > getCarByType(Long orderCarId, Integer waybillType) {
-       List<WaybillCarVo> list =waybillCarDao.findVoByType(orderCarId, waybillType);
+    public ResultVo<List<WaybillCarTransportVo>> getCarByType(Long orderCarId, Integer waybillType) {
+       List<WaybillCarTransportVo> list =waybillCarDao.findVoByType(orderCarId, waybillType);
         return BaseResultUtil.success(list);
     }
 

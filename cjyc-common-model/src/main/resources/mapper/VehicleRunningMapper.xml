@@ -46,7 +46,6 @@
         <include refid="Base_Column_List"/>
         from d_vehicle_running
         where driver_id = #{driverId}
-        and state = 1
     </select>
 
     <!-- 根据司机id删除运力信息 -->

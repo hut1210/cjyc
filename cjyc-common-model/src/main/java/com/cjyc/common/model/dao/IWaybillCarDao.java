@@ -12,6 +12,7 @@ import com.cjyc.common.model.entity.defined.FullWaybillCar;
 import com.cjyc.common.model.vo.salesman.dispatch.DispatchListVo;
 import com.cjyc.common.model.vo.salesman.dispatch.DispatchRecordVo;
 import com.cjyc.common.model.vo.web.WayBillCarrierVo;
+import com.cjyc.common.model.vo.web.waybill.WaybillCarTransportVo;
 import com.cjyc.common.model.vo.web.waybill.WaybillCarVo;
 import com.cjyc.common.model.vo.web.waybill.LocalListWaybillCarVo;
 import com.cjyc.common.model.vo.web.waybill.TrunkCarListWaybillCarVo;
@@ -60,7 +61,7 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
 
     List<LocalListWaybillCarVo> findListLocal(@Param("paramsDto") LocalListWaybillCarDto paramsDto);
 
-    List<WaybillCarVo> findVoByType(@Param("orderCarId") Long orderCarId, @Param("waybillType") Integer waybillType);
+    List<WaybillCarTransportVo> findVoByType(@Param("orderCarId") Long orderCarId, @Param("waybillType") Integer waybillType);
 
     List<WaybillCarVo> findVoByWaybillId(Long waybillId);
 

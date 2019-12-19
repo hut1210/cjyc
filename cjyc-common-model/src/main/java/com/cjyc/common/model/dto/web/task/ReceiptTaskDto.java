@@ -20,13 +20,13 @@ public class ReceiptTaskDto {
     @ApiModelProperty(value = "用户Id",required = true)
     private Long loginId;
 
-    @ApiModelProperty(value = "用户名称（不用传）")
+    @ApiModelProperty(hidden = true)
     private String loginName;
 
-    @ApiModelProperty(value = "用户手机号（不用传）")
+    @ApiModelProperty(hidden = true)
     private String loginPhone;
 
-    @ApiModelProperty(value = "用户类型：1业务员，2司机，3客户（不用传）")
+    @ApiModelProperty(hidden = true)
     private UserTypeEnum loginType;
 
     @ApiModelProperty(value = "客户端类型：1WEB管理后台, 2业务员APP, 3业务员小程序, 4司机APP, 5司机小程序, 6用户端APP, 7用户端小程序（不用传）")

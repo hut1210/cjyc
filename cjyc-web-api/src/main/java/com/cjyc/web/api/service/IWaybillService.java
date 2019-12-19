@@ -53,7 +53,7 @@ public interface IWaybillService extends IService<Waybill> {
 
     ResultVo<WaybillVo> get(Long id);
 
-    ResultVo<List<WaybillCarVo>> getCarByType(Long orderCarId, Integer waybillType);
+    ResultVo<List<WaybillCarTransportVo>> getCarByType(Long orderCarId, Integer waybillType);
 
     ResultVo<PageVo<TrunkMainListWaybillVo>> getTrunkMainList(TrunkMainListWaybillDto reqDto);
 

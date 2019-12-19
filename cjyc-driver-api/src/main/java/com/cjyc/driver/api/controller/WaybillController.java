@@ -107,7 +107,7 @@ public class WaybillController {
      */
     @ApiOperation(value = "卸车")
     @PostMapping(value = "/car/unload")
-    public ResultVo<ResultReasonVo> unload(@RequestBody UnLoadTaskDto reqDto) {
+    public ResultVo<ResultReasonVo> unload(@Validated @RequestBody UnLoadTaskDto reqDto) {
         //验证用户
         Driver driver = csDriverService.validate(reqDto.getLoginId());
         reqDto.setLoginName(driver.getName());
@@ -118,7 +118,7 @@ public class WaybillController {
      * 签收-司机
      * @author JPG
      */
-    @ApiOperation(value = "签收")
+    @ApiOperation(value = "签收-无需支付")
     @PostMapping(value = "/car/receipt")
     public ResultVo receipt(@RequestBody ReceiptTaskDto reqDto) {
         //验证用户

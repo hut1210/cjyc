@@ -53,7 +53,7 @@
         update w_task
         set state = 55
         where id = #{id}
-        where state &lt; 55
+        and state &lt; 55
     </update>
     <delete id="cancelBywaybillId">
         update w_task

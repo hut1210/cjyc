@@ -19,11 +19,11 @@ public class UnLoadTaskDto {
     @NotNull(message = "用户ID不能为空")
     @ApiModelProperty(value = "用户Id",required = true)
     private Long loginId;
-    @ApiModelProperty(value = "(不用传)")
+    @ApiModelProperty(hidden = true)
     private String loginName;
-    @ApiModelProperty(value = "(不用传)")
+    @ApiModelProperty(hidden = true)
     private String loginPhone;
-    @ApiModelProperty(value = "(不用传)")
+    @ApiModelProperty(hidden = true)
     private UserTypeEnum loginType;
 
     @NotNull(message = "taskId不能为空")

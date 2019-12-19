@@ -383,7 +383,6 @@
         select
         (case
         when wc.state = 0 then '待指派'
-        when wc.state = 2 then '已指派'
         when wc.state = 5 then '待装车'
         when wc.state = 15 then '待装车确认'
         when wc.state = 45 then '已装车'
@@ -516,7 +515,7 @@
         </where>
     </select>
 
-    <select id="findVoByType" resultType="com.cjyc.common.model.vo.web.waybill.WaybillCarVo">
+    <select id="findVoByType" resultType="com.cjyc.common.model.vo.web.waybill.WaybillCarTransportVo">
         select
             (case
             when wc.state &lt;= 15 then '未运输'
@@ -527,7 +526,6 @@
             w.carrier_id as carrierId,
             w.carrier_type as carrierType,
             w.carrier_name as carrierName,
-            w.create_time as createTime,
             w.create_user as createUser,
             w.create_user_id as createUserId,
             t.driver_name as driverName,

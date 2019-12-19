@@ -40,7 +40,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.HashSet;
@@ -96,7 +95,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
      */
     @Override
     public String getTaskNo(String waybillNo) {
-        String taskNo = null;
+        String taskNo;
         String lockKey = RedisKeys.getNewTaskNoKey(waybillNo);
         if (!redisLock.lock(lockKey, 30000, 100, 300)) {
             throw new ServerException("获取任务编号失败");
@@ -212,10 +211,11 @@ public class CsTaskServiceImpl implements ICsTaskService {
             if (driver.getBusinessState() != BizStateEnum.BUSINESS.code) {
                 return BaseResultUtil.fail("司机不在运营中");
             }
-
-            /*if(){
-
-            }*/
+            //验证司机运力信息
+            VehicleRunning vr = vehicleRunningDao.findByDriverId(driverId);
+            if(vr == null || vr.getState() != 1){
+                return BaseResultUtil.fail("司机尚未绑定车牌号");
+            }
 
             Task task = new Task();
             //计算任务编号
@@ -286,9 +286,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
         if (task == null) {
             return BaseResultUtil.fail("任务不存在");
         }
-        if (StringUtils.isBlank(task.getVehiclePlateNo())) {
-            return BaseResultUtil.fail("请先完善运力车牌号");
-        }
+        //TODO 验证司机是否匹配
         //验证运单
         Waybill waybill = waybillDao.selectById(task.getWaybillId());
         if (waybill == null) {
@@ -312,24 +310,29 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 failCarNoSet.add(new FailResultReasonVo(waybillCar.getOrderCarId(), "运单车辆已经装过车"));
                 continue;
             }
+
             //验证车辆当前所在地是否与出发区县匹配
             OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
             if (orderCar == null) {
-                failCarNoSet.add(new FailResultReasonVo(waybillCar.getOrderCarNo(), "订单车辆不存在"));
-                continue;
+                throw new ParameterException("订单车辆不存在");
+                /*failCarNoSet.add(new FailResultReasonVo(waybillCar.getOrderCarNo(), "订单车辆不存在"));
+                continue;*/
             }
             if (!waybillCar.getStartAreaCode().equals(orderCar.getNowAreaCode())) {
-                failCarNoSet.add(new FailResultReasonVo(waybillCar.getOrderCarNo(), "订单车辆区县范围内"));
+                //failCarNoSet.add(new FailResultReasonVo(waybillCar.getOrderCarNo(), "订单车辆区县范围内"));
+                throw new ParameterException("订单车辆{}区县范围内", orderCar.getNo());
             }
 
             //验证运单车辆信息是否完全
             if (!validateOrderCarInfo(orderCar)) {
-                failCarNoSet.add(new FailResultReasonVo(waybillCar.getOrderCarNo(), "订单车辆信息不完整"));
-                continue;
+                /*failCarNoSet.add(new FailResultReasonVo(waybillCar.getOrderCarNo(), "订单车辆信息不完整"));
+                continue;*/
+                throw new ParameterException("订单车辆{}信息不完整", orderCar.getNo());
             }
             if (!validateWaybillCarInfo(waybillCar)) {
-                failCarNoSet.add(new FailResultReasonVo(waybillCar.getOrderCarNo(), "运单车辆信息不完整"));
-                continue;
+                /*failCarNoSet.add(new FailResultReasonVo(waybillCar.getOrderCarNo(), "运单车辆信息不完整"));
+                continue;*/
+                throw new ParameterException("运单车辆{}信息不完整", orderCar.getNo());
             }
 
             //运单和车辆状态
@@ -366,20 +369,14 @@ public class CsTaskServiceImpl implements ICsTaskService {
             successSet.add(orderCar.getNo());
             count++;
         }
-
         //更新订单状态
         if (!CollectionUtils.isEmpty(orderIdSet)) {
             orderDao.updateStateForLoad(OrderStateEnum.TRANSPORTING.code, orderIdSet);
         }
-
-        //更新任务状态
-        if(task.getState() < TaskStateEnum.TRANSPORTING.code){
-            taskDao.updateForLoad(task.getId());
-        }
+        taskDao.updateForLoad(task.getId());
         //更新运单状态
-        if(waybill.getState() < WaybillStateEnum.TRANSPORTING.code){
-            waybillDao.updateForLoad(waybill.getId());
-        }
+        waybillDao.updateForLoad(waybill.getId());
+
         resultReasonVo.setSuccessList(successSet);
         resultReasonVo.setFailList(failCarNoSet);
         return BaseResultUtil.success(resultReasonVo);

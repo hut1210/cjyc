@@ -18,7 +18,6 @@ import com.cjyc.common.model.exception.ServerException;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
-import com.cjyc.common.model.util.StringUtil;
 import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.service.*;
@@ -31,7 +30,6 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.text.Collator;
 import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.List;
@@ -257,6 +255,9 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                         (waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code ? WaybillCarStateEnum.LOADED.code : WaybillCarStateEnum.WAIT_LOAD.code)
                         : WaybillCarStateEnum.WAIT_ALLOT.code);
 
+                if(waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code){
+                    waybillCar.setLoadTime(currentMillisTime);
+                }
                 waybillCar.setCreateTime(currentMillisTime);
                 waybillCarDao.insert(waybillCar);
 
@@ -280,7 +281,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                     task.setDriverName(driverName);
                     task.setDriverPhone(driverPhone);
                     //添加运力信息
-                    if (dto.getCarrierType() == WaybillCarrierTypeEnum.LOCAL_ADMIN.code) {
+                    if (dto.getCarrierType() == WaybillCarrierTypeEnum.LOCAL_CONSIGN.code) {
                         VehicleRunning vehicleRunning = vehicleRunningDao.findByDriverId(driverId);
                         if (vehicleRunning != null) {
                             task.setVehicleRunningId(vehicleRunning.getId());
@@ -388,6 +389,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
      */
     @Override
     public ResultVo updateLocal(UpdateLocalDto paramsDto) {
+        long currentTimeMillis = System.currentTimeMillis();
         Set<String> lockSet = new HashSet<>();
         try {
             String orderCarNo = paramsDto.getCarDto().getOrderCarNo();
@@ -488,6 +490,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             waybillCar.setWaybillId(waybill.getId());
             waybillCar.setWaybillNo(waybill.getNo());
             waybillCar.setFreightFee(waybill.getFreightFee());
+
             //城市信息赋值
             fillWaybillCarCityInfo(waybillCar);
             //业务中心信息赋值
@@ -501,6 +504,10 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             waybillCar.setState(isOneDriver ?
                     (waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code ? WaybillCarStateEnum.LOADED.code : WaybillCarStateEnum.WAIT_LOAD.code)
                     : WaybillCarStateEnum.WAIT_ALLOT.code);
+            if(waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code){
+                waybillCar.setLoadTime(currentTimeMillis);
+            }
+            waybillCar.setCreateTime(currentTimeMillis);
             //TODO 计算预计到达时间，计算线路是否存在
             waybillCarDao.updateById(waybillCar);
 
@@ -523,7 +530,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                     task.setDriverPhone(driverPhone);
                     task.setDriverId(driverId);
                     //添加运力信息
-                    if (paramsDto.getCarrierType() == WaybillCarrierTypeEnum.TRUNK_INDIVIDUAL.code) {
+                    if (paramsDto.getCarrierType() == WaybillCarrierTypeEnum.LOCAL_CONSIGN.code) {
                         VehicleRunning vehicleRunning = vehicleRunningDao.findByDriverId(driverId);
                         if (vehicleRunning != null) {
                             task.setVehicleRunningId(vehicleRunning.getId());
@@ -533,7 +540,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                     task.setRemark(paramsDto.getRemark());
                     task.setCreateUser(paramsDto.getLoginName());
                     task.setCreateUserId(paramsDto.getLoginId());
-                    task.setCreateTime(System.currentTimeMillis());
+                    task.setCreateTime(currentTimeMillis);
                     taskDao.insert(task);
                 }
             }
