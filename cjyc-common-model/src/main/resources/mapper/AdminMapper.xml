@@ -90,7 +90,6 @@
                 and  admin.store_id = #{storeId}
             </if>
             and admin.state = 2
-            AND admin.type = 1
         </where>
     </select>
     <select id="findByPhone" resultType="com.cjyc.common.model.entity.Admin">

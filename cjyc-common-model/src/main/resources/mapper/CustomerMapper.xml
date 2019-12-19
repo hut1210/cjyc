@@ -161,6 +161,7 @@
             ccp.settle_type AS settleType,
             ccp.settle_period AS settlePeriod,
             sbcb.description AS description,
+            cc.social_credit_code AS socialCreditCode,
             cc.source AS source,
             cc.create_time as registerTime,
             ba.NAME AS createUserName

@@ -23,4 +23,5 @@ public class TypeSalesmanDto extends BasePageDto {
 
     @ApiModelProperty("所属业务中心")
     private Long storeId;
+
 }

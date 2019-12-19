@@ -59,6 +59,9 @@ public class CustomerPartnerVo implements Serializable {
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal totalAmount;
 
+    @ApiModelProperty("统一社会信用代码")
+    private String socialCreditCode;
+
     @ApiModelProperty("备注")
     private String description;
 
