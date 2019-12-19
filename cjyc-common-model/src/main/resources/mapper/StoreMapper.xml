@@ -136,7 +136,7 @@
         <include refid="Base_Column_List"/>
         from s_store
         <where>
-            and s.is_delete = 0
+            and is_delete = 0
             <if test="storeName != null and storeName != ''">
                 and name like concat('%', #{storeName},'%')
             </if>
