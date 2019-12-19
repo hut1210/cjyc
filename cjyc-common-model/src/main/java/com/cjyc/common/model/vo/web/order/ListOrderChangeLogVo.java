@@ -10,4 +10,6 @@ import java.math.BigDecimal;
 public class ListOrderChangeLogVo extends OrderChangeLog {
     @ApiModelProperty("退款金额")
     private BigDecimal totalfee;
+    @ApiModelProperty("退款金额")
+    private BigDecimal payType;
 }

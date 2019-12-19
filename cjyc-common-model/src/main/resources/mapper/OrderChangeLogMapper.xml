@@ -29,6 +29,7 @@
     <select id="findList" resultType="com.cjyc.common.model.vo.web.order.ListOrderChangeLogVo">
         select
         o.total_fee,
+        o.pay_type as payType,
         ocl.*
         from w_order o
         join w_order_change_log ocl on ocl.order_id = o.id
