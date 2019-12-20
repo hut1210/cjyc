@@ -45,7 +45,7 @@ spring:
       maximum-pool-size: 15
       auto-commit: true
       idle-timeout: 30000
-      pool-name: CjycHikari
+      pool-name: SalemanHikari
       max-lifetime: 1800000
       connection-timeout: 30000
       #connection-test-query: select 1
@@ -99,7 +99,7 @@ cjyc:
     description: 韵车项目接口文档
     version: 2.0.1
     basePackage: com.cjyc.salesman.api.controller
-    groupName: CJYC-Salesman-Api
+    groupName: Salesman
     usePathMapping: false
   salesman:
     clientId: "1186108891007336449"

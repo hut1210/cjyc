@@ -41,7 +41,7 @@ spring:
       maximum-pool-size: 15
       auto-commit: true
       idle-timeout: 30000
-      pool-name: YuncheHikari
+      pool-name: CustomerHikari
       max-lifetime: 1800000
       connection-timeout: 30000
       #connection-test-query: select 1
@@ -118,7 +118,7 @@ cjyc:
     description: 韵车项目接口文档
     version: 2.0.1
     basePackage: com.cjyc.customer.api.controller
-    groupName: CJYC-Customer-Api
+    groupName: Customer
     usePathMapping: false
 
   #短信

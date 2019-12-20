@@ -51,7 +51,7 @@ spring:
       maximum-pool-size: 15
       auto-commit: true
       idle-timeout: 30000
-      pool-name: CjycHikari
+      pool-name: WebHikari
       max-lifetime: 1800000
       connection-timeout: 30000
       #connection-test-query: select 1
@@ -132,7 +132,7 @@ cjyc:
     description: 长久韵车web端api接口文档
     version: 2.0.1
     basePackage: com.cjyc.web.api.controller
-    groupName: CJYC-Web-Api
+    groupName: Web
     usePathMapping: false
 
   #短信

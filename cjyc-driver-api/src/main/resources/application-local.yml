@@ -42,7 +42,7 @@ spring:
       maximum-pool-size: 15
       auto-commit: true
       idle-timeout: 30000
-      pool-name: CjycHikari
+      pool-name: DriverHikari
       max-lifetime: 1800000
       connection-timeout: 30000
       #connection-test-query: select 1
@@ -117,7 +117,7 @@ cjyc:
     description: 长久韵车司机端api接口文档
     version: 2.0.1
     basePackage: com.cjyc.driver.api.controller
-    groupName: CJYC-DriverDto-Api
+    groupName: Driver
     usePathMapping: false
 
   #短信
