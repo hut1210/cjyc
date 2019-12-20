@@ -120,6 +120,7 @@
             dd.taxi_licence_front_img AS taxiLicenceFrontImg,
             dd.qualifi_cert_front_img AS qualifiCertFrontImg,
             dd.source AS source,
+            dd.business_state AS businessState,
             dcdc.state AS state,
             dvr.running_state AS runningState,
             dd.check_time as operatTime,
@@ -492,7 +493,7 @@
             LEFT JOIN d_vehicle_running run ON d.id = run.driver_id
         <where>
             con.state = ${@com.cjyc.common.model.enums.CommonStateEnum@CHECKED.code}
-            and con.carrier_id=#{carrierId}
+            and con.carrier_id=#{carrierId} and run.driver_id is not null
             <if test="keyword != null and keyword.trim() != ''">
                 and (
                 d.real_name like CONCAT('%',#{keyword},'%')
@@ -509,7 +510,7 @@
             SELECT
                 dv.id AS vehicleId,
                 dv.plate_no AS plateNo,
-                dvr.carry_car_num AS carryCarNum,
+                dv.default_carry_num AS carryCarNum,
                 dvr.occupied_car_num AS occupiedCarNum,
                 dd.id AS driverId,
                 dd.real_name AS realName,

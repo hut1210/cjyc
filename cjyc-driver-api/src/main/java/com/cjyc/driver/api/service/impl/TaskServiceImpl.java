@@ -155,7 +155,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                 BeanUtils.copyProperties(waybillCar,carDetailVo);
 
                 // 获取运单车辆费用
-                freightFee = freightFee.add(waybillCar.getFreightFee());
+                freightFee = freightFee.add(waybillCar.getFreightFee()==null?new BigDecimal(0):waybillCar.getFreightFee());
 
                 // 如果指导路线为空，且运单是提车或者送车，将始发成和结束城市用“-”拼接
                 fillGuideLine(taskDetailVo,waybillCar);
@@ -217,7 +217,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                 BeanUtils.copyProperties(waybillCar,carDetailVo);
 
                 // 运费
-                freightFee = freightFee.add(waybillCar.getFreightFee());
+                freightFee = freightFee.add(waybillCar.getFreightFee()==null?new BigDecimal(0):waybillCar.getFreightFee());
 
                 // 如果指导路线为空，且运单是提车或者送车，将始发成和结束城市用“-”拼接
                 fillGuideLine(taskDetailVo,waybillCar);

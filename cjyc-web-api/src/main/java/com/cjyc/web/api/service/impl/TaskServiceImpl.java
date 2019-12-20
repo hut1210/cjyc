@@ -109,4 +109,9 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
         return BaseResultUtil.success(pageInfo);
     }
 
+    @Override
+    public ResultVo getTaskPage(TaskPageDto dto) {
+        return null;
+    }
+
 }
