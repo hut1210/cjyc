@@ -474,6 +474,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
             return BaseResultUtil.fail("没有数据权限");
         }
+        // 拼接业务中心ID
+
         paramsDto.setBizScope(bizScope.getCode() == 0 ? null : bizScope.getStoreIds());
 
         PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
