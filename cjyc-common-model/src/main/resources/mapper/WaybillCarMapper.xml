@@ -851,12 +851,10 @@
         (shell.expectStartTime + l.days * 24 * 60 * 60 * 1000) as expectEndTime
         from (
             select
-            oc.id as id,
             oc.brand as brand,
             oc.model as model,
             oc.plate_no as plateNo,
             oc.vin as vin,
-            oc.state as state,
             oc.id as orderCarId,
             oc.no as orderCarNo,
             (case when temp.id is not null then temp.end_province else o.start_province end) as startProvince,

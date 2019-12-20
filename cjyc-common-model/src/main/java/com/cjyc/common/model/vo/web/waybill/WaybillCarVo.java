@@ -1,5 +1,6 @@
 package com.cjyc.common.model.vo.web.waybill;
 
+import com.cjyc.common.model.util.BigDecimalSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
@@ -26,6 +27,7 @@ public class WaybillCarVo {
     private String vin;
 
     @ApiModelProperty(value = "价卡运费")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal lineFreightFee;
 
 
@@ -45,6 +47,7 @@ public class WaybillCarVo {
     private String orderCarNo;
 
     @ApiModelProperty(value = "运费")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal freightFee;
 
     @ApiModelProperty(value = "省")
