@@ -122,12 +122,8 @@ public class CsVehicleServiceImpl implements ICsVehicleService {
     public void saveTransport(CarrierVehicleDto dto, AppCarrierVehicleDto appDto, Vehicle veh) {
         //新增运力
         VehicleRunning vr = new VehicleRunning();
-        vr.setVehicleId(veh.getId());
-        vr.setRunningState(VehicleRunStateEnum.WAY.code);
-        vr.setCreateTime(NOW);
         //新增车辆与司机关系
         DriverVehicleCon dvc = new DriverVehicleCon();
-        dvc.setVehicleId(veh.getId());
         if(dto != null){
             BeanUtils.copyProperties(dto,vr);
             vr.setCarryCarNum(dto.getDefaultCarryNum());
@@ -137,7 +133,11 @@ public class CsVehicleServiceImpl implements ICsVehicleService {
             vr.setCarryCarNum(appDto.getDefaultCarryNum());
             dvc.setDriverId(appDto.getDriverId());
         }
+        vr.setVehicleId(veh.getId());
+        vr.setRunningState(VehicleRunStateEnum.WAY.code);
+        vr.setCreateTime(NOW);
         vehicleRunningDao.insert(vr);
+        dvc.setVehicleId(veh.getId());
         driverVehicleConDao.insert(dvc);
     }
 
