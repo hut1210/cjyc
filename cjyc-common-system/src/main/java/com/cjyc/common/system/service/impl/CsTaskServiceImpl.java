@@ -121,11 +121,13 @@ public class CsTaskServiceImpl implements ICsTaskService {
             return BaseResultUtil.fail("运单车辆不存在");
         }
         List<String> loadPhotoImgs = reqDto.getLoadPhotoImgs();
-        if (loadPhotoImgs.size() < Constant.MIN_LOAD_PHOTO_NUM) {
-            return BaseResultUtil.fail("照片数量不足8张");
-        }
-        if (loadPhotoImgs.size() > Constant.MAX_LOAD_PHOTO_NUM) {
-            return BaseResultUtil.fail("照片数量不能超过20张");
+        if(!CollectionUtils.isEmpty(loadPhotoImgs)){
+            if (loadPhotoImgs.size() < Constant.MIN_LOAD_PHOTO_NUM) {
+                return BaseResultUtil.fail("照片数量不足8张");
+            }
+            if (loadPhotoImgs.size() > Constant.MAX_LOAD_PHOTO_NUM) {
+                return BaseResultUtil.fail("照片数量不能超过20张");
+            }
         }
         //更新车辆信息
         OrderCar orderCar = new OrderCar();
@@ -136,7 +138,9 @@ public class CsTaskServiceImpl implements ICsTaskService {
         orderCar.setPlateNo(reqDto.getPlateNo());
         orderCarDao.updateById(orderCar);
         //更新运单车辆信息
-        waybillCarDao.updateForReplenishInfo(waybillCar.getId(), Joiner.on(",").join(loadPhotoImgs));
+        if(!CollectionUtils.isEmpty(loadPhotoImgs)){
+            waybillCarDao.updateForReplenishInfo(waybillCar.getId(), Joiner.on(",").join(loadPhotoImgs));
+        }
         return BaseResultUtil.success();
     }
 
@@ -298,11 +302,11 @@ public class CsTaskServiceImpl implements ICsTaskService {
 
             //验证运单车辆信息是否完全
             if (!validateOrderCarInfo(orderCar)) {
-                throw new ParameterException("订单车辆{}信息不完整", orderCar.getNo());
+                throw new ParameterException("订单车辆{0}信息不完整", orderCar.getNo());
             }
-            if (!validateWaybillCarInfo(waybillCar)) {
-                throw new ParameterException("运单车辆{}信息不完整", orderCar.getNo());
-            }
+/*            if (!validateWaybillCarInfo(waybillCar)) {
+                throw new ParameterException("运单车辆{0}信息不完整", orderCar.getNo());
+            }*/
 
             //运单和车辆状态
             int waybillCarNewState = WaybillCarStateEnum.WAIT_LOAD_CONFIRM.code;
