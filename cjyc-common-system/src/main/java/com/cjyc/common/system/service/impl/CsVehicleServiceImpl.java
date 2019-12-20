@@ -136,8 +136,8 @@ public class CsVehicleServiceImpl implements ICsVehicleService {
         vr.setVehicleId(veh.getId());
         vr.setRunningState(VehicleRunStateEnum.WAY.code);
         vr.setCreateTime(NOW);
-        vehicleRunningDao.insert(vr);
         dvc.setVehicleId(veh.getId());
+        vehicleRunningDao.insert(vr);
         driverVehicleConDao.insert(dvc);
     }
 
