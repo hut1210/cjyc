@@ -1,5 +1,7 @@
 package com.cjyc.common.model.vo.web.finance;
 
+import com.cjyc.common.model.util.BigDecimalSerizlizer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -18,12 +20,15 @@ public class WaitInvoiceVo implements Serializable {
     @ApiModelProperty(value = "结算流水号")
     private  String serialNumber;
 
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     @ApiModelProperty(value = "应收运费")
     private BigDecimal freightReceivable;
 
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     @ApiModelProperty(value = "结算金额（开票金额）")
     private BigDecimal amount;
 
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     @ApiModelProperty(value = "差额")
     private BigDecimal difference;
 

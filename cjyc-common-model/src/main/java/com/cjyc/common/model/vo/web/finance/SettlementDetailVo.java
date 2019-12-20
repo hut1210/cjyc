@@ -2,6 +2,8 @@ package com.cjyc.common.model.vo.web.finance;
 
 import com.cjyc.common.model.entity.CustomerInvoice;
 import com.cjyc.common.model.entity.InvoiceReceipt;
+import com.cjyc.common.model.util.BigDecimalSerizlizer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -18,9 +20,11 @@ public class SettlementDetailVo implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     @ApiModelProperty(value = "应收总运费")
     private BigDecimal freightFee;
 
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     @ApiModelProperty(value = "结算金额")
     private BigDecimal amount;
 

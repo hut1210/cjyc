@@ -39,4 +39,6 @@ public interface ITradeBillDao extends BaseMapper<TradeBill> {
     List<String> getOrderCarNosByTaskId(Long taskId);
 
     BigDecimal getAmountByOrderCarNos(@Param("orderCarNos")List<String> orderCarNos);
+
+    List<String> getOrderCarNosByTaskCarIds(@Param("taskCarIdList")List<Long> taskCarIdList);
 }

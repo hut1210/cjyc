@@ -1,10 +1,7 @@
 package com.cjyc.common.system.service.impl;
 
 import com.Pingxx.model.OrderModel;
-import com.cjyc.common.model.dao.ICarrierDao;
-import com.cjyc.common.model.dao.IOrderCarDao;
-import com.cjyc.common.model.dao.IOrderDao;
-import com.cjyc.common.model.dao.IWaybillDao;
+import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.customer.pingxx.PrePayDto;
 import com.cjyc.common.model.dto.customer.pingxx.SweepCodeDto;
 import com.cjyc.common.model.dto.customer.pingxx.ValidateSweepCodeDto;
@@ -23,6 +20,7 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.ValidateReceiptCarPayVo;
 import com.cjyc.common.model.vo.customer.order.ValidateSweepCodePayVo;
 import com.cjyc.common.model.vo.web.carrier.BaseCarrierVo;
+import com.cjyc.common.model.vo.web.task.TaskVo;
 import com.cjyc.common.system.config.PingProperty;
 import com.cjyc.common.system.service.ICsPingPayService;
 import com.cjyc.common.system.service.ICsTransactionService;
@@ -76,6 +74,9 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
 
     @Resource
     private ICarrierDao carrierDao;
+
+    @Resource
+    private ITaskDao taskDao;
 
     @Override
     public Charge sweepDriveCode(SweepCodeDto sweepCodeDto) throws RateLimitException, APIException, ChannelException, InvalidRequestException,
@@ -173,7 +174,25 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
     public ResultVo<ValidateSweepCodePayVo> validateCarPayState(ValidateSweepCodeDto validateSweepCodeDto, boolean addLock) {
         Long taskId = validateSweepCodeDto.getTaskId();
 
-        List<String> orderCarNosList = cStransactionService.getOrderCarNosByTaskId(taskId);
+        if(taskId==null){
+            return BaseResultUtil.fail("缺少参数taskId");
+        }else{
+            TaskVo taskVo = taskDao.findVoById(taskId);
+            if(taskVo == null) {
+                return BaseResultUtil.fail("任务不存在");
+            }
+
+            Waybill waybill = waybillDao.findByNo(taskVo.getWaybillNo());
+            if(waybill == null ){
+                return BaseResultUtil.fail("运单不存在");
+            }
+        }
+
+        List<Long> taskCarIdList = validateSweepCodeDto.getTaskCarIdList();
+        List<String> orderCarNosList = new ArrayList<>();
+        if(taskCarIdList!=null){
+            orderCarNosList = cStransactionService.getOrderCarNosByTaskCarIds(taskCarIdList);
+        }
         List<com.cjyc.common.model.entity.Order> list = orderDao.findListByCarNos(orderCarNosList);
         if (CollectionUtils.isEmpty(list)) {
             return BaseResultUtil.fail("订单信息丢失");
@@ -251,6 +270,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             resVo.setAmount(amount);
             resVo.setIsNeedPay(isNeedPay);
             resVo.setTaskId(taskId);
+            resVo.setTaskCarIds(taskCarIdList);
             return BaseResultUtil.success(resVo);
         } finally {
             if(addLock && isNeedPay == 0){

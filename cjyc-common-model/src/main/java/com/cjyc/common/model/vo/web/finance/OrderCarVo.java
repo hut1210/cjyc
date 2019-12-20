@@ -1,5 +1,7 @@
 package com.cjyc.common.model.vo.web.finance;
 
+import com.cjyc.common.model.util.BigDecimalSerizlizer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -43,15 +45,25 @@ public class OrderCarVo implements Serializable {
     @ApiModelProperty(value = "结算类型")
     private String  payMode;
     @ApiModelProperty(value = "订单分摊金额")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal feeShare;
+
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     @ApiModelProperty(value = "应收运费")
     private BigDecimal freightReceivable;
+
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     @ApiModelProperty(value = "开票金额")
     private BigDecimal invoiceFee;
+
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     @ApiModelProperty(value = "差额")
     private BigDecimal Difference;
+
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     @ApiModelProperty(value = "实收金额")
     private BigDecimal amountReceived;
+
     @ApiModelProperty(value = "收款时间")
     private String receivedTime;
 

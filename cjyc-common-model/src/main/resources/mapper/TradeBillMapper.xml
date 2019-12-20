@@ -114,4 +114,13 @@
         left join w_waybill_car wwc on wt.waybill_id = wwc.waybill_id
         where wt.id=#{taskId}
     </select>
+    <select id="getOrderCarNosByTaskCarIds" parameterType="java.util.List" resultType="java.lang.String">
+        select wwc.order_car_no
+        from w_task_car wtc
+        left join w_waybill_car wwc on wtc.waybill_car_id = wwc.id
+        where wtc.id in
+        <foreach collection="taskCarIdList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
 </mapper>

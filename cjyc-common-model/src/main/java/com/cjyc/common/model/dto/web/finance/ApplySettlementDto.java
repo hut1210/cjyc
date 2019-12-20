@@ -1,5 +1,7 @@
 package com.cjyc.common.model.dto.web.finance;
 
+import com.cjyc.common.model.util.BigDecimalSerizlizer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import lombok.Data;
@@ -22,9 +24,11 @@ public class ApplySettlementDto implements Serializable {
     @ApiModelProperty(value = "客户Id")
     private Long customerId;
 
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     @ApiModelProperty(value = "应收总运费")
     private BigDecimal freightFee;
 
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     @ApiModelProperty(value = "结算金额（开票金额）")
     private BigDecimal amount;
 

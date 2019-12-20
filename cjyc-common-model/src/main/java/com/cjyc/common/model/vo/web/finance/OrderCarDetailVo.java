@@ -1,5 +1,7 @@
 package com.cjyc.common.model.vo.web.finance;
 
+import com.cjyc.common.model.util.BigDecimalSerizlizer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -28,8 +30,11 @@ public class OrderCarDetailVo implements Serializable {
     @ApiModelProperty(value = "vin码")
     private String vin;
 
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     @ApiModelProperty(value = "应收运费")
     private BigDecimal freightReceivable;
+
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     @ApiModelProperty(value = "开票金额")
     private BigDecimal invoiceFee;
 

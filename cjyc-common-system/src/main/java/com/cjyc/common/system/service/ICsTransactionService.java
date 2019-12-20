@@ -27,4 +27,6 @@ public interface ICsTransactionService {
     int save(Object obj);
 
     List<String> getOrderCarNosByTaskId(Long taskId);
+
+    List<String> getOrderCarNosByTaskCarIds(List<Long> taskCarIdList);
 }

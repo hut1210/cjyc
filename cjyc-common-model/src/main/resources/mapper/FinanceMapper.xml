@@ -195,7 +195,7 @@
     <select id="getPaymentList" parameterType="com.cjyc.common.model.dto.web.finance.FinanceQueryDto"
             resultType="com.cjyc.common.model.vo.web.finance.PaymentVo">
         select woc.no,woc.vin,woc.brand,woc.model,
-        cc.id,cc.type,
+        cc.id,cc.type,zcity.name as largeArea,
         if(cc.pay_mode=0,'时付','账期') as payModeName,woc.total_fee as freightReceivable,
         woc.total_fee as freightPay,
         woc.order_no as orderNo,
@@ -210,6 +210,8 @@
         left join c_customer cc on cc.id = wo.customer_id
         left join w_waybill_car wwc on wwc.order_car_no = woc.no
         left join w_task wt on wt.waybill_no = wwc.waybill_no
+        left join zcity zc on zc.code = wo.start_province_code
+        left join zcity zcity on zcity.code = zc.parent_code
 
         where cc.pay_mode = 0
         <if test="no != null and no.trim() != ''">
@@ -312,22 +314,23 @@
         select ww.no as wayBillNo,ww.type as wayBillType
         from w_waybill ww
 
-        where 1=1
-        <if test="waybillNo != null and waybillNo.trim() != ''">
-            and ww.no like concat('%',#{waybillNo},'%')
-        </if>
-        <if test="wayBillType!= null">
-            and ww.type = #{wayBillType}
-        </if>
-        <if test="collectMan !=null and collectMan.trim() !=''">
+        <where>
+            <if test="wayBillNo != null and wayBillNo.trim() != ''">
+                and ww.no like concat('%',#{wayBillNo},'%')
+            </if>
+            <if test="wayBillType!= null">
+                and ww.type = #{wayBillType}
+            </if>
+            <!--<if test="collectMan !=null and collectMan.trim() !=''">
 
-        </if>
-        <if test="collectManPhone !=null and collectManPhone.trim() !=''">
+            </if>
+            <if test="collectManPhone !=null and collectManPhone.trim() !=''">
 
-        </if>
-        <if test="returnStatus !=null and returnStatus.trim() !=''">
+            </if>
+            <if test="returnStatus !=null and returnStatus.trim() !=''">
 
-        </if>
+            </if>-->
+        </where>
 
     </select>
 </mapper>

@@ -5,7 +5,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 
 /**
  * @Author: Hut
@@ -19,7 +18,7 @@ public class CollectReceiveQueryDto extends BasePageDto implements Serializable 
     private String wayBillNo;
 
     @ApiModelProperty(value = "运单类型")
-    private int wayBillType;
+    private Integer wayBillType;
 
     @ApiModelProperty(value = "代收款人")
     private String collectMan;

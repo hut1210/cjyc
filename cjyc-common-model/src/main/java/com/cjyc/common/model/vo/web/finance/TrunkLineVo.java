@@ -1,5 +1,7 @@
 package com.cjyc.common.model.vo.web.finance;
 
+import com.cjyc.common.model.util.BigDecimalSerizlizer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -20,6 +22,7 @@ public class TrunkLineVo implements Serializable {
     @ApiModelProperty(value = "结算类型")
     private String  settleType;
     @ApiModelProperty(value = "应付运费")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal freightFee;
     @ApiModelProperty(value = "付款时间")
     private Long payTime;

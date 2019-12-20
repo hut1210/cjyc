@@ -90,6 +90,11 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
     }
 
     @Override
+    public List<String> getOrderCarNosByTaskCarIds(List<Long> taskCarIdList) {
+        return tradeBillDao.getOrderCarNosByTaskCarIds(taskCarIdList);
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveTransactions(Object obj, String state) {
         TradeBill tb;
