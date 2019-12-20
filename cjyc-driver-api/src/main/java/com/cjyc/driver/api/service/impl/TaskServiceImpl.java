@@ -1,5 +1,6 @@
 package com.cjyc.driver.api.service.impl;
 
+import cn.hutool.core.text.StrBuilder;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -216,6 +217,9 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                 carDetailVo = new CarDetailVo();
                 BeanUtils.copyProperties(waybillCar,carDetailVo);
 
+                // 查询除了当前车辆运单的历史车辆运单图片
+                getHistoryImg(carDetailVo, waybillCar);
+
                 // 运费
                 freightFee = freightFee.add(waybillCar.getFreightFee()==null?new BigDecimal(0):waybillCar.getFreightFee());
 
@@ -239,6 +243,28 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
         taskDetailVo.setFreightFee(freightFee);
         taskDetailVo.setCarDetailVoList(carDetailVoList);
         return BaseResultUtil.success(taskDetailVo);
+    }
+
+    private void getHistoryImg(CarDetailVo carDetailVo, WaybillCar waybillCar) {
+        List<WaybillCar> waybillCarList = waybillCarDao.selectList(new QueryWrapper<WaybillCar>().lambda()
+                .eq(WaybillCar::getOrderCarNo, waybillCar.getOrderCarNo())
+                .ne(WaybillCar::getId, waybillCar.getId()));
+        if (!CollectionUtils.isEmpty(waybillCarList)) {
+            StrBuilder sb = new StrBuilder();
+            for (WaybillCar car : waybillCarList) {
+                String loadPhotoImg = car.getLoadPhotoImg();
+                if (sb.length() > 0 && !StringUtils.isEmpty(loadPhotoImg)) {
+                    sb.append(",");
+                }
+                sb.append(loadPhotoImg);
+                String unloadPhotoImg = car.getUnloadPhotoImg();
+                if (sb.length() > 0 && !StringUtils.isEmpty(unloadPhotoImg)) {
+                    sb.append(",");
+                }
+                sb.append(unloadPhotoImg);
+            }
+            carDetailVo.setHistoryLoadPhotoImg(sb.toString());
+        }
     }
 
 }
