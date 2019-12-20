@@ -55,6 +55,7 @@ public class MyDriverVo implements Serializable {
     private Integer carNum;
 
     @ApiModelProperty("车辆id")
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long vehicleId;
 
     @ApiModelProperty("车牌号")

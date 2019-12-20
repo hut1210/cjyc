@@ -76,6 +76,9 @@ public class DriverVo implements Serializable {
     @ApiModelProperty("运行状态：0空闲，1在途 2繁忙")
     private Integer runningState;
 
+    @ApiModelProperty("营运状态：0营运中(空闲)，1停运中(繁忙)")
+    private Integer businessState;
+
     @ApiModelProperty("总运量(台)")
     private Integer carNum;
 
