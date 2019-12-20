@@ -128,7 +128,7 @@
         <where>
             and is_delete = 0
             <if test="storeName != null and storeName != ''">
-                name like concat('%', #{storeName},'%')
+               and name like concat('%', #{storeName},'%')
             </if>
         </where>
     </select>
