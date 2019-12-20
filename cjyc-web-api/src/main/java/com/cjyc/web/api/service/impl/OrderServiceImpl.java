@@ -489,17 +489,15 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
 
     private String getStoreIds(BizScope bizScope) {
         StringBuilder storeId = null;
-        if (bizScope.getCode() == 0) {
+        if (bizScope.getCode() == BizScopeEnum.CHINA.code) {
             return null;
         } else {
             storeId = new StringBuilder();
             for (Long id : bizScope.getStoreIds()) {
-                if (storeId.length() != 0) {
+                if (storeId.length() > 0) {
                     storeId.append(",");
-                    storeId.append(id);
-                } else {
-                    storeId.append(id);
                 }
+                storeId.append(id);
             }
             return storeId.toString();
         }

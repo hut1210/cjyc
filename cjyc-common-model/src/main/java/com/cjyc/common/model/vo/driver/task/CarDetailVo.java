@@ -52,6 +52,9 @@ public class CarDetailVo implements Serializable {
     @ApiModelProperty(value = "提车图片地址，逗号分隔")
     private String loadPhotoImg;
 
+    @ApiModelProperty(value = "历史图片地址，逗号分隔")
+    private String historyLoadPhotoImg;
+
     @ApiModelProperty(value = "交车图片地址，逗号分隔:已交付的运单")
     private String unloadPhotoImg;
 
@@ -73,6 +76,9 @@ public class CarDetailVo implements Serializable {
     @ApiModelProperty(value = "最后一次运输标识：0否，1是")
     private Boolean receiptFlag;
 
+    public String getHistoryLoadPhotoImg() {
+        return historyLoadPhotoImg == null ? "" : historyLoadPhotoImg;
+    }
     public Integer getWaybillCarState() {
         return waybillCarState == null ? -1 : waybillCarState;
     }

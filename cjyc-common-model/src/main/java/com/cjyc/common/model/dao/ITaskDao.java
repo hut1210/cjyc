@@ -7,14 +7,12 @@ import com.cjyc.common.model.dto.salesman.BaseSalesDto;
 import com.cjyc.common.model.dto.salesman.task.OutAndInStorageQueryDto;
 import com.cjyc.common.model.dto.salesman.task.TaskWaybillQueryDto;
 import com.cjyc.common.model.dto.web.task.CrTaskDto;
+import com.cjyc.common.model.dto.web.task.TaskPageDto;
 import com.cjyc.common.model.entity.Task;
 import com.cjyc.common.model.vo.driver.task.TaskBillVo;
 import com.cjyc.common.model.vo.salesman.mine.StockTaskVo;
 import com.cjyc.common.model.vo.salesman.task.TaskWaybillVo;
-import com.cjyc.common.model.vo.web.task.CrTaskVo;
-import com.cjyc.common.model.vo.web.task.DriverCarCountVo;
-import com.cjyc.common.model.vo.web.task.ListByWaybillTaskVo;
-import com.cjyc.common.model.vo.web.task.TaskVo;
+import com.cjyc.common.model.vo.web.task.*;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Collection;
@@ -120,4 +118,13 @@ public interface ITaskDao extends BaseMapper<Task> {
     List<DriverCarCountVo> findDriverCarCount(@Param("beforeStartDay") Long beforeStartDay,@Param("beforeEndDay") Long beforeEndDay);
 
     int updateForLoad(Long id);
+
+    /**
+     * 功能描述: 查询我的任务列表
+     * @author liuxingxiang
+     * @date 2019/12/20
+     * @param dto
+     * @return java.util.List<com.cjyc.common.model.vo.web.task.TaskPageVo>
+     */
+    List<TaskPageVo> selectMyTaskList(TaskPageDto dto);
 }

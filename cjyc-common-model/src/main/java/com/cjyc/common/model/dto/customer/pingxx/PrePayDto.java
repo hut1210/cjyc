@@ -9,7 +9,7 @@ public class PrePayDto {
     private String uid;
     @ApiModelProperty(value = "订单No")
     private String orderNo;
-    @ApiModelProperty(value = "支付渠道")
+    @ApiModelProperty(value = "支付渠道 微信：wx_pub_qr，支付宝：alipay_qr")
     private String channel;
 
     @ApiModelProperty(value = "IP（不用传）")

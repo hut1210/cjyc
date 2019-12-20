@@ -48,7 +48,7 @@ public class TaskController {
      */
     @ApiOperation(value = "查询任务分页列表")
     @PostMapping(value = "/getTaskPage")
-    public ResultVo<TaskPageVo> getTaskPage(@RequestBody TaskPageDto dto) {
+    public ResultVo<TaskPageVo> getTaskPage(@RequestBody @Validated TaskPageDto dto) {
         return taskService.getTaskPage(dto);
     }
 
