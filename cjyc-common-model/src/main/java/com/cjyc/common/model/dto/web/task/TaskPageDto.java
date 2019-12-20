@@ -20,4 +20,12 @@ public class TaskPageDto extends BasePageDto {
     @ApiModelProperty(value = "订单编号")
     private String orderNo;
 
+    @ApiModelProperty(value = "运单编号")
+    private String waybillNo;
+
+    @ApiModelProperty(value = "车辆编号")
+    private String orderCarNo;
+
+    @ApiModelProperty(value = "vin码")
+    private String vin;
 }

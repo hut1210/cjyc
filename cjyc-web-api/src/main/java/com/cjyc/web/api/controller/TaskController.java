@@ -10,6 +10,7 @@ import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.task.CrTaskVo;
 import com.cjyc.common.model.vo.web.task.ListByWaybillTaskVo;
+import com.cjyc.common.model.vo.web.task.TaskPageVo;
 import com.cjyc.common.model.vo.web.task.TaskVo;
 import com.cjyc.common.system.service.ICsAdminService;
 import com.cjyc.common.system.service.ICsDriverService;
@@ -47,7 +48,7 @@ public class TaskController {
      */
     @ApiOperation(value = "查询任务分页列表")
     @PostMapping(value = "/getTaskPage")
-    public ResultVo getTaskPage(@RequestBody TaskPageDto dto) {
+    public ResultVo<TaskPageVo> getTaskPage(@RequestBody TaskPageDto dto) {
         return taskService.getTaskPage(dto);
     }
 
