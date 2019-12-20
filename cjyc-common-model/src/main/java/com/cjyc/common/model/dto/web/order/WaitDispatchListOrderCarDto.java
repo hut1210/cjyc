@@ -10,7 +10,6 @@ import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Set;
 
 /**
  * <p>
@@ -114,6 +113,6 @@ public class WaitDispatchListOrderCarDto extends BasePageDto implements Serializ
     private List<FromToCityDto> fromToCityList;
 
     @ApiModelProperty(value = "业务范围(不用传)")
-    private Set<Long> bizScope;
+    private String bizScope;
 
 }
