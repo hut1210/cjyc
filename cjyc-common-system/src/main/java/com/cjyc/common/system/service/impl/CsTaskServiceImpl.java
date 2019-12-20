@@ -152,7 +152,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
         LoadTaskDto loadTaskDto = new LoadTaskDto();
         BeanUtils.copyProperties(paramsDto, loadTaskDto);
         loadTaskDto.setTaskId(taskCar.getTaskId());
-        loadTaskDto.setTaskCarIdList(Lists.newArrayList(taskCar.getTaskId()));
+        loadTaskDto.setTaskCarIdList(Lists.newArrayList(taskCar.getId()));
 
         return load(loadTaskDto);
 
