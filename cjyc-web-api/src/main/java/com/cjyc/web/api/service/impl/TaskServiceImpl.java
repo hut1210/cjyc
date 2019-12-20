@@ -6,12 +6,15 @@ import com.cjyc.common.model.dao.IWaybillCarDao;
 import com.cjyc.common.model.dto.web.task.*;
 import com.cjyc.common.model.entity.Carrier;
 import com.cjyc.common.model.entity.Task;
+import com.cjyc.common.model.entity.defined.BizScope;
+import com.cjyc.common.model.enums.BizScopeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.task.CrTaskVo;
 import com.cjyc.common.model.vo.web.task.ListByWaybillTaskVo;
+import com.cjyc.common.model.vo.web.task.TaskPageVo;
 import com.cjyc.common.model.vo.web.task.TaskVo;
 import com.cjyc.common.model.vo.web.waybill.WaybillCarVo;
 import com.cjyc.common.system.service.ICsTaskService;
@@ -111,7 +114,38 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
 
     @Override
     public ResultVo getTaskPage(TaskPageDto dto) {
-        return null;
+        // 根据登录ID查询业务中心ID
+        BizScope bizScope = csSysService.getBizScopeByLoginId(dto.getLoginId(), true);
+
+        // 判断当前登录人是否有权限访问
+        int code = bizScope.getCode();
+        if (BizScopeEnum.NONE.code == code) {
+            return BaseResultUtil.fail("您没有访问权限!");
+        }
+        // 设置业务中心ID
+        String storeId = getStoreId(bizScope);
+        dto.setStoreId(storeId);
+
+        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
+        List<TaskPageVo> list = taskDao.selectMyTaskList(dto);
+        PageInfo<TaskPageVo> pageInfo = new PageInfo<>(list);
+        return BaseResultUtil.success(pageInfo);
+    }
+
+    private String getStoreId(BizScope bizScope) {
+        StringBuilder storeId = null;
+        if (bizScope.getCode() == BizScopeEnum.CHINA.code) {
+            return null;
+        } else {
+            storeId = new StringBuilder();
+            for (Long id : bizScope.getStoreIds()) {
+                if (storeId.length() > 0) {
+                    storeId.append(",");
+                }
+                storeId.append(id);
+            }
+            return storeId.toString();
+        }
     }
 
 }

@@ -412,7 +412,7 @@
                         AND task.create_time = #{creatTime}
                     </if>
                     <if test="waybillNo != null and waybillNo.trim() != ''">
-                        AND task.no = concat('%',#{waybillNo},'%')
+                        AND task.no like concat('%',#{waybillNo},'%')
                     </if>
                     <if test="startAddress != null and startAddress.trim() != ''">
                         and task.guide_line like concat('%',#{startAddress},'%')
@@ -487,6 +487,55 @@
             wt.state = 100
             AND ( wt.complete_time BETWEEN #{beforeStartDay} AND #{beforeEndDay} )
             AND ww.carrier_type IN ( 1, 2, 4, 5 )
+    </select>
+
+    <!--web端：查询我的任务列表-->
+    <select id="selectMyTaskList" parameterType="com.cjyc.common.model.dto.web.task.TaskPageDto"
+            resultType="com.cjyc.common.model.vo.web.task.TaskPageVo">
+        select
+            t1.taskCarId,
+            t1.waybillCarState,
+            w.no as waybillNo,
+            w.type,
+            oc.order_no as orderNo,
+            oc.no as orderCarNo,
+            oc.vin as vin
+        from
+        (SELECT
+            t.task_car_id AS taskCarId,
+            t.waybill_no AS waybillNo,
+            wc.state as waybillCarState,
+            wc.order_car_id as orderCarId,
+            wc.waybill_id as waybillId
+        FROM
+        ( SELECT task.id, task.waybill_no,tc.id as task_car_id,tc.waybill_car_id
+        FROM w_task task
+        LEFT JOIN w_task_car tc ON task.id = tc.task_id
+            <where>
+                <if test="waybillNo != null and waybillNo.trim() != ''">
+                    AND task.waybill_no like concat('%',#{waybillNo},'%')
+                </if>
+            </where>
+        ) t
+        LEFT JOIN w_waybill_car wc ON t.waybill_car_id = wc.id
+        <where>
+            <if test="storeId != null and storeId != ''">
+                AND (wc.start_belong_store_id in(#{storeId}) or wc.end_belong_store_id in(#{storeId}))
+            </if>
+        </where>) t1
+        left join w_waybill w on t1.waybillId=w.id
+        left join w_order_car oc on t1.orderCarId=oc.id
+        <where>
+            <if test="orderNo != null and orderNo.trim() != ''">
+                AND oc.order_no like concat('%',#{orderNo},'%')
+            </if>
+            <if test="orderCarNo != null and orderCarNo.trim() != ''">
+                AND oc.no like concat('%',#{orderCarNo},'%')
+            </if>
+            <if test="vin != null and vin.trim() != ''">
+                AND oc.vin like concat('%',#{vin},'%')
+            </if>
+        </where>
     </select>
 
 </mapper>

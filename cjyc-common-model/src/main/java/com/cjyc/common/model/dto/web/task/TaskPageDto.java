@@ -13,6 +13,7 @@ import javax.validation.constraints.NotNull;
  **/
 @Data
 public class TaskPageDto extends BasePageDto {
+    private static final long serialVersionUID = -6720067907147114367L;
     @ApiModelProperty(value = "登录用户id",required = true)
     @NotNull(message = "登录用户id不能为空")
     private Long loginId;
@@ -28,4 +29,7 @@ public class TaskPageDto extends BasePageDto {
 
     @ApiModelProperty(value = "vin码")
     private String vin;
+
+    @ApiModelProperty(value = "业务中心ID：不用传")
+    private String storeId;
 }
