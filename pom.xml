@@ -272,6 +272,8 @@
                                 <exclude>*.txt</exclude>
                                 <exclude>*.xml</exclude>
                                 <exclude>*.jks</exclude>
+                                <exclude>*.pem</exclude>
+                                <exclude>*.jks</exclude>
                                 <exclude>*.properties</exclude>
                             </excludes>
                         </configuration>

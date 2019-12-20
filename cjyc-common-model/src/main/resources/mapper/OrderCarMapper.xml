@@ -845,17 +845,18 @@
             when oc.state &lt;= 5 then 1
             when oc.state = 10 then 2
             when oc.state = 15 then 3
-            when oc.state &gt;= 25 then 5 end)end ) as pickTransportState,
+            when oc.state &gt;= 25 then 5 end)
+        end ) as pickTransportState,
 
         (case
         when oc.state &lt;= 25 then
             (case
             when oc.trunk_state &lt;= 1 then 1
             when oc.trunk_state > 1 and oc.trunk_state &lt; 7 then 2
-            when oc.trunk_state = 7 then 100
+            when oc.trunk_state = 7 then 100 end)
         when oc.state = 35 then 2
         when oc.state > 35 and oc.state &lt; 45 then 3
-        when oc.state &gt;= 45 then 5 end)end ) as trunkTransportState,
+        when oc.state &gt;= 45 then 5 end) as trunkTransportState,
 
         (case
         when oc.back_type = 4 then 100

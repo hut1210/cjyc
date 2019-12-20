@@ -133,12 +133,9 @@ public class WaybillCar implements Serializable {
     @ApiModelProperty(value = "预计到达时间")
     private Long expectEndTime;
 
-    @ApiModelProperty(value = "取车方式:1上门，2 自送/自取")
-    private Integer takeType;
-
-    @Excel(name = "运载方式", orderNum = "10")
+    /*@Excel(name = "运载方式", orderNum = "10")
     @TableField(exist = false)
-    private String takeTypeDesc;
+    private String takeTypeDesc;*/
 
     @Excel(name = "提车联系人", orderNum = "20")
     @ApiModelProperty(value = "提车联系人")
@@ -150,9 +147,6 @@ public class WaybillCar implements Serializable {
     @Excel(name = "提车联系人电话", orderNum = "21")
     @ApiModelProperty(value = "提车联系人电话")
     private String loadLinkPhone;
-
-    @ApiModelProperty(value = "装车交接类型：1客户家，2中途交接，3业务中心")
-    private Integer loadTurnType;
 
     @ApiModelProperty(value = "图片地址，逗号分隔")
     private String loadPhotoImg;
@@ -170,9 +164,6 @@ public class WaybillCar implements Serializable {
     @ApiModelProperty(value = "收车人电话")
     private String unloadLinkPhone;
 
-    @ApiModelProperty(value = "卸车交接类型：1客户指定地，2中途交接，3业务中心")
-    private Integer unloadTurnType;
-
     @ApiModelProperty(value = "图片地址，逗号分隔")
     private String unloadPhotoImg;
 
@@ -185,8 +176,6 @@ public class WaybillCar implements Serializable {
     @Excel(name = "实际交付日期", orderNum = "11")
     @TableField(exist = false)
     private String uploadTimeDesc;
-
-    private Integer sort;
 
     @ApiModelProperty(value = "创建时间")
     private Long createTime;

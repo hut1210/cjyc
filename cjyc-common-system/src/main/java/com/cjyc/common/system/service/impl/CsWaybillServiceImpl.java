@@ -18,6 +18,7 @@ import com.cjyc.common.model.exception.ServerException;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
+import com.cjyc.common.model.util.MoneyUtil;
 import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.service.*;
@@ -247,6 +248,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 fillWaybillcarStoreInfo(waybillCar);
                 //提送车业务员
                 fillWaybillCarHandleAdmin(waybillCar, waybill.getType());
+
                 //计算预计到达时间
                 fillWaybillCarExpectEndTime(waybillCar);
                 waybillCar.setReceiptFlag(waybillCar.getUnloadLinkPhone().equals(order.getBackContactPhone()));
@@ -327,6 +329,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         }
         return BaseResultUtil.success();
     }
+
 
     private boolean validateIsArriveEndCity(Order order, WaybillCar waybillCar) {
         if(waybillCar == null){
@@ -578,11 +581,12 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
      * 计算到达时间
      **/
     private void fillWaybillCarExpectEndTime(WaybillCar waybillCar) {
-        if (waybillCar.getExpectEndTime() != null) {
-            Line line = csLineService.getLineByCity(waybillCar.getStartCityCode(), waybillCar.getEndCityCode(), true);
-            if (line != null && line.getDays() != null) {
-                waybillCar.setExpectEndTime(TimeStampUtil.addDays(waybillCar.getExpectStartTime(), line.getDays().intValue()));
-            }
+        if(waybillCar.getExpectStartTime() == null){
+            throw new ParameterException("请填写预估提车日期");
+        }
+        Line line = csLineService.getLineByCity(waybillCar.getStartCityCode(), waybillCar.getEndCityCode(), true);
+        if (line != null && line.getDays() != null) {
+            waybillCar.setExpectEndTime(TimeStampUtil.addDays(waybillCar.getExpectStartTime(), line.getDays().intValue()));
         }
     }
 
@@ -661,13 +665,13 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             waybill.setCarrierType(carrier.getType());
             waybill.setCarNum(carList.size());
             waybill.setState(WaybillStateEnum.ALLOT_CONFIRM.code);
-            //提送车费用逻辑，调度时不允许修改提送车费用，需要到订单中修改提送车费用，多则返还，少则后补
-            waybill.setFreightFee(paramsDto.getFreightFee());
+            waybill.setFreightFee(MoneyUtil.convertYuanToFen(paramsDto.getFreightFee()));
             waybill.setFixedFreightFee(paramsDto.getFixedFreightFee());
             waybill.setRemark(paramsDto.getRemark());
             waybill.setCreateTime(currentMillisTime);
             waybill.setCreateUser(admin.getName());
             waybill.setCreateUserId(admin.getId());
+            //TODO 干线运单所属业务中心
             //waybill.setInputStoreId(paramsDto.);
             waybillDao.insert(waybill);
 
@@ -877,7 +881,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             waybill.setCarrierId(carrierId);
             waybill.setCarrierType(carrier.getType());
             waybill.setCarrierName(carrier.getName());
-            waybill.setFreightFee(paramsDto.getFreightFee());
+            waybill.setFreightFee(MoneyUtil.convertYuanToFen(paramsDto.getFreightFee()));
             waybill.setFixedFreightFee(paramsDto.getFixedFreightFee());
             waybill.setRemark(paramsDto.getRemark());
             waybillDao.updateById(waybill);
@@ -1323,11 +1327,9 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             newWaybillCar.setState(WaybillCarStateEnum.WAIT_ALLOT.code);
             newWaybillCar.setExpectStartTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTimeUtil.getDayStartByLong(paramsDto.getUnloadTime())));
             newWaybillCar.setExpectEndTime(null);
-            newWaybillCar.setTakeType(WaybillTakeTypeEnum.PICK.code);
             newWaybillCar.setLoadLinkName(paramsDto.getLoginName());
             newWaybillCar.setLoadLinkUserId(paramsDto.getLoginId());
             newWaybillCar.setLoadLinkPhone(paramsDto.getUserPhone());
-            newWaybillCar.setLoadTurnType(WaybillCarTurnType.MIDWAY.code);
             newWaybillCar.setUnloadLinkName(waybillCar.getUnloadLinkName());
             newWaybillCar.setUnloadLinkPhone(waybillCar.getUnloadLinkPhone());
             newWaybillCar.setUnloadLinkUserId(waybillCar.getUnloadLinkUserId());

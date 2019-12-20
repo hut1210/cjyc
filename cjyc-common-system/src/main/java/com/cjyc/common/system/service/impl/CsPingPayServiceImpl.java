@@ -169,14 +169,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         Pingpp.apiKey = PingProperty.apiKey;
         //Pingpp.overrideApiBase("https://sapi.pingxx.com");//此接口为ping++协助测试的接口 升级完成后注释掉 20181023 add
         System.setProperty("https.protocols", "TLSv1.2");//20181023 添加 (TLSv1.2升级配置)
-  /*      System.out.println("XXXXXXX:【");
-        System.out.println("XXXXXXX:【" + System.getProperty("user.dir"));
-        System.out.println("XXXXXXX:【" +  this.getClass().getClassLoader().getResource("application-local.yml"));
-        System.out.println("XXXXXXX:【" + this.getClass().getClassLoader().getResource("your_rsa_private_key_pkcs.pem"));
-        System.out.println("XXXXXXX:【");
-        System.out.println("XXXXXXX:【" + this.getClass().getClassLoader().getResource("../conf/your_rsa_private_key_pkcs.pem"));*/
-        //Pingpp.privateKeyPath = ResourceUtils.getFile(ResourceUtils.CLASSPATH_URL_PREFIX+"your_rsa_private_key_pkcs.pem").getPath();
-        Pingpp.privateKeyPath = this.getClass().getClassLoader().getResource("../conf/your_rsa_private_key_pkcs.pem").getPath();
+        Pingpp.privateKeyPath = this.getClass().getClassLoader().getResource("your_rsa_private_key_pkcs.pem").getPath();
 
     }
 

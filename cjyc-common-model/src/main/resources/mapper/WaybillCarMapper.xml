@@ -34,21 +34,17 @@
         <result column="state" property="state"/>
         <result column="expect_start_time" property="expectStartTime"/>
         <result column="expect_end_time" property="expectEndTime"/>
-        <result column="take_type" property="takeType"/>
         <result column="load_link_name" property="loadLinkName"/>
         <result column="load_link_user_id" property="loadLinkUserId"/>
         <result column="load_link_phone" property="loadLinkPhone"/>
-        <result column="load_turn_type" property="loadTurnType"/>
         <result column="load_photo_img" property="loadPhotoImg"/>
         <result column="load_time" property="loadTime"/>
         <result column="unload_link_name" property="unloadLinkName"/>
         <result column="unload_link_user_id" property="unloadLinkUserId"/>
         <result column="unload_link_phone" property="unloadLinkPhone"/>
-        <result column="unload_turn_type" property="unloadTurnType"/>
         <result column="unload_photo_img" property="unloadPhotoImg"/>
         <result column="unload_time" property="unloadTime"/>
         <result column="receipt_flag" property="receiptFlag" />
-        <result column="sort" property="sort"/>
         <result column="create_time" property="createTime"/>
     </resultMap>
 
