@@ -256,12 +256,17 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                 if (sb.length() > 0 && !StringUtils.isEmpty(loadPhotoImg)) {
                     sb.append(",");
                 }
-                sb.append(loadPhotoImg);
+                if (!StringUtils.isEmpty(loadPhotoImg)) {
+                    sb.append(loadPhotoImg);
+                }
+
                 String unloadPhotoImg = car.getUnloadPhotoImg();
                 if (sb.length() > 0 && !StringUtils.isEmpty(unloadPhotoImg)) {
                     sb.append(",");
                 }
-                sb.append(unloadPhotoImg);
+                if (!StringUtils.isEmpty(unloadPhotoImg)) {
+                    sb.append(unloadPhotoImg);
+                }
             }
             carDetailVo.setHistoryLoadPhotoImg(sb.toString());
         }
