@@ -79,6 +79,8 @@ public class TaskController {
         //验证用户
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
+        reqDto.setLoginPhone(admin.getPhone());
+        reqDto.setLoginType(UserTypeEnum.ADMIN);
         return taskService.outStore(reqDto);
     }
 

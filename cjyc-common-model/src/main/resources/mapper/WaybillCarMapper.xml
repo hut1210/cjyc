@@ -510,7 +510,7 @@
                 and wc.unload_time &lt;= #{paramsDto.endUnloadTime}
             </if>
             <if test="paramsDto.orderNo != null and paramsDto.orderNo != ''">
-                and oc.order_no &lt;= #{paramsDto.orderNo}
+                and oc.order_no = #{paramsDto.orderNo}
             </if>
         </where>
         order by w.create_time desc
@@ -542,7 +542,6 @@
         where wc.order_car_id = #{orderCarId}
         and w.type = #{waybillType}
         order by wc.id
-
     </select>
     <select id="findVoByWaybillId" resultType="com.cjyc.common.model.vo.web.waybill.WaybillCarVo">
         select

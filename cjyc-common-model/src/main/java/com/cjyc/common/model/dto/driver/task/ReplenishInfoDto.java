@@ -29,10 +29,8 @@ public class ReplenishInfoDto {
     private String model;
     @ApiModelProperty(value = "车牌号")
     private String plateNo;
-    @NotBlank(message = "车架号不能为空")
     @ApiModelProperty(value = "vin码",required = true)
     private String vin;
-    @NotEmpty(message = "图片不能为空")
     @ApiModelProperty(value = "提车图片",required = true)
     private List<String> loadPhotoImgs;
 }

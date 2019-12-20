@@ -17,15 +17,15 @@ import java.util.List;
 public class OutStoreTaskDto {
     @ApiModelProperty(value = "登录用户ID", required = true)
     private Long loginId;
-    @ApiModelProperty(value = "登录用户名(不用传)")
+    @ApiModelProperty(hidden = true)
     private String loginName;
-    @ApiModelProperty(value = "(不用传)")
+    @ApiModelProperty(hidden = true)
     private String loginPhone;
-    @ApiModelProperty(value = "(不用传)")
+    @ApiModelProperty(hidden = true)
     private UserTypeEnum loginType;
 
     @ApiModelProperty(value = "任务ID", required = true)
-    private String taskId;
+    private Long taskId;
 
     @ApiModelProperty(value = "任务车辆ID", required = true)
     private List<Long> taskCarIdList;
