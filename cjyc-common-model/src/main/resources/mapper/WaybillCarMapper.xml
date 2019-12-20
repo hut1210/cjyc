@@ -506,6 +506,7 @@
                 and oc.order_no &lt;= #{paramsDto.orderNo}
             </if>
         </where>
+        order by w.create_time desc
     </select>
 
     <select id="findVoByType" resultType="com.cjyc.common.model.vo.web.waybill.WaybillCarTransportVo">
@@ -729,9 +730,8 @@
             <if test="paramsDto.nowStoreId != null">
                 and wc.now_store_id &lt;= #{paramsDto.nowStoreId}
             </if>
-
         </where>
-
+        order by w.create_time desc
     </select>
     <select id="findVoByTaskId" resultType="com.cjyc.common.model.vo.web.waybill.WaybillCarVo">
         select
