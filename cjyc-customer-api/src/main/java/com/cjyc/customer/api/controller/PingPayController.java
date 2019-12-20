@@ -12,6 +12,7 @@ import com.cjyc.common.model.dto.customer.pingxx.SweepCodeDto;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.ValidateReceiptCarPayVo;
@@ -191,6 +192,7 @@ public class PingPayController {
     public static void main(String arg[]) throws Exception{
         File file = ResourceUtils.getFile(ResourceUtils.CLASSPATH_URL_PREFIX+"pingpp_public_key.pem");
         String pubKeyPath = PingPayController.class.getClassLoader().getResource("pingpp_public_key.pem").getPath();
+        InputStream resourceAsStream = PingPayController.class.getClassLoader().getResourceAsStream("pingpp_public_key.pem");
         System.out.println(file.getPath());
         System.out.println(pubKeyPath);
 

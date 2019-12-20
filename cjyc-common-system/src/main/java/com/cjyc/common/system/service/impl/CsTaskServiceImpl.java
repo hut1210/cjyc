@@ -42,6 +42,7 @@ import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author JPG
@@ -82,6 +83,8 @@ public class CsTaskServiceImpl implements ICsTaskService {
     private ICsSmsService csSmsService;
     @Resource
     private ICsUserService csUserService;
+    @Resource
+    private ICsStoreService csStoreService;
 
     /**
      * 获取任务编号
@@ -281,6 +284,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             return BaseResultUtil.fail("运单已完结");
         }
 
+
         //批量处理数据
         int count = 0;
         long currentTimeMillis = System.currentTimeMillis();
@@ -292,6 +296,9 @@ public class CsTaskServiceImpl implements ICsTaskService {
             }
             if (waybillCar.getState() >= WaybillCarStateEnum.WAIT_LOAD_CONFIRM.code) {
                 throw new ParameterException("运单车辆已经装过车");
+            }
+            if(WaybillTypeEnum.PICK.code == waybill.getType() && !validateWaybillCarInfo(waybillCar)){
+                throw new ParameterException("提车运单运单，照片不能为空");
             }
 
             //验证车辆当前所在地是否与出发区县匹配
@@ -483,6 +490,9 @@ public class CsTaskServiceImpl implements ICsTaskService {
             }
             int m = waybillCarDao.countByStartCityAndOrderCar(waybillCar.getEndCityCode(), waybillCar.getEndStoreId());
             //计算是否到达目的地城市范围
+            if(validateIsArriveEndCity(order, waybillCar)){
+
+            }
             if (waybillCar.getEndCityCode().equals(order.getEndCityCode())) {
                 //配送
                 newState = m == 0 ? OrderCarStateEnum.WAIT_BACK_DISPATCH.code : OrderCarStateEnum.WAIT_BACK.code;
@@ -649,6 +659,25 @@ public class CsTaskServiceImpl implements ICsTaskService {
         resultReasonVo.setFailList(failCarNoSet);
         resultReasonVo.setSuccessList(successSet);
         return BaseResultUtil.success(resultReasonVo);
+    }
+
+    private boolean validateIsArriveEndCity(Order order, WaybillCar waybillCar) {
+        if(waybillCar == null){
+            return false;
+        }
+        //先验证是否到达所属业务中心
+        if(order.getEndStoreId() != null){
+            List<Store> storeList = csStoreService.getBelongByAreaCode(waybillCar.getEndAreaCode());
+            if(!CollectionUtils.isEmpty(storeList) && storeList.stream().map(Store::getId).collect(Collectors.toList()).contains(order.getEndStoreId())){
+                return true;
+            }
+        }
+        //其次验证城市
+        if(order.getEndCityCode().equals(waybillCar.getEndCityCode())){
+            return true;
+        }
+        return false;
+
     }
 
 
