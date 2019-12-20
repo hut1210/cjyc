@@ -20,6 +20,9 @@ public class CarDetailVo implements Serializable {
     @JsonSerialize(using= ToStringSerializer.class)
     private Long id;
 
+    @ApiModelProperty(value = "运单车辆状态：0待指派，2已指派，5待装车，15待装车确认，45已装车，70已卸车，90确认交车, 100确认收车, 105待重连，120已重连")
+    private Integer waybillCarState;
+
     @ApiModelProperty(value = "提车联系人")
     private String loadLinkName;
 
@@ -70,6 +73,21 @@ public class CarDetailVo implements Serializable {
     @ApiModelProperty(value = "最后一次运输标识：0否，1是")
     private Boolean receiptFlag;
 
+    public Integer getWaybillCarState() {
+        return waybillCarState == null ? -1 : waybillCarState;
+    }
+    public String getStartAddress() {
+        return startAddress == null ? "" : startAddress;
+    }
+    public String getEndAddress() {
+        return endAddress == null ? "" : endAddress;
+    }
+    public String getBrand() {
+        return brand == null ? "" : brand;
+    }
+    public String getModel() {
+        return model == null ? "" : model;
+    }
     public Integer getPayType() {
         return payType == null ? -1 : payType;
     }

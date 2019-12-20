@@ -130,6 +130,7 @@
             LEFT JOIN w_waybill w ON t.waybill_id = w.id
             LEFT JOIN w_waybill_car car ON t.waybill_car_id = car.id
         GROUP BY t.id
+        order by t.create_time desc
     </select>
 
     <!--查询已交付任务列表-->
@@ -240,7 +241,7 @@
             </if>
         </where>
         group by t.id
-        order by t.complete_time desc
+        order by t.create_time desc
     </select>
     <select id="findListForMineCarrier" resultType="com.cjyc.common.model.vo.web.task.CrTaskVo">
         select

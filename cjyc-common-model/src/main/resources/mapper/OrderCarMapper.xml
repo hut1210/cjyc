@@ -423,11 +423,11 @@
                     and o.end_city_code = #{item.toCityCode})
                 </foreach>
             </if>
-            <if test="paramsDto.bizScope != null">
-                and (o.input_store_id or o.end_belong_store_id or oc.now_store_id or wc.end_belong_store_id) in
-                <foreach collection="paramsDto.bizScope" index="index" item="item" open="(" separator="," close=")">
-                    #{item}
-                </foreach>
+            <if test="paramsDto.bizScope != null and paramsDto.bizScope != ''">
+                and (o.input_store_id in(#{paramsDto.bizScope})
+                or o.end_belong_store_id in(#{paramsDto.bizScope})
+                or oc.now_store_id in(#{paramsDto.bizScope})
+                or wc.end_belong_store_id in(#{paramsDto.bizScope}))
             </if>
         </where>
         group by oc.id

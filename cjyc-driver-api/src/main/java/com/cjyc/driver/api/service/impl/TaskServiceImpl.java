@@ -165,6 +165,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                 BeanUtils.copyProperties(orderCar,carDetailVo);
 
                 carDetailVo.setId(waybillCar.getId());
+                carDetailVo.setWaybillCarState(waybillCar.getState());
                 carDetailVoList.add(carDetailVo);
             }
         }
@@ -214,6 +215,8 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                 WaybillCar waybillCar = waybillCarDao.selectById(taskCar.getWaybillCarId());
                 carDetailVo = new CarDetailVo();
                 BeanUtils.copyProperties(waybillCar,carDetailVo);
+
+                // 运费
                 freightFee = freightFee.add(waybillCar.getFreightFee());
 
                 // 如果指导路线为空，且运单是提车或者送车，将始发成和结束城市用“-”拼接
@@ -228,6 +231,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                 carDetailVo.setPayType(order.getPayType());
 
                 carDetailVo.setId(taskCar.getId());
+                carDetailVo.setWaybillCarState(waybillCar.getState());
                 carDetailVoList.add(carDetailVo);
             }
         }

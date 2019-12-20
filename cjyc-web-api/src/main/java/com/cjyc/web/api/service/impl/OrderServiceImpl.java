@@ -474,8 +474,10 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
             return BaseResultUtil.fail("没有数据权限");
         }
-        paramsDto.setBizScope(bizScope.getCode() == 0 ? null : bizScope.getStoreIds());
+        // 拼接业务中心ID
+        String storeId = getStoreIds(bizScope);
 
+        paramsDto.setBizScope(storeId);
         PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
         List<OrderCarWaitDispatchVo> list = orderCarDao.findWaitDispatchCarList(paramsDto);
         PageInfo<OrderCarWaitDispatchVo> pageInfo = new PageInfo<>(list);
@@ -483,6 +485,24 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
             pageInfo.setList(null);
         }
         return BaseResultUtil.success(pageInfo);
+    }
+
+    private String getStoreIds(BizScope bizScope) {
+        StringBuilder storeId = null;
+        if (bizScope.getCode() == 0) {
+            return null;
+        } else {
+            storeId = new StringBuilder();
+            for (Long id : bizScope.getStoreIds()) {
+                if (storeId.length() != 0) {
+                    storeId.append(",");
+                    storeId.append(id);
+                } else {
+                    storeId.append(id);
+                }
+            }
+            return storeId.toString();
+        }
     }
 
 
