@@ -328,10 +328,8 @@ public class CsTaskServiceImpl implements ICsTaskService {
             //订单车辆
             if (orderCar.getState() < orderCarNewState) {
                 orderCarDao.updateStateById(orderCarNewState, orderCar.getId());
-                //订单
-                orderIdSet.add(orderCar.getOrderId());
             }
-
+            orderIdSet.add(orderCar.getOrderId());
             successSet.add(orderCar.getNo());
             count++;
         }
@@ -588,7 +586,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             }
 
             //更新运单车辆状态
-            waybillCarDao.updateStateById(waybillCar.getId(), WaybillCarStateEnum.UNLOADED.code);
+            waybillCarDao.updateForInStore(waybillCar.getId());
 
             //更新车辆状态和所在位置
             OrderCar orderCar = new OrderCar();

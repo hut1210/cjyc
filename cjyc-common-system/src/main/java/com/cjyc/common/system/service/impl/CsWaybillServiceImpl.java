@@ -713,12 +713,12 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 }*/
 
                 //验证出发地与上一次调度目的地是否一致
-/*                WaybillCar prevWc = waybillCarDao.findLastByOderCarId(orderCarId);
+                WaybillCar prevWc = waybillCarDao.findLastByOderCarId(orderCarId);
                 if (prevWc != null) {
                     if (!prevWc.getEndAddress().equals(dto.getStartAddress())) {
-                        throw new ServerException("本次调度出发地址与上次调度结束地址不一致");
+                        throw new ServerException("车辆本次调度出发地址与上次调度结束地址不一致");
                     }
-                }*/
+                }
 
                 WaybillCar waybillCar = new WaybillCar();
                 BeanUtils.copyProperties(dto, waybillCar);
@@ -1061,7 +1061,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         if(oc == null){
             throw new ParameterException("车辆{0}, 订单信息错误", waybillCar.getOrderCarNo());
         }
-        Order order = orderDao.selectById(oc.getId());
+        Order order = orderDao.selectById(oc.getOrderId());
         if(order == null){
             throw new ParameterException("车辆{0}, 车辆信息错误", waybillCar.getOrderCarNo());
         }
@@ -1072,7 +1072,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         if (WaybillTypeEnum.PICK.code == waybillType) {
             orderCar.setPickType(order.getPickType());
             //订单车辆状态
-            if (OrderCarStateEnum.WAIT_PICK.code == orderCar.getState()) {
+            if (OrderCarStateEnum.WAIT_PICK.code == oc.getState()) {
                 orderCar.setState(OrderCarStateEnum.WAIT_PICK_DISPATCH.code);
             }
             //订单车辆提车状态
@@ -1083,7 +1083,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         if (WaybillTypeEnum.BACK.code == waybillType) {
             orderCar.setBackType(order.getBackType());
             //订单车辆状态
-            if (OrderCarStateEnum.WAIT_BACK.code == orderCar.getState()) {
+            if (OrderCarStateEnum.WAIT_BACK.code == oc.getState()) {
                 orderCar.setState(OrderCarStateEnum.WAIT_BACK_DISPATCH.code);
             }
             //订单车辆配送状态
@@ -1099,7 +1099,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             //订单车辆干线状态
             orderCar.setTrunkState(OrderCarTrunkStateEnum.WAIT_NEXT_DISPATCH.code);
             //订单车辆状态
-            if (OrderCarStateEnum.WAIT_TRUNK.code == orderCar.getState()) {
+            if (OrderCarStateEnum.WAIT_TRUNK.code == oc.getState()) {
                 orderCar.setState(OrderCarStateEnum.WAIT_TRUNK_DISPATCH.code);
             }
             //取消该车辆所有后续调度

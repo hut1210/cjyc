@@ -145,4 +145,6 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
      * @return
      */
     Integer waybillCarCount(@Param("type") Integer type,@Param("driverId") Long driverId);
+
+    int updateForInStore(Long id);
 }
