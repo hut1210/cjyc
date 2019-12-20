@@ -499,14 +499,16 @@
             w.type,
             oc.order_no as orderNo,
             oc.no as orderCarNo,
-            oc.vin as vin
+            oc.vin as vin,
+            t1.waybillCarId
         from
         (SELECT
             t.task_car_id AS taskCarId,
             t.waybill_no AS waybillNo,
             wc.state as waybillCarState,
             wc.order_car_id as orderCarId,
-            wc.waybill_id as waybillId
+            wc.waybill_id as waybillId,
+            wc.id as waybillCarId
         FROM
         ( SELECT task.id, task.waybill_no,tc.id as task_car_id,tc.waybill_car_id
         FROM w_task task
@@ -536,6 +538,7 @@
                 AND oc.vin like concat('%',#{vin},'%')
             </if>
         </where>
+        GROUP BY t1.waybillCarId
     </select>
 
 </mapper>
