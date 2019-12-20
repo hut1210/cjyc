@@ -83,6 +83,8 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             APIConnectionException, AuthenticationException, FileNotFoundException {
         ValidateSweepCodeDto validateSweepCodeDto = new ValidateSweepCodeDto();
         validateSweepCodeDto.setTaskId(sweepCodeDto.getTaskId());
+        validateSweepCodeDto.setLoginId(sweepCodeDto.getLoginId());
+        validateSweepCodeDto.setTaskCarIdList(sweepCodeDto.getTaskCarIdList());
         ResultVo<ValidateSweepCodePayVo> resultVo = validateCarPayState(validateSweepCodeDto,true);
 
         if(ResultEnum.SUCCESS.getCode() != resultVo.getCode()){
