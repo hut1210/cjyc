@@ -38,6 +38,18 @@ public class TaskController {
     @Resource
     private ICsDriverService csDriverService;
 
+    /**
+     * 功能描述: 查询任务分页列表
+     * @author liuxingxiang
+     * @date 2019/12/20
+     * @param dto
+     * @return com.cjyc.common.model.vo.ResultVo
+     */
+    @ApiOperation(value = "查询任务分页列表")
+    @PostMapping(value = "/getTaskPage")
+    public ResultVo getTaskPage(@RequestBody TaskPageDto dto) {
+        return taskService.getTaskPage(dto);
+    }
 
     /**
      * 分配任务

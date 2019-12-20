@@ -39,4 +39,13 @@ public interface ITaskService extends IService<Task> {
     ResultVo<TaskVo> get(Long taskId);
 
     ResultVo<PageVo<CrTaskVo>> crTaskList(CrTaskDto reqDto);
+
+    /**
+     * 功能描述: 查询我的任务列表
+     * @author liuxingxiang
+     * @date 2019/12/20
+     * @param dto
+     * @return com.cjyc.common.model.vo.ResultVo
+     */
+    ResultVo getTaskPage(TaskPageDto dto);
 }
