@@ -85,7 +85,7 @@ public class FinanceVo implements Serializable {
 
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     @ApiModelProperty(value = "毛利")
-    private BigDecimal GrossProfit;
+    private BigDecimal grossProfit;
 
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     @ApiModelProperty(value = "提车成本")
