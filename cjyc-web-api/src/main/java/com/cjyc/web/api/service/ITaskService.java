@@ -1,13 +1,14 @@
 package com.cjyc.web.api.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.dto.web.task.*;
 import com.cjyc.common.model.entity.Task;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.task.CrTaskVo;
 import com.cjyc.common.model.vo.web.task.ListByWaybillTaskVo;
+import com.cjyc.common.model.vo.web.task.TaskPageVo;
 import com.cjyc.common.model.vo.web.task.TaskVo;
 
 import java.util.List;
@@ -47,5 +48,5 @@ public interface ITaskService extends IService<Task> {
      * @param dto
      * @return com.cjyc.common.model.vo.ResultVo
      */
-    ResultVo getTaskPage(TaskPageDto dto);
+    ResultVo<PageVo<TaskPageVo>> getTaskPage(TaskPageDto dto);
 }

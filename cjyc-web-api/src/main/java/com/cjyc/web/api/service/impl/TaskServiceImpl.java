@@ -113,7 +113,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
     }
 
     @Override
-    public ResultVo getTaskPage(TaskPageDto dto) {
+    public ResultVo<PageVo<TaskPageVo>> getTaskPage(TaskPageDto dto) {
         // 根据登录ID查询业务中心ID
         BizScope bizScope = csSysService.getBizScopeByLoginId(dto.getLoginId(), true);
 

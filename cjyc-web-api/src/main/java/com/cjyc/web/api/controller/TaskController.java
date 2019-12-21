@@ -46,9 +46,9 @@ public class TaskController {
      * @param dto
      * @return com.cjyc.common.model.vo.ResultVo
      */
-    @ApiOperation(value = "查询任务分页列表")
+    @ApiOperation(value = "查询任务分页列表(后加功能)")
     @PostMapping(value = "/getTaskPage")
-    public ResultVo<TaskPageVo> getTaskPage(@RequestBody @Validated TaskPageDto dto) {
+    public ResultVo<PageVo<TaskPageVo>> getTaskPage(@RequestBody @Validated TaskPageDto dto) {
         return taskService.getTaskPage(dto);
     }
 
