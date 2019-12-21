@@ -222,7 +222,8 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
                 vr.setVehicleId(veh.getId());
                 vr.setPlateNo(dto.getPlateNo());
                 vr.setCarryCarNum(dto.getDefaultCarryNum());
-                vr.setRunningState(VehicleRunStateEnum.WAY.code);
+                vr.setState(RunningStateEnum.EFFECTIVE.code);
+                vr.setRunningState(VehicleRunStateEnum.FREE.code);
                 vr.setCreateTime(NOW);
                 vehicleRunningDao.insert(vr);
             }

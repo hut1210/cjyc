@@ -9,6 +9,7 @@ import com.cjyc.common.model.dto.driver.BaseDriverDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.task.TaskStateEnum;
+import com.cjyc.common.model.enums.transport.RunningStateEnum;
 import com.cjyc.common.model.enums.transport.VehicleOwnerEnum;
 import com.cjyc.common.model.enums.transport.VehicleRunStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -290,7 +291,8 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
             BeanUtils.copyProperties(dto,vr);
             vr.setDriverId(dto.getLoginId());
             vr.setCarryCarNum(dto.getDefaultCarryNum());
-            vr.setRunningState(VehicleRunStateEnum.WAY.code);
+            vr.setState(RunningStateEnum.EFFECTIVE.code);
+            vr.setRunningState(VehicleRunStateEnum.FREE.code);
             vr.setCreateTime(NOW);
             vehicleRunningDao.insert(vr);
         }else if(dto.getFlag() == 1 && dto.getVehicleId() != null){
@@ -313,7 +315,8 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
             vr.setVehicleId(dto.getVehicleId());
             vr.setPlateNo(dto.getPlateNo());
             vr.setCarryCarNum(dto.getDefaultCarryNum());
-            vr.setRunningState(VehicleRunStateEnum.WAY.code);
+            vr.setState(RunningStateEnum.EFFECTIVE.code);
+            vr.setRunningState(VehicleRunStateEnum.FREE.code);
             vehicleRunningDao.updateById(vr);
         }
         return BaseResultUtil.success();

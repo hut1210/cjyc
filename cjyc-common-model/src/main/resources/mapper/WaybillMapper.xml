@@ -334,6 +334,7 @@
             </if>
         </where>
         group by w.id
+        order by w.create_time desc
     </select>
     <select id="findCrListForMineCarrier" resultType="com.cjyc.common.model.vo.web.waybill.CrWaybillVo">
         select
