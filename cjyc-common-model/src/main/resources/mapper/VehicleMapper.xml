@@ -44,13 +44,13 @@
         LEFT JOIN b_admin ba ON ba.id = dv.create_user_id
         <where>
             <if test="plateNo != null and plateNo.trim() != ''">
-                dv.plate_no = #{plateNo}
+                dv.plate_no like CONCAT('%',#{plateNo},'%')
             </if>
             <if test="realName != null and realName.trim() != ''">
                 and dd.real_name like CONCAT('%',#{realName},'%')
             </if>
             <if test="phone != null and phone.trim() != ''">
-                and dd.phone = #{phone}
+                and dd.phone like CONCAT('%',#{phone},'%')
             </if>
             and dv.ownership_type = 1
         </where>
@@ -80,13 +80,13 @@
                 dd.real_name like CONCAT('%',#{realName},'%')
             </if>
             <if test="phone != null and phone.trim() != ''">
-                and  dd.phone = #{phone}
+                and  dd.phone like CONCAT('%',#{phone},'%')
             </if>
             <if test="mode != null ">
                 and  dcdc.mode = #{mode}
             </if>
             <if test="plateNo != null and plateNo.trim() != ''">
-                and  dvr.plate_no = #{plateNo}
+                and  dvr.plate_no like CONCAT('%',#{plateNo},'%')
             </if>
             and dv.carrier_id = #{carrierId}
             group by dv.id

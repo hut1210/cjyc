@@ -139,13 +139,13 @@
                 dd.real_name like CONCAT('%',#{realName},'%')
             </if>
             <if test="phone != null and phone.trim() != ''">
-                and  dd.phone = #{phone}
+                and  dd.phone like CONCAT('%',#{phone},'%')
             </if>
             <if test="idCard != null and idCard.trim() != ''">
-                and  dd.id_card = #{idCard}
+                and  dd.id_card like CONCAT('%',#{idCard},'%')
             </if>
             <if test="plateNo != null and plateNo.trim() != ''">
-                and  dv.plate_no = #{plateNo}
+                and  dv.plate_no like CONCAT('%',#{plateNo},'%')
             </if>
             <if test="runningState != null">
                 and  dvr.running_state = #{runningState}
@@ -321,10 +321,10 @@
                 dd.real_name like CONCAT('%',#{realName},'%')
             </if>
             <if test="phone != null and phone.trim() != ''">
-                and  dd.phone = #{phone}
+                and  dd.phone like CONCAT('%',#{phone},'%')
             </if>
             <if test="plateNo != null and plateNo.trim() != ''">
-                and  dvr.plate_no = #{plateNo}
+                and  dvr.plate_no like CONCAT('%',#{plateNo},'%')
             </if>
             <if test="identity != null">
                 and  dd.identity = #{identity}

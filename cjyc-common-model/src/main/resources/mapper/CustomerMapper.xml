@@ -66,13 +66,13 @@
         LEFT JOIN b_admin ba ON ba.id = cc.create_user_id
         <where>
             <if test="contactPhone != null and contactPhone.trim() != ''">
-                cc.contact_phone = #{contactPhone}
+                cc.contact_phone like concat('%',#{contactPhone},'%')
             </if>
             <if test="contactMan != null  and contactMan.trim() != ''">
-                and  cc.contact_man = #{contactMan}
+                and  cc.contact_man like concat('%',#{contactMan},'%')
             </if>
             <if test="idCard != null and idCard.trim() != ''">
-                and  cc.id_card = #{idCard}
+                and  cc.id_card like concat('%',#{idCard},'%')
             </if>
             <if test="flag != null and flag == 0">
                 and  cc.state = 2
@@ -118,19 +118,19 @@
         LEFT JOIN b_admin ba ON ba.id = cc.create_user_id
         <where>
             <if test="customerNo != null and customerNo.trim() != ''">
-                cc.customer_no = #{customerNo}
+                cc.customer_no like concat('%',#{customerNo},'%')
             </if>
             <if test="name != null and name.trim() != ''">
-                and  cc.name = #{name}
+                and  cc.name like concat('%',#{name},'%')
             </if>
             <if test="state != null">
                 and  cc.state = #{state}
             </if>
             <if test="contactMan != null  and contactMan.trim() != ''">
-                and cc.contact_man = #{contactMan}
+                and cc.contact_man like concat('%',#{contactMan},'%')
             </if>
             <if test="contactPhone != null  and contactPhone.trim() != ''">
-                and  cc.contact_phone = #{contactPhone}
+                and  cc.contact_phone like concat('%',#{contactPhone},'%')
             </if>
             <if test="createUserName != null and createUserName.trim() != ''">
                 and  ba.name like concat('%',#{createUserName},'%')
@@ -172,19 +172,19 @@
         LEFT JOIN b_admin ba ON ba.id = cc.create_user_id
         <where>
             <if test="customerNo != null and customerNo.trim() != ''">
-                cc.customer_no = #{customerNo}
+                cc.customer_no like concat('%',#{customerNo},'%')
             </if>
             <if test="name != null and name.trim() != ''">
-               and cc.name = #{name}
+               and cc.name like concat('%',#{name},'%')
             </if>
             <if test="contactMan != null  and contactMan.trim() != ''">
-                and  cc.contact_man = #{contactMan}
+                and  cc.contact_man like concat('%',#{contactMan},'%')
             </if>
             <if test="contactPhone != null  and contactPhone.trim() != ''">
-                and cc.contact_phone = #{contactPhone}
+                and cc.contact_phone like concat('%',#{contactPhone},'%')
             </if>
             <if test="socialCreditCode != null  and socialCreditCode.trim() != ''">
-                and  cc.social_credit_code = #{socialCreditCode}
+                and  cc.social_credit_code like concat('%',#{socialCreditCode},'%')
             </if>
             <if test="source != null">
                 and  cc.source = #{source}

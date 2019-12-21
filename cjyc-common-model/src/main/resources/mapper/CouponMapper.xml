@@ -61,7 +61,7 @@
                 and  cc.create_time &lt; #{endTime}
             </if>
             <if test="createName != null and createName.trim() != ''">
-                and  ba.name = #{createName}
+                and  ba.name like CONCAT('%',#{createName},'%')
             </if>
         </where>
           order by cc.create_time desc
