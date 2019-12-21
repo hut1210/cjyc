@@ -73,7 +73,7 @@
                 and sl.to_code = #{toCityCode}
             </if>
             <if test="lineCode != null and lineCode.trim() != ''">
-                and sl.code = #{lineCode}
+                and sl.code like concat('%',#{lineCode},'%')
             </if>
         </where>
         order by sl.create_time desc,sl.update_time desc

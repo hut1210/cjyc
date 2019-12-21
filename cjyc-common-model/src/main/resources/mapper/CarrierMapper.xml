@@ -94,19 +94,19 @@
                 dc.name like CONCAT('%',#{name},'%')
             </if>
             <if test="linkman != null and linkman.trim() != ''">
-                and  dc.linkman = #{linkman}
+                and  dc.linkman like CONCAT('%',#{linkman},'%')
             </if>
             <if test="linkmanPhone != null and linkmanPhone.trim() != ''">
-                and  dc.linkman_phone = #{linkmanPhone}
+                and  dc.linkman_phone like CONCAT('%',#{linkmanPhone},'%')
             </if>
             <if test="cardNo != null and cardNo.trim() != ''">
-                and  sbcb.card_no = #{cardNo}
+                and  sbcb.card_no like CONCAT('%',#{cardNo},'%')
             </if>
             <if test="legalName != null and legalName.trim() != ''">
-                and  dc.legal_name = #{legalName}
+                and  dc.legal_name like CONCAT('%',#{legalName},'%')
             </if>
             <if test="legalIdCard != null and legalIdCard.trim() != ''">
-                and  dc.legal_id_card = #{legalIdCard}
+                and  dc.legal_id_card like CONCAT('%',#{legalIdCard},'%')
             </if>
             <if test="isInvoice != null">
                 and  dc.is_invoice = #{isInvoice}
