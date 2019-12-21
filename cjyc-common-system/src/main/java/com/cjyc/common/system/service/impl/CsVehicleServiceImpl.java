@@ -9,6 +9,7 @@ import com.cjyc.common.model.dto.driver.mine.AppCarrierVehicleDto;
 import com.cjyc.common.model.dto.driver.mine.CarrierVehicleNoDto;
 import com.cjyc.common.model.dto.web.vehicle.FreeVehicleDto;
 import com.cjyc.common.model.entity.*;
+import com.cjyc.common.model.enums.transport.RunningStateEnum;
 import com.cjyc.common.model.enums.transport.VehicleRunStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
@@ -134,7 +135,8 @@ public class CsVehicleServiceImpl implements ICsVehicleService {
             dvc.setDriverId(appDto.getDriverId());
         }
         vr.setVehicleId(veh.getId());
-        vr.setRunningState(VehicleRunStateEnum.WAY.code);
+        vr.setState(RunningStateEnum.EFFECTIVE.code);
+        vr.setRunningState(VehicleRunStateEnum.FREE.code);
         vr.setCreateTime(NOW);
         dvc.setVehicleId(veh.getId());
         vehicleRunningDao.insert(vr);
@@ -149,7 +151,8 @@ public class CsVehicleServiceImpl implements ICsVehicleService {
         //更新运力
         VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda()
                 .eq(veh.getId() != null,VehicleRunning::getVehicleId, veh.getId()));
-        vr.setRunningState(VehicleRunStateEnum.WAY.code);
+        vr.setState(RunningStateEnum.EFFECTIVE.code);
+        vr.setRunningState(VehicleRunStateEnum.FREE.code);
         vr.setUpdateTime(NOW);
         if(dto != null){
             dvc.setDriverId(dto.getDriverId());

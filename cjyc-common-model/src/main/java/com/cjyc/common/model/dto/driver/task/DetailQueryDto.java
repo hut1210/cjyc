@@ -3,7 +3,9 @@ package com.cjyc.common.model.dto.driver.task;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 
 /**
@@ -24,5 +26,10 @@ public class DetailQueryDto implements Serializable {
     @ApiModelProperty(value = "任务单id")
     @NotNull(groups = {GetHistoryDetail.class},message = "任务单id不能为空")
     private Long taskId;
+
+    @ApiModelProperty(value = "详情类型：0全部，1待提车，2待交车")
+    @NotBlank(groups = {GetHistoryDetail.class},message = "详情类型不能为空")
+    @Pattern(regexp = "(0|1|2)",message = "详情类型只能是0,1,2中的一位数")
+    private String detailType;
 
 }

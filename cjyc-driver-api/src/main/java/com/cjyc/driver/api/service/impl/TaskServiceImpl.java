@@ -4,6 +4,7 @@ import cn.hutool.core.text.StrBuilder;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cjyc.common.model.constant.FieldConstant;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.driver.BaseDriverDto;
 import com.cjyc.common.model.dto.driver.task.DetailQueryDto;
@@ -218,7 +219,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                 BeanUtils.copyProperties(waybillCar,carDetailVo);
 
                 // 查询除了当前车辆运单的历史车辆运单图片
-                getHistoryImg(carDetailVo, waybillCar);
+                getHistoryWaybillCarImg(carDetailVo, waybillCar,dto.getDetailType());
 
                 // 运费
                 freightFee = freightFee.add(waybillCar.getFreightFee()==null?new BigDecimal(0):waybillCar.getFreightFee());
@@ -245,12 +246,21 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
         return BaseResultUtil.success(taskDetailVo);
     }
 
-    private void getHistoryImg(CarDetailVo carDetailVo, WaybillCar waybillCar) {
+    private void getHistoryWaybillCarImg(CarDetailVo carDetailVo, WaybillCar waybillCar,String detailType) {
         List<WaybillCar> waybillCarList = waybillCarDao.selectList(new QueryWrapper<WaybillCar>().lambda()
                 .eq(WaybillCar::getOrderCarNo, waybillCar.getOrderCarNo())
-                .ne(WaybillCar::getId, waybillCar.getId()));
+                .lt(WaybillCar::getId, waybillCar.getId()));
+        StrBuilder sb = new StrBuilder();
+        // 封装历史运单车辆图片
+        fillHistoryWaybillCarImg(waybillCarList, sb);
+        // 封装当前运单车辆图片
+        fillThisWaybillCarImg(waybillCar, detailType, sb);
+        // 历史图片
+        carDetailVo.setHistoryLoadPhotoImg(sb.toString());
+    }
+
+    private void fillHistoryWaybillCarImg(List<WaybillCar> waybillCarList, StrBuilder sb) {
         if (!CollectionUtils.isEmpty(waybillCarList)) {
-            StrBuilder sb = new StrBuilder();
             for (WaybillCar car : waybillCarList) {
                 String loadPhotoImg = car.getLoadPhotoImg();
                 if (sb.length() > 0 && !StringUtils.isEmpty(loadPhotoImg)) {
@@ -268,7 +278,31 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                     sb.append(unloadPhotoImg);
                 }
             }
-            carDetailVo.setHistoryLoadPhotoImg(sb.toString());
+        }
+    }
+
+    private void fillThisWaybillCarImg(WaybillCar waybillCar, String detailType, StrBuilder sb) {
+        // 待交车车辆
+        if (FieldConstant.WAIT_GIVE_CAR.equals(detailType) || FieldConstant.ALL_TASK.equals(detailType)) {
+            // 当前车辆装车图片
+            String loadPhotoImg1 = waybillCar.getLoadPhotoImg();
+            if (sb.length() > 0 && !StringUtils.isEmpty(loadPhotoImg1)) {
+                sb.append(",");
+            }
+            if (!StringUtils.isEmpty(loadPhotoImg1)) {
+                sb.append(loadPhotoImg1);
+            }
+        }
+        // 已交付车辆
+        if (FieldConstant.ALL_TASK.equals(detailType)) {
+            // 当前车辆卸车图片
+            String unloadPhotoImg1 = waybillCar.getUnloadPhotoImg();
+            if (sb.length() > 0 && !StringUtils.isEmpty(unloadPhotoImg1)) {
+                sb.append(",");
+            }
+            if (!StringUtils.isEmpty(unloadPhotoImg1)) {
+                sb.append(unloadPhotoImg1);
+            }
         }
     }
 
