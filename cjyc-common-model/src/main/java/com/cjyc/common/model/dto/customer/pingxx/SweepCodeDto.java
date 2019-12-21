@@ -27,9 +27,9 @@ public class SweepCodeDto {
     @ApiModelProperty(value = "任务车辆ID")
     private List<Long> taskCarIdList;
 
-    @ApiModelProperty(value = "ip (不用传)")
+    @ApiModelProperty(hidden = true)
     private String ip;
 
-    @ApiModelProperty("1为司机端出示 2为业务员端出示")
+    @ApiModelProperty(value = "1为司机端出示 2为业务员端出示", hidden = true)
     private int clientType;
 }

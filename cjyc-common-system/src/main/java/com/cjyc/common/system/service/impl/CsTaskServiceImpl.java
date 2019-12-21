@@ -123,13 +123,23 @@ public class CsTaskServiceImpl implements ICsTaskService {
         if (waybillCar == null) {
             return BaseResultUtil.fail("运单车辆不存在");
         }
+        Waybill waybill = waybillDao.selectById(waybillCar.getWaybillId());
+        if(waybill == null){
+            return BaseResultUtil.fail("运单不存在");
+        }
         List<String> loadPhotoImgs = reqDto.getLoadPhotoImgs();
-        if(!CollectionUtils.isEmpty(loadPhotoImgs)){
+        if(WaybillTypeEnum.PICK.code == waybill.getType() ){
             if (loadPhotoImgs.size() < Constant.MIN_LOAD_PHOTO_NUM) {
                 return BaseResultUtil.fail("照片数量不足8张");
             }
             if (loadPhotoImgs.size() > Constant.MAX_LOAD_PHOTO_NUM) {
                 return BaseResultUtil.fail("照片数量不能超过20张");
+            }
+        }else{
+            if(!CollectionUtils.isEmpty(loadPhotoImgs)){
+                if (loadPhotoImgs.size() > Constant.MAX_LOAD_PHOTO_NUM) {
+                    return BaseResultUtil.fail("照片数量不能超过20张");
+                }
             }
         }
         //更新车辆信息
@@ -162,7 +172,6 @@ public class CsTaskServiceImpl implements ICsTaskService {
         loadTaskDto.setTaskCarIdList(Lists.newArrayList(taskCar.getId()));
 
         return load(loadTaskDto);
-
     }
 
 

@@ -30,6 +30,8 @@ public class TaskPageDto extends BasePageDto {
     @ApiModelProperty(value = "vin码")
     private String vin;
 
-    @ApiModelProperty(value = "业务中心ID：不用传")
+    @ApiModelProperty(value = "业务中心ID")
     private String storeId;
+
+
 }

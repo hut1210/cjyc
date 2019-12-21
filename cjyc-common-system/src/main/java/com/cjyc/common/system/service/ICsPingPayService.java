@@ -25,7 +25,7 @@ public interface ICsPingPayService {
     Charge sweepSalesCode(SweepCodeDto sweepCodeDto) throws RateLimitException, APIException, ChannelException, InvalidRequestException,
             APIConnectionException, AuthenticationException, FileNotFoundException;
 
-    Transfer allinpayToDriver(Long waybillId) throws AuthenticationException, InvalidRequestException, APIConnectionException, APIException, ChannelException, RateLimitException, FileNotFoundException ;
+    Transfer allinpayToCarrier(Long waybillId) throws AuthenticationException, InvalidRequestException, APIConnectionException, APIException, ChannelException, RateLimitException, FileNotFoundException ;
 
     Charge prePay(PrePayDto prePayDto) throws RateLimitException, APIException, ChannelException, InvalidRequestException,
             APIConnectionException, AuthenticationException, FileNotFoundException;

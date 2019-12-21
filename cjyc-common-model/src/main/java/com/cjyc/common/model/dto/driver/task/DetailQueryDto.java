@@ -24,4 +24,5 @@ public class DetailQueryDto implements Serializable {
     @ApiModelProperty(value = "任务单id")
     @NotNull(groups = {GetHistoryDetail.class},message = "任务单id不能为空")
     private Long taskId;
+
 }

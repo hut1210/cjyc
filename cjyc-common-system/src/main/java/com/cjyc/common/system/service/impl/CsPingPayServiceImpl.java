@@ -291,7 +291,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
     }
 
     @Override
-    public Transfer allinpayToDriver(Long waybillId) throws AuthenticationException, InvalidRequestException, APIConnectionException, APIException, ChannelException, RateLimitException, FileNotFoundException {
+    public Transfer allinpayToCarrier(Long waybillId) throws AuthenticationException, InvalidRequestException, APIConnectionException, APIException, ChannelException, RateLimitException, FileNotFoundException {
         Transfer transfer = new Transfer();
         List<Long> waybillIdList = new ArrayList<>();
         waybillIdList.add(waybillId);
