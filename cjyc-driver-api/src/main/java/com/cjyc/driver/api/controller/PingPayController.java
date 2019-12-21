@@ -55,7 +55,6 @@ public class PingPayController {
     @ApiOperation(value = "签收-验证支付状态")
     @PostMapping(value = "/validate")
     public ResultVo<ValidateSweepCodePayVo> validateCarPayState(@RequestBody ValidateSweepCodeDto validateSweepCodeDto) {
-
         return pingPayService.validateCarPayState(validateSweepCodeDto, false);
     }
 

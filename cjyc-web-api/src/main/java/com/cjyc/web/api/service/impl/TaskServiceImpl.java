@@ -114,18 +114,6 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
 
     @Override
     public ResultVo<PageVo<TaskPageVo>> getTaskPage(TaskPageDto dto) {
-        // 根据登录ID查询业务中心ID
-        BizScope bizScope = csSysService.getBizScopeByLoginId(dto.getLoginId(), true);
-
-        // 判断当前登录人是否有权限访问
-        int code = bizScope.getCode();
-        if (BizScopeEnum.NONE.code == code) {
-            return BaseResultUtil.fail("您没有访问权限!");
-        }
-        // 设置业务中心ID
-        String storeId = getStoreId(bizScope);
-        dto.setStoreId(storeId);
-
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<TaskPageVo> list = taskDao.selectMyTaskList(dto);
         PageInfo<TaskPageVo> pageInfo = new PageInfo<>(list);
