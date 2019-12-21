@@ -111,8 +111,6 @@ public class CsOrderServiceImpl implements ICsOrderService {
         BeanUtils.copyProperties(paramsDto, order);
         //查询三级城市
         fillOrderCityInfo(order);
-        fillOrderInputStore(order);
-        fillOrderStoreInfo(order);
 
         /**1、组装订单数据
          */

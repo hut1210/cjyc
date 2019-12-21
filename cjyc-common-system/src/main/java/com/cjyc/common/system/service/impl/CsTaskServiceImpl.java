@@ -24,7 +24,6 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.FailResultReasonVo;
 import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.OrderCarVo;
 import com.cjyc.common.system.service.*;
 import com.cjyc.common.system.util.RedisUtils;
 import com.google.common.base.Joiner;
@@ -499,9 +498,10 @@ public class CsTaskServiceImpl implements ICsTaskService {
             }
             int m = waybillCarDao.countByStartCityAndOrderCar(waybillCar.getEndCityCode(), waybillCar.getEndStoreId());
             //计算是否到达目的地城市范围
-            if(validateIsArriveEndCity(order, waybillCar)){
-
-            }
+/*            if(validateIsArriveEndCity(order, waybillCar)){
+                failCarNoSet.add(new FailResultReasonVo(waybillCar.getOrderCarNo(), "订单尚未到达业务中心范围"));
+                continue;
+            }*/
             if (waybillCar.getEndCityCode().equals(order.getEndCityCode())) {
                 //配送
                 newState = m == 0 ? OrderCarStateEnum.WAIT_BACK_DISPATCH.code : OrderCarStateEnum.WAIT_BACK.code;
@@ -549,6 +549,11 @@ public class CsTaskServiceImpl implements ICsTaskService {
                             MessageFormat.format(OrderCarLogEnum.IN_STORE.getOutterLog(), oc.getNo(), waybillCar.getEndStoreName())},
                     new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), paramsDto.getLoginType()));
             successSet.add(order.getNo());
+        }
+        if(CollectionUtils.isEmpty(successSet)){
+            resultReasonVo.setSuccessList(successSet);
+            resultReasonVo.setFailList(failCarNoSet);
+            BaseResultUtil.success(resultReasonVo);
         }
 
         //验证任务是否完成
@@ -615,10 +620,10 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 failCarNoSet.add(new FailResultReasonVo(waybillCar.getOrderCarNo(), "订单车辆不存在"));
                 continue;
             }
-            if (!waybillCar.getStartStoreId().equals(orderCar.getNowStoreId())) {
+/*            if (!waybillCar.getStartStoreId().equals(orderCar.getNowStoreId())) {
                 failCarNoSet.add(new FailResultReasonVo(waybillCar.getOrderCarNo(), "订单车辆尚未到达始发地业务中心范围内"));
                 continue;
-            }
+            }*/
             //更新运单车辆状态
             waybillCarDao.updateStateById(waybillCar.getId(), WaybillCarStateEnum.LOADED.code);
             //更新车辆信息
@@ -634,8 +639,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 orderCarNewState = OrderCarStateEnum.BACKING.code;
             }
             orderCarDao.updateStateById(orderCarNewState, orderCar.getId());
-            //提取数据
-            successSet.add(orderCar.getNo());
+
             //出库日志
             CarStorageLog carStorageLog = CarStorageLog.builder()
                     .type(CarStorageTypeEnum.OUT.code)
@@ -662,6 +666,13 @@ public class CsTaskServiceImpl implements ICsTaskService {
                     new String[]{MessageFormat.format(OrderCarLogEnum.OUT_STORE.getInnerLog(), orderCar.getNo(), waybillCar.getEndStoreName()),
                             MessageFormat.format(OrderCarLogEnum.OUT_STORE.getOutterLog(), orderCar.getNo(), waybillCar.getEndStoreName())},
                     userInfo);
+            //提取数据
+            successSet.add(orderCar.getNo());
+        }
+        if(CollectionUtils.isEmpty(successSet)){
+            resultReasonVo.setFailList(failCarNoSet);
+            resultReasonVo.setSuccessList(successSet);
+            return BaseResultUtil.fail(resultReasonVo);
         }
         //添加出库日志
         csStorageLogService.asyncSaveBatch(storageLogSet);
