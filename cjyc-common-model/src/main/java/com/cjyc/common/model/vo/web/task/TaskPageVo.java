@@ -28,6 +28,9 @@ public class TaskPageVo implements Serializable {
     @ApiModelProperty(value = "运单类型：1提车运单，2干线运单，3送车运单")
     private Integer type;
 
+    @ApiModelProperty(value = "任务单ID")
+    private Long taskId;
+
     @ApiModelProperty(value = "任务单车辆ID")
     private Long taskCarId;
 
