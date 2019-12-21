@@ -31,6 +31,6 @@ public class TaskPageDto extends BasePageDto {
     private Long storeId;
 
     @ApiModelProperty(value = "库存状态：0全部，1待入库，2待出库")
-    @Pattern(regexp = "[0|1|2]",message = "库存状态只能是0,1,2中的一位数")
+    @Pattern(regexp = "(0|1|2)",message = "库存状态只能是0,1,2中的一位数")
     private String storageState;
 }

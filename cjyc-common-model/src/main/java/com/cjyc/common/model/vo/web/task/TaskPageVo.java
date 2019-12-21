@@ -17,7 +17,7 @@ public class TaskPageVo implements Serializable {
     private String orderNo;
 
     @ApiModelProperty(value = "运单编号")
-    private String waybillNo;
+    private String taskNo;
 
     @ApiModelProperty(value = "车辆编号")
     private String orderCarNo;

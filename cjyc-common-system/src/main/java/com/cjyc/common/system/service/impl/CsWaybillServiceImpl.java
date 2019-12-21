@@ -254,7 +254,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 waybillCar.setReceiptFlag(waybillCar.getUnloadLinkPhone().equals(order.getBackContactPhone()));
                 //运单车辆状态
                 waybillCar.setState(isOneDriver ?
-                        (waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code ? WaybillCarStateEnum.LOADED.code : WaybillCarStateEnum.WAIT_LOAD.code)
+                        (waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code ? WaybillCarStateEnum.WAIT_UNLOAD_CONFIRM.code : WaybillCarStateEnum.WAIT_LOAD.code)
                         : WaybillCarStateEnum.WAIT_ALLOT.code);
 
                 if(waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code){
@@ -508,7 +508,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             waybillCar.setReceiptFlag(waybillCar.getUnloadLinkPhone().equals(order.getBackContactPhone()));
             //运单车辆状态
             waybillCar.setState(isOneDriver ?
-                    (waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code ? WaybillCarStateEnum.LOADED.code : WaybillCarStateEnum.WAIT_LOAD.code)
+                    (waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code ? WaybillCarStateEnum.WAIT_UNLOAD_CONFIRM.code : WaybillCarStateEnum.WAIT_LOAD.code)
                     : WaybillCarStateEnum.WAIT_ALLOT.code);
             if(waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code){
                 waybillCar.setLoadTime(currentTimeMillis);

@@ -43,6 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.lang.reflect.Parameter;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.List;
@@ -111,6 +112,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         //查询三级城市
         fillOrderCityInfo(order);
         fillOrderInputStore(order);
+        fillOrderStoreInfo(order);
 
         /**1、组装订单数据
          */
@@ -197,9 +199,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         paramsDto.setCustomerId(customer.getId());
         //提交订单
         Order order = commitOrder(paramsDto);
-
         return BaseResultUtil.success("下单{0}成功", order.getNo());
-
     }
 
     private Order commitOrder(CommitOrderDto paramsDto) {
@@ -386,6 +386,9 @@ public class CsOrderServiceImpl implements ICsOrderService {
                     order.setStartStoreName(store.getName());
                 }
                 order.setStartBelongStoreId(store.getId());
+            }else{
+                order.setStartStoreId(0L);
+                order.setStartBelongStoreId(0L);
             }
         }
         if (order.getEndStoreId() != null && order.getEndStoreId() > 0) {
@@ -400,6 +403,9 @@ public class CsOrderServiceImpl implements ICsOrderService {
                     order.setEndStoreName(store.getName());
                 }
                 order.setEndBelongStoreId(store.getId());
+            }else{
+                order.setEndStoreId(0L);
+                order.setEndBelongStoreId(0L);
             }
         }
     }
@@ -587,7 +593,11 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 || order.getBackContactPhone() == null) {
             throw new ParameterException("收车联系人不能为空");
         }
-
+        if(order.getStartStoreId() == null || order.getStartStoreId() == -5
+                || order.getEndStoreId() == null || order.getEndStoreId() == -5
+                || order.getInputStoreId() == null || order.getInputStoreId() == -5){
+            throw new ParameterException("请先完善订单信息");
+        }
     }
 
     /**

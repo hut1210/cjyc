@@ -496,7 +496,7 @@
             t1.taskId,
             t1.taskCarId,
             t1.waybillCarState,
-            t1.taskNo as waybillNo,
+            t1.taskNo as taskNo,
             w.type,
             oc.order_no as orderNo,
             oc.no as orderCarNo,
@@ -523,22 +523,21 @@
         ) t
         LEFT JOIN w_waybill_car wc ON t.waybill_car_id = wc.id
         <where>
-             /*库存状态：0全部*/
-            <if test="storeId != null and storageState == 0">
-                ((wc.start_belong_store_id = #{storeId} and wc.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_LOAD_CONFIRM.code})
-                or
-                (wc.end_belong_store_id = #{storeId} and wc.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_UNLOAD_CONFIRM.code}))
-            </if>
-            /*库存状态：1待入库*/
-            <if test="storeId != null and storageState == 1">
-                wc.end_belong_store_id = #{storeId}
-                and wc.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_UNLOAD_CONFIRM.code}
-            </if>
-            /*库存状态：2待出库*/
-            <if test="storeId != null and storageState == 2">
-                wc.start_belong_store_id = #{storeId}
-                and wc.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_LOAD_CONFIRM.code}
-            </if>
+            <choose>
+                <when test="storeId != null and storageState == 1">
+                    wc.end_belong_store_id = #{storeId}
+                    and wc.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_UNLOAD_CONFIRM.code}
+                </when>
+                <when test="storeId != null and storageState == 2">
+                    wc.start_belong_store_id = #{storeId}
+                    and wc.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_LOAD_CONFIRM.code}
+                </when>
+                <otherwise>
+                    ((wc.start_belong_store_id = #{storeId} and wc.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_LOAD_CONFIRM.code})
+                    or
+                    (wc.end_belong_store_id = #{storeId} and wc.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_UNLOAD_CONFIRM.code}))
+                </otherwise>
+            </choose>
         </where>) t1
         left join w_waybill w on t1.waybillId=w.id
         left join w_order_car oc on t1.orderCarId=oc.id

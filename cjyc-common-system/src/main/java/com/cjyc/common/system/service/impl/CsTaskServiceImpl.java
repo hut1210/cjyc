@@ -206,7 +206,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             }
             //验证司机运力信息
             VehicleRunning vr = vehicleRunningDao.findByDriverId(driverId);
-            if(vr == null || vr.getState() != 1){
+            if(vr == null || vr.getState() == null || vr.getState() != 1){
                 return BaseResultUtil.fail("司机尚未绑定车牌号");
             }
 
@@ -237,19 +237,19 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 //加锁
                 String lockKey = RedisKeys.getAllotTaskKey(waybillCar.getId());
                 if (!redisLock.lock(lockKey, 20000, 100, 300)) {
-                    throw new ServerException("当前运单车辆{}其他人正在分配，", waybillCar.getOrderCarNo());
+                    throw new ServerException("当前运单车辆{0}其他人正在分配，", waybillCar.getOrderCarNo());
                 }
                 lockKeySet.add(lockKey);
 
                 //验证运单车辆状态
                 if (waybillCar.getState() > WaybillCarStateEnum.WAIT_ALLOT.code) {
-                    throw new ServerException("当前运单车辆{}的状态，无法分配任务", waybillCar.getOrderCarNo());
+                    throw new ServerException("当前运单车辆{0}的状态，无法分配任务", waybillCar.getOrderCarNo());
                 }
 
                 //验证是否存在任务明细
                 int n = taskDao.countByTaskIdAndWaybillCarId(task.getId(), waybillCar.getId());
                 if (n > 0) {
-                    throw new ServerException("当前运单车辆{}, 已经分配过", waybillCar.getOrderCarNo());
+                    throw new ServerException("当前运单车辆{0}, 已经分配过", waybillCar.getOrderCarNo());
                 }
 
                 TaskCar taskCar = new TaskCar();
@@ -548,6 +548,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                     new String[]{MessageFormat.format(OrderCarLogEnum.IN_STORE.getInnerLog(), oc.getNo(), waybillCar.getEndStoreName()),
                             MessageFormat.format(OrderCarLogEnum.IN_STORE.getOutterLog(), oc.getNo(), waybillCar.getEndStoreName())},
                     new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), paramsDto.getLoginType()));
+            successSet.add(order.getNo());
         }
 
         //验证任务是否完成

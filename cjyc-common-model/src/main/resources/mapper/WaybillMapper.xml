@@ -294,15 +294,20 @@
     </select>
     <select id="findSubListTrunk" resultType="com.cjyc.common.model.vo.web.waybill.TrunkSubListWaybillVo">
         select
-        w.*,
+        w.carrier_name as carrierName,
         t.no as wtNo,
+        t.car_num as carNum,
+        t.guide_line as guideLine,
         t.car_num as taskCarNum,
-        (case when w.carrier_type = 1 then t.driver_id end) as driverId,
-        (case when w.carrier_type = 1 then t.driver_name end) as driverName,
-        (case when w.carrier_type = 1 then t.driver_phone end) as driverPhone,
-        (case when w.carrier_type = 1 then vr.plate_no end) as vehiclePlateNo,
-        (case when w.carrier_type = 1 then vr.carry_car_num end) as carryCarNum,
-        (case when w.carrier_type = 1 then vr.occupied_car_num end) as occupiedCarNum
+        t.driver_id as driverId,
+        t.driver_name as driverName,
+        t.driver_phone as driverPhone,
+        t.vehicle_plate_no as vehiclePlateNo,
+        t.remark as remark,
+        t.create_time as createTime,
+        t.create_user as createUser,
+        vr.carry_car_num as carryCarNum,
+        vr.occupied_car_num as occupiedCarNum
         from w_waybill w
         JOIN w_task t on w.id = t.waybill_id
         left join d_vehicle_running vr on vr.driver_id = t.driver_id
@@ -333,7 +338,7 @@
                 and t.create_time  &lt;= #{paramsDto.endCreateTime}
             </if>
         </where>
-        group by w.id
+        group by t.id
     </select>
     <select id="findCrListForMineCarrier" resultType="com.cjyc.common.model.vo.web.waybill.CrWaybillVo">
         select
