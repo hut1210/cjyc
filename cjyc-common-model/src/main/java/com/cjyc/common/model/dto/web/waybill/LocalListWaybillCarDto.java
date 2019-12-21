@@ -57,8 +57,6 @@ public class LocalListWaybillCarDto extends BasePageDto {
     private Long beginExpectStartTime;
     @ApiModelProperty(value = "起始预计提车日期")
     private Long endExpectStartTime;
-    @ApiModelProperty(value = "取车方式:1上门，2 自送/自取")
-    private Integer takeType;
     @ApiModelProperty(value = "提车联系人")
     private String loadLinkName;
     @ApiModelProperty(value = "提车联系人userid")

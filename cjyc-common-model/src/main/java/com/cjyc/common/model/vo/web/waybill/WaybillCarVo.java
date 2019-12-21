@@ -133,9 +133,6 @@ public class WaybillCarVo {
     @ApiModelProperty(value = "预计到达时间")
     private Long expectEndTime;
 
-    @ApiModelProperty(value = "取车方式:1上门，2 自送/自取")
-    private Integer takeType;
-
     @ApiModelProperty(value = "提车联系人")
     private String loadLinkName;
 

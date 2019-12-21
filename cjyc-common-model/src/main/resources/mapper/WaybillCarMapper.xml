@@ -50,7 +50,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, waybill_id, waybill_no, order_car_id, order_car_no, freight_fee, start_province, start_province_code, start_city, start_city_code, start_area, start_area_code, start_address, start_store_name, start_store_id, start_belong_store_id, end_province, end_province_code, end_city, end_city_code, end_area, end_area_code, end_address, end_store_name, end_store_id, end_belong_store_id, line_id, state, expect_start_time, expect_end_time, take_type, load_link_name, load_link_user_id, load_link_phone, load_turn_type, load_photo_img, load_time, unload_link_name, unload_link_user_id, unload_link_phone, unload_turn_type, unload_photo_img, unload_time, receipt_flag, sort, create_time
+        id, waybill_id, waybill_no, order_car_id, order_car_no, freight_fee, start_province, start_province_code, start_city, start_city_code, start_area, start_area_code, start_address, start_store_name, start_store_id, start_belong_store_id, end_province, end_province_code, end_city, end_city_code, end_area, end_area_code, end_address, end_store_name, end_store_id, end_belong_store_id, line_id, state, expect_start_time, expect_end_time, load_link_name, load_link_user_id, load_link_phone, load_photo_img, load_time, unload_link_name, unload_link_user_id, unload_link_phone, unload_photo_img, unload_time, receipt_flag, create_time
     </sql>
 
 
@@ -59,7 +59,7 @@
         (waybill_id, waybill_no, order_car_id, freight_fee, start_province, start_province_code, start_city,
         start_city_code, start_area, start_area_code, start_address,start_store_name, start_store_id, end_province,
         end_province_code, end_city,end_city_code, end_area, end_area_code, end_address,end_store_name,
-        end_store_id, line_id, state, expect_start_time, expect_end_time, take_type, load_link_name,
+        end_store_id, line_id, state, expect_start_time, expect_end_time, load_link_name,
         load_link_user_id, load_link_phone, unload_link_name, unload_link_user_id, unload_link_phone,
         create_time)
         values
@@ -91,7 +91,6 @@
             #{item.state},
             #{item.expect_start_time},
             #{item.expect_end_time},
-            #{item.take_type},
             #{item.load_link_name},
             #{item.load_link_user_id},
             #{item.load_link_phone},
@@ -470,10 +469,6 @@
             </if>
             <if test="paramsDto.endExpectStartTime != null">
                 and wc.expect_start_time &lt;= #{paramsDto.endExpectStartTime}
-            </if>
-
-            <if test="paramsDto.takeType != null and paramsDto.takeType != 0">
-                and wc.take_type = #{paramsDto.takeType}
             </if>
             <if test="paramsDto.loadLinkName != null and paramsDto.loadLinkName != ''">
                 and wc.load_link_name = #{paramsDto.loadLinkName}
