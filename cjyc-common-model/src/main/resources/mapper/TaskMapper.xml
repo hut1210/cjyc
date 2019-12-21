@@ -524,19 +524,19 @@
         LEFT JOIN w_waybill_car wc ON t.waybill_car_id = wc.id
         <where>
              /*库存状态：0全部*/
-            <if test="storeId != null and storageState == @com.cjyc.common.model.constant.FieldConstant@ALL_TASK">
+            <if test="storeId != null and storageState == 0">
                 ((wc.start_belong_store_id = #{storeId} and wc.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_LOAD_CONFIRM.code})
                 or
                 (wc.end_belong_store_id = #{storeId} and wc.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_UNLOAD_CONFIRM.code}))
             </if>
             /*库存状态：1待入库*/
-            <if test="storeId != null and storageState == @com.cjyc.common.model.constant.FieldConstant@WAIT_PICK_CAR">
-                AND wc.end_belong_store_id = #{storeId}
+            <if test="storeId != null and storageState == 1">
+                wc.end_belong_store_id = #{storeId}
                 and wc.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_UNLOAD_CONFIRM.code}
             </if>
             /*库存状态：2待出库*/
-            <if test="storeId != null and storageState == @com.cjyc.common.model.constant.FieldConstant@WAIT_GIVE_CAR">
-                AND wc.start_belong_store_id = #{storeId}
+            <if test="storeId != null and storageState == 2">
+                wc.start_belong_store_id = #{storeId}
                 and wc.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_LOAD_CONFIRM.code}
             </if>
         </where>) t1
