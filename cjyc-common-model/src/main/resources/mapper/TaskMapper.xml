@@ -432,28 +432,28 @@
             <if test="storeId != null and storeId != '' and storageState == @com.cjyc.common.model.constant.FieldConstant@ALL_TASK">
                 AND (
                 (car.start_belong_store_id in(#{storeId})
-                and car.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_LOAD_TURN})
+                and car.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_LOAD_CONFIRM.code})
                 or (car.end_belong_store_id in(#{storeId})
-                and car.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@APPLY_CONFIRM})
+                and car.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_UNLOAD_CONFIRM.code})
                 )
             </if>
             /*库存状态：1待入库*/
             <if test="storeId != null and storeId != '' and storageState == @com.cjyc.common.model.constant.FieldConstant@WAIT_PICK_CAR">
                 AND car.end_belong_store_id in(#{storeId})
-                and car.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@APPLY_CONFIRM}
+                and car.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_UNLOAD_CONFIRM.code}
             </if>
             /*库存状态：2待出库*/
             <if test="storeId != null and storeId != '' and storageState == @com.cjyc.common.model.constant.FieldConstant@WAIT_GIVE_CAR">
                 AND car.start_belong_store_id in(#{storeId})
-                and car.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_LOAD_TURN}
+                and car.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_LOAD_CONFIRM.code}
             </if>
             /*库存状态：3已入库，已出库*/
             <if test="storeId != null and storeId != '' and storageState == @com.cjyc.common.model.constant.FieldConstant@FINISH">
                 AND (
                 (car.start_belong_store_id in(#{storeId})
-                and car.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@LOADED})
+                and car.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@LOADED.code})
                 or (car.end_belong_store_id in(#{storeId})
-                and car.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@CONFIRMED})
+                and car.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@UNLOADED.code})
                 )
             </if>
             <if test="inStorageTimeS != null and inStorageTimeS != 0">
