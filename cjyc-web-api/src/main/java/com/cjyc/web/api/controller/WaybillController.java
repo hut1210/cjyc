@@ -300,20 +300,6 @@ public class WaybillController {
         }
     }
 
-
-
-    /**
-     * 查询干线运单主单列表
-     */
-    @Deprecated
-    @ApiOperation(value = "查询干线运单列表")
-    @PostMapping(value = "/trunk/list")
-    public ResultVo<PageVo<TrunkListWaybillVo>> getTrunklist(@RequestBody TrunkListWaybillDto reqDto) {
-        return waybillService.trunklist(reqDto);
-    }
-
-
-
     /**
      * 查询干线运单车辆列表
      */

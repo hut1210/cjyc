@@ -273,7 +273,8 @@
         left join d_vehicle_running vr on vr.driver_id = t.driver_id
         <where>
             w.type = 2
-            w.state &lt;= 100
+            and w.state &lt;= 100
+            and t.state &lt;= 100
             <if test="paramsDto.waybillNo != null and paramsDto.waybillNo != ''">
                 and w.no  = #{paramsDto.waybillNo}
             </if>
@@ -314,7 +315,8 @@
         left join d_vehicle_running vr on vr.driver_id = t.driver_id
         <where>
             w.type = 2
-            w.state &lt;= 100
+            and w.state &lt;= 100
+            and t.state &lt;= 100
             <if test="paramsDto.waybillNo != null and paramsDto.waybillNo != ''">
                 and w.no  = #{paramsDto.waybillNo}
             </if>

@@ -43,7 +43,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.lang.reflect.Parameter;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.List;
@@ -111,7 +110,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
         BeanUtils.copyProperties(paramsDto, order);
         //查询三级城市
         fillOrderCityInfo(order);
-
+        fillOrderInputStore(order);
+        fillOrderStoreInfoForSave(order);
         /**1、组装订单数据
          */
         if (newOrderFlag) {
@@ -165,6 +165,15 @@ public class CsOrderServiceImpl implements ICsOrderService {
             noCount++;
         }
         return BaseResultUtil.success("下单成功，订单编号{0}", order.getNo());
+    }
+
+    private void fillOrderStoreInfoForSave(Order order) {
+        Long inputStoreId = order.getInputStoreId();
+        order.setInputStoreId(inputStoreId == null || inputStoreId == -5 ? null : inputStoreId);
+        Long startStoreId = order.getStartStoreId();
+        order.setStartStoreId(startStoreId == null || startStoreId == -5 ? null : startStoreId);
+        Long endStoreId = order.getEndStoreId();
+        order.setInputStoreId(endStoreId == null || endStoreId == -5 ? null : endStoreId);
     }
 
     private void fillOrderInputStore(Order order) {
@@ -594,7 +603,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         if(order.getStartStoreId() == null || order.getStartStoreId() == -5
                 || order.getEndStoreId() == null || order.getEndStoreId() == -5
                 || order.getInputStoreId() == null || order.getInputStoreId() == -5){
-            throw new ParameterException("请先完善订单信息");
+            throw new ParameterException("请先通过[修改订单]完善订单业务中心信息");
         }
     }
 

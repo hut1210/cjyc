@@ -34,7 +34,6 @@ public class SmsController {
     @Resource
     private ICsSmsService csSmsService;
 
-
     @ApiOperation(value = "发送短信验证码", notes = " ")
     @PostMapping("/captcha/send")
     public ResultVo send(@RequestBody CaptchaSendDto reqDto){
