@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 @Data
@@ -73,4 +74,35 @@ public class ShowPartnerVo implements Serializable {
     private String authorizationFrontImg;
     @ApiModelProperty("授权书反面")
     private String authorizationBackImg;
+
+    public String getDescription(){
+        return StringUtils.isBlank(description) ? "":description;
+    }
+    public String getIdCard(){
+        return StringUtils.isBlank(idCard) ? "":idCard;
+    }
+    public String getBusinessLicenseFrontImg(){
+        return StringUtils.isBlank(businessLicenseFrontImg) ? "":businessLicenseFrontImg;
+    }
+    public String getBusinessLicenseBackImg(){
+        return StringUtils.isBlank(businessLicenseBackImg) ? "":businessLicenseBackImg;
+    }
+    public String getLegalIdcardFrontImg(){
+        return StringUtils.isBlank(legalIdcardFrontImg) ? "":legalIdcardFrontImg;
+    }
+    public String getLegalIdcardBackImg(){
+        return StringUtils.isBlank(legalIdcardBackImg) ? "":legalIdcardBackImg;
+    }
+    public String getLinkmanIdcardFrontImg(){
+        return StringUtils.isBlank(linkmanIdcardFrontImg) ? "":linkmanIdcardFrontImg;
+    }
+    public String getLinkmanIdcardBackImg(){
+        return StringUtils.isBlank(linkmanIdcardBackImg) ? "":linkmanIdcardBackImg;
+    }
+    public String getAuthorizationFrontImg(){
+        return StringUtils.isBlank(authorizationFrontImg) ? "":authorizationFrontImg;
+    }
+    public String getAuthorizationBackImg(){
+        return StringUtils.isBlank(authorizationBackImg) ? "":authorizationBackImg;
+    }
 }

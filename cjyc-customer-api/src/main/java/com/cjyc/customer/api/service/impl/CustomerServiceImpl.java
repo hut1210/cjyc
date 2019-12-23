@@ -9,6 +9,7 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.customerInfo.AppCustomerInfoVo;
 import com.cjyc.common.model.vo.web.customer.CustomerFuzzyListVo;
+import com.cjyc.common.model.vo.web.customer.ShowPartnerVo;
 import com.cjyc.customer.api.service.ICustomerService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -51,6 +52,12 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao, Customer> imp
         infoVo.setPhone(customer.getContactPhone());
         infoVo.setName(customer.getContactMan());
         return BaseResultUtil.success(infoVo);
+    }
+
+    @Override
+    public ResultVo<ShowPartnerVo> showPartner(AppCustomerDto dto) {
+        ShowPartnerVo partnerVo = customerDao.showPartner(dto.getLoginId());
+        return BaseResultUtil.success(partnerVo);
     }
 
 }

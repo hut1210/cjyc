@@ -22,4 +22,7 @@ public class SelectCustomerDto extends BasePageDto implements Serializable {
 
     @ApiModelProperty(value = "身份证号")
     private String idCard;
+
+    @ApiModelProperty(value = "状态：0待审核，1审核中，2已审核，3审核拒绝， 7已冻结")
+    private Long state;
 }
