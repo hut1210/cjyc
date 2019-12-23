@@ -17,8 +17,8 @@ public class TaskPageDto extends BasePageDto {
     private static final long serialVersionUID = -6720067907147114367L;
     @ApiModelProperty(value = "订单编号")
     private String orderNo;
-    @ApiModelProperty(value = "运单编号")
-    private String waybillNo;
+    @ApiModelProperty(value = "任务编号")
+    private String taskNo;
 
     @ApiModelProperty(value = "车辆编号")
     private String orderCarNo;

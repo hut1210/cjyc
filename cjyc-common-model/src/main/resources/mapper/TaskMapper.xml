@@ -516,8 +516,8 @@
         FROM w_task task
         LEFT JOIN w_task_car tc ON task.id = tc.task_id
             <where>
-                <if test="waybillNo != null and waybillNo.trim() != ''">
-                    AND task.waybill_no like concat('%',#{waybillNo},'%')
+                <if test="taskNo != null and taskNo.trim() != ''">
+                    AND task.no like concat('%',#{taskNo},'%')
                 </if>
             </where>
         ) t
