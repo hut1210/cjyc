@@ -285,16 +285,13 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
     }
 
     private void fillThisWaybillCarImg(WaybillCar waybillCar, String detailType, StrBuilder sb) {
-        // 待交车车辆
-        if (FieldConstant.WAIT_GIVE_CAR.equals(detailType) || FieldConstant.ALL_TASK.equals(detailType)) {
-            // 当前车辆装车图片
-            String loadPhotoImg1 = waybillCar.getLoadPhotoImg();
-            if (sb.length() > 0 && !StringUtils.isEmpty(loadPhotoImg1)) {
-                sb.append(",");
-            }
-            if (!StringUtils.isEmpty(loadPhotoImg1)) {
-                sb.append(loadPhotoImg1);
-            }
+        // 当前车辆装车图片
+        String loadPhotoImg1 = waybillCar.getLoadPhotoImg();
+        if (sb.length() > 0 && !StringUtils.isEmpty(loadPhotoImg1)) {
+            sb.append(",");
+        }
+        if (!StringUtils.isEmpty(loadPhotoImg1)) {
+            sb.append(loadPhotoImg1);
         }
         // 已交付车辆
         if (FieldConstant.ALL_TASK.equals(detailType)) {
