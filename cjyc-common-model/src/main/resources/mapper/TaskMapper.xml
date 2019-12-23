@@ -493,7 +493,7 @@
             LEFT JOIN w_waybill ww ON ww.id = wwc.waybill_id
         WHERE
             wt.state = 100
-            AND ( wt.complete_time BETWEEN #{beforeStartDay} AND #{beforeEndDay} )
+            AND ( wt.create_time BETWEEN #{beforeStartDay} AND #{beforeEndDay} )
             AND ww.carrier_type IN ( 1, 2, 4, 5 )
     </select>
 
