@@ -314,6 +314,16 @@ public class CsTaskServiceImpl implements ICsTaskService {
             if (orderCar == null) {
                 throw new ParameterException("订单车辆不存在");
             }
+            //验证目的地业务中心是否与当前业务中心匹配
+            if(waybillCar.getStartStoreId() != null){
+               if(!waybillCar.getStartStoreId().equals(orderCar.getNowStoreId())){
+                   throw new ParameterException("订单车辆尚未到达提车业务中心");
+               }
+            }else{
+                if(!waybillCar.getStartAreaCode().equals(orderCar.getNowAreaCode())){
+                    throw new ParameterException("订单车辆尚未到达提车地址区县范围内");
+                }
+            }
 
             //验证运单车辆信息是否完全
             if (!validateOrderCarInfo(orderCar)) {
@@ -523,12 +533,13 @@ public class CsTaskServiceImpl implements ICsTaskService {
 
             //添加入库日志
             CarStorageLog carStorageLog = CarStorageLog.builder()
-                    .type(CarStorageTypeEnum.OUT.code)
-                    .orderNo(orderCar.getOrderNo())
-                    .orderCarNo(orderCar.getNo())
-                    .vin(orderCar.getVin())
-                    .brand(orderCar.getBrand())
-                    .model(orderCar.getModel())
+                    .storeId(waybillCar.getStartStoreId())
+                    .type(CarStorageTypeEnum.IN.code)
+                    .orderNo(oc.getOrderNo())
+                    .orderCarNo(oc.getNo())
+                    .vin(oc.getVin())
+                    .brand(oc.getBrand())
+                    .model(oc.getModel())
                     .freight(waybillCar.getFreightFee())
                     .carryType(waybill.getCarrierType())
                     .carrierId(waybill.getCarrierId())
@@ -541,6 +552,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                     .createUserId(paramsDto.getLoginId())
                     .createUser(paramsDto.getLoginName())
                     .build();
+
             storageLogSet.add(carStorageLog);
 
             //添加物流日志
@@ -642,6 +654,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
 
             //出库日志
             CarStorageLog carStorageLog = CarStorageLog.builder()
+                    .storeId(waybillCar.getEndStoreId())
                     .type(CarStorageTypeEnum.OUT.code)
                     .orderNo(orderCar.getOrderNo())
                     .orderCarNo(orderCar.getNo())
@@ -660,6 +673,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                     .createUserId(paramsDto.getLoginId())
                     .createUser(paramsDto.getLoginName())
                     .build();
+
             storageLogSet.add(carStorageLog);
             //出库日志
             csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.OUT_STORE,

@@ -254,7 +254,7 @@
         vr.carry_car_num as carryCarNum,
         t.*
         from w_waybill w
-        LEFT JOIN w_task t on w.id = t.waybill_id
+        JOIN w_task t on w.id = t.waybill_id
         left join d_vehicle_running vr on vr.id = t.vehicle_running_id
         <where>
             w.carrier_id = #{paramsDto.carrierId}

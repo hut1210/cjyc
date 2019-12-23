@@ -3,6 +3,8 @@ package com.cjyc.common.model.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.cjyc.common.model.util.BigDecimalSerizlizer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -63,6 +65,7 @@ public class Waybill implements Serializable {
     private Integer state;
 
     @ApiModelProperty(value = "运单总运费")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal freightFee;
 
     @ApiModelProperty(value = "运费支付状态")
