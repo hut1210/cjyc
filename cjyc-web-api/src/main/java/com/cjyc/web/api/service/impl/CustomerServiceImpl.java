@@ -289,6 +289,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                 //升级成审核中的合伙人(审核拒绝)
                 if(FlagEnum.AUDIT_REJECT.code == dto.getFlag() && customer.getSource() == CustomerSourceEnum.UPGRADE.code && customer.getState() == CustomerStateEnum.WAIT_CHECK.code){
                     customer.setState(CustomerStateEnum.CHECKED.code);
+                    customer.setSource(CustomerSourceEnum.APP.code);
                 }
                 //冻结/解冻
                 if(FlagEnum.FROZEN.code == dto.getFlag() || FlagEnum.THAW.code == dto.getFlag()){
