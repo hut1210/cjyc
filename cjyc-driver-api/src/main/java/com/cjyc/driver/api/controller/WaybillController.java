@@ -6,6 +6,7 @@ import com.cjyc.common.model.dto.web.task.LoadTaskDto;
 import com.cjyc.common.model.dto.web.task.ReceiptTaskDto;
 import com.cjyc.common.model.dto.web.task.UnLoadTaskDto;
 import com.cjyc.common.model.entity.Driver;
+import com.cjyc.common.model.enums.ClientEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -113,6 +114,7 @@ public class WaybillController {
         Driver driver = csDriverService.validate(reqDto.getLoginId());
         reqDto.setLoginName(driver.getName());
         reqDto.setLoginPhone(driver.getPhone());
+        reqDto.setClientEnum(ClientEnum.APP_DRIVER);
         return csTaskService.receipt(reqDto);
     }
 

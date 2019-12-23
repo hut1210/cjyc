@@ -384,6 +384,7 @@
         when wc.state = 70 then '已卸车'
         when wc.state = 90 then '确认交车'
         when wc.state = 100 then '确认收车'
+        when wc.state = 113 then '已取消'
         end
         ) as outterState,
         w.carrier_id as carrierId,
