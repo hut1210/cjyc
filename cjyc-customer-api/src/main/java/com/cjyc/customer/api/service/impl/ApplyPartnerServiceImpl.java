@@ -65,7 +65,7 @@ public class ApplyPartnerServiceImpl extends ServiceImpl<ICustomerDao, Customer>
         cust.setName(dto.getName());
         cust.setAlias(dto.getName());
         cust.setSource(CustomerSourceEnum.UPGRADE.code);
-        cust.setState(CustomerStateEnum.WAIT_LOGIN.code);
+        cust.setState(CustomerStateEnum.WAIT_CHECK.code);
         super.updateById(cust);
         //合伙人附加信息
         CustomerPartner cp = new CustomerPartner();
