@@ -104,6 +104,7 @@
             resultType="com.cjyc.common.model.vo.driver.task.TaskBillVo">
         SELECT
             t.id AS taskId,
+            t.taskCarId,
             t.waybill_id AS waybillId,
             t.no AS waybillNo,
             t.guide_line AS guideLine,
@@ -114,7 +115,7 @@
             sum(car.freight_fee) AS freightFee
         FROM
             ( SELECT task.id, task.waybill_id, task.no, task.guide_line, task.car_num,
-            task.state,task.create_time,tc.waybill_car_id
+            task.state,task.create_time,tc.id as taskCarId,tc.waybill_car_id
             FROM w_task task
             LEFT JOIN w_task_car tc ON task.id = tc.task_id
             <where>
