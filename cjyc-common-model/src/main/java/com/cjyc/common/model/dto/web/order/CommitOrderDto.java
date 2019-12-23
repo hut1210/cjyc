@@ -9,6 +9,7 @@ import lombok.experimental.Accessors;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -40,18 +41,17 @@ public class CommitOrderDto {
     @ApiModelProperty(hidden = true)
     private Long createUserId;
 
-    @NotNull(message = "createCustomerFlag不能为空")
-    @ApiModelProperty(value = "用户不存在，是否创建用户",required = true)
-    private Boolean createCustomerFlag;
+    @ApiModelProperty(value = "用户不存在，是否创建用户")
+    private Boolean createCustomerFlag = false;
 
-    @NotEmpty(message = "车辆信息不能为空")
     @ApiModelProperty(value = "车辆列表")
     private List<CommitOrderCarDto> orderCarList;
 
     @ApiModelProperty(value = "订单ID(修改时传)")
     private Long orderId;
+    @NotNull
     @ApiModelProperty(value = "1C端 2大客户 3-伙人", required = true)
-    private int customerType;
+    private Integer customerType;
     @ApiModelProperty(value = "客户id")
     private Long customerId;
     @NotBlank(message = "客户电话不能为空")
@@ -63,10 +63,9 @@ public class CommitOrderDto {
     @NotBlank(message = "出发城市不能为空")
     @ApiModelProperty(value = "区编号", required = true)
     private String startAreaCode;
-    @NotBlank(message = "出发不能为空地址")
-    @ApiModelProperty(value = "始发地详细地址", required = true)
+    @ApiModelProperty(value = "始发地详细地址")
     private String startAddress;
-    @ApiModelProperty(value = "出发地业务中心ID:  0无业务中心，-1有但不经过业务中心，-5用户无主观操作")
+    @ApiModelProperty(value = "出发地业务中心ID:  0无业务中心，-5用户无主观操作")
     private Long startStoreId;
     @ApiModelProperty(value = "出发地业务中心名称")
     private String startStoreName;
@@ -74,10 +73,9 @@ public class CommitOrderDto {
     @NotBlank(message = "目的城市不能为空")
     @ApiModelProperty(value = "区编号", required = true)
     private String endAreaCode;
-    @NotBlank(message = "目的地址不能为空")
-    @ApiModelProperty(value = "目的地详细地址", required = true)
+    @ApiModelProperty(value = "目的地详细地址")
     private String endAddress;
-    @ApiModelProperty(value = "目的地业务中心ID:  0无业务中心，-1有但不经过业务中心，-5用户无主观操作")
+    @ApiModelProperty(value = "目的地业务中心ID:  0无业务中心，-5用户无主观操作")
     private Long endStoreId;
     @ApiModelProperty(value = "目的地业务中心名称")
     private String endStoreName;
@@ -105,6 +103,7 @@ public class CommitOrderDto {
     @NotBlank(message = "发车联系人电话不能为空")
     @ApiModelProperty(value = "发车联系人电话", required = true)
     private String pickContactPhone;
+    @Pattern(regexp = "(1|2|3|4)",message = "详情类型只能是1,2,3,4中的一位数")
     @ApiModelProperty(value = "送车方式： 1 自提，2代驾上门，3拖车上门, 4.物流上门", required = true)
     private int backType;
     @NotBlank(message = "收车联系人电话不能为空")
@@ -123,9 +122,9 @@ public class CommitOrderDto {
     private Integer hurryDays;
     @ApiModelProperty(value = "备注")
     private String remark;
-    @NotNull(message = "支付方式不能为空")
+    @Pattern(regexp = "(0|1|2)",message = "详情类型只能是0,1,2中的一位数")
     @ApiModelProperty(value = "支付方式 0-到付，1-预付，2账期", required = true)
-    private Integer payType;
+    private Integer payType = 0;
     @ApiModelProperty(value = "优惠券id")
     private Long couponSendId;
     @ApiModelProperty(value = "物流券抵消金额")

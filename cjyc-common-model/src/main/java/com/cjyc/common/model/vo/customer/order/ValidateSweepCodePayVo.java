@@ -1,5 +1,7 @@
 package com.cjyc.common.model.vo.customer.order;
 
+import com.cjyc.common.model.util.BigDecimalSerizlizer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -17,6 +19,7 @@ public class ValidateSweepCodePayVo {
     private Integer isNeedPay;
 
     @ApiModelProperty(value = "金额")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal amount;
 
     @ApiModelProperty(value = "任务Id")

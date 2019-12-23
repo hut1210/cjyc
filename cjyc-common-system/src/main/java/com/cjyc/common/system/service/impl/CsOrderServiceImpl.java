@@ -192,6 +192,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
         if(store != null){
             order.setInputStoreId(store.getId());
             order.setInputStoreName(store.getName());
+        }else{
+            order.setInputStoreId(0L);
         }
     }
 
@@ -730,7 +732,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
             }
             OrderCar orderCar = new OrderCar();
             //填充数据
-            orderCar.setId(oc.getOrderId());
+            orderCar.setId(oc.getId());
             orderCar.setPickFee(MoneyUtil.convertYuanToFen(dto.getPickFee()));
             orderCar.setTrunkFee(MoneyUtil.convertYuanToFen(dto.getTrunkFee()));
             orderCar.setBackFee(MoneyUtil.convertYuanToFen(dto.getBackFee()));
@@ -740,6 +742,11 @@ public class CsOrderServiceImpl implements ICsOrderService {
         }
         //新数据
         List<OrderCar> orderCarList = orderCarDao.findListByOrderId(orderId);
+        //合计费用：提、干、送、保险
+        fillOrderFeeInfo(order, orderCarList);
+        order.setCarNum(orderCarList.size());
+        order.setTotalFee(MoneyUtil.convertYuanToFen(paramsDto.getTotalFee()));
+        orderDao.updateById(order);
         //均摊优惠券费用
         if (order.getCouponOffsetFee() != null && order.getCouponOffsetFee().compareTo(BigDecimal.ZERO) > 0) {
             shareCouponOffsetFee(order, orderCarList);
@@ -750,12 +757,6 @@ public class CsOrderServiceImpl implements ICsOrderService {
         }
         //更新车辆信息
         orderCarList.forEach(orderCar -> orderCarDao.updateById(orderCar));
-
-        //合计费用：提、干、送、保险
-        fillOrderFeeInfo(order, orderCarList);
-        order.setCarNum(orderCarList.size());
-        order.setTotalFee(MoneyUtil.convertYuanToFen(paramsDto.getTotalFee()));
-        orderDao.updateById(order);
 
         //TODO 日志
         OrderVo newOrderVo = new OrderVo();

@@ -281,13 +281,13 @@
         <where>
             w.type = 2
             <if test="paramsDto.waybillNo != null and paramsDto.waybillNo != ''">
-                and w.no  = #{paramsDto.waybillNo}
+                and w.no like concat('%', #{paramsDto.waybillNo}, '%')
             </if>
             <if test="paramsDto.guideLine != null and paramsDto.guideLine != ''">
                 and w.guide_line  = #{paramsDto.guideLine}
             </if>
             <if test="paramsDto.carrierName != null and paramsDto.carrierName != ''">
-                and w.carrier_name  = #{paramsDto.carrierName}
+                and w.carrier_name like concat('%', #{paramsDto.carrierName}, '%')
             </if>
             <if test="paramsDto.beginCreateTime != null">
                 and w.create_time  &gt; #{paramsDto.beginCreateTime}
@@ -327,22 +327,22 @@
         <where>
             w.type = 2
             <if test="paramsDto.waybillNo != null and paramsDto.waybillNo != ''">
-                and w.no  = #{paramsDto.waybillNo}
+                and w.no like concat('%', #{paramsDto.waybillNo}, '%')
             </if>
             <if test="paramsDto.guideLine != null and paramsDto.guideLine != ''">
                 and w.guide_line  = #{paramsDto.guideLine}
             </if>
             <if test="paramsDto.carrierName != null and paramsDto.carrierName != ''">
-                and w.carrier_name  = #{paramsDto.carrierName}
+                and w.carrier_name like concat('%', #{paramsDto.carrierName}, '%')
             </if>
             <if test="paramsDto.driverName != null and paramsDto.driverName != ''">
-                and t.driver_name  = #{paramsDto.driverName}
+                and t.driver_name  like concat('%', #{paramsDto.driverName}, '%')
             </if>
             <if test="paramsDto.driverPhone != null and paramsDto.driverPhone != ''">
-                and t.driver_phone  = #{paramsDto.driverPhone}
+                and t.driver_phone like concat('%', #{paramsDto.driverPhone}, '%')
             </if>
             <if test="paramsDto.vehiclePlateNo != null and paramsDto.vehiclePlateNo != ''">
-                and t.vehicle_plate_no  = #{paramsDto.vehiclePlateNo}
+                and t.vehicle_plate_no like concat('%', #{paramsDto.vehiclePlateNo}, '%')
             </if>
             <if test="paramsDto.beginCreateTime != null">
                 and t.create_time  &gt; #{paramsDto.beginCreateTime}
@@ -359,15 +359,16 @@
             w.no as waybillNo,
             w.id as waybillId,
             w.type as waybillType,
+            w.guide_line as guideLine,
             w.carrier_name as carrierName,
             w.state as state,
             w.remark as remark,
             w.create_time as createTime,
             w.car_num as carNum,
             w.create_user as createUser,
-            sum(IFNULL(w.car_num,0)) as hasAllottedNum
+            sum(IFNULL(t.car_num,0)) as hasAllottedNum
         from w_waybill w
-        JOIN w_task t on w.id = t.waybill_id
+        left join w_task t on w.id = t.waybill_id
         <where>
             w.carrier_id = #{paramsDto.carrierId}
             <if test="paramsDto.waybillNo != null and paramsDto.waybillNo != ''">

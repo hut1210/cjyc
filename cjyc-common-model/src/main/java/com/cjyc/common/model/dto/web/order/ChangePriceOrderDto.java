@@ -33,6 +33,7 @@ public class ChangePriceOrderDto {
     @NotNull
     @ApiModelProperty(value = "实际总物流费用，客户实际需付(提车费+干线费+送车费+保险费+服务费)",required = true)
     private BigDecimal totalFee;
+
     @ApiModelProperty(value = "原因")
     private String reason;
 

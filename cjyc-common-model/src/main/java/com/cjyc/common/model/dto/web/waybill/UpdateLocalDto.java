@@ -37,7 +37,7 @@ public class UpdateLocalDto {
     @ApiModelProperty(value = "备注")
     private String remark;
 
-    @NotEmpty(message = "carDto不能为空")
+    @NotNull(message = "车辆信息不能为空")
     @ApiModelProperty(value = "车辆信息", required = true)
     private UpdateLocalCarDto carDto;
 

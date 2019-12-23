@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
 
+import com.cjyc.common.model.util.BigDecimalSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModel;
@@ -52,6 +53,7 @@ public class WaybillCar implements Serializable {
 
     @Excel(name = "运费(元)", orderNum = "9")
     @ApiModelProperty(value = "运费")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal freightFee;
 
     @ApiModelProperty(value = "省")

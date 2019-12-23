@@ -427,10 +427,10 @@
                 and oc.model = #{paramsDto.model}
             </if>
             <if test="paramsDto.plateNo != null and paramsDto.plateNo != ''">
-                and oc.plate_no = #{paramsDto.plateNo}
+                and oc.plate_no like concat('%', #{paramsDto.plateNo}, '%')
             </if>
             <if test="paramsDto.vin != null and paramsDto.vin != ''">
-                and oc.vin = #{paramsDto.vin}
+                and oc.vin like concat('%', #{paramsDto.vin}, '%')
             </if>
             <if test="paramsDto.type != null and paramsDto.type != 0">
                 and w.type = #{paramsDto.type}
@@ -439,10 +439,10 @@
                 and w.carrier_type = #{paramsDto.carrierType}
             </if>
             <if test="paramsDto.waybillNo != null and paramsDto.waybillNo != ''">
-                and wc.waybill_no = #{paramsDto.waybillNo}
+                and wc.waybill_no like concat('%', #{paramsDto.waybillNo}, '%')
             </if>
             <if test="paramsDto.orderCarNo != null and paramsDto.orderCarNo != ''">
-                and wc.order_car_no = #{paramsDto.orderCarNo}
+                and wc.order_car_no like concat('%', #{paramsDto.orderCarNo}, '%')
             </if>
             <if test="paramsDto.startProvinceCode != null and paramsDto.startProvinceCode != ''">
                 and wc.start_province_code = #{paramsDto.startProvinceCode}
@@ -505,7 +505,7 @@
                 and wc.unload_time &lt;= #{paramsDto.endUnloadTime}
             </if>
             <if test="paramsDto.orderNo != null and paramsDto.orderNo != ''">
-                and oc.order_no = #{paramsDto.orderNo}
+                and oc.order_no like concat('%', #{paramsDto.orderNo}, '%')
             </if>
         </where>
         order by w.create_time desc
@@ -517,6 +517,7 @@
             when wc.state &lt;= 15 then '未运输'
             when wc.state &gt; 15 and wc.state &lt; 100 then '运输中'
             when wc.state = 100 then '已交付'
+            when wc.state = 113 then '已取消'
             end
             ) as outterState,
             w.carrier_id as carrierId,
@@ -612,7 +613,7 @@
                 and o.end_area_code = #{paramsDto.orderEndAreaCode}
             </if>
             <if test="paramsDto.orderNo != null and paramsDto.orderNo != ''">
-                and o.no = #{paramsDto.orderNo}
+                and o.no like concat('%', #{paramsDto.orderNo}, '%')
             </if>
             <if test="paramsDto.orderSource != null and paramsDto.orderSource != ''">
                 and o.source = #{paramsDto.orderSource}
@@ -624,34 +625,34 @@
                 and oc.model = #{paramsDto.model}
             </if>
             <if test="paramsDto.plateNo != null and paramsDto.plateNo != ''">
-                and oc.plate_no = #{paramsDto.plateNo}
+                and oc.plate_no like concat('%', #{paramsDto.plateNo}, '%')
             </if>
             <if test="paramsDto.vin != null and paramsDto.vin != ''">
-                and oc.vin = #{paramsDto.vin}
+                and oc.vin like concat('%', #{paramsDto.vin}, '%')
             </if>
             <if test="paramsDto.carrierName != null and paramsDto.carrierName != ''">
-                and w.carrier_name = #{paramsDto.carrierName}
+                and w.carrier_name like concat('%', #{paramsDto.carrierName}, '%')
             </if>
             <if test="paramsDto.createUser != null and paramsDto.createUser != ''">
                 and w.create_user = #{paramsDto.createUser}
             </if>
             <if test="paramsDto.driverName != null and paramsDto.driverName != ''">
-                and t.driver_name = #{paramsDto.driverName}
+                and t.driver_name like concat('%', #{paramsDto.driverName}, '%')
             </if>
             <if test="paramsDto.driverPhone != null and paramsDto.driverPhone != ''">
-                and t.driver_phone = #{paramsDto.driverPhone}
+                and t.driver_phone like concat('%', #{paramsDto.driverPhone}, '%')
             </if>
             <if test="paramsDto.vehiclePlateNo != null and paramsDto.vehiclePlateNo != ''">
-                and t.vehicle_plate_no = #{paramsDto.vehiclePlateNo}
+                and t.vehicle_plate_no like concat('%', #{paramsDto.vehiclePlateNo}, '%')
             </if>
             <if test="paramsDto.outterState != null and paramsDto.outterState != ''">
                 and wc.outter_state = #{paramsDto.outterState}
             </if>
             <if test="paramsDto.waybillNo != null and paramsDto.waybillNo != ''">
-                and wc.waybill_no = #{paramsDto.waybillNo}
+                and wc.waybill_no like concat('%', #{paramsDto.waybillNo}, '%')
             </if>
             <if test="paramsDto.orderCarNo != null and paramsDto.orderCarNo != ''">
-                and wc.order_car_no = #{paramsDto.orderCarNo}
+                and wc.order_car_no like concat('%', #{paramsDto.orderCarNo}, '%')
             </if>
             <if test="paramsDto.startProvinceCode != null and paramsDto.startProvinceCode != ''">
                 and wc.start_province_code = #{paramsDto.startProvinceCode}
@@ -1320,6 +1321,7 @@
         from w_waybill w
         join w_waybill_car wc on wc.waybill_id = w.id
         where wc.order_car_no = #{orderCarNo}
+        and w.state &lt;= 100
         and w.type = 2
     </select>
 
