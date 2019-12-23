@@ -127,7 +127,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             return BaseResultUtil.fail("运单不存在");
         }
         List<String> loadPhotoImgs = reqDto.getLoadPhotoImgs();
-        if(WaybillTypeEnum.PICK.code == waybill.getType() ){
+        if(WaybillTypeEnum.PICK.code == waybill.getType()){
             if (loadPhotoImgs.size() < Constant.MIN_LOAD_PHOTO_NUM) {
                 return BaseResultUtil.fail("照片数量不足8张");
             }

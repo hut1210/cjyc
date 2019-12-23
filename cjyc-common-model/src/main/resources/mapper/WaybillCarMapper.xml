@@ -265,11 +265,13 @@
         update w_waybill_car
         set load_photo_img = #{loadPhotoImg}
         where id = #{id}
+        limit 1
     </update>
     <update id="updateForReceipt">
         update w_waybill_car
         set state = 100
         where id = #{id}
+        limit 1
     </update>
     <update id="updateForLoad">
         update w_waybill_car
@@ -277,6 +279,7 @@
         load_time = #{currentTimeMillis}
         where state &lt; #{state}
         and id = #{id}
+        limit 1
     </update>
     <update id="updateForInStore">
         update w_waybill_car

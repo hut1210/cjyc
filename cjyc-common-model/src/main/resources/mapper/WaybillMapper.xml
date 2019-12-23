@@ -261,6 +261,13 @@
     <select id="findMainListTrunk" resultType="com.cjyc.common.model.vo.web.waybill.TrunkMainListWaybillVo">
         select
         w.*,
+        (case w.state
+        when 0 then '待承接'
+        when 20 then '已承接'
+        when 55 then '运输中'
+        when 100 then '已完成'
+        when 113 then '已取消'
+        end ) as outterState,
         w.no as wtNo,
         (case when w.carrier_type != 2 then t.driver_id end) as driverId,
         (case when w.carrier_type != 2 then t.driver_name end) as driverName,
@@ -273,8 +280,6 @@
         left join d_vehicle_running vr on vr.driver_id = t.driver_id
         <where>
             w.type = 2
-            and w.state &lt;= 100
-            and t.state &lt;= 100
             <if test="paramsDto.waybillNo != null and paramsDto.waybillNo != ''">
                 and w.no  = #{paramsDto.waybillNo}
             </if>
@@ -296,6 +301,12 @@
     </select>
     <select id="findSubListTrunk" resultType="com.cjyc.common.model.vo.web.waybill.TrunkSubListWaybillVo">
         select
+        (case w.state
+        when 5 then '待装车'
+        when 55 then '运输中'
+        when 100 then '已完成'
+        when 113 then '已取消'
+        end ) as outterState,
         w.carrier_name as carrierName,
         t.no as wtNo,
         t.car_num as carNum,
@@ -315,8 +326,6 @@
         left join d_vehicle_running vr on vr.driver_id = t.driver_id
         <where>
             w.type = 2
-            and w.state &lt;= 100
-            and t.state &lt;= 100
             <if test="paramsDto.waybillNo != null and paramsDto.waybillNo != ''">
                 and w.no  = #{paramsDto.waybillNo}
             </if>

@@ -9,7 +9,8 @@ import lombok.Data;
 
 @Data
 public class TrunkSubListWaybillVo extends Waybill {
-
+    @ApiModelProperty("外部状态")
+    private String outterState;
 
     @ApiModelProperty("任务编号")
     private String wtNo;
