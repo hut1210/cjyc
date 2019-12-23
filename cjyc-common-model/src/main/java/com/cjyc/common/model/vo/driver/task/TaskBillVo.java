@@ -26,6 +26,9 @@ public class TaskBillVo implements Serializable {
     @JsonSerialize(using= ToStringSerializer.class)
     private Long taskId;
 
+    @ApiModelProperty(value = "任务状态")
+    private Integer taskState;
+
     @ApiModelProperty(value = "运单编号")
     private String waybillNo;
 
@@ -63,6 +66,18 @@ public class TaskBillVo implements Serializable {
     @ApiModelProperty(value = "运力车牌号")
     private String vehiclePlateNo;
 
+    public Integer getTaskState() {
+        return taskState == null ? -1 : taskState;
+    }
+    public String getWaybillNo() {
+        return waybillNo == null ? "" : waybillNo;
+    }
+    public Integer getType() {
+        return type == null ? -1 : type;
+    }
+    public BigDecimal getFreightFee() {
+        return freightFee == null ? new BigDecimal(0) : freightFee;
+    }
     public Long getCreateTime() {
         return createTime == null ? 0 : createTime;
     }
