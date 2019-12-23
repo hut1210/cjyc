@@ -162,6 +162,9 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                 // 如果指导路线为空，且运单是提车或者送车，将始发成和结束城市用“-”拼接
                 fillGuideLine(taskDetailVo,waybillCar);
 
+                // 查询除了当前车辆运单的历史车辆运单图片
+                getHistoryWaybillCarImg(carDetailVo, waybillCar,dto.getDetailType());
+
                 // 查询品牌车系信息
                 OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
                 BeanUtils.copyProperties(orderCar,carDetailVo);

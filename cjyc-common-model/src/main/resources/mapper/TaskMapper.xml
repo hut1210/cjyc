@@ -192,6 +192,7 @@
         select
             t.id as taskId,
             t.waybill_id as waybillId,
+            t.state as taskState,
             t.no as waybillNo,
             t.guide_line as guideLine,
             t.car_num as carNum,
@@ -516,8 +517,8 @@
         FROM w_task task
         LEFT JOIN w_task_car tc ON task.id = tc.task_id
             <where>
-                <if test="waybillNo != null and waybillNo.trim() != ''">
-                    AND task.waybill_no like concat('%',#{waybillNo},'%')
+                <if test="taskNo != null and taskNo.trim() != ''">
+                    AND task.no like concat('%',#{taskNo},'%')
                 </if>
             </where>
         ) t
