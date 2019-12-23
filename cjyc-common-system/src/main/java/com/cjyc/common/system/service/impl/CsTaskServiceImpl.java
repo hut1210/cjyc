@@ -753,10 +753,6 @@ public class CsTaskServiceImpl implements ICsTaskService {
         if (customerPhoneSet.size() > 1) {
             return BaseResultUtil.fail("批量收车不能同时包含多个收车人订单");
         }
-        boolean flag = csSmsService.validateCaptcha(customerPhoneSet.iterator().next(), paramsDto.getCaptcha(), CaptchaTypeEnum.CONFIRM_RECEIPT, paramsDto.getClientEnum());
-        if (!flag) {
-            return BaseResultUtil.fail("收车码错误");
-        }
         if (CollectionUtils.isEmpty(waybillCarIdSet)) {
             return BaseResultUtil.fail("没有可以卸车的车辆");
         }
