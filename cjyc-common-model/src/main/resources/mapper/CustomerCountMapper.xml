@@ -15,7 +15,7 @@
         id, customer_id, order_no, create_time
     </sql>
 
-    <!-- 根据用户userId统计用户下单量，运车量，总金额-->
+    <!-- 根据用户id统计用户下单量，运车量，总金额-->
     <select id="count" resultType="com.cjyc.common.model.vo.web.customer.CustomerCountVo" parameterType="java.lang.Long">
         SELECT
             IFNULL(count( wo.NO ),0) AS totalOrder,
