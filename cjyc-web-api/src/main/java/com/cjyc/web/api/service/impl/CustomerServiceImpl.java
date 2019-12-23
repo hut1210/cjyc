@@ -322,7 +322,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                 }
             }
             //C端客户/大客户
-            if(customer.getType() < CustomerTypeEnum.COOPERATOR.code){
+            if(customer.getType() < CustomerTypeEnum.COOPERATOR.code && customer.getSource() < CustomerSourceEnum.UPGRADE.code){
                 if(FlagEnum.AUDIT_PASS.code == dto.getFlag()){
                     //审核通过
                     customer.setState(CustomerStateEnum.CHECKED.code);
