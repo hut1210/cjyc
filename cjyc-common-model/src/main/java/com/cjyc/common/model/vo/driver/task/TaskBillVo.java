@@ -70,6 +70,24 @@ public class TaskBillVo implements Serializable {
     @ApiModelProperty(value = "运力车牌号")
     private String vehiclePlateNo;
 
+    @ApiModelProperty(value = "始发地城市")
+    private String startCity;
+
+    @ApiModelProperty(value = "目的地城市")
+    private String endCity;
+
+    public String getStartCity() {
+        return startCity == null ? "" : startCity;
+    }
+    public String getEndCity() {
+        return endCity == null ? "" : endCity;
+    }
+    public Long getWaybillId() {
+        return waybillId == null ? 0 : waybillId;
+    }
+    public Long getTaskCarId() {
+        return taskCarId == null ? 0 : taskCarId;
+    }
     public Integer getTaskState() {
         return taskState == null ? -1 : taskState;
     }

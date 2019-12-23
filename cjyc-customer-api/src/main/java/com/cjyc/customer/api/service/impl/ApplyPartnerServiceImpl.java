@@ -1,5 +1,6 @@
 package com.cjyc.customer.api.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
@@ -54,13 +55,17 @@ public class ApplyPartnerServiceImpl extends ServiceImpl<ICustomerDao, Customer>
         if(cust == null){
             return BaseResultUtil.fail("该用户不存在,请检查");
         }
+        if(cust.getState() == CustomerStateEnum.WAIT_CHECK.code){
+            //删除合伙人信息与银行卡信息
+            customerPartnerDao.delete(new QueryWrapper<CustomerPartner>().lambda().eq(CustomerPartner::getCustomerId,cust.getId()));
+            bankCardBindDao.delete(new QueryWrapper<BankCardBind>().lambda().eq(BankCardBind::getUserId,cust.getId()));
+        }
         BeanUtils.copyProperties(dto,cust);
         cust.setId(dto.getLoginId());
         cust.setName(dto.getName());
         cust.setAlias(dto.getName());
-        cust.setType(CustomerTypeEnum.COOPERATOR.code);
         cust.setSource(CustomerSourceEnum.UPGRADE.code);
-        cust.setState(CustomerStateEnum.WAIT_LOGIN.code);
+        cust.setState(CustomerStateEnum.WAIT_CHECK.code);
         super.updateById(cust);
         //合伙人附加信息
         CustomerPartner cp = new CustomerPartner();

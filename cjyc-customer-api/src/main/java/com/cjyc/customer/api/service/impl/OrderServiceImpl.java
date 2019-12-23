@@ -115,7 +115,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         // 查询待确认订单数量
         LambdaQueryWrapper<Order> queryWrapper = new QueryWrapper<Order>().lambda()
                 .eq(Order::getCustomerId,loginId)
-                .between(Order::getState, OrderStateEnum.WAIT_SUBMIT.code,OrderStateEnum.WAIT_RECHECK.code);
+                .between(Order::getState, OrderStateEnum.WAIT_SUBMIT.code,OrderStateEnum.CHECKED.code);
         Integer waitConfirmCount = orderDao.selectCount(queryWrapper);
         if (!Objects.isNull(waitConfirmCount)) {
             map.put("waitConfirmCount",waitConfirmCount >= 99 ? "99+" : waitConfirmCount);
@@ -124,7 +124,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         // 查询运输中订单数量
         queryWrapper = new QueryWrapper<Order>().lambda()
                 .eq(Order::getCustomerId,loginId)
-                .eq(Order::getState,OrderStateEnum.TRANSPORTING.code);
+                .gt(Order::getState,OrderStateEnum.CHECKED.code)
+                .lt(Order::getState,OrderStateEnum.FINISHED.code);
         Integer transitCount = orderDao.selectCount(queryWrapper);
         if (!Objects.isNull(transitCount)) {
             map.put("transitCount",transitCount >= 99 ? "99+" : transitCount);

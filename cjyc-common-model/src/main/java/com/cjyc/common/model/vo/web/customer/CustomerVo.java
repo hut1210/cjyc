@@ -61,4 +61,5 @@ public class CustomerVo implements Serializable {
     @ApiModelProperty("订单总金额")
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal totalAmount;
+
 }

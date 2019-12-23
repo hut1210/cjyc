@@ -5,6 +5,7 @@ import com.cjyc.common.model.dto.customer.UpdateCustomerDto;
 import com.cjyc.common.model.dto.web.customer.CustomerfuzzyListDto;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.customerInfo.AppCustomerInfoVo;
+import com.cjyc.common.model.vo.web.customer.ShowPartnerVo;
 import com.cjyc.customer.api.service.ICustomerService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -54,6 +55,12 @@ public class CustomerController {
     @PostMapping("/findNewCustomerInfo")
     public ResultVo<AppCustomerInfoVo> findNewCustomerInfo(@Validated @RequestBody AppCustomerDto dto){
         return customerService.findNewCustomerInfo(dto);
+    }
+
+    @ApiOperation(value = "根据客户id查看申请合伙人信息")
+    @PostMapping(value = "/findPartnerInfo")
+    public ResultVo<ShowPartnerVo> findPartnerInfo(@Validated @RequestBody AppCustomerDto dto){
+        return customerService.showPartner(dto);
     }
 
 }

@@ -255,33 +255,41 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     public ResultVo verifyCustomer(OperateDto dto) {
         Customer customer = customerDao.selectById(dto.getId());
         if(customer != null){
-            if(FlagEnum.AUDIT_PASS.code == dto.getFlag() && customer.getType() == CustomerTypeEnum.COOPERATOR.code){
+            if(FlagEnum.AUDIT_PASS.code == dto.getFlag()){
                 //审核通过
                 //新增用户信息到物流平台
-                if(customer.getUserId() == null){
-                    ResultData<Long> rd = csCustomerService.addCustomerToPlatform(customer);
-                    if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
-                        return BaseResultUtil.fail(rd.getMsg());
+                if(customer.getType() == CustomerTypeEnum.COOPERATOR.code || (customer.getSource() == CustomerSourceEnum.UPGRADE.code && customer.getState() == CustomerStateEnum.WAIT_CHECK.code)){
+                    if(customer.getUserId() == null){
+                        ResultData<Long> rd = csCustomerService.addCustomerToPlatform(customer);
+                        if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+                            return BaseResultUtil.fail(rd.getMsg());
+                        }
+                        customer.setUserId(rd.getData());
+                    }else if(customer.getUserId() != null){
+                        //更新到物流平台（升级为合伙人）
+                        UpdateUserReq uur = new UpdateUserReq();
+                        uur.setUserId(customer.getUserId());
+                        uur.setRoleIdList(Arrays.asList(
+                                Long.parseLong(YmlProperty.get("cjkj.customer.partner_role_id"))));
+                        ResultData update = sysUserService.update(uur);
+                        if (!ReturnMsg.SUCCESS.getCode().equals(update.getCode())) {
+                            return BaseResultUtil.fail("更新组织下的所有角色失败");
+                        }
+                        customer.setType(CustomerTypeEnum.COOPERATOR.code);
                     }
-                    customer.setUserId(rd.getData());
-                }else if(customer.getUserId() != null){
-                    //更新到物流平台（升级为合伙人）
-                    UpdateUserReq uur = new UpdateUserReq();
-                    uur.setUserId(customer.getUserId());
-                    uur.setRoleIdList(Arrays.asList(
-                            Long.parseLong(YmlProperty.get("cjkj.customer.partner_role_id"))));
-                    ResultData update = sysUserService.update(uur);
-                    if (!ReturnMsg.SUCCESS.getCode().equals(update.getCode())) {
-                        return BaseResultUtil.fail("更新组织下的所有角色失败");
-                    }
+                    customer.setState(CustomerStateEnum.CHECKED.code);
                 }
-                customer.setState(CustomerStateEnum.CHECKED.code);
             }
             //合伙人
-            if(customer.getType() == CustomerTypeEnum.COOPERATOR.code){
-                if(FlagEnum.AUDIT_REJECT.code == dto.getFlag()){
+            if(customer.getType() == CustomerTypeEnum.COOPERATOR.code || (customer.getSource() == CustomerSourceEnum.UPGRADE.code && customer.getState() == CustomerStateEnum.WAIT_CHECK.code)){
+                if(FlagEnum.AUDIT_REJECT.code == dto.getFlag() && customer.getType() == CustomerTypeEnum.COOPERATOR.code){
                     //审核拒绝
                     customer.setState(CustomerStateEnum.REJECT.code);
+                }
+                //升级成审核中的合伙人(审核拒绝)
+                if(FlagEnum.AUDIT_REJECT.code == dto.getFlag() && customer.getSource() == CustomerSourceEnum.UPGRADE.code && customer.getState() == CustomerStateEnum.WAIT_CHECK.code){
+                    customer.setState(CustomerStateEnum.CHECKED.code);
+                    customer.setSource(CustomerSourceEnum.APP.code);
                 }
                 //冻结/解冻
                 if(FlagEnum.FROZEN.code == dto.getFlag() || FlagEnum.THAW.code == dto.getFlag()){
@@ -315,7 +323,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                 }
             }
             //C端客户/大客户
-            if(customer.getType() != CustomerTypeEnum.COOPERATOR.code){
+            if(customer.getType() < CustomerTypeEnum.COOPERATOR.code && customer.getSource() < CustomerSourceEnum.UPGRADE.code){
                 if(FlagEnum.AUDIT_PASS.code == dto.getFlag()){
                     //审核通过
                     customer.setState(CustomerStateEnum.CHECKED.code);

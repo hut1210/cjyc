@@ -6,6 +6,8 @@ import com.cjyc.common.model.dto.web.customer.CustomerfuzzyListDto;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.customerInfo.AppCustomerInfoVo;
+import com.cjyc.common.model.vo.web.customer.ShowPartnerVo;
+
 /**
  * <p>
  * 客户表（登录用户端APP用户） 服务类
@@ -26,4 +28,11 @@ public interface ICustomerService extends IService<Customer> {
      * @return
      */
     ResultVo<AppCustomerInfoVo> findNewCustomerInfo(AppCustomerDto dto);
+
+    /**
+     * 查看合伙人信息
+     * @param dto
+     * @return
+     */
+    ResultVo<ShowPartnerVo> showPartner(AppCustomerDto dto);
 }

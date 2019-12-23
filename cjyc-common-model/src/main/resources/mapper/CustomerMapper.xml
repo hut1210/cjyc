@@ -77,6 +77,9 @@
             <if test="flag != null and flag == 0">
                 and  cc.state = 2
             </if>
+            <if test="flag != null and flag == 1">
+                and  cc.state = #{state}
+            </if>
                 and cc.type = 1 order by cc.create_time desc,cc.check_time desc
         </where>
     </select>
@@ -198,7 +201,7 @@
             <if test="flag != null and flag == 0">
                 and  cc.state = 2
             </if>
-            and cc.type = 3 order by cc.create_time desc,cc.check_time desc
+            and (cc.type = 3 or (cc.type = 1 and cc.state = 1)) order by cc.create_time desc,cc.check_time desc
         </where>
     </select>
 
@@ -235,7 +238,7 @@
               c_customer cc
             LEFT JOIN c_customer_partner ccp ON ccp.customer_id = cc.id
             LEFT JOIN s_bank_card_bind sbcb ON sbcb.user_id = cc.id
-            where cc.id = #{customerId} and type = 3 group by cc.id
+            where cc.id = #{customerId}
     </select>
 
     <select id="findByPhone" resultType="com.cjyc.common.model.entity.Customer" parameterType="java.lang.String">

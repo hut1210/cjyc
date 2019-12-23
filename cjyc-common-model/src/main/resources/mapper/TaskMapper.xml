@@ -111,6 +111,8 @@
             t.car_num AS carNum,
             t.create_time AS createTime,
             w.type AS type,
+            car.start_city as startCity,
+            car.end_city as endCity,
             car.expect_start_time AS expectStartTime,
             sum(car.freight_fee) AS freightFee
         FROM
@@ -145,6 +147,8 @@
             t.car_num as carNum,
             t.complete_time as completeTime,
             w.type as type,
+            car.start_city as startCity,
+            car.end_city as endCity,
             sum(car.freight_fee) as freightFee
         from
             (select task.id, task.waybill_id, task.no, task.guide_line, task.car_num,task.state,task.complete_time,tc.waybill_car_id
@@ -202,6 +206,8 @@
             t.driver_phone as driverPhone,
             t.vehicle_plate_no as vehiclePlateNo,
             w.type as type,
+            car.start_city as startCity,
+            car.end_city as endCity,
             sum(car.freight_fee) as freightFee
         from
             (select task.id, task.waybill_id, task.no, task.guide_line, task.car_num,
@@ -487,7 +493,7 @@
             LEFT JOIN w_waybill ww ON ww.id = wwc.waybill_id
         WHERE
             wt.state = 100
-            AND ( wt.complete_time BETWEEN #{beforeStartDay} AND #{beforeEndDay} )
+            AND ( wt.create_time BETWEEN #{beforeStartDay} AND #{beforeEndDay} )
             AND ww.carrier_type IN ( 1, 2, 4, 5 )
     </select>
 

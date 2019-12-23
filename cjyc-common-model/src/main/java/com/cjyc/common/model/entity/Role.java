@@ -30,6 +30,9 @@ public class Role implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
+    @ApiModelProperty(value = "角色标识(物流平台角色标识)")
+    private Long roleId;
+
     @ApiModelProperty(value = "角色名称")
     private String roleName;
 

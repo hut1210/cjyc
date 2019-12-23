@@ -458,7 +458,9 @@
             w.car_num as carNum,
             w.type as type,
             w.freight_fee as freightFee,
-            w.create_time as createTime
+            w.create_time as createTime,
+            wcar.start_city as startCity,
+            wcar.end_city as endCity
         from
             w_waybill_car wcar
             left join w_waybill w on wcar.waybill_id = w.id
