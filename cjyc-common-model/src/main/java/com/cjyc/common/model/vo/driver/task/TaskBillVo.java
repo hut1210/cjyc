@@ -26,6 +26,10 @@ public class TaskBillVo implements Serializable {
     @JsonSerialize(using= ToStringSerializer.class)
     private Long taskId;
 
+    @ApiModelProperty(value = "任务单车辆id")
+    @JsonSerialize(using= ToStringSerializer.class)
+    private Long taskCarId;
+
     @ApiModelProperty(value = "任务状态：0待承接(弃)，5待装车，55运输中，100已完成，113已取消，115已拒接")
     private Integer taskState;
 
