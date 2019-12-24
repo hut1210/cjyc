@@ -22,7 +22,7 @@ public class FinanceQueryDto extends BasePageDto implements Serializable {
     private String vin;
 
     @ApiModelProperty(value = "订单编号")
-    private Long orderNo;
+    private String orderNo;
 
     @ApiModelProperty(value = "省编号")
     private String startProvinceCode;
