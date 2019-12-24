@@ -45,7 +45,7 @@ public class PingxxController {
      * @since 2019/11/6 19:51
      * @param
      */
-    @ApiOperation(value = "获取支付宝二维码")
+    @ApiOperation(value = "获取二维码")
     @PostMapping("/qrcode/get")
     public ResultVo getPayQrCode(HttpServletRequest request, @RequestBody PrePayDto prePayDto){
         prePayDto.setIp(IPUtil.getIpAddr(request));

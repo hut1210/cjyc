@@ -148,6 +148,7 @@ public class TransactionServiceImpl implements ITransactionService {
             //修改车辆支付状态
             for(int i=0;i<orderCarNosList.size();i++){
                 tradeBillDao.updateOrderCar(orderCarNosList.get(i),1,System.currentTimeMillis());
+                //TODO
             }
         }
         //验证任务是否完成
