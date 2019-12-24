@@ -107,4 +107,6 @@ public interface IWaybillDao extends BaseMapper<Waybill> {
     List<SettlementDetailVo> getSettlementDetail(SettlementDetailQueryDto settlementDetailQueryDto);
 
     int updateForLoad(Long id);
+
+    int updateForFinish(Long id);
 }

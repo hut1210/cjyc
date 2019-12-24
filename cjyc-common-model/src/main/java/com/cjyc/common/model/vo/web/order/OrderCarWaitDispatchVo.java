@@ -11,6 +11,19 @@ import lombok.Data;
 @Data
 @ApiModel
 public class OrderCarWaitDispatchVo extends OrderCar {
+    private String dispatchStartProvinceCode;
+    private String dispatchStartProvince;
+    private String dispatchStartCityCode;
+    private String dispatchStartCity;
+    private String dispatchStartAreaCode;
+    private String dispatchStartArea;
+    private String dispatchEndProvinceCode;
+    private String dispatchEndProvince;
+    private String dispatchEndCityCode;
+    private String dispatchEndCity;
+    private String dispatchEndAreaCode;
+    private String dispatchEndArea;
+
     @ApiModelProperty(value = "目的业务中心地址")
     private String startFullAddress;
     @ApiModelProperty(value = "目的业务中心地址")

@@ -3,6 +3,7 @@ package com.cjyc.web.api.controller;
 import com.cjyc.common.model.dto.web.order.ComputeCarEndpointDto;
 import com.cjyc.common.model.dto.web.order.LineWaitDispatchCountListOrderCarDto;
 import com.cjyc.common.model.dto.web.order.WaitDispatchListOrderCarDto;
+import com.cjyc.common.model.dto.web.order.WaitDispatchTrunkDto;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -67,6 +68,16 @@ public class DispatchController {
     @PostMapping(value = "/wait/list")
     public ResultVo<PageVo<OrderCarWaitDispatchVo>> waitDispatchCarList(@RequestBody WaitDispatchListOrderCarDto reqDto) {
         return orderService.waitDispatchCarList(reqDto);
+    }
+
+    /**
+     * 查询待调度车辆列表（数据列表）
+     * @author JPG
+     */
+    @ApiOperation(value = "查询待调度车辆列表")
+    @PostMapping(value = "/trunk/wait/list")
+    public ResultVo<PageVo<OrderCarWaitDispatchVo>> waitDispatchCarList(@RequestBody WaitDispatchTrunkDto reqDto) {
+        return orderService.waitDispatchTrunkCarList(reqDto);
     }
 
 

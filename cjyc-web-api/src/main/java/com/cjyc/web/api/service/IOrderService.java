@@ -86,4 +86,6 @@ public interface IOrderService extends IService<Order> {
     OrderCarVo getCarVoById(Long orderCarId);
 
     ResultVo<PageVo<ListOrderVo>> listForHhr(ListOrderDto reqDto);
+
+    ResultVo<PageVo<OrderCarWaitDispatchVo>> waitDispatchTrunkCarList(WaitDispatchTrunkDto reqDto);
 }

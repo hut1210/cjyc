@@ -124,6 +124,13 @@
         where id = #{id}
         and state &lt; 55
     </update>
+    <update id="updateForFinish">
+        update w_waybill
+        set state = 100,
+        complete_time = UNIX_TIMESTAMP(NOW()) * 1000
+        where id = #{id}
+        and state &lt; 100
+    </update>
     <select id="findByNo" resultType="com.cjyc.common.model.entity.Waybill">
         select
         <include refid="Base_Column_List"/>
