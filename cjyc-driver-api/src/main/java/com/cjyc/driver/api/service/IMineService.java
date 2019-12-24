@@ -68,6 +68,13 @@ public interface IMineService extends IService<Driver> {
     ResultVo<AppDriverInfoVo> findNewDriverInfo(AppDriverDto dto);
 
     /**
+     * 更新司机状态
+     * @param dto
+     * @return
+     */
+    ResultVo updateDriverState(DriverStateDto dto);
+
+    /**
      * 查看认证后的个人司机信息
      * @param dto
      * @return

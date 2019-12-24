@@ -1,12 +1,10 @@
 package com.cjyc.common.model.dto.customer.partner;
 
-import com.cjyc.common.model.constant.RegexConstant;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 @Data
 public class ApplyPartnerDto implements Serializable {
@@ -19,12 +17,10 @@ public class ApplyPartnerDto implements Serializable {
 
     @ApiModelProperty(value = "合伙人名称",required = true)
     @NotBlank(message = "合伙人名称不能为空")
-    @Pattern(regexp = RegexConstant.NAME,message = "请输入合法姓名")
     private String name;
 
     @ApiModelProperty(value = "联系人",required = true)
     @NotBlank(message = "联系人不能为空")
-    @Pattern(regexp = RegexConstant.NAME,message = "请输入合法姓名")
     private String contactMan;
 
     @ApiModelProperty("统一社会信用代码")
@@ -55,12 +51,10 @@ public class ApplyPartnerDto implements Serializable {
 
     @ApiModelProperty(value = "开户名称",required = true)
     @NotBlank(message = "开户名称不能为空")
-    @Pattern(regexp = RegexConstant.NAME,message = "请输入合法姓名")
     private String cardName;
 
     @ApiModelProperty(value = "银行账号",required = true)
     @NotBlank(message = "银行账号不能为空")
-    @Pattern(regexp = RegexConstant.BANK_CARD,message = "银行卡号格式不正确")
     private String cardNo;
 
     @ApiModelProperty(value = "开户行名称",required = true)

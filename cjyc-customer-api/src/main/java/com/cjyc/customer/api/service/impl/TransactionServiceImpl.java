@@ -88,7 +88,7 @@ public class TransactionServiceImpl implements ITransactionService {
     }
 
     @Override
-    public void update(Charge object, Event event, String s) {
+    public void update(Charge object, Event event, String state) {
 
     }
 
