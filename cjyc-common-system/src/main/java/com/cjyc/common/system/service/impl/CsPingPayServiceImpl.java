@@ -101,21 +101,24 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         //创建Charge对象
         Charge charge = new Charge();
         try {
-            List<String> orderCarNosList = cStransactionService.getOrderCarNosByTaskId(sweepCodeDto.getTaskId());
+            List<String> orderCarNosList = cStransactionService.getOrderCarNosByTaskCarIds(sweepCodeDto.getTaskCarIdList());
             BigDecimal freightFee = cStransactionService.getAmountByOrderCarNos(orderCarNosList);
             om.setAmount(freightFee);
             om.setDriver_code(String.valueOf(sweepCodeDto.getLoginId()));
             om.setOrderCarIds(orderCarNosList);
             om.setTaskId(sweepCodeDto.getTaskId());
+            om.setTaskCarIdList(sweepCodeDto.getTaskCarIdList());
             om.setChannel(sweepCodeDto.getChannel());
             if(sweepCodeDto.getClientType()==ClientEnum.APP_DRIVER.code){
                 om.setSubject("司机端收款码功能!");
                 om.setBody("司机端生成二维码！");
+                om.setChargeType("2");
             }else{
                 om.setSubject("业务员收款码功能!");
                 om.setBody("业务员端生成二维码！");
+                om.setChargeType("3");
             }
-            om.setChargeType("2");
+
             om.setClientType(String.valueOf(sweepCodeDto.getClientType()));
             om.setDescription("韵车订单号："+om.getOrderNo());
             charge = createDriverCode(om);
@@ -144,7 +147,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         params.put("body", om.getBody()); // 商品的描述信息, 必传
         params.put("description", om.getDescription()); // 备注：订单号
         Map<String, Object> meta = new HashMap<String,Object>();
-        meta.put("chargeType", om.getChargeType());//0:定金	1：尾款
+        meta.put("chargeType", om.getChargeType());//1 预付款 2 司机出示二维码 3 业务员出示二维码
         //自定义存储字段
         meta.put("orderNo", om.getOrderNo());	//订单号
         meta.put("orderCarIds",om.getOrderCarIds());//订单Id
@@ -154,6 +157,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         meta.put("driver_phone", om.getDriver_phone());
         meta.put("back_type", om.getBack_type());
         meta.put("taskId",om.getTaskId());
+        meta.put("taskCarIdList",om.getTaskCarIdList());
         //当为微信支付是需要product_id
         if("wx_pub_qr".equals(om.getChannel())){
             Map<String, Object> extra  = new HashMap<String,Object>();
@@ -291,19 +295,23 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
     }
 
     @Override
-    public Transfer allinpayToCarrier(Long waybillId) throws AuthenticationException, InvalidRequestException, APIConnectionException, APIException, ChannelException, RateLimitException, FileNotFoundException {
+    public ResultVo allinpayToCarrier(Long waybillId) throws AuthenticationException, InvalidRequestException, APIConnectionException, APIException, ChannelException, RateLimitException, FileNotFoundException {
         Transfer transfer = new Transfer();
         List<Long> waybillIdList = new ArrayList<>();
         waybillIdList.add(waybillId);
         List<Waybill> waybillList = waybillDao.findListByIds(waybillIdList);
-        if(waybillList!=null&&waybillList.size()>0){
-            Waybill waybill = waybillList.get(0);
-            Long carrierId = waybill.getCarrierId();
-            BaseCarrierVo baseCarrierVo = carrierDao.showCarrierById(carrierId);
-            transfer = allinpayTransferDriverCreate(baseCarrierVo,waybill);
+        try{
+            if(waybillList!=null&&waybillList.size()>0){
+                Waybill waybill = waybillList.get(0);
+                Long carrierId = waybill.getCarrierId();
+                BaseCarrierVo baseCarrierVo = carrierDao.showCarrierById(carrierId);
+                transfer = allinpayTransferDriverCreate(baseCarrierVo,waybill);
+            }
+        }catch (Exception e){
+            return BaseResultUtil.fail("通联代付失败");
         }
 
-        return transfer;
+        return BaseResultUtil.success("通联代付成功");
     }
 
     @Override

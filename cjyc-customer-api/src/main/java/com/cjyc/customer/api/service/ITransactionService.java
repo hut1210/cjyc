@@ -2,6 +2,7 @@ package com.cjyc.customer.api.service;
 
 import com.cjyc.common.model.entity.TradeBill;
 import com.Pingxx.model.Order;
+import com.cjyc.common.model.vo.ResultVo;
 import com.pingplusplus.model.Charge;
 import com.pingplusplus.model.Event;
 
@@ -28,5 +29,5 @@ public interface ITransactionService {
 
     int save(Object obj);
 
-    void update(Charge object, Event event, String s);
+    ResultVo update(Charge object, Event event, String s);
 }

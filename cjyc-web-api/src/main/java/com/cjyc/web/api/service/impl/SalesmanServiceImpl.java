@@ -6,16 +6,28 @@ import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
 import com.cjkj.usercenter.dto.common.*;
 import com.cjyc.common.model.dao.IAdminDao;
+import com.cjyc.common.model.dao.ICustomerDao;
+import com.cjyc.common.model.dao.IDriverDao;
+import com.cjyc.common.model.dao.IUserRoleDeptDao;
 import com.cjyc.common.model.dto.web.salesman.AddDto;
 import com.cjyc.common.model.dto.web.salesman.AssignRoleDto;
+import com.cjyc.common.model.dto.web.salesman.AssignRoleNewDto;
 import com.cjyc.common.model.dto.web.salesman.ResetStateDto;
 import com.cjyc.common.model.entity.Admin;
+import com.cjyc.common.model.entity.Driver;
+import com.cjyc.common.model.entity.Role;
+import com.cjyc.common.model.entity.UserRoleDept;
+import com.cjyc.common.model.enums.UseStateEnum;
+import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.enums.saleman.SalemanStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysUserService;
+import com.cjyc.common.system.util.ResultDataUtil;
+import com.cjyc.web.api.service.IRoleService;
 import com.cjyc.web.api.service.ISalesmanService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +37,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -38,11 +52,21 @@ public class SalesmanServiceImpl extends ServiceImpl<IAdminDao, Admin> implement
     private ISysUserService sysUserService;
     @Autowired
     private ISysDeptService sysDeptService;
+    @Autowired
+    private IRoleService roleService;
+    @Resource
+    private IUserRoleDeptDao userRoleDeptDao;
+    @Resource
+    private IDriverDao driverDao;
+    @Resource
+    private ICustomerDao customerDao;
     /**
      * 社会车辆事业部机构id
      */
     @Value("${cjkj.dept_admin_id}")
     private Long YC_CT_DEPT_ID;
+
+    private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -120,6 +144,38 @@ public class SalesmanServiceImpl extends ServiceImpl<IAdminDao, Admin> implement
                 return BaseResultUtil.fail("重置密码错误，原因：" + rd.getMsg());
             }
         }
+        return BaseResultUtil.success();
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public ResultVo assignRolesNew(AssignRoleNewDto dto) {
+        Admin admin = baseMapper.selectById(dto.getId());
+        if (null == admin || admin.getUserId() == null || admin.getUserId() <= 0L) {
+            return BaseResultUtil.fail("用户信息有误，请确认");
+        }
+        Role role = roleService.getById(dto.getRoleId());
+        if (null == role || role.getRoleId() == null || role.getRoleId() <= 0L) {
+            return BaseResultUtil.fail("角色信息有误，请确认");
+        }
+        UpdateUserReq user = new UpdateUserReq();
+        user.setUserId(admin.getUserId());
+        //查询当前用户的非业务员角色列表
+        List<Long> nonSalesmanRoleIds = userRoleDeptDao.getNonSalesmanRoleIds(admin.getUserId());
+        if (!CollectionUtils.isEmpty(nonSalesmanRoleIds)) {
+            nonSalesmanRoleIds.add(role.getRoleId());
+            user.setRoleIdList(nonSalesmanRoleIds);
+        }else {
+            user.setRoleIdList(Arrays.asList(role.getRoleId()));
+        }
+        ResultData updateRd = sysUserService.updateUser(user);
+        if (!ResultDataUtil.isSuccess(updateRd)) {
+            return BaseResultUtil.fail("分配角色信息失败，原因：" + updateRd.getMsg());
+        }
+        //用户角色机构信息同步
+        updateUserRoleDept(dto);
+        admin.setBizDesc(dto.getBizDesc());
+        this.updateById(admin);
         return BaseResultUtil.success();
     }
 
@@ -311,5 +367,40 @@ public class SalesmanServiceImpl extends ServiceImpl<IAdminDao, Admin> implement
         BeanUtils.copyProperties(dto, user);
         user.setMobile(dto.getPhone());
         user.setPassword(YmlProperty.get("cjkj.salesman.password"));
+    }
+
+    /**
+     * 更新用户角色机构关系
+     * @param dto
+     */
+    private void updateUserRoleDept(AssignRoleNewDto dto) {
+        dto.getDeptIdList().forEach(dId -> {
+            //关系表中存在有效关系无需变更否则新增一条
+            List<UserRoleDept> userRoleDeptList = userRoleDeptDao.selectList(new QueryWrapper<UserRoleDept>()
+                    .eq("user_id", dto.getId())
+                    .eq("role_id", dto.getRoleId())
+                    .eq("dept_id", dId)
+                    .eq("dept_type", UserTypeEnum.ADMIN.code)
+                    .eq("user_type", UserTypeEnum.ADMIN.code)
+                    .eq("state", UseStateEnum.USABLE.code));
+            if (CollectionUtils.isEmpty(userRoleDeptList)) {
+                UserRoleDept userRoleDept = new UserRoleDept();
+                userRoleDept.setUserId(dto.getId());
+                userRoleDept.setRoleId(dto.getRoleId());
+                userRoleDept.setDeptId(dId);
+                userRoleDept.setDeptLevel(dto.getDeptType().equals(5)?5: 1);
+                userRoleDept.setDeptType(UserTypeEnum.ADMIN.code);
+                userRoleDept.setUserType(UserTypeEnum.ADMIN.code);
+                userRoleDept.setCreateTime(NOW);
+                userRoleDept.setCreateUserId(dto.getLoginId());
+                userRoleDeptDao.insert(userRoleDept);
+            }else {
+                userRoleDeptList.forEach(ur -> {
+                    ur.setUpdateTime(NOW);
+                    ur.setUpdateUserId(dto.getLoginId());
+                    userRoleDeptDao.updateById(ur);
+                });
+            }
+        });
     }
 }

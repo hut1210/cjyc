@@ -2,6 +2,7 @@ package com.cjyc.web.api.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.dto.web.salesman.AdminPageDto;
+import com.cjyc.common.model.dto.web.salesman.AdminPageNewDto;
 import com.cjyc.common.model.dto.web.salesman.TypeSalesmanDto;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.vo.PageVo;
@@ -26,4 +27,8 @@ public interface IAdminService extends IService<Admin> {
     ResultVo<PageVo<AdminPageVo>> page(AdminPageDto reqDto);
 
     CacheData getCacheData(Long userId, Long roleId);
+
+    /************************************韵车集成改版 st***********************************/
+    ResultVo<PageVo<AdminPageVo>> pageNew(AdminPageNewDto reqDto);
+    /************************************韵车集成改版 ed***********************************/
 }

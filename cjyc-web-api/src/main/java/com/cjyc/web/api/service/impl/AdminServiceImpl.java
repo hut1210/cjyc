@@ -1,5 +1,6 @@
 package com.cjyc.web.api.service.impl;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.model.PageData;
 import com.cjkj.common.model.ResultData;
@@ -12,6 +13,7 @@ import com.cjkj.usercenter.dto.yc.SelectUsersByRoleResp;
 import com.cjyc.common.model.dao.IAdminDao;
 import com.cjyc.common.model.dao.IRoleDao;
 import com.cjyc.common.model.dto.web.salesman.AdminPageDto;
+import com.cjyc.common.model.dto.web.salesman.AdminPageNewDto;
 import com.cjyc.common.model.dto.web.salesman.TypeSalesmanDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.UserTypeEnum;
@@ -42,6 +44,7 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -276,6 +279,36 @@ public class AdminServiceImpl extends ServiceImpl<IAdminDao, Admin> implements I
             return null;
         }
         return cacheData;
+    }
+
+    @Override
+    public ResultVo<PageVo<AdminPageVo>> pageNew(AdminPageNewDto dto) {
+        PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize(), true);
+        List<AdminPageVo> pageList = adminDao.getPageList(dto);
+        if (!CollectionUtils.isEmpty(pageList)) {
+            pageList.forEach(admin -> {
+                if (!StringUtils.isEmpty(admin.getRoles())) {
+                    Set<String> set = new HashSet<>();
+                    String[] roles = admin.getRoles().split(",");
+                    for (String role: roles) {
+                        set.add(role.trim());
+                    }
+                    StringBuilder sb = new StringBuilder();
+                    set.forEach(r -> {
+                        if (sb.length() > 0) {
+                            sb.append(",");
+                        }
+                        sb.append(r);
+                    });
+                    admin.setRoles(sb.toString());
+                }
+            });
+        }
+        PageInfo<AdminPageVo> pageInfo = new PageInfo<>(pageList);
+        if (dto.getCurrentPage() > pageInfo.getPages()) {
+            pageInfo.setList(pageList);
+        }
+        return BaseResultUtil.success(pageInfo);
     }
 
     private int getPages(long total, Integer pageSize) {

@@ -2,6 +2,7 @@ package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.web.salesman.AddDto;
 import com.cjyc.common.model.dto.web.salesman.AssignRoleDto;
+import com.cjyc.common.model.dto.web.salesman.AssignRoleNewDto;
 import com.cjyc.common.model.dto.web.salesman.ResetStateDto;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
@@ -45,4 +46,12 @@ public class SalesmanController {
                              @PathVariable("id")Long id) {
         return salesmanService.resetPwd(id);
     }
+
+    /************************************韵车集成改版 st***********************************/
+    @PostMapping("/assignRolesNew")
+    @ApiOperation(value = "分配角色(即分配业务范围)")
+    public ResultVo assignRolesNew(@Valid @RequestBody AssignRoleNewDto dto){
+        return salesmanService.assignRolesNew(dto);
+    }
+    /************************************韵车集成改版 ed***********************************/
 }
