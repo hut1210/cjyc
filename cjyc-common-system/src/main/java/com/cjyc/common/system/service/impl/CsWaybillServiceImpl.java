@@ -862,15 +862,13 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             //是否重新分配任务
             boolean isReAllotDriver = false;
             boolean isOneDriver = false;
-            Carrier carrier = null;
-            Driver driver = null;
 
             //【验证】承运商和司机信息
-            carrier = carrierDao.selectById(carrierId);
-            if (carrier.getState() == null || carrier.getState() != CommonStateEnum.CHECKED.code || carrier.getBusinessState() == null || carrier.getBusinessState() != 0) {
+            Carrier carrier = carrierDao.selectById(carrierId);
+            if (carrier == null || carrier.getState() == null || carrier.getState() != CommonStateEnum.CHECKED.code || carrier.getBusinessState() == null || carrier.getBusinessState() != 0) {
                 return BaseResultUtil.fail("运单，所选承运商，停运中");
             }
-            driver = new Driver();
+            Driver driver = null;
             if (carrier.getDriverNum() <= 1) {
                 driver = driverDao.findTopByCarrierId(carrierId);
                 if (driver == null) {

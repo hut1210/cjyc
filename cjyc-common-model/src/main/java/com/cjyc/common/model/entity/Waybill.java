@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.cjyc.common.model.util.BigDecimalSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -51,6 +52,7 @@ public class Waybill implements Serializable {
     private String recommendLine;
 
     @ApiModelProperty(value = "承运商ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long carrierId;
 
     @ApiModelProperty(value = "承运商类型：0承运商，1业务员，2客户自己")
