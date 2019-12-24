@@ -766,7 +766,6 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 //更新订单车辆状态
                 OrderCar noc = new OrderCar();
                 noc.setId(orderCar.getId());
-                noc.setState(OrderCarStateEnum.WAIT_TRUNK.code);
                 noc.setTrunkState(OrderCarTrunkStateEnum.WAIT_NEXT_DISPATCH.code);
                 int n = waybillCarDao.countPrevTrunk(waybillCar.getId());
                 if(n == 0){
@@ -774,6 +773,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                     if(order.getStartAddress().equals(waybillCar.getStartAddress())){
                         noc.setPickType(OrderPickTypeEnum.WL.code);
                         noc.setPickState(OrderCarLocalStateEnum.F_WL.code);
+                        noc.setState(OrderCarStateEnum.WAIT_TRUNK.code);
                     }
                     //干线最后一段
                     if(order.getEndCityCode().equals(waybillCar.getEndCityCode())){
@@ -990,7 +990,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 OrderCar noc = new OrderCar();
                 noc.setId(orderCar.getId());
                 int n = waybillCarDao.countPrevTrunk(waybillCar.getId());
-                if(n == 0){
+                if(0 == n){
                     //提干
                     if(order.getStartAddress().equals(waybillCar.getStartAddress())){
                         noc.setPickType(OrderPickTypeEnum.WL.code);

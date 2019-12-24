@@ -884,7 +884,16 @@
             (case when o.end_store_id > 0 and o.back_type != 4 and o.end_store_id > 0 then null else null end)  as unloadLinkUserId,
             (case when o.end_store_id > 0 and o.back_type != 4 and o.end_store_id > 0 then null else o.back_contact_name end)  as unloadLinkName,
             (case when o.end_store_id > 0 and o.back_type != 4 and o.end_store_id > 0 then null else o.back_contact_phone end)  as unloadLinkPhone,
-            o.end_belong_store_id as endBelongStoreId
+            o.end_belong_store_id as endBelongStoreId,
+            (
+                select
+                CONCAT(GROUP_CONCAT(wcsub.load_photo_img),',',GROUP_CONCAT(wcsub.unload_photo_img))
+                from w_waybill wsub
+                join w_waybill_car wcsub on wsub.id = wcsub.waybill_id
+                where wcsub.order_car_id = oc.id
+                and wsub.state &lt;= 100
+                and wcsub.state &lt;= 100
+            ) as historyPhotoImg
             from w_order o
             join w_order_car oc on o.id = oc.order_id
             left join s_store s0 on s0.id = o.end_store_id
