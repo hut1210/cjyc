@@ -244,6 +244,7 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
         }
     }
 
+    /*********************************韵车集成改版 st*****************************/
     @Override
     public ResultVo addRoleNew(AddRoleDto dto) {
         List<Role> list = baseMapper.selectList(new QueryWrapper<Role>()
@@ -272,6 +273,33 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
         baseMapper.insert(role);
         return BaseResultUtil.success();
     }
+
+    @Override
+    public ResultVo<List<SelectUserByRoleVo>> getUsersByRoleIdNew(Long roleId) {
+        List<SelectUserByRoleVo> userList = baseMapper.getUsersByRoleId(roleId);
+        if (CollectionUtils.isEmpty(userList)) {
+            return BaseResultUtil.success();
+        }
+        userList.forEach(u -> {
+            if (!StringUtils.isEmpty(u.getRoles())) {
+                String[] roles = u.getRoles().split(",");
+                Set<String> rSet;
+                if (roles.length > 1) {
+                    rSet = Sets.newHashSet(roles);
+                    StringBuilder sb = new StringBuilder();
+                    rSet.forEach(r -> {
+                        if (sb.length() > 0) {
+                            sb.append(",");
+                        }
+                        sb.append(r);
+                    });
+                    u.setRoles(sb.toString());
+                }
+            }
+        });
+        return BaseResultUtil.success(userList);
+    }
+    /*********************************韵车集成改版 ed*****************************/
 
 
     /**

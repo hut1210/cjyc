@@ -26,4 +26,14 @@
         select * from s_role where role_name = #{roleName};
     </select>
 
+    <select id="getUsersByRoleId" resultType="com.cjyc.common.model.vo.web.role.SelectUserByRoleVo">
+        SELECT ba.id AS userId, ba.state, ba.`name`, ba.phone, GROUP_CONCAT(sr.role_name) roles,
+        ba.biz_desc AS bizDesc, ba.create_user AS createUser, ba.create_time AS createTime,
+        ba.state AS status, ba.phone AS account
+        FROM b_admin ba
+            LEFT JOIN s_user_role_dept sur ON sur.user_id = ba.id
+            LEFT JOIN s_role sr ON sr.id = sur.role_id
+        WHERE sur.role_id = #{roleId}
+        GROUP BY ba.id
+    </select>
 </mapper>
