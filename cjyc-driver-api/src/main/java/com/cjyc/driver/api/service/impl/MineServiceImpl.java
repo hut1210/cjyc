@@ -336,6 +336,17 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
     }
 
     @Override
+    public ResultVo updateDriverState(DriverStateDto dto) {
+        Driver driver = driverDao.selectById(dto.getLoginId());
+        if(driver == null){
+            return BaseResultUtil.fail("该司机不存在，请检查");
+        }
+        driver.setBusinessState(dto.getBusinessState());
+        driverDao.updateById(driver);
+        return BaseResultUtil.success();
+    }
+
+    @Override
     public ResultVo<SocietyDriverVo> showDriverInfo(AppDriverDto dto) {
         CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
                 .eq(CarrierDriverCon::getId, dto.getRoleId())

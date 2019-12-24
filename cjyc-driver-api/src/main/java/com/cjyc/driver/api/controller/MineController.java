@@ -117,6 +117,13 @@ public class MineController {
         return mineService.findNewDriverInfo(dto);
     }
 
+    @ApiOperation(value = "获取司机最新信息")
+    @PostMapping(value = "/updateDriverState")
+    public ResultVo updateDriverState(@Validated @RequestBody DriverStateDto dto) {
+        return mineService.updateDriverState(dto);
+    }
+
+
     @ApiOperation(value = "个人司机信息(认证通过后查看司机信息)")
     @PostMapping(value = "/showDriverInfo")
     public ResultVo<SocietyDriverVo> showDriverInfo(@Validated @RequestBody AppDriverDto dto) {
