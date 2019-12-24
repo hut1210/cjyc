@@ -888,6 +888,7 @@
             from w_order o
             join w_order_car oc on o.id = oc.order_id
             left join s_store s0 on s0.id = o.end_store_id
+            left join s_store ss on ss.id = o.start_store_id
             left join (
                 select
                 wc.*,
