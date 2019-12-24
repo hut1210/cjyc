@@ -245,7 +245,6 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                 // 待提车详情
                 LambdaQueryWrapper<WaybillCar> query = new QueryWrapper<WaybillCar>().lambda()
                         .eq(WaybillCar::getId, taskCar.getWaybillCarId());
-
                 if (FieldConstant.WAIT_PICK_CAR.equals(detailType)) {
                     // 查询任务单车辆信息
                     query = query.eq(WaybillCar::getState,WaybillCarStateEnum.WAIT_LOAD.code)
