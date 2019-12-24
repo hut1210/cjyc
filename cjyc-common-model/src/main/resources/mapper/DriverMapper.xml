@@ -469,7 +469,7 @@
         LEFT JOIN d_carrier_driver_con dcdc ON dcdc.driver_id = dd.id
         LEFT JOIN d_carrier dc ON dc.id = dcdc.carrier_id
         LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
-        where dc.id = #{carrierId} and dc.type = 2 and dc.state &lt; 4 and dcdc.role &lt; 2
+        where dc.id = #{carrierId} and dc.type = 2 and dcdc.state &lt; 5 and dcdc.role &lt; 2
         order by dd.create_time desc,dd.check_time desc
     </select>
 
