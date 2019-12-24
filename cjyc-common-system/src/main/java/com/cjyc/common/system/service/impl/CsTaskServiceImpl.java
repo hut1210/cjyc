@@ -315,7 +315,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 throw new ParameterException("订单车辆不存在");
             }
             //验证目的地业务中心是否与当前业务中心匹配
-            if(waybillCar.getStartStoreId() != null){
+            if(waybillCar.getStartStoreId() != null && waybillCar.getStartStoreId() != 0){
                if(!waybillCar.getStartStoreId().equals(orderCar.getNowStoreId())){
                    throw new ParameterException("订单车辆尚未到达提车业务中心");
                }
@@ -433,6 +433,11 @@ public class CsTaskServiceImpl implements ICsTaskService {
             }
             if (waybillCar.getState() >= WaybillCarStateEnum.UNLOADED.code) {
                 throw new ParameterException("运单车辆{0}已经卸过车", waybillCar.getOrderCarNo());
+            }
+            if(waybillCar.getEndStoreId() == null || waybillCar.getEndStoreId() <= 0 ){
+                waybillCarDao.updateStateById(waybillCar.getId(), WaybillCarStateEnum.UNLOADED.code);
+            }else{
+                waybillCarDao.updateStateById(waybillCar.getId(), WaybillCarStateEnum.WAIT_UNLOAD_CONFIRM.code);
             }
             waybillCarIdSet.add(waybillCar.getId());
             count++;

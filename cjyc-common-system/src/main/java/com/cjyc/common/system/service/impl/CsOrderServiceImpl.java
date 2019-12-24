@@ -110,8 +110,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
         BeanUtils.copyProperties(paramsDto, order);
         //查询三级城市
         fillOrderCityInfo(order);
-        fillOrderInputStore(order);
         fillOrderStoreInfoForSave(order);
+        fillOrderInputStore(order);
         /**1、组装订单数据
          */
         if (newOrderFlag) {
@@ -156,6 +156,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
             orderCar.setOrderId(order.getId());
             orderCar.setNo(csSendNoService.formatNo(order.getNo(), noCount, 3));
             orderCar.setState(OrderCarStateEnum.WAIT_ROUTE.code);
+            orderCar.setNowAreaCode(order.getStartAreaCode());
             orderCar.setPickFee(MoneyUtil.convertYuanToFen(dto.getPickFee()));
             orderCar.setTrunkFee(MoneyUtil.convertYuanToFen(dto.getTrunkFee()));
             orderCar.setBackFee(MoneyUtil.convertYuanToFen(dto.getBackFee()));
@@ -167,18 +168,19 @@ public class CsOrderServiceImpl implements ICsOrderService {
         return BaseResultUtil.success("下单成功，订单编号{0}", order.getNo());
     }
 
-    private void fillOrderStoreInfoForSave(Order order) {
+    private Order fillOrderStoreInfoForSave(Order order) {
         Long inputStoreId = order.getInputStoreId();
         order.setInputStoreId(inputStoreId == null || inputStoreId == -5 ? null : inputStoreId);
         Long startStoreId = order.getStartStoreId();
         order.setStartStoreId(startStoreId == null || startStoreId == -5 ? null : startStoreId);
         Long endStoreId = order.getEndStoreId();
         order.setInputStoreId(endStoreId == null || endStoreId == -5 ? null : endStoreId);
+        return order;
     }
 
-    private void fillOrderInputStore(Order order) {
-        if(order.getInputStoreId() != null){
-            return;
+    private Order fillOrderInputStore(Order order) {
+        if(order.getInputStoreId() != null && order.getInputStoreId() != -5){
+            return order;
         }
         //根据业务范围查询业务中心
         Store store = null;
@@ -195,6 +197,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         }else{
             order.setInputStoreId(0L);
         }
+        return order;
     }
 
     @Override
@@ -289,6 +292,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 orderCar.setState(OrderCarStateEnum.WAIT_ROUTE.code);
                 orderCar.setPickFee(MoneyUtil.convertYuanToFen(dto.getPickFee()));
                 orderCar.setTrunkFee(MoneyUtil.convertYuanToFen(dto.getTrunkFee()));
+                orderCar.setNowAreaCode(order.getStartAreaCode());
                 orderCar.setBackFee(MoneyUtil.convertYuanToFen(dto.getBackFee()));
                 orderCar.setAddInsuranceFee(MoneyUtil.convertYuanToFen(dto.getAddInsuranceFee()));
                 orderCarDao.insert(orderCar);
@@ -364,7 +368,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
      * @author JPG
      * @since 2019/12/12 13:11
      */
-    private void fillOrderCityInfo(Order order) {
+    private Order fillOrderCityInfo(Order order) {
         if (StringUtils.isNotBlank(order.getStartAreaCode())) {
             FullCity startFullCity = csCityService.findFullCity(order.getStartAreaCode(), CityLevelEnum.PROVINCE);
             copyOrderStartCity(startFullCity, order);
@@ -373,6 +377,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
             FullCity endFullCity = csCityService.findFullCity(order.getEndAreaCode(), CityLevelEnum.PROVINCE);
             copyOrderEndCity(endFullCity, order);
         }
+        return order;
     }
 
     /**
@@ -382,7 +387,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
      * @author JPG
      * @since 2019/12/12 11:55
      */
-    private void fillOrderStoreInfo(Order order) {
+    private Order fillOrderStoreInfo(Order order) {
         if (order.getStartStoreId() != null && order.getStartStoreId() > 0) {
             order.setStartBelongStoreId(order.getStartStoreId());
         } else {
@@ -417,6 +422,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 order.setEndBelongStoreId(0L);
             }
         }
+        return order;
     }
 
     /**
@@ -519,7 +525,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
      * @author JPG
      * @since 2019/12/12 14:41
      */
-    private void fillOrderFeeInfo(Order order, List<OrderCar> orderCarList) {
+    private Order fillOrderFeeInfo(Order order, List<OrderCar> orderCarList) {
         BigDecimal pickFee = BigDecimal.ZERO;
         BigDecimal trunkFee = BigDecimal.ZERO;
         BigDecimal backFee = BigDecimal.ZERO;
@@ -534,6 +540,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         order.setTrunkFee(trunkFee);
         order.setBackFee(backFee);
         order.setAddInsuranceFee(addInsuranceFee);
+        return order;
     }
 
     /**

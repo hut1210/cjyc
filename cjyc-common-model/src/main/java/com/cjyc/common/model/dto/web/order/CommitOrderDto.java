@@ -103,7 +103,6 @@ public class CommitOrderDto {
     @NotBlank(message = "发车联系人电话不能为空")
     @ApiModelProperty(value = "发车联系人电话", required = true)
     private String pickContactPhone;
-    @Pattern(regexp = "(1|2|3|4)",message = "详情类型只能是1,2,3,4中的一位数")
     @ApiModelProperty(value = "送车方式： 1 自提，2代驾上门，3拖车上门, 4.物流上门", required = true)
     private int backType;
     @NotBlank(message = "收车联系人电话不能为空")
@@ -122,7 +121,6 @@ public class CommitOrderDto {
     private Integer hurryDays;
     @ApiModelProperty(value = "备注")
     private String remark;
-    @Pattern(regexp = "(0|1|2)",message = "详情类型只能是0,1,2中的一位数")
     @ApiModelProperty(value = "支付方式 0-到付，1-预付，2账期", required = true)
     private Integer payType = 0;
     @ApiModelProperty(value = "优惠券id")

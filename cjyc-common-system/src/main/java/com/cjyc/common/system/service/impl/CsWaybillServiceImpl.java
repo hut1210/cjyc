@@ -351,7 +351,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
     }
 
-    private void fillWaybillCarHandleAdmin(WaybillCar waybillCar, Integer type) {
+    private WaybillCar fillWaybillCarHandleAdmin(WaybillCar waybillCar, Integer type) {
         if(WaybillTypeEnum.BACK.code == type){
             if(StringUtils.isBlank(waybillCar.getLoadLinkPhone())){
                 Admin admin = csAdminService.findLoop(waybillCar.getStartStoreId());
@@ -374,6 +374,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 waybillCar.setUnloadLinkPhone(admin.getPhone());
             }
         }
+        return waybillCar;
     }
 
     private Integer getLocalCarryType(Integer carrierType) {
@@ -581,7 +582,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
     /**
      * 计算到达时间
      **/
-    private void fillWaybillCarExpectEndTime(WaybillCar waybillCar) {
+    private WaybillCar fillWaybillCarExpectEndTime(WaybillCar waybillCar) {
         if(waybillCar.getExpectStartTime() == null){
             throw new ParameterException("请填写预估提车日期");
         }
@@ -589,22 +590,24 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         if (line != null && line.getDays() != null) {
             waybillCar.setExpectEndTime(TimeStampUtil.addDays(waybillCar.getExpectStartTime(), line.getDays().intValue()));
         }
+        return waybillCar;
     }
 
     /**
      * 计算城市信息
      **/
-    private void fillWaybillCarCityInfo(WaybillCar wc) {
+    private WaybillCar fillWaybillCarCityInfo(WaybillCar wc) {
         FullCity startFullCity = csCityService.findFullCity(wc.getStartAreaCode(), CityLevelEnum.PROVINCE);
         copyWaybillCarStartCity(startFullCity, wc);
         FullCity endFullCity = csCityService.findFullCity(wc.getEndAreaCode(), CityLevelEnum.PROVINCE);
         copyWaybillCarEndCity(endFullCity, wc);
+        return wc;
     }
 
     /**
      * 计算业务中心
      **/
-    private void fillWaybillcarStoreInfo(WaybillCar wc) {
+    private WaybillCar fillWaybillcarStoreInfo(WaybillCar wc) {
         Long startBelongStoreId = csStoreService.getBelongStoreId(wc.getStartStoreId(), wc.getStartCityCode());
         if (startBelongStoreId != null) {
             wc.setStartBelongStoreId(startBelongStoreId);
@@ -613,6 +616,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         if (endBelongStoreId != null) {
             wc.setEndBelongStoreId(endBelongStoreId);
         }
+        return wc;
     }
 
     /**

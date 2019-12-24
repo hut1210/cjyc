@@ -4,7 +4,6 @@ import com.cjyc.common.model.dto.customer.order.OrderDetailDto;
 import com.cjyc.common.model.dto.customer.order.OrderQueryDto;
 import com.cjyc.common.model.dto.customer.order.SimpleSaveOrderDto;
 import com.cjyc.common.model.dto.web.order.CancelOrderDto;
-import com.cjyc.common.model.dto.web.order.CommitOrderDto;
 import com.cjyc.common.model.dto.web.order.SaveOrderDto;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.vo.PageVo;
@@ -63,7 +62,7 @@ public class OrderController {
      */
     @ApiOperation(value = "订单提交-客户")
     @PostMapping(value = "/submit")
-    public ResultVo submit(@Validated @RequestBody CommitOrderDto reqDto) {
+    public ResultVo submit(@Validated @RequestBody SaveOrderDto reqDto) {
 
         //验证用户存不存在
         Customer customer = csCustomerService.validate(reqDto.getLoginId());
@@ -72,7 +71,7 @@ public class OrderController {
         reqDto.setCreateUserName(customer.getName());
 
         //发送推送信息
-        return csOrderService.commit(reqDto);
+        return orderService.submit(reqDto);
     }
 
     /**

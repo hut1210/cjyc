@@ -47,7 +47,6 @@ public class CustomerController {
     @ApiOperation(value = "修改个人信息")
     @PostMapping("/update")
     public ResultVo update(@RequestBody UpdateCustomerDto updateCustomerDto) {
-
         return null;
     }
 
