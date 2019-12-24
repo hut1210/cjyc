@@ -3,6 +3,8 @@ package com.cjyc.web.api.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.cjkj.common.utils.IPUtil;
 import com.cjyc.common.model.dto.customer.pingxx.PrePayDto;
+import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.service.ICsPingPayService;
 import com.cjyc.web.api.service.IPingxxService;
 import com.cjyc.web.api.util.QRcodeUtil;
@@ -18,12 +20,14 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Ping++
  * @author JPG
  */
-@Controller
+@RestController
 @Api(tags = "资金-Ping++")
 @RequestMapping(value = "/pingxx",
         produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -42,10 +46,11 @@ public class PingxxController {
      * @param
      */
     @ApiOperation(value = "获取支付宝二维码")
-    @GetMapping("/qrcode/get")
-    public void getPayQrCode(HttpServletRequest request, PrePayDto prePayDto, HttpServletResponse response){
+    @PostMapping("/qrcode/get")
+    public ResultVo getPayQrCode(HttpServletRequest request, @RequestBody PrePayDto prePayDto){
         prePayDto.setIp(IPUtil.getIpAddr(request));
         Charge charge = new Charge();
+        Map<String,String> map=new HashMap<>();
         try {
             charge = csPingPayService.prePay(prePayDto);
 
@@ -61,10 +66,12 @@ public class PingxxController {
                 qrcode = credentialJson.getString("alipay_qr");
             }
 
-            QRcodeUtil.creatRrCode(qrcode,200,200,response);
+            map.put("imageUrl",QRcodeUtil.creatRrCode(qrcode,200,200));
         }catch (Exception e){
             log.error(e.getMessage(),e);
         }
+
+        return BaseResultUtil.success(map);
     }
 
 
