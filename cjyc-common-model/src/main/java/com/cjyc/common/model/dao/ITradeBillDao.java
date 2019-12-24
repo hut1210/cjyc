@@ -22,7 +22,7 @@ public interface ITradeBillDao extends BaseMapper<TradeBill> {
 
     List<String> getOrderCarNoList(String orderNo);
 
-    void updateOrderCar(@Param("orderCarNos") String orderCarNo,@Param("wlPayState") int wlPayState,@Param("wlPayTime") long wlPayTime);
+    void updateOrderCar(@Param("orderCarNo") String orderCarNo,@Param("wlPayState") int wlPayState,@Param("wlPayTime") long wlPayTime);
 
     TradeBill getTradeBillByOrderNo(String orderNo);
 

@@ -30,6 +30,6 @@ public class SweepCodeDto {
     @ApiModelProperty(hidden = true)
     private String ip;
 
-    @ApiModelProperty(value = "1为司机端出示 2为业务员端出示", hidden = true)
+    @ApiModelProperty(value = "2为司机端出示 3为业务员端出示", hidden = true)
     private int clientType;
 }

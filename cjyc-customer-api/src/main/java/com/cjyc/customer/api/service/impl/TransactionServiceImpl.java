@@ -2,17 +2,22 @@ package com.cjyc.customer.api.service.impl;
 
 import com.Pingxx.model.MetaDataEntiy;
 import com.Pingxx.model.Order;
-import com.cjyc.common.model.dao.ITradeBillDao;
-import com.cjyc.common.model.dao.ITradeBillDetailDao;
+import com.cjyc.common.model.dao.*;
+import com.cjyc.common.model.entity.Task;
 import com.cjyc.common.model.entity.TradeBill;
 import com.cjyc.common.model.entity.TradeBillDetail;
+import com.cjyc.common.model.entity.Waybill;
 import com.cjyc.common.model.entity.defined.UserInfo;
 import com.cjyc.common.model.enums.ChargeTypeEnum;
 import com.cjyc.common.model.enums.PayStateEnum;
 import com.cjyc.common.model.enums.Pingxx.ChannelEnum;
 import com.cjyc.common.model.enums.Pingxx.LiveModeEnum;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
+import com.cjyc.common.model.enums.task.TaskStateEnum;
+import com.cjyc.common.model.enums.waybill.WaybillStateEnum;
+import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.BeanMapUtil;
+import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.service.ICsSendNoService;
 import com.cjyc.common.system.service.ICsTaskService;
 import com.cjyc.common.system.service.ICsUserService;
@@ -26,9 +31,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -62,6 +69,21 @@ public class TransactionServiceImpl implements ITransactionService {
     @Resource
     private ICsUserService userService;
 
+    @Resource
+    private ITaskDao taskDao;
+
+    @Resource
+    private IWaybillDao waybillDao;
+
+    @Resource
+    private IOrderDao orderDao;
+
+    @Resource
+    private ITaskCarDao taskCarDao;
+
+    @Resource
+    private IWaybillCarDao waybillCarDao;
+
     @Override
     public int save(Object obj) {
         TradeBill bill;
@@ -88,8 +110,60 @@ public class TransactionServiceImpl implements ITransactionService {
     }
 
     @Override
-    public void update(Charge object, Event event, String state) {
+    public ResultVo update(Charge charge, Event event, String state) {
 
+        Map<String, Object> metadata = charge.getMetadata();
+
+        Long taskId = (Long)metadata.get("taskId");
+
+        List<String> orderCarNosList = (List<String>)metadata.get("orderCarIds");
+
+        Task task = null;
+        if(taskId == null){
+            log.error("回调中参数taskId不存在");
+            return BaseResultUtil.fail("缺少参数taskId");
+        }else{
+            task = taskDao.selectById(taskId);
+            if (task == null) {
+                log.error(taskId+" 任务不存在");
+                return BaseResultUtil.fail(taskId+"任务不存在");
+            }else{
+                //验证运单
+                Waybill waybill = waybillDao.selectById(task.getWaybillId());
+                if (waybill == null) {
+                    log.error("运单不存在");
+                    return BaseResultUtil.fail("运单不存在");
+                }
+                if (waybill.getState() >= WaybillStateEnum.FINISHED.code || waybill.getState() <= WaybillStateEnum.ALLOT_CONFIRM.code) {
+                    log.error(waybill.getNo()+"运单已完结");
+                    return BaseResultUtil.fail(waybill.getNo()+"运单已完结");
+                }
+            }
+        }
+
+        if(orderCarNosList==null){
+            log.error("回调中参数orderCarNosList不存在");
+            return BaseResultUtil.fail("缺少参数orderCarNosList");
+        }else{
+            //修改车辆支付状态
+            for(int i=0;i<orderCarNosList.size();i++){
+                tradeBillDao.updateOrderCar(orderCarNosList.get(i),1,System.currentTimeMillis());
+            }
+        }
+        //验证任务是否完成
+        int row = taskCarDao.countUnFinishByTaskId(taskId);
+        if (row == 0) {
+            //更新任务状态
+            taskDao.updateStateById(task.getId(), TaskStateEnum.FINISHED.code);
+            //验证运单是否完成
+            int n = waybillCarDao.countUnFinishByWaybillId(task.getWaybillId());
+            if (n == 0) {
+                //更新运单状态
+                waybillDao.updateForReceipt(task.getWaybillId(), System.currentTimeMillis());
+            }
+        }
+
+        return BaseResultUtil.success();
     }
 
     @Override
