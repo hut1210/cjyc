@@ -65,4 +65,13 @@ public interface IRoleService extends IService<Role> {
      * @return
      */
     ResultVo<List<String>> getBtmMenuIdsByRoleId(Long roleId);
+
+    /*********************************韵车集成改版 st*****************************/
+    /**
+     * 添加角色信息
+     * @param dto
+     * @return
+     */
+    ResultVo addRoleNew(AddRoleDto dto);
+    /*********************************韵车集成改版 ed*****************************/
 }

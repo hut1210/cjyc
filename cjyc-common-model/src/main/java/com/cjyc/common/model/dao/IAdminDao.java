@@ -1,6 +1,7 @@
 package com.cjyc.common.model.dao;
 
 import com.cjyc.common.model.dto.web.salesman.AdminPageDto;
+import com.cjyc.common.model.dto.web.salesman.AdminPageNewDto;
 import com.cjyc.common.model.dto.web.salesman.TypeSalesmanDto;
 import com.cjyc.common.model.entity.Admin;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -46,4 +47,8 @@ public interface IAdminDao extends BaseMapper<Admin> {
     Admin findNext(@Param("startStoreId") Long startStoreId, Long valueOf);
 
     Admin findTop(Long startStoreId);
+
+    /************************************韵车集成改版 ed***********************************/
+    List<AdminPageVo> getPageList(@Param("param") AdminPageNewDto dto);
+    /************************************韵车集成改版 st***********************************/
 }

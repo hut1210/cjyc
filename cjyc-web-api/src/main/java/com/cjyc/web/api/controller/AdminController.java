@@ -5,6 +5,7 @@ import com.cjkj.common.model.ResultData;
 import com.cjkj.usercenter.dto.common.AddUserResp;
 import com.cjkj.usercenter.dto.common.UserResp;
 import com.cjkj.usercenter.dto.yc.SelectPageUsersByDeptReq;
+import com.cjyc.common.model.dto.web.salesman.AdminPageNewDto;
 import com.cjyc.common.model.dto.web.salesman.MySalesmanQueryDto;
 import com.cjyc.common.model.dto.web.salesman.AdminPageDto;
 import com.cjyc.common.model.dto.web.salesman.TypeSalesmanDto;
@@ -27,6 +28,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Objects;
 
@@ -112,4 +114,12 @@ public class AdminController {
     public ResultVo deliverySalesman(@Validated @RequestBody TypeSalesmanDto dto){
         return adminService.deliverySalesman(dto);
     }
+
+    /************************************韵车集成改版 st***********************************/
+    @ApiOperation(value = "分页查询指定业务中心下的业务员_改版")
+    @PostMapping(value = "/pageNew")
+    public ResultVo<PageVo<AdminPageVo>> listByRoleIdNew(@Valid @RequestBody AdminPageNewDto reqDto) {
+        return adminService.pageNew(reqDto);
+    }
+    /************************************韵车集成改版 ed***********************************/
 }
