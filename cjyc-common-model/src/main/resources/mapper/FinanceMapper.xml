@@ -92,7 +92,7 @@
         <if test="receiveEndTime!= null">
             and wt.wl_pay_time &lt;= #{receiveEndTime}
         </if>
-
+        order by wo.create_time desc
     </select>
 
     <select id="getFee" parameterType="map" resultType="java.math.BigDecimal">
@@ -190,6 +190,7 @@
             and wo.input_store_name = #{inputStoreName}
         </if>
 
+        order by wo.create_time desc
     </select>
 
     <select id="getPaymentList" parameterType="com.cjyc.common.model.dto.web.finance.FinanceQueryDto"
