@@ -75,6 +75,21 @@ public class ShowPartnerVo implements Serializable {
     @ApiModelProperty("授权书反面")
     private String authorizationBackImg;
 
+    public String getName(){
+        return StringUtils.isBlank(name) ? "":name;
+    }
+    public String getContactMan(){return StringUtils.isBlank(contactMan) ? "":contactMan;}
+    public String getContactPhone(){return StringUtils.isBlank(contactPhone) ? "":contactPhone;}
+    public String getSocialCreditCode(){return StringUtils.isBlank(socialCreditCode) ? "":socialCreditCode;}
+    public String getContactAddress(){return StringUtils.isBlank(contactAddress) ? "":contactAddress;}
+    public String getCardName(){return StringUtils.isBlank(cardName) ? "":cardName;}
+    public String getBankLicence(){return StringUtils.isBlank(bankLicence) ? "":bankLicence;}
+    public Integer getIsTaxpayer(){return isTaxpayer == null ? 0:isTaxpayer;}
+    public Integer getIsInvoice(){return isInvoice == null ? 0:isInvoice;}
+    public Integer getSettleType(){return settleType == null ? 0:settleType;}
+    public Integer getSettlePeriod(){return settlePeriod == null ? 0:settlePeriod;}
+    public Integer getCardType(){return cardType == null ? 0:cardType;}
+
     public String getDescription(){
         return StringUtils.isBlank(description) ? "":description;
     }
