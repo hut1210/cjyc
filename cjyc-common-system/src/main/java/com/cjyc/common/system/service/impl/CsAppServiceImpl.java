@@ -33,8 +33,8 @@ public class CsAppServiceImpl implements ICsAppService {
         if (!CollectionUtils.isEmpty(dictionaryList)) {
             for(Dictionary dictionary : dictionaryList) {
                 ItemVo vo = new ItemVo();
-                vo.setPictureUrl(dictionary.getItemValue());
-                vo.setUrl("");
+                vo.setPictureUrl("");
+                vo.setUrl(dictionary.getItemValue());
                 list.add(vo);
             }
         }

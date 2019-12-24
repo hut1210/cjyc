@@ -72,9 +72,7 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
         }
         BankCardVos cardVos = new BankCardVos();
         List<BankCardVo> bankCardVos = bankCardBindDao.findBinkCardInfo(cdc.getCarrierId());
-        if(!CollectionUtils.isEmpty(bankCardVos)){
-            cardVos.setCardVos(bankCardVos);
-        }
+        cardVos.setCardVos(bankCardVos);
         return BaseResultUtil.success(cardVos);
     }
 
