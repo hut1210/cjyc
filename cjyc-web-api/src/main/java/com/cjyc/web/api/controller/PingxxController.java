@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.cjkj.common.utils.IPUtil;
 import com.cjyc.common.model.dto.customer.pingxx.PrePayDto;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.StringUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.service.ICsPingPayService;
 import com.cjyc.web.api.service.IPingxxService;
@@ -48,7 +49,7 @@ public class PingxxController {
     @ApiOperation(value = "获取二维码")
     @PostMapping("/qrcode/get")
     public ResultVo getPayQrCode(HttpServletRequest request, @RequestBody PrePayDto prePayDto){
-        prePayDto.setIp(IPUtil.getIpAddr(request));
+        prePayDto.setIp(StringUtil.getIp(IPUtil.getIpAddr(request)));
         Charge charge = new Charge();
         Map<String,String> map=new HashMap<>();
         try {
