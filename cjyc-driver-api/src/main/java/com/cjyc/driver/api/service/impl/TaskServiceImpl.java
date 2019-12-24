@@ -238,9 +238,9 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
         BigDecimal freightFee = new BigDecimal(0);
         if (!CollectionUtils.isEmpty(taskCarList)) {
             CarDetailVo carDetailVo = null;
+            String detailType = dto.getDetailType();
             for (TaskCar taskCar : taskCarList) {
                 carDetailVo = new CarDetailVo();
-                String detailType = dto.getDetailType();
                 WaybillCar waybillCar = null;
                 // 待提车详情
                 LambdaQueryWrapper<WaybillCar> query = new QueryWrapper<WaybillCar>().lambda()
