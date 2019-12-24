@@ -244,6 +244,35 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
         }
     }
 
+    @Override
+    public ResultVo addRoleNew(AddRoleDto dto) {
+        List<Role> list = baseMapper.selectList(new QueryWrapper<Role>()
+                .eq("role_name", dto.getRoleName()));
+        if (!CollectionUtils.isEmpty(list)) {
+            return BaseResultUtil.fail("角色名称重复，请检查");
+        }
+        //角色添加
+        AddRoleReq roleReq = new AddRoleReq();
+        BeanUtils.copyProperties(dto, roleReq);
+        roleReq.setDeptId(BIZ_TOP_DEPT_ID);
+        ResultData<AddRoleResp> saveRd = sysRoleService.save(roleReq);
+        if (!ResultDataUtil.isSuccess(saveRd)) {
+            return BaseResultUtil.fail("角色信息保存失败，原因：" + saveRd.getMsg());
+        }
+        //此处维护韵车角色信息
+        Role role = new Role();
+        BeanUtils.copyProperties(dto, role);
+        role.setRoleLevel(dto.getRoleLevel());
+        role.setRoleRange(dto.getRoleRange());
+        //将物流平台角色标识存储
+        Long clpRoleId = saveRd.getData().getRoleId();
+        role.setRoleId(clpRoleId);
+        role.setUpdateTime(System.currentTimeMillis());
+        role.setCreateTime(System.currentTimeMillis());
+        baseMapper.insert(role);
+        return BaseResultUtil.success();
+    }
+
 
     /**
      * 根据角色id查询获取用户列表信息

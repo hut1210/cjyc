@@ -3,6 +3,7 @@ package com.cjyc.web.api.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.dto.web.salesman.AddDto;
 import com.cjyc.common.model.dto.web.salesman.AssignRoleDto;
+import com.cjyc.common.model.dto.web.salesman.AssignRoleNewDto;
 import com.cjyc.common.model.dto.web.salesman.ResetStateDto;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.vo.ResultVo;
@@ -38,4 +39,8 @@ public interface ISalesmanService extends IService<Admin> {
      * @return
      */
     ResultVo resetPwd(Long id);
+
+    /************************************韵车集成改版 st***********************************/
+    ResultVo assignRolesNew(AssignRoleNewDto dto);
+    /************************************韵车集成改版 ed***********************************/
 }

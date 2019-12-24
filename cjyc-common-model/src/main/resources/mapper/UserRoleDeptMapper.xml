@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cjyc.common.model.dao.IUserRoleDeptDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.UserRoleDept">
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="role_id" property="roleId" />
+        <result column="dept_id" property="deptId" />
+        <result column="dept_level" property="deptLevel" />
+        <result column="dept_type" property="deptType" />
+        <result column="user_type" property="userType" />
+        <result column="create_time" property="createTime" />
+        <result column="create_user_id" property="createUserId" />
+        <result column="update_time" property="updateTime" />
+        <result column="update_user_id" property="updateUserId" />
+        <result column="state" property="state" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_id, role_id, dept_id, dept_level, dept_type, user_type, create_time, create_user_id, update_time, update_user_id, state
+    </sql>
+
+    <select id="getNonSalesmanRoleIds" resultType="java.lang.Long">
+        SELECT
+            role_id
+        FROM
+            s_role
+        WHERE
+            id IN (
+                SELECT
+                    surd.role_id
+                FROM
+                    s_user_role_dept surd
+                LEFT JOIN d_driver d ON d.id = surd.user_id
+                WHERE
+                    surd.state = 1
+                AND surd.user_type = 2
+                AND d.user_id = #{userId}
+                UNION
+                SELECT
+                    surd.role_id
+                FROM
+                    s_user_role_dept surd
+                LEFT JOIN c_customer c ON c.id = surd.user_id
+                WHERE
+                    surd.state = 1
+                AND surd.user_type = 3
+                AND c.user_id = #{userId}
+        )
+    </select>
+</mapper>

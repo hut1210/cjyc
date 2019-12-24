@@ -131,4 +131,27 @@
 
     </select>
 
+    <select id="getPageList" resultType="com.cjyc.common.model.vo.web.admin.AdminPageVo">
+        SELECT ba.id, ba.user_id, ba.state, ba.`name`, ba.phone, GROUP_CONCAT(sr.role_name) roles, ba.biz_desc,
+        ba.create_time, ba.create_user
+        FROM b_admin ba
+            LEFT JOIN (SELECT * FROM s_user_role_dept WHERE dept_type = 1) sur ON sur.user_id = ba.id
+            LEFT JOIN s_role sr ON sr.id = sur.role_id
+        <where>
+            <if test="param.name != null and param.name !=''">
+                and ba.`name` LIKE CONCAT('%',#{param.name},'%')
+            </if>
+            <if test="param.phone != null and param.phone != ''">
+                AND ba.phone LIKE CONCAT('%',#{param.phone},'%')
+            </if>
+            <if test="param.storeId != null and param.storeId != ''">
+                AND sur.dept_id = #{param.storeId}
+            </if>
+            <if test="param.roleId != null and param.roleId > 0">
+                AND sur.role_id = #{param.roleId}
+            </if>
+        </where>
+        GROUP BY ba.phone
+        ORDER BY create_time DESC
+    </select>
 </mapper>

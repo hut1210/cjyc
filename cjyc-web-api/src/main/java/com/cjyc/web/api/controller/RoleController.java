@@ -119,6 +119,14 @@ public class RoleController {
     }
 
 
+    /*********************************韵车集成改版 st*****************************/
+    @PostMapping("/addNew")
+    @ApiOperation(value = "添加角色信息")
+    public ResultVo addNew(@Valid @RequestBody AddRoleDto dto) {
+        return roleService.addRoleNew(dto);
+    }
+    /*********************************韵车集成改版 ed*****************************/
+
     /**
      * 资源列表转换为菜单树
      * @param list
