@@ -130,7 +130,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                 Integer type = taskBillVo.getType();
                 boolean b = WaybillTypeEnum.PICK.code == type || WaybillTypeEnum.BACK.code == type;
                 if (StringUtils.isEmpty(taskBillVo.getGuideLine()) && b) {
-                    taskBillVo.setGuideLine(taskBillVo.getStartCity() +""+ taskBillVo.getEndCity());
+                    taskBillVo.setGuideLine(taskBillVo.getStartCity() +"-"+ taskBillVo.getEndCity());
                 }
             }
         }
