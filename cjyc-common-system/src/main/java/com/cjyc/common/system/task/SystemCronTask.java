@@ -28,6 +28,7 @@ public class SystemCronTask {
      * 每天凌晨两点执行
      */
     @Scheduled(cron = "0 0 2 * * ?")
+    //@Scheduled(cron = "0/60 * * * * ?")
     void saveDriverCar(){
         csCronTaskService.saveDriverCar();
     }

@@ -72,6 +72,7 @@ public class CsCronTaskServiceImpl implements ICsCronTaskService {
                 dcc.setCarNum(1);
                 dcc.setDriverId(vo.getDriverId());
                 dcc.setIncome(orderCar.getTotalFee());
+                dcc.setCreateTime(NOW);
                 driverCarCountDao.insert(dcc);
             }
         }

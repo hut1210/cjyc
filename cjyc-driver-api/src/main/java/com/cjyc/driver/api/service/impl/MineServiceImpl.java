@@ -277,6 +277,7 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
 
         //更新状态(审核中)
         cdc.setState(CommonStateEnum.IN_CHECK.code);
+        cdc.setMode(dto.getMode());
         carrierDriverConDao.updateById(cdc);
         //运力信息
         DriverVehicleCon vehicleCon = driverVehicleConDao.selectOne(new QueryWrapper<DriverVehicleCon>().lambda()
