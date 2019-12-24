@@ -5,10 +5,12 @@ import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import org.apache.commons.codec.binary.Base64;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.util.Hashtable;
 
 /**
@@ -16,7 +18,7 @@ import java.util.Hashtable;
  * @Date: 2019/12/19 11:34
  */
 public class QRcodeUtil {
-    public static void creatRrCode(String contents, int width, int height, HttpServletResponse response) {
+    public static String creatRrCode(String contents, int width, int height) {
         Hashtable hints = new Hashtable();
         //设置容错级别最高
         hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
@@ -29,11 +31,15 @@ public class QRcodeUtil {
             BitMatrix bitMatrix = new MultiFormatWriter().encode(contents, BarcodeFormat.QR_CODE, width, height, hints);
             //转为图片对象格式
             BufferedImage image = toBufferedImage(bitMatrix);
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             //转换成png格式的IO流
-            ImageIO.write(image, "png", response.getOutputStream());
+            ImageIO.write(image, "png", outputStream);
+
+            return Base64.encodeBase64String(outputStream.toByteArray());
         } catch (Exception e) {
             e.getMessage();
         }
+        return null;
     }
 
     /**
