@@ -4,7 +4,7 @@
 
     <select id="getFinanceList" parameterType="com.cjyc.common.model.dto.web.finance.FinanceQueryDto"
             resultType="com.cjyc.common.model.vo.web.finance.FinanceVo">
-        select woc.no,woc.vin,woc.brand,woc.model,woc.order_no as orderNo,
+        select DISTINCT(woc.no),woc.vin,woc.brand,woc.model,woc.order_no as orderNo,
         zcity.name as largeArea,
         wo.input_store_name as inputStoreName,wo.start_address as startAddress,
         wo.end_address as endAddress,
