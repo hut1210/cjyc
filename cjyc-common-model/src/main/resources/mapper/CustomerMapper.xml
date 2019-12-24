@@ -77,7 +77,7 @@
             <if test="flag != null and flag == 0">
                 and  cc.state = 2
             </if>
-            <if test="flag != null and flag == 1">
+            <if test="state != null">
                 and  cc.state = #{state}
             </if>
                 and cc.type = 1 order by cc.create_time desc,cc.check_time desc

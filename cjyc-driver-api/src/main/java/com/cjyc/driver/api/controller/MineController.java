@@ -117,7 +117,7 @@ public class MineController {
         return mineService.findNewDriverInfo(dto);
     }
 
-    @ApiOperation(value = "获取司机最新信息")
+    @ApiOperation(value = "更新司机状态")
     @PostMapping(value = "/updateDriverState")
     public ResultVo updateDriverState(@Validated @RequestBody DriverStateDto dto) {
         return mineService.updateDriverState(dto);
