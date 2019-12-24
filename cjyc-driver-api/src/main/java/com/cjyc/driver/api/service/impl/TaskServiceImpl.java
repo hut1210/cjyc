@@ -241,25 +241,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
             String detailType = dto.getDetailType();
             for (TaskCar taskCar : taskCarList) {
                 carDetailVo = new CarDetailVo();
-                WaybillCar waybillCar = null;
-                // 待提车详情
-                LambdaQueryWrapper<WaybillCar> query = new QueryWrapper<WaybillCar>().lambda()
-                        .eq(WaybillCar::getId, taskCar.getWaybillCarId());
-                if (FieldConstant.WAIT_PICK_CAR.equals(detailType)) {
-                    // 查询任务单车辆信息
-                    query = query.eq(WaybillCar::getState,WaybillCarStateEnum.WAIT_LOAD.code)
-                            .or().eq(WaybillCar::getState,WaybillCarStateEnum.WAIT_LOAD_CONFIRM.code);
-                    waybillCar = waybillCarDao.selectOne(query);
-                }
-                // 待交车详情
-                else if(FieldConstant.WAIT_GIVE_CAR.equals(detailType)){
-                    query = query.eq(WaybillCar::getState,WaybillCarStateEnum.LOADED.code)
-                            .or().eq(WaybillCar::getState,WaybillCarStateEnum.WAIT_UNLOAD_CONFIRM.code);
-                    waybillCar = waybillCarDao.selectOne(query);
-                } else{
-                    waybillCar = waybillCarDao.selectOne(query);
-                }
-
+                WaybillCar waybillCar = getWaybillCar(detailType, taskCar);
                 BeanUtils.copyProperties(waybillCar,carDetailVo);
 
                 // 查询除了当前车辆运单的历史车辆运单图片
@@ -288,6 +270,27 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
         taskDetailVo.setFreightFee(freightFee);
         taskDetailVo.setCarDetailVoList(carDetailVoList);
         return BaseResultUtil.success(taskDetailVo);
+    }
+
+    WaybillCar getWaybillCar(String detailType, TaskCar taskCar) {
+        // 待提车详情
+        LambdaQueryWrapper<WaybillCar> query = new QueryWrapper<WaybillCar>().lambda()
+                .eq(WaybillCar::getId, taskCar.getWaybillCarId());
+        if (FieldConstant.WAIT_PICK_CAR.equals(detailType)) {
+            // 查询任务单车辆信息
+            query = query.eq(WaybillCar::getState, WaybillCarStateEnum.WAIT_LOAD.code)
+                    .or().eq(WaybillCar::getState,WaybillCarStateEnum.WAIT_LOAD_CONFIRM.code);
+        }
+        // 待交车详情
+        else if(FieldConstant.WAIT_GIVE_CAR.equals(detailType)){
+            query = query.eq(WaybillCar::getState,WaybillCarStateEnum.LOADED.code)
+                    .or().eq(WaybillCar::getState,WaybillCarStateEnum.WAIT_UNLOAD_CONFIRM.code);
+        }
+        // 已交付
+        else if (FieldConstant.FINISH.equals(detailType)){
+            query = query.eq(WaybillCar::getState,WaybillCarStateEnum.UNLOADED.code);
+        }
+        return waybillCarDao.selectOne(query);
     }
 
     private void getHistoryWaybillCarImg(CarDetailVo carDetailVo, WaybillCar waybillCar,String detailType) {
