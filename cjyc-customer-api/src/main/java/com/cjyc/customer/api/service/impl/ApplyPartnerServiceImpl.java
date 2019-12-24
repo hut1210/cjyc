@@ -44,8 +44,6 @@ public class ApplyPartnerServiceImpl extends ServiceImpl<ICustomerDao, Customer>
     private IBankCardBindDao bankCardBindDao;
     @Resource
     private ICustomerDao customerDao;
-    @Resource
-    private ISysUserService sysUserService;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -64,6 +62,7 @@ public class ApplyPartnerServiceImpl extends ServiceImpl<ICustomerDao, Customer>
         cust.setId(dto.getLoginId());
         cust.setName(dto.getName());
         cust.setAlias(dto.getName());
+        cust.setContactMan(dto.getContactMan());
         cust.setSource(CustomerSourceEnum.UPGRADE.code);
         cust.setState(CustomerStateEnum.WAIT_CHECK.code);
         super.updateById(cust);
