@@ -129,9 +129,11 @@
             LEFT JOIN w_task_car tc ON task.id = tc.task_id
             <where>
                 task.driver_id = #{loginId}
+                /*提车任务*/
                 <if test="taskState != null and taskState == @com.cjyc.common.model.constant.FieldConstant@PICK_CAR_TASK">
                     AND task.state = ${@com.cjyc.common.model.enums.task.TaskStateEnum@WAIT_LOAD.code}
                 </if>
+                /*交车任务*/
                 <if test="taskState != null and taskState == @com.cjyc.common.model.constant.FieldConstant@GIVE_CAR_TASK">
                     AND task.state = ${@com.cjyc.common.model.enums.task.TaskStateEnum@TRANSPORTING.code}
                 </if>
@@ -139,6 +141,18 @@
             ) t
             LEFT JOIN w_waybill w ON t.waybill_id = w.id
             LEFT JOIN w_waybill_car car ON t.waybill_car_id = car.id
+            <where>
+                /*待提车*/
+                <if test="taskState != null and taskState == @com.cjyc.common.model.constant.FieldConstant@PICK_CAR_TASK">
+                    car.state in(${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_LOAD.code}
+                    ,${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_LOAD_CONFIRM.code)
+                </if>
+                /*待交车*/
+                <if test="taskState != null and taskState == @com.cjyc.common.model.constant.FieldConstant@GIVE_CAR_TASK">
+                    car.state in(${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@LOADED.code}
+                    ,${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_UNLOAD_CONFIRM.code})
+                </if>
+            </where>
         GROUP BY t.id
         order by t.create_time desc
     </select>
@@ -166,6 +180,7 @@
             left join w_waybill w on t.waybill_id = w.id
             left join w_waybill_car car on t.waybill_car_id = car.id
         <where>
+            car.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@UNLOADED.code
             <if test="waybillNo != null and waybillNo.trim() != ''">
                 and t.no like concat('%',#{waybillNo},'%')
             </if>

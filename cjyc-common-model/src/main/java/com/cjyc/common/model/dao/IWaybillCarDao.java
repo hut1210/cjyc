@@ -3,6 +3,7 @@ package com.cjyc.common.model.dao;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cjyc.common.model.dto.salesman.dispatch.DispatchListDto;
 import com.cjyc.common.model.dto.web.WayBillCarrierDto;
+import com.cjyc.common.model.dto.web.mineStore.StorageCarQueryDto;
 import com.cjyc.common.model.dto.web.waybill.LocalListWaybillCarDto;
 import com.cjyc.common.model.dto.web.waybill.TrunkListWaybillCarDto;
 import com.cjyc.common.model.dto.web.waybill.getWaybillDto;
@@ -12,6 +13,7 @@ import com.cjyc.common.model.entity.defined.FullWaybillCar;
 import com.cjyc.common.model.vo.salesman.dispatch.DispatchListVo;
 import com.cjyc.common.model.vo.salesman.dispatch.DispatchRecordVo;
 import com.cjyc.common.model.vo.web.WayBillCarrierVo;
+import com.cjyc.common.model.vo.web.mineStore.StorageCarVo;
 import com.cjyc.common.model.vo.web.waybill.WaybillCarTransportVo;
 import com.cjyc.common.model.vo.web.waybill.WaybillCarVo;
 import com.cjyc.common.model.vo.web.waybill.LocalListWaybillCarVo;
@@ -147,4 +149,13 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
     Integer waybillCarCount(@Param("type") Integer type,@Param("driverId") Long driverId);
 
     int updateForInStore(Long id);
+
+    /**
+     * 功能描述: 分页查询在库列表
+     * @author liuxingxiang
+     * @date 2019/12/25
+     * @param dto
+     * @return java.util.List<com.cjyc.common.model.vo.web.mineStore.StorageCarVo>
+     */
+    List<StorageCarVo> selectStorageCarPage(StorageCarQueryDto dto);
 }

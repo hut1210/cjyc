@@ -2,16 +2,20 @@ package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.web.mineStore.ListMineSalesmanDto;
 import com.cjyc.common.model.dto.web.mineStore.SetContactPersonDto;
+import com.cjyc.common.model.dto.web.mineStore.StorageCarQueryDto;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.mineStore.MySalesmanVo;
 import com.cjyc.web.api.service.IMineStoreService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
@@ -37,5 +41,18 @@ public class MineStoreController {
     @PostMapping("/setContractPerson")
     public ResultVo setContractPerson(@Valid @RequestBody SetContactPersonDto dto) {
         return mineStoreService.setContractPerson(dto);
+    }
+
+    /**
+     * 功能描述: 分页查询在库列表
+     * @author liuxingxiang
+     * @date 2019/12/25
+     * @param dto
+     * @return com.cjyc.common.model.vo.ResultVo
+     */
+    @ApiOperation(value = "分页查询在库列表")
+    @PostMapping("/getStorageCarPage")
+    public ResultVo getStorageCarPage(@RequestBody @Validated StorageCarQueryDto dto) {
+        return mineStoreService.getStorageCarPage(dto);
     }
 }

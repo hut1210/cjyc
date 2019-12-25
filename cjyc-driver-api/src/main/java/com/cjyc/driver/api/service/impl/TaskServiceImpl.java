@@ -242,6 +242,9 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                 carDetailVo = new CarDetailVo();
                 // 查询任务单车辆信息
                 WaybillCar waybillCar = getWaybillCar(detailType, taskCar);
+                if (waybillCar == null) {
+                    log.error("===>查询任务单车辆信息为空...");
+                }
                 BeanUtils.copyProperties(waybillCar,carDetailVo);
 
                 // 查询除了当前车辆运单的历史车辆运单图片

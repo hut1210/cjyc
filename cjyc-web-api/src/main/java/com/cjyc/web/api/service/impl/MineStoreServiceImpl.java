@@ -3,26 +3,30 @@ package com.cjyc.web.api.service.impl;
 import com.cjkj.common.model.PageData;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
-import com.cjkj.usercenter.dto.common.SelectRoleResp;
 import com.cjkj.usercenter.dto.yc.SelectPageUsersByDeptReq;
 import com.cjkj.usercenter.dto.yc.SelectUsersByRoleResp;
+import com.cjyc.common.model.dao.IWaybillCarDao;
 import com.cjyc.common.model.dto.web.mineStore.ListMineSalesmanDto;
 import com.cjyc.common.model.dto.web.mineStore.SetContactPersonDto;
+import com.cjyc.common.model.dto.web.mineStore.StorageCarQueryDto;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Store;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.mineStore.MySalesmanVo;
+import com.cjyc.common.model.vo.web.mineStore.StorageCarVo;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.web.api.service.IAdminService;
 import com.cjyc.web.api.service.IMineStoreService;
 import com.cjyc.web.api.service.IStoreService;
+import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,6 +49,8 @@ public class MineStoreServiceImpl implements IMineStoreService {
     private ISysUserService sysUserService;
     @Autowired
     private IAdminService adminService;
+    @Resource
+    private IWaybillCarDao waybillCarDao;
 
     @Override
     public ResultVo<PageVo<MySalesmanVo>> listSalesman(ListMineSalesmanDto dto) {
@@ -112,6 +118,14 @@ public class MineStoreServiceImpl implements IMineStoreService {
         store.setContactAdminId(dto.getContactAdminId());
         storeService.updateById(store);
         return BaseResultUtil.success();
+    }
+
+    @Override
+    public ResultVo getStorageCarPage(StorageCarQueryDto dto) {
+        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
+        List<StorageCarVo> list = waybillCarDao.selectStorageCarPage(dto);
+        PageInfo pageInfo = new PageInfo(list);
+        return BaseResultUtil.success(pageInfo);
     }
 
 
