@@ -112,6 +112,12 @@ public class PingPayController {
         return BaseResultUtil.success();
     }
 
+    @ApiOperation("回调Test")
+    @PostMapping("/webhooksNoticeTest")
+    public ResultVo webhooksNoticeTest(HttpServletRequest request){
+        return webhooksNotice(request);
+    }
+
     @ApiOperation("回调")
     @PostMapping("/webhooksNotice")
     @Async
