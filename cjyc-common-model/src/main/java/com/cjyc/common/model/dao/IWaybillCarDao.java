@@ -167,4 +167,8 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
      * @return int
      */
     int selectStorageCount(@Param("nowStoreId") Long nowStoreId);
+
+    WaybillCar findLastByOderCarIdAndId(@Param("id") Long id, @Param("orderCarId") Long orderCarId);
+
+    List<WaybillCar> findUnAllotListByWaybillId(Long waybillId);
 }

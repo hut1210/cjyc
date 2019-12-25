@@ -144,6 +144,7 @@ public class WaybillCar implements Serializable {
     private String loadLinkName;
 
     @ApiModelProperty(value = "提车联系人userid")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long loadLinkUserId;
 
     @Excel(name = "提车联系人电话", orderNum = "21")
@@ -161,6 +162,7 @@ public class WaybillCar implements Serializable {
     private String unloadLinkName;
 
     @ApiModelProperty(value = "收车联系人userId")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long unloadLinkUserId;
 
     @ApiModelProperty(value = "收车人电话")

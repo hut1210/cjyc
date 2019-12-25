@@ -3,6 +3,8 @@ package com.cjyc.common.model.vo.web.waybill;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class CrWaybillVo {
     @ApiModelProperty(value = "ID")
@@ -13,6 +15,8 @@ public class CrWaybillVo {
     private Integer waybillType;
     @ApiModelProperty(value = "指导线路")
     private String guideLine;
+    @ApiModelProperty(value = "承运商ID")
+    private String carrierId;
     @ApiModelProperty(value = "车数量")
     private Integer carNum;
     @ApiModelProperty(value = "备注")

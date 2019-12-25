@@ -191,7 +191,13 @@ public class CsTaskServiceImpl implements ICsTaskService {
                     || waybill.getState() > WaybillStateEnum.FINISHED.code) {
                 return BaseResultUtil.fail("当前运单的状态，无法分配任务");
             }
-            List<WaybillCar> list = waybillCarDao.findVoByIds(waybillCarIdList);
+            List<WaybillCar> list = null;
+            if(CollectionUtils.isEmpty(waybillCarIdList)){
+                list = waybillCarDao.findUnAllotListByWaybillId(waybillId);
+            }else{
+
+                list = waybillCarDao.findVoByIds(waybillCarIdList);
+            }
             if (list == null || list.isEmpty()) {
                 return BaseResultUtil.fail("内容不能为空");
             }
@@ -215,7 +221,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             task.setWaybillId(waybill.getId());
             task.setWaybillNo(waybill.getNo());
             task.setGuideLine(paramsDto.getGuideLine());
-            task.setCarNum(paramsDto.getWaybillCarIdList().size());
+            task.setCarNum(list.size());
             task.setState(TaskStateEnum.WAIT_LOAD.code);
             task.setDriverId(driver.getId());
             task.setDriverPhone(driver.getPhone());

@@ -208,17 +208,17 @@
     </select>
     <select id="findLineWaitDispatchTrunkCarCountList" resultType="java.util.Map">
         select
-            count(0) as carNum,
-            o.start_city_code as startCityCode,
-            o.start_city as startCity,
-            o.end_city_code as endCityCode,
-            o.end_city as endCity,
-            CONCAT(o.start_city,'-',o.end_city) as line
+        count(0) AS carNum,
+        countShell.dispatchStartCityCode AS startCityCode,
+        countShell.dispatchStartCity AS startCity,
+        countShell.dispatchEndCityCode AS endCityCode,
+        countShell.dispatchEndCity AS endCity,
+        CONCAT(countShell.dispatchStartCity, '-', countShell.dispatchEndCity) AS line
         from (
-          <include refid="trunk_wait_dispatch_car"/>
+          <include refid="trunk_wait_dispatch_car_list"/>
         ) as countShell
-        and countShell.dispatchStartCityCode = #{paramsDto.cityCode}
-        group by o.start_city_code, o.end_city_code
+        where countShell.dispatchStartCityCode = #{paramsDto.cityCode}
+        GROUP BY countShell.dispatchStartCityCode, countShell.dispatchEndCityCode
     </select>
     <select id="countTotalWaitDispatchCarByStartCity" resultType="java.util.Map">
         select sum(carNum) as totalCount from (
@@ -454,100 +454,100 @@
         order by oc.id desc
 
     </select>
-    <sql id="trunk_wait_dispatch_car">
+    <sql id="trunk_wait_dispatch_car_list">
         select *
         from (
-        select
-        <include refid="transport_state"/>
-        (case when wmax.id is not null then wmax.end_province_code else o.start_province_code end) as dispatchStartProvinceCode,
-        (case when wmax.id is not null then wmax.end_province else o.start_province end) as dispatchStartProvince,
-        (case when wmax.id is not null then wmax.end_city_code else o.start_city_code end) as dispatchStartCityCode,
-        (case when wmax.id is not null then wmax.end_city else o.start_city end) as dispatchStartCity,
-        (case when wmax.id is not null then wmax.end_area_code else o.start_area_code end) as dispatchStartAreaCode,
-        (case when wmax.id is not null then wmax.end_area else o.start_area end) as dispatchStartArea,
-        o.end_province_code as dispatchEndProvinceCode,
-        o.end_province as dispatchEndProvince,
-        o.end_city_code as dispatchEndCityCode,
-        o.end_city as dispatchEndCity,
-        o.end_area_code as dispatchEndAreaCode,
-        o.end_area as dispatchEndArea,
+            select
+            <include refid="transport_state"/>
+            (case when wmax.id is not null then wmax.end_province_code else o.start_province_code end) as dispatchStartProvinceCode,
+            (case when wmax.id is not null then wmax.end_province else o.start_province end) as dispatchStartProvince,
+            (case when wmax.id is not null then wmax.end_city_code else o.start_city_code end) as dispatchStartCityCode,
+            (case when wmax.id is not null then wmax.end_city else o.start_city end) as dispatchStartCity,
+            (case when wmax.id is not null then wmax.end_area_code else o.start_area_code end) as dispatchStartAreaCode,
+            (case when wmax.id is not null then wmax.end_area else o.start_area end) as dispatchStartArea,
+            o.end_province_code as dispatchEndProvinceCode,
+            o.end_province as dispatchEndProvince,
+            o.end_city_code as dispatchEndCityCode,
+            o.end_city as dispatchEndCity,
+            o.end_area_code as dispatchEndAreaCode,
+            o.end_area as dispatchEndArea,
 
-        o.customer_id as customerId,
-        o.customer_name as customerName,
-        o.customer_phone as customerPhone,
-        o.customer_type as customerType,
-        o.input_store_id as inputStoreId,
-        o.input_store_name as inputStoreName,
-        o.start_province as startProvince,
-        o.start_province_code as startProvinceCode,
-        o.start_city as startCity,
-        o.start_city_code as startCityCode,
-        o.start_area as startArea,
-        o.start_area_code as startAreaCode,
-        o.start_address as startAddress,
-        o.start_lng as startLng,
-        o.start_lat as startLat,
-        o.start_store_id as startStoreId,
-        o.start_store_name as startStoreName,
-        o.start_belong_store_id as startBelongStoreId,
-        o.end_province as endProvince,
-        o.end_province_code as endProvinceCode,
-        o.end_city as endCity,
-        o.end_city_code as endCityCode,
-        o.end_area as endArea,
-        o.end_area_code as endAreaCode,
-        o.end_address as endAddress,
-        o.end_lng as endLng,
-        o.end_lat as endLat,
-        o.end_store_id as endStoreId,
-        o.end_store_name as endStoreName,
-        o.end_belong_store_id as endBelongStoreId,
-        o.expect_start_date as expectStartDate,
-        o.expect_end_date as expectEndDate,
-        o.car_num as carNum,
-        o.line_id as lineId,
-        o.pick_contact_name as pickContactName,
-        o.pick_contact_phone as pickContactPhone,
-        o.back_contact_name as backContactName,
-        o.back_contact_phone as backContactPhone,
-        o.source as source,
-        o.create_time as createTime,
-        o.create_user_name as createUserName,
-        o.create_user_id as createUserId,
-        o.allot_to_user_name as allotToUserName,
-        o.allot_to_user_id as allotToUserId,
-        o.check_time as checkTime,
-        o.check_user_name as checkUserName,
-        o.check_user_id as checkUserId,
-        oc.*
-        from w_order o
-        join w_order_car oc on oc.order_id = o.id
-        left join (
-        select
-        wc1.id,
-        wc1.end_province_code,
-        wc1.end_province,
-        wc1.end_city_code,
-        wc1.end_city,
-        wc1.end_area_code,
-        wc1.end_area,
-        wc1.order_car_id
-        from w_waybill_car wc1
-        where id in (
-        select max(wc.id)
-        from w_waybill w
-        join w_waybill_car wc on w.id = wc.waybill_id
-        where w.state &lt;= 100
-        and wc.state &lt;= 100
-        group by wc.order_car_id
-        )
-        ) as wmax on wmax.order_car_id = oc.id
-        where o.state &lt;= 100
-        and oc.trunk_state &lt; 5
+            o.customer_id as customerId,
+            o.customer_name as customerName,
+            o.customer_phone as customerPhone,
+            o.customer_type as customerType,
+            o.input_store_id as inputStoreId,
+            o.input_store_name as inputStoreName,
+            o.start_province as startProvince,
+            o.start_province_code as startProvinceCode,
+            o.start_city as startCity,
+            o.start_city_code as startCityCode,
+            o.start_area as startArea,
+            o.start_area_code as startAreaCode,
+            o.start_address as startAddress,
+            o.start_lng as startLng,
+            o.start_lat as startLat,
+            o.start_store_id as startStoreId,
+            o.start_store_name as startStoreName,
+            o.start_belong_store_id as startBelongStoreId,
+            o.end_province as endProvince,
+            o.end_province_code as endProvinceCode,
+            o.end_city as endCity,
+            o.end_city_code as endCityCode,
+            o.end_area as endArea,
+            o.end_area_code as endAreaCode,
+            o.end_address as endAddress,
+            o.end_lng as endLng,
+            o.end_lat as endLat,
+            o.end_store_id as endStoreId,
+            o.end_store_name as endStoreName,
+            o.end_belong_store_id as endBelongStoreId,
+            o.expect_start_date as expectStartDate,
+            o.expect_end_date as expectEndDate,
+            o.car_num as carNum,
+            o.line_id as lineId,
+            o.pick_contact_name as pickContactName,
+            o.pick_contact_phone as pickContactPhone,
+            o.back_contact_name as backContactName,
+            o.back_contact_phone as backContactPhone,
+            o.source as source,
+            o.create_time as createTime,
+            o.create_user_name as createUserName,
+            o.create_user_id as createUserId,
+            o.allot_to_user_name as allotToUserName,
+            o.allot_to_user_id as allotToUserId,
+            o.check_time as checkTime,
+            o.check_user_name as checkUserName,
+            o.check_user_id as checkUserId,
+            oc.*
+            from w_order o
+            join w_order_car oc on oc.order_id = o.id
+            left join (
+                select
+                wc1.id,
+                wc1.end_province_code,
+                wc1.end_province,
+                wc1.end_city_code,
+                wc1.end_city,
+                wc1.end_area_code,
+                wc1.end_area,
+                wc1.order_car_id
+                from w_waybill_car wc1
+                where id in (
+                    select max(wc.id)
+                    from w_waybill w
+                    join w_waybill_car wc on w.id = wc.waybill_id
+                    where w.state &lt;= 100
+                    and wc.state &lt;= 100
+                    group by wc.order_car_id
+                )
+            ) as wmax on wmax.order_car_id = oc.id
+            where o.state between 25 and 100
+            and oc.trunk_state &lt; 5
         ) as shell
     </sql>
     <select id="findWaitDispatchTrunkCarList" resultType="com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo">
-        <include refid="trunk_wait_dispatch_car"/>
+        <include refid="trunk_wait_dispatch_car_list"/>
         <where>
             <if test="paramsDto.startProvinceCode != null and paramsDto.startProvinceCode != ''">
                 and shell.dispatchStartProvinceCode = #{paramsDto.startProvinceCode,jdbcType=VARCHAR}
@@ -1439,24 +1439,31 @@
     </select>
     <select id="countTrunkListWaitDispatchCar" resultType="java.util.Map">
         select
-        count(0) as car_num,
-        IFNULL(o.start_city_code,'-1') as cityCode,
-        IFNULL(o.start_city, '无城市') as cityName
+        count(0) as carNum,
+        IFNULL(countShell.dispatchStartCityCode, '-1') AS cityCode,
+        IFNULL(countShell.dispatchStartCity, '无城市') AS cityName
         from (
-          <include refid="trunk_wait_dispatch_car"/>
-        )
-        group by o.start_city_code
+          <include refid="trunk_wait_dispatch_car_list"/>
+        )  as countShell
+        group by countShell.dispatchStartCityCode
     </select>
     <select id="countTotalTrunkWaitDispatchCarByStartCity" resultType="java.util.Map">
         select sum(carNum) as totalCount from (
             select count(0) as carNum
             from (
-              <include refid="trunk_wait_dispatch_car"/>
+              <include refid="trunk_wait_dispatch_car_list"/>
             ) as countShell
-            and countShell.dispatchStartCityCode = #{paramsDto.cityCode}
-            group by o.start_city_code, o.end_city_code
+            where countShell.dispatchStartCityCode = #{paramsDto.cityCode}
+            GROUP BY countShell.dispatchStartCityCode, countShell.dispatchEndCityCode
         ) as t
     </select>
-
-
+    <select id="countTotalTrunkWaitDispatchCar" resultType="java.util.Map">
+        select sum(carNum) as totalCount from (
+            select count(0) as carNum
+            from (
+              <include refid="trunk_wait_dispatch_car_list"/>
+            ) as countShell
+            group by countShell.dispatchStartCityCode
+        ) as t
+    </select>
 </mapper>

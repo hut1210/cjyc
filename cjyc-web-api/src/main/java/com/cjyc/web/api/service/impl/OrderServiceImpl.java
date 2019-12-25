@@ -455,7 +455,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         //查询统计
         Map<String, Object> countInfo = null;
         if (list != null && !list.isEmpty()) {
-            countInfo = orderCarDao.countTotalWaitDispatchCar();
+            countInfo = orderCarDao.countTotalTrunkWaitDispatchCar();
         }
         return BaseResultUtil.success(list, countInfo);
     }

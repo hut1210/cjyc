@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
@@ -14,15 +15,17 @@ import java.util.List;
 @ApiModel
 public class AllotTaskDto {
 
+    @NotNull(message = "登录用户不能为空")
     @ApiModelProperty(value = "用户Id",required = true)
     private Long loginId;
 
     @ApiModelProperty(hidden = true)
     private String loginName;
 
+    @NotNull(message = "运单不能为空")
     @ApiModelProperty(value = "运单ID",required = true)
     private Long waybillId;
-
+    @NotNull(message = "司机不能为空")
     @ApiModelProperty(value = "司机ID",required = true)
     private Long driverId;
 

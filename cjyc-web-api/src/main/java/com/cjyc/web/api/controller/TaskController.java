@@ -21,6 +21,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -58,7 +59,7 @@ public class TaskController {
      */
     @ApiOperation(value = "分配任务")
     @PostMapping(value = "/allot")
-    public ResultVo allot(@RequestBody AllotTaskDto reqDto) {
+    public ResultVo allot(@Valid @RequestBody AllotTaskDto reqDto) {
         //验证用户
         Driver driver = csDriverService.getById(reqDto.getLoginId(), true);
         if (driver == null) {

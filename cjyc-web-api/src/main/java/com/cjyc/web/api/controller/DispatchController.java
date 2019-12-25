@@ -72,7 +72,7 @@ public class DispatchController {
      * 查询待调度车辆列表（数据列表）
      * @author JPG
      */
-    @ApiOperation(value = "查询待调度车辆列表")
+    @ApiOperation(value = "查询干线待调度车辆按城市统计")
     @PostMapping(value = "/wait/trunk/count/list")
     public ResultVo<ListVo<Map<String, Object>>> waitDispatchTrunkCarCountList(@RequestBody WaitDispatchCountDto reqDto) {
         return orderService.waitDispatchTrunkCarCountList(reqDto);
@@ -81,7 +81,7 @@ public class DispatchController {
      * 查询待调度车辆列表（数据列表）
      * @author JPG
      */
-    @ApiOperation(value = "查询待调度车辆列表")
+    @ApiOperation(value = "查询干线待调度按线路统计列表")
     @PostMapping(value = "/line/wait/trunk/count/list")
     public ResultVo<ListVo<Map<String, Object>>> lineWaitDispatchTrunkCarCountList(@RequestBody LineWaitDispatchCountDto reqDto) {
         return orderService.lineWaitDispatchTrunkCarCountList(reqDto);
@@ -90,7 +90,7 @@ public class DispatchController {
      * 查询待调度车辆列表（数据列表）
      * @author JPG
      */
-    @ApiOperation(value = "查询待调度车辆列表")
+    @ApiOperation(value = "查询干线待调度车辆列表")
     @PostMapping(value = "/trunk/wait/list")
     public ResultVo<PageVo<OrderCarWaitDispatchVo>> waitDispatchTrunkCarList(@RequestBody WaitDispatchTrunkDto reqDto) {
         return orderService.waitDispatchTrunkCarList(reqDto);

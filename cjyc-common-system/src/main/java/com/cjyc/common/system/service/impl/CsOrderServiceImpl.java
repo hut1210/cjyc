@@ -174,7 +174,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         Long startStoreId = order.getStartStoreId();
         order.setStartStoreId(startStoreId == null || startStoreId == -5 ? null : startStoreId);
         Long endStoreId = order.getEndStoreId();
-        order.setInputStoreId(endStoreId == null || endStoreId == -5 ? null : endStoreId);
+        order.setEndStoreId(endStoreId == null || endStoreId == -5 ? null : endStoreId);
         return order;
     }
 

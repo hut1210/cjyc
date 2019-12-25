@@ -366,6 +366,7 @@
             w.no as waybillNo,
             w.id as waybillId,
             w.type as waybillType,
+            w.carrier_id as carrierId,
             w.guide_line as guideLine,
             w.carrier_name as carrierName,
             w.state as state,

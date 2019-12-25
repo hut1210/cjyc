@@ -19,16 +19,15 @@ public class UpdateLocalDto {
     @NotNull(message = "id不能为空")
     @ApiModelProperty(value = "运单ID", required = true)
     private Long id;
-    @NotNull(message = "type不能为空")
+    @NotNull(message = "运单类型不能为空")
     @ApiModelProperty(value = "运单类型：1提车运单，2干线运单，3送车运单", required = true)
     private Integer type;
-    @NotNull(message = "carrierId不能为空")
     @ApiModelProperty(value = "承运商ID", required = true)
     private Long carrierId;
-    @NotNull(message = "carrierType不能为空")
+    @NotNull(message = "承运类型不能为空")
     @ApiModelProperty(value = "承运商类型：1干线-个人承运商，2干线-企业承运商，3同城-业务员，4同城-代驾，5同城-拖车，6客户自己", required = true)
     private Integer carrierType;
-    @NotBlank(message = "carrierName不能为空")
+    @NotBlank(message = "承运商名称不能为空")
     @ApiModelProperty(value = "承运商名称", required = true)
     private String carrierName;
 
