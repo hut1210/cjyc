@@ -113,6 +113,7 @@ public class TransactionServiceImpl implements ITransactionService {
     public ResultVo update(Charge charge, Event event, String state) {
 
         Map<String, Object> metadata = charge.getMetadata();
+        log.debug("update metadata = "+metadata.toString()+" taskId = "+metadata.get("taskId"));
 
         Long taskId = (Long)metadata.get("taskId");
 
