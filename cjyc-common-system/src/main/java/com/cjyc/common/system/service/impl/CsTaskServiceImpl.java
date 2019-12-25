@@ -435,8 +435,8 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 throw new ParameterException("运单车辆{0}已经卸过车", waybillCar.getOrderCarNo());
             }
             if(waybillCar.getEndStoreId() == null || waybillCar.getEndStoreId() <= 0 ){
-                orderCarDao.updateLocationForUnload(waybillCar.getOrderCarId(), waybillCar.getEndAreaCode());
                 waybillCarDao.updateStateById(waybillCar.getId(), WaybillCarStateEnum.UNLOADED.code);
+                orderCarDao.updateLocationForUnload(waybillCar.getOrderCarId(), 0L, waybillCar.getEndAreaCode());
             }else{
                 waybillCarDao.updateStateById(waybillCar.getId(), WaybillCarStateEnum.WAIT_UNLOAD_CONFIRM.code);
             }

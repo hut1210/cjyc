@@ -157,7 +157,12 @@
         trunk_state = #{trunkState}
         where id = #{id}
     </update>
-    <update id="updateLocationForUnload"></update>
+    <update id="updateLocationForUnload">
+        update w_order_car
+        set now_area_code = #{nowAreaCode},
+        now_store_id = #{nowStoreId}
+        where id = #{orderCarId}
+    </update>
 
     <delete id="deleteBatchByOrderId">
         delete from w_order_car
@@ -212,7 +217,7 @@
         from (
           <include refid="trunk_wait_dispatch_car"/>
         ) as countShell
-        and countShell.dis = #{paramsDto.cityCode}
+        and countShell.dispatchStartCityCode = #{paramsDto.cityCode}
         group by o.start_city_code, o.end_city_code
     </select>
     <select id="countTotalWaitDispatchCarByStartCity" resultType="java.util.Map">
@@ -1442,7 +1447,16 @@
         )
         group by o.start_city_code
     </select>
-
+    <select id="countTotalTrunkWaitDispatchCarByStartCity" resultType="java.util.Map">
+        select sum(carNum) as totalCount from (
+            select count(0) as carNum
+            from (
+              <include refid="trunk_wait_dispatch_car"/>
+            ) as countShell
+            and countShell.dispatchStartCityCode = #{paramsDto.cityCode}
+            group by o.start_city_code, o.end_city_code
+        ) as t
+    </select>
 
 
 </mapper>
