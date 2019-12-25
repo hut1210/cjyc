@@ -67,13 +67,13 @@ public class OrderModel extends APIResource {
     private String driver_phone;
     private String back_type;
     private String taskId;
-    private List<Long>  taskCarIdList;
+    private List<String>  taskCarIdList;
 
-    public List<Long> getTaskCarIdList() {
+    public List<String> getTaskCarIdList() {
         return taskCarIdList;
     }
 
-    public void setTaskCarIdList(List<Long> taskCarIdList) {
+    public void setTaskCarIdList(List<String> taskCarIdList) {
         this.taskCarIdList = taskCarIdList;
     }
 

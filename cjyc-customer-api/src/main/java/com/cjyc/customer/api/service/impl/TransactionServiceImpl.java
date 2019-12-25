@@ -117,6 +117,8 @@ public class TransactionServiceImpl implements ITransactionService {
 
         Long taskId = Long.valueOf((String)metadata.get("taskId"));
 
+        List<String> taskCarIdList = (List<String>)metadata.get("orderCarIds");
+
         List<String> orderCarNosList = (List<String>)metadata.get("orderCarIds");
 
         Task task = null;
@@ -146,10 +148,19 @@ public class TransactionServiceImpl implements ITransactionService {
             log.error("回调中参数orderCarNosList不存在");
             return BaseResultUtil.fail("缺少参数orderCarNosList");
         }else{
+            //修改流水支付状态
+            TradeBill tradeBill = new TradeBill();
+            tradeBill.setPingPayId(charge.getId());
+            tradeBill.setState(2);
+            tradeBill.setTradeTime(System.currentTimeMillis());
+            tradeBillDao.updateTradeBillByPingPayId(tradeBill);
             //修改车辆支付状态
             for(int i=0;i<orderCarNosList.size();i++){
                 tradeBillDao.updateOrderCar(orderCarNosList.get(i),1,System.currentTimeMillis());
-                //TODO
+            }
+
+            for (int i=0;i<taskCarIdList.size();i++){
+                waybillCarDao.updateForReceipt(Long.valueOf(taskCarIdList.get(i)));
             }
         }
         //验证任务是否完成

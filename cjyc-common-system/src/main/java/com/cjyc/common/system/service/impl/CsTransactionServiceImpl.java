@@ -98,7 +98,6 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
     @Transactional(rollbackFor = Exception.class)
     public void saveTransactions(Object obj, String state) {
         TradeBill tb;
-        int id = 0;
         if(obj instanceof Order){
             Order order = (Order) obj;
 
@@ -114,7 +113,7 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
         }else if(obj instanceof Charge){
             tb = chargeToTransactions((Charge)obj, null,state);
             if(tb != null){
-                id = tradeBillDao.insert(tb);
+                tradeBillDao.insert(tb);
             }
 
             Map<String, Object> metadata = ((Charge)obj).getMetadata();
@@ -122,15 +121,12 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
             if(orderCarIds != null){
                 for(int i=0;i<orderCarIds.size();i++){
                     TradeBillDetail tradeBillDetail = new TradeBillDetail();
-                    tradeBillDetail.setTradeBillId(Long.valueOf(id));
+                    tradeBillDetail.setTradeBillId(Long.valueOf(tb.getId()));
                     tradeBillDetail.setSourceNo(orderCarIds.get(i)==null?null:orderCarIds.get(i));
                     tradeBillDetailDao.insert(tradeBillDetail);
                 }
             }
-        }else{
-            tb = (TradeBill) obj;
         }
-
     }
 
     private TradeBill orderToTradeBill(Order order, Event event, int state) {

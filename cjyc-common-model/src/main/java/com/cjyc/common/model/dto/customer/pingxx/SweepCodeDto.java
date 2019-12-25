@@ -25,7 +25,7 @@ public class SweepCodeDto {
 
     @NotEmpty(message = "任务车辆ID")
     @ApiModelProperty(value = "任务车辆ID")
-    private List<Long> taskCarIdList;
+    private List<String> taskCarIdList;
 
     @ApiModelProperty(hidden = true)
     private String ip;

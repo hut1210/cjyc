@@ -18,7 +18,7 @@ public class ValidateSweepCodeDto {
 
     @NotEmpty(message = "任务车辆ID")
     @ApiModelProperty(value = "任务车辆ID")
-    private List<Long> taskCarIdList;
+    private List<String> taskCarIdList;
 
     @ApiModelProperty(value = "收车码",required = true)
     @NotBlank(message = "收车码")

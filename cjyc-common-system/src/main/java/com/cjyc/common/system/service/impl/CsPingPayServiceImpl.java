@@ -102,7 +102,10 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         //创建Charge对象
         Charge charge = new Charge();
         try {
-            List<String> orderCarNosList = cStransactionService.getOrderCarNosByTaskCarIds(sweepCodeDto.getTaskCarIdList());
+            List<String> tempList = sweepCodeDto.getTaskCarIdList();
+
+            List<Long> taskCarIdList = convertToLongList(tempList);
+            List<String> orderCarNosList = cStransactionService.getOrderCarNosByTaskCarIds(taskCarIdList);
             BigDecimal freightFee = cStransactionService.getAmountByOrderCarNos(orderCarNosList);
             om.setAmount(freightFee);
             om.setDriver_code(String.valueOf(sweepCodeDto.getLoginId()));
@@ -129,6 +132,14 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             log.error("扫码支付异常",e);
         }
         return charge;
+    }
+
+    private List<Long> convertToLongList(List<String> tempList) {
+        List<Long> list = new ArrayList<>();
+        for(int i=0;i<tempList.size();i++){
+            list.add(Long.valueOf(tempList.get(i)));
+        }
+        return list;
     }
 
     private Charge createDriverCode(OrderModel om) throws RateLimitException, APIException, ChannelException,InvalidRequestException,
@@ -197,10 +208,11 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             }
         }
 
-        List<Long> taskCarIdList = validateSweepCodeDto.getTaskCarIdList();
+        List<String> taskCarIdList = validateSweepCodeDto.getTaskCarIdList();
+
         List<String> orderCarNosList = new ArrayList<>();
         if(taskCarIdList!=null){
-            orderCarNosList = cStransactionService.getOrderCarNosByTaskCarIds(taskCarIdList);
+            orderCarNosList = cStransactionService.getOrderCarNosByTaskCarIds(convertToLongList(taskCarIdList));
         }
         List<com.cjyc.common.model.entity.Order> list = orderDao.findListByCarNos(orderCarNosList);
         if (CollectionUtils.isEmpty(list)) {
@@ -279,7 +291,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             resVo.setAmount(amount);
             resVo.setIsNeedPay(isNeedPay);
             resVo.setTaskId(taskId);
-            resVo.setTaskCarIds(taskCarIdList);
+            resVo.setTaskCarIds(convertToLongList(taskCarIdList));
             return BaseResultUtil.success(resVo);
         } finally {
             if(addLock && isNeedPay == 0){
