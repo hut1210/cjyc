@@ -12,14 +12,16 @@ import javax.validation.constraints.NotNull;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel
-public class LineWaitDispatchCountListOrderCarDto {
-
+public class LineWaitDispatchCountDto {
+    @NotNull
+    @ApiModelProperty(value = "用户ID", required = true)
+    private Long loginId;
+    @NotNull
+    @ApiModelProperty(value = "用户ID", required = true)
+    private Long roleId;
     @NotNull
     @ApiModelProperty(value = "城市编码", required = true)
     private String cityCode;
 
-    @NotNull
-    @ApiModelProperty(value = "用户ID", required = true)
-    private Long loginId;
 
 }

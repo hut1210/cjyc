@@ -106,4 +106,9 @@ public interface ICarrierDao extends BaseMapper<Carrier> {
     AppDriverInfoVo findAppDriverInfo(@Param("roleId") Long roleId,@Param("loginId") Long loginId);
 
     Carrier findByDeptId(Long deptId);
+
+    /*********************************韵车集成改版 st*****************************/
+    List<Carrier> getListByLoginIdAndRoleId(@Param("loginId")Long loginId,
+                                            @Param("roleId")Long roleId);
+    /*********************************韵车集成改版 ed*****************************/
 }

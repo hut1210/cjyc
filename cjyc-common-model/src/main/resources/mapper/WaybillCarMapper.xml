@@ -377,19 +377,31 @@
             #{item}
         </foreach>
     </select>
-    <select id="findListLocal" resultType="com.cjyc.common.model.vo.web.waybill.LocalListWaybillCarVo">
-        select
+    <sql id="waybill_car_inner_state">
         (case
         when wc.state = 0 then '待指派'
         when wc.state = 5 then '待装车'
-        when wc.state = 15 then '待装车确认'
+        when wc.state = 15 then '待出库'
         when wc.state = 45 then '已装车'
         when wc.state = 70 then '已卸车'
-        when wc.state = 90 then '确认交车'
-        when wc.state = 100 then '确认收车'
+        when wc.state = 90 then '待入库'
+        when wc.state = 100 then '已交付'
         when wc.state = 113 then '已取消'
         end
         ) as outterState,
+    </sql>
+    <sql id="waybill_car_outter_state">
+        (case
+        when wc.state &lt;= 15 then '待运输' <!-- 待提车 -->
+        when wc.state &gt; 15 and wc.state &lt; 100 then '运输中' <!-- 已提车 -->
+        when wc.state = 100 then '已交付' <!-- 已交付 -->
+        when wc.state = 113 then '已取消'
+        end
+        ) as outterState,
+    </sql>
+    <select id="findListLocal" resultType="com.cjyc.common.model.vo.web.waybill.LocalListWaybillCarVo">
+        select
+        <include refid="waybill_car_inner_state"/>
         w.carrier_id as carrierId,
         w.carrier_type as carrierType,
         w.carrier_name as carrierName,
@@ -571,12 +583,7 @@
     </select>
     <select id="findTrunkCarList" resultType="com.cjyc.common.model.vo.web.waybill.TrunkCarListWaybillCarVo">
         select
-        (case
-        when wc.state &lt;= 15 then '待提车'
-        when wc.state &gt; 15 and wc.state &lt; 100 then '已提车'
-        when wc.state = 100 then '已交付'
-        end
-        ) as outterState,
+        <include refid="waybill_car_outter_state"/>
         w.carrier_id as carrierId,
         w.carrier_type as carrierType,
         w.carrier_name as carrierName,
@@ -1296,8 +1303,7 @@
         left join s_store s2 on s2.id = wc.end_store_id
         where wc.order_car_id = #{orderCarId}
         and w.state &lt;= 100
-        and w.type &lt; 3
-        order by w.id, wc.id desc
+        order by wc.id desc
         limit 1
     </select>
     <select id="findFirstTrunkWaybillCar" resultType="com.cjyc.common.model.entity.WaybillCar">

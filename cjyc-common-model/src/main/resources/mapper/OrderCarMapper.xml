@@ -157,6 +157,12 @@
         trunk_state = #{trunkState}
         where id = #{id}
     </update>
+    <update id="updateLocationForUnload">
+        update w_order_car
+        set now_area_code = #{nowAreaCode},
+        now_store_id = #{nowStoreId}
+        where id = #{orderCarId}
+    </update>
 
     <delete id="deleteBatchByOrderId">
         delete from w_order_car
@@ -185,7 +191,7 @@
         ) as t
     </select>
     <!--按线路统计待调度车辆（统计列表）-->
-    <select id="findlineWaitDispatchCarCountList" resultType="java.util.Map">
+    <select id="findLineWaitDispatchCarCountList" resultType="java.util.Map">
         select
             count(0) as carNum,
             o.start_city_code as startCityCode,
@@ -199,6 +205,20 @@
         and o.start_city_code = #{paramsDto.cityCode}
         group by o.start_city_code, o.end_city_code
 
+    </select>
+    <select id="findLineWaitDispatchTrunkCarCountList" resultType="java.util.Map">
+        select
+            count(0) as carNum,
+            o.start_city_code as startCityCode,
+            o.start_city as startCity,
+            o.end_city_code as endCityCode,
+            o.end_city as endCity,
+            CONCAT(o.start_city,'-',o.end_city) as line
+        from (
+          <include refid="trunk_wait_dispatch_car"/>
+        ) as countShell
+        and countShell.dispatchStartCityCode = #{paramsDto.cityCode}
+        group by o.start_city_code, o.end_city_code
     </select>
     <select id="countTotalWaitDispatchCarByStartCity" resultType="java.util.Map">
         select sum(carNum) as totalCount from (
@@ -368,13 +388,13 @@
                 and o.end_store_id = #{paramsDto.endStoreId,jdbcType=BIGINT}
             </if>
             <if test="paramsDto.orderNo != null and paramsDto.orderNo != ''">
-                and oc.order_no like concat("%", #{paramsDto.orderNo,jdbcType=VARCHAR}, "%")
+                and oc.order_no like concat('%', #{paramsDto.orderNo,jdbcType=VARCHAR}, '%')
             </if>
             <if test="paramsDto.carNo != null and paramsDto.carNo != ''">
-                and oc.no like concat("%", #{paramsDto.carNo,jdbcType=VARCHAR}, "%")
+                and oc.no like concat('%', #{paramsDto.carNo,jdbcType=VARCHAR}, '%')
             </if>
             <if test="paramsDto.vin != null and paramsDto.vin != ''">
-                and oc.vin like concat("%", #{paramsDto.vin,jdbcType=VARCHAR}, "%")
+                and oc.vin like concat('%', #{paramsDto.vin,jdbcType=VARCHAR}, '%')
             </if>
             <if test="paramsDto.beginExpectStartDate != null">
                 and o.expect_start_date &gt;= #{paramsDto.beginExpectStartDate,jdbcType=BIGINT}
@@ -386,28 +406,28 @@
                 and o.pick_type = #{paramsDto.pickType,jdbcType=TINYINT}
             </if>
             <if test="paramsDto.pickContactName != null and paramsDto.pickContactName != ''">
-                and o.pick_contact_name like concat("%", #{paramsDto.pickContactName,jdbcType=VARCHAR}, "%")
+                and o.pick_contact_name like concat('%', #{paramsDto.pickContactName,jdbcType=VARCHAR}, '%')
             </if>
             <if test="paramsDto.pickContactPhone != null and paramsDto.pickContactPhone != ''">
-                and o.pick_contact_phone like concat("%", #{paramsDto.pickContactPhone,jdbcType=VARCHAR}, "%")
+                and o.pick_contact_phone like concat('%', #{paramsDto.pickContactPhone,jdbcType=VARCHAR}, '%')
             </if>
             <if test="paramsDto.backType != null">
                 and o.back_type = #{paramsDto.backType,jdbcType=TINYINT}
             </if>
             <if test="paramsDto.backContactName != null and paramsDto.backContactName != ''">
-                and o.back_contact_name like concat("%", #{paramsDto.backContactName,jdbcType=VARCHAR}, "%")
+                and o.back_contact_name like concat('%', #{paramsDto.backContactName,jdbcType=VARCHAR}, '%')
             </if>
             <if test="paramsDto.backContactPhone != null and paramsDto.backContactPhone != ''">
-                and o.back_contact_phone like concat("%", #{paramsDto.backContactPhone,jdbcType=VARCHAR}, "%")
+                and o.back_contact_phone like concat('%', #{paramsDto.backContactPhone,jdbcType=VARCHAR}, '%')
             </if>
             <if test="paramsDto.brand != null and paramsDto.brand != ''">
-                and oc.brand like concat("%", #{paramsDto.brand,jdbcType=VARCHAR}, "%")
+                and oc.brand like concat('%', #{paramsDto.brand,jdbcType=VARCHAR}, '%')
             </if>
             <if test="paramsDto.model != null and paramsDto.model != ''">
-                and oc.model like concat("%", #{paramsDto.model,jdbcType=VARCHAR}, "%")
+                and oc.model like concat('%', #{paramsDto.model,jdbcType=VARCHAR}, '%')
             </if>
             <if test="paramsDto.plateNo != null and paramsDto.plateNo != ''">
-                and oc.plate_no like concat("%", #{paramsDto.plateNo,jdbcType=VARCHAR}, "%")
+                and oc.plate_no like concat('%', #{paramsDto.plateNo,jdbcType=VARCHAR}, '%')
             </if>
             <if test="paramsDto.startStoreId != null">
                 and o.start_store_id = #{paramsDto.startStoreId,jdbcType=BIGINT}
@@ -434,106 +454,100 @@
         order by oc.id desc
 
     </select>
-    <select id="findWaitDispatchTrunkCarList" resultType="com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo">
+    <sql id="trunk_wait_dispatch_car">
         select *
         from (
-            select
-            <include refid="transport_state"/>
-            (case when wmax.id is not null then wmax.end_province_code else o.start_province_code end) as dispatchStartProvinceCode,
-            (case when wmax.id is not null then wmax.end_province else o.start_province end) as dispatchStartProvince,
-            (case when wmax.id is not null then wmax.end_city_code else o.start_city_code end) as dispatchStartCityCode,
-            (case when wmax.id is not null then wmax.end_city else o.start_city end) as dispatchStartCity,
-            (case when wmax.id is not null then wmax.end_area_code else o.start_area_code end) as dispatchStartAreaCode,
-            (case when wmax.id is not null then wmax.end_area else o.start_area end) as dispatchStartArea,
-            o.end_province_code as dispatchEndProvinceCode,
-            o.end_province as dispatchEndProvince,
-            o.end_city_code as dispatchEndCityCode,
-            o.end_city as dispatchEndCity,
-            o.end_area_code as dispatchEndAreaCode,
-            o.end_area as dispatchEndArea,
+        select
+        <include refid="transport_state"/>
+        (case when wmax.id is not null then wmax.end_province_code else o.start_province_code end) as dispatchStartProvinceCode,
+        (case when wmax.id is not null then wmax.end_province else o.start_province end) as dispatchStartProvince,
+        (case when wmax.id is not null then wmax.end_city_code else o.start_city_code end) as dispatchStartCityCode,
+        (case when wmax.id is not null then wmax.end_city else o.start_city end) as dispatchStartCity,
+        (case when wmax.id is not null then wmax.end_area_code else o.start_area_code end) as dispatchStartAreaCode,
+        (case when wmax.id is not null then wmax.end_area else o.start_area end) as dispatchStartArea,
+        o.end_province_code as dispatchEndProvinceCode,
+        o.end_province as dispatchEndProvince,
+        o.end_city_code as dispatchEndCityCode,
+        o.end_city as dispatchEndCity,
+        o.end_area_code as dispatchEndAreaCode,
+        o.end_area as dispatchEndArea,
 
-            oc.order_id as orderId,
-            oc.order_no as orderNo,
-            oc.id as orderCarId,
-            oc.no as orderCarNo,
-            oc.vin as vin,
-            oc.brand as brand,
-            oc.model as model,
-            o.customer_id as customerId,
-            o.customer_name as customerName,
-            o.customer_phone as customerPhone,
-            o.customer_type as customerType,
-            o.input_store_id as inputStoreId,
-            o.input_store_name as inputStoreName,
-            o.start_province as startProvince,
-            o.start_province_code as startProvinceCode,
-            o.start_city as startCity,
-            o.start_city_code as startCityCode,
-            o.start_area as startArea,
-            o.start_area_code as startAreaCode,
-            o.start_address as startAddress,
-            o.start_lng as startLng,
-            o.start_lat as startLat,
-            oc.pick_type as pickType,
-            oc.back_type as backType,
-            o.start_store_id as startStoreId,
-            o.start_store_name as startStoreName,
-            o.start_belong_store_id as startBelongStoreId,
-            o.end_province as endProvince,
-            o.end_province_code as endProvinceCode,
-            o.end_city as endCity,
-            o.end_city_code as endCityCode,
-            o.end_area as endArea,
-            o.end_area_code as endAreaCode,
-            o.end_address as endAddress,
-            o.end_lng as endLng,
-            o.end_lat as endLat,
-            o.end_store_id as endStoreId,
-            o.end_store_name as endStoreName,
-            o.end_belong_store_id as endBelongStoreId,
-            o.expect_start_date as expectStartDate,
-            o.expect_end_date as expectEndDate,
-            o.car_num as carNum,
-            o.line_id as lineId,
-            o.pick_contact_name as pickContactName,
-            o.pick_contact_phone as pickContactPhone,
-            o.back_contact_name as backContactName,
-            o.back_contact_phone as backContactPhone,
-            o.source as source,
-            o.create_time as createTime,
-            o.create_user_name as createUserName,
-            o.create_user_id as createUserId,
-            o.allot_to_user_name as allotToUserName,
-            o.allot_to_user_id as allotToUserId,
-            o.check_time as checkTime,
-            o.check_user_name as checkUserName,
-            o.check_user_id as checkUserId
-
-            from w_order o
-            join w_order_car oc on oc.order_id = o.id
-            left join (
-                select
-                wc1.id,
-                wc1.end_province_code,
-                wc1.end_province,
-                wc1.end_city_code,
-                wc1.end_city,
-                wc1.end_area_code,
-                wc1.end_area,
-                wc1.order_car_id
-                from w_waybill_car wc1
-                where id in (
-                    select max(wc.id)
-                    from w_waybill w
-                    join w_waybill_car wc on w.id = wc.waybill_id
-                    where w.state &lt;= 100
-                    and wc.state &lt;= 100
-                    group by wc.order_car_id
-                )
-            ) as wmax on wmax.order_car_id = oc.id
-            where o.state &lt;= 100
-            and oc.trunk_state &lt; 5
+        o.customer_id as customerId,
+        o.customer_name as customerName,
+        o.customer_phone as customerPhone,
+        o.customer_type as customerType,
+        o.input_store_id as inputStoreId,
+        o.input_store_name as inputStoreName,
+        o.start_province as startProvince,
+        o.start_province_code as startProvinceCode,
+        o.start_city as startCity,
+        o.start_city_code as startCityCode,
+        o.start_area as startArea,
+        o.start_area_code as startAreaCode,
+        o.start_address as startAddress,
+        o.start_lng as startLng,
+        o.start_lat as startLat,
+        o.start_store_id as startStoreId,
+        o.start_store_name as startStoreName,
+        o.start_belong_store_id as startBelongStoreId,
+        o.end_province as endProvince,
+        o.end_province_code as endProvinceCode,
+        o.end_city as endCity,
+        o.end_city_code as endCityCode,
+        o.end_area as endArea,
+        o.end_area_code as endAreaCode,
+        o.end_address as endAddress,
+        o.end_lng as endLng,
+        o.end_lat as endLat,
+        o.end_store_id as endStoreId,
+        o.end_store_name as endStoreName,
+        o.end_belong_store_id as endBelongStoreId,
+        o.expect_start_date as expectStartDate,
+        o.expect_end_date as expectEndDate,
+        o.car_num as carNum,
+        o.line_id as lineId,
+        o.pick_contact_name as pickContactName,
+        o.pick_contact_phone as pickContactPhone,
+        o.back_contact_name as backContactName,
+        o.back_contact_phone as backContactPhone,
+        o.source as source,
+        o.create_time as createTime,
+        o.create_user_name as createUserName,
+        o.create_user_id as createUserId,
+        o.allot_to_user_name as allotToUserName,
+        o.allot_to_user_id as allotToUserId,
+        o.check_time as checkTime,
+        o.check_user_name as checkUserName,
+        o.check_user_id as checkUserId,
+        oc.*
+        from w_order o
+        join w_order_car oc on oc.order_id = o.id
+        left join (
+        select
+        wc1.id,
+        wc1.end_province_code,
+        wc1.end_province,
+        wc1.end_city_code,
+        wc1.end_city,
+        wc1.end_area_code,
+        wc1.end_area,
+        wc1.order_car_id
+        from w_waybill_car wc1
+        where id in (
+        select max(wc.id)
+        from w_waybill w
+        join w_waybill_car wc on w.id = wc.waybill_id
+        where w.state &lt;= 100
+        and wc.state &lt;= 100
+        group by wc.order_car_id
+        )
+        ) as wmax on wmax.order_car_id = oc.id
+        where o.state &lt;= 100
+        and oc.trunk_state &lt; 5
         ) as shell
+    </sql>
+    <select id="findWaitDispatchTrunkCarList" resultType="com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo">
+        <include refid="trunk_wait_dispatch_car"/>
         <where>
             <if test="paramsDto.startProvinceCode != null and paramsDto.startProvinceCode != ''">
                 and shell.dispatchStartProvinceCode = #{paramsDto.startProvinceCode,jdbcType=VARCHAR}
@@ -554,13 +568,13 @@
                 and shell.dispatchEndAreaCode = #{paramsDto.endAreaCode,jdbcType=VARCHAR}
             </if>
             <if test="paramsDto.orderNo != null and paramsDto.orderNo != ''">
-                and shell.orderNo like concat("%", #{paramsDto.orderNo,jdbcType=VARCHAR}, "%")
+                and shell.orderNo like concat('%' #{paramsDto.orderNo,jdbcType=VARCHAR}, '%')
             </if>
             <if test="paramsDto.carNo != null and paramsDto.carNo != ''">
-                and shell.no like concat("%", #{paramsDto.carNo,jdbcType=VARCHAR}, "%")
+                and shell.no like concat('%', #{paramsDto.carNo,jdbcType=VARCHAR}, '%')
             </if>
             <if test="paramsDto.vin != null and paramsDto.vin != ''">
-                and shell.vin like concat("%", #{paramsDto.vin,jdbcType=VARCHAR}, "%")
+                and shell.vin like concat('%', #{paramsDto.vin,jdbcType=VARCHAR}, '%')
             </if>
         </where>
 
@@ -719,16 +733,16 @@
             </if>
 
             <if test="paramsDto.orderNo != null and paramsDto.orderNo != ''">
-                and o.no like concat("%", #{paramsDto.orderNo},"%")
+                and o.no like concat('%', #{paramsDto.orderNo},'%')
             </if>
             <if test="paramsDto.customerName != null and paramsDto.customerName != ''">
-                and o.customer_name like concat("%", #{paramsDto.customerName},"%")
+                and o.customer_name like concat('%', #{paramsDto.customerName},'%')
             </if>
             <if test="paramsDto.customerType != null and paramsDto.customerType != ''">
                 and o.customer_type = #{paramsDto.customerType}
             </if>
             <if test="paramsDto.customerPhone != null and paramsDto.customerPhone != ''">
-                and o.customer_phone like concat("%", #{paramsDto.customerPhone},"%")
+                and o.customer_phone like concat('%', #{paramsDto.customerPhone},'%')
             </if>
             <if test="paramsDto.inputStoreId != null">
                 and o.input_store_id = #{paramsDto.inputStoreId}
@@ -758,10 +772,10 @@
                 and o.end_store_id = #{paramsDto.endStoreId}
             </if>
             <if test="paramsDto.pickContactName != null and paramsDto.pickContactName != ''">
-                and o.pick_contact_name like concat("%", #{paramsDto.pickContactName},"%")
+                and o.pick_contact_name like concat('%', #{paramsDto.pickContactName},'%')
             </if>
             <if test="paramsDto.pickContactPhone != null and paramsDto.pickContactPhone != ''">
-                and o.pick_contact_phone like concat("%", #{paramsDto.pickContactPhone},"%")
+                and o.pick_contact_phone like concat('%', #{paramsDto.pickContactPhone},'%')
             </if>
             <if test="paramsDto.pickType != null">
                 and o.pick_type = #{paramsDto.pickType}
@@ -770,10 +784,10 @@
                 and o.back_type = #{paramsDto.backType}
             </if>
             <if test="paramsDto.backContactName != null and paramsDto.backContactName != ''">
-                and o.back_contact_name like concat("%", #{paramsDto.backContactName},"%")
+                and o.back_contact_name like concat('%', #{paramsDto.backContactName},'%')
             </if>
             <if test="paramsDto.backContactPhone != null and paramsDto.backContactPhone != ''">
-                and o.back_contact_phone like concat("%", #{paramsDto.backContactPhone},"%")
+                and o.back_contact_phone like concat('%', #{paramsDto.backContactPhone},'%')
             </if>
             <if test="paramsDto.lineId != null">
                 and o.line_id = #{paramsDto.lineId}
@@ -782,7 +796,7 @@
                 and o.source = #{paramsDto.source}
             </if>
             <if test="paramsDto.createUserName != null and paramsDto.createUserName != ''">
-                and o.create_user_name like concat("%", #{paramsDto.createUserName},"%")
+                and o.create_user_name like concat('%', #{paramsDto.createUserName},'%')
             </if>
             <if test="paramsDto.payType != null">
                 and o.pay_type = #{paramsDto.payType}
@@ -797,7 +811,7 @@
                 and oc.is_new = #{paramsDto.isNew}
             </if>
             <if test="paramsDto.carNo != null and paramsDto.carNo != ''">
-                and oc.no like concat("%", #{paramsDto.carNo},"%")
+                and oc.no like concat('%', #{paramsDto.carNo},'%')
             </if>
             <if test="paramsDto.brand != null and paramsDto.brand != ''">
                 and oc.brand = #{paramsDto.brand}
@@ -806,10 +820,10 @@
                 and oc.model = #{paramsDto.model}
             </if>
             <if test="paramsDto.plateNo != null and paramsDto.plateNo != ''">
-                and oc.plate_no like concat("%", #{paramsDto.plateNo},"%")
+                and oc.plate_no like concat('%', #{paramsDto.plateNo},'%')
             </if>
             <if test="paramsDto.vin != null and paramsDto.vin != ''">
-                and oc.vin like concat("%", #{paramsDto.vin},"%")
+                and oc.vin like concat('%', #{paramsDto.vin},'%')
             </if>
             <if test="paramsDto.bizScope != null">
                 and o.input_store_id in
@@ -1422,6 +1436,26 @@
                 and wo.check_user_id = #{userId}
             </if>
         </where>
+    </select>
+    <select id="countTrunkListWaitDispatchCar" resultType="java.util.Map">
+        select
+        count(0) as car_num,
+        IFNULL(o.start_city_code,'-1') as cityCode,
+        IFNULL(o.start_city, '无城市') as cityName
+        from (
+          <include refid="trunk_wait_dispatch_car"/>
+        )
+        group by o.start_city_code
+    </select>
+    <select id="countTotalTrunkWaitDispatchCarByStartCity" resultType="java.util.Map">
+        select sum(carNum) as totalCount from (
+            select count(0) as carNum
+            from (
+              <include refid="trunk_wait_dispatch_car"/>
+            ) as countShell
+            and countShell.dispatchStartCityCode = #{paramsDto.cityCode}
+            group by o.start_city_code, o.end_city_code
+        ) as t
     </select>
 
 

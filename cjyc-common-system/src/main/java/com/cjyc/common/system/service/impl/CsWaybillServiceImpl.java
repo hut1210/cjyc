@@ -1268,6 +1268,11 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         if (fullCity == null) {
             return BaseResultUtil.fail("请填写卸车城市");
         }
+        //查询运单
+        Waybill waybill = waybillDao.selectById(paramsDto.getWaybillId());
+        if(waybill == null){
+            return BaseResultUtil.fail("运单信息错误");
+        }
         Set<Long> waybillIds = new HashSet<>();
         for (Long waybillCarId : carIdList) {
             if (waybillCarId == null) {
@@ -1275,10 +1280,13 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             }
             WaybillCar waybillCar = waybillCarDao.selectById(waybillCarId);
             if (waybillCar == null) {
-                throw new ParameterException("ID为{}的车辆不存在", waybillCarId);
+                throw new ParameterException("ID为{0}的车辆不存在", waybillCarId);
             }
             if (waybillCar.getState() > WaybillCarStateEnum.UNLOADED.code) {
-                throw new ParameterException("已完成", waybillCarId);
+                throw new ParameterException("车辆{0}已完结", waybillCar.getOrderCarNo());
+            }
+            if(!waybillCar.getWaybillId().equals(waybill.getId())){
+                throw new ParameterException("车辆{0}不属于运单{1}", waybillCar.getOrderCarNo(), waybill.getNo());
             }
 
             //已装车的完成
@@ -1302,18 +1310,16 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 waybillCar.setEndStoreName(endStoreName);
                 //车辆运输到中途卸车算调度单业务中心
                 waybillCar.setEndBelongStoreId(waybillCar.getStartBelongStoreId());
-                //车辆运输到中途卸车算调度单业务中心
-                waybillCar.setEndBelongStoreId(waybillCar.getStartBelongStoreId());
                 //交接状态如何变更
-                waybillCar.setState(WaybillCarStateEnum.WAIT_CONNECT.code);
+                waybillCar.setState(WaybillCarStateEnum.UNLOADED.code);
+                //取消后续调度
+                waybillCarDao.cancelAfterWaybillCar(waybillCar.getId(), waybillCar.getOrderCarNo());
+                //
                 waybillCarDao.updateById(waybillCar);
-            }
-            //未装车的删除
-            if (waybillCar.getState() < WaybillCarStateEnum.LOADED.code) {
-                //删除车辆
-                waybillCarDao.deleteById(waybillCarId);
-                //删除任务车辆
-                taskDao.deleteByWaybillCarId(waybillCarId);
+
+            }else{
+                //未装车的取消
+                cancelWaybillCar(waybill.getType(), waybillCar);
             }
             waybillIds.add(waybillCarId);
         }
@@ -1398,9 +1404,9 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         return newWaybill;
     }
 
-    private void copyWaybillCarStartCity(FullCity fullCity, WaybillCar waybillCar) {
+    private WaybillCar copyWaybillCarStartCity(FullCity fullCity, WaybillCar waybillCar) {
         if (fullCity == null) {
-            return;
+            return waybillCar;
         }
         waybillCar.setStartProvince(fullCity.getProvince());
         waybillCar.setStartProvinceCode(fullCity.getProvinceCode());
@@ -1408,11 +1414,12 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         waybillCar.setStartCityCode(fullCity.getCityCode());
         waybillCar.setStartArea(fullCity.getArea());
         waybillCar.setStartAreaCode(fullCity.getAreaCode());
+        return waybillCar;
     }
 
-    private void copyWaybillCarEndCity(FullCity fullCity, WaybillCar waybillCar) {
+    private WaybillCar copyWaybillCarEndCity(FullCity fullCity, WaybillCar waybillCar) {
         if (fullCity == null) {
-            return;
+            return waybillCar;
         }
         waybillCar.setEndProvince(fullCity.getProvince());
         waybillCar.setEndProvinceCode(fullCity.getProvinceCode());
@@ -1420,6 +1427,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         waybillCar.setEndCityCode(fullCity.getCityCode());
         waybillCar.setEndArea(fullCity.getArea());
         waybillCar.setEndAreaCode(fullCity.getAreaCode());
+        return waybillCar;
     }
 
 }

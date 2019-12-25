@@ -1,9 +1,6 @@
 package com.cjyc.web.api.controller;
 
-import com.cjyc.common.model.dto.web.order.ComputeCarEndpointDto;
-import com.cjyc.common.model.dto.web.order.LineWaitDispatchCountListOrderCarDto;
-import com.cjyc.common.model.dto.web.order.WaitDispatchListOrderCarDto;
-import com.cjyc.common.model.dto.web.order.WaitDispatchTrunkDto;
+import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -56,7 +53,7 @@ public class DispatchController {
      */
     @ApiOperation(value = "按线路统计待调度车辆（统计列表）")
     @PostMapping(value = "/line/wait/count/list")
-    public ResultVo<ListVo<Map<String, Object>>> lineWaitDispatchCarCountList(@RequestBody LineWaitDispatchCountListOrderCarDto reqDto) {
+    public ResultVo<ListVo<Map<String, Object>>> lineWaitDispatchCarCountList(@RequestBody LineWaitDispatchCountDto reqDto) {
         return orderService.lineWaitDispatchCarCountList(reqDto,null);
     }
 
@@ -70,13 +67,32 @@ public class DispatchController {
         return orderService.waitDispatchCarList(reqDto);
     }
 
+
+    /**
+     * 查询待调度车辆列表（数据列表）
+     * @author JPG
+     */
+    @ApiOperation(value = "查询待调度车辆列表")
+    @PostMapping(value = "/wait/trunk/count/list")
+    public ResultVo<ListVo<Map<String, Object>>> waitDispatchTrunkCarCountList(@RequestBody WaitDispatchCountDto reqDto) {
+        return orderService.waitDispatchTrunkCarCountList(reqDto);
+    }
+    /**
+     * 查询待调度车辆列表（数据列表）
+     * @author JPG
+     */
+    @ApiOperation(value = "查询待调度车辆列表")
+    @PostMapping(value = "/line/wait/trunk/count/list")
+    public ResultVo<ListVo<Map<String, Object>>> lineWaitDispatchTrunkCarCountList(@RequestBody LineWaitDispatchCountDto reqDto) {
+        return orderService.lineWaitDispatchTrunkCarCountList(reqDto);
+    }
     /**
      * 查询待调度车辆列表（数据列表）
      * @author JPG
      */
     @ApiOperation(value = "查询待调度车辆列表")
     @PostMapping(value = "/trunk/wait/list")
-    public ResultVo<PageVo<OrderCarWaitDispatchVo>> waitDispatchCarList(@RequestBody WaitDispatchTrunkDto reqDto) {
+    public ResultVo<PageVo<OrderCarWaitDispatchVo>> waitDispatchTrunkCarList(@RequestBody WaitDispatchTrunkDto reqDto) {
         return orderService.waitDispatchTrunkCarList(reqDto);
     }
 

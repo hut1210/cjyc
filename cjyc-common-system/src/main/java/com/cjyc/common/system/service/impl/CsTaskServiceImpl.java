@@ -436,6 +436,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             }
             if(waybillCar.getEndStoreId() == null || waybillCar.getEndStoreId() <= 0 ){
                 waybillCarDao.updateStateById(waybillCar.getId(), WaybillCarStateEnum.UNLOADED.code);
+                orderCarDao.updateLocationForUnload(waybillCar.getOrderCarId(), 0L, waybillCar.getEndAreaCode());
             }else{
                 waybillCarDao.updateStateById(waybillCar.getId(), WaybillCarStateEnum.WAIT_UNLOAD_CONFIRM.code);
             }
@@ -443,8 +444,6 @@ public class CsTaskServiceImpl implements ICsTaskService {
             count++;
         }
 
-        //更新运单车辆信息
-        waybillCarDao.updateBatchForUnload(waybillCarIdSet, WaybillCarStateEnum.WAIT_UNLOAD_CONFIRM.code);
         //更新任务信息
         taskDao.updateNumForUnload(task.getId(), count);
         //更新实时运力信息

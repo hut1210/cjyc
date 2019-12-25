@@ -45,7 +45,7 @@
                 and order_car_no =#{paramsDto.orderCarNo}
             </if>
             <if test="paramsDto.vin != null and paramsDto.vin.trim() != ''">
-                and vin =#{paramsDto.vin}
+                and vin like concat('%', #{paramsDto.vin}, '%')
             </if>
             <if test="paramsDto.brand != null and paramsDto.brand.trim() != ''">
                 and brand =#{paramsDto.brand}
@@ -87,6 +87,13 @@
                 and create_user =#{paramsDto.createUser}
             </if>
         </where>
+    </select>
+    <select id="countAllByStoreId" resultType="java.util.Map">
+        select
+            IFNULL(sum(case when type = 1 then 1 else 0 end),0) as inStoreTotalCount,
+            IFNULL(sum(case when type = 2 then 1 else 0 end),0) as outStoreTotalCount
+        from w_car_storage_log csl
+        where store_id = #{storeId}
     </select>
 
 </mapper>

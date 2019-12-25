@@ -8,6 +8,8 @@ import java.util.List;
 
 @Data
 public class TrunkMidwayUnload {
+    @ApiModelProperty(value = "区县编码")
+    private String waybillId;
 
     @ApiModelProperty(value = "区县编码")
     private String endAreaCode;
