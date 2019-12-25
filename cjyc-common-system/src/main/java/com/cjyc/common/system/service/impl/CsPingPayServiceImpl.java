@@ -81,7 +81,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
     @Override
     public Charge sweepDriveCode(SweepCodeDto sweepCodeDto) throws RateLimitException, APIException, ChannelException, InvalidRequestException,
             APIConnectionException, AuthenticationException, FileNotFoundException {
-        log.debug("sweepDriveCode taskId ="+sweepCodeDto.getTaskId());
+        log.info("sweepDriveCode taskId ="+sweepCodeDto.getTaskId());
         ValidateSweepCodeDto validateSweepCodeDto = new ValidateSweepCodeDto();
         validateSweepCodeDto.setTaskId(sweepCodeDto.getTaskId());
         validateSweepCodeDto.setLoginId(sweepCodeDto.getLoginId());
@@ -107,7 +107,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             om.setAmount(freightFee);
             om.setDriver_code(String.valueOf(sweepCodeDto.getLoginId()));
             om.setOrderCarIds(orderCarNosList);
-            om.setTaskId(sweepCodeDto.getTaskId());
+            om.setTaskId(String.valueOf(sweepCodeDto.getTaskId()));
             om.setTaskCarIdList(sweepCodeDto.getTaskCarIdList());
             om.setChannel(sweepCodeDto.getChannel());
             if(sweepCodeDto.getClientType()==ClientEnum.APP_DRIVER.code){
@@ -165,7 +165,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             extra.put("product_id", Integer.toString(calendar.get(Calendar.YEAR)) + System.currentTimeMillis());
             params.put("extra", extra);
         }
-        log.debug("createDriverCode meta ="+meta.toString());
+        log.info("createDriverCode meta ="+meta.toString());
         params.put("metadata",meta);//自定义参数
         Charge charge = Charge.create(params); // 创建 Charge 对象 方法
         return charge;

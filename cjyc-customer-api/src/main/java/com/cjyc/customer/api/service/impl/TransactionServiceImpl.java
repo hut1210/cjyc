@@ -115,7 +115,7 @@ public class TransactionServiceImpl implements ITransactionService {
         Map<String, Object> metadata = charge.getMetadata();
         log.debug("update metadata = "+metadata.toString()+" taskId = "+metadata.get("taskId"));
 
-        Long taskId = (Long)metadata.get("taskId");
+        Long taskId = Long.valueOf((String)metadata.get("taskId"));
 
         List<String> orderCarNosList = (List<String>)metadata.get("orderCarIds");
 
