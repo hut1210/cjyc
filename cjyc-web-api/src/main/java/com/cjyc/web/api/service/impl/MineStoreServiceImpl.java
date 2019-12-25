@@ -129,16 +129,11 @@ public class MineStoreServiceImpl implements IMineStoreService {
         List<StorageCarVo> list = waybillCarDao.selectStorageCarPage(dto);
         PageInfo<List<StorageCarVo>> pageInfo = new PageInfo(list);
         // 查询在库数量
-        Integer storageCarCount = getStorageCarCount(dto.getNowStoreId());
+        Integer storageCarCount = waybillCarDao.selectStorageCount(dto.getNowStoreId());
         Map<String,Object> map = new HashMap<>(1);
         map.put("count",storageCarCount);
         return BaseResultUtil.success(pageInfo,map);
     }
-
-    public Integer getStorageCarCount(Long nowStoreId) {
-        return waybillCarDao.selectStorageCount(nowStoreId);
-    }
-
 
     /**
      * 验证ResultData状态是否正常
