@@ -3,10 +3,7 @@ package com.cjyc.customer.api.service.impl;
 import com.Pingxx.model.MetaDataEntiy;
 import com.Pingxx.model.Order;
 import com.cjyc.common.model.dao.*;
-import com.cjyc.common.model.entity.Task;
-import com.cjyc.common.model.entity.TradeBill;
-import com.cjyc.common.model.entity.TradeBillDetail;
-import com.cjyc.common.model.entity.Waybill;
+import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.entity.defined.UserInfo;
 import com.cjyc.common.model.enums.ChargeTypeEnum;
 import com.cjyc.common.model.enums.PayStateEnum;
@@ -160,7 +157,10 @@ public class TransactionServiceImpl implements ITransactionService {
             }
 
             for (int i=0;i<taskCarIdList.size();i++){
-                waybillCarDao.updateForReceipt(Long.valueOf(taskCarIdList.get(i)));
+                TaskCar taskCar = taskCarDao.selectById(Long.valueOf(taskCarIdList.get(i)));
+                if(taskCar != null){
+                    waybillCarDao.updateForReceipt(taskCar.getWaybillCarId());
+                }
             }
         }
         //验证任务是否完成
