@@ -117,7 +117,7 @@ public class TransactionServiceImpl implements ITransactionService {
 
         Long taskId = Long.valueOf((String)metadata.get("taskId"));
 
-        List<String> taskCarIdList = (List<String>)metadata.get("orderCarIds");
+        List<String> taskCarIdList = (List<String>)metadata.get("taskCarIdList");
 
         List<String> orderCarNosList = (List<String>)metadata.get("orderCarIds");
 
