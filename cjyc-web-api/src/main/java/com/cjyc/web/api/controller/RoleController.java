@@ -9,7 +9,6 @@ import com.cjyc.common.model.dto.web.role.ModifyRoleMenusDto;
 import com.cjyc.common.model.entity.Role;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.role.AdminListVo;
 import com.cjyc.common.model.vo.web.role.MenuTreeVo;
 import com.cjyc.common.model.vo.web.role.SelectUserByRoleVo;
 import com.cjyc.common.system.feign.ISysRoleService;

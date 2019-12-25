@@ -1,27 +1,32 @@
 package com.cjyc.common.system.service.sys;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.usercenter.dto.common.SelectDeptResp;
 import com.cjkj.usercenter.dto.common.SelectRoleResp;
 import com.cjyc.common.model.dao.ICarrierDao;
-import com.cjyc.common.model.entity.Admin;
-import com.cjyc.common.model.entity.Carrier;
-import com.cjyc.common.model.entity.Store;
+import com.cjyc.common.model.dao.ICityDao;
+import com.cjyc.common.model.dao.IStoreDao;
+import com.cjyc.common.model.dao.IUserRoleDeptDao;
+import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.entity.defined.BizScope;
 import com.cjyc.common.model.enums.BizScopeEnum;
+import com.cjyc.common.model.enums.CityLevelEnum;
+import com.cjyc.common.model.enums.UseStateEnum;
+import com.cjyc.common.model.enums.UserTypeEnum;
+import com.cjyc.common.model.enums.role.RoleLevelEnum;
 import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.service.ICsAdminService;
 import com.cjyc.common.system.service.ICsStoreService;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -33,7 +38,19 @@ import java.util.stream.Collectors;
 public class CsSysServiceImpl implements ICsSysService {
 
     private static final String YC_DEPT_ADMIN_ID = YmlProperty.get("cjkj.dept_admin_id");
+    /**
+     * 全国城市编码
+     */
+    private static final String COUNTRY_CODE = "000000";
 
+    /**
+     * 业务中心级别机构 存储key
+     */
+    private static final String STORE_DEPT_KEY = "store";
+    /**
+     * 地区级别机构（全国、大区、省、市） 存储key
+     */
+    private static final String CITY_DEPT_KEY = "city";
     @Resource
     private ICsAdminService csAdminService;
     @Resource
@@ -44,6 +61,12 @@ public class CsSysServiceImpl implements ICsSysService {
     private ICsStoreService csStoreService;
     @Resource
     private ICarrierDao carrierDao;
+    @Resource
+    private IUserRoleDeptDao userRoleDeptDao;
+    @Resource
+    private ICityDao cityDao;
+    @Resource
+    private IStoreDao storeDao;
 
     /**
      * 获取角色业务范围: 0全国，-1无业务范围，StoreIds逗号分隔字符串
@@ -178,4 +201,103 @@ public class CsSysServiceImpl implements ICsSysService {
         }
         return carrierDao.findByDeptId(resultData.getData().getDeptId());
     }
+
+    /*********************************韵车集成改版 st*****************************/
+    @Override
+    public BizScope getBizScopeByRoleIdNew(Long loginId, Long roleId, boolean isSearchCache) {
+        List<UserRoleDept> roleList = userRoleDeptDao.selectList(new QueryWrapper<UserRoleDept>()
+                .eq("user_id", loginId)
+                .eq("role_id", roleId)
+                .eq("dept_type", UserTypeEnum.ADMIN.code)
+                .eq("state", UseStateEnum.USABLE.code));
+        return resolveBizScopeByUserRoleDeptList(roleList);
+    }
+
+    @Override
+    public BizScope getBizScopeByLoginIdNew(Long loginId, boolean isSearchCache) {
+        List<UserRoleDept> roleList = userRoleDeptDao.selectList(new QueryWrapper<UserRoleDept>()
+                .eq("user_id", loginId)
+                .eq("dept_type", UserTypeEnum.ADMIN.code)
+                .eq("state", UseStateEnum.USABLE.code));
+        return resolveBizScopeByUserRoleDeptList(roleList);
+    }
+
+    @Override
+    public List<Carrier> getCarriersByRoleId(Long loginId, Long roleId) {
+        return carrierDao.getListByLoginIdAndRoleId(loginId, roleId);
+    }
+
+    /**
+     * 根据用户-角色-机构关系系统获取BizScope
+     * @param roleList
+     */
+    private BizScope resolveBizScopeByUserRoleDeptList(List<UserRoleDept> roleList) {
+        BizScope bizScope = new BizScope();
+        bizScope.setCode(BizScopeEnum.NONE.code);
+        if (CollectionUtils.isEmpty(roleList)) {
+            return bizScope;
+        }
+        //将角色相关机构分类：1 业务中心级别 2 城市级别
+        Map<String, List<String>> map = new HashMap<>();
+        roleList.forEach(r -> {
+            if (RoleLevelEnum.BIZ_CENTER_LEVEL.getLevel() == r.getDeptLevel()) {
+                if (!map.containsKey(STORE_DEPT_KEY)) {
+                    map.put(STORE_DEPT_KEY, Lists.newArrayList(r.getDeptId()));
+                }else {
+                    map.get(STORE_DEPT_KEY).add(r.getDeptId());
+                }
+            }else {
+                if (!map.containsKey(CITY_DEPT_KEY)) {
+                    map.put(CITY_DEPT_KEY, Lists.newArrayList(r.getDeptId()));
+                }else {
+                    map.get(CITY_DEPT_KEY).add(r.getDeptId());
+                }
+            }
+        });
+        if (!CollectionUtils.isEmpty(map.get(CITY_DEPT_KEY)) && map.get(CITY_DEPT_KEY).contains(COUNTRY_CODE)) {
+            bizScope.setCode(BizScopeEnum.CHINA.code);
+            return bizScope;
+        }
+
+        if (CollectionUtils.isEmpty(map.get(CITY_DEPT_KEY))) {
+            bizScope.setCode(BizScopeEnum.STORE.code);
+            bizScope.setStoreIds(Sets.newHashSet(map.get(STORE_DEPT_KEY)
+                    .stream().map(d -> Long.parseLong(d)).collect(Collectors.toList())));
+            return bizScope;
+        }
+        List<City> cityList = cityDao.selectList(new QueryWrapper<City>()
+                .eq("level", CityLevelEnum.PROVINCE_LEVEL.getLevel())
+                .in("parent_code", map.get(CITY_DEPT_KEY)));
+        List<String> cityCodeList = new ArrayList<>();
+        cityCodeList.addAll(map.get(CITY_DEPT_KEY));
+        if (!CollectionUtils.isEmpty(cityList)) {
+            cityList.forEach(c -> {
+                cityCodeList.add(c.getCode());
+            });
+        }
+        List<String> storeIds = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(map.get(STORE_DEPT_KEY))) {
+            storeIds.addAll(map.get(STORE_DEPT_KEY));
+        }
+        List<Store> stores = storeDao.selectList(new QueryWrapper<Store>()
+                .eq("is_delete", 0)
+                .and(wrapper ->
+                        wrapper.in("province_code", cityCodeList).or()
+                                .in("city_code", cityCodeList)
+                ));
+        if (!CollectionUtils.isEmpty(stores)) {
+            stores.forEach(s -> {
+                storeIds.add(s.getId()+"");
+            });
+        }
+        if (!CollectionUtils.isEmpty(storeIds)) {
+            bizScope.setCode(BizScopeEnum.STORE.code);
+            Set storeSet = Sets.newHashSet(storeIds
+                    .stream().map(s -> Long.parseLong(s)).collect(Collectors.toList()));
+            bizScope.setStoreIds(storeSet);
+            return bizScope;
+        }
+        return bizScope;
+    }
+    /*********************************韵车集成改版 ed*****************************/
 }
