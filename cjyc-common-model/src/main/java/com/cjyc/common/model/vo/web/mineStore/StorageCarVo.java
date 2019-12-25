@@ -37,8 +37,13 @@ public class StorageCarVo implements Serializable {
     @ApiModelProperty(value = "是否新车 0-否 1-是")
     private Integer isNew;
 
-    @ApiModelProperty(value = "应收追加保险费")
+    @ApiModelProperty(value = "保险费")
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal addInsuranceFee;
 
+    @ApiModelProperty(value = "保额（万元）")
+    private BigDecimal addInsuranceAmount;
+
+    @ApiModelProperty(value = "车值（万元）")
+    private BigDecimal valuation;
 }

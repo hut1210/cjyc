@@ -34,4 +34,13 @@ public interface IMineStoreService {
      * @return com.cjyc.common.model.vo.ResultVo
      */
     ResultVo getStorageCarPage(StorageCarQueryDto dto);
+
+    /**
+     * 功能描述: 查询在库车辆数量
+     * @author liuxingxiang
+     * @date 2019/12/25
+     * @param nowStoreId
+     * @return com.cjyc.common.model.vo.ResultVo
+     */
+    ResultVo getStorageCarCount(Long nowStoreId);
 }

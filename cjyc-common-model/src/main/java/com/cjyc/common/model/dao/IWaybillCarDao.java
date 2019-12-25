@@ -158,4 +158,13 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
      * @return java.util.List<com.cjyc.common.model.vo.web.mineStore.StorageCarVo>
      */
     List<StorageCarVo> selectStorageCarPage(StorageCarQueryDto dto);
+
+    /**
+     * 功能描述: 查询在库车辆数量
+     * @author liuxingxiang
+     * @date 2019/12/25
+     * @param nowStoreId
+     * @return int
+     */
+    int selectStorageCount(@Param("nowStoreId") Long nowStoreId);
 }

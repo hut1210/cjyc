@@ -1388,4 +1388,58 @@
             )
     </select>
 
+    <!--分页查询在库列表-->
+    <select id="selectStorageCarPage" parameterType="com.cjyc.common.model.dto.web.mineStore.StorageCarQueryDto"
+            resultType="com.cjyc.common.model.vo.web.mineStore.StorageCarVo">
+        SELECT
+            oc.NO AS carNo,
+            oc.brand AS brand,
+            oc.model AS model,
+            oc.plate_no AS plateNo,
+            oc.vin AS vin,
+            oc.order_no AS orderNo,
+            oc.is_new AS isNew,
+            oc.add_insurance_fee AS addInsuranceFee,
+            oc.add_insurance_amount AS addInsuranceAmount,
+            oc.valuation AS valuation
+        FROM
+            ( SELECT order_car_id, max( id ) AS id FROM w_waybill_car
+            WHERE state &lt; ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@LOADED.code} GROUP BY order_car_id ) t
+            JOIN ( SELECT * FROM w_order_car WHERE now_store_id = #{nowStoreId} ) oc ON t.order_car_id = oc.id
+        <where>
+            <if test="isNew != null">
+                and oc.is_new=#{isNew}
+            </if>
+            <if test="orderNo != null and orderNo.trim() != ''">
+                and oc.order_no like concat('%',#{orderNo},'%')
+            </if>
+            <if test="carNo != null and carNo.trim() != ''">
+                and oc.no like concat('%',#{carNo},'%')
+            </if>
+            <if test="plateNo != null and plateNo.trim() != ''">
+                and oc.plate_no like concat('%',#{plateNo},'%')
+            </if>
+            <if test="vin != null and vin.trim() != ''">
+                and oc.vin like concat('%',#{vin},'%')
+            </if>
+            <if test="brand != null and brand.trim() != ''">
+                and oc.brand=#{brand}
+            </if>
+            <if test="model != null and model.trim() != ''">
+                and oc.model=#{model}
+            </if>
+        </where>
+        order by t.id desc
+    </select>
+
+    <!--查询在库车辆数量-->
+    <select id="selectStorageCount" resultType="java.lang.Integer">
+        SELECT
+            count(*) as count
+        FROM
+            ( SELECT order_car_id, max( id ) AS id FROM w_waybill_car
+            WHERE state &lt; ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@LOADED.code} GROUP BY order_car_id ) t
+            JOIN ( SELECT * FROM w_order_car WHERE now_store_id = #{nowStoreId} ) oc ON t.order_car_id = oc.id
+    </select>
+
 </mapper>
