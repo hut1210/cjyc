@@ -43,19 +43,6 @@ public class MineStoreController {
     }
 
     /**
-     * 功能描述: 查询在库车辆数量
-     * @author liuxingxiang
-     * @date 2019/12/25
-     * @param nowStoreId
-     * @return com.cjyc.common.model.vo.ResultVo
-     */
-    @ApiOperation(value = "查询在库车辆数量")
-    @PostMapping("/getStorageCarCount/{nowStoreId}")
-    public ResultVo getStorageCarCount(@PathVariable Long nowStoreId) {
-        return mineStoreService.getStorageCarCount(nowStoreId);
-    }
-
-    /**
      * 功能描述: 分页查询在库车辆列表
      * @author liuxingxiang
      * @date 2019/12/25

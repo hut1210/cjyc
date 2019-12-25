@@ -28,7 +28,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 我的业务中心
@@ -122,16 +124,19 @@ public class MineStoreServiceImpl implements IMineStoreService {
 
     @Override
     public ResultVo getStorageCarPage(StorageCarQueryDto dto) {
+        // 查询在库列表
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<StorageCarVo> list = waybillCarDao.selectStorageCarPage(dto);
         PageInfo<List<StorageCarVo>> pageInfo = new PageInfo(list);
-        return BaseResultUtil.success(pageInfo);
+        // 查询在库数量
+        Integer storageCarCount = getStorageCarCount(dto.getNowStoreId());
+        Map<String,Object> map = new HashMap<>(1);
+        map.put("count",storageCarCount);
+        return BaseResultUtil.success(pageInfo,map);
     }
 
-    @Override
-    public ResultVo getStorageCarCount(Long nowStoreId) {
-        int count = waybillCarDao.selectStorageCount(nowStoreId);
-        return BaseResultUtil.success(count);
+    public Integer getStorageCarCount(Long nowStoreId) {
+        return waybillCarDao.selectStorageCount(nowStoreId);
     }
 
 
