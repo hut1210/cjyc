@@ -159,11 +159,11 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
         TaskDetailVo taskDetailVo = new TaskDetailVo();
         // 查询运单信息
         Long waybillId = dto.getWaybillId();
-        if (waybillId == 0) {
-            log.error("运单ID参数错误");
-            return BaseResultUtil.fail("运单ID参数错误");
-        }
         Waybill waybill = waybillDao.selectById(waybillId);
+        if (waybill == null) {
+            log.error("查询运单为空");
+            return BaseResultUtil.fail("查询运单为空");
+        }
         BeanUtils.copyProperties(waybill,taskDetailVo);
 
         // 查询运单车辆信息
@@ -214,11 +214,11 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
         TaskDetailVo taskDetailVo = new TaskDetailVo();
         // 查询运单信息
         Long waybillId = dto.getWaybillId();
-        if (waybillId == 0) {
-            log.error("运单ID参数错误");
-            return BaseResultUtil.fail("运单ID参数错误");
-        }
         Waybill waybill = waybillDao.selectById(waybillId);
+        if (waybill == null) {
+            log.error("查询运单为空");
+            return BaseResultUtil.fail("查询运单为空");
+        }
         taskDetailVo.setType(waybill.getType());
 
         // 查询任务单信息信息
