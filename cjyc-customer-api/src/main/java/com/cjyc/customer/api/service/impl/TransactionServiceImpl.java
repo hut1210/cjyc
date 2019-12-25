@@ -3,10 +3,7 @@ package com.cjyc.customer.api.service.impl;
 import com.Pingxx.model.MetaDataEntiy;
 import com.Pingxx.model.Order;
 import com.cjyc.common.model.dao.*;
-import com.cjyc.common.model.entity.Task;
-import com.cjyc.common.model.entity.TradeBill;
-import com.cjyc.common.model.entity.TradeBillDetail;
-import com.cjyc.common.model.entity.Waybill;
+import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.entity.defined.UserInfo;
 import com.cjyc.common.model.enums.ChargeTypeEnum;
 import com.cjyc.common.model.enums.PayStateEnum;
@@ -117,6 +114,8 @@ public class TransactionServiceImpl implements ITransactionService {
 
         Long taskId = Long.valueOf((String)metadata.get("taskId"));
 
+        List<String> taskCarIdList = (List<String>)metadata.get("taskCarIdList");
+
         List<String> orderCarNosList = (List<String>)metadata.get("orderCarIds");
 
         Task task = null;
@@ -146,10 +145,22 @@ public class TransactionServiceImpl implements ITransactionService {
             log.error("回调中参数orderCarNosList不存在");
             return BaseResultUtil.fail("缺少参数orderCarNosList");
         }else{
+            //修改流水支付状态
+            TradeBill tradeBill = new TradeBill();
+            tradeBill.setPingPayId(charge.getId());
+            tradeBill.setState(2);
+            tradeBill.setTradeTime(System.currentTimeMillis());
+            tradeBillDao.updateTradeBillByPingPayId(tradeBill);
             //修改车辆支付状态
             for(int i=0;i<orderCarNosList.size();i++){
                 tradeBillDao.updateOrderCar(orderCarNosList.get(i),1,System.currentTimeMillis());
-                //TODO
+            }
+
+            for (int i=0;i<taskCarIdList.size();i++){
+                TaskCar taskCar = taskCarDao.selectById(Long.valueOf(taskCarIdList.get(i)));
+                if(taskCar != null){
+                    waybillCarDao.updateForReceipt(taskCar.getWaybillCarId());
+                }
             }
         }
         //验证任务是否完成
