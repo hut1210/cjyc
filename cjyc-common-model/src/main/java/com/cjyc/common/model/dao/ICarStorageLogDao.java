@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -18,4 +19,6 @@ import java.util.List;
 public interface ICarStorageLogDao extends BaseMapper<CarStorageLog> {
 
     List<CarStorageLog> findList(@Param("paramsDto") storeListDto paramsDto);
+
+    Map<String, Object> countAllByStoreId(Long storeId);
 }

@@ -56,7 +56,7 @@ public interface IOrderService extends IService<Order> {
      * @since 2019/10/16 10:04
      * @param bizScopeStoreIds
      */
-    ResultVo<ListVo<Map<String, Object>>> lineWaitDispatchCarCountList(LineWaitDispatchCountListOrderCarDto paramsDto, List<Long> bizScopeStoreIds);
+    ResultVo<ListVo<Map<String, Object>>> lineWaitDispatchCarCountList(LineWaitDispatchCountDto paramsDto, List<Long> bizScopeStoreIds);
 
     OrderVo getVoById(Long orderId);
 
@@ -88,4 +88,8 @@ public interface IOrderService extends IService<Order> {
     ResultVo<PageVo<ListOrderVo>> listForHhr(ListOrderDto reqDto);
 
     ResultVo<PageVo<OrderCarWaitDispatchVo>> waitDispatchTrunkCarList(WaitDispatchTrunkDto reqDto);
+
+    ResultVo<ListVo<Map<String, Object>>> waitDispatchTrunkCarCountList(WaitDispatchCountDto reqDto);
+
+    ResultVo<ListVo<Map<String, Object>>> lineWaitDispatchTrunkCarCountList(LineWaitDispatchCountDto reqDto);
 }

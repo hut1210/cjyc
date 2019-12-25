@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -34,6 +35,11 @@ public class CarStorageLogServiceImpl extends ServiceImpl<ICarStorageLogDao, Car
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize(), true);
         List<CarStorageLog> list = carStorageLogDao.findList(dto);
         PageInfo<CarStorageLog> pageInfo = new PageInfo<>(list);
-        return BaseResultUtil.success(pageInfo);
+        if(pageInfo.getPages() < dto.getCurrentPage()){
+            pageInfo.setList(null);
+        }
+        //查询统计
+        Map<String, Object> map = carStorageLogDao.countAllByStoreId(dto.getStoreId());
+        return BaseResultUtil.success(pageInfo, map);
     }
 }

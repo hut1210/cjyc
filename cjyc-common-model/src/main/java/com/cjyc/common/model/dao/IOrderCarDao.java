@@ -72,7 +72,7 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
      * @author JPG
      * @since 2019/10/16 10:26
      */
-    List<Map<String, Object>> findlineWaitDispatchCarCountList(@Param("paramsDto") LineWaitDispatchCountListOrderCarDto paramsDto);
+    List<Map<String, Object>> findLineWaitDispatchCarCountList(@Param("paramsDto") LineWaitDispatchCountDto paramsDto);
 
     /**
      * 更新状态
@@ -114,7 +114,7 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
 
     BigDecimal getWLTotalFee(Long orderId);
 
-    Map<String, Object> countTotalWaitDispatchCarByStartCity(@Param("paramsDto") LineWaitDispatchCountListOrderCarDto paramsDto);
+    Map<String, Object> countTotalWaitDispatchCarByStartCity(@Param("paramsDto") LineWaitDispatchCountDto paramsDto);
 
     /**
      * 根据条件查询车辆信息
@@ -223,4 +223,10 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
      * @return
      */
     Integer orderCarCount(@Param("flag") Integer flag,@Param("userId") Long userId);
+
+    List<Map<String, Object>> countTrunkListWaitDispatchCar();
+
+    List<Map<String, Object>> findLineWaitDispatchTrunkCarCountList(LineWaitDispatchCountDto paramsDto);
+
+    int updateLocationForUnload(Long orderCarId, String endAreaCode);
 }
