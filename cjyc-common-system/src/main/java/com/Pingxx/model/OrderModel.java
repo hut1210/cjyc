@@ -66,7 +66,7 @@ public class OrderModel extends APIResource {
     private String driver_name;
     private String driver_phone;
     private String back_type;
-    private Long taskId;
+    private String taskId;
     private List<Long>  taskCarIdList;
 
     public List<Long> getTaskCarIdList() {
@@ -77,11 +77,11 @@ public class OrderModel extends APIResource {
         this.taskCarIdList = taskCarIdList;
     }
 
-    public Long getTaskId() {
+    public String getTaskId() {
         return taskId;
     }
 
-    public void setTaskId(Long taskId) {
+    public void setTaskId(String taskId) {
         this.taskId = taskId;
     }
 
