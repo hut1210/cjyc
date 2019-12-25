@@ -130,7 +130,7 @@ public class SaveTrunkWaybillCarDto implements Serializable {
     private String unloadLinkPhone;
 
     @ApiModelProperty(value = "最后一次运输标识：0否，1是")
-    private boolean receiptFlag;
+    private Boolean receiptFlag;
 
 
 }

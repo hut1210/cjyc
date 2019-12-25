@@ -125,6 +125,14 @@ public class RoleController {
     public ResultVo addNew(@Valid @RequestBody AddRoleDto dto) {
         return roleService.addRoleNew(dto);
     }
+
+    @GetMapping("/getUsersByRoleIdNew/{roleId}")
+    @ApiOperation(value = "根据角色id获取关联用户列表信息")
+    public ResultVo<List<SelectUserByRoleVo>> getUsersByRoleIdNew(
+            @ApiParam(name = "roleId", value = "角色标识", required = true)
+            @PathVariable Long roleId) {
+        return roleService.getUsersByRoleIdNew(roleId);
+    }
     /*********************************韵车集成改版 ed*****************************/
 
     /**

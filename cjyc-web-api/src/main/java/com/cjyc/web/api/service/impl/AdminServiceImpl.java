@@ -281,6 +281,7 @@ public class AdminServiceImpl extends ServiceImpl<IAdminDao, Admin> implements I
         return cacheData;
     }
 
+    /************************************韵车集成改版 st***********************************/
     @Override
     public ResultVo<PageVo<AdminPageVo>> pageNew(AdminPageNewDto dto) {
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize(), true);
@@ -310,6 +311,7 @@ public class AdminServiceImpl extends ServiceImpl<IAdminDao, Admin> implements I
         }
         return BaseResultUtil.success(pageInfo);
     }
+    /************************************韵车集成改版 ed***********************************/
 
     private int getPages(long total, Integer pageSize) {
         if(total <= 0){

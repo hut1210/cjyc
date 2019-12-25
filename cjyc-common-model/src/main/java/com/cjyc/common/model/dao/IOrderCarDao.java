@@ -5,10 +5,7 @@ import com.cjyc.common.model.dto.customer.invoice.InvoiceApplyQueryDto;
 import com.cjyc.common.model.dto.salesman.BaseSalesDto;
 import com.cjyc.common.model.dto.salesman.dispatch.DispatchListDto;
 import com.cjyc.common.model.dto.salesman.mine.StockCarDto;
-import com.cjyc.common.model.dto.web.order.ChangePriceOrderCarDto;
-import com.cjyc.common.model.dto.web.order.LineWaitDispatchCountListOrderCarDto;
-import com.cjyc.common.model.dto.web.order.ListOrderCarDto;
-import com.cjyc.common.model.dto.web.order.WaitDispatchListOrderCarDto;
+import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.vo.customer.invoice.InvoiceOrderVo;
 import com.cjyc.common.model.vo.customer.order.OrderCarCenterVo;
@@ -169,6 +166,10 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
 
     List<OrderCarWaitDispatchVo> findWaitDispatchCarList(@Param("paramsDto") WaitDispatchListOrderCarDto paramsDto);
 
+    List<DispatchListVo> findWaitDispatchCarListForApp(DispatchListDto dto);
+
+    List<OrderCarWaitDispatchVo> findWaitDispatchTrunkCarList(@Param("paramsDto") WaitDispatchTrunkDto paramsDto);
+
     List<OrderCar> findListByIds(@Param("list") List<Long> orderCarIdList);
 
     List<OrderCar> findListByNos(@Param("list") List<String> orderCarNos);
@@ -213,7 +214,7 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
 
     int updateForDispatchTrunk(@Param("id") Long id, @Param("pickState") Integer pickState, @Param("trunkState") Integer trunkState);
 
-    List<DispatchListVo> findWaitDispatchCarListForApp(DispatchListDto dto);
+
 
     /**
      * 业务员端我下的订单车辆台数

@@ -538,7 +538,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
 
             //添加入库日志
             CarStorageLog carStorageLog = CarStorageLog.builder()
-                    .storeId(waybillCar.getStartStoreId())
+                    .storeId(waybillCar.getEndStoreId())
                     .type(CarStorageTypeEnum.IN.code)
                     .orderNo(oc.getOrderNo())
                     .orderCarNo(oc.getNo())
@@ -577,12 +577,12 @@ public class CsTaskServiceImpl implements ICsTaskService {
         int row = taskCarDao.countUnFinishByTaskId(paramsDto.getTaskId());
         if (row == 0) {
             //更新任务状态
-            taskDao.updateStateById(task.getId(), TaskStateEnum.FINISHED.code);
+            taskDao.updateForFinish(task.getId());
             //验证运单是否完成
             int n = waybillCarDao.countUnFinishByWaybillId(task.getWaybillId());
             if (n == 0) {
                 //更新运单状态
-                waybillDao.updateStateById(WaybillStateEnum.FINISHED.code, waybill.getId());
+                waybillDao.updateForFinish(waybill.getId());
             }
         }
 
@@ -659,7 +659,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
 
             //出库日志
             CarStorageLog carStorageLog = CarStorageLog.builder()
-                    .storeId(waybillCar.getEndStoreId())
+                    .storeId(waybillCar.getStartStoreId())
                     .type(CarStorageTypeEnum.OUT.code)
                     .orderNo(orderCar.getOrderNo())
                     .orderCarNo(orderCar.getNo())

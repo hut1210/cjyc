@@ -257,6 +257,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         return BaseResultUtil.success(pageInfo, countInfo);
     }
 
+
     @Override
     public ResultVo allot(AllotOrderDto paramsDto) {
         return csOrderService.allot(paramsDto);
@@ -501,6 +502,23 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
             }
             return storeId.toString();
         }
+    }
+
+    @Override
+    public ResultVo<PageVo<OrderCarWaitDispatchVo>> waitDispatchTrunkCarList(WaitDispatchTrunkDto paramsDto) {
+        //查询角色业务中心范围
+        BizScope bizScope = csSysService.getBizScopeByRoleId(paramsDto.getRoleId(), true);
+        if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
+            return BaseResultUtil.fail("没有数据权限");
+        }
+        paramsDto.setBizScope(bizScope.getStoreIds());
+        PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
+        List<OrderCarWaitDispatchVo> list = orderCarDao.findWaitDispatchTrunkCarList(paramsDto);
+        PageInfo<OrderCarWaitDispatchVo> pageInfo = new PageInfo<>(list);
+        if (paramsDto.getCurrentPage() > pageInfo.getPages()) {
+            pageInfo.setList(null);
+        }
+        return BaseResultUtil.success(pageInfo);
     }
 
 

@@ -14,6 +14,8 @@ public class WaybillCarVo extends WaybillCar {
 
     @ApiModelProperty(value = "状态")
     private String outterState;
+    @ApiModelProperty(value = "历史照片")
+    private String historyPhotoImg;
 
     @ApiModelProperty(value = "品牌")
     private String brand;

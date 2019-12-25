@@ -67,7 +67,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
         List<TaskBillVo> taskList = waybillDao.selectWaitHandleTaskPage(dto);
         PageInfo pageInfo = new PageInfo(taskList);
         // 填充指导线路
-        pageInfo = fillGuideLine(pageInfo);
+        fillGuideLine(pageInfo);
         return BaseResultUtil.success(pageInfo);
     }
 
@@ -78,7 +78,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
         List<TaskBillVo> taskList = taskDao.selectNoFinishTaskPage(dto);
         PageInfo pageInfo = new PageInfo(taskList);
         // 填充指导线路
-        pageInfo = fillGuideLine(pageInfo);
+        fillGuideLine(pageInfo);
         return BaseResultUtil.success(pageInfo);
     }
 
@@ -119,23 +119,22 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
         List<TaskBillVo> taskList = taskDao.selectHistoryTaskPage(dto);
         PageInfo<TaskBillVo> pageInfo = new PageInfo(taskList);
         // 填充指导线路
-        pageInfo = fillGuideLine(pageInfo);
+        fillGuideLine(pageInfo);
         return BaseResultUtil.success(pageInfo);
     }
 
-    PageInfo<TaskBillVo> fillGuideLine(PageInfo<TaskBillVo> pageInfo) {
+    private void fillGuideLine(PageInfo<TaskBillVo> pageInfo) {
         List<TaskBillVo> list = pageInfo.getList();
         if (!CollectionUtils.isEmpty(list)) {
             for (TaskBillVo taskBillVo : list) {
                 Integer type = taskBillVo.getType();
                 boolean b = WaybillTypeEnum.PICK.code == type || WaybillTypeEnum.BACK.code == type;
                 if (StringUtils.isEmpty(taskBillVo.getGuideLine()) && b) {
-                    taskBillVo.setGuideLine(taskBillVo.getStartCity() +""+ taskBillVo.getEndCity());
+                    taskBillVo.setGuideLine(taskBillVo.getStartCity() +"-"+ taskBillVo.getEndCity());
                 }
             }
         }
         pageInfo.setList(list);
-        return pageInfo;
     }
 
     @Override
@@ -151,7 +150,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
         List<TaskBillVo> taskList = taskDao.selectFinishTaskPage(dto);
         PageInfo<TaskBillVo> pageInfo = new PageInfo(taskList);
         // 填充指导线路
-        pageInfo = fillGuideLine(pageInfo);
+        fillGuideLine(pageInfo);
         return BaseResultUtil.success(pageInfo);
     }
 

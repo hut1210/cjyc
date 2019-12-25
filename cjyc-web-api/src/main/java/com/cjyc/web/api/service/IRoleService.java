@@ -73,5 +73,12 @@ public interface IRoleService extends IService<Role> {
      * @return
      */
     ResultVo addRoleNew(AddRoleDto dto);
+
+    /**
+     * 根据角色查询关联用户信息 改版
+     * @param roleId
+     * @return
+     */
+    ResultVo<List<SelectUserByRoleVo>> getUsersByRoleIdNew(Long roleId);
     /*********************************韵车集成改版 ed*****************************/
 }

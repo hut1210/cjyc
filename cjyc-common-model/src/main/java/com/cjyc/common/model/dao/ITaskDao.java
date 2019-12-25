@@ -127,4 +127,6 @@ public interface ITaskDao extends BaseMapper<Task> {
      * @return java.util.List<com.cjyc.common.model.vo.web.task.TaskPageVo>
      */
     List<TaskPageVo> selectMyTaskList(TaskPageDto dto);
+
+    int updateForFinish(Long id);
 }

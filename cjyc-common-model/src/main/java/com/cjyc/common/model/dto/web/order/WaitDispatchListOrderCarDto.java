@@ -33,6 +33,10 @@ public class WaitDispatchListOrderCarDto extends BasePageDto implements Serializ
     @ApiModelProperty(value = "用户ID")
     private Long roleId;
 
+    @ApiModelProperty(value = "调度起始城市")
+    private String dispatchFromCityCode;
+    @ApiModelProperty(value = "调度目的城市")
+    private String dispatchToCityCode;
 
     @ApiModelProperty(value = "调度类型：0全部，1待提车，2待干线，3待配送")
     private Long dispatchType;

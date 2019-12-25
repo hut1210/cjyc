@@ -132,4 +132,8 @@ public class StringUtil {
         sb.append(".png");
         return sb.toString();
     }
+
+    public static String getIp(String ip){
+        return ip.split(",")[0];
+    }
 }

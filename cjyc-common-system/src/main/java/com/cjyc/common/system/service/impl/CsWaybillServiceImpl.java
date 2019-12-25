@@ -305,21 +305,22 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
                 /**5、更新订单车辆状态*/
                 if (paramsDto.getType() == WaybillTypeEnum.PICK.code) {
-                    OrderCar oc = new OrderCar();
-                    oc.setId(orderCarId);
-                    oc.setState(waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code ? OrderCarStateEnum.PICKING.code : OrderCarStateEnum.WAIT_PICK.code);
-                    oc.setPickType(getLocalCarryType(waybill.getCarrierType()));
-                    oc.setPickState(OrderCarLocalStateEnum.DISPATCHED.code);
-                    orderCarDao.updateById(oc);
+                    OrderCar noc = new OrderCar();
+                    noc.setId(orderCarId);
+                    noc.setState(waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code ? OrderCarStateEnum.PICKING.code : OrderCarStateEnum.WAIT_PICK.code);
+                    noc.setPickType(getLocalCarryType(waybill.getCarrierType()));
+                    noc.setPickState(OrderCarLocalStateEnum.DISPATCHED.code);
+                    orderCarDao.updateById(noc);
                 } else {
-                    OrderCar oc = new OrderCar();
-                    oc.setId(orderCarId);
+                    OrderCar noc = new OrderCar();
+                    noc.setId(orderCarId);
+                    //车辆实际运输状态
                     if(orderCar.getState() == OrderCarStateEnum.WAIT_BACK.code){
-                        oc.setState(waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code ? OrderCarStateEnum.BACKING.code : OrderCarStateEnum.WAIT_BACK.code);
+                        noc.setState(waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code ? OrderCarStateEnum.BACKING.code : OrderCarStateEnum.WAIT_BACK.code);
                     }
-                    oc.setBackType(getLocalCarryType(waybill.getCarrierType()));
-                    oc.setBackState(OrderCarLocalStateEnum.DISPATCHED.code);
-                    orderCarDao.updateById(oc);
+                    noc.setBackType(getLocalCarryType(waybill.getCarrierType()));
+                    noc.setBackState(OrderCarLocalStateEnum.DISPATCHED.code);
+                    orderCarDao.updateById(noc);
                 }
 
             }
@@ -765,6 +766,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 //更新订单车辆状态
                 OrderCar noc = new OrderCar();
                 noc.setId(orderCar.getId());
+                noc.setTrunkState(OrderCarTrunkStateEnum.WAIT_NEXT_DISPATCH.code);
                 int n = waybillCarDao.countPrevTrunk(waybillCar.getId());
                 if(n == 0){
                     //提干
