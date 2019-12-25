@@ -28,6 +28,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -111,8 +112,15 @@ public class PingPayController {
         return BaseResultUtil.success();
     }
 
+    @ApiOperation("回调Test")
+    @PostMapping("/webhooksNoticeTest")
+    public ResultVo webhooksNoticeTest(HttpServletRequest request){
+        return webhooksNotice(request);
+    }
+
     @ApiOperation("回调")
     @PostMapping("/webhooksNotice")
+    @Async
     public ResultVo webhooksNotice(HttpServletRequest request){
         try{
             request.setCharacterEncoding("UTF8");

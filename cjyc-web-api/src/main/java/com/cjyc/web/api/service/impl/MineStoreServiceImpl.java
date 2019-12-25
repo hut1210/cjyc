@@ -124,8 +124,14 @@ public class MineStoreServiceImpl implements IMineStoreService {
     public ResultVo getStorageCarPage(StorageCarQueryDto dto) {
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<StorageCarVo> list = waybillCarDao.selectStorageCarPage(dto);
-        PageInfo pageInfo = new PageInfo(list);
+        PageInfo<List<StorageCarVo>> pageInfo = new PageInfo(list);
         return BaseResultUtil.success(pageInfo);
+    }
+
+    @Override
+    public ResultVo getStorageCarCount(Long nowStoreId) {
+        int count = waybillCarDao.selectStorageCount(nowStoreId);
+        return BaseResultUtil.success(count);
     }
 
 
