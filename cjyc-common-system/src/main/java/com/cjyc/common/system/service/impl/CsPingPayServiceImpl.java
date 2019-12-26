@@ -198,8 +198,8 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
 
         log.info("validateCarPayState validateSweepCodeDto.getClientType()= "+validateSweepCodeDto.getClientType()+" validateSweepCodeDto.getCode()="+validateSweepCodeDto.getCode()
         +" addLock="+addLock);
-        if(validateSweepCodeDto.getClientType()==null){
-            if(!addLock&&validateSweepCodeDto.getCode()==null){
+        if(validateSweepCodeDto.getClientType()!=null){
+            if(validateSweepCodeDto.getClientType().equals("4")||validateSweepCodeDto.getClientType().equals("2")){
                 return BaseResultUtil.fail("缺少收车码");
             }
         }
@@ -236,10 +236,14 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
 
         com.cjyc.common.model.entity.Order order = list.get(0);
 
-        if(order.getBackContactPhone()!=null){
-            if(!csSmsService.validateCaptcha(order.getBackContactPhone(),validateSweepCodeDto.getCode(), CaptchaTypeEnum.CONFIRM_RECEIPT,
-            validateSweepCodeDto.getClientType().equals("4")?ClientEnum.APP_DRIVER:ClientEnum.APP_SALESMAN)){
-                return BaseResultUtil.fail("验证码输入错误");
+        if(validateSweepCodeDto.getClientType()!=null){
+            if(validateSweepCodeDto.getClientType().equals("4")||validateSweepCodeDto.getClientType().equals("2")){
+                if(order.getBackContactPhone()!=null){
+                    if(!csSmsService.validateCaptcha(order.getBackContactPhone(),validateSweepCodeDto.getCode(), CaptchaTypeEnum.CONFIRM_RECEIPT,
+                            validateSweepCodeDto.getClientType().equals("4")?ClientEnum.APP_DRIVER:ClientEnum.APP_SALESMAN)){
+                        return BaseResultUtil.fail("验证码输入错误");
+                    }
+                }
             }
         }
 
