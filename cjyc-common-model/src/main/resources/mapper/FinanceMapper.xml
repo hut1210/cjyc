@@ -310,6 +310,8 @@
         <if test="driverPhone!= null and driverPhone.trim() != ''">
             and wt.driver_phone like concat('%',#{driverPhone},'%')
         </if>
+
+        order by ww.create_time desc
     </select>
 
     <select id="getCollectReceiveList" parameterType="com.cjyc.common.model.dto.web.finance.CollectReceiveQueryDto"

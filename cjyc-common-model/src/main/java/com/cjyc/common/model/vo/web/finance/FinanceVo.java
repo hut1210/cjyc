@@ -37,7 +37,7 @@ public class FinanceVo implements Serializable {
     @ApiModelProperty(value = "订单目的地")
     private String endAddress;
     @ApiModelProperty(value = "交付日期")
-    private String deliveryDate;
+    private Long deliveryDate;
 
     @ApiModelProperty(value = "客户Id")
     private Long customerId;
