@@ -2,7 +2,8 @@ package com.cjyc.web.api.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.cjkj.common.utils.IPUtil;
-import com.cjyc.common.model.dto.customer.pingxx.PrePayDto;
+import com.cjyc.common.model.dto.web.pingxx.WebOutOfStockDto;
+import com.cjyc.common.model.dto.web.pingxx.WebPrePayDto;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.StringUtil;
 import com.cjyc.common.model.vo.ResultVo;
@@ -15,12 +16,10 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,7 +47,7 @@ public class PingxxController {
      */
     @ApiOperation(value = "获取二维码")
     @PostMapping("/qrcode/get")
-    public ResultVo getPayQrCode(HttpServletRequest request, @RequestBody PrePayDto prePayDto){
+    public ResultVo getPayQrCode(HttpServletRequest request, @RequestBody WebPrePayDto prePayDto){
         prePayDto.setIp(StringUtil.getIp(IPUtil.getIpAddr(request)));
         Charge charge = new Charge();
         Map<String,String> map=new HashMap<>();
@@ -75,6 +74,34 @@ public class PingxxController {
         return BaseResultUtil.success(map);
     }
 
+    @ApiOperation(value = "获取出库二维码")
+    @PostMapping("/qrcode/getOutOfStock")
+    public ResultVo getOutOfStockQrCode(HttpServletRequest request, @RequestBody WebOutOfStockDto webOutOfStockDto){
+        webOutOfStockDto.setIp(StringUtil.getIp(IPUtil.getIpAddr(request)));
+        Charge charge = new Charge();
+        Map<String,String> map=new HashMap<>();
+        try {
+            charge = csPingPayService.getOutOfStockQrCode(webOutOfStockDto);
+
+            JSONObject jsonObject = JSONObject.parseObject(charge.toString());
+            // 获取到key为shoppingCartItemList的值
+            String credential = jsonObject.getString("credential");
+
+            JSONObject credentialJson = JSONObject.parseObject(credential.toString());
+            String qrcode = "";
+            if(webOutOfStockDto.getChannel().equals("wx_pub_qr")){
+                qrcode = credentialJson.getString("wx_pub_qr");
+            }else if(webOutOfStockDto.getChannel().equals("alipay_qr")){
+                qrcode = credentialJson.getString("alipay_qr");
+            }
+
+            map.put("imageUrl",QRcodeUtil.creatRrCode(qrcode,200,200));
+        }catch (Exception e){
+            log.error(e.getMessage(),e);
+        }
+
+        return BaseResultUtil.success(map);
+    }
 
 
 }
