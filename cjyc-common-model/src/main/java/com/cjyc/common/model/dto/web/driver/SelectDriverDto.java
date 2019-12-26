@@ -32,8 +32,8 @@ public class SelectDriverDto extends BasePageDto implements Serializable {
     @ApiModelProperty("司机身份 0：普通司机 1：管理员")
     private Integer identity;
 
-    @ApiModelProperty("运行状态：0空闲，1在途 2繁忙")
-    private Integer runningState;
+    @ApiModelProperty("营运状态：0营运中(空闲)，1停运中(繁忙)")
+    private Integer businessState;
 
     @ApiModelProperty("状态：0待审核，2已审核，4取消，5冻结  7已驳回，9已停用（CommonStateEnum）")
     private Integer state;

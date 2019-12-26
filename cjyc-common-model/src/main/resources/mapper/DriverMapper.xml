@@ -147,8 +147,8 @@
             <if test="plateNo != null and plateNo.trim() != ''">
                 and  dv.plate_no like CONCAT('%',#{plateNo},'%')
             </if>
-            <if test="runningState != null">
-                and  dvr.running_state = #{runningState}
+            <if test="businessState != null">
+                and  dd.business_state = #{businessState}
             </if>
             <if test="state != null">
                 and  dc.state = #{state}
@@ -329,8 +329,8 @@
             <if test="identity != null">
                 and  dd.identity = #{identity}
             </if>
-            <if test="runningState != null">
-                and  dvr.running_state = #{runningState}
+            <if test="businessState != null">
+                and  dd.business_state = #{businessState}
             </if>
             <if test="state != null">
                 and  dcdc.state = #{state}

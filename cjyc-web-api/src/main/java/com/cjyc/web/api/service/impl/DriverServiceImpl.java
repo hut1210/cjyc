@@ -384,7 +384,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         dto.setIdCard(request.getParameter("idCard"));
         dto.setPlateNo(request.getParameter("plateNo"));
         dto.setIdentity(StringUtils.isBlank(request.getParameter("identity")) ? null:Integer.valueOf(request.getParameter("identity")));
-        dto.setRunningState(StringUtils.isBlank(request.getParameter("runningState")) ? null:Integer.valueOf(request.getParameter("runningState")));
+        dto.setBusinessState(StringUtils.isBlank(request.getParameter("businessState")) ? null:Integer.valueOf(request.getParameter("businessState")));
         dto.setState(StringUtils.isBlank(request.getParameter("state")) ? null:Integer.valueOf(request.getParameter("state")));
         dto.setMode(StringUtils.isBlank(request.getParameter("mode")) ? null:Integer.valueOf(request.getParameter("mode")));
         return dto;
