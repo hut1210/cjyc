@@ -244,13 +244,12 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                 carDetailVo = new CarDetailVo();
                 // 查询任务单车辆信息
                 WaybillCar waybillCar = getWaybillCar(detailType, taskCar);
-                if (waybillCar == null) {
-                    log.info("===>查询任务单车辆信息为空...");
-                } else {
+                if (waybillCar != null) {
+                    carDetailVo.setWaybillCarState(waybillCar.getState());
                     BeanUtils.copyProperties(waybillCar,carDetailVo);
 
                     // 查询除了当前车辆运单的历史车辆运单图片
-                    getHistoryWaybillCarImg(carDetailVo, waybillCar,dto.getDetailType());
+                    getHistoryWaybillCarImg(carDetailVo, waybillCar,detailType);
 
                     // 运费
                     freightFee = freightFee.add(waybillCar.getFreightFee()==null?new BigDecimal(0):waybillCar.getFreightFee());
