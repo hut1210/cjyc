@@ -1,6 +1,5 @@
 package com.cjyc.customer.api.controller;
 
-import com.Pingxx.model.Order;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.nacos.client.utils.StringUtils;
 import com.cjkj.common.utils.IPUtil;
@@ -8,18 +7,14 @@ import com.cjyc.common.model.dto.customer.order.CarCollectPayDto;
 import com.cjyc.common.model.dto.customer.order.CarPayStateDto;
 import com.cjyc.common.model.dto.customer.order.ReceiptBatchDto;
 import com.cjyc.common.model.dto.customer.pingxx.PrePayDto;
-import com.cjyc.common.model.dto.customer.pingxx.SweepCodeDto;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.ValidateReceiptCarPayVo;
-import com.cjyc.common.system.config.PingProperty;
 import com.cjyc.common.system.service.ICsCustomerService;
 import com.cjyc.common.system.service.ICsPingxxService;
-import com.cjyc.customer.api.dto.OrderModel;
 import com.cjyc.customer.api.service.IPingPayService;
 import com.cjyc.customer.api.service.ITransactionService;
 import com.pingplusplus.model.*;

@@ -124,20 +124,13 @@
             sum(car.freight_fee) AS freightFee
         FROM
             ( SELECT task.id, task.waybill_id, task.no, task.guide_line, task.car_num,
-            task.state,task.create_time,tc.id as taskCarId,tc.waybill_car_id
-            FROM w_task task
-            LEFT JOIN w_task_car tc ON task.id = tc.task_id
-            <where>
+                task.state,task.create_time,tc.id as taskCarId,tc.waybill_car_id
+            FROM
+                w_task task
+                LEFT JOIN w_task_car tc ON task.id = tc.task_id
+            where
                 task.driver_id = #{loginId}
-                /*提车任务*/
-                <if test="taskState != null and taskState == @com.cjyc.common.model.constant.FieldConstant@PICK_CAR_TASK">
-                    AND task.state = ${@com.cjyc.common.model.enums.task.TaskStateEnum@WAIT_LOAD.code}
-                </if>
-                /*交车任务*/
-                <if test="taskState != null and taskState == @com.cjyc.common.model.constant.FieldConstant@GIVE_CAR_TASK">
-                    AND task.state = ${@com.cjyc.common.model.enums.task.TaskStateEnum@TRANSPORTING.code}
-                </if>
-            </where>
+                AND task.state &lt; ${@com.cjyc.common.model.enums.task.TaskStateEnum@FINISHED.code}
             ) t
             LEFT JOIN w_waybill w ON t.waybill_id = w.id
             LEFT JOIN w_waybill_car car ON t.waybill_car_id = car.id

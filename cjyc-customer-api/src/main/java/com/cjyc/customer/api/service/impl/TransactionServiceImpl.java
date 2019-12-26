@@ -1,7 +1,7 @@
 package com.cjyc.customer.api.service.impl;
 
 import com.Pingxx.model.MetaDataEntiy;
-import com.Pingxx.model.Order;
+import com.pingplusplus.model.Order;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.entity.defined.UserInfo;
@@ -28,11 +28,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;

@@ -1,10 +1,10 @@
 package com.cjyc.customer.api.service;
 
 import com.cjyc.common.model.entity.TradeBill;
-import com.Pingxx.model.Order;
 import com.cjyc.common.model.vo.ResultVo;
 import com.pingplusplus.model.Charge;
 import com.pingplusplus.model.Event;
+import com.pingplusplus.model.Order;
 
 import java.math.BigDecimal;
 

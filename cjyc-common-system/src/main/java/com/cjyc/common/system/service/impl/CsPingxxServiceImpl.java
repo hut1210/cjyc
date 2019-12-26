@@ -1,14 +1,12 @@
 package com.cjyc.common.system.service.impl;
 
-import com.Pingxx.model.Order;
+import com.pingplusplus.model.Order;
 import com.Pingxx.model.PingOrderModel;
 import com.cjyc.common.model.util.BeanMapUtil;
 import com.cjyc.common.system.service.ICsPingxxService;
 import com.google.common.collect.Maps;
 import com.pingplusplus.Pingpp;
 import com.pingplusplus.exception.*;
-import org.apache.commons.beanutils.BeanUtils;
-import org.springframework.cglib.beans.BeanMap;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 
