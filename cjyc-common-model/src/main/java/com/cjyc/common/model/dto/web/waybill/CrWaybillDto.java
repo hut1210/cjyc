@@ -12,7 +12,7 @@ public class CrWaybillDto extends BasePageDto {
     @ApiModelProperty(value = "承运商ID（不需要传）")
     private Long carrierId;
     @ApiModelProperty(value = "运单号")
-    private Long waybillNo;
+    private String waybillNo;
 
     /*@ApiModelProperty(value = "指派进度: 0全部，1未完成，2已完成")
     private Long allotProgress;*/

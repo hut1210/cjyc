@@ -379,8 +379,8 @@
         left join w_task t on w.id = t.waybill_id
         <where>
             w.carrier_id = #{paramsDto.carrierId}
-            <if test="paramsDto.waybillNo != null and paramsDto.waybillNo != ''">
-                and w.no = #{paramsDto.waybillNo}
+            <if test="paramsDto.waybillNo != null and paramsDto.waybillNo.trim() != ''">
+                and w.no like concat('%',#{paramsDto.waybillNo},'%')
             </if>
             <if test="paramsDto.waybillType != null and paramsDto.waybillType != ''">
                 and w.type = #{paramsDto.waybillType}
