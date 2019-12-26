@@ -388,7 +388,7 @@
         when wc.state = 100 then '已交付'
         when wc.state = 113 then '已取消'
         end
-        ) as outterState,
+        ) as outterState
     </sql>
     <sql id="waybill_car_outter_state">
         (case
@@ -397,11 +397,11 @@
         when wc.state = 100 then '已交付' <!-- 已交付 -->
         when wc.state = 113 then '已取消'
         end
-        ) as outterState,
+        ) as outterState
     </sql>
     <select id="findListLocal" resultType="com.cjyc.common.model.vo.web.waybill.LocalListWaybillCarVo">
         select
-        <include refid="waybill_car_inner_state"/>
+        <include refid="waybill_car_inner_state"/>,
         w.carrier_id as carrierId,
         w.carrier_type as carrierType,
         w.carrier_name as carrierName,
@@ -554,12 +554,7 @@
     <select id="findVoByWaybillId" resultType="com.cjyc.common.model.vo.web.waybill.WaybillCarVo">
         select
         wc.*,
-        (case
-            when wc.state &lt;= 15 then '0' <!-- 待提车 -->
-            when wc.state &gt; 15 and wc.state &lt; 100 then '1' <!-- 已提车 -->
-            when wc.state = 100 then '2' <!-- 已交付 -->
-            end
-        ) as outterState,
+        <include refid="waybill_car_inner_state"/>,
         (
             select
             CONCAT_WS(',',GROUP_CONCAT(wcsub.load_photo_img),GROUP_CONCAT(wcsub.unload_photo_img))
@@ -584,7 +579,7 @@
     </select>
     <select id="findTrunkCarList" resultType="com.cjyc.common.model.vo.web.waybill.TrunkCarListWaybillCarVo">
         select
-        <include refid="waybill_car_outter_state"/>
+        <include refid="waybill_car_outter_state"/>,
         w.carrier_id as carrierId,
         w.carrier_type as carrierType,
         w.carrier_name as carrierName,
@@ -811,12 +806,7 @@
     <select id="findVo" resultType="com.cjyc.common.model.vo.web.waybill.WaybillCarVo">
         select
         wc.*,
-        (case
-            when wc.state &lt;= 15 then '0' <!-- 待提车 -->
-            when wc.state &gt; 15 and wc.state &lt; 100 then '1' <!-- 已提车 -->
-            when wc.state = 100 then '2' <!-- 已交付 -->
-            end
-        ) as outterState,
+        <include refid="waybill_car_inner_state"/>,
         oc.brand as brand,
         oc.model as model,
         oc.plate_no as plateNo,

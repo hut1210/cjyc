@@ -254,6 +254,17 @@
         )
         where id = #{waybillId}
     </update>
+    <update id="updateFreightFee">
+        update w_waybill w
+        set freight_fee = (
+            select sum(IFNULL(wc.freight_fee,0))
+            from w_waybill_car wc
+            where wc.waybill_id = #{id}
+            and wc.state &lt;= 100
+        )
+        where w.id = #{id}
+        limit 1
+    </update>
     <select id="findByNo" resultType="com.cjyc.common.model.entity.Waybill">
         select
         <include refid="Base_Column_List"/>
@@ -388,16 +399,19 @@
         where w.id = #{id}
         group by w.id
     </select>
-    <select id="findMainListTrunk" resultType="com.cjyc.common.model.vo.web.waybill.TrunkMainListWaybillVo">
-        select
-        w.*,
+    <sql id="waybill_inner_state">
         (case w.state
         when 0 then '待承接'
-        when 20 then '已承接'
+        when 20 then '待运输'
         when 55 then '运输中'
         when 100 then '已完成'
         when 113 then '已取消'
-        end ) as outterState,
+        end ) as outterState
+    </sql>
+    <select id="findMainListTrunk" resultType="com.cjyc.common.model.vo.web.waybill.TrunkMainListWaybillVo">
+        select
+        w.*,
+        <include refid="waybill_inner_state"/>,
         w.no as wtNo,
         (case when w.carrier_type != 2 then t.driver_id end) as driverId,
         (case when w.carrier_type != 2 then t.driver_name end) as driverName,
@@ -429,14 +443,17 @@
         group by w.id
         order by w.create_time desc
     </select>
-    <select id="findSubListTrunk" resultType="com.cjyc.common.model.vo.web.waybill.TrunkSubListWaybillVo">
-        select
+    <sql id="task_inner_state">
         (case w.state
-        when 5 then '待装车'
+        when 5 then '待运输'
         when 55 then '运输中'
         when 100 then '已完成'
         when 113 then '已取消'
-        end ) as outterState,
+        end ) as outterState
+    </sql>
+    <select id="findSubListTrunk" resultType="com.cjyc.common.model.vo.web.waybill.TrunkSubListWaybillVo">
+        select
+        <include refid="task_inner_state"/>,
         w.carrier_name as carrierName,
         t.no as wtNo,
         t.car_num as carNum,

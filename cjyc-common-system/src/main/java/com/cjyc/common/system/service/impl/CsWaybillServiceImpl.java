@@ -1075,6 +1075,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 });
             }
 
+            waybillDao.updateFreightFee(waybill.getId());
+
         } finally {
             if (!CollectionUtils.isEmpty(lockSet)) {
                 redisUtil.del(lockSet.toArray(new String[0]));
@@ -1356,6 +1358,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
         //按比例均摊运费
         shareWaybillCarFreightFee(waybillCars, oldTotalFee, paramsDto.getFreightFee());
+        //更新运单费用
+        waybillDao.updateFreightFee(waybill.getId());
         //验证运单是否已经全部完成
         int num = waybillCarDao.countUnAllFinish(waybill.getId());
         if (num == 0) {
@@ -1407,6 +1411,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 waybillCarDao.updateById(waybillCar);
             }
         }
+
     }
 
     /**

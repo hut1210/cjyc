@@ -114,4 +114,6 @@ public interface IWaybillDao extends BaseMapper<Waybill> {
     FullWaybill findFullWaybillById(Long waybillId);
 
     int updateNum(@Param("waybillId") Long waybillId);
+
+    int updateFreightFee(Long id);
 }

@@ -241,6 +241,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
             fillOrderCityInfo(order);
             //业务中心信息
             fillOrderStoreInfo(order);
+            fillCarryTypeInfo(order);
             //订单编号
             if (newOrderFlag) {
                 order.setNo(csSendNoService.getNo(SendNoTypeEnum.ORDER));
@@ -339,6 +340,16 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
         return order;
 
+    }
+
+    private Order fillCarryTypeInfo(Order order) {
+        if(order.getPickType() == null || order.getPickType() <= 0){
+            order.setPickType(2);
+        }
+        if(order.getBackType() == null || order.getBackType() <= 0){
+            order.setBackType(2);
+        }
+        return order;
     }
 
     private void validateOrderCarPlateNoInfo(Set<String> plateNoSet, String plateNo) {
