@@ -196,8 +196,11 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
     @Override
     public ResultVo<ValidateSweepCodePayVo> validateCarPayState(ValidateSweepCodeDto validateSweepCodeDto, boolean addLock) {
 
-        if(validateSweepCodeDto.getCode()==null){
-            return BaseResultUtil.fail("缺少收车码");
+        log.info("validateCarPayState validateSweepCodeDto.getClientType()= "+validateSweepCodeDto.getClientType());
+        if(validateSweepCodeDto.getClientType()==null){
+            if(validateSweepCodeDto.getCode()==null){
+                return BaseResultUtil.fail("缺少收车码");
+            }
         }
 
         Long taskId = validateSweepCodeDto.getTaskId();
@@ -381,6 +384,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         validateSweepCodeDto.setTaskId(webOutOfStockDto.getTaskId());
         validateSweepCodeDto.setLoginId(webOutOfStockDto.getLoginId());
         validateSweepCodeDto.setTaskCarIdList(webOutOfStockDto.getTaskCarIdList());
+        validateSweepCodeDto.setClientType("1");
         ResultVo<ValidateSweepCodePayVo> resultVo = validateCarPayState(validateSweepCodeDto,true);
 
         if(ResultEnum.SUCCESS.getCode() != resultVo.getCode()){
