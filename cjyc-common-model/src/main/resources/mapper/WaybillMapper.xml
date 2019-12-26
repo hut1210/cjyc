@@ -54,7 +54,7 @@
             <result column="waybill_no" property="waybillNo"/>
             <result column="order_car_id" property="orderCarId"/>
             <result column="order_car_no" property="orderCarNo"/>
-            <result column="freight_fee" property="freightFee"/>
+            <result column="car_freight_fee" property="freightFee"/>
             <result column="start_province" property="startProvince"/>
             <result column="start_province_code" property="startProvinceCode"/>
             <result column="start_city" property="startCity"/>
@@ -76,7 +76,7 @@
             <result column="end_store_id" property="endStoreId"/>
             <result column="end_belong_store_id" property="endBelongStoreId"/>
             <result column="line_id" property="lineId"/>
-            <result column="state" property="state"/>
+            <result column="car_state" property="state"/>
             <result column="expect_start_time" property="expectStartTime"/>
             <result column="expect_end_time" property="expectEndTime"/>
             <result column="load_link_name" property="loadLinkName"/>
@@ -90,7 +90,7 @@
             <result column="unload_photo_img" property="unloadPhotoImg"/>
             <result column="unload_time" property="unloadTime"/>
             <result column="receipt_flag" property="receiptFlag" />
-            <result column="create_time" property="createTime"/>
+            <result column="car_create_time" property="createTime"/>
         </collection>
     </resultMap>
     <resultMap id="TrunkListResultMap" type="com.cjyc.common.model.vo.web.waybill.TrunkListWaybillVo">
@@ -144,41 +144,50 @@
         id, no, type, source, guide_line, recommend_line, carrier_id, carrier_type, carrier_name, car_num, state, freight_fee, freight_pay_state, freight_pay_time, freight_pay_billno, fixed_freight_fee, remark, create_time, create_user, create_user_id, input_store_id, complete_time
     </sql>
     <sql id="Base_Car_Column_List_Rename_id">
-        id as waybill_car_id,
-        waybill_id,
-        waybill_no,
-        order_car_id,
-        order_car_no,
-        freight_fee as car_freight_fee,
-        start_province,
-        start_province_code,
-        start_city,
-        start_city_code,
-        start_area,
-        start_area_code,
-        start_address,
-        start_store_name,
-        start_store_id,
-        start_belong_store_id,
-        end_province,
-        end_province_code,
-        end_city,
-        end_city_code,
-        end_area,
-        end_area_code,
-        end_address,
-        end_store_name,
-        end_store_id,
-        end_belong_store_id,
-        line_id,
-        state as car_state,
-        expect_start_time,
-        expect_end_time,
-        load_link_name,
-        load_link_user_id,
-        load_link_phone,
-        load_photo_img, load_time, unload_link_name, unload_link_user_id, unload_link_phone, unload_photo_img, unload_time, receipt_flag, create_time
-    </sql>
+        wc.id as waybill_car_id,
+        wc.waybill_id,
+        wc.waybill_no,
+        wc.order_car_id,
+        wc.order_car_no,
+        wc.freight_fee as car_freight_fee,
+        wc.start_province,
+        wc.start_province_code,
+        wc.start_city,
+        wc.start_city_code,
+        wc.start_area,
+        wc.start_area_code,
+        wc.start_address,
+        wc.start_store_name,
+        wc.start_store_id,
+        wc.start_belong_store_id,
+        wc.end_province,
+        wc.end_province_code,
+        wc.end_city,
+        wc.end_city_code,
+        wc.end_area,
+        wc.end_area_code,
+        wc.end_address,
+        wc.end_store_name,
+        wc.end_store_id,
+        wc.end_belong_store_id,
+        wc.line_id,
+        wc.state as car_state,
+        wc.expect_start_time,
+        wc.expect_end_time,
+        wc.load_link_name,
+        wc.load_link_user_id,
+        wc.load_link_phone,
+        wc.load_photo_img,
+        wc.load_time,
+        wc.unload_link_name,
+        wc.unload_link_user_id,
+        wc.unload_link_phone,
+        wc.unload_photo_img,
+        wc.unload_time,
+        wc.receipt_flag,
+        wc.create_time as car_create_time
+
+        </sql>
 
     <update id="updateStateBatchByNos">
         update w_waybill
@@ -233,6 +242,17 @@
         complete_time = UNIX_TIMESTAMP(NOW()) * 1000
         where id = #{id}
         and state &lt; 100
+    </update>
+    <update id="updateNum">
+        update w_waybill
+        set car_num = (
+            select count(0)
+            from w_waybill_car
+            where waybill_id =
+            #{waybillId}
+            and state &lt;= 100
+        )
+        where id = #{waybillId}
     </update>
     <select id="findByNo" resultType="com.cjyc.common.model.entity.Waybill">
         select
@@ -647,6 +667,7 @@
         <include refid="Base_Car_Column_List_Rename_id"/>
         from w_waybill w
         join w_waybill_car wc on w.id = wc.waybill_id
+        and w.id = #{waybillId}
     </select>
 
 </mapper>

@@ -129,4 +129,6 @@ public interface ITaskDao extends BaseMapper<Task> {
     List<TaskPageVo> selectMyTaskList(TaskPageDto dto);
 
     int updateForFinish(Long id);
+
+    int updateNum(@Param("taskId") Long taskId);
 }

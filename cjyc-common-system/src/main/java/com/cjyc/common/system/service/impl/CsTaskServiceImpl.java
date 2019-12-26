@@ -453,7 +453,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
         //更新任务信息
         taskDao.updateNumForUnload(task.getId(), count);
         //更新实时运力信息
-        vehicleRunningDao.updateOccupiedNumForUnload(task.getId(), count);
+        vehicleRunningDao.updateOccupiedNum(task.getId());
         //TODO 发送收车推送信息
         resultReasonVo.setSuccessList(successSet);
         resultReasonVo.setFailList(failCarNoSet);

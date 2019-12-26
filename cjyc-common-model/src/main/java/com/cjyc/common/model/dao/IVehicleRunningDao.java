@@ -40,4 +40,6 @@ public interface IVehicleRunningDao extends BaseMapper<VehicleRunning> {
     int updateOccupiedNumForLoad(@Param("driverId") Long driverId, @Param("count") int count);
 
     int updateOccupiedNumForUnload(@Param("driverId") Long driverId, @Param("count") int count);
+
+    int updateOccupiedNum(@Param("id") Long id);
 }

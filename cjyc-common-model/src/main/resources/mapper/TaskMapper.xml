@@ -62,6 +62,17 @@
         where id = #{id}
         and state &lt; 100
     </update>
+    <update id="updateNum">
+        update w_task
+        set car_num = (
+            select count(0)
+            from w_task_car tc
+            join w_waybill_car wc on tc.waybill_car_id = wc.id
+            where tc.task_id = #{taskId}
+            and wc.state &lt;= 100
+        )
+        where id = #{taskId}
+    </update>
     <delete id="cancelBywaybillId">
         update w_task
         set state = 113

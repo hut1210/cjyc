@@ -568,7 +568,7 @@
                 and shell.dispatchEndAreaCode = #{paramsDto.endAreaCode,jdbcType=VARCHAR}
             </if>
             <if test="paramsDto.orderNo != null and paramsDto.orderNo != ''">
-                and shell.orderNo like concat('%' #{paramsDto.orderNo,jdbcType=VARCHAR}, '%')
+                and shell.order_no like concat('%' #{paramsDto.orderNo,jdbcType=VARCHAR}, '%')
             </if>
             <if test="paramsDto.carNo != null and paramsDto.carNo != ''">
                 and shell.no like concat('%', #{paramsDto.carNo,jdbcType=VARCHAR}, '%')
