@@ -284,7 +284,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
         return BaseResultUtil.success(taskDetailVo);
     }
 
-    WaybillCar getWaybillCar(String detailType, TaskCar taskCar) {
+    private WaybillCar getWaybillCar(String detailType, TaskCar taskCar) {
         LambdaQueryWrapper<WaybillCar> query = new QueryWrapper<WaybillCar>().lambda()
                 .eq(WaybillCar::getId, taskCar.getWaybillCarId());
         if (FieldConstant.WAIT_PICK_CAR.equals(detailType)) {
@@ -337,7 +337,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
 
     private void fillThisWaybillCarImg(WaybillCar waybillCar, String detailType, StrBuilder sb) {
         // 待交车车辆
-        if (FieldConstant.WAIT_GIVE_CAR.equals(detailType) || FieldConstant.ALL_TASK.equals(detailType)) {
+        if (!FieldConstant.WAIT_PICK_CAR.equals(detailType)) {
             // 当前车辆装车图片
             String loadPhotoImg1 = waybillCar.getLoadPhotoImg();
             if (sb.length() > 0 && !StringUtils.isEmpty(loadPhotoImg1)) {
@@ -348,7 +348,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
             }
         }
         // 已交付车辆
-        if (FieldConstant.ALL_TASK.equals(detailType)) {
+        if (FieldConstant.ALL_TASK.equals(detailType) || FieldConstant.FINISH.equals(detailType)) {
             // 当前车辆卸车图片
             String unloadPhotoImg1 = waybillCar.getUnloadPhotoImg();
             if (sb.length() > 0 && !StringUtils.isEmpty(unloadPhotoImg1)) {
