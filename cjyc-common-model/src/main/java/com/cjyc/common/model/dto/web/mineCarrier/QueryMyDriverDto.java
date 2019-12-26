@@ -28,8 +28,8 @@ public class QueryMyDriverDto extends BasePageDto {
     @ApiModelProperty("承运方式：2 : 代驾  3 : 干线   4：拖车")
     private Integer mode;
 
-    @ApiModelProperty("运行状态：0空闲，1在途 2繁忙")
-    private Integer runningState;
+    @ApiModelProperty("营运状态：0营运中(空闲)，1停运中(繁忙)")
+    private Integer businessState;
 
     @ApiModelProperty("司机状态 2：正常 5冻结")
     private Integer state;

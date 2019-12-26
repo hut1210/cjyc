@@ -14,7 +14,7 @@
         wo.customer_type as type,cc.name as customerName,
         cc.pay_mode as payMode,
         if(wo.customer_type=3,woc.total_fee,0) as feeShare,
-        if(wo.customer_type=3,(woc.total_fee-woc.agency_fee),woc.total_fee) as freightReceivable,
+        (woc.pick_fee+woc.trunk_fee+woc.back_fee+woc.add_insurance_fee) as freightReceivable,
         woc.wl_pay_time as receivedTime,
 
         wwc.freight_fee as totalCost
@@ -310,6 +310,8 @@
         <if test="driverPhone!= null and driverPhone.trim() != ''">
             and wt.driver_phone like concat('%',#{driverPhone},'%')
         </if>
+
+        order by ww.create_time desc
     </select>
 
     <select id="getCollectReceiveList" parameterType="com.cjyc.common.model.dto.web.finance.CollectReceiveQueryDto"

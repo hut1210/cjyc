@@ -198,7 +198,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
 
         log.info("validateCarPayState validateSweepCodeDto.getClientType()= "+validateSweepCodeDto.getClientType());
         if(validateSweepCodeDto.getClientType()==null){
-            if(validateSweepCodeDto.getCode()==null){
+            if(!addLock&&validateSweepCodeDto.getCode()==null){
                 return BaseResultUtil.fail("缺少收车码");
             }
         }
@@ -236,8 +236,10 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         com.cjyc.common.model.entity.Order order = list.get(0);
 
         if(order.getBackContactPhone()!=null){
-            csSmsService.validateCaptcha(order.getBackContactPhone(),validateSweepCodeDto.getCode(), CaptchaTypeEnum.CONFIRM_RECEIPT,
-            validateSweepCodeDto.getClientType().equals("4")?ClientEnum.APP_DRIVER:ClientEnum.APP_SALESMAN);
+            if(!csSmsService.validateCaptcha(order.getBackContactPhone(),validateSweepCodeDto.getCode(), CaptchaTypeEnum.CONFIRM_RECEIPT,
+            validateSweepCodeDto.getClientType().equals("4")?ClientEnum.APP_DRIVER:ClientEnum.APP_SALESMAN)){
+                return BaseResultUtil.fail("验证码输入错误");
+            }
         }
 
         int isNeedPay = 0; //0不需要支付，1支付
