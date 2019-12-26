@@ -238,44 +238,44 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
         List<CarDetailVo> carDetailVoList = new ArrayList<>(10);
         BigDecimal freightFee = new BigDecimal(0);
         if (!CollectionUtils.isEmpty(taskCarList)) {
-            CarDetailVo carDetailVo = null;
             String detailType = dto.getDetailType();
             for (TaskCar taskCar : taskCarList) {
-                carDetailVo = new CarDetailVo();
                 // 查询任务单车辆信息
                 WaybillCar waybillCar = getWaybillCar(detailType, taskCar);
                 if (waybillCar == null) {
-                    log.error("===>查询任务单车辆信息为空...");
+                    log.info("===>查询任务单车辆信息为空...");
+                } else {
+                    CarDetailVo carDetailVo = new CarDetailVo();
+                    BeanUtils.copyProperties(waybillCar,carDetailVo);
+
+                    // 查询除了当前车辆运单的历史车辆运单图片
+                    getHistoryWaybillCarImg(carDetailVo, waybillCar,dto.getDetailType());
+
+                    // 运费
+                    freightFee = freightFee.add(waybillCar.getFreightFee()==null?new BigDecimal(0):waybillCar.getFreightFee());
+
+                    // 如果指导路线为空，且运单是提车或者送车，将始发成和结束城市用“-”拼接
+                    fillGuideLine(taskDetailVo,waybillCar);
+
+                    // 查询品牌车系信息
+                    OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
+                    BeanUtils.copyProperties(orderCar,carDetailVo);
+
+                    // 查询支付方式
+                    Order order = orderDao.selectById(orderCar.getOrderId());
+                    carDetailVo.setPayType(order.getPayType());
+
+                    carDetailVo.setId(taskCar.getId());
+                    carDetailVo.setWaybillCarState(waybillCar.getState());
+                    carDetailVoList.add(carDetailVo);
+                    // todo 测试用
+                    String historyLoadPhotoImg = carDetailVo.getHistoryLoadPhotoImg();
+                    String loadPhotoImg = carDetailVo.getLoadPhotoImg();
+                    String[] split = historyLoadPhotoImg.split(",");
+                    String[] split1 = loadPhotoImg.split(",");
+                    log.info("===>运单ID"+waybillCar.getId()+"历史图片张数："+split.length);
+                    log.info("===>运单ID"+waybillCar.getId()+"当前运单提车图片张数："+(split1.length-1));
                 }
-                BeanUtils.copyProperties(waybillCar,carDetailVo);
-
-                // 查询除了当前车辆运单的历史车辆运单图片
-                getHistoryWaybillCarImg(carDetailVo, waybillCar,dto.getDetailType());
-
-                // 运费
-                freightFee = freightFee.add(waybillCar.getFreightFee()==null?new BigDecimal(0):waybillCar.getFreightFee());
-
-                // 如果指导路线为空，且运单是提车或者送车，将始发成和结束城市用“-”拼接
-                fillGuideLine(taskDetailVo,waybillCar);
-
-                // 查询品牌车系信息
-                OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
-                BeanUtils.copyProperties(orderCar,carDetailVo);
-
-                // 查询支付方式
-                Order order = orderDao.selectById(orderCar.getOrderId());
-                carDetailVo.setPayType(order.getPayType());
-
-                carDetailVo.setId(taskCar.getId());
-                carDetailVo.setWaybillCarState(waybillCar.getState());
-                carDetailVoList.add(carDetailVo);
-                // todo 测试用
-                String historyLoadPhotoImg = carDetailVo.getHistoryLoadPhotoImg();
-                String loadPhotoImg = carDetailVo.getLoadPhotoImg();
-                String[] split = historyLoadPhotoImg.split(",");
-                String[] split1 = loadPhotoImg.split(",");
-                log.info("===>运单ID"+waybillCar.getId()+"历史图片张数："+split.length);
-                log.info("===>运单ID"+waybillCar.getId()+"当前运单提车图片张数："+split1.length);
             }
         }
 
