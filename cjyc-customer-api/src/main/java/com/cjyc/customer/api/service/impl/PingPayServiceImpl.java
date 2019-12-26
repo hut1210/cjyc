@@ -121,6 +121,7 @@ public class PingPayServiceImpl implements IPingPayService {
         if(tradeBill != null){
             throw new CommonException("订单已支付完成","1");
         }else{
+            log.info("pay orderNo ="+orderNo);
             String lockKey =getRandomNoKey(orderNo);
             if (!redisLock.lock(lockKey, 30000, 99, 200)) {
                 throw new CommonException("订单正在支付中","1");

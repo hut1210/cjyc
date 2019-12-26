@@ -24,4 +24,7 @@ public class ValidateSweepCodeDto {
     @NotBlank(message = "收车码")
     private String code;
 
+    @ApiModelProperty(value = "客户端类型")
+    private String clientType;
+
 }

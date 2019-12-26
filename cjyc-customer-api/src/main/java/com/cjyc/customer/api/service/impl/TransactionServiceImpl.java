@@ -173,6 +173,9 @@ public class TransactionServiceImpl implements ITransactionService {
             if (n == 0) {
                 //更新运单状态
                 tradeBillDao.updateForReceipt(task.getWaybillId(), System.currentTimeMillis());
+
+                //TODO
+                //更新订单状态
             }
         }
 

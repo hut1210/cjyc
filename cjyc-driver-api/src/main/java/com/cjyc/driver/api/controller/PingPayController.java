@@ -37,7 +37,7 @@ public class PingPayController {
     @Autowired
     private ICsPingPayService pingPayService;
 
-    @ApiOperation("签收-司机出示二维码")
+    @ApiOperation("司机出示二维码")
     @PostMapping("/sweepDriveCode")
     public ResultVo sweepDriveCode(HttpServletRequest request, @RequestBody SweepCodeDto sweepCodeDto){
         sweepCodeDto.setIp(IPUtil.getIpAddr(request));
@@ -52,7 +52,7 @@ public class PingPayController {
         return BaseResultUtil.success(JSONObject.parseObject(charge.toString()));
     }
 
-    @ApiOperation(value = "签收-验证支付状态")
+    @ApiOperation(value = "收款码-验证支付状态")
     @PostMapping(value = "/validate")
     public ResultVo<ValidateSweepCodePayVo> validateCarPayState(@RequestBody ValidateSweepCodeDto validateSweepCodeDto) {
         return pingPayService.validateCarPayState(validateSweepCodeDto, false);
