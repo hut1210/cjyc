@@ -201,15 +201,15 @@
         SELECT
             dc.id AS carrierId,
             dc.NAME AS businessName,
-            dc.linkman AS NAME,
-            dc.linkman_phone AS phone,
+            ( CASE dc.type WHEN 1 THEN dc.linkman WHEN 2 THEN '' END ) AS NAME,
+            ( CASE dc.type WHEN 1 THEN dc.linkman_phone WHEN 2 THEN '' END ) AS phone,
             dc.type AS type,
-            dc.mode AS mode,
-            dvr.plate_no AS plateNo,
-            dc.legal_id_card AS idCard,
-            dvr.carry_car_num AS carryCarNum,
-            dvr.occupied_car_num AS occupiedCarNum,
-            dvr.running_state AS runningState
+            dc.MODE AS MODE,
+            ( CASE dc.type WHEN 1 THEN dvr.plate_no WHEN 2 THEN '' END ) AS plateNo,
+            ( CASE dc.type WHEN 1 THEN dc.legal_id_card WHEN 2 THEN '' END ) AS idCard,
+            ( CASE dc.type WHEN 1 THEN dvr.carry_car_num WHEN 2 THEN '' END ) AS carryCarNum,
+            ( CASE dc.type WHEN 1 THEN dvr.occupied_car_num WHEN 2 THEN '' END ) AS occupiedCarNum,
+            ( CASE dc.type WHEN 1 THEN dvr.running_state WHEN 2 THEN '' END ) AS runningState
         FROM
           d_carrier dc
         LEFT JOIN d_carrier_driver_con dcdc ON dcdc.carrier_id = dc.id

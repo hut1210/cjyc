@@ -607,7 +607,7 @@
             dd.id_card AS idCard,
             dvr.carry_car_num AS carryCarNum,
             dvr.occupied_car_num AS occupiedCarNum,
-            dvr.running_state AS runningState,
+            dd.business_state AS businessState,
             dcdc.mode as mode
         FROM d_carrier dc
         LEFT JOIN d_carrier_driver_con dcdc on dcdc.carrier_id = dc.id

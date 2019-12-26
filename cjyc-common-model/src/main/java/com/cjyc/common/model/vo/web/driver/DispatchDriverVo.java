@@ -41,8 +41,8 @@ public class DispatchDriverVo implements Serializable {
     @ApiModelProperty("非空车位")
     private Integer occupiedCarNum;
 
-    @ApiModelProperty("运行状态：0空闲，1在途 2繁忙")
-    private Integer runningState;
+    @ApiModelProperty("营运状态：0营运中(空闲)，1停运中(繁忙)")
+    private Integer businessState;
 
     public String getDriverName(){return StringUtils.isBlank(driverName) ? "":driverName;}
     public String getDriverPhone(){return StringUtils.isBlank(driverPhone) ? "":driverPhone;}

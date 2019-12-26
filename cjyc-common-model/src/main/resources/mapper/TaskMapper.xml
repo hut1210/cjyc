@@ -532,6 +532,7 @@
             t1.waybillCarState,
             t1.taskNo as taskNo,
             w.type,
+            w.carrier_type as carrierType,
             oc.order_no as orderNo,
             oc.no as orderCarNo,
             oc.vin as vin,
