@@ -15,6 +15,8 @@
         cc.pay_mode as payMode,
         if(wo.customer_type=3,woc.total_fee,0) as feeShare,
         (woc.pick_fee+woc.trunk_fee+woc.back_fee+woc.add_insurance_fee) as freightReceivable,
+        if(woc.wl_pay_state=1,woc.total_fee,0) as amountReceived,
+        if(woc.wl_pay_state=1,(woc.pick_fee+woc.trunk_fee+woc.back_fee+woc.add_insurance_fee),0) as totalIncome,
         woc.wl_pay_time as receivedTime,
 
         wwc.freight_fee as totalCost
