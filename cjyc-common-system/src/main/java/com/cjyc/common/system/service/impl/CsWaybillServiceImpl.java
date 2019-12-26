@@ -24,6 +24,7 @@ import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.waybill.WaybillVo;
 import com.cjyc.common.system.service.*;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -34,6 +35,7 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.List;
@@ -1295,7 +1297,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         if (waybill == null) {
             return BaseResultUtil.fail("运单信息错误");
         }
-        Set<Long> waybillIds = new HashSet<>();
+        BigDecimal oldTotalFee = BigDecimal.ZERO;
+        Set<WaybillCar> waybillCars = Sets.newHashSet();
         for (Long waybillCarId : carIdList) {
             if (waybillCarId == null) {
                 continue;
@@ -1327,9 +1330,14 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                     }
                 }
 
+
                 waybillCar.setEndStoreId(endStoreId);
-                waybillCar.setReceiptFlag(false);
                 waybillCar.setEndStoreName(endStoreName);
+                waybillCar.setReceiptFlag(false);
+                waybillCar.setUnloadLinkName(paramsDto.getUnloadLinkName());
+                waybillCar.setUnloadLinkPhone(paramsDto.getUnloadLinkPhone());
+                waybillCar.setUnloadLinkUserId(paramsDto.getUnloadLinkUserId());
+                waybillCar.setUnloadTime(paramsDto.getUnloadTime());
                 //车辆运输到中途卸车算调度单业务中心
                 waybillCar.setEndBelongStoreId(waybillCar.getStartBelongStoreId());
                 //交接状态如何变更
@@ -1338,24 +1346,67 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 waybillCarDao.cancelAfterWaybillCar(waybillCar.getId(), waybillCar.getOrderCarNo());
                 //
                 waybillCarDao.updateById(waybillCar);
-
+                waybillCars.add(waybillCar);
+                oldTotalFee = oldTotalFee.add(waybillCar.getFreightFee());
             } else {
                 //未装车的取消
                 cancelWaybillCar(waybill.getType(), waybillCar);
             }
-            waybillIds.add(waybillCarId);
         }
+
+        //按比例均摊运费
+        shareWaybillCarFreightFee(waybillCars, oldTotalFee, paramsDto.getFreightFee());
         //验证运单是否已经全部完成
-        for (Long waybillId : waybillIds) {
-            int num = waybillCarDao.countUnAllFinish(waybillId);
-            if (num == 0) {
-                //修改运单状态
-                waybillDao.updateStateById(WaybillStateEnum.FINISHED.code, waybillId);
-                //TODO 运单完成结算费用
-                log.error("TODO 运单完成结算费用");
-            }
+        int num = waybillCarDao.countUnAllFinish(waybill.getId());
+        if (num == 0) {
+            //修改运单状态
+            waybillDao.updateStateById(WaybillStateEnum.FINISHED.code, waybill.getId());
+            //TODO 运单完成结算费用
+            log.error("TODO 运单完成结算费用");
         }
         return BaseResultUtil.success();
+    }
+
+    private void shareWaybillCarFreightFee(Set<WaybillCar> waybillCars, BigDecimal oldTotalFee, BigDecimal newTotalFee) {
+        if(newTotalFee.compareTo(BigDecimal.ZERO) == 0){
+            waybillCars.forEach(waybillCar -> {
+                waybillCar.setFreightFee(BigDecimal.ZERO);
+                waybillCarDao.updateById(waybillCar);
+            });
+        }else if(oldTotalFee.compareTo(BigDecimal.ZERO) == 0){
+
+            BigDecimal[] bigDecimals = newTotalFee.divideAndRemainder(new BigDecimal(waybillCars.size()));
+            BigDecimal rAvg = bigDecimals[0];
+            BigDecimal rRemainder = bigDecimals[1];
+            for (WaybillCar waybillCar : waybillCars) {
+                //运费
+                if (rRemainder.compareTo(BigDecimal.ZERO) > 0) {
+                    waybillCar.setFreightFee(rAvg.add(BigDecimal.ONE));
+                    rRemainder = rRemainder.subtract(BigDecimal.ONE);
+                } else {
+                    waybillCar.setFreightFee(rAvg);
+                }
+                waybillCarDao.updateById(waybillCar);
+            }
+        }else{
+            BigDecimal freightFee = MoneyUtil.convertYuanToFen(newTotalFee);
+            BigDecimal avg = freightFee.divide(oldTotalFee, 0, RoundingMode.FLOOR);
+            BigDecimal remainder = freightFee.subtract(avg.multiply(oldTotalFee));
+
+            BigDecimal[] bigDecimals = remainder.divideAndRemainder(new BigDecimal(waybillCars.size()));
+            BigDecimal rAvg = bigDecimals[0];
+            BigDecimal rRemainder = bigDecimals[1];
+            for (WaybillCar waybillCar : waybillCars) {
+                //运费
+                if (rRemainder.compareTo(BigDecimal.ZERO) > 0) {
+                    waybillCar.setFreightFee(waybillCar.getFreightFee().multiply(avg).add(rAvg).add(BigDecimal.ONE));
+                    rRemainder = rRemainder.subtract(BigDecimal.ONE);
+                } else {
+                    waybillCar.setFreightFee(waybillCar.getFreightFee().multiply(avg).add(rAvg));
+                }
+                waybillCarDao.updateById(waybillCar);
+            }
+        }
     }
 
     /**

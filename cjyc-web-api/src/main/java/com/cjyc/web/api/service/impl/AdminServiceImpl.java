@@ -213,6 +213,7 @@ public class AdminServiceImpl extends ServiceImpl<IAdminDao, Admin> implements I
                     adminPageVo.setCreateTime(admin.getCreateTime());
                     adminPageVo.setCreateUser(admin.getCreateUser());
                     adminPageVo.setId(admin.getId());
+                    adminPageVo.setName(admin.getName());
                 }
             }
             resList.add(adminPageVo);
