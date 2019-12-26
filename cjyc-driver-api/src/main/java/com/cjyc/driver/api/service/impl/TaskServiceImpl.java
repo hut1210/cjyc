@@ -25,6 +25,7 @@ import com.cjyc.common.model.vo.driver.task.TaskDriverVo;
 import com.cjyc.driver.api.service.ITaskService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,6 +44,7 @@ import java.util.List;
  * @author JPG
  * @since 2019-11-19
  */
+@Slf4j
 @Service
 public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITaskService {
     @Autowired
@@ -267,6 +269,13 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                 carDetailVo.setId(taskCar.getId());
                 carDetailVo.setWaybillCarState(waybillCar.getState());
                 carDetailVoList.add(carDetailVo);
+                // todo 测试用
+                String historyLoadPhotoImg = carDetailVo.getHistoryLoadPhotoImg();
+                String loadPhotoImg = carDetailVo.getLoadPhotoImg();
+                String[] split = historyLoadPhotoImg.split(",");
+                String[] split1 = loadPhotoImg.split(",");
+                log.info("===>运单ID"+waybillCar.getId()+"历史图片张数："+split.length);
+                log.info("===>运单ID"+waybillCar.getId()+"当前运单提车图片张数："+split1.length);
             }
         }
 
