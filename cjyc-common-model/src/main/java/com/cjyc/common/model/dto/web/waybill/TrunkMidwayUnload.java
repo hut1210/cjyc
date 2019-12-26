@@ -3,12 +3,15 @@ package com.cjyc.common.model.dto.web.waybill;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.List;
 
 @Data
 public class TrunkMidwayUnload {
-    @ApiModelProperty(value = "区县编码")
+    @NotNull(message = "运单ID不能为空")
+    @ApiModelProperty(value = "运单ID")
     private String waybillId;
 
     @ApiModelProperty(value = "区县编码")
@@ -35,9 +38,11 @@ public class TrunkMidwayUnload {
     @ApiModelProperty(value = "实际完成卸车时间")
     private Long unloadTime;
 
+    @NotNull(message = "运费不能为空")
     @ApiModelProperty(value = "运费")
     private BigDecimal freightFee;
 
+    @NotEmpty(message = "车辆不能为空")
     @ApiModelProperty(value = "运单车辆ID列表")
     List<Long> waybillCarIdList;
 }
