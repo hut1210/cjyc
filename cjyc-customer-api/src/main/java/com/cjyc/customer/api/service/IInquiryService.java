@@ -14,5 +14,5 @@ public interface IInquiryService extends IService<Inquiry> {
      * @param defaultWlFee
      * @return
      */
-    boolean saveInquiry(TransportDto dto, BigDecimal defaultWlFee);
+    void saveInquiry(TransportDto dto, BigDecimal defaultWlFee);
 }

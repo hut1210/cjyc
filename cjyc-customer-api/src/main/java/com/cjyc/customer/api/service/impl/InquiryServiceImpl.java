@@ -30,25 +30,25 @@ public class InquiryServiceImpl extends SuperServiceImpl<IInquiryDao, Inquiry> i
 
     @Async
     @Override
-    public boolean saveInquiry(TransportDto dto, BigDecimal defaultWlFee) {
+    public void saveInquiry(TransportDto dto, BigDecimal defaultWlFee) {
         Inquiry inquiry = inquiryDao.selectOne(new QueryWrapper<Inquiry>().lambda()
                             .eq(Inquiry::getCustomerId,dto.getLgoinId())
                             .eq(Inquiry::getFromCode,dto.getFromCode())
                             .eq(Inquiry::getToCode,dto.getToCode()));
         if(inquiry != null){
-            return true;
+        }else{
+            //根据用户id查询用户
+            Customer customer = customerDao.selectById(dto.getLgoinId());
+            //添加用户询价记录
+            inquiry = new Inquiry();
+            BeanUtils.copyProperties(dto, inquiry);
+            inquiry.setName(customer.getContactMan());
+            inquiry.setCustomerId(customer.getId());
+            inquiry.setPhone(customer.getContactPhone());
+            inquiry.setLogisticsFee(defaultWlFee);
+            inquiry.setState(InquiryStateEnum.NO_HANDLE.code);
+            inquiry.setInquiryTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
+            super.save(inquiry);
         }
-        //根据用户id查询用户
-        Customer customer = customerDao.selectById(dto.getLgoinId());
-        //添加用户询价记录
-        inquiry = new Inquiry();
-        BeanUtils.copyProperties(dto, inquiry);
-        inquiry.setName(customer.getContactMan());
-        inquiry.setCustomerId(customer.getId());
-        inquiry.setPhone(customer.getContactPhone());
-        inquiry.setLogisticsFee(defaultWlFee);
-        inquiry.setState(InquiryStateEnum.NO_HANDLE.code);
-        inquiry.setInquiryTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
-        return super.save(inquiry);
     }
 }

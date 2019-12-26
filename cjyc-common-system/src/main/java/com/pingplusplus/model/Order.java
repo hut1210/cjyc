@@ -1,7 +1,5 @@
 package com.pingplusplus.model;
 
-import com.Pingxx.model.ChargeEssentials;
-import com.Pingxx.model.OrderCollection;
 import com.pingplusplus.exception.*;
 import com.pingplusplus.net.APIResource;
 
@@ -10,38 +8,38 @@ import java.util.List;
 import java.util.Map;
 
 public class Order extends APIResource {
-    private String id;
-    private String object;
-    private Long created;
-    private Boolean livemode;
-    private String status;
-    private Boolean paid;
-    private Boolean refunded;
-    private Object app;
-    private String charge;
-    private String uid;
-    private String merchantOrderNo;
-    private Integer amount;
-    private Integer couponAmount;
-    private Integer actualAmount;
-    private Integer amountRefunded;
-    private Integer amountPaid;
-    private String currency;
-    private String subject;
-    private String body;
-    private String clientIp;
-    private Long timePaid;
-    private Long timeExpire;
-    private String coupon;
-    private ChargeCollection charges;
-    private String description;
-    private Map<String, Object> metadata;
-    private ChargeEssentials chargeEssentials;
-    private Long availableBalance;
-    private String receiptApp;
-    private String serviceApp;
-    private List<String> availableMethods;
-    private Integer discountAmount;
+    String id;
+    String object;
+    Long created;
+    Boolean livemode;
+    String status;
+    Boolean paid;
+    Boolean refunded;
+    Object app;
+    String charge;
+    String uid;
+    String merchantOrderNo;
+    Integer amount;
+    Integer couponAmount;
+    Integer actualAmount;
+    Integer amountRefunded;
+    Integer amountPaid;
+    String currency;
+    String subject;
+    String body;
+    String clientIp;
+    Long timePaid;
+    Long timeExpire;
+    String coupon;
+    ChargeCollection charges;
+    String description;
+    Map<String, Object> metadata;
+    ChargeEssentials chargeEssentials;
+    Long availableBalance;
+    String receiptApp;
+    String serviceApp;
+    List<String> availableMethods;
+    Integer discountAmount;
 
     public String getId() {
         return id;

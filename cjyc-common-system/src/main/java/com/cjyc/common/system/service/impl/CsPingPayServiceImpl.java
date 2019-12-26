@@ -5,6 +5,8 @@ import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.customer.pingxx.PrePayDto;
 import com.cjyc.common.model.dto.customer.pingxx.SweepCodeDto;
 import com.cjyc.common.model.dto.customer.pingxx.ValidateSweepCodeDto;
+import com.cjyc.common.model.dto.web.pingxx.WebOutOfStockDto;
+import com.cjyc.common.model.dto.web.pingxx.WebPrePayDto;
 import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.entity.Waybill;
 import com.cjyc.common.model.enums.*;
@@ -160,7 +162,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         params.put("body", om.getBody()); // 商品的描述信息, 必传
         params.put("description", om.getDescription()); // 备注：订单号
         Map<String, Object> meta = new HashMap<String,Object>();
-        meta.put("chargeType", om.getChargeType());//1 预付款 2 司机出示二维码 3 业务员出示二维码
+        meta.put("chargeType", om.getChargeType());//1 预付款 2 司机出示二维码 3 业务员出示二维码 5后台预付 6出库付款
         //自定义存储字段
         meta.put("orderNo", om.getOrderNo());	//订单号
         meta.put("orderCarIds",om.getOrderCarIds());//订单Id
@@ -340,7 +342,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
     }
 
     @Override
-    public Charge prePay(PrePayDto prePayDto) throws RateLimitException, APIException, ChannelException, InvalidRequestException, APIConnectionException, AuthenticationException, FileNotFoundException {
+    public Charge prePay(WebPrePayDto prePayDto) throws RateLimitException, APIException, ChannelException, InvalidRequestException, APIConnectionException, AuthenticationException, FileNotFoundException {
 
         OrderModel om = new OrderModel();
         //创建Charge对象
@@ -357,8 +359,8 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             om.setAmount(wlFee);
             om.setSubject("后台收款码");
             om.setBody("订单预付款");
-            om.setChargeType("1");
-            om.setClientType(String.valueOf(ClientEnum.APP_CUSTOMER.code));
+            om.setChargeType("5");
+            om.setClientType(String.valueOf(ClientEnum.WEB_SERVER.code));
             // 备注：订单号
             om.setDescription("韵车订单号："+om.getOrderNo());
 
@@ -367,6 +369,57 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             cStransactionService.saveTransactions(charge, "0");
         } catch (Exception e) {
             log.error("后台出示二维码异常",e);
+        }
+        return charge;
+    }
+
+    @Override
+    public Charge getOutOfStockQrCode(WebOutOfStockDto webOutOfStockDto) throws RateLimitException, APIException, ChannelException, InvalidRequestException,
+            APIConnectionException, AuthenticationException, FileNotFoundException{
+        log.info("webOutOfStockDto taskId ="+webOutOfStockDto.getTaskId());
+        ValidateSweepCodeDto validateSweepCodeDto = new ValidateSweepCodeDto();
+        validateSweepCodeDto.setTaskId(webOutOfStockDto.getTaskId());
+        validateSweepCodeDto.setLoginId(webOutOfStockDto.getLoginId());
+        validateSweepCodeDto.setTaskCarIdList(webOutOfStockDto.getTaskCarIdList());
+        ResultVo<ValidateSweepCodePayVo> resultVo = validateCarPayState(validateSweepCodeDto,true);
+
+        if(ResultEnum.SUCCESS.getCode() != resultVo.getCode()){
+            throw new CommonException(resultVo.getMsg());
+        }
+        BigDecimal amount = resultVo.getData().getAmount();
+        if(amount.compareTo(BigDecimal.ZERO) <= 0){
+            throw new CommonException(("无需支付"));
+        }
+        OrderModel om = new OrderModel();
+
+        om.setClientIp(webOutOfStockDto.getIp());
+        om.setPingAppId(PingProperty.userAppId);
+        //创建Charge对象
+        Charge charge = new Charge();
+        try {
+            List<String> tempList = webOutOfStockDto.getTaskCarIdList();
+
+            List<Long> taskCarIdList = convertToLongList(tempList);
+            List<String> orderCarNosList = cStransactionService.getOrderCarNosByTaskCarIds(taskCarIdList);
+            BigDecimal freightFee = cStransactionService.getAmountByOrderCarNos(orderCarNosList);
+            om.setAmount(freightFee);
+            om.setDriver_code(String.valueOf(webOutOfStockDto.getLoginId()));
+            om.setOrderCarIds(orderCarNosList);
+            om.setTaskId(String.valueOf(webOutOfStockDto.getTaskId()));
+            om.setTaskCarIdList(webOutOfStockDto.getTaskCarIdList());
+            om.setChannel(webOutOfStockDto.getChannel());
+
+            om.setSubject("确认出库收款码功能!");
+            om.setBody("确认出库生成二维码！");
+            om.setChargeType("6");//出库付款码
+
+            om.setClientType(String.valueOf(ClientEnum.WEB_SERVER.code));
+            om.setDescription("韵车订单号："+om.getOrderNo());
+            charge = createDriverCode(om);
+
+            cStransactionService.saveTransactions(charge, "0");
+        } catch (Exception e) {
+            log.error("扫码支付异常",e);
         }
         return charge;
     }
