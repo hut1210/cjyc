@@ -6,6 +6,7 @@ import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.waybill.*;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.entity.defined.FullCity;
+import com.cjyc.common.model.entity.defined.FullWaybill;
 import com.cjyc.common.model.enums.AdminStateEnum;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
@@ -21,6 +22,7 @@ import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.MoneyUtil;
 import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.waybill.WaybillVo;
 import com.cjyc.common.system.service.*;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
@@ -398,6 +400,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
      */
     @Override
     public ResultVo updateLocal(UpdateLocalDto paramsDto) {
+        //历史数据
+        FullWaybill oldFw = waybillDao.findFullWaybillById(paramsDto.getCarDto().getWaybillId());
         long currentTimeMillis = System.currentTimeMillis();
         Set<String> lockSet = new HashSet<>();
         try {

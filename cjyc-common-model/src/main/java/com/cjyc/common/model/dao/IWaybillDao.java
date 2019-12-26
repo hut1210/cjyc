@@ -7,6 +7,7 @@ import com.cjyc.common.model.dto.web.mineCarrier.MyWaybillDto;
 import com.cjyc.common.model.dto.web.mineCarrier.SettlementDetailQueryDto;
 import com.cjyc.common.model.dto.web.waybill.*;
 import com.cjyc.common.model.entity.Waybill;
+import com.cjyc.common.model.entity.defined.FullWaybill;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.task.TaskBillVo;
 import com.cjyc.common.model.vo.driver.waybill.WaitAllotVo;
@@ -109,4 +110,6 @@ public interface IWaybillDao extends BaseMapper<Waybill> {
     int updateForLoad(Long id);
 
     int updateForFinish(Long id);
+
+    FullWaybill findFullWaybillById(Long waybillId);
 }

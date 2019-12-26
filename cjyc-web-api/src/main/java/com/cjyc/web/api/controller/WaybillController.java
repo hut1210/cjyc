@@ -48,6 +48,7 @@ public class WaybillController {
 
     /**
      * 提送车调度
+     *
      * @author JPG
      * @since 2019/10/15 11:53
      */
@@ -69,9 +70,8 @@ public class WaybillController {
     @ApiOperation(value = "修改同城调度", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @PostMapping("/local/update")
     public ResultVo updateLocal(@Validated @RequestBody UpdateLocalDto reqDto) {
-            return waybillService.updateLocal(reqDto);
+        return waybillService.updateLocal(reqDto);
     }
-
 
     /**
      * 干线调度
@@ -97,7 +97,6 @@ public class WaybillController {
         return waybillService.updateTrunk(reqDto);
     }
 
-
     /**
      * 中途卸载车辆
      *
@@ -109,6 +108,7 @@ public class WaybillController {
     public ResultVo trunkMidwayUnload(@Validated @RequestBody TrunkMidwayUnload reqDto) {
         return waybillService.trunkMidwayUnload(reqDto);
     }
+
     /**
      * 中止干线运单并结算
      *
@@ -122,9 +122,6 @@ public class WaybillController {
         return waybillService.updateTrunkMidwayFinish(reqDto);
     }
 
-
-
-
     /**
      * 取消调度
      *
@@ -137,8 +134,6 @@ public class WaybillController {
         return waybillService.cancel(reqDto);
     }
 
-
-
     /**
      * 根据订单车辆ID查询历史运单
      */
@@ -147,7 +142,6 @@ public class WaybillController {
     public ResultVo<List<HistoryListWaybillVo>> getCarHistoryList(@RequestBody HistoryListDto reqDto) {
         return waybillService.historyList(reqDto);
     }
-
 
     /**
      * 查询同城运单列表
@@ -173,9 +167,9 @@ public class WaybillController {
         }
         try {
             ExcelUtil.exportExcel(data.getList(), "运单信息", "运单信息",
-                    LocalListWaybillCarVo.class, System.currentTimeMillis()+"运单信息.xls", response);
+                    LocalListWaybillCarVo.class, System.currentTimeMillis() + "运单信息.xls", response);
             return null;
-        }catch (Exception e) {
+        } catch (Exception e) {
             LogUtil.error("导出分页同城运单列表信息异常", e);
             return BaseResultUtil.fail("导出分页同城运单列表信息异常: " + e.getMessage());
         }
@@ -192,9 +186,9 @@ public class WaybillController {
         try {
             List<ExportLocalListWaybillCarVo> rsList = dealLocalListForExport(list);
             ExcelUtil.exportExcel(rsList, "运单信息", "运单信息",
-                    ExportLocalListWaybillCarVo.class, System.currentTimeMillis()+"运单信息.xls", response);
+                    ExportLocalListWaybillCarVo.class, System.currentTimeMillis() + "运单信息.xls", response);
             return null;
-        }catch (Exception e) {
+        } catch (Exception e) {
             LogUtil.error("导出全部同城运单列表信息异常", e);
             return BaseResultUtil.fail("导出全部同城运单列表信息异常: " + e.getMessage());
         }
@@ -223,9 +217,9 @@ public class WaybillController {
         }
         try {
             ExcelUtil.exportExcel(data.getList(), "运单信息", "运单信息",
-                    TrunkMainListWaybillVo.class, System.currentTimeMillis()+"运单信息.xls", response);
+                    TrunkMainListWaybillVo.class, System.currentTimeMillis() + "运单信息.xls", response);
             return null;
-        }catch (Exception e) {
+        } catch (Exception e) {
             LogUtil.error("导出分页干线主运单列表异常", e);
             return BaseResultUtil.fail("导出分页干线主运单列表异常: " + e.getMessage());
         }
@@ -241,9 +235,9 @@ public class WaybillController {
         try {
             List<ExportTrunkMainListWaybillVo> rsList = dealTrunkMainListForExport(list);
             ExcelUtil.exportExcel(rsList, "运单信息-干线", "运单信息-干线",
-                    ExportTrunkMainListWaybillVo.class, System.currentTimeMillis()+"运单信息-干线.xls", response);
+                    ExportTrunkMainListWaybillVo.class, System.currentTimeMillis() + "运单信息-干线.xls", response);
             return null;
-        }catch (Exception e) {
+        } catch (Exception e) {
             LogUtil.error("导出全部干线主运单列表信息异常", e);
             return BaseResultUtil.fail("导出全部干线主运单列表信息异常: " + e.getMessage());
         }
@@ -273,9 +267,9 @@ public class WaybillController {
 
         try {
             ExcelUtil.exportExcel(data.getList(), "运单干线子运单信息", "运单干线子运单信息",
-                    TrunkSubListWaybillVo.class, System.currentTimeMillis()+"运单干线子运单信息.xls", response);
+                    TrunkSubListWaybillVo.class, System.currentTimeMillis() + "运单干线子运单信息.xls", response);
             return null;
-        }catch (Exception e) {
+        } catch (Exception e) {
             LogUtil.error("导出分页运单干线子运单列表异常", e);
             return BaseResultUtil.fail("导出分页运单干线子运单列表异常: " + e.getMessage());
         }
@@ -291,9 +285,9 @@ public class WaybillController {
         try {
             List<ExportTrunkMainListWaybillVo> rsList = dealTrunkSubListForExport(list);
             ExcelUtil.exportExcel(rsList, "运单干线子运单信息", "运单干线子运单信息",
-                    ExportTrunkMainListWaybillVo.class, System.currentTimeMillis()+"运单干线子运单信息.xls", response);
+                    ExportTrunkMainListWaybillVo.class, System.currentTimeMillis() + "运单干线子运单信息.xls", response);
             return null;
-        }catch (Exception e) {
+        } catch (Exception e) {
             LogUtil.error("导出全部运单干线子运单列表异常", e);
             return BaseResultUtil.fail("导出全部运单干线子运单列表异常: " + e.getMessage());
         }
@@ -332,11 +326,9 @@ public class WaybillController {
     @ApiOperation(value = "分类根据车辆ID查询车辆运单")
     @PostMapping(value = "/car/get/{orderCarId}/{waybillType}")
     public ResultVo<List<WaybillCarTransportVo>> getByType(@ApiParam(value = "运单车辆ID") @PathVariable Long orderCarId,
-                                                  @ApiParam(value = "运单类型：1提车运单，2干线运单，3送车运单") @PathVariable Integer waybillType) {
+                                                           @ApiParam(value = "运单类型：1提车运单，2干线运单，3送车运单") @PathVariable Integer waybillType) {
         return waybillService.getCarByType(orderCarId, waybillType);
     }
-
-
 
     /**----承运商模块-------------------------------------------------------------------------------------*/
 
@@ -348,7 +340,6 @@ public class WaybillController {
     public ResultVo<PageVo<CrWaybillVo>> crList(@RequestBody CrWaybillDto reqDto) {
         return waybillService.crListForMineCarrier(reqDto);
     }
-
 
     /**----我的业务中心-------------------------------------------------------------------------------------*/
 
@@ -364,6 +355,7 @@ public class WaybillController {
 
     /**
      * 检查返回结果是否成功
+     *
      * @param resultVo
      * @return
      */
@@ -376,6 +368,7 @@ public class WaybillController {
 
     /**
      * 导出LocalListWaybillCarVo对象信息封装
+     *
      * @param list
      * @return
      */
@@ -387,11 +380,11 @@ public class WaybillController {
         list.forEach(l -> {
             ExportLocalListWaybillCarVo vo = new ExportLocalListWaybillCarVo();
             BeanUtils.copyProperties(l, vo);
-            vo.setStateDesc(l.getState() == null?null:
+            vo.setStateDesc(l.getState() == null ? null :
                     WaybillValueToDesc.convertStateToDesc(l.getState()));
-            vo.setTypeDesc(l.getType() == null? null:
+            vo.setTypeDesc(l.getType() == null ? null :
                     WaybillValueToDesc.convertTypeToDesc(l.getType()));
-            vo.setIsNewDesc(l.getIsNew() == null?null:
+            vo.setIsNewDesc(l.getIsNew() == null ? null :
                     WaybillValueToDesc.convertIsNewDesc(l.getIsNew()));
             rsList.add(vo);
         });
@@ -400,6 +393,7 @@ public class WaybillController {
 
     /**
      * 导出TrunkMainListWaybillVo对象信息封装
+     *
      * @param list
      * @return
      */
@@ -412,9 +406,9 @@ public class WaybillController {
         list.forEach(l -> {
             ExportTrunkMainListWaybillVo vo = new ExportTrunkMainListWaybillVo();
             BeanUtils.copyProperties(l, vo);
-            vo.setCreateTimeDesc(l.getCreateTime() == null? null:
+            vo.setCreateTimeDesc(l.getCreateTime() == null ? null :
                     LocalDateTimeUtil.formatLDT(LocalDateTimeUtil
-                                    .convertLongToLDT(l.getCreateTime()), "yyyy-MM-dd"));
+                            .convertLongToLDT(l.getCreateTime()), "yyyy-MM-dd"));
             rsList.add(vo);
         });
         return rsList;
@@ -422,6 +416,7 @@ public class WaybillController {
 
     /**
      * 导出TrunkSubListWaybillVo对象信息封装
+     *
      * @param list
      * @return
      */
@@ -434,7 +429,7 @@ public class WaybillController {
         list.forEach(l -> {
             ExportTrunkMainListWaybillVo vo = new ExportTrunkMainListWaybillVo();
             BeanUtils.copyProperties(l, vo);
-            vo.setCreateTimeDesc(l.getCreateTime() == null? null:
+            vo.setCreateTimeDesc(l.getCreateTime() == null ? null :
                     LocalDateTimeUtil.formatLDT(LocalDateTimeUtil
                             .convertLongToLDT(l.getCreateTime()), "yyyy-MM-dd"));
             rsList.add(vo);
