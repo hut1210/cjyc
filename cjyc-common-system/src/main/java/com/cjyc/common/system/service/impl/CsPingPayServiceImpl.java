@@ -196,7 +196,8 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
     @Override
     public ResultVo<ValidateSweepCodePayVo> validateCarPayState(ValidateSweepCodeDto validateSweepCodeDto, boolean addLock) {
 
-        log.info("validateCarPayState validateSweepCodeDto.getClientType()= "+validateSweepCodeDto.getClientType());
+        log.info("validateCarPayState validateSweepCodeDto.getClientType()= "+validateSweepCodeDto.getClientType()+" validateSweepCodeDto.getCode()="+validateSweepCodeDto.getCode()
+        +" addLock="+addLock);
         if(validateSweepCodeDto.getClientType()==null){
             if(!addLock&&validateSweepCodeDto.getCode()==null){
                 return BaseResultUtil.fail("缺少收车码");
