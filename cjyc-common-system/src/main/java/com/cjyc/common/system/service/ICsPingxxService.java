@@ -1,6 +1,6 @@
 package com.cjyc.common.system.service;
 
-import com.Pingxx.model.Order;
+import com.pingplusplus.model.Order;
 import com.Pingxx.model.PingOrderModel;
 import com.pingplusplus.exception.*;
 

@@ -1,7 +1,6 @@
 package com.cjyc.customer.api.service.impl;
 
 import com.Pingxx.model.MetaDataEntiy;
-import com.Pingxx.model.Order;
 import com.Pingxx.model.OrderRefund;
 import com.Pingxx.model.PingOrderModel;
 import com.alibaba.fastjson.JSON;
@@ -38,6 +37,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.pingplusplus.Pingpp;
 import com.pingplusplus.exception.*;
+import com.pingplusplus.model.Order;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -112,7 +112,7 @@ public class PingPayServiceImpl implements IPingPayService {
     }
     
     @Override
-    public Order pay(PrePayDto reqDto) {
+    public com.pingplusplus.model.Order pay(PrePayDto reqDto) {
         String orderNo = reqDto.getOrderNo();
         OrderModel om = new OrderModel();
         Order order = new Order();
