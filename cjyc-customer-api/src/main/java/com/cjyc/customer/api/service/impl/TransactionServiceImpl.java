@@ -172,7 +172,10 @@ public class TransactionServiceImpl implements ITransactionService {
             int n = waybillCarDao.countUnFinishByWaybillId(task.getWaybillId());
             if (n == 0) {
                 //更新运单状态
-                waybillDao.updateForReceipt(task.getWaybillId(), System.currentTimeMillis());
+                tradeBillDao.updateForReceipt(task.getWaybillId(), System.currentTimeMillis());
+
+                //TODO
+                //更新订单状态
             }
         }
 

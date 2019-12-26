@@ -7,10 +7,7 @@ import com.cjyc.common.model.dto.customer.pingxx.SweepCodeDto;
 import com.cjyc.common.model.dto.customer.pingxx.ValidateSweepCodeDto;
 import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.entity.Waybill;
-import com.cjyc.common.model.enums.ClientEnum;
-import com.cjyc.common.model.enums.PayModeEnum;
-import com.cjyc.common.model.enums.PayStateEnum;
-import com.cjyc.common.model.enums.ResultEnum;
+import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.exception.CommonException;
@@ -23,6 +20,7 @@ import com.cjyc.common.model.vo.web.carrier.BaseCarrierVo;
 import com.cjyc.common.model.vo.web.task.TaskVo;
 import com.cjyc.common.system.config.PingProperty;
 import com.cjyc.common.system.service.ICsPingPayService;
+import com.cjyc.common.system.service.ICsSmsService;
 import com.cjyc.common.system.service.ICsTransactionService;
 import com.cjyc.common.system.util.RedisLock;
 import com.cjyc.common.system.util.RedisUtils;
@@ -77,6 +75,9 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
 
     @Resource
     private ITaskDao taskDao;
+
+    @Autowired
+    private ICsSmsService csSmsService;
 
     @Override
     public Charge sweepDriveCode(SweepCodeDto sweepCodeDto) throws RateLimitException, APIException, ChannelException, InvalidRequestException,
@@ -192,6 +193,11 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
 
     @Override
     public ResultVo<ValidateSweepCodePayVo> validateCarPayState(ValidateSweepCodeDto validateSweepCodeDto, boolean addLock) {
+
+        if(validateSweepCodeDto.getCode()==null){
+            return BaseResultUtil.fail("缺少收车码");
+        }
+
         Long taskId = validateSweepCodeDto.getTaskId();
 
         if(taskId==null){
@@ -223,6 +229,11 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         }
 
         com.cjyc.common.model.entity.Order order = list.get(0);
+
+        if(order.getBackContactPhone()!=null){
+            csSmsService.validateCaptcha(order.getBackContactPhone(),validateSweepCodeDto.getCode(), CaptchaTypeEnum.CONFIRM_RECEIPT,
+            validateSweepCodeDto.getClientType().equals("4")?ClientEnum.APP_DRIVER:ClientEnum.APP_SALESMAN);
+        }
 
         int isNeedPay = 0; //0不需要支付，1支付
         BigDecimal amount = BigDecimal.ZERO;

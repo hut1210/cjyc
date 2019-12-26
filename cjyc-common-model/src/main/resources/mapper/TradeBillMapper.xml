@@ -123,4 +123,12 @@
             #{item}
         </foreach>
     </select>
+
+    <update id="updateForReceipt">
+        update w_waybill
+        set state = 100,
+        complete_time = #{currentTimeMillis}
+        where id = #{waybillId}
+        and state &lt; 100
+    </update>
 </mapper>
