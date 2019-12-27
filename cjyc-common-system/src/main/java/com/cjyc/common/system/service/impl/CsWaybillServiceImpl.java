@@ -1369,8 +1369,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 oldTotalFee = oldTotalFee.add(waybillCar.getFreightFee());
                 //验证并完成任务
                 validateAndFinishTask(waybillCar.getId());
-                //验证并完成运单
-                validateAndFinishWaybill(waybillCar.getId());
+
 
             } else {
                 //未装车的取消
@@ -1382,14 +1381,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         shareWaybillCarFreightFee(waybillCars, oldTotalFee, paramsDto.getFreightFee());
         //更新运单费用
         waybillDao.updateFreightFee(waybill.getId());
-        //验证运单是否已经全部完成
-        int num = waybillCarDao.countUnAllFinish(waybill.getId());
-        if (num == 0) {
-            //修改运单状态
-            waybillDao.updateStateById(WaybillStateEnum.FINISHED.code, waybill.getId());
-            //TODO 运单完成结算费用
-            log.error("TODO 运单完成结算费用");
-        }
+        //验证并完成运单
+        validateAndFinishWaybill(waybill.getId());
         return BaseResultUtil.success();
     }
 
