@@ -19,6 +19,7 @@ import com.cjyc.common.model.vo.customer.invoice.InvoiceOrderVo;
 import com.cjyc.common.model.vo.customer.order.OrderCarCenterVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterDetailVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterVo;
+import com.cjyc.common.system.config.LogoImgProperty;
 import com.cjyc.common.system.service.ICsOrderService;
 import com.cjyc.common.system.service.ICsSendNoService;
 import com.cjyc.common.system.util.RedisUtils;
@@ -223,7 +224,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
                 // 查询品牌logo图片
                 List<CarSeries> carSeriesList = carSeriesDao.selectList(new QueryWrapper<CarSeries>().lambda().eq(CarSeries::getModel, orderCar.getModel()));
                 if(!CollectionUtils.isEmpty(carSeriesList)) {
-                    orderCarCenter.setLogoImg(carSeriesList.get(0).getLogoImg());
+                    orderCarCenter.setLogoImg(LogoImgProperty.logoImg+carSeriesList.get(0).getLogoImg());
                 }
             }
         }
