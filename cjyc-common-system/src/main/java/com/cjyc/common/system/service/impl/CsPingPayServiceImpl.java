@@ -200,7 +200,9 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         +" addLock="+addLock);
         if(validateSweepCodeDto.getClientType()!=null){
             if(validateSweepCodeDto.getClientType().equals("4")||validateSweepCodeDto.getClientType().equals("2")){
-                return BaseResultUtil.fail("缺少收车码");
+                if(validateSweepCodeDto.getCode()==null){
+                    return BaseResultUtil.fail("缺少收车码");
+                }
             }
         }
 
