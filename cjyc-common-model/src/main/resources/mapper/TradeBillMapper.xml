@@ -131,4 +131,10 @@
         where id = #{waybillId}
         and state &lt; 100
     </update>
+
+    <select id="countUnFinishByOrderNo"  resultType="java.lang.Integer">
+        select count(0) from
+        w_order_car woc left join w_order wo on wo.id = woc.order_id
+        where wo.no=#{no} and woc.wl_pay_state=0
+    </select>
 </mapper>

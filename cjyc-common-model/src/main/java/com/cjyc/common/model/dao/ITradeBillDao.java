@@ -43,4 +43,6 @@ public interface ITradeBillDao extends BaseMapper<TradeBill> {
     List<String> getOrderCarNosByTaskCarIds(@Param("taskCarIdList")List<Long> taskCarIdList);
 
     void updateForReceipt(@Param("waybillId")Long waybillId, @Param("currentTimeMillis")long currentTimeMillis);
+
+    int countUnFinishByOrderNo(String no);
 }

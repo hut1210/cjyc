@@ -183,6 +183,13 @@ public class TransactionServiceImpl implements ITransactionService {
 
                         //TODO
                         //更新订单状态
+                        List<com.cjyc.common.model.entity.Order> list = orderDao.findListByCarNos(orderCarNosList);
+                        com.cjyc.common.model.entity.Order order = list.get(0);
+
+                        int num = tradeBillDao.countUnFinishByOrderNo(order.getNo());
+                        if(num == 0){
+                            orderDao.updateForReceipt(order.getId(),System.currentTimeMillis());
+                        }
                     }
                 }
             }
@@ -362,7 +369,7 @@ public class TransactionServiceImpl implements ITransactionService {
         }else if(chargeType == ChargeTypeEnum.PREPAY.getCode() || chargeType == ChargeTypeEnum.PREPAY_QRCODE.getCode()){
             //物流费预付
             String orderNo = (String) metadata.get("orderNo");
-
+            log.info(chargeType+" 物流费预付 orderNo ="+orderNo);
             if(orderNo!=null){
                 tradeBillDao.updateOrderState(orderNo,2,System.currentTimeMillis());
                 List<String> list = tradeBillDao.getOrderCarNoList(orderNo);

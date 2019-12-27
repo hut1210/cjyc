@@ -123,7 +123,7 @@ public class PingPayServiceImpl implements IPingPayService {
         }else{
             log.info("pay orderNo ="+orderNo);
             String lockKey =getRandomNoKey(orderNo);
-            if (!redisLock.lock(lockKey, 30000, 99, 200)) {
+            if (!redisLock.lock(lockKey, 1800000, 99, 200)) {
                 throw new CommonException("订单正在支付中","1");
             }
         }
