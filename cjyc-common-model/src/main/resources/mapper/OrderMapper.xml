@@ -408,6 +408,9 @@
             <if test="endDate != null and endDate != 0">
                 and o.create_time &lt;= #{endDate}
             </if>
+            <if test="orderNo != null and orderNo.trim() != ''">
+                and o.no like concat('%',#{orderNo},'%')
+            </if>
         </where>
         order by o.create_time desc
     </select>
