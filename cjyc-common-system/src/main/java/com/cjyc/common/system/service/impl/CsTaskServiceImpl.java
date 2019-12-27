@@ -863,9 +863,9 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 continue;
             }
             //更新车辆状态
-            orderCarDao.updateForReceipt(orderCar.getId());
+            orderCarDao.updateForPaySuccess(orderCar.getId());
             //处理车辆相关运单车辆
-            waybillCarDao.updateForReceipt(waybillCar.getId());
+            waybillCarDao.updateForPaySuccess(waybillCar.getId());
 
             //添加日志
             csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.IN_STORE,
@@ -938,29 +938,27 @@ public class CsTaskServiceImpl implements ICsTaskService {
         long currentTimeMillis = System.currentTimeMillis();
         Set<Long> orderIdSet = Sets.newHashSet();
         Set<Long> waybillCarIdSet = Sets.newHashSet();
-        List<OrderCar> orderCarList = Lists.newArrayList();
         List<OrderCar> list = orderCarDao.findListByNos(orderCarNoList);
         for (OrderCar orderCar : list) {
             if (orderCar.getState() >= OrderCarStateEnum.SIGNED.code) {
                 continue;
             }
             //更新车辆状态
-            orderCarDao.updateForReceipt(orderCar.getId());
+            orderCarDao.updateForPaySuccess(orderCar.getId());
             //处理车辆相关运单车辆
             WaybillCar waybillCar = waybillCarDao.findWaitReceiptWaybill(orderCar.getId());
             if (waybillCar == null) {
                 continue;
             }
-            waybillCarDao.updateForReceipt(waybillCar.getId());
+            waybillCarDao.updateForPaySuccess(waybillCar.getId());
 
             //添加日志
-            //            csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.IN_STORE,
-            //                    new String[]{MessageFormat.format(OrderCarLogEnum.IN_STORE.getInnerLog(), orderCar.getNo(), waybillCar.getEndStoreName()),
-            //                            MessageFormat.format(OrderCarLogEnum.IN_STORE.getOutterLog(), orderCar.getNo(), waybillCar.getEndStoreName())},
-            //                    userInfo);
-            //            //提取数据
+            csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.RECEIPT,
+                    new String[]{MessageFormat.format(OrderCarLogEnum.RECEIPT.getInnerLog(), orderCar.getNo()),
+                            MessageFormat.format(OrderCarLogEnum.RECEIPT.getOutterLog(), orderCar.getNo())},
+                    userInfo);
+            // 提取数据
             orderIdSet.add(orderCar.getOrderId());
-            orderCarList.add(orderCar);
             waybillCarIdSet.add(waybillCar.getId());
         }
         //处理订单
@@ -985,10 +983,11 @@ public class CsTaskServiceImpl implements ICsTaskService {
             taskList.forEach(task -> {
                 int count = taskCarDao.countUnFinishByTaskId(task.getId());
                 if (count == 0) {
+                    taskDao.updateForFinish(task.getId());
                     //处理运单
                     int countw = waybillCarDao.countUnFinishByWaybillId(task.getWaybillId());
                     if (countw == 0) {
-                        waybillDao.updateForReceipt(task.getWaybillId(), System.currentTimeMillis());
+                        waybillDao.updateForFinish(task.getWaybillId());
                     }
                 }
             });

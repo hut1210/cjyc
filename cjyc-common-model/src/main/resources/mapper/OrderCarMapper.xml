@@ -133,7 +133,7 @@
             </if>
         </where>
     </update>
-    <update id="updateForReceipt">
+    <update id="updateForPaySuccess">
         update w_order_car
         set state = 100,
         wl_pay_state = 1

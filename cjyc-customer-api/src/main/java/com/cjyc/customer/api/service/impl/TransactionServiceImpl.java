@@ -183,7 +183,7 @@ public class TransactionServiceImpl implements ITransactionService {
                         for (int i=0;i<taskCarIdList.size();i++){
                             TaskCar taskCar = taskCarDao.selectById(Long.valueOf(taskCarIdList.get(i)));
                             if(taskCar != null){
-                                waybillCarDao.updateForReceipt(taskCar.getWaybillCarId());
+                                waybillCarDao.updateForPaySuccess(taskCar.getWaybillCarId());
                             }
                         }
                     }

@@ -12,7 +12,7 @@ public enum OrderCarLogEnum {
     CHECK("客户提交", "", "", 3),
     IN_STORE("车辆入库", "车辆{0}, 已在{1}入库", "车辆{0}, 已在{1}入库", 5),
     OUT_STORE("车辆出库", "车辆{0}, 已在{1}出库", "车辆{0}, 已在{1}出库", 6),
-    RECEIPT("客户签收", "车辆{0}, 已被签收", "车辆{0}, 已被签收", 4);
+    RECEIPT("客户签收", "车辆{0}, 已确认收车", "车辆{0}, 已确认收车", 4);
 
     private String name;
     private String innerLog;

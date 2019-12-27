@@ -103,7 +103,7 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
 
     List<WaybillCar> findWaitReceiptListByOrderCarId(Long orderCarId);
 
-    int updateForReceipt(Long id);
+    int updateForPaySuccess(Long id);
 
     WaybillCar findWaitReceiptWaybill(Long orderCarId);
 
