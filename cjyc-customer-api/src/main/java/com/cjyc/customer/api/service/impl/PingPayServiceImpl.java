@@ -135,7 +135,7 @@ public class PingPayServiceImpl implements IPingPayService {
             om.setOrderNo(reqDto.getOrderNo());
             om.setUid(String.valueOf(reqDto.getUid()));
             om.setAmount(wlFee);
-            om.setSubject("预付款");
+            om.setSubject(ChargeTypeEnum.PREPAY.getName());
             om.setBody("订单预付款");
             om.setChargeType(String.valueOf(ChargeTypeEnum.PREPAY.getCode()));
             om.setClientType(String.valueOf(ClientEnum.APP_CUSTOMER.code));

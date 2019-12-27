@@ -111,31 +111,19 @@ public class TransactionServiceImpl implements ITransactionService {
         log.debug("update metadata = "+metadata.toString()+" taskId = "+metadata.get("taskId"));
         String chargeType = (String)metadata.get("chargeType");
 
-        //chargeType 1、app预付 2司机端出示二维码付款 3业务员端出示二维码 5后台出示二维码预付 6后台出库出示二维码付款
+        //chargeType 1、app预付 3司机端出示二维码付款 4业务员端出示二维码 5后台出示二维码预付 6后台出库出示二维码付款
         if(chargeType!=null&&!chargeType.equals("1")){
 
             log.info("update chargeType="+chargeType);
 
             if(chargeType!=null){
-                if(chargeType.equals("5")){
+                if(chargeType.equals(String.valueOf(ChargeTypeEnum.WEB_PREPAY_QRCODE.getCode()))){
                     log.info("后台预付码回调");
                     String orderNo = (String) metadata.get("orderNo");
                     log.info(chargeType+" 物流费预付 orderNo ="+orderNo);
-                    if(orderNo!=null){
-                        tradeBillDao.updateOrderState(orderNo,2,System.currentTimeMillis());
-                        List<String> list = tradeBillDao.getOrderCarNoList(orderNo);
-                        if(list != null){
-                            for(int i=0;i<list.size();i++){
-                                String orderCarNo = list.get(i);
-                                if(orderCarNo != null){
-                                    tradeBillDao.updateOrderCar(orderCarNo,2,System.currentTimeMillis());
-                                }
-
-                            }
-                        }
-                    }
+                    updateForPrePay(orderNo);
                 }
-                if(chargeType.equals("2")||chargeType.equals("6")){
+                if(chargeType.equals(String.valueOf(ChargeTypeEnum.DRIVER_COLLECT_QRCODE.getCode()))||chargeType.equals(String.valueOf(ChargeTypeEnum.WEB_OUT_STOCK_QRCODE.getCode()))){
                     Long taskId = Long.valueOf((String)metadata.get("taskId"));
 
                     List<String> taskCarIdList = (List<String>)metadata.get("taskCarIdList");
@@ -389,23 +377,27 @@ public class TransactionServiceImpl implements ITransactionService {
             //物流费预付
             String orderNo = (String) metadata.get("orderNo");
             log.info(chargeType+" 物流费预付 orderNo ="+orderNo);
-            if(orderNo!=null){
-                tradeBillDao.updateOrderState(orderNo,2,System.currentTimeMillis());
-                List<String> list = tradeBillDao.getOrderCarNoList(orderNo);
-                if(list != null){
-                    for(int i=0;i<list.size();i++){
-                        String orderCarNo = list.get(i);
-                        if(orderCarNo != null){
-                            tradeBillDao.updateOrderCar(orderCarNo,2,System.currentTimeMillis());
-                        }
-
-                    }
-                }
-            }
+            updateForPrePay(orderNo);
             String lockKey =getRandomNoKey(orderNo);
             redisUtil.delete(lockKey);
         }
 
+    }
+
+    private void updateForPrePay(String orderNo){
+        if(orderNo!=null){
+            tradeBillDao.updateOrderState(orderNo,2,System.currentTimeMillis());
+            List<String> list = tradeBillDao.getOrderCarNoList(orderNo);
+            if(list != null){
+                for(int i=0;i<list.size();i++){
+                    String orderCarNo = list.get(i);
+                    if(orderCarNo != null){
+                        tradeBillDao.updateOrderCar(orderCarNo,2,System.currentTimeMillis());
+                    }
+
+                }
+            }
+        }
     }
 
     private String getRandomNoKey(String prefix) {

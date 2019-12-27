@@ -119,11 +119,11 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             if(sweepCodeDto.getClientType()==ClientEnum.APP_DRIVER.code){
                 om.setSubject("司机端收款码功能!");
                 om.setBody("司机端生成二维码！");
-                om.setChargeType("2");
+                om.setChargeType(String.valueOf(ChargeTypeEnum.DRIVER_COLLECT_QRCODE.getCode()));
             }else{
                 om.setSubject("业务员收款码功能!");
                 om.setBody("业务员端生成二维码！");
-                om.setChargeType("3");
+                om.setChargeType(String.valueOf(ChargeTypeEnum.SALESMAN_COLLECT_QRCODE.getCode()));
             }
 
             om.setClientType(String.valueOf(sweepCodeDto.getClientType()));
@@ -369,9 +369,9 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             om.setOrderNo(prePayDto.getOrderNo());
             om.setUid(String.valueOf(prePayDto.getUid()));
             om.setAmount(wlFee);
-            om.setSubject("后台收款码");
-            om.setBody("订单预付款");
-            om.setChargeType("5");
+            om.setSubject(ChargeTypeEnum.WEB_PREPAY_QRCODE.getName());
+            om.setBody("后台订单预付款");
+            om.setChargeType(String.valueOf(ChargeTypeEnum.WEB_PREPAY_QRCODE.getCode()));
             om.setClientType(String.valueOf(ClientEnum.WEB_SERVER.code));
             // 备注：订单号
             om.setDescription("韵车订单号："+om.getOrderNo());
@@ -422,9 +422,9 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             om.setTaskCarIdList(webOutOfStockDto.getTaskCarIdList());
             om.setChannel(webOutOfStockDto.getChannel());
 
-            om.setSubject("确认出库收款码功能!");
+            om.setSubject(ChargeTypeEnum.WEB_OUT_STOCK_QRCODE.getName());
             om.setBody("确认出库生成二维码！");
-            om.setChargeType("6");//出库付款码
+            om.setChargeType(String.valueOf(ChargeTypeEnum.WEB_OUT_STOCK_QRCODE.getCode()));//出库付款码
 
             om.setClientType(String.valueOf(ClientEnum.WEB_SERVER.code));
             om.setDescription("韵车订单号："+om.getOrderNo());
