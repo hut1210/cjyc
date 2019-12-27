@@ -60,8 +60,11 @@ public class UserRoleDept implements Serializable {
     @ApiModelProperty(value = "最后修改人")
     private Long updateUserId;
 
-    @ApiModelProperty(value = "状态 1：有效/启用 2: 无效/停用")
+    @ApiModelProperty(value = "状态  0：待审核 1：审核中  2:有效/启用 4：已取消  5：已冻结  7：已拒绝   9:无效/停用")
     private Integer state;
+
+    @ApiModelProperty(value = "承运方式：2 : 代驾  3 : 干线  4：拖车  5：代驾+干线  6：代驾+拖车  7：干线+拖车  9：代驾+干线+拖车")
+    private Integer mode;
 
 
 }

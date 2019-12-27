@@ -284,9 +284,9 @@ public class SalesmanServiceImpl extends ServiceImpl<IAdminDao, Admin> implement
         if (!ReturnMsg.SUCCESS.getCode().equals(accountRd.getCode())) {
             return BaseResultUtil.fail("用户信息更新失败， 原因:" + accountRd.getMsg());
         }
-        if (accountRd.getData() != null) {
+       /* if (accountRd.getData() != null) {
             return BaseResultUtil.fail("被更新账号已存在，请检查");
-        }
+        }*/
         ResultData rd = sysUserService.update(updateUser);
         if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())){
             return BaseResultUtil.fail("用户信息更新失败, 原因：" + rd.getMsg());
