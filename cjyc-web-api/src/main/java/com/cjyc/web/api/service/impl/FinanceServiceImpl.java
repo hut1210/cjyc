@@ -8,6 +8,7 @@ import com.cjyc.common.model.entity.CustomerInvoice;
 import com.cjyc.common.model.entity.InvoiceReceipt;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.BigDecimalSerizlizer;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.finance.*;
@@ -82,6 +83,22 @@ public class FinanceServiceImpl implements IFinanceService {
                 financeVo.setPickUpCarList(pickUpCarList);
                 financeVo.setTrunkLineVoList(trunkLineVoList);
                 financeVo.setCarryCarList(carryCarList);
+
+                BigDecimal totalCost = new BigDecimal(0);
+                //成本合计
+                for(int j=0;j<pickUpCarList.size();j++){
+                    totalCost = totalCost.add(pickUpCarList.get(j).getFreightFee());
+                }
+                for(int k=0;k<trunkLineVoList.size();k++){
+                    totalCost = totalCost.add(trunkLineVoList.get(k).getFreightFee());
+                }
+                for(int m=0;m<carryCarList.size();m++){
+                    totalCost = totalCost.add(carryCarList.get(m).getFreightFee());
+                }
+
+                financeVo.setTotalCost(totalCost);
+
+                financeVo.setGrossProfit(financeVo.getTotalIncome().subtract(totalCost));
             }
         }
         PageInfo<FinanceVo> pageInfo = new PageInfo<>(financeVoList);
