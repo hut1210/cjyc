@@ -1398,7 +1398,10 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         taskDao.updateForFinish(task.getId());
     }
 
-    private void validateAndFinishWaybill(Long waybillId) {
+
+
+    @Override
+    public void validateAndFinishWaybill(Long waybillId) {
         int count = waybillCarDao.countUnFinishByWaybillId(waybillId);
         if(count > 0){
             return;

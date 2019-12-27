@@ -65,4 +65,12 @@ public interface ICsWaybillService {
      * @param paramsDto
      */
     ResultVo trunkMidwayUnload(TrunkMidwayUnload paramsDto);
+
+    /**
+     * 验证并完成运单
+     * @author JPG
+     * @since 2019/12/27 13:18
+     * @param waybillId
+     */
+    void validateAndFinishWaybill(Long waybillId);
 }
