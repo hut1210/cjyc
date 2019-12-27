@@ -377,7 +377,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
         waybillDao.updateForLoad(waybill.getId());
 
         //更新空车位数
-        vehicleRunningDao.updateOccupiedNumForLoad(paramsDto.getLoginId(), count);
+        vehicleRunningDao.updateOccupiedNum(task.getVehicleRunningId());
 
         resultReasonVo.setSuccessList(successSet);
         resultReasonVo.setFailList(failCarNoSet);
