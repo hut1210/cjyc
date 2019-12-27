@@ -233,20 +233,21 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
     }
 
     private void getCarImg(OrderCar orderCar, OrderCarCenterVo orderCarCenter) {
-        List<String> photoImgList = new ArrayList<>(10);
+        List<String> photoImgList = new ArrayList<>(20);
         List<WaybillCar> waybillCarList = waybillCarDao.selectList(new QueryWrapper<WaybillCar>().lambda()
                 .eq(WaybillCar::getOrderCarId, orderCar.getId()).select(WaybillCar::getLoadPhotoImg,WaybillCar::getUnloadPhotoImg));
         if (!CollectionUtils.isEmpty(waybillCarList)) {
-            WaybillCar waybillCar = waybillCarList.get(0);
-            String loadPhotoImg = waybillCar == null ? "" : waybillCar.getLoadPhotoImg();
-            String unloadPhotoImg = waybillCar == null ? "" : waybillCar.getUnloadPhotoImg();
-            if (!StringUtils.isEmpty(loadPhotoImg)) {
-                String[] array = loadPhotoImg.split(",");
-                Collections.addAll(photoImgList,array);
-            }
-            if (!StringUtils.isEmpty(unloadPhotoImg)) {
-                String[] array = unloadPhotoImg.split(",");
-                Collections.addAll(photoImgList,array);
+            for (WaybillCar waybillCar : waybillCarList) {
+                String loadPhotoImg = waybillCar == null ? "" : waybillCar.getLoadPhotoImg();
+                String unloadPhotoImg = waybillCar == null ? "" : waybillCar.getUnloadPhotoImg();
+                if (!StringUtils.isEmpty(loadPhotoImg)) {
+                    String[] array = loadPhotoImg.split(",");
+                    Collections.addAll(photoImgList,array);
+                }
+                if (!StringUtils.isEmpty(unloadPhotoImg)) {
+                    String[] array = unloadPhotoImg.split(",");
+                    Collections.addAll(photoImgList,array);
+                }
             }
         }
         orderCarCenter.setCarImgList(photoImgList);
