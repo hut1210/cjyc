@@ -137,7 +137,7 @@ public class OrderCar implements Serializable {
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal totalFee;
 
-    @ApiModelProperty(value = "应收状态：0未支付，1已支付")
+    @ApiModelProperty(value = "应收状态：0未支付，2已支付")
     private Integer wlPayState;
 
     @ApiModelProperty(value = "物流费支付时间")
