@@ -624,8 +624,6 @@
         o.customer_phone as customerPhone,
         o.start_city as startCity,
         o.end_city as endCity,
-        o.pick_type as pickType,
-        o.back_type as backType,
         o.pick_contact_name as pickContactName,
         o.back_contact_name as backContactName,
         o.pick_contact_phone as pickContactPhone,

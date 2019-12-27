@@ -492,6 +492,9 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             }
 
             isReAllotCarrier = validateReAllotCarrier(carrierId, waybill.getCarrierId());
+            if (waybill.getState() >= WaybillStateEnum.TRANSPORTING.code && isReAllotCarrier) {
+                return BaseResultUtil.fail("运输中运单不允许变更司机，请使用卸载车辆功能");
+            }
 
             if (waybill.getState() > WaybillStateEnum.TRANSPORTING.code) {
                 return BaseResultUtil.fail("运单已经在运输中不能修改");
@@ -1091,6 +1094,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             }
 
             waybillDao.updateFreightFee(waybill.getId());
+            //验证运单是否完成
+            validateAndFinishWaybill(waybill.getId());
 
         } finally {
             if (!CollectionUtils.isEmpty(lockSet)) {
@@ -1127,16 +1132,15 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         if (waybill.getState() > WaybillStateEnum.TRANSPORTING.code) {
             throw new ServerException("运单{0},[{1}]状态不能取消", waybill.getNo(), WaybillStateEnum.valueOf(waybill.getState()).name);
         }
-        //修改运单主单状态
-        waybillDao.updateStateById(WaybillStateEnum.F_CANCEL.code, waybill.getId());
-        //修改任务主单状态
-        taskDao.cancelBywaybillId(waybill.getId());
         //修改车辆状态和调度状态
         List<WaybillCar> list = waybillCarDao.findListByWaybillId(waybill.getId());
         if (CollectionUtils.isEmpty(list)) {
             return;
         }
         list.forEach(waybillCar -> cancelWaybillCar(waybill.getType(), waybillCar));
+
+        //修改运单主单状态
+        waybillDao.updateStateById(WaybillStateEnum.F_CANCEL.code, waybill.getId());
 
     }
 
@@ -1227,7 +1231,6 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         }
         //更新运单车辆数
         waybillDao.updateNum(waybillCar.getWaybillId());
-        validateAndFinishWaybill(waybillCar.getWaybillId());
         orderCarDao.updateById(noc);
     }
 
@@ -1369,8 +1372,6 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 oldTotalFee = oldTotalFee.add(waybillCar.getFreightFee());
                 //验证并完成任务
                 validateAndFinishTask(waybillCar.getId());
-
-
             } else {
                 //未装车的取消
                 cancelWaybillCar(waybill.getType(), waybillCar);

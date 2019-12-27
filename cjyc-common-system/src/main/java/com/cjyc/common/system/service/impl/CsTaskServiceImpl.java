@@ -442,6 +442,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             }
             if(waybillCar.getEndStoreId() == null || waybillCar.getEndStoreId() <= 0 ){
                 waybillCarDao.updateStateById(waybillCar.getId(), WaybillCarStateEnum.UNLOADED.code);
+
                 orderCarDao.updateLocationForUnload(waybillCar.getOrderCarId(), 0L, waybillCar.getEndAreaCode());
             }else{
                 waybillCarDao.updateStateById(waybillCar.getId(), WaybillCarStateEnum.WAIT_UNLOAD_CONFIRM.code);

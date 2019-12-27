@@ -145,17 +145,11 @@ public class ListOrderCarVo extends OrderCar {
     @ApiModelProperty(value = "线路ID")
     private Long lineId;
 
-    @ApiModelProperty(value = "提车方式:1 自送，2代驾上门，3拖车上门，4物流上门")
-    private Integer pickType;
-
     @ApiModelProperty(value = "发车人")
     private String pickContactName;
 
     @ApiModelProperty(value = "发车人联系方式")
     private String pickContactPhone;
-
-    @ApiModelProperty(value = "送车方式： 1 自提，2代驾上门，3拖车上门，4物流上门")
-    private Integer backType;
 
     @ApiModelProperty(value = "收车人")
     private String backContactName;
@@ -244,23 +238,11 @@ public class ListOrderCarVo extends OrderCar {
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal depositFee;
 
-    @ApiModelProperty(value = "车辆均摊费用（提车费/送车费/中转费）方式：0均分余数散列（默认），1不均分")
-    private Integer feeShareType;
-
     @ApiModelProperty(value = "合同ID")
     private Long customerContractId;
 
     @ApiModelProperty(value = "客户付款方式：0到付（默认），1预付，2账期")
     private Integer payType;
-
-    @ApiModelProperty(value = "客户支付尾款状态：0未支付，1部分支付，2支付完成")
-    private Integer wlPayState;
-
-    @ApiModelProperty(value = "上次客户支付尾款时间")
-    private Long wlPayTime;
-
-    @ApiModelProperty(value = "订单完结时间")
-    private Long finishTime;
 
     @ApiModelProperty(value = "线下收款标识：默认0（不允许），")
     private Integer offlinePayFlag;
