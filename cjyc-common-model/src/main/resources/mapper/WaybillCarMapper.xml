@@ -711,7 +711,6 @@
         left join w_task t on tc.task_id = t.id
         where wc.order_car_id = #{orderCarId}
         and w.type = #{waybillType}
-        order by wc.id desc
     </select>
     <select id="findVoByWaybillId" resultType="com.cjyc.common.model.vo.web.waybill.WaybillCarVo">
         select

@@ -63,7 +63,18 @@
         where driver_id = #{driverId}
     </update>
     <update id="updateOccupiedNum">
-
+        update d_vehicle_running vr
+        set vr.occupied_car_num = (
+            select count(0)
+            from w_task t
+            join w_task_car tc on tc.task_id = t.id
+            join w_waybill_car wc on wc.id = tc.waybill_car_id
+            where t.vehicle_running_id = #{vehicleRunningId}
+            and wc.state &lt;= 100
+            and t.state &lt;= 100
+        )
+        where vr.id = #{vehicleRunningId}
+        limit 1
     </update>
 
 </mapper>
