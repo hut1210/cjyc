@@ -88,19 +88,25 @@ public class FinanceServiceImpl implements IFinanceService {
                 //成本合计
                 if(pickUpCarList!=null){
                     for(int j=0;j<pickUpCarList.size();j++){
-                        totalCost = totalCost.add(pickUpCarList.get(j).getFreightFee());
+                        if(pickUpCarList.get(j)!=null&&pickUpCarList.get(j).getFreightFee()!=null){
+                            totalCost = totalCost.add(pickUpCarList.get(j).getFreightFee());
+                        }
                     }
                 }
 
                 if(trunkLineVoList!=null){
                     for(int k=0;k<trunkLineVoList.size();k++){
-                        totalCost = totalCost.add(trunkLineVoList.get(k).getFreightFee());
+                        if(trunkLineVoList.get(k)!=null&&trunkLineVoList.get(k).getFreightFee()!=null){
+                            totalCost = totalCost.add(trunkLineVoList.get(k).getFreightFee());
+                        }
                     }
                 }
 
                 if(carryCarList!=null){
                     for(int m=0;m<carryCarList.size();m++){
-                        totalCost = totalCost.add(carryCarList.get(m).getFreightFee());
+                        if(carryCarList.get(m)!=null&&carryCarList.get(m).getFreightFee()!=null){
+                            totalCost = totalCost.add(carryCarList.get(m).getFreightFee());
+                        }
                     }
                 }
 
