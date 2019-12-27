@@ -558,6 +558,7 @@ public class PingPayServiceImpl implements IPingPayService {
         mde.setLoginId(reqDto.getLoginId().toString());
         mde.setLoginName(reqDto.getLoginName());
         mde.setSourceMainNo(resultVo.getData().getOrderNo());
+        mde.setLoginType(String.valueOf(UserTypeEnum.CUSTOMER.code));
         pm.setMetaDataEntiy(mde);
         // 备注：订单号
         pm.setDescription("韵车订单车辆号：" + join);

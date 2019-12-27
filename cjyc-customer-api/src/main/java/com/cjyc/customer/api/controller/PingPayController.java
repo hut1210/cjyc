@@ -233,52 +233,6 @@ public class PingPayController {
         return signature.verify(signatureBytes);
     }
 
-    /*@ApiOperation("司机出示二维码")
-    @PostMapping("/sweepDriveCode")
-    public ResultVo sweepDriveCode(HttpServletRequest request,@RequestBody SweepCodeDto sweepCodeDto){
-        sweepCodeDto.setIp(IPUtil.getIpAddr(request));
-        Charge charge;
-        try {
-            charge = pingPayService.sweepDriveCode(sweepCodeDto);
-        }catch (Exception e){
-            log.error(e.getMessage(),e);
-            return BaseResultUtil.fail(500,"司机二维码异常");
-        }
-        return BaseResultUtil.success(JSONObject.parseObject(charge.toString()));
-    }
-
-    @ApiOperation("业务员出示二维码，用户扫码")
-    @PostMapping("/sweepSalesmanCode")
-    public ResultVo sweepSalesmanCode(HttpServletRequest request,@RequestBody OrderModel om){
-
-        om.setClientIp(request.getRemoteAddr());
-        om.setPingAppId(PingProperty.userAppId);
-        //创建Charge对象
-        Charge charge = new Charge();
-        try {
-            om.setAmount(om.getAmount());
-            om.setDriver_code(om.getDriver_code());
-            om.setOrder_type(om.getOrder_type());
-            om.setDriver_name(om.getDriver_name());
-            om.setDriver_phone(om.getDriver_phone());
-            om.setBack_type(om.getBack_type());
-            om.setOrderCarIds(om.getOrderCarIds());
-            om.setChannel(om.getChannel());
-            om.setOrderNo(om.getOrderNo());
-            om.setSubject("订单的收款码功能!");
-            om.setBody("生成二维码！");
-            om.setChargeType("1");//支付尾款
-            om.setClientType("user");
-            om.setDescription("韵车订单号："+om.getOrderNo());
-            charge = pingPayService.sweepSalesmanCode(om);
-
-        } catch (Exception e) {
-            log.error("扫码支付异常",e);
-            return BaseResultUtil.fail(500,"业务员出示二维码，用户扫码支付异常");
-        }
-        return BaseResultUtil.success(JSONObject.parseObject(charge.toString()));
-    }*/
-
     /**
      * 签收-验证支付状态
      * @author JPG

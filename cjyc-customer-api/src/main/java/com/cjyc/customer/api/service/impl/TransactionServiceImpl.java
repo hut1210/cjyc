@@ -379,6 +379,7 @@ public class TransactionServiceImpl implements ITransactionService {
         if(chargeType == ChargeTypeEnum.COLLECT_PAY.getCode() || chargeType == ChargeTypeEnum.COLLECT_QRCODE.getCode()){
             //物流费到付
             String no = order.getMerchantOrderNo();
+            log.info(chargeType+" 物流费到付 no ="+no);
             //操作人信息
             UserInfo userInfo = userService.getUserInfo(Long.valueOf(mde.getLoginId()), Integer.valueOf(mde.getLoginType()));
             tradeBillDao.updateForPaySuccess(no, order.getTimePaid() * 1000);
