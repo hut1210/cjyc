@@ -111,19 +111,36 @@ public class TransactionServiceImpl implements ITransactionService {
         log.debug("update metadata = "+metadata.toString()+" taskId = "+metadata.get("taskId"));
         String chargeType = (String)metadata.get("chargeType");
 
+        //chargeType 1、app预付 2司机端出示二维码付款 3业务员端出示二维码 5后台出示二维码预付 6后台出库出示二维码付款
         if(chargeType!=null&&!chargeType.equals("1")){
-            Long taskId = Long.valueOf((String)metadata.get("taskId"));
 
-            List<String> taskCarIdList = (List<String>)metadata.get("taskCarIdList");
-
-            List<String> orderCarNosList = (List<String>)metadata.get("orderCarIds");
             log.info("update chargeType="+chargeType);
 
             if(chargeType!=null){
                 if(chargeType.equals("5")){
                     log.info("后台预付码回调");
+                    String orderNo = (String) metadata.get("orderNo");
+                    log.info(chargeType+" 物流费预付 orderNo ="+orderNo);
+                    if(orderNo!=null){
+                        tradeBillDao.updateOrderState(orderNo,2,System.currentTimeMillis());
+                        List<String> list = tradeBillDao.getOrderCarNoList(orderNo);
+                        if(list != null){
+                            for(int i=0;i<list.size();i++){
+                                String orderCarNo = list.get(i);
+                                if(orderCarNo != null){
+                                    tradeBillDao.updateOrderCar(orderCarNo,2,System.currentTimeMillis());
+                                }
+
+                            }
+                        }
+                    }
                 }
                 if(chargeType.equals("2")||chargeType.equals("6")){
+                    Long taskId = Long.valueOf((String)metadata.get("taskId"));
+
+                    List<String> taskCarIdList = (List<String>)metadata.get("taskCarIdList");
+
+                    List<String> orderCarNosList = (List<String>)metadata.get("orderCarIds");
                     log.info("司机出示二维码回调或者后台出库回调");
                     Task task = null;
                     if(taskId == null){
@@ -160,7 +177,7 @@ public class TransactionServiceImpl implements ITransactionService {
                         tradeBillDao.updateTradeBillByPingPayId(tradeBill);
                         //修改车辆支付状态
                         for(int i=0;i<orderCarNosList.size();i++){
-                            tradeBillDao.updateOrderCar(orderCarNosList.get(i),1,System.currentTimeMillis());
+                            tradeBillDao.updateOrderCar(orderCarNosList.get(i),2,System.currentTimeMillis());
                         }
 
                         for (int i=0;i<taskCarIdList.size();i++){
@@ -378,7 +395,7 @@ public class TransactionServiceImpl implements ITransactionService {
                     for(int i=0;i<list.size();i++){
                         String orderCarNo = list.get(i);
                         if(orderCarNo != null){
-                            tradeBillDao.updateOrderCar(orderCarNo,1,System.currentTimeMillis());
+                            tradeBillDao.updateOrderCar(orderCarNo,2,System.currentTimeMillis());
                         }
 
                     }
