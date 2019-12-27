@@ -321,7 +321,7 @@
         update w_waybill
         set state = 100,
         complete_time = #{currentTimeMillis}
-        where id = #{waybillId}
+        where id = #{id}
         and state &lt; 100
     </update>
     <update id="updateForLoad">
