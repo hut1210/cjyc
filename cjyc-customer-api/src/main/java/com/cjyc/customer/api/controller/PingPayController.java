@@ -145,14 +145,12 @@ public class PingPayController {
                         Order order = (Order) data.getObject();
                         if(data.getObject() instanceof Charge){
                             log.debug("------------->charge.succeeded");
-                            //将金额存进OrderDeTailId
                             //transactionService.update((Charge)data.getObject(),event,"1");
                         }
                     }else if("charge.succeeded".equals(event.getType())){
                         Charge charge = (Charge)data.getObject();
                         if(data.getObject() instanceof Charge){
                             log.debug("------------->charge.succeeded");
-                            //将金额存进OrderDeTailId
                             transactionService.update((Charge)data.getObject(),event,"1");
                         }
                     }else if("transfer.succeeded".equals(event.getType())){//通联支付司机运费

@@ -68,7 +68,7 @@
     </select>
 
     <update id="updateOrderCar" parameterType="map" >
-        update w_order_car set wl_pay_state = #{wlPayState}, wl_pay_time = #{wlPayTime} where no =#{orderCarNo}
+        update w_order_car set wl_pay_state = #{wlPayState}, wl_pay_time = #{wlPayTime},state=100 where no =#{orderCarNo}
     </update>
 
     <select id="getTradeBillByOrderNo" parameterType="String" resultType="com.cjyc.common.model.entity.TradeBill">
