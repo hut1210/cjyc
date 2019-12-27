@@ -86,15 +86,24 @@ public class FinanceServiceImpl implements IFinanceService {
 
                 BigDecimal totalCost = new BigDecimal(0);
                 //成本合计
-                for(int j=0;j<pickUpCarList.size();j++){
-                    totalCost = totalCost.add(pickUpCarList.get(j).getFreightFee());
+                if(pickUpCarList!=null){
+                    for(int j=0;j<pickUpCarList.size();j++){
+                        totalCost = totalCost.add(pickUpCarList.get(j).getFreightFee());
+                    }
                 }
-                for(int k=0;k<trunkLineVoList.size();k++){
-                    totalCost = totalCost.add(trunkLineVoList.get(k).getFreightFee());
+
+                if(trunkLineVoList!=null){
+                    for(int k=0;k<trunkLineVoList.size();k++){
+                        totalCost = totalCost.add(trunkLineVoList.get(k).getFreightFee());
+                    }
                 }
-                for(int m=0;m<carryCarList.size();m++){
-                    totalCost = totalCost.add(carryCarList.get(m).getFreightFee());
+
+                if(carryCarList!=null){
+                    for(int m=0;m<carryCarList.size();m++){
+                        totalCost = totalCost.add(carryCarList.get(m).getFreightFee());
+                    }
                 }
+
 
                 financeVo.setTotalCost(totalCost);
 
