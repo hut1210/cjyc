@@ -109,91 +109,92 @@ public class TransactionServiceImpl implements ITransactionService {
 
         Map<String, Object> metadata = charge.getMetadata();
         log.debug("update metadata = "+metadata.toString()+" taskId = "+metadata.get("taskId"));
-
-        Long taskId = Long.valueOf((String)metadata.get("taskId"));
-
-        List<String> taskCarIdList = (List<String>)metadata.get("taskCarIdList");
-
-        List<String> orderCarNosList = (List<String>)metadata.get("orderCarIds");
-
         String chargeType = (String)metadata.get("chargeType");
-        log.info("update chargeType="+chargeType);
 
-        if(chargeType!=null){
-            if(chargeType.equals("5")){
-                log.info("后台预付码回调");
-            }
-            if(chargeType.equals("2")||chargeType.equals("6")){
-                log.info("司机出示二维码回调或者后台出库回调");
-                Task task = null;
-                if(taskId == null){
-                    log.error("回调中参数taskId不存在");
-                    return BaseResultUtil.fail("缺少参数taskId");
-                }else{
-                    task = taskDao.selectById(taskId);
-                    if (task == null) {
-                        log.error(taskId+" 任务不存在");
-                        return BaseResultUtil.fail(taskId+"任务不存在");
+        if(chargeType!=null&&!chargeType.equals("1")){
+            Long taskId = Long.valueOf((String)metadata.get("taskId"));
+
+            List<String> taskCarIdList = (List<String>)metadata.get("taskCarIdList");
+
+            List<String> orderCarNosList = (List<String>)metadata.get("orderCarIds");
+            log.info("update chargeType="+chargeType);
+
+            if(chargeType!=null){
+                if(chargeType.equals("5")){
+                    log.info("后台预付码回调");
+                }
+                if(chargeType.equals("2")||chargeType.equals("6")){
+                    log.info("司机出示二维码回调或者后台出库回调");
+                    Task task = null;
+                    if(taskId == null){
+                        log.error("回调中参数taskId不存在");
+                        return BaseResultUtil.fail("缺少参数taskId");
                     }else{
-                        //验证运单
-                        Waybill waybill = waybillDao.selectById(task.getWaybillId());
-                        if (waybill == null) {
-                            log.error("运单不存在");
-                            return BaseResultUtil.fail("运单不存在");
+                        task = taskDao.selectById(taskId);
+                        if (task == null) {
+                            log.error(taskId+" 任务不存在");
+                            return BaseResultUtil.fail(taskId+"任务不存在");
+                        }else{
+                            //验证运单
+                            Waybill waybill = waybillDao.selectById(task.getWaybillId());
+                            if (waybill == null) {
+                                log.error("运单不存在");
+                                return BaseResultUtil.fail("运单不存在");
+                            }
+                            if (waybill.getState() >= WaybillStateEnum.FINISHED.code || waybill.getState() <= WaybillStateEnum.ALLOT_CONFIRM.code) {
+                                log.error(waybill.getNo()+"运单已完结");
+                                return BaseResultUtil.fail(waybill.getNo()+"运单已完结");
+                            }
                         }
-                        if (waybill.getState() >= WaybillStateEnum.FINISHED.code || waybill.getState() <= WaybillStateEnum.ALLOT_CONFIRM.code) {
-                            log.error(waybill.getNo()+"运单已完结");
-                            return BaseResultUtil.fail(waybill.getNo()+"运单已完结");
+                    }
+
+                    if(orderCarNosList==null){
+                        log.error("回调中参数orderCarNosList不存在");
+                        return BaseResultUtil.fail("缺少参数orderCarNosList");
+                    }else{
+                        //修改流水支付状态
+                        TradeBill tradeBill = new TradeBill();
+                        tradeBill.setPingPayId(charge.getId());
+                        tradeBill.setState(2);
+                        tradeBill.setTradeTime(System.currentTimeMillis());
+                        tradeBillDao.updateTradeBillByPingPayId(tradeBill);
+                        //修改车辆支付状态
+                        for(int i=0;i<orderCarNosList.size();i++){
+                            tradeBillDao.updateOrderCar(orderCarNosList.get(i),1,System.currentTimeMillis());
+                        }
+
+                        for (int i=0;i<taskCarIdList.size();i++){
+                            TaskCar taskCar = taskCarDao.selectById(Long.valueOf(taskCarIdList.get(i)));
+                            if(taskCar != null){
+                                waybillCarDao.updateForReceipt(taskCar.getWaybillCarId());
+                            }
+                        }
+                    }
+                    //验证任务是否完成
+                    int row = taskCarDao.countUnFinishByTaskId(taskId);
+                    if (row == 0) {
+                        //更新任务状态
+                        taskDao.updateStateById(task.getId(), TaskStateEnum.FINISHED.code);
+                        //验证运单是否完成
+                        int n = waybillCarDao.countUnFinishByWaybillId(task.getWaybillId());
+                        if (n == 0) {
+                            //更新运单状态
+                            tradeBillDao.updateForReceipt(task.getWaybillId(), System.currentTimeMillis());
+
+                            //TODO
+                            //更新订单状态
+                            List<com.cjyc.common.model.entity.Order> list = orderDao.findListByCarNos(orderCarNosList);
+                            com.cjyc.common.model.entity.Order order = list.get(0);
+
+                            int num = tradeBillDao.countUnFinishByOrderNo(order.getNo());
+                            if(num == 0){
+                                orderDao.updateForReceipt(order.getId(),System.currentTimeMillis());
+                            }
                         }
                     }
                 }
 
-                if(orderCarNosList==null){
-                    log.error("回调中参数orderCarNosList不存在");
-                    return BaseResultUtil.fail("缺少参数orderCarNosList");
-                }else{
-                    //修改流水支付状态
-                    TradeBill tradeBill = new TradeBill();
-                    tradeBill.setPingPayId(charge.getId());
-                    tradeBill.setState(2);
-                    tradeBill.setTradeTime(System.currentTimeMillis());
-                    tradeBillDao.updateTradeBillByPingPayId(tradeBill);
-                    //修改车辆支付状态
-                    for(int i=0;i<orderCarNosList.size();i++){
-                        tradeBillDao.updateOrderCar(orderCarNosList.get(i),1,System.currentTimeMillis());
-                    }
-
-                    for (int i=0;i<taskCarIdList.size();i++){
-                        TaskCar taskCar = taskCarDao.selectById(Long.valueOf(taskCarIdList.get(i)));
-                        if(taskCar != null){
-                            waybillCarDao.updateForReceipt(taskCar.getWaybillCarId());
-                        }
-                    }
-                }
-                //验证任务是否完成
-                int row = taskCarDao.countUnFinishByTaskId(taskId);
-                if (row == 0) {
-                    //更新任务状态
-                    taskDao.updateStateById(task.getId(), TaskStateEnum.FINISHED.code);
-                    //验证运单是否完成
-                    int n = waybillCarDao.countUnFinishByWaybillId(task.getWaybillId());
-                    if (n == 0) {
-                        //更新运单状态
-                        tradeBillDao.updateForReceipt(task.getWaybillId(), System.currentTimeMillis());
-
-                        //TODO
-                        //更新订单状态
-                        List<com.cjyc.common.model.entity.Order> list = orderDao.findListByCarNos(orderCarNosList);
-                        com.cjyc.common.model.entity.Order order = list.get(0);
-
-                        int num = tradeBillDao.countUnFinishByOrderNo(order.getNo());
-                        if(num == 0){
-                            orderDao.updateForReceipt(order.getId(),System.currentTimeMillis());
-                        }
-                    }
-                }
             }
-
         }
 
         return BaseResultUtil.success();
