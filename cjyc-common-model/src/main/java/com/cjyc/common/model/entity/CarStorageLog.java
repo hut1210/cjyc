@@ -7,6 +7,10 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
+
+import com.cjyc.common.model.util.BigDecimalSerizlizer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
@@ -37,6 +41,7 @@ public class CarStorageLog implements Serializable {
     private Long id;
 
     @ApiModelProperty(value = "业务中心ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long storeId;
 
     @ApiModelProperty(value = "记录类型：1入库，2出库")
@@ -58,12 +63,14 @@ public class CarStorageLog implements Serializable {
     private String model;
 
     @ApiModelProperty(value = "运费")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal freight;
 
     @ApiModelProperty(value = "承运方式")
     private Integer carryType;
 
     @ApiModelProperty(value = "承运商ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long carrierId;
 
     @ApiModelProperty(value = "承运商")
@@ -73,6 +80,7 @@ public class CarStorageLog implements Serializable {
     private String driver;
 
     @ApiModelProperty(value = "司机ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long driverId;
 
     @ApiModelProperty(value = "司机手机号")
@@ -85,6 +93,7 @@ public class CarStorageLog implements Serializable {
     private Long createTime;
 
     @ApiModelProperty(value = "创建人ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long createUserId;
 
     @ApiModelProperty(value = "创建人")

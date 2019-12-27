@@ -53,6 +53,168 @@
         id, waybill_id, waybill_no, order_car_id, order_car_no, freight_fee, start_province, start_province_code, start_city, start_city_code, start_area, start_area_code, start_address, start_store_name, start_store_id, start_belong_store_id, end_province, end_province_code, end_city, end_city_code, end_area, end_area_code, end_address, end_store_name, end_store_id, end_belong_store_id, line_id, state, expect_start_time, expect_end_time, load_link_name, load_link_user_id, load_link_phone, load_photo_img, load_time, unload_link_name, unload_link_user_id, unload_link_phone, unload_photo_img, unload_time, receipt_flag, create_time
     </sql>
 
+    <update id="updateByIdForNull" parameterType="com.cjyc.common.model.entity.WaybillCar" >
+    update w_waybill_car
+    set waybill_id = #{waybillId,jdbcType=BIGINT},
+      waybill_no = #{waybillNo,jdbcType=VARCHAR},
+      order_car_id = #{orderCarId,jdbcType=BIGINT},
+      order_car_no = #{orderCarNo,jdbcType=VARCHAR},
+      freight_fee = #{freightFee,jdbcType=DECIMAL},
+      start_province = #{startProvince,jdbcType=VARCHAR},
+      start_province_code = #{startProvinceCode,jdbcType=VARCHAR},
+      start_city = #{startCity,jdbcType=VARCHAR},
+      start_city_code = #{startCityCode,jdbcType=VARCHAR},
+      start_area = #{startArea,jdbcType=VARCHAR},
+      start_area_code = #{startAreaCode,jdbcType=VARCHAR},
+      start_address = #{startAddress,jdbcType=VARCHAR},
+      start_store_name = #{startStoreName,jdbcType=VARCHAR},
+      start_store_id = #{startStoreId,jdbcType=BIGINT},
+      start_belong_store_id = #{startBelongStoreId,jdbcType=BIGINT},
+      end_province = #{endProvince,jdbcType=VARCHAR},
+      end_province_code = #{endProvinceCode,jdbcType=VARCHAR},
+      end_city = #{endCity,jdbcType=VARCHAR},
+      end_city_code = #{endCityCode,jdbcType=VARCHAR},
+      end_area = #{endArea,jdbcType=VARCHAR},
+      end_area_code = #{endAreaCode,jdbcType=VARCHAR},
+      end_address = #{endAddress,jdbcType=VARCHAR},
+      end_store_name = #{endStoreName,jdbcType=VARCHAR},
+      end_store_id = #{endStoreId,jdbcType=BIGINT},
+      end_belong_store_id = #{endBelongStoreId,jdbcType=BIGINT},
+      line_id = #{lineId,jdbcType=BIGINT},
+      state = #{state,jdbcType=TINYINT},
+      expect_start_time = #{expectStartTime,jdbcType=BIGINT},
+      expect_end_time = #{expectEndTime,jdbcType=BIGINT},
+      load_link_name = #{loadLinkName,jdbcType=VARCHAR},
+      load_link_user_id = #{loadLinkUserId,jdbcType=BIGINT},
+      load_link_phone = #{loadLinkPhone,jdbcType=VARCHAR},
+      load_photo_img = #{loadPhotoImg,jdbcType=VARCHAR},
+      load_time = #{loadTime,jdbcType=BIGINT},
+      unload_link_name = #{unloadLinkName,jdbcType=VARCHAR},
+      unload_link_user_id = #{unloadLinkUserId,jdbcType=BIGINT},
+      unload_link_phone = #{unloadLinkPhone,jdbcType=VARCHAR},
+      unload_photo_img = #{unloadPhotoImg,jdbcType=VARCHAR},
+      unload_time = #{unloadTime,jdbcType=BIGINT},
+      receipt_flag = #{receiptFlag,jdbcType=BIT},
+      create_time = #{createTime,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+    <update id="updateByIdSelectiveForNull" parameterType="com.cjyc.common.model.entity.WaybillCar" >
+        update w_waybill_car
+        <set >
+            <if test="waybillId != null" >
+                waybill_id = #{waybillId,jdbcType=BIGINT},
+            </if>
+            <if test="waybillNo != null" >
+                waybill_no = #{waybillNo,jdbcType=VARCHAR},
+            </if>
+            <if test="orderCarId != null" >
+                order_car_id = #{orderCarId,jdbcType=BIGINT},
+            </if>
+            <if test="orderCarNo != null" >
+                order_car_no = #{orderCarNo,jdbcType=VARCHAR},
+            </if>
+            <if test="freightFee != null" >
+                freight_fee = #{freightFee,jdbcType=DECIMAL},
+            </if>
+            <if test="startProvince != null" >
+                start_province = #{startProvince,jdbcType=VARCHAR},
+            </if>
+            <if test="startProvinceCode != null" >
+                start_province_code = #{startProvinceCode,jdbcType=VARCHAR},
+            </if>
+            <if test="startCity != null" >
+                start_city = #{startCity,jdbcType=VARCHAR},
+            </if>
+            <if test="startCityCode != null" >
+                start_city_code = #{startCityCode,jdbcType=VARCHAR},
+            </if>
+            <if test="startArea != null" >
+                start_area = #{startArea,jdbcType=VARCHAR},
+            </if>
+            <if test="startAreaCode != null" >
+                start_area_code = #{startAreaCode,jdbcType=VARCHAR},
+            </if>
+            <if test="startAddress != null" >
+                start_address = #{startAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="startStoreName != null" >
+                start_store_name = #{startStoreName,jdbcType=VARCHAR},
+            </if>
+            <if test="startStoreId != null" >
+                start_store_id = #{startStoreId,jdbcType=BIGINT},
+            </if>
+            <if test="startBelongStoreId != null" >
+                start_belong_store_id = #{startBelongStoreId,jdbcType=BIGINT},
+            </if>
+            <if test="endProvince != null" >
+                end_province = #{endProvince,jdbcType=VARCHAR},
+            </if>
+            <if test="endProvinceCode != null" >
+                end_province_code = #{endProvinceCode,jdbcType=VARCHAR},
+            </if>
+            <if test="endCity != null" >
+                end_city = #{endCity,jdbcType=VARCHAR},
+            </if>
+            <if test="endCityCode != null" >
+                end_city_code = #{endCityCode,jdbcType=VARCHAR},
+            </if>
+            <if test="endArea != null" >
+                end_area = #{endArea,jdbcType=VARCHAR},
+            </if>
+            <if test="endAreaCode != null" >
+                end_area_code = #{endAreaCode,jdbcType=VARCHAR},
+            </if>
+            <if test="endAddress != null" >
+                end_address = #{endAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="endStoreName != null" >
+                end_store_name = #{endStoreName,jdbcType=VARCHAR},
+            </if>
+            <if test="endStoreId != null" >
+                end_store_id = #{endStoreId,jdbcType=BIGINT},
+            </if>
+            <if test="endBelongStoreId != null" >
+                end_belong_store_id = #{endBelongStoreId,jdbcType=BIGINT},
+            </if>
+            <if test="lineId != null" >
+                line_id = #{lineId,jdbcType=BIGINT},
+            </if>
+            <if test="state != null" >
+                state = #{state,jdbcType=TINYINT},
+            </if>
+            <if test="expectStartTime != null" >
+                expect_start_time = #{expectStartTime,jdbcType=BIGINT},
+            </if>
+            <if test="expectEndTime != null" >
+                expect_end_time = #{expectEndTime,jdbcType=BIGINT},
+            </if>
+            load_link_name = #{loadLinkName,jdbcType=VARCHAR},
+            load_link_user_id = #{loadLinkUserId,jdbcType=BIGINT},
+            load_link_phone = #{loadLinkPhone,jdbcType=VARCHAR},
+            <if test="loadPhotoImg != null" >
+                load_photo_img = #{loadPhotoImg,jdbcType=VARCHAR},
+            </if>
+            <if test="loadTime != null" >
+                load_time = #{loadTime,jdbcType=BIGINT},
+            </if>
+            unload_link_name = #{unloadLinkName,jdbcType=VARCHAR},
+            unload_link_user_id = #{unloadLinkUserId,jdbcType=BIGINT},
+            unload_link_phone = #{unloadLinkPhone,jdbcType=VARCHAR},
+            <if test="unloadPhotoImg != null" >
+                unload_photo_img = #{unloadPhotoImg,jdbcType=VARCHAR},
+            </if>
+            <if test="unloadTime != null" >
+                unload_time = #{unloadTime,jdbcType=BIGINT},
+            </if>
+            <if test="receiptFlag != null" >
+                receipt_flag = #{receiptFlag,jdbcType=BIT},
+            </if>
+            <if test="createTime != null" >
+                create_time = #{createTime,jdbcType=BIGINT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
 
     <insert id="saveBatch">
         insert into w_waybill_car

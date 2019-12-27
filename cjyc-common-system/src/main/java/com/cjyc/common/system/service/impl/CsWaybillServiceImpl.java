@@ -22,9 +22,7 @@ import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.MoneyUtil;
 import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.waybill.WaybillVo;
 import com.cjyc.common.system.service.*;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -224,11 +222,15 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 waybill.setType(paramsDto.getType());
                 //承运商类型
                 waybill.setSource(WaybillSourceEnum.MANUAL.code);
-                waybill.setCarrierId(carrierId);
                 waybill.setCarrierType(dto.getCarrierType());
-                waybill.setCarrierName(dto.getCarrierName());
+                waybill.setCarrierId(dto.getCarrierId());
+                if(dto.getCarrierType() == WaybillCarrierTypeEnum.SELF.code){
+                    waybill.setCarrierName(paramsDto.getType() == WaybillTypeEnum.PICK.code ? order.getPickContactName() : order.getBackContactName());
+                }else{
+                    waybill.setCarrierName(dto.getCarrierName());
+                }
                 waybill.setCarNum(1);
-                waybill.setState(waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code ? WaybillStateEnum.TRANSPORTING.code : WaybillStateEnum.ALLOT_CONFIRM.code);
+                waybill.setState(dto.getCarrierType() == WaybillCarrierTypeEnum.SELF.code ? WaybillStateEnum.TRANSPORTING.code : WaybillStateEnum.ALLOT_CONFIRM.code);
                 //提送车费用逻辑，调度时不允许修改提送车费用，需要到订单中修改提送车费用，多则返还，少则后补
                 waybill.setFreightFee(paramsDto.getType() == WaybillTypeEnum.PICK.code ? orderCar.getPickFee() : orderCar.getPickFee());
                 waybill.setRemark(dto.getRemark());
@@ -488,23 +490,25 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             if (waybill == null) {
                 return BaseResultUtil.fail("运单不存在");
             }
-            if ((carrierId == null && waybill.getCarrierId() != null)
-                    || (carrierId != null && waybill.getCarrierId() == null)
-                    || carrierId != null && waybill.getCarrierId() != null && !carrierId.equals(waybill.getCarrierId())) {
-                isReAllotCarrier = true;
-            }
+
+            isReAllotCarrier = validateReAllotCarrier(carrierId, waybill.getCarrierId());
+
             if (waybill.getState() > WaybillStateEnum.TRANSPORTING.code) {
                 return BaseResultUtil.fail("运单已经在运输中不能修改");
             }
             waybill.setState(waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code ? WaybillStateEnum.TRANSPORTING.code : WaybillStateEnum.ALLOT_CONFIRM.code);
             waybill.setSource(WaybillSourceEnum.MANUAL.code);
-            waybill.setCarrierId(carrierId);
             waybill.setCarrierType(paramsDto.getCarrierType());
-            waybill.setCarrierName(paramsDto.getCarrierName());
+            waybill.setCarrierId(paramsDto.getCarrierId());
+            if(waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code){
+                waybill.setCarrierName(waybill.getType() == WaybillTypeEnum.PICK.code ? order.getPickContactName() : order.getBackContactName());
+            }else{
+                waybill.setCarrierName(paramsDto.getCarrierName());
+            }
             waybill.setFreightFee(waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code ? BigDecimal.ZERO : (paramsDto.getType() == WaybillTypeEnum.PICK.code ? orderCar.getPickFee() : orderCar.getPickFee()));
             waybill.setFixedFreightFee(false);
             waybill.setRemark(paramsDto.getRemark());
-            waybillDao.updateById(waybill);
+            waybillDao.updateByIdForNull(waybill);
 
             /**2、添加运单车辆信息*/
             WaybillCar waybillCar = waybillCarDao.selectById(paramsDto.getCarDto().getId());
@@ -513,7 +517,6 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             waybillCar.setWaybillId(waybill.getId());
             waybillCar.setWaybillNo(waybill.getNo());
             waybillCar.setFreightFee(waybill.getFreightFee());
-
             //城市信息赋值
             fillWaybillCarCityInfo(waybillCar);
             //业务中心信息赋值
@@ -530,9 +533,11 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             if (waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code) {
                 waybillCar.setLoadTime(currentTimeMillis);
             }
+            waybillCar.setLoadLinkUserId(waybillCar.getLoadLinkUserId());
+            waybillCar.setUnloadLinkUserId(waybillCar.getUnloadLinkUserId());
             waybillCar.setCreateTime(currentTimeMillis);
             //TODO 计算预计到达时间，计算线路是否存在
-            waybillCarDao.updateById(waybillCar);
+            waybillCarDao.updateByIdForNull(waybillCar);
 
             /**3、添加任务信息*/
             if (isReAllotCarrier) {
@@ -591,6 +596,15 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             }
         }
         return BaseResultUtil.success();
+    }
+
+    private boolean validateReAllotCarrier(Long oldCarrierId, Long newCarrierId) {
+        oldCarrierId = oldCarrierId == null || oldCarrierId <= 0 ? 0L : oldCarrierId;
+        newCarrierId = newCarrierId == null || newCarrierId <= 0 ? 0L : newCarrierId;
+        if(oldCarrierId.equals(newCarrierId)){
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -913,13 +927,14 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 waybill.setCarrierType(carrier.getType());
             }
             waybill.setCarNum(list.size());
+            waybill.setCarrierId(paramsDto.getCarrierId());
             waybill.setCarrierId(carrierId);
             waybill.setCarrierType(carrier.getType());
             waybill.setCarrierName(carrier.getName());
             waybill.setFreightFee(MoneyUtil.convertYuanToFen(paramsDto.getFreightFee()));
             waybill.setFixedFreightFee(paramsDto.getFixedFreightFee());
             waybill.setRemark(paramsDto.getRemark());
-            waybillDao.updateById(waybill);
+            waybillDao.updateByIdForNull(waybill);
             /**2、运单，车辆循环*/
             boolean hasNewWaybillCar = false;
             Set<Long> unDeleteWaybillCarIds = new HashSet<>();
@@ -1002,7 +1017,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 if (isNewWaybillCar) {
                     waybillCarDao.insert(waybillCar);
                 } else {
-                    waybillCarDao.updateById(waybillCar);
+                    waybillCarDao.updateByIdForNull(waybillCar);
                 }
 
                 //更新车辆信息

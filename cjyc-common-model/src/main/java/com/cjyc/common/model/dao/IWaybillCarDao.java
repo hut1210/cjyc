@@ -33,6 +33,9 @@ import java.util.Set;
  */
 public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
 
+    //int updateByIdSelectiveForNull(WaybillCar waybill);
+    int updateByIdForNull(WaybillCar waybill);
+
     List<WayBillCarrierDto> getWayBillCarrier(WayBillCarrierVo wayBillCarrierVo);
 
     int saveBatch(@Param("list") List<WaybillCar> list);

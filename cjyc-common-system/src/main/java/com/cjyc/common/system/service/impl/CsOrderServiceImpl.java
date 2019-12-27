@@ -112,6 +112,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         fillOrderCityInfo(order);
         fillOrderStoreInfoForSave(order);
         fillOrderInputStore(order);
+        fillCarryTypeInfo(order);
         /**1、组装订单数据
          */
         if (newOrderFlag) {
@@ -344,10 +345,10 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
     private Order fillCarryTypeInfo(Order order) {
         if(order.getPickType() == null || order.getPickType() <= 0){
-            order.setPickType(2);
+            order.setPickType(null);
         }
         if(order.getBackType() == null || order.getBackType() <= 0){
-            order.setBackType(2);
+            order.setBackType(null);
         }
         return order;
     }
@@ -585,19 +586,19 @@ public class CsOrderServiceImpl implements ICsOrderService {
      */
     private void validateOrderFeild(Order order) {
         if (order == null) {
-            throw new ParameterException("[订单]-不存在");
+            throw new ParameterException("订单不存在");
         }
         if (order.getState() <= OrderStateEnum.WAIT_SUBMIT.code) {
-            throw new ParameterException("[订单]-未提交，无法审核");
+            throw new ParameterException("订单未提交，无法审核");
         }
         if (order.getState() >= OrderStateEnum.CHECKED.code) {
-            throw new ParameterException("[订单]-已经审核过，无法审核");
+            throw new ParameterException("订单已经审核过，无法审核");
         }
         if (order.getId() == null || order.getNo() == null) {
-            throw new ParameterException("[订单]-订单编号不能为空");
+            throw new ParameterException("订单编号不能为空");
         }
         if (order.getCustomerId() == null) {
-            throw new ParameterException("[订单]-客户不存在");
+            throw new ParameterException("订单客户不存在");
         }
         if (order.getStartProvinceCode() == null
                 || order.getStartCityCode() == null
@@ -607,18 +608,18 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 || order.getEndCityCode() == null
                 || order.getEndAreaCode() == null
                 || order.getEndAddress() == null) {
-            throw new ParameterException("[订单]-地址不完整");
+            throw new ParameterException("地址不完整");
         }
         if (order.getCarNum() == null || order.getCarNum() <= 0) {
-            throw new ParameterException("[订单]-车辆数不能小于一辆");
+            throw new ParameterException("车辆数不能小于一辆");
         }
         if (order.getPickType() == null
                 || order.getPickContactPhone() == null) {
-            throw new ParameterException("[订单]-提车联系人不能为空");
+            throw new ParameterException("提车联系人/提车方式不能为空");
         }
         if (order.getBackType() == null
                 || order.getBackContactPhone() == null) {
-            throw new ParameterException("收车联系人不能为空");
+            throw new ParameterException("收车联系人/收车方式不能为空");
         }
         if(order.getStartStoreId() == null || order.getStartStoreId() == -5
                 || order.getEndStoreId() == null || order.getEndStoreId() == -5

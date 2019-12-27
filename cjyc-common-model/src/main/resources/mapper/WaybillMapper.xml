@@ -189,6 +189,100 @@
 
         </sql>
 
+    <update id="updateByIdForNull" parameterType="com.cjyc.common.model.entity.Waybill" >
+    update w_waybill
+    set no = #{no,jdbcType=VARCHAR},
+      type = #{type,jdbcType=TINYINT},
+      source = #{source,jdbcType=TINYINT},
+      guide_line = #{guideLine,jdbcType=VARCHAR},
+      recommend_line = #{recommendLine,jdbcType=VARCHAR},
+      carrier_id = #{carrierId,jdbcType=BIGINT},
+      carrier_type = #{carrierType,jdbcType=TINYINT},
+      carrier_name = #{carrierName,jdbcType=VARCHAR},
+      car_num = #{carNum,jdbcType=INTEGER},
+      state = #{state,jdbcType=TINYINT},
+      freight_fee = #{freightFee,jdbcType=DECIMAL},
+      freight_pay_state = #{freightPayState,jdbcType=TINYINT},
+      freight_pay_time = #{freightPayTime,jdbcType=CHAR},
+      freight_pay_billno = #{freightPayBillno,jdbcType=CHAR},
+      fixed_freight_fee = #{fixedFreightFee,jdbcType=BIT},
+      remark = #{remark,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=BIGINT},
+      create_user = #{createUser,jdbcType=VARCHAR},
+      create_user_id = #{createUserId,jdbcType=BIGINT},
+      input_store_id = #{inputStoreId,jdbcType=BIGINT},
+      complete_time = #{completeTime,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+    <update id="updateByIdSelectiveForNull" parameterType="com.cjyc.common.model.entity.Waybill">
+        update w_waybill
+        <set>
+            carrier_id = #{carrierId,jdbcType=BIGINT},
+            <if test="no != null">
+                no = #{no,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">
+                type = #{type,jdbcType=TINYINT},
+            </if>
+            <if test="source != null">
+                source = #{source,jdbcType=TINYINT},
+            </if>
+            <if test="guideLine != null">
+                guide_line = #{guideLine,jdbcType=VARCHAR},
+            </if>
+            <if test="recommendLine != null">
+                recommend_line = #{recommendLine,jdbcType=VARCHAR},
+            </if>
+
+            <if test="carrierType != null">
+                carrier_type = #{carrierType,jdbcType=TINYINT},
+            </if>
+            <if test="carrierName != null">
+                carrier_name = #{carrierName,jdbcType=VARCHAR},
+            </if>
+            <if test="carNum != null">
+                car_num = #{carNum,jdbcType=INTEGER},
+            </if>
+            <if test="state != null">
+                state = #{state,jdbcType=TINYINT},
+            </if>
+            <if test="freightFee != null">
+                freight_fee = #{freightFee,jdbcType=DECIMAL},
+            </if>
+            <if test="freightPayState != null">
+                freight_pay_state = #{freightPayState,jdbcType=TINYINT},
+            </if>
+            <if test="freightPayTime != null">
+                freight_pay_time = #{freightPayTime,jdbcType=CHAR},
+            </if>
+            <if test="freightPayBillno != null">
+                freight_pay_billno = #{freightPayBillno,jdbcType=CHAR},
+            </if>
+            <if test="fixedFreightFee != null">
+                fixed_freight_fee = #{fixedFreightFee,jdbcType=BIT},
+            </if>
+            <if test="remark != null">
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=BIGINT},
+            </if>
+            <if test="createUser != null">
+                create_user = #{createUser,jdbcType=VARCHAR},
+            </if>
+            <if test="createUserId != null">
+                create_user_id = #{createUserId,jdbcType=BIGINT},
+            </if>
+            <if test="inputStoreId != null">
+                input_store_id = #{inputStoreId,jdbcType=BIGINT},
+            </if>
+            <if test="completeTime != null">
+                complete_time = #{completeTime,jdbcType=BIGINT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
     <update id="updateStateBatchByNos">
         update w_waybill
         set state = #{state}

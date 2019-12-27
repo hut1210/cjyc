@@ -31,6 +31,8 @@ public interface IWaybillDao extends BaseMapper<Waybill> {
 
     Waybill findByNo(String waybillNo);
 
+    //int updateByIdSelectiveForNull(Waybill waybill);
+    int updateByIdForNull(Waybill waybill);
     /**
      * 根据运单号批量更新运单状态
      * @param waybillNoList 运单编号列表
@@ -116,4 +118,5 @@ public interface IWaybillDao extends BaseMapper<Waybill> {
     int updateNum(@Param("waybillId") Long waybillId);
 
     int updateFreightFee(Long id);
+
 }

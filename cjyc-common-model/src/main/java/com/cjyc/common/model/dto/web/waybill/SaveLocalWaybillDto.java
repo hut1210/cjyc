@@ -33,7 +33,6 @@ public class SaveLocalWaybillDto implements Serializable {
     @NotNull(message = "承运类型不能为空")
     @ApiModelProperty(value = "承运商类型：1干线-个人承运商，2干线-企业承运商，3同城-业务员，4同城-代驾，5同城-拖车，6客户自己", required = true)
     private Integer carrierType;
-    @NotBlank(message = "承运商名称不能为空")
     @ApiModelProperty(value = "承运商名称", required = true)
     private String carrierName;
 
