@@ -1223,9 +1223,11 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         Task task = taskDao.findByWaybillCarId(waybillCar.getId());
         if (task != null) {
             taskDao.updateNum(task.getId());
+            validateAndFinishTask(waybillCar.getId());
         }
         //更新运单车辆数
         waybillDao.updateNum(waybillCar.getWaybillId());
+        validateAndFinishWaybill(waybillCar.getWaybillId());
         orderCarDao.updateById(noc);
     }
 
@@ -1362,9 +1364,14 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 //取消后续调度
                 waybillCarDao.cancelAfterWaybillCar(waybillCar.getId(), waybillCar.getOrderCarNo());
                 //
-                waybillCarDao.updateById(waybillCar);
+                waybillCarDao.updateByIdForNull(waybillCar);
                 waybillCars.add(waybillCar);
                 oldTotalFee = oldTotalFee.add(waybillCar.getFreightFee());
+                //验证并完成任务
+                validateAndFinishTask(waybillCar.getId());
+                //验证并完成运单
+                validateAndFinishWaybill(waybillCar.getId());
+
             } else {
                 //未装车的取消
                 cancelWaybillCar(waybill.getType(), waybillCar);
@@ -1384,6 +1391,26 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             log.error("TODO 运单完成结算费用");
         }
         return BaseResultUtil.success();
+    }
+
+    private void validateAndFinishTask(Long waybillCarId) {
+        Task task = taskDao.findByWaybillCarId(waybillCarId);
+        if(task == null){
+            return;
+        }
+        int count = taskCarDao.countUnFinishByTaskId(task.getId());
+        if(count > 0){
+            return;
+        }
+        taskDao.updateForFinish(task.getId());
+    }
+
+    private void validateAndFinishWaybill(Long waybillId) {
+        int count = waybillCarDao.countUnFinishByWaybillId(waybillId);
+        if(count > 0){
+            return;
+        }
+        waybillDao.updateForFinish(waybillId);
     }
 
     private void shareWaybillCarFreightFee(Set<WaybillCar> waybillCars, BigDecimal oldTotalFee, BigDecimal newTotalFee) {
