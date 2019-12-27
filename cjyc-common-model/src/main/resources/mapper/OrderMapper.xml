@@ -107,7 +107,7 @@
     <update id="updateForReceipt">
         update w_order
         set state = 100,
-        set finish_time = #{currentTimeMillis}
+        finish_time = #{currentTimeMillis}
         where id = #{id}
     </update>
 

@@ -137,7 +137,7 @@ public class PingPayServiceImpl implements IPingPayService {
             om.setAmount(wlFee);
             om.setSubject("预付款");
             om.setBody("订单预付款");
-            om.setChargeType("1");
+            om.setChargeType(String.valueOf(ChargeTypeEnum.PREPAY.getCode()));
             om.setClientType(String.valueOf(ClientEnum.APP_CUSTOMER.code));
             // 备注：订单号
             om.setDescription("韵车订单号："+om.getOrderNo());
