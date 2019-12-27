@@ -442,7 +442,8 @@ public class CsTaskServiceImpl implements ICsTaskService {
             }
             if(waybillCar.getEndStoreId() == null || waybillCar.getEndStoreId() <= 0 ){
                 waybillCarDao.updateStateById(waybillCar.getId(), WaybillCarStateEnum.UNLOADED.code);
-
+                validateAndFinishTask(waybillCar.getId());
+                validateAndFinishWaybill(waybillCar.getWaybillId());
                 orderCarDao.updateLocationForUnload(waybillCar.getOrderCarId(), 0L, waybillCar.getEndAreaCode());
             }else{
                 waybillCarDao.updateStateById(waybillCar.getId(), WaybillCarStateEnum.WAIT_UNLOAD_CONFIRM.code);
@@ -454,7 +455,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
         //更新任务信息
         taskDao.updateNumForUnload(task.getId(), count);
         //更新实时运力信息
-        //vehicleRunningDao.updateOccupiedNum(task.getId());
+        vehicleRunningDao.updateOccupiedNum(task.getId());
         //TODO 发送收车推送信息
         resultReasonVo.setSuccessList(successSet);
         resultReasonVo.setFailList(failCarNoSet);
@@ -599,7 +600,27 @@ public class CsTaskServiceImpl implements ICsTaskService {
         resultReasonVo.setFailList(failCarNoSet);
         return BaseResultUtil.success(resultReasonVo);
     }
+    private void validateAndFinishTask(Long waybillCarId) {
+        Task task = taskDao.findByWaybillCarId(waybillCarId);
+        if(task == null){
+            return;
+        }
+        int count = taskCarDao.countUnFinishByTaskId(task.getId());
+        if(count > 0){
+            return;
+        }
+        taskDao.updateForFinish(task.getId());
+    }
 
+
+
+    private void validateAndFinishWaybill(Long waybillId) {
+        int count = waybillCarDao.countUnFinishByWaybillId(waybillId);
+        if(count > 0){
+            return;
+        }
+        waybillDao.updateForFinish(waybillId);
+    }
     @Override
     public ResultVo<ResultReasonVo> outStore(OutStoreTaskDto paramsDto) {
         //返回内容

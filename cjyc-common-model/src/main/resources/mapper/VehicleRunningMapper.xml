@@ -63,6 +63,7 @@
         where driver_id = #{driverId}
     </update>
     <update id="updateOccupiedNum">
+
     </update>
 
 </mapper>
