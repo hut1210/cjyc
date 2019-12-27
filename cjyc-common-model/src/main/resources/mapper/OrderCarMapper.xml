@@ -34,11 +34,12 @@
         <result column="total_fee" property="totalFee" />
         <result column="wl_pay_state" property="wlPayState" />
         <result column="wl_pay_time" property="wlPayTime" />
+        <result column="finish_time" property="finishTime" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, order_id, order_no, no, brand, model, plate_no, vin, is_move, is_new, valuation, now_store_id, now_area_code, state, pick_type, pick_state, trunk_state, back_state, back_type, description, pick_fee, trunk_fee, back_fee, add_insurance_fee, add_insurance_amount, coupon_offset_fee, agency_fee, total_fee, wl_pay_state, wl_pay_time
+        id, order_id, order_no, no, brand, model, plate_no, vin, is_move, is_new, valuation, now_store_id, now_area_code, state, pick_type, pick_state, trunk_state, back_state, back_type, description, pick_fee, trunk_fee, back_fee, add_insurance_fee, add_insurance_amount, coupon_offset_fee, agency_fee, total_fee, wl_pay_state, wl_pay_time, finish_time
     </sql>
 
     <insert id="saveBatch">
@@ -162,6 +163,14 @@
         set now_area_code = #{nowAreaCode},
         now_store_id = #{nowStoreId}
         where id = #{orderCarId}
+    </update>
+    <update id="updateForFinish">
+        update w_order_car
+        set state = 100,
+        finish_time = unix_timestamp(now()) * 1000
+        where id = #{orderCarId}
+        and state &lt; 100
+        limit 1
     </update>
 
     <delete id="deleteBatchByOrderId">

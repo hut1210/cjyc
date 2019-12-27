@@ -49,6 +49,8 @@ public interface IOrderDao extends BaseMapper<Order> {
 
     int updateForReceipt(@Param("id") Long orderId, @Param("currentTimeMillis") long currentTimeMillis);
 
+    int updateForFinish(@Param("id") Long orderId);
+
     int countUnReceipt(Long orderId);
 
     List<Order> findListByCarIds(@Param("list") List<Long> orderCarIds);

@@ -790,8 +790,10 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 continue;
             }
             Order order = orderDao.findByCarId(waybillCar.getOrderCarId());
-            customerPhoneSet.add(order.getBackContactPhone());
+            waybillCarDao.updateForFinish(waybillCar.getId());
+            orderCarDao.updateForFinish(waybillCar.getOrderCarId());
 
+            customerPhoneSet.add(order.getBackContactPhone());
             waybillCarIdSet.add(waybillCar.getId());
             orderSet.add(order.getId());
             count++;
@@ -806,12 +808,12 @@ public class CsTaskServiceImpl implements ICsTaskService {
         int row = taskCarDao.countUnFinishByTaskId(paramsDto.getTaskId());
         if (row == 0) {
             //更新任务状态
-            taskDao.updateStateById(task.getId(), TaskStateEnum.FINISHED.code);
+            taskDao.updateForFinish(task.getId());
             //验证运单是否完成
             int n = waybillCarDao.countUnFinishByWaybillId(task.getWaybillId());
             if (n == 0) {
                 //更新运单状态
-                waybillDao.updateForReceipt(task.getWaybillId(), System.currentTimeMillis());
+                waybillDao.updateForFinish(task.getWaybillId());
             }
         }
 
@@ -820,7 +822,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             int rows = orderCarDao.countUnFinishByOrderId(orderId);
             if (rows <= 0) {
                 //更新订单状态
-                orderDao.updateForReceipt(orderId, System.currentTimeMillis());
+                orderDao.updateForFinish(orderId);
             }
         });
 

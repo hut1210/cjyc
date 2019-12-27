@@ -110,6 +110,14 @@
         finish_time = #{currentTimeMillis}
         where id = #{id}
     </update>
+    <update id="updateForFinish">
+        update w_order
+        set state = 100,
+        finish_time = #{currentTimeMillis}
+        where id = #{id}
+        and state &lt; 100
+        limit 1
+    </update>
 
     <resultMap id="VinResultMap" type="com.cjyc.common.model.vo.customer.order.OrderCenterVo">
         <!--查询该订单号下的一条车辆信息-->

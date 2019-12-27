@@ -450,6 +450,14 @@
         where id = #{id}
 
     </update>
+    <update id="updateForFinish">
+        update w_waybill_car
+        set state = 100,
+        unload_time = unix_timestamp(now()) * 1000
+        where id = #{id}
+        and state &lt; 100
+        limit 1
+    </update>
 
     <select id="findByTaskCarId" resultType="com.cjyc.common.model.entity.WaybillCar">
         select

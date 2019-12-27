@@ -254,7 +254,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 //业务中心信息赋值
                 fillWaybillcarStoreInfo(waybillCar);
                 //提送车业务员
-                fillWaybillCarHandleAdmin(waybillCar, waybill.getType());
+                fillWaybillCarReceiveAdmin(waybillCar, waybill.getType());
 
                 //计算预计到达时间
                 fillWaybillCarExpectEndTime(waybillCar);
@@ -359,7 +359,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
     }
 
-    private WaybillCar fillWaybillCarHandleAdmin(WaybillCar waybillCar, Integer type) {
+    private WaybillCar fillWaybillCarReceiveAdmin(WaybillCar waybillCar, Integer type) {
         if (WaybillTypeEnum.BACK.code == type) {
             if (StringUtils.isBlank(waybillCar.getLoadLinkPhone())) {
                 Admin admin = csAdminService.findLoop(waybillCar.getStartStoreId());
@@ -370,8 +370,27 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 waybillCar.setLoadLinkName(admin.getName());
                 waybillCar.setLoadLinkPhone(admin.getPhone());
             }
-        } else {
+        } else if (WaybillTypeEnum.PICK.code == type){
 
+            if (StringUtils.isBlank(waybillCar.getUnloadLinkPhone())) {
+                Admin admin = csAdminService.findLoop(waybillCar.getEndStoreId());
+                if (admin == null) {
+                    throw new ParameterException("业务中心无人员");
+                }
+                waybillCar.setUnloadLinkUserId(admin.getId());
+                waybillCar.setUnloadLinkName(admin.getName());
+                waybillCar.setUnloadLinkPhone(admin.getPhone());
+            }
+        }else{
+            if (StringUtils.isBlank(waybillCar.getLoadLinkPhone())) {
+                Admin admin = csAdminService.findLoop(waybillCar.getStartStoreId());
+                if (admin == null) {
+                    throw new ParameterException("业务中心无人员");
+                }
+                waybillCar.setLoadLinkUserId(admin.getId());
+                waybillCar.setLoadLinkName(admin.getName());
+                waybillCar.setLoadLinkPhone(admin.getPhone());
+            }
             if (StringUtils.isBlank(waybillCar.getUnloadLinkPhone())) {
                 Admin admin = csAdminService.findLoop(waybillCar.getEndStoreId());
                 if (admin == null) {
@@ -525,7 +544,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             //业务中心信息赋值
             fillWaybillcarStoreInfo(waybillCar);
             //提送车业务员
-            fillWaybillCarHandleAdmin(waybillCar, waybill.getType());
+            fillWaybillCarReceiveAdmin(waybillCar, waybill.getType());
             //计算预计到达时间
             fillWaybillCarExpectEndTime(waybillCar);
             waybillCar.setReceiptFlag(waybillCar.getUnloadLinkPhone().equals(order.getBackContactPhone()));
@@ -777,10 +796,18 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 fillWaybillCarCityInfo(waybillCar);
                 //业务中心信息赋值
                 fillWaybillcarStoreInfo(waybillCar);
+
                 //填充接待员
+                if (StringUtils.isBlank(waybillCar.getLoadLinkPhone())) {
+                    if (waybillCar.getStartStoreId() != null && waybillCar.getStartStoreId() > 0) {
+                        fillWaybillCarReceiveAdmin(waybillCar, waybill.getType());
+                    } else {
+                        throw new ParameterException("请填写提车联系人");
+                    }
+                }
                 if (StringUtils.isBlank(waybillCar.getUnloadLinkPhone())) {
-                    if (waybillCar.getEndStoreId() != null) {
-                        fillWaybillCarHandleAdmin(waybillCar, waybill.getType());
+                    if (waybillCar.getEndStoreId() != null && waybillCar.getStartStoreId() > 0) {
+                        fillWaybillCarReceiveAdmin(waybillCar, waybill.getType());
                     } else {
                         throw new ParameterException("请填写收车人");
                     }

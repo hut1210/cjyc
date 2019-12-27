@@ -18,7 +18,7 @@ public class MetaDataEntiy {
     private String loginId;
     /**当前app登陆人的名称*/
     private String loginName;
-    /**当前app登陆人的名称*/
+    /**当前app登陆人的类型*/
     private String loginType;
     /**支付来源子编号，根据支付类型*/
     private String sourceNos;

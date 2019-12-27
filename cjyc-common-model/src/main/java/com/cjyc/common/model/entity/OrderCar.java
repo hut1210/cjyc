@@ -143,5 +143,7 @@ public class OrderCar implements Serializable {
     @ApiModelProperty(value = "物流费支付时间")
     private Long wlPayTime;
 
+    @ApiModelProperty(value = "完成时间")
+    private Long finishTime;
 
 }

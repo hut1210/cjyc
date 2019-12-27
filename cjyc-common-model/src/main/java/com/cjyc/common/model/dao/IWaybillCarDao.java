@@ -152,6 +152,7 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
     Integer waybillCarCount(@Param("type") Integer type,@Param("driverId") Long driverId);
 
     int updateForInStore(Long id);
+    int updateForFinish(Long id);
 
     /**
      * 功能描述: 分页查询在库列表
