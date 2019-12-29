@@ -1632,14 +1632,14 @@
     </select>
     <select id="findAfterWaybillCar" resultType="com.cjyc.common.model.entity.WaybillCar">
         select wc.*
-        from w_waybill_car
+        from w_waybill_car wc
         where wc.order_car_no = #{orderCarNo}
         and wc.id > #{waybillCarId}
         and wc.state &lt; 100
     </select>
     <select id="findNextWaybillCar" resultType="com.cjyc.common.model.entity.WaybillCar">
         select wc.*
-        from w_waybill_car
+        from w_waybill_car wc
         where wc.order_car_no = #{orderCarNo}
         and wc.id > #{waybillCarId}
         and wc.state &lt; 100
@@ -1648,14 +1648,14 @@
 
     <delete id="cancelAfterWaybillCar">
         update w_waybill_car wc
-        set state = 113
+        set wc.state = 113
         where wc.order_car_no = #{orderCarNo}
         and wc.id > #{waybillCarId}
         and wc.state &lt; 100
     </delete>
     <delete id="cancelBatch">
         update w_waybill_car wc
-        set state = 113
+        set wc.state = 113
         where wc.state &lt; 100
         and wc.id in
         <foreach collection="collect" index="index" item="item" open="(" separator="," close=")">

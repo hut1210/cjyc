@@ -1015,8 +1015,9 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             //取消该车辆所有后续调度
             List<WaybillCar> afterWaybillCars = waybillCarDao.findAfterWaybillCar(waybillCar.getId(), waybillCar.getOrderCarNo());
             if(!CollectionUtils.isEmpty(afterWaybillCars)){
-                waybillCarDao.cancelBatch(afterWaybillCars);
-                List<Long> list = afterWaybillCars.stream().map(WaybillCar::getId).collect(Collectors.toList());
+                List<Long> collect = afterWaybillCars.stream().map(WaybillCar::getId).collect(Collectors.toList());
+                waybillCarDao.cancelBatch(collect);
+                List<Long> list = collect;
                 List<Task> afterTasks = taskDao.findListByWaybillCarIds(list);
                 if(CollectionUtils.isEmpty(afterTasks)){
                     afterTasks.forEach(task -> {
