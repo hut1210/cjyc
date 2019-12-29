@@ -342,8 +342,7 @@
         set car_num = (
             select count(0)
             from w_waybill_car
-            where waybill_id =
-            #{waybillId}
+            where waybill_id = #{waybillId}
             and state &lt;= 100
         )
         where id = #{waybillId}

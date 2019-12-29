@@ -1634,14 +1634,14 @@
         select wc.*
         from w_waybill_car
         where wc.order_car_no = #{orderCarNo}
-        and wc.id > #{id}
+        and wc.id > #{waybillCarId}
         and wc.state &lt; 100
     </select>
     <select id="findNextWaybillCar" resultType="com.cjyc.common.model.entity.WaybillCar">
         select wc.*
         from w_waybill_car
         where wc.order_car_no = #{orderCarNo}
-        and wc.id > #{id}
+        and wc.id > #{waybillCarId}
         and wc.state &lt; 100
         limit 1
     </select>
@@ -1650,7 +1650,7 @@
         update w_waybill_car wc
         set state = 113
         where wc.order_car_no = #{orderCarNo}
-        and wc.id > #{id}
+        and wc.id > #{waybillCarId}
         and wc.state &lt; 100
     </delete>
     <delete id="cancelBatch">

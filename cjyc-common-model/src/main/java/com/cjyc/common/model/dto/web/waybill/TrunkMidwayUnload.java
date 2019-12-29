@@ -10,12 +10,6 @@ import java.util.List;
 
 @Data
 public class TrunkMidwayUnload {
-    @NotNull(message = "loginId不能为空")
-    @ApiModelProperty(value = "用户ID", required = true)
-    private Long loginId;
-
-    @ApiModelProperty(hidden = true)
-    private String loginName;
 
     @NotNull(message = "运单ID不能为空")
     @ApiModelProperty(value = "运单ID")
