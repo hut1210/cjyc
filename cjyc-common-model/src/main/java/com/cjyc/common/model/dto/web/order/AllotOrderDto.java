@@ -18,12 +18,12 @@ public class AllotOrderDto {
     @NotNull
     @ApiModelProperty(value = "操作人ID", required = true)
     private Long loginId;
-    @ApiModelProperty(value = "操作人(不用传)")
+    @ApiModelProperty(value = "操作人", hidden = true)
     private String loginName;
 
     @NotNull
     @ApiModelProperty(value = "被分配人ID", required = true)
     private Long toAdminId;
-    @ApiModelProperty(value = "被分配人名称")
+    @ApiModelProperty(value = "被分配人名称", hidden = true)
     private String toAdminName;
 }

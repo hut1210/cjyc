@@ -20,6 +20,7 @@ import com.cjyc.common.model.vo.web.waybill.LocalListWaybillCarVo;
 import com.cjyc.common.model.vo.web.waybill.TrunkCarListWaybillCarVo;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -175,4 +176,10 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
     WaybillCar findLastByOderCarIdAndId(@Param("id") Long id, @Param("orderCarId") Long orderCarId);
 
     List<WaybillCar> findUnAllotListByWaybillId(Long waybillId);
+
+    List<WaybillCar> findAfterWaybillCar(@Param("waybillCarId") Long waybillCarId, @Param("orderCarNo") String orderCarNo);
+
+    WaybillCar findNextWaybillCar(@Param("waybillCarId") Long waybillCarId, @Param("orderCarNo") String orderCarNo);
+
+    int cancelBatch(Collection<WaybillCar> afterWaybillCars);
 }

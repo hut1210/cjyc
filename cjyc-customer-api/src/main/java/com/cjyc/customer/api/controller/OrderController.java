@@ -6,6 +6,7 @@ import com.cjyc.common.model.dto.customer.order.SimpleSaveOrderDto;
 import com.cjyc.common.model.dto.web.order.CancelOrderDto;
 import com.cjyc.common.model.dto.web.order.SaveOrderDto;
 import com.cjyc.common.model.entity.Customer;
+import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterDetailVo;
@@ -33,7 +34,7 @@ import javax.annotation.Resource;
 @RestController
 public class OrderController {
     @Autowired
-    IOrderService orderService;
+    private IOrderService orderService;
     @Resource
     private ICsCustomerService csCustomerService;
     @Resource
@@ -51,9 +52,10 @@ public class OrderController {
         reqDto.setLoginName(customer.getName());
         reqDto.setCreateUserId(customer.getUserId());
         reqDto.setCreateUserName(customer.getName());
+        reqDto.setState(OrderStateEnum.WAIT_SUBMIT.code);
 
         //发送推送信息
-        return orderService.save(reqDto);
+        return csOrderService.save(reqDto);
     }
 
     /**
@@ -69,9 +71,10 @@ public class OrderController {
         reqDto.setLoginName(customer.getName());
         reqDto.setCreateUserId(customer.getUserId());
         reqDto.setCreateUserName(customer.getName());
+        reqDto.setState(OrderStateEnum.SUBMITTED.code);
 
         //发送推送信息
-        return orderService.submit(reqDto);
+        return csOrderService.save(reqDto);
     }
 
     /**

@@ -277,12 +277,7 @@
             </foreach>
         </where>
     </delete>
-    <delete id="cancelAfterWaybillCar">
-        update w_waybill_car wc
-        set state = 113
-        where wc.order_car_no = #{orderCarNo}
-        and wc.id >= #{id}
-    </delete>
+
 
 
     <select id="getWayBillCarrier" parameterType="com.cjyc.common.model.vo.web.WayBillCarrierVo"
@@ -1637,5 +1632,37 @@
         where waybill_id = #{waybillId}
         and state = 0
     </select>
+    <select id="findAfterWaybillCar" resultType="com.cjyc.common.model.entity.WaybillCar">
+        select wc.*
+        from w_waybill_car
+        where wc.order_car_no = #{orderCarNo}
+        and wc.id > #{id}
+        and wc.state &lt; 100
+    </select>
+    <select id="findNextWaybillCar" resultType="com.cjyc.common.model.entity.WaybillCar">
+        select wc.*
+        from w_waybill_car
+        where wc.order_car_no = #{orderCarNo}
+        and wc.id > #{id}
+        and wc.state &lt; 100
+        limit 1
+    </select>
+
+    <delete id="cancelAfterWaybillCar">
+        update w_waybill_car wc
+        set state = 113
+        where wc.order_car_no = #{orderCarNo}
+        and wc.id > #{id}
+        and wc.state &lt; 100
+    </delete>
+    <delete id="cancelBatch">
+        update w_waybill_car wc
+        set state = 113
+        where wc.state &lt; 100
+        and wc.id in
+        <foreach collection="collect" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
 
 </mapper>

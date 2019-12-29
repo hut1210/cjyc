@@ -80,7 +80,7 @@ public interface ITaskDao extends BaseMapper<Task> {
      */
     List<TaskBillVo> selectHistoryTaskPage(TaskQueryDto dto);
 
-    int updateNumForUnload(@Param("taskId") Long taskId, @Param("unLoadNum")int unLoadNum);
+    int updateUnloadNum(@Param("taskId") Long taskId, @Param("count")int count);
 
     int updateStateById(@Param("taskId") Long taskId, @Param("state") int state);
 
@@ -88,7 +88,7 @@ public interface ITaskDao extends BaseMapper<Task> {
 
     Task findByWaybillCarId(Long waybillCarId);
 
-    List<Task> findListByWaybillCarIds(@Param("collection") Collection<Long> waybillCarIdSet);
+    List<Task> findListByWaybillCarIds(@Param("collection") Collection<Long> waybillCarIds);
 
     /**
      * 功能描述: 查询待提车，待交车列表
@@ -131,4 +131,6 @@ public interface ITaskDao extends BaseMapper<Task> {
     int updateForFinish(Long id);
 
     int updateNum(@Param("taskId") Long taskId);
+
+    int updateLoadNum(@Param("taskId") Long taskId, @Param("count") int count);
 }

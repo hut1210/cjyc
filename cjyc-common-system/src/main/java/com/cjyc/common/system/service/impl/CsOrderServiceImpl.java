@@ -16,6 +16,7 @@ import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
 import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.enums.city.CityLevelEnum;
+import com.cjyc.common.model.enums.customer.CustomerStateEnum;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.enums.log.OrderLogEnum;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
@@ -43,6 +44,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.List;
@@ -91,51 +93,51 @@ public class CsOrderServiceImpl implements ICsOrderService {
     private ICsCustomerLineService csCustomerLineService;
 
     @Override
-    public ResultVo save(SaveOrderDto paramsDto, OrderStateEnum stateEnum) {
+    public ResultVo save(SaveOrderDto paramsDto) {
         //获取参数
         Long orderId = paramsDto.getOrderId();
+        long currentTimeMillis = System.currentTimeMillis();
 
         Order order = null;
-        boolean newOrderFlag = false;
+        boolean isNewOrder = false;
+        //更新订单
         if (orderId != null) {
-            //更新订单
             order = orderDao.selectById(orderId);
         }
+        //新建订单
         if (order == null) {
-            //新建订单
-            newOrderFlag = true;
+            isNewOrder = true;
             order = new Order();
-
         }
+        //copy属性
         BeanUtils.copyProperties(paramsDto, order);
         //查询三级城市
         fillOrderCityInfo(order);
         fillOrderStoreInfoForSave(order);
         fillOrderInputStore(order);
-        fillCarryTypeInfo(order);
+        fillOrderLocalCarryTypeInfo(order);
         /**1、组装订单数据
          */
-        if (newOrderFlag) {
+        if (isNewOrder) {
             order.setNo(csSendNoService.getNo(SendNoTypeEnum.ORDER));
+            order.setSource(paramsDto.getClientId());
+            order.setCreateTime(currentTimeMillis);
         }
-        order.setState(stateEnum.code);
-        order.setSource(order.getSource() == null ? paramsDto.getClientId() : order.getSource());
-        order.setCreateTime(System.currentTimeMillis());
+        order.setState(paramsDto.getState());
         order.setTotalFee(MoneyUtil.convertYuanToFen(order.getTotalFee()));
 
         //更新或插入订单
-        int row = newOrderFlag ? orderDao.insert(order) : orderDao.updateById(order);
+        int row = isNewOrder ? orderDao.insert(order) : orderDao.updateById(order);
 
         /**2、更新或保存车辆信息*/
         List<SaveOrderCarDto> carDtoList = paramsDto.getOrderCarList();
-        if (carDtoList == null || carDtoList.isEmpty()) {
+        if (CollectionUtils.isEmpty(carDtoList)) {
             //没有车辆，结束
-            return BaseResultUtil.success();
+            return BaseResultUtil.success("下单成功，订单编号{0}", order.getNo());
         }
 
-        //费用统计变量
         //删除旧的车辆数据
-        if (!newOrderFlag) {
+        if (!isNewOrder) {
             orderCarDao.deleteBatchByOrderId(order.getId());
         }
         int noCount = 1;
@@ -147,16 +149,20 @@ public class CsOrderServiceImpl implements ICsOrderService {
             }
             //验证vin码是否重复
             validateOrderCarVinInfo(vinSet, dto.getVin());
+            //验证车牌号是否重复
             validateOrderCarPlateNoInfo(plateNoSet, dto.getPlateNo());
 
             OrderCar orderCar = new OrderCar();
-            //复制数据
+            //copy数据
             BeanUtils.copyProperties(dto, orderCar);
             //填充数据
             orderCar.setOrderNo(order.getNo());
             orderCar.setOrderId(order.getId());
             orderCar.setNo(csSendNoService.formatNo(order.getNo(), noCount, 3));
             orderCar.setState(OrderCarStateEnum.WAIT_ROUTE.code);
+            orderCar.setNowAreaCode(order.getStartAreaCode());
+            orderCar.setPickType(order.getPickType());
+            orderCar.setBackType(order.getBackType());
             orderCar.setNowAreaCode(order.getStartAreaCode());
             orderCar.setPickFee(MoneyUtil.convertYuanToFen(dto.getPickFee()));
             orderCar.setTrunkFee(MoneyUtil.convertYuanToFen(dto.getTrunkFee()));
@@ -167,6 +173,181 @@ public class CsOrderServiceImpl implements ICsOrderService {
             noCount++;
         }
         return BaseResultUtil.success("下单成功，订单编号{0}", order.getNo());
+    }
+
+    @Override
+    public ResultVo commit(CommitOrderDto paramsDto) {
+        //验证客户
+        ResultVo<Customer> validateCustomerResult = validateCustomer(paramsDto);
+        if (ResultEnum.SUCCESS.getCode() != validateCustomerResult.getCode()) {
+            return validateCustomerResult;
+        }
+        Customer customer = validateCustomerResult.getData();
+        paramsDto.setCustomerId(customer.getId());
+        //提交订单
+        Order order = commitOrder(paramsDto);
+        return BaseResultUtil.success("下单{0}成功", order.getNo());
+    }
+
+    private Order commitOrder(CommitOrderDto paramsDto) {
+        String lockKey = null;
+        boolean isNewOrder = false;
+        try {
+            //获取参数
+            Long orderId = paramsDto.getOrderId();
+            long currentTimeMillis = System.currentTimeMillis();
+
+            Order order = null;
+            //更新订单
+            if (orderId != null) {
+                order = orderDao.selectById(orderId);
+                if (order != null) {
+                    lockKey = RedisKeys.getDispatchLockForOrderUpdate(order.getNo());
+                    redisLock.lock(lockKey, 30000, 100, 300);
+                }
+            }
+            //新建订单
+            if (order == null) {
+                isNewOrder = true;
+                order = new Order();
+            }
+            //copy属性
+            BeanUtils.copyProperties(paramsDto, order);
+            //城市信息
+            fillOrderCityInfo(order);
+            //所属业务中心
+            fillOrderInputStore(order);
+            //业务中心
+            fillOrderStoreInfo(order);
+            //提送车类型
+            fillOrderLocalCarryTypeInfo(order);
+            //订单编号
+            if (isNewOrder) {
+                order.setNo(csSendNoService.getNo(SendNoTypeEnum.ORDER));
+                order.setSource(paramsDto.getClientId());
+                order.setCreateTime(currentTimeMillis);
+            }
+            order.setState(OrderStateEnum.SUBMITTED.code);
+            order.setTotalFee(MoneyUtil.convertYuanToFen(paramsDto.getTotalFee()));
+
+            //更新或插入订单
+            int row = isNewOrder ? orderDao.insert(order) : orderDao.updateById(order);
+
+            /**2、更新或保存车辆信息*/
+            List<CommitOrderCarDto> carDtoList = paramsDto.getOrderCarList();
+            //删除旧的车辆数据
+            if (!isNewOrder) {
+                orderCarDao.deleteBatchByOrderId(order.getId());
+            }
+            int count = 1;//车辆序号
+            List<OrderCar> orderCarList = Lists.newArrayList();
+            Set<String> vinSet = Sets.newHashSet();
+            Set<String> plateNoSet = Sets.newHashSet();
+            for (CommitOrderCarDto dto : carDtoList) {
+                if (dto == null) {
+                    continue;
+                }
+                //验证vin码是否重复
+                validateOrderCarVinInfo(vinSet, dto.getVin());
+                //验证车牌号是否重复
+                validateOrderCarPlateNoInfo(plateNoSet, dto.getPlateNo());
+
+                OrderCar orderCar = new OrderCar();
+                //copy数据
+                BeanUtils.copyProperties(dto, orderCar);
+                //填充数据
+                orderCar.setOrderNo(order.getNo());
+                orderCar.setOrderId(order.getId());
+                orderCar.setNo(csSendNoService.formatNo(order.getNo(), count, 3));
+                orderCar.setPickType(order.getPickType());
+                orderCar.setBackType(order.getBackType());
+                orderCar.setNowAreaCode(order.getStartAreaCode());
+                orderCar.setState(OrderCarStateEnum.WAIT_ROUTE.code);
+                orderCar.setPickFee(MoneyUtil.convertYuanToFen(dto.getPickFee()));
+                orderCar.setTrunkFee(MoneyUtil.convertYuanToFen(dto.getTrunkFee()));
+                orderCar.setBackFee(MoneyUtil.convertYuanToFen(dto.getBackFee()));
+                orderCar.setAddInsuranceFee(MoneyUtil.convertYuanToFen(dto.getAddInsuranceFee()));
+                orderCarDao.insert(orderCar);
+
+                //提取数据
+                orderCarList.add(orderCar);
+                count++;
+            }
+            if (CollectionUtils.isEmpty(orderCarList)) {
+                throw new ParameterException("订单至少包含一辆车");
+            }
+
+            //均摊优惠券费用
+            shareCouponOffsetFee(order.getCouponOffsetFee(), orderCarList);
+            //均摊总费用
+            shareTotalFee(order.getTotalFee(), orderCarList);
+            //更新车辆信息
+            orderCarList.forEach(orderCar -> orderCarDao.updateById(orderCar));
+
+            //合计费用：提、干、送、保险
+            fillOrderFeeInfo(order, orderCarList);
+            order.setCarNum(orderCarList.size());
+            orderDao.updateById(order);
+
+            //记录发车人和收车人
+            csCustomerContactService.asyncSave(order);
+            //记录客户历史线路
+            csCustomerLineService.asyncSave(order);
+            //记录订单日志
+            csOrderLogService.asyncSave(order, OrderLogEnum.COMMIT,
+                    new String[]{MessageFormat.format(OrderLogEnum.COMMIT.getInnerLog(), order.getNo()),
+                            MessageFormat.format(OrderLogEnum.COMMIT.getInnerLog(), order.getNo())},
+                    new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), UserTypeEnum.ADMIN));
+            return order;
+        } finally {
+            if (!isNewOrder) {
+                redisLock.releaseLock(lockKey);
+            }
+        }
+
+    }
+
+
+    /**
+     * 审核订单
+     * @param paramsDto
+     * @author JPG
+     * @since 2019/11/5 15:03
+     */
+    @Override
+    public ResultVo check(CheckOrderDto paramsDto) {
+        @NotNull Long orderId = paramsDto.getOrderId();
+        long currentTimeMillis = System.currentTimeMillis();
+
+        Order order = orderDao.selectById(orderId);
+        //验证必要信息是否完全
+        validateOrderFeild(order);
+
+        List<OrderCar> orderCarList = orderCarDao.findListByOrderId(order.getId());
+        if (CollectionUtils.isEmpty(orderCarList)) {
+            throw new ParameterException("订单车辆列表不能为空，请先通过[修改订单]完善信息");
+        }
+
+        //根据到付和预付置不同状态
+        if (PayModeEnum.PREPAY.code == order.getPayType()) {
+            order.setState(OrderStateEnum.WAIT_PREPAY.code);
+            //TODO 支付通知
+        } else {
+            order.setState(OrderStateEnum.CHECKED.code);
+        }
+        order.setCheckTime(currentTimeMillis);
+        order.setCheckUserName(paramsDto.getLoginName());
+        order.setCheckUserId(paramsDto.getLoginId());
+        orderDao.updateById(order);
+
+        //记录订单日志
+        csOrderLogService.asyncSave(order, OrderLogEnum.CHECK,
+                new String[]{MessageFormat.format(OrderLogEnum.CHECK.getInnerLog(), order.getNo()),
+                        MessageFormat.format(OrderLogEnum.CHECK.getInnerLog(), order.getNo())},
+                new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), UserTypeEnum.ADMIN));
+        //TODO 处理优惠券为使用状态，优惠券有且仅能验证一次
+
+        return BaseResultUtil.success();
     }
 
     private Order fillOrderStoreInfoForSave(Order order) {
@@ -201,149 +382,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         return order;
     }
 
-    @Override
-    public ResultVo commit(CommitOrderDto paramsDto) {
-        //验证客户
-        ResultVo<Customer> validateCustomerResult = validateCustomer(paramsDto);
-        if (ResultEnum.SUCCESS.getCode() != validateCustomerResult.getCode()) {
-            return validateCustomerResult;
-        }
-        Customer customer = validateCustomerResult.getData();
-        paramsDto.setCustomerId(customer.getId());
-        //提交订单
-        Order order = commitOrder(paramsDto);
-        return BaseResultUtil.success("下单{0}成功", order.getNo());
-    }
-
-    private Order commitOrder(CommitOrderDto paramsDto) {
-        //获取参数
-        Long orderId = paramsDto.getOrderId();
-
-        Order order = null;
-        boolean newOrderFlag = false;
-        String lockKey = null;
-        try {
-            if (orderId != null) {
-                //更新订单
-                order = orderDao.selectById(orderId);
-                if (order != null) {
-                    lockKey = RedisKeys.getDispatchLockForOrderUpdate(order.getNo());
-                    redisLock.lock(lockKey, 30000, 100, 300);
-                }
-            }
-            if (order == null) {
-                //新建订单
-                newOrderFlag = true;
-                order = new Order();
-            }
-            BeanUtils.copyProperties(paramsDto, order);
-            fillOrderInputStore(order);
-            //城市信息
-            fillOrderCityInfo(order);
-            //业务中心信息
-            fillOrderStoreInfo(order);
-            fillCarryTypeInfo(order);
-            //订单编号
-            if (newOrderFlag) {
-                order.setNo(csSendNoService.getNo(SendNoTypeEnum.ORDER));
-            }
-            //TODO 验证物流券费用
-            //TODO 校验总费用
-
-            order.setState(OrderStateEnum.SUBMITTED.code);
-            if (order.getSource() == null) {
-                order.setSource(paramsDto.getClientId());
-            }
-            order.setCreateTime(System.currentTimeMillis());
-            order.setTotalFee(MoneyUtil.convertYuanToFen(paramsDto.getTotalFee()));
-
-            //更新或插入订单
-            int row = newOrderFlag ? orderDao.insert(order) : orderDao.updateById(order);
-
-            /**2、更新或保存车辆信息*/
-            List<CommitOrderCarDto> carDtoList = paramsDto.getOrderCarList();
-            //删除旧的车辆数据
-            if (!newOrderFlag) {
-                orderCarDao.deleteBatchByOrderId(order.getId());
-            }
-            //费用统计变量
-            int count = 0;
-            List<OrderCar> orderCarList = Lists.newArrayList();
-            Set<String> vinSet = Sets.newHashSet();
-            Set<String> plateNoSet = Sets.newHashSet();
-            for (CommitOrderCarDto dto : carDtoList) {
-                if (dto == null) {
-                    continue;
-                }
-                //编号
-                count++;
-                //验证vin码是否重复
-                validateOrderCarVinInfo(vinSet, dto.getVin());
-                //验证车牌号是否重复
-                validateOrderCarPlateNoInfo(plateNoSet, dto.getPlateNo());
-                //复制数据
-                OrderCar orderCar = new OrderCar();
-                BeanUtils.copyProperties(dto, orderCar);
-                //填充数据
-                orderCar.setOrderNo(order.getNo());
-                orderCar.setOrderId(order.getId());
-                orderCar.setPickType(order.getPickType());
-                orderCar.setBackType(order.getBackType());
-                orderCar.setNowAreaCode(order.getStartAreaCode());
-                orderCar.setNo(csSendNoService.formatNo(order.getNo(), count, 3));
-                orderCar.setState(OrderCarStateEnum.WAIT_ROUTE.code);
-                orderCar.setPickFee(MoneyUtil.convertYuanToFen(dto.getPickFee()));
-                orderCar.setTrunkFee(MoneyUtil.convertYuanToFen(dto.getTrunkFee()));
-                orderCar.setNowAreaCode(order.getStartAreaCode());
-                orderCar.setBackFee(MoneyUtil.convertYuanToFen(dto.getBackFee()));
-                orderCar.setAddInsuranceFee(MoneyUtil.convertYuanToFen(dto.getAddInsuranceFee()));
-                orderCarDao.insert(orderCar);
-
-                //提取数据
-                orderCarList.add(orderCar);
-            }
-            if (CollectionUtils.isEmpty(orderCarList)) {
-                throw new ParameterException("订单至少包含一辆车");
-            }
-
-            //均摊优惠券费用
-            if (order.getCouponOffsetFee() != null && order.getCouponOffsetFee().compareTo(BigDecimal.ZERO) > 0) {
-                shareCouponOffsetFee(order, orderCarList);
-            }
-            //均摊总费用
-            if (order.getTotalFee() != null && order.getTotalFee().compareTo(BigDecimal.ZERO) > 0) {
-                shareTotalFee(order, orderCarList);
-            }
-            //更新车辆信息
-            orderCarList.forEach(orderCar -> orderCarDao.updateById(orderCar));
-
-            //合计费用：提、干、送、保险
-            fillOrderFeeInfo(order, orderCarList);
-            order.setCarNum(orderCarList.size());
-            orderDao.updateById(order);
-
-            //记录发车人和收车人
-            csCustomerContactService.asyncSaveByOrder(order);
-            //记录客户历史线路
-            if (newOrderFlag) {
-                csCustomerLineService.asyncSave(order);
-            }
-            //记录订单日志
-            csOrderLogService.asyncSave(order, OrderLogEnum.COMMIT,
-                    new String[]{MessageFormat.format(OrderLogEnum.COMMIT.getInnerLog(), order.getNo()),
-                            MessageFormat.format(OrderLogEnum.COMMIT.getInnerLog(), order.getNo())},
-                    new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), UserTypeEnum.ADMIN));
-        } finally {
-            if (!newOrderFlag) {
-                redisLock.releaseLock(lockKey);
-            }
-        }
-
-        return order;
-
-    }
-
-    private Order fillCarryTypeInfo(Order order) {
+    private Order fillOrderLocalCarryTypeInfo(Order order) {
         if(order.getPickType() == null || order.getPickType() <= 0){
             order.setPickType(null);
         }
@@ -471,7 +510,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                     customer.setContactPhone(paramsDto.getCustomerPhone());
                     customer.setType(CustomerTypeEnum.INDIVIDUAL.code);
                     //customer.setInitial()
-                    customer.setState(1);
+                    customer.setState(CustomerStateEnum.CHECKED.code);
                     customer.setPayMode(PayModeEnum.COLLECT.code);
                     customer.setCreateTime(System.currentTimeMillis());
                     customer.setCreateUserId(paramsDto.getLoginId());
@@ -485,48 +524,6 @@ public class CsOrderServiceImpl implements ICsOrderService {
             }
         }
         return BaseResultUtil.success(customer);
-    }
-
-    /**
-     * 审核订单
-     *
-     * @param paramsDto
-     * @author JPG
-     * @since 2019/11/5 15:03
-     */
-    @Override
-    public ResultVo check(CheckOrderDto paramsDto) {
-        Order order = orderDao.selectById(paramsDto.getOrderId());
-        //验证必要信息是否完全
-        validateOrderFeild(order);
-
-        List<OrderCar> orderCarList = orderCarDao.findListByOrderId(order.getId());
-        if (CollectionUtils.isEmpty(orderCarList)) {
-            throw new ParameterException("[订单车辆]-为空");
-        }
-
-        //根据到付和预付置不同状态
-        if (PayModeEnum.PREPAY.code == order.getPayType()) {
-            order.setState(OrderStateEnum.WAIT_PREPAY.code);
-            //TODO 支付通知
-        } else {
-            order.setState(OrderStateEnum.CHECKED.code);
-        }
-        order.setCheckTime(System.currentTimeMillis());
-        order.setCheckUserName(paramsDto.getLoginName());
-        order.setCheckUserId(paramsDto.getLoginId());
-        orderDao.updateById(order);
-
-        //记录订单日志
-        csOrderLogService.asyncSave(order, OrderLogEnum.CHECK,
-                new String[]{MessageFormat.format(OrderLogEnum.CHECK.getInnerLog(), order.getNo()),
-                        MessageFormat.format(OrderLogEnum.CHECK.getInnerLog(), order.getNo())},
-                new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), UserTypeEnum.ADMIN));
-        //TODO 处理优惠券为使用状态，优惠券有且仅能验证一次，修改时怎么保证
-
-        //TODO 路由轨迹
-
-        return BaseResultUtil.success();
     }
 
     /**
@@ -608,23 +605,23 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 || order.getEndCityCode() == null
                 || order.getEndAreaCode() == null
                 || order.getEndAddress() == null) {
-            throw new ParameterException("地址不完整");
+            throw new ParameterException("地址信息不完整，请先通过[修改订单]完善信息");
         }
         if (order.getCarNum() == null || order.getCarNum() <= 0) {
-            throw new ParameterException("车辆数不能小于一辆");
+            throw new ParameterException("车辆数不能小于1，请先通过[修改订单]完善信息");
         }
         if (order.getPickType() == null
                 || order.getPickContactPhone() == null) {
-            throw new ParameterException("提车联系人/提车方式不能为空");
+            throw new ParameterException("提车联系人/提车方式不能为空，请先通过[修改订单]完善信息");
         }
         if (order.getBackType() == null
                 || order.getBackContactPhone() == null) {
-            throw new ParameterException("收车联系人/收车方式不能为空");
+            throw new ParameterException("收车联系人/收车方式不能为空，请先通过[修改订单]完善信息");
         }
         if(order.getStartStoreId() == null || order.getStartStoreId() == -5
                 || order.getEndStoreId() == null || order.getEndStoreId() == -5
                 || order.getInputStoreId() == null || order.getInputStoreId() == -5){
-            throw new ParameterException("请先通过[修改订单]完善订单业务中心信息");
+            throw new ParameterException("业务中心信息不能为空，请先通过[修改订单]完善信息");
         }
     }
 
@@ -637,13 +634,11 @@ public class CsOrderServiceImpl implements ICsOrderService {
      */
     @Override
     public ResultVo allot(AllotOrderDto paramsDto) {
-        Order order = orderDao.selectById(paramsDto.getOrderId());
-        if (order == null || order.getState() >= OrderStateEnum.WAIT_RECHECK.code) {
-            return BaseResultUtil.fail("订单不允许修改");
-        }
-        order.setAllotToUserId(paramsDto.getToAdminId());
-        order.setAllotToUserName(paramsDto.getToAdminName());
-        orderDao.updateById(order);
+        Order o = new Order();
+        o.setId(paramsDto.getOrderId());
+        o.setAllotToUserId(paramsDto.getToAdminId());
+        o.setAllotToUserName(paramsDto.getToAdminName());
+        orderDao.updateById(o);
         return BaseResultUtil.success();
     }
 
@@ -658,14 +653,14 @@ public class CsOrderServiceImpl implements ICsOrderService {
     public ResultVo reject(RejectOrderDto paramsDto) {
         Order order = orderDao.selectById(paramsDto.getOrderId());
         if (order == null) {
-            return BaseResultUtil.fail("[订单]-不存在");
+            return BaseResultUtil.fail("订单不存在");
         }
         Integer oldState = order.getState();
         if (oldState <= OrderStateEnum.WAIT_SUBMIT.code) {
-            return BaseResultUtil.fail("[订单]-未提交，无法驳回");
+            return BaseResultUtil.fail("订单未提交，无法驳回");
         }
         if (oldState > OrderStateEnum.CHECKED.code) {
-            return BaseResultUtil.fail("[订单]-已经运输无法驳回");
+            return BaseResultUtil.fail("订单运输中，无法驳回");
         }
         orderDao.updateStateById(OrderStateEnum.WAIT_SUBMIT.code, order.getId());
         //添加操作日志
@@ -691,15 +686,16 @@ public class CsOrderServiceImpl implements ICsOrderService {
             return BaseResultUtil.fail("订单不存在");
         }
         if (order.getState() >= OrderStateEnum.TRANSPORTING.code) {
-            return BaseResultUtil.fail("当前订单状态不允许取消");
+            return BaseResultUtil.fail("订单运输中，不允许取消");
         }
-        Integer oldState = order.getState();
+        String oldStateName = OrderStateEnum.valueOf(order.getState()).name;
+
         order.setState(OrderStateEnum.F_CANCEL.code);
         orderDao.updateById(order);
 
         //添加操作日志
         orderChangeLogService.asyncSave(order, OrderChangeTypeEnum.CANCEL,
-                new Object[]{oldState, order.getState(), paramsDto.getReason()},
+                new Object[]{oldStateName, OrderStateEnum.F_CANCEL.name, paramsDto.getReason()},
                 new Object[]{paramsDto.getLoginId(), paramsDto.getLoginName()});
         //TODO 发送消息
         return BaseResultUtil.success();
@@ -713,15 +709,16 @@ public class CsOrderServiceImpl implements ICsOrderService {
             return BaseResultUtil.fail("订单不存在");
         }
         if (order.getState() > OrderStateEnum.CHECKED.code) {
-            return BaseResultUtil.fail("当前订单状态不允许作废");
+            return BaseResultUtil.fail("订单运输中，不允许作废");
         }
-        Integer oldState = order.getState();
+        String oldStateName = OrderStateEnum.valueOf(order.getState()).name;
+
         order.setState(OrderStateEnum.F_OBSOLETE.code);
         orderDao.updateById(order);
 
         //添加操作日志
         orderChangeLogService.asyncSave(order, OrderChangeTypeEnum.OBSOLETE,
-                new Object[]{oldState, OrderStateEnum.F_OBSOLETE.code, paramsDto.getReason()},
+                new Object[]{oldStateName, OrderStateEnum.F_OBSOLETE.name, paramsDto.getReason()},
                 new Object[]{paramsDto.getLoginId(), paramsDto.getLoginName()});
 
         return BaseResultUtil.success();
@@ -733,9 +730,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         Long orderId = paramsDto.getOrderId();
         Order order = orderDao.selectById(orderId);
         //记录历史数据
-        OrderVo oldOrderVo = new OrderVo();
-        BeanUtils.copyProperties(order, oldOrderVo);
-        oldOrderVo.setOrderCarList(orderCarDao.findListByOrderId(orderId));
+        OrderVo oldOrderVo = getFullOrderVo(order, new OrderVo());
 
         /**2、更新或保存车辆信息*/
         List<ChangePriceOrderCarDto> carDtoList = paramsDto.getOrderCarList();
@@ -744,40 +739,35 @@ public class CsOrderServiceImpl implements ICsOrderService {
             if (dto == null) {
                 continue;
             }
-            //统计数量
-            OrderCar oc = orderCarDao.selectById(dto.getId());
-            if (oc == null) {
+            OrderCar orderCar = orderCarDao.selectById(dto.getId());
+            if (orderCar == null) {
                 throw new ServerException("ID为{}的车辆，不存在", dto.getId());
             }
-            OrderCar orderCar = new OrderCar();
-            //填充数据
-            orderCar.setId(oc.getId());
-            orderCar.setPickFee(MoneyUtil.convertYuanToFen(dto.getPickFee()));
-            orderCar.setTrunkFee(MoneyUtil.convertYuanToFen(dto.getTrunkFee()));
-            orderCar.setBackFee(MoneyUtil.convertYuanToFen(dto.getBackFee()));
-            orderCar.setAddInsuranceFee(MoneyUtil.convertYuanToFen(dto.getAddInsuranceFee()));
-            orderCar.setAddInsuranceAmount(dto.getAddInsuranceAmount() == null ? 0 : dto.getAddInsuranceAmount());
-            orderCarDao.updateById(orderCar);
+            OrderCar noc = new OrderCar();
+            noc.setId(orderCar.getId());
+            noc.setPickFee(MoneyUtil.convertYuanToFen(dto.getPickFee()));
+            noc.setTrunkFee(MoneyUtil.convertYuanToFen(dto.getTrunkFee()));
+            noc.setBackFee(MoneyUtil.convertYuanToFen(dto.getBackFee()));
+            noc.setAddInsuranceFee(MoneyUtil.convertYuanToFen(dto.getAddInsuranceFee()));
+            noc.setAddInsuranceAmount(dto.getAddInsuranceAmount());
+            orderCarDao.updateById(noc);
         }
         //新数据
         List<OrderCar> orderCarList = orderCarDao.findListByOrderId(orderId);
-        //合计费用：提、干、送、保险
-        fillOrderFeeInfo(order, orderCarList);
-        order.setCarNum(orderCarList.size());
-        order.setTotalFee(MoneyUtil.convertYuanToFen(paramsDto.getTotalFee()));
-        orderDao.updateById(order);
+
         //均摊优惠券费用
-        if (order.getCouponOffsetFee() != null && order.getCouponOffsetFee().compareTo(BigDecimal.ZERO) > 0) {
-            shareCouponOffsetFee(order, orderCarList);
-        }
+        shareCouponOffsetFee(order.getCouponOffsetFee(), orderCarList);
         //均摊总费用
-        if (order.getTotalFee() != null && order.getTotalFee().compareTo(BigDecimal.ZERO) > 0) {
-            shareTotalFee(order, orderCarList);
-        }
+        shareTotalFee(order.getTotalFee(), orderCarList);
         //更新车辆信息
         orderCarList.forEach(orderCar -> orderCarDao.updateById(orderCar));
 
-        //TODO 日志
+        //合计费用：提、干、送、保险
+        fillOrderFeeInfo(order, orderCarList);
+        order.setTotalFee(MoneyUtil.convertYuanToFen(paramsDto.getTotalFee()));
+        orderDao.updateById(order);
+
+        //变更记录
         OrderVo newOrderVo = new OrderVo();
         BeanUtils.copyProperties(order, newOrderVo);
         newOrderVo.setOrderCarList(orderCarList);
@@ -796,21 +786,38 @@ public class CsOrderServiceImpl implements ICsOrderService {
      */
     @Override
     public ResultVo replenishInfo(ReplenishOrderDto paramsDto) {
-        Order order = orderDao.selectById(paramsDto.getOrderId());
-        if (order == null || order.getState() >= OrderStateEnum.TRANSPORTING.code) {
-            return BaseResultUtil.fail("订单不允许修改");
-        }
+        Long orderId = paramsDto.getOrderId();
+        Order order = orderDao.selectById(orderId);
+        //记录历史数据
+        OrderVo oldOrderVo = getFullOrderVo(order, new OrderVo());
+
+
         List<ReplenishOrderCarDto> list = paramsDto.getOrderCarList();
         for (ReplenishOrderCarDto dto : list) {
-            OrderCar orderCar = orderCarDao.selectById(dto.getId());
-            orderCar.setBrand(dto.getBrand());
-            orderCar.setModel(dto.getModel());
-            orderCar.setPlateNo(dto.getPlateNo());
-            orderCar.setVin(dto.getVin());
-            orderCarDao.updateById(orderCar);
+            if(dto == null){
+                continue;
+            }
+            OrderCar noc = new OrderCar();
+            noc.setId(dto.getId());
+            noc.setBrand(dto.getBrand());
+            noc.setModel(dto.getModel());
+            noc.setPlateNo(dto.getPlateNo());
+            noc.setVin(dto.getVin());
+            orderCarDao.updateById(noc);
         }
-        // TODO 日志
+
+        OrderVo newOrderVo = getFullOrderVo(order, new OrderVo());
+
+        orderChangeLogService.asyncSave(order, OrderChangeTypeEnum.CHANGE_ORDER,
+                new Object[]{oldOrderVo, newOrderVo, ""},
+                new Object[]{paramsDto.getLoginId(), paramsDto.getLoginName()});
         return BaseResultUtil.success();
+    }
+
+    private OrderVo getFullOrderVo(Order order, OrderVo orderVo) {
+        BeanUtils.copyProperties(order, orderVo);
+        orderVo.setOrderCarList(orderCarDao.findListByOrderId(order.getId()));
+        return orderVo;
     }
 
     /**
@@ -884,23 +891,26 @@ public class CsOrderServiceImpl implements ICsOrderService {
     /**
      * 均摊服务费
      *
-     * @param order
-     * @param orderCarSavelist
      * @author JPG
      * @since 2019/10/29 8:30
      */
-    private void shareTotalFee(Order order, List<OrderCar> orderCarSavelist) {
-        BigDecimal totalFee = order.getTotalFee() == null ? BigDecimal.ZERO : order.getTotalFee();
-        BigDecimal[] totalFeeArray = totalFee.divideAndRemainder(new BigDecimal(order.getCarNum()));
-        BigDecimal totalFeeAvg = totalFeeArray[0];
-        BigDecimal totalFeeRemainder = totalFeeArray[1];
-        for (OrderCar orderCar : orderCarSavelist) {
+    private void shareTotalFee(BigDecimal totalFee, List<OrderCar> orderCarlist) {
+        if(totalFee == null || totalFee.compareTo(BigDecimal.ZERO) <= 0){
+            return;
+        }
+        if(CollectionUtils.isEmpty(orderCarlist)){
+            return;
+        }
+        BigDecimal[] array = totalFee.divideAndRemainder(new BigDecimal(orderCarlist.size()));
+        BigDecimal avg = array[0];
+        BigDecimal remainder = array[1];
+        for (OrderCar orderCar : orderCarlist) {
             //合伙人计算均摊服务费
-            if (totalFeeRemainder.compareTo(BigDecimal.ZERO) > 0) {
-                orderCar.setTotalFee(totalFeeAvg.add(BigDecimal.ONE));
-                totalFeeRemainder = totalFeeRemainder.subtract(BigDecimal.ONE);
+            if (remainder.compareTo(BigDecimal.ZERO) > 0) {
+                orderCar.setTotalFee(avg.add(BigDecimal.ONE));
+                remainder = remainder.subtract(BigDecimal.ONE);
             } else {
-                orderCar.setTotalFee(totalFeeAvg);
+                orderCar.setTotalFee(avg);
             }
         }
     }
@@ -908,22 +918,26 @@ public class CsOrderServiceImpl implements ICsOrderService {
     /**
      * 均摊优惠券
      *
-     * @param order
-     * @param orderCarSavelist
+     * @param orderCarlist
      * @author JPG
      * @since 2019/10/29 8:27
      */
-    private void shareCouponOffsetFee(Order order, List<OrderCar> orderCarSavelist) {
-        BigDecimal couponOffsetFee = order.getCouponOffsetFee() == null ? BigDecimal.ZERO : order.getCouponOffsetFee();
-        BigDecimal[] couponOffsetFeeArray = couponOffsetFee.divideAndRemainder(new BigDecimal(order.getCarNum()));
-        BigDecimal couponOffsetFeeAvg = couponOffsetFeeArray[0];
-        BigDecimal couponOffsetFeeRemainder = couponOffsetFeeArray[1];
-        for (OrderCar orderCar : orderCarSavelist) {
-            if (couponOffsetFeeRemainder.compareTo(BigDecimal.ZERO) > 0) {
-                orderCar.setCouponOffsetFee(couponOffsetFeeAvg.add(BigDecimal.ONE));
-                couponOffsetFeeRemainder = couponOffsetFeeRemainder.subtract(BigDecimal.ONE);
+    private void shareCouponOffsetFee(BigDecimal couponOffsetFee, List<OrderCar> orderCarlist) {
+        if(couponOffsetFee == null || couponOffsetFee.compareTo(BigDecimal.ZERO) <= 0){
+            return;
+        }
+        if(CollectionUtils.isEmpty(orderCarlist)){
+            return;
+        }
+        BigDecimal[] array = couponOffsetFee.divideAndRemainder(new BigDecimal(orderCarlist.size()));
+        BigDecimal avg = array[0];
+        BigDecimal remainder = array[1];
+        for (OrderCar orderCar : orderCarlist) {
+            if (remainder.compareTo(BigDecimal.ZERO) > 0) {
+                orderCar.setCouponOffsetFee(avg.add(BigDecimal.ONE));
+                remainder = remainder.subtract(BigDecimal.ONE);
             } else {
-                orderCar.setCouponOffsetFee(couponOffsetFeeAvg);
+                orderCar.setCouponOffsetFee(avg);
             }
         }
     }

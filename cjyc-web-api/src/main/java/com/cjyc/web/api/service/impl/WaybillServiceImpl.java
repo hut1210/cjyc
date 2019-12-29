@@ -9,8 +9,6 @@ import com.cjyc.common.model.entity.Waybill;
 import com.cjyc.common.model.entity.defined.BizScope;
 import com.cjyc.common.model.enums.BizScopeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.vo.BaseTipVo;
-import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.waybill.*;
@@ -19,7 +17,6 @@ import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.web.api.service.IWaybillService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,53 +43,6 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
     private ICsWaybillService csWaybillService;
     @Resource
     private ICsSysService csSysService;
-
-    /**
-     * 提送车调度
-     *
-     * @param paramsDto 参数
-     */
-    @Override
-    public ResultVo saveLocal(SaveLocalDto paramsDto) {
-        return csWaybillService.saveLocal(paramsDto);
-    }
-
-    /**
-     * 干线调度
-     *
-     * @param paramsDto 参数
-     * @author JPG
-     * @since 2019/10/17 9:16
-     */
-    @Override
-    public ResultVo saveTrunk(SaveTrunkWaybillDto paramsDto) {
-        return csWaybillService.saveTrunk(paramsDto);
-    }
-    @Override
-    public ResultVo updateLocal(UpdateLocalDto paramsDto) {
-        return  csWaybillService.updateLocal(paramsDto);
-    }
-
-    @Override
-    public ResultVo updateTrunk(UpdateTrunkWaybillDto paramsDto) {
-        return csWaybillService.updateTrunk(paramsDto);
-    }
-
-    @Override
-    public ResultVo updateTrunkMidwayFinish(UpdateTrunkMidwayFinishDto paramsDto) {
-        return  csWaybillService.updateTrunkMidwayFinish(paramsDto);
-    }
-
-    @Override
-    public ResultVo trunkMidwayUnload(TrunkMidwayUnload paramsDto) {
-        return csWaybillService.trunkMidwayUnload(paramsDto);
-    }
-
-
-    @Override
-    public ResultVo<ListVo<BaseTipVo>> cancel(CancelWaybillDto paramsDto) {
-        return csWaybillService.cancel(paramsDto);
-    }
 
 
     @Override
@@ -165,31 +115,6 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
     @Override
     public List<TrunkSubListWaybillVo> getTrunkSubAllList(TrunkSubListWaybillDto reqDto) {
         return waybillDao.findSubListTrunk(reqDto);
-    }
-
-
-    @Override
-    public ResultVo<PageVo<TrunkListWaybillVo>> trunklist(TrunkListWaybillDto paramsDto) {
-        //查询角色业务中心范围
-        BizScope bizScope = csSysService.getBizScopeByRoleId(paramsDto.getRoleId(), true);
-        if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
-            return null;
-        }
-        paramsDto.setBizScope(bizScope.getCode() == 0 ? null : bizScope.getStoreIds());
-
-
-        PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
-        List<TrunkListWaybillVo> list = null;
-        if(StringUtils.isBlank(paramsDto.getDriverName()) && StringUtils.isBlank(paramsDto.getDriverPhone()) && StringUtils.isBlank(paramsDto.getVehiclePlateNo())){
-            list = waybillDao.findLeftListTrunk(paramsDto);
-        }else{
-            list = waybillDao.findListTrunk(paramsDto);
-        }
-        PageInfo<TrunkListWaybillVo> pageInfo = new PageInfo<>(list);
-        if(paramsDto.getCurrentPage() > pageInfo.getPages()){
-            pageInfo.setList(null);
-        }
-        return BaseResultUtil.success(pageInfo);
     }
 
 

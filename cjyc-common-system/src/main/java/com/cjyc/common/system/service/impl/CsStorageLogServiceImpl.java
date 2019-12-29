@@ -1,5 +1,6 @@
 package com.cjyc.common.system.service.impl;
 
+import com.cjkj.log.monitor.LogUtil;
 import com.cjyc.common.model.dao.ICarStorageLogDao;
 import com.cjyc.common.model.entity.CarStorageLog;
 import com.cjyc.common.system.service.ICsStorageLogService;
@@ -25,20 +26,20 @@ public class CsStorageLogServiceImpl implements ICsStorageLogService {
         try {
             carStorageLogDao.insert(carStorageLog);
         } catch (Exception e) {
-            log.error("保存出入库日志异常！",e);
+            log.error("保存出入库日志异常！", e);
         }
     }
 
     @Async
     @Override
     public void asyncSaveBatch(Collection<CarStorageLog> storageLogSet) {
-        if(CollectionUtils.isEmpty(storageLogSet)){
-            return;
-        }
         try {
+            if (CollectionUtils.isEmpty(storageLogSet)) {
+                return;
+            }
             storageLogSet.forEach(s -> carStorageLogDao.insert(s));
         } catch (Exception e) {
-            log.error("批量保存出入库日志异常！",e);
+            LogUtil.error("保存出入库日志失败", e);
         }
     }
 }

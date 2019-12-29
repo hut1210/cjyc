@@ -1,11 +1,8 @@
 package com.cjyc.common.system.service;
 
 import com.cjyc.common.model.dto.web.order.*;
-import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.order.DispatchAddCarVo;
-
-import java.util.List;
 
 /**
  * 订单公用业务
@@ -13,7 +10,7 @@ import java.util.List;
  */
 public interface ICsOrderService {
 
-    ResultVo save(SaveOrderDto reqDto, OrderStateEnum state);
+    ResultVo save(SaveOrderDto reqDto);
 
     ResultVo commit(CommitOrderDto reqDto);
     /**

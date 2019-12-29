@@ -12,7 +12,11 @@ public class UserInfo {
 
     public UserInfo() {
     }
-
+    public UserInfo(Long id, String name, String phone) {
+        this.id = id;
+        this.name = name;
+        this.phone = phone;
+    }
     public UserInfo(Long id, String name, String phone, UserTypeEnum userType) {
         this.id = id;
         this.name = name;

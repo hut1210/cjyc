@@ -1,6 +1,7 @@
 package com.cjyc.common.system.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.cjkj.log.monitor.LogUtil;
 import com.cjyc.common.model.dao.IOrderChangeLogDao;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.entity.OrderChangeLog;
@@ -13,6 +14,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.text.MessageFormat;
 
 @Service
 public class CsOrderChangeLogServiceImpl implements ICsOrderChangeLogService {
@@ -45,19 +47,23 @@ public class CsOrderChangeLogServiceImpl implements ICsOrderChangeLogService {
     @Async
     @Override
     public void asyncSave(Order order, OrderChangeTypeEnum changeType, Object[] content, Object[] creator) {
-        OrderChangeLog orderChangeLog = new OrderChangeLog();
-        orderChangeLog.setOrderNo(order.getNo());
-        orderChangeLog.setOrderId(order.getId());
-        orderChangeLog.setName(changeType.name);
-        orderChangeLog.setType(changeType.code);
-        orderChangeLog.setOldContent(JSON.toJSONString(content[0]));
-        orderChangeLog.setNewContent(JSON.toJSONString(content[1]));
-        orderChangeLog.setReason(String.valueOf(content[2]));
-        orderChangeLog.setState(CommonStateEnum.CHECKED.code);
-        orderChangeLog.setCreateTime(System.currentTimeMillis());
-        orderChangeLog.setCreateUserId(Long.valueOf(String.valueOf(creator[0])));
-        orderChangeLog.setCreateUser(String.valueOf(creator[1]));
-        orderChangeLogDao.insert(orderChangeLog);
+        try {
+            OrderChangeLog orderChangeLog = new OrderChangeLog();
+            orderChangeLog.setOrderNo(order.getNo());
+            orderChangeLog.setOrderId(order.getId());
+            orderChangeLog.setName(changeType.name);
+            orderChangeLog.setType(changeType.code);
+            orderChangeLog.setOldContent(JSON.toJSONString(content[0]));
+            orderChangeLog.setNewContent(JSON.toJSONString(content[1]));
+            orderChangeLog.setReason(String.valueOf(content[2]));
+            orderChangeLog.setState(CommonStateEnum.CHECKED.code);
+            orderChangeLog.setCreateTime(System.currentTimeMillis());
+            orderChangeLog.setCreateUserId(Long.valueOf(String.valueOf(creator[0])));
+            orderChangeLog.setCreateUser(String.valueOf(creator[1]));
+            orderChangeLogDao.insert(orderChangeLog);
+        } catch (NumberFormatException e) {
+            LogUtil.error(MessageFormat.format("{0}{1},保存变更记录失败", changeType.name, order.getNo()));
+        }
     }
 
 }

@@ -14,6 +14,7 @@ import com.cjyc.common.model.vo.web.task.TaskPageVo;
 import com.cjyc.common.model.vo.web.task.TaskVo;
 import com.cjyc.common.system.service.ICsAdminService;
 import com.cjyc.common.system.service.ICsDriverService;
+import com.cjyc.common.system.service.ICsTaskService;
 import com.cjyc.web.api.service.ITaskService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -35,6 +36,8 @@ public class TaskController {
 
     @Resource
     private ITaskService taskService;
+    @Resource
+    private ICsTaskService csTaskService;
     @Resource
     private ICsAdminService csAdminService;
     @Resource
@@ -66,7 +69,7 @@ public class TaskController {
             return BaseResultUtil.fail("当前用户不存在");
         }
         reqDto.setLoginName(driver.getName());
-        return taskService.allot(reqDto);
+        return csTaskService.allot(reqDto);
     }
 
 
@@ -82,7 +85,7 @@ public class TaskController {
         reqDto.setLoginName(admin.getName());
         reqDto.setLoginPhone(admin.getPhone());
         reqDto.setLoginType(UserTypeEnum.ADMIN);
-        return taskService.outStore(reqDto);
+        return csTaskService.outStore(reqDto);
     }
 
 
@@ -98,7 +101,7 @@ public class TaskController {
         reqDto.setLoginName(admin.getName());
         reqDto.setLoginPhone(admin.getPhone());
         reqDto.setLoginType(UserTypeEnum.ADMIN);
-        return taskService.inStore(reqDto);
+        return csTaskService.inStore(reqDto);
     }
 
     /**
@@ -111,7 +114,7 @@ public class TaskController {
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
         reqDto.setLoginPhone(admin.getPhone());
-        return taskService.receipt(reqDto);
+        return csTaskService.receipt(reqDto);
     }
 
     /**

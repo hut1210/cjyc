@@ -4,6 +4,7 @@ import com.cjyc.common.model.entity.TaskCar;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -25,7 +26,7 @@ public interface ITaskCarDao extends BaseMapper<TaskCar> {
      */
     int saveBatch(@Param("list") List<TaskCar> list);
 
-    int saveBatchByTaskIdAndWaybillCarIds(@Param("taskId")Long taskId, @Param("waybillCarIds") Set<Long> waybillCarIds);
+    int saveBatchByTaskIdAndWaybillCarIds(@Param("taskId")Long taskId, @Param("waybillCarIds") Collection<Long> waybillCarIds);
 
     int countUnFinishByTaskId(Long taskId);
 

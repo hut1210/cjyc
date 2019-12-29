@@ -59,10 +59,9 @@ public class OrderController {
         reqDto.setLoginName(admin.getName());
         reqDto.setCreateUserId(admin.getId());
         reqDto.setCreateUserName(admin.getName());
+        reqDto.setState(OrderStateEnum.WAIT_SUBMIT.code);
 
-        ResultVo resultVo = csOrderService.save(reqDto, OrderStateEnum.WAIT_SUBMIT);
-        //发送推送信息
-        return resultVo;
+        return csOrderService.save(reqDto);
     }
 
     /**

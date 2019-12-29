@@ -1,5 +1,7 @@
 package com.cjyc.common.model.enums.order;
 
+import com.cjyc.common.model.enums.UserTypeEnum;
+
 /**
  * 订单状态枚举
  * @author JPG
@@ -32,4 +34,11 @@ public enum OrderStateEnum {
         this.code = code;
     }
 
-}
+    public static OrderStateEnum valueOf(Integer code) {
+        for (OrderStateEnum orderStateEnum : values()) {
+            if(orderStateEnum.code == code){
+                return orderStateEnum;
+            }
+        }
+        throw new IllegalArgumentException("No matching constant for [" + code + "]");
+    }}

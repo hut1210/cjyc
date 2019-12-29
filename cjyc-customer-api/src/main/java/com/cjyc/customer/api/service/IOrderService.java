@@ -55,22 +55,6 @@ public interface IOrderService extends IService<Order> {
      */
     ResultVo getInvoiceApplyOrderPage(InvoiceApplyQueryDto dto);
 
-    /**
-     * 保存订单
-     * @author JPG
-     * @since 2019/11/5 8:39
-     * @param reqDto
-     */
-    ResultVo save(SaveOrderDto reqDto);
-
-    /**
-     * 订单提交-客户
-     * @author JPG
-     * @since 2019/11/5 10:16
-     * @param reqDto
-     */
-    ResultVo submit(SaveOrderDto reqDto);
-
     ResultVo simpleSubmit(SimpleSaveOrderDto reqDto);
 
 }

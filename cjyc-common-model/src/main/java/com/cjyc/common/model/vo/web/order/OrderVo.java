@@ -23,7 +23,7 @@ public class OrderVo extends Order {
     private String endStoreAddress;
     @ApiModelProperty("所属业务中心地址")
     private String inputStoreAddress;
-    @ApiModelProperty("所属业务中心地址")
+    @ApiModelProperty("物流券")
     private String couponName;
 
     @ApiModelProperty("车辆列表")

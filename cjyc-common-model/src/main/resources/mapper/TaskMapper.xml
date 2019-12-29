@@ -39,8 +39,8 @@
             </foreach>
         </where>
     </update>
-    <update id="updateNumForUnload">
-        update w_task set unload_car_num = unload_car_num + #{unLoadNum}
+    <update id="updateUnloadNum">
+        update w_task set unload_car_num = unload_car_num + #{count}
         where id = #{taskId}
     </update>
     <update id="updateStateById">
@@ -71,6 +71,10 @@
             where tc.task_id = #{taskId}
             and wc.state &lt;= 100
         )
+        where id = #{taskId}
+    </update>
+    <update id="updateLoadNum">
+        update w_task set load_car_num = load_car_num + #{count}
         where id = #{taskId}
     </update>
     <delete id="cancelBywaybillId">

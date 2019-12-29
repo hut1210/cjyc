@@ -14,10 +14,10 @@ public class SimpleSaveOrderDto {
     @NotNull
     @ApiModelProperty(value = "操作人id", required = true)
     private Long loginId;
-    @ApiModelProperty(value = "操作人(不用传)")
+    @ApiModelProperty(value = "操作人", hidden = true)
     private String loginName;
 
-    @ApiModelProperty(value = "订单ID（修改时传）")
+    @ApiModelProperty(value = "订单ID", required = true)
     private Long orderId;
 
 }

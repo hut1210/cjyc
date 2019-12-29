@@ -13,6 +13,7 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.waybill.*;
 import com.cjyc.common.system.service.ICsAdminService;
+import com.cjyc.common.system.service.ICsWaybillService;
 import com.cjyc.web.api.service.IWaybillService;
 import com.cjyc.web.api.util.WaybillValueToDesc;
 import io.swagger.annotations.Api;
@@ -44,6 +45,8 @@ public class WaybillController {
     @Autowired
     private IWaybillService waybillService;
     @Autowired
+    private ICsWaybillService csWaybillService;
+    @Autowired
     private ICsAdminService csAdminService;
 
     /**
@@ -58,7 +61,7 @@ public class WaybillController {
         //验证用户
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
-        return waybillService.saveLocal(reqDto);
+        return csWaybillService.saveLocal(reqDto);
     }
 
     /**
@@ -70,7 +73,10 @@ public class WaybillController {
     @ApiOperation(value = "修改同城调度", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @PostMapping("/local/update")
     public ResultVo updateLocal(@Validated @RequestBody UpdateLocalDto reqDto) {
-        return waybillService.updateLocal(reqDto);
+        //验证用户
+        Admin admin = csAdminService.validate(reqDto.getLoginId());
+        reqDto.setLoginName(admin.getName());
+        return csWaybillService.updateLocal(reqDto);
     }
 
     /**
@@ -82,7 +88,10 @@ public class WaybillController {
     @ApiOperation("干线调度")
     @PostMapping("/trunk/save")
     public ResultVo saveTrunk(@Validated @RequestBody SaveTrunkWaybillDto reqDto) {
-        return waybillService.saveTrunk(reqDto);
+        //验证用户
+        Admin admin = csAdminService.validate(reqDto.getLoginId());
+        reqDto.setLoginName(admin.getName());
+        return csWaybillService.saveTrunk(reqDto);
     }
 
     /**
@@ -94,7 +103,10 @@ public class WaybillController {
     @ApiOperation("修改干线调度")
     @PostMapping("/trunk/update")
     public ResultVo updateTrunk(@Validated @RequestBody UpdateTrunkWaybillDto reqDto) {
-        return waybillService.updateTrunk(reqDto);
+        //验证用户
+        Admin admin = csAdminService.validate(reqDto.getLoginId());
+        reqDto.setLoginName(admin.getName());
+        return csWaybillService.updateTrunk(reqDto);
     }
 
     /**
@@ -106,21 +118,12 @@ public class WaybillController {
     @ApiOperation("中途卸载车辆")
     @PostMapping("/trunk/midway/unload")
     public ResultVo trunkMidwayUnload(@Validated @RequestBody TrunkMidwayUnload reqDto) {
-        return waybillService.trunkMidwayUnload(reqDto);
+        //验证用户
+        Admin admin = csAdminService.validate(reqDto.getLoginId());
+        reqDto.setLoginName(admin.getName());
+        return csWaybillService.trunkMidwayUnload(reqDto);
     }
 
-    /**
-     * 中止干线运单并结算
-     *
-     * @author JPG
-     * @since 2019/10/15 11:53
-     */
-    @Deprecated
-    @ApiOperation("中止干线运单并结算")
-    @PostMapping("/trunk/midway/finish")
-    public ResultVo updateTrunkMidwayFinish(@Validated @RequestBody UpdateTrunkMidwayFinishDto reqDto) {
-        return waybillService.updateTrunkMidwayFinish(reqDto);
-    }
 
     /**
      * 取消调度
@@ -131,7 +134,7 @@ public class WaybillController {
     @ApiOperation("取消调度")
     @PostMapping("/cancel")
     public ResultVo<ListVo<BaseTipVo>> cancel(@Validated @RequestBody CancelWaybillDto reqDto) {
-        return waybillService.cancel(reqDto);
+        return csWaybillService.cancel(reqDto);
     }
 
     /**

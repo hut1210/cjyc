@@ -4,6 +4,9 @@ import com.cjyc.common.model.dto.customer.order.ReceiptBatchDto;
 import com.cjyc.common.model.dto.driver.task.PickLoadDto;
 import com.cjyc.common.model.dto.driver.task.ReplenishInfoDto;
 import com.cjyc.common.model.dto.web.task.*;
+import com.cjyc.common.model.entity.Waybill;
+import com.cjyc.common.model.entity.WaybillCar;
+import com.cjyc.common.model.entity.defined.CarrierInfo;
 import com.cjyc.common.model.entity.defined.UserInfo;
 import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -52,4 +55,6 @@ public interface ICsTaskService {
     void updateForCarFinish(List<String> orderCarNoList, UserInfo userInfo);
 
     ResultVo<ResultReasonVo>  loadForLocal(ReplenishInfoDto paramsDto);
+
+    void create(Waybill waybill, List<WaybillCar> waybillCarList, CarrierInfo carrierInfo);
 }

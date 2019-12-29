@@ -1,6 +1,7 @@
 package com.cjyc.common.system.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.cjkj.log.monitor.LogUtil;
 import com.cjyc.common.model.dao.ICustomerDao;
 import com.cjyc.common.model.dao.ICustomerLineDao;
 import com.cjyc.common.model.dto.CommonDto;
@@ -18,6 +19,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.text.MessageFormat;
 import java.util.List;
 
 @Service
@@ -47,21 +49,25 @@ public class CsCustomerLineServiceImpl implements ICsCustomerLineService {
     @Async
     @Override
     public void asyncSave(Order order) {
-        if(order.getLineId() == null){
-            return;
+        try {
+            if(order.getLineId() == null){
+                return;
+            }
+            CustomerLine customerLine = new CustomerLine();
+            customerLine.setCustomerId(order.getCustomerId());
+            customerLine.setOperateId(order.getCreateUserId());
+            customerLine.setLineCode(order.getStartCityCode() + order.getEndCityCode());
+            customerLine.setStartAdress(getOrderStartAddress(order));
+            customerLine.setStartContact(order.getPickContactName());
+            customerLine.setStartContactPhone(order.getPickContactPhone());
+            customerLine.setEndAdress(getOrderEndAddress(order));
+            customerLine.setEndContact(order.getBackContactName());
+            customerLine.setEndContactPhone(order.getBackContactPhone());
+            customerLine.setCreateTime(System.currentTimeMillis());
+            customerLineDao.insert(customerLine);
+        } catch (Exception e) {
+            LogUtil.error(MessageFormat.format("订单{0}下单保存历史线路失败",order.getNo()), e);
         }
-        CustomerLine customerLine = new CustomerLine();
-        customerLine.setCustomerId(order.getCustomerId());
-        customerLine.setOperateId(order.getCreateUserId());
-        customerLine.setLineCode(order.getStartCityCode() + order.getEndCityCode());
-        customerLine.setStartAdress(getOrderStartAddress(order));
-        customerLine.setStartContact(order.getPickContactName());
-        customerLine.setStartContactPhone(order.getPickContactPhone());
-        customerLine.setEndAdress(getOrderEndAddress(order));
-        customerLine.setEndContact(order.getBackContactName());
-        customerLine.setEndContactPhone(order.getBackContactPhone());
-        customerLine.setCreateTime(System.currentTimeMillis());
-        customerLineDao.insert(customerLine);
 
     }
 

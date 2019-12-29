@@ -10,6 +10,7 @@ import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.UserTypeEnum;
+import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -17,6 +18,7 @@ import com.cjyc.common.model.vo.web.OrderCarVo;
 import com.cjyc.common.model.vo.web.order.*;
 import com.cjyc.common.system.service.ICsAdminService;
 import com.cjyc.common.system.service.ICsCustomerService;
+import com.cjyc.common.system.service.ICsOrderService;
 import com.cjyc.web.api.service.IOrderService;
 import com.cjyc.web.api.util.CustomerOrderExcelVerifyHandler;
 import com.cjyc.web.api.util.ExcelUtil;
@@ -51,6 +53,8 @@ public class OrderController {
     @Resource
     private IOrderService orderService;
     @Resource
+    private ICsOrderService csOrderService;
+    @Resource
     private ICsAdminService csAdminService;
     @Resource
     private ICsCustomerService csCustomerService;
@@ -81,8 +85,8 @@ public class OrderController {
             reqDto.setCreateUserId(admin.getId());
             reqDto.setCreateUserName(admin.getName());
         }
-
-        ResultVo resultVo = orderService.save(reqDto);
+        reqDto.setState(OrderStateEnum.WAIT_SUBMIT.code);
+        ResultVo resultVo = csOrderService.save(reqDto);
         //发送推送信息
         return resultVo;
     }
@@ -111,15 +115,7 @@ public class OrderController {
             reqDto.setCreateUserName(admin.getName());
         }
         //发送短信
-        return orderService.commit(reqDto);
-    }
-
-
-    @ApiOperation(value = "导入订单")
-    @PostMapping(value = "/batch/import")
-    @Deprecated
-    public ResultVo batchImport(@Validated @RequestBody BatchImportOrderDto reqDto) {
-        return null;
+        return csOrderService.commit(reqDto);
     }
 
     /**
@@ -129,7 +125,7 @@ public class OrderController {
     @ApiOperation(value = "完善订单信息")
     @PostMapping(value = "/replenish/info/update")
     public ResultVo replenishInfo(@RequestBody ReplenishOrderDto reqDto) {
-        return orderService.replenishInfo(reqDto);
+        return csOrderService.replenishInfo(reqDto);
     }
 
     /**
@@ -144,7 +140,7 @@ public class OrderController {
         reqDto.setLoginName(admin.getName());
         reqDto.setLoginName(admin.getName());
         reqDto.setLoginName(admin.getName());
-        return orderService.check(reqDto);
+        return csOrderService.check(reqDto);
     }
 
     /**
@@ -157,9 +153,64 @@ public class OrderController {
         //验证用户存不存在
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
-        return orderService.reject(reqDto);
+        return csOrderService.reject(reqDto);
     }
 
+    /**
+     * 分配订单
+     * @author JPG
+     */
+    @ApiOperation(value = "分配订单")
+    @PostMapping(value = "/allot")
+    public ResultVo allot(@Validated @RequestBody AllotOrderDto reqDto) {
+        //验证用户存不存在
+        Admin admin = csAdminService.validate(reqDto.getLoginId());
+        reqDto.setLoginName(admin.getName());
+        Admin toAdmin = csAdminService.validate(reqDto.getToAdminId());
+        reqDto.setToAdminName(toAdmin.getName());
+        return csOrderService.allot(reqDto);
+    }
+
+
+    /**
+     * 订单改价
+     * @author JPG
+     */
+    @ApiOperation(value = "订单改价")
+    @PostMapping(value = "/change/price")
+    public ResultVo changePrice(@RequestBody ChangePriceOrderDto reqDto) {
+        Admin admin = csAdminService.validate(reqDto.getLoginId());
+        reqDto.setLoginName(admin.getName());
+        return csOrderService.changePrice(reqDto);
+    }
+
+
+    /**
+     * 取消订单
+     * @author JPG
+     */
+    @ApiOperation(value = "取消订单")
+    @PostMapping(value = "/cancel")
+    public ResultVo cancel(@RequestBody CancelOrderDto reqDto) {
+        Admin admin = csAdminService.validate(reqDto.getLoginId());
+        reqDto.setLoginName(admin.getName());
+        return csOrderService.cancel(reqDto);
+    }
+
+
+    /**
+     * 作废订单
+     * @author JPG
+     */
+    @ApiOperation(value = "作废订单")
+    @PostMapping(value = "/obsolete")
+    public ResultVo obsolete(@RequestBody CancelOrderDto reqDto) {
+
+        Admin admin = csAdminService.validate(reqDto.getLoginId());
+        reqDto.setLoginName(admin.getName());
+
+        return csOrderService.obsolete(reqDto);
+    }
 
     /**
      * 查询订单-根据ID
@@ -304,61 +355,6 @@ public class OrderController {
         return BaseResultUtil.success(list);
     }
 
-
-
-    /**
-     * 分配订单
-     * @author JPG
-     */
-    @ApiOperation(value = "分配订单")
-    @PostMapping(value = "/allot")
-    public ResultVo allot(@Validated @RequestBody AllotOrderDto reqDto) {
-        //验证用户存不存在
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
-        return orderService.allot(reqDto);
-    }
-
-
-    /**
-     * 订单改价
-     * @author JPG
-     */
-    @ApiOperation(value = "订单改价")
-    @PostMapping(value = "/change/price")
-    public ResultVo changePrice(@RequestBody ChangePriceOrderDto reqDto) {
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
-        return orderService.changePrice(reqDto);
-    }
-
-
-    /**
-     * 取消订单
-     * @author JPG
-     */
-    @ApiOperation(value = "取消订单")
-    @PostMapping(value = "/cancel")
-    public ResultVo cancel(@RequestBody CancelOrderDto reqDto) {
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
-        return orderService.cancel(reqDto);
-    }
-
-
-    /**
-     * 作废订单
-     * @author JPG
-     */
-    @ApiOperation(value = "作废订单")
-    @PostMapping(value = "/obsolete")
-    public ResultVo obsolete(@RequestBody CancelOrderDto reqDto) {
-
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
-
-        return orderService.obsolete(reqDto);
-    }
 
 
     @ApiOperation(value = "c端客户订单导入", notes = "验证失败返回失败Excel文件流，其它情况返回json结果信息")

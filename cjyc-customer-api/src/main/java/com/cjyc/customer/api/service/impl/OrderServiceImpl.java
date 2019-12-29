@@ -64,22 +64,6 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
     @Resource
     private ICsSendNoService csSendNoService;
 
-    /**
-     * 保存订单
-     *
-     * @param paramsDto
-     * @author JPG
-     * @since 2019/11/5 8:39
-     */
-    @Override
-    public ResultVo save(SaveOrderDto paramsDto) {
-        return comOrderService.save(paramsDto, OrderStateEnum.WAIT_SUBMIT);
-    }
-
-    @Override
-    public ResultVo submit(SaveOrderDto paramsDto) {
-        return comOrderService.save(paramsDto, OrderStateEnum.SUBMITTED);
-    }
 
     @Override
     public ResultVo simpleSubmit(SimpleSaveOrderDto paramsDto) {

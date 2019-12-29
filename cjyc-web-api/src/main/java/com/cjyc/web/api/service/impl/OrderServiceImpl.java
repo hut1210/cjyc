@@ -73,28 +73,6 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     private ICsSendNoService csSendNoService;
 
 
-
-
-    @Override
-    public ResultVo save(SaveOrderDto paramsDto) {
-        return csOrderService.save(paramsDto, OrderStateEnum.WAIT_SUBMIT);
-    }
-
-    @Override
-    public ResultVo commit(CommitOrderDto paramsDto) {
-        return csOrderService.commit(paramsDto);
-    }
-
-    @Override
-    public ResultVo check(CheckOrderDto paramsDto) {
-        return csOrderService.check(paramsDto);
-    }
-
-    @Override
-    public ResultVo reject(RejectOrderDto paramsDto) {
-        return csOrderService.reject(paramsDto);
-    }
-
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void importCustomerOrder(List<ImportCustomerOrderDto> orderList,
@@ -255,30 +233,6 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         //查询统计
         Map<String, Object> countInfo = orderDao.countForAllTab(paramsDto);
         return BaseResultUtil.success(pageInfo, countInfo);
-    }
-
-
-    @Override
-    public ResultVo allot(AllotOrderDto paramsDto) {
-        return csOrderService.allot(paramsDto);
-    }
-    @Override
-    public ResultVo cancel(CancelOrderDto paramsDto) {
-        return csOrderService.cancel(paramsDto);
-    }
-    @Override
-    public ResultVo obsolete(CancelOrderDto paramsDto) {
-        return csOrderService.obsolete(paramsDto);
-    }
-
-    @Override
-    public ResultVo changePrice(ChangePriceOrderDto paramsDto) {
-        return csOrderService.changePrice(paramsDto);
-    }
-
-    @Override
-    public ResultVo replenishInfo(ReplenishOrderDto paramsDto) {
-        return csOrderService.replenishInfo(paramsDto);
     }
 
 

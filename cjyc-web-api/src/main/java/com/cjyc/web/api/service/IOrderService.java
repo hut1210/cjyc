@@ -22,25 +22,6 @@ import java.util.Map;
 public interface IOrderService extends IService<Order> {
 
 
-    ResultVo save(SaveOrderDto reqDto);
-
-    ResultVo commit(CommitOrderDto paramsDto);
-
-    ResultVo check(CheckOrderDto reqDto);
-
-    ResultVo allot(AllotOrderDto paramsDto);
-
-    ResultVo reject(RejectOrderDto reqDto);
-
-    ResultVo cancel(CancelOrderDto paramsDto);
-
-    ResultVo obsolete(CancelOrderDto paramsDto);
-
-    ResultVo changePrice(ChangePriceOrderDto paramsDto);
-
-    ResultVo replenishInfo(ReplenishOrderDto paramsDto);
-
-
     ResultVo<ListVo<Map<String, Object>>> waitDispatchCarCountList();
 
     /**
