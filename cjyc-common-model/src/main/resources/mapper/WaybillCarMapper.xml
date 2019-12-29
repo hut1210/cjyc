@@ -1082,27 +1082,25 @@
             left join s_store s0 on s0.id = o.end_store_id
             left join s_store ss on ss.id = o.start_store_id
             left join (
-                select
-                wc.*,
-                concat(s1.province, s1.city, s1.area,s1.detail_addr) as startStoreFullAddress,
-                concat(s2.province, s2.city, s2.area,s2.detail_addr) as endStoreFullAddress
-                from w_waybill w
-                join w_waybill_car wc on wc.waybill_id = w.id
-                left join s_store s1 on s1.id = wc.start_store_id
-                left join s_store s2 on s2.id = wc.end_store_id
-                where
-                    wc.id in
-                    (
-                    SELECT MAX(wc1.id)
-                    FROM w_waybill_car wc1
-                    where wc1.order_car_id in
+                select * from (
+                    select
+                    wc.*,
+                    concat(s1.province, s1.city, s1.area,s1.detail_addr) as startStoreFullAddress,
+                    concat(s2.province, s2.city, s2.area,s2.detail_addr) as endStoreFullAddress
+                    from w_waybill w
+                    join w_waybill_car wc on w.id = wc.waybill_id
+                    left join s_store s1 on s1.id = wc.start_store_id
+                    left join s_store s2 on s2.id = wc.end_store_id
+                    where wc.order_car_id in
                     <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
                         #{item}
                     </foreach>
-                    and wc1.state &lt;= 100
-                    GROUP BY wc1.order_car_id
-                    )
-                ) as temp on temp.order_car_id = oc.id
+                    and wc.state &lt;= 100
+                    order by w.type desc, wc.id desc
+                    limit 1000
+                ) as max
+                group by max.order_car_id
+            ) as temp on temp.order_car_id = oc.id
             where oc.id in
             <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
                 #{item}
