@@ -25,10 +25,25 @@ public class StockCarVo implements Serializable {
     @ApiModelProperty(value = "车系图片logo")
     private String logoImg;
 
+    @ApiModelProperty(value = "vin码")
+    private String vin;
+
     @ApiModelProperty(value = "提车日期")
     @JsonSerialize(using = DateLongSerizlizer.class)
     private Long expectStartDate;
 
+    public String getBrand() {
+        return brand == null ? "" : brand;
+    }
+    public String getModel() {
+        return model == null ? "" : model;
+    }
+    public String getLogoImg() {
+        return logoImg == null ? "" : logoImg;
+    }
+    public String getVin() {
+        return vin == null ? "" : vin;
+    }
     public String getStartCity(){ return StringUtils.isBlank(startCity) ? "":startCity;}
     public String getEndCity() {return StringUtils.isBlank(endCity) ? "":endCity;}
     public Long getExpectStartDate() {return expectStartDate == null ? 0:expectStartDate;}

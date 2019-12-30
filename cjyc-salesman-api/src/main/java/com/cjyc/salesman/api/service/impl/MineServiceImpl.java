@@ -82,10 +82,8 @@ public class MineServiceImpl extends ServiceImpl<IWaybillCarDao, WaybillCar> imp
                 vo.setLogoImg(logoImg);
             }
         }
-        Map<String,Object> map = new HashMap<String,Object>(1);
-        map.put("carStockCount",stockCarVos.size());
         PageInfo<StockCarVo> pageInfo = new PageInfo(stockCarVos);
-        return BaseResultUtil.success(pageInfo,map);
+        return BaseResultUtil.success(pageInfo);
     }
 
     @Override
