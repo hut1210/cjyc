@@ -20,7 +20,7 @@ public class OutAndInStorageQueryDto extends BasePageDto {
     private Long loginId;
 
     @ApiModelProperty(value = "库存状态：0全部,1待入库,2待出库,3已入库和已出库")
-    @Pattern(regexp = "[0|1|2|3]",message = "库存状态只能是0,1,2,3中的一位数")
+    @Pattern(regexp = "(0|1|2|3)",message = "库存状态只能是0,1,2,3中的一位数")
     private String storageState;
 
     @ApiModelProperty(value = "接单日期")

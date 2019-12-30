@@ -26,13 +26,13 @@ public class ImportCustomerOrderCarDto {
     @NotEmpty(message = "车系不能为空")
     private String model;
     @Excel(name = "是否能动")
-    @Pattern(regexp = "[是|否]", message = "是否能动只能输入是或否")
+    @Pattern(regexp = "(是|否)", message = "是否能动只能输入是或否")
     @NotEmpty(message = "是否能动不能为空")
     private String isMove;
     @Excel(name = "车牌号")
     private String carNum;
     @Excel(name = "是否新车")
-    @Pattern(regexp = "[是|否]", message = "只能输入是或否")
+    @Pattern(regexp = "(是|否)", message = "只能输入是或否")
     @NotEmpty(message = "是否新车不能为空")
     private String isNew;
     @Excel(name = "提车费(元)")

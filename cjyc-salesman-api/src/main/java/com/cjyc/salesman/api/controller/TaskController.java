@@ -141,7 +141,7 @@ public class TaskController {
      * @param dto
      * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.vo.PageVo<com.cjyc.common.model.vo.salesman.task.TaskWaybillVo>>
      */
-    @ApiOperation(value = "查询提送车,提送车历史记录列表分页")
+    @ApiOperation(value = "分页查询提送车,提送车历史记录列表")
     @PostMapping("/getCarryPage")
     public ResultVo<PageVo<TaskWaybillVo>> getCarryPage(@RequestBody @Validated TaskWaybillQueryDto dto) {
        return taskService.getCarryPage(dto);
@@ -167,7 +167,7 @@ public class TaskController {
      * @param dto
      * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.vo.PageVo<com.cjyc.common.model.vo.salesman.task.TaskWaybillVo>>
      */
-    @ApiOperation(value = "查询出入库,出入库历史记录列表分页")
+    @ApiOperation(value = "分页查询出入库,出入库历史记录列表")
     @PostMapping("/getOutAndInStoragePage")
     public ResultVo<PageVo<TaskWaybillVo>> getOutAndInStoragePage(@RequestBody @Validated OutAndInStorageQueryDto dto) {
         return taskService.getOutAndInStoragePage(dto);

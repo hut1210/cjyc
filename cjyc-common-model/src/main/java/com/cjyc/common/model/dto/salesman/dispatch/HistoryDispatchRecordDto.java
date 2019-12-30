@@ -23,7 +23,7 @@ public class HistoryDispatchRecordDto extends BasePageDto {
     private String key;
 
     @ApiModelProperty(value = "运单类型：0全部，1提车，2干线运输，3送车")
-    @Pattern(regexp = "[0|1|2|3]",message = "运单类型只能是0,1,2,3中的一位数")
+    @Pattern(regexp = "(0|1|2|3)",message = "运单类型只能是0,1,2,3中的一位数")
     private String type;
 
     @ApiModelProperty("起始城市")
