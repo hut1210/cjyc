@@ -2,6 +2,7 @@ package com.cjyc.common.model.vo.salesman.mine;
 
 import com.cjyc.common.model.util.DateLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
@@ -27,6 +28,10 @@ public class StockCarVo implements Serializable {
 
     @ApiModelProperty(value = "vin码")
     private String vin;
+
+    @ApiModelProperty(value = "订单车辆ID")
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long orderCarId;
 
     @ApiModelProperty(value = "提车日期")
     @JsonSerialize(using = DateLongSerizlizer.class)
