@@ -115,18 +115,6 @@ public class DispatchServiceImpl implements IDispatchService {
                             stateList.add(states[i]);
                         }
                     }
-                    if (CollectionUtils.isEmpty(modeList)) {
-                        modeList.add(v.getOrderStartCity()+"-"+v.getOrderEndCity());
-                        stateList.add("0");
-                    }else {
-                        String[] lines = modeList.get(modeList.size() - 1).split("-");
-                        if (lines != null && lines.length == 2) {
-                            if (!lines[1].equals(v.getOrderEndCity())) {
-                                modeList.add(lines[1] + "-" + v.getOrderEndCity());
-                                stateList.add("0");
-                            }
-                        }
-                    }
                     v.setTrunkModeList(modeList);
                     v.setTrunkStateList(stateList);
                 }
