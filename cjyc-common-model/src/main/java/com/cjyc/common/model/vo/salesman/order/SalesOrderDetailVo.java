@@ -1,7 +1,7 @@
 package com.cjyc.common.model.vo.salesman.order;
 
 import com.cjyc.common.model.util.BigDecimalSerizlizer;
-import com.cjyc.common.model.util.DataLongSerizlizer;
+import com.cjyc.common.model.util.DateLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
@@ -21,7 +21,7 @@ public class SalesOrderDetailVo implements Serializable {
     @ApiModelProperty(value = "订单编号")
     private String orderNo;
     @ApiModelProperty(value = "创建时间")
-    @JsonSerialize(using = DataLongSerizlizer.class)
+    @JsonSerialize(using = DateLongSerizlizer.class)
     private Long createTime;
     @ApiModelProperty(value = "订单状态：0待提交，2待分配，5待确认，10待复确认，15待预付款，25已确认，55运输中，88待付款，100已完成，111原返（待），112异常结束，113取消（待），114作废（待）")
     private Integer state;
@@ -42,10 +42,10 @@ public class SalesOrderDetailVo implements Serializable {
     @ApiModelProperty(value = "送车所属业务中心名称")
     private String endStoreName;
     @ApiModelProperty(value = "提车日期")
-    @JsonSerialize(using = DataLongSerizlizer.class)
+    @JsonSerialize(using = DateLongSerizlizer.class)
     private Long expectStartDate;
     @ApiModelProperty(value = "预计到达日期")
-    @JsonSerialize(using = DataLongSerizlizer.class)
+    @JsonSerialize(using = DateLongSerizlizer.class)
     private Long expectEndDate;
     @ApiModelProperty(value = "客户付款方式：0到付（默认），1预付，2账期")
     private Integer payType;

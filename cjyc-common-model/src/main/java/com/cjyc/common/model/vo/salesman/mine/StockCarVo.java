@@ -1,6 +1,6 @@
 package com.cjyc.common.model.vo.salesman.mine;
 
-import com.cjyc.common.model.util.DataLongSerizlizer;
+import com.cjyc.common.model.util.DateLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -26,7 +26,7 @@ public class StockCarVo implements Serializable {
     private String logoImg;
 
     @ApiModelProperty(value = "提车日期")
-    @JsonSerialize(using = DataLongSerizlizer.class)
+    @JsonSerialize(using = DateLongSerizlizer.class)
     private Long expectStartDate;
 
     public String getStartCity(){ return StringUtils.isBlank(startCity) ? "":startCity;}

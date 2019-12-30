@@ -1,6 +1,6 @@
 package com.cjyc.common.model.vo.web.role;
 
-import com.cjyc.common.model.util.DataLongSerizlizer;
+import com.cjyc.common.model.util.DateLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModel;
@@ -31,7 +31,7 @@ public class SelectUserByRoleVo implements Serializable {
     @ApiModelProperty(value = "创建人")
     private String createUser;
     @ApiModelProperty("创建时间")
-    @JsonSerialize(using = DataLongSerizlizer.class)
+    @JsonSerialize(using = DateLongSerizlizer.class)
     private Long createTime;
 
     private String bizDesc;

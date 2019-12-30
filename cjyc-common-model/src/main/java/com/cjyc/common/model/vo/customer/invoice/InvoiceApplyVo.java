@@ -1,7 +1,7 @@
 package com.cjyc.common.model.vo.customer.invoice;
 
 import com.cjyc.common.model.util.BigDecimalSerizlizer;
-import com.cjyc.common.model.util.DataLongSerizlizer;
+import com.cjyc.common.model.util.DateLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
@@ -32,11 +32,11 @@ public class InvoiceApplyVo implements Serializable {
     private String customerName;
 
     @ApiModelProperty(value = "申请时间")
-    @JsonSerialize(using = DataLongSerizlizer.class)
+    @JsonSerialize(using = DateLongSerizlizer.class)
     private Long applyTime;
 
     @ApiModelProperty(value = "开票时间")
-    @JsonSerialize(using = DataLongSerizlizer.class)
+    @JsonSerialize(using = DateLongSerizlizer.class)
     private Long invoiceTime;
 
     @ApiModelProperty(value = "开票金额")

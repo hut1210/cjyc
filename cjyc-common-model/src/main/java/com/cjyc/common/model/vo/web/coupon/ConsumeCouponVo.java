@@ -1,7 +1,7 @@
 package com.cjyc.common.model.vo.web.coupon;
 
 import com.cjyc.common.model.util.BigDecimalSerizlizer;
-import com.cjyc.common.model.util.DataLongSerizlizer;
+import com.cjyc.common.model.util.DateLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
@@ -26,7 +26,7 @@ public class ConsumeCouponVo implements Serializable {
     private String couponNo;
 
     @ApiModelProperty("使用时间")
-    @JsonSerialize(using = DataLongSerizlizer.class)
+    @JsonSerialize(using = DateLongSerizlizer.class)
     private Long useTime;
 
     @ApiModelProperty("客户名称")

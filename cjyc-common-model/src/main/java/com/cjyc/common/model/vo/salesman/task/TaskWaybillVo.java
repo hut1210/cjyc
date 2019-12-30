@@ -1,7 +1,7 @@
 package com.cjyc.common.model.vo.salesman.task;
 
 import com.cjyc.common.model.util.BigDecimalSerizlizer;
-import com.cjyc.common.model.util.DataLongSerizlizer;
+import com.cjyc.common.model.util.DateLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
@@ -46,19 +46,19 @@ public class TaskWaybillVo implements Serializable {
     private BigDecimal freightFee;
 
     @ApiModelProperty(value = "接单时间")
-    @JsonSerialize(using = DataLongSerizlizer.class)
+    @JsonSerialize(using = DateLongSerizlizer.class)
     private Long createTime;
 
     @ApiModelProperty(value = "交车时间")
-    @JsonSerialize(using = DataLongSerizlizer.class)
+    @JsonSerialize(using = DateLongSerizlizer.class)
     private Long completeTime;
 
     @ApiModelProperty(value = "入库时间")
-    @JsonSerialize(using = DataLongSerizlizer.class)
+    @JsonSerialize(using = DateLongSerizlizer.class)
     private Long unloadTime;
 
     @ApiModelProperty(value = "出库时间")
-    @JsonSerialize(using = DataLongSerizlizer.class)
+    @JsonSerialize(using = DateLongSerizlizer.class)
     private Long loadTime;
 
     @ApiModelProperty(value = "车辆数")

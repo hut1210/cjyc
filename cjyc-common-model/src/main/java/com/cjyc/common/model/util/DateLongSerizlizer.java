@@ -9,12 +9,12 @@ import java.io.IOException;
 import java.util.Objects;
 
 /**
- * @ClassName DataLongSerizlizer
+ * @ClassName DateLongSerizlizer
  * @Description: 时间返回类型处理为Long类型
  * @Author dongy
  * @Date 2019/9/25 13:36
  **/
-public class DataLongSerizlizer extends JsonSerializer<Long> {
+public class DateLongSerizlizer extends JsonSerializer<Long> {
     @Override
     public void serialize(Long date, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
         //将毫秒值转换成秒变成char型数据返回

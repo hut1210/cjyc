@@ -1,7 +1,7 @@
 package com.cjyc.common.model.vo.customer.invoice;
 
 import com.cjyc.common.model.util.BigDecimalSerizlizer;
-import com.cjyc.common.model.util.DataLongSerizlizer;
+import com.cjyc.common.model.util.DateLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -30,7 +30,7 @@ public class InvoiceOrderVo implements Serializable {
     private BigDecimal totalFee;
 
     @ApiModelProperty(value = "订单完结时间")
-    @JsonSerialize(using = DataLongSerizlizer.class)
+    @JsonSerialize(using = DateLongSerizlizer.class)
     private Long finishTime;
 
     @ApiModelProperty(value = "车辆数")

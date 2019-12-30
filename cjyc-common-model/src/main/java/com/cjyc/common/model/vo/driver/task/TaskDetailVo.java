@@ -1,7 +1,7 @@
 package com.cjyc.common.model.vo.driver.task;
 
 import com.cjyc.common.model.util.BigDecimalSerizlizer;
-import com.cjyc.common.model.util.DataLongSerizlizer;
+import com.cjyc.common.model.util.DateLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
@@ -30,11 +30,11 @@ public class TaskDetailVo implements Serializable {
     private Integer type;
 
     @ApiModelProperty(value = "接单时间")
-    @JsonSerialize(using = DataLongSerizlizer.class)
+    @JsonSerialize(using = DateLongSerizlizer.class)
     private Long createTime;
 
     @ApiModelProperty(value = "交车时间")
-    @JsonSerialize(using = DataLongSerizlizer.class)
+    @JsonSerialize(using = DateLongSerizlizer.class)
     private Long completeTime;
 
     @ApiModelProperty(value = "指导线路")

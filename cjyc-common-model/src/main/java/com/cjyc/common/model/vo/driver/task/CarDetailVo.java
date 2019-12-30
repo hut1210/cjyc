@@ -1,6 +1,6 @@
 package com.cjyc.common.model.vo.driver.task;
 
-import com.cjyc.common.model.util.DataLongSerizlizer;
+import com.cjyc.common.model.util.DateLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
@@ -42,11 +42,11 @@ public class CarDetailVo implements Serializable {
     private String endAddress;
 
     @ApiModelProperty(value = "提车日期")
-    @JsonSerialize(using = DataLongSerizlizer.class)
+    @JsonSerialize(using = DateLongSerizlizer.class)
     private Long expectStartTime;
 
     @ApiModelProperty(value = "交车日期")
-    @JsonSerialize(using = DataLongSerizlizer.class)
+    @JsonSerialize(using = DateLongSerizlizer.class)
     private Long unloadTime;
 
     @ApiModelProperty(value = "提车图片地址，逗号分隔")

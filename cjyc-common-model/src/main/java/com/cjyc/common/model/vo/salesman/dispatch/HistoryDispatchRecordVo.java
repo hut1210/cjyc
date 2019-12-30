@@ -1,7 +1,7 @@
 package com.cjyc.common.model.vo.salesman.dispatch;
 
 import com.cjyc.common.model.util.BigDecimalSerizlizer;
-import com.cjyc.common.model.util.DataLongSerizlizer;
+import com.cjyc.common.model.util.DateLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -27,7 +27,7 @@ public class HistoryDispatchRecordVo implements Serializable {
     private String guideLine;
 
     @ApiModelProperty(value = "调度日期")
-    @JsonSerialize(using = DataLongSerizlizer.class)
+    @JsonSerialize(using = DateLongSerizlizer.class)
     private Long createTime;
 
     @ApiModelProperty(value = "车辆数量")

@@ -1,6 +1,6 @@
 package com.cjyc.common.model.vo.salesman.dispatch;
 
-import com.cjyc.common.model.util.DataLongSerizlizer;
+import com.cjyc.common.model.util.DateLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -32,7 +32,7 @@ public class DispatchCarDetailVo implements Serializable {
     private String logoImg;
 
     @ApiModelProperty(value = "提车时间")
-    @JsonSerialize(using = DataLongSerizlizer.class)
+    @JsonSerialize(using = DateLongSerizlizer.class)
     private Long expectStartDate;
 
     @ApiModelProperty(value = "发车人")

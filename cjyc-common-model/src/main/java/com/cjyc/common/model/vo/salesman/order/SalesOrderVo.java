@@ -1,7 +1,7 @@
 package com.cjyc.common.model.vo.salesman.order;
 
 import com.cjyc.common.model.util.BigDecimalSerizlizer;
-import com.cjyc.common.model.util.DataLongSerizlizer;
+import com.cjyc.common.model.util.DateLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
@@ -40,7 +40,7 @@ public class SalesOrderVo implements Serializable {
     private String allotToUserName;
 
     @ApiModelProperty(value = "提车日期")
-    @JsonSerialize(using = DataLongSerizlizer.class)
+    @JsonSerialize(using = DateLongSerizlizer.class)
     private Long expectStartDate;
 
     @ApiModelProperty(value = "客户类型：1个人，2企业，3合伙人")

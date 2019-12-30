@@ -1,7 +1,7 @@
 package com.cjyc.common.model.vo.web.driver;
 
 import com.cjyc.common.model.util.BigDecimalSerizlizer;
-import com.cjyc.common.model.util.DataLongSerizlizer;
+import com.cjyc.common.model.util.DateLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
@@ -90,7 +90,7 @@ public class DriverVo implements Serializable {
     private Integer state;
 
     @ApiModelProperty("最后操作时间")
-    @JsonSerialize(using = DataLongSerizlizer.class)
+    @JsonSerialize(using = DateLongSerizlizer.class)
     private Long operatTime;
 
     @ApiModelProperty("操作人")

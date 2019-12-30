@@ -1,6 +1,6 @@
 package com.cjyc.common.model.vo.web.driver;
 
-import com.cjyc.common.model.util.DataLongSerizlizer;
+import com.cjyc.common.model.util.DateLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
@@ -32,6 +32,6 @@ public class ExistDriverVo implements Serializable {
     private String existIdCard;
 
     @ApiModelProperty("创建时间")
-    @JsonSerialize(using = DataLongSerizlizer.class)
+    @JsonSerialize(using = DateLongSerizlizer.class)
     private Long createTime;
 }

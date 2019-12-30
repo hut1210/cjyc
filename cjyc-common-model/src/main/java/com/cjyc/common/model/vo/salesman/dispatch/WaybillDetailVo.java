@@ -1,7 +1,7 @@
 package com.cjyc.common.model.vo.salesman.dispatch;
 
 import com.cjyc.common.model.util.BigDecimalSerizlizer;
-import com.cjyc.common.model.util.DataLongSerizlizer;
+import com.cjyc.common.model.util.DateLongSerizlizer;
 import com.cjyc.common.model.vo.driver.task.CarDetailVo;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModelProperty;
@@ -29,7 +29,7 @@ public class WaybillDetailVo implements Serializable {
     private String no;
 
     @ApiModelProperty(value = "调度日期")
-    @JsonSerialize(using = DataLongSerizlizer.class)
+    @JsonSerialize(using = DateLongSerizlizer.class)
     private Long createTime;
 
     @ApiModelProperty(value = "运单类型")

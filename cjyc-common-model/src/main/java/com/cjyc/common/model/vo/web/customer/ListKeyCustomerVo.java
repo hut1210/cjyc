@@ -1,7 +1,7 @@
 package com.cjyc.common.model.vo.web.customer;
 
 import com.cjyc.common.model.util.BigDecimalSerizlizer;
-import com.cjyc.common.model.util.DataLongSerizlizer;
+import com.cjyc.common.model.util.DateLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
@@ -54,7 +54,7 @@ public class ListKeyCustomerVo implements Serializable {
     private BigDecimal totalAmount;
 
     @ApiModelProperty(value = "注册时间")
-    @JsonSerialize(using = DataLongSerizlizer.class)
+    @JsonSerialize(using = DateLongSerizlizer.class)
     private Long createTime;
 
     @ApiModelProperty("创建人名称")
