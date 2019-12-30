@@ -110,7 +110,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 Long carrierId = dto.getCarrierId();
 
                 //是否分配司机任务标识
-                CarrierInfo carrierInfo = validateLocalCarrierInfo(carrierId, dto.getCarrierType(), paramsDto.getType(),
+                CarrierInfo carrierInfo = validateLocalCarrierInfo(carrierId, dto.getCarrierName(), dto.getCarrierType(), paramsDto.getType(),
                         new UserInfo(dto.getLoadLinkUserId(), dto.getLoadLinkName(), dto.getLoadLinkPhone()),
                         new UserInfo(dto.getUnloadLinkUserId(), dto.getUnloadLinkName(), dto.getUnloadLinkPhone()),
                         orderCarNo);
@@ -263,7 +263,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             Long carrierId = paramsDto.getCarrierId();
 
             //【验证】承运商是否可以运营
-            CarrierInfo carrierInfo = validateLocalCarrierInfo(carrierId, paramsDto.getCarrierType(), paramsDto.getType(),
+            CarrierInfo carrierInfo = validateLocalCarrierInfo(carrierId, paramsDto.getCarrierName(), paramsDto.getCarrierType(), paramsDto.getType(),
                     new UserInfo(dto.getLoadLinkUserId(), dto.getLoadLinkName(), dto.getLoadLinkPhone()),
                     new UserInfo(dto.getUnloadLinkUserId(), dto.getUnloadLinkName(), dto.getUnloadLinkPhone()),
                     orderCarNo);
@@ -392,16 +392,16 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         return carrierType == WaybillCarrierTypeEnum.SELF.code ? WaybillStateEnum.TRANSPORTING.code : WaybillStateEnum.ALLOT_CONFIRM.code;
     }
 
-    private CarrierInfo validateLocalCarrierInfo(Long newCarrierId, Integer carrierType, Integer waybillType, UserInfo loadUser, UserInfo unloadUser, String orderCarNo) {
+    private CarrierInfo validateLocalCarrierInfo(Long newCarrierId, String newCarrierName, Integer carrierType, Integer waybillType, UserInfo loadUser, UserInfo unloadUser, String orderCarNo) {
         CarrierInfo carrierInfo = new CarrierInfo();
         carrierInfo.setCarrierId(newCarrierId);
+        carrierInfo.setCarrierName(newCarrierName);
         carrierInfo.setCarrierType(carrierType);
         if(carrierType == WaybillCarrierTypeEnum.LOCAL_ADMIN.code){
             Admin admin = adminDao.selectById(newCarrierId);
             if (admin == null || admin.getState() != AdminStateEnum.CHECKED.code) {
                 throw new ParameterException("编号为{0}的车辆，所选业务员已离职", orderCarNo);
             }
-            carrierInfo.setCarrierName(admin.getName());
             carrierInfo.setDriverId(admin.getId());
             carrierInfo.setDriverName(admin.getName());
             carrierInfo.setDriverPhone(admin.getPhone());
@@ -426,7 +426,6 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 if (driver == null) {
                     throw new ParameterException("编号为{0}的车辆，所选承运商没有运营中的司机", orderCarNo);
                 }
-                carrierInfo.setCarrierName(driver.getName());
                 carrierInfo.setDriverId(driver.getId());
                 carrierInfo.setDriverName(driver.getName());
                 carrierInfo.setDriverPhone(driver.getPhone());

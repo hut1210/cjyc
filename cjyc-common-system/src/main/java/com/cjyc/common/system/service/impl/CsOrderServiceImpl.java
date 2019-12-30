@@ -70,10 +70,6 @@ public class CsOrderServiceImpl implements ICsOrderService {
     @Resource
     private IWaybillCarDao waybillCarDao;
     @Resource
-    private ICsPingxxService csPingxxService;
-    @Resource
-    private ICsSysService csSysService;
-    @Resource
     private ICsCityService csCityService;
     @Resource
     private ICsLineService csLineService;
@@ -177,12 +173,45 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
     @Override
     public ResultVo commit(CommitOrderDto paramsDto) {
-        //验证客户
-        ResultVo<Customer> validateCustomerResult = validateCustomer(paramsDto);
-        if (ResultEnum.SUCCESS.getCode() != validateCustomerResult.getCode()) {
-            return validateCustomerResult;
+        Customer customer = null;
+        if (paramsDto.getCustomerId() != null) {
+            customer = csCustomerService.getById(paramsDto.getCustomerId(), true);
+            if (customer != null && !customer.getName().equals(paramsDto.getCustomerName())) {
+                return BaseResultUtil.fail(ResultEnum.CREATE_NEW_CUSTOMER.getCode(),
+                        "客户手机号存在，名称不一致：新名称（{0}）旧名称（{1}），请返回订单重新选择客户",
+                        paramsDto.getCustomerName(), customer.getName());
+            }
         }
-        Customer customer = validateCustomerResult.getData();
+        if (customer == null) {
+            customer = csCustomerService.getByPhone(paramsDto.getCustomerPhone(), true);
+            if (customer != null && !customer.getName().equals(paramsDto.getCustomerName())) {
+                return BaseResultUtil.fail(ResultEnum.CREATE_NEW_CUSTOMER.getCode(),
+                        "客户手机号存在，名称不一致：新名称（{0}）旧名称（{1}），请返回订单重新选择客户",
+                        paramsDto.getCustomerName(), customer.getName());
+            }
+        }
+        if (customer == null) {
+            customer = new Customer();
+            if (paramsDto.getCustomerType() == CustomerTypeEnum.INDIVIDUAL.code) {
+                if (paramsDto.getCreateCustomerFlag()) {
+                    customer.setName(paramsDto.getCustomerName());
+                    customer.setContactMan(paramsDto.getCustomerName());
+                    customer.setContactPhone(paramsDto.getCustomerPhone());
+                    customer.setType(CustomerTypeEnum.INDIVIDUAL.code);
+                    //customer.setInitial()
+                    customer.setState(CustomerStateEnum.CHECKED.code);
+                    customer.setPayMode(PayModeEnum.COLLECT.code);
+                    customer.setCreateTime(System.currentTimeMillis());
+                    customer.setCreateUserId(paramsDto.getLoginId());
+                    //添加
+                    csCustomerService.save(customer);
+                } else {
+                    return BaseResultUtil.getVo(ResultEnum.CREATE_NEW_CUSTOMER.getCode(), ResultEnum.CREATE_NEW_CUSTOMER.getMsg());
+                }
+            } else {
+                return BaseResultUtil.fail("企业客户/合伙人不存在");
+            }
+        }
         paramsDto.setCustomerId(customer.getId());
         //提交订单
         Order order = commitOrder(paramsDto);
@@ -477,13 +506,40 @@ public class CsOrderServiceImpl implements ICsOrderService {
     }
 
     /**
-     * 下单验证客户
+     * 费用信息赋值
+     *
+     * @param order
+     * @param orderCarList
+     * @author JPG
+     * @since 2019/12/12 14:41
+     */
+    private Order fillOrderFeeInfo(Order order, List<OrderCar> orderCarList) {
+        BigDecimal pickFee = BigDecimal.ZERO;
+        BigDecimal trunkFee = BigDecimal.ZERO;
+        BigDecimal backFee = BigDecimal.ZERO;
+        BigDecimal addInsuranceFee = BigDecimal.ZERO;
+        for (OrderCar orderCar : orderCarList) {
+            pickFee = pickFee.add(orderCar.getPickFee() == null ? BigDecimal.ZERO : orderCar.getPickFee());
+            trunkFee = trunkFee.add(orderCar.getTrunkFee() == null ? BigDecimal.ZERO : orderCar.getTrunkFee());
+            backFee = backFee.add(orderCar.getBackFee() == null ? BigDecimal.ZERO : orderCar.getBackFee());
+            addInsuranceFee = addInsuranceFee.add(orderCar.getAddInsuranceFee() == null? BigDecimal.ZERO : orderCar.getAddInsuranceFee());
+        }
+        order.setPickFee(pickFee);
+        order.setTrunkFee(trunkFee);
+        order.setBackFee(backFee);
+        order.setAddInsuranceFee(addInsuranceFee);
+        return order;
+    }
+
+    /**
+     * 提交并审核
      *
      * @param paramsDto
-     * @author JPG
-     * @since 2019/11/27 14:05
+     * @return
      */
-    private ResultVo<Customer> validateCustomer(CommitOrderDto paramsDto) {
+    @Override
+    public ResultVo commitAndCheck(CommitOrderDto paramsDto) {
+        //验证客户
         Customer customer = null;
         if (paramsDto.getCustomerId() != null) {
             customer = csCustomerService.getById(paramsDto.getCustomerId(), true);
@@ -523,49 +579,6 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 return BaseResultUtil.fail("企业客户/合伙人不存在");
             }
         }
-        return BaseResultUtil.success(customer);
-    }
-
-    /**
-     * 费用信息赋值
-     *
-     * @param order
-     * @param orderCarList
-     * @author JPG
-     * @since 2019/12/12 14:41
-     */
-    private Order fillOrderFeeInfo(Order order, List<OrderCar> orderCarList) {
-        BigDecimal pickFee = BigDecimal.ZERO;
-        BigDecimal trunkFee = BigDecimal.ZERO;
-        BigDecimal backFee = BigDecimal.ZERO;
-        BigDecimal addInsuranceFee = BigDecimal.ZERO;
-        for (OrderCar orderCar : orderCarList) {
-            pickFee = pickFee.add(orderCar.getPickFee() == null ? BigDecimal.ZERO : orderCar.getPickFee());
-            trunkFee = trunkFee.add(orderCar.getTrunkFee() == null ? BigDecimal.ZERO : orderCar.getTrunkFee());
-            backFee = backFee.add(orderCar.getBackFee() == null ? BigDecimal.ZERO : orderCar.getBackFee());
-            addInsuranceFee = addInsuranceFee.add(orderCar.getAddInsuranceFee() == null? BigDecimal.ZERO : orderCar.getAddInsuranceFee());
-        }
-        order.setPickFee(pickFee);
-        order.setTrunkFee(trunkFee);
-        order.setBackFee(backFee);
-        order.setAddInsuranceFee(addInsuranceFee);
-        return order;
-    }
-
-    /**
-     * 提交并审核
-     *
-     * @param paramsDto
-     * @return
-     */
-    @Override
-    public ResultVo commitAndCheck(CommitOrderDto paramsDto) {
-        //验证客户
-        ResultVo<Customer> validateCustomerResult = validateCustomer(paramsDto);
-        if (ResultEnum.SUCCESS.getCode() != validateCustomerResult.getCode()) {
-            return validateCustomerResult;
-        }
-        Customer customer = validateCustomerResult.getData();
         paramsDto.setCustomerId(customer.getId());
         //提交订单
         Order order = commitOrder(paramsDto);
