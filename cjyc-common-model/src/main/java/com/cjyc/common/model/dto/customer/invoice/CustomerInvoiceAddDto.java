@@ -28,7 +28,7 @@ public class CustomerInvoiceAddDto implements Serializable {
 
     @ApiModelProperty(value = "发票类型 1-普通(个人) ，2-增值普票(企业) ，3-增值专用发票'",required = true)
     @NotNull(message = "发票类型不能为空")
-    @Pattern(regexp = "[1|2|3]",message = "发票类型只能是1,2,3中的一位数")
+    @Pattern(regexp = "(1|2|3)",message = "发票类型只能是1,2,3中的一位数")
     private String type;
 
     @ApiModelProperty(value = "发票抬头")

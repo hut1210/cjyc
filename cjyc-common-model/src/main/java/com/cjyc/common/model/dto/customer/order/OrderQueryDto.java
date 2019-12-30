@@ -15,7 +15,7 @@ public class OrderQueryDto extends BasePageDto {
     private Long loginId;
 
     @ApiModelProperty("订单状态 0:待确认,1:运输中,2:已交付,3:全部")
-    @Pattern(regexp = "[0|1|2|3]",message = "订单状态只能是0,1,2,3中的一位数")
+    @Pattern(regexp = "(0|1|2|3)",message = "订单状态只能是0,1,2,3中的一位数")
     private String state;
 
     @ApiModelProperty("订单号")

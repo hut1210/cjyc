@@ -20,7 +20,7 @@ public class TaskWaybillQueryDto extends BasePageDto {
     private Long loginId;
 
     @ApiModelProperty(value = "任务状态：0全部,1待提车,2待交车,3历史记录")
-    @Pattern(regexp = "[0|1|2|3]",message = "任务状态只能是0,1,2,3中的一位数")
+    @Pattern(regexp = "(0|1|2|3)",message = "任务状态只能是0,1,2,3中的一位数")
     private String taskState;
 
     @ApiModelProperty(value = "接单日期")
