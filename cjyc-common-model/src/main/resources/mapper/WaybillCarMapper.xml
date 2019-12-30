@@ -599,6 +599,7 @@
         left join w_task t on tc.task_id = t.id
         <where>
             w.type != 2
+            and t.state &lt;= 100
             <if test="paramsDto.brand != null and paramsDto.brand != ''">
                 and oc.brand = #{paramsDto.brand}
             </if>
@@ -1017,6 +1018,7 @@
         join w_order_car oc on oc.order_id = o.id
         join w_waybill_car wc on wc.order_car_id = oc.id
         where wc.order_car_id = #{orderCarId}
+        and wc.state &lt;= 100
         and o.back_contact_phone = wc.unload_link_phone
     </select>
     <select id="findCarEndpoint" resultType="com.cjyc.common.model.vo.web.waybill.WaybillCarVo">
@@ -1093,6 +1095,7 @@
                     left join s_store s2 on s2.id = wc.end_store_id
                     where w.state &lt;= 100
                     and wc.state &lt;= 100
+                    and w.type >= 2
                     and wc.order_car_id in
                     <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
                         #{item}
@@ -1633,8 +1636,10 @@
     </select>
     <select id="findAfterWaybillCar" resultType="com.cjyc.common.model.entity.WaybillCar">
         select wc.*
-        from w_waybill_car wc
+        from w_waybill w
+        join w_waybill_car wc on wc.waybill_id = w.id
         where wc.order_car_no = #{orderCarNo}
+        and w.type >= 2
         and wc.id > #{waybillCarId}
         and wc.state &lt; 100
     </select>

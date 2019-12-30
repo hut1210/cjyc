@@ -1048,10 +1048,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 }
             }
             //干送
-            if (order.getEndAddress().equals(waybillCar.getEndAddress())) {
-                noc.setBackType(order.getBackType());
-                noc.setBackState(OrderCarLocalStateEnum.WAIT_DISPATCH.code);
-            }
+            noc.setBackType(order.getBackType());
+            noc.setBackState(OrderCarLocalStateEnum.WAIT_DISPATCH.code);
         } else {
             throw new ParameterException("运单类型错误");
         }
