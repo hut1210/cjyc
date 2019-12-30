@@ -26,6 +26,10 @@ public class TaskWaybillVo implements Serializable {
     @JsonSerialize(using= ToStringSerializer.class)
     private Long taskId;
 
+    @ApiModelProperty(value = "任务单车辆id")
+    @JsonSerialize(using= ToStringSerializer.class)
+    private Long taskCarId;
+
     @ApiModelProperty(value = "运单编号")
     private String waybillNo;
 
