@@ -468,6 +468,7 @@
             LEFT JOIN w_waybill_car car ON t.waybill_car_id = car.id
         <where>
             /*库存状态：0全部*/
+            1=1
             <if test="storeId != null and storeId != '' and storageState == @com.cjyc.common.model.constant.FieldConstant@ALL_TASK">
                 AND (
                 (car.start_belong_store_id in(#{storeId})
