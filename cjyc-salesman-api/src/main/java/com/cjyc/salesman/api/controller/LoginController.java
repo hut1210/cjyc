@@ -13,6 +13,7 @@ import com.cjyc.common.model.entity.Role;
 import com.cjyc.common.model.enums.role.RoleLoginAppEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.salesman.login.AdminVo;
 import com.cjyc.common.model.vo.salesman.login.SalesmanAppLoginVo;
 import com.cjyc.common.system.feign.ISysLoginService;
 import com.cjyc.common.system.feign.ISysRoleService;
@@ -197,7 +198,9 @@ public class LoginController {
         SalesmanAppLoginVo vo = new SalesmanAppLoginVo();
         BeanUtils.copyProperties(loginResp, vo);
         vo.setRoleList(roleList);
-        vo.setAdmin(admin);
+        AdminVo adminVo = new AdminVo();
+        BeanUtils.copyProperties(admin, adminVo);
+        vo.setAdmin(adminVo);
         return vo;
     }
 }
