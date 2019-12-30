@@ -532,24 +532,29 @@
             from w_order o
             join w_order_car oc on oc.order_id = o.id
             left join (
-                select
-                wc1.id,
-                wc1.end_province_code,
-                wc1.end_province,
-                wc1.end_city_code,
-                wc1.end_city,
-                wc1.end_area_code,
-                wc1.end_area,
-                wc1.order_car_id
-                from w_waybill_car wc1
-                where id in (
-                    select max(wc.id)
+                select *
+                from (
+                    select
+                    wc.id,
+                    wc.end_province_code,
+                    wc.end_province,
+                    wc.end_city_code,
+                    wc.end_city,
+                    wc.end_area_code,
+                    wc.end_area,
+                    wc.order_car_id
                     from w_waybill w
                     join w_waybill_car wc on w.id = wc.waybill_id
                     where w.state &lt;= 100
                     and wc.state &lt;= 100
-                    group by wc.order_car_id
-                )
+                    and wc.order_car_id in
+                    <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                    order by w.type desc, wc.id desc
+                    limit 10000
+                ) as max
+                group by max.order_car_id
             ) as wmax on wmax.order_car_id = oc.id
             where o.state between 25 and 100
             and oc.trunk_state &lt; 5

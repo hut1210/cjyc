@@ -1091,13 +1091,14 @@
                     join w_waybill_car wc on w.id = wc.waybill_id
                     left join s_store s1 on s1.id = wc.start_store_id
                     left join s_store s2 on s2.id = wc.end_store_id
-                    where wc.order_car_id in
+                    where w.state &lt;= 100
+                    and wc.state &lt;= 100
+                    and wc.order_car_id in
                     <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
                         #{item}
                     </foreach>
-                    and wc.state &lt;= 100
                     order by w.type desc, wc.id desc
-                    limit 1000
+                    limit 10000
                 ) as max
                 group by max.order_car_id
             ) as temp on temp.order_car_id = oc.id

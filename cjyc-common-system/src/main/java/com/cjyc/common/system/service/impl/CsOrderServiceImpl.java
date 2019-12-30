@@ -16,6 +16,7 @@ import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
 import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.enums.city.CityLevelEnum;
+import com.cjyc.common.model.enums.customer.CustomerSourceEnum;
 import com.cjyc.common.model.enums.customer.CustomerStateEnum;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.enums.log.OrderLogEnum;
@@ -194,6 +195,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
             customer = new Customer();
             if (paramsDto.getCustomerType() == CustomerTypeEnum.INDIVIDUAL.code) {
                 if (paramsDto.getCreateCustomerFlag()) {
+                    customer.setCustomerNo(csSendNoService.getNo(SendNoTypeEnum.CUSTOMER));
                     customer.setName(paramsDto.getCustomerName());
                     customer.setContactMan(paramsDto.getCustomerName());
                     customer.setContactPhone(paramsDto.getCustomerPhone());
@@ -201,6 +203,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                     //customer.setInitial()
                     customer.setState(CustomerStateEnum.CHECKED.code);
                     customer.setPayMode(PayModeEnum.COLLECT.code);
+                    customer.setSource(CustomerSourceEnum.WEB.code);
                     customer.setCreateTime(System.currentTimeMillis());
                     customer.setCreateUserId(paramsDto.getLoginId());
                     //添加
@@ -561,6 +564,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
             customer = new Customer();
             if (paramsDto.getCustomerType() == CustomerTypeEnum.INDIVIDUAL.code) {
                 if (paramsDto.getCreateCustomerFlag()) {
+                    customer.setCustomerNo(csSendNoService.getNo(SendNoTypeEnum.CUSTOMER));
                     customer.setName(paramsDto.getCustomerName());
                     customer.setContactMan(paramsDto.getCustomerName());
                     customer.setContactPhone(paramsDto.getCustomerPhone());
@@ -568,6 +572,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                     //customer.setInitial()
                     customer.setState(CustomerStateEnum.CHECKED.code);
                     customer.setPayMode(PayModeEnum.COLLECT.code);
+                    customer.setSource(CustomerSourceEnum.WEB.code);
                     customer.setCreateTime(System.currentTimeMillis());
                     customer.setCreateUserId(paramsDto.getLoginId());
                     //添加
