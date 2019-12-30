@@ -70,7 +70,7 @@ public class MineServiceImpl extends ServiceImpl<IWaybillCarDao, WaybillCar> imp
         }
         // 获取业务中心ID
         dto.setStoreIds(csStoreService.getStoreIds(bizScope));
-        if(dto.getEndTime() != null){
+        if(dto.getEndTime() != null && dto.getEndTime() != 0){
             dto.setEndTime(TimeStampUtil.addDays(dto.getEndTime(),1));
         }
         String logoImg = LogoImgProperty.logoImg;

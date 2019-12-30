@@ -1149,10 +1149,10 @@
             <if test="endCity != null and endCity.trim() != ''">
                 and wo.endCity = #{endCity}
             </if>
-            <if test="startTime != null">
+            <if test="startTime != null and startTime != 0">
                 and wo.expect_start_date >= #{startTime}
             </if>
-            <if test="endTime != null">
+            <if test="endTime != null and endTime != 0">
                 and wo.expect_start_date &lt; #{endTime}
             </if>
             <if test="storeIds != null and storeIds.trim() != ''">
