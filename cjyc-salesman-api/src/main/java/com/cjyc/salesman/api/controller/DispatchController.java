@@ -5,14 +5,17 @@ import com.cjyc.common.model.dto.salesman.dispatch.HistoryDispatchRecordDto;
 import com.cjyc.common.model.dto.web.carrier.DispatchCarrierDto;
 import com.cjyc.common.model.dto.web.carrier.TrailCarrierDto;
 import com.cjyc.common.model.dto.web.driver.DispatchDriverDto;
+import com.cjyc.common.model.dto.web.order.ComputeCarEndpointDto;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.salesman.dispatch.*;
 import com.cjyc.common.model.vo.web.carrier.DispatchCarrierVo;
 import com.cjyc.common.model.vo.web.carrier.TrailCarrierVo;
 import com.cjyc.common.model.vo.web.driver.DispatchDriverVo;
+import com.cjyc.common.model.vo.web.order.DispatchAddCarVo;
 import com.cjyc.common.system.service.ICsCarrierService;
 import com.cjyc.common.system.service.ICsDriverService;
+import com.cjyc.common.system.service.ICsOrderService;
 import com.cjyc.salesman.api.service.IDispatchService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -39,6 +42,8 @@ public class DispatchController {
     private ICsCarrierService csCarrierService;
     @Resource
     private ICsDriverService csDriverService;
+    @Resource
+    private ICsOrderService csOrderService;
 
     /**
      * 功能描述: 查询所有出发城市-目的地城市的车辆数量
@@ -74,6 +79,14 @@ public class DispatchController {
     @PostMapping(value = "/wait/list")
     public ResultVo<PageVo<WaitDispatchCarListVo>> waitDispatchCarList(@RequestBody DispatchListDto reqDto) {
         return dispatchService.waitDispatchCarList(reqDto);
+    }
+    /**
+     * 根据订单车辆ID查询可调度起始地和目的地
+     */
+    @ApiOperation(value = "根据订单车辆ID查询可调度起始地和目的地")
+    @PostMapping(value = "/car/from/to/get")
+    public ResultVo<DispatchAddCarVo> computerCarEndpoint(@RequestBody ComputeCarEndpointDto reqDto) {
+        return csOrderService.computerCarEndpoint(reqDto);
     }
 
     /**

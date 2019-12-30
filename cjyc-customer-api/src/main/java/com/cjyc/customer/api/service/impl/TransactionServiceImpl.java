@@ -1,6 +1,7 @@
 package com.cjyc.customer.api.service.impl;
 
 import com.Pingxx.model.MetaDataEntiy;
+import com.cjyc.common.model.keys.RedisKeys;
 import com.pingplusplus.model.Order;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.entity.*;
@@ -166,6 +167,8 @@ public class TransactionServiceImpl implements ITransactionService {
                         //修改车辆支付状态
                         for(int i=0;i<orderCarNosList.size();i++){
                             tradeBillDao.updateOrderCar(orderCarNosList.get(i),2,System.currentTimeMillis());
+                            String lockKey = RedisKeys.getWlCollectPayLockKey(orderCarNosList.get(i));
+                            redisUtil.delete(lockKey);
                         }
 
                         for (int i=0;i<taskCarIdList.size();i++){

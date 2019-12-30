@@ -110,7 +110,7 @@ public class TaskServiceImpl implements ITaskService {
                 Order order = orderDao.selectById(orderCar.getOrderId());
                 carDetailVo.setPayType(order.getPayType());
 
-                carDetailVo.setId(waybillCar.getId());
+                carDetailVo.setId(taskCar.getId());
                 carDetailVoList.add(carDetailVo);
             }
         }

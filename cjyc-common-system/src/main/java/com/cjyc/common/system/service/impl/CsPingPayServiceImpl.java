@@ -263,7 +263,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                     return BaseResultUtil.fail("订单车辆信息丢失");
                 }
                 if (orderCar.getState() >= OrderCarStateEnum.SIGNED.code) {
-                    return BaseResultUtil.fail("订单车辆{0}已签收过，请刷新后重试", orderCar.getNo());
+                    return BaseResultUtil.fail("订单车辆{0}已交付，请刷新后重试", orderCar.getNo());
                 }
 
                 if(addLock){

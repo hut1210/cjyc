@@ -128,7 +128,6 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         customer.setState(CustomerStateEnum.CHECKED.code);
         customer.setPayMode(PayModeEnum.COLLECT.code);
         customer.setSource(CustomerSourceEnum.WEB.code);
-        customer.setRegisterTime(NOW);
         customer.setCreateUserId(dto.getLoginId());
         customer.setCreateTime(NOW);
         //新增个人用户信息到物流平台

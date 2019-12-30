@@ -161,17 +161,6 @@ public class OrderController {
         return orderService.findOrder(dto);
     }
 
-
-    /**
-     * 根据订单车辆ID查询可调度起始地和目的地
-     */
-    @ApiOperation(value = "根据订单车辆ID查询计算起始地和目的地")
-    @PostMapping(value = "/computer/car/endpoint")
-    public ResultVo<DispatchAddCarVo> computerCarEndpoint(@RequestBody ComputeCarEndpointDto reqDto) {
-        return csOrderService.computerCarEndpoint(reqDto);
-    }
-
-
     @ApiOperation(value = "订单详情")
     @PostMapping("/findOrderDetail")
     public ResultVo<SalesOrderDetailVo> findOrderDetail(@Valid @RequestBody SalesOrderDetailDto dto) {

@@ -4,7 +4,7 @@ spring:
     active: local
   #应用名称
   application:
-    name: cjyc-web-api
+    name: cjyc-web-api1
   #nacos Data ID：yunche-api-${spring.profiles.active}.${file-extension}
   cloud:
     nacos:

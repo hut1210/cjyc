@@ -26,6 +26,10 @@ public class TaskWaybillVo implements Serializable {
     @JsonSerialize(using= ToStringSerializer.class)
     private Long taskId;
 
+    @ApiModelProperty(value = "任务单车辆id")
+    @JsonSerialize(using= ToStringSerializer.class)
+    private Long taskCarId;
+
     @ApiModelProperty(value = "运单编号")
     private String waybillNo;
 
@@ -63,6 +67,31 @@ public class TaskWaybillVo implements Serializable {
 
     @ApiModelProperty(value = "车辆数")
     private Integer carNum;
+
+    public Long getWaybillId() {
+        return waybillId == null ? 0 : waybillId;
+    }
+    public Long getTaskId() {
+        return taskId == null ? 0 : taskId;
+    }
+    public Long getTaskCarId() {
+        return taskCarId == null ? 0 : taskCarId;
+    }
+    public String getWaybillNo() {
+        return waybillNo == null ? "" : waybillNo;
+    }
+    public Integer getType() {
+        return type == null ? -1 : type;
+    }
+    public BigDecimal getFreightFee() {
+        return freightFee == null ? new BigDecimal(0) : freightFee;
+    }
+    public Long getCreateTime() {
+        return createTime == null ? 0 : createTime;
+    }
+    public Integer getCarNum() {
+        return carNum == null ? 0 : carNum;
+    }
     public String getGuideLine() {
         return guideLine == null ? "" : guideLine;
     }

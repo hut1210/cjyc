@@ -532,24 +532,26 @@
             from w_order o
             join w_order_car oc on oc.order_id = o.id
             left join (
-                select
-                wc1.id,
-                wc1.end_province_code,
-                wc1.end_province,
-                wc1.end_city_code,
-                wc1.end_city,
-                wc1.end_area_code,
-                wc1.end_area,
-                wc1.order_car_id
-                from w_waybill_car wc1
-                where id in (
-                    select max(wc.id)
+                select *
+                from (
+                    select
+                    wc.id,
+                    wc.end_province_code,
+                    wc.end_province,
+                    wc.end_city_code,
+                    wc.end_city,
+                    wc.end_area_code,
+                    wc.end_area,
+                    wc.order_car_id
                     from w_waybill w
                     join w_waybill_car wc on w.id = wc.waybill_id
                     where w.state &lt;= 100
                     and wc.state &lt;= 100
-                    group by wc.order_car_id
-                )
+                    and w.type >= 2
+                    order by w.type desc, wc.id desc
+                    limit 10000
+                ) as max
+                group by max.order_car_id
             ) as wmax on wmax.order_car_id = oc.id
             where o.state between 25 and 100
             and oc.trunk_state &lt; 5
@@ -1147,10 +1149,10 @@
             <if test="endCity != null and endCity.trim() != ''">
                 and wo.endCity = #{endCity}
             </if>
-            <if test="startTime != null">
+            <if test="startTime != null and startTime != 0">
                 and wo.expect_start_date >= #{startTime}
             </if>
-            <if test="endTime != null">
+            <if test="endTime != null and endTime != 0">
                 and wo.expect_start_date &lt; #{endTime}
             </if>
             <if test="storeIds != null and storeIds.trim() != ''">
@@ -1349,83 +1351,130 @@
         where oc.id = #{orderCarId}
     </select>
     <select id="findWaitDispatchCarListForApp" resultType="com.cjyc.common.model.vo.salesman.dispatch.DispatchListVo">
-        select * from (
-            /*订单所属地提车*/
-            select oc.*
+        select *
+        from (
+            select
+            <include refid="transport_state"/>
+            (case when wmax.id is not null then wmax.end_province_code else o.start_province_code end) as dispatchStartProvinceCode,
+            (case when wmax.id is not null then wmax.end_province else o.start_province end) as dispatchStartProvince,
+            (case when wmax.id is not null then wmax.end_city_code else o.start_city_code end) as dispatchStartCityCode,
+            (case when wmax.id is not null then wmax.end_city else o.start_city end) as dispatchStartCity,
+            (case when wmax.id is not null then wmax.end_area_code else o.start_area_code end) as dispatchStartAreaCode,
+            (case when wmax.id is not null then wmax.end_area else o.start_area end) as dispatchStartArea,
+            o.end_province_code as dispatchEndProvinceCode,
+            o.end_province as dispatchEndProvince,
+            o.end_city_code as dispatchEndCityCode,
+            o.end_city as dispatchEndCity,
+            o.end_area_code as dispatchEndAreaCode,
+            o.end_area as dispatchEndArea,
+
+            o.customer_id as customerId,
+            o.customer_name as customerName,
+            o.customer_phone as customerPhone,
+            o.customer_type as customerType,
+            o.input_store_id as inputStoreId,
+            o.input_store_name as inputStoreName,
+            o.start_province as startProvince,
+            o.start_province_code as startProvinceCode,
+            o.start_city as startCity,
+            o.start_city_code as startCityCode,
+            o.start_area as startArea,
+            o.start_area_code as startAreaCode,
+            o.start_address as startAddress,
+            o.start_lng as startLng,
+            o.start_lat as startLat,
+            o.start_store_id as startStoreId,
+            o.start_store_name as startStoreName,
+            o.start_belong_store_id as startBelongStoreId,
+            o.end_province as endProvince,
+            o.end_province_code as endProvinceCode,
+            o.end_city as endCity,
+            o.end_city_code as endCityCode,
+            o.end_area as endArea,
+            o.end_area_code as endAreaCode,
+            o.end_address as endAddress,
+            o.end_lng as endLng,
+            o.end_lat as endLat,
+            o.end_store_id as endStoreId,
+            o.end_store_name as endStoreName,
+            o.end_belong_store_id as endBelongStoreId,
+            o.expect_start_date as expectStartDate,
+            o.expect_end_date as expectEndDate,
+            o.car_num as carNum,
+            o.line_id as lineId,
+            o.pick_contact_name as pickContactName,
+            o.pick_contact_phone as pickContactPhone,
+            o.back_contact_name as backContactName,
+            o.back_contact_phone as backContactPhone,
+            o.source as source,
+            o.create_time as createTime,
+            o.create_user_name as createUserName,
+            o.create_user_id as createUserId,
+            o.allot_to_user_name as allotToUserName,
+            o.allot_to_user_id as allotToUserId,
+            o.check_time as checkTime,
+            o.check_user_name as checkUserName,
+            o.check_user_id as checkUserId,
+            oc.*
             from w_order o
             join w_order_car oc on oc.order_id = o.id
-            where o.state between 25 and 99
-            and o.input_store_id in(2222)
-            and oc.pick_state &lt;= 1
-
-            union all
-            /*订单所属地干线*/
-            select oc.*
-            from w_order o
-            join w_order_car oc on oc.order_id = o.id
-            where o.state between 25 and 99
-            and o.input_store_id in(2222)
-            and oc.trunk_state &lt;= 1
-
-            union all
-            /*#运单目的地干线或送车*/
-            select oc.*
-            from w_order o
-            join w_order_car oc on oc.order_id = o.id
-            where o.state between 25 and 99
-            and EXISTS
-            (
-                select t.order_car_id
-                from
-                (
-                select wc.order_car_id
-                from w_waybill w
-                join w_waybill_car wc on wc.waybill_id = w.id
-                where w.state &lt;= 100
-                and w.type = 2
-                and wc.end_belong_store_id in (2222)
-                and not EXISTS
-                (select wc1.id from w_waybill_car wc1 where wc1.start_belong_store_id = wc.end_belong_store_id and wc1.state &lt;=100)
-            ) as t
-            where t.order_car_id = oc.id
-            )
-
-        ) as tb ORDER BY tb.order_id
-
-
-
-<!--
-        select GROUP_CONCAT(ci) as line from (
-        select wc.id,GROUP_CONCAT(CONCAT(left(wc.start_city,2),"-",left(wc.end_city,2))) as ci
-        from w_waybill w
-        join w_waybill_car wc on wc.waybill_id = w.id
-        where order_car_id = 197
-        and w.state <= 100
-        and wc.state <= 100
-
-        union
-
-        select wc.id,
-        (case
-        when wc.id is null then CONCAT(left(o.start_city,2),"-",left(o.end_city,2))
-        when wc.id is not null and wc.end_city != o.end_city then CONCAT(left(wc.end_city,2),"-",left(o.end_city,2))
-        else null end) as ci
-        from w_order o
-        join w_order_car oc on oc.order_id = o.id
-        left join w_waybill_car wc on wc.order_car_id = oc.id
-        and wc.id =
-        (select max(wc.id)
-        from w_waybill w
-        join w_waybill_car wc on wc.waybill_id = w.id
-        where order_car_id = 197
-        and w.state <= 100
-        and wc.state <= 100)
-        where oc.id = 197
-        ) as t
--->
-
-
-
+            left join (
+                select *
+                    from (
+                    select
+                    wc.id,
+                    wc.end_province_code,
+                    wc.end_province,
+                    wc.end_city_code,
+                    wc.end_city,
+                    wc.end_area_code,
+                    wc.end_area,
+                    wc.order_car_id
+                    from w_waybill w
+                    join w_waybill_car wc on w.id = wc.waybill_id
+                    where w.state &lt;= 100
+                    and wc.state &lt;= 100
+                    and wc.order_car_id in
+                    <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                    order by w.type desc, wc.id desc
+                    limit 10000
+                ) as max
+                group by max.order_car_id
+            ) as wmax on wmax.order_car_id = oc.id
+            where o.state between 25 and 100
+            and oc.trunk_state &lt; 5
+        ) as shell
+        <where>
+            <if test="paramsDto.startProvinceCode != null and paramsDto.startProvinceCode != ''">
+                and shell.dispatchStartProvinceCode = #{paramsDto.startProvinceCode,jdbcType=VARCHAR}
+            </if>
+            <if test="paramsDto.startCityCode != null and paramsDto.startCityCode != ''">
+                and shell.dispatchStartCityCode = #{paramsDto.startCityCode,jdbcType=VARCHAR}
+            </if>
+            <if test="paramsDto.startAreaCode != null and paramsDto.startAreaCode != ''">
+                and shell.dispatchStartAreaCode = #{paramsDto.startAreaCode,jdbcType=VARCHAR}
+            </if>
+            <if test="paramsDto.endProvinceCode != null and paramsDto.endProvinceCode != ''">
+                and shell.dispatchEndProvinceCode = #{paramsDto.endProvinceCode,jdbcType=VARCHAR}
+            </if>
+            <if test="paramsDto.endCityCode != null and paramsDto.endCityCode != ''">
+                and shell.dispatchEndCityCode = #{paramsDto.endCityCode,jdbcType=VARCHAR}
+            </if>
+            <if test="paramsDto.endAreaCode != null and paramsDto.endAreaCode != ''">
+                and shell.dispatchEndAreaCode = #{paramsDto.endAreaCode,jdbcType=VARCHAR}
+            </if>
+            <if test="paramsDto.orderNo != null and paramsDto.orderNo != ''">
+                and shell.order_no like concat('%' #{paramsDto.orderNo,jdbcType=VARCHAR}, '%')
+            </if>
+            <if test="paramsDto.carNo != null and paramsDto.carNo != ''">
+                and shell.no like concat('%', #{paramsDto.carNo,jdbcType=VARCHAR}, '%')
+            </if>
+            <if test="paramsDto.vin != null and paramsDto.vin != ''">
+                and shell.vin like concat('%', #{paramsDto.vin,jdbcType=VARCHAR}, '%')
+            </if>
+        </where>
     </select>
 
     <!-- 业务员端我下的订单台数/全部订单的车辆 -->

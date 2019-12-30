@@ -48,8 +48,8 @@ public class PaymentVo implements Serializable {
     @ApiModelProperty(value = "目的地")
     private String endAddress;
 
-    @ApiModelProperty(value = "交付日期")
-    private String deliveryDate;
+    @ApiModelProperty(value = "交付时间")
+    private Long deliveryDate;
     @ApiModelProperty(value = "客户类型")
     private Integer type;
 
