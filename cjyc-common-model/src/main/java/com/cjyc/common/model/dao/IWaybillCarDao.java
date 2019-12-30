@@ -142,7 +142,7 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
      * @param driverId
      * @return
      */
-    Integer deliveredCarCount(@Param("driverId") Long driverId);
+    Integer deliveredCarCount(@Param("userId") Long driverId);
 
     /**
      * 获取业务员端提送车完成台数
