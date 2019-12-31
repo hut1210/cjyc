@@ -1152,10 +1152,10 @@
                   woc.vin = #{vin}
             </if>
             <if test="startCity != null and startCity.trim() != ''">
-                and wo.startCity = #{startCity}
+                and wo.start_city = #{startCity}
             </if>
             <if test="endCity != null and endCity.trim() != ''">
-                and wo.endCity = #{endCity}
+                and wo.end_city = #{endCity}
             </if>
             <if test="startTime != null and startTime != 0">
                 and wo.expect_start_date >= #{startTime}
