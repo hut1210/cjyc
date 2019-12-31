@@ -24,6 +24,9 @@ public class AppCustomerInfoVo implements Serializable {
     @ApiModelProperty("用户名")
     private String name;
 
+    @ApiModelProperty("联系人")
+    private String contactMan;
+
     @ApiModelProperty("用户手机号")
     private String phone;
 

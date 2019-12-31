@@ -50,7 +50,6 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao, Customer> imp
         AppCustomerInfoVo infoVo = new AppCustomerInfoVo();
         BeanUtils.copyProperties(customer,infoVo);
         infoVo.setPhone(customer.getContactPhone());
-        infoVo.setName(customer.getContactMan());
         return BaseResultUtil.success(infoVo);
     }
 
