@@ -335,16 +335,13 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
 
     @Override
     public ResultVo allinpayToCarrier(Long waybillId) throws AuthenticationException, InvalidRequestException, APIConnectionException, APIException, ChannelException, RateLimitException, FileNotFoundException {
-        Transfer transfer = new Transfer();
-        List<Long> waybillIdList = new ArrayList<>();
-        waybillIdList.add(waybillId);
-        List<Waybill> waybillList = waybillDao.findListByIds(waybillIdList);
+
+        Waybill waybill = waybillDao.selectById(waybillId);
         try{
-            if(waybillList!=null&&waybillList.size()>0){
-                Waybill waybill = waybillList.get(0);
+            if(waybill!=null){
                 Long carrierId = waybill.getCarrierId();
                 BaseCarrierVo baseCarrierVo = carrierDao.showCarrierById(carrierId);
-                transfer = allinpayTransferDriverCreate(baseCarrierVo,waybill);
+                allinpayTransferDriverCreate(baseCarrierVo,waybill);
             }
         }catch (Exception e){
             return BaseResultUtil.fail("通联代付失败");
