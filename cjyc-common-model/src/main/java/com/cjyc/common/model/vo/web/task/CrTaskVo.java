@@ -7,6 +7,8 @@ import lombok.Data;
 @Data
 public class CrTaskVo extends Task {
     @ApiModelProperty(value = "车数量")
+    private String outterState;
+    @ApiModelProperty(value = "车数量")
     private Integer waybillCarNum;
     @ApiModelProperty(value = "承运商名称")
     private String carrierName;

@@ -944,7 +944,7 @@
         from w_task_car tc
         join w_waybill_car wc on tc.waybill_car_id = wc.id
         join w_order_car oc on wc.order_car_id = oc.id
-        where t.id = #{taskId}
+        where tc.id = #{taskId}
     </select>
     <select id="findLastPrevByBelongStoreId" resultType="com.cjyc.common.model.entity.defined.FullWaybillCar">
         select

@@ -933,10 +933,10 @@ public class CsTaskServiceImpl implements ICsTaskService {
             Order order = orderDao.selectById(orderId);
             orderDao.updateForFinish(orderId);
             //订单完成日志
-            orderLogService.asyncSave(order, OrderLogEnum.RECEIPT,
+            /*orderLogService.asyncSave(order, OrderLogEnum.RECEIPT,
                     new String[]{MessageFormat.format(OrderLogEnum.RECEIPT.getInnerLog(), order.getNo()),
                             MessageFormat.format(OrderLogEnum.RECEIPT.getOutterLog(), order.getNo())},
-                    userInfo);
+                    userInfo);*/
         }
     }
 

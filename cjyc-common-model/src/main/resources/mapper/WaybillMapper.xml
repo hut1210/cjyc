@@ -602,6 +602,7 @@
     </select>
     <select id="findCrListForMineCarrier" resultType="com.cjyc.common.model.vo.web.waybill.CrWaybillVo">
         select
+            <include refid="waybill_inner_state"/>,
             w.no as waybillNo,
             w.id as waybillId,
             w.type as waybillType,

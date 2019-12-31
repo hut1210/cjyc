@@ -6,12 +6,16 @@ import com.cjyc.common.model.dto.customer.order.CarCollectPayDto;
 import com.cjyc.common.model.dto.customer.pingxx.SweepCodeDto;
 import com.cjyc.common.model.dto.customer.pingxx.ValidateSweepCodeDto;
 import com.cjyc.common.model.entity.Customer;
+import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.enums.ClientEnum;
+import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.ValidateReceiptCarPayVo;
 import com.cjyc.common.model.vo.customer.order.ValidateSweepCodePayVo;
+import com.cjyc.common.system.service.ICsDriverService;
 import com.cjyc.common.system.service.ICsPingPayService;
+import com.cjyc.common.system.service.ICsTaskService;
 import com.pingplusplus.model.Charge;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -22,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -36,11 +41,17 @@ public class PingPayController {
 
     @Autowired
     private ICsPingPayService pingPayService;
+    @Resource
+    private ICsDriverService csDriverService;
 
     @ApiOperation("司机出示二维码")
     @PostMapping("/sweepDriveCode")
     public ResultVo sweepDriveCode(HttpServletRequest request, @RequestBody SweepCodeDto sweepCodeDto){
+        Driver driver = csDriverService.validate(sweepCodeDto.getLoginId());
+        sweepCodeDto.setLoginName(driver.getName());
+        sweepCodeDto.setLoginType(UserTypeEnum.DRIVER);
         sweepCodeDto.setIp(IPUtil.getIpAddr(request));
+
         Charge charge;
         try {
             sweepCodeDto.setClientType(ClientEnum.APP_DRIVER.code);

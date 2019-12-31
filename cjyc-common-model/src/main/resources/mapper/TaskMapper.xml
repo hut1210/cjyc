@@ -282,8 +282,18 @@
         group by t.id
         order by t.create_time desc
     </select>
+    <sql id="task_inner_state">
+        (case t.state
+        when 0 then '待运输'
+        when 5 then '待运输'
+        when 55 then '运输中'
+        when 100 then '已完成'
+        when 113 then '已取消'
+        end ) as outterState
+    </sql>
     <select id="findListForMineCarrier" resultType="com.cjyc.common.model.vo.web.task.CrTaskVo">
         select
+        <include refid="task_inner_state"/>,
         w.carrier_name as carrierName,
         w.car_num as waybillCarNum,
         w.type as waybillType,

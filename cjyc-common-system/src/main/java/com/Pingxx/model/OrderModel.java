@@ -65,6 +65,7 @@ public class OrderModel extends APIResource {
     private String order_type;
     private String driver_name;
     private String driver_phone;
+    private String driver_type;
     private String back_type;
     private String taskId;
     private List<String>  taskCarIdList;

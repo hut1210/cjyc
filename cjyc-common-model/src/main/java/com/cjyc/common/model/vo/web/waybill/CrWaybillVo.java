@@ -7,6 +7,8 @@ import java.util.List;
 
 @Data
 public class CrWaybillVo {
+    @ApiModelProperty(value = "状态")
+    private String outterState;
     @ApiModelProperty(value = "ID")
     private Long waybillId;
     @ApiModelProperty(value = "运单编号")
