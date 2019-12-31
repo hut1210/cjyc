@@ -1,11 +1,10 @@
 package com.cjyc.salesman.api.controller;
 
-import com.cjyc.common.model.dto.salesman.BaseSalesDto;
 import com.cjyc.common.model.dto.salesman.mine.AchieveDto;
+import com.cjyc.common.model.dto.salesman.mine.OrderCarDto;
 import com.cjyc.common.model.dto.salesman.mine.StockCarDto;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.salesman.mine.QRCodeVo;
 import com.cjyc.common.model.vo.salesman.mine.StockCarDetailVo;
 import com.cjyc.common.model.vo.salesman.mine.StockCarVo;
 import com.cjyc.salesman.api.service.IMineService;
@@ -38,7 +37,7 @@ public class MineController {
 
     @ApiOperation(value = "库存车辆详情")
     @PostMapping(value = "/findStockCarDetail")
-    public ResultVo<StockCarDetailVo> findStockCarDetail(@Validated @RequestBody BaseSalesDto dto) {
+    public ResultVo<StockCarDetailVo> findStockCarDetail(@Validated @RequestBody OrderCarDto dto) {
         return mineService.findStockCarDetail(dto);
     }
 

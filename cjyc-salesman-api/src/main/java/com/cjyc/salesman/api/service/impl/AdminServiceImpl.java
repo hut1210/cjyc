@@ -47,7 +47,13 @@ public class AdminServiceImpl implements IAdminService {
     public PageVo<AdminPageVo> listPage(SalesmanQueryDto dto) {
         Store store = storeDao.selectById(dto.getInputStoreId());
         if (null == store || store.getDeptId() == null || store.getDeptId() <= 0L) {
-            return null;
+            return PageVo.<AdminPageVo>builder()
+                    .totalRecords(0)
+                    .totalPages(0)
+                    .pageSize(dto.getPageSize())
+                    .currentPage(dto.getCurrentPage())
+                    .list(new ArrayList<AdminPageVo>())
+                    .build();
         }
         List<AdminPageVo> resList = new ArrayList<>();
         SelectPageUsersForSalesmanReq req = new SelectPageUsersForSalesmanReq();
@@ -58,13 +64,25 @@ public class AdminServiceImpl implements IAdminService {
         ResultData<PageData<SelectUsersByRoleResp>> rd = sysUserService.getPageUsersForSalesmanApp(req);
         if (ResultDataUtil.isSuccess(rd)) {
             if(rd == null || rd.getData() == null || CollectionUtils.isEmpty(rd.getData().getList())){
-                return null;
+                return PageVo.<AdminPageVo>builder()
+                        .totalRecords(0)
+                        .totalPages(0)
+                        .pageSize(dto.getPageSize())
+                        .currentPage(dto.getCurrentPage())
+                        .list(new ArrayList<AdminPageVo>())
+                        .build();
             }
             List<SelectUsersByRoleResp> list = rd.getData().getList();
             Set<Long> collect = list.stream().map(SelectUsersByRoleResp::getUserId).collect(Collectors.toSet());
             List<Admin> adminList = adminDao.findListByUserIds(collect);
             if(CollectionUtils.isEmpty(adminList)){
-                return null;
+                return PageVo.<AdminPageVo>builder()
+                        .totalRecords(0)
+                        .totalPages(0)
+                        .pageSize(dto.getPageSize())
+                        .currentPage(dto.getCurrentPage())
+                        .list(new ArrayList<AdminPageVo>())
+                        .build();
             }
             //附加数据
             for (SelectUsersByRoleResp selectUsersByRoleResp : list) {
@@ -90,7 +108,13 @@ public class AdminServiceImpl implements IAdminService {
                     .list(resList)
                     .build();
         }else {
-            return null;
+            return PageVo.<AdminPageVo>builder()
+                    .totalRecords(0)
+                    .totalPages(0)
+                    .pageSize(dto.getPageSize())
+                    .currentPage(dto.getCurrentPage())
+                    .list(new ArrayList<AdminPageVo>())
+                    .build();
         }
     }
 

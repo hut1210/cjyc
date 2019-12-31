@@ -89,7 +89,8 @@ public class LoginServiceImpl extends SuperServiceImpl<ICustomerDao, Customer> i
         loginVo.setUserId(c.getUserId() == null ? 0 : c.getUserId());
         loginVo.setAccessToken(rd.getData().getAccessToken());
         loginVo.setPhotoImg(StringUtils.isNotBlank(c.getPhotoImg()) ? c.getPhotoImg():"");
-        loginVo.setName(c.getContactMan());
+        loginVo.setName(c.getName());
+        loginVo.setContactMan(c.getContactMan());
         loginVo.setPhone(c.getContactPhone());
         return BaseResultUtil.success(loginVo);
     }

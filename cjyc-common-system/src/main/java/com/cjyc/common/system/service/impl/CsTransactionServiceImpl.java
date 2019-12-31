@@ -21,6 +21,7 @@ import com.cjyc.common.system.util.RedisUtils;
 import com.pingplusplus.model.Charge;
 import com.pingplusplus.model.ChargeCollection;
 import com.pingplusplus.model.Event;
+import com.pingplusplus.model.Transfer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -126,6 +127,20 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
                     tradeBillDetailDao.insert(tradeBillDetail);
                 }
             }
+        }else if(obj instanceof Transfer){
+            tb = transferToTransactions((Transfer)obj,null,state);
+            if(tb != null){
+                tradeBillDao.insert(tb);
+            }
+
+            Map<String, Object> metadata = ((Transfer)obj).getMetadata();
+            String waybillId = (String) metadata.get("waybillId");
+            if(waybillId != null){
+                TradeBillDetail tradeBillDetail = new TradeBillDetail();
+                tradeBillDetail.setTradeBillId(Long.valueOf(tb.getId()));
+                tradeBillDetail.setSourceNo(waybillId==null?null:waybillId);
+                tradeBillDetailDao.insert(tradeBillDetail);
+            }
         }
     }
 
@@ -228,8 +243,51 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
             tb.setEventId(event.getId());
             tb.setEventType(event.getType());
         }
+        Map<String, Object> metadata = charge.getMetadata();
+        if(metadata!=null){
+            String type =(String) metadata.get("chargeType");
+
+            tb.setType((Integer.valueOf(type)));
+        }
         tb.setType(0);
         tb.setPingPayId(charge.getId());
+        tb.setState(Integer.valueOf(state));//待支付/已支付/付款失败
+        tb.setNo(csSendNoService.getNo(SendNoTypeEnum.RECEIPT));
+        return tb;
+    }
+
+    private TradeBill transferToTransactions(Transfer transfer,Event event,String state) {
+        TradeBill tb = new TradeBill();
+        if(transfer.getType()!=null&&"b2c".equals(transfer.getType())){
+            tb.setSubject("通联代付承运商运费");
+            tb.setBody("打款运费到承运商银行卡");
+        }
+
+        tb.setAmount(transfer.getAmount()==null?BigDecimal.valueOf(0):BigDecimal.valueOf(transfer.getAmount()));
+        tb.setCreateTime(System.currentTimeMillis());
+        tb.setChannel(transfer.getChannel());
+        //支付渠道名
+        ChannelEnum channelEnum = ChannelEnum.valueOfTag(transfer.getChannel());
+        if(channelEnum != null){
+            tb.setChannelName(channelEnum.getName());
+        }
+        tb.setChannelFee(new BigDecimal(0));
+        tb.setReceiverId(0L);
+        tb.setLivemode(transfer.getLivemode() ? LiveModeEnum.LIVE.getTag() : LiveModeEnum.TEST.getTag());
+        if(event != null){
+            tb.setEventId(event.getId());
+            tb.setEventType(event.getType());
+        }
+
+        Map<String, Object> metadata = transfer.getMetadata();
+        if(metadata!=null){
+            String type =(String) metadata.get("type");
+            String uid = (String) metadata.get("uid");
+
+            tb.setReceiverId(Long.valueOf(uid));
+            tb.setType((Integer.valueOf(type)));
+        }
+        tb.setPingPayId(transfer.getId());
         tb.setState(Integer.valueOf(state));//待支付/已支付/付款失败
         tb.setNo(csSendNoService.getNo(SendNoTypeEnum.RECEIPT));
         return tb;

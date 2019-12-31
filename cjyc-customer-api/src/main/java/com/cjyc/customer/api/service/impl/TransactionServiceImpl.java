@@ -2,7 +2,7 @@ package com.cjyc.customer.api.service.impl;
 
 import com.Pingxx.model.MetaDataEntiy;
 import com.cjyc.common.model.keys.RedisKeys;
-import com.pingplusplus.model.Order;
+import com.pingplusplus.model.*;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.entity.defined.UserInfo;
@@ -21,9 +21,7 @@ import com.cjyc.common.system.service.ICsTaskService;
 import com.cjyc.common.system.service.ICsUserService;
 import com.cjyc.common.system.util.RedisUtils;
 import com.cjyc.customer.api.service.ITransactionService;
-import com.pingplusplus.model.Charge;
-import com.pingplusplus.model.ChargeCollection;
-import com.pingplusplus.model.Event;
+import com.pingplusplus.model.Order;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -83,9 +81,9 @@ public class TransactionServiceImpl implements ITransactionService {
     @Override
     public int save(Object obj) {
         TradeBill bill;
-        if (obj instanceof TradeBill) {
+        if(obj instanceof TradeBill){
             tradeBillDao.insert((TradeBill) obj);
-        } else if (obj instanceof Order) {
+        }else if(obj instanceof Order){
             //根据ping++订单创建账单
             Order order = (Order) obj;
             MetaDataEntiy metaDataEntiy = BeanMapUtil.mapToBean(order.getMetadata(), new MetaDataEntiy());
@@ -93,11 +91,11 @@ public class TransactionServiceImpl implements ITransactionService {
             bill = orderToTradeBill(order, null, PayStateEnum.UNPAID.code);
             tradeBillDao.insert(bill);
             //预付
-            if (chargeType == ChargeTypeEnum.PREPAY.getCode() || chargeType == ChargeTypeEnum.PREPAY_QRCODE.getCode()) {
+            if(chargeType == ChargeTypeEnum.PREPAY.getCode() || chargeType == ChargeTypeEnum.PREPAY_QRCODE.getCode()){
 
             }
             //到付
-            if (chargeType == ChargeTypeEnum.COLLECT_PAY.getCode() || chargeType == ChargeTypeEnum.COLLECT_QRCODE.getCode()) {
+            if(chargeType == ChargeTypeEnum.COLLECT_PAY.getCode() || chargeType == ChargeTypeEnum.COLLECT_QRCODE.getCode() ){
                 List<String> orderNos = Arrays.asList(metaDataEntiy.getSourceNos().split(","));
                 tradeBillDetailDao.saveBatch(bill.getId(), orderNos);
             }
@@ -106,41 +104,48 @@ public class TransactionServiceImpl implements ITransactionService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public ResultVo update(Charge charge, Event event, String state) {
 
+        TradeBill tradeBill = new TradeBill();
+        tradeBill.setPingPayId(charge.getId());
+        tradeBill.setState(2);
+        tradeBill.setTradeTime(System.currentTimeMillis());
+        tradeBillDao.updateTradeBillByPingPayId(tradeBill);
+
         Map<String, Object> metadata = charge.getMetadata();
-        log.debug("update metadata = " + metadata.toString() + " taskId = " + metadata.get("taskId"));
-        String chargeType = (String) metadata.get("chargeType");
+        log.debug("update metadata = "+metadata.toString()+" taskId = "+metadata.get("taskId"));
+        String chargeType = (String)metadata.get("chargeType");
 
         //chargeType 1、app预付 3司机端出示二维码付款 4业务员端出示二维码 5后台出示二维码预付 6后台出库出示二维码付款
-        if (chargeType != null && !chargeType.equals("1")) {
+        if(chargeType!=null&&!chargeType.equals("1")){
 
-            log.info("update chargeType=" + chargeType);
+            log.info("update chargeType="+chargeType);
 
-            if (chargeType != null) {
-                if (chargeType.equals(String.valueOf(ChargeTypeEnum.WEB_PREPAY_QRCODE.getCode()))) {
+            if(chargeType!=null){
+                if(chargeType.equals(String.valueOf(ChargeTypeEnum.WEB_PREPAY_QRCODE.getCode()))){
                     log.info("后台预付码回调");
                     String orderNo = (String) metadata.get("orderNo");
-                    log.info(chargeType + " 物流费预付 orderNo =" + orderNo);
+                    log.info(chargeType+" 物流费预付 orderNo ="+orderNo);
                     updateForPrePay(orderNo);
                 }
-                if (chargeType.equals(String.valueOf(ChargeTypeEnum.DRIVER_COLLECT_QRCODE.getCode())) || chargeType.equals(String.valueOf(ChargeTypeEnum.WEB_OUT_STOCK_QRCODE.getCode()))) {
-                    Long taskId = Long.valueOf((String) metadata.get("taskId"));
+                if(chargeType.equals(String.valueOf(ChargeTypeEnum.DRIVER_COLLECT_QRCODE.getCode()))||chargeType.equals(String.valueOf(ChargeTypeEnum.WEB_OUT_STOCK_QRCODE.getCode()))){
+                    Long taskId = Long.valueOf((String)metadata.get("taskId"));
 
-                    List<String> taskCarIdList = (List<String>) metadata.get("taskCarIdList");
+                    List<String> taskCarIdList = (List<String>)metadata.get("taskCarIdList");
 
-                    List<String> orderCarNosList = (List<String>) metadata.get("orderCarIds");
+                    List<String> orderCarNosList = (List<String>)metadata.get("orderCarIds");
                     log.info("司机出示二维码回调或者后台出库回调");
                     Task task = null;
-                    if (taskId == null) {
+                    if(taskId == null){
                         log.error("回调中参数taskId不存在");
                         return BaseResultUtil.fail("缺少参数taskId");
-                    } else {
+                    }else{
                         task = taskDao.selectById(taskId);
                         if (task == null) {
-                            log.error(taskId + " 任务不存在");
-                            return BaseResultUtil.fail(taskId + "任务不存在");
-                        } else {
+                            log.error(taskId+" 任务不存在");
+                            return BaseResultUtil.fail(taskId+"任务不存在");
+                        }else{
                             //验证运单
                             Waybill waybill = waybillDao.selectById(task.getWaybillId());
                             if (waybill == null) {
@@ -148,27 +153,58 @@ public class TransactionServiceImpl implements ITransactionService {
                                 return BaseResultUtil.fail("运单不存在");
                             }
                             if (waybill.getState() >= WaybillStateEnum.FINISHED.code || waybill.getState() <= WaybillStateEnum.ALLOT_CONFIRM.code) {
-                                log.error(waybill.getNo() + "运单已完结");
-                                return BaseResultUtil.fail(waybill.getNo() + "运单已完结");
+                                log.error(waybill.getNo()+"运单已完结");
+                                return BaseResultUtil.fail(waybill.getNo()+"运单已完结");
                             }
                         }
                     }
 
-                    if (orderCarNosList == null) {
+                    if(orderCarNosList==null){
                         log.error("回调中参数orderCarNosList不存在");
                         return BaseResultUtil.fail("缺少参数orderCarNosList");
-                    } else {
+                    }else{
                         //修改流水支付状态
                         TradeBill tradeBill = new TradeBill();
                         tradeBill.setPingPayId(charge.getId());
                         tradeBill.setState(2);
                         tradeBill.setTradeTime(System.currentTimeMillis());
                         tradeBillDao.updateTradeBillByPingPayId(tradeBill);
-                        UserInfo userInfo = new UserInfo();
+                        //修改车辆支付状态
+                        for(int i=0;i<orderCarNosList.size();i++){
+                            tradeBillDao.updateOrderCar(orderCarNosList.get(i),2,System.currentTimeMillis());
+                            String lockKey = RedisKeys.getWlCollectPayLockKey(orderCarNosList.get(i));
+                            redisUtil.delete(lockKey);
+                        }
 
-                        csTaskService.updateForTaskCarFinish(taskCarIdList, ChargeTypeEnum.COLLECT_PAY.getCode(), userInfo);
+                        for (int i=0;i<taskCarIdList.size();i++){
+                            TaskCar taskCar = taskCarDao.selectById(Long.valueOf(taskCarIdList.get(i)));
+                            if(taskCar != null){
+                                waybillCarDao.updateForPaySuccess(taskCar.getWaybillCarId());
+                            }
+                        }
                     }
+                    //验证任务是否完成
+                    int row = taskCarDao.countUnFinishByTaskId(taskId);
+                    if (row == 0) {
+                        //更新任务状态
+                        taskDao.updateStateById(task.getId(), TaskStateEnum.FINISHED.code);
+                        //验证运单是否完成
+                        int n = waybillCarDao.countUnFinishByWaybillId(task.getWaybillId());
+                        if (n == 0) {
+                            //更新运单状态
+                            tradeBillDao.updateForReceipt(task.getWaybillId(), System.currentTimeMillis());
 
+                            //TODO
+                            //更新订单状态
+                            List<com.cjyc.common.model.entity.Order> list = orderDao.findListByCarNos(orderCarNosList);
+                            com.cjyc.common.model.entity.Order order = list.get(0);
+
+                            int num = tradeBillDao.countUnFinishByOrderNo(order.getNo());
+                            if(num == 0){
+                                orderDao.updateForReceipt(order.getId(),System.currentTimeMillis());
+                            }
+                        }
+                    }
                 }
 
             }
@@ -179,39 +215,49 @@ public class TransactionServiceImpl implements ITransactionService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    public void updateTransfer(Transfer transfer, Event event, String state) {
+        TradeBill tradeBill = new TradeBill();
+        tradeBill.setPingPayId(transfer.getId());
+        tradeBill.setState(2);
+        tradeBill.setTradeTime(System.currentTimeMillis());
+        tradeBillDao.updateTradeBillByPingPayId(tradeBill);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
     public void saveTransactions(Object obj, String state) {
         TradeBill tb;
         int id = 0;
-        if (obj instanceof Order) {
+        if(obj instanceof Order){
             Order order = (Order) obj;
 
             tb = orderToTransactions(order, null, "0");
             tradeBillDao.insert(tb);
-            Map<String, Object> metadata = ((Order) obj).getMetadata();
+            Map<String, Object> metadata = ((Order)obj).getMetadata();
             Object orderNo = metadata.get("orderNo");
 
             TradeBillDetail tradeBillDetail = new TradeBillDetail();
             tradeBillDetail.setTradeBillId(tb.getId());
-            tradeBillDetail.setSourceNo(orderNo == null ? null : String.valueOf(orderNo));
+            tradeBillDetail.setSourceNo(orderNo==null?null:String.valueOf(orderNo));
             tradeBillDetailDao.insert(tradeBillDetail);
-        } else if (obj instanceof Charge) {
-            tb = chargeToTransactions((Charge) obj, null, state);
-            if (tb != null) {
+        }else if(obj instanceof Charge){
+            tb = chargeToTransactions((Charge)obj, null,state);
+            if(tb != null){
                 id = tradeBillDao.insert(tb);
             }
 
-            Map<String, Object> metadata = ((Order) obj).getMetadata();
+            Map<String, Object> metadata = ((Order)obj).getMetadata();
             Object orderCarIds = metadata.get("orderCarIds");
-            if (orderCarIds != null) {
-                String[] ids = ((String) orderCarIds).split(",");
-                for (int i = 0; i < ids.length; i++) {
+            if(orderCarIds != null){
+                String[] ids =((String)orderCarIds).split(",");
+                for(int i=0;i<ids.length;i++){
                     TradeBillDetail tradeBillDetail = new TradeBillDetail();
                     tradeBillDetail.setTradeBillId(Long.valueOf(id));
-                    tradeBillDetail.setSourceNo(ids[i] == null ? null : ids[i]);
+                    tradeBillDetail.setSourceNo(ids[i]==null?null:ids[i]);
                     tradeBillDetailDao.insert(tradeBillDetail);
                 }
             }
-        } else {
+        }else{
             tb = (TradeBill) obj;
         }
 
@@ -235,13 +281,13 @@ public class TransactionServiceImpl implements ITransactionService {
         //tb.setSourceMainNo()
         //支付渠道
         ChargeCollection charges = order.getCharges();
-        if (charges != null) {
+        if(charges != null){
             List<Charge> data = charges.getData();
             Charge charge = data.get(0);
             tb.setChannel(charge.getChannel());
             //支付渠道名
             ChannelEnum channelEnum = ChannelEnum.valueOfTag(charge.getChannel());
-            if (channelEnum != null) {
+            if(channelEnum != null){
                 tb.setChannelName(channelEnum.getName());
             }
             //支付渠道费
@@ -249,7 +295,7 @@ public class TransactionServiceImpl implements ITransactionService {
             tb.setChannelFee(new BigDecimal(0));
         }
         tb.setReceiverId(0L);
-        if (event != null) {
+        if(event != null){
             tb.setEventId(event.getId());
             tb.setEventType(event.getType());
         }
@@ -262,19 +308,19 @@ public class TransactionServiceImpl implements ITransactionService {
         tb.setPingPayId(order.getId());
         tb.setSubject(order.getSubject());
         tb.setBody(order.getBody());
-        tb.setAmount(order.getAmount() == null ? BigDecimal.valueOf(0) : BigDecimal.valueOf(order.getAmount()));
+        tb.setAmount(order.getAmount()==null?BigDecimal.valueOf(0):BigDecimal.valueOf(order.getAmount()));
         tb.setCreateTime(System.currentTimeMillis());
-        tb.setType(1);
+        tb.setType(ChargeTypeEnum.PREPAY.getCode());
         tb.setLivemode(order.getLivemode() ? LiveModeEnum.LIVE.getTag() : LiveModeEnum.TEST.getTag());
 
         ChargeCollection charges = order.getCharges();
-        if (charges != null) {
+        if(charges != null){
             List<Charge> data = charges.getData();
             Charge charge = data.get(0);
             tb.setChannel(charge.getChannel());
             //支付渠道名
             ChannelEnum channelEnum = ChannelEnum.valueOfTag(charge.getChannel());
-            if (channelEnum != null) {
+            if(channelEnum != null){
                 tb.setChannelName(channelEnum.getName());
             }
             //TODO
@@ -286,7 +332,7 @@ public class TransactionServiceImpl implements ITransactionService {
         tb.setPayerId(Long.valueOf(uid));
 
         tb.setReceiverId(0L);
-        if (event != null) {
+        if(event != null){
             tb.setEventId(event.getId());
             tb.setEventType(event.getType());
         }
@@ -296,19 +342,19 @@ public class TransactionServiceImpl implements ITransactionService {
         return tb;
     }
 
-    private TradeBill chargeToTransactions(Charge charge, Event event, String status) {
+    private TradeBill chargeToTransactions(Charge charge,Event event,String status) {
         TradeBill tb = new TradeBill();
         tb.setSubject(charge.getSubject());
         tb.setBody(charge.getBody());
         /*Map<String, Object> metadata = charge.getMetadata();
         Object orderNo = metadata.get("orderNo");
         tb.setPingPayNo((String)orderNo);*/
-        tb.setAmount(charge.getAmount() == null ? BigDecimal.valueOf(0) : BigDecimal.valueOf(charge.getAmount()).multiply(new BigDecimal(100)));
+        tb.setAmount(charge.getAmount()==null?BigDecimal.valueOf(0):BigDecimal.valueOf(charge.getAmount()).multiply(new BigDecimal(100)));
         tb.setCreateTime(System.currentTimeMillis());
         tb.setChannel(charge.getChannel());
         tb.setChannelFee(new BigDecimal(0));
         tb.setReceiverId(0L);
-        if (event != null) {
+        if(event != null){
             tb.setEventId(event.getId());
             tb.setEventType(event.getType());
         }
@@ -336,35 +382,35 @@ public class TransactionServiceImpl implements ITransactionService {
         Map<String, Object> metadata = order.getMetadata();
         MetaDataEntiy mde = BeanMapUtil.mapToBean(metadata, new MetaDataEntiy());
         int chargeType = Integer.valueOf(mde.getChargeType());
-        if (chargeType == ChargeTypeEnum.COLLECT_PAY.getCode() || chargeType == ChargeTypeEnum.COLLECT_QRCODE.getCode()) {
+        if(chargeType == ChargeTypeEnum.COLLECT_PAY.getCode() || chargeType == ChargeTypeEnum.COLLECT_QRCODE.getCode()){
             //物流费到付
             String no = order.getMerchantOrderNo();
-            log.info(chargeType + " 物流费到付 no =" + no);
+            log.info(chargeType+" 物流费到付 no ="+no);
             //操作人信息
             UserInfo userInfo = userService.getUserInfo(Long.valueOf(mde.getLoginId()), Integer.valueOf(mde.getLoginType()));
             tradeBillDao.updateForPaySuccess(no, order.getTimePaid() * 1000);
             //处理运单订单任务数据
             csTaskService.updateForCarFinish(Arrays.asList(mde.getSourceNos().split(",")), userInfo);
-        } else if (chargeType == ChargeTypeEnum.PREPAY.getCode() || chargeType == ChargeTypeEnum.PREPAY_QRCODE.getCode()) {
+        }else if(chargeType == ChargeTypeEnum.PREPAY.getCode() || chargeType == ChargeTypeEnum.PREPAY_QRCODE.getCode()){
             //物流费预付
             String orderNo = (String) metadata.get("orderNo");
-            log.info(chargeType + " 物流费预付 orderNo =" + orderNo);
+            log.info(chargeType+" 物流费预付 orderNo ="+orderNo);
             updateForPrePay(orderNo);
-            String lockKey = getRandomNoKey(orderNo);
+            String lockKey =getRandomNoKey(orderNo);
             redisUtil.delete(lockKey);
         }
 
     }
 
-    private void updateForPrePay(String orderNo) {
-        if (orderNo != null) {
-            tradeBillDao.updateOrderState(orderNo, 2, System.currentTimeMillis());
+    private void updateForPrePay(String orderNo){
+        if(orderNo!=null){
+            tradeBillDao.updateOrderState(orderNo,2,System.currentTimeMillis());
             List<String> list = tradeBillDao.getOrderCarNoList(orderNo);
-            if (list != null) {
-                for (int i = 0; i < list.size(); i++) {
+            if(list != null){
+                for(int i=0;i<list.size();i++){
                     String orderCarNo = list.get(i);
-                    if (orderCarNo != null) {
-                        tradeBillDao.updateOrderCar(orderCarNo, 2, System.currentTimeMillis());
+                    if(orderCarNo != null){
+                        tradeBillDao.updateOrderCar(orderCarNo,2,System.currentTimeMillis());
                     }
 
                 }
@@ -390,13 +436,13 @@ public class TransactionServiceImpl implements ITransactionService {
     public void cancelExpireTrade() {
         List<TradeBill> list = tradeBillDao.getAllExpireTradeBill();
 
-        if (list != null && list.size() > 0) {
+        if(list != null && list.size()>0){
             executorService.execute(new Runnable() {
                 @Override
                 public void run() {
-                    for (int i = 0; i < list.size(); i++) {
+                    for(int i=0;i<list.size();i++) {
                         TradeBill tb = list.get(i);
-                        if (tb != null) {
+                        if(tb != null){
                             TradeBill tradeBill = new TradeBill();
                             tradeBill.setPingPayId(tb.getPingPayId());
                             tradeBill.setState(-1);

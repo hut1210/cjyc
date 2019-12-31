@@ -6,6 +6,7 @@ import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.salesman.BaseSalesDto;
 import com.cjyc.common.model.dto.salesman.mine.AchieveDto;
+import com.cjyc.common.model.dto.salesman.mine.OrderCarDto;
 import com.cjyc.common.model.dto.salesman.mine.SalesAchieveDto;
 import com.cjyc.common.model.dto.salesman.mine.StockCarDto;
 import com.cjyc.common.model.entity.Admin;
@@ -70,7 +71,7 @@ public class MineServiceImpl extends ServiceImpl<IWaybillCarDao, WaybillCar> imp
         }
         // 获取业务中心ID
         dto.setStoreIds(csStoreService.getStoreIds(bizScope));
-        if(dto.getEndTime() != null){
+        if(dto.getEndTime() != null && dto.getEndTime() != 0){
             dto.setEndTime(TimeStampUtil.addDays(dto.getEndTime(),1));
         }
         String logoImg = LogoImgProperty.logoImg;
@@ -82,14 +83,12 @@ public class MineServiceImpl extends ServiceImpl<IWaybillCarDao, WaybillCar> imp
                 vo.setLogoImg(logoImg);
             }
         }
-        Map<String,Object> map = new HashMap<String,Object>(1);
-        map.put("carStockCount",stockCarVos.size());
         PageInfo<StockCarVo> pageInfo = new PageInfo(stockCarVos);
-        return BaseResultUtil.success(pageInfo,map);
+        return BaseResultUtil.success(pageInfo);
     }
 
     @Override
-    public ResultVo<StockCarDetailVo> findStockCarDetail(BaseSalesDto dto) {
+    public ResultVo<StockCarDetailVo> findStockCarDetail(OrderCarDto dto) {
         String logoImg = LogoImgProperty.logoImg;
         //订单车辆信息
         StockCarDetailVo orderCarVo = orderCarDao.findOrderCar(dto);
@@ -98,19 +97,7 @@ public class MineServiceImpl extends ServiceImpl<IWaybillCarDao, WaybillCar> imp
             orderCarVo.setLogoImg(logoImg);
         }
         List<StockTaskVo> listStockTask = taskDao.findListStockTask(dto);
-        List<StockTaskVo> trunkStockVos = new ArrayList<>();
-        if(!CollectionUtils.isEmpty(listStockTask)){
-            for(StockTaskVo vo : listStockTask){
-                if(vo.getType() == WaybillTypeEnum.PICK.code){
-                    orderCarVo.setPickStockVo(vo);
-                }else if(vo.getType() == WaybillTypeEnum.BACK.code){
-                    orderCarVo.setBackStockVo(vo);
-                }else {
-                    trunkStockVos.add(vo);
-                }
-            }
-            orderCarVo.setTrunkStockVos(trunkStockVos);
-        }
+        orderCarVo.setStockVos(listStockTask);
         return BaseResultUtil.success(orderCarVo);
     }
 

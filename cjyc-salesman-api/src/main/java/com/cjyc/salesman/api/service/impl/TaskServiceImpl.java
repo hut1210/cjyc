@@ -132,8 +132,7 @@ public class TaskServiceImpl implements ITaskService {
         BizScope bizScope = csSysService.getBizScopeByLoginId(dto.getLoginId(), true);
 
         // 判断当前登录人是否有权限访问
-        int code = bizScope.getCode();
-        if (BizScopeEnum.NONE.code == code) {
+        if (BizScopeEnum.NONE.code == bizScope.getCode()) {
             return BaseResultUtil.fail("您没有访问权限!");
         }
 

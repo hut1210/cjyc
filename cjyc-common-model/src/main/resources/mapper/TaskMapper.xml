@@ -431,6 +431,7 @@
             resultType="com.cjyc.common.model.vo.salesman.task.TaskWaybillVo">
         SELECT
             t.id AS taskId,
+            t.task_car_id AS taskCarId,
             t.waybill_id AS waybillId,
             t.no AS waybillNo,
             t.guide_line AS guideLine,
@@ -445,7 +446,7 @@
         FROM
             ( SELECT
                 task.id, task.waybill_id, task.no, task.guide_line,
-                task.car_num,task.state,task.create_time,task.complete_time,tc.waybill_car_id
+                task.car_num,task.state,task.create_time,task.complete_time,tc.id as task_car_id,tc.waybill_car_id
             FROM w_task task
                 LEFT JOIN w_task_car tc ON task.id = tc.task_id
                 <where>

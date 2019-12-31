@@ -43,7 +43,6 @@ public class TaskController {
     @Resource
     private ICsAdminService csAdminService;
 
-
     /**
      * 提车完善信息
      * @author JPG
@@ -103,7 +102,6 @@ public class TaskController {
         return csTaskService.outStore(reqDto);
     }
 
-
     /**
      * 确认入库
      * @author JPG
@@ -132,7 +130,6 @@ public class TaskController {
         reqDto.setLoginPhone(admin.getPhone());
         return csTaskService.receipt(reqDto);
     }
-
 
     /**
      * 功能描述: 查询提送车列表分页

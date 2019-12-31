@@ -141,6 +141,9 @@ public class CsSysServiceImpl implements ICsSysService {
         BizScope bizScope = new BizScope();
         //默认无权限
         bizScope.setCode(BizScopeEnum.NONE.code);
+        if (admin == null) {
+            return bizScope;
+        }
         //业务中心ID集合
         Set<Long> set = Sets.newHashSet();
         ResultData<List<SelectRoleResp>> resData = sysRoleService.getListByUserId(admin.getUserId());

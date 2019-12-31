@@ -1157,10 +1157,10 @@
             <if test="endCity != null and endCity.trim() != ''">
                 and wo.endCity = #{endCity}
             </if>
-            <if test="startTime != null">
+            <if test="startTime != null and startTime != 0">
                 and wo.expect_start_date >= #{startTime}
             </if>
-            <if test="endTime != null">
+            <if test="endTime != null and endTime != 0">
                 and wo.expect_start_date &lt; #{endTime}
             </if>
             <if test="storeIds != null and storeIds.trim() != ''">
@@ -1174,6 +1174,8 @@
     <select id="findOrderCar" resultType="com.cjyc.common.model.vo.salesman.mine.StockCarDetailVo"
                             parameterType="com.cjyc.common.model.dto.salesman.BaseSalesDto">
           SELECT
+            wo.no AS orderNo,
+            woc.id AS orderCarId,
             wo.start_city AS startCity,
             wo.end_city AS endCity,
             wo.pick_contact_name AS pickContactName,

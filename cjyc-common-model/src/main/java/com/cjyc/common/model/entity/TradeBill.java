@@ -74,7 +74,7 @@ public class TradeBill implements Serializable {
     @ApiModelProperty(value = "渠道费率")
     private BigDecimal channelFee;
 
-    @ApiModelProperty(value = "类型：1物流费预付，2物流费全款到付，3物流费分车支付， 11运费支付、12居间服务费支付")
+    @ApiModelProperty(value = "类型：1物流费预付，2物流费全款到付，3物流费分车支付， 11运费支付、12居间服务费支付，20通联代付")
     private Integer type;
 
     @ApiModelProperty(value = "回调事件ID")

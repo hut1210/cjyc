@@ -1136,331 +1136,374 @@
 
     <!-- 调度列表信息 -->
     <select id="getDispatchList" resultType="com.cjyc.common.model.vo.salesman.dispatch.DispatchListVo">
-            SELECT
-            b.*
-            FROM
-            (
-            SELECT
-            a.brand,
-            a.model,
-            a.order_no AS orderNo,
-            a.woc_no AS carNo,
-            a.expect_start_date AS pickDate,
-            a.wo_start_city AS orderStartCity,
-            a.wo_end_city AS orderEndCity,
-            a.ww_id AS wayBillId,
-            a.ww_no AS wayBillNo,
-            a.pickType AS liftCarMode,
-            GROUP_CONCAT(
-            a.trunkType
-            ORDER BY
-            a.waybill_id ASC SEPARATOR ','
-            ) trunkMode,
-            a.backType AS deliveryMode,
-            a.pickState AS liftCarState,
-            GROUP_CONCAT(
-            a.trunkState
-            ORDER BY
-            a.waybill_id ASC SEPARATOR ','
-            ) trunkState,
-            a.backState AS deliveryState,
-            a.vin
-            FROM
-            (
-            SELECT
-            woc.brand,
-            woc.model,
-            woc.order_no,
-            woc.`no` woc_no,
-            wo.expect_start_date,
-            wwc.waybill_id,
-            wo.id,
-            wo.start_city wo_start_city,
-            wo.end_city wo_end_city,
-            ww.id ww_id,
-            ww.`no` ww_no,
-            ww.type,
-            (
-            CASE
-            WHEN wo.start_address = (
-            SELECT DISTINCT
-            wwci.start_address
-            FROM
-            w_waybill_car wwci
-            LEFT JOIN w_waybill wwi ON wwci.waybill_id = wwi.id
-            WHERE
-            wwi.type = 2
-            AND wwc.order_car_no = wwci.order_car_no
-            GROUP BY
-            wwci.order_car_no
-            ) THEN
-            '物流上门'
-            WHEN (
-            SELECT
-            COUNT(wbi.id)
-            FROM
-            w_waybill wbi
-            JOIN w_waybill_car wci ON wbi.id = wci.waybill_id
-            WHERE
-            wci.order_car_no = wwc.order_car_no
-            AND type = 1
-            ) > 0 THEN
-            (
-            CASE (
-            SELECT
-            wbi.carrier_type
-            FROM
-            w_waybill wbi
-            JOIN w_waybill_car wci ON wbi.id = wci.waybill_id
-            WHERE
-            wci.order_car_no = wwc.order_car_no
-            AND type = 1
-            )
-            WHEN 3 THEN
-            '同城-业务员'
-            WHEN 4 THEN
-            '同城-代驾'
-            WHEN 5 THEN
-            '同城-拖车'
-            WHEN 6 THEN
-            '客户自己'
-            ELSE
-            '未知'
-            END
-            )
-            ELSE
-            (
-            CASE wo.pick_type
-            WHEN 1 THEN
-            '自送'
-            WHEN 2 THEN
-            '代驾上门'
-            WHEN 3 THEN
-            '拖车上门'
-            WHEN 4 THEN
-            '物流上门'
-            ELSE
-            '未知'
-            END
-            )
-            END
-            ) pickType,
-            (
-            CASE ww.type
-            WHEN 2 THEN
-            CONCAT(
-            wwc.start_city,
-            '-',
-            wwc.end_city
-            )
-            ELSE
-            'V_NULL_V'
-            END
-            ) trunkType,
-            (
-            CASE
-            WHEN wo.end_address = (
-            SELECT
-            wwci.end_address
-            FROM
-            w_waybill_car wwci
-            LEFT JOIN w_waybill wwi ON wwci.waybill_id = wwi.id
-            WHERE
-            wwi.type = 2
-            AND wwc.order_car_no = wwci.order_car_no
-            ORDER BY
-            wwci.id DESC
-            LIMIT 0,
-            1
-            ) THEN
-            '物流上门'
-            WHEN (
-            SELECT
-            COUNT(wbi.id)
-            FROM
-            w_waybill wbi
-            JOIN w_waybill_car wci ON wbi.id = wci.waybill_id
-            WHERE
-            wci.order_car_no = wwc.order_car_no
-            AND type = 3
-            ) > 0 THEN
-            (
-            CASE (
-            SELECT
-            wbi.carrier_type
-            FROM
-            w_waybill wbi
-            JOIN w_waybill_car wci ON wbi.id = wci.waybill_id
-            WHERE
-            wci.order_car_no = wwc.order_car_no
-            AND type = 3
-            )
-            WHEN 3 THEN
-            '同城-业务员'
-            WHEN 4 THEN
-            '同城-代驾'
-            WHEN 5 THEN
-            '同城-拖车'
-            WHEN 6 THEN
-            '客户自己'
-            ELSE
-            '未知'
-            END
-            )
-            ELSE
-            (
-            CASE wo.back_type
-            WHEN 1 THEN
-            '自提'
-            WHEN 2 THEN
-            '代驾上门'
-            WHEN 3 THEN
-            '拖车上门'
-            WHEN 4 THEN
-            '物流上门'
-            ELSE
-            '未知'
-            END
-            )
-            END
-            ) backType,
-            (
-            CASE
-            WHEN wo.start_address = (
-            SELECT
-            wwci.start_address
-            FROM
-            w_waybill_car wwci
-            LEFT JOIN w_waybill wwi ON wwci.waybill_id = wwi.id
-            WHERE
-            wwi.type = 2
-            AND wwc.order_car_no = wwci.order_car_no
-            GROUP BY
-            wwci.order_car_no
-            ) THEN
-            1
-            WHEN (
-            SELECT
-            COUNT(wbi.id)
-            FROM
-            w_waybill wbi
-            JOIN w_waybill_car wci ON wbi.id = wci.waybill_id
-            WHERE
-            wci.order_car_no = wwc.order_car_no
-            AND type = 1
-            ) > 0 THEN
-            1
-            ELSE
-            0
-            END
-            ) pickState,
-            (
-            CASE ww.type
-            WHEN 2 THEN
-            1
-            ELSE
-            0
-            END
-            ) trunkState,
-            (
-            CASE
-            WHEN wo.end_address = (
-            SELECT
-            wwci.end_address
-            FROM
-            w_waybill_car wwci
-            LEFT JOIN w_waybill wwi ON wwci.waybill_id = wwi.id
-            WHERE
-            wwi.type = 2
-            AND wwc.order_car_no = wwci.order_car_no
-            ORDER BY
-            wwci.id DESC
-            LIMIT 0,
-            1
-            ) THEN
-            1
-            WHEN (
-            SELECT
-            COUNT(wbi.id)
-            FROM
-            w_waybill wbi
-            JOIN w_waybill_car wci ON wbi.id = wci.waybill_id
-            WHERE
-            wci.order_car_no = wwc.order_car_no
-            AND type = 3
-            ) > 0 THEN
-            1
-            ELSE
-            0
-            END
-            ) backState,
-            woc.vin
-            FROM
-            w_order_car woc
-            LEFT JOIN w_order wo ON wo.id = woc.order_id
-            LEFT JOIN w_waybill_car wwc ON wwc.order_car_no = woc.`no`
-            LEFT JOIN w_waybill ww ON ww.id = wwc.waybill_id
-            WHERE
-            wo.state IN (25, 55, 88)
-            AND wwc.state &lt;= 100
-            <if test="param.bizStoreIds != null and param.bizStoreIds !=''">
-                and wo.input_store_id IN (#{param.bizStoreIds})
+        SELECT c.* FROM (SELECT
+        b.brand, b.model, b.orderNo, b.carNo, b.pickDate, b.orderStartCity, b.orderEndCity, b.wayBillId,
+        b.wayBillNo, b.liftCarMode,
+        (CASE WHEN ISNULL(b.trunkMode) = 1 THEN CONCAT(b.orderStartCity,'-',b.orderEndCity)
+        WHEN INSTR(b.trunkMode, b.orderEndCity) > 0 THEN b.trunkMode
+        WHEN INSTR(b.trunkMode, b.orderEndCity) &lt;= 0 THEN CONCAT(b.trunkMode, ',', SUBSTRING_INDEX(b.trunkMode,'-', -1), '-', b.orderEndCity) END) trunkMode,
+        b.deliveryMode, b.liftCarState,
+        (CASE
+        WHEN ISNULL(b.trunkMode) = 1 THEN 0
+        WHEN INSTR(b.trunkMode, b.orderEndCity) > 0 THEN b.trunkState
+        WHEN INSTR(b.trunkMode, b.orderEndCity) &lt;= 0 THEN CONCAT(b.trunkState, ',', 0)
+        END) trunkState,
+        b.deliveryState,
+        (CASE
+        WHEN ISNULL(b.trunkMode) = 1 THEN b.orderStartCity
+        WHEN INSTR(b.trunkMode, b.orderEndCity) > 0 THEN ''
+        WHEN INSTR(b.trunkMode, b.orderEndCity) &lt;= 0 THEN SUBSTRING_INDEX(b.trunkMode,'-', -1)
+        END) stUnTrunk,
+        (CASE
+        WHEN ISNULL(b.trunkMode) = 1 THEN b.orderEndCity
+        WHEN INSTR(b.trunkMode, b.orderEndCity) > 0 THEN ''
+        WHEN INSTR(b.trunkMode, b.orderEndCity) &lt;= 0 THEN b.orderEndCity
+        END) edUnTrunk,
+        b.vin
+        FROM
+        (
+        SELECT
+        a.brand,
+        a.model,
+        a.order_no AS orderNo,
+        a.woc_no AS carNo,
+        a.expect_start_date AS pickDate,
+        a.wo_start_city AS orderStartCity,
+        a.wo_end_city AS orderEndCity,
+        a.ww_id AS wayBillId,
+        a.ww_no AS wayBillNo,
+        a.pickType AS liftCarMode,
+        GROUP_CONCAT(
+        a.trunkType
+        ORDER BY
+        a.waybill_id ASC SEPARATOR ','
+        ) trunkMode,
+        a.backType AS deliveryMode,
+        a.pickState AS liftCarState,
+        GROUP_CONCAT(
+        a.trunkState
+        ORDER BY
+        a.waybill_id ASC SEPARATOR ','
+        ) trunkState,
+        a.backState AS deliveryState,
+        a.vin
+        FROM
+        (
+        SELECT
+        woc.brand,
+        woc.model,
+        woc.order_no,
+        woc.`no` woc_no,
+        wo.expect_start_date,
+        wwc.waybill_id,
+        wo.id,
+        wo.start_city wo_start_city,
+        wo.end_city wo_end_city,
+        ww.id ww_id,
+        ww.`no` ww_no,
+        ww.type,
+        (
+        CASE
+        WHEN wo.start_address = (
+        SELECT DISTINCT
+        wwci.start_address
+        FROM
+        w_waybill_car wwci
+        LEFT JOIN w_waybill wwi ON wwci.waybill_id = wwi.id
+        WHERE
+        wwi.type = 2
+        AND wwi.state &lt;= 100
+        AND wwci.state &lt;= 100
+        AND wwc.order_car_no = wwci.order_car_no
+        GROUP BY
+        wwci.order_car_no
+        ) THEN
+        '物流上门'
+        WHEN (
+        SELECT
+        COUNT(wbi.id)
+        FROM
+        w_waybill wbi
+        JOIN w_waybill_car wci ON wbi.id = wci.waybill_id
+        WHERE
+        wci.order_car_no = wwc.order_car_no
+        AND type = 1
+        AND wbi.state &lt;= 100
+        AND wci.state &lt;= 100
+        ) > 0 THEN
+        (
+        CASE (
+        SELECT
+        wbi.carrier_type
+        FROM
+        w_waybill wbi
+        JOIN w_waybill_car wci ON wbi.id = wci.waybill_id
+        WHERE
+        wci.order_car_no = wwc.order_car_no
+        AND type = 1
+        AND wbi.state &lt;= 100
+        AND wci.state &lt;= 100
+        )
+        WHEN 3 THEN
+        '同城-业务员'
+        WHEN 4 THEN
+        '同城-代驾'
+        WHEN 5 THEN
+        '同城-拖车'
+        WHEN 6 THEN
+        '客户自己'
+        ELSE
+        '未知'
+        END
+        )
+        ELSE
+        (
+        CASE wo.pick_type
+        WHEN 1 THEN
+        '自送'
+        WHEN 2 THEN
+        '代驾上门'
+        WHEN 3 THEN
+        '拖车上门'
+        WHEN 4 THEN
+        '物流上门'
+        ELSE
+        '未知'
+        END
+        )
+        END
+        ) pickType,
+        (
+        CASE ww.type
+        WHEN 2 THEN
+        CONCAT(
+        wwc.start_city,
+        '-',
+        wwc.end_city
+        )
+        ELSE
+        NULL
+        END
+        ) trunkType,
+        (
+        CASE
+        WHEN wo.end_address = (
+        SELECT
+        wwci.end_address
+        FROM
+        w_waybill_car wwci
+        LEFT JOIN w_waybill wwi ON wwci.waybill_id = wwi.id
+        WHERE
+        wwi.type = 2
+        AND wwi.state &lt;= 100
+        AND wwci.state &lt;= 100
+        AND wwc.order_car_no = wwci.order_car_no
+        ORDER BY
+        wwci.id DESC
+        LIMIT 0,
+        1
+        ) THEN
+        '物流上门'
+        WHEN (
+        SELECT
+        COUNT(wbi.id)
+        FROM
+        w_waybill wbi
+        JOIN w_waybill_car wci ON wbi.id = wci.waybill_id
+        WHERE
+        wci.order_car_no = wwc.order_car_no
+        AND type = 3
+        AND wbi.state &lt;= 100
+        AND wci.state &lt;= 100
+        ) > 0 THEN
+        (
+        CASE (
+        SELECT
+        wbi.carrier_type
+        FROM
+        w_waybill wbi
+        JOIN w_waybill_car wci ON wbi.id = wci.waybill_id
+        WHERE
+        wci.order_car_no = wwc.order_car_no
+        AND type = 3
+        AND wbi.state &lt;= 100
+        AND wci.state &lt;= 100
+        )
+        WHEN 3 THEN
+        '同城-业务员'
+        WHEN 4 THEN
+        '同城-代驾'
+        WHEN 5 THEN
+        '同城-拖车'
+        WHEN 6 THEN
+        '客户自己'
+        ELSE
+        '未知'
+        END
+        )
+        ELSE
+        (
+        CASE wo.back_type
+        WHEN 1 THEN
+        '自提'
+        WHEN 2 THEN
+        '代驾上门'
+        WHEN 3 THEN
+        '拖车上门'
+        WHEN 4 THEN
+        '物流上门'
+        ELSE
+        '未知'
+        END
+        )
+        END
+        ) backType,
+        (
+        CASE
+        WHEN wo.start_address = (
+        SELECT
+        wwci.start_address
+        FROM
+        w_waybill_car wwci
+        LEFT JOIN w_waybill wwi ON wwci.waybill_id = wwi.id
+        WHERE
+        wwi.type = 2
+        AND wwi.state &lt;= 100
+        AND wwci.state &lt;= 100
+        AND wwc.order_car_no = wwci.order_car_no
+        GROUP BY
+        wwci.order_car_no
+        ) THEN
+        1
+        WHEN (
+        SELECT
+        COUNT(wbi.id)
+        FROM
+        w_waybill wbi
+        JOIN w_waybill_car wci ON wbi.id = wci.waybill_id
+        WHERE
+        wci.order_car_no = wwc.order_car_no
+        AND type = 1
+        AND wbi.state &lt;= 100
+        AND wci.state &lt;= 100
+        ) > 0 THEN
+        1
+        ELSE
+        0
+        END
+        ) pickState,
+        (
+        CASE ww.type
+        WHEN 2 THEN
+        1
+        ELSE
+        NULL
+        END
+        ) trunkState,
+        (
+        CASE
+        WHEN wo.end_address = (
+        SELECT
+        wwci.end_address
+        FROM
+        w_waybill_car wwci
+        LEFT JOIN w_waybill wwi ON wwci.waybill_id = wwi.id
+        WHERE
+        wwi.type = 2
+        AND wwi.state &lt;= 100
+        AND wwci.state &lt;= 100
+        AND wwc.order_car_no = wwci.order_car_no
+        ORDER BY
+        wwci.id DESC
+        LIMIT 0,
+        1
+        ) THEN
+        1
+        WHEN (
+        SELECT
+        COUNT(wbi.id)
+        FROM
+        w_waybill wbi
+        JOIN w_waybill_car wci ON wbi.id = wci.waybill_id
+        WHERE
+        wci.order_car_no = wwc.order_car_no
+        AND type = 3
+        AND wbi.state &lt;= 100
+        AND wci.state &lt;= 100
+        ) > 0 THEN
+        1
+        ELSE
+        0
+        END
+        ) backState,
+        woc.vin
+        FROM
+        w_order_car woc
+        LEFT JOIN w_order wo ON wo.id = woc.order_id
+        LEFT JOIN w_waybill_car wwc ON wwc.order_car_no = woc.`no`
+        LEFT JOIN w_waybill ww ON ww.id = wwc.waybill_id
+        WHERE
+        wo.state IN (25, 55, 88)
+        AND wwc.state &lt;= 100
+        AND ww.state &lt;= 100
+        <if test="param.bizStoreIds != null and param.bizStoreIds !=''">
+            and wo.input_store_id IN (#{param.bizStoreIds})
+        </if>
+        ) a
+        GROUP BY
+        a.woc_no
+        ) b) c
+        <where>
+            <if test="param.searchValue != null and param.searchValue != ''">
+                and (c.vin LIKE CONCAT('%',#{param.searchValue},'%') or
+                c.orderNo LIKE CONCAT('%',#{param.searchValue},'%') or
+                c.wayBillNo LIKE CONCAT('%',#{param.searchValue},'%'))
             </if>
-            ) a
-            GROUP BY
-            a.woc_no
-            ) b
-            <where>
-                <if test="param.searchValue != null and param.searchValue != ''">
-                   and (b.vin LIKE CONCAT('%',#{param.searchValue},'%') or
-                    b.orderNo LIKE CONCAT('%',#{param.searchValue},'%') or
-                    b.wayBillNo LIKE CONCAT('%',#{param.searchValue},'%'))
-                </if>
-                <if test="param.pickDateSt != null and param.pickDateSt > 0">
-                    and b.pickDate &gt;= #{param.pickDateSt}
-                </if>
-                <if test="param.pickDateEd != null and param.pickDateEd > 0">
-                    and b.pickDate &lt;= #{param.pickDateEd}
-                </if>
-                <if test="param.brand != null and param.brand !=''">
-                    and b.brand LIKE CONCAT('%',#{param.brand},'%')
-                </if>
-                <if test="param.model != null and param.model != ''">
-                    and b.model LIKE CONCAT('%',#{param.model},'%')
-                </if>
-                <if test="param.dispatchType != null">
-                    <choose>
-                        <when test="param.dispatchType == 1">
-                            and b.liftCarMode IN
-                            ('自送', '代驾上门', '拖车上门', '同城-业务员', '同城-代驾',
-                            '同城-拖车', '客户自己')
-                        </when>
-                        <when test="param.dispatchType == 2">
-                            and (b.liftCarMode = '物流上门' AND b.deliveryMode = '物流上门')
-                        </when>
-                        <when test="param.dispatchType == 3">
-                            and b.deliveryMode IN ('自提', '代驾上门', '拖车上门', '同城-业务员',
-                            '同城-代驾', '同城-拖车', '客户自己')
-                        </when>
-                    </choose>
-                </if>
-                <if test="param.startCity != null and param.startCity != ''">
-                    and b.orderStartCity like CONCAT('%',#{param.startCity},'%')
-                </if>
-                <if test="param.endCity != null and param.endCity != ''">
-                    and b.orderEndCity like CONCAT('%',#{param.endCity},'%')
-                </if>
-            </where>
-            <if test="param.pickDateSort != null">
+            <if test="param.pickDateSt != null and param.pickDateSt > 0">
+                and c.pickDate &gt;= #{param.pickDateSt}
+            </if>
+            <if test="param.pickDateEd != null and param.pickDateEd > 0">
+                and c.pickDate &lt;= #{param.pickDateEd}
+            </if>
+            <if test="param.brand != null and param.brand !=''">
+                and c.brand LIKE CONCAT('%',#{param.brand},'%')
+            </if>
+            <if test="param.model != null and param.model != ''">
+                and c.model LIKE CONCAT('%',#{param.model},'%')
+            </if>
+            <if test="param.dispatchType != null">
                 <choose>
-                    <when test="param.pickDateSort == 1">
-                        ORDER BY b.pickDate ASC
+                    <when test="param.dispatchType == 1">
+                        and c.liftCarMode IN
+                        ('自送', '代驾上门', '拖车上门', '同城-业务员', '同城-代驾',
+                        '同城-拖车', '客户自己')
                     </when>
-                    <when test="param.pickDateSort == 2">
-                        ORDER BY b.pickDate DESC
+                    <when test="param.dispatchType == 2">
+                        and (c.liftCarMode = '物流上门' AND c.deliveryMode = '物流上门')
+                    </when>
+                    <when test="param.dispatchType == 3">
+                        and c.deliveryMode IN ('自提', '代驾上门', '拖车上门', '同城-业务员',
+                        '同城-代驾', '同城-拖车', '客户自己')
                     </when>
                 </choose>
             </if>
+            <if test="param.startCity != null and param.startCity != ''">
+                and c.stUnTrunk like CONCAT('%',#{param.startCity},'%')
+            </if>
+            <if test="param.endCity != null and param.endCity != ''">
+                and c.edUnTrunk like CONCAT('%',#{param.endCity},'%')
+            </if>
+        </where>
+        <if test="param.pickDateSort != null">
+            <choose>
+                <when test="param.pickDateSort == 1">
+                    ORDER BY c.pickDate ASC
+                </when>
+                <when test="param.pickDateSort == 2">
+                    ORDER BY c.pickDate DESC
+                </when>
+            </choose>
+        </if>
     </select>
 
     <select id="selectWaybillRecordList" parameterType="java.lang.Long"
