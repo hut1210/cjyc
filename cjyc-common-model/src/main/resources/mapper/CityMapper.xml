@@ -51,8 +51,11 @@
             <if test="keyword != null and keyword.trim() != ''">
                 (sc1.name like concat('%',#{keyword},'%')  or sc2.name like concat('%',#{keyword},'%') or sc3.name like concat('%',#{keyword},'%'))
             </if>
-            <if test="code != null and code.trim() != ''">
-                sc1.parent_code in (#{code})
+            <if test="code != null">
+                and sc1.parent_code in
+                <foreach collection="code" item="item" index="index" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
             </if>
             and sc1.LEVEL >= 1 AND sc1.LEVEL &lt;= 3 GROUP BY sc3.CODE
         </where>

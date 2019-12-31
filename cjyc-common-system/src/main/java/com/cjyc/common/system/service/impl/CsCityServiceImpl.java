@@ -21,19 +21,24 @@ import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.service.ICsCityService;
 import com.cjyc.common.system.util.ClpDeptUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 城市公用业务
  * @author JPG
  */
 @Service
+@Slf4j
 public class CsCityServiceImpl implements ICsCityService {
     @Resource
     private ICityDao cityDao;
@@ -85,7 +90,7 @@ public class CsCityServiceImpl implements ICsCityService {
         CityVo cityvo = new CityVo();
         //获取热门城市
         List<HotCityVo> hotCity = cityDao.getHotCity();
-        List<ProvinceTreeVo> cityTreeVos = cityDao.findThreeCity(dto.getKeyword(),Constant.EMPTY_STRING);
+        List<ProvinceTreeVo> cityTreeVos = cityDao.findThreeCity(dto.getKeyword(),null);
         cityvo.setHotCityVos(hotCity);
         cityvo.setCityTreeVos(cityTreeVos);
         return BaseResultUtil.success(cityvo);
@@ -94,9 +99,9 @@ public class CsCityServiceImpl implements ICsCityService {
     @Override
     public ResultVo<CityVo> findThreeCityByAdmin(AdminDto dto) {
         //保存用户的deptId
-        StringBuffer adminDeptIds = new StringBuffer();
+        List<Long> adminDeptIds = new ArrayList<>(4);
         //保存大区deptId
-        StringBuffer regionDeptIds = new StringBuffer();
+        List<String> regionDeptIds = new ArrayList<>(6);
 
         boolean result = false;
         CityVo cityVo = new CityVo();
@@ -111,7 +116,7 @@ public class CsCityServiceImpl implements ICsCityService {
             }
             SelectRoleResp rpData = roleResp.getData();
             if(rpData != null){
-                adminDeptIds.append(rpData.getDeptId()+",");
+                adminDeptIds.add(rpData.getDeptId());
             }
         }else if(dto.getLoginId() != null){
             //业务员端app获取机构信息
@@ -126,29 +131,31 @@ public class CsCityServiceImpl implements ICsCityService {
             List<SelectRoleResp> rpDatas = roleRespList.getData();
             if(!CollectionUtils.isEmpty(rpDatas)){
                 for(SelectRoleResp rp : rpDatas){
-                    adminDeptIds.append(rp.getDeptId()+",");
+                    adminDeptIds.add(rp.getDeptId());
                 }
             }
+            log.info("用户的deptId::"+adminDeptIds.toString());
         }
-        if(StringUtils.isBlank(adminDeptIds.toString())){
+        if(CollectionUtils.isEmpty(adminDeptIds)){
             //用户没有绑定业务中心
             cityTreeVos = Collections.EMPTY_LIST;
             cityVo.setCityTreeVos(cityTreeVos);
             return BaseResultUtil.success(cityVo);
         }else{
             //判断是否在全国范围
-            result = adminDeptIds.substring(0, adminDeptIds.length()-1).contains(Constant.SOCIAL_VEHICLE_DEPT);
+            result = adminDeptIds.contains(Constant.SOCIAL_VEHICLE_DEPT);
         }
         if(result){
             //是全国范围，则查询所有省市区
-            cityTreeVos = cityDao.findThreeCity(Constant.EMPTY_STRING,Constant.EMPTY_STRING);
+            cityTreeVos = cityDao.findThreeCity(Constant.EMPTY_STRING,null);
             cityVo.setCityTreeVos(cityTreeVos);
         }else{
             //获取所有大区机构id
             List<Long> regionGovIdList = clpDeptUtil.getRegionGovIdList();
+            log.info("所有大区机构id"+regionGovIdList);
             if(!CollectionUtils.isEmpty(regionGovIdList)){
                 //存放每个大区的deptId
-                StringBuffer multiLevelDepts = new StringBuffer();
+                List<Long> multiLevelDepts = new ArrayList<>();
                 for(Long deptId : regionGovIdList){
                     ResultData<List<SelectDeptResp>> multiLevelDeptList = sysDeptService.getMultiLevelDeptList(deptId);
                     if (!ReturnMsg.SUCCESS.getCode().equals(multiLevelDeptList.getCode())) {
@@ -156,29 +163,37 @@ public class CsCityServiceImpl implements ICsCityService {
                     }
                     List<SelectDeptResp> deptDatas = multiLevelDeptList.getData();
                     if(!CollectionUtils.isEmpty(deptDatas)){
-                        for(SelectDeptResp deptData : deptDatas){
-                            multiLevelDepts.append(deptData.getDeptId()+",");
+                        multiLevelDepts = deptDatas.stream().map(d -> d.getDeptId()).collect(Collectors.toList());
+                    }
+                    log.info("每个大区的deptId::"+multiLevelDepts.toString());
+
+                    boolean contains = false;
+                    if (!CollectionUtils.isEmpty(adminDeptIds)) {
+                        for (Long adminDeptId: adminDeptIds) {
+                            result = multiLevelDepts.contains(adminDeptId);
+                            if (result) {
+                                contains = true;
+                                break;
+                            }
                         }
                     }
-                    result = (multiLevelDepts.substring(0, multiLevelDepts.length()-1)).contains(adminDeptIds.substring(0, adminDeptIds.length()-1));
-                    if(result){
-                        //记录该大区的deptId
+                    if (contains) {
                         ResultData<SelectDeptResp> deptResp = sysDeptService.getById(deptId);
                         if (!ReturnMsg.SUCCESS.getCode().equals(deptResp.getCode())) {
                             return BaseResultUtil.fail(deptResp.getMsg());
                         }
                         SelectDeptResp dept = deptResp.getData();
                         if(dept != null){
-                            //获取remark值
-                            regionDeptIds.append(dept.getRemark()+",");
+                            regionDeptIds.add(dept.getRemark());
                         }
                     }
                 }
-                if(StringUtils.isBlank(regionDeptIds.toString())){
+                if(!CollectionUtils.isEmpty(regionDeptIds)){
+                    log.info("大区deptId::"+regionDeptIds.toString());
+                    cityTreeVos = cityDao.findThreeCity(Constant.EMPTY_STRING, regionDeptIds);
+                }else{
                     //大区deptId为空
                     cityTreeVos = Collections.EMPTY_LIST;
-                }else{
-                    cityTreeVos = cityDao.findThreeCity(Constant.EMPTY_STRING,regionDeptIds.substring(0, regionDeptIds.length()-1));
                 }
                 cityVo.setCityTreeVos(cityTreeVos);
             }
