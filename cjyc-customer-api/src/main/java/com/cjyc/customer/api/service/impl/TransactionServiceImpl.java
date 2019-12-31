@@ -2,7 +2,7 @@ package com.cjyc.customer.api.service.impl;
 
 import com.Pingxx.model.MetaDataEntiy;
 import com.cjyc.common.model.keys.RedisKeys;
-import com.pingplusplus.model.Order;
+import com.pingplusplus.model.*;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.entity.defined.UserInfo;
@@ -21,9 +21,7 @@ import com.cjyc.common.system.service.ICsTaskService;
 import com.cjyc.common.system.service.ICsUserService;
 import com.cjyc.common.system.util.RedisUtils;
 import com.cjyc.customer.api.service.ITransactionService;
-import com.pingplusplus.model.Charge;
-import com.pingplusplus.model.ChargeCollection;
-import com.pingplusplus.model.Event;
+import com.pingplusplus.model.Order;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -106,7 +104,14 @@ public class TransactionServiceImpl implements ITransactionService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public ResultVo update(Charge charge, Event event, String state) {
+
+        TradeBill tradeBill = new TradeBill();
+        tradeBill.setPingPayId(charge.getId());
+        tradeBill.setState(2);
+        tradeBill.setTradeTime(System.currentTimeMillis());
+        tradeBillDao.updateTradeBillByPingPayId(tradeBill);
 
         Map<String, Object> metadata = charge.getMetadata();
         log.debug("update metadata = "+metadata.toString()+" taskId = "+metadata.get("taskId"));
@@ -158,12 +163,7 @@ public class TransactionServiceImpl implements ITransactionService {
                         log.error("回调中参数orderCarNosList不存在");
                         return BaseResultUtil.fail("缺少参数orderCarNosList");
                     }else{
-                        //修改流水支付状态
-                        TradeBill tradeBill = new TradeBill();
-                        tradeBill.setPingPayId(charge.getId());
-                        tradeBill.setState(2);
-                        tradeBill.setTradeTime(System.currentTimeMillis());
-                        tradeBillDao.updateTradeBillByPingPayId(tradeBill);
+
                         //修改车辆支付状态
                         for(int i=0;i<orderCarNosList.size();i++){
                             tradeBillDao.updateOrderCar(orderCarNosList.get(i),2,System.currentTimeMillis());
@@ -206,6 +206,16 @@ public class TransactionServiceImpl implements ITransactionService {
         }
 
         return BaseResultUtil.success();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateTransfer(Transfer transfer, Event event, String state) {
+        TradeBill tradeBill = new TradeBill();
+        tradeBill.setPingPayId(transfer.getId());
+        tradeBill.setState(2);
+        tradeBill.setTradeTime(System.currentTimeMillis());
+        tradeBillDao.updateTradeBillByPingPayId(tradeBill);
     }
 
     @Override
