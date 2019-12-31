@@ -218,22 +218,21 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
         Long waybillId = dto.getWaybillId();
         Waybill waybill = waybillDao.selectById(waybillId);
         if (waybill == null) {
-            log.error("查询运单为空");
+            log.error("===> 查询运单为空...");
             return BaseResultUtil.fail("查询运单为空");
         }
         taskDetailVo.setType(waybill.getType());
 
         // 查询任务单信息信息
-        Long taskId = dto.getTaskId();
-        if (taskId == 0) {
-            log.error("任务单ID参数错误");
-            return BaseResultUtil.fail("任务单ID参数错误");
+        Task task = taskDao.selectById(dto.getTaskId());
+        if (task == null) {
+            log.error("===> 查询任务单为空...");
+            return BaseResultUtil.fail("查询任务单为空");
         }
-        Task task = taskDao.selectById(taskId);
         BeanUtils.copyProperties(task,taskDetailVo);
 
         // 查询车辆信息
-        LambdaQueryWrapper<TaskCar> queryWrapper = new QueryWrapper<TaskCar>().lambda().eq(TaskCar::getTaskId, taskId);
+        LambdaQueryWrapper<TaskCar> queryWrapper = new QueryWrapper<TaskCar>().lambda().eq(TaskCar::getTaskId, dto.getTaskId());
         List<TaskCar> taskCarList = taskCarDao.selectList(queryWrapper);
         List<CarDetailVo> carDetailVoList = new ArrayList<>(10);
         BigDecimal freightFee = new BigDecimal(0);
@@ -274,7 +273,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                     String[] split = historyLoadPhotoImg.split(",");
                     String[] split1 = loadPhotoImg.split(",");
                     log.info("===>运单ID"+waybillCar.getId()+"历史图片张数："+split.length);
-                    log.info("===>运单ID"+waybillCar.getId()+"当前运单提车图片张数："+(split1.length-1));
+                    log.info("===>运单ID"+waybillCar.getId()+"当前运单提车图片张数："+split1.length);
                 }
             }
         }
