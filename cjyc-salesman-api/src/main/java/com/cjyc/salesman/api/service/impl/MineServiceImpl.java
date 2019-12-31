@@ -97,19 +97,7 @@ public class MineServiceImpl extends ServiceImpl<IWaybillCarDao, WaybillCar> imp
             orderCarVo.setLogoImg(logoImg);
         }
         List<StockTaskVo> listStockTask = taskDao.findListStockTask(dto);
-        List<StockTaskVo> trunkStockVos = new ArrayList<>();
-        if(!CollectionUtils.isEmpty(listStockTask)){
-            for(StockTaskVo vo : listStockTask){
-                if(vo.getType() == WaybillTypeEnum.PICK.code){
-                    orderCarVo.setPickStockVo(vo);
-                }else if(vo.getType() == WaybillTypeEnum.BACK.code){
-                    orderCarVo.setBackStockVo(vo);
-                }else {
-                    trunkStockVos.add(vo);
-                }
-            }
-            orderCarVo.setTrunkStockVos(trunkStockVos);
-        }
+        orderCarVo.setStockVos(listStockTask);
         return BaseResultUtil.success(orderCarVo);
     }
 

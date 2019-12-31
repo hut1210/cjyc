@@ -28,12 +28,7 @@ public class StockCarDetailVo extends StockCarVo {
     @ApiModelProperty(value = "目的地详细地址")
     private String endAddress;
 
-    @ApiModelProperty(value = "提车")
-    private StockTaskVo pickStockVo;
+    @ApiModelProperty(value = "运输")
+    private List<StockTaskVo> stockVos;
 
-    @ApiModelProperty(value = "干线运输")
-    private List<StockTaskVo> trunkStockVos;
-
-    @ApiModelProperty(value = "送车")
-    private StockTaskVo backStockVo;
 }
