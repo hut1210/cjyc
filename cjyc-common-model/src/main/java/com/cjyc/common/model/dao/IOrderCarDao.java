@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.dto.customer.invoice.InvoiceApplyQueryDto;
 import com.cjyc.common.model.dto.salesman.BaseSalesDto;
 import com.cjyc.common.model.dto.salesman.dispatch.DispatchListDto;
+import com.cjyc.common.model.dto.salesman.mine.OrderCarDto;
 import com.cjyc.common.model.dto.salesman.mine.StockCarDto;
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.entity.OrderCar;
@@ -188,7 +189,7 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
      * @param dto
      * @return
      */
-    StockCarDetailVo findOrderCar(BaseSalesDto dto);
+    StockCarDetailVo findOrderCar(OrderCarDto dto);
 
     /**
      * 功能描述: 查询出发地相同的车辆数量

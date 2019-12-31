@@ -6,6 +6,7 @@ import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.salesman.BaseSalesDto;
 import com.cjyc.common.model.dto.salesman.mine.AchieveDto;
+import com.cjyc.common.model.dto.salesman.mine.OrderCarDto;
 import com.cjyc.common.model.dto.salesman.mine.SalesAchieveDto;
 import com.cjyc.common.model.dto.salesman.mine.StockCarDto;
 import com.cjyc.common.model.entity.Admin;
@@ -87,7 +88,7 @@ public class MineServiceImpl extends ServiceImpl<IWaybillCarDao, WaybillCar> imp
     }
 
     @Override
-    public ResultVo<StockCarDetailVo> findStockCarDetail(BaseSalesDto dto) {
+    public ResultVo<StockCarDetailVo> findStockCarDetail(OrderCarDto dto) {
         String logoImg = LogoImgProperty.logoImg;
         //订单车辆信息
         StockCarDetailVo orderCarVo = orderCarDao.findOrderCar(dto);
