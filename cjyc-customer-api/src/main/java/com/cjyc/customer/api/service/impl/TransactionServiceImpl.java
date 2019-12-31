@@ -295,7 +295,7 @@ public class TransactionServiceImpl implements ITransactionService {
         tb.setBody(order.getBody());
         tb.setAmount(order.getAmount()==null?BigDecimal.valueOf(0):BigDecimal.valueOf(order.getAmount()));
         tb.setCreateTime(System.currentTimeMillis());
-        tb.setType(1);
+        tb.setType(ChargeTypeEnum.PREPAY.getCode());
         tb.setLivemode(order.getLivemode() ? LiveModeEnum.LIVE.getTag() : LiveModeEnum.TEST.getTag());
 
         ChargeCollection charges = order.getCharges();

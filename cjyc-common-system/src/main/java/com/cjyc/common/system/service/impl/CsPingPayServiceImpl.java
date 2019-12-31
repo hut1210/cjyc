@@ -341,7 +341,8 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             if(waybill!=null){
                 Long carrierId = waybill.getCarrierId();
                 BaseCarrierVo baseCarrierVo = carrierDao.showCarrierById(carrierId);
-                allinpayTransferDriverCreate(baseCarrierVo,waybill);
+                Transfer transfer = allinpayTransferDriverCreate(baseCarrierVo,waybill);
+                cStransactionService.saveTransactions(transfer, "0");
             }
         }catch (Exception e){
             return BaseResultUtil.fail("通联代付失败");
@@ -467,9 +468,9 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         params.put("extra", extra);
 
         Map<String, String> metadata = new HashMap<String,String>();
-        metadata.put("type", "driverFreight");
+        metadata.put("type", String.valueOf(ChargeTypeEnum.UNION_PAY.getCode()));
         metadata.put("uid", String.valueOf(baseCarrierVo.getCarrierId()));
-        metadata.put("order_detail_id", "");
+        metadata.put("waybillId", String.valueOf(waybill.getId()));
         params.put("metadata", metadata);
 
         Transfer obj = Transfer.create(params);
