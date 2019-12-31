@@ -194,7 +194,7 @@
     <select id="countListWaitDispatchCar" resultType="java.util.Map">
         select count(0) as car_num, IFNULL(o.start_city_code,'-1') as cityCode, IFNULL(o.start_city, '无城市') as cityName from w_order o
         join w_order_car c on o.id = c.order_id
-        where o.state BETWEEN 25 and 101
+        where o.state BETWEEN 25 and 100
         group by o.start_city_code
     </select>
 
@@ -203,7 +203,7 @@
             select count(0) as carNum
             from w_order o
             join w_order_car c on o.id = c.order_id
-            where o.state BETWEEN 25 and 101
+            where o.state BETWEEN 25 and 100
             group by o.start_city_code
         ) as t
     </select>

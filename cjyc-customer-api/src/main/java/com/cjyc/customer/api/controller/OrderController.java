@@ -4,6 +4,7 @@ import com.cjyc.common.model.dto.customer.order.OrderDetailDto;
 import com.cjyc.common.model.dto.customer.order.OrderQueryDto;
 import com.cjyc.common.model.dto.customer.order.SimpleSaveOrderDto;
 import com.cjyc.common.model.dto.web.order.CancelOrderDto;
+import com.cjyc.common.model.dto.web.order.SaveOrderCarDto;
 import com.cjyc.common.model.dto.web.order.SaveOrderDto;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
@@ -17,6 +18,7 @@ import com.cjyc.customer.api.service.IOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,6 +26,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * 订单
@@ -53,7 +57,11 @@ public class OrderController {
         reqDto.setCreateUserId(customer.getUserId());
         reqDto.setCreateUserName(customer.getName());
         reqDto.setState(OrderStateEnum.WAIT_SUBMIT.code);
-
+        //均摊干线费用
+        List<SaveOrderCarDto> carList = reqDto.getOrderCarList();
+        if(!CollectionUtils.isEmpty(carList) && reqDto.getLineWlFreightFee() != null){
+            carList.forEach(dto -> dto.setTrunkFee(reqDto.getLineWlFreightFee()));
+        }
         //发送推送信息
         return csOrderService.save(reqDto);
     }
@@ -72,7 +80,11 @@ public class OrderController {
         reqDto.setCreateUserId(customer.getUserId());
         reqDto.setCreateUserName(customer.getName());
         reqDto.setState(OrderStateEnum.SUBMITTED.code);
-
+        //均摊干线费用
+        List<SaveOrderCarDto> carList = reqDto.getOrderCarList();
+        if(!CollectionUtils.isEmpty(carList) && reqDto.getLineWlFreightFee() != null){
+            carList.forEach(dto -> dto.setTrunkFee(reqDto.getLineWlFreightFee()));
+        }
         //发送推送信息
         return csOrderService.save(reqDto);
     }

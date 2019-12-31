@@ -904,6 +904,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         if (carrier.getState() == null || carrier.getState() != CommonStateEnum.CHECKED.code || carrier.getBusinessState() == null || carrier.getBusinessState() != 0) {
             throw new ParameterException("运单，所选承运商，停运中");
         }
+        carrierInfo.setCarrierType(carrier.getType());
         carrierInfo.setCarrierId(carrierId);
         carrierInfo.setCarryType(carrier.getType());
         carrierInfo.setCarrierName(carrier.getName());

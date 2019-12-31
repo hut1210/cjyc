@@ -2,7 +2,6 @@ package com.cjyc.common.model.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.dto.customer.order.OrderQueryDto;
-import com.cjyc.common.model.dto.salesman.PageSalesDto;
 import com.cjyc.common.model.dto.salesman.order.SalesOrderQueryDto;
 import com.cjyc.common.model.dto.web.order.ListOrderDto;
 import com.cjyc.common.model.entity.Order;

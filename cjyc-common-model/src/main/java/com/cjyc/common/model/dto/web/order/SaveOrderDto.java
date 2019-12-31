@@ -85,6 +85,8 @@ public class SaveOrderDto {
     @NotNull(message = "线路ID不能为空")
     @ApiModelProperty(value = "线路ID")
     private Long lineId;
+    @ApiModelProperty(value = "线路费用")
+    private BigDecimal lineWlFreightFee;
     @ApiModelProperty(value = "提车方式:1 自送，2代驾上门，3拖车上门, 4.物流上门")
     private int pickType;
     @ApiModelProperty(value = "发车联系人")

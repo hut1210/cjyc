@@ -113,7 +113,7 @@
     <update id="updateForFinish">
         update w_order
         set state = 100,
-        finish_time = #{currentTimeMillis}
+        finish_time = UNIX_TIMESTAMP(NOW()) * 1000
         where id = #{id}
         and state &lt; 100
         limit 1
