@@ -15,6 +15,7 @@ import com.cjyc.common.model.enums.log.OrderLogEnum;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.enums.task.TaskStateEnum;
+import com.cjyc.common.model.enums.transport.CarrierTypeEnum;
 import com.cjyc.common.model.enums.waybill.WaybillCarStateEnum;
 import com.cjyc.common.model.enums.waybill.WaybillCarrierTypeEnum;
 import com.cjyc.common.model.enums.waybill.WaybillStateEnum;
@@ -125,19 +126,19 @@ public class CsTaskServiceImpl implements ICsTaskService {
             return BaseResultUtil.fail("运单车辆不存在");
         }
         Waybill waybill = waybillDao.selectById(waybillCar.getWaybillId());
-        if(waybill == null){
+        if (waybill == null) {
             return BaseResultUtil.fail("运单不存在");
         }
         List<String> loadPhotoImgs = reqDto.getLoadPhotoImgs();
-        if(WaybillTypeEnum.PICK.code == waybill.getType()){
+        if (WaybillTypeEnum.PICK.code == waybill.getType()) {
             if (loadPhotoImgs.size() < Constant.MIN_LOAD_PHOTO_NUM) {
                 return BaseResultUtil.fail("照片数量不足8张");
             }
             if (loadPhotoImgs.size() > Constant.MAX_LOAD_PHOTO_NUM) {
                 return BaseResultUtil.fail("照片数量不能超过20张");
             }
-        }else{
-            if(!CollectionUtils.isEmpty(loadPhotoImgs)){
+        } else {
+            if (!CollectionUtils.isEmpty(loadPhotoImgs)) {
                 if (loadPhotoImgs.size() > Constant.MAX_LOAD_PHOTO_NUM) {
                     return BaseResultUtil.fail("照片数量不能超过20张");
                 }
@@ -152,17 +153,17 @@ public class CsTaskServiceImpl implements ICsTaskService {
         orderCar.setPlateNo(reqDto.getPlateNo());
         orderCarDao.updateById(orderCar);
         //更新运单车辆信息
-        if(!CollectionUtils.isEmpty(loadPhotoImgs)){
+        if (!CollectionUtils.isEmpty(loadPhotoImgs)) {
             waybillCarDao.updateForReplenishInfo(waybillCar.getId(), Joiner.on(",").join(loadPhotoImgs));
         }
         return BaseResultUtil.success();
     }
 
     @Override
-    public ResultVo<ResultReasonVo>  loadForLocal(ReplenishInfoDto paramsDto) {
+    public ResultVo<ResultReasonVo> loadForLocal(ReplenishInfoDto paramsDto) {
         //提车上传信息
         ResultVo resultVo = replenishInfo(paramsDto);
-        if(ResultEnum.SUCCESS.getCode() != resultVo.getCode()){
+        if (ResultEnum.SUCCESS.getCode() != resultVo.getCode()) {
             return BaseResultUtil.fail(resultVo.getMsg());
         }
         //提车
@@ -176,34 +177,51 @@ public class CsTaskServiceImpl implements ICsTaskService {
     }
 
     @Override
-    public void create(Waybill waybill, List<WaybillCar> waybillCarList, CarrierInfo carrierInfo) {
-
-        //只有一个司机添加任务信息
-        Task task = new Task();
-        //获取编号
-        task.setNo(getTaskNo(waybill.getNo()));
-        task.setWaybillId(waybill.getId());
-        task.setWaybillNo(waybill.getNo());
-        task.setGuideLine(waybill.getGuideLine());
-        task.setCarNum(waybillCarList.size());
-        task.setState(waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code ? TaskStateEnum.TRANSPORTING.code : TaskStateEnum.WAIT_LOAD.code);
-        task.setDriverId(carrierInfo.getDriverId());
-        task.setDriverName(carrierInfo.getCarrierName());
-        task.setDriverPhone(carrierInfo.getDriverPhone());
-        //添加运力信息
-        task.setVehicleRunningId(carrierInfo.getVehicleId());
-        task.setVehiclePlateNo(carrierInfo.getVehiclePlateNo());
-        task.setCreateTime(System.currentTimeMillis());
-        task.setCreateUser(waybill.getCreateUser());
-        task.setCreateUserId(waybill.getCreateUserId());
-        taskDao.insert(task);
-
+    public void reCreate(Waybill waybill, List<WaybillCar> waybillCarList, CarrierInfo carrierInfo) {
         /**4、插入任务车辆关联表*/
         Set<Long> waybillCarIds = waybillCarList.stream().map(WaybillCar::getId).collect(Collectors.toSet());
-
-        //添加任务车辆信息
-        taskCarDao.saveBatchByTaskIdAndWaybillCarIds(task.getId(), waybillCarIds);
+        Task task;
+        if (carrierInfo.isReAllotCarrier()) {
+            //删除历史任务
+            taskDao.cancelBywaybillId(waybill.getId());
+            if (carrierInfo.getCarrierType() != CarrierTypeEnum.ENTERPRISE.code) {
+                task = new Task();
+                //只有一个司机添加任务信息
+                //获取编号
+                task.setNo(getTaskNo(waybill.getNo()));
+                task.setWaybillId(waybill.getId());
+                task.setWaybillNo(waybill.getNo());
+                task.setGuideLine(waybill.getGuideLine());
+                task.setCarNum(waybillCarList.size());
+                task.setState(waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code ? TaskStateEnum.TRANSPORTING.code : TaskStateEnum.WAIT_LOAD.code);
+                task.setDriverId(carrierInfo.getDriverId());
+                task.setDriverName(carrierInfo.getCarrierName());
+                task.setDriverPhone(carrierInfo.getDriverPhone());
+                //添加运力信息
+                task.setVehicleRunningId(carrierInfo.getVehicleId());
+                task.setVehiclePlateNo(carrierInfo.getVehiclePlateNo());
+                task.setCreateTime(System.currentTimeMillis());
+                task.setCreateUser(waybill.getCreateUser());
+                task.setCreateUserId(waybill.getCreateUserId());
+                taskDao.insert(task);
+                //添加任务车辆信息
+                taskCarDao.saveBatchByTaskIdAndWaybillCarIds(task.getId(), waybillCarIds);
+            }
+        } else {
+            if (carrierInfo.getCarrierType() != CarrierTypeEnum.ENTERPRISE.code) {
+                task = taskDao.findTopByWaybillId(waybill.getId());
+                Task nt = new Task();
+                nt.setId(task.getId());
+                nt.setCarNum(waybillCarList.size());
+                taskDao.updateById(nt);
+                //删除任务关系
+                taskCarDao.deleteByTaskId(task.getId());
+                //添加任务车辆信息
+                taskCarDao.saveBatchByTaskIdAndWaybillCarIds(task.getId(), waybillCarIds);
+            }
+        }
     }
+
     @Override
     public ResultVo allot(AllotTaskDto paramsDto) {
         Long waybillId = paramsDto.getWaybillId();
@@ -219,10 +237,10 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 return BaseResultUtil.fail("当前运单的状态，无法分配任务");
             }
             List<WaybillCar> list = null;
-            if(CollectionUtils.isEmpty(waybillCarIdList)){
+            if (CollectionUtils.isEmpty(waybillCarIdList)) {
                 //如果未指定车辆列表，则查询所有未分配的车辆
                 list = waybillCarDao.findUnAllotListByWaybillId(waybillId);
-            }else{
+            } else {
 
                 list = waybillCarDao.findVoByIds(waybillCarIdList);
             }
@@ -239,7 +257,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             }
             //验证司机运力信息
             VehicleRunning vr = vehicleRunningDao.findByDriverId(driverId);
-            if(vr == null || vr.getState() == null || vr.getState() != 1){
+            if (vr == null || vr.getState() == null || vr.getState() != 1) {
                 return BaseResultUtil.fail("司机尚未绑定车牌号");
             }
 
@@ -314,7 +332,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             return BaseResultUtil.fail("任务不存在");
         }
         //验证司机是否匹配
-        if(!paramsDto.getLoginId().equals(task.getDriverId())){
+        if (!paramsDto.getLoginId().equals(task.getDriverId())) {
             return BaseResultUtil.fail("不是自己的任务");
         }
         //验证运单
@@ -325,7 +343,6 @@ public class CsTaskServiceImpl implements ICsTaskService {
         if (waybill.getState() >= WaybillStateEnum.FINISHED.code || waybill.getState() < WaybillStateEnum.ALLOT_CONFIRM.code) {
             return BaseResultUtil.fail("运单已完结");
         }
-
 
         //批量处理数据
         int count = 0;
@@ -339,7 +356,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             if (waybillCar.getState() >= WaybillCarStateEnum.WAIT_LOAD_CONFIRM.code) {
                 throw new ParameterException("运单车辆已经装过车");
             }
-            if(WaybillTypeEnum.PICK.code == waybill.getType() && !validateWaybillCarInfo(waybillCar)){
+            if (WaybillTypeEnum.PICK.code == waybill.getType() && !validateWaybillCarInfo(waybillCar)) {
                 throw new ParameterException("提车运单运单，照片不能为空");
             }
 
@@ -349,12 +366,12 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 throw new ParameterException("订单车辆不存在");
             }
             //验证目的地业务中心是否与当前业务中心匹配
-            if(waybillCar.getStartStoreId() != null && waybillCar.getStartStoreId() != 0){
-               if(!waybillCar.getStartStoreId().equals(orderCar.getNowStoreId())){
-                   throw new ParameterException("订单车辆尚未到达提车业务中心");
-               }
-            }else{
-                if(!waybillCar.getStartAreaCode().equals(orderCar.getNowAreaCode())){
+            if (waybillCar.getStartStoreId() != null && waybillCar.getStartStoreId() != 0) {
+                if (!waybillCar.getStartStoreId().equals(orderCar.getNowStoreId())) {
+                    throw new ParameterException("订单车辆尚未到达提车业务中心");
+                }
+            } else {
+                if (!waybillCar.getStartAreaCode().equals(orderCar.getNowAreaCode())) {
                     throw new ParameterException("订单车辆尚未到达提车地址区县范围内");
                 }
             }
@@ -469,12 +486,12 @@ public class CsTaskServiceImpl implements ICsTaskService {
             if (waybillCar.getState() >= WaybillCarStateEnum.UNLOADED.code) {
                 throw new ParameterException("运单车辆{0}已经卸过车", waybillCar.getOrderCarNo());
             }
-            if(waybillCar.getEndStoreId() == null || waybillCar.getEndStoreId() <= 0 ){
+            if (waybillCar.getEndStoreId() == null || waybillCar.getEndStoreId() <= 0) {
                 waybillCarDao.updateStateById(waybillCar.getId(), WaybillCarStateEnum.UNLOADED.code);
                 validateAndFinishTask(task.getId());
                 validateAndFinishWaybill(waybillCar.getWaybillId());
                 orderCarDao.updateLocationForUnload(waybillCar.getOrderCarId(), 0L, waybillCar.getEndAreaCode());
-            }else{
+            } else {
                 waybillCarDao.updateStateById(waybillCar.getId(), WaybillCarStateEnum.WAIT_UNLOAD_CONFIRM.code);
             }
             waybillCarIdSet.add(waybillCar.getId());
@@ -543,7 +560,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             int newState;
             //下一段是否调度
             Order order = orderDao.selectById(oc.getOrderId());
-            if(order == null){
+            if (order == null) {
                 failCarNoSet.add(new FailResultReasonVo(waybillCar.getOrderCarNo(), "订单不存在"));
                 continue;
             }
@@ -605,7 +622,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
         }
         resultReasonVo.setSuccessList(successSet);
         resultReasonVo.setFailList(failCarNoSet);
-        if(CollectionUtils.isEmpty(successSet)){
+        if (CollectionUtils.isEmpty(successSet)) {
             BaseResultUtil.fail(resultReasonVo);
         }
 
@@ -617,29 +634,32 @@ public class CsTaskServiceImpl implements ICsTaskService {
 
         return BaseResultUtil.success(resultReasonVo);
     }
+
     private void validateAndFinishTask(Long taskId) {
         int count = taskCarDao.countUnFinishByTaskId(taskId);
-        if(count > 0){
+        if (count > 0) {
             return;
         }
         taskDao.updateForFinish(taskId);
     }
+
     private void validateAndFinishWaybill(Long waybillId) {
         int count = waybillCarDao.countUnFinishByWaybillId(waybillId);
-        if(count > 0){
+        if (count > 0) {
             return;
         }
         waybillDao.updateForFinish(waybillId);
     }
+
     private void validateAndFinishTaskWaybill(Task task) {
-        if(task == null){
+        if (task == null) {
             return;
         }
         int count = taskCarDao.countUnFinishByTaskId(task.getId());
-        if(count <= 0){
+        if (count <= 0) {
             taskDao.updateForFinish(task.getId());
             int n = waybillCarDao.countUnFinishByWaybillId(task.getWaybillId());
-            if(n > 0){
+            if (n > 0) {
                 return;
             }
             waybillDao.updateForFinish(task.getWaybillId());
@@ -742,7 +762,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
         }
         resultReasonVo.setFailList(failCarNoSet);
         resultReasonVo.setSuccessList(successSet);
-        if(CollectionUtils.isEmpty(successSet)){
+        if (CollectionUtils.isEmpty(successSet)) {
             return BaseResultUtil.fail(resultReasonVo);
         }
         //添加出库日志
@@ -751,24 +771,23 @@ public class CsTaskServiceImpl implements ICsTaskService {
     }
 
     private boolean validateIsArriveEndCity(Order order, WaybillCar waybillCar) {
-        if(waybillCar == null){
+        if (waybillCar == null) {
             return false;
         }
         //先验证是否到达所属业务中心
-        if(order.getEndStoreId() != null){
+        if (order.getEndStoreId() != null) {
             List<Store> storeList = csStoreService.getBelongByAreaCode(waybillCar.getEndAreaCode());
-            if(!CollectionUtils.isEmpty(storeList) && storeList.stream().map(Store::getId).collect(Collectors.toList()).contains(order.getEndStoreId())){
+            if (!CollectionUtils.isEmpty(storeList) && storeList.stream().map(Store::getId).collect(Collectors.toList()).contains(order.getEndStoreId())) {
                 return true;
             }
         }
         //其次验证城市
-        if(order.getEndCityCode().equals(waybillCar.getEndCityCode())){
+        if (order.getEndCityCode().equals(waybillCar.getEndCityCode())) {
             return true;
         }
         return false;
 
     }
-
 
     @Override
     public ResultVo receipt(ReceiptTaskDto paramsDto) {
@@ -913,7 +932,6 @@ public class CsTaskServiceImpl implements ICsTaskService {
         if (count <= 0) {
             Order order = orderDao.selectById(orderId);
             orderDao.updateForFinish(orderId);
-
             //订单完成日志
             orderLogService.asyncSave(order, OrderLogEnum.RECEIPT,
                     new String[]{MessageFormat.format(OrderLogEnum.RECEIPT.getInnerLog(), order.getNo()),
@@ -970,6 +988,51 @@ public class CsTaskServiceImpl implements ICsTaskService {
             taskList.forEach(this::validateAndFinishTaskWaybill);
         }
 
+    }
+
+    @Override
+    public void updateForTaskCarFinish(List<String> taskCarIdList, int payType, UserInfo userInfo) {
+
+        Set<Long> taskIdSet = Sets.newHashSet();
+        Set<Long> orderIdSet = Sets.newHashSet();
+        Set<String> lockSet = Sets.newHashSet();
+        for (String taskIdStr : taskCarIdList) {
+            TaskCar taskCar = taskCarDao.selectById(Long.valueOf(taskIdStr));
+            if (taskCar == null) {
+                continue;
+            }
+            WaybillCar waybillCar = waybillCarDao.selectById(taskCar.getWaybillCarId());
+            if (waybillCar == null) {
+                continue;
+            }
+            OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
+            if (orderCar == null) {
+                continue;
+            }
+            String lockKey = RedisKeys.getWlCollectPayLockKey(orderCar.getNo());
+            lockSet.add(lockKey);
+
+            //更新支付车辆状态
+            if(payType == ChargeTypeEnum.COLLECT_PAY.getCode()){
+                orderCarDao.updateForPaySuccess(orderCar.getId());
+            }else{
+                orderCarDao.updateForPrePaySuccess(orderCar.getId());
+            }
+
+            //更新运单车辆状态
+            waybillCarDao.updateForFinish(waybillCar.getId());
+
+            taskIdSet.add(taskCar.getTaskId());
+            orderIdSet.add(orderCar.getOrderId());
+        }
+        taskIdSet.forEach(taskId -> {
+            Task task = taskDao.selectById(taskId);
+            validateAndFinishTaskWaybill(task);
+        });
+        orderIdSet.forEach(orderId -> validateAndFinishOrder(orderId, userInfo));
+
+        //删除支付锁
+        redisUtil.delete(lockSet);
     }
 
 }

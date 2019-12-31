@@ -346,6 +346,7 @@
         <include refid="Base_Column_List"/>
         from w_waybill_car
         where waybill_id = #{waybillId}
+        and state &lt;= 100
     </select>
     <select id="findNextDispatch" resultType="com.cjyc.common.model.entity.WaybillCar">
         select
@@ -587,19 +588,22 @@
         oc.plate_no as plateNo,
         oc.vin as vin,
         oc.order_no as orderNo,
-        t.driver_name as driverName,
-        t.driver_phone as driverPhone,
-        t.driver_id as driverId,
-        t.vehicle_plate_no as vehiclePlateNo,
+        tb.driver_name as driverName,
+        tb.driver_phone as driverPhone,
+        tb.driver_id as driverId,
+        tb.vehicle_plate_no as vehiclePlateNo,
         wc.*
         from w_waybill w
         join w_waybill_car wc on wc.waybill_id = w.id
         join w_order_car oc on wc.order_car_id = oc.id
-        left join w_task_car tc on tc.waybill_car_id = wc.id
-        left join w_task t on tc.task_id = t.id
+        left join (
+            select t.*,tc.waybill_car_id
+            from w_task t
+            join w_task_car tc on t.id = tc.task_id
+            where t.state &lt;= 100
+        ) as tb on tb.waybill_car_id = wc.id
         <where>
             w.type != 2
-            and t.state &lt;= 100
             <if test="paramsDto.brand != null and paramsDto.brand != ''">
                 and oc.brand = #{paramsDto.brand}
             </if>
@@ -758,21 +762,36 @@
         oc.plate_no as plateNo,
         oc.vin as vin,
         o.no as orderNo,
-        t.no as taskNo,
-        t.driver_name as driverName,
-        t.driver_phone as driverPhone,
-        t.driver_id as driverId,
-        t.vehicle_plate_no as vehiclePlateNo,
-        (case when t.no is null or t.no = '' then w.no else t.no end) as parentNo,
+        tb.no as taskNo,
+        tb.driver_name as driverName,
+        tb.driver_phone as driverPhone,
+        tb.driver_id as driverId,
+        tb.vehicle_plate_no as vehiclePlateNo,
+        (case when tb.no is null or tb.no = '' then w.no else tb.no end) as parentNo,
         wc.*
         from w_waybill w
         join w_waybill_car wc on wc.waybill_id = w.id
         join w_order_car oc on wc.order_car_id = oc.id
         join w_order o on o.id = oc.order_id
-        left join w_task_car tc on tc.waybill_car_id = wc.id
-        left join w_task t on tc.task_id = t.id
+        left join (
+            select t.*,tc.waybill_car_id
+            from w_task t
+            join w_task_car tc on t.id = tc.task_id
+            where t.state &lt;= 100
+        ) as tb on tb.waybill_car_id = wc.id
         <where>
             w.type = 2
+            <choose>
+                <when test="paramsDto.outterState == 2">
+                    wc.state &lt;= 15
+                </when>
+                <when test="paramsDto.outterState == 3">
+                    wc.state between 16 and 99
+                </when>
+                <when test="paramsDto.outterState == 4">
+                    wc.state = 100
+                </when>
+            </choose>
             <if test="paramsDto.orderStartProvinceCode != null and paramsDto.orderStartProvinceCode != ''">
                 and o.start_province_code = #{paramsDto.orderStartProvinceCode}
             </if>
@@ -912,6 +931,7 @@
                 and wc.now_store_id &lt;= #{paramsDto.nowStoreId}
             </if>
         </where>
+        group by wc.id
         order by w.create_time desc
     </select>
     <select id="findVoByTaskId" resultType="com.cjyc.common.model.vo.web.waybill.WaybillCarVo">
@@ -1020,6 +1040,7 @@
         where wc.order_car_id = #{orderCarId}
         and wc.state &lt;= 100
         and o.back_contact_phone = wc.unload_link_phone
+        limit 1
     </select>
     <select id="findCarEndpoint" resultType="com.cjyc.common.model.vo.web.waybill.WaybillCarVo">
         select

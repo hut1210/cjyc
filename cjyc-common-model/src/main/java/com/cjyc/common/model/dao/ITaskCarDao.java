@@ -30,4 +30,5 @@ public interface ITaskCarDao extends BaseMapper<TaskCar> {
 
     int countUnFinishByTaskId(Long taskId);
 
+    int deleteByTaskId(Long taskId);
 }

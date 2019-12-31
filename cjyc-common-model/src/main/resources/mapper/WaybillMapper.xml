@@ -506,15 +506,20 @@
         w.*,
         <include refid="waybill_inner_state"/>,
         w.no as wtNo,
-        (case when w.carrier_type != 2 then t.driver_id end) as driverId,
-        (case when w.carrier_type != 2 then t.driver_name end) as driverName,
-        (case when w.carrier_type != 2 then t.driver_phone end) as driverPhone,
-        (case when w.carrier_type != 2 then vr.plate_no end) as vehiclePlateNo,
-        (case when w.carrier_type != 2 then vr.carry_car_num end) as carryCarNum,
-        (case when w.carrier_type != 2 then vr.occupied_car_num end) as occupiedCarNum
+        (case when w.carrier_type != 2 then tb.driver_id end) as driverId,
+        (case when w.carrier_type != 2 then tb.driver_name end) as driverName,
+        (case when w.carrier_type != 2 then tb.driver_phone end) as driverPhone,
+        (case when w.carrier_type != 2 then tb.plate_no end) as vehiclePlateNo,
+        (case when w.carrier_type != 2 then tb.carry_car_num end) as carryCarNum,
+        (case when w.carrier_type != 2 then tb.occupied_car_num end) as occupiedCarNum
         from w_waybill w
-        LEFT JOIN w_task t on w.id = t.waybill_id
-        left join d_vehicle_running vr on vr.driver_id = t.driver_id
+        left join (
+            select t.*,vr.carry_car_num,vr.plate_no,vr.occupied_car_num
+            from w_task t
+            left join d_vehicle_running vr on vr.driver_id = t.driver_id
+            where t.state &lt;= 100
+            group by t.id
+        ) as tb on tb.waybill_id = w.id
         <where>
             w.type = 2
             <if test="paramsDto.waybillNo != null and paramsDto.waybillNo != ''">
@@ -537,7 +542,8 @@
         order by w.create_time desc
     </select>
     <sql id="task_inner_state">
-        (case w.state
+        (case t.state
+        when 0 then '待运输'
         when 5 then '待运输'
         when 55 then '运输中'
         when 100 then '已完成'

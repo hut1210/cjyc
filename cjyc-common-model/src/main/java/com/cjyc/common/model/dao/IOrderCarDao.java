@@ -163,6 +163,7 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
     int updateForReceiptBatch(@Param("collection") Collection<Long> orderCarIdSet);
 
     int updateForPaySuccess(Long orderCarId);
+    int updateForPrePaySuccess(Long orderCarId);
 
     List<OrderCarWaitDispatchVo> findWaitDispatchCarList(@Param("paramsDto") WaitDispatchListOrderCarDto paramsDto);
 

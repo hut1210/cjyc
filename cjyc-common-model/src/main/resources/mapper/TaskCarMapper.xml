@@ -35,6 +35,9 @@
             )
         </foreach>
     </insert>
+    <delete id="deleteByTaskId">
+        delete from w_task_car where task_id = #{taskId}
+    </delete>
     <select id="countUnFinishByTaskId" resultType="java.lang.Integer">
         select count(0)
         from w_task_car tc

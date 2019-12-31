@@ -7,7 +7,9 @@ public class CarrierInfo {
     private boolean isReAllotCarrier = true; //是否重新分配承运商
     private Long carrierId;
     private String carrierName;
-    private Integer carrierType;
+    private Integer carrierType;//承运商类型 1个人，2企业
+
+    private Integer carryType;//承运方式
 
     private Long driverId;
     private String driverName;

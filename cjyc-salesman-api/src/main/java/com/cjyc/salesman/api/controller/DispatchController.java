@@ -75,6 +75,7 @@ public class DispatchController {
      * 查询待调度车辆列表（数据列表）
      * @author JPG
      */
+    @Deprecated
     @ApiOperation(value = "查询待调度车辆列表")
     @PostMapping(value = "/wait/list")
     public ResultVo<PageVo<WaitDispatchCarListVo>> waitDispatchCarList(@RequestBody DispatchListDto reqDto) {

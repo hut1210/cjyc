@@ -364,7 +364,7 @@ public class PingPayServiceImpl implements IPingPayService {
             params.put("extra", extra);
         }
         params.put("metadata",meta);//自定义参数
-        Charge charge = Charge.create(params); // 创建 Charge 对象 方法
+        Charge charge = Charge.reCreate(params); // 创建 Charge 对象 方法
         return charge;
     }
 
@@ -402,7 +402,7 @@ public class PingPayServiceImpl implements IPingPayService {
             params.put("extra", extra);
         }
         params.put("metadata",meta);//自定义参数
-        Charge charge = Charge.create(params); // 创建 Charge 对象 方法
+        Charge charge = Charge.reCreate(params); // 创建 Charge 对象 方法
         return charge;
     }*/
 

@@ -81,6 +81,7 @@
         update w_task
         set state = 113
         where waybill_id = #{waybillId}
+        and state &lt;= 100
     </delete>
     <delete id="deleteByWaybillId">
         delete t,tc
@@ -323,6 +324,7 @@
         from w_task t
         join w_task_car tc on tc.task_id = t.id
         where tc.waybill_car_id = #{waybillCarId}
+        and t.state &lt;= 100
     </select>
     <select id="findListByWaybillCarIds" resultType="com.cjyc.common.model.entity.Task">
         select t.*
