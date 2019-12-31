@@ -164,24 +164,14 @@ public class TransactionServiceImpl implements ITransactionService {
                         return BaseResultUtil.fail("缺少参数orderCarNosList");
                     }else{
                         //修改流水支付状态
-                        TradeBill tradeBill = new TradeBill();
+                        tradeBill = new TradeBill();
                         tradeBill.setPingPayId(charge.getId());
                         tradeBill.setState(2);
                         tradeBill.setTradeTime(System.currentTimeMillis());
                         tradeBillDao.updateTradeBillByPingPayId(tradeBill);
                         //修改车辆支付状态
-                        for(int i=0;i<orderCarNosList.size();i++){
-                            tradeBillDao.updateOrderCar(orderCarNosList.get(i),2,System.currentTimeMillis());
-                            String lockKey = RedisKeys.getWlCollectPayLockKey(orderCarNosList.get(i));
-                            redisUtil.delete(lockKey);
-                        }
-
-                        for (int i=0;i<taskCarIdList.size();i++){
-                            TaskCar taskCar = taskCarDao.selectById(Long.valueOf(taskCarIdList.get(i)));
-                            if(taskCar != null){
-                                waybillCarDao.updateForPaySuccess(taskCar.getWaybillCarId());
-                            }
-                        }
+                        UserInfo userInfo = new UserInfo();
+                        csTaskService.updateForTaskCarFinish(taskCarIdList, ChargeTypeEnum.COLLECT_PAY.getCode(), userInfo);
                     }
                     //验证任务是否完成
                     int row = taskCarDao.countUnFinishByTaskId(taskId);
