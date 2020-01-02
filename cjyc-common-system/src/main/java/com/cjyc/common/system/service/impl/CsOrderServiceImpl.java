@@ -339,6 +339,35 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
     }
 
+    @Override
+    public ResultVo simpleCommitAndCheck(CheckOrderDto paramsDto) {
+        Order order = orderDao.selectById(paramsDto.getOrderId());
+        List<OrderCar> orderCarList = orderCarDao.findListByOrderId(order.getId());
+        //均摊优惠券费用
+        shareCouponOffsetFee(order.getCouponOffsetFee(), orderCarList);
+        //均摊总费用
+        shareTotalFee(order.getTotalFee(), orderCarList);
+        //更新车辆信息
+        orderCarList.forEach(orderCar -> orderCarDao.updateById(orderCar));
+
+        //合计费用：提、干、送、保险
+        fillOrderFeeInfo(order, orderCarList);
+        order.setCarNum(orderCarList.size());
+        orderDao.updateById(order);
+        //记录发车人和收车人
+        csCustomerContactService.asyncSave(order);
+        //记录客户历史线路
+        csCustomerLineService.asyncSave(order);
+        //记录订单日志
+        csOrderLogService.asyncSave(order, OrderLogEnum.COMMIT,
+                new String[]{MessageFormat.format(OrderLogEnum.COMMIT.getInnerLog(), order.getNo()),
+                        MessageFormat.format(OrderLogEnum.COMMIT.getInnerLog(), order.getNo())},
+                new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), UserTypeEnum.ADMIN));
+
+        check(paramsDto);
+
+        return BaseResultUtil.success();
+    }
 
     /**
      * 审核订单

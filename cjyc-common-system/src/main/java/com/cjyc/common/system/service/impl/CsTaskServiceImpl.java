@@ -1,6 +1,8 @@
 package com.cjyc.common.system.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.cjkj.common.redis.lock.RedisDistributedLock;
+import com.cjkj.log.monitor.LogUtil;
 import com.cjyc.common.model.constant.Constant;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.customer.order.ReceiptBatchDto;
@@ -867,7 +869,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
         Set<FailResultReasonVo> failCarNoSet = Sets.newHashSet();
         Set<String> successSet = Sets.newHashSet();
 
-        long currentTimeMillis = System.currentTimeMillis();
+        Set<String> orderNos = Sets.newHashSet();
         Set<Long> orderIdSet = Sets.newHashSet();
         Set<Long> waybillCarIdSet = Sets.newHashSet();
         List<OrderCar> list = orderCarDao.findListByNos(paramsDto.getOrderCarNos());
@@ -880,7 +882,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 failCarNoSet.add(new FailResultReasonVo(orderCarNo, "车辆，已被签收"));
                 continue;
             }
-            if (PayStateEnum.PAID.code == orderCar.getWlPayState() || BigDecimal.ZERO.compareTo(orderCar.getTotalFee()) == 0) {
+            if (PayStateEnum.PAID.code != orderCar.getWlPayState() && BigDecimal.ZERO.compareTo(orderCar.getTotalFee()) == 0) {
                 failCarNoSet.add(new FailResultReasonVo(orderCarNo, "车辆，尚未支付"));
                 continue;
             }
@@ -891,9 +893,9 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 continue;
             }
             //更新车辆状态
-            orderCarDao.updateForPaySuccess(orderCar.getId());
+            orderCarDao.updateForFinish(orderCar.getId());
             //处理车辆相关运单车辆
-            waybillCarDao.updateForPaySuccess(waybillCar.getId());
+            waybillCarDao.updateForFinish(waybillCar.getId());
 
             //添加日志
             csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.IN_STORE,
@@ -904,13 +906,13 @@ public class CsTaskServiceImpl implements ICsTaskService {
             orderIdSet.add(orderCar.getOrderId());
             waybillCarIdSet.add(waybillCar.getId());
             successSet.add(orderCar.getNo());
-
+            orderNos.add(orderCar.getOrderNo());
         }
         if (orderIdSet.size() > 1) {
             throw new ParameterException("暂不支持跨订单批量签收");
         }
         //处理订单
-        if (CollectionUtils.isEmpty(orderIdSet)) {
+        if (!CollectionUtils.isEmpty(orderIdSet)) {
             UserInfo userInfo = new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), paramsDto.getLoginType());
             orderIdSet.forEach(orderId -> validateAndFinishOrder(orderId, userInfo));
 
@@ -924,6 +926,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
 
         resultReasonVo.setSuccessList(successSet);
         resultReasonVo.setFailList(failCarNoSet);
+        LogUtil.debug(MessageFormat.format("订单{0}签收结果：{1}：", JSON.toJSONString(orderNos), JSON.toJSONString(resultReasonVo)));
         return BaseResultUtil.success(resultReasonVo);
     }
 

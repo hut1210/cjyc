@@ -33,7 +33,7 @@ public class TaskWaybillVo implements Serializable {
     @ApiModelProperty(value = "运单编号")
     private String waybillNo;
 
-    @ApiModelProperty(value = "任务状态：5待提车，55待交车")
+    @ApiModelProperty(value = "任务状态：5待提车，55待交车，100已交付")
     private Integer taskState;
 
     @ApiModelProperty(value = "库存状态：15待出库，90待入库，45已出库，100已入库")
