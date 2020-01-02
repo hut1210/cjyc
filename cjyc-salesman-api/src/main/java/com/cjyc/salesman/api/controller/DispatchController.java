@@ -1,5 +1,6 @@
 package com.cjyc.salesman.api.controller;
 
+import com.cjyc.common.model.dto.CommonDto;
 import com.cjyc.common.model.dto.salesman.dispatch.DispatchListDto;
 import com.cjyc.common.model.dto.salesman.dispatch.HistoryDispatchRecordDto;
 import com.cjyc.common.model.dto.web.carrier.DispatchCarrierDto;
@@ -49,13 +50,13 @@ public class DispatchController {
      * 功能描述: 查询所有出发城市-目的地城市的车辆数量
      * @author liuxingxiang
      * @date 2019/12/9
-     * @param loginId
+     * @param dto
      * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.vo.PageVo<com.cjyc.common.model.vo.salesman.task.TaskWaybillVo>>
      */
     @ApiOperation(value = "查询所有出发城市-目的地城市的车辆数量")
-    @PostMapping("/getCityCarCount/{loginId}")
-    public ResultVo<CityCarCountVo> getCityCarCount(@PathVariable Long loginId) {
-        return dispatchService.getCityCarCount(loginId);
+    @PostMapping("/getCityCarCount")
+    public ResultVo<CityCarCountVo> getCityCarCount(@RequestBody @Validated CommonDto dto) {
+        return dispatchService.getCityCarCount(dto.getLoginId());
     }
 
     /**
