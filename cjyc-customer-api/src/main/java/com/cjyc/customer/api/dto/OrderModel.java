@@ -2,6 +2,7 @@ package com.cjyc.customer.api.dto;
 
 import com.Pingxx.model.ChargeEssentials;
 import com.Pingxx.model.OrderCollection;
+import com.Pingxx.model.PingxxMetaData;
 import com.pingplusplus.exception.*;
 import com.pingplusplus.model.Charge;
 import com.pingplusplus.model.ChargeCollection;
@@ -47,63 +48,7 @@ public class OrderModel extends APIResource {
     private String serviceApp;
     private List<String> availableMethods;
 
-
-    /**支付渠道*/
-    private String channel;
-    private String orderNo; //平台订单编号
-    private String chargeType;	//支付类型 类型：1物流费预付，2物流费全款到付，3物流费分车支付， 11运费支付、12居间服务费支付
-    private String batch;	//0:整体支付尾款	 1：批量支付尾款
-    private BigDecimal deductFee;	//扣费金额
-    private String clientType;	//客户端类型 customer:用户端	driver:司机端    user:业务员端
-    private String pingAppId;
-    private BigDecimal deposit;	//定金
-    private String orderMan; //当前app登陆人的Id
-    private String orderCarIds;
-    private String driver_code;
-    private String order_type;
-    private String driver_name;
-    private String driver_phone;
-    private String back_type;
-
-	public String getOrder_type() {
-		return order_type;
-	}
-
-	public void setOrder_type(String order_type) {
-		this.order_type = order_type;
-	}
-
-	public String getDriver_name() {
-		return driver_name;
-	}
-
-	public void setDriver_name(String driver_name) {
-		this.driver_name = driver_name;
-	}
-
-	public String getDriver_phone() {
-		return driver_phone;
-	}
-
-	public void setDriver_phone(String driver_phone) {
-		this.driver_phone = driver_phone;
-	}
-
-	public String getBack_type() {
-		return back_type;
-	}
-
-	public void setBack_type(String back_type) {
-		this.back_type = back_type;
-	}
-
-    public String getOrderCarIds() {
-        return orderCarIds;
-    }
-
-    public void setOrderCarIds(String orderCarIds) {
-        this.orderCarIds = orderCarIds;
-    }
+    private PingxxMetaData pingxxMetaData;
 
     public String getId() {
         return id;
@@ -541,85 +486,5 @@ public class OrderModel extends APIResource {
             APIException, ChannelException, RateLimitException {
         return request(RequestMethod.GET, String.format("%s/charges/%s", instanceURL(OrderModel.class, orderId), chargeId),
                 null, Charge.class);
-    }
-
-    public String getOrderNo() {
-        return orderNo;
-    }
-
-    public void setOrderNo(String orderNo) {
-        this.orderNo = orderNo;
-    }
-
-    public String getChargeType() {
-		return chargeType;
-	}
-
-	public void setChargeType(String chargeType) {
-		this.chargeType = chargeType;
-	}
-
-	public String getBatch() {
-		return batch;
-	}
-
-	public void setBatch(String batch) {
-		this.batch = batch;
-	}
-
-	public String getChannel() {
-		return channel;
-	}
-
-	public void setChannel(String channel) {
-		this.channel = channel;
-	}
-
-	public String getClientType() {
-		return clientType;
-	}
-
-	public void setClientType(String clientType) {
-		this.clientType = clientType;
-	}
-
-	public String getPingAppId() {
-		return pingAppId;
-	}
-
-	public void setPingAppId(String pingAppId) {
-		this.pingAppId = pingAppId;
-	}
-
-	public String getOrderMan() {
-		return orderMan;
-	}
-
-	public void setOrderMan(String orderMan) {
-		this.orderMan = orderMan;
-	}
-
-	public String getDriver_code() {
-		return driver_code;
-	}
-
-	public void setDriver_code(String driver_code) {
-		this.driver_code = driver_code;
-	}
-
-    public BigDecimal getDeductFee() {
-        return deductFee;
-    }
-
-    public void setDeductFee(BigDecimal deductFee) {
-        this.deductFee = deductFee;
-    }
-
-    public BigDecimal getDeposit() {
-        return deposit;
-    }
-
-    public void setDeposit(BigDecimal deposit) {
-        this.deposit = deposit;
     }
 }
