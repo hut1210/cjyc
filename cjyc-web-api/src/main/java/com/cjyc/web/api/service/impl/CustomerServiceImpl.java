@@ -917,4 +917,39 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         return BaseResultUtil.success();
     }
 
+    @Override
+    public ResultVo saveOrModifyKeyNew(KeyCustomerDto dto) {
+        return null;
+    }
+
+    @Override
+    public ResultVo saveOrModifyPartnerNew(PartnerDto dto) {
+        return null;
+    }
+
+    @Override
+    public ResultVo findCustomerNew(SelectCustomerDto dto) {
+        return null;
+    }
+
+    @Override
+    public ResultVo findKeyCustomerNew(SelectKeyCustomerDto dto) {
+        return null;
+    }
+
+    @Override
+    public ResultVo findPartnerNew(CustomerPartnerDto dto) {
+        return null;
+    }
+
+    @Override
+    public ResultVo verifyCustomerNew(OperateDto dto) {
+        return null;
+    }
+
+    @Override
+    public ResultVo findCustomerByKeyNew(String keyword) {
+        return null;
+    }
+
 }

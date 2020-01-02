@@ -177,4 +177,53 @@ public interface ICustomerService  extends IService<Customer> {
      * @return
      */
     ResultVo modifyCustomerNew(CustomerDto dto);
+
+    /**
+     * 新增修改大客户&合同
+     * @param dto
+     * @return
+     */
+    ResultVo saveOrModifyKeyNew(KeyCustomerDto dto);
+
+    /**
+     * 新增修改合伙人
+     * @param dto
+     * @return
+     */
+    ResultVo saveOrModifyPartnerNew(PartnerDto dto);
+
+    /**
+     * 根据条件查询C端客户
+     * @param dto
+     * @return
+     */
+    ResultVo<PageVo<CustomerVo>> findCustomerNew(SelectCustomerDto dto);
+
+    /**
+     * 根据条件查询大客户
+     * @param dto
+     * @return
+     */
+    ResultVo<PageVo<ListKeyCustomerVo>> findKeyCustomerNew(SelectKeyCustomerDto dto);
+
+    /**
+     * 根据条件查询合伙人
+     * @param dto
+     * @return
+     */
+    ResultVo<PageVo<CustomerPartnerVo>> findPartnerNew(CustomerPartnerDto dto);
+
+    /**
+     * 审核/冻结/解冻客户
+     * @param dto
+     * @return
+     */
+    ResultVo verifyCustomerNew(OperateDto dto);
+
+    /**
+     * 根据输入手机号/用户名称模糊查询用户信息
+     * @param keyword
+     * @return
+     */
+    ResultVo findCustomerByKeyNew(String keyword);
 }
