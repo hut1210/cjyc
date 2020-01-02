@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.dto.salesman.order.SalesOrderDetailDto;
 import com.cjyc.common.model.dto.salesman.order.SalesOrderQueryDto;
 import com.cjyc.common.model.dto.web.order.CommitOrderDto;
+import com.cjyc.common.model.dto.web.order.SimpleCommitOrderDto;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -25,5 +26,4 @@ public interface IOrderService extends IService<Order> {
      * @return
      */
     ResultVo<SalesOrderDetailVo> findOrderDetail(SalesOrderDetailDto dto);
-
 }

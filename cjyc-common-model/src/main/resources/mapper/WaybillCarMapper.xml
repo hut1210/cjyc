@@ -709,16 +709,20 @@
             w.carrier_name as carrierName,
             w.create_user as createUser,
             w.create_user_id as createUserId,
-            t.driver_name as driverName,
-            t.driver_phone as driverPhone,
-            t.driver_id as driverId,
-            t.vehicle_plate_no as vehiclePlateNo,
+            tb.driver_name as driverName,
+            tb.driver_phone as driverPhone,
+            tb.driver_id as driverId,
+            tb.vehicle_plate_no as vehiclePlateNo,
             wc.*
         from w_waybill w
         join w_waybill_car wc on wc.waybill_id = w.id
         join w_order_car oc on wc.order_car_id = oc.id
-        left join w_task_car tc on tc.waybill_car_id = wc.id
-        left join w_task t on tc.task_id = t.id
+        left join (
+            select t.*,tc.waybill_car_id
+            from w_task t
+            join w_task_car tc on t.id = tc.task_id
+            where t.state &lt;= 100
+        ) as tb on tb.waybill_car_id = wc.id
         where wc.order_car_id = #{orderCarId}
         and w.type = #{waybillType}
     </select>
@@ -1534,7 +1538,7 @@
         join w_waybill_car wc on wc.waybill_id = w.id
         where wc.order_car_id = #{orderCarId}
         and wc.state &lt;= 100
-        order by wc.id desc
+        order by w.type desc, wc.id desc
         limit 1
     </select>
     <select id="findFirstTrunkWaybillCar" resultType="com.cjyc.common.model.entity.WaybillCar">
@@ -1688,7 +1692,7 @@
         where wc.order_car_id = #{orderCarId}
         and wc.id &lt; #{id}
         and wc.state &lt;= 100
-        order by wc.id desc
+        order by w.type desc, wc.id desc
         limit 1
     </select>
     <select id="findUnAllotListByWaybillId" resultType="com.cjyc.common.model.entity.WaybillCar">
