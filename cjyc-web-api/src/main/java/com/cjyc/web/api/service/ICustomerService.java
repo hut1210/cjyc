@@ -170,4 +170,11 @@ public interface ICustomerService  extends IService<Customer> {
      * @return
      */
     ResultVo saveCustomerNew(CustomerDto dto);
+
+    /**
+     * 更新移动端用户
+     * @param dto
+     * @return
+     */
+    ResultVo modifyCustomerNew(CustomerDto dto);
 }

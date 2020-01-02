@@ -155,4 +155,10 @@ public class CustomerController {
     public ResultVo saveCustomerNew(@Validated @RequestBody CustomerDto customerDto){
         return customerService.saveCustomerNew(customerDto);
     }
+
+    @ApiOperation(value = "更新移动端用户")
+    @PostMapping(value = "/modifyCustomerNew")
+    public ResultVo modifyCustomerNew(@Validated @RequestBody CustomerDto customerDto){
+        return customerService.modifyCustomerNew(customerDto);
+    }
 }

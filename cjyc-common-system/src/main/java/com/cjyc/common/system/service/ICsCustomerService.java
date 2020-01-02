@@ -81,4 +81,14 @@ public interface ICsCustomerService {
      * @return
      */
     ResultData<Long> addUserToPlatform(String phone, String name, Role role);
+
+    /**
+     * 更新用户信息到架构组
+     * @param customer
+     * @param newPhone
+     * @return
+     */
+    ResultData<Boolean> updateUserToPlatform(Customer customer, String newPhone);
+
+
 }
