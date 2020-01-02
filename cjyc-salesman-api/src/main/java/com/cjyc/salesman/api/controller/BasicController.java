@@ -4,6 +4,7 @@ import com.cjyc.common.model.dto.CommonDto;
 import com.cjyc.common.model.dto.KeywordDto;
 import com.cjyc.common.model.dto.AdminDto;
 import com.cjyc.common.model.dto.customer.freightBill.FindStoreDto;
+import com.cjyc.common.model.dto.customer.freightBill.TransportDto;
 import com.cjyc.common.model.dto.salesman.customer.SalesCustomerDto;
 import com.cjyc.common.model.vo.salesman.customer.SalesCustomerListVo;
 import com.cjyc.common.model.vo.PageVo;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 
 @Api(tags = "基础数据")
 @RestController
@@ -41,6 +43,8 @@ public class BasicController {
     private ICsCustomerLineService csCustomerLineService;
     @Resource
     private ICsCustomerService csCustomerService;
+    @Resource
+    private ICsLineService csLineService;
 
     @ApiOperation(value = "查看品牌车系")
     @PostMapping(value = "/findCarSeries")
@@ -83,6 +87,12 @@ public class BasicController {
     @PostMapping(value = "/findKeyCustomer")
     public ResultVo<SalesCustomerListVo> findKeyCustomer(@RequestBody SalesCustomerDto dto){
         return csCustomerService.findKeyCustomer(dto);
+    }
+
+    @ApiOperation(value = "获取运价")
+    @PostMapping(value = "/linePriceByCode")
+    public ResultVo<Map<String,Object>> linePriceByCode(@Validated @RequestBody TransportDto dto){
+        return csLineService.linePriceByCode(dto);
     }
 
 }

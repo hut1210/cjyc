@@ -29,4 +29,8 @@ public interface IFinanceDao extends BaseMapper {
     List<CollectReceiveVo> getCollectReceiveList(CollectReceiveQueryDto collectReceiveQueryDto);
 
     BigDecimal getFee(@Param("orderCarNo") String orderCarNo,@Param("type") int type);
+
+    Integer getCustomerContractById(Long customerContractId);
+
+    Integer getCustomerPartnerById(Long customerId);
 }

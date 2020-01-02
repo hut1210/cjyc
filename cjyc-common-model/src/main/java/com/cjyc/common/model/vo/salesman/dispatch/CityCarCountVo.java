@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,4 +26,16 @@ public class CityCarCountVo implements Serializable {
 
     @ApiModelProperty(value = "出发城市-目的城市车辆数量列表")
     private List<StartAndEndCityCountVo> startAndEndCityCountList;
+
+    public String getStartCityCode() {
+        return startCityCode == null ? "" : startCityCode;
+    }
+
+    public String getStartCity() {
+        return startCity == null ? "" : startCity;
+    }
+
+    public List<StartAndEndCityCountVo> getStartAndEndCityCountList() {
+        return startAndEndCityCountList == null ? new ArrayList<>(0) : startAndEndCityCountList;
+    }
 }

@@ -265,6 +265,18 @@ public class FinanceServiceImpl implements IFinanceService {
     public ResultVo<PageVo<PaymentVo>> getPaymentList(FinanceQueryDto financeQueryDto) {
         PageHelper.startPage(financeQueryDto.getCurrentPage(), financeQueryDto.getPageSize());
         List<PaymentVo> financeVoList = financeDao.getPaymentList(financeQueryDto);
+        for(int i=0;i<financeVoList.size();i++){
+            PaymentVo paymentVo = financeVoList.get(i);
+            if(paymentVo!=null&&paymentVo.getType()!=null){
+                if(paymentVo.getType()==2){//企业
+                    Integer settleType = financeDao.getCustomerContractById(paymentVo.getCustomerContractId());
+                    paymentVo.setPayModeName(settleType!=null&&settleType==0?"时付":"账期");
+                }else if(paymentVo.getType()==3){//合伙人
+                    Integer settleType = financeDao.getCustomerPartnerById(paymentVo.getCustomerId());
+                    paymentVo.setPayModeName(settleType!=null&&settleType==0?"时付":"账期");
+                }
+            }
+        }
         PageInfo<PaymentVo> pageInfo = new PageInfo<>(financeVoList);
         return BaseResultUtil.success(pageInfo);
     }

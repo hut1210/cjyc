@@ -843,18 +843,4 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         }
     }
 
-    /**
-     * 校验：手机号是否在Customer中存在
-     * @param phone
-     * @return
-     */
-    /*private boolean phoneExistsInCustomer(String phone) {
-        List<Customer> existList = customerDao.selectList(new QueryWrapper<Customer>()
-                .eq("contact_phone", phone));
-        if (!CollectionUtils.isEmpty(existList)) {
-            log.error("手机号已存在，请检查");
-            return true;
-        }
-        return false;
-    }*/
 }

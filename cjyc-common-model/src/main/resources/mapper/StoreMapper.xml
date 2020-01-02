@@ -165,8 +165,8 @@
             <if test="cityCode != null and cityCode.trim() != ''">
                 and city_code = #{cityCode}
             </if>
-            order by create_time desc,update_time desc
         </where>
+        order by create_time desc,update_time desc
     </select>
 
 

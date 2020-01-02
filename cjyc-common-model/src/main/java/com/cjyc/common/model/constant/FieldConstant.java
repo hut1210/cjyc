@@ -110,4 +110,34 @@ public class FieldConstant {
      * 已交付：历史记录
      */
     public static final String FINISH = "3";
+
+    /*******业务员端任务明细状态请求常量******/
+    /**
+     * 1待提车
+     */
+    public static final String WAIT_GET_CAR = "1";
+    /**
+     * 2待交车
+     */
+    public static final String WAIT_TO_CAR = "2";
+    /**
+     * 3已交付
+     */
+    public static final String FINISH_CAR = "3";
+    /**
+     * 4待入库
+     */
+    public static final String WAIT_PUT_IN = "4";
+    /**
+     * 5已入库
+     */
+    public static final String FINISH_PUT_IN = "5";
+    /**
+     * 6待出库
+     */
+    public static final String WAIT_PUT_OUT = "6";
+    /**
+     * 7已出库
+     */
+    public static final String FINISH_PUT_OUT = "7";
 }
