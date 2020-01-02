@@ -27,4 +27,20 @@ public class StartAndEndCityCountVo implements Serializable {
 
     @ApiModelProperty(value = "出发城市-目的城市车辆数量")
     private int carCount;
+
+    public String getStartCityCode() {
+        return startCityCode == null ? "" : startCityCode;
+    }
+
+    public String getStartCity() {
+        return startCity == null ? "" : startCity;
+    }
+
+    public String getEndCityCode() {
+        return endCityCode == null ? "" : endCityCode;
+    }
+
+    public String getEndCity() {
+        return endCity == null ? "" : endCity;
+    }
 }
