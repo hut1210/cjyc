@@ -70,20 +70,20 @@ public class TaskServiceImpl implements ITaskService {
         TaskDetailVo taskDetailVo = new TaskDetailVo();
         // 查询运单类型
         Long waybillId = dto.getWaybillId();
-        if (waybillId == 0) {
-            log.error("运单ID参数错误");
-            return BaseResultUtil.fail("运单ID参数错误");
-        }
         Waybill waybill = waybillDao.selectById(waybillId);
+        if (waybill == null) {
+            log.error("===>查询运单为空...");
+            return BaseResultUtil.fail("查询运单为空");
+        }
         taskDetailVo.setType(waybill.getType());
 
         // 查询任务单信息
         Long taskId = dto.getTaskId();
-        if (taskId == 0) {
-            log.error("任务单ID参数错误");
-            return BaseResultUtil.fail("任务单ID参数错误");
-        }
         Task task = taskDao.selectById(taskId);
+        if (task == null) {
+            log.error("===>查询任务单为空...");
+            return BaseResultUtil.fail("查询任务单为空");
+        }
         BeanUtils.copyProperties(task,taskDetailVo);
 
         // 任务单车辆
@@ -98,20 +98,22 @@ public class TaskServiceImpl implements ITaskService {
             for (TaskCar taskCar : taskCarList) {
                 // 查询任务单车辆信息
                 WaybillCar waybillCar = waybillCarDao.selectById(taskCar.getWaybillCarId());
-                carDetailVo = new CarDetailVo();
-                BeanUtils.copyProperties(waybillCar,carDetailVo);
-                freightFee = freightFee.add(waybillCar.getFreightFee());
+                if (waybillCar != null) {
+                    carDetailVo = new CarDetailVo();
+                    BeanUtils.copyProperties(waybillCar,carDetailVo);
+                    freightFee = freightFee.add(waybillCar.getFreightFee());
 
-                // 查询品牌车系信息
-                OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
-                BeanUtils.copyProperties(orderCar,carDetailVo);
+                    // 查询品牌车系信息
+                    OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
+                    BeanUtils.copyProperties(orderCar,carDetailVo);
 
-                // 查询支付方式
-                Order order = orderDao.selectById(orderCar.getOrderId());
-                carDetailVo.setPayType(order.getPayType());
+                    // 查询支付方式
+                    Order order = orderDao.selectById(orderCar.getOrderId());
+                    carDetailVo.setPayType(order.getPayType());
 
-                carDetailVo.setId(taskCar.getId());
-                carDetailVoList.add(carDetailVo);
+                    carDetailVo.setId(taskCar.getId());
+                    carDetailVoList.add(carDetailVo);
+                }
             }
         }
         taskDetailVo.setFreightFee(freightFee);
