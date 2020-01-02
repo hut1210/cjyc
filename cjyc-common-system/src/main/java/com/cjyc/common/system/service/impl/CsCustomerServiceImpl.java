@@ -6,6 +6,7 @@ import com.cjkj.common.redis.template.StringRedisUtil;
 import com.cjkj.usercenter.dto.common.*;
 import com.cjyc.common.model.dao.ICustomerDao;
 import com.cjyc.common.model.dto.salesman.customer.SalesCustomerDto;
+import com.cjyc.common.model.entity.Role;
 import com.cjyc.common.model.enums.role.RoleNameEnum;
 import com.cjyc.common.model.vo.salesman.customer.SalesCustomerListVo;
 import com.cjyc.common.model.entity.Customer;
@@ -195,4 +196,32 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
         listVo.setList(salesKeyCustomter);
         return BaseResultUtil.success(listVo);
     }
+
+
+    /************************************韵车集成改版 st***********************************/
+    @Override
+    public ResultData<Long> addUserToPlatform(String phone, String name, Role role) {
+        ResultData<UserResp> accountRd = sysUserService.getByAccount(phone);
+        if (!ReturnMsg.SUCCESS.getCode().equals(accountRd.getCode())) {
+            return ResultData.failed("获取用户信息失败，原因：" + accountRd.getMsg());
+        }
+        if (accountRd.getData() != null) {
+            //存在，则直接返回已有用户userId信息
+            return ResultData.ok(accountRd.getData().getUserId());
+        }
+        //不存在，需要重新添加
+        AddUserReq user = new AddUserReq();
+        user.setName(name);
+        user.setAccount(phone);
+        user.setMobile(phone);
+        user.setDeptId(Long.parseLong(YmlProperty.get("cjkj.dept_customer_id")));
+        user.setPassword(YmlProperty.get("cjkj.customer.password"));
+        user.setRoleIdList(Arrays.asList(role.getRoleId()));
+        ResultData<AddUserResp> saveRd = sysUserService.save(user);
+        if (!ReturnMsg.SUCCESS.getCode().equals(saveRd.getCode())) {
+            return ResultData.failed("保存客户信息失败，原因：" + saveRd.getMsg());
+        }
+        return ResultData.ok(saveRd.getData().getUserId());
+    }
+
 }

@@ -4,6 +4,7 @@ import com.cjkj.common.model.ResultData;
 import com.cjkj.usercenter.dto.common.SelectRoleResp;
 import com.cjyc.common.model.dto.CommonDto;
 import com.cjyc.common.model.dto.salesman.customer.SalesCustomerDto;
+import com.cjyc.common.model.entity.Role;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.customer.customerLine.CustomerLineVo;
 import com.cjyc.common.model.vo.salesman.customer.SalesCustomerListVo;
@@ -70,4 +71,14 @@ public interface ICsCustomerService {
     ResultVo<Long> findRoleId(List<SelectRoleResp> roleResps);
 
     ResultVo<SalesCustomerListVo> findKeyCustomer(SalesCustomerDto dto);
+
+    /************************************韵车集成改版 st***********************************/
+    /**
+     * 将用户添加到架构组中
+     * @param phone
+     * @param name
+     * @param role
+     * @return
+     */
+    ResultData<Long> addUserToPlatform(String phone, String name, Role role);
 }

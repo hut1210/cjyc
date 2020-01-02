@@ -147,4 +147,12 @@ public class CustomerController {
     public void exportPartnerExcel(HttpServletRequest request, HttpServletResponse response){
         customerService.exportPartnerExcel(request,response);
     }
+
+    /************************************韵车集成改版 st***********************************/
+
+    @ApiOperation(value = "新增移动端用户")
+    @PostMapping(value = "/saveCustomerNew")
+    public ResultVo saveCustomerNew(@Validated @RequestBody CustomerDto customerDto){
+        return customerService.saveCustomerNew(customerDto);
+    }
 }

@@ -161,4 +161,13 @@ public interface ICustomerService  extends IService<Customer> {
      * @param response
      */
     void exportPartnerExcel(HttpServletRequest request, HttpServletResponse response);
+
+    /************************************韵车集成改版 st***********************************/
+
+    /**
+     *  新增移动端用户
+     * @param dto
+     * @return
+     */
+    ResultVo saveCustomerNew(CustomerDto dto);
 }

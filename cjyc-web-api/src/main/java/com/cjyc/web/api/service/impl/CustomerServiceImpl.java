@@ -857,4 +857,35 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         }
         return false;
     }*/
+
+    /************************************韵车集成改版 st***********************************/
+    @Override
+    public ResultVo saveCustomerNew(CustomerDto dto) {
+        //判断该手机号是否在库中存在
+        Customer customer = customerDao.selectOne(new QueryWrapper<Customer>().lambda().eq(Customer::getContactPhone, dto.getContactPhone()));
+        if(customer != null){
+            return BaseResultUtil.fail("该客户已存在，请检查");
+        }
+        customer = new Customer();
+        BeanUtils.copyProperties(dto,customer);
+        customer.setCustomerNo(sendNoService.getNo(SendNoTypeEnum.CUSTOMER));
+        customer.setAlias(dto.getContactMan());
+        customer.setName(dto.getContactMan());
+        customer.setType(CustomerTypeEnum.INDIVIDUAL.code);
+        customer.setState(CustomerStateEnum.CHECKED.code);
+        customer.setPayMode(PayModeEnum.COLLECT.code);
+        customer.setSource(CustomerSourceEnum.WEB.code);
+        customer.setCreateUserId(dto.getLoginId());
+        customer.setCreateTime(NOW);
+
+        //新增个人用户信息到物流平台
+        ResultData<Long> rd = csCustomerService.addCustomerToPlatform(customer);
+        if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+            return BaseResultUtil.fail(rd.getMsg());
+        }
+        customer.setUserId(rd.getData());
+        super.save(customer);
+        return BaseResultUtil.success();
+    }
+
 }
