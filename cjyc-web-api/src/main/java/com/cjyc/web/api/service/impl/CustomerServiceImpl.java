@@ -14,10 +14,10 @@ import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.customer.*;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.*;
+import com.cjyc.common.model.enums.customer.CustomerPayEnum;
 import com.cjyc.common.model.enums.customer.CustomerSourceEnum;
 import com.cjyc.common.model.enums.customer.CustomerStateEnum;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
-import com.cjyc.common.model.enums.role.DeptTypeEnum;
 import com.cjyc.common.model.exception.ServerException;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
@@ -30,9 +30,7 @@ import com.cjyc.common.model.vo.web.coupon.CustomerCouponSendVo;
 import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.ICsCustomerService;
-import com.cjyc.common.system.service.ICsRoleService;
 import com.cjyc.common.system.service.ICsSendNoService;
-import com.cjyc.common.system.service.ICsUserRoleDeptService;
 import com.cjyc.web.api.service.ICustomerContractService;
 import com.cjyc.web.api.service.ICustomerService;
 import com.github.pagehelper.PageHelper;
@@ -87,10 +85,6 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     private ICsCustomerService csCustomerService;
     @Resource
     private ISysRoleService sysRoleService;
-    @Resource
-    private ICsRoleService csRoleService;
-    @Resource
-    private ICsUserRoleDeptService csUserRoleDeptService;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -849,85 +843,4 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         }
     }
 
-    /**
-     * 校验：手机号是否在Customer中存在
-     * @param phone
-     * @return
-     */
-    /*private boolean phoneExistsInCustomer(String phone) {
-        List<Customer> existList = customerDao.selectList(new QueryWrapper<Customer>()
-                .eq("contact_phone", phone));
-        if (!CollectionUtils.isEmpty(existList)) {
-            log.error("手机号已存在，请检查");
-            return true;
-        }
-        return false;
-    }*/
-
-    /************************************韵车集成改版 st***********************************/
-    @Override
-    public ResultVo saveCustomerNew(CustomerDto dto) {
-        //判断该手机号是否在库中存在
-        Customer customer = customerDao.selectOne(new QueryWrapper<Customer>().lambda().eq(Customer::getContactPhone, dto.getContactPhone()));
-        if(customer != null){
-            return BaseResultUtil.fail("该客户已存在，请检查");
-        }
-        customer = new Customer();
-        BeanUtils.copyProperties(dto,customer);
-        customer.setCustomerNo(sendNoService.getNo(SendNoTypeEnum.CUSTOMER));
-        customer.setAlias(dto.getContactMan());
-        customer.setName(dto.getContactMan());
-        customer.setType(CustomerTypeEnum.INDIVIDUAL.code);
-        customer.setPayMode(PayModeEnum.COLLECT.code);
-        customer.setSource(CustomerSourceEnum.WEB.code);
-        customer.setCreateUserId(dto.getLoginId());
-        customer.setCreateTime(NOW);
-        customer.setCheckUserId(dto.getLoginId());
-        customer.setCheckTime(NOW);
-        Role role = csRoleService.getByName(YmlProperty.get("cjkj.customer_client_role_name"), DeptTypeEnum.CUSTOMER.code);
-        if(role == null){
-            return BaseResultUtil.fail("C端客户角色不存在，请先添加");
-        }
-        //新增个人用户信息到物流平台
-        ResultData<Long> rd = csCustomerService.addUserToPlatform(dto.getContactPhone(),dto.getContactMan(),role);
-        if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
-            return BaseResultUtil.fail(rd.getMsg());
-        }
-        if(rd.getData() != null){
-            customer.setUserId(rd.getData());
-        }
-        super.save(customer);
-        //保存用户角色机构关系
-        csUserRoleDeptService.saveCustomerToUserRoleDept(customer,role.getRoleId(),dto.getLoginId());
-        return BaseResultUtil.success();
-    }
-
-    @Override
-    public ResultVo modifyCustomerNew(CustomerDto dto) {
-        //判断该手机号是否在库中存在
-        Customer customer = customerDao.selectOne(new QueryWrapper<Customer>().lambda()
-                .eq(Customer::getContactPhone, dto.getContactPhone())
-                .ne(dto.getCustomerId() != null,Customer::getId,dto.getCustomerId()));
-        if(customer != null){
-            return BaseResultUtil.fail("该客户已存在,请检查");
-        }
-        customer = customerDao.selectById(dto.getCustomerId());
-        if(customer == null){
-            return BaseResultUtil.fail("该客户不存在,请检查");
-        }
-        ResultData<Boolean> updateRd = csCustomerService.updateUserToPlatform(customer, dto.getContactPhone());
-        if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
-            log.error("修改用户信息失败，原因：" + updateRd.getMsg());
-            return BaseResultUtil.fail("修改用户信息失败，原因：" + updateRd.getMsg());
-        }
-        BeanUtils.copyProperties(dto,customer);
-        customer.setName(dto.getContactMan());
-        customer.setAlias(dto.getContactMan());
-        customer.setCheckUserId(dto.getLoginId());
-        customer.setCheckTime(NOW);
-        super.updateById(customer);
-        //修改用户与角色机构关系
-        csUserRoleDeptService.updateCustomerToUserRoleDept(customer.getId(),dto.getLoginId());
-        return BaseResultUtil.success();
-    }
 }
