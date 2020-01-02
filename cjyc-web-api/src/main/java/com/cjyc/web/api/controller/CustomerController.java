@@ -202,7 +202,7 @@ public class CustomerController {
 
     @ApiOperation(value = "根据输入手机号/用户名称模糊查询用户信息")
     @PostMapping(value = "/getAllCustomerByKeyNew/{keyword}")
-    public ResultVo getAllCustomerByKeyNew(@PathVariable @ApiParam(value = "手机号/用户名",required = true) String keyword){
-        return customerService.findCustomerByKeyNew(keyword);
+    public ResultVo findCustomerByKey(@PathVariable @ApiParam(value = "手机号/用户名",required = true) String keyword){
+        return customerService.findCustomerByKey(keyword);
     }
 }

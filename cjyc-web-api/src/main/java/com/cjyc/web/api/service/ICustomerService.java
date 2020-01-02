@@ -225,5 +225,5 @@ public interface ICustomerService  extends IService<Customer> {
      * @param keyword
      * @return
      */
-    ResultVo findCustomerByKeyNew(String keyword);
+    ResultVo findCustomerByKey(String keyword);
 }

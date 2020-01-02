@@ -948,8 +948,9 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     }
 
     @Override
-    public ResultVo findCustomerByKeyNew(String keyword) {
-        return null;
+    public ResultVo findCustomerByKey(String keyword) {
+        List<Map<String,Object>> customerList = customerDao.findCustomerByKey(keyword);
+        return BaseResultUtil.success(customerList);
     }
 
 }
