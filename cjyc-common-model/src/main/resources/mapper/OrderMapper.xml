@@ -456,6 +456,7 @@
     <select id="findOrder" resultType="com.cjyc.common.model.vo.salesman.order.SalesOrderVo"
                 parameterType="com.cjyc.common.model.dto.salesman.order.SalesOrderQueryDto">
         SELECT
+            wo.id AS orderId,
             wo.no AS orderNo,
             wo.pay_type AS payType,
             wo.start_city AS startCity,

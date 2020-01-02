@@ -3,6 +3,7 @@ package com.cjyc.customer.api.service.impl;
 import com.Pingxx.model.MetaDataEntiy;
 import com.Pingxx.model.OrderRefund;
 import com.Pingxx.model.PingOrderModel;
+import com.Pingxx.model.PingxxMetaData;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.nacos.client.utils.StringUtils;
 import com.cjyc.common.model.dao.IOrderCarDao;
@@ -19,6 +20,7 @@ import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.exception.CommonException;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.BeanMapUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -129,19 +131,24 @@ public class PingPayServiceImpl implements IPingPayService {
         }
         try {
             BigDecimal wlFee = transactionService.getAmountByOrderNo(reqDto.getOrderNo());
-            om.setPingAppId(PingProperty.customerAppId);
             om.setClientIp(reqDto.getIp());
-            om.setChannel(reqDto.getChannel());
-            om.setOrderNo(reqDto.getOrderNo());
             om.setUid(String.valueOf(reqDto.getUid()));
             om.setAmount(wlFee);
             om.setSubject(ChargeTypeEnum.PREPAY.getName());
             om.setBody("订单预付款");
-            om.setChargeType(String.valueOf(ChargeTypeEnum.PREPAY.getCode()));
-            om.setClientType(String.valueOf(ClientEnum.APP_CUSTOMER.code));
             // 备注：订单号
-            om.setDescription("韵车订单号："+om.getOrderNo());
+            om.setDescription("韵车订单号："+reqDto.getOrderNo());
 
+            PingxxMetaData pingxxMetaData = new PingxxMetaData();
+            pingxxMetaData.setChannel(reqDto.getChannel());
+            pingxxMetaData.setPingAppId(PingProperty.customerAppId);
+            pingxxMetaData.setOrderNo(reqDto.getOrderNo());
+            pingxxMetaData.setChargeType(String.valueOf(ChargeTypeEnum.PREPAY.getCode()));
+            pingxxMetaData.setClientType(String.valueOf(ClientEnum.APP_CUSTOMER.code));
+            pingxxMetaData.setLoginId(reqDto.getUid());
+            pingxxMetaData.setLoginType(String.valueOf(UserTypeEnum.CUSTOMER.code));
+
+            om.setPingxxMetaData(pingxxMetaData);
             order = payOrder(om);
             log.debug(order.toString());
             transactionService.saveTransactions(order, "0");
@@ -159,7 +166,7 @@ public class PingPayServiceImpl implements IPingPayService {
             ChannelException, RateLimitException, APIConnectionException, AuthenticationException,FileNotFoundException {
         Order order = createOrder(om);
         if(order != null){
-            order = payOrder(om.getPingAppId(),om.getChannel(), om.getAmount(), order.getId());
+            order = payOrder(om.getPingxxMetaData().getPingAppId(),om.getPingxxMetaData().getChannel(), om.getAmount(), order.getId());
             return order;
         }
         return order;
@@ -171,7 +178,7 @@ public class PingPayServiceImpl implements IPingPayService {
         initPingApiKey();
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("uid", om.getUid()); // 用户在当前 app 下的 User ID, 可选
-        params.put("app", om.getPingAppId()); // App ID, 必传
+        params.put("app", om.getPingxxMetaData().getPingAppId()); // App ID, 必传
         Calendar calendar = Calendar.getInstance();
         params.put("merchant_order_no", Integer.toString(calendar.get(Calendar.YEAR)) + System.currentTimeMillis()); // 商户订单号, 必传
         params.put("subject", om.getSubject()); // 商品的标题, 必传
@@ -181,14 +188,7 @@ public class PingPayServiceImpl implements IPingPayService {
         params.put("client_ip", om.getClientIp()); // 客户端的 IP 地址 (IPv4 格式，要求商户上传真实的，渠道可能会判断), 必传
         params.put("description", om.getDescription()); // 备注：订单号
 
-        Map<String, Object> meta = new HashMap<String,Object>();
-        meta.put("chargeType", om.getChargeType());//0:定金	1：尾款    2:居间服务费
-        meta.put("orderNo", om.getOrderNo());	//订单号
-        meta.put("batch", om.getBatch());	//是否批量支付尾款
-        meta.put("deductFee", om.getDeductFee());	//扣款金额
-        meta.put("type", om.getClientType()); //customer 用户  bond 司机保证金  freight 司机运费收入  driver 居间服务费
-        meta.put("deposit", om.getDeposit()); //定金金额
-        meta.put("orderMan", om.getOrderMan()); //当前app登陆人的ID
+        Map<String, Object> meta = BeanMapUtil.beanToMap(om.getPingxxMetaData());
         params.put("metadata",meta);//自定义参数
         Order order = Order.create(params); // 创建 Order 对象 方法
         return order;

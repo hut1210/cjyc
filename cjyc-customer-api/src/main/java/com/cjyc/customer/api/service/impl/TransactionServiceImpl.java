@@ -1,7 +1,10 @@
 package com.cjyc.customer.api.service.impl;
 
 import com.Pingxx.model.MetaDataEntiy;
+import com.Pingxx.model.PingxxMetaData;
+import com.cjyc.common.model.enums.log.OrderCarLogEnum;
 import com.cjyc.common.model.keys.RedisKeys;
+import com.cjyc.common.system.service.ICsOrderCarLogService;
 import com.pingplusplus.model.*;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.entity.*;
@@ -30,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -78,6 +82,12 @@ public class TransactionServiceImpl implements ITransactionService {
     @Resource
     private IWaybillCarDao waybillCarDao;
 
+    @Resource
+    private ICsOrderCarLogService csOrderCarLogService;
+
+    @Resource
+    private IOrderCarDao orderCarDao;
+
     @Override
     public int save(Object obj) {
         TradeBill bill;
@@ -114,27 +124,29 @@ public class TransactionServiceImpl implements ITransactionService {
         tradeBillDao.updateTradeBillByPingPayId(tradeBill);
 
         Map<String, Object> metadata = charge.getMetadata();
+
+        PingxxMetaData pingxxMetaData = BeanMapUtil.mapToBean(metadata, new PingxxMetaData());
         log.debug("update metadata = "+metadata.toString()+" taskId = "+metadata.get("taskId"));
-        String chargeType = (String)metadata.get("chargeType");
+        String chargeType = pingxxMetaData.getChargeType();
 
         //chargeType 1、app预付 3司机端出示二维码付款 4业务员端出示二维码 5后台出示二维码预付 6后台出库出示二维码付款
-        if(chargeType!=null&&!chargeType.equals("1")){
+        if(chargeType!=null&&!chargeType.equals(String.valueOf(ChargeTypeEnum.PREPAY.getCode()))){
 
             log.info("update chargeType="+chargeType);
 
             if(chargeType!=null){
                 if(chargeType.equals(String.valueOf(ChargeTypeEnum.WEB_PREPAY_QRCODE.getCode()))){
                     log.info("后台预付码回调");
-                    String orderNo = (String) metadata.get("orderNo");
+                    String orderNo = pingxxMetaData.getOrderNo();
                     log.info(chargeType+" 物流费预付 orderNo ="+orderNo);
-                    updateForPrePay(orderNo);
+                    updateForPrePay(pingxxMetaData);
                 }
                 if(chargeType.equals(String.valueOf(ChargeTypeEnum.DRIVER_COLLECT_QRCODE.getCode()))||chargeType.equals(String.valueOf(ChargeTypeEnum.WEB_OUT_STOCK_QRCODE.getCode()))){
                     Long taskId = Long.valueOf((String)metadata.get("taskId"));
 
-                    List<String> taskCarIdList = (List<String>)metadata.get("taskCarIdList");
+                    List<String> taskCarIdList = pingxxMetaData.getTaskCarIdList();
 
-                    List<String> orderCarNosList = (List<String>)metadata.get("orderCarIds");
+                    List<String> orderCarNosList = pingxxMetaData.getOrderCarIds();
                     log.info("司机出示二维码回调或者后台出库回调");
                     Task task = null;
                     if(taskId == null){
@@ -163,14 +175,8 @@ public class TransactionServiceImpl implements ITransactionService {
                         log.error("回调中参数orderCarNosList不存在");
                         return BaseResultUtil.fail("缺少参数orderCarNosList");
                     }else{
-                        //修改流水支付状态
-                        tradeBill = new TradeBill();
-                        tradeBill.setPingPayId(charge.getId());
-                        tradeBill.setState(2);
-                        tradeBill.setTradeTime(System.currentTimeMillis());
-                        tradeBillDao.updateTradeBillByPingPayId(tradeBill);
                         //修改车辆支付状态
-                        UserInfo userInfo = new UserInfo();
+                        UserInfo userInfo = userService.getUserInfo(Long.valueOf(pingxxMetaData.getLoginId()), Integer.valueOf(pingxxMetaData.getLoginType()));
                         csTaskService.updateForTaskCarFinish(taskCarIdList, ChargeTypeEnum.COLLECT_PAY.getCode(), userInfo);
                     }
                     //验证任务是否完成
@@ -184,7 +190,6 @@ public class TransactionServiceImpl implements ITransactionService {
                             //更新运单状态
                             tradeBillDao.updateForReceipt(task.getWaybillId(), System.currentTimeMillis());
 
-                            //TODO
                             //更新订单状态
                             List<com.cjyc.common.model.entity.Order> list = orderDao.findListByCarNos(orderCarNosList);
                             com.cjyc.common.model.entity.Order order = list.get(0);
@@ -382,25 +387,39 @@ public class TransactionServiceImpl implements ITransactionService {
             //处理运单订单任务数据
             csTaskService.updateForCarFinish(Arrays.asList(mde.getSourceNos().split(",")), userInfo);
         }else if(chargeType == ChargeTypeEnum.PREPAY.getCode() || chargeType == ChargeTypeEnum.PREPAY_QRCODE.getCode()){
+            PingxxMetaData pingxxMetaData = BeanMapUtil.mapToBean(metadata, new PingxxMetaData());
             //物流费预付
-            String orderNo = (String) metadata.get("orderNo");
+            String orderNo = pingxxMetaData.getOrderNo();
             log.info(chargeType+" 物流费预付 orderNo ="+orderNo);
-            updateForPrePay(orderNo);
+            updateForPrePay(pingxxMetaData);
             String lockKey =getRandomNoKey(orderNo);
             redisUtil.delete(lockKey);
         }
 
     }
 
-    private void updateForPrePay(String orderNo){
+    private void updateForPrePay(PingxxMetaData pingxxMetaData){
+        //操作人信息
+        UserInfo userInfo = userService.getUserInfo(Long.valueOf(pingxxMetaData.getLoginId()), Integer.valueOf(pingxxMetaData.getLoginType()));
+        String  orderNo = pingxxMetaData.getOrderNo();
         if(orderNo!=null){
             tradeBillDao.updateOrderState(orderNo,2,System.currentTimeMillis());
             List<String> list = tradeBillDao.getOrderCarNoList(orderNo);
+            List<OrderCar> orderCarList = orderCarDao.findListByNos(list);
             if(list != null){
-                for(int i=0;i<list.size();i++){
-                    String orderCarNo = list.get(i);
-                    if(orderCarNo != null){
-                        tradeBillDao.updateOrderCar(orderCarNo,2,System.currentTimeMillis());
+                for(int i=0;i<orderCarList.size();i++){
+                    OrderCar orderCar = orderCarList.get(i);
+                    if(orderCar != null){
+                        tradeBillDao.updateOrderCar(orderCar.getOrderNo(),2,System.currentTimeMillis());
+
+                        if(userInfo!=null){
+                            //添加日志
+                            csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.RECEIPT,
+                                    new String[]{MessageFormat.format(OrderCarLogEnum.RECEIPT.getInnerLog(), orderCar.getNo()),
+                                            MessageFormat.format(OrderCarLogEnum.RECEIPT.getOutterLog(), orderCar.getNo())},
+                                    userInfo);
+                        }
+
                     }
 
                 }

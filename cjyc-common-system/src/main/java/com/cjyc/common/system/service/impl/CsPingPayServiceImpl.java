@@ -1,6 +1,7 @@
 package com.cjyc.common.system.service.impl;
 
 import com.Pingxx.model.OrderModel;
+import com.Pingxx.model.PingxxMetaData;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.customer.pingxx.PrePayDto;
 import com.cjyc.common.model.dto.customer.pingxx.SweepCodeDto;
@@ -15,6 +16,7 @@ import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.exception.CommonException;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.BeanMapUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.ValidateReceiptCarPayVo;
 import com.cjyc.common.model.vo.customer.order.ValidateSweepCodePayVo;
@@ -100,8 +102,10 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         }
         OrderModel om = new OrderModel();
 
+        PingxxMetaData pingxxMetaData = new PingxxMetaData();
         om.setClientIp(sweepCodeDto.getIp());
-        om.setPingAppId(sweepCodeDto.getClientType()==ClientEnum.APP_DRIVER.code?PingProperty.driverAppId:PingProperty.userAppId);
+        pingxxMetaData.setPingAppId(sweepCodeDto.getClientType()==ClientEnum.APP_DRIVER.code?PingProperty.driverAppId:PingProperty.userAppId);
+        //om.setPingAppId(sweepCodeDto.getClientType()==ClientEnum.APP_DRIVER.code?PingProperty.driverAppId:PingProperty.userAppId);
         //创建Charge对象
         Charge charge = new Charge();
         try {
@@ -111,23 +115,26 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             List<String> orderCarNosList = cStransactionService.getOrderCarNosByTaskCarIds(taskCarIdList);
             BigDecimal freightFee = cStransactionService.getAmountByOrderCarNos(orderCarNosList);
             om.setAmount(freightFee);
-            om.setDriver_code(String.valueOf(sweepCodeDto.getLoginId()));
-            om.setOrderCarIds(orderCarNosList);
-            om.setTaskId(String.valueOf(sweepCodeDto.getTaskId()));
-            om.setTaskCarIdList(sweepCodeDto.getTaskCarIdList());
-            om.setChannel(sweepCodeDto.getChannel());
+            pingxxMetaData.setLoginId(String.valueOf(sweepCodeDto.getLoginId()));
+            pingxxMetaData.setOrderCarIds(orderCarNosList);
+            pingxxMetaData.setChannel(sweepCodeDto.getChannel());
+            pingxxMetaData.setTaskId(String.valueOf(sweepCodeDto.getTaskId()));
+            pingxxMetaData.setTaskCarIdList(sweepCodeDto.getTaskCarIdList());
+
             if(sweepCodeDto.getClientType()==ClientEnum.APP_DRIVER.code){
                 om.setSubject("司机端收款码功能!");
                 om.setBody("司机端生成二维码！");
-                om.setChargeType(String.valueOf(ChargeTypeEnum.DRIVER_COLLECT_QRCODE.getCode()));
+                pingxxMetaData.setLoginType(String.valueOf(UserTypeEnum.DRIVER.code));
+                pingxxMetaData.setChargeType(String.valueOf(ChargeTypeEnum.DRIVER_COLLECT_QRCODE.getCode()));
             }else{
                 om.setSubject("业务员收款码功能!");
                 om.setBody("业务员端生成二维码！");
-                om.setChargeType(String.valueOf(ChargeTypeEnum.SALESMAN_COLLECT_QRCODE.getCode()));
+                pingxxMetaData.setLoginType(String.valueOf(UserTypeEnum.ADMIN.code));
+                pingxxMetaData.setChargeType(String.valueOf(ChargeTypeEnum.SALESMAN_COLLECT_QRCODE.getCode()));
             }
-
-            om.setClientType(String.valueOf(sweepCodeDto.getClientType()));
-            om.setDescription("韵车订单号："+om.getOrderNo());
+            pingxxMetaData.setClientType(String.valueOf(sweepCodeDto.getClientType()));
+            om.setDescription("韵车订单号："+om.getPingxxMetaData().getOrderNo());
+            om.setPingxxMetaData(pingxxMetaData);
             charge = createDriverCode(om);
 
             cStransactionService.saveTransactions(charge, "0");
@@ -152,29 +159,20 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         Calendar calendar = Calendar.getInstance();
         params.put("order_no", Integer.toString(calendar.get(Calendar.YEAR)) + System.currentTimeMillis()); // 商户订单号, 必传
         Map<String, String> app = new HashMap<String, String>();
-        app.put("id", om.getPingAppId());
+        app.put("id", om.getPingxxMetaData().getPingAppId());
         params.put("app", app);
-        params.put("channel", om.getChannel());// alipay_qr 支付宝扫码支付 /wx_pub_qr 微信扫码支付
+        params.put("channel", om.getPingxxMetaData().getChannel());// alipay_qr 支付宝扫码支付 /wx_pub_qr 微信扫码支付
         params.put("amount", om.getAmount()); // 订单总金额，单位：分, 必传
         params.put("client_ip", om.getClientIp()); // 客户端的 IP 地址 (IPv4 格式，要求商户上传真实的，渠道可能会判断), 必传
         params.put("currency", "cny"); // 仅支持人民币 cny, 必传
         params.put("subject", om.getSubject()); // 商品的标题, 必传
         params.put("body", om.getBody()); // 商品的描述信息, 必传
         params.put("description", om.getDescription()); // 备注：订单号
-        Map<String, Object> meta = new HashMap<String,Object>();
-        meta.put("chargeType", om.getChargeType());//1 预付款 2 司机出示二维码 3 业务员出示二维码 5后台预付 6出库付款
-        //自定义存储字段
-        meta.put("orderNo", om.getOrderNo());	//订单号
-        meta.put("orderCarIds",om.getOrderCarIds());//订单Id
-        meta.put("driver_code", om.getDriver_code());//司机Code
-        meta.put("order_type", om.getOrder_type());
-        meta.put("driver_name", om.getDriver_name());
-        meta.put("driver_phone", om.getDriver_phone());
-        meta.put("back_type", om.getBack_type());
-        meta.put("taskId",om.getTaskId());
-        meta.put("taskCarIdList",om.getTaskCarIdList());
+
+        Map<String, Object> meta = BeanMapUtil.beanToMap(om.getPingxxMetaData());
+        params.put("metadata",meta);//自定义参数
         //当为微信支付是需要product_id
-        if("wx_pub_qr".equals(om.getChannel())){
+        if("wx_pub_qr".equals(om.getPingxxMetaData().getChannel())){
             Map<String, Object> extra  = new HashMap<String,Object>();
             extra.put("product_id", Integer.toString(calendar.get(Calendar.YEAR)) + System.currentTimeMillis());
             params.put("extra", extra);
@@ -359,20 +357,24 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         Charge charge = new Charge();
         try {
             om.setClientIp(prePayDto.getIp());
-            om.setPingAppId(PingProperty.userAppId);
             BigDecimal wlFee = cStransactionService.getAmountByOrderNo(prePayDto.getOrderNo());
-            om.setPingAppId(PingProperty.customerAppId);
             om.setClientIp(prePayDto.getIp());
-            om.setChannel(prePayDto.getChannel());
-            om.setOrderNo(prePayDto.getOrderNo());
             om.setUid(String.valueOf(prePayDto.getUid()));
             om.setAmount(wlFee);
             om.setSubject(ChargeTypeEnum.WEB_PREPAY_QRCODE.getName());
             om.setBody("后台订单预付款");
-            om.setChargeType(String.valueOf(ChargeTypeEnum.WEB_PREPAY_QRCODE.getCode()));
-            om.setClientType(String.valueOf(ClientEnum.WEB_SERVER.code));
+
+            PingxxMetaData pingxxMetaData = new PingxxMetaData();
+            pingxxMetaData.setPingAppId(PingProperty.userAppId);
+            pingxxMetaData.setChannel(prePayDto.getChannel());
+            pingxxMetaData.setOrderNo(prePayDto.getOrderNo());
+            pingxxMetaData.setChargeType(String.valueOf(ChargeTypeEnum.WEB_PREPAY_QRCODE.getCode()));
+            pingxxMetaData.setClientType(String.valueOf(ClientEnum.WEB_SERVER.code));
+            pingxxMetaData.setLoginId(prePayDto.getUid());
+            pingxxMetaData.setLoginType(String.valueOf(UserTypeEnum.ADMIN.code));
             // 备注：订单号
-            om.setDescription("韵车订单号："+om.getOrderNo());
+            om.setDescription("韵车订单号："+om.getPingxxMetaData().getOrderNo());
+            om.setPingxxMetaData(pingxxMetaData);
 
             charge = createDriverCode(om);
 
@@ -404,7 +406,6 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         OrderModel om = new OrderModel();
 
         om.setClientIp(webOutOfStockDto.getIp());
-        om.setPingAppId(PingProperty.userAppId);
         //创建Charge对象
         Charge charge = new Charge();
         try {
@@ -414,18 +415,25 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             List<String> orderCarNosList = cStransactionService.getOrderCarNosByTaskCarIds(taskCarIdList);
             BigDecimal freightFee = cStransactionService.getAmountByOrderCarNos(orderCarNosList);
             om.setAmount(freightFee);
-            om.setDriver_code(String.valueOf(webOutOfStockDto.getLoginId()));
-            om.setOrderCarIds(orderCarNosList);
-            om.setTaskId(String.valueOf(webOutOfStockDto.getTaskId()));
-            om.setTaskCarIdList(webOutOfStockDto.getTaskCarIdList());
-            om.setChannel(webOutOfStockDto.getChannel());
 
             om.setSubject(ChargeTypeEnum.WEB_OUT_STOCK_QRCODE.getName());
             om.setBody("确认出库生成二维码！");
-            om.setChargeType(String.valueOf(ChargeTypeEnum.WEB_OUT_STOCK_QRCODE.getCode()));//出库付款码
 
-            om.setClientType(String.valueOf(ClientEnum.WEB_SERVER.code));
-            om.setDescription("韵车订单号："+om.getOrderNo());
+            PingxxMetaData pingxxMetaData = new PingxxMetaData();
+            pingxxMetaData.setPingAppId(PingProperty.userAppId);
+            pingxxMetaData.setOrderCarIds(orderCarNosList);
+            pingxxMetaData.setTaskId(String.valueOf(webOutOfStockDto.getTaskId()));
+            pingxxMetaData.setTaskCarIdList(webOutOfStockDto.getTaskCarIdList());
+            pingxxMetaData.setChannel(webOutOfStockDto.getChannel());
+            pingxxMetaData.setChargeType(String.valueOf(ChargeTypeEnum.WEB_OUT_STOCK_QRCODE.getCode()));
+            pingxxMetaData.setClientType(String.valueOf(ClientEnum.WEB_SERVER.code));
+
+            pingxxMetaData.setLoginId(String.valueOf(webOutOfStockDto.getLoginId()));
+            pingxxMetaData.setLoginType(String.valueOf(UserTypeEnum.ADMIN.code));
+
+            om.setDescription("韵车订单号："+om.getPingxxMetaData().getOrderNo());
+
+            om.setPingxxMetaData(pingxxMetaData);
             charge = createDriverCode(om);
 
             cStransactionService.saveTransactions(charge, "0");
