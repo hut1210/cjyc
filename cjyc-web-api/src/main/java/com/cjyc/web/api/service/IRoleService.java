@@ -80,5 +80,11 @@ public interface IRoleService extends IService<Role> {
      * @return
      */
     ResultVo<List<SelectUserByRoleVo>> getUsersByRoleIdNew(Long roleId);
+
+    /**
+     * 查询所有角色信息列表
+     * @return
+     */
+    ResultVo<List<Role>> getAllListNew(String roleName);
     /*********************************韵车集成改版 ed*****************************/
 }

@@ -132,6 +132,18 @@ public class RoleController {
             @PathVariable Long roleId) {
         return roleService.getUsersByRoleIdNew(roleId);
     }
+
+    /**
+     * 查询所有角色信息列表
+     * @return
+     */
+    @GetMapping(value = {"/getAllListNew", "/getAllListNew/{roleName}"})
+    @ApiOperation(value = "获取所有角色信息列表")
+    public ResultVo<List<Role>> getAllListNew(
+            @ApiParam(name = "roleName", value = "角色名称", required = false)
+            @PathVariable(name = "roleName", required = false) String roleName) {
+        return roleService.getAllListNew(roleName);
+    }
     /*********************************韵车集成改版 ed*****************************/
 
     /**
