@@ -198,7 +198,7 @@
     <select id="getPaymentList" parameterType="com.cjyc.common.model.dto.web.finance.FinanceQueryDto"
             resultType="com.cjyc.common.model.vo.web.finance.PaymentVo">
         select woc.no,woc.vin,woc.brand,woc.model,
-        cc.id,cc.type,zcity.name as largeArea,
+        wo.customer_id as customerId,wo.customer_type as type,zcity.name as largeArea,
         if(cc.pay_mode=0,'时付','账期') as payModeName,woc.total_fee as freightReceivable,
         if(woc.wl_pay_state=2,woc.total_fee,0) as freightPay,
         woc.order_no as orderNo,
@@ -208,6 +208,7 @@
         woc.now_area_code,wo.input_store_id,
         wo.input_store_name as inputStoreName,
         wo.customer_name as customerName,
+        wo.customer_contract_id as customerContractId,
         woc.wl_pay_time as deliveryDate
         from w_order_car woc
         left join w_order wo on woc.order_id = wo.id
@@ -217,61 +218,70 @@
         left join zcity zc on zc.code = wo.start_province_code
         left join zcity zcity on zcity.code = zc.parent_code
 
-        where cc.pay_mode = 0
-        <if test="no != null and no.trim() != ''">
-            and woc.no like concat('%',#{no},'%')
-        </if>
-        <if test="vin != null and vin.trim() != ''">
-            and  woc.vin = #{vin}
-        </if>
-        <if test="orderNo != null and orderNo.trim() != ''">
-            and  woc.order_no like concat('%',#{orderNo},'%')
-        </if>
+        <where>
+            <if test="no != null and no.trim() != ''">
+                and woc.no like concat('%',#{no},'%')
+            </if>
+            <if test="vin != null and vin.trim() != ''">
+                and  woc.vin = #{vin}
+            </if>
+            <if test="orderNo != null and orderNo.trim() != ''">
+                and  woc.order_no like concat('%',#{orderNo},'%')
+            </if>
 
-        <if test="type != null">
-            and cc.type = #{type}
-        </if>
-        <if test="customerName != null  and customerName.trim() != ''">
-            and  cc.name  like concat('%',#{customerName},'%')
-        </if>
-        <if test="payMode != null">
-            and  cc.pay_mode =#{payMode}
-        </if>
+            <if test="type != null">
+                and cc.type = #{type}
+            </if>
+            <if test="customerName != null  and customerName.trim() != ''">
+                and  cc.name  like concat('%',#{customerName},'%')
+            </if>
+            <if test="payMode != null">
+                and  cc.pay_mode =#{payMode}
+            </if>
 
-        <if test="brand != null and brand.trim() != ''">
-            and cc.brand = #{brand}
-        </if>
-        <if test="model != null and model.trim() != ''">
-            and cc.model = #{model}
-        </if>
-        <if test="inputStoreName != null and inputStoreName.trim() != ''">
-            and wo.input_store_name = #{inputStoreName}
-        </if>
-        <if test="completeStartTime!= null">
-            and wt.complete_time &gt;= #{completeStartTime}
-        </if>
-        <if test="completeEndTime!= null">
-            and wt.complete_time &lt;= #{completeEndTime}
-        </if>
-        <if test="startProvinceCode != null and startProvinceCode.trim() != ''">
-            and wo.start_province = #{startProvinceCode}
-        </if>
-        <if test="startCityCode != null and startCityCode.trim() != ''">
-            and wo.start_city = #{startCityCode}
-        </if>
-        <if test="startAreaCode != null and startAreaCode.trim() != ''">
-            and wo.start_area = #{startAreaCode}
-        </if>
-        <if test="endProvinceCode != null and endProvinceCode.trim() != ''">
-            and wo.end_province = #{endProvinceCode}
-        </if>
-        <if test="endCityCode != null and endCityCode.trim() != ''">
-            and wo.end_city = #{endCityCode}
-        </if>
-        <if test="endAreaCode != null and endAreaCode.trim() != ''">
-            and wo.end_area = #{endAreaCode}
-        </if>
+            <if test="brand != null and brand.trim() != ''">
+                and cc.brand = #{brand}
+            </if>
+            <if test="model != null and model.trim() != ''">
+                and cc.model = #{model}
+            </if>
+            <if test="inputStoreName != null and inputStoreName.trim() != ''">
+                and wo.input_store_name = #{inputStoreName}
+            </if>
+            <if test="completeStartTime!= null">
+                and wt.complete_time &gt;= #{completeStartTime}
+            </if>
+            <if test="completeEndTime!= null">
+                and wt.complete_time &lt;= #{completeEndTime}
+            </if>
+            <if test="startProvinceCode != null and startProvinceCode.trim() != ''">
+                and wo.start_province = #{startProvinceCode}
+            </if>
+            <if test="startCityCode != null and startCityCode.trim() != ''">
+                and wo.start_city = #{startCityCode}
+            </if>
+            <if test="startAreaCode != null and startAreaCode.trim() != ''">
+                and wo.start_area = #{startAreaCode}
+            </if>
+            <if test="endProvinceCode != null and endProvinceCode.trim() != ''">
+                and wo.end_province = #{endProvinceCode}
+            </if>
+            <if test="endCityCode != null and endCityCode.trim() != ''">
+                and wo.end_city = #{endCityCode}
+            </if>
+            <if test="endAreaCode != null and endAreaCode.trim() != ''">
+                and wo.end_area = #{endAreaCode}
+            </if>
+        </where>
     </select>
+
+    <select id="getCustomerContractById" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        select settle_type from c_customer_contract where id =#{customerContractId}
+    </select>
+    <select id="getCustomerPartnerById" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        select settle_type from c_customer_partner where customer_id =#{customerId}
+    </select>
+
     <select id="getPaidList" parameterType="com.cjyc.common.model.dto.web.finance.PayMentQueryDto"
             resultType="com.cjyc.common.model.vo.web.finance.PaidVo">
         select ww.no as waybillNo,ww.complete_time as completeTime,

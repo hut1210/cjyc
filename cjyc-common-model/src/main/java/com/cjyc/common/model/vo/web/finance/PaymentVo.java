@@ -50,6 +50,9 @@ public class PaymentVo implements Serializable {
 
     @ApiModelProperty(value = "交付时间")
     private Long deliveryDate;
+
+    @ApiModelProperty(value = "客户Id")
+    private Long customerId;
     @ApiModelProperty(value = "客户类型")
     private Integer type;
 
@@ -57,4 +60,6 @@ public class PaymentVo implements Serializable {
     @ApiModelProperty(value = "客户名称")
     private String customerName;
 
+    @ApiModelProperty(value = "合同Id")
+    private Long customerContractId;
 }
