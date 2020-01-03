@@ -75,4 +75,13 @@ public interface ICarrierService {
      * @param response
      */
     void exportCarrierExcel(HttpServletRequest request, HttpServletResponse response);
+
+    /*********************************韵车集成改版 st*****************************/
+    /**
+     * 添加承运商信息
+     * @param dto
+     * @return
+     */
+    ResultVo saveOrModifyCarrierNew(CarrierDto dto);
+    /*********************************韵车集成改版 ed*****************************/
 }
