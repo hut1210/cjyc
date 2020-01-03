@@ -214,7 +214,7 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
         user.setName(name);
         user.setAccount(phone);
         user.setMobile(phone);
-        user.setDeptId(Long.parseLong(YmlProperty.get("cjkj.dept_customer_id")));
+        user.setDeptId(Long.parseLong(YmlProperty.get("cjkj.dept_admin_id")));
         user.setPassword(YmlProperty.get("cjkj.customer.password"));
         user.setRoleIdList(Arrays.asList(role.getRoleId()));
         ResultData<AddUserResp> saveRd = sysUserService.save(user);
@@ -224,4 +224,29 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
         return ResultData.ok(saveRd.getData().getUserId());
     }
 
+    @Override
+    public ResultData<Boolean> updateUserToPlatform(Customer customer, String newPhone) {
+        String oldPhone = customer.getContactPhone();
+        if (!oldPhone.equals(newPhone)) {
+            //新旧账号不相同需要替换手机号
+            ResultData<UserResp> accountRd = sysUserService.getByAccount(newPhone);
+            if (!ReturnMsg.SUCCESS.getCode().equals(accountRd.getCode())) {
+                return ResultData.failed("用户信息获取失败，原因：" + accountRd.getMsg());
+            }
+            if (accountRd.getData() != null) {
+                return ResultData.failed("用户账号不允许修改，预修改账号：" + newPhone + " 已存在");
+            }
+            UpdateUserReq user = new UpdateUserReq();
+            user.setName(customer.getName());
+            user.setUserId(customer.getUserId());
+            user.setAccount(newPhone);
+            user.setMobile(newPhone);
+            ResultData rd = sysUserService.updateUser(user);
+            if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+                return ResultData.failed("用户信息修改失败，原因：" + rd.getMsg());
+            }
+            return ResultData.ok(true);
+        }
+        return ResultData.ok(false);
+    }
 }

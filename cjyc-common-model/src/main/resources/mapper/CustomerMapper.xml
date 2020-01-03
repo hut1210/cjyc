@@ -339,11 +339,32 @@
                 cc.contact_phone like concat('%',#{phone},'%')
             </if>
             <if test="name != null and name.trim() !=''">
-                and cc.contact_man like concat('%',#{name},'%')
+                or cc.contact_man like concat('%',#{name},'%')
             </if>
             and cc.type = 2 and cc.state = 2
         </where>
     </select>
 
+    <!--************************************韵车集成改版 st***********************************-->
+
+    <!--根据用户名/手机号模糊匹配用户信息-->
+    <select id="findCustomerByKey" resultType="java.util.Map"
+            parameterType="java.lang.String">
+       select
+            cc.user_id as userId,
+            cc.name as name,
+            cc.contact_man as contactMan,
+            cc.contact_phone AS contactPhone
+        from c_customer cc
+		left join s_user_role_dept surd on surd.user_id = cc.id
+        <where>
+            <if test="keyword != null and keyword.trim() !=''">
+               (cc.name like concat('%',#{keyword},'%') or
+                cc.contact_phone like concat('%',#{keyword},'%') or
+                cc.contact_man like concat('%',#{keyword},'%'))
+            </if>
+            and surd.state = 2
+        </where>
+    </select>
 
 </mapper>

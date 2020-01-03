@@ -88,4 +88,13 @@ public interface ICustomerDao extends BaseMapper<Customer> {
     List<SalesCustomerVo> findSalesKeyCustomter(SalesCustomerDto dto);
 
 
+    /************************************韵车集成改版 st***********************************/
+
+    /**
+     * 根据用户名/手机号模糊匹配用户信息
+     * @param keyword
+     * @return
+     */
+    List<Map<String,Object>> findCustomerByKey(@Param("keyword") String keyword);
+
 }
