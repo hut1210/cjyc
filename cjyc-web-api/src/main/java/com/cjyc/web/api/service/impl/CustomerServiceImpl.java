@@ -42,6 +42,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -855,6 +856,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
 
     /************************************韵车集成改版 st***********************************/
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public ResultVo saveCustomerNew(CustomerDto dto) {
         //判断该手机号是否在库中存在
         Customer customer = customerDao.selectOne(new QueryWrapper<Customer>().lambda().eq(Customer::getContactPhone, dto.getContactPhone()));
@@ -892,6 +894,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public ResultVo modifyCustomerNew(CustomerDto dto) {
         //判断该手机号是否在库中存在
         Customer customer = customerDao.selectOne(new QueryWrapper<Customer>().lambda()
@@ -921,6 +924,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public ResultVo saveOrModifyKeyNew(KeyCustomerDto dto) {
         //判断该手机号是否在库中存在
         Customer customer = customerDao.selectOne(new QueryWrapper<Customer>().lambda()
@@ -970,6 +974,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public ResultVo saveOrModifyPartnerNew(PartnerDto dto) {
         //新增/修改时，验证在大客户或者合伙人中是否存在
         Customer customer = customerDao.selectOne(new QueryWrapper<Customer>().lambda()
@@ -1047,6 +1052,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public ResultVo verifyCustomerNew(OperateDto dto) {
         Customer customer = customerDao.selectById(dto.getId());
         UserRoleDept urd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
