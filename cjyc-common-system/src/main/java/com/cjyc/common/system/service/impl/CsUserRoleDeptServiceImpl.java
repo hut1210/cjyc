@@ -6,6 +6,7 @@ import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.entity.UserRoleDept;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.UserTypeEnum;
+import com.cjyc.common.model.enums.customer.CustomerSourceEnum;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.enums.role.DeptTypeEnum;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
@@ -50,6 +51,8 @@ public class CsUserRoleDeptServiceImpl implements ICsUserRoleDeptService {
                 .eq(UserRoleDept::getUserType, UserTypeEnum.CUSTOMER.code));
         if(customer.getType() != CustomerTypeEnum.INDIVIDUAL.code){
             urd.setState(CommonStateEnum.WAIT_CHECK.code);
+        }else if(customer.getType() == CustomerTypeEnum.INDIVIDUAL.code && customer.getSource() == CustomerSourceEnum.UPGRADE.code){
+            urd.setState(CommonStateEnum.IN_CHECK.code);
         }
         urd.setUpdateUserId(loginId);
         urd.setUpdateTime(NOW);

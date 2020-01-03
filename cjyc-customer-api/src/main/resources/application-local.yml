@@ -104,6 +104,13 @@ cjkj:
       1166601727922446337,
       1166601979446468610,
       1169434673131659265
+  carrier_super_role_name: 承运商超级管理员
+  carrier_common_role_name: 承运商管理员
+  carrier_sub_driver_role_name: 下属司机
+  carrier_personal_driver_role_name: 个人司机
+  customer_client_role_name: C端客户
+  customer_key_role_name: 大客户
+  customer_copartner_role_name: 合伙人
 
 
 
