@@ -104,5 +104,12 @@ public interface ICarrierService {
      * @return
      */
     ResultVo showBaseCarrierNew(Long carrierId);
+
+    /**
+     * 重置承运商超级管理员密码_改版
+     * @param id
+     * @return
+     */
+    ResultVo resetPwdNew(Long id);
     /*********************************韵车集成改版 ed*****************************/
 }

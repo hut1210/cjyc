@@ -131,5 +131,12 @@ public class CarrierController {
     public ResultVo<BaseCarrierVo> showBaseCarrierNew(@PathVariable @ApiParam(value = "承运商id",required = true) Long carrierId){
         return carrierService.showBaseCarrierNew(carrierId);
     }
+
+    @PostMapping("/resetPwdNew/{id}")
+    @ApiOperation(value = "承运商机构超级管理员账户重置密码_改版")
+    public ResultVo resetPwdNew(@ApiParam(name = "id", value = "机构标识", required = true)
+                             @PathVariable Long id) {
+        return carrierService.resetPwdNew(id);
+    }
     /*********************************韵车集成改版 ed*****************************/
 }

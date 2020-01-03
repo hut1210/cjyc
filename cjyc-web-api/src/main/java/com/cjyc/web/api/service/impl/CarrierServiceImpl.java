@@ -503,6 +503,31 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         }
         return BaseResultUtil.success(vo);
     }
+
+    @Override
+    public ResultVo resetPwdNew(Long id) {
+        Role role = csRoleService.getByName(CARRIER_SUPER_ROLE_NAME, 2);
+        if (role == null) {
+            return BaseResultUtil.fail("根据角色名称：" + CARRIER_SUPER_ROLE_NAME +
+                    ",未查询到角色信息");
+        }
+        UserRoleDept userRoleDept = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
+            .eq(UserRoleDept::getDeptId, id)
+            .eq(UserRoleDept::getRoleId, role.getId()));
+        if (userRoleDept != null) {
+            Driver driver = driverDao.selectById(userRoleDept.getUserId());
+            if (driver != null) {
+                ResultData rd =
+                        sysUserService.resetPwd(driver.getUserId(), YmlProperty.get("cjkj.salesman.password"));
+                if (!ResultDataUtil.isSuccess(rd)) {
+                    return BaseResultUtil.fail("重置密码错误，原因：" + rd.getMsg());
+                }else {
+                    return BaseResultUtil.success();
+                }
+            }
+        }
+        return BaseResultUtil.fail("用户信息有误，请检查");
+    }
     /*********************************韵车集成改版 ed*****************************/
     /**
      * 封装承运商excel请求
