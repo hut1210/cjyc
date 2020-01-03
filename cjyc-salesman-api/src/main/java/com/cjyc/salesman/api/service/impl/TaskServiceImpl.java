@@ -27,6 +27,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -99,11 +100,21 @@ public class TaskServiceImpl implements ITaskService {
             CarDetailVo carDetailVo = null;
             for (TaskCar taskCar : taskCarList) {
                 // 查询任务单车辆信息
-                WaybillCar waybillCar = getWaybillCar(dto, taskCar);
+                String detailState = dto.getDetailState();
+                WaybillCar waybillCar = getWaybillCar(detailState, taskCar);
                 if (waybillCar != null) {
                     carDetailVo = new CarDetailVo();
                     BeanUtils.copyProperties(waybillCar,carDetailVo);
                     freightFee = freightFee.add(waybillCar.getFreightFee());
+
+                    // 查询车辆历史图片
+                    StringBuilder sb = getCarHistoryPhotoImg(waybillCar);
+
+                    // 封装当前车辆图片
+                    fillCarPhotoImg(detailState, waybillCar, sb);
+
+                    // 封装历史图片
+                    carDetailVo.setHistoryLoadPhotoImg(sb.toString());
 
                     // 查询品牌车系信息
                     OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
@@ -123,8 +134,62 @@ public class TaskServiceImpl implements ITaskService {
         return BaseResultUtil.success(taskDetailVo);
     }
 
-    public WaybillCar getWaybillCar(DetailQueryDto dto, TaskCar taskCar) {
-        String detailState = dto.getDetailState();
+    private void fillCarPhotoImg(String detailState, WaybillCar waybillCar, StringBuilder sb) {
+        if (FieldConstant.WAIT_TO_CAR.equals(detailState)
+                || FieldConstant.FINISH_PUT_OUT.equals(detailState)
+                || FieldConstant.FINISH_CAR.equals(detailState)
+                || FieldConstant.FINISH_PUT_IN.equals(detailState)) {
+            // 待交车 已出库 已交付 已入库
+            String loadPhotoImg = waybillCar.getLoadPhotoImg();
+            if (sb.length() > 0 && !StringUtils.isEmpty(loadPhotoImg)) {
+                sb.append(",");
+            }
+            if (!StringUtils.isEmpty(loadPhotoImg)) {
+                sb.append(loadPhotoImg);
+            }
+        }
+
+        if (FieldConstant.FINISH_CAR.equals(detailState)
+                || FieldConstant.FINISH_PUT_IN.equals(detailState)) {
+            // 已交付 已入库
+            String unloadPhotoImg = waybillCar.getUnloadPhotoImg();
+            if (sb.length() > 0 && !StringUtils.isEmpty(unloadPhotoImg)) {
+                sb.append(",");
+            }
+            if (!StringUtils.isEmpty(unloadPhotoImg)) {
+                sb.append(unloadPhotoImg);
+            }
+        }
+    }
+
+    private StringBuilder getCarHistoryPhotoImg(WaybillCar waybillCar) {
+        LambdaQueryWrapper<WaybillCar> query = new QueryWrapper<WaybillCar>().lambda()
+                .eq(WaybillCar::getOrderCarId, waybillCar.getOrderCarId())
+                .lt(WaybillCar::getId, waybillCar.getId());
+        List<WaybillCar> waybillCarList = waybillCarDao.selectList(query);
+        StringBuilder sb = new StringBuilder();
+        if (!CollectionUtils.isEmpty(waybillCarList)) {
+            for (WaybillCar car : waybillCarList) {
+                String loadPhotoImg = car.getLoadPhotoImg();
+                String unloadPhotoImg = car.getUnloadPhotoImg();
+                if (sb.length() > 0 && !StringUtils.isEmpty(loadPhotoImg)) {
+                    sb.append(",");
+                }
+                if (!StringUtils.isEmpty(loadPhotoImg)) {
+                    sb.append(loadPhotoImg);
+                }
+                if (sb.length() > 0 && !StringUtils.isEmpty(unloadPhotoImg)) {
+                    sb.append(",");
+                }
+                if (!StringUtils.isEmpty(unloadPhotoImg)) {
+                    sb.append(unloadPhotoImg);
+                }
+            }
+        }
+        return sb;
+    }
+
+    public WaybillCar getWaybillCar(String detailState, TaskCar taskCar) {
         LambdaQueryWrapper<WaybillCar> query = new QueryWrapper<WaybillCar>().lambda().eq(WaybillCar::getId, taskCar.getWaybillCarId());
         if (FieldConstant.WAIT_GET_CAR.equals(detailState)) {
             // 待提车
