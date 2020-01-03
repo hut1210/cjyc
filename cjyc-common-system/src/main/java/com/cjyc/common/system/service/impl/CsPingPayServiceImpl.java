@@ -133,8 +133,9 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                 pingxxMetaData.setChargeType(String.valueOf(ChargeTypeEnum.SALESMAN_COLLECT_QRCODE.getCode()));
             }
             pingxxMetaData.setClientType(String.valueOf(sweepCodeDto.getClientType()));
-            om.setDescription("韵车订单号："+om.getPingxxMetaData().getOrderNo());
             om.setPingxxMetaData(pingxxMetaData);
+            om.setDescription("韵车订单号："+om.getPingxxMetaData().getOrderNo());
+
             charge = createDriverCode(om);
 
             cStransactionService.saveTransactions(charge, "0");
@@ -372,9 +373,11 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             pingxxMetaData.setClientType(String.valueOf(ClientEnum.WEB_SERVER.code));
             pingxxMetaData.setLoginId(prePayDto.getUid());
             pingxxMetaData.setLoginType(String.valueOf(UserTypeEnum.ADMIN.code));
+
+            om.setPingxxMetaData(pingxxMetaData);
             // 备注：订单号
             om.setDescription("韵车订单号："+om.getPingxxMetaData().getOrderNo());
-            om.setPingxxMetaData(pingxxMetaData);
+
 
             charge = createDriverCode(om);
 
