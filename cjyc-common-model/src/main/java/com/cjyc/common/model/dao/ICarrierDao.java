@@ -117,5 +117,12 @@ public interface ICarrierDao extends BaseMapper<Carrier> {
      * @return
      */
     Integer existBusinessDriverNew(CarrierDto dto);
+
+    /**
+     * 查询承运商信息_改版
+     * @param dto
+     * @return
+     */
+    List<CarrierVo> getCarrierByTermNew(SeleCarrierDto dto);
     /*********************************韵车集成改版 ed*****************************/
 }

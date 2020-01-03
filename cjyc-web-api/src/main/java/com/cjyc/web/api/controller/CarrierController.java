@@ -113,5 +113,11 @@ public class CarrierController {
     public ResultVo saveOrModifyCarrierNew(@Validated @RequestBody CarrierDto dto){
         return carrierService.saveOrModifyCarrierNew(dto);
     }
+
+    @ApiOperation(value = "根据条件查询承运商_改版")
+    @PostMapping(value = "/findCarrierNew")
+    public ResultVo<PageVo<CarrierVo>> findCarrierNew(@RequestBody SeleCarrierDto dto){
+        return carrierService.findCarrierNew(dto);
+    }
     /*********************************韵车集成改版 ed*****************************/
 }

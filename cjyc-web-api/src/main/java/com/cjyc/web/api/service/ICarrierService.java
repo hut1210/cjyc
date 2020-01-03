@@ -83,5 +83,12 @@ public interface ICarrierService {
      * @return
      */
     ResultVo saveOrModifyCarrierNew(CarrierDto dto);
+
+    /**
+     * 根据条件查询承运商
+     * @param dto
+     * @return
+     */
+    ResultVo findCarrierNew(SeleCarrierDto dto);
     /*********************************韵车集成改版 ed*****************************/
 }

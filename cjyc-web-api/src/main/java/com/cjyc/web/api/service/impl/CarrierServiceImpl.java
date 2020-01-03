@@ -442,6 +442,14 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         }
         return BaseResultUtil.success();
     }
+
+    @Override
+    public ResultVo findCarrierNew(SeleCarrierDto dto) {
+        PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
+        List<CarrierVo> carrierVos = encapCarrierNew(dto);
+        PageInfo<CarrierVo> pageInfo =  new PageInfo<>(carrierVos);
+        return BaseResultUtil.success(pageInfo);
+    }
     /*********************************韵车集成改版 ed*****************************/
     /**
      * 封装承运商excel请求
@@ -652,4 +660,23 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         return BaseResultUtil.success();
     }
 
+
+    /**
+     * 封装承运商
+     * @param dto
+     * @return
+     */
+    private List<CarrierVo> encapCarrierNew(SeleCarrierDto dto){
+        List<CarrierVo> carrierVos = carrierDao.getCarrierByTermNew(dto);
+        if(!CollectionUtils.isEmpty(carrierVos)){
+            for(CarrierVo vo : carrierVos){
+                CarrierCarCount count = carrierCarCountDao.countNew(vo.getCarrierId());
+                if(count != null){
+                    vo.setCarNum(count.getCarNum());
+                    vo.setTotalIncome(count.getIncome());
+                }
+            }
+        }
+        return carrierVos;
+    }
 }
