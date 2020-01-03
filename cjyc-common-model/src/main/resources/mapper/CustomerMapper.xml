@@ -330,6 +330,7 @@
             parameterType="com.cjyc.common.model.dto.salesman.customer.SalesCustomerDto">
         SELECT
             cc.id AS customerId,
+            cc.name AS name,
             cc.contact_man AS contactMan,
             cc.contact_phone AS contactPhone
         FROM
