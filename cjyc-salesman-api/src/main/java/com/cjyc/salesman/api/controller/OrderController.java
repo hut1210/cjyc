@@ -62,7 +62,7 @@ public class OrderController {
         reqDto.setState(OrderStateEnum.WAIT_SUBMIT.code);
 
         reqDto.setCustomerPhone(reqDto.getPickContactPhone());
-        reqDto.setCustomerPhone(reqDto.getPickContactName());
+        reqDto.setCustomerName(reqDto.getPickContactName());
         return csOrderService.save(reqDto);
     }
 
@@ -83,7 +83,7 @@ public class OrderController {
 
 
         reqDto.setCustomerPhone(reqDto.getPickContactPhone());
-        reqDto.setCustomerPhone(reqDto.getPickContactName());
+        reqDto.setCustomerName(reqDto.getPickContactName());
         //发送短信
         return csOrderService.commitAndCheck(reqDto);
     }

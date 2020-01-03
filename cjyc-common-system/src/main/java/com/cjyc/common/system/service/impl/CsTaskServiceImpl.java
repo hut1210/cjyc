@@ -179,7 +179,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
     }
 
     @Override
-    public void reCreate(Waybill waybill, List<WaybillCar> waybillCarList, CarrierInfo carrierInfo) {
+    public void reCreate(Waybill waybill, List<WaybillCar> waybillCarList, List<WaybillCar> newWaybillCarList, CarrierInfo carrierInfo) {
         /**4、插入任务车辆关联表*/
         Set<Long> waybillCarIds = waybillCarList.stream().map(WaybillCar::getId).collect(Collectors.toSet());
         Task task;
@@ -216,10 +216,12 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 nt.setId(task.getId());
                 nt.setCarNum(waybillCarList.size());
                 taskDao.updateById(nt);
-                //删除任务关系
-                taskCarDao.deleteByTaskId(task.getId());
                 //添加任务车辆信息
-                taskCarDao.saveBatchByTaskIdAndWaybillCarIds(task.getId(), waybillCarIds);
+                if(!CollectionUtils.isEmpty(newWaybillCarList)){
+                    List<Long> collect = newWaybillCarList.stream().map(WaybillCar::getId).collect(Collectors.toList());
+                    taskCarDao.saveBatchByTaskIdAndWaybillCarIds(task.getId(), collect);
+                }
+
             }
         }
     }
