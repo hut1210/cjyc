@@ -915,7 +915,6 @@ public class CsTaskServiceImpl implements ICsTaskService {
         if (!CollectionUtils.isEmpty(orderIdSet)) {
             UserInfo userInfo = new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), paramsDto.getLoginType());
             orderIdSet.forEach(orderId -> validateAndFinishOrder(orderId, userInfo));
-
         }
 
         //是否处理任务

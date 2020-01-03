@@ -785,5 +785,14 @@
         join w_waybill_car wc on w.id = wc.waybill_id
         and w.id = #{waybillId}
     </select>
+    <select id="findListByWaybillCarIds" resultType="com.cjyc.common.model.entity.Waybill">
+        select w.*
+        from w_waybill w
+        join w_waybill_car wc on w.id = wc.waybill_id
+        where wc.id in
+        <foreach collection="collection" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
 
 </mapper>
