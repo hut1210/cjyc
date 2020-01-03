@@ -275,7 +275,6 @@ public class LoginServiceImpl extends SuperServiceImpl<ICustomerDao, Customer> i
         customer.setPayMode(CustomerPayEnum.TIME_PAY.code);
         customer.setType(CustomerTypeEnum.INDIVIDUAL.code);
         customer.setSource(CustomerSourceEnum.APP.code);
-        customer.setRegisterTime(NOW);
         customer.setCreateTime(NOW);
         Role role = csRoleService.getByName(YmlProperty.get("cjkj.customer_client_role_name"), DeptTypeEnum.CUSTOMER.code);
         if(role == null){
