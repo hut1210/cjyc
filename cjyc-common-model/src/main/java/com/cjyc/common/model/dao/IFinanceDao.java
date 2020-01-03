@@ -35,5 +35,5 @@ public interface IFinanceDao extends BaseMapper {
 
     Integer getCustomerPartnerById(Long customerId);
 
-    List<FinanceReceiptVo> getFinancePayableList(PayableQueryDto payableQueryDto);
+    List<FinancePayableVo> getFinancePayableList(PayableQueryDto payableQueryDto);
 }

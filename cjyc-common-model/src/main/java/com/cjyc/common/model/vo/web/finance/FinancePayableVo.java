@@ -22,7 +22,13 @@ public class FinancePayableVo implements Serializable {
     private Long completeTime;
 
     @ApiModelProperty(value = "结算类型")
+    private Integer type;
+
+    @ApiModelProperty(value = "结算类型名称")
     private String settleTypeName;
+
+    @ApiModelProperty(value = "账期时间")
+    private int settlePeriod;
 
     @ApiModelProperty(value = "剩余账期时间")
     private Long remainDate;

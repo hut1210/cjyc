@@ -45,5 +45,5 @@ public interface IFinanceService {
 
     ResultVo updateBackState(String wayBillNo);
 
-    ResultVo<PageVo<FinanceReceiptVo>> getFinancePayableList(PayableQueryDto payableQueryDto);
+    ResultVo<PageVo<FinancePayableVo>> getFinancePayableList(PayableQueryDto payableQueryDto);
 }

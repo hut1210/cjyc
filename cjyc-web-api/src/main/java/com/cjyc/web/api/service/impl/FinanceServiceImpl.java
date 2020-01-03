@@ -311,10 +311,13 @@ public class FinanceServiceImpl implements IFinanceService {
     }
 
     @Override
-    public ResultVo<PageVo<FinanceReceiptVo>> getFinancePayableList(PayableQueryDto payableQueryDto) {
+    public ResultVo<PageVo<FinancePayableVo>> getFinancePayableList(PayableQueryDto payableQueryDto) {
         PageHelper.startPage(payableQueryDto.getCurrentPage(), payableQueryDto.getPageSize());
-        List<FinanceReceiptVo> financeVoList = financeDao.getFinancePayableList(payableQueryDto);
-        PageInfo<FinanceReceiptVo> pageInfo = new PageInfo<>(financeVoList);
+        List<FinancePayableVo> financeVoList = financeDao.getFinancePayableList(payableQueryDto);
+        for (int i=0;i<financeVoList.size();i++){
+            FinancePayableVo financePayableVo = financeVoList.get(i);
+        }
+        PageInfo<FinancePayableVo> pageInfo = new PageInfo<>(financeVoList);
         return BaseResultUtil.success(pageInfo);
     }
 }
