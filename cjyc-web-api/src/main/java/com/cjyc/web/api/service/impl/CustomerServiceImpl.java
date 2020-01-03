@@ -675,11 +675,6 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         }
     }
 
-    @Override
-    public ResultVo saveCustomerNew(CustomerDto dto) {
-        return null;
-    }
-
     /**
      * 封装C端客户excel请求
      * @param request
