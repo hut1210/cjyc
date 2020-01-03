@@ -70,6 +70,11 @@ public class SalesOrderDetailVo implements Serializable {
     private String startAddress;
     @ApiModelProperty(value = "提车方式:1 自送，2代驾上门，3拖车上门，4物流上门")
     private Integer pickType;
+
+    @ApiModelProperty(value = "收车人")
+    private String backContactName;
+    @ApiModelProperty(value = "收车人联系方式")
+    private String backContactPhone;
     @ApiModelProperty(value = "目的省编号")
     private String endProvinceCode;
     @ApiModelProperty(value = "目的省")
@@ -124,6 +129,8 @@ public class SalesOrderDetailVo implements Serializable {
     public String getStartAreaCode(){return StringUtils.isBlank(startAreaCode) ? "":startAreaCode;}
     public String getStartArea(){return StringUtils.isBlank(startArea) ? "":startArea;}
     public String getStartAddress(){return StringUtils.isBlank(startAddress) ? "":startAddress;}
+    public String getBackContactName(){return StringUtils.isBlank(backContactName) ? "":backContactName;}
+    public String getBackContactPhone(){return StringUtils.isBlank(backContactPhone) ? "":backContactPhone;}
     public String getEndProvinceCode(){return StringUtils.isBlank(endProvinceCode) ? "":endProvinceCode;}
     public String getEndProvince(){return StringUtils.isBlank(endProvince) ? "":endProvince;}
     public String getEndCityCode(){return StringUtils.isBlank(endCityCode) ? "":endCityCode;}
