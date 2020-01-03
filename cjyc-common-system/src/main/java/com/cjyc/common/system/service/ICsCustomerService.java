@@ -4,6 +4,7 @@ import com.cjkj.common.model.ResultData;
 import com.cjkj.usercenter.dto.common.SelectRoleResp;
 import com.cjyc.common.model.dto.CommonDto;
 import com.cjyc.common.model.dto.salesman.customer.SalesCustomerDto;
+import com.cjyc.common.model.dto.salesman.mine.AppCustomerIdDto;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.customer.customerLine.CustomerLineVo;
 import com.cjyc.common.model.vo.salesman.customer.SalesCustomerListVo;
@@ -70,4 +71,6 @@ public interface ICsCustomerService {
     ResultVo<Long> findRoleId(List<SelectRoleResp> roleResps);
 
     ResultVo<SalesCustomerListVo> findKeyCustomer(SalesCustomerDto dto);
+
+    ResultVo findCustomerContract(AppCustomerIdDto dto);
 }

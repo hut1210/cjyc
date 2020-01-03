@@ -6,7 +6,9 @@ import com.cjkj.common.redis.template.StringRedisUtil;
 import com.cjkj.usercenter.dto.common.*;
 import com.cjyc.common.model.dao.ICustomerDao;
 import com.cjyc.common.model.dto.salesman.customer.SalesCustomerDto;
+import com.cjyc.common.model.dto.salesman.mine.AppCustomerIdDto;
 import com.cjyc.common.model.enums.role.RoleNameEnum;
+import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.salesman.customer.SalesCustomerListVo;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
@@ -24,9 +26,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 客户公用业务
@@ -194,5 +198,12 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
         SalesCustomerListVo listVo = new SalesCustomerListVo();
         listVo.setList(salesKeyCustomter);
         return BaseResultUtil.success(listVo);
+    }
+
+    @Override
+    public ResultVo findCustomerContract(AppCustomerIdDto dto) {
+        Long now = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
+        List<Map<String,Object>> contractList = customerDao.getContractByCustomerId(dto.getCustomerId(),now);
+        return BaseResultUtil.success(contractList);
     }
 }
