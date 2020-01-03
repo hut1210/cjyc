@@ -105,7 +105,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         PingxxMetaData pingxxMetaData = new PingxxMetaData();
         om.setClientIp(sweepCodeDto.getIp());
         pingxxMetaData.setPingAppId(sweepCodeDto.getClientType()==ClientEnum.APP_DRIVER.code?PingProperty.driverAppId:PingProperty.userAppId);
-        //om.setPingAppId(sweepCodeDto.getClientType()==ClientEnum.APP_DRIVER.code?PingProperty.driverAppId:PingProperty.userAppId);
+
         //创建Charge对象
         Charge charge = new Charge();
         try {
@@ -378,7 +378,6 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             // 备注：订单号
             om.setDescription("韵车订单号："+om.getPingxxMetaData().getOrderNo());
 
-
             charge = createDriverCode(om);
 
             cStransactionService.saveTransactions(charge, "0");
@@ -434,9 +433,9 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             pingxxMetaData.setLoginId(String.valueOf(webOutOfStockDto.getLoginId()));
             pingxxMetaData.setLoginType(String.valueOf(UserTypeEnum.ADMIN.code));
 
+            om.setPingxxMetaData(pingxxMetaData);
             om.setDescription("韵车订单号："+om.getPingxxMetaData().getOrderNo());
 
-            om.setPingxxMetaData(pingxxMetaData);
             charge = createDriverCode(om);
 
             cStransactionService.saveTransactions(charge, "0");
