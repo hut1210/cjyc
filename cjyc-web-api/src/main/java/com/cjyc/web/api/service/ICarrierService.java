@@ -90,5 +90,12 @@ public interface ICarrierService {
      * @return
      */
     ResultVo findCarrierNew(SeleCarrierDto dto);
+
+    /**
+     * 根据承运商id进行审核通过/拒绝/冻结_改版
+     * @param dto
+     * @return
+     */
+    ResultVo verifyCarrierNew(OperateDto dto);
     /*********************************韵车集成改版 ed*****************************/
 }
