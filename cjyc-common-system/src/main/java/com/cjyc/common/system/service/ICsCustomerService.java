@@ -10,6 +10,7 @@ import com.cjyc.common.model.vo.customer.customerLine.CustomerLineVo;
 import com.cjyc.common.model.vo.salesman.customer.SalesCustomerListVo;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.salesman.mine.AppContractVo;
 
 import java.util.List;
 
@@ -72,5 +73,5 @@ public interface ICsCustomerService {
 
     ResultVo<SalesCustomerListVo> findKeyCustomer(SalesCustomerDto dto);
 
-    ResultVo findCustomerContract(AppCustomerIdDto dto);
+    ResultVo<AppContractVo> findCustomerContract(AppCustomerIdDto dto);
 }
