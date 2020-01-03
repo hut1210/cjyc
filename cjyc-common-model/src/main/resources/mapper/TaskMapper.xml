@@ -391,10 +391,7 @@
                 <if test="startAddress != null and startAddress.trim() != ''">
                     and task.guide_line like concat('%',#{startAddress},'%')
                 </if>
-                <if test="(startAddress != null and startAddress.trim() != '') and (endAddress != null and endAddress.trim() != '')">
-                    and task.guide_line like concat('%',#{endAddress},'%')
-                </if>
-                <if test="(startAddress == null or startAddress.trim() == '') and (endAddress != null and endAddress.trim() != '')">
+                <if test="endAddress != null and endAddress.trim() != ''">
                     and task.guide_line like concat('%-',#{endAddress},'%')
                 </if>
                 <if test="completeTimeS != null and completeTimeS != 0">
@@ -407,6 +404,7 @@
         ) t
         LEFT JOIN w_waybill w ON t.waybill_id = w.id
         LEFT JOIN w_waybill_car car ON t.waybill_car_id = car.id
+        where w.type in(1,3)
         GROUP BY t.id
     </select>
 
