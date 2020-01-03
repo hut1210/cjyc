@@ -6,8 +6,9 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.redis.lock.RedisDistributedLock;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.customer.invoice.InvoiceApplyQueryDto;
-import com.cjyc.common.model.dto.customer.order.*;
-import com.cjyc.common.model.dto.web.order.SaveOrderDto;
+import com.cjyc.common.model.dto.customer.order.OrderDetailDto;
+import com.cjyc.common.model.dto.customer.order.OrderQueryDto;
+import com.cjyc.common.model.dto.customer.order.SimpleSaveOrderDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
@@ -171,18 +172,14 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
     private void fillData(OrderCenterDetailVo detailVo, Order order) {
         BeanUtils.copyProperties(order,detailVo);
         StringBuilder start = new StringBuilder();
-        start.append(order.getStartProvince() == null ? "" : order.getStartProvince());
-        start.append(" ");
-        start.append(order.getStartCity() == null ? "" : order.getStartCity());
-        start.append(" ");
+        start.append(order.getStartProvince() == null ? "" : order.getStartProvince()+" ");
+        start.append(order.getStartCity() == null ? "" : order.getStartCity()+" ");
         start.append(order.getStartArea() == null ? "" : order.getStartArea());
         detailVo.setStartProvinceCityAreaName(start.toString().trim());
 
         StringBuilder end = new StringBuilder();
-        end.append(order.getEndProvince() == null ? "" : order.getEndProvince());
-        end.append(" ");
-        end.append(order.getEndCity() == null ? "" : order.getEndCity());
-        end.append(" ");
+        end.append(order.getEndProvince() == null ? "" : order.getEndProvince()+" ");
+        end.append(order.getEndCity() == null ? "" : order.getEndCity()+" ");
         end.append(order.getEndArea() == null ? "" : order.getEndArea());
         detailVo.setEndProvinceCityAreaName(end.toString().trim());
     }
