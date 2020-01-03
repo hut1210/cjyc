@@ -407,6 +407,7 @@
         ) t
         LEFT JOIN w_waybill w ON t.waybill_id = w.id
         LEFT JOIN w_waybill_car car ON t.waybill_car_id = car.id
+        where w.type in(1,3)
         GROUP BY t.id
     </select>
 
