@@ -17,6 +17,7 @@ import com.cjyc.common.model.exception.ServerException;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.salesman.customer.SalesCustomerVo;
+import com.cjyc.common.model.vo.salesman.mine.AppContractVo;
 import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.feign.ISysUserService;
@@ -201,9 +202,11 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
     }
 
     @Override
-    public ResultVo<List<Map<String,Object>>> findCustomerContract(AppCustomerIdDto dto) {
+    public ResultVo<AppContractVo> findCustomerContract(AppCustomerIdDto dto) {
         Long now = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
         List<Map<String,Object>> contractList = customerDao.getContractByCustomerId(dto.getCustomerId(),now);
-        return BaseResultUtil.success(contractList);
+        AppContractVo vo = new AppContractVo();
+        vo.setList(contractList);
+        return BaseResultUtil.success(vo);
     }
 }
