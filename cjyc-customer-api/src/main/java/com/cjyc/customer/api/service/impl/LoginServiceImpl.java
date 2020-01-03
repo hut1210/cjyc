@@ -39,6 +39,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
@@ -208,6 +209,7 @@ public class LoginServiceImpl extends SuperServiceImpl<ICustomerDao, Customer> i
     /************************************韵车集成改版 st***********************************/
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public ResultVo<CustomerLoginVo> loginNew(LoginDto dto) {
         Customer customer = customerDao.selectOne(new QueryWrapper<Customer>().lambda()
                 .eq(Customer::getContactPhone, dto.getPhone()));
