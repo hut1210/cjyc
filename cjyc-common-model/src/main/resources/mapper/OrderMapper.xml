@@ -466,7 +466,8 @@
             wo.allot_to_user_name as allotToUserName,
             wo.expect_start_date AS expectStartDate,
             wo.customer_type AS customerType,
-            wo.car_num AS carNum
+            wo.car_num AS carNum,
+            wo.input_store_id AS inputStoreId
         FROM
             w_order wo
         <where>
