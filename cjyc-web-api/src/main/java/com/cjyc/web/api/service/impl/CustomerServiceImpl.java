@@ -1058,7 +1058,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         }
         Role role = csRoleService.getByName(YmlProperty.get("cjkj.customer_copartner_role_name"), DeptTypeEnum.CUSTOMER.code);
         if(role == null){
-            return BaseResultUtil.fail("角色不存在，请先添加角色");
+            return BaseResultUtil.fail("角色不存在,请先添加角色");
         }
         //审核通过
         if(dto.getFlag() == FlagEnum.AUDIT_PASS.code){
