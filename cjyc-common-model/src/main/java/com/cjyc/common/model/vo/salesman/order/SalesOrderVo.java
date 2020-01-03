@@ -49,8 +49,13 @@ public class SalesOrderVo implements Serializable {
     @ApiModelProperty(value = "车辆总数")
     private Integer carNum;
 
+    @ApiModelProperty(value = "订单所属业务中心")
+    @JsonSerialize(using= ToStringSerializer.class)
+    private Long inputStoreId;
+
     public String getAllotToUserName(){return StringUtils.isBlank(allotToUserName) ? "":allotToUserName;}
     public String getStartCity(){return StringUtils.isBlank(startCity) ? "":startCity;}
     public String getEndCity(){return StringUtils.isBlank(endCity) ? "":endCity;}
     public Long getExpectStartDate(){return expectStartDate == null ? 0:expectStartDate;}
+    public Long getInputStoreId(){return inputStoreId == null ? 0:inputStoreId;}
 }
