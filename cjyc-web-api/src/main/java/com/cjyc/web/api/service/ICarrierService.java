@@ -97,5 +97,12 @@ public interface ICarrierService {
      * @return
      */
     ResultVo verifyCarrierNew(OperateDto dto);
+
+    /**
+     * 根据承运商carrierId查看承运商信息_改版
+     * @param carrierId
+     * @return
+     */
+    ResultVo showBaseCarrierNew(Long carrierId);
     /*********************************韵车集成改版 ed*****************************/
 }

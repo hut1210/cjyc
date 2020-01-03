@@ -471,4 +471,37 @@
             order by dc.create_time desc,dc.check_time desc
         </where>
     </select>
+
+    <!-- 根据承运商id查看承运商信息 -->
+    <select id="showCarrierByIdNew" resultType="com.cjyc.common.model.vo.web.carrier.BaseCarrierVo"
+            parameterType="java.lang.Long">
+        SELECT
+            dc.id AS carrierId,
+            dc.NAME AS NAME,
+            dc.linkman AS linkman,
+            dc.linkman_phone AS linkmanPhone,
+            dc.legal_name AS legalName,
+            dc.legal_id_card AS legalIdCard,
+            dc.bus_license_front_img AS busLicenseFrontImg,
+            dc.bus_license_back_img AS busLicenseBackImg,
+            dc.transport_license_front_img AS transportLicenseFrontImg,
+            dc.transport_license_back_img AS transportLicenseBackImg,
+            dc.bank_open_front_img AS bankOpenFrontImg,
+            dc.bank_open_back_img AS bankOpenBackImg,
+            dc.settle_period,
+            dc.settle_type AS settleType,
+            dc.MODE AS MODE,
+            dc.is_invoice AS isInvoice,
+            sbcb.card_type AS cardType,
+            sbcb.card_name AS cardName,
+            sbcb.bank_name AS bankName,
+            sbcb.card_no AS cardNo
+        FROM
+            d_carrier dc
+            LEFT JOIN (SELECT * FROM s_user_role_dept WHERE dept_type = 2 AND user_type = 2) urd
+            ON urd.dept_id = dc.id
+            LEFT JOIN d_driver dd ON dd.id = urd.user_id
+            LEFT JOIN s_bank_card_bind sbcb ON sbcb.user_id = dc.id
+          where dc.id = #{carrierId} group by dc.id
+    </select>
 </mapper>

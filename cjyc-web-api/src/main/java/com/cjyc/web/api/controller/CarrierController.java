@@ -125,5 +125,11 @@ public class CarrierController {
     public ResultVo verifyCarrierNew(@RequestBody OperateDto dto){
         return carrierService.verifyCarrierNew(dto);
     }
+
+    @ApiOperation(value = "根据carrierId查看基本承运商信息_改版")
+    @PostMapping(value = "/showBaseCarrierNew/{carrierId}")
+    public ResultVo<BaseCarrierVo> showBaseCarrierNew(@PathVariable @ApiParam(value = "承运商id",required = true) Long carrierId){
+        return carrierService.showBaseCarrierNew(carrierId);
+    }
     /*********************************韵车集成改版 ed*****************************/
 }

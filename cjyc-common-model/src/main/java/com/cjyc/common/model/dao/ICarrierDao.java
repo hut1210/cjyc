@@ -124,5 +124,12 @@ public interface ICarrierDao extends BaseMapper<Carrier> {
      * @return
      */
     List<CarrierVo> getCarrierByTermNew(SeleCarrierDto dto);
+
+    /**
+     * 根据承运商id查看承运商信息
+     * @param carrierId
+     * @return
+     */
+    BaseCarrierVo showCarrierByIdNew(@Param("carrierId") Long carrierId);
     /*********************************韵车集成改版 ed*****************************/
 }

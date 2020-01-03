@@ -494,6 +494,15 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         super.updateById(carrier);
         return BaseResultUtil.success();
     }
+
+    @Override
+    public ResultVo showBaseCarrierNew(Long carrierId) {
+        BaseCarrierVo vo = carrierDao.showCarrierByIdNew(carrierId);
+        if(vo != null){
+            vo.setMapCodes(carrierCityConService.getMapCodes(carrierId));
+        }
+        return BaseResultUtil.success(vo);
+    }
     /*********************************韵车集成改版 ed*****************************/
     /**
      * 封装承运商excel请求
