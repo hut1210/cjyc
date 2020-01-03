@@ -3,9 +3,11 @@ package com.cjyc.salesman.api.controller;
 import com.cjyc.common.model.dto.CommonDto;
 import com.cjyc.common.model.dto.KeywordDto;
 import com.cjyc.common.model.dto.AdminDto;
+import com.cjyc.common.model.dto.customer.AppCustomerDto;
 import com.cjyc.common.model.dto.customer.freightBill.FindStoreDto;
 import com.cjyc.common.model.dto.customer.freightBill.TransportDto;
 import com.cjyc.common.model.dto.salesman.customer.SalesCustomerDto;
+import com.cjyc.common.model.dto.web.customer.CustomerContractDto;
 import com.cjyc.common.model.vo.salesman.customer.SalesCustomerListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -16,12 +18,10 @@ import com.cjyc.common.model.vo.web.carSeries.CarSeriesTree;
 import com.cjyc.common.system.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -88,6 +88,7 @@ public class BasicController {
     public ResultVo<SalesCustomerListVo> findKeyCustomer(@RequestBody SalesCustomerDto dto){
         return csCustomerService.findKeyCustomer(dto);
     }
+
 
     @ApiOperation(value = "获取运价")
     @PostMapping(value = "/linePriceByCode")

@@ -339,7 +339,7 @@
                 cc.contact_phone like concat('%',#{phone},'%')
             </if>
             <if test="name != null and name.trim() !=''">
-                and cc.contact_man like concat('%',#{name},'%')
+                or cc.contact_man like concat('%',#{name},'%')
             </if>
             and cc.type = 2 and cc.state = 2
         </where>
