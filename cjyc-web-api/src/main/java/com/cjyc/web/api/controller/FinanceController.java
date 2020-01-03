@@ -129,4 +129,10 @@ public class FinanceController {
         return financeService.getPaidList(payMentQueryDto);
     }
 
+    @ApiOperation(value = "财务应付账款列表")
+    @PostMapping(value = "/getFinancePayableList")
+    public ResultVo<PageVo<FinanceReceiptVo>> getFinancePayableList(@RequestBody PayableQueryDto payableQueryDto){
+        return financeService.getFinancePayableList(payableQueryDto);
+    }
+
 }

@@ -309,4 +309,12 @@ public class FinanceServiceImpl implements IFinanceService {
     public ResultVo updateBackState(String wayBillNo) {
         return BaseResultUtil.success();
     }
+
+    @Override
+    public ResultVo<PageVo<FinanceReceiptVo>> getFinancePayableList(PayableQueryDto payableQueryDto) {
+        PageHelper.startPage(payableQueryDto.getCurrentPage(), payableQueryDto.getPageSize());
+        List<FinanceReceiptVo> financeVoList = financeDao.getFinancePayableList(payableQueryDto);
+        PageInfo<FinanceReceiptVo> pageInfo = new PageInfo<>(financeVoList);
+        return BaseResultUtil.success(pageInfo);
+    }
 }
