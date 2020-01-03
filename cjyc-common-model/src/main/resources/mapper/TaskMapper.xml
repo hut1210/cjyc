@@ -450,6 +450,7 @@
             w.type AS type,
             car.unload_time AS unloadTime,
             car.load_time AS loadTime,
+            car.state AS storageState,
             sum(car.freight_fee) AS freightFee
         FROM
             ( SELECT
