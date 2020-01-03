@@ -161,4 +161,69 @@ public interface ICustomerService  extends IService<Customer> {
      * @param response
      */
     void exportPartnerExcel(HttpServletRequest request, HttpServletResponse response);
+
+    /************************************韵车集成改版 st***********************************/
+
+    /**
+     *  新增移动端用户
+     * @param dto
+     * @return
+     */
+    ResultVo saveCustomerNew(CustomerDto dto);
+
+    /**
+     * 更新移动端用户
+     * @param dto
+     * @return
+     */
+    ResultVo modifyCustomerNew(CustomerDto dto);
+
+    /**
+     * 新增修改大客户&合同
+     * @param dto
+     * @return
+     */
+    ResultVo saveOrModifyKeyNew(KeyCustomerDto dto);
+
+    /**
+     * 新增修改合伙人
+     * @param dto
+     * @return
+     */
+    ResultVo saveOrModifyPartnerNew(PartnerDto dto);
+
+    /**
+     * 根据条件查询C端客户
+     * @param dto
+     * @return
+     */
+    ResultVo<PageVo<CustomerVo>> findCustomerNew(SelectCustomerDto dto);
+
+    /**
+     * 根据条件查询大客户
+     * @param dto
+     * @return
+     */
+    ResultVo<PageVo<ListKeyCustomerVo>> findKeyCustomerNew(SelectKeyCustomerDto dto);
+
+    /**
+     * 根据条件查询合伙人
+     * @param dto
+     * @return
+     */
+    ResultVo<PageVo<CustomerPartnerVo>> findPartnerNew(CustomerPartnerDto dto);
+
+    /**
+     * 审核/冻结/解冻客户
+     * @param dto
+     * @return
+     */
+    ResultVo verifyCustomerNew(OperateDto dto);
+
+    /**
+     * 根据输入手机号/用户名称模糊查询用户信息
+     * @param keyword
+     * @return
+     */
+    ResultVo findCustomerByKey(String keyword);
 }

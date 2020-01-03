@@ -8,21 +8,26 @@ import com.cjkj.usercenter.dto.common.UpdateUserReq;
 import com.cjyc.common.model.dao.IBankCardBindDao;
 import com.cjyc.common.model.dao.ICustomerDao;
 import com.cjyc.common.model.dao.ICustomerPartnerDao;
+import com.cjyc.common.model.dao.IUserRoleDeptDao;
 import com.cjyc.common.model.dto.customer.partner.ApplyPartnerDto;
 import com.cjyc.common.model.entity.BankCardBind;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.entity.CustomerPartner;
+import com.cjyc.common.model.entity.UserRoleDept;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.UseStateEnum;
 import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.enums.customer.CustomerSourceEnum;
 import com.cjyc.common.model.enums.customer.CustomerStateEnum;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
+import com.cjyc.common.model.enums.role.DeptTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.ExcelUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.feign.ISysUserService;
+import com.cjyc.common.system.service.ICsUserRoleDeptService;
 import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.customer.api.service.IApplyPartnerService;
 import lombok.extern.slf4j.Slf4j;
@@ -44,6 +49,10 @@ public class ApplyPartnerServiceImpl extends ServiceImpl<ICustomerDao, Customer>
     private IBankCardBindDao bankCardBindDao;
     @Resource
     private ICustomerDao customerDao;
+    @Resource
+    private IUserRoleDeptDao userRoleDeptDao;
+    @Resource
+    private ICsUserRoleDeptService csUserRoleDeptService;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -81,4 +90,47 @@ public class ApplyPartnerServiceImpl extends ServiceImpl<ICustomerDao, Customer>
         bankCardBindDao.insert(bcb);
         return BaseResultUtil.success();
     }
+
+
+    /************************************韵车集成改版 st***********************************/
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ResultVo applyPartnerNew(ApplyPartnerDto dto) {
+        Customer customer = customerDao.selectById(dto.getLoginId());
+        UserRoleDept urd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
+                .eq(UserRoleDept::getUserId, dto.getLoginId())
+                .eq(UserRoleDept::getDeptType, DeptTypeEnum.CUSTOMER.code)
+                .eq(UserRoleDept::getUserType, UserTypeEnum.CUSTOMER.code));
+        if(customer == null || urd == null){
+            return BaseResultUtil.fail("该用户不存在,请检查");
+        }
+        if(urd.getState() == CommonStateEnum.IN_CHECK.code){
+            //删除合伙人信息与银行卡信息
+            customerPartnerDao.delete(new QueryWrapper<CustomerPartner>().lambda().eq(CustomerPartner::getCustomerId,customer.getId()));
+            bankCardBindDao.delete(new QueryWrapper<BankCardBind>().lambda().eq(BankCardBind::getUserId,customer.getId()));
+        }
+        BeanUtils.copyProperties(dto,customer);
+        customer.setAlias(dto.getName());
+        customer.setSource(CustomerSourceEnum.UPGRADE.code);
+        super.updateById(customer);
+
+        //更新用户与角色机构关系
+        csUserRoleDeptService.updateCustomerToUserRoleDept(customer,dto.getLoginId());
+
+        //合伙人附加信息
+        CustomerPartner cp = new CustomerPartner();
+        BeanUtils.copyProperties(dto,cp);
+        cp.setCustomerId(customer.getId());
+        customerPartnerDao.insert(cp);
+        //创建合伙人银行信息
+        BankCardBind bcb = new BankCardBind();
+        BeanUtils.copyProperties(dto,bcb);
+        bcb.setUserId(dto.getLoginId());
+        bcb.setUserType(UserTypeEnum.CUSTOMER.code);
+        bcb.setState(UseStateEnum.USABLE.code);
+        bcb.setCreateTime(NOW);
+        bankCardBindDao.insert(bcb);
+        return BaseResultUtil.success();
+    }
+
 }

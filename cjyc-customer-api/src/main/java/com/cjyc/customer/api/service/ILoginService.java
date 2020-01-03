@@ -29,4 +29,12 @@ public interface ILoginService extends IService<Customer> {
     ResultVo<CustomerLoginVo> loginByPhone(LoginByPhoneDto captchaValidatedDto);
 
 
+    /************************************韵车集成改版 st***********************************/
+
+    /**
+     * 用户端登录
+     * @param dto
+     * @return
+     */
+    ResultVo<CustomerLoginVo> loginNew(LoginDto dto);
 }

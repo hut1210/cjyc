@@ -154,4 +154,26 @@
         GROUP BY ba.phone
         ORDER BY create_time DESC
     </select>
+
+    <select id="getMineSalesmanList" resultType="com.cjyc.common.model.vo.web.mineStore.MySalesmanVo">
+        SELECT
+        ba.id, ba.user_id, ba.state, ba.`name`, ba.phone as account,
+        ba.phone, GROUP_CONCAT(sr.role_name) roles,
+        ba.biz_desc, ba.create_time, ba.create_user,
+        (CASE WHEN ( SELECT contact_admin_id FROM s_store WHERE contact_admin_id = ba.id ) IS NULL
+        THEN FALSE ELSE TRUE END ) isContactPerson
+        FROM
+        (SELECT * FROM s_user_role_dept WHERE dept_type = 1 AND user_type = 1 AND dept_id = #{param.storeId}) sur
+        LEFT JOIN b_admin ba ON ba.id = sur.user_id
+        LEFT JOIN s_role sr ON sr.id = sur.role_id
+        <where>
+            <if test="param.name != null and param.name != ''">
+                AND ba.`name` LIKE CONCAT('%', #{param.name}, '%')
+            </if>
+            <if test="param.phone != null and param.phone != ''">
+                AND ba.phone LIKE CONCAT('%', #{param.phone}, '%')
+            </if>
+        </where>
+        GROUP BY ba.phone
+    </select>
 </mapper>

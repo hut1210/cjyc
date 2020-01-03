@@ -29,4 +29,14 @@ public class ApplyPartnerController {
     public ResultVo applyPartner(@Validated @RequestBody ApplyPartnerDto dto) {
         return applyPartnerService.applyPartner(dto);
     }
+
+
+    /************************************韵车集成改版 st***********************************/
+
+    @ApiOperation(value = "申请合伙人")
+    @PostMapping(value = "/applyPartnerNew")
+    public ResultVo applyPartnerNew(@Validated @RequestBody ApplyPartnerDto dto) {
+        return applyPartnerService.applyPartnerNew(dto);
+    }
+
 }

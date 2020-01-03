@@ -147,4 +147,62 @@ public class CustomerController {
     public void exportPartnerExcel(HttpServletRequest request, HttpServletResponse response){
         customerService.exportPartnerExcel(request,response);
     }
+
+    /************************************韵车集成改版 st***********************************/
+
+    @ApiOperation(value = "新增移动端用户")
+    @PostMapping(value = "/saveCustomerNew")
+    public ResultVo saveCustomerNew(@Validated @RequestBody CustomerDto customerDto){
+        return customerService.saveCustomerNew(customerDto);
+    }
+
+    @ApiOperation(value = "更新移动端用户")
+    @PostMapping(value = "/modifyCustomerNew")
+    public ResultVo modifyCustomerNew(@Validated @RequestBody CustomerDto customerDto){
+        return customerService.modifyCustomerNew(customerDto);
+    }
+
+    @ApiOperation(value = "新增/修改大客户&合同")
+    @PostMapping(value = "/saveOrModifyKeyNew")
+    public ResultVo saveOrModifyKeyNew(@Validated @RequestBody KeyCustomerDto dto){
+        return customerService.saveOrModifyKeyNew(dto);
+    }
+
+    @ApiOperation(value = "新增/修改合伙人")
+    @PostMapping(value = "/saveOrModifyPartnerNew")
+    public ResultVo saveOrModifyPartnerNew(@Validated  @RequestBody PartnerDto dto){
+        return customerService.saveOrModifyPartnerNew(dto);
+    }
+
+    @ApiOperation(value = "根据条件查询移动端用户")
+    @PostMapping(value = "/findCustomerNew")
+    public ResultVo<PageVo<CustomerVo>> findCustomerNew(@RequestBody SelectCustomerDto dto){
+        return customerService.findCustomerNew(dto);
+    }
+
+    @ApiOperation(value = "根据条件查询大客户")
+    @PostMapping(value = "/findKeyCustomerNew")
+    public ResultVo<PageVo<ListKeyCustomerVo>> findKeyCustomerNew(@RequestBody SelectKeyCustomerDto dto){
+        return customerService.findKeyCustomerNew(dto);
+    }
+
+    @ApiOperation(value = "根据条件分页查看合伙人")
+    @PostMapping(value = "/findPartnerNew")
+    public ResultVo<PageVo<CustomerPartnerVo>> findPartnerNew(@RequestBody CustomerPartnerDto dto){
+        return customerService.findPartnerNew(dto);
+    }
+
+
+    @ApiOperation(value = "当前登陆用户loginId冻结/解冻/审核用户")
+    @PostMapping(value = "/verifyCustomerNew")
+    public ResultVo verifyCustomerNew(@RequestBody OperateDto dto){
+        return customerService.verifyCustomerNew(dto);
+    }
+
+
+    @ApiOperation(value = "根据输入手机号/用户名称模糊查询用户信息")
+    @PostMapping(value = "/getAllCustomerByKeyNew/{keyword}")
+    public ResultVo findCustomerByKey(@PathVariable @ApiParam(value = "手机号/用户名",required = true) String keyword){
+        return customerService.findCustomerByKey(keyword);
+    }
 }

@@ -106,4 +106,24 @@ public class CarrierController {
         carrierService.exportCarrierExcel(request,response);
     }
 
+
+    /*********************************韵车集成改版 st*****************************/
+    @ApiOperation(value = "改版：新增/修改承运商")
+    @PostMapping(value = "/saveOrModifyCarrierNew")
+    public ResultVo saveOrModifyCarrierNew(@Validated @RequestBody CarrierDto dto){
+        return carrierService.saveOrModifyCarrierNew(dto);
+    }
+
+    @ApiOperation(value = "根据条件查询承运商_改版")
+    @PostMapping(value = "/findCarrierNew")
+    public ResultVo<PageVo<CarrierVo>> findCarrierNew(@RequestBody SeleCarrierDto dto){
+        return carrierService.findCarrierNew(dto);
+    }
+
+    @ApiOperation(value = "根据id审核/冻结/解冻承运商_改版")
+    @PostMapping(value = "/verifyCarrierNew")
+    public ResultVo verifyCarrierNew(@RequestBody OperateDto dto){
+        return carrierService.verifyCarrierNew(dto);
+    }
+    /*********************************韵车集成改版 ed*****************************/
 }
