@@ -892,10 +892,10 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 failCarNoSet.add(new FailResultReasonVo(orderCarNo, "车辆，尚未开始配送"));
                 continue;
             }
-            //更新车辆状态
-            orderCarDao.updateForFinish(orderCar.getId());
             //处理车辆相关运单车辆
             waybillCarDao.updateForFinish(waybillCar.getId());
+            //更新车辆状态
+            orderCarDao.updateForFinish(orderCar.getId());
 
             //添加日志
             csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.IN_STORE,

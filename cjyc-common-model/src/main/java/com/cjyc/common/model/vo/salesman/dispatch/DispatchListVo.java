@@ -20,6 +20,10 @@ public class DispatchListVo {
     @ApiModelProperty(value = "订单号")
     private String orderNo;
     @ApiModelProperty(value = "车辆编号")
+    private String orderCarNo;
+    @ApiModelProperty(value = "车辆ID")
+    private String orderCarId;
+    @ApiModelProperty(value = "车辆编号")
     private String carNo;
     @ApiModelProperty(value = "提车日期")
     private Long pickDate;

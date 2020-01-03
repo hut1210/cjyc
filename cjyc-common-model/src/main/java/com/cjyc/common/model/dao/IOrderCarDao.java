@@ -168,7 +168,7 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
 
     List<OrderCarWaitDispatchVo> findWaitDispatchCarList(@Param("paramsDto") WaitDispatchListOrderCarDto paramsDto);
 
-    List<DispatchListVo> findWaitDispatchCarListForApp(DispatchListDto dto);
+    List<DispatchListVo> findWaitDispatchCarListForApp(@Param("param") DispatchListDto paramsDto);
 
     List<OrderCarWaitDispatchVo> findWaitDispatchTrunkCarList(@Param("paramsDto") WaitDispatchTrunkDto paramsDto);
 

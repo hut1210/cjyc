@@ -1141,6 +1141,8 @@
     <!-- 调度列表信息 -->
     <select id="getDispatchList" resultType="com.cjyc.common.model.vo.salesman.dispatch.DispatchListVo">
         SELECT c.* FROM (SELECT
+        b.orderCarId,
+        b.orderCarNo,
         b.brand, b.model, b.orderNo, b.carNo, b.pickDate, b.orderStartCity, b.orderEndCity, b.wayBillId,
         b.wayBillNo, b.liftCarMode,
         (CASE WHEN ISNULL(b.trunkMode) = 1 THEN CONCAT(b.orderStartCity,'-',b.orderEndCity)
@@ -1167,6 +1169,8 @@
         FROM
         (
         SELECT
+        a.orderCarId,
+        a.orderCarNo,
         a.brand,
         a.model,
         a.order_no AS orderNo,
@@ -1194,6 +1198,8 @@
         FROM
         (
         SELECT
+        woc.id as orderCarId,
+        woc.no as orderCarNo,
         woc.brand,
         woc.model,
         woc.order_no,

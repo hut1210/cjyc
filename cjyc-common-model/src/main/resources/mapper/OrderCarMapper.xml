@@ -1392,24 +1392,25 @@
         join w_order_car oc on oc.order_id = o.id
         join s_store s on s.id = o.start_store_id
         where o.state between 25 and 100
-        and oc.state &lt; 100
+        and oc.state &lt; 25
         and oc.pick_state &lt; 5
         and oc.pick_type &lt; 4
     </sql>
     <sql id="back_wait_dispatch_car_list_For_App">
         select
-        o.end_province_code as dispatchEndProvinceCode,
-        o.end_province as dispatchEndProvince,
-        o.end_city_code as dispatchEndCityCode,
-        o.end_city as dispatchEndCity,
-        o.end_area_code as dispatchEndAreaCode,
-        o.end_area as dispatchEndArea,
         (case when s.id is not null and s.id > 0 then s.province_code else null end) as dispatchStartProvinceCode,
         (case when s.id is not null and s.id > 0 then s.province else null end) as dispatchStartProvince,
         (case when s.id is not null and s.id > 0 then s.city_code else null end) as dispatchStartCityCode,
         (case when s.id is not null and s.id > 0 then s.city else null end) as dispatchStartCity,
         (case when s.id is not null and s.id > 0 then s.area_code else null end) as dispatchStartAreaCode,
         (case when s.id is not null and s.id > 0 then s.area else null end) as dispatchStartArea,
+
+        o.end_province_code as dispatchEndProvinceCode,
+        o.end_province as dispatchEndProvince,
+        o.end_city_code as dispatchEndCityCode,
+        o.end_city as dispatchEndCity,
+        o.end_area_code as dispatchEndAreaCode,
+        o.end_area as dispatchEndArea,
 
         o.input_store_id as inputStoreId,
         o.start_city as startCity,
@@ -1428,23 +1429,23 @@
         where o.state between 25 and 100
         and oc.state &lt; 100
         and oc.back_state &lt; 5
-        and oc.state >= 45
         and oc.back_type &lt; 4
     </sql>
     <sql id="trunk_wait_dispatch_car_list_For_App">
         select
-        o.end_province_code as dispatchEndProvinceCode,
-        o.end_province as dispatchEndProvince,
-        o.end_city_code as dispatchEndCityCode,
-        o.end_city as dispatchEndCity,
-        o.end_area_code as dispatchEndAreaCode,
-        o.end_area as dispatchEndArea,
-        (case when s.id is not null and s.id > 0 then s.province_code else null end) as dispatchStartProvinceCode,
-        (case when s.id is not null and s.id > 0 then s.province else null end) as dispatchStartProvince,
-        (case when s.id is not null and s.id > 0 then s.city_code else null end) as dispatchStartCityCode,
-        (case when s.id is not null and s.id > 0 then s.city else null end) as dispatchStartCity,
-        (case when s.id is not null and s.id > 0 then s.area_code else null end) as dispatchStartAreaCode,
-        (case when s.id is not null and s.id > 0 then s.area else null end) as dispatchStartArea,
+        (case when ss.id is not null and ss.id > 0 then ss.province_code else o.start_province_code end) as dispatchStartProvinceCode,
+        (case when ss.id is not null and ss.id > 0 then ss.province else o.start_province end) as dispatchStartProvince,
+        (case when ss.id is not null and ss.id > 0 then ss.city_code else o.start_city_code end) as dispatchStartCityCode,
+        (case when ss.id is not null and ss.id > 0 then ss.city else o.start_city end) as dispatchStartCity,
+        (case when ss.id is not null and ss.id > 0 then ss.area_code else o.start_area_code end) as dispatchStartAreaCode,
+        (case when ss.id is not null and ss.id > 0 then ss.area else o.start_area end) as dispatchStartArea,
+
+        (case when se.id is not null and se.id > 0 then se.province_code else o.end_province_code end) as dispatchEndProvinceCode,
+        (case when se.id is not null and se.id > 0 then se.province else o.end_province end) as dispatchEndProvince,
+        (case when se.id is not null and se.id > 0 then se.city_code else o.end_city_code end) as dispatchEndCityCode,
+        (case when se.id is not null and se.id > 0 then se.city else o.end_city end) as dispatchEndCity,
+        (case when se.id is not null and se.id > 0 then se.area_code else o.end_area_code end) as dispatchEndAreaCode,
+        (case when se.id is not null and se.id > 0 then se.area else o.end_area end) as dispatchEndArea,
 
         o.input_store_id as inputStoreId,
         o.start_city as startCity,
@@ -1459,44 +1460,81 @@
         oc.vin as vin
         from w_order o
         join w_order_car oc on oc.order_id = o.id
-        join s_store s on s.id = o.end_store_id
+        join s_store ss on ss.id = o.start_store_id
+        join s_store se on se.id = o.end_store_id
         where o.state between 25 and 100
-        and oc.state &lt; 100
+        and oc.state &lt; 45
         and oc.trunk_state &lt; 5
     </sql>
     <select id="findWaitDispatchCarListForApp" resultType="com.cjyc.common.model.vo.salesman.dispatch.DispatchListVo">
-
-        <include refid="trunk_wait_dispatch_car_list"/>
+        select
+        shell.inputStoreId,
+        shell.startCity,
+        shell.startCityCode,
+        shell.startBelongStoreId,
+        shell.endCity,
+        shell.endCityCode,
+        shell.endBelongStoreId,
+        shell.expectStartDate,
+        shell.orderCarId,
+        shell.orderCarNo,
+        shell.vin
+        from (
+            <choose>
+                <when test="param.dispatchType == 1">
+                    <include refid="pick_wait_dispatch_car_list_For_App"/>
+                </when>
+                <when test="param.dispatchType == 2">
+                    <include refid="trunk_wait_dispatch_car_list_For_App"/>
+                </when>
+                <when test="param.dispatchType == 3">
+                    <include refid="back_wait_dispatch_car_list_For_App"/>
+                </when>
+                <otherwise>
+                    <include refid="pick_wait_dispatch_car_list_For_App"/>
+                    union
+                    <include refid="trunk_wait_dispatch_car_list_For_App"/>
+                    union
+                    <include refid="back_wait_dispatch_car_list_For_App"/>
+                </otherwise>
+            </choose>
+        ) as shell
         <where>
-            <if test="paramsDto.startProvinceCode != null and paramsDto.startProvinceCode != ''">
-                and shell.dispatchStartProvinceCode = #{paramsDto.startProvinceCode,jdbcType=VARCHAR}
+            <if test="param.searchValue != null and param.searchValue != ''">
+                and (c.vin LIKE CONCAT('%',#{param.searchValue},'%') or
+                c.orderNo LIKE CONCAT('%',#{param.searchValue},'%') or
+                c.wayBillNo LIKE CONCAT('%',#{param.searchValue},'%'))
             </if>
-            <if test="paramsDto.startCityCode != null and paramsDto.startCityCode != ''">
-                and shell.dispatchStartCityCode = #{paramsDto.startCityCode,jdbcType=VARCHAR}
+            <if test="param.pickDateSt != null and param.pickDateSt > 0">
+                and c.pickDate &gt;= #{param.pickDateSt}
             </if>
-            <if test="paramsDto.startAreaCode != null and paramsDto.startAreaCode != ''">
-                and shell.dispatchStartAreaCode = #{paramsDto.startAreaCode,jdbcType=VARCHAR}
+            <if test="param.pickDateEd != null and param.pickDateEd > 0">
+                and c.pickDate &lt;= #{param.pickDateEd}
             </if>
-            <if test="paramsDto.endProvinceCode != null and paramsDto.endProvinceCode != ''">
-                and shell.dispatchEndProvinceCode = #{paramsDto.endProvinceCode,jdbcType=VARCHAR}
+            <if test="param.brand != null and param.brand !=''">
+                and c.brand LIKE CONCAT('%',#{param.brand},'%')
             </if>
-            <if test="paramsDto.endCityCode != null and paramsDto.endCityCode != ''">
-                and shell.dispatchEndCityCode = #{paramsDto.endCityCode,jdbcType=VARCHAR}
+            <if test="param.model != null and param.model != ''">
+                and c.model LIKE CONCAT('%',#{param.model},'%')
             </if>
-            <if test="paramsDto.endAreaCode != null and paramsDto.endAreaCode != ''">
-                and shell.dispatchEndAreaCode = #{paramsDto.endAreaCode,jdbcType=VARCHAR}
+            <if test="param.startCity != null and param.startCity != ''">
+                and c.stUnTrunk like CONCAT('%',#{param.startCity},'%')
             </if>
-            <if test="paramsDto.orderNo != null and paramsDto.orderNo != ''">
-                and shell.order_no like concat('%' #{paramsDto.orderNo,jdbcType=VARCHAR}, '%')
-            </if>
-            <if test="paramsDto.carNo != null and paramsDto.carNo != ''">
-                and shell.no like concat('%', #{paramsDto.carNo,jdbcType=VARCHAR}, '%')
-            </if>
-            <if test="paramsDto.vin != null and paramsDto.vin != ''">
-                and shell.vin like concat('%', #{paramsDto.vin,jdbcType=VARCHAR}, '%')
+            <if test="param.endCity != null and param.endCity != ''">
+                and c.edUnTrunk like CONCAT('%',#{param.endCity},'%')
             </if>
         </where>
-
+        group by shell.orderCarId
+        <if test="param.pickDateSort != null">
+            <choose>
+                <when test="param.pickDateSort == 1">
+                    ORDER BY c.pickDate ASC
+                </when>
+                <when test="param.pickDateSort == 2">
+                    ORDER BY c.pickDate DESC
+                </when>
+            </choose>
+        </if>
     </select>
 
     <!-- 业务员端我下的订单台数/全部订单的车辆 -->
