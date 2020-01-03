@@ -43,6 +43,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -92,6 +93,8 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     private ICsRoleService csRoleService;
     @Resource
     private ICsUserRoleDeptService csUserRoleDeptService;
+    @Resource
+    private IUserRoleDeptDao userRoleDeptDao;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -913,18 +916,108 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         customer.setCheckTime(NOW);
         super.updateById(customer);
         //修改用户与角色机构关系
-        csUserRoleDeptService.updateCustomerToUserRoleDept(customer.getId(),dto.getLoginId());
+        csUserRoleDeptService.updateCustomerToUserRoleDept(customer,dto.getLoginId());
         return BaseResultUtil.success();
     }
 
     @Override
     public ResultVo saveOrModifyKeyNew(KeyCustomerDto dto) {
-        return null;
+        //判断该手机号是否在库中存在
+        Customer customer = customerDao.selectOne(new QueryWrapper<Customer>().lambda()
+                            .eq(Customer::getContactPhone, dto.getContactPhone())
+                            .ne(dto.getCustomerId() != null,Customer::getId,dto.getCustomerId()));
+        if(dto.getCustomerId() == null){
+            if(customer != null){
+                return BaseResultUtil.fail("该客户已存在，请检查");
+            }
+            //新增大客户
+            customer = new Customer();
+            BeanUtils.copyProperties(dto,customer);
+            customer.setCustomerNo(sendNoService.getNo(SendNoTypeEnum.CUSTOMER));
+            customer.setAlias(dto.getName());
+            customer.setType(CustomerTypeEnum.ENTERPRISE.code);
+            customer.setSource(CustomerSourceEnum.WEB.code);
+            customer.setCreateTime(NOW);
+            customer.setCreateUserId(dto.getLoginId());
+            Role role = csRoleService.getByName(YmlProperty.get("cjkj.customer_key_role_name"), DeptTypeEnum.CUSTOMER.code);
+            if(role == null){
+                return BaseResultUtil.fail("大客户角色不存在，请先添加");
+            }
+            //保存大客户信息到物流平台
+            ResultData<Long> rd = csCustomerService.addUserToPlatform(dto.getContactPhone(),dto.getContactMan(),role);
+            if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+                return BaseResultUtil.fail(rd.getMsg());
+            }
+            if(rd.getData() != null){
+                customer.setUserId(rd.getData());
+            }
+            super.save(customer);
+            //合同集合
+            List<CustomerContractDto> customerConList = dto.getCustContraVos();
+            if(!CollectionUtils.isEmpty(customerConList)){
+                List<CustomerContract> list = encapCustomerContract(customer.getId(),customerConList);
+                customerContractService.saveBatch(list);
+            }
+            //保存用户角色机构关系
+            csUserRoleDeptService.saveCustomerToUserRoleDept(customer,role.getRoleId(),dto.getLoginId());
+        }else{
+            if(customer != null){
+                return BaseResultUtil.fail("该客户已存在，请检查");
+            }
+            return modifyKeyNew(dto);
+        }
+        return BaseResultUtil.success();
     }
 
     @Override
     public ResultVo saveOrModifyPartnerNew(PartnerDto dto) {
-        return null;
+        //新增/修改时，验证在大客户或者合伙人中是否存在
+        Customer customer = customerDao.selectOne(new QueryWrapper<Customer>().lambda()
+                .eq(Customer::getContactPhone,dto.getContactPhone())
+                .ne(Customer::getType,1)
+                .ne((dto.getCustomerId() != null),Customer::getId,dto.getCustomerId()));
+        if(customer != null){
+            return BaseResultUtil.fail("该用户已存在于大客户或者合伙人中");
+        }
+        //新增/修改时，验证在C端用户中是否存在
+        customer =  customerDao.selectOne(new QueryWrapper<Customer>().lambda()
+                .eq(Customer::getContactPhone,dto.getContactPhone())
+                .eq(Customer::getType,1));
+        if(customer != null){
+            if(dto.getFlag()){
+                UserRoleDept urd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
+                        .eq(UserRoleDept::getUserId, dto.getCustomerId())
+                        .eq(UserRoleDept::getDeptType, DeptTypeEnum.CUSTOMER.code)
+                        .eq(UserRoleDept::getUserType, UserTypeEnum.CUSTOMER.code));
+                if(urd == null){
+                    return BaseResultUtil.fail("数据错误,请先检查");
+                }
+                if((urd.getState() == CustomerStateEnum.FROZEN.code) || (urd.getState() == CustomerStateEnum.REJECT.code)){
+                    //冻结/审核拒绝
+                    return BaseResultUtil.fail("该账号已被冻结或被审核拒绝,不可升级");
+                }
+                //前端重置为true，升级为合伙人
+                BeanUtils.copyProperties(dto,customer);
+                customer.setAlias(dto.getName());
+                customer.setType(CustomerTypeEnum.COOPERATOR.code);
+                customer.setSource(CustomerSourceEnum.UPGRADE.code);
+                customer.setCreateUserId(dto.getLoginId());
+                customer.setCreateTime(NOW);
+                super.updateById(customer);
+                //合伙人附加信息
+                encapPartner(dto,customer,NOW);
+                return BaseResultUtil.success();
+            }else{
+                //返回前端，flag重置为true
+                return BaseResultUtil.getVo(ResultEnum.UPGRADE_CUSTOMER.getCode(),ResultEnum.UPGRADE_CUSTOMER.getMsg());
+            }
+        }
+        if(dto.getCustomerId() == null){
+            return addPartner(dto);
+        }else{
+            //修改
+            return modifyPartner(dto);
+        }
     }
 
     @Override
@@ -951,6 +1044,34 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     public ResultVo findCustomerByKey(String keyword) {
         List<Map<String,Object>> customerList = customerDao.findCustomerByKey(keyword);
         return BaseResultUtil.success(customerList);
+    }
+
+    private ResultVo modifyKeyNew(KeyCustomerDto dto){
+        Customer customer = customerDao.selectById(dto.getCustomerId());
+        if(null != customer){
+            //判断手机号是否存在
+            ResultData<Boolean> updateRd = csCustomerService.updateUserToPlatform(customer, dto.getContactPhone());
+            if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
+                log.error("修改用户信息失败，原因：" + updateRd.getMsg());
+                return BaseResultUtil.fail("修改用户信息失败，原因：" + updateRd.getMsg());
+            }
+            BeanUtils.copyProperties(dto,customer);
+            customer.setId(dto.getCustomerId());
+            customer.setAlias(dto.getName());
+            super.updateById(customer);
+
+            List<CustomerContractDto> contractDtos = dto.getCustContraVos();
+            List<CustomerContract> list = null;
+            if(!CollectionUtils.isEmpty(contractDtos)){
+                //批量删除
+                customerContractDao.removeKeyContract(dto.getCustomerId());
+                list = encapCustomerContract(customer.getId(),contractDtos);
+                customerContractService.saveBatch(list);
+            }
+            //修改用户与角色机构关系
+            csUserRoleDeptService.updateCustomerToUserRoleDept(customer,dto.getLoginId());
+        }
+        return BaseResultUtil.success();
     }
 
 }

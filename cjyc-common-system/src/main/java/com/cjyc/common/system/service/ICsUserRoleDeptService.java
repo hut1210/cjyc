@@ -13,8 +13,8 @@ public interface ICsUserRoleDeptService {
 
     /**
      * 修改用戶更新關係表
-     * @param userId
+     * @param customer
      * @param loginId
      */
-    void updateCustomerToUserRoleDept(Long userId,Long loginId);
+    void updateCustomerToUserRoleDept(Customer customer,Long loginId);
 }

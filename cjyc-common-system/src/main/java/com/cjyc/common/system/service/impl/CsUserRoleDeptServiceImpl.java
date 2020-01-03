@@ -43,11 +43,14 @@ public class CsUserRoleDeptServiceImpl implements ICsUserRoleDeptService {
     }
 
     @Override
-    public void updateCustomerToUserRoleDept(Long userId,Long loginId) {
+    public void updateCustomerToUserRoleDept(Customer customer,Long loginId) {
         UserRoleDept urd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
-                .eq(UserRoleDept::getUserId, userId)
+                .eq(UserRoleDept::getUserId, customer.getId())
                 .eq(UserRoleDept::getDeptType, DeptTypeEnum.CUSTOMER.code)
                 .eq(UserRoleDept::getUserType, UserTypeEnum.CUSTOMER.code));
+        if(customer.getType() != CustomerTypeEnum.INDIVIDUAL.code){
+            urd.setState(CommonStateEnum.WAIT_CHECK.code);
+        }
         urd.setUpdateUserId(loginId);
         urd.setUpdateTime(NOW);
         userRoleDeptDao.updateById(urd);
