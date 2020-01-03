@@ -4,6 +4,7 @@ import com.cjkj.common.model.ResultData;
 import com.cjkj.usercenter.dto.common.SelectRoleResp;
 import com.cjyc.common.model.dto.CommonDto;
 import com.cjyc.common.model.dto.salesman.customer.SalesCustomerDto;
+import com.cjyc.common.model.dto.salesman.mine.AppCustomerIdDto;
 import com.cjyc.common.model.entity.Role;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.customer.customerLine.CustomerLineVo;
@@ -91,4 +92,6 @@ public interface ICsCustomerService {
     ResultData<Boolean> updateUserToPlatform(Customer customer, String newPhone);
 
 
+
+    ResultVo findCustomerContract(AppCustomerIdDto dto);
 }
