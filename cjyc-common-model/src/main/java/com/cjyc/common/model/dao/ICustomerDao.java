@@ -97,4 +97,27 @@ public interface ICustomerDao extends BaseMapper<Customer> {
      */
     List<Map<String,Object>> findCustomerByKey(@Param("keyword") String keyword);
 
+    /**
+     * 根据手机号，姓名，身份证号查询移动端用户
+     * @param customerVo
+     * @return
+     */
+    List<CustomerVo> findClientCustomer(SelectCustomerDto customerVo);
+
+    /**
+     * 根据条件查询大客户用户
+     * @param keyCustomerVo
+     * @return
+     */
+    List<ListKeyCustomerVo> findKeyAccountCustomter(SelectKeyCustomerDto keyCustomerVo);
+
+    /**
+     * 根据条件查询合伙人
+     * @param dto
+     * @return
+     */
+    List<CustomerPartnerVo> findCoPartner(CustomerPartnerDto dto);
+
+
+
 }
