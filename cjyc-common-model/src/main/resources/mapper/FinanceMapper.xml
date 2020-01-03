@@ -349,4 +349,11 @@
         </where>
 
     </select>
+
+
+    <!--应付 -->
+    <select id="getFinancePayableList" parameterType="com.cjyc.common.model.dto.web.finance.PayableQueryDto"
+            resultType="com.cjyc.common.model.vo.web.finance.FinancePayableVo">
+
+    </select>
 </mapper>

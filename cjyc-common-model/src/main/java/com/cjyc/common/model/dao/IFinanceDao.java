@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.dto.web.finance.CollectReceiveQueryDto;
 import com.cjyc.common.model.dto.web.finance.FinanceQueryDto;
 import com.cjyc.common.model.dto.web.finance.PayMentQueryDto;
+import com.cjyc.common.model.dto.web.finance.PayableQueryDto;
 import com.cjyc.common.model.vo.web.finance.*;
 import org.apache.ibatis.annotations.Param;
 
@@ -33,4 +34,6 @@ public interface IFinanceDao extends BaseMapper {
     Integer getCustomerContractById(Long customerContractId);
 
     Integer getCustomerPartnerById(Long customerId);
+
+    List<FinanceReceiptVo> getFinancePayableList(PayableQueryDto payableQueryDto);
 }
