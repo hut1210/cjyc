@@ -450,6 +450,50 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         PageInfo<CarrierVo> pageInfo =  new PageInfo<>(carrierVos);
         return BaseResultUtil.success(pageInfo);
     }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public ResultVo verifyCarrierNew(OperateDto dto) {
+        Role role = csRoleService.getByName(CARRIER_SUPER_ROLE_NAME, 2);
+        if (role == null) {
+            return BaseResultUtil.fail("根据角色名称：" + CARRIER_SUPER_ROLE_NAME +
+                    ",未查询到角色信息");
+        }
+        Carrier carrier = carrierDao.selectById(dto.getId());
+        Driver driver = findDriverNew(carrier.getId(), role);
+        UserRoleDept userRoleDept = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
+            .eq(UserRoleDept::getDeptId, carrier.getId())
+            .eq(UserRoleDept::getUserId, driver.getId())
+            .eq(UserRoleDept::getRoleId, role.getId()));
+        if (null == carrier || null == driver || null == userRoleDept) {
+            return BaseResultUtil.fail("承运商信息有误，请检查");
+        }
+        if (FlagEnum.AUDIT_PASS.code == dto.getFlag()) {
+            //审核通过
+            userRoleDept.setState(CommonStateEnum.CHECKED.code);
+            carrier.setState(CommonStateEnum.CHECKED.code);
+        }else if (FlagEnum.AUDIT_REJECT.code == dto.getFlag()) {
+            //审核拒绝
+            userRoleDept.setState(CommonStateEnum.REJECT.code);
+            carrier.setState(CommonStateEnum.REJECT.code);
+        }else if (FlagEnum.FROZEN.code == dto.getFlag()) {
+            //冻结
+            userRoleDept.setState(CommonStateEnum.FROZEN.code);
+            carrier.setState(CommonStateEnum.FROZEN.code);
+        }else if (FlagEnum.THAW.code == dto.getFlag()) {
+            //解冻
+            userRoleDept.setState(CommonStateEnum.CHECKED.code);
+            carrier.setState(CommonStateEnum.CHECKED.code);
+        }
+        driver.setCheckUserId(dto.getLoginId());
+        driver.setCheckTime(NOW);
+        carrier.setCheckUserId(dto.getLoginId());
+        carrier.setCheckTime(NOW);
+        userRoleDeptDao.updateById(userRoleDept);
+        driverDao.updateById(driver);
+        super.updateById(carrier);
+        return BaseResultUtil.success();
+    }
     /*********************************韵车集成改版 ed*****************************/
     /**
      * 封装承运商excel请求
@@ -678,5 +722,26 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             }
         }
         return carrierVos;
+    }
+
+    /**
+     * 保存司机及承运商-司机关联关系_改版
+     * @param carrierId
+     */
+    private Driver findDriverNew(Long carrierId, Role role) {
+        List<UserRoleDept> conList = userRoleDeptDao.selectList(new QueryWrapper<UserRoleDept>().lambda()
+            .eq(UserRoleDept::getDeptId, carrierId)
+            .eq(UserRoleDept::getRoleId, role.getId()));
+        Long driverId = null;
+        if (!CollectionUtils.isEmpty(conList)) {
+            driverId = conList.get(0).getUserId();
+        }
+        if (driverId != null) {
+            Driver driver = driverDao.selectById(driverId);
+            if (driver != null) {
+                return driver;
+            }
+        }
+        return null;
     }
 }
