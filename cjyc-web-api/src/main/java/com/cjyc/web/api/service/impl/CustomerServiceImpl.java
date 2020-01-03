@@ -668,6 +668,11 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         }
     }
 
+    @Override
+    public ResultVo saveCustomerNew(CustomerDto dto) {
+        return null;
+    }
+
     /**
      * 封装C端客户excel请求
      * @param request
@@ -841,51 +846,6 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             driver.setPhone(newPhone);
             driverDao.updateById(driver);
         }
-    }
-
-    /**
-     * 校验：手机号是否在Customer中存在
-     * @param phone
-     * @return
-     */
-    /*private boolean phoneExistsInCustomer(String phone) {
-        List<Customer> existList = customerDao.selectList(new QueryWrapper<Customer>()
-                .eq("contact_phone", phone));
-        if (!CollectionUtils.isEmpty(existList)) {
-            log.error("手机号已存在，请检查");
-            return true;
-        }
-        return false;
-    }*/
-
-    /************************************韵车集成改版 st***********************************/
-    @Override
-    public ResultVo saveCustomerNew(CustomerDto dto) {
-        //判断该手机号是否在库中存在
-        Customer customer = customerDao.selectOne(new QueryWrapper<Customer>().lambda().eq(Customer::getContactPhone, dto.getContactPhone()));
-        if(customer != null){
-            return BaseResultUtil.fail("该客户已存在，请检查");
-        }
-        customer = new Customer();
-        BeanUtils.copyProperties(dto,customer);
-        customer.setCustomerNo(sendNoService.getNo(SendNoTypeEnum.CUSTOMER));
-        customer.setAlias(dto.getContactMan());
-        customer.setName(dto.getContactMan());
-        customer.setType(CustomerTypeEnum.INDIVIDUAL.code);
-        customer.setState(CustomerStateEnum.CHECKED.code);
-        customer.setPayMode(PayModeEnum.COLLECT.code);
-        customer.setSource(CustomerSourceEnum.WEB.code);
-        customer.setCreateUserId(dto.getLoginId());
-        customer.setCreateTime(NOW);
-
-        //新增个人用户信息到物流平台
-        ResultData<Long> rd = csCustomerService.addCustomerToPlatform(customer);
-        if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
-            return BaseResultUtil.fail(rd.getMsg());
-        }
-        customer.setUserId(rd.getData());
-        super.save(customer);
-        return BaseResultUtil.success();
     }
 
 }
