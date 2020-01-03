@@ -11,6 +11,7 @@ import com.cjyc.common.model.vo.customer.customerLine.CustomerLineVo;
 import com.cjyc.common.model.vo.salesman.customer.SalesCustomerListVo;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.salesman.mine.AppContractVo;
 
 import java.util.List;
 
@@ -73,6 +74,7 @@ public interface ICsCustomerService {
 
     ResultVo<SalesCustomerListVo> findKeyCustomer(SalesCustomerDto dto);
 
+    ResultVo<AppContractVo> findCustomerContract(AppCustomerIdDto dto);
     /************************************韵车集成改版 st***********************************/
     /**
      * 将用户添加到架构组中
@@ -93,5 +95,5 @@ public interface ICsCustomerService {
 
 
 
-    ResultVo findCustomerContract(AppCustomerIdDto dto);
+
 }
