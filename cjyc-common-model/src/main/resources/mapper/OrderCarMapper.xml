@@ -568,6 +568,7 @@
     <select id="findWaitDispatchTrunkCarList" resultType="com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo">
         <include refid="trunk_wait_dispatch_car_list"/>
         <where>
+
             <if test="paramsDto.startProvinceCode != null and paramsDto.startProvinceCode != ''">
                 and shell.dispatchStartProvinceCode = #{paramsDto.startProvinceCode,jdbcType=VARCHAR}
             </if>
@@ -1360,102 +1361,112 @@
         join w_order_car oc on o.id= oc.order_id
         where oc.id = #{orderCarId}
     </select>
-    <select id="findWaitDispatchCarListForApp" resultType="com.cjyc.common.model.vo.salesman.dispatch.DispatchListVo">
-        select *
-        from (
-            select
-            <include refid="transport_state"/>
-            (case when wmax.id is not null then wmax.end_province_code else o.start_province_code end) as dispatchStartProvinceCode,
-            (case when wmax.id is not null then wmax.end_province else o.start_province end) as dispatchStartProvince,
-            (case when wmax.id is not null then wmax.end_city_code else o.start_city_code end) as dispatchStartCityCode,
-            (case when wmax.id is not null then wmax.end_city else o.start_city end) as dispatchStartCity,
-            (case when wmax.id is not null then wmax.end_area_code else o.start_area_code end) as dispatchStartAreaCode,
-            (case when wmax.id is not null then wmax.end_area else o.start_area end) as dispatchStartArea,
-            o.end_province_code as dispatchEndProvinceCode,
-            o.end_province as dispatchEndProvince,
-            o.end_city_code as dispatchEndCityCode,
-            o.end_city as dispatchEndCity,
-            o.end_area_code as dispatchEndAreaCode,
-            o.end_area as dispatchEndArea,
+    <sql id="pick_wait_dispatch_car_list_For_App">
+        select
+        o.start_province_code as dispatchStartProvinceCode,
+        o.start_province as dispatchStartProvince,
+        o.start_city_code as dispatchStartCityCode,
+        o.start_city as dispatchStartCity,
+        o.start_area_code as dispatchStartAreaCode,
+        o.start_area as dispatchStartArea,
+        (case when s.id is not null and s.id > 0 then s.province_code else null end) as dispatchEndProvinceCode,
+        (case when s.id is not null and s.id > 0 then s.province else null end) as dispatchEndProvince,
+        (case when s.id is not null and s.id > 0 then s.city_code else null end) as dispatchEndCityCode,
+        (case when s.id is not null and s.id > 0 then s.city else null end) as dispatchEndCity,
+        (case when s.id is not null and s.id > 0 then s.area_code else null end) as dispatchEndAreaCode,
+        (case when s.id is not null and s.id > 0 then s.area else null end) as dispatchEndArea,
 
-            o.customer_id as customerId,
-            o.customer_name as customerName,
-            o.customer_phone as customerPhone,
-            o.customer_type as customerType,
-            o.input_store_id as inputStoreId,
-            o.input_store_name as inputStoreName,
-            o.start_province as startProvince,
-            o.start_province_code as startProvinceCode,
-            o.start_city as startCity,
-            o.start_city_code as startCityCode,
-            o.start_area as startArea,
-            o.start_area_code as startAreaCode,
-            o.start_address as startAddress,
-            o.start_lng as startLng,
-            o.start_lat as startLat,
-            o.start_store_id as startStoreId,
-            o.start_store_name as startStoreName,
-            o.start_belong_store_id as startBelongStoreId,
-            o.end_province as endProvince,
-            o.end_province_code as endProvinceCode,
-            o.end_city as endCity,
-            o.end_city_code as endCityCode,
-            o.end_area as endArea,
-            o.end_area_code as endAreaCode,
-            o.end_address as endAddress,
-            o.end_lng as endLng,
-            o.end_lat as endLat,
-            o.end_store_id as endStoreId,
-            o.end_store_name as endStoreName,
-            o.end_belong_store_id as endBelongStoreId,
-            o.expect_start_date as expectStartDate,
-            o.expect_end_date as expectEndDate,
-            o.car_num as carNum,
-            o.line_id as lineId,
-            o.pick_contact_name as pickContactName,
-            o.pick_contact_phone as pickContactPhone,
-            o.back_contact_name as backContactName,
-            o.back_contact_phone as backContactPhone,
-            o.source as source,
-            o.create_time as createTime,
-            o.create_user_name as createUserName,
-            o.create_user_id as createUserId,
-            o.allot_to_user_name as allotToUserName,
-            o.allot_to_user_id as allotToUserId,
-            o.check_time as checkTime,
-            o.check_user_name as checkUserName,
-            o.check_user_id as checkUserId,
-            oc.*
-            from w_order o
-            join w_order_car oc on oc.order_id = o.id
-            left join (
-                select *
-                    from (
-                    select
-                    wc.id,
-                    wc.end_province_code,
-                    wc.end_province,
-                    wc.end_city_code,
-                    wc.end_city,
-                    wc.end_area_code,
-                    wc.end_area,
-                    wc.order_car_id
-                    from w_waybill w
-                    join w_waybill_car wc on w.id = wc.waybill_id
-                    where w.state &lt;= 100
-                    and wc.state &lt;= 100
-                    and wc.order_car_id in
-                    <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
-                        #{item}
-                    </foreach>
-                    order by w.type desc, wc.id desc
-                    limit 10000
-                ) as max
-                group by max.order_car_id
-            ) as wmax on wmax.order_car_id = oc.id
-            where o.state between 25 and 100
-            and oc.trunk_state &lt; 5
-        ) as shell
+        o.input_store_id as inputStoreId,
+        o.start_city as startCity,
+        o.start_city_code as startCityCode,
+        o.start_belong_store_id as startBelongStoreId,
+        o.end_city as endCity,
+        o.end_city_code as endCityCode,
+        o.end_belong_store_id as endBelongStoreId,
+        o.expect_start_date as expectStartDate,
+        oc.id as orderCarId,
+        oc.no as orderCarNo,
+        oc.vin as vin,
+        (select logo_img from s_car_series cs where cs.brand = oc.brand and cs.model = oc.model limit 1) as logo_img
+        from w_order o
+        join w_order_car oc on oc.order_id = o.id
+        join s_store s on s.id = o.start_store_id
+        where o.state between 25 and 100
+        and oc.state &lt; 100
+        and oc.pick_state &lt; 5
+        and oc.pick_type &lt; 4
+    </sql>
+    <sql id="back_wait_dispatch_car_list_For_App">
+        select
+        o.end_province_code as dispatchEndProvinceCode,
+        o.end_province as dispatchEndProvince,
+        o.end_city_code as dispatchEndCityCode,
+        o.end_city as dispatchEndCity,
+        o.end_area_code as dispatchEndAreaCode,
+        o.end_area as dispatchEndArea,
+        (case when s.id is not null and s.id > 0 then s.province_code else null end) as dispatchStartProvinceCode,
+        (case when s.id is not null and s.id > 0 then s.province else null end) as dispatchStartProvince,
+        (case when s.id is not null and s.id > 0 then s.city_code else null end) as dispatchStartCityCode,
+        (case when s.id is not null and s.id > 0 then s.city else null end) as dispatchStartCity,
+        (case when s.id is not null and s.id > 0 then s.area_code else null end) as dispatchStartAreaCode,
+        (case when s.id is not null and s.id > 0 then s.area else null end) as dispatchStartArea,
+
+        o.input_store_id as inputStoreId,
+        o.start_city as startCity,
+        o.start_city_code as startCityCode,
+        o.start_belong_store_id as startBelongStoreId,
+        o.end_city as endCity,
+        o.end_city_code as endCityCode,
+        o.end_belong_store_id as endBelongStoreId,
+        o.expect_start_date as expectStartDate,
+        oc.id as orderCarId,
+        oc.no as orderCarNo,
+        oc.vin as vin
+        from w_order o
+        join w_order_car oc on oc.order_id = o.id
+        join s_store s on s.id = o.end_store_id
+        where o.state between 25 and 100
+        and oc.state &lt; 100
+        and oc.back_state &lt; 5
+        and oc.state >= 45
+        and oc.back_type &lt; 4
+    </sql>
+    <sql id="trunk_wait_dispatch_car_list_For_App">
+        select
+        o.end_province_code as dispatchEndProvinceCode,
+        o.end_province as dispatchEndProvince,
+        o.end_city_code as dispatchEndCityCode,
+        o.end_city as dispatchEndCity,
+        o.end_area_code as dispatchEndAreaCode,
+        o.end_area as dispatchEndArea,
+        (case when s.id is not null and s.id > 0 then s.province_code else null end) as dispatchStartProvinceCode,
+        (case when s.id is not null and s.id > 0 then s.province else null end) as dispatchStartProvince,
+        (case when s.id is not null and s.id > 0 then s.city_code else null end) as dispatchStartCityCode,
+        (case when s.id is not null and s.id > 0 then s.city else null end) as dispatchStartCity,
+        (case when s.id is not null and s.id > 0 then s.area_code else null end) as dispatchStartAreaCode,
+        (case when s.id is not null and s.id > 0 then s.area else null end) as dispatchStartArea,
+
+        o.input_store_id as inputStoreId,
+        o.start_city as startCity,
+        o.start_city_code as startCityCode,
+        o.start_belong_store_id as startBelongStoreId,
+        o.end_city as endCity,
+        o.end_city_code as endCityCode,
+        o.end_belong_store_id as endBelongStoreId,
+        o.expect_start_date as expectStartDate,
+        oc.id as orderCarId,
+        oc.no as orderCarNo,
+        oc.vin as vin
+        from w_order o
+        join w_order_car oc on oc.order_id = o.id
+        join s_store s on s.id = o.end_store_id
+        where o.state between 25 and 100
+        and oc.state &lt; 100
+        and oc.trunk_state &lt; 5
+    </sql>
+    <select id="findWaitDispatchCarListForApp" resultType="com.cjyc.common.model.vo.salesman.dispatch.DispatchListVo">
+
+        <include refid="trunk_wait_dispatch_car_list"/>
         <where>
             <if test="paramsDto.startProvinceCode != null and paramsDto.startProvinceCode != ''">
                 and shell.dispatchStartProvinceCode = #{paramsDto.startProvinceCode,jdbcType=VARCHAR}
@@ -1485,6 +1496,7 @@
                 and shell.vin like concat('%', #{paramsDto.vin,jdbcType=VARCHAR}, '%')
             </if>
         </where>
+
     </select>
 
     <!-- 业务员端我下的订单台数/全部订单的车辆 -->

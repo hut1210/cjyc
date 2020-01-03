@@ -17,6 +17,7 @@ import com.cjyc.common.model.vo.web.mineCarrier.MyWaybillVo;
 import com.cjyc.common.model.vo.web.waybill.*;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -119,4 +120,5 @@ public interface IWaybillDao extends BaseMapper<Waybill> {
 
     int updateFreightFee(Long id);
 
+    List<Waybill> findListByWaybillCarIds(@Param("collection") Collection<Long> waybillCarIds);
 }

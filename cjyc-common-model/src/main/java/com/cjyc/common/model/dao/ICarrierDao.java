@@ -110,5 +110,12 @@ public interface ICarrierDao extends BaseMapper<Carrier> {
     /*********************************韵车集成改版 st*****************************/
     List<Carrier> getListByLoginIdAndRoleId(@Param("loginId")Long loginId,
                                             @Param("roleId")Long roleId);
+
+    /**
+     * 修改承运商时验证是否为该承运商下的司机
+     * @param dto
+     * @return
+     */
+    Integer existBusinessDriverNew(CarrierDto dto);
     /*********************************韵车集成改版 ed*****************************/
 }

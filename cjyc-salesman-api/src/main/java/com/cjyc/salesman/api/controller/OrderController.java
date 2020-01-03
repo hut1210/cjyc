@@ -5,6 +5,7 @@ import com.cjyc.common.model.dto.salesman.order.SalesOrderQueryDto;
 import com.cjyc.common.model.dto.salesman.order.SalesmanQueryDto;
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.entity.Admin;
+import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
@@ -12,7 +13,6 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.salesman.order.SalesOrderDetailVo;
 import com.cjyc.common.model.vo.salesman.order.SalesOrderVo;
 import com.cjyc.common.model.vo.web.admin.AdminPageVo;
-import com.cjyc.common.model.vo.web.order.DispatchAddCarVo;
 import com.cjyc.common.system.service.ICsAdminService;
 import com.cjyc.common.system.service.ICsOrderService;
 import com.cjyc.salesman.api.service.IAdminService;
@@ -65,10 +65,10 @@ public class OrderController {
     }
 
     /**
-     * 提交
+     * 提交并审核
      * @author JPG
      */
-    @ApiOperation(value = "订单提交")
+    @ApiOperation(value = "提交并审核")
     @PostMapping(value = "/commit")
     public ResultVo commitAndCheck(@Validated @RequestBody CommitOrderDto reqDto) {
 
@@ -81,6 +81,23 @@ public class OrderController {
 
         //发送短信
         return csOrderService.commitAndCheck(reqDto);
+    }
+
+    /**
+     * 直接提交并审核
+     * @author JPG
+     */
+    @ApiOperation(value = "直接提交并审核")
+    @PostMapping(value = "/simple/commit")
+    public ResultVo simpleCommitAndCheck(@Validated @RequestBody CheckOrderDto reqDto) {
+
+        //验证用户存不存在
+        Admin admin = csAdminService.validate(reqDto.getLoginId());
+        reqDto.setLoginName(admin.getName());
+        reqDto.setLoginPhone(admin.getPhone());
+
+        //发送短信
+        return csOrderService.simpleCommitAndCheck(reqDto);
     }
     /**
      * 审核订单

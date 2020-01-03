@@ -389,4 +389,14 @@
             ON urd.dept_id = dc.id
         WHERE urd.user_id = #{loginId} AND urd.role_id = #{roleId}
     </select>
+
+    <!--修改承运商时验证是否为该承运商下的司机_改版-->
+    <select id="existBusinessDriverNew" resultType="java.lang.Integer"
+            parameterType="com.cjyc.common.model.dto.CarrierDriverDto">
+        SELECT COUNT(dd.id)
+        FROM d_driver dd LEFT JOIN s_user_role_dept urd ON dd.id = urd.user_id
+            LEFT JOIN d_carrier dc ON dc.id = urd.dept_id
+        where urd.dept_type = 2 AND urd.user_type = 2
+        AND dc.id = #{carrierId} and  dd.phone = #{linkmanPhone}  and  dd.id_card = #{legalIdCard}
+    </select>
 </mapper>
