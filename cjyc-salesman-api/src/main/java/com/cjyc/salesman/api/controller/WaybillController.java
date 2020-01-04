@@ -1,11 +1,16 @@
 package com.cjyc.salesman.api.controller;
 
+import com.cjyc.common.model.dto.driver.task.ReplenishInfoDto;
 import com.cjyc.common.model.dto.web.waybill.*;
 import com.cjyc.common.model.entity.Admin;
+import com.cjyc.common.model.entity.Driver;
+import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.BaseTipVo;
 import com.cjyc.common.model.vo.ListVo;
+import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.service.ICsAdminService;
+import com.cjyc.common.system.service.ICsTaskService;
 import com.cjyc.common.system.service.ICsWaybillService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -32,6 +37,8 @@ public class WaybillController {
     private ICsWaybillService csWaybillService;
     @Autowired
     private ICsAdminService csAdminService;
+    @Autowired
+    private ICsTaskService csTaskService;
 
     /**
      * 提送车调度
@@ -48,6 +55,31 @@ public class WaybillController {
         return csWaybillService.saveLocal(reqDto);
     }
 
+
+    /**
+     * 提车完善信息
+     * @author JPG
+     */
+    @ApiOperation(value = "提车完善信息")
+    @PostMapping(value = "/replenish/info/update")
+    public ResultVo replenishInfo(@RequestBody ReplenishInfoDto reqDto) {
+        //验证用户
+        Admin admin = csAdminService.validate(reqDto.getLoginId());
+        reqDto.setLoginName(admin.getName());
+        return csTaskService.replenishInfo(reqDto);
+    }
+    /**
+     * 提车装车并完善信息
+     * @author JPG
+     */
+    @ApiOperation(value = "同城装车")
+    @PostMapping(value = "/load/for/local")
+    public ResultVo<ResultReasonVo> loadForLocal(@RequestBody ReplenishInfoDto reqDto) {
+        //验证用户
+        Admin admin = csAdminService.validate(reqDto.getLoginId());
+        reqDto.setLoginName(admin.getName());
+        return csTaskService.loadForLocal(reqDto);
+    }
     /**
      * 修改同城调度
      *

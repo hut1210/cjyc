@@ -54,10 +54,10 @@ public class CommitOrderDto {
     private Integer customerType;
     @ApiModelProperty(value = "客户id")
     private Long customerId;
-    @NotBlank(message = "客户电话不能为空")
+    //@NotBlank(message = "客户电话不能为空")
     @ApiModelProperty(value = "客户电话", required = true)
     private String customerPhone;
-    @NotBlank(message = "客户姓名不能为空")
+    //@NotBlank(message = "客户姓名不能为空")
     @ApiModelProperty(value = "客户姓名", required = true)
     private String customerName;
     @NotBlank(message = "出发城市不能为空")

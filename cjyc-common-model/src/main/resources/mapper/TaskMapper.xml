@@ -335,6 +335,16 @@
         join w_task_car tc on tc.task_id = t.id
         where tc.waybill_car_id = #{waybillCarId}
         and t.state &lt;= 100
+        limit 1
+    </select>
+    <select id="findByWcCarId" resultType="com.cjyc.common.model.entity.Task">
+        select
+        t.*
+        from w_task t
+        join w_task_car tc on tc.task_id = t.id
+        where tc.waybill_car_id = #{id}
+        and t.state &lt; 100
+        limit 1
     </select>
     <select id="findListByWaybillCarIds" resultType="com.cjyc.common.model.entity.Task">
         select t.*

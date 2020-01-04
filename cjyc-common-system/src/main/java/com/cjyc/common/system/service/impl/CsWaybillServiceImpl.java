@@ -227,7 +227,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 waybillCarDao.insert(waybillCar);
 
                 /**3、添加任务信息*/
-                csTaskService.reCreate(waybill, Lists.newArrayList(waybillCar), carrierInfo);
+                csTaskService.reCreate(waybill, Lists.newArrayList(waybillCar), Lists.newArrayList(waybillCar), carrierInfo);
 
                 /**5、更新订单车辆状态*/
                 updateOrderCarForDispatchLocal(orderCar.getId(), waybill, orderCar.getState());
@@ -336,7 +336,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
             //运单车辆状态
             /**3、添加任务信息*/
-            csTaskService.reCreate(waybill, Lists.newArrayList(waybillCar), carrierInfo);
+            csTaskService.reCreate(waybill, Lists.newArrayList(waybillCar),null, carrierInfo);
 
             /**5、更新订单车辆状态*/
             updateOrderCarForDispatchLocal(orderCar.getId(), waybill, orderCar.getState());
@@ -702,7 +702,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
             //承运商有且仅有一个司机
             /**1+、写入任务表*/
-            csTaskService.reCreate(waybill, waybillCars, carrierInfo);
+            csTaskService.reCreate(waybill, waybillCars, waybillCars,carrierInfo);
 
             return BaseResultUtil.success();
         } finally {
@@ -758,6 +758,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             /**2、运单，车辆循环*/
             boolean hasNewWaybillCar = false;
             Set<Long> unCancelWaybillCarIds = Sets.newHashSet();
+            List<WaybillCar> newWaybillCars = Lists.newArrayList();
             List<WaybillCar> waybillCars = Lists.newArrayList();
             for (UpdateTrunkWaybillCarDto dto : dtoList) {
                 if (dto == null) {
@@ -849,11 +850,13 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 //提取信息
                 unCancelWaybillCarIds.add(waybillCar.getId());
                 waybillCars.add(waybillCar);
+                if(isNewWaybillCar){
+                    newWaybillCars.add(waybillCar);
+                }
             }
 
             /**承运商有且仅有一个司机*/
-            csTaskService.reCreate(waybill, waybillCars, carrierInfo);
-
+            csTaskService.reCreate(waybill, waybillCars, newWaybillCars, carrierInfo);
             //查询待取消的车辆
             List<WaybillCar> cancelWaybillCars = waybillCarDao.findWaitCancelListByUnCancelIds(unCancelWaybillCarIds, waybill.getId());
             if (!CollectionUtils.isEmpty(cancelWaybillCars)) {
@@ -865,6 +868,9 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
             //验证运单是否完成
             validateAndFinishWaybill(waybill.getId());
+
+
+
 
             return BaseResultUtil.success();
         } finally {
@@ -982,6 +988,10 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         if(waybillCar == null){
             return;
         }
+        //######
+        Task t1 = taskDao.findByWaybillCarId(waybillCar.getId());
+
+
         if (waybillCar.getState() >= WaybillCarStateEnum.LOADED.code) {
             throw new ParameterException("车辆{0}运输中，不允许取消", waybillCar.getOrderCarNo());
         }
@@ -1171,6 +1181,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
         //按比例均摊运费
         shareWaybillCarFreightFee(waybillCars, oldTotalFee, paramsDto.getFreightFee());
+
+        waybillCars.forEach(wc -> waybillCarDao.updateById(wc));
         //更新运单费用
         waybillDao.updateFreightFee(waybill.getId());
         //验证并完成运单
@@ -1210,6 +1222,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         }
     }
     private void shareWaybillCarFreightFee(Set<WaybillCar> waybillCars, BigDecimal oldTotalFee, BigDecimal newTotalFee) {
+        newTotalFee = MoneyUtil.convertYuanToFen(newTotalFee);
         if(newTotalFee.compareTo(BigDecimal.ZERO) == 0){
             waybillCars.forEach(waybillCar -> {
                 waybillCar.setFreightFee(BigDecimal.ZERO);
@@ -1231,22 +1244,29 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 waybillCarDao.updateById(waybillCar);
             }
         }else{
-            BigDecimal freightFee = MoneyUtil.convertYuanToFen(newTotalFee);
-            BigDecimal avg = freightFee.divide(oldTotalFee, 0, RoundingMode.FLOOR);
-            BigDecimal remainder = freightFee.subtract(avg.multiply(oldTotalFee));
+            BigDecimal avg = newTotalFee.divide(oldTotalFee, 8, RoundingMode.FLOOR);
+            BigDecimal avgTotalFee = BigDecimal.ZERO;
+            for (WaybillCar wc : waybillCars) {
+                BigDecimal avgCar = (wc.getFreightFee().multiply(avg));
+                avgCar = avgCar.setScale(0, BigDecimal.ROUND_HALF_DOWN);
+                wc.setFreightFee(avgCar);
+                avgTotalFee = avgTotalFee.add(avgCar);
+            }
 
+            BigDecimal remainder = newTotalFee.subtract(avgTotalFee);
+            if(remainder.compareTo(BigDecimal.ZERO) <= 0){
+                return;
+            }
             BigDecimal[] bigDecimals = remainder.divideAndRemainder(new BigDecimal(waybillCars.size()));
             BigDecimal rAvg = bigDecimals[0];
             BigDecimal rRemainder = bigDecimals[1];
-            for (WaybillCar waybillCar : waybillCars) {
-                //运费
+            for (WaybillCar wc : waybillCars) {
                 if (rRemainder.compareTo(BigDecimal.ZERO) > 0) {
-                    waybillCar.setFreightFee(waybillCar.getFreightFee().multiply(avg).add(rAvg).add(BigDecimal.ONE));
+                    wc.setFreightFee(wc.getFreightFee().add(rAvg).add(BigDecimal.ONE));
                     rRemainder = rRemainder.subtract(BigDecimal.ONE);
                 } else {
-                    waybillCar.setFreightFee(waybillCar.getFreightFee().multiply(avg).add(rAvg));
+                    wc.setFreightFee(wc.getFreightFee().add(rAvg));
                 }
-                waybillCarDao.updateById(waybillCar);
             }
         }
 
