@@ -202,4 +202,35 @@ public interface IDriverDao extends BaseMapper<Driver> {
      * @param dto
      */
     List<DispatchDriverVo> findCarrierDrvierList(CarrierDriverListDto dto);
+
+
+    /************************************韵车集成改版 st***********************************/
+
+    /**
+     * 根据条件查询司机信息
+     * @param dto
+     * @return
+     */
+    List<DriverVo> findDriverByTerm(SelectDriverDto dto);
+
+    /**
+     * 根据司机id查看司机信息
+     * @param carrierId
+     * @return
+     */
+    ShowDriverVo findDriverById(@Param("carrierId") Long carrierId);
+
+    /**
+     * 查询符合条件的调度个人司机
+     * @param dto
+     * @return
+     */
+    List<DispatchDriverVo> findDispatchDriver(DispatchDriverDto dto);
+
+    /**
+     * 查询承运商下属
+     * @param dto
+     * @return
+     */
+    List<DispatchDriverVo> findCarrierDrvierListNew(CarrierDriverListDto dto);
 }

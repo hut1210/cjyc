@@ -105,12 +105,6 @@ public interface IDriverService {
     ResultVo<ShowDriverVo> showDriverNew(BaseCarrierIdDto dto);
 
     /**
-     * app注册校验记录
-     * @return
-     */
-    ResultVo<List<ExistDriverVo>> showExistDriverNew();
-
-    /**
      * 根据id进行审核通过/拒绝/冻结/解冻_改版
      * @param dto
      * @return

@@ -126,13 +126,7 @@ public class DriverController {
     public ResultVo<ShowDriverVo> showDriverNew(@Validated @RequestBody BaseCarrierIdDto dto){
         return driverService.showDriverNew(dto);
     }
-
-    @ApiOperation(value = "app注册校验记录_改版")
-    @PostMapping(value = "/showExistDriverNew")
-    public ResultVo<List<ExistDriverVo>> showExistDriverNew(){
-        return driverService.showExistDriverNew();
-    }
-
+    
     @ApiOperation(value = "根据id进行审核通过/拒绝/冻结/解冻_改版")
     @PostMapping(value = "/verifyDriverNew")
     public ResultVo verifyDriverNew(@Validated @RequestBody OperateDto dto){

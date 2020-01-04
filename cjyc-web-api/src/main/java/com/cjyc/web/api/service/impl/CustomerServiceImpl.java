@@ -890,7 +890,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         customer.setCheckTime(NOW);
         super.save(customer);
         //保存用户角色机构关系
-        csUserRoleDeptService.saveCustomerToUserRoleDept(customer,role.getId(),dto.getLoginId());
+        csUserRoleDeptService.saveCustomerToUserRoleDept(customer, role.getId(), dto.getLoginId());
         return BaseResultUtil.success();
     }
 
@@ -913,14 +913,17 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             log.error("修改用户信息失败，原因：" + updateRd.getMsg());
             return BaseResultUtil.fail("修改用户信息失败，原因：" + updateRd.getMsg());
         }
+        //修改用户与角色机构关系
+        ResultVo resultVo = csUserRoleDeptService.updateCustomerToUserRoleDept(customer, dto.getLoginId());
+        if (!ResultEnum.SUCCESS.getCode().equals(resultVo.getCode())) {
+            return BaseResultUtil.fail(resultVo.getMsg());
+        }
         BeanUtils.copyProperties(dto,customer);
         customer.setName(dto.getContactMan());
         customer.setAlias(dto.getContactMan());
         customer.setCheckUserId(dto.getLoginId());
         customer.setCheckTime(NOW);
         super.updateById(customer);
-        //修改用户与角色机构关系
-        csUserRoleDeptService.updateCustomerToUserRoleDept(customer,dto.getLoginId());
         return BaseResultUtil.success();
     }
 
@@ -1014,7 +1017,10 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                 //合伙人附加信息
                 encapPartner(dto,customer,NOW);
                 //修改用户与角色机构关系
-                csUserRoleDeptService.updateCustomerToUserRoleDept(customer,dto.getLoginId());
+                ResultVo resultVo = csUserRoleDeptService.updateCustomerToUserRoleDept(customer, dto.getLoginId());
+                if (!ResultEnum.SUCCESS.getCode().equals(resultVo.getCode())) {
+                    return BaseResultUtil.fail(resultVo.getMsg());
+                }
                 return BaseResultUtil.success();
             }else{
                 //返回前端，flag重置为true
@@ -1143,6 +1149,12 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                 log.error("修改用户信息失败，原因：" + updateRd.getMsg());
                 return BaseResultUtil.fail("修改用户信息失败，原因：" + updateRd.getMsg());
             }
+            //修改用户与角色机构关系
+            ResultVo resultVo = csUserRoleDeptService.updateCustomerToUserRoleDept(customer, dto.getLoginId());
+            if (!ResultEnum.SUCCESS.getCode().equals(resultVo.getCode())) {
+                return BaseResultUtil.fail(resultVo.getMsg());
+            }
+
             BeanUtils.copyProperties(dto,customer);
             customer.setId(dto.getCustomerId());
             customer.setAlias(dto.getName());
@@ -1156,8 +1168,6 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                 list = encapCustomerContract(customer.getId(),contractDtos);
                 customerContractService.saveBatch(list);
             }
-            //修改用户与角色机构关系
-            csUserRoleDeptService.updateCustomerToUserRoleDept(customer,dto.getLoginId());
         }
         return BaseResultUtil.success();
     }
@@ -1217,13 +1227,16 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             log.error("修改用户信息失败，原因：" + updateRd.getMsg());
             return BaseResultUtil.fail("修改用户信息失败，原因：" + updateRd.getMsg());
         }
+        //修改用户与角色机构关系
+        ResultVo resultVo = csUserRoleDeptService.updateCustomerToUserRoleDept(customer, dto.getLoginId());
+        if (!ResultEnum.SUCCESS.getCode().equals(resultVo.getCode())) {
+            return BaseResultUtil.fail(resultVo.getMsg());
+        }
         BeanUtils.copyProperties(dto,customer);
         customer.setId(dto.getCustomerId());
         customer.setAlias(dto.getName());
         super.updateById(customer);
 
-        //修改用户与角色机构关系
-        csUserRoleDeptService.updateCustomerToUserRoleDept(customer,dto.getLoginId());
         //删除合伙人附加信息
         customerPartnerDao.removeByCustomerId(customer.getId());
         //删除合伙人银行卡信息
@@ -1242,13 +1255,10 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         if(!CollectionUtils.isEmpty(vos)){
             for(CustomerVo vo : vos){
                 CustomerCountVo count = customerCountDao.count(vo.getCustomerId());
-                if(count != null){
-                    BeanUtils.copyProperties(count,vo);
-                }
+                BeanUtils.copyProperties(count,vo);
             }
-            return vos;
         }
-        return Collections.emptyList();
+        return vos;
     }
 
     /**
@@ -1261,13 +1271,10 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         if(!CollectionUtils.isEmpty(customerVos)){
             for(ListKeyCustomerVo vo : customerVos){
                 CustomerCountVo count = customerCountDao.count(vo.getCustomerId());
-                if(count != null){
-                   BeanUtils.copyProperties(count,vo);
-                }
+                BeanUtils.copyProperties(count,vo);
             }
-            return customerVos;
         }
-        return Collections.emptyList();
+        return customerVos;
     }
 
     /**
@@ -1280,13 +1287,10 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         if(!CollectionUtils.isEmpty(coPartnerVos)){
             for(CustomerPartnerVo vo : coPartnerVos){
                 CustomerCountVo count = customerCountDao.count(vo.getCustomerId());
-                if(count != null){
-                   BeanUtils.copyProperties(count,vo);
-                }
+                BeanUtils.copyProperties(count,vo);
             }
-            return coPartnerVos;
         }
-        return Collections.emptyList();
+        return coPartnerVos;
     }
 
 }
