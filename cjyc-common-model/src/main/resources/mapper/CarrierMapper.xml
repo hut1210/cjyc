@@ -504,4 +504,32 @@
             LEFT JOIN s_bank_card_bind sbcb ON sbcb.user_id = dc.id
           where dc.id = #{carrierId} group by dc.id
     </select>
+
+
+
+
+
+    <!--根据手机号查询承运商中是否存在_改版-->
+    <select id="existCarrierNew" resultType="com.cjyc.common.model.vo.web.carrier.ExistCarrierVo"
+            parameterType="com.cjyc.common.model.dto.web.driver.DriverDto">
+        SELECT
+            dc.type AS type,
+            dc.NAME AS NAME,
+            dd.phone AS phone,
+            dd.id_card AS idCard
+        FROM
+          d_carrier dc
+        LEFT JOIN (SELECT * FROM s_user_role_dept WHERE dept_type = 2 AND user_type = 2) surd
+        ON surd.dept_id = dc.id
+        LEFT JOIN d_driver dd ON dd.id = surd.user_id
+        <where>
+            <if test="(phone != null and phone.trim() != '') or (idCard != null and idCard.trim() != '')">
+                (dd.phone = #{phone} or dd.id_card = #{idCard})
+            </if>
+            <if test="driverId != null">
+                and  dd.id  &lt;&gt; #{driverId}
+            </if>
+            limit 1
+        </where>
+    </select>
 </mapper>

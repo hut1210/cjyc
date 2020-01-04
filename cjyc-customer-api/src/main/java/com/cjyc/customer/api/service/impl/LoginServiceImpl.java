@@ -290,7 +290,7 @@ public class LoginServiceImpl extends SuperServiceImpl<ICustomerDao, Customer> i
         }
         customerDao.insert(customer);
         //保存用户角色机构关系
-        csUserRoleDeptService.saveCustomerToUserRoleDept(customer,role.getRoleId(),customer.getId());
+        csUserRoleDeptService.saveCustomerToUserRoleDept(customer,role.getId(),customer.getId());
         return BaseResultUtil.success(customer);
     }
 

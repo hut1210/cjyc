@@ -5,6 +5,7 @@ import com.cjkj.usercenter.dto.common.SelectRoleResp;
 import com.cjyc.common.model.dto.CommonDto;
 import com.cjyc.common.model.dto.salesman.customer.SalesCustomerDto;
 import com.cjyc.common.model.dto.salesman.mine.AppCustomerIdDto;
+import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.entity.Role;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.customer.customerLine.CustomerLineVo;
@@ -88,10 +89,11 @@ public interface ICsCustomerService {
     /**
      * 更新用户信息到架构组
      * @param customer
+     * @param driver
      * @param newPhone
      * @return
      */
-    ResultData<Boolean> updateUserToPlatform(Customer customer, String newPhone);
+    ResultData<Boolean> updateUserToPlatform(Customer customer, Driver driver, String newPhone);
 
 
 

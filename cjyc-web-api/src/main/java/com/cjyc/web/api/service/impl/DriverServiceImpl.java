@@ -16,6 +16,7 @@ import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.FlagEnum;
 import com.cjyc.common.model.enums.driver.DriverIdentityEnum;
+import com.cjyc.common.model.enums.role.DeptTypeEnum;
 import com.cjyc.common.model.enums.task.TaskStateEnum;
 import com.cjyc.common.model.enums.transport.*;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -26,8 +27,10 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.carrier.ExistCarrierVo;
 import com.cjyc.common.model.vo.web.driver.*;
 import com.cjyc.common.model.vo.web.user.DriverListVo;
+import com.cjyc.common.system.service.ICsCustomerService;
 import com.cjyc.common.system.service.ICsDriverService;
 import com.cjyc.common.system.feign.ISysUserService;
+import com.cjyc.common.system.service.ICsRoleService;
 import com.cjyc.common.system.service.ICsVehicleService;
 import com.cjyc.web.api.service.ICarrierCityConService;
 import com.cjyc.web.api.service.IDriverService;
@@ -37,6 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
@@ -75,6 +79,10 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
     private ICsDriverService csDriverService;
     @Resource
     private ICsVehicleService csVehicleService;
+    @Resource
+    private ICsCustomerService csCustomerService;
+    @Resource
+    private ICsRoleService csRoleService;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -470,4 +478,109 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
             return ResultData.ok(saveRd.getData().getUserId());
         }
     }
+
+
+
+    /************************************韵车集成改版 st***********************************/
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ResultVo saveOrModifyDriverNew(DriverDto dto) {
+        ExistCarrierVo carrierVo = carrierDao.existCarrierNew(dto);
+        if(carrierVo != null){
+            if(carrierVo.getType() == CarrierTypeEnum.PERSONAL.code){
+                return BaseResultUtil.fail("账号已存在于个人司机中");
+            }
+            if(carrierVo.getType() == CarrierTypeEnum.ENTERPRISE.code){
+                return BaseResultUtil.fail("该司机已存在于["+carrierVo.getName()+"]不可创建");
+            }
+        }
+        if(dto.getDriverId() == null){
+            if(StringUtils.isNotBlank(dto.getPlateNo()) && dto.getVehicleId() != null){
+                boolean result = csVehicleService.verifyDriverVehicle(null, dto.getVehicleId());
+                if(!result){
+                    return BaseResultUtil.fail("该车辆已绑定，请检查");
+                }
+            }
+            Role role = csRoleService.getByName(YmlProperty.get("cjkj.carrier_personal_driver_role_name"), DeptTypeEnum.CARRIER.code);
+            if(role == null){
+                return BaseResultUtil.fail("个人司机角色不存在，请先添加");
+            }
+            ResultData<Long> rd = csCustomerService.addUserToPlatform(dto.getPhone(),dto.getRealName(),role);
+            if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+                return BaseResultUtil.fail("司机信息保存失败，原因：" + rd.getMsg());
+            }
+            if(rd.getData() == null){
+                return BaseResultUtil.fail("获取架构组userId失败");
+            }
+            //保存个人承运商
+            Carrier carrier = new Carrier();
+            carrier.setLegalName(dto.getRealName());
+            carrier.setLegalIdCard(dto.getIdCard());
+            carrier.setName(dto.getRealName());
+            carrier.setLinkman(dto.getRealName());
+            carrier.setLinkmanPhone(dto.getPhone());
+            carrier.setMode(dto.getMode());
+            carrier.setType(CarrierTypeEnum.PERSONAL.code);
+            carrier.setSettleType(ModeTypeEnum.TIME.code);
+            carrier.setState(CommonStateEnum.WAIT_CHECK.code);
+            carrier.setBusinessState(BusinessStateEnum.BUSINESS.code);
+            carrier.setCreateTime(NOW);
+            carrier.setCreateUserId(dto.getLoginId());
+            carrierDao.insert(carrier);
+
+            //保存散户司机
+            Driver driver = new Driver();
+            BeanUtils.copyProperties(dto,driver);
+            driver.setName(dto.getRealName());
+            driver.setType(DriverTypeEnum.SOCIETY.code);
+            driver.setIdentity(DriverIdentityEnum.GENERAL_DRIVER.code);
+            driver.setBusinessState(BusinessStateEnum.BUSINESS.code);
+            driver.setSource(DriverSourceEnum.SALEMAN_WEB.code);
+            driver.setCreateTime(NOW);
+            driver.setCreateUserId(dto.getLoginId());
+            driver.setUserId(rd.getData());
+            super.save(driver);
+
+            //保存司机角色机构关系
+
+            //保存司机与车辆关系
+            if(StringUtils.isNotBlank(dto.getPlateNo()) && dto.getVehicleId() != null){
+                dto.setDriverId(driver.getId());
+                bindDriverVehicle(dto);
+            }
+            //添加承运商业务范围
+            carrierCityConService.batchSave(carrier.getId(),dto.getCodes());
+        }else{
+            return modifyDriver(dto);
+        }
+        return BaseResultUtil.success();
+    }
+
+    @Override
+    public ResultVo<PageVo<DriverVo>> findDriverNew(SelectDriverDto dto) {
+        return null;
+    }
+
+    @Override
+    public ResultVo showDriverNew(BaseCarrierIdDto dto) {
+        return null;
+    }
+
+    @Override
+    public ResultVo<List<ExistDriverVo>> showExistDriverNew() {
+        return null;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ResultVo verifyDriverNew(OperateDto dto) {
+        return null;
+    }
+
+    @Override
+    public ResultVo<PageVo<DispatchDriverVo>> carrierDrvierListNew(CarrierDriverListDto dto) {
+        return null;
+    }
+
 }

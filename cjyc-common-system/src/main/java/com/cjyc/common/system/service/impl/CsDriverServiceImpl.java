@@ -42,6 +42,7 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -479,4 +480,14 @@ public class CsDriverServiceImpl implements ICsDriverService {
         vr.setCreateTime(NOW);
         vehicleRunningDao.insert(vr);
     }
+
+
+
+    /************************************韵车集成改版 st***********************************/
+
+    @Override
+    public ResultVo<PageVo<DispatchDriverVo>> dispatchDriverNew(DispatchDriverDto dto){
+        return null;
+    }
+
 }

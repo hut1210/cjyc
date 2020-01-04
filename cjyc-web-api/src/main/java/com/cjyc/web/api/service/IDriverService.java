@@ -9,6 +9,7 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.driver.DispatchDriverVo;
 import com.cjyc.common.model.vo.web.driver.DriverVo;
 import com.cjyc.common.model.vo.web.driver.ExistDriverVo;
+import com.cjyc.common.model.vo.web.driver.ShowDriverVo;
 import com.cjyc.common.model.vo.web.user.DriverListVo;
 
 import javax.servlet.http.HttpServletRequest;
@@ -77,4 +78,49 @@ public interface IDriverService {
      * @param response
      */
     void exportDriverExcel(HttpServletRequest request, HttpServletResponse response);
+
+
+
+    /************************************韵车集成改版 st***********************************/
+
+    /**
+     * 保存社会司机
+     * @param dto
+     * @return
+     */
+    ResultVo saveOrModifyDriverNew(DriverDto dto);
+
+    /**
+     * 查询社会司机
+     * @param dto
+     * @return
+     */
+    ResultVo<PageVo<DriverVo>> findDriverNew(SelectDriverDto dto);
+
+    /**
+     * 根据承运商id查看社会司机信息
+     * @param dto
+     * @return
+     */
+    ResultVo<ShowDriverVo> showDriverNew(BaseCarrierIdDto dto);
+
+    /**
+     * app注册校验记录
+     * @return
+     */
+    ResultVo<List<ExistDriverVo>> showExistDriverNew();
+
+    /**
+     * 根据id进行审核通过/拒绝/冻结/解冻_改版
+     * @param dto
+     * @return
+     */
+    ResultVo verifyDriverNew(OperateDto dto);
+
+    /**
+     * 查询承运商下属司机
+     * @param dto
+     * @return
+     */
+    ResultVo<PageVo<DispatchDriverVo>> carrierDrvierListNew(CarrierDriverListDto dto);
 }

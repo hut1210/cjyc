@@ -6,6 +6,7 @@ import com.cjkj.common.redis.template.StringRedisUtil;
 import com.cjkj.usercenter.dto.common.*;
 import com.cjyc.common.model.dao.ICustomerDao;
 import com.cjyc.common.model.dto.salesman.customer.SalesCustomerDto;
+import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.entity.Role;
 import com.cjyc.common.model.dto.salesman.mine.AppCustomerIdDto;
 import com.cjyc.common.model.enums.role.RoleNameEnum;
@@ -239,8 +240,13 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
     }
 
     @Override
-    public ResultData<Boolean> updateUserToPlatform(Customer customer, String newPhone) {
-        String oldPhone = customer.getContactPhone();
+    public ResultData<Boolean> updateUserToPlatform(Customer customer, Driver driver, String newPhone) {
+        String oldPhone = null;
+        if(customer != null){
+            oldPhone = customer.getContactPhone();
+        }else{
+            oldPhone = driver.getPhone();
+        }
         if (!oldPhone.equals(newPhone)) {
             //新旧账号不相同需要替换手机号
             ResultData<UserResp> accountRd = sysUserService.getByAccount(newPhone);
@@ -251,8 +257,13 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
                 return ResultData.failed("用户账号不允许修改，预修改账号：" + newPhone + " 已存在");
             }
             UpdateUserReq user = new UpdateUserReq();
-            user.setName(customer.getName());
-            user.setUserId(customer.getUserId());
+            if(customer != null){
+                user.setName(customer.getName());
+                user.setUserId(customer.getUserId());
+            }else{
+                user.setName(driver.getName());
+                user.setUserId(driver.getUserId());
+            }
             user.setAccount(newPhone);
             user.setMobile(newPhone);
             ResultData rd = sysUserService.updateUser(user);

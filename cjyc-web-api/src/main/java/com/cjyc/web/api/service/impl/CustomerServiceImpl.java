@@ -863,8 +863,21 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         if(customer != null){
             return BaseResultUtil.fail("该客户已存在，请检查");
         }
+        Role role = csRoleService.getByName(YmlProperty.get("cjkj.customer_client_role_name"), DeptTypeEnum.CUSTOMER.code);
+        if(role == null){
+            return BaseResultUtil.fail("C端客户角色不存在，请先添加");
+        }
+        //新增个人用户信息到物流平台
+        ResultData<Long> rd = csCustomerService.addUserToPlatform(dto.getContactPhone(),dto.getContactMan(),role);
+        if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+            return BaseResultUtil.fail(rd.getMsg());
+        }
+        if(rd.getData() == null){
+            return BaseResultUtil.fail("获取架构组userId失败");
+        }
         customer = new Customer();
         BeanUtils.copyProperties(dto,customer);
+        customer.setUserId(rd.getData());
         customer.setCustomerNo(sendNoService.getNo(SendNoTypeEnum.CUSTOMER));
         customer.setAlias(dto.getContactMan());
         customer.setName(dto.getContactMan());
@@ -875,21 +888,9 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         customer.setCreateTime(NOW);
         customer.setCheckUserId(dto.getLoginId());
         customer.setCheckTime(NOW);
-        Role role = csRoleService.getByName(YmlProperty.get("cjkj.customer_client_role_name"), DeptTypeEnum.CUSTOMER.code);
-        if(role == null){
-            return BaseResultUtil.fail("C端客户角色不存在，请先添加");
-        }
-        //新增个人用户信息到物流平台
-        ResultData<Long> rd = csCustomerService.addUserToPlatform(dto.getContactPhone(),dto.getContactMan(),role);
-        if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
-            return BaseResultUtil.fail(rd.getMsg());
-        }
-        if(rd.getData() != null){
-            customer.setUserId(rd.getData());
-        }
         super.save(customer);
         //保存用户角色机构关系
-        csUserRoleDeptService.saveCustomerToUserRoleDept(customer,role.getRoleId(),dto.getLoginId());
+        csUserRoleDeptService.saveCustomerToUserRoleDept(customer,role.getId(),dto.getLoginId());
         return BaseResultUtil.success();
     }
 
@@ -907,7 +908,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         if(customer == null){
             return BaseResultUtil.fail("该客户不存在,请检查");
         }
-        ResultData<Boolean> updateRd = csCustomerService.updateUserToPlatform(customer, dto.getContactPhone());
+        ResultData<Boolean> updateRd = csCustomerService.updateUserToPlatform(customer,null, dto.getContactPhone());
         if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
             log.error("修改用户信息失败，原因：" + updateRd.getMsg());
             return BaseResultUtil.fail("修改用户信息失败，原因：" + updateRd.getMsg());
@@ -934,15 +935,6 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             if(customer != null){
                 return BaseResultUtil.fail("该客户已存在，请检查");
             }
-            //新增大客户
-            customer = new Customer();
-            BeanUtils.copyProperties(dto,customer);
-            customer.setCustomerNo(sendNoService.getNo(SendNoTypeEnum.CUSTOMER));
-            customer.setAlias(dto.getName());
-            customer.setType(CustomerTypeEnum.ENTERPRISE.code);
-            customer.setSource(CustomerSourceEnum.WEB.code);
-            customer.setCreateTime(NOW);
-            customer.setCreateUserId(dto.getLoginId());
             Role role = csRoleService.getByName(YmlProperty.get("cjkj.customer_key_role_name"), DeptTypeEnum.CUSTOMER.code);
             if(role == null){
                 return BaseResultUtil.fail("大客户角色不存在，请先添加");
@@ -952,9 +944,19 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
                 return BaseResultUtil.fail(rd.getMsg());
             }
-            if(rd.getData() != null){
-                customer.setUserId(rd.getData());
+            if(rd.getData() == null){
+                return BaseResultUtil.fail("获取架构组userId失败");
             }
+            //新增大客户
+            customer = new Customer();
+            BeanUtils.copyProperties(dto,customer);
+            customer.setUserId(rd.getData());
+            customer.setCustomerNo(sendNoService.getNo(SendNoTypeEnum.CUSTOMER));
+            customer.setAlias(dto.getName());
+            customer.setType(CustomerTypeEnum.ENTERPRISE.code);
+            customer.setSource(CustomerSourceEnum.WEB.code);
+            customer.setCreateTime(NOW);
+            customer.setCreateUserId(dto.getLoginId());
             super.save(customer);
             //合同集合
             List<CustomerContractDto> customerConList = dto.getCustContraVos();
@@ -963,7 +965,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                 customerContractService.saveBatch(list);
             }
             //保存用户角色机构关系
-            csUserRoleDeptService.saveCustomerToUserRoleDept(customer,role.getRoleId(),dto.getLoginId());
+            csUserRoleDeptService.saveCustomerToUserRoleDept(customer,role.getId(),dto.getLoginId());
         }else{
             if(customer != null){
                 return BaseResultUtil.fail("该客户已存在，请检查");
@@ -1136,7 +1138,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         Customer customer = customerDao.selectById(dto.getCustomerId());
         if(null != customer){
             //判断手机号是否存在
-            ResultData<Boolean> updateRd = csCustomerService.updateUserToPlatform(customer, dto.getContactPhone());
+            ResultData<Boolean> updateRd = csCustomerService.updateUserToPlatform(customer,null, dto.getContactPhone());
             if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
                 log.error("修改用户信息失败，原因：" + updateRd.getMsg());
                 return BaseResultUtil.fail("修改用户信息失败，原因：" + updateRd.getMsg());
@@ -1166,15 +1168,6 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
      * @return
      */
     private ResultVo savePartner(PartnerDto dto){
-        //新增c_customer
-        Customer customer = new Customer();
-        BeanUtils.copyProperties(dto,customer);
-        customer.setAlias(dto.getName());
-        customer.setCustomerNo(sendNoService.getNo(SendNoTypeEnum.CUSTOMER));
-        customer.setSource(CustomerSourceEnum.WEB.code);
-        customer.setType(CustomerTypeEnum.COOPERATOR.code);
-        customer.setCreateTime(NOW);
-        customer.setCreateUserId(dto.getLoginId());
         Role role = csRoleService.getByName(YmlProperty.get("cjkj.customer_copartner_role_name"), DeptTypeEnum.CUSTOMER.code);
         if(role == null){
             return BaseResultUtil.fail("合伙人角色不存在，请先添加");
@@ -1184,17 +1177,27 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
             return BaseResultUtil.fail(rd.getMsg());
         }
-        if(rd.getData() != null){
-            customer.setUserId(rd.getData());
+        if(rd.getData() == null){
+            return BaseResultUtil.fail("获取架构组userId失败");
         }
         ResultData resultData = sysRoleService.revokeRole(rd.getData(), role.getRoleId());
         if (!ReturnMsg.SUCCESS.getCode().equals(resultData.getCode())) {
             return BaseResultUtil.fail("解除合伙人角色失败");
         }
+        //新增c_customer
+        Customer customer = new Customer();
+        BeanUtils.copyProperties(dto,customer);
+        customer.setUserId(rd.getData());
+        customer.setAlias(dto.getName());
+        customer.setCustomerNo(sendNoService.getNo(SendNoTypeEnum.CUSTOMER));
+        customer.setSource(CustomerSourceEnum.WEB.code);
+        customer.setType(CustomerTypeEnum.COOPERATOR.code);
+        customer.setCreateTime(NOW);
+        customer.setCreateUserId(dto.getLoginId());
         customerDao.insert(customer);
         encapPartner(dto,customer,NOW);
         //保存用户角色机构关系
-        csUserRoleDeptService.saveCustomerToUserRoleDept(customer,role.getRoleId(),dto.getLoginId());
+        csUserRoleDeptService.saveCustomerToUserRoleDept(customer,role.getId(),dto.getLoginId());
         return BaseResultUtil.success();
     }
 
@@ -1209,7 +1212,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             return BaseResultUtil.fail("合伙人不存在,数据错误，请检查");
         }
         //更新架构组用户数据
-        ResultData<Boolean> updateRd = csCustomerService.updateUserToPlatform(customer, dto.getContactPhone());
+        ResultData<Boolean> updateRd = csCustomerService.updateUserToPlatform(customer,null, dto.getContactPhone());
         if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
             log.error("修改用户信息失败，原因：" + updateRd.getMsg());
             return BaseResultUtil.fail("修改用户信息失败，原因：" + updateRd.getMsg());

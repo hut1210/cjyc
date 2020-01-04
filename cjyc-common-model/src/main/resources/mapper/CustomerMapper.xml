@@ -357,7 +357,7 @@
             cc.contact_man as contactMan,
             cc.contact_phone AS contactPhone
         from c_customer cc
-		left join s_user_role_dept surd on surd.user_id = cc.id
+		left join (SELECT * FROM s_user_role_dept WHERE dept_type = 3 AND user_type = 3) surd ON surd.user_id = cc.id
         <where>
             <if test="keyword != null and keyword.trim() !=''">
                (cc.name like concat('%',#{keyword},'%') or
@@ -387,7 +387,7 @@
         FROM
           c_customer cc
         LEFT JOIN b_admin ba ON ba.id = cc.create_user_id
-        left join s_user_role_dept surd on surd.user_id = cc.id
+        LEFT JOIN (SELECT * FROM s_user_role_dept WHERE dept_type = 3 AND user_type = 3) surd ON surd.user_id = cc.id
         <where>
             <if test="contactPhone != null and contactPhone.trim() != ''">
                 cc.contact_phone like concat('%',#{contactPhone},'%')
@@ -426,7 +426,7 @@
         FROM
           c_customer cc
         LEFT JOIN b_admin ba ON ba.id = cc.create_user_id
-        LEFT JOIN s_user_role_dept surd on surd.user_id = cc.id
+        LEFT JOIN (SELECT * FROM s_user_role_dept WHERE dept_type = 3 AND user_type = 3) surd ON surd.user_id = cc.id
         <where>
             <if test="customerNo != null and customerNo.trim() != ''">
                 cc.customer_no like concat('%',#{customerNo},'%')
@@ -481,7 +481,7 @@
         LEFT JOIN c_customer_partner ccp ON ccp.customer_id = cc.id
         LEFT JOIN s_bank_card_bind sbcb ON sbcb.user_id = cc.id
         LEFT JOIN b_admin ba ON ba.id = cc.create_user_id
-        LEFT JOIN s_user_role_dept surd ON surd.user_id = cc.id
+        LEFT JOIN (SELECT * FROM s_user_role_dept WHERE dept_type = 3 AND user_type = 3) surd ON surd.user_id = cc.id
         <where>
             <if test="customerNo != null and customerNo.trim() != ''">
                 cc.customer_no like concat('%',#{customerNo},'%')

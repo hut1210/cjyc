@@ -132,4 +132,13 @@ public interface ICarrierDao extends BaseMapper<Carrier> {
      */
     BaseCarrierVo showCarrierByIdNew(@Param("carrierId") Long carrierId);
     /*********************************韵车集成改版 ed*****************************/
+
+
+
+    /**
+     * 根据手机号/身份证号查询个人司机/承运商中是否存在
+     * @param
+     * @return
+     */
+    ExistCarrierVo existCarrierNew(DriverDto dto);
 }
