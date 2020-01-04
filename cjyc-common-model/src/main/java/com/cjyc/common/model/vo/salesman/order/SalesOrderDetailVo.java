@@ -5,6 +5,7 @@ import com.cjyc.common.model.util.DateLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiParam;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
@@ -50,6 +51,10 @@ public class SalesOrderDetailVo implements Serializable {
     @ApiModelProperty(value = "客户付款方式：0到付（默认），1预付，2账期")
     private Integer payType;
 
+    @ApiModelProperty(value = "客户类型：1个人，2企业，3合伙人")
+    private Integer customerType;
+    @ApiModelProperty(value = "大客户名称")
+    private String name;
     @ApiModelProperty(value = "发车人")
     private String pickContactName;
     @ApiModelProperty(value = "发车人联系方式")
@@ -121,6 +126,8 @@ public class SalesOrderDetailVo implements Serializable {
     public Long getStartBelongStoreId(){return startBelongStoreId == null ? 0:startBelongStoreId;}
     public String getStartStoreName(){return StringUtils.isBlank(startStoreName) ? "":startStoreName;}
     public String getEndStoreName(){return StringUtils.isBlank(endStoreName) ? "":endStoreName;}
+    public Integer getCustomerType(){return customerType == null ? 0:customerType;}
+    public String getName(){return StringUtils.isBlank(name) ? "":name;}
     public String getPickContactName(){return StringUtils.isBlank(pickContactName) ? "":pickContactName;}
     public String getPickContactPhone(){return StringUtils.isBlank(pickContactPhone) ? "":pickContactPhone;}
     public String getStartProvinceCode(){return StringUtils.isBlank(startProvinceCode) ? "":startProvinceCode;}
