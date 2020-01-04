@@ -28,14 +28,16 @@ public interface ICsUserRoleDeptService {
      * @param driver
      * @param roleId
      * @param loginId
+     * @param flag 承运商下司机:0  个人司机:1
      */
-    ResultVo<UserRoleDept> saveDriverToUserRoleDept(Carrier carrier, Driver driver, Long roleId, Long loginId);
+    ResultVo<UserRoleDept> saveDriverToUserRoleDept(Carrier carrier, Driver driver, Long roleId, Long loginId,Integer flag);
 
     /**
      * 修改司机更新关系表
      * @param carrier
      * @param driver
      * @param loginId
+     * @param flag 承运商下司机:0  个人司机:1
      */
-    ResultVo updateDriverToUserRoleDept(Carrier carrier,Driver driver,Long loginId);
+    ResultVo updateDriverToUserRoleDept(Carrier carrier,Driver driver,Long loginId,Integer flag);
 }

@@ -43,6 +43,8 @@ public class CsVehicleServiceImpl implements ICsVehicleService {
     private ICsSysService csSysService;
     @Resource
     private IUserRoleDeptDao userRoleDeptDao;
+    @Resource
+    private ICarrierDao carrierDao;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -227,6 +229,17 @@ public class CsVehicleServiceImpl implements ICsVehicleService {
         SocietyVehicleVo vehicleVo = new SocietyVehicleVo();
         vehicleVo.setVehicleVo(freeVehicleVos);
         return BaseResultUtil.success(vehicleVo);
+    }
+
+    @Override
+    public ResultVo<List<FreeVehicleVo>> findCarrierFreeVehicleNew(FreeDto dto){
+        //获取承运商
+        Carrier carrier = carrierDao.selectById(dto.getCarrierId());
+        if(carrier == null){
+            return BaseResultUtil.fail("该承运商管理员不存在,请检查");
+        }
+        List<FreeVehicleVo> freeVehicleVos = vehicleDao.findCarrierVehicle(carrier.getId(),dto.getPlateNo());
+        return  BaseResultUtil.success(freeVehicles(freeVehicleVos));
     }
 
 }

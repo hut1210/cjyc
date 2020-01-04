@@ -120,4 +120,18 @@ public interface ICsDriverService {
      * @return
      */
     ResultVo saveOrModifyDriverAppNew(CarrierDriverDto dto);
+
+    /**
+     * 添加和修改承运商下司机信息
+     * @param dto
+     * @return
+     */
+    ResultVo saveOrModifyDriverWebNew(CarrierDriverDto dto);
+
+    /**
+     * 获取该承运商下空闲司机
+     * @param dto
+     * @return
+     */
+    ResultVo<List<FreeDriverVo>> findCarrierFreeDriverNew(FreeDto dto);
 }

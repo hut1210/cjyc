@@ -91,4 +91,11 @@ public interface ICsVehicleService {
      * @return
      */
     ResultVo<SocietyVehicleVo> findSocietyFreeVehicleNew(CarrierVehicleNoDto dto);
+
+    /**
+     * 获取承运商下的空闲车辆
+     * @param dto
+     * @return
+     */
+    ResultVo<List<FreeVehicleVo>> findCarrierFreeVehicleNew(FreeDto dto);
 }

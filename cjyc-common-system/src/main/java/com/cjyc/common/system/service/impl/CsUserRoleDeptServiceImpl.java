@@ -73,14 +73,18 @@ public class CsUserRoleDeptServiceImpl implements ICsUserRoleDeptService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResultVo<UserRoleDept> saveDriverToUserRoleDept(Carrier carrier, Driver driver, Long roleId, Long loginId) {
+    public ResultVo<UserRoleDept> saveDriverToUserRoleDept(Carrier carrier, Driver driver, Long roleId, Long loginId,Integer flag) {
         UserRoleDept urd = new UserRoleDept();
         urd.setUserId(driver.getId());
         urd.setRoleId(roleId);
         urd.setDeptId(carrier.getId()+"");
         urd.setDeptType(DeptTypeEnum.CARRIER.code);
         urd.setUserType(UserTypeEnum.DRIVER.code);
-        urd.setState(CommonStateEnum.WAIT_CHECK.code);
+        if(flag == 0){
+            urd.setState(CommonStateEnum.CHECKED.code);
+        }else{
+            urd.setState(CommonStateEnum.WAIT_CHECK.code);
+        }
         urd.setMode(carrier.getMode());
         urd.setCreateTime(NOW);
         urd.setCreateUserId(loginId);
@@ -89,7 +93,7 @@ public class CsUserRoleDeptServiceImpl implements ICsUserRoleDeptService {
     }
 
     @Override
-    public ResultVo updateDriverToUserRoleDept(Carrier carrier, Driver driver, Long loginId) {
+    public ResultVo updateDriverToUserRoleDept(Carrier carrier, Driver driver, Long loginId,Integer flag) {
         UserRoleDept urd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
                 .eq(UserRoleDept::getUserId, driver.getId())
                 .eq(UserRoleDept::getDeptId, carrier.getId())
@@ -99,7 +103,11 @@ public class CsUserRoleDeptServiceImpl implements ICsUserRoleDeptService {
             return BaseResultUtil.fail("该司机不存在，请联系管理员");
         }
         urd.setMode(carrier.getMode());
-        urd.setState(CommonStateEnum.WAIT_CHECK.code);
+        if(flag == 0){
+            urd.setState(CommonStateEnum.CHECKED.code);
+        }else{
+            urd.setState(CommonStateEnum.WAIT_CHECK.code);
+        }
         urd.setUpdateUserId(loginId);
         urd.setUpdateTime(NOW);
         userRoleDeptDao.updateById(urd);
