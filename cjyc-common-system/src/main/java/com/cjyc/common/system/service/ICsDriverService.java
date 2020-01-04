@@ -106,4 +106,18 @@ public interface ICsDriverService {
      * @return
      */
     ResultVo<PageVo<DispatchDriverVo>> dispatchDriverNew(DispatchDriverDto dto);
+
+    /**
+     * 根据承运商id获取该承运商下的空闲司机
+     * @param dto
+     * @return
+     */
+    ResultVo<CarrierDriverVo> findCompanyFreeDriverNew(CarrierDriverNameDto dto);
+
+    /**
+     * 添加和修改承运商下司机信息
+     * @param dto
+     * @return
+     */
+    ResultVo saveOrModifyDriverAppNew(CarrierDriverDto dto);
 }

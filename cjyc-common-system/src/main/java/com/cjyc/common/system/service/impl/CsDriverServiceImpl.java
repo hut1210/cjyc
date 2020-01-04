@@ -15,6 +15,7 @@ import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.driver.DriverIdentityEnum;
+import com.cjyc.common.model.enums.role.DeptTypeEnum;
 import com.cjyc.common.model.enums.role.RoleNameEnum;
 import com.cjyc.common.model.enums.task.TaskStateEnum;
 import com.cjyc.common.model.enums.transport.*;
@@ -29,14 +30,14 @@ import com.cjyc.common.model.vo.driver.mine.CarrierDriverVo;
 import com.cjyc.common.model.vo.web.driver.DispatchDriverVo;
 import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.feign.ISysUserService;
-import com.cjyc.common.system.service.ICsDriverService;
-import com.cjyc.common.system.service.ICsVehicleService;
+import com.cjyc.common.system.service.*;
 import com.cjyc.common.system.service.sys.ICsSysService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
@@ -70,6 +71,14 @@ public class CsDriverServiceImpl implements ICsDriverService {
     private ICsDriverService csDriverService;
     @Resource
     private ICsVehicleService csVehicleService;
+    @Resource
+    private IUserRoleDeptDao userRoleDeptDao;
+    @Resource
+    private ICsRoleService csRoleService;
+    @Resource
+    private ICsCustomerService csCustomerService;
+    @Resource
+    private ICsUserRoleDeptService csUserRoleDeptService;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -491,6 +500,168 @@ public class CsDriverServiceImpl implements ICsDriverService {
         List<DispatchDriverVo> dispatchDriverVos = driverDao.findDispatchDriver(dto);
         PageInfo<DispatchDriverVo> pageInfo = new PageInfo<>(dispatchDriverVos);
         return BaseResultUtil.success(pageInfo);
+    }
+
+    @Override
+    public ResultVo<CarrierDriverVo> findCompanyFreeDriverNew(CarrierDriverNameDto dto){
+        UserRoleDept urd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
+                .eq(UserRoleDept::getUserId, dto.getLoginId())
+                .eq(UserRoleDept::getId, dto.getRoleId()));
+        if(urd == null){
+            return BaseResultUtil.fail("该司机管理员不存在,请检查");
+        }
+        List<FreeDriverVo> freeDriverVos = driverDao.findCarrierAllDriverNew(Long.valueOf(urd.getDeptId()),dto.getRealName());
+        freeDriverVos = freeDriver(freeDriverVos,Long.valueOf(urd.getDeptId()));
+        CarrierDriverVo driverVo = new CarrierDriverVo();
+        driverVo.setDriverVo(freeDriverVos);
+        return BaseResultUtil.success(driverVo);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ResultVo saveOrModifyDriverAppNew(CarrierDriverDto dto){
+        Role role = null;
+        UserRoleDept urd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
+                .eq(UserRoleDept::getUserId, dto.getLoginId())
+                .eq(UserRoleDept::getId, dto.getRoleId()));
+        if(urd == null){
+            return BaseResultUtil.fail("该司机管理员不存在,请检查");
+        }
+        dto.setCarrierId(Long.valueOf(urd.getDeptId()));
+        Carrier carrier = carrierDao.selectById(Long.valueOf(urd.getDeptId()));
+        if(carrier == null){
+            return BaseResultUtil.fail("该承运商不存在,请联系管理员");
+        }
+        if(carrier.getState() != CommonStateEnum.CHECKED.code){
+            return BaseResultUtil.fail("该承运商审核未通过，不可添加司机");
+        }
+        //验证在个人司机池中是否存在
+        Integer count = carrierDao.existPersonalCarrierNew(dto);
+        if(count > 0){
+            return BaseResultUtil.fail("账号已存在于个人司机中");
+        }
+        //验证在该承运商下是否有相同的
+        count = carrierDao.existBusinessCarrierNew(dto);
+        if(count > 0){
+            return BaseResultUtil.fail("账号已存在于该企业承运商中");
+        }
+        if(dto.getDriverId() == null){
+            if(StringUtils.isNotBlank(dto.getPlateNo()) && dto.getVehicleId() != null){
+                boolean result = csVehicleService.verifyDriverVehicle(null, dto.getVehicleId());
+                if(!result){
+                    return BaseResultUtil.fail("该车辆已绑定，请检查");
+                }
+            }
+            Driver driver = driverDao.selectOne(new QueryWrapper<Driver>().lambda()
+                    .eq(Driver::getPhone, dto.getPhone()));
+            if(driver == null){
+                role = csRoleService.getByName(YmlProperty.get("cjkj.carrier_sub_driver_role_name"), DeptTypeEnum.CARRIER.code);
+                if(role == null){
+                    return BaseResultUtil.fail("下属司机角色不存在，请先添加");
+                }
+                ResultData<Long> rd = csCustomerService.addUserToPlatform(dto.getPhone(),dto.getRealName(),role);
+                if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+                    return BaseResultUtil.fail("司机信息保存失败，原因：" + rd.getMsg());
+                }
+                if(rd.getData() == null){
+                    return BaseResultUtil.fail("获取架构组userId失败");
+                }
+                //保存司机
+                driver = new Driver();
+                BeanUtils.copyProperties(dto,driver);
+                driver.setUserId(rd.getData());
+                driver.setName(dto.getRealName());
+                driver.setType(DriverTypeEnum.SOCIETY.code);
+                driver.setIdentity(DriverIdentityEnum.GENERAL_DRIVER.code);
+                driver.setBusinessState(BusinessStateEnum.BUSINESS.code);
+                //承运商超级管理员登陆
+                driver.setSource(DriverSourceEnum.CARRIER_ADMIN.code);
+                driver.setCreateUserId(dto.getLoginId());
+                driver.setCreateTime(NOW);
+                driverDao.insert(driver);
+            }
+            //保存司机与承运商关系
+            csUserRoleDeptService.saveDriverToUserRoleDept(carrier, driver, role.getId(), dto.getLoginId());
+            //车牌号不为空
+            if(StringUtils.isNotBlank(dto.getPlateNo()) && dto.getVehicleId() != null){
+                //保存司机与车辆关系
+                DriverVehicleCon dvc = new DriverVehicleCon();
+                dvc.setVehicleId(dto.getVehicleId());
+                dvc.setDriverId(driver.getId());
+                driverVehicleConDao.insert(dvc);
+                //保存运力信息
+                VehicleRunning vr = new VehicleRunning();
+                vr.setDriverId(driver.getId());
+                vr.setVehicleId(dto.getVehicleId());
+                vr.setPlateNo(dto.getPlateNo());
+                vr.setCarryCarNum(dto.getDefaultCarryNum());
+                vr.setState(RunningStateEnum.EFFECTIVE.code);
+                vr.setRunningState(VehicleRunStateEnum.FREE.code);
+                vr.setCreateTime(NOW);
+                vehicleRunningDao.insert(vr);
+            }
+            return BaseResultUtil.success();
+        }else{
+            return modifyDriverNew(dto,urd);
+        }
+    }
+
+    /**
+     * 修改承运商下司机与车辆关系
+     * @param dto
+     * @return
+     */
+    private ResultVo modifyDriverNew(CarrierDriverDto dto,UserRoleDept urd) {
+        //判断司机是否已存在
+        Driver driver = driverDao.selectById(dto.getDriverId());
+        if(driver == null){
+            return BaseResultUtil.fail("该司机不存在，请检查");
+        }
+        Carrier carrier = carrierDao.selectById(urd.getDeptId());
+        if(carrier == null){
+            return BaseResultUtil.fail("该承运商不存在，请检查");
+        }
+        DriverVehicleCon dvc = driverVehicleConDao.selectOne(new QueryWrapper<DriverVehicleCon>().lambda().eq(DriverVehicleCon::getDriverId,driver.getId()));
+        VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda().eq(VehicleRunning::getDriverId,driver.getId()));
+        if(vr != null) {
+            Task task = taskDao.selectOne(new QueryWrapper<Task>().lambda()
+                    .eq(Task::getVehicleRunningId,vr.getId())
+                    .eq(Task::getState,TaskStateEnum.TRANSPORTING.code));
+            if(task != null){
+                return BaseResultUtil.fail("该运力正在运输中，不可修改");
+            }
+        }
+        //更新架构组用户信息
+        ResultData<Boolean> updateRd = csCustomerService.updateUserToPlatform(null,driver, dto.getPhone());
+        if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
+            return BaseResultUtil.fail("修改用户信息失败，原因：" + updateRd.getMsg());
+        }
+        //更新司机与用户角色机构关系
+        ResultVo resultVo = csUserRoleDeptService.updateDriverToUserRoleDept(carrier, driver, dto.getLoginId());
+        if (!ResultEnum.SUCCESS.getCode().equals(resultVo.getCode())) {
+            return BaseResultUtil.fail("修改用户信息失败，原因：" + resultVo.getMsg());
+        }
+        //更新司机信息
+        BeanUtils.copyProperties(dto,driver);
+        driver.setName(dto.getRealName());
+        driver.setRealName(dto.getRealName());
+        driverDao.updateById(driver);
+        if(StringUtils.isNotBlank(dto.getPlateNo()) && dvc != null){
+            //更新司机与车辆绑定关系
+            dvc.setVehicleId(dvc.getVehicleId());
+            driverVehicleConDao.updateById(dvc);
+            //更新运力信息
+            vr.setVehicleId(dto.getVehicleId());
+            vehicleRunningDao.updateById(vr);
+        }else if(StringUtils.isBlank(dto.getPlateNo()) && dvc != null){
+            //为空删除绑定关系
+            driverVehicleConDao.removeCon(dvc.getDriverId(),dvc.getVehicleId());
+            vehicleRunningDao.removeRun(dvc.getDriverId(),dvc.getVehicleId());
+        }else if(StringUtils.isNotBlank(dto.getPlateNo()) && dvc == null){
+            //之前没绑定，现在绑定
+            bindDriverVeh(dto);
+        }
+        return BaseResultUtil.success();
     }
 
 }

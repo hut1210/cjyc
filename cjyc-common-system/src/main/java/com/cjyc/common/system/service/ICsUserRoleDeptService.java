@@ -3,6 +3,7 @@ package com.cjyc.common.system.service;
 import com.cjyc.common.model.entity.Carrier;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.entity.Driver;
+import com.cjyc.common.model.entity.UserRoleDept;
 import com.cjyc.common.model.vo.ResultVo;
 
 public interface ICsUserRoleDeptService {
@@ -28,7 +29,7 @@ public interface ICsUserRoleDeptService {
      * @param roleId
      * @param loginId
      */
-    ResultVo saveDriverToUserRoleDept(Carrier carrier, Driver driver, Long roleId, Long loginId);
+    ResultVo<UserRoleDept> saveDriverToUserRoleDept(Carrier carrier, Driver driver, Long roleId, Long loginId);
 
     /**
      * 修改司机更新关系表

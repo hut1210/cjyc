@@ -73,7 +73,7 @@ public class CsUserRoleDeptServiceImpl implements ICsUserRoleDeptService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResultVo saveDriverToUserRoleDept(Carrier carrier, Driver driver, Long roleId, Long loginId) {
+    public ResultVo<UserRoleDept> saveDriverToUserRoleDept(Carrier carrier, Driver driver, Long roleId, Long loginId) {
         UserRoleDept urd = new UserRoleDept();
         urd.setUserId(driver.getId());
         urd.setRoleId(roleId);
@@ -85,7 +85,7 @@ public class CsUserRoleDeptServiceImpl implements ICsUserRoleDeptService {
         urd.setCreateTime(NOW);
         urd.setCreateUserId(loginId);
         userRoleDeptDao.insert(urd);
-        return BaseResultUtil.success();
+        return BaseResultUtil.success(urd);
     }
 
     @Override

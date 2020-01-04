@@ -813,4 +813,113 @@
         group by dd.phone
     </select>
 
+    <!--根据承运商id获取下属司机信息-->
+    <select id="findDriverInfoNew" resultType="com.cjyc.common.model.vo.driver.mine.DriverInfoVo"
+            parameterType="java.lang.Long">
+          SELECT
+            dc.id as carrierId,
+            dd.id AS driverId,
+            dd.real_name AS realName,
+            dd.phone AS phone,
+            dd.id_card AS idCard,
+            dd.id_card_front_img AS idCardFrontImg,
+            dd.id_card_back_img AS idCardBackImg,
+            surd.MODE AS MODE,
+            surd.state AS state,
+            dd.business_state AS businessState,
+            dvr.vehicle_id AS vehicleId,
+            dvr.plate_no AS plateNo
+      FROM
+          d_driver dd
+        LEFT JOIN (SELECT * FROM s_user_role_dept WHERE dept_type = 2 AND user_type = 2) surd ON surd.user_id = dd.id
+        LEFT JOIN d_carrier dc ON dc.id = surd.dept_id
+        LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
+        where dc.id = #{carrierId} and dc.type = 2 and surd.state &lt; 5 and
+        (
+        SELECT
+            ( CASE sr.role_name WHEN '个人司机' THEN 0 WHEN '下属司机' THEN 1 WHEN '承运商管理员' THEN 2 WHEN '承运商超级管理员' THEN 3 END ) AS role
+        FROM
+            s_role sr
+            LEFT JOIN ( SELECT * FROM s_user_role_dept WHERE dept_type = 2 AND user_type = 2 ) surd ON surd.role_id = sr.id
+            LEFT JOIN d_carrier dc ON dc.id = surd.dept_id  where dc.id = #{carrierId}
+	    ) &lt; 2
+        order by dd.create_time desc,dd.check_time desc
+    </select>
+
+    <!--获取该承运商下符合条件的司机-->
+    <select id="findCarrierAllDriverNew" resultType="com.cjyc.common.model.vo.FreeDriverVo">
+        SELECT
+            dd.id AS driverId,
+            dd.real_name AS realName,
+            dd.phone AS phone,
+            surd.MODE AS MODE
+        FROM
+          d_driver dd
+        LEFT JOIN ( SELECT * FROM s_user_role_dept WHERE dept_type = 2 AND user_type = 2 ) surd ON surd.user_id = dd.id
+        <where>
+            <if test="realName != null and realName.trim() != ''">
+                dd.real_name LIKE CONCAT('%',#{realName},'%')
+            </if>
+            AND surd.dept_id = #{carrierId}
+            AND surd.state = 2
+            ORDER BY dd.create_time DESC,dd.check_time DESC
+        </where>
+    </select>
+
+    <!--验证在企业承运商下是否存在-->
+    <select id="existEnterPriseDriverNew" resultType="java.lang.Integer"
+            parameterType="com.cjyc.common.model.dto.driver.mine.SocietyDriverDto">
+        SELECT
+	      count( dd.id )
+        FROM
+	      d_driver dd
+	    LEFT JOIN ( SELECT * FROM s_user_role_dept WHERE dept_type = 2 AND user_type = 2 ) surd ON surd.user_id = dd.id
+	    LEFT JOIN d_carrier dc ON dc.id = surd.dept_id
+        WHERE
+            dc.type = 2
+            AND ( dd.phone = #{phone} OR dd.id_card = #{idCard})
+    </select>
+
+    <!--验证在个人承运商下是否存在-->
+    <select id="existPersonDriverNew" resultType="java.lang.Integer"
+            parameterType="com.cjyc.common.model.dto.driver.mine.SocietyDriverDto">
+        SELECT
+	      count( dd.id )
+        FROM
+	      d_driver dd
+        LEFT JOIN ( SELECT * FROM s_user_role_dept WHERE dept_type = 2 AND user_type = 2 ) surd ON surd.user_id = dd.id
+        LEFT JOIN d_carrier dc ON dc.id = surd.dept_id
+        WHERE
+            dc.type = 1
+            AND ( dd.phone = #{phone} and dd.id_card = #{idCard})
+            and dd.id &lt;&gt; #{loginId}
+    </select>
+
+    <!--司机端查询个人司机信息_改版-->
+    <select id="findPersonInfoNew" resultType="com.cjyc.common.model.vo.driver.mine.SocietyDriverVo"
+            parameterType="com.cjyc.common.model.dto.driver.AppDriverDto">
+        SELECT
+            dd.real_name AS realName,
+            dd.phone AS phone,
+            dd.id_card AS idCard,
+            dvr.vehicle_id AS vehicleId,
+            dvr.plate_no AS plateNo,
+            surd.MODE AS MODE,
+            dd.id_card_front_img AS idCardFrontImg,
+            dd.id_card_back_img AS idCardBackImg,
+            dd.driver_licence_front_img AS driverLicenceFrontImg,
+            dd.qualifi_cert_front_img AS qualifiCertFrontImg,
+            dd.taxi_licence_front_img AS taxiLicenceFrontImg,
+            dd.travel_licence_front_img AS travelLicenceFrontImg
+        FROM
+            d_driver dd
+        LEFT JOIN (SELECT * FROM s_user_role_dept WHERE dept_type = 2 AND user_type = 2) surd ON surd.user_id = dd.id
+        LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
+        WHERE
+        surd.id = #{roleId}
+        AND dd.id = #{loginId}
+        AND surd.state &lt;= 2
+    </select>
+
+
 </mapper>

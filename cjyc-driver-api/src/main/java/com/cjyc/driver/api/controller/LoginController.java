@@ -41,4 +41,15 @@ public class LoginController {
     public ResultVo<DriverLoginVo> login(@Validated @RequestBody LoginDto dto) {
         return loginService.login(dto);
     }
+
+
+    /************************************韵车集成改版 st***********************************/
+
+    @ApiOperation(value = "司机注册登陆")
+    @PostMapping("/loginNew")
+    public ResultVo<DriverLoginVo> loginNew(@Validated @RequestBody LoginDto dto) {
+        return loginService.loginNew(dto);
+    }
+
+
 }

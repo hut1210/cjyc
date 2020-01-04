@@ -532,4 +532,96 @@
             limit 1
         </where>
     </select>
+
+    <!--司机端登录_改版-->
+    <select id="findDriverLoginNew" resultType="com.cjyc.common.model.vo.driver.login.BaseLoginVo"
+            parameterType="java.lang.Long">
+        SELECT
+            dd.id AS id,
+            dc.id AS carrierId,
+            surd.id AS roleId,
+            dd.user_id AS userId,
+            dd.real_name AS realName,
+            dd.phone AS phone,
+            dd.id_card AS idCard,
+            dd.identity AS identity,
+            dd.business_state AS businessState,
+            surd.state AS state,
+            ( CASE sr.role_name WHEN '个人司机' THEN 0 WHEN '下属司机' THEN 1 WHEN '承运商管理员' THEN 2 WHEN '承运商超级管理员' THEN 3 END ) AS role,
+            dc.type AS type,
+            dc.state AS carrierState,
+            dc.NAME AS companyName,
+            dvr.plate_no AS plateNo,
+            dd.photo_img AS photoImg
+        FROM
+	        d_carrier dc
+        LEFT JOIN ( SELECT * FROM s_user_role_dept WHERE dept_type = 2 AND user_type = 2 ) surd ON surd.dept_id = dc.id
+        LEFT JOIN d_driver dd ON dd.id = surd.user_id
+        LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
+        LEFT JOIN s_role sr ON sr.id = surd.role_id
+        WHERE dd.id = #{driverId} and dc.state &lt; 4
+    </select>
+
+    <!--查询个人承运商中是否存在_改版-->
+    <select id="existPersonalCarrierNew" resultType="java.lang.Integer"
+            parameterType="com.cjyc.common.model.dto.CarrierDriverDto">
+        SELECT
+          count( dd.id )
+        FROM
+          d_carrier dc
+        LEFT JOIN ( SELECT * FROM s_user_role_dept WHERE dept_type = 2 AND user_type = 2 ) surd ON surd.dept_id = dc.id
+        LEFT JOIN d_driver dd ON dd.id = surd.user_id
+        <where>
+            <if test="(phone != null and phone.trim() != '') or (idCard != null and idCard.trim() != '')">
+                (dd.phone = #{phone} OR dd.id_card = #{idCard})
+            </if>
+            AND dc.type = 1
+        </where>
+    </select>
+
+    <!--查询企业承运商中是否存在_改版-->
+    <select id="existBusinessCarrierNew" resultType="java.lang.Integer"
+            parameterType="com.cjyc.common.model.dto.CarrierDriverDto">
+        SELECT
+          count( dd.id )
+        FROM
+          d_carrier dc
+        LEFT JOIN (SELECT * FROM s_user_role_dept WHERE dept_type = 2 AND user_type = 2) surd ON surd.dept_id = dc.id
+        LEFT JOIN d_driver dd ON dd.id = surd.user_id
+        <where>
+            <if test="driverId != null">
+                dd.id &lt;&gt; #{driverId}
+            </if>
+            and dc.id = #{carrierId} and (dd.phone = #{phone} or dd.id_card = #{idCard}) and dc.type = 2
+        </where>
+    </select>
+
+    <!--获取司机最新信息_改版-->
+    <select id="findAppDriverInfoNew" resultType="com.cjyc.common.model.vo.driver.mine.AppDriverInfoVo">
+          SELECT
+            dd.id AS id,
+            dc.id AS carrierId,
+            surd.id AS roleId,
+            dd.user_id AS userId,
+            dd.real_name AS realName,
+            dd.phone AS phone,
+            dd.id_card AS idCard,
+            dd.identity AS identity,
+            dd.business_state AS businessState,
+            surd.state AS state,
+            ( CASE sr.role_name WHEN '个人司机' THEN 0 WHEN '下属司机' THEN 1 WHEN '承运商管理员' THEN 2 WHEN '承运商超级管理员' THEN 3 END ) AS role,
+            dc.type AS type,
+            dc.state AS carrierState,
+            dc.NAME AS companyName,
+            dvr.plate_no AS plateNo,
+            dd.photo_img AS photoImg
+        FROM
+            d_carrier dc
+            LEFT JOIN ( SELECT * FROM s_user_role_dept WHERE dept_type = 2 AND user_type = 2 ) surd ON surd.dept_id = dc.id
+            LEFT JOIN d_driver dd ON dd.id = surd.user_id
+            LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
+            LEFT JOIN s_role sr ON sr.id = surd.role_id
+        WHERE
+            surd.id = #{roleId} and surd.user_id = #{loginId} and dc.state &lt; 4
+    </select>
 </mapper>

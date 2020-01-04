@@ -141,4 +141,34 @@ public interface ICarrierDao extends BaseMapper<Carrier> {
      * @return
      */
     ExistCarrierVo existCarrierNew(DriverDto dto);
+
+    /**
+     * 根据司机id获取信息(司机登录)
+     * @param driverId
+     * @return
+     */
+    List<BaseLoginVo> findDriverLoginNew(@Param("driverId") Long driverId);
+
+    /**
+     * 判断个人承运商下司机是否存在
+     * @param dto
+     * @return
+     */
+    Integer existPersonalCarrierNew(CarrierDriverDto dto);
+
+    /**
+     * 判断在该承运商下司机是否存在
+     * @param dto
+     * @return
+     */
+    Integer existBusinessCarrierNew(CarrierDriverDto dto);
+
+    /**
+     * 获取司机信息
+     * @param roleId
+     * @param loginId
+     * @return
+     */
+    AppDriverInfoVo findAppDriverInfoNew(@Param("roleId") Long roleId,@Param("loginId") Long loginId);
+
 }

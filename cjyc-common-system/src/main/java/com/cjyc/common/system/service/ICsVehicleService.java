@@ -72,4 +72,23 @@ public interface ICsVehicleService {
      * @param veh
      */
     void updateTransport(CarrierVehicleDto dto, AppCarrierVehicleDto appDto, Vehicle veh);
+
+
+
+
+    /************************************韵车集成改版 st***********************************/
+
+    /**
+     * 根据承运商获取该承运商下的空闲车辆
+     * @param dto
+     * @return
+     */
+    ResultVo<CarrierVehicleVo> findCompanyFreeVehicleNew(CarrierVehicleNoDto dto);
+
+    /**
+     * 获取司机端社会空闲车辆
+     * @param dto
+     * @return
+     */
+    ResultVo<SocietyVehicleVo> findSocietyFreeVehicleNew(CarrierVehicleNoDto dto);
 }
