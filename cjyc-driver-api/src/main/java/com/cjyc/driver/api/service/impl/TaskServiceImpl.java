@@ -22,6 +22,7 @@ import com.cjyc.common.model.vo.driver.task.CarDetailVo;
 import com.cjyc.common.model.vo.driver.task.TaskBillVo;
 import com.cjyc.common.model.vo.driver.task.TaskDetailVo;
 import com.cjyc.common.model.vo.driver.task.TaskDriverVo;
+import com.cjyc.common.system.config.LogoImgProperty;
 import com.cjyc.driver.api.service.ITaskService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -61,6 +62,8 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
     private IOrderDao orderDao;
     @Autowired
     private IDriverDao driverDao;
+    @Autowired
+    private ICarSeriesDao carSeriesDao;
 
     @Override
     public ResultVo<PageVo<TaskBillVo>> getWaitHandleTaskPage(BaseDriverDto dto) {
@@ -185,6 +188,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
 
                 // 如果指导路线为空，且运单是提车或者送车，将始发成和结束城市用“-”拼接
                 fillGuideLine(taskDetailVo,waybillCar);
+                carDetailVo.setGuideLine(taskDetailVo.getGuideLine());
 
                 // 查询除了当前车辆运单的历史车辆运单图片
                 getHistoryWaybillCarImg(carDetailVo, waybillCar,dto.getDetailType());
@@ -192,6 +196,10 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                 // 查询品牌车系信息
                 OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
                 BeanUtils.copyProperties(orderCar,carDetailVo);
+
+                // 查询车辆logo图片
+                String logoImg = carSeriesDao.getLogoImgByBraMod(carDetailVo.getBrand(),carDetailVo.getModel());
+                carDetailVo.setLogoPhotoImg(LogoImgProperty.logoImg+logoImg);
 
                 carDetailVo.setId(waybillCar.getId());
                 carDetailVo.setWaybillCarState(waybillCar.getState());
@@ -255,10 +263,15 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
 
                     // 如果指导路线为空，且运单是提车或者送车，将始发成和结束城市用“-”拼接
                     fillGuideLine(taskDetailVo,waybillCar);
+                    carDetailVo.setGuideLine(taskDetailVo.getGuideLine());
 
                     // 查询品牌车系信息
                     OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
                     BeanUtils.copyProperties(orderCar,carDetailVo);
+
+                    // 查询车辆logo图片
+                    String logoImg = carSeriesDao.getLogoImgByBraMod(carDetailVo.getBrand(),carDetailVo.getModel());
+                    carDetailVo.setLogoPhotoImg(LogoImgProperty.logoImg+logoImg);
 
                     // 查询支付方式
                     Order order = orderDao.selectById(orderCar.getOrderId());
@@ -267,13 +280,6 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                     carDetailVo.setId(taskCar.getId());
                     carDetailVo.setWaybillCarState(waybillCar.getState());
                     carDetailVoList.add(carDetailVo);
-                    // todo 测试用
-                    String historyLoadPhotoImg = carDetailVo.getHistoryLoadPhotoImg();
-                    String loadPhotoImg = carDetailVo.getLoadPhotoImg();
-                    String[] split = historyLoadPhotoImg.split(",");
-                    String[] split1 = loadPhotoImg.split(",");
-                    log.info("===>运单ID"+waybillCar.getId()+"历史图片张数："+split.length);
-                    log.info("===>运单ID"+waybillCar.getId()+"当前运单提车图片张数："+split1.length);
                 }
             }
         }

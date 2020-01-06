@@ -96,4 +96,10 @@ public class FinancePayableController {
         return financeService.paid(payablePaidQueryDto);
     }
 
+    @ApiOperation(value = "结算明细")
+    @PostMapping(value = "/detail")
+    public ResultVo detail(@RequestBody String serialNumber){
+        return financeService.payableDetail(serialNumber);
+    }
+
 }

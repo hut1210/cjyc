@@ -4,6 +4,8 @@ import com.cjyc.common.model.dto.salesman.PageSalesDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.Set;
+
 @Data
 public class StockCarDto extends PageSalesDto {
     @ApiModelProperty(value = "vin码")
@@ -17,5 +19,5 @@ public class StockCarDto extends PageSalesDto {
     @ApiModelProperty(value = "提车结束日期")
     private Long endTime;
     @ApiModelProperty(value = "业务中心ids，不需要传")
-    private String storeIds;
+    private Set<Long> storeIds;
 }

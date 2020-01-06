@@ -67,4 +67,6 @@ public interface IFinanceService {
     ResultVo writeOffPayable(WriteOffTicketDto writeOffTicketDto);
 
     ResultVo paid(PayablePaidQueryDto payablePaidQueryDto);
+
+    ResultVo payableDetail(String serialNumber);
 }
