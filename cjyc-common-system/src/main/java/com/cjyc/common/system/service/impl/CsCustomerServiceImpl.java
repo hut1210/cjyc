@@ -4,6 +4,7 @@ import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
 import com.cjkj.common.redis.template.StringRedisUtil;
 import com.cjkj.usercenter.dto.common.*;
+import com.cjyc.common.model.constant.Constant;
 import com.cjyc.common.model.dao.ICustomerDao;
 import com.cjyc.common.model.dto.salesman.customer.SalesCustomerDto;
 import com.cjyc.common.model.entity.Driver;
@@ -24,6 +25,7 @@ import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.ICsCustomerService;
+import com.cjyc.common.system.util.ResultDataUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -34,6 +36,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 客户公用业务
@@ -216,27 +219,63 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
     /************************************韵车集成改版 st***********************************/
     @Override
     public ResultData<Long> addUserToPlatform(String phone, String name, Role role) {
-        ResultData<UserResp> accountRd = sysUserService.getByAccount(phone);
-        if (!ReturnMsg.SUCCESS.getCode().equals(accountRd.getCode())) {
-            return ResultData.failed("获取用户信息失败，原因：" + accountRd.getMsg());
+        ResultData<UserResp> rd = sysUserService.getByAccount(phone);
+        if(!ResultDataUtil.isSuccess(rd)){
+            return ResultData.failed("获取用户信息失败，原因：" + rd.getMsg());
         }
-        if (accountRd.getData() != null) {
-            //存在，则直接返回已有用户userId信息
-            return ResultData.ok(accountRd.getData().getUserId());
+        if(rd.getData() != null){
+            //用户存在，需要判断是否需要将用户、角色关系维护
+            ResultData<List<SelectRoleResp>> rolesRd =
+                    sysRoleService.getListByUserId(rd.getData().getUserId());
+            if(!ResultDataUtil.isSuccess(rolesRd)){
+                return ResultData.failed("查询用户下角色列表错误，原因：" + rolesRd.getMsg());
+            }
+            UpdateUserReq updateUserReq = null;
+            if(!CollectionUtils.isEmpty(rolesRd.getData())){
+                //存在角色
+                List<Long> roleIdList = rolesRd.getData().stream()
+                        .map(r -> r.getRoleId()).collect(Collectors.toList());
+                if(roleIdList.contains(role.getRoleId())){
+                    return ResultData.ok(rd.getData().getUserId());
+                }else{
+                    roleIdList.add(role.getRoleId());
+                    updateUserReq = new UpdateUserReq();
+                    updateUserReq.setUserId(rd.getData().getUserId());
+                    updateUserReq.setRoleIdList(roleIdList);
+                    ResultData updateUserRd = sysUserService.update(updateUserReq);
+                    if (!ResultDataUtil.isSuccess(updateUserRd)) {
+                        return ResultData.failed("更新用户信息错误，原因：" + updateUserRd.getMsg());
+                    }else {
+                        return ResultData.ok(rd.getData().getUserId());
+                    }
+                }
+            }else{
+                //不存在角色
+                updateUserReq = new UpdateUserReq();
+                updateUserReq.setUserId(rd.getData().getUserId());
+                updateUserReq.setRoleIdList(Arrays.asList(role.getRoleId()));
+                ResultData updateUserRd = sysUserService.update(updateUserReq);
+                if(!ResultDataUtil.isSuccess(updateUserRd)){
+                    return ResultData.failed("更新用户信息错误，原因：" + updateUserRd.getMsg());
+                }else{
+                    return ResultData.ok(rd.getData().getUserId());
+                }
+            }
+        }else{
+            //不存在，需要重新添加
+            AddUserReq user = new AddUserReq();
+            user.setName(name);
+            user.setAccount(phone);
+            user.setMobile(phone);
+            user.setDeptId(Long.valueOf(Constant.SOCIAL_VEHICLE_DEPT));
+            user.setPassword(YmlProperty.get("cjkj.customer.password"));
+            user.setRoleIdList(Arrays.asList(role.getRoleId()));
+            ResultData<AddUserResp> saveRd = sysUserService.save(user);
+            if(!ReturnMsg.SUCCESS.getCode().equals(saveRd.getCode())){
+                return ResultData.failed("保存客户信息失败，原因：" + saveRd.getMsg());
+            }
+            return ResultData.ok(saveRd.getData().getUserId());
         }
-        //不存在，需要重新添加
-        AddUserReq user = new AddUserReq();
-        user.setName(name);
-        user.setAccount(phone);
-        user.setMobile(phone);
-        user.setDeptId(Long.parseLong(YmlProperty.get("cjkj.dept_admin_id")));
-        user.setPassword(YmlProperty.get("cjkj.customer.password"));
-        user.setRoleIdList(Arrays.asList(role.getRoleId()));
-        ResultData<AddUserResp> saveRd = sysUserService.save(user);
-        if (!ReturnMsg.SUCCESS.getCode().equals(saveRd.getCode())) {
-            return ResultData.failed("保存客户信息失败，原因：" + saveRd.getMsg());
-        }
-        return ResultData.ok(saveRd.getData().getUserId());
     }
 
     @Override
