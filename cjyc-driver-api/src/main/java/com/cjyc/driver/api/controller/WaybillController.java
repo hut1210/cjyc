@@ -7,6 +7,7 @@ import com.cjyc.common.model.dto.web.task.ReceiptTaskDto;
 import com.cjyc.common.model.dto.web.task.UnLoadTaskDto;
 import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.enums.ClientEnum;
+import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -59,6 +60,7 @@ public class WaybillController {
         //验证用户
         Driver driver = csDriverService.validate(reqDto.getLoginId());
         reqDto.setLoginName(driver.getName());
+        reqDto.setLoginType(UserTypeEnum.DRIVER);
         return csTaskService.loadForLocal(reqDto);
     }
     /**
