@@ -1,9 +1,11 @@
 package com.cjyc.salesman.api.controller;
 
+import com.cjkj.common.model.UserType;
 import com.cjyc.common.model.dto.driver.task.ReplenishInfoDto;
 import com.cjyc.common.model.dto.web.waybill.*;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Driver;
+import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.BaseTipVo;
 import com.cjyc.common.model.vo.ListVo;
@@ -78,6 +80,7 @@ public class WaybillController {
         //验证用户
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
+        reqDto.setLoginType(UserTypeEnum.ADMIN);
         return csTaskService.loadForLocal(reqDto);
     }
     /**
