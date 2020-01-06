@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
 import com.cjkj.common.utils.ExcelUtil;
+import com.cjkj.usercenter.dto.common.*;
 import com.cjkj.usercenter.dto.yc.AddDeptAndUserResp;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.OperateDto;
@@ -12,6 +13,8 @@ import com.cjyc.common.model.dto.web.carrier.*;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.driver.DriverIdentityEnum;
+import com.cjyc.common.model.enums.role.RoleLevelEnum;
+import com.cjyc.common.model.enums.role.RoleRangeEnum;
 import com.cjyc.common.model.enums.transport.*;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
@@ -20,14 +23,18 @@ import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.carrier.*;
+import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.ICsCarrierService;
+import com.cjyc.common.system.service.ICsRoleService;
+import com.cjyc.common.system.util.ResultDataUtil;
 import com.cjyc.web.api.service.ICarrierCityConService;
 import com.cjyc.web.api.service.ICarrierService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.util.PropertiesUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,7 +47,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -64,8 +73,31 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     private ISysUserService sysUserService;
     @Resource
     private ICsCarrierService csCarrierService;
+    @Resource
+    private ICsRoleService csRoleService;
+    @Resource
+    private ISysRoleService sysRoleService;
+    @Resource
+    private IUserRoleDeptDao userRoleDeptDao;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
+
+    /**
+     * 承运商超级管理员角色名称
+     */
+    private static final String CARRIER_SUPER_ROLE_NAME =
+            YmlProperty.get("cjkj.carrier_super_role_name");
+
+    /**
+     * 承运商管理员角色名称
+     */
+    private static final String CARRIER_COMMON_ROLE_NAME =
+            YmlProperty.get("cjkj.carrier_common_role_name");
+
+    /**
+     * 社会车辆事业部机构ID
+     */
+    private static final Long BIZ_TOP_DEPT_ID = Long.parseLong(YmlProperty.get("cjkj.dept_admin_id"));
 
     @Override
     public ResultVo saveOrModifyCarrier(CarrierDto dto) {
@@ -327,6 +359,176 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         }
     }
 
+    /*********************************韵车集成改版 st*****************************/
+    /**
+     * 添加承运商_改版
+     * @param dto
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public ResultVo saveOrModifyCarrierNew(CarrierDto dto) {
+        if (dto.getCarrierId() == null) {
+            //新增
+            Carrier existCarrier = carrierDao.selectOne(new QueryWrapper<Carrier>().lambda()
+                .eq(Carrier::getName, dto.getName()));
+            if (existCarrier != null) {
+                return BaseResultUtil.fail("该企业名称已存在，不可重复添加");
+            }
+            List<Driver> existDriverList = driverDao.selectList(new QueryWrapper<Driver>().lambda()
+                .eq(Driver::getPhone, dto.getLinkmanPhone())
+                .or()
+                .eq(Driver::getIdCard, dto.getLegalIdCard()));
+            if (!CollectionUtils.isEmpty(existDriverList)) {
+                return BaseResultUtil.fail("该承运商账号已存在");
+            }
+            //将承运商超级管理员账号、分配角色信息同步到物流平台
+            Role role = csRoleService
+                    .getByName(CARRIER_SUPER_ROLE_NAME, 2);
+            ResultData<Long> addUserRd = saveCarrierSuperAdminToPlatform(dto.getLinkman(),
+                    dto.getLinkmanPhone(), role);
+            if (!ResultDataUtil.isSuccess(addUserRd)) {
+                return BaseResultUtil.fail("保存承运商信息错误，原因：" + addUserRd.getMsg());
+            }
+            Long userId = addUserRd.getData();
+            //添加承运商
+            Carrier carrier = new Carrier();
+            BeanUtils.copyProperties(dto,carrier);
+            carrier.setState(CommonStateEnum.WAIT_CHECK.code);
+            carrier.setType(CarrierTypeEnum.ENTERPRISE.code);
+            carrier.setBusinessState(BusinessStateEnum.BUSINESS.code);
+            carrier.setCreateUserId(dto.getLoginId());
+            carrier.setCreateTime(NOW);
+            super.save(carrier);
+
+            //添加承运商司机管理员
+            Driver driver = new Driver();
+            driver.setName(dto.getName());
+            driver.setPhone(dto.getLinkmanPhone());
+            driver.setType(DriverTypeEnum.SOCIETY.code);
+            driver.setIdentity(DriverIdentityEnum.CARRIER_MANAGER.code);
+            driver.setBusinessState(BusinessStateEnum.BUSINESS.code);
+            driver.setSource(DriverSourceEnum.SALEMAN_WEB.code);
+            driver.setIdCard(dto.getLegalIdCard());
+            driver.setRealName(dto.getLinkman());
+            driver.setCreateUserId(dto.getLoginId());
+            driver.setCreateTime(NOW);
+            driver.setUserId(userId);
+            driverDao.insert(driver);
+
+            //承运商、用户、角色关系维护
+            UserRoleDept userRoleDept = new UserRoleDept();
+            userRoleDept.setUserId(driver.getId());
+            userRoleDept.setRoleId(role.getId());
+            userRoleDept.setDeptId(carrier.getId()+"");
+            userRoleDept.setDeptType(2);
+            userRoleDept.setUserType(UserTypeEnum.DRIVER.code);
+            userRoleDept.setState(CommonStateEnum.WAIT_CHECK.code);
+            userRoleDept.setMode(dto.getMode());
+            userRoleDept.setCreateTime(NOW);
+            userRoleDept.setCreateUserId(dto.getLoginId());
+            userRoleDeptDao.insert(userRoleDept);
+
+            saveBankCardBand(dto,carrier.getId());
+            //添加承运商业务范围
+            carrierCityConService.batchSave(carrier.getId(),dto.getCodes());
+        }else {
+            //修改
+            Integer count = carrierDao.existBusinessDriverNew(dto);
+            if(count != 1){
+                return BaseResultUtil.fail("该手机号不是承运商下司机，请先添加");
+            }
+            return modifyCarrierNew(dto);
+        }
+        return BaseResultUtil.success();
+    }
+
+    @Override
+    public ResultVo findCarrierNew(SeleCarrierDto dto) {
+        PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
+        List<CarrierVo> carrierVos = encapCarrierNew(dto);
+        PageInfo<CarrierVo> pageInfo =  new PageInfo<>(carrierVos);
+        return BaseResultUtil.success(pageInfo);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public ResultVo verifyCarrierNew(OperateDto dto) {
+        Role role = csRoleService.getByName(CARRIER_SUPER_ROLE_NAME, 2);
+        if (role == null) {
+            return BaseResultUtil.fail("根据角色名称：" + CARRIER_SUPER_ROLE_NAME +
+                    ",未查询到角色信息");
+        }
+        Carrier carrier = carrierDao.selectById(dto.getId());
+        Driver driver = findDriverNew(carrier.getId(), role);
+        UserRoleDept userRoleDept = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
+            .eq(UserRoleDept::getDeptId, carrier.getId())
+            .eq(UserRoleDept::getUserId, driver.getId())
+            .eq(UserRoleDept::getRoleId, role.getId()));
+        if (null == carrier || null == driver || null == userRoleDept) {
+            return BaseResultUtil.fail("承运商信息有误，请检查");
+        }
+        if (FlagEnum.AUDIT_PASS.code == dto.getFlag()) {
+            //审核通过
+            userRoleDept.setState(CommonStateEnum.CHECKED.code);
+            carrier.setState(CommonStateEnum.CHECKED.code);
+        }else if (FlagEnum.AUDIT_REJECT.code == dto.getFlag()) {
+            //审核拒绝
+            userRoleDept.setState(CommonStateEnum.REJECT.code);
+            carrier.setState(CommonStateEnum.REJECT.code);
+        }else if (FlagEnum.FROZEN.code == dto.getFlag()) {
+            //冻结
+            userRoleDept.setState(CommonStateEnum.FROZEN.code);
+            carrier.setState(CommonStateEnum.FROZEN.code);
+        }else if (FlagEnum.THAW.code == dto.getFlag()) {
+            //解冻
+            userRoleDept.setState(CommonStateEnum.CHECKED.code);
+            carrier.setState(CommonStateEnum.CHECKED.code);
+        }
+        driver.setCheckUserId(dto.getLoginId());
+        driver.setCheckTime(NOW);
+        carrier.setCheckUserId(dto.getLoginId());
+        carrier.setCheckTime(NOW);
+        userRoleDeptDao.updateById(userRoleDept);
+        driverDao.updateById(driver);
+        super.updateById(carrier);
+        return BaseResultUtil.success();
+    }
+
+    @Override
+    public ResultVo showBaseCarrierNew(Long carrierId) {
+        BaseCarrierVo vo = carrierDao.showCarrierByIdNew(carrierId);
+        if(vo != null){
+            vo.setMapCodes(carrierCityConService.getMapCodes(carrierId));
+        }
+        return BaseResultUtil.success(vo);
+    }
+
+    @Override
+    public ResultVo resetPwdNew(Long id) {
+        Role role = csRoleService.getByName(CARRIER_SUPER_ROLE_NAME, 2);
+        if (role == null) {
+            return BaseResultUtil.fail("根据角色名称：" + CARRIER_SUPER_ROLE_NAME +
+                    ",未查询到角色信息");
+        }
+        UserRoleDept userRoleDept = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
+            .eq(UserRoleDept::getDeptId, id)
+            .eq(UserRoleDept::getRoleId, role.getId()));
+        if (userRoleDept != null) {
+            Driver driver = driverDao.selectById(userRoleDept.getUserId());
+            if (driver != null) {
+                ResultData rd =
+                        sysUserService.resetPwd(driver.getUserId(), YmlProperty.get("cjkj.salesman.password"));
+                if (!ResultDataUtil.isSuccess(rd)) {
+                    return BaseResultUtil.fail("重置密码错误，原因：" + rd.getMsg());
+                }else {
+                    return BaseResultUtil.success();
+                }
+            }
+        }
+        return BaseResultUtil.fail("用户信息有误，请检查");
+    }
+    /*********************************韵车集成改版 ed*****************************/
     /**
      * 封装承运商excel请求
      * @param request
@@ -406,4 +608,174 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         return null;
     }
 
+    /**
+     * 将承运商管理员账号及超级管理员角色关系添加到物流平台
+     * @return
+     */
+    private ResultData<Long> saveCarrierSuperAdminToPlatform(String name, String phone, Role role) {
+        ResultData<UserResp> existUser = sysUserService.getByAccount(phone);
+        if (!ResultDataUtil.isSuccess(existUser)) {
+            return ResultData.failed("查询账号信息异常，原因：" + existUser.getMsg());
+        }
+        if (role == null) {
+            return ResultData.failed("根据角色名称：" + CARRIER_SUPER_ROLE_NAME +
+                    ",未查询到角色信息");
+        }
+        Long existUserId = existUser.getData() == null?null: existUser.getData().getUserId();
+        if (existUserId == null) {
+            //用户不存在， 需要新增
+            AddUserReq addUserReq = new AddUserReq();
+            addUserReq.setName(name);
+            addUserReq.setMobile(phone);
+            addUserReq.setAccount(phone);
+            addUserReq.setDeptId(BIZ_TOP_DEPT_ID);
+            addUserReq.setPassword(YmlProperty.get("cjkj.driver.password"));
+            addUserReq.setRoleIdList(Arrays.asList(role.getRoleId()));
+            ResultData<AddUserResp> rd = sysUserService.save(addUserReq);
+            if (!ResultDataUtil.isSuccess(rd)) {
+                return ResultData.failed("司机信息保存失败，原因：" + rd.getMsg());
+            }
+            return ResultData.ok(rd.getData().getUserId());
+        }else {
+            //用户已存在，需要更新
+            ResultData<List<SelectRoleResp>> rolesRd =
+                    sysRoleService.getListByUserId(existUser.getData().getUserId());
+            if (!ResultDataUtil.isSuccess(rolesRd)) {
+                return ResultData.failed("角色信息查询失败，原因：" + rolesRd.getMsg());
+            }
+            ResultData updateRd = null;
+            if (CollectionUtils.isEmpty(rolesRd.getData())) {
+                //角色信息为空，直接更新用户
+                UpdateUserReq req = new UpdateUserReq();
+                req.setUserId(existUserId);
+                req.setRoleIdList(Arrays.asList(role.getRoleId()));
+                updateRd = sysUserService.update(req);
+            }else {
+                //角色信息不为空，需新增当前角色
+                List<Long> roleIdList = rolesRd.getData().stream()
+                        .map(r -> r.getRoleId()).collect(Collectors.toList());
+                if (roleIdList.contains(role.getRoleId())) {
+                    return ResultData.ok(existUserId);
+                }else {
+                    roleIdList.add(role.getRoleId());
+                    UpdateUserReq req = new UpdateUserReq();
+                    req.setUserId(existUserId);
+                    req.setRoleIdList(roleIdList);
+                    updateRd = sysUserService.update(req);
+                }
+            }
+            if (!ResultDataUtil.isSuccess(updateRd)) {
+                return ResultData.failed("用户信息保存失败，原因：" + updateRd.getMsg());
+            }
+            return ResultData.ok(existUserId);
+        }
+    }
+
+    /**
+     * 修改承运商
+     * @param dto
+     * @return
+     */
+    private ResultVo modifyCarrierNew(CarrierDto dto) {
+        Carrier origCarrier = carrierDao.selectById(dto.getCarrierId());
+        Role role = csRoleService.getByName(CARRIER_SUPER_ROLE_NAME, 2);
+        if (role == null) {
+            return BaseResultUtil.fail("根据角色名称：" + CARRIER_SUPER_ROLE_NAME +
+                    ",未查询到角色信息");
+        }
+        UserRoleDept urd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
+            .eq(UserRoleDept::getDeptId, origCarrier.getId())
+            .eq(UserRoleDept::getRoleId, role.getId()));
+        Driver driver = driverDao.selectOne(new QueryWrapper<Driver>().lambda().eq(Driver::getPhone,dto.getLinkmanPhone()));
+        if(origCarrier == null || urd == null || driver == null){
+            return BaseResultUtil.fail("数据信息有误");
+        }
+//        if (CommonStateEnum.WAIT_CHECK.code == urd.getState()) {
+            //待审核
+            if (!dto.getLinkmanPhone().equals(origCarrier.getLinkmanPhone())) {
+                //更换手机号
+                Role commonRole = csRoleService.getByName(CARRIER_COMMON_ROLE_NAME, 2);
+                if (commonRole == null) {
+                    return BaseResultUtil.fail("根据角色名称：" + CARRIER_COMMON_ROLE_NAME +
+                            ",未查询到角色信息");
+                }
+                urd.setRoleId(commonRole.getId());
+                userRoleDeptDao.updateById(urd);
+                UserRoleDept updateUrd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
+                    .eq(UserRoleDept::getUserId, driver.getId())
+                    .eq(UserRoleDept::getDeptId, origCarrier.getId()));
+                updateUrd.setMode(dto.getMode());
+                updateUrd.setState(CommonStateEnum.WAIT_CHECK.code);
+                updateUrd.setRoleId(role.getId());
+                userRoleDeptDao.updateById(updateUrd);
+            }else {
+                //无需更换手机号
+                urd.setMode(dto.getMode());
+                urd.setState(CommonStateEnum.WAIT_CHECK.code);
+                userRoleDeptDao.updateById(urd);
+                //没换手机号
+                driver.setName(dto.getLinkman());
+                driver.setRealName(dto.getLinkman());
+                driver.setPhone(dto.getLinkmanPhone());
+                driverDao.updateById(driver);
+            }
+//        }
+        //更新承运商
+        BeanUtils.copyProperties(dto,origCarrier);
+        origCarrier.setState(CommonStateEnum.WAIT_CHECK.code);
+        origCarrier.setId(dto.getCarrierId());
+        origCarrier.setCheckUserId(dto.getLoginId());
+        origCarrier.setCheckTime(NOW);
+        super.updateById(origCarrier);
+
+        //更新银行卡信息(先删除后添加)
+        bankCardBindDao.removeBandCarBind(dto.getCarrierId());
+        saveBankCardBand(dto,origCarrier.getId());
+
+        //承运商业务范围,先批量删除，再添加
+        carrierCityConService.batchDelete(origCarrier.getId());
+        carrierCityConService.batchSave(origCarrier.getId(),dto.getCodes());
+        return BaseResultUtil.success();
+    }
+
+
+    /**
+     * 封装承运商
+     * @param dto
+     * @return
+     */
+    private List<CarrierVo> encapCarrierNew(SeleCarrierDto dto){
+        List<CarrierVo> carrierVos = carrierDao.getCarrierByTermNew(dto);
+        if(!CollectionUtils.isEmpty(carrierVos)){
+            for(CarrierVo vo : carrierVos){
+                CarrierCarCount count = carrierCarCountDao.countNew(vo.getCarrierId());
+                if(count != null){
+                    vo.setCarNum(count.getCarNum());
+                    vo.setTotalIncome(count.getIncome());
+                }
+            }
+        }
+        return carrierVos;
+    }
+
+    /**
+     * 保存司机及承运商-司机关联关系_改版
+     * @param carrierId
+     */
+    private Driver findDriverNew(Long carrierId, Role role) {
+        List<UserRoleDept> conList = userRoleDeptDao.selectList(new QueryWrapper<UserRoleDept>().lambda()
+            .eq(UserRoleDept::getDeptId, carrierId)
+            .eq(UserRoleDept::getRoleId, role.getId()));
+        Long driverId = null;
+        if (!CollectionUtils.isEmpty(conList)) {
+            driverId = conList.get(0).getUserId();
+        }
+        if (driverId != null) {
+            Driver driver = driverDao.selectById(driverId);
+            if (driver != null) {
+                return driver;
+            }
+        }
+        return null;
+    }
 }

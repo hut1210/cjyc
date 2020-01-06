@@ -54,4 +54,12 @@ public class MineStoreController {
     public ResultVo<PageVo<List<StorageCarVo>>> getStorageCarPage(@RequestBody @Validated StorageCarQueryDto dto) {
         return mineStoreService.getStorageCarPage(dto);
     }
+
+    /************************************韵车集成改版 st***********************************/
+    @ApiOperation(value = "查询我的业务中心-我的业务员列表")
+    @PostMapping("/listSalesmanNew")
+    public ResultVo<PageVo<MySalesmanVo>> listSalesmanNew(@Valid @RequestBody ListMineSalesmanDto dto) {
+        return mineStoreService.listSalesmanNew(dto);
+    }
+    /************************************韵车集成改版 ed***********************************/
 }

@@ -6,6 +6,8 @@ import com.cjkj.common.redis.template.StringRedisUtil;
 import com.cjkj.usercenter.dto.common.*;
 import com.cjyc.common.model.dao.ICustomerDao;
 import com.cjyc.common.model.dto.salesman.customer.SalesCustomerDto;
+import com.cjyc.common.model.entity.Driver;
+import com.cjyc.common.model.entity.Role;
 import com.cjyc.common.model.dto.salesman.mine.AppCustomerIdDto;
 import com.cjyc.common.model.enums.role.RoleNameEnum;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
@@ -208,5 +210,68 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
         AppContractVo vo = new AppContractVo();
         vo.setList(contractList);
         return BaseResultUtil.success(vo);
+    }
+
+
+    /************************************韵车集成改版 st***********************************/
+    @Override
+    public ResultData<Long> addUserToPlatform(String phone, String name, Role role) {
+        ResultData<UserResp> accountRd = sysUserService.getByAccount(phone);
+        if (!ReturnMsg.SUCCESS.getCode().equals(accountRd.getCode())) {
+            return ResultData.failed("获取用户信息失败，原因：" + accountRd.getMsg());
+        }
+        if (accountRd.getData() != null) {
+            //存在，则直接返回已有用户userId信息
+            return ResultData.ok(accountRd.getData().getUserId());
+        }
+        //不存在，需要重新添加
+        AddUserReq user = new AddUserReq();
+        user.setName(name);
+        user.setAccount(phone);
+        user.setMobile(phone);
+        user.setDeptId(Long.parseLong(YmlProperty.get("cjkj.dept_admin_id")));
+        user.setPassword(YmlProperty.get("cjkj.customer.password"));
+        user.setRoleIdList(Arrays.asList(role.getRoleId()));
+        ResultData<AddUserResp> saveRd = sysUserService.save(user);
+        if (!ReturnMsg.SUCCESS.getCode().equals(saveRd.getCode())) {
+            return ResultData.failed("保存客户信息失败，原因：" + saveRd.getMsg());
+        }
+        return ResultData.ok(saveRd.getData().getUserId());
+    }
+
+    @Override
+    public ResultData<Boolean> updateUserToPlatform(Customer customer, Driver driver, String newPhone) {
+        String oldPhone = null;
+        if(customer != null){
+            oldPhone = customer.getContactPhone();
+        }else{
+            oldPhone = driver.getPhone();
+        }
+        if (!oldPhone.equals(newPhone)) {
+            //新旧账号不相同需要替换手机号
+            ResultData<UserResp> accountRd = sysUserService.getByAccount(newPhone);
+            if (!ReturnMsg.SUCCESS.getCode().equals(accountRd.getCode())) {
+                return ResultData.failed("用户信息获取失败，原因：" + accountRd.getMsg());
+            }
+            if (accountRd.getData() != null) {
+                return ResultData.failed("用户账号不允许修改，预修改账号：" + newPhone + " 已存在");
+            }
+            UpdateUserReq user = new UpdateUserReq();
+            if(customer != null){
+                user.setName(customer.getName());
+                user.setUserId(customer.getUserId());
+            }else{
+                user.setName(driver.getName());
+                user.setUserId(driver.getUserId());
+            }
+            user.setAccount(newPhone);
+            user.setMobile(newPhone);
+            ResultData rd = sysUserService.updateUser(user);
+            if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+                return ResultData.failed("用户信息修改失败，原因：" + rd.getMsg());
+            }
+            return ResultData.ok(true);
+        }
+        return ResultData.ok(false);
     }
 }

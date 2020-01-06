@@ -105,4 +105,43 @@ public class DriverController {
     public void exportDriverExcel(HttpServletRequest request, HttpServletResponse response){
         driverService.exportDriverExcel(request,response);
     }
+
+
+    /************************************韵车集成改版 st***********************************/
+
+    @ApiOperation(value = "新增/修改社会司机_改版")
+    @PostMapping(value = "/saveOrModifyDriverNew")
+    public ResultVo saveOrModifyDriverNew(@Validated @RequestBody DriverDto dto){
+        return driverService.saveOrModifyDriverNew(dto);
+    }
+
+    @ApiOperation(value = "根据查询条件查看司机信息_改版")
+    @PostMapping(value = "/findDriverNew")
+    public ResultVo<PageVo<DriverVo>> findDriverNew(@RequestBody SelectDriverDto dto){
+        return driverService.findDriverNew(dto);
+    }
+
+    @ApiOperation(value = "根据承运商id(carrierId)查看司机信息")
+    @PostMapping(value = "/showDriverNew")
+    public ResultVo<ShowDriverVo> showDriverNew(@Validated @RequestBody BaseCarrierIdDto dto){
+        return driverService.showDriverNew(dto);
+    }
+    
+    @ApiOperation(value = "根据id进行审核通过/拒绝/冻结/解冻_改版")
+    @PostMapping(value = "/verifyDriverNew")
+    public ResultVo verifyDriverNew(@Validated @RequestBody OperateDto dto){
+        return driverService.verifyDriverNew(dto);
+    }
+
+    @ApiOperation(value = "调度社会司机信息")
+    @PostMapping(value = "/dispatchDriverNew")
+    public ResultVo<PageVo<DispatchDriverVo>> dispatchDriverNew(@RequestBody DispatchDriverDto dto){
+        return csDriverService.dispatchDriverNew(dto);
+    }
+
+    @ApiOperation(value = "查询承运商下属司机")
+    @PostMapping(value = "/carrier/driver/listNew")
+    public ResultVo<PageVo<DispatchDriverVo>> dispatchDriverNew(@RequestBody CarrierDriverListDto dto){
+        return driverService.carrierDrvierListNew(dto);
+    }
 }

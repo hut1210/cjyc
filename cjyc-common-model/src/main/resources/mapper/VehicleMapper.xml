@@ -177,4 +177,45 @@
                 order by create_time desc
         </where>
     </select>
+
+
+
+
+    <!-- /************************************韵车集成改版 st***********************************/ -->
+
+    <!-- 根据条件查询该承运商下的车辆_改版 -->
+    <select id="findMyCarNew" resultType="com.cjyc.common.model.vo.web.mineCarrier.MyCarVo"
+            parameterType="com.cjyc.common.model.dto.web.mineCarrier.QueryMyCarDto">
+        SELECT
+            dv.id AS vehicleId,
+            dv.carrier_id AS carrierId,
+            dd.id AS driverId,
+            dv.plate_no AS plateNo,
+            dv.default_carry_num AS defaultCarryNum,
+            dd.real_name AS realName,
+            dd.phone AS phone,
+            surd.MODE AS MODE
+        FROM
+          d_vehicle dv
+        LEFT JOIN d_driver_vehicle_con ddvc ON ddvc.vehicle_id = dv.id
+        LEFT JOIN d_driver dd ON dd.id = ddvc.driver_id
+        LEFT JOIN (SELECT * FROM s_user_role_dept WHERE dept_type = 2 AND user_type = 2) surd ON surd.user_id = dd.id
+        <where>
+            <if test="realName != null and realName.trim() != ''">
+                dd.real_name like CONCAT('%',#{realName},'%')
+            </if>
+            <if test="phone != null and phone.trim() != ''">
+                and  dd.phone like CONCAT('%',#{phone},'%')
+            </if>
+            <if test="mode != null ">
+                and  surd.mode = #{mode}
+            </if>
+            <if test="plateNo != null and plateNo.trim() != ''">
+                and  dv.plate_no like CONCAT('%',#{plateNo},'%')
+            </if>
+            and dv.carrier_id = #{carrierId}
+            group by dv.id
+            order by dv.create_time desc
+        </where>
+    </select>
 </mapper>

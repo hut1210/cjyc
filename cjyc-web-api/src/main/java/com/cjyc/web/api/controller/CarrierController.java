@@ -106,4 +106,37 @@ public class CarrierController {
         carrierService.exportCarrierExcel(request,response);
     }
 
+
+    /*********************************韵车集成改版 st*****************************/
+    @ApiOperation(value = "改版：新增/修改承运商")
+    @PostMapping(value = "/saveOrModifyCarrierNew")
+    public ResultVo saveOrModifyCarrierNew(@Validated @RequestBody CarrierDto dto){
+        return carrierService.saveOrModifyCarrierNew(dto);
+    }
+
+    @ApiOperation(value = "根据条件查询承运商_改版")
+    @PostMapping(value = "/findCarrierNew")
+    public ResultVo<PageVo<CarrierVo>> findCarrierNew(@RequestBody SeleCarrierDto dto){
+        return carrierService.findCarrierNew(dto);
+    }
+
+    @ApiOperation(value = "根据id审核/冻结/解冻承运商_改版")
+    @PostMapping(value = "/verifyCarrierNew")
+    public ResultVo verifyCarrierNew(@RequestBody OperateDto dto){
+        return carrierService.verifyCarrierNew(dto);
+    }
+
+    @ApiOperation(value = "根据carrierId查看基本承运商信息_改版")
+    @PostMapping(value = "/showBaseCarrierNew/{carrierId}")
+    public ResultVo<BaseCarrierVo> showBaseCarrierNew(@PathVariable @ApiParam(value = "承运商id",required = true) Long carrierId){
+        return carrierService.showBaseCarrierNew(carrierId);
+    }
+
+    @PostMapping("/resetPwdNew/{id}")
+    @ApiOperation(value = "承运商机构超级管理员账户重置密码_改版")
+    public ResultVo resetPwdNew(@ApiParam(name = "id", value = "机构标识", required = true)
+                             @PathVariable Long id) {
+        return carrierService.resetPwdNew(id);
+    }
+    /*********************************韵车集成改版 ed*****************************/
 }

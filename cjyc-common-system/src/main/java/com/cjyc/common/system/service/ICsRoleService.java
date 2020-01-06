@@ -14,4 +14,12 @@ public interface ICsRoleService {
      * @return
      */
     List<Role> getValidInnerRoleList();
+
+    /**
+     * 根据角色名称、类型查询角色信息
+     * @param roleName
+     * @param roleType
+     * @return
+     */
+    public Role getByName(String roleName, Integer roleType);
 }

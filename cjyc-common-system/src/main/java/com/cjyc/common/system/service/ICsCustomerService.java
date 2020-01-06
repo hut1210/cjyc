@@ -5,6 +5,8 @@ import com.cjkj.usercenter.dto.common.SelectRoleResp;
 import com.cjyc.common.model.dto.CommonDto;
 import com.cjyc.common.model.dto.salesman.customer.SalesCustomerDto;
 import com.cjyc.common.model.dto.salesman.mine.AppCustomerIdDto;
+import com.cjyc.common.model.entity.Driver;
+import com.cjyc.common.model.entity.Role;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.customer.customerLine.CustomerLineVo;
 import com.cjyc.common.model.vo.salesman.customer.SalesCustomerListVo;
@@ -74,4 +76,26 @@ public interface ICsCustomerService {
     ResultVo<SalesCustomerListVo> findKeyCustomer(SalesCustomerDto dto);
 
     ResultVo<AppContractVo> findCustomerContract(AppCustomerIdDto dto);
+    /************************************韵车集成改版 st***********************************/
+    /**
+     * 将用户添加到架构组中
+     * @param phone
+     * @param name
+     * @param role
+     * @return
+     */
+    ResultData<Long> addUserToPlatform(String phone, String name, Role role);
+
+    /**
+     * 更新用户信息到架构组
+     * @param customer
+     * @param driver
+     * @param newPhone
+     * @return
+     */
+    ResultData<Boolean> updateUserToPlatform(Customer customer, Driver driver, String newPhone);
+
+
+
+
 }

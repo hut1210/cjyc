@@ -299,6 +299,13 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
         });
         return BaseResultUtil.success(userList);
     }
+
+    @Override
+    public ResultVo<List<Role>> getAllListNew(String roleName) {
+        return BaseResultUtil.success(this.list(new QueryWrapper<Role>()
+                .like(!StringUtils.isEmpty(roleName), "role_name", roleName)
+                .eq("role_range", RoleRangeEnum.INNER.getValue())));
+    }
     /*********************************韵车集成改版 ed*****************************/
 
 
