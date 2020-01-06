@@ -437,4 +437,15 @@ public class FinanceServiceImpl implements IFinanceService {
 
         return BaseResultUtil.success(payableSettlementVo);
     }
+
+    @Override
+    public ResultVo writeOffPayable(WriteOffTicketDto writeOffTicketDto) {
+        SettlementVo settlementVo = new SettlementVo();
+        settlementVo.setState("2");
+        settlementVo.setSerialNumber(writeOffTicketDto.getSerialNumber());
+        settlementVo.setWriteOffId(writeOffTicketDto.getWriteOffId());
+        settlementVo.setWriteOffTime(System.currentTimeMillis());
+        financeDao.confirm(settlementVo);
+        return BaseResultUtil.success();
+    }
 }

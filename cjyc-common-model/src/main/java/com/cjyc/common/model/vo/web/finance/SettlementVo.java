@@ -53,4 +53,7 @@ public class SettlementVo {
 
     @ApiModelProperty(value = "核销人")
     private Long writeOffMan;
+
+    @ApiModelProperty(value = "实付总运费")
+    private BigDecimal totalFreightPay;
 }

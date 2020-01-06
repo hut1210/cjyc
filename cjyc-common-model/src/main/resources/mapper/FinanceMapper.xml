@@ -400,23 +400,23 @@
         select fp.no,fp.serial_number as serialNumber,
         fp.freight_fee as freightFee,
         fp.apply_time as applyTime,
-        fp.applicant_id as applicantId
+        fp.applicant_id as applicantId,
         ba.name as applicant
         from f_payable fp
         left join b_admin ba on ba.id = fp.applicant_id
 
         where fp.state='0'
         <if test="serialNumber !=null and serialNumber.trim() !=''">
-            fp.serial_number like concat('%',#{serialNumber},'%')
+            and fp.serial_number like concat('%',#{serialNumber},'%')
         </if>
         <if test="applyStartTime !=null">
-            fp.apply_time &gt;=#{applyStartTime}
+            and fp.apply_time &gt;=#{applyStartTime}
         </if>
         <if test="applyEndTime !=null">
-            fp.apply_time &lt;=#{applyEndTime}
+            and fp.apply_time &lt;=#{applyEndTime}
         </if>
         <if test="applicant !=null and applicant.trim() !=''">
-            ba.name like concat('%',#{applicant},'%')
+            and ba.name like concat('%',#{applicant},'%')
         </if>
     </select>
 
@@ -441,7 +441,7 @@
         select fp.no,fp.serial_number as serialNumber,
         fp.freight_fee as freightFee,
         fp.apply_time as applyTime,
-        fp.applicant_id as applicantId
+        fp.applicant_id as applicantId,
         fp.confirm_id as confirmId,
         ba.name as applicant
         from f_payable fp
@@ -449,26 +449,26 @@
         left join b_admin ba on ba.id = fp.applicant_id
         where fp.state='1'
         <if test="serialNumber !=null and serialNumber.trim() !=''">
-            fp.serial_number like concat('%',#{serialNumber},'%')
+            and fp.serial_number like concat('%',#{serialNumber},'%')
         </if>
         <if test="applyStartTime !=null">
-            fp.apply_time &gt;=#{applyStartTime}
+            and fp.apply_time &gt;=#{applyStartTime}
         </if>
         <if test="applyEndTime !=null">
-            fp.apply_time &lt;=#{applyEndTime}
+            and fp.apply_time &lt;=#{applyEndTime}
         </if>
         <if test="applicant !=null and applicant.trim() !=''">
-            ba.name like concat('%',#{applicant},'%')
+            and ba.name like concat('%',#{applicant},'%')
         </if>
 
         <if test="confirmStartTime !=null">
-            fp.comfirm_time &gt;=#{confirmStartTime}
+            and fp.comfirm_time &gt;=#{confirmStartTime}
         </if>
         <if test="confirmEndTime !=null">
-            fp.comfirm_time &lt;=#{confirmEndTime}
+            and fp.comfirm_time &lt;=#{confirmEndTime}
         </if>
         <if test="confirmMan !=null and confirmMan.trim() !=''">
-            ba.name like concat('%',#{confirmMan},'%')
+            and ba.name like concat('%',#{confirmMan},'%')
         </if>
     </select>
 

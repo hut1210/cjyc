@@ -83,4 +83,11 @@ public class FinancePayableController {
     public ResultVo writeOffTicket(@RequestBody String serialNumber){
         return financeService.getWriteOffTicket(serialNumber);
     }
+
+    @ApiOperation(value = "确认收票")
+    @PostMapping(value = "/writeOff")
+    public ResultVo writeOff(@RequestBody WriteOffTicketDto writeOffTicketDto){
+        return financeService.writeOffPayable(writeOffTicketDto);
+    }
+
 }
