@@ -5,6 +5,7 @@ import com.cjyc.common.model.util.DateLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiParam;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
@@ -49,6 +50,24 @@ public class SalesOrderDetailVo implements Serializable {
     private Long expectEndDate;
     @ApiModelProperty(value = "客户付款方式：0到付（默认），1预付，2账期")
     private Integer payType;
+
+    @ApiModelProperty(value = "客户类型：1个人，2企业，3合伙人")
+    private Integer customerType;
+    @ApiModelProperty(value = "客户id")
+    @JsonSerialize(using= ToStringSerializer.class)
+    private Long customerId;
+    @ApiModelProperty(value = "大客户名称")
+    private String name;
+    @ApiModelProperty(value = "合同ID")
+    @JsonSerialize(using= ToStringSerializer.class)
+    private Long customerContractId;
+    @ApiModelProperty(value = "大客户联系人")
+    private String contactMan;
+    @ApiModelProperty(value = "联系人手机号")
+    private String contactPhone;
+    @ApiModelProperty(value = "班线id")
+    @JsonSerialize(using= ToStringSerializer.class)
+    private Long lineId;
 
     @ApiModelProperty(value = "发车人")
     private String pickContactName;
@@ -121,6 +140,12 @@ public class SalesOrderDetailVo implements Serializable {
     public Long getStartBelongStoreId(){return startBelongStoreId == null ? 0:startBelongStoreId;}
     public String getStartStoreName(){return StringUtils.isBlank(startStoreName) ? "":startStoreName;}
     public String getEndStoreName(){return StringUtils.isBlank(endStoreName) ? "":endStoreName;}
+    public Integer getCustomerType(){return customerType == null ? 0:customerType;}
+    public String getName(){return StringUtils.isBlank(name) ? "":name;}
+    public Long getCustomerId(){return customerId == null ? 0:customerId;}
+    public Long getCustomerContractId(){return customerContractId == null ? 0:customerContractId;}
+    public String getContactMan(){return StringUtils.isBlank(contactMan) ? "":contactMan;}
+    public String getContactPhone(){return StringUtils.isBlank(contactPhone) ? "":contactPhone;}
     public String getPickContactName(){return StringUtils.isBlank(pickContactName) ? "":pickContactName;}
     public String getPickContactPhone(){return StringUtils.isBlank(pickContactPhone) ? "":pickContactPhone;}
     public String getStartProvinceCode(){return StringUtils.isBlank(startProvinceCode) ? "":startProvinceCode;}

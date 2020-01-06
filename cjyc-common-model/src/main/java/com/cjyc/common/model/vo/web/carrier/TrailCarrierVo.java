@@ -46,6 +46,8 @@ public class TrailCarrierVo implements Serializable {
     @ApiModelProperty("运行状态：0空闲，1在途 2繁忙")
     private Integer runningState;
 
+    public Long getCarrierId(){return carrierId == null ? 0:carrierId;}
+    public Integer getType(){return type == null ? 0:type;}
     public String getName(){return StringUtils.isBlank(name) ? "":name;}
     public String getBusinessName(){return StringUtils.isBlank(businessName) ? "":businessName;}
     public String getPhone(){return StringUtils.isBlank(phone) ? "":phone;}
@@ -55,4 +57,5 @@ public class TrailCarrierVo implements Serializable {
     public Integer getOccupiedCarNum(){return occupiedCarNum == null ? 0:occupiedCarNum;}
     public Integer getRunningState(){return runningState == null ? 0:runningState;}
     public Integer getMode(){return mode == null ? 0 : mode;}
+
 }

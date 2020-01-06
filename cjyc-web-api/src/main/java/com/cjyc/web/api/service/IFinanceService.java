@@ -7,6 +7,7 @@ import com.cjyc.common.model.vo.web.finance.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * @Author:Hut
@@ -46,4 +47,10 @@ public interface IFinanceService {
     ResultVo updateBackState(String wayBillNo);
 
     ResultVo<PageVo<FinancePayableVo>> getFinancePayableList(PayableQueryDto payableQueryDto);
+
+    ResultVo getSettlementPayable(List<String> taskNo);
+
+    ResultVo apply(AppSettlementPayableDto appSettlementPayableDto);
+
+    ResultVo<PageVo<SettlementVo>> collect(WaitTicketCollectDto waitTicketCollectDto);
 }
