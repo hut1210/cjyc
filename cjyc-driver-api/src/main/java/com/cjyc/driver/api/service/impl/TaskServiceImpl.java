@@ -22,6 +22,7 @@ import com.cjyc.common.model.vo.driver.task.CarDetailVo;
 import com.cjyc.common.model.vo.driver.task.TaskBillVo;
 import com.cjyc.common.model.vo.driver.task.TaskDetailVo;
 import com.cjyc.common.model.vo.driver.task.TaskDriverVo;
+import com.cjyc.common.system.config.LogoImgProperty;
 import com.cjyc.driver.api.service.ITaskService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -61,6 +62,8 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
     private IOrderDao orderDao;
     @Autowired
     private IDriverDao driverDao;
+    @Autowired
+    private ICarSeriesDao carSeriesDao;
 
     @Override
     public ResultVo<PageVo<TaskBillVo>> getWaitHandleTaskPage(BaseDriverDto dto) {
@@ -193,6 +196,10 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                 OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
                 BeanUtils.copyProperties(orderCar,carDetailVo);
 
+                // 查询车辆logo图片
+                List<String> brandList = carSeriesDao.getSeriesByBrand(carDetailVo.getBrand());
+                carDetailVo.setLogoPhotoImg(LogoImgProperty.logoImg+brandList.get(0));
+
                 carDetailVo.setId(waybillCar.getId());
                 carDetailVo.setWaybillCarState(waybillCar.getState());
                 carDetailVoList.add(carDetailVo);
@@ -260,6 +267,10 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                     OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
                     BeanUtils.copyProperties(orderCar,carDetailVo);
 
+                    // 查询车辆logo图片
+                    List<String> brandList = carSeriesDao.getSeriesByBrand(carDetailVo.getBrand());
+                    carDetailVo.setLogoPhotoImg(LogoImgProperty.logoImg+brandList.get(0));
+
                     // 查询支付方式
                     Order order = orderDao.selectById(orderCar.getOrderId());
                     carDetailVo.setPayType(order.getPayType());
@@ -267,13 +278,6 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                     carDetailVo.setId(taskCar.getId());
                     carDetailVo.setWaybillCarState(waybillCar.getState());
                     carDetailVoList.add(carDetailVo);
-                    // todo 测试用
-                    String historyLoadPhotoImg = carDetailVo.getHistoryLoadPhotoImg();
-                    String loadPhotoImg = carDetailVo.getLoadPhotoImg();
-                    String[] split = historyLoadPhotoImg.split(",");
-                    String[] split1 = loadPhotoImg.split(",");
-                    log.info("===>运单ID"+waybillCar.getId()+"历史图片张数："+split.length);
-                    log.info("===>运单ID"+waybillCar.getId()+"当前运单提车图片张数："+split1.length);
                 }
             }
         }

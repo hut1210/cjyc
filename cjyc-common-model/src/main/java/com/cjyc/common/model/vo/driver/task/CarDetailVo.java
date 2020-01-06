@@ -61,6 +61,9 @@ public class CarDetailVo implements Serializable {
     @ApiModelProperty(value = "品牌")
     private String brand;
 
+    @ApiModelProperty(value = "logo图片")
+    private String logoPhotoImg;
+
     @ApiModelProperty(value = "型号")
     private String model;
 
