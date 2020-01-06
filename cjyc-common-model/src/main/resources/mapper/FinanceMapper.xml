@@ -397,7 +397,7 @@
         from f_payable fp
         <where>
             <if test="no !=null and no.trim() !=''">
-                fp.no like like concat('%',#{fp.no},'%')
+                fp.no like like concat('%',#{no},'%')
             </if>
             <if test="applyStartTime !=null">
                 fp.apply_time &gt;=#{applyStartTime}
