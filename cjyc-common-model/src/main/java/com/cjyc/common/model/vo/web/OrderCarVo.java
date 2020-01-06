@@ -102,6 +102,9 @@ public class OrderCarVo extends OrderCar implements Serializable {
     @ApiModelProperty(value = "目的地业务中心名称")
     private String endStoreName;
 
+    @ApiModelProperty(value = "目的地业务中心地址")
+    private String endStoreAddress;
+
     @ApiModelProperty(value = "预计出发时间（提车日期）")
     private Long expectStartDate;
 
