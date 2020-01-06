@@ -88,7 +88,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         if(order.getCustomerType() == CustomerTypeEnum.ENTERPRISE.code){
             //大客户
             Customer customer = customerDao.selectById(order.getCustomerId());
-            detailVo.setName(customer.getName());
+            BeanUtils.copyProperties(customer,detailVo);
         }
         detailVo.setOrderId(order.getId());
         detailVo.setOrderNo(order.getNo());

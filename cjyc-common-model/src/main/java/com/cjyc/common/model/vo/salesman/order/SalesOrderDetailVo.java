@@ -53,8 +53,19 @@ public class SalesOrderDetailVo implements Serializable {
 
     @ApiModelProperty(value = "客户类型：1个人，2企业，3合伙人")
     private Integer customerType;
+    @ApiModelProperty(value = "客户id")
+    @JsonSerialize(using= ToStringSerializer.class)
+    private Long customerId;
     @ApiModelProperty(value = "大客户名称")
     private String name;
+    @ApiModelProperty(value = "合同ID")
+    @JsonSerialize(using= ToStringSerializer.class)
+    private Long customerContractId;
+    @ApiModelProperty(value = "大客户联系人")
+    private String contactMan;
+    @ApiModelProperty(value = "联系人手机号")
+    private String contactPhone;
+
     @ApiModelProperty(value = "发车人")
     private String pickContactName;
     @ApiModelProperty(value = "发车人联系方式")
@@ -128,6 +139,10 @@ public class SalesOrderDetailVo implements Serializable {
     public String getEndStoreName(){return StringUtils.isBlank(endStoreName) ? "":endStoreName;}
     public Integer getCustomerType(){return customerType == null ? 0:customerType;}
     public String getName(){return StringUtils.isBlank(name) ? "":name;}
+    public Long getCustomerId(){return customerId == null ? 0:customerId;}
+    public Long getCustomerContractId(){return customerContractId == null ? 0:customerContractId;}
+    public String getContactMan(){return StringUtils.isBlank(contactMan) ? "":contactMan;}
+    public String getContactPhone(){return StringUtils.isBlank(contactPhone) ? "":contactPhone;}
     public String getPickContactName(){return StringUtils.isBlank(pickContactName) ? "":pickContactName;}
     public String getPickContactPhone(){return StringUtils.isBlank(pickContactPhone) ? "":pickContactPhone;}
     public String getStartProvinceCode(){return StringUtils.isBlank(startProvinceCode) ? "":startProvinceCode;}
