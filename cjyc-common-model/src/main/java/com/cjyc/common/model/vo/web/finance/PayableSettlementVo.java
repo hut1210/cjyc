@@ -21,4 +21,10 @@ public class PayableSettlementVo {
     private String invoiceNo;
 
     private List<PayableTaskVo> payableTaskVo;
+
+    @ApiModelProperty(value = "实付总运费")
+    private BigDecimal totalFreightPaid;
+
+    @ApiModelProperty(value = "核销时间")
+    private Long writeOffTime;
 }

@@ -476,7 +476,9 @@
     </select>
 
     <select id="getPayableSettlement" resultType="com.cjyc.common.model.vo.web.finance.SettlementVo">
-        select invoice_no as invoiceNo from f_payable where serial_number=#{serialNumber}
+        select invoice_no as invoiceNo,total_freight_paid as totalFreightPaid,
+        writeoff_time as writeoffTime
+        from f_payable where serial_number=#{serialNumber}
     </select>
 
     <update id="writeOffPayable" parameterType="com.cjyc.common.model.vo.web.finance.SettlementVo">
