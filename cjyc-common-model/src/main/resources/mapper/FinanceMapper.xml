@@ -386,8 +386,8 @@
     </select>
 
     <insert id="apply" parameterType="com.cjyc.common.model.vo.web.finance.SettlementVo">
-        insert into f_payable(serial_number,freight_fee,apply_time,applicant_id)
-        values (#{serialNumber},#{freightFee},#{applyTime},#{applicantId})
+        insert into f_payable(serial_number,freight_fee,apply_time,applicant_id,state)
+        values (#{serialNumber},#{freightFee},#{applyTime},#{applicantId},#{state})
     </insert>
 
     <insert id="applyDetail" parameterType="com.cjyc.common.model.vo.web.finance.SettlementVo">
@@ -425,7 +425,7 @@
     </select>
 
     <update id="confirm" parameterType="com.cjyc.common.model.vo.web.finance.SettlementVo">
-        update f_payable set state=#{State},confirm_id=#{confirmId},
+        update f_payable set state=#{state},confirm_id=#{confirmId},
         comfirm_time=#{confirmTime} where serial_number = #{serialNumber}
     </update>
 
@@ -440,13 +440,16 @@
             resultType="com.cjyc.common.model.vo.web.finance.SettlementVo">
         select fp.no,fp.serial_number as serialNumber,
         fp.freight_fee as freightFee,
+        fp.invoice_no as invoiceNo,
         fp.apply_time as applyTime,
         fp.applicant_id as applicantId,
         fp.confirm_id as confirmId,
-        ba.name as applicant
+        fp.comfirm_time as comfirmTime,
+        ba.name as applicant,
+        bc.name as confirmMan,
         from f_payable fp
         left join b_admin ba on ba.id = fp.applicant_id
-        left join b_admin ba on ba.id = fp.applicant_id
+        left join b_admin bc on bc.id = fp.confirm_id
         where fp.state='1'
         <if test="serialNumber !=null and serialNumber.trim() !=''">
             and fp.serial_number like concat('%',#{serialNumber},'%')
@@ -475,4 +478,63 @@
     <select id="getPayableSettlement" resultType="com.cjyc.common.model.vo.web.finance.SettlementVo">
         select invoice_no as invoiceNo from f_payable where serial_number=#{serialNumber}
     </select>
+
+    <update id="writeOffPayable" parameterType="com.cjyc.common.model.vo.web.finance.SettlementVo">
+        update f_payable set state=#{state},writeoff_id=#{writeoffId},
+        writeoff_time=#{writeoffTime}, total_freight_paid=#{totalFreightPaid} where serial_number = #{serialNumber}
+    </update>
+    <select id="getPayablePaidList" parameterType="com.cjyc.common.model.dto.web.finance.PayablePaidQueryDto"
+            resultType="com.cjyc.common.model.vo.web.finance.PayablePaidVo">
+        select fp.no,fp.serial_number as serialNumber,
+        fp.freight_fee as freightFee,
+        fp.invoice_no as invoiceNo,
+        fp.apply_time as applyTime,
+        fp.applicant_id as applicantId,
+        fp.confirm_id as confirmId,
+        fp.comfirm_time as comfirmTime,
+        fp.writeoff_id as writeoffId,
+        fp.writeoff_time as writeoffTime,
+        fp.total_freight_paid as totalFreightPaid,
+        ba.name as applicant,
+        bc.name as confirmMan,
+        bd.name as writeOffMan
+        from f_payable fp
+        left join b_admin ba on ba.id = fp.applicant_id
+        left join b_admin bc on bc.id = fp.confirm_id
+        left join b_admin bd on bd.id = fp.writeoff_id
+        where fp.state='2'
+        <if test="serialNumber !=null and serialNumber.trim() !=''">
+            and fp.serial_number like concat('%',#{serialNumber},'%')
+        </if>
+        <if test="applyStartTime !=null">
+            and fp.apply_time &gt;=#{applyStartTime}
+        </if>
+        <if test="applyEndTime !=null">
+            and fp.apply_time &lt;=#{applyEndTime}
+        </if>
+        <if test="applicant !=null and applicant.trim() !=''">
+            and ba.name like concat('%',#{applicant},'%')
+        </if>
+
+        <if test="confirmStartTime !=null">
+            and fp.comfirm_time &gt;=#{confirmStartTime}
+        </if>
+        <if test="confirmEndTime !=null">
+            and fp.comfirm_time &lt;=#{confirmEndTime}
+        </if>
+        <if test="confirmMan !=null and confirmMan.trim() !=''">
+            and bc.name like concat('%',#{confirmMan},'%')
+        </if>
+
+        <if test="confirmStartTime !=null">
+            and fp.writeoff_time &gt;=#{writeOffStartTime}
+        </if>
+        <if test="confirmEndTime !=null">
+            and fp.writeoff_time &lt;=#{writeOffEndTime}
+        </if>
+        <if test="confirmMan !=null and confirmMan.trim() !=''">
+            and bd.name like concat('%',#{writeOffMan},'%')
+        </if>
+    </select>
+
 </mapper>

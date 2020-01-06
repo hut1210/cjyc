@@ -52,7 +52,7 @@ public class SettlementVo {
     private Long writeOffId;
 
     @ApiModelProperty(value = "核销人")
-    private Long writeOffMan;
+    private String writeOffMan;
 
     @ApiModelProperty(value = "实付总运费")
     private BigDecimal totalFreightPay;

@@ -445,7 +445,16 @@ public class FinanceServiceImpl implements IFinanceService {
         settlementVo.setSerialNumber(writeOffTicketDto.getSerialNumber());
         settlementVo.setWriteOffId(writeOffTicketDto.getWriteOffId());
         settlementVo.setWriteOffTime(System.currentTimeMillis());
-        financeDao.confirm(settlementVo);
+        settlementVo.setTotalFreightPay(writeOffTicketDto.getTotalFreightPay());
+        financeDao.writeOffPayable(settlementVo);
         return BaseResultUtil.success();
+    }
+
+    @Override
+    public ResultVo paid(PayablePaidQueryDto payablePaidQueryDto) {
+        PageHelper.startPage(payablePaidQueryDto.getCurrentPage(), payablePaidQueryDto.getPageSize());
+        List<PayablePaidVo> payablePaidList = financeDao.getPayablePaidList(payablePaidQueryDto);
+        PageInfo<PayablePaidVo> pageInfo = new PageInfo<>(payablePaidList);
+        return BaseResultUtil.success(pageInfo);
     }
 }

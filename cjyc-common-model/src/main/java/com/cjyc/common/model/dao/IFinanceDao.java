@@ -51,4 +51,8 @@ public interface IFinanceDao extends BaseMapper {
     List<SettlementVo> getPayablePaymentList(WaitPaymentDto waitPaymentDto);
 
     SettlementVo getPayableSettlement(String serialNumber);
+
+    List<PayablePaidVo> getPayablePaidList(PayablePaidQueryDto payablePaidQueryDto);
+
+    void writeOffPayable(SettlementVo settlementVo);
 }
