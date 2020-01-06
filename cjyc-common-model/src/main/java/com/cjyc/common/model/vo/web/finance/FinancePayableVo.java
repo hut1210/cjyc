@@ -1,6 +1,5 @@
 package com.cjyc.common.model.vo.web.finance;
 
-import com.cjyc.common.model.util.BigDecimalSerizlizer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
