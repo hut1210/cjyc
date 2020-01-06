@@ -397,7 +397,7 @@
         from f_payable fp
         <where>
             <if test="no !=null and no.trim() !=''">
-                fp.no like concat('%',#{no},'%')
+                fp.serial_number like concat('%',#{serialNumber},'%')
             </if>
             <if test="applyStartTime !=null">
                 fp.apply_time &gt;=#{applyStartTime}
