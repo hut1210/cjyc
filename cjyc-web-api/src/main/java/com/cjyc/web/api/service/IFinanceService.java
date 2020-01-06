@@ -53,4 +53,14 @@ public interface IFinanceService {
     ResultVo apply(AppSettlementPayableDto appSettlementPayableDto);
 
     ResultVo<PageVo<SettlementVo>> collect(WaitTicketCollectDto waitTicketCollectDto);
+
+    ResultVo getConfirmTicket(String serialNumber);
+
+    ResultVo confirm(ConfirmTicketDto confirmTicketDto);
+
+    ResultVo withdraw(String serialNumber);
+
+    ResultVo<PageVo<SettlementVo>> payment(WaitPaymentDto waitPaymentDto);
+
+    ResultVo getWriteOffTicket(String serialNumber);
 }

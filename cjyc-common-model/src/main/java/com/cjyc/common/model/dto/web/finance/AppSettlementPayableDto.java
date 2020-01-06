@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.Value;
 
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -20,5 +21,8 @@ public class AppSettlementPayableDto {
     private Long loginId;
 
     @ApiModelProperty(value = "运单单号集合")
-    List<String> taskNo;
+    private List<String> taskNo;
+
+    @ApiModelProperty(value = "应付总运费")
+    private BigDecimal freightFee;
 }
