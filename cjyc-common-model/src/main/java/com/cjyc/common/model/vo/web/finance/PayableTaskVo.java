@@ -10,7 +10,7 @@ import java.math.BigDecimal;
  * @Date: 2020/01/06 11:08
  **/
 @Data
-public class SettlementPayableVo {
+public class PayableTaskVo {
 
     @ApiModelProperty(value = "运单单号")
     private String no;
