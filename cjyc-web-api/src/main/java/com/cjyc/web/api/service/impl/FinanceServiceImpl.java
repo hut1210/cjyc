@@ -8,7 +8,6 @@ import com.cjyc.common.model.entity.CustomerInvoice;
 import com.cjyc.common.model.entity.InvoiceReceipt;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.util.BigDecimalSerizlizer;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.finance.*;
@@ -18,6 +17,7 @@ import com.cjyc.web.api.service.IFinanceService;
 import com.cjyc.web.api.service.IOrderService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.pingplusplus.model.App;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -314,10 +314,53 @@ public class FinanceServiceImpl implements IFinanceService {
     public ResultVo<PageVo<FinancePayableVo>> getFinancePayableList(PayableQueryDto payableQueryDto) {
         PageHelper.startPage(payableQueryDto.getCurrentPage(), payableQueryDto.getPageSize());
         List<FinancePayableVo> financeVoList = financeDao.getFinancePayableList(payableQueryDto);
-        for (int i=0;i<financeVoList.size();i++){
+        for (int i=0;i<financeVoList.size();i++) {
             FinancePayableVo financePayableVo = financeVoList.get(i);
+            BigDecimal freightFee = new BigDecimal(0);
+            List<String> list = new ArrayList<>();
+            list.add(financePayableVo.getNo());
+            List<SettlementPayableVo> settlementVoList = financeDao.getSettlementInfo(list);
+            for (int j=0;j<settlementVoList.size();j++){
+                SettlementPayableVo settlementVo = settlementVoList.get(j);
+                if(settlementVo!=null && settlementVo.getFreightFee()!=null){
+                    freightFee.add(settlementVo.getFreightFee());
+                }
+            }
+
+            financePayableVo.setFreightPayable(freightFee);
         }
         PageInfo<FinancePayableVo> pageInfo = new PageInfo<>(financeVoList);
+        return BaseResultUtil.success(pageInfo);
+    }
+
+    @Override
+    public ResultVo getSettlementPayable(List<String> taskNo) {
+        List<SettlementPayableVo> settlementVoList = financeDao.getSettlementInfo(taskNo);
+        return BaseResultUtil.success(settlementVoList);
+    }
+
+    @Override
+    public ResultVo apply(AppSettlementPayableDto appSettlementPayableDto) {
+        List<String> list = appSettlementPayableDto.getTaskNo();
+        for (int i=0;i<list.size();i++){
+            String taskNo = list.get(i);
+            SettlementVo settlementVo = new SettlementVo();
+            settlementVo.setSerialNumber(csSendNoService.getNo(SendNoTypeEnum.PAYMENT));
+            settlementVo.setApplyTime(System.currentTimeMillis());
+            settlementVo.setApplicantId(appSettlementPayableDto.getLoginId());
+            settlementVo.setNo(taskNo);
+
+            financeDao.apply(settlementVo);
+        }
+
+        return null;
+    }
+
+    @Override
+    public ResultVo<PageVo<SettlementVo>> collect(WaitTicketCollectDto waitTicketCollectDto) {
+        PageHelper.startPage(waitTicketCollectDto.getCurrentPage(), waitTicketCollectDto.getPageSize());
+        List<SettlementVo> settlementVoList = financeDao.getCollectTicketList(waitTicketCollectDto);
+        PageInfo<SettlementVo> pageInfo = new PageInfo<>(settlementVoList);
         return BaseResultUtil.success(pageInfo);
     }
 }

@@ -23,14 +23,16 @@ public class DispatchListVo {
     private String orderCarNo;
     @ApiModelProperty(value = "车辆ID")
     private String orderCarId;
-    @ApiModelProperty(value = "车辆编号")
-    private String carNo;
     @ApiModelProperty(value = "提车日期")
-    private Long pickDate;
+    private Long expectStartDate;
     @ApiModelProperty(value = "订单-出发城市")
-    private String orderStartCity;
+    private String startCity;
     @ApiModelProperty(value = "订单-目的城市")
-    private String orderEndCity;
+    private String endCity;
+    @ApiModelProperty(value = "调度-出发城市")
+    private String dispatchStartCity;
+    @ApiModelProperty(value = "调度-目的城市")
+    private String dispatchEndCity;
     @ApiModelProperty(value = "运单标识")
     private Long wayBillId;
     @ApiModelProperty(value = "运单编号")

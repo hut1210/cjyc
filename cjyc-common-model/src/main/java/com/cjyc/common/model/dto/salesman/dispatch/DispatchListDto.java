@@ -32,8 +32,10 @@ public class DispatchListDto extends BasePageDto {
     private Long pickDateSt;
     @ApiModelProperty(value = "提车结束日期")
     private Long pickDateEd;
-    @ApiModelProperty(value = "订单号/运单号/VIN码")
+    @ApiModelProperty(value = "订单号/VIN码")
     private String searchValue;
+    @ApiModelProperty(value = "运单号")
+    private String waybillNo;
     @ApiModelProperty(value = "品牌")
     private String brand;
     @ApiModelProperty(value = "车系")

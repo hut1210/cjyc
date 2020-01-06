@@ -13,6 +13,7 @@ import com.cjyc.common.model.vo.customer.order.OrderCarCenterVo;
 import com.cjyc.common.model.vo.salesman.dispatch.CityCarCountVo;
 import com.cjyc.common.model.vo.salesman.dispatch.DispatchListVo;
 import com.cjyc.common.model.vo.salesman.dispatch.StartAndEndCityCountVo;
+import com.cjyc.common.model.vo.salesman.dispatch.WaitDispatchCarListVo;
 import com.cjyc.common.model.vo.salesman.mine.StockCarDetailVo;
 import com.cjyc.common.model.vo.salesman.mine.StockCarVo;
 import com.cjyc.common.model.vo.web.OrderCarVo;
@@ -168,7 +169,7 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
 
     List<OrderCarWaitDispatchVo> findWaitDispatchCarList(@Param("paramsDto") WaitDispatchListOrderCarDto paramsDto);
 
-    List<DispatchListVo> findWaitDispatchCarListForApp(@Param("param") DispatchListDto paramsDto);
+    List<WaitDispatchCarListVo> findWaitDispatchCarListForApp(@Param("param") DispatchListDto paramsDto);
 
     List<OrderCarWaitDispatchVo> findWaitDispatchTrunkCarList(@Param("paramsDto") WaitDispatchTrunkDto paramsDto);
 

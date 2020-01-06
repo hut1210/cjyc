@@ -59,4 +59,7 @@ public class FinancePayableVo implements Serializable {
 
     @ApiModelProperty(value = "车牌号")
     private String vehiclePlateNo;
+
+    @ApiModelProperty(value = "车辆数")
+    private int carNum;
 }
