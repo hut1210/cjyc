@@ -267,7 +267,7 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
             user.setName(name);
             user.setAccount(phone);
             user.setMobile(phone);
-            user.setDeptId(Long.valueOf(Constant.SOCIAL_VEHICLE_DEPT));
+            user.setDeptId(Long.parseLong(YmlProperty.get("cjkj.dept_admin_id")));
             user.setPassword(YmlProperty.get("cjkj.customer.password"));
             user.setRoleIdList(Arrays.asList(role.getRoleId()));
             ResultData<AddUserResp> saveRd = sysUserService.save(user);
