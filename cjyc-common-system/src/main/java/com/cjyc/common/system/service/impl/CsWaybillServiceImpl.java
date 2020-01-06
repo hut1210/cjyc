@@ -434,12 +434,14 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 carrierInfo.setDriverId(driver.getId());
                 carrierInfo.setDriverName(driver.getName());
                 carrierInfo.setDriverPhone(driver.getPhone());
-                VehicleRunning vr = vehicleRunningDao.findByDriverId(driver.getId());
-                if(vr == null){
-                    throw new ParameterException("运单，所选司机没有绑定车牌号");
+                if(carrierType != WaybillCarrierTypeEnum.LOCAL_PILOT.code){
+                    VehicleRunning vr = vehicleRunningDao.findByDriverId(driver.getId());
+                    if(vr == null){
+                        throw new ParameterException("运单，所选司机没有绑定车牌号");
+                    }
+                    carrierInfo.setVehicleId(vr.getId());
+                    carrierInfo.setVehiclePlateNo(vr.getPlateNo());
                 }
-                carrierInfo.setVehicleId(vr.getId());
-                carrierInfo.setVehiclePlateNo(vr.getPlateNo());
             }
         }
 
