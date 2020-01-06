@@ -65,6 +65,9 @@ public class SalesOrderDetailVo implements Serializable {
     private String contactMan;
     @ApiModelProperty(value = "联系人手机号")
     private String contactPhone;
+    @ApiModelProperty(value = "班线id")
+    @JsonSerialize(using= ToStringSerializer.class)
+    private Long lineId;
 
     @ApiModelProperty(value = "发车人")
     private String pickContactName;
