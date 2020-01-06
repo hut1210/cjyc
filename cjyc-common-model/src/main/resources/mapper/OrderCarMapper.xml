@@ -1357,9 +1357,11 @@
         o.back_contact_name as backContactName,
         o.back_contact_phone as backContactPhone,
         o.state as orderState,
+        se.detail_addr as endStoreAddress,
         oc.*
         from w_order o
         join w_order_car oc on o.id= oc.order_id
+        left join s_store se on se.id = o.end_store_id
         where oc.id = #{orderCarId}
     </select>
     <sql id="pick_wait_dispatch_car_list_For_App">
@@ -1377,7 +1379,7 @@
         s.city as dispatchEndCity,
         s.area_code as dispatchEndAreaCode,
         s.area as dispatchEndArea,
-        concat(o.start_city, '-', s.city) as nodes,
+        concat(left(o.start_city,2), '-', left(s.city,2)) as nodes,
 
         o.input_store_id as inputStoreId,
         o.start_city as startCity,
@@ -1425,7 +1427,7 @@
         s.city as dispatchStartCity,
         s.area_code as dispatchStartAreaCode,
         s.area as dispatchStartArea,
-        concat(s.city, '-', o.end_city) as nodes,
+        concat(left(s.city,2), '-', left(o.end_city,2)) as nodes,
 
         o.end_province_code as dispatchEndProvinceCode,
         o.end_province as dispatchEndProvince,
@@ -1486,9 +1488,8 @@
         (case when o.end_store_id > 0 and o.back_type != 4 then se.city_code else o.end_city_code end)  as dispatchEndCityCode,
         (case when o.end_store_id > 0 and o.back_type != 4 then se.area else o.end_area end)  as dispatchEndArea,
         (case when o.end_store_id > 0 and o.back_type != 4 then se.area_code else o.end_area_code end)  as dispatchEndAreaCode,
-        o.end_belong_store_id as endBelongStoreId,
         (
-            select GROUP_CONCAT(concat(wc.start_city, '-', wc.end_city))
+            select GROUP_CONCAT(concat(left(wc.start_city,2), '-', left(wc.end_city,2)))
             from w_waybill w
             join w_waybill_car wc on w.id = wc.waybill_id
             where wc.order_car_id = oc.id
@@ -1535,7 +1536,7 @@
                 order by w.type desc, wc.id desc
                 limit 10000
             ) as max
-            group by wc.order_car_id
+            group by max.order_car_id
         ) temp on temp.order_car_id = oc.id
         where o.state between 25 and 100
         and oc.state &lt; 45
@@ -1586,8 +1587,11 @@
         <where>
             <if test="param.searchValue != null and param.searchValue != ''">
                 and (shell.vin LIKE CONCAT('%', #{param.searchValue}, '%') or
-                shell.orderCarNo LIKE CONCAT('%', #{param.searchValue}, '%')) or
+                shell.orderCarNo LIKE CONCAT('%', #{param.searchValue}, '%') or
                 shell.waybillNo LIKE CONCAT('%', #{param.searchValue}, '%'))
+            </if>
+            <if test="param.waybillNo != null and param.waybillNo != ''">
+                and shell.waybillNo LIKE CONCAT('%', #{param.waybillNo}, '%'))
             </if>
             <if test="param.brand != null and param.brand !=''">
                 and shell.brand LIKE CONCAT('%',#{param.brand},'%')
