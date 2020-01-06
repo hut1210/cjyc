@@ -426,7 +426,7 @@
 
     <update id="confirm" parameterType="com.cjyc.common.model.vo.web.finance.SettlementVo">
         update f_payable set state=#{state},confirm_id=#{confirmId},
-        comfirm_time=#{confirmTime} where serial_number = #{serialNumber}
+        confirm_time=#{confirmTime} where serial_number = #{serialNumber}
     </update>
 
     <delete id="withdraw" parameterType="String">
@@ -444,7 +444,7 @@
         fp.apply_time as applyTime,
         fp.applicant_id as applicantId,
         fp.confirm_id as confirmId,
-        fp.comfirm_time as comfirmTime,
+        fp.confirm_time as confirmTime,
         ba.name as applicant,
         bc.name as confirmMan
         from f_payable fp
@@ -465,10 +465,10 @@
         </if>
 
         <if test="confirmStartTime !=null">
-            and fp.comfirm_time &gt;=#{confirmStartTime}
+            and fp.confirm_time &gt;=#{confirmStartTime}
         </if>
         <if test="confirmEndTime !=null">
-            and fp.comfirm_time &lt;=#{confirmEndTime}
+            and fp.confirm_time &lt;=#{confirmEndTime}
         </if>
         <if test="confirmMan !=null and confirmMan.trim() !=''">
             and ba.name like concat('%',#{confirmMan},'%')
@@ -476,7 +476,9 @@
     </select>
 
     <select id="getPayableSettlement" resultType="com.cjyc.common.model.vo.web.finance.SettlementVo">
-        select invoice_no as invoiceNo from f_payable where serial_number=#{serialNumber}
+        select invoice_no as invoiceNo,total_freight_paid as totalFreightPaid,
+        writeoff_time as writeoffTime
+        from f_payable where serial_number=#{serialNumber}
     </select>
 
     <update id="writeOffPayable" parameterType="com.cjyc.common.model.vo.web.finance.SettlementVo">
@@ -491,7 +493,7 @@
         fp.apply_time as applyTime,
         fp.applicant_id as applicantId,
         fp.confirm_id as confirmId,
-        fp.comfirm_time as comfirmTime,
+        fp.confirm_time as confirmTime,
         fp.writeoff_id as writeoffId,
         fp.writeoff_time as writeoffTime,
         fp.total_freight_paid as totalFreightPaid,
@@ -517,10 +519,10 @@
         </if>
 
         <if test="confirmStartTime !=null">
-            and fp.comfirm_time &gt;=#{confirmStartTime}
+            and fp.confirm_time &gt;=#{confirmStartTime}
         </if>
         <if test="confirmEndTime !=null">
-            and fp.comfirm_time &lt;=#{confirmEndTime}
+            and fp.confirm_time &lt;=#{confirmEndTime}
         </if>
         <if test="confirmMan !=null and confirmMan.trim() !=''">
             and bc.name like concat('%',#{confirmMan},'%')
