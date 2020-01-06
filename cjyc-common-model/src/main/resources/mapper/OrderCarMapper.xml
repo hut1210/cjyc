@@ -1165,9 +1165,10 @@
             <if test="endTime != null and endTime != 0">
                 and wo.expect_start_date &lt; #{endTime}
             </if>
-            <if test="storeIds != null and storeIds.trim() != ''">
-                and woc.now_store_id in ( #{storeIds} )
-            </if>
+            and woc.now_store_id in
+            <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
             and woc.state in (25,35,45,50)
             order by wo.create_time desc,wo.check_time desc
         </where>

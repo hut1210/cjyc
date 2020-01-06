@@ -7,6 +7,7 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.customerLine.StoreListVo;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * 公用业务中心类
@@ -65,5 +66,5 @@ public interface ICsStoreService {
 
     Store getOneBelongByCityCode(String cityCode);
 
-    String getStoreIds(BizScope bizScope);
+    Set<Long> getStoreIds(BizScope bizScope);
 }
