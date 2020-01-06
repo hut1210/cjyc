@@ -446,7 +446,7 @@
         fp.confirm_id as confirmId,
         fp.comfirm_time as comfirmTime,
         ba.name as applicant,
-        bc.name as confirmMan,
+        bc.name as confirmMan
         from f_payable fp
         left join b_admin ba on ba.id = fp.applicant_id
         left join b_admin bc on bc.id = fp.confirm_id
