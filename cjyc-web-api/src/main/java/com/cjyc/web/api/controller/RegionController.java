@@ -95,8 +95,9 @@ public class RegionController {
         try {
             resultVo = regionService.removeRegion(regionCode);
         } catch (Exception e) {
-            //log.error("删除大区异常",e);
-            //resultVo = BaseResultUtil.fail("删除大区失败");
+            // hhhhhh
+            log.error("删除大区异常",e);
+            resultVo = BaseResultUtil.fail("删除大区失败");
         }
         return resultVo;
     }
