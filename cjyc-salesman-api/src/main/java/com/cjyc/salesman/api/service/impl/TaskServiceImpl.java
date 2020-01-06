@@ -113,6 +113,7 @@ public class TaskServiceImpl implements ITaskService {
 
                     // 如果指导路线为空，且运单是提车或者送车，将始发成和结束城市用“-”拼接
                     fillGuideLine(taskDetailVo,waybillCar);
+                    carDetailVo.setGuideLine(taskDetailVo.getGuideLine());
 
                     // 查询车辆历史图片
                     StringBuilder sb = getCarHistoryPhotoImg(waybillCar);
@@ -128,8 +129,8 @@ public class TaskServiceImpl implements ITaskService {
                     BeanUtils.copyProperties(orderCar,carDetailVo);
 
                     // 查询车辆logo图片
-                    List<String> brandList = carSeriesDao.getSeriesByBrand(carDetailVo.getBrand());
-                    carDetailVo.setLogoPhotoImg(LogoImgProperty.logoImg+brandList.get(0));
+                    String logoImg = carSeriesDao.getLogoImgByBraMod(carDetailVo.getBrand(),carDetailVo.getModel());
+                    carDetailVo.setLogoPhotoImg(LogoImgProperty.logoImg+logoImg);
 
                     // 查询支付方式
                     Order order = orderDao.selectById(orderCar.getOrderId());

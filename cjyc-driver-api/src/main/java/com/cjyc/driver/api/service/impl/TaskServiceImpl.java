@@ -188,6 +188,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
 
                 // 如果指导路线为空，且运单是提车或者送车，将始发成和结束城市用“-”拼接
                 fillGuideLine(taskDetailVo,waybillCar);
+                carDetailVo.setGuideLine(taskDetailVo.getGuideLine());
 
                 // 查询除了当前车辆运单的历史车辆运单图片
                 getHistoryWaybillCarImg(carDetailVo, waybillCar,dto.getDetailType());
@@ -197,8 +198,8 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                 BeanUtils.copyProperties(orderCar,carDetailVo);
 
                 // 查询车辆logo图片
-                List<String> brandList = carSeriesDao.getSeriesByBrand(carDetailVo.getBrand());
-                carDetailVo.setLogoPhotoImg(LogoImgProperty.logoImg+brandList.get(0));
+                String logoImg = carSeriesDao.getLogoImgByBraMod(carDetailVo.getBrand(),carDetailVo.getModel());
+                carDetailVo.setLogoPhotoImg(LogoImgProperty.logoImg+logoImg);
 
                 carDetailVo.setId(waybillCar.getId());
                 carDetailVo.setWaybillCarState(waybillCar.getState());
@@ -262,14 +263,15 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
 
                     // 如果指导路线为空，且运单是提车或者送车，将始发成和结束城市用“-”拼接
                     fillGuideLine(taskDetailVo,waybillCar);
+                    carDetailVo.setGuideLine(taskDetailVo.getGuideLine());
 
                     // 查询品牌车系信息
                     OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
                     BeanUtils.copyProperties(orderCar,carDetailVo);
 
                     // 查询车辆logo图片
-                    List<String> brandList = carSeriesDao.getSeriesByBrand(carDetailVo.getBrand());
-                    carDetailVo.setLogoPhotoImg(LogoImgProperty.logoImg+brandList.get(0));
+                    String logoImg = carSeriesDao.getLogoImgByBraMod(carDetailVo.getBrand(),carDetailVo.getModel());
+                    carDetailVo.setLogoPhotoImg(LogoImgProperty.logoImg+logoImg);
 
                     // 查询支付方式
                     Order order = orderDao.selectById(orderCar.getOrderId());
