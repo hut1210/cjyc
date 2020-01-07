@@ -214,7 +214,7 @@
       complete_time = #{completeTime,jdbcType=BIGINT}
     where id = #{id,jdbcType=BIGINT}
   </update>
-    <update id="updateByIdSelectiveForNull" parameterType="com.cjyc.common.model.entity.Waybill">
+    <!--<update id="updateByIdSelectiveForNull" parameterType="com.cjyc.common.model.entity.Waybill">
         update w_waybill
         <set>
             carrier_id = #{carrierId,jdbcType=BIGINT},
@@ -281,7 +281,7 @@
             </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
-    </update>
+    </update>-->
 
     <update id="updateStateBatchByNos">
         update w_waybill

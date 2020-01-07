@@ -130,13 +130,13 @@
             t.taskCarId,
             t.waybill_id AS waybillId,
             t.guide_line AS guideLine,
-            t.car_num AS carNum,
             t.create_time AS createTime,
             (case w.carrier_type when 2 then w.no else t.no end) AS waybillNo,
             w.type AS type,
             car.start_city as startCity,
             car.end_city as endCity,
             car.expect_start_time AS expectStartTime,
+            count(car.id) AS carNum,
             sum(car.freight_fee) AS freightFee
         FROM
             ( SELECT task.id, task.waybill_id, task.no, task.guide_line, task.car_num,
@@ -173,12 +173,12 @@
             t.id as taskId,
             t.waybill_id as waybillId,
             t.guide_line as guideLine,
-            t.car_num as carNum,
             t.complete_time as completeTime,
             (case w.carrier_type when 2 then w.no else t.no end) AS waybillNo,
             w.type as type,
             car.start_city as startCity,
             car.end_city as endCity,
+            count( car.id ) AS carNum,
             sum(car.freight_fee) as freightFee
         from
             (select task.id, task.waybill_id, task.no, task.guide_line, task.car_num,task.state,task.complete_time,tc.waybill_car_id
