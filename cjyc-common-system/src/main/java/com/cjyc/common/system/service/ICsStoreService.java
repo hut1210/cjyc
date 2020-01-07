@@ -66,5 +66,4 @@ public interface ICsStoreService {
 
     Store getOneBelongByCityCode(String cityCode);
 
-    Set<Long> getStoreIds(BizScope bizScope);
 }

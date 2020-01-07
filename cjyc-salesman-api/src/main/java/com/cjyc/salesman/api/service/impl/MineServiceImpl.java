@@ -58,8 +58,6 @@ public class MineServiceImpl extends ServiceImpl<IWaybillCarDao, WaybillCar> imp
     private IWaybillCarDao waybillCarDao;
     @Resource
     private ICsSysService csSysService;
-    @Resource
-    private ICsStoreService csStoreService;
 
     @Override
     public ResultVo<PageVo<StockCarVo>> findStockCar(StockCarDto dto) {
@@ -70,7 +68,7 @@ public class MineServiceImpl extends ServiceImpl<IWaybillCarDao, WaybillCar> imp
             return BaseResultUtil.fail("您没有访问权限!");
         }
         // 获取业务中心ID
-        dto.setStoreIds(csStoreService.getStoreIds(bizScope));
+        dto.setStoreIds(bizScope.getStoreIds());
         if(dto.getEndTime() != null && dto.getEndTime() != 0){
             dto.setEndTime(TimeStampUtil.addDays(dto.getEndTime(),1));
         }
