@@ -1,14 +1,9 @@
 package com.cjyc.web.api.controller;
 
-import com.cjyc.common.model.dto.web.finance.AppSettlementPayableDto;
-import com.cjyc.common.model.dto.web.finance.ApplySettlementDto;
-import com.cjyc.common.model.dto.web.finance.PayableQueryDto;
-import com.cjyc.common.model.dto.web.finance.WaitTicketCollectDto;
-import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.dto.web.finance.*;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.finance.FinancePayableVo;
-import com.cjyc.common.model.vo.web.finance.SettlementPayableVo;
 import com.cjyc.common.model.vo.web.finance.SettlementVo;
 import com.cjyc.web.api.service.IFinanceService;
 import io.swagger.annotations.Api;
@@ -41,8 +36,8 @@ public class FinancePayableController {
         return financeService.getFinancePayableList(payableQueryDto);
     }
 
-    @ApiOperation(value = "获取申请开票信息")
-    @PostMapping(value = "/get")
+    @ApiOperation(value = "获取申请开票运单信息")
+    @PostMapping(value = "/applyTicket")
     public ResultVo get(@RequestBody List<String> taskNo){
         return financeService.getSettlementPayable(taskNo);
     }
@@ -58,4 +53,53 @@ public class FinancePayableController {
     public ResultVo<PageVo<SettlementVo>> collect(@RequestBody WaitTicketCollectDto waitTicketCollectDto){
         return financeService.collect(waitTicketCollectDto);
     }
+
+    @ApiOperation(value = "获取确认收票运单信息")
+    @PostMapping(value = "/confirmTicket")
+    public ResultVo confirmTicket(@RequestBody String serialNumber){
+        return financeService.getConfirmTicket(serialNumber);
+    }
+
+    @ApiOperation(value = "确认收票")
+    @PostMapping(value = "/confirm")
+    public ResultVo confirm(@RequestBody ConfirmTicketDto confirmTicketDto){
+        return financeService.confirm(confirmTicketDto);
+    }
+
+    @ApiOperation(value = "撤回")
+    @PostMapping(value = "/withdraw")
+    public ResultVo withdraw(@RequestBody String serialNumber){
+        return financeService.withdraw(serialNumber);
+    }
+
+    @ApiOperation(value = "等待付款列表")
+    @PostMapping(value = "/payment")
+    public ResultVo<PageVo<SettlementVo>> payment(@RequestBody WaitPaymentDto waitPaymentDto){
+        return financeService.payment(waitPaymentDto);
+    }
+
+    @ApiOperation(value = "获取核销运单信息")
+    @PostMapping(value = "/writeOffTicket")
+    public ResultVo writeOffTicket(@RequestBody String serialNumber){
+        return financeService.getWriteOffTicket(serialNumber);
+    }
+
+    @ApiOperation(value = "核销")
+    @PostMapping(value = "/writeOff")
+    public ResultVo writeOff(@RequestBody WriteOffTicketDto writeOffTicketDto){
+        return financeService.writeOffPayable(writeOffTicketDto);
+    }
+
+    @ApiOperation(value = "已付款列表")
+    @PostMapping(value = "/paid")
+    public ResultVo paid(@RequestBody PayablePaidQueryDto payablePaidQueryDto){
+        return financeService.paid(payablePaidQueryDto);
+    }
+
+    @ApiOperation(value = "结算明细")
+    @PostMapping(value = "/detail")
+    public ResultVo detail(@RequestBody String serialNumber){
+        return financeService.payableDetail(serialNumber);
+    }
+
 }

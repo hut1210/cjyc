@@ -355,7 +355,7 @@
     <select id="getFinancePayableList" parameterType="com.cjyc.common.model.dto.web.finance.PayableQueryDto"
             resultType="com.cjyc.common.model.vo.web.finance.FinancePayableVo">
         select wt.no,wt.complete_time as completeTime,
-        ww.type,ww.carrier_id as carrierId,
+        ww.type as waybillType,ww.carrier_id as carrierId,
         ww.carrier_type as carrierType,
         ww.carrier_name as carrierName,
         wt.driver_id as driverId,
@@ -369,10 +369,35 @@
         left join w_waybill ww on ww.no = wt.waybill_no
         left join d_carrier dc on dc.id = ww.carrier_id
         where dc.settle_type=1 and wt.complete_time &gt;0 and carrier_type in (1,2,4,5)
+        and wt.no not in (select fpd.no from f_payable_detail fpd)
+        <if test="waybillNo !=null and waybillNo.trim() !=''">
+            and wt.no like concat('%',#{waybillNo},'%')
+        </if>
+        <if test="carrierName !=null and carrierName.trim() !=''">
+            and ww.carrier_name like concat('%',#{carrierName},'%')
+        </if>
+        <if test="driverName !=null and driverName.trim() !=''">
+            and wt.driver_name like concat('%',#{driverName},'%')
+        </if>
+        <if test="completeStartTime !=null ">
+            and wt.complete_time &gt;=#{completeStartTime}
+        </if>
+        <if test="completeEndTime !=null ">
+            and wt.complete_time &lt;=#{completeEndTime}
+        </if>
+        <if test="driverPhone !=null and driverPhone.trim() !=''">
+            and wt.driver_phone like concat('%',#{driverPhone},'%')
+        </if>
+        <if test="vehiclePlateNo !=null and vehiclePlateNo.trim() !=''">
+            and wt.vehicle_plate_no like concat('%',#{vehiclePlateNo},'%')
+        </if>
+        <if test="waybillType !=null and waybillType.trim() !=''">
+            and ww.type = #{waybillType}
+        </if>
     </select>
 
     <select id="getSettlementInfo" parameterType="java.util.List"
-        resultType="com.cjyc.common.model.vo.web.finance.SettlementPayableVo">
+        resultType="com.cjyc.common.model.vo.web.finance.PayableTaskVo">
         select wt.no,wt.car_num as carNum,ww.type,wwc.freight_fee as freightFee
         from w_task wt
         left join w_task_car wtc on wt.id=wtc.task_id
@@ -385,29 +410,157 @@
     </select>
 
     <insert id="apply" parameterType="com.cjyc.common.model.vo.web.finance.SettlementVo">
-        insert into f_payable(no,serial_number,apply_time,applicant_id)
-        values (#{no},#{serialNumber},#{applyTime},#{applicantId})
+        insert into f_payable(serial_number,freight_fee,apply_time,applicant_id,state)
+        values (#{serialNumber},#{freightFee},#{applyTime},#{applicantId},#{state})
+    </insert>
+
+    <insert id="applyDetail" parameterType="com.cjyc.common.model.vo.web.finance.SettlementVo">
+        insert into f_payable_detail(serial_number,no)
+        values (#{serialNumber},#{no})
     </insert>
 
     <select id="getCollectTicketList" parameterType="com.cjyc.common.model.dto.web.finance.WaitTicketCollectDto"
             resultType="com.cjyc.common.model.vo.web.finance.SettlementVo">
         select fp.no,fp.serial_number as serialNumber,
+        fp.freight_fee as freightFee,
         fp.apply_time as applyTime,
-        fp.applicant_id as applicantId
+        fp.applicant_id as applicantId,
+        ba.name as applicant
         from f_payable fp
-        <where>
-            <if test="no !=null and no.trim() !=''">
-                fp.serial_number like concat('%',#{serialNumber},'%')
-            </if>
-            <if test="applyStartTime !=null">
-                fp.apply_time &gt;=#{applyStartTime}
-            </if>
-            <if test="applyEndTime !=null">
-                fp.apply_time &lt;=#{applyEndTime}
-            </if>
-            <if test="applicant !=null and applicant.trim() !=''">
+        left join b_admin ba on ba.id = fp.applicant_id
 
-            </if>
-        </where>
+        where fp.state='0'
+        <if test="serialNumber !=null and serialNumber.trim() !=''">
+            and fp.serial_number like concat('%',#{serialNumber},'%')
+        </if>
+        <if test="applyStartTime !=null">
+            and fp.apply_time &gt;=#{applyStartTime}
+        </if>
+        <if test="applyEndTime !=null">
+            and fp.apply_time &lt;=#{applyEndTime}
+        </if>
+        <if test="applicant !=null and applicant.trim() !=''">
+            and ba.name like concat('%',#{applicant},'%')
+        </if>
     </select>
+
+    <select id="getTaskNoList" resultType="java.lang.String">
+        select no from f_payable_detail where serial_number=#{serialNumber}
+    </select>
+
+    <update id="confirm" parameterType="com.cjyc.common.model.vo.web.finance.SettlementVo">
+        update f_payable set state=#{state},confirm_id=#{confirmId},
+        confirm_time=#{confirmTime} where serial_number = #{serialNumber}
+    </update>
+
+    <delete id="withdraw" parameterType="String">
+        delete fp,fpd
+        from f_payable fp
+        left join f_payable_detail fpd on fp.serial_number = fpd.serial_number
+        where fp.serial_number=#{serialNumber}
+    </delete>
+
+    <select id="getPayablePaymentList" parameterType="com.cjyc.common.model.dto.web.finance.WaitPaymentDto"
+            resultType="com.cjyc.common.model.vo.web.finance.SettlementVo">
+        select fp.no,fp.serial_number as serialNumber,
+        fp.freight_fee as freightFee,
+        fp.invoice_no as invoiceNo,
+        fp.apply_time as applyTime,
+        fp.applicant_id as applicantId,
+        fp.confirm_id as confirmId,
+        fp.confirm_time as confirmTime,
+        ba.name as applicant,
+        bc.name as confirmMan
+        from f_payable fp
+        left join b_admin ba on ba.id = fp.applicant_id
+        left join b_admin bc on bc.id = fp.confirm_id
+        where fp.state='1'
+        <if test="serialNumber !=null and serialNumber.trim() !=''">
+            and fp.serial_number like concat('%',#{serialNumber},'%')
+        </if>
+        <if test="applyStartTime !=null">
+            and fp.apply_time &gt;=#{applyStartTime}
+        </if>
+        <if test="applyEndTime !=null">
+            and fp.apply_time &lt;=#{applyEndTime}
+        </if>
+        <if test="applicant !=null and applicant.trim() !=''">
+            and ba.name like concat('%',#{applicant},'%')
+        </if>
+
+        <if test="confirmStartTime !=null">
+            and fp.confirm_time &gt;=#{confirmStartTime}
+        </if>
+        <if test="confirmEndTime !=null">
+            and fp.confirm_time &lt;=#{confirmEndTime}
+        </if>
+        <if test="confirmMan !=null and confirmMan.trim() !=''">
+            and ba.name like concat('%',#{confirmMan},'%')
+        </if>
+    </select>
+
+    <select id="getPayableSettlement" resultType="com.cjyc.common.model.vo.web.finance.SettlementVo">
+        select invoice_no as invoiceNo,total_freight_paid as totalFreightPaid,
+        writeoff_time as writeoffTime
+        from f_payable where serial_number=#{serialNumber}
+    </select>
+
+    <update id="writeOffPayable" parameterType="com.cjyc.common.model.vo.web.finance.SettlementVo">
+        update f_payable set state=#{state},writeoff_id=#{writeoffId},
+        writeoff_time=#{writeoffTime}, total_freight_paid=#{totalFreightPaid} where serial_number = #{serialNumber}
+    </update>
+    <select id="getPayablePaidList" parameterType="com.cjyc.common.model.dto.web.finance.PayablePaidQueryDto"
+            resultType="com.cjyc.common.model.vo.web.finance.PayablePaidVo">
+        select fp.no,fp.serial_number as serialNumber,
+        fp.freight_fee as freightFee,
+        fp.invoice_no as invoiceNo,
+        fp.apply_time as applyTime,
+        fp.applicant_id as applicantId,
+        fp.confirm_id as confirmId,
+        fp.confirm_time as confirmTime,
+        fp.writeoff_id as writeoffId,
+        fp.writeoff_time as writeoffTime,
+        fp.total_freight_paid as totalFreightPaid,
+        ba.name as applicant,
+        bc.name as confirmMan,
+        bd.name as writeOffMan
+        from f_payable fp
+        left join b_admin ba on ba.id = fp.applicant_id
+        left join b_admin bc on bc.id = fp.confirm_id
+        left join b_admin bd on bd.id = fp.writeoff_id
+        where fp.state='2'
+        <if test="serialNumber !=null and serialNumber.trim() !=''">
+            and fp.serial_number like concat('%',#{serialNumber},'%')
+        </if>
+        <if test="applyStartTime !=null">
+            and fp.apply_time &gt;=#{applyStartTime}
+        </if>
+        <if test="applyEndTime !=null">
+            and fp.apply_time &lt;=#{applyEndTime}
+        </if>
+        <if test="applicant !=null and applicant.trim() !=''">
+            and ba.name like concat('%',#{applicant},'%')
+        </if>
+
+        <if test="confirmStartTime !=null">
+            and fp.confirm_time &gt;=#{confirmStartTime}
+        </if>
+        <if test="confirmEndTime !=null">
+            and fp.confirm_time &lt;=#{confirmEndTime}
+        </if>
+        <if test="confirmMan !=null and confirmMan.trim() !=''">
+            and bc.name like concat('%',#{confirmMan},'%')
+        </if>
+
+        <if test="confirmStartTime !=null">
+            and fp.writeoff_time &gt;=#{writeOffStartTime}
+        </if>
+        <if test="confirmEndTime !=null">
+            and fp.writeoff_time &lt;=#{writeOffEndTime}
+        </if>
+        <if test="confirmMan !=null and confirmMan.trim() !=''">
+            and bd.name like concat('%',#{writeOffMan},'%')
+        </if>
+    </select>
+
 </mapper>

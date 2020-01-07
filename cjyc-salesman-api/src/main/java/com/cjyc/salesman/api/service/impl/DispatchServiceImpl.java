@@ -66,18 +66,15 @@ public class DispatchServiceImpl implements IDispatchService {
         BizScope bizScope = csSysService.getBizScopeByLoginId(loginId, true);
 
         // 判断当前登录人是否有权限访问
-        int code = bizScope.getCode();
-        if (BizScopeEnum.NONE.code == code) {
+        if (BizScopeEnum.NONE.code == bizScope.getCode()) {
             return BaseResultUtil.fail("您没有访问权限!");
         }
 
-        // 获取业务中心ID
-        String storeIds = getStoreIds(bizScope);
         // 查询 出发地 以及车辆数量
-        List<CityCarCountVo> list = orderCarDao.selectStartCityCarCount(storeIds);
+        List<CityCarCountVo> list = orderCarDao.selectStartCityCarCount(bizScope.getStoreIds());
         // 查询出 发地-目的地 以及车辆数量
         Map<String,Object> map = new HashMap<>(2);
-        map.put("storeIds",storeIds);
+        map.put("storeIds",bizScope.getStoreIds());
         for (CityCarCountVo cityCarCountVo : list) {
             map.put("startCityCode",cityCarCountVo.getStartCityCode());
             List<StartAndEndCityCountVo> startAndEndCityCountList = orderCarDao.selectStartAndEndCityCarCount(map);
@@ -92,11 +89,10 @@ public class DispatchServiceImpl implements IDispatchService {
         BizScope bizScope = csSysService.getBizScopeByLoginId(dto.getLoginId(), true);
 
         // 判断当前登录人是否有权限访问
-        int code = bizScope.getCode();
-        if (BizScopeEnum.NONE.code == code) {
+        if (BizScopeEnum.NONE.code == bizScope.getCode()) {
             return BaseResultUtil.fail("无权访问");
         }
-        dto.setBizStoreIds(getStoreIds(bizScope));
+        dto.setBizStoreIds(bizScope.getStoreIds());
         Page<DispatchListVo> page = new Page<>();
         page.setCurrent(dto.getCurrentPage());
         page.setSize(dto.getPageSize());
@@ -143,7 +139,7 @@ public class DispatchServiceImpl implements IDispatchService {
         if (BizScopeEnum.NONE.code == bizScope.getCode()) {
             return BaseResultUtil.fail("无权访问");
         }
-        dto.setBizStoreIds(getStoreIds(bizScope));
+        dto.setBizStoreIds(bizScope.getStoreIds());
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize(), true);
         List<WaitDispatchCarListVo> list = orderCarDao.findWaitDispatchCarListForApp(dto);
         PageInfo<WaitDispatchCarListVo> pageInfo = new PageInfo<>(list);
@@ -253,29 +249,13 @@ public class DispatchServiceImpl implements IDispatchService {
         BizScope bizScope = csSysService.getBizScopeByLoginId(dto.getLoginId(), true);
 
         // 判断当前登录人是否有权限访问
-        int code = bizScope.getCode();
-        if (BizScopeEnum.NONE.code == code) {
+        if (BizScopeEnum.NONE.code == bizScope.getCode()) {
             return BaseResultUtil.fail("无权访问");
         }
-        dto.setBizStoreIds(getStoreIds(bizScope));
+        dto.setBizStoreIds(bizScope.getStoreIds());
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<HistoryDispatchRecordVo> list = waybillDao.selectHistoryDispatchRecord(dto);
         PageInfo pageInfo = new PageInfo(list);
         return BaseResultUtil.success(pageInfo);
-    }
-
-    private String getStoreIds(BizScope bizScope) {
-        if (bizScope.getCode() == BizScopeEnum.CHINA.code) {
-            return null;
-        }
-        Set<Long> storeIds = bizScope.getStoreIds();
-        StringBuilder sb = new StringBuilder();
-        for (Long storeId : storeIds) {
-            if (sb.length() > 0) {
-                sb.append(",");
-            }
-            sb.append(storeId);
-        }
-        return sb.toString();
     }
 }
