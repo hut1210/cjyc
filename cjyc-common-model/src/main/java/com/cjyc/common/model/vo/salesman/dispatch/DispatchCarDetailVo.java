@@ -28,6 +28,12 @@ public class DispatchCarDetailVo implements Serializable {
     @ApiModelProperty(value = "vin码")
     private String vin;
 
+    @ApiModelProperty(value = "市")
+    private String startCity;
+
+    @ApiModelProperty(value = "市")
+    private String endCity;
+
     @ApiModelProperty("车辆logo图片链接")
     private String logoImg;
 
