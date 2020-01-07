@@ -425,6 +425,14 @@ public class TransactionServiceImpl implements ITransactionService {
             //操作人信息
             UserInfo userInfo = userService.getUserInfo(Long.valueOf(mde.getLoginId()), Integer.valueOf(mde.getLoginType()));
             tradeBillDao.updateForPaySuccess(no, order.getTimePaid() * 1000);
+            //更新车辆支付状态
+            List<String> orderCarNoList = Arrays.asList(mde.getSourceNos().split(","));
+            for (int i=0;i<orderCarNoList.size();i++){
+                String orderCarNo = orderCarNoList.get(i);
+                if(orderCarNo!=null){
+                    tradeBillDao.updateOrderCar(orderCarNo,2,System.currentTimeMillis());
+                }
+            }
             //处理运单订单任务数据
             csTaskService.updateForCarFinish(Arrays.asList(mde.getSourceNos().split(",")), userInfo);
         }else if(chargeType == ChargeTypeEnum.PREPAY.getCode() || chargeType == ChargeTypeEnum.PREPAY_QRCODE.getCode()){

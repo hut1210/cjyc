@@ -13,6 +13,7 @@ import com.cjyc.common.model.dto.driver.task.NoFinishTaskQueryDto;
 import com.cjyc.common.model.dto.driver.task.TaskQueryDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.waybill.WaybillCarStateEnum;
+import com.cjyc.common.model.enums.waybill.WaybillCarrierTypeEnum;
 import com.cjyc.common.model.enums.waybill.WaybillTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.TimeStampUtil;
@@ -238,6 +239,10 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
             return BaseResultUtil.fail("查询任务单为空");
         }
         BeanUtils.copyProperties(task,taskDetailVo);
+        // 承运商类型不是企业或者不是干线运输时，运单号显示运单号，否则显示任务单号
+        if (WaybillCarrierTypeEnum.TRUNK_ENTERPRISE.code != waybill.getCarrierType()) {
+            taskDetailVo.setNo(waybill.getNo());
+        }
 
         // 查询车辆信息
         LambdaQueryWrapper<TaskCar> queryWrapper = new QueryWrapper<TaskCar>().lambda().eq(TaskCar::getTaskId, dto.getTaskId());

@@ -2,15 +2,13 @@ package com.cjyc.salesman.api.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.cjyc.common.model.dao.ICarSeriesDao;
-import com.cjyc.common.model.dao.ICustomerDao;
-import com.cjyc.common.model.dao.IOrderCarDao;
-import com.cjyc.common.model.dao.IOrderDao;
+import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.salesman.order.SalesOrderDetailDto;
 import com.cjyc.common.model.dto.salesman.order.SalesOrderQueryDto;
 import com.cjyc.common.model.dto.web.order.CommitOrderDto;
 import com.cjyc.common.model.dto.web.order.SimpleCommitOrderDto;
 import com.cjyc.common.model.entity.Customer;
+import com.cjyc.common.model.entity.Line;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.entity.defined.BizScope;
@@ -35,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -50,6 +49,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     private ICarSeriesDao carSeriesDao;
     @Resource
     private ICustomerDao customerDao;
+    @Resource
+    private ILineDao lineDao;
     @Resource
     private ICsSysService csSysService;
 
@@ -88,11 +89,23 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
             Customer customer = customerDao.selectById(order.getCustomerId());
             BeanUtils.copyProperties(customer,detailVo);
         }
+        Customer customer = customerDao.findByUserId(order.getCreateUserId());
+        if(customer != null){
+            //客户下单
+            detailVo.setFlag(1);
+        }else{
+            //业务员下单
+            detailVo.setFlag(2);
+        }
         detailVo.setOrderId(order.getId());
         detailVo.setOrderNo(order.getNo());
         BeanUtils.copyProperties(order,detailVo);
         List<OrderCar> orderCars = orderCarDao.selectList(new QueryWrapper<OrderCar>().lambda().eq(OrderCar::getOrderId, order.getId()));
         String logoImg = LogoImgProperty.logoImg;
+        BigDecimal totalPickFee = new BigDecimal(0);
+        BigDecimal totalBackFee = new BigDecimal(0);
+        BigDecimal totalAddInsuranceFee = new BigDecimal(0);
+        BigDecimal totalTrunkFee = new BigDecimal(0);
         if(!CollectionUtils.isEmpty(orderCars)){
             for(OrderCar orderCar : orderCars){
                 logoImg += carSeriesDao.getLogoImgByBraMod(orderCar.getBrand(), orderCar.getModel());
@@ -101,8 +114,18 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
                 carVo.setLogoImg(logoImg);
                 BeanUtils.copyProperties(orderCar,carVo);
                 carVoList.add(carVo);
+                totalPickFee = totalPickFee.add(orderCar.getPickFee());
+                totalBackFee = totalBackFee.add(orderCar.getBackFee());
+                totalAddInsuranceFee = totalAddInsuranceFee.add(orderCar.getAddInsuranceFee());
+                totalTrunkFee = totalTrunkFee.add(orderCar.getTrunkFee());
             }
         }
+        Line line = lineDao.getLinePriceByCode(order.getStartCityCode(), order.getEndCityCode());
+        detailVo.setDefaultWlFee(line.getDefaultWlFee() == null ? BigDecimal.ZERO : line.getDefaultWlFee());
+        detailVo.setTotalPickFee(totalPickFee);
+        detailVo.setTotalBackFee(totalBackFee);
+        detailVo.setTotalAddInsuranceFee(totalAddInsuranceFee);
+        detailVo.setTotalTrunkFee(totalTrunkFee);
         detailVo.setCarVoList(carVoList);
         return BaseResultUtil.success(detailVo);
     }

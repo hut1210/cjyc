@@ -714,7 +714,9 @@
         where
             w.carrier_id in (select carrier_id
                             from d_carrier_driver_con
-                            where driver_id = #{loginId} and state = ${@com.cjyc.common.model.enums.CommonStateEnum@CHECKED.code})
+                            where driver_id = #{loginId} and
+                            state = ${@com.cjyc.common.model.enums.CommonStateEnum@CHECKED.code}
+                            )
             and wcar.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_ALLOT.code}
         group by w.id
         order by w.create_time desc
@@ -737,7 +739,7 @@
             left join d_carrier carrier on w.carrier_id=carrier.id
         <where>
             <if test="bizStoreIds != null">
-                and input_store_id in <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
+                and input_store_id in <foreach collection="bizStoreIds" item="item" index="index" open="(" close=")" separator=",">
                                         #{item}
                                     </foreach>
             </if>
