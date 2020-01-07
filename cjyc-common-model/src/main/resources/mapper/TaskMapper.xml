@@ -491,44 +491,56 @@
         <where>
             /*库存状态：0全部*/
             1=1
-            <if test="storeId != null and storeId != '' and storageState == @com.cjyc.common.model.constant.FieldConstant@ALL_TASK">
+            <if test="storeIds != null and storageState == @com.cjyc.common.model.constant.FieldConstant@ALL_TASK">
                 AND (
-                (car.start_belong_store_id in(#{storeId})
+                (car.start_belong_store_id in <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
                 and car.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_LOAD_CONFIRM.code})
-                or (car.end_belong_store_id in(#{storeId})
+                or (car.end_belong_store_id in <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
                 and car.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_UNLOAD_CONFIRM.code})
                 )
             </if>
-            <if test="(storeId == null or storeId == '') and storageState == @com.cjyc.common.model.constant.FieldConstant@ALL_TASK">
+            <if test="storeIds == null and storageState == @com.cjyc.common.model.constant.FieldConstant@ALL_TASK">
                 and (car.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_LOAD_CONFIRM.code}
                 or car.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_UNLOAD_CONFIRM.code})
             </if>
             /*库存状态：1待入库*/
-            <if test="storeId != null and storeId != '' and storageState == @com.cjyc.common.model.constant.FieldConstant@WAIT_PICK_CAR">
-                AND car.end_belong_store_id in(#{storeId})
+            <if test="storeIds != null and storageState == @com.cjyc.common.model.constant.FieldConstant@WAIT_PICK_CAR">
+                AND car.end_belong_store_id in <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
                 and car.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_UNLOAD_CONFIRM.code}
             </if>
-            <if test="(storeId == null or storeId == '') and storageState == @com.cjyc.common.model.constant.FieldConstant@WAIT_PICK_CAR">
+            <if test="storeIds == null and storageState == @com.cjyc.common.model.constant.FieldConstant@WAIT_PICK_CAR">
                 and car.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_UNLOAD_CONFIRM.code}
             </if>
             /*库存状态：2待出库*/
-            <if test="storeId != null and storeId != '' and storageState == @com.cjyc.common.model.constant.FieldConstant@WAIT_GIVE_CAR">
-                AND car.start_belong_store_id in(#{storeId})
+            <if test="storeIds != null and storageState == @com.cjyc.common.model.constant.FieldConstant@WAIT_GIVE_CAR">
+                AND car.start_belong_store_id in <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
                 and car.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_LOAD_CONFIRM.code}
             </if>
-            <if test="(storeId == null or storeId == '') and storageState == @com.cjyc.common.model.constant.FieldConstant@WAIT_GIVE_CAR">
+            <if test="storeIds == null and storageState == @com.cjyc.common.model.constant.FieldConstant@WAIT_GIVE_CAR">
                 and car.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_LOAD_CONFIRM.code}
             </if>
             /*库存状态：3已入库，已出库*/
-            <if test="storeId != null and storeId != '' and storageState == @com.cjyc.common.model.constant.FieldConstant@FINISH">
+            <if test="storeIds != null and storageState == @com.cjyc.common.model.constant.FieldConstant@FINISH">
                 AND (
-                (car.start_belong_store_id in(#{storeId})
+                (car.start_belong_store_id in <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
                 and car.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@LOADED.code})
-                or (car.end_belong_store_id in(#{storeId})
+                or (car.end_belong_store_id in <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
                 and car.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@UNLOADED.code})
                 )
             </if>
-            <if test="(storeId == null or storeId == '') and storageState == @com.cjyc.common.model.constant.FieldConstant@FINISH">
+            <if test="storeIds == null and storageState == @com.cjyc.common.model.constant.FieldConstant@FINISH">
                 and (car.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@LOADED.code}
                 or car.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@UNLOADED.code})
             </if>

@@ -34,7 +34,6 @@ import org.springframework.util.StringUtils;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @Description 任务业务接口实现类
@@ -251,25 +250,11 @@ public class TaskServiceImpl implements ITaskService {
             return BaseResultUtil.fail("您没有访问权限!");
         }
 
-        dto.setStoreId(getStoreIds(bizScope));
+        dto.setStoreIds(bizScope.getStoreIds());
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<TaskWaybillVo> list = taskDao.selectOutAndInStorageList(dto);
         PageInfo<TaskWaybillVo> pageInfo = new PageInfo<>(list);
         return BaseResultUtil.success(pageInfo);
     }
 
-    private String getStoreIds(BizScope bizScope) {
-        if (bizScope.getCode() == BizScopeEnum.CHINA.code) {
-            return null;
-        }
-        Set<Long> storeIds = bizScope.getStoreIds();
-        StringBuilder sb = new StringBuilder();
-        for (Long storeId : storeIds) {
-            if (sb.length() > 0) {
-                sb.append(",");
-            }
-            sb.append(storeId);
-        }
-        return sb.toString();
-    }
 }
