@@ -34,4 +34,6 @@ public class PingxxMetaData {
     private String loginName;
     /**当前app登陆人的类型*/
     private String loginType;
+
+    private Long waybillId;
 }

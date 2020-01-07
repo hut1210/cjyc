@@ -246,11 +246,17 @@ public class TransactionServiceImpl implements ITransactionService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateTransfer(Transfer transfer, Event event, String state) {
+        //更新交易流水表状态
         TradeBill tradeBill = new TradeBill();
         tradeBill.setPingPayId(transfer.getId());
         tradeBill.setState(2);
         tradeBill.setTradeTime(System.currentTimeMillis());
         tradeBillDao.updateTradeBillByPingPayId(tradeBill);
+
+        //更新运单支付状态
+        Map<String, Object> metadata = transfer.getMetadata();
+        PingxxMetaData pingxxMetaData = BeanMapUtil.mapToBean(metadata, new PingxxMetaData());
+        Long waybillId = pingxxMetaData.getWaybillId();
     }
 
     @Override
@@ -445,7 +451,7 @@ public class TransactionServiceImpl implements ITransactionService {
                 for(int i=0;i<orderCarList.size();i++){
                     OrderCar orderCar = orderCarList.get(i);
                     if(orderCar != null){
-                        tradeBillDao.updateOrderCar(orderCar.getOrderNo(),2,System.currentTimeMillis());
+                        tradeBillDao.updateOrderCar(orderCar.getNo(),2,System.currentTimeMillis());
 
                         if(userInfo!=null){
                             //添加日志
