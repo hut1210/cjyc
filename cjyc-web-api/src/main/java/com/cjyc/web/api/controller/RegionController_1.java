@@ -7,13 +7,16 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.city.RegionVo;
-import com.cjyc.web.api.service.IRegionService;
+import com.cjyc.web.api.service.IRegionService_1;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @Description 大区管理控制层
@@ -23,10 +26,10 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @Api(tags = "基础数据-大区管理")
 @RestController
-@RequestMapping("/region")
+//@RequestMapping("/region")
 public class RegionController_1 {
     @Autowired
-    private IRegionService regionService;
+    private IRegionService_1 regionService;
 
     /**
      * 功能描述: 分页查询大区列表
