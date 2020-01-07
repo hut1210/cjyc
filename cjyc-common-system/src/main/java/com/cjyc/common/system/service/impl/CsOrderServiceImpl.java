@@ -683,6 +683,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         Order o = new Order();
         o.setId(paramsDto.getOrderId());
         o.setAllotToUserId(paramsDto.getToAdminId());
+        o.setAllotToUserName(paramsDto.getToAdminName());
         orderDao.updateById(o);
         return BaseResultUtil.success();
     }
