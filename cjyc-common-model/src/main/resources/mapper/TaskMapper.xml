@@ -203,10 +203,10 @@
                 and car.expect_start_date &lt;= #{expectStartDateE}
             </if>
             <if test="completeTimeS != null and completeTimeS != 0">
-                and t.complete_time >= #{completeTimeS}
+                and car.unload_time >= #{completeTimeS}
             </if>
             <if test="completeTimeE != null and completeTimeE != 0">
-                and t.complete_time &lt;= #{completeTimeE}
+                and car.unload_time &lt;= #{completeTimeE}
             </if>
             <if test="lineStart != null and lineStart.trim() != ''">
                 and t.guide_line like concat('%',#{lineStart},'%')
