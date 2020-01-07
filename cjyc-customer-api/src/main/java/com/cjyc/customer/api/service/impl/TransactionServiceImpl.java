@@ -201,34 +201,44 @@ public class TransactionServiceImpl implements ITransactionService {
                             }
                         }
                     }
-                    /**
-                     * 【韵车物流】VIN码后四位为 1234、2345、3456、5678的车辆已完成交车收款，收款金额120009.00元。
-                     */
-                    StringBuilder message = new StringBuilder("韵车物流】VIN码后六位为");
-                    List<OrderCar> orderCarList = orderCarDao.findListByNos(orderCarNosList);
-
-                    for(int i=0;i<orderCarList.size();i++){
-                        OrderCar orderCar = orderCarList.get(i);
-                        if(orderCar!=null){
-                            message.append(orderCar.getVin());
-                        }
-                    }
-                    message.append("的车辆已完成交车收款，收款金额");
-                    BigDecimal freightFee = tradeBillDao.getAmountByOrderCarNos(orderCarNosList);
-                    message.append(freightFee);
-                    message.append("元");
-                    if(userInfo!=null&&userInfo.getPhone()!=null){
-                        try{
-                            MiaoxinSmsUtil.send(userInfo.getPhone(), message.toString());
-                        }catch (Exception e){
-                            log.error("回调短信发送失败"+e.getMessage(),e);
-                        }
-                    }
+                    sendMessage(orderCarNosList,userInfo);
                 }
             }
         }
 
         return BaseResultUtil.success();
+    }
+
+    private void sendMessage(List<String> orderCarNosList,UserInfo userInfo){
+        StringBuilder message = new StringBuilder("韵车物流】VIN码后六位为");
+        List<OrderCar> orderCarList = orderCarDao.findListByNos(orderCarNosList);
+
+        for(int i=0;i<orderCarList.size();i++){
+            OrderCar orderCar = orderCarList.get(i);
+            if(orderCar!=null){
+                if(orderCar.getVin()!=null){
+                    if(i==orderCarList.size()-1){
+                        message.append(orderCar.getVin().substring(orderCar.getVin().length()-6));
+                    }else{
+                        message.append(orderCar.getVin().substring(orderCar.getVin().length()-6));
+                        message.append("、");
+                    }
+                }
+            }
+        }
+        message.append("的车辆已完成交车收款，收款金额");
+        BigDecimal freightFee = tradeBillDao.getAmountByOrderCarNos(orderCarNosList);
+        if(freightFee!=null){
+            message.append(freightFee);
+        }
+        message.append("元");
+        if(userInfo!=null&&userInfo.getPhone()!=null){
+            try{
+                MiaoxinSmsUtil.send(userInfo.getPhone(), message.toString());
+            }catch (Exception e){
+                log.error("回调短信发送失败"+e.getMessage(),e);
+            }
+        }
     }
 
     @Override
