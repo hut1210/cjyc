@@ -285,6 +285,16 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                     carDetailVo.setId(taskCar.getId());
                     carDetailVo.setWaybillCarState(waybillCar.getState());
                     carDetailVoList.add(carDetailVo);
+
+                    // todo 测试车辆图片
+                    String[] split = carDetailVo.getHistoryLoadPhotoImg().split(",");
+                    log.info("===>历史图片数量："+split.length);
+                    String[] string1 = StringUtils.isEmpty(carDetailVo.getLoadPhotoImg()) ? new String[]{}
+                            : carDetailVo.getLoadPhotoImg().split(",");
+                    log.info("===>提车图片数量："+string1.length);
+                    String[] string2 = StringUtils.isEmpty(carDetailVo.getUnloadPhotoImg()) ? new String[]{}
+                            : carDetailVo.getUnloadPhotoImg().split(",");
+                    log.info("===>收车图片数量："+string2.length);
                 }
             }
         }
