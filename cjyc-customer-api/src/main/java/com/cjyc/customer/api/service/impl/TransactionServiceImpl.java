@@ -216,11 +216,13 @@ public class TransactionServiceImpl implements ITransactionService {
         for(int i=0;i<orderCarList.size();i++){
             OrderCar orderCar = orderCarList.get(i);
             if(orderCar!=null){
-                if(orderCar.getVin()!=null){
+                String vin = orderCar.getVin();
+                if(vin!=null){
+                    int length = vin.length();
                     if(i==orderCarList.size()-1){
-                        message.append(orderCar.getVin().substring(orderCar.getVin().length()-6));
+                        message.append(vin.substring(length-6));
                     }else{
-                        message.append(orderCar.getVin().substring(orderCar.getVin().length()-6));
+                        message.append(vin.substring(length-6));
                         message.append("、");
                     }
                 }
