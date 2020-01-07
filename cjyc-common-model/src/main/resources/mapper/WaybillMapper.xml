@@ -739,7 +739,7 @@
             left join d_carrier carrier on w.carrier_id=carrier.id
         <where>
             <if test="bizStoreIds != null">
-                and input_store_id in <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
+                and input_store_id in <foreach collection="bizStoreIds" item="item" index="index" open="(" close=")" separator=",">
                                         #{item}
                                     </foreach>
             </if>

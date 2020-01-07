@@ -532,11 +532,11 @@
                 AND (
                 (car.start_belong_store_id in <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
                                                 #{item}
-                                            </foreach>
+                                              </foreach>
                 and car.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@LOADED.code})
                 or (car.end_belong_store_id in <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
-                                                #{item}
-                                            </foreach>
+                                                 #{item}
+                                               </foreach>
                 and car.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@UNLOADED.code})
                 )
             </if>
