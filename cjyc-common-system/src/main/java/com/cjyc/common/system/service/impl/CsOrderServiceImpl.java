@@ -307,16 +307,17 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 throw new ParameterException("订单至少包含一辆车");
             }
 
+            List<OrderCar> ocList = orderCarDao.findListByOrderId(order.getId());
             //均摊优惠券费用
-            shareCouponOffsetFee(order.getCouponOffsetFee(), orderCarList);
+            shareCouponOffsetFee(order.getCouponOffsetFee(), ocList);
             //均摊总费用
-            shareTotalFee(order.getTotalFee(), orderCarList);
+            shareTotalFee(order.getTotalFee(), ocList);
             //更新车辆信息
-            orderCarList.forEach(orderCar -> orderCarDao.updateById(orderCar));
+            ocList.forEach(orderCar -> orderCarDao.updateById(orderCar));
 
             //合计费用：提、干、送、保险
-            fillOrderFeeInfo(order, orderCarList);
-            order.setCarNum(orderCarList.size());
+            fillOrderFeeInfo(order, ocList);
+            order.setCarNum(ocList.size());
             orderDao.updateById(order);
 
             //记录发车人和收车人
@@ -630,9 +631,9 @@ public class CsOrderServiceImpl implements ICsOrderService {
         if (order == null) {
             throw new ParameterException("订单不存在");
         }
-        if (order.getState() <= OrderStateEnum.WAIT_SUBMIT.code) {
+        /*if (order.getState() <= OrderStateEnum.WAIT_SUBMIT.code) {
             throw new ParameterException("订单未提交，无法审核");
-        }
+        }*/
         if (order.getState() >= OrderStateEnum.CHECKED.code) {
             throw new ParameterException("订单已经审核过，无法审核");
         }
@@ -948,7 +949,10 @@ public class CsOrderServiceImpl implements ICsOrderService {
         }
         BigDecimal carTotalFee = BigDecimal.ZERO;
         for (OrderCar oc : orderCarlist) {
-            carTotalFee = carTotalFee.add(oc.getPickFee()).add(oc.getTrunkFee()).add(oc.getBackFee()).add(oc.getAddInsuranceFee());
+            carTotalFee = carTotalFee.add(oc.getPickFee() == null ? BigDecimal.ZERO : oc.getPickFee())
+                    .add(oc.getTrunkFee() == null ? BigDecimal.ZERO : oc.getTrunkFee())
+                    .add(oc.getBackFee() == null ? BigDecimal.ZERO : oc.getBackFee())
+                    .add(oc.getAddInsuranceFee() == null ? BigDecimal.ZERO : oc.getAddInsuranceFee());
         }
         if(carTotalFee.compareTo(BigDecimal.ZERO) <= 0){
             return;
@@ -957,7 +961,11 @@ public class CsOrderServiceImpl implements ICsOrderService {
         BigDecimal avg = totalFee.divide(carTotalFee, 8, RoundingMode.FLOOR);
         BigDecimal avgTotalFee = BigDecimal.ZERO;
         for (OrderCar oc : orderCarlist) {
-            BigDecimal avgCar = (oc.getPickFee().add(oc.getTrunkFee()).add(oc.getBackFee()).add(oc.getAddInsuranceFee())).multiply(avg);
+            BigDecimal avgCar = (oc.getPickFee()
+                    .add(oc.getTrunkFee() == null ? BigDecimal.ZERO : oc.getTrunkFee())
+                    .add(oc.getBackFee() == null ? BigDecimal.ZERO : oc.getBackFee())
+                    .add(oc.getAddInsuranceFee()== null ? BigDecimal.ZERO : oc.getAddInsuranceFee()))
+                    .multiply(avg);
             avgCar = avgCar.setScale(0, BigDecimal.ROUND_HALF_DOWN);
             //赋值
             oc.setTotalFee(avgCar);

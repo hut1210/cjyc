@@ -130,13 +130,13 @@
             t.taskCarId,
             t.waybill_id AS waybillId,
             t.guide_line AS guideLine,
-            t.car_num AS carNum,
             t.create_time AS createTime,
             (case w.carrier_type when 2 then w.no else t.no end) AS waybillNo,
             w.type AS type,
             car.start_city as startCity,
             car.end_city as endCity,
             car.expect_start_time AS expectStartTime,
+            count(car.id) AS carNum,
             sum(car.freight_fee) AS freightFee
         FROM
             ( SELECT task.id, task.waybill_id, task.no, task.guide_line, task.car_num,
@@ -173,12 +173,12 @@
             t.id as taskId,
             t.waybill_id as waybillId,
             t.guide_line as guideLine,
-            t.car_num as carNum,
-            t.complete_time as completeTime,
             (case w.carrier_type when 2 then w.no else t.no end) AS waybillNo,
             w.type as type,
             car.start_city as startCity,
             car.end_city as endCity,
+            max(car.unload_time) as completeTime,
+            count( car.id ) AS carNum,
             sum(car.freight_fee) as freightFee
         from
             (select task.id, task.waybill_id, task.no, task.guide_line, task.car_num,task.state,task.complete_time,tc.waybill_car_id
@@ -203,10 +203,10 @@
                 and car.expect_start_date &lt;= #{expectStartDateE}
             </if>
             <if test="completeTimeS != null and completeTimeS != 0">
-                and t.complete_time >= #{completeTimeS}
+                and car.unload_time >= #{completeTimeS}
             </if>
             <if test="completeTimeE != null and completeTimeE != 0">
-                and t.complete_time &lt;= #{completeTimeE}
+                and car.unload_time &lt;= #{completeTimeE}
             </if>
             <if test="lineStart != null and lineStart.trim() != ''">
                 and t.guide_line like concat('%',#{lineStart},'%')
@@ -219,7 +219,7 @@
             </if>
         </where>
         group by t.id
-        order by t.complete_time desc
+        order by car.unload_time desc
     </select>
 
     <!--查询历史任务记录列表-->
@@ -229,13 +229,13 @@
             t.id as taskId,
             t.waybill_id as waybillId,
             t.state as taskState,
-            t.no as waybillNo,
             t.guide_line as guideLine,
             t.car_num as carNum,
             t.create_time as createTime,
             t.driver_name as driverName,
             t.driver_phone as driverPhone,
             t.vehicle_plate_no as vehiclePlateNo,
+            (case w.carrier_type when 2 then w.no else t.no end) AS waybillNo,
             w.type as type,
             car.start_city as startCity,
             car.end_city as endCity,
@@ -364,12 +364,12 @@
             t.id AS taskId,
             t.task_car_id AS taskCarId,
             t.waybill_id AS waybillId,
-            t.no AS waybillNo,
             t.guide_line AS guideLine,
             t.car_num AS carNum,
             t.create_time AS createTime,
             t.complete_time AS completeTime,
             t.state AS taskState,
+            (case w.carrier_type when 2 then w.no else t.no end) AS waybillNo,
             w.type AS type,
             sum(car.freight_fee) AS freightFee
         FROM
@@ -416,6 +416,7 @@
         LEFT JOIN w_waybill_car car ON t.waybill_car_id = car.id
         where w.type in(1,3)
         GROUP BY t.id
+        order by t.complete_time desc
     </select>
 
     <select id="findListStockTask" resultType="com.cjyc.common.model.vo.salesman.mine.StockTaskVo"
@@ -451,12 +452,12 @@
             t.id AS taskId,
             t.task_car_id AS taskCarId,
             t.waybill_id AS waybillId,
-            t.no AS waybillNo,
             t.guide_line AS guideLine,
             t.car_num AS carNum,
             t.create_time AS createTime,
             t.complete_time AS completeTime,
             t.state AS taskState,
+            (case w.carrier_type when 2 then w.no else t.no end) AS waybillNo,
             w.type AS type,
             car.unload_time AS unloadTime,
             car.load_time AS loadTime,
@@ -491,44 +492,56 @@
         <where>
             /*库存状态：0全部*/
             1=1
-            <if test="storeId != null and storeId != '' and storageState == @com.cjyc.common.model.constant.FieldConstant@ALL_TASK">
+            <if test="storeIds != null and storageState == @com.cjyc.common.model.constant.FieldConstant@ALL_TASK">
                 AND (
-                (car.start_belong_store_id in(#{storeId})
+                (car.start_belong_store_id in <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
+                                                    #{item}
+                                                </foreach>
                 and car.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_LOAD_CONFIRM.code})
-                or (car.end_belong_store_id in(#{storeId})
+                or (car.end_belong_store_id in <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
+                                                    #{item}
+                                                </foreach>
                 and car.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_UNLOAD_CONFIRM.code})
                 )
             </if>
-            <if test="(storeId == null or storeId == '') and storageState == @com.cjyc.common.model.constant.FieldConstant@ALL_TASK">
+            <if test="storeIds == null and storageState == @com.cjyc.common.model.constant.FieldConstant@ALL_TASK">
                 and (car.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_LOAD_CONFIRM.code}
                 or car.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_UNLOAD_CONFIRM.code})
             </if>
             /*库存状态：1待入库*/
-            <if test="storeId != null and storeId != '' and storageState == @com.cjyc.common.model.constant.FieldConstant@WAIT_PICK_CAR">
-                AND car.end_belong_store_id in(#{storeId})
+            <if test="storeIds != null and storageState == @com.cjyc.common.model.constant.FieldConstant@WAIT_PICK_CAR">
+                AND car.end_belong_store_id in <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
+                                                    #{item}
+                                                </foreach>
                 and car.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_UNLOAD_CONFIRM.code}
             </if>
-            <if test="(storeId == null or storeId == '') and storageState == @com.cjyc.common.model.constant.FieldConstant@WAIT_PICK_CAR">
+            <if test="storeIds == null and storageState == @com.cjyc.common.model.constant.FieldConstant@WAIT_PICK_CAR">
                 and car.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_UNLOAD_CONFIRM.code}
             </if>
             /*库存状态：2待出库*/
-            <if test="storeId != null and storeId != '' and storageState == @com.cjyc.common.model.constant.FieldConstant@WAIT_GIVE_CAR">
-                AND car.start_belong_store_id in(#{storeId})
+            <if test="storeIds != null and storageState == @com.cjyc.common.model.constant.FieldConstant@WAIT_GIVE_CAR">
+                AND car.start_belong_store_id in <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
+                                                    #{item}
+                                                </foreach>
                 and car.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_LOAD_CONFIRM.code}
             </if>
-            <if test="(storeId == null or storeId == '') and storageState == @com.cjyc.common.model.constant.FieldConstant@WAIT_GIVE_CAR">
+            <if test="storeIds == null and storageState == @com.cjyc.common.model.constant.FieldConstant@WAIT_GIVE_CAR">
                 and car.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_LOAD_CONFIRM.code}
             </if>
             /*库存状态：3已入库，已出库*/
-            <if test="storeId != null and storeId != '' and storageState == @com.cjyc.common.model.constant.FieldConstant@FINISH">
+            <if test="storeIds != null and storageState == @com.cjyc.common.model.constant.FieldConstant@FINISH">
                 AND (
-                (car.start_belong_store_id in(#{storeId})
+                (car.start_belong_store_id in <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
+                                                #{item}
+                                              </foreach>
                 and car.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@LOADED.code})
-                or (car.end_belong_store_id in(#{storeId})
+                or (car.end_belong_store_id in <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
+                                                 #{item}
+                                               </foreach>
                 and car.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@UNLOADED.code})
                 )
             </if>
-            <if test="(storeId == null or storeId == '') and storageState == @com.cjyc.common.model.constant.FieldConstant@FINISH">
+            <if test="storeIds == null and storageState == @com.cjyc.common.model.constant.FieldConstant@FINISH">
                 and (car.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@LOADED.code}
                 or car.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@UNLOADED.code})
             </if>

@@ -17,6 +17,7 @@
         <result column="valuation" property="valuation" />
         <result column="now_store_id" property="nowStoreId" />
         <result column="now_area_code" property="nowAreaCode" />
+        <result column="now_update_time" property="nowUpdateTime" />
         <result column="state" property="state" />
         <result column="pick_type" property="pickType" />
         <result column="pick_state" property="pickState" />
@@ -166,15 +167,18 @@
         trunk_state = #{trunkState}
         where id = #{id}
     </update>
-    <update id="updateLocationForUnload">
+    <update id="updateLocation">
         update w_order_car
         set now_area_code = #{nowAreaCode},
         now_store_id = #{nowStoreId}
+        now_update_time = UNIX_TIMESTAMP(NOW()) * 1000
         where id = #{orderCarId}
     </update>
     <update id="updateForFinish">
         update w_order_car
         set state = 100,
+        now_area_code = #{areaCode},
+        now_update_time = unix_timestamp(now()) * 1000
         finish_time = unix_timestamp(now()) * 1000
         where id = #{orderCarId}
         and state &lt; 100
@@ -460,17 +464,25 @@
                     and o.end_city_code = #{item.toCityCode})
                 </foreach>
             </if>
-            <if test="paramsDto.bizScope != null and paramsDto.bizScope != ''">
-                and (o.input_store_id in(#{paramsDto.bizScope})
-                or o.end_belong_store_id in(#{paramsDto.bizScope})
-                or oc.now_store_id in(#{paramsDto.bizScope})
-                or wc.end_belong_store_id in(#{paramsDto.bizScope}))
+            <if test="paramsDto.bizScope != null">
+                and (o.input_store_id in <foreach collection="paramsDto.bizScope" item="item" index="index" open="(" close=")" separator=",">
+                                        #{item}
+                                    </foreach>
+                or o.end_belong_store_id in <foreach collection="paramsDto.bizScope" item="item" index="index" open="(" close=")" separator=",">
+                                            #{item}
+                                        </foreach>
+                or oc.now_store_id in <foreach collection="paramsDto.bizScope" item="item" index="index" open="(" close=")" separator=",">
+                                        #{item}
+                                    </foreach>
+                or wc.end_belong_store_id in <foreach collection="paramsDto.bizScope" item="item" index="index" open="(" close=")" separator=",">
+                                                #{item}
+                                            </foreach>)
             </if>
         </where>
         group by oc.id
         order by oc.id desc
-
     </select>
+
     <sql id="trunk_wait_dispatch_car_list">
         select *
         from (
@@ -1170,7 +1182,7 @@
                 #{item}
             </foreach>
             and woc.state in (25,35,45,50)
-            order by wo.create_time desc,wo.check_time desc
+            order by wo.now_update_time desc
         </where>
     </select>
 
@@ -1198,7 +1210,7 @@
     </select>
 
     <!--查询出发地相同的车辆数量-->
-    <select id="selectStartCityCarCount" parameterType="java.lang.String" resultType="com.cjyc.common.model.vo.salesman.dispatch.CityCarCountVo">
+    <select id="selectStartCityCarCount" parameterType="java.util.Set" resultType="com.cjyc.common.model.vo.salesman.dispatch.CityCarCountVo">
         /*查询未调度的 始发城市和车辆数*/
         SELECT
             t1.startCityCode,
@@ -1215,8 +1227,10 @@
                 car.pick_state = 1
                 AND car.trunk_state = 1
                 AND car.back_state =1
-                <if test="storeIds != null and storeIds.trim() != ''">
-                    AND o.input_store_id IN ( #{storeIds} )
+                <if test="storeIds != null">
+                    AND o.input_store_id IN <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
                 </if>
             </where>
             UNION ALL
@@ -1240,8 +1254,10 @@
                 w_waybill_car
             <where>
                 receipt_flag = 0
-                <if test="storeIds != null and storeIds.trim() != ''">
-                    AND end_belong_store_id IN ( #{storeIds} )
+                <if test="storeIds != null">
+                    AND end_belong_store_id IN <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
                 </if>
             </where>
             GROUP BY
@@ -1277,8 +1293,10 @@
                 AND car.trunk_state = 1
                 AND car.back_state =1
                 AND o.start_city_code = #{startCityCode}
-                <if test="storeIds != null and storeIds.trim() != ''">
-                    AND o.input_store_id IN ( #{storeIds} )
+                <if test="storeIds != null">
+                    AND o.input_store_id IN <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
                 </if>
             </where>
             UNION ALL
@@ -1304,8 +1322,10 @@
                 w_waybill_car
             <where>
                 receipt_flag = 0
-                <if test="storeIds != null and storeIds.trim() != ''">
-                    AND end_belong_store_id IN ( #{storeIds} )
+                <if test="storeIds != null">
+                    AND end_belong_store_id IN <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
                 </if>
             </where>
             GROUP BY

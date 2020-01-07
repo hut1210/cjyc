@@ -58,8 +58,6 @@ public class MineServiceImpl extends ServiceImpl<IWaybillCarDao, WaybillCar> imp
     private IWaybillCarDao waybillCarDao;
     @Resource
     private ICsSysService csSysService;
-    @Resource
-    private ICsStoreService csStoreService;
 
     @Override
     public ResultVo<PageVo<StockCarVo>> findStockCar(StockCarDto dto) {

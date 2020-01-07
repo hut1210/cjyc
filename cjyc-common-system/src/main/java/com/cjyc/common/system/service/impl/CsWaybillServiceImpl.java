@@ -987,9 +987,6 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         if(waybillCar == null){
             return;
         }
-        //######
-        Task t1 = taskDao.findByWaybillCarId(waybillCar.getId());
-
 
         if (waybillCar.getState() >= WaybillCarStateEnum.LOADED.code) {
             throw new ParameterException("车辆{0}运输中，不允许取消", waybillCar.getOrderCarNo());
@@ -1076,17 +1073,20 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         } else {
             throw new ParameterException("运单类型错误");
         }
+        //取消运单车辆
+        waybillCarDao.updateStateById(waybillCar.getId(), WaybillCarStateEnum.F_CANCEL.code);
+        //更新运单车辆数
+        waybillDao.updateNum(waybillCar.getWaybillId());
+        orderCarDao.updateById(noc);
+
         //更新任务车辆数
         Task task = taskDao.findByWaybillCarId(waybillCar.getId());
         if (task != null) {
             taskDao.updateNum(task.getId());
             validateAndFinishTask(task.getId());
         }
-        //取消运单车辆
-        waybillCarDao.updateStateById(waybillCar.getId(), WaybillCarStateEnum.F_CANCEL.code);
-        //更新运单车辆数
-        waybillDao.updateNum(waybillCar.getWaybillId());
-        orderCarDao.updateById(noc);
+
+
     }
 
     /**

@@ -201,7 +201,12 @@ public class TransactionServiceImpl implements ITransactionService {
                             }
                         }
                     }
-                    sendMessage(orderCarNosList,userInfo);
+                    try{
+                        sendMessage(orderCarNosList,userInfo);
+                    }catch (Exception e){
+                        log.error("回调短信发送异常"+e.getMessage(),e);
+                    }
+
                 }
             }
         }
@@ -213,25 +218,39 @@ public class TransactionServiceImpl implements ITransactionService {
         StringBuilder message = new StringBuilder("韵车物流】VIN码后六位为");
         List<OrderCar> orderCarList = orderCarDao.findListByNos(orderCarNosList);
 
-        for(int i=0;i<orderCarList.size();i++){
-            OrderCar orderCar = orderCarList.get(i);
-            if(orderCar!=null){
-                String vin = orderCar.getVin();
-                if(vin!=null){
-                    int length = vin.length();
-                    if(i==orderCarList.size()-1){
-                        message.append(vin.substring(length-6));
-                    }else{
-                        message.append(vin.substring(length-6));
-                        message.append("、");
+        try{
+            for(int i=0;i<orderCarList.size();i++){
+                OrderCar orderCar = orderCarList.get(i);
+                if(orderCar!=null){
+                    String vin = orderCar.getVin();
+                    if(vin!=null){
+                        int length = vin.length();
+                        if(length>6){
+                            if(i==orderCarList.size()-1){
+                                message.append(vin.substring(length-6));
+                            }else{
+                                message.append(vin.substring(length-6));
+                                message.append("、");
+                            }
+                        }else{
+                            if(i==orderCarList.size()-1){
+                                message.append(vin);
+                            }else{
+                                message.append(vin);
+                                message.append("、");
+                            }
+                        }
                     }
                 }
             }
+        }catch (Exception e){
+            log.error("拼接Vin码异常"+e.getMessage(),e);
         }
+
         message.append("的车辆已完成交车收款，收款金额");
         BigDecimal freightFee = tradeBillDao.getAmountByOrderCarNos(orderCarNosList);
         if(freightFee!=null){
-            message.append(freightFee);
+            message.append(freightFee.divide(new BigDecimal(100)));
         }
         message.append("元");
         if(userInfo!=null&&userInfo.getPhone()!=null){
@@ -246,11 +265,17 @@ public class TransactionServiceImpl implements ITransactionService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateTransfer(Transfer transfer, Event event, String state) {
+        //更新交易流水表状态
         TradeBill tradeBill = new TradeBill();
         tradeBill.setPingPayId(transfer.getId());
         tradeBill.setState(2);
         tradeBill.setTradeTime(System.currentTimeMillis());
         tradeBillDao.updateTradeBillByPingPayId(tradeBill);
+
+        //更新运单支付状态
+        Map<String, Object> metadata = transfer.getMetadata();
+        PingxxMetaData pingxxMetaData = BeanMapUtil.mapToBean(metadata, new PingxxMetaData());
+        Long waybillId = pingxxMetaData.getWaybillId();
     }
 
     @Override
@@ -419,6 +444,14 @@ public class TransactionServiceImpl implements ITransactionService {
             //操作人信息
             UserInfo userInfo = userService.getUserInfo(Long.valueOf(mde.getLoginId()), Integer.valueOf(mde.getLoginType()));
             tradeBillDao.updateForPaySuccess(no, order.getTimePaid() * 1000);
+            //更新车辆支付状态
+            List<String> orderCarNoList = Arrays.asList(mde.getSourceNos().split(","));
+            for (int i=0;i<orderCarNoList.size();i++){
+                String orderCarNo = orderCarNoList.get(i);
+                if(orderCarNo!=null){
+                    tradeBillDao.updateOrderCar(orderCarNo,2,System.currentTimeMillis());
+                }
+            }
             //处理运单订单任务数据
             csTaskService.updateForCarFinish(Arrays.asList(mde.getSourceNos().split(",")), userInfo);
         }else if(chargeType == ChargeTypeEnum.PREPAY.getCode() || chargeType == ChargeTypeEnum.PREPAY_QRCODE.getCode()){
@@ -445,7 +478,7 @@ public class TransactionServiceImpl implements ITransactionService {
                 for(int i=0;i<orderCarList.size();i++){
                     OrderCar orderCar = orderCarList.get(i);
                     if(orderCar != null){
-                        tradeBillDao.updateOrderCar(orderCar.getOrderNo(),2,System.currentTimeMillis());
+                        tradeBillDao.updateOrderCar(orderCar.getNo(),2,System.currentTimeMillis());
 
                         if(userInfo!=null){
                             //添加日志

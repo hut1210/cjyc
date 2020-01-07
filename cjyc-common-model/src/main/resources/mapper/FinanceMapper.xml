@@ -355,7 +355,7 @@
     <select id="getFinancePayableList" parameterType="com.cjyc.common.model.dto.web.finance.PayableQueryDto"
             resultType="com.cjyc.common.model.vo.web.finance.FinancePayableVo">
         select wt.no,wt.complete_time as completeTime,
-        ww.type,ww.carrier_id as carrierId,
+        ww.type as waybillType,ww.carrier_id as carrierId,
         ww.carrier_type as carrierType,
         ww.carrier_name as carrierName,
         wt.driver_id as driverId,
@@ -370,6 +370,30 @@
         left join d_carrier dc on dc.id = ww.carrier_id
         where dc.settle_type=1 and wt.complete_time &gt;0 and carrier_type in (1,2,4,5)
         and wt.no not in (select fpd.no from f_payable_detail fpd)
+        <if test="waybillNo !=null and waybillNo.trim() !=''">
+            and wt.no like concat('%',#{waybillNo},'%')
+        </if>
+        <if test="carrierName !=null and carrierName.trim() !=''">
+            and ww.carrier_name like concat('%',#{carrierName},'%')
+        </if>
+        <if test="driverName !=null and driverName.trim() !=''">
+            and wt.driver_name like concat('%',#{driverName},'%')
+        </if>
+        <if test="completeStartTime !=null ">
+            and wt.complete_time &gt;=#{completeStartTime}
+        </if>
+        <if test="completeEndTime !=null ">
+            and wt.complete_time &lt;=#{completeEndTime}
+        </if>
+        <if test="driverPhone !=null and driverPhone.trim() !=''">
+            and wt.driver_phone like concat('%',#{driverPhone},'%')
+        </if>
+        <if test="vehiclePlateNo !=null and vehiclePlateNo.trim() !=''">
+            and wt.vehicle_plate_no like concat('%',#{vehiclePlateNo},'%')
+        </if>
+        <if test="waybillType !=null and waybillType.trim() !=''">
+            and ww.type = #{waybillType}
+        </if>
     </select>
 
     <select id="getSettlementInfo" parameterType="java.util.List"

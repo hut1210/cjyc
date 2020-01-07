@@ -6,6 +6,7 @@ import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.util.Set;
 
 /**
  * @Description 出入库查询对象
@@ -47,5 +48,5 @@ public class OutAndInStorageQueryDto extends BasePageDto {
     @ApiModelProperty(value = "出库日期结束")
     private Long outStorageTimeE;
 
-    private String storeId;
+    private Set<Long> storeIds;
 }

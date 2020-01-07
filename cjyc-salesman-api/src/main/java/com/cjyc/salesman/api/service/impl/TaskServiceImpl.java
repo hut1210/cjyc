@@ -11,6 +11,7 @@ import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.entity.defined.BizScope;
 import com.cjyc.common.model.enums.BizScopeEnum;
 import com.cjyc.common.model.enums.waybill.WaybillCarStateEnum;
+import com.cjyc.common.model.enums.waybill.WaybillCarrierTypeEnum;
 import com.cjyc.common.model.enums.waybill.WaybillTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.TimeStampUtil;
@@ -34,7 +35,6 @@ import org.springframework.util.StringUtils;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @Description 任务业务接口实现类
@@ -92,6 +92,10 @@ public class TaskServiceImpl implements ITaskService {
             return BaseResultUtil.fail("查询任务单为空");
         }
         BeanUtils.copyProperties(task,taskDetailVo);
+        // 承运商类型不是企业或者不是干线运输时，运单号显示运单号，否则显示任务单号
+        if (WaybillCarrierTypeEnum.TRUNK_ENTERPRISE.code != waybill.getCarrierType()) {
+            taskDetailVo.setNo(waybill.getNo());
+        }
 
         // 任务单车辆
         LambdaQueryWrapper<TaskCar> queryWrapper = new QueryWrapper<TaskCar>().lambda().eq(TaskCar::getTaskId,taskId);
@@ -251,25 +255,11 @@ public class TaskServiceImpl implements ITaskService {
             return BaseResultUtil.fail("您没有访问权限!");
         }
 
-        dto.setStoreId(getStoreIds(bizScope));
+        dto.setStoreIds(bizScope.getStoreIds());
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<TaskWaybillVo> list = taskDao.selectOutAndInStorageList(dto);
         PageInfo<TaskWaybillVo> pageInfo = new PageInfo<>(list);
         return BaseResultUtil.success(pageInfo);
     }
 
-    private String getStoreIds(BizScope bizScope) {
-        if (bizScope.getCode() == BizScopeEnum.CHINA.code) {
-            return null;
-        }
-        Set<Long> storeIds = bizScope.getStoreIds();
-        StringBuilder sb = new StringBuilder();
-        for (Long storeId : storeIds) {
-            if (sb.length() > 0) {
-                sb.append(",");
-            }
-            sb.append(storeId);
-        }
-        return sb.toString();
-    }
 }

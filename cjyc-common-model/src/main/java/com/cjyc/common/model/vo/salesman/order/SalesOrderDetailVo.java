@@ -26,6 +26,8 @@ public class SalesOrderDetailVo implements Serializable {
     private Long createTime;
     @ApiModelProperty(value = "订单状态：0待提交，2待分配，5待确认，10待复确认，15待预付款，25已确认，55运输中，88待付款，100已完成，111原返（待），112异常结束，113取消（待），114作废（待）")
     private Integer state;
+    @ApiModelProperty(value = "1:客户下单 2:业务员下单")
+    private Integer flag;
 
     @ApiModelProperty(value = "订单所属业务中心ID")
     @JsonSerialize(using= ToStringSerializer.class)
@@ -115,19 +117,22 @@ public class SalesOrderDetailVo implements Serializable {
 
     @ApiModelProperty(value = "提车费")
     @JsonSerialize(using = BigDecimalSerizlizer.class)
-    private BigDecimal pickFee;
+    private BigDecimal totalPickFee;
     @ApiModelProperty(value = "送车费")
     @JsonSerialize(using = BigDecimalSerizlizer.class)
-    private BigDecimal backFee;
+    private BigDecimal totalBackFee;
     @ApiModelProperty(value = "追加保险费")
     @JsonSerialize(using = BigDecimalSerizlizer.class)
-    private BigDecimal addInsuranceFee;
+    private BigDecimal totalAddInsuranceFee;
     @ApiModelProperty(value = "干线/物流费")
     @JsonSerialize(using = BigDecimalSerizlizer.class)
-    private BigDecimal trunkFee;
+    private BigDecimal totalTrunkFee;
     @ApiModelProperty(value = "总计")
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal totalFee;
+    @ApiModelProperty(value = "默认物流费")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
+    private BigDecimal defaultWlFee;
 
     @ApiModelProperty(value = "车辆详情")
     private List<SalesOrderCarVo> carVoList;
@@ -163,9 +168,10 @@ public class SalesOrderDetailVo implements Serializable {
     public String getEndAreaCode(){return StringUtils.isBlank(endAreaCode) ? "":endAreaCode;}
     public String getEndArea(){return StringUtils.isBlank(endArea) ? "":endArea;}
     public String getEndAddress(){return StringUtils.isBlank(endAddress) ? "":endAddress;}
-    public BigDecimal getPickFee(){return pickFee == null ? BigDecimal.ZERO:pickFee;}
-    public BigDecimal getBackFee(){return backFee == null ? BigDecimal.ZERO:backFee;}
-    public BigDecimal getAddInsuranceFee(){return addInsuranceFee == null ? BigDecimal.ZERO:addInsuranceFee;}
-    public BigDecimal getTrunkFee(){return trunkFee == null ? BigDecimal.ZERO:trunkFee;}
+    public BigDecimal getTotalPickFee(){return totalPickFee == null ? BigDecimal.ZERO:totalPickFee;}
+    public BigDecimal getTotalBackFee(){return totalBackFee == null ? BigDecimal.ZERO:totalBackFee;}
+    public BigDecimal getTotalAddInsuranceFee(){return totalAddInsuranceFee == null ? BigDecimal.ZERO:totalAddInsuranceFee;}
+    public BigDecimal getTotalTrunkFee(){return totalTrunkFee == null ? BigDecimal.ZERO:totalTrunkFee;}
     public BigDecimal getTotalFee(){return totalFee == null ? BigDecimal.ZERO:totalFee;}
+    public BigDecimal getDefaultWlFee(){return defaultWlFee == null ? BigDecimal.ZERO:defaultWlFee;}
 }
