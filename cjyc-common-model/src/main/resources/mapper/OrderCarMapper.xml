@@ -170,7 +170,7 @@
     <update id="updateLocation">
         update w_order_car
         set now_area_code = #{nowAreaCode},
-        now_store_id = #{nowStoreId}
+        now_store_id = #{nowStoreId},
         now_update_time = UNIX_TIMESTAMP(NOW()) * 1000
         where id = #{orderCarId}
     </update>
@@ -178,7 +178,7 @@
         update w_order_car
         set state = 100,
         now_area_code = #{areaCode},
-        now_update_time = unix_timestamp(now()) * 1000
+        now_update_time = unix_timestamp(now()) * 1000,
         finish_time = unix_timestamp(now()) * 1000
         where id = #{orderCarId}
         and state &lt; 100
