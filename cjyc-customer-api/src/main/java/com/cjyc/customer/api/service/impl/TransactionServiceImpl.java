@@ -5,6 +5,7 @@ import com.Pingxx.model.PingxxMetaData;
 import com.cjyc.common.model.enums.log.OrderCarLogEnum;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.system.service.ICsOrderCarLogService;
+import com.cjyc.common.system.util.MiaoxinSmsUtil;
 import com.pingplusplus.model.*;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.entity.*;
@@ -170,13 +171,13 @@ public class TransactionServiceImpl implements ITransactionService {
                             }
                         }
                     }
-
+                    UserInfo userInfo = new UserInfo();
                     if(orderCarNosList==null){
                         log.error("回调中参数orderCarNosList不存在");
                         return BaseResultUtil.fail("缺少参数orderCarNosList");
                     }else{
                         //修改车辆支付状态
-                        UserInfo userInfo = userService.getUserInfo(Long.valueOf(pingxxMetaData.getLoginId()), Integer.valueOf(pingxxMetaData.getLoginType()));
+                        userInfo = userService.getUserInfo(Long.valueOf(pingxxMetaData.getLoginId()), Integer.valueOf(pingxxMetaData.getLoginType()));
                         csTaskService.updateForTaskCarFinish(taskCarIdList, ChargeTypeEnum.COLLECT_PAY.getCode(), userInfo);
                     }
                     //验证任务是否完成
@@ -200,12 +201,46 @@ public class TransactionServiceImpl implements ITransactionService {
                             }
                         }
                     }
+                    sendMessage(orderCarNosList,userInfo);
                 }
-
             }
         }
 
         return BaseResultUtil.success();
+    }
+
+    private void sendMessage(List<String> orderCarNosList,UserInfo userInfo){
+        StringBuilder message = new StringBuilder("韵车物流】VIN码后六位为");
+        List<OrderCar> orderCarList = orderCarDao.findListByNos(orderCarNosList);
+
+        for(int i=0;i<orderCarList.size();i++){
+            OrderCar orderCar = orderCarList.get(i);
+            if(orderCar!=null){
+                String vin = orderCar.getVin();
+                if(vin!=null){
+                    int length = vin.length();
+                    if(i==orderCarList.size()-1){
+                        message.append(vin.substring(length-6));
+                    }else{
+                        message.append(vin.substring(length-6));
+                        message.append("、");
+                    }
+                }
+            }
+        }
+        message.append("的车辆已完成交车收款，收款金额");
+        BigDecimal freightFee = tradeBillDao.getAmountByOrderCarNos(orderCarNosList);
+        if(freightFee!=null){
+            message.append(freightFee);
+        }
+        message.append("元");
+        if(userInfo!=null&&userInfo.getPhone()!=null){
+            try{
+                MiaoxinSmsUtil.send(userInfo.getPhone(), message.toString());
+            }catch (Exception e){
+                log.error("回调短信发送失败"+e.getMessage(),e);
+            }
+        }
     }
 
     @Override

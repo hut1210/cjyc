@@ -758,7 +758,6 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             waybillDao.updateByIdForNull(waybill);
 
             /**2、运单，车辆循环*/
-            boolean hasNewWaybillCar = false;
             Set<Long> unCancelWaybillCarIds = Sets.newHashSet();
             List<WaybillCar> newWaybillCars = Lists.newArrayList();
             List<WaybillCar> waybillCars = Lists.newArrayList();
@@ -785,7 +784,6 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 if (waybillCar == null) {
                     //新增的车辆
                     isNewWaybillCar = true;
-                    hasNewWaybillCar = true;
                     waybillCar = new WaybillCar();
                 }
 
@@ -857,16 +855,15 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 }
             }
 
-            /**承运商有且仅有一个司机*/
-            csTaskService.reCreate(waybill, waybillCars, newWaybillCars, carrierInfo);
             //查询待取消的车辆
             List<WaybillCar> cancelWaybillCars = waybillCarDao.findWaitCancelListByUnCancelIds(unCancelWaybillCarIds, waybill.getId());
             if (!CollectionUtils.isEmpty(cancelWaybillCars)) {
                 //取消运单车辆
-                cancelWaybillCars.forEach(waybillCar -> {
-                    cancelWaybillCar(waybill.getType(), waybillCar);
-                });
+                cancelWaybillCars.forEach(waybillCar -> cancelWaybillCar(waybill.getType(), waybillCar));
             }
+
+            /**承运商有且仅有一个司机*/
+            csTaskService.reCreate(waybill, waybillCars, newWaybillCars, carrierInfo);
 
             //验证运单是否完成
             validateAndFinishWaybill(waybill.getId());
@@ -1145,6 +1142,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             //已装车
             if (waybillCar.getState() >= WaybillCarStateEnum.LOADED.code) {
                 copyWaybillCarEndCity(fullCity, waybillCar);
+                waybillCar.setEndStoreId(paramsDto.getEndStoreId());
+                waybillCar.setEndStoreName(paramsDto.getEndStoreName());
                 waybillCar.setEndAddress(paramsDto.getEndAddress());
                 Long endStoreId = paramsDto.getEndStoreId();
                 if (endStoreId == null || endStoreId <= 0) {
