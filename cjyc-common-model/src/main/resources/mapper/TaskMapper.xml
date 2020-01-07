@@ -219,7 +219,7 @@
             </if>
         </where>
         group by t.id
-        order by t.complete_time desc
+        order by car.unload_time desc
     </select>
 
     <!--查询历史任务记录列表-->
