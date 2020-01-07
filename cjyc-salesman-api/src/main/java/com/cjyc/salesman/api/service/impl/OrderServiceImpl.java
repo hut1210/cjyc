@@ -64,7 +64,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
             return BaseResultUtil.fail("您没有访问权限!");
         }
         // 获取业务中心ID
-        dto.setStoreIds(csStoreService.getStoreIds(bizScope));
+        dto.setStoreIds(bizScope.getStoreIds());
         if(dto.getCreateEndTime() != null){
             dto.setCreateEndTime(TimeStampUtil.addDays(dto.getCreateEndTime(),1));
         }
