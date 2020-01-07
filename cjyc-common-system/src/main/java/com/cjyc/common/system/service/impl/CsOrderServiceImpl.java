@@ -630,9 +630,9 @@ public class CsOrderServiceImpl implements ICsOrderService {
         if (order == null) {
             throw new ParameterException("订单不存在");
         }
-        if (order.getState() <= OrderStateEnum.WAIT_SUBMIT.code) {
+        /*if (order.getState() <= OrderStateEnum.WAIT_SUBMIT.code) {
             throw new ParameterException("订单未提交，无法审核");
-        }
+        }*/
         if (order.getState() >= OrderStateEnum.CHECKED.code) {
             throw new ParameterException("订单已经审核过，无法审核");
         }
