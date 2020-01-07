@@ -7,7 +7,7 @@ import lombok.Data;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotNull;
-import java.util.List;
+import java.util.Set;
 
 /**
  * 调度信息列表实体
@@ -41,5 +41,5 @@ public class DispatchListDto extends BasePageDto {
     @ApiModelProperty(value = "车系")
     private String model;
     @ApiModelProperty(hidden = true)
-    private String bizStoreIds;
+    private Set<Long> bizStoreIds;
 }

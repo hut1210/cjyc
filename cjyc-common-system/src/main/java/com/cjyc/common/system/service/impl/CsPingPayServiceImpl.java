@@ -477,11 +477,12 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
 
         params.put("extra", extra);
 
-        Map<String, String> metadata = new HashMap<String,String>();
-        metadata.put("type", String.valueOf(ChargeTypeEnum.UNION_PAY.getCode()));
-        metadata.put("uid", String.valueOf(baseCarrierVo.getCarrierId()));
-        metadata.put("waybillId", String.valueOf(waybill.getId()));
-        params.put("metadata", metadata);
+        PingxxMetaData pingxxMetaData = new PingxxMetaData();
+        pingxxMetaData.setChargeType(String.valueOf(ChargeTypeEnum.UNION_PAY.getCode()));
+        pingxxMetaData.setWaybillId(waybill.getId());
+
+        Map<String, Object> meta = BeanMapUtil.beanToMap(pingxxMetaData);
+        params.put("metadata",meta);//自定义参数
 
         Transfer obj = Transfer.create(params);
         if(Pingpp.apiKey.contains("_test_")){//test模式调用查询相当于企业付款成功

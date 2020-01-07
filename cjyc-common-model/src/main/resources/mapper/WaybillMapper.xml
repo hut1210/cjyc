@@ -736,8 +736,10 @@
             w_waybill w
             left join d_carrier carrier on w.carrier_id=carrier.id
         <where>
-            <if test="bizStoreIds != null and bizStoreIds.trim() != ''">
-                and input_store_id in(#{bizStoreIds})
+            <if test="bizStoreIds != null">
+                and input_store_id in <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
+                                        #{item}
+                                    </foreach>
             </if>
             <if test="key != null and key.trim() != ''">
                 and (w.linkman_phone like CONCAT('%',#{key},'%') or w.no like CONCAT('%',#{key},'%'))

@@ -1456,8 +1456,10 @@
         wo.state IN (25, 55, 88)
         AND wwc.state &lt;= 100
         AND ww.state &lt;= 100
-        <if test="param.bizStoreIds != null and param.bizStoreIds !=''">
-            and wo.input_store_id IN (#{param.bizStoreIds})
+        <if test="param.bizStoreIds != null">
+            and wo.input_store_id IN <foreach collection="param.bizStoreIds" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         </if>
         ) a
         GROUP BY

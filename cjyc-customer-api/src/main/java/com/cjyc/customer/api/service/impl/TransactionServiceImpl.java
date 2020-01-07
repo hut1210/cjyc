@@ -201,29 +201,7 @@ public class TransactionServiceImpl implements ITransactionService {
                             }
                         }
                     }
-                    /**
-                     * 【韵车物流】VIN码后四位为 1234、2345、3456、5678的车辆已完成交车收款，收款金额120009.00元。
-                     */
-                    StringBuilder message = new StringBuilder("韵车物流】VIN码后六位为");
-                    List<OrderCar> orderCarList = orderCarDao.findListByNos(orderCarNosList);
-
-                    for(int i=0;i<orderCarList.size();i++){
-                        OrderCar orderCar = orderCarList.get(i);
-                        if(orderCar!=null){
-                            message.append(orderCar.getVin());
-                        }
-                    }
-                    message.append("的车辆已完成交车收款，收款金额");
-                    BigDecimal freightFee = tradeBillDao.getAmountByOrderCarNos(orderCarNosList);
-                    message.append(freightFee);
-                    message.append("元");
-                    if(userInfo!=null&&userInfo.getPhone()!=null){
-                        try{
-                            MiaoxinSmsUtil.send(userInfo.getPhone(), message.toString());
-                        }catch (Exception e){
-                            log.error("回调短信发送失败"+e.getMessage(),e);
-                        }
-                    }
+                    sendMessage(orderCarNosList,userInfo);
                 }
             }
         }
@@ -231,14 +209,54 @@ public class TransactionServiceImpl implements ITransactionService {
         return BaseResultUtil.success();
     }
 
+    private void sendMessage(List<String> orderCarNosList,UserInfo userInfo){
+        StringBuilder message = new StringBuilder("韵车物流】VIN码后六位为");
+        List<OrderCar> orderCarList = orderCarDao.findListByNos(orderCarNosList);
+
+        for(int i=0;i<orderCarList.size();i++){
+            OrderCar orderCar = orderCarList.get(i);
+            if(orderCar!=null){
+                String vin = orderCar.getVin();
+                if(vin!=null){
+                    int length = vin.length();
+                    if(i==orderCarList.size()-1){
+                        message.append(vin.substring(length-6));
+                    }else{
+                        message.append(vin.substring(length-6));
+                        message.append("、");
+                    }
+                }
+            }
+        }
+        message.append("的车辆已完成交车收款，收款金额");
+        BigDecimal freightFee = tradeBillDao.getAmountByOrderCarNos(orderCarNosList);
+        if(freightFee!=null){
+            message.append(freightFee);
+        }
+        message.append("元");
+        if(userInfo!=null&&userInfo.getPhone()!=null){
+            try{
+                MiaoxinSmsUtil.send(userInfo.getPhone(), message.toString());
+            }catch (Exception e){
+                log.error("回调短信发送失败"+e.getMessage(),e);
+            }
+        }
+    }
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateTransfer(Transfer transfer, Event event, String state) {
+        //更新交易流水表状态
         TradeBill tradeBill = new TradeBill();
         tradeBill.setPingPayId(transfer.getId());
         tradeBill.setState(2);
         tradeBill.setTradeTime(System.currentTimeMillis());
         tradeBillDao.updateTradeBillByPingPayId(tradeBill);
+
+        //更新运单支付状态
+        Map<String, Object> metadata = transfer.getMetadata();
+        PingxxMetaData pingxxMetaData = BeanMapUtil.mapToBean(metadata, new PingxxMetaData());
+        Long waybillId = pingxxMetaData.getWaybillId();
     }
 
     @Override
@@ -433,7 +451,7 @@ public class TransactionServiceImpl implements ITransactionService {
                 for(int i=0;i<orderCarList.size();i++){
                     OrderCar orderCar = orderCarList.get(i);
                     if(orderCar != null){
-                        tradeBillDao.updateOrderCar(orderCar.getOrderNo(),2,System.currentTimeMillis());
+                        tradeBillDao.updateOrderCar(orderCar.getNo(),2,System.currentTimeMillis());
 
                         if(userInfo!=null){
                             //添加日志

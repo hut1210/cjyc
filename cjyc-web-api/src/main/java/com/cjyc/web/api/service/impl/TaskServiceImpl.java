@@ -6,8 +6,6 @@ import com.cjyc.common.model.dao.IWaybillCarDao;
 import com.cjyc.common.model.dto.web.task.*;
 import com.cjyc.common.model.entity.Carrier;
 import com.cjyc.common.model.entity.Task;
-import com.cjyc.common.model.entity.defined.BizScope;
-import com.cjyc.common.model.enums.BizScopeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultReasonVo;
@@ -118,22 +116,6 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
         List<TaskPageVo> list = taskDao.selectMyTaskList(dto);
         PageInfo<TaskPageVo> pageInfo = new PageInfo<>(list);
         return BaseResultUtil.success(pageInfo);
-    }
-
-    private String getStoreId(BizScope bizScope) {
-        StringBuilder storeId = null;
-        if (bizScope.getCode() == BizScopeEnum.CHINA.code) {
-            return null;
-        } else {
-            storeId = new StringBuilder();
-            for (Long id : bizScope.getStoreIds()) {
-                if (storeId.length() > 0) {
-                    storeId.append(",");
-                }
-                storeId.append(id);
-            }
-            return storeId.toString();
-        }
     }
 
 }

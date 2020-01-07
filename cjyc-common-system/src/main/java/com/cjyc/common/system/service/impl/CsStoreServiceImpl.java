@@ -44,15 +44,6 @@ public class CsStoreServiceImpl implements ICsStoreService {
         return storeDao.findOneBelongByCityCode(cityCode);
     }
 
-    @Override
-    public Set<Long> getStoreIds(BizScope bizScope) {
-        if (bizScope.getCode() == BizScopeEnum.CHINA.code) {
-            return null;
-        }
-        Set<Long> storeIds = bizScope.getStoreIds();
-        return storeIds;
-    }
-
     /**
      * 查询区县所属业务中心列表-业务范围
      *
