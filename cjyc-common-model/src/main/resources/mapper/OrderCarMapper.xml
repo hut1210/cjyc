@@ -17,6 +17,7 @@
         <result column="valuation" property="valuation" />
         <result column="now_store_id" property="nowStoreId" />
         <result column="now_area_code" property="nowAreaCode" />
+        <result column="now_update_time" property="nowUpdateTime" />
         <result column="state" property="state" />
         <result column="pick_type" property="pickType" />
         <result column="pick_state" property="pickState" />
@@ -166,15 +167,18 @@
         trunk_state = #{trunkState}
         where id = #{id}
     </update>
-    <update id="updateLocationForUnload">
+    <update id="updateLocation">
         update w_order_car
         set now_area_code = #{nowAreaCode},
         now_store_id = #{nowStoreId}
+        now_update_time = UNIX_TIMESTAMP(NOW()) * 1000
         where id = #{orderCarId}
     </update>
     <update id="updateForFinish">
         update w_order_car
         set state = 100,
+        now_area_code = #{areaCode},
+        now_update_time = unix_timestamp(now()) * 1000
         finish_time = unix_timestamp(now()) * 1000
         where id = #{orderCarId}
         and state &lt; 100

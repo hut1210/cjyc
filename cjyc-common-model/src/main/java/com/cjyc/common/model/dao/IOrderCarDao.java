@@ -229,11 +229,11 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
 
     List<Map<String, Object>> findLineWaitDispatchTrunkCarCountList(@Param("paramsDto") LineWaitDispatchCountDto paramsDto);
 
-    int updateLocationForUnload(@Param("orderCarId") Long orderCarId, @Param("nowStoreId") Long nowStoreId, @Param("nowAreaCode") String nowAreaCode);
+    int updateLocation(@Param("orderCarId") Long orderCarId, @Param("nowStoreId") Long nowStoreId, @Param("nowAreaCode") String nowAreaCode);
 
     Map<String, Object> countTotalTrunkWaitDispatchCarByStartCity(@Param("paramsDto") LineWaitDispatchCountDto paramsDto);
 
     Map<String, Object> countTotalTrunkWaitDispatchCar();
 
-    int updateForFinish(Long orderCarId);
+    int updateForFinish(@Param("orderCarId") Long orderCarId, @Param("areaCode")String areaCode);
 }
