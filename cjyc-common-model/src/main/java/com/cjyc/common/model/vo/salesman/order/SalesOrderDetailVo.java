@@ -130,6 +130,9 @@ public class SalesOrderDetailVo implements Serializable {
     @ApiModelProperty(value = "总计")
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal totalFee;
+    @ApiModelProperty(value = "默认物流费")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
+    private BigDecimal defaultWlFee;
 
     @ApiModelProperty(value = "车辆详情")
     private List<SalesOrderCarVo> carVoList;
@@ -170,4 +173,5 @@ public class SalesOrderDetailVo implements Serializable {
     public BigDecimal getTotalAddInsuranceFee(){return totalAddInsuranceFee == null ? BigDecimal.ZERO:totalAddInsuranceFee;}
     public BigDecimal getTotalTrunkFee(){return totalTrunkFee == null ? BigDecimal.ZERO:totalTrunkFee;}
     public BigDecimal getTotalFee(){return totalFee == null ? BigDecimal.ZERO:totalFee;}
+    public BigDecimal getDefaultWlFee(){return defaultWlFee == null ? BigDecimal.ZERO:defaultWlFee;}
 }

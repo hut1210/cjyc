@@ -2,15 +2,13 @@ package com.cjyc.salesman.api.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.cjyc.common.model.dao.ICarSeriesDao;
-import com.cjyc.common.model.dao.ICustomerDao;
-import com.cjyc.common.model.dao.IOrderCarDao;
-import com.cjyc.common.model.dao.IOrderDao;
+import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.salesman.order.SalesOrderDetailDto;
 import com.cjyc.common.model.dto.salesman.order.SalesOrderQueryDto;
 import com.cjyc.common.model.dto.web.order.CommitOrderDto;
 import com.cjyc.common.model.dto.web.order.SimpleCommitOrderDto;
 import com.cjyc.common.model.entity.Customer;
+import com.cjyc.common.model.entity.Line;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.entity.defined.BizScope;
@@ -51,6 +49,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     private ICarSeriesDao carSeriesDao;
     @Resource
     private ICustomerDao customerDao;
+    @Resource
+    private ILineDao lineDao;
     @Resource
     private ICsSysService csSysService;
 
@@ -120,6 +120,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
                 totalTrunkFee = totalTrunkFee.add(orderCar.getTrunkFee());
             }
         }
+        Line line = lineDao.getLinePriceByCode(order.getStartCityCode(), order.getEndCityCode());
+        detailVo.setDefaultWlFee(line.getDefaultWlFee() == null ? BigDecimal.ZERO : line.getDefaultWlFee());
         detailVo.setTotalPickFee(totalPickFee);
         detailVo.setTotalBackFee(totalBackFee);
         detailVo.setTotalAddInsuranceFee(totalAddInsuranceFee);
