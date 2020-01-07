@@ -250,7 +250,7 @@ public class TransactionServiceImpl implements ITransactionService {
         message.append("的车辆已完成交车收款，收款金额");
         BigDecimal freightFee = tradeBillDao.getAmountByOrderCarNos(orderCarNosList);
         if(freightFee!=null){
-            message.append(freightFee);
+            message.append(freightFee.divide(new BigDecimal(100)));
         }
         message.append("元");
         if(userInfo!=null&&userInfo.getPhone()!=null){
