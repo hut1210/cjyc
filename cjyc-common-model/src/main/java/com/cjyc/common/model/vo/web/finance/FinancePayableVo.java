@@ -35,7 +35,7 @@ public class FinancePayableVo implements Serializable {
     @ApiModelProperty(value = "应付运费")
     private BigDecimal freightPayable;
 
-    @ApiModelProperty(value = "运单类型")
+    @ApiModelProperty(value = "运单类型 1提车运单，2干线运单，3送车运单")
     private Integer waybillType;
 
     @ApiModelProperty(value = "运输路线")
