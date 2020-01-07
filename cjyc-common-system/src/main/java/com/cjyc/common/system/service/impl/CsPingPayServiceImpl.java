@@ -6,9 +6,11 @@ import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.customer.pingxx.PrePayDto;
 import com.cjyc.common.model.dto.customer.pingxx.SweepCodeDto;
 import com.cjyc.common.model.dto.customer.pingxx.ValidateSweepCodeDto;
+import com.cjyc.common.model.dto.web.pingxx.SalesPrePayDto;
 import com.cjyc.common.model.dto.web.pingxx.WebOutOfStockDto;
 import com.cjyc.common.model.dto.web.pingxx.WebPrePayDto;
 import com.cjyc.common.model.entity.OrderCar;
+import com.cjyc.common.model.entity.TradeBill;
 import com.cjyc.common.model.entity.Waybill;
 import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
@@ -356,6 +358,18 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         OrderModel om = new OrderModel();
         //创建Charge对象
         Charge charge = new Charge();
+
+        String orderNo = prePayDto.getOrderNo();
+        TradeBill tradeBill = cStransactionService.getTradeBillByOrderNo(orderNo);
+        if(tradeBill != null){
+            throw new CommonException("订单已支付完成","1");
+        }else{
+            log.info("webPrePay orderNo ="+orderNo);
+            String lockKey =getRandomNoKey(orderNo);
+            if (!redisLock.lock(lockKey, 1800000, 99, 200)) {
+                throw new CommonException("订单正在支付中","1");
+            }
+        }
         try {
             om.setClientIp(prePayDto.getIp());
             BigDecimal wlFee = cStransactionService.getAmountByOrderNo(prePayDto.getOrderNo());
@@ -443,6 +457,57 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             log.error("扫码支付异常",e);
         }
         return charge;
+    }
+
+    @Override
+    public Charge salesPrePay(SalesPrePayDto salesPrePayDto) throws RateLimitException, APIException, ChannelException, InvalidRequestException, APIConnectionException, AuthenticationException, FileNotFoundException {
+        OrderModel om = new OrderModel();
+        //创建Charge对象
+        Charge charge = new Charge();
+
+        String orderNo = salesPrePayDto.getOrderNo();
+        TradeBill tradeBill = cStransactionService.getTradeBillByOrderNo(orderNo);
+        if(tradeBill != null){
+            throw new CommonException("订单已支付完成","1");
+        }else{
+            log.info("salesPrePay orderNo ="+orderNo);
+            String lockKey =getRandomNoKey(orderNo);
+            if (!redisLock.lock(lockKey, 1800000, 99, 200)) {
+                throw new CommonException("订单正在支付中","1");
+            }
+        }
+        try {
+            om.setClientIp(salesPrePayDto.getIp());
+            BigDecimal wlFee = cStransactionService.getAmountByOrderNo(salesPrePayDto.getOrderNo());
+            om.setClientIp(salesPrePayDto.getIp());
+            om.setAmount(wlFee);
+            om.setSubject(ChargeTypeEnum.SALES_PREPAY_QRCODE.getName());
+            om.setBody("业务员订单预付款");
+
+            PingxxMetaData pingxxMetaData = new PingxxMetaData();
+            pingxxMetaData.setPingAppId(PingProperty.userAppId);
+            pingxxMetaData.setChannel(salesPrePayDto.getChannel());
+            pingxxMetaData.setOrderNo(salesPrePayDto.getOrderNo());
+            pingxxMetaData.setChargeType(String.valueOf(ChargeTypeEnum.SALES_PREPAY_QRCODE.getCode()));
+            pingxxMetaData.setClientType(String.valueOf(ClientEnum.App_PREPAY_SALESMAN));
+            pingxxMetaData.setLoginId(String.valueOf(salesPrePayDto.getLoginId()));
+            pingxxMetaData.setLoginType(String.valueOf(UserTypeEnum.ADMIN.code));
+
+            om.setPingxxMetaData(pingxxMetaData);
+            // 备注：订单号
+            om.setDescription("韵车订单号："+om.getPingxxMetaData().getOrderNo());
+
+            charge = createDriverCode(om);
+
+            cStransactionService.saveTransactions(charge, "0");
+        } catch (Exception e) {
+            log.error("业务员预付款出示二维码异常",e);
+        }
+        return charge;
+    }
+
+    private String getRandomNoKey(String prefix) {
+        return "cjyc:random:no:prepay:" + prefix;
     }
 
     public Transfer allinpayTransferDriverCreate(BaseCarrierVo baseCarrierVo,Waybill waybill) throws AuthenticationException, InvalidRequestException,

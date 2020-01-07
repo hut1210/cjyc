@@ -13,8 +13,9 @@ public enum ClientEnum {
     APP_DRIVER("司机APP",4),
     //APPLET_DRIVER("司机小程序",5),
     APP_CUSTOMER("用户端APP",6),
-    APPLET_CUSTOMER("用户端小程序",7);
+    APPLET_CUSTOMER("用户端小程序",7),
 
+    App_PREPAY_SALESMAN("业务员预付款APP显示二维码", 8);
     public String name;
     public int code;
 

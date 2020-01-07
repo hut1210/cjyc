@@ -1,5 +1,6 @@
 package com.cjyc.common.system.service;
 
+import com.cjyc.common.model.dto.web.pingxx.SalesPrePayDto;
 import com.cjyc.common.model.dto.web.pingxx.WebOutOfStockDto;
 import com.cjyc.common.model.dto.web.pingxx.WebPrePayDto;
 import com.cjyc.common.model.dto.customer.pingxx.SweepCodeDto;
@@ -30,5 +31,8 @@ public interface ICsPingPayService {
             APIConnectionException, AuthenticationException, FileNotFoundException;
 
     Charge getOutOfStockQrCode(WebOutOfStockDto webOutOfStockDto) throws RateLimitException, APIException, ChannelException, InvalidRequestException,
+            APIConnectionException, AuthenticationException, FileNotFoundException;
+
+    Charge salesPrePay(SalesPrePayDto salesPrePayDto) throws RateLimitException, APIException, ChannelException, InvalidRequestException,
             APIConnectionException, AuthenticationException, FileNotFoundException;
 }

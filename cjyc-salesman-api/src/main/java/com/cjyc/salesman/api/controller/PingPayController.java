@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.cjkj.common.utils.IPUtil;
 import com.cjyc.common.model.dto.customer.pingxx.SweepCodeDto;
 import com.cjyc.common.model.dto.customer.pingxx.ValidateSweepCodeDto;
+import com.cjyc.common.model.dto.web.pingxx.SalesPrePayDto;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.ValidateSweepCodePayVo;
@@ -52,6 +53,20 @@ public class PingPayController {
     public ResultVo<ValidateSweepCodePayVo> validateCarPayState(@RequestBody ValidateSweepCodeDto validateSweepCodeDto) {
 
         return pingPayService.validateCarPayState(validateSweepCodeDto, false);
+    }
+
+    @ApiOperation("业务员预付款出示二维码")
+    @PostMapping("/prepay/sweepSalesCode")
+    public ResultVo prepay(HttpServletRequest request, @RequestBody SalesPrePayDto salesPrePayDto){
+        salesPrePayDto.setIp(IPUtil.getIpAddr(request));
+        Charge charge;
+        try {
+            charge = pingPayService.salesPrePay(salesPrePayDto);
+        }catch (Exception e){
+            log.error(e.getMessage(),e);
+            return BaseResultUtil.fail(500,"业务员预付款出示二维码异常");
+        }
+        return BaseResultUtil.success(JSONObject.parseObject(charge.toString()));
     }
 
 }
