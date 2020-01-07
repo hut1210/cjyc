@@ -201,7 +201,12 @@ public class TransactionServiceImpl implements ITransactionService {
                             }
                         }
                     }
-                    sendMessage(orderCarNosList,userInfo);
+                    try{
+                        sendMessage(orderCarNosList,userInfo);
+                    }catch (Exception e){
+                        log.error("回调短信发送异常"+e.getMessage(),e);
+                    }
+
                 }
             }
         }
@@ -213,21 +218,35 @@ public class TransactionServiceImpl implements ITransactionService {
         StringBuilder message = new StringBuilder("韵车物流】VIN码后六位为");
         List<OrderCar> orderCarList = orderCarDao.findListByNos(orderCarNosList);
 
-        for(int i=0;i<orderCarList.size();i++){
-            OrderCar orderCar = orderCarList.get(i);
-            if(orderCar!=null){
-                String vin = orderCar.getVin();
-                if(vin!=null){
-                    int length = vin.length();
-                    if(i==orderCarList.size()-1){
-                        message.append(vin.substring(length-6));
-                    }else{
-                        message.append(vin.substring(length-6));
-                        message.append("、");
+        try{
+            for(int i=0;i<orderCarList.size();i++){
+                OrderCar orderCar = orderCarList.get(i);
+                if(orderCar!=null){
+                    String vin = orderCar.getVin();
+                    if(vin!=null){
+                        int length = vin.length();
+                        if(length>6){
+                            if(i==orderCarList.size()-1){
+                                message.append(vin.substring(length-6));
+                            }else{
+                                message.append(vin.substring(length-6));
+                                message.append("、");
+                            }
+                        }else{
+                            if(i==orderCarList.size()-1){
+                                message.append(vin);
+                            }else{
+                                message.append(vin);
+                                message.append("、");
+                            }
+                        }
                     }
                 }
             }
+        }catch (Exception e){
+            log.error("拼接Vin码异常"+e.getMessage(),e);
         }
+
         message.append("的车辆已完成交车收款，收款金额");
         BigDecimal freightFee = tradeBillDao.getAmountByOrderCarNos(orderCarNosList);
         if(freightFee!=null){
