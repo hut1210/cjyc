@@ -478,7 +478,7 @@
                  and wo.state between 2 and 15
             </if>
             <if test="flag != null and flag == 2">
-                 and wo.state >= 15
+                 and wo.state > 15
             </if>
             <if test="orderNo != null and orderNo.trim() != ''">
                 and wo.no like concat('%',#{orderNo},'%')
