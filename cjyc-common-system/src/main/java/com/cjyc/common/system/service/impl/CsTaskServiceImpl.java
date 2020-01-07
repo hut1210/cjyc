@@ -362,7 +362,8 @@ public class CsTaskServiceImpl implements ICsTaskService {
             if (WaybillTypeEnum.PICK.code == waybill.getType() && !validateWaybillCarInfo(waybillCar)) {
                 throw new ParameterException("提车运单运单，照片不能为空");
             }
-
+            //验证是否是第一段运单
+            waybillCarDao.countPrev(waybillCar.getId(), waybillCar.getOrderCarId());
             //验证车辆当前所在地是否与出发区县匹配
             OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
             if (orderCar == null) {

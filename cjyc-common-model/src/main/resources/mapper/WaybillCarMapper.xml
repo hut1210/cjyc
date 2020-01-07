@@ -1729,6 +1729,15 @@
         and wc.state &lt; 100
         limit 1
     </select>
+    <select id="countPrev" resultType="java.lang.Integer">
+        select count(0) from w_waybill_car wc
+        join w_waybill w on w.id = wc.waybill_id
+        where order_car_id = #{orderCarId}
+        and w.state &lt;= 100
+        and wc.state &lt;= 100
+        and wc.id &lt; #{id}
+        and w.type = 2
+    </select>
 
     <delete id="cancelAfterWaybillCar">
         update w_waybill_car wc

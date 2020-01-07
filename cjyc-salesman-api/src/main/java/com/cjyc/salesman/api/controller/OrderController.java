@@ -141,6 +141,8 @@ public class OrderController {
         //验证用户存不存在
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
+        Admin toAdmin = csAdminService.validate(reqDto.getToAdminId());
+        reqDto.setToAdminName(toAdmin.getName());
         return csOrderService.allot(reqDto);
     }
 
