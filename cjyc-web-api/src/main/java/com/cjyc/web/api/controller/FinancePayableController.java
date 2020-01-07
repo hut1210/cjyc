@@ -10,10 +10,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -55,8 +52,8 @@ public class FinancePayableController {
     }
 
     @ApiOperation(value = "获取确认收票运单信息")
-    @PostMapping(value = "/confirmTicket")
-    public ResultVo confirmTicket(@RequestBody String serialNumber){
+    @PostMapping(value = "/confirmTicket/{serialNumber}")
+    public ResultVo confirmTicket(@PathVariable String serialNumber){
         return financeService.getConfirmTicket(serialNumber);
     }
 
@@ -67,8 +64,8 @@ public class FinancePayableController {
     }
 
     @ApiOperation(value = "撤回")
-    @PostMapping(value = "/withdraw")
-    public ResultVo withdraw(@RequestBody String serialNumber){
+    @PostMapping(value = "/withdraw/{serialNumber}")
+    public ResultVo withdraw(@PathVariable String serialNumber){
         return financeService.withdraw(serialNumber);
     }
 
@@ -79,8 +76,8 @@ public class FinancePayableController {
     }
 
     @ApiOperation(value = "获取核销运单信息")
-    @PostMapping(value = "/writeOffTicket")
-    public ResultVo writeOffTicket(@RequestBody String serialNumber){
+    @PostMapping(value = "/writeOffTicket/{serialNumber}")
+    public ResultVo writeOffTicket(@PathVariable String serialNumber){
         return financeService.getWriteOffTicket(serialNumber);
     }
 
@@ -97,8 +94,8 @@ public class FinancePayableController {
     }
 
     @ApiOperation(value = "结算明细")
-    @PostMapping(value = "/detail")
-    public ResultVo detail(@RequestBody String serialNumber){
+    @PostMapping(value = "/detail/{serialNumber}")
+    public ResultVo detail(@PathVariable String serialNumber){
         return financeService.payableDetail(serialNumber);
     }
 
