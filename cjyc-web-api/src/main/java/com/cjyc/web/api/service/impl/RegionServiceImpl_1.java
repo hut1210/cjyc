@@ -27,7 +27,7 @@ import com.cjyc.common.model.vo.web.city.ProvinceCityVo;
 import com.cjyc.common.model.vo.web.city.RegionVo;
 import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.web.api.service.ICityService;
-import com.cjyc.web.api.service.IRegionService;
+import com.cjyc.web.api.service.IRegionService_1;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.BeanUtils;
@@ -49,7 +49,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @Date 2019/11/7 11:46
  **/
 @Service
-public class RegionServiceImpl_1 implements IRegionService {
+public class RegionServiceImpl_1 implements IRegionService_1 {
     @Resource
     private ICityDao cityDao;
     @Resource
