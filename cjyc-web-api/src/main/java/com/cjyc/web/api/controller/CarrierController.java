@@ -138,5 +138,11 @@ public class CarrierController {
                              @PathVariable Long id) {
         return carrierService.resetPwdNew(id);
     }
+
+    @ApiOperation(value = "调度中心中提车/送车调度中代驾和拖车列表_改版")
+    @PostMapping(value = "/traileDriverNew")
+    public ResultVo<PageVo<TrailCarrierVo>> trailDriverNew(@RequestBody TrailCarrierDto dto){
+        return csCarrierService.trailDriverNew(dto);
+    }
     /*********************************韵车集成改版 ed*****************************/
 }
