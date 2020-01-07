@@ -369,7 +369,7 @@
         left join w_waybill ww on ww.no = wt.waybill_no
         left join d_carrier dc on dc.id = ww.carrier_id
         where dc.settle_type=1 and wt.complete_time &gt;0 and carrier_type in (1,2,4,5)
-        and wt.no not in (select fpd.no from f_payable_detail fpd)
+        and wt.no not in (select IFNULL(fpd.no,'') from f_payable_detail fpd)
         <if test="waybillNo !=null and waybillNo.trim() !=''">
             and wt.no like concat('%',#{waybillNo},'%')
         </if>

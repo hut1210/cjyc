@@ -34,7 +34,7 @@ public interface IFinanceDao extends BaseMapper {
 
     List<FinancePayableVo> getFinancePayableList(PayableQueryDto payableQueryDto);
 
-    List<PayableTaskVo> getSettlementInfo(List<String> taskNoList);
+    List<PayableTaskVo> getSettlementInfo(@Param("taskNoList")List<String> taskNoList);
 
     List<SettlementVo> getCollectTicketList(WaitTicketCollectDto waitTicketCollectDto);
 

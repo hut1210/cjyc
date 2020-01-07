@@ -119,14 +119,8 @@ public class TaskServiceImpl implements ITaskService {
                     fillGuideLine(taskDetailVo,waybillCar);
                     carDetailVo.setGuideLine(taskDetailVo.getGuideLine());
 
-                    // 查询车辆历史图片
-                    StringBuilder sb = getCarHistoryPhotoImg(waybillCar);
-
-                    // 封装当前车辆图片
-                    fillCarPhotoImg(detailState, waybillCar, sb);
-
-                    // 封装历史图片
-                    carDetailVo.setHistoryLoadPhotoImg(sb.toString());
+                    // 获取车辆运输图片
+                    getCarPhotoImg(carDetailVo, detailState, waybillCar);
 
                     // 查询品牌车系信息
                     OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
@@ -143,12 +137,33 @@ public class TaskServiceImpl implements ITaskService {
                     carDetailVo.setId(taskCar.getId());
                     carDetailVo.setWaybillCarState(waybillCar.getState());
                     carDetailVoList.add(carDetailVo);
+
+                    // todo 测试车辆图片
+                    String[] split = carDetailVo.getHistoryLoadPhotoImg().split(",");
+                    log.info("===>历史图片数量："+split.length);
+                    String[] string1 = StringUtils.isEmpty(carDetailVo.getLoadPhotoImg()) ? new String[]{}
+                            : carDetailVo.getLoadPhotoImg().split(",");
+                    log.info("===>提车图片数量："+string1.length);
+                    String[] string2 = StringUtils.isEmpty(carDetailVo.getUnloadPhotoImg()) ? new String[]{}
+                            : carDetailVo.getUnloadPhotoImg().split(",");
+                    log.info("===>收车图片数量："+string2.length);
                 }
             }
         }
         taskDetailVo.setFreightFee(freightFee);
         taskDetailVo.setCarDetailVoList(carDetailVoList);
         return BaseResultUtil.success(taskDetailVo);
+    }
+
+    private void getCarPhotoImg(CarDetailVo carDetailVo, String detailState, WaybillCar waybillCar) {
+        // 查询车辆历史图片
+        StringBuilder sb = getCarHistoryPhotoImg(waybillCar);
+
+        // 封装当前车辆图片
+        fillCarPhotoImg(detailState, waybillCar, sb);
+
+        // 封装历史图片
+        carDetailVo.setHistoryLoadPhotoImg(sb.toString());
     }
 
     private void fillGuideLine(TaskDetailVo taskDetailVo,WaybillCar waybillCar) {
