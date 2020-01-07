@@ -173,11 +173,11 @@
             t.id as taskId,
             t.waybill_id as waybillId,
             t.guide_line as guideLine,
-            t.complete_time as completeTime,
             (case w.carrier_type when 2 then w.no else t.no end) AS waybillNo,
             w.type as type,
             car.start_city as startCity,
             car.end_city as endCity,
+            max(car.unload_time) as completeTime,
             count( car.id ) AS carNum,
             sum(car.freight_fee) as freightFee
         from
@@ -416,6 +416,7 @@
         LEFT JOIN w_waybill_car car ON t.waybill_car_id = car.id
         where w.type in(1,3)
         GROUP BY t.id
+        order by t.complete_time desc
     </select>
 
     <select id="findListStockTask" resultType="com.cjyc.common.model.vo.salesman.mine.StockTaskVo"
