@@ -68,6 +68,7 @@ public class DispatchController {
      * @param dto
      * @return com.cjyc.common.model.vo.ResultVo<PageVo<DispatchListVo>>
      */
+    @Deprecated
     @ApiOperation(value = "调度列表信息")
     @PostMapping("/list")
     public ResultVo<PageVo<DispatchListVo>> list(@Valid @RequestBody DispatchListDto dto) {
@@ -78,7 +79,6 @@ public class DispatchController {
      * 查询待调度车辆列表（数据列表）
      * @author JPG
      */
-    @Deprecated
     @ApiOperation(value = "查询待调度车辆列表")
     @PostMapping(value = "/wait/list")
     public ResultVo<PageVo<WaitDispatchCarListVo>> waitDispatchCarList(@RequestBody DispatchListDto reqDto) {

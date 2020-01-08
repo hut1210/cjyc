@@ -109,7 +109,7 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
 
     WaybillCar findWaitReceiptWaybill(Long orderCarId);
 
-    List<WaybillCarVo> findCarEndpoint(@Param("list") List<Long> orderCarIds);
+    List<WaybillCarVo> findTrunkCarEndpoint(@Param("list") List<Long> orderCarIds);
     List<DispatchListVo> getDispatchList(Page<DispatchListVo> page,
                                          @Param("param") DispatchListDto dto);
 
@@ -185,4 +185,8 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
     int cancelBatch(@Param("collect") Collection<Long> afterWaybillCarIds);
 
     WaybillCar findFirst(@Param("id") Long id, @Param("orderCarId") Long orderCarId);
+
+    List<WaybillCarVo> findPickCarEndpoint(List<Long> orderCarIdList);
+
+    List<WaybillCarVo> findBackCarEndpoint(List<Long> orderCarIdList);
 }

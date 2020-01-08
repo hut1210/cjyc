@@ -465,18 +465,24 @@
                 </foreach>
             </if>
             <if test="paramsDto.bizScope != null">
-                and (o.input_store_id in <foreach collection="paramsDto.bizScope" item="item" index="index" open="(" close=")" separator=",">
-                                        #{item}
-                                    </foreach>
-                or o.end_belong_store_id in <foreach collection="paramsDto.bizScope" item="item" index="index" open="(" close=")" separator=",">
-                                            #{item}
-                                        </foreach>
-                or oc.now_store_id in <foreach collection="paramsDto.bizScope" item="item" index="index" open="(" close=")" separator=",">
-                                        #{item}
-                                    </foreach>
-                or wc.end_belong_store_id in <foreach collection="paramsDto.bizScope" item="item" index="index" open="(" close=")" separator=",">
-                                                #{item}
-                                            </foreach>)
+                and (
+                    o.input_store_id in
+                    <foreach collection="paramsDto.bizScope" item="item" index="index" open="(" close=")" separator=",">
+                        #{item}
+                    </foreach>
+                    or o.end_belong_store_id in
+                    <foreach collection="paramsDto.bizScope" item="item" index="index" open="(" close=")" separator=",">
+                        #{item}
+                    </foreach>
+                    or oc.now_store_id in
+                    <foreach collection="paramsDto.bizScope" item="item" index="index" open="(" close=")" separator=",">
+                        #{item}
+                    </foreach>
+                    or wc.end_belong_store_id in
+                    <foreach collection="paramsDto.bizScope" item="item" index="index" open="(" close=")" separator=",">
+                        #{item}
+                    </foreach>
+                )
             </if>
         </where>
         group by oc.id
@@ -1401,8 +1407,7 @@
         ss.city as dispatchEndCity,
         ss.area_code as dispatchEndAreaCode,
         ss.area as dispatchEndArea,
-        ss.detail_addr as dispatchEndAddress,
-        concat(left(o.start_city,2), '-', left(s.city,2)) as nodes,
+        concat(left(o.start_city,2), '-', left(ss.city,2)) as nodes,
 
         o.input_store_id as inputStoreId,
         o.start_city as startCity,
@@ -1411,7 +1416,6 @@
         o.end_city as endCity,
         o.end_city_code as endCityCode,
         o.end_belong_store_id as endBelongStoreId,
-        o.expect_start_date as expectStartDate,
         oc.order_no as orderNo,
         oc.id as orderCarId,
         oc.no as orderCarNo,
@@ -1450,8 +1454,7 @@
         se.city as dispatchStartCity,
         se.area_code as dispatchStartAreaCode,
         se.area as dispatchStartArea,
-        se.detail_addr as dispatchEndAddress,
-        concat(left(s.city,2), '-', left(o.end_city,2)) as nodes,
+        concat(left(se.city,2), '-', left(o.end_city,2)) as nodes,
 
         o.end_province_code as dispatchEndProvinceCode,
         o.end_province as dispatchEndProvince,
@@ -1459,7 +1462,6 @@
         o.end_city as dispatchEndCity,
         o.end_area_code as dispatchEndAreaCode,
         o.end_area as dispatchEndArea,
-        o.end_address as dispatchEndAddress,
 
         o.input_store_id as inputStoreId,
         o.start_city as startCity,
@@ -1611,12 +1613,14 @@
         ) as shell
         <where>
             <if test="param.searchValue != null and param.searchValue != ''">
-                and (shell.vin LIKE CONCAT('%', #{param.searchValue}, '%') or
-                shell.orderCarNo LIKE CONCAT('%', #{param.searchValue}, '%') or
-                shell.waybillNo LIKE CONCAT('%', #{param.searchValue}, '%'))
+                and (
+                shell.vin LIKE CONCAT('%', #{param.searchValue}, '%')
+                or shell.orderCarNo LIKE CONCAT('%', #{param.searchValue}, '%')
+                or shell.waybillNo LIKE CONCAT('%', #{param.searchValue}, '%')
+                )
             </if>
             <if test="param.waybillNo != null and param.waybillNo != ''">
-                and shell.waybillNo LIKE CONCAT('%', #{param.waybillNo}, '%'))
+                and shell.waybillNo LIKE CONCAT('%', #{param.waybillNo}, '%')
             </if>
             <if test="param.brand != null and param.brand !=''">
                 and shell.brand LIKE CONCAT('%',#{param.brand},'%')

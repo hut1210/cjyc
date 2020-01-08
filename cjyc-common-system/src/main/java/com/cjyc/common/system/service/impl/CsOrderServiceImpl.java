@@ -20,6 +20,7 @@ import com.cjyc.common.model.enums.log.OrderLogEnum;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.enums.order.OrderChangeTypeEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
+import com.cjyc.common.model.enums.waybill.WaybillTypeEnum;
 import com.cjyc.common.model.exception.ParameterException;
 import com.cjyc.common.model.exception.ServerException;
 import com.cjyc.common.model.keys.RedisKeys;
@@ -30,7 +31,6 @@ import com.cjyc.common.model.vo.web.order.DispatchAddCarVo;
 import com.cjyc.common.model.vo.web.order.OrderVo;
 import com.cjyc.common.model.vo.web.waybill.WaybillCarVo;
 import com.cjyc.common.system.service.*;
-import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.common.system.util.RedisUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -883,9 +883,17 @@ public class CsOrderServiceImpl implements ICsOrderService {
             return BaseResultUtil.fail("无数据权限");
         }
         paramsDto.setBizScope(bizScope.getCode() == 0 ? null : bizScope.getStoreIds());*/
-
-        //查询车辆信息
-        List<WaybillCarVo> childList = waybillCarDao.findCarEndpoint(paramsDto.getOrderCarIdList());
+        List<WaybillCarVo> childList = null;
+        if(paramsDto.getDispatchType() == WaybillTypeEnum.PICK.code){
+            //查询车辆信息
+            childList = waybillCarDao.findPickCarEndpoint(paramsDto.getOrderCarIdList());
+        }else if(paramsDto.getDispatchType() == WaybillTypeEnum.BACK.code){
+            //查询车辆信息
+            childList = waybillCarDao.findBackCarEndpoint(paramsDto.getOrderCarIdList());
+        }else{
+            //查询车辆信息
+            childList = waybillCarDao.findTrunkCarEndpoint(paramsDto.getOrderCarIdList());
+        }
         //计算推荐线路
         /*List<String> guideLines = csLineNodeService.getGuideLine(citySet, store.getCity());
         dispatchAddCarVo.setGuideLine(guideLines == null ? store.getCity() : guideLines.get(0));*/
