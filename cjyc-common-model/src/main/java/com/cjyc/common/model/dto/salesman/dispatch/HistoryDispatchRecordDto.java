@@ -6,6 +6,7 @@ import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.util.Set;
 
 /**
  * @Description 历史调度记录参数对象
@@ -38,5 +39,5 @@ public class HistoryDispatchRecordDto extends BasePageDto {
     @ApiModelProperty(value = "调度日期结束")
     private Long createTimeE;
 
-    private String bizStoreIds;
+    private Set<Long> bizStoreIds;
 }

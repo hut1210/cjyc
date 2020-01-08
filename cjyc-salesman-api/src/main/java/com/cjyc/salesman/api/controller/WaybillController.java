@@ -58,31 +58,7 @@ public class WaybillController {
     }
 
 
-    /**
-     * 提车完善信息
-     * @author JPG
-     */
-    @ApiOperation(value = "提车完善信息")
-    @PostMapping(value = "/replenish/info/update")
-    public ResultVo replenishInfo(@RequestBody ReplenishInfoDto reqDto) {
-        //验证用户
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
-        return csTaskService.replenishInfo(reqDto);
-    }
-    /**
-     * 提车装车并完善信息
-     * @author JPG
-     */
-    @ApiOperation(value = "同城装车")
-    @PostMapping(value = "/load/for/local")
-    public ResultVo<ResultReasonVo> loadForLocal(@RequestBody ReplenishInfoDto reqDto) {
-        //验证用户
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
-        reqDto.setLoginType(UserTypeEnum.ADMIN);
-        return csTaskService.loadForLocal(reqDto);
-    }
+
     /**
      * 修改同城调度
      *

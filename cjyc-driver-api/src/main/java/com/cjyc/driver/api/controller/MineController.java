@@ -178,7 +178,7 @@ public class MineController {
 
     @ApiOperation(value = "新增/修改承运商下司机_改版")
     @PostMapping(value = "/saveOrModifyDriverNew")
-    public ResultVo saveOrModifyDriverAppNew(@Validated @RequestBody CarrierDriverDto dto){
+    public ResultVo saveOrModifyDriverNew(@Validated @RequestBody CarrierDriverDto dto){
         return csDriverService.saveOrModifyDriverAppNew(dto);
     }
 

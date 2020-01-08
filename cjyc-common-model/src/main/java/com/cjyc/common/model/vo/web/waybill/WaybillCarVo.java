@@ -40,4 +40,10 @@ public class WaybillCarVo extends WaybillCar {
     @ApiModelProperty(value = "目的地是否可以编辑")
     private Boolean hasLine;
 
+    @ApiModelProperty(value = "提车方式：1自送，2代驾上门，3拖车上门，4物流上门")
+    private String pickType;
+
+    @ApiModelProperty(value = "送车方式：1自提，2代驾上门，3拖车上门，4物流上门")
+    private String backType;
+
 }

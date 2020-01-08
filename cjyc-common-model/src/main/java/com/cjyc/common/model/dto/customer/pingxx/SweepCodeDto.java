@@ -15,7 +15,7 @@ import java.util.List;
 @Data
 public class SweepCodeDto {
 
-    @ApiModelProperty(value = "用户端类型",required = true)
+    @ApiModelProperty(value = "用户端类型",hidden = true)
     private Integer clientId;
     @ApiModelProperty(value = "用户ID",required = true)
     private Long loginId;
@@ -33,6 +33,6 @@ public class SweepCodeDto {
     @NotEmpty(message = "任务车辆ID")
     @ApiModelProperty(value = "任务车辆ID")
     private List<String> taskCarIdList;
-    @ApiModelProperty(value = "4为司机端出示 2为业务员端出示", hidden = true)
+    @ApiModelProperty(value = "4为司机端出示 2为业务员端出示", required = true)
     private int clientType;
 }

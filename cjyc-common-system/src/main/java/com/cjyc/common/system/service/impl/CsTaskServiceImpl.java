@@ -13,7 +13,6 @@ import com.cjyc.common.model.entity.defined.CarrierInfo;
 import com.cjyc.common.model.entity.defined.UserInfo;
 import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.log.OrderCarLogEnum;
-import com.cjyc.common.model.enums.log.OrderLogEnum;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.enums.task.TaskStateEnum;
@@ -363,7 +362,8 @@ public class CsTaskServiceImpl implements ICsTaskService {
             if (WaybillTypeEnum.PICK.code == waybill.getType() && !validateWaybillCarInfo(waybillCar)) {
                 throw new ParameterException("提车运单运单，照片不能为空");
             }
-
+            //验证是否是第一段运单
+            waybillCarDao.countPrev(waybillCar.getId(), waybillCar.getOrderCarId());
             //验证车辆当前所在地是否与出发区县匹配
             OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
             if (orderCar == null) {
@@ -528,7 +528,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 waybillCarDao.updateStateById(waybillCar.getId(), WaybillCarStateEnum.UNLOADED.code);
                 validateAndFinishTask(task.getId());
                 validateAndFinishWaybill(waybillCar.getWaybillId());
-                orderCarDao.updateLocationForUnload(waybillCar.getOrderCarId(), 0L, waybillCar.getEndAreaCode());
+                orderCarDao.updateLocation(waybillCar.getOrderCarId(), 0L, waybillCar.getEndAreaCode());
 
                 if(paramsDto.getLoginType() == UserTypeEnum.ADMIN){
                     CarStorageLog carStorageLog = CarStorageLog.builder()
@@ -649,12 +649,13 @@ public class CsTaskServiceImpl implements ICsTaskService {
             waybillCarDao.updateForInStore(waybillCar.getId());
 
             //更新车辆状态和所在位置
-            OrderCar orderCar = new OrderCar();
-            orderCar.setId(oc.getId());
-            orderCar.setState(newState);
-            orderCar.setNowStoreId(waybillCar.getEndStoreId());
-            orderCar.setNowAreaCode(waybillCar.getEndAreaCode());
-            orderCarDao.updateById(orderCar);
+            OrderCar noc = new OrderCar();
+            noc.setId(oc.getId());
+            noc.setState(newState);
+            noc.setNowStoreId(waybillCar.getEndStoreId());
+            noc.setNowAreaCode(waybillCar.getEndAreaCode());
+            noc.setNowUpdateTime(System.currentTimeMillis());
+            orderCarDao.updateById(noc);
 
             //添加入库日志
             CarStorageLog carStorageLog = CarStorageLog.builder()
@@ -794,7 +795,14 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 //送车、自提
                 orderCarNewState = OrderCarStateEnum.BACKING.code;
             }
-            orderCarDao.updateStateById(orderCarNewState, orderCar.getId());
+
+            //更新车辆状态和所在位置
+            OrderCar noc = new OrderCar();
+            noc.setId(orderCar.getId());
+            noc.setState(orderCarNewState);
+            noc.setNowStoreId(0L);
+            noc.setNowUpdateTime(System.currentTimeMillis());
+            orderCarDao.updateById(noc);
 
             //出库日志
             CarStorageLog carStorageLog = CarStorageLog.builder()
@@ -899,7 +907,8 @@ public class CsTaskServiceImpl implements ICsTaskService {
             }
             Order order = orderDao.findByCarId(waybillCar.getOrderCarId());
             waybillCarDao.updateForFinish(waybillCar.getId());
-            orderCarDao.updateForFinish(waybillCar.getOrderCarId());
+
+            orderCarDao.updateForFinish(waybillCar.getOrderCarId(), waybillCar.getEndAreaCode());
 
             customerPhoneSet.add(order.getBackContactPhone());
             waybillCarIdSet.add(waybillCar.getId());
@@ -960,7 +969,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             //处理车辆相关运单车辆
             waybillCarDao.updateForFinish(waybillCar.getId());
             //更新车辆状态
-            orderCarDao.updateForFinish(orderCar.getId());
+            orderCarDao.updateForFinish(orderCar.getId(), waybillCar.getEndAreaCode());
 
             //添加日志
             csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.IN_STORE,

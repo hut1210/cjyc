@@ -171,4 +171,12 @@ public interface ICarrierDao extends BaseMapper<Carrier> {
      */
     AppDriverInfoVo findAppDriverInfoNew(@Param("roleId") Long roleId,@Param("loginId") Long loginId);
 
+
+    /**
+     * 调度中心中提车干线调度中代驾和拖车列表
+     * @param dto
+     * @return
+     */
+    List<TrailCarrierVo> findTrailDriverNew(TrailCarrierDto dto);
+
 }

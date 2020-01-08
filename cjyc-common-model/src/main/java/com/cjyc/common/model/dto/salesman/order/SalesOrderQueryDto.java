@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
+import java.util.Set;
 
 @Data
 public class SalesOrderQueryDto extends PageSalesDto {
@@ -37,5 +39,5 @@ public class SalesOrderQueryDto extends PageSalesDto {
     private Long createEndTime;
 
     @ApiModelProperty(value = "业务中心ids，不需要传")
-    private String storeIds;
+    private Set<Long> storeIds;
 }

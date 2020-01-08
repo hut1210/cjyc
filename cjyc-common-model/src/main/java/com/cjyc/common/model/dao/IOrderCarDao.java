@@ -2,7 +2,6 @@ package com.cjyc.common.model.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.dto.customer.invoice.InvoiceApplyQueryDto;
-import com.cjyc.common.model.dto.salesman.BaseSalesDto;
 import com.cjyc.common.model.dto.salesman.dispatch.DispatchListDto;
 import com.cjyc.common.model.dto.salesman.mine.OrderCarDto;
 import com.cjyc.common.model.dto.salesman.mine.StockCarDto;
@@ -11,7 +10,6 @@ import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.vo.customer.invoice.InvoiceOrderVo;
 import com.cjyc.common.model.vo.customer.order.OrderCarCenterVo;
 import com.cjyc.common.model.vo.salesman.dispatch.CityCarCountVo;
-import com.cjyc.common.model.vo.salesman.dispatch.DispatchListVo;
 import com.cjyc.common.model.vo.salesman.dispatch.StartAndEndCityCountVo;
 import com.cjyc.common.model.vo.salesman.dispatch.WaitDispatchCarListVo;
 import com.cjyc.common.model.vo.salesman.mine.StockCarDetailVo;
@@ -201,7 +199,7 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
      * @author liuxingxiang
      * @date 2019/12/11
      */
-    List<CityCarCountVo> selectStartCityCarCount(@Param("storeIds") String storeIds);
+    List<CityCarCountVo> selectStartCityCarCount(@Param("storeIds") Set<Long> storeIds);
 
     /**
      * 功能描述: 查询出发地与目的地相同的车辆数量
@@ -231,11 +229,11 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
 
     List<Map<String, Object>> findLineWaitDispatchTrunkCarCountList(@Param("paramsDto") LineWaitDispatchCountDto paramsDto);
 
-    int updateLocationForUnload(@Param("orderCarId") Long orderCarId, @Param("nowStoreId") Long nowStoreId, @Param("nowAreaCode") String nowAreaCode);
+    int updateLocation(@Param("orderCarId") Long orderCarId, @Param("nowStoreId") Long nowStoreId, @Param("nowAreaCode") String nowAreaCode);
 
     Map<String, Object> countTotalTrunkWaitDispatchCarByStartCity(@Param("paramsDto") LineWaitDispatchCountDto paramsDto);
 
     Map<String, Object> countTotalTrunkWaitDispatchCar();
 
-    int updateForFinish(Long orderCarId);
+    int updateForFinish(@Param("orderCarId") Long orderCarId, @Param("areaCode")String areaCode);
 }

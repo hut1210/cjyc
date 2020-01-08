@@ -1,7 +1,6 @@
 package com.cjyc.common.model.vo.web.finance;
 
 import io.swagger.annotations.ApiModelProperty;
-import io.swagger.models.auth.In;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -23,11 +22,11 @@ public class SettlementVo {
     @ApiModelProperty(value = "应付运费")
     private BigDecimal freightFee;
 
-    @ApiModelProperty(value = "运单类型")
-    private Integer type;
+    @ApiModelProperty(value = "状态")
+    private String state;
 
-    @ApiModelProperty(value = "车辆数")
-    private int carNum;
+    @ApiModelProperty(value = "发票号")
+    private String invoiceNo;
 
     @ApiModelProperty(value = "申请结算时间")
     private Long applyTime;
@@ -40,12 +39,21 @@ public class SettlementVo {
     @ApiModelProperty(value = "确认开票时间")
     private Long confirmTime;
 
+    @ApiModelProperty(value = "确认人Id")
+    private Long confirmId;
+
     @ApiModelProperty(value = "确认人")
     private String confirmMan;
 
     @ApiModelProperty(value = "核销时间")
     private Long writeOffTime;
 
+    @ApiModelProperty(value = "核销人Id")
+    private Long writeOffId;
+
     @ApiModelProperty(value = "核销人")
-    private Long writeOffMan;
+    private String writeOffMan;
+
+    @ApiModelProperty(value = "实付总运费")
+    private BigDecimal totalFreightPay;
 }

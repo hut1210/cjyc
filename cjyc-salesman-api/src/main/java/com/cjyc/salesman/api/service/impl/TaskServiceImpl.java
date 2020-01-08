@@ -11,6 +11,8 @@ import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.entity.defined.BizScope;
 import com.cjyc.common.model.enums.BizScopeEnum;
 import com.cjyc.common.model.enums.waybill.WaybillCarStateEnum;
+import com.cjyc.common.model.enums.waybill.WaybillCarrierTypeEnum;
+import com.cjyc.common.model.enums.waybill.WaybillTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.PageVo;
@@ -18,6 +20,7 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.task.CarDetailVo;
 import com.cjyc.common.model.vo.driver.task.TaskDetailVo;
 import com.cjyc.common.model.vo.salesman.task.TaskWaybillVo;
+import com.cjyc.common.system.config.LogoImgProperty;
 import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.salesman.api.service.ITaskService;
 import com.github.pagehelper.PageHelper;
@@ -32,7 +35,6 @@ import org.springframework.util.StringUtils;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @Description 任务业务接口实现类
@@ -56,6 +58,8 @@ public class TaskServiceImpl implements ITaskService {
     private IOrderDao orderDao;
     @Autowired
     private ICsSysService csSysService;
+    @Autowired
+    private ICarSeriesDao carSeriesDao;
 
     @Override
     public ResultVo<PageVo<TaskWaybillVo>> getCarryPage(TaskWaybillQueryDto dto) {
@@ -88,6 +92,10 @@ public class TaskServiceImpl implements ITaskService {
             return BaseResultUtil.fail("查询任务单为空");
         }
         BeanUtils.copyProperties(task,taskDetailVo);
+        // 承运商类型不是企业或者不是干线运输时，运单号显示运单号，否则显示任务单号
+        if (WaybillCarrierTypeEnum.TRUNK_ENTERPRISE.code != waybill.getCarrierType()) {
+            taskDetailVo.setNo(waybill.getNo());
+        }
 
         // 任务单车辆
         LambdaQueryWrapper<TaskCar> queryWrapper = new QueryWrapper<TaskCar>().lambda().eq(TaskCar::getTaskId,taskId);
@@ -107,31 +115,62 @@ public class TaskServiceImpl implements ITaskService {
                     BeanUtils.copyProperties(waybillCar,carDetailVo);
                     freightFee = freightFee.add(waybillCar.getFreightFee());
 
-                    // 查询车辆历史图片
-                    StringBuilder sb = getCarHistoryPhotoImg(waybillCar);
+                    // 如果指导路线为空，且运单是提车或者送车，将始发成和结束城市用“-”拼接
+                    fillGuideLine(taskDetailVo,waybillCar);
+                    carDetailVo.setGuideLine(taskDetailVo.getGuideLine());
 
-                    // 封装当前车辆图片
-                    fillCarPhotoImg(detailState, waybillCar, sb);
-
-                    // 封装历史图片
-                    carDetailVo.setHistoryLoadPhotoImg(sb.toString());
+                    // 获取车辆运输图片
+                    getCarPhotoImg(carDetailVo, detailState, waybillCar);
 
                     // 查询品牌车系信息
                     OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
                     BeanUtils.copyProperties(orderCar,carDetailVo);
+
+                    // 查询车辆logo图片
+                    String logoImg = carSeriesDao.getLogoImgByBraMod(carDetailVo.getBrand(),carDetailVo.getModel());
+                    carDetailVo.setLogoPhotoImg(LogoImgProperty.logoImg+logoImg);
 
                     // 查询支付方式
                     Order order = orderDao.selectById(orderCar.getOrderId());
                     carDetailVo.setPayType(order.getPayType());
 
                     carDetailVo.setId(taskCar.getId());
+                    carDetailVo.setWaybillCarState(waybillCar.getState());
                     carDetailVoList.add(carDetailVo);
+
+                    // todo 测试车辆图片
+                    String[] split = carDetailVo.getHistoryLoadPhotoImg().split(",");
+                    log.info("===>历史图片数量："+split.length);
+                    String[] string1 = StringUtils.isEmpty(carDetailVo.getLoadPhotoImg()) ? new String[]{}
+                            : carDetailVo.getLoadPhotoImg().split(",");
+                    log.info("===>提车图片数量："+string1.length);
+                    String[] string2 = StringUtils.isEmpty(carDetailVo.getUnloadPhotoImg()) ? new String[]{}
+                            : carDetailVo.getUnloadPhotoImg().split(",");
+                    log.info("===>收车图片数量："+string2.length);
                 }
             }
         }
         taskDetailVo.setFreightFee(freightFee);
         taskDetailVo.setCarDetailVoList(carDetailVoList);
         return BaseResultUtil.success(taskDetailVo);
+    }
+
+    private void getCarPhotoImg(CarDetailVo carDetailVo, String detailState, WaybillCar waybillCar) {
+        // 查询车辆历史图片
+        StringBuilder sb = getCarHistoryPhotoImg(waybillCar);
+
+        // 封装当前车辆图片
+        fillCarPhotoImg(detailState, waybillCar, sb);
+
+        // 封装历史图片
+        carDetailVo.setHistoryLoadPhotoImg(sb.toString());
+    }
+
+    private void fillGuideLine(TaskDetailVo taskDetailVo,WaybillCar waybillCar) {
+        boolean b = WaybillTypeEnum.PICK.code == taskDetailVo.getType() || WaybillTypeEnum.BACK.code == taskDetailVo.getType();
+        if (b && StringUtils.isEmpty(taskDetailVo.getGuideLine())) {
+            taskDetailVo.setGuideLine(waybillCar.getStartCity() + "-" + waybillCar.getEndCity());
+        }
     }
 
     private void fillCarPhotoImg(String detailState, WaybillCar waybillCar, StringBuilder sb) {
@@ -231,25 +270,11 @@ public class TaskServiceImpl implements ITaskService {
             return BaseResultUtil.fail("您没有访问权限!");
         }
 
-        dto.setStoreId(getStoreIds(bizScope));
+        dto.setStoreIds(bizScope.getStoreIds());
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<TaskWaybillVo> list = taskDao.selectOutAndInStorageList(dto);
         PageInfo<TaskWaybillVo> pageInfo = new PageInfo<>(list);
         return BaseResultUtil.success(pageInfo);
     }
 
-    private String getStoreIds(BizScope bizScope) {
-        if (bizScope.getCode() == BizScopeEnum.CHINA.code) {
-            return null;
-        }
-        Set<Long> storeIds = bizScope.getStoreIds();
-        StringBuilder sb = new StringBuilder();
-        for (Long storeId : storeIds) {
-            if (sb.length() > 0) {
-                sb.append(",");
-            }
-            sb.append(storeId);
-        }
-        return sb.toString();
-    }
 }

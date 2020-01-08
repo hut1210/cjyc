@@ -624,4 +624,52 @@
         WHERE
             surd.id = #{roleId} and surd.user_id = #{loginId} and dc.state &lt; 4
     </select>
+
+    <!-- 调度中心中提车送车调度中代驾和拖车列表_改版 -->
+    <select id="findTrailDriverNew" resultType="com.cjyc.common.model.vo.web.carrier.TrailCarrierVo"
+            parameterType="com.cjyc.common.model.dto.web.carrier.TrailCarrierDto">
+        SELECT
+            dc.id AS carrierId,
+            dc.NAME AS businessName,
+            ( CASE dc.type WHEN 1 THEN dc.linkman WHEN 2 THEN '' END ) AS NAME,
+            ( CASE dc.type WHEN 1 THEN dc.linkman_phone WHEN 2 THEN '' END ) AS phone,
+            dc.type AS type,
+            dc.MODE AS MODE,
+            ( CASE dc.type WHEN 1 THEN dvr.plate_no WHEN 2 THEN '' END ) AS plateNo,
+            ( CASE dc.type WHEN 1 THEN dc.legal_id_card WHEN 2 THEN '' END ) AS idCard,
+            ( CASE dc.type WHEN 1 THEN dvr.carry_car_num WHEN 2 THEN '' END ) AS carryCarNum,
+            ( CASE dc.type WHEN 1 THEN dvr.occupied_car_num WHEN 2 THEN '' END ) AS occupiedCarNum,
+            ( CASE dc.type WHEN 1 THEN dvr.running_state WHEN 2 THEN '' END ) AS runningState
+        FROM
+          d_carrier dc
+        LEFT JOIN ( SELECT * FROM s_user_role_dept WHERE dept_type = 2 AND user_type = 2 ) surd ON surd.dept_id = dc.id
+        LEFT JOIN d_driver dd ON dd.id = surd.user_id
+        LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
+        <where>
+            <if test="name != null and name.trim() != ''">
+                dc.name like CONCAT('%',#{name},'%')
+            </if>
+            <if test="type != null">
+                and  dc.type = #{type}
+            </if>
+            <if test="phone != null and phone.trim() != ''">
+                and  dc.linkman_phone = #{phone}
+            </if>
+            <if test="idCard != null and idCard.trim() != ''">
+                and  dc.legal_id_card = #{idCard}
+            </if>
+            <if test="plateNo != null and plateNo.trim() != ''">
+                and  dvr.plate_no = #{plateNo}
+            </if>
+            and dc.mode in
+            <foreach collection="mode" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+            and dc.state = 2
+            and dc.business_state = 0
+            and surd.state = 2
+            group by dc.id
+            order by dc.create_time desc,dc.check_time desc
+        </where>
+    </select>
 </mapper>

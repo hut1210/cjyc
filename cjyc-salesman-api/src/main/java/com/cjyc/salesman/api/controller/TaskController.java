@@ -44,6 +44,19 @@ public class TaskController {
     private ICsAdminService csAdminService;
 
     /**
+     * 提车装车并完善信息
+     * @author JPG
+     */
+    @ApiOperation(value = "同城装车")
+    @PostMapping(value = "/load/for/local")
+    public ResultVo<ResultReasonVo> loadForLocal(@RequestBody ReplenishInfoDto reqDto) {
+        //验证用户
+        Admin admin = csAdminService.validate(reqDto.getLoginId());
+        reqDto.setLoginName(admin.getName());
+        reqDto.setLoginType(UserTypeEnum.ADMIN);
+        return csTaskService.loadForLocal(reqDto);
+    }
+    /**
      * 提车完善信息
      * @author JPG
      */
