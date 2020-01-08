@@ -130,10 +130,13 @@ public class TaskServiceImpl implements ITaskService {
                     String logoImg = carSeriesDao.getLogoImgByBraMod(carDetailVo.getBrand(),carDetailVo.getModel());
                     carDetailVo.setLogoPhotoImg(LogoImgProperty.logoImg+logoImg);
 
-                    // 查询支付方式
+                    // 查询订单信息
                     Order order = orderDao.selectById(orderCar.getOrderId());
                     carDetailVo.setPayType(order.getPayType());
+                    carDetailVo.setOrderId(order.getId());
+                    carDetailVo.setOrderNo(order.getNo());
 
+                    // 设置任务单车辆ID和运单车辆状态
                     carDetailVo.setId(taskCar.getId());
                     carDetailVo.setWaybillCarState(waybillCar.getState());
                     carDetailVoList.add(carDetailVo);
