@@ -20,6 +20,13 @@ public class CarDetailVo implements Serializable {
     @JsonSerialize(using= ToStringSerializer.class)
     private Long id;
 
+    @ApiModelProperty(value = "订单ID")
+    @JsonSerialize(using= ToStringSerializer.class)
+    private Long orderId;
+
+    @ApiModelProperty(value = "订单编号")
+    private String orderNo;
+
     @ApiModelProperty(value = "运单车辆状态：0待指派，2已指派，5待装车，15待装车确认，45已装车，70已卸车，90确认交车, 100确认收车, 105待重连，120已重连")
     private Integer waybillCarState;
 
