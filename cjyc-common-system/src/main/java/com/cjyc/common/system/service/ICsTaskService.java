@@ -59,4 +59,6 @@ public interface ICsTaskService {
     void reCreate(Waybill waybill, List<WaybillCar> waybillCarList, List<WaybillCar> newWaybillCar,CarrierInfo carrierInfo);
 
     void updateForTaskCarFinish(List<String> taskCarIdList, int payType, UserInfo userInfo);
+
+    ResultVo inStoreForLocal(ReplenishInfoDto reqDto);
 }

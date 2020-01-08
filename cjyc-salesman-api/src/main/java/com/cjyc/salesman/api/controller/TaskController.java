@@ -131,6 +131,22 @@ public class TaskController {
     }
 
     /**
+     * 确认入库
+     * @author JPG
+     */
+    @ApiOperation(value = "确认入库")
+    @PostMapping(value = "/car/in/store/For/local")
+    public ResultVo inStoreForLocal(@Validated @RequestBody ReplenishInfoDto reqDto) {
+        //验证用户
+        Admin admin = csAdminService.validate(reqDto.getLoginId());
+        reqDto.setLoginName(admin.getName());
+        reqDto.setLoginPhone(admin.getPhone());
+        reqDto.setLoginType(UserTypeEnum.ADMIN);
+        return csTaskService.inStoreForLocal(reqDto);
+    }
+
+
+    /**
      * 签收-业务员
      * @author JPG
      */

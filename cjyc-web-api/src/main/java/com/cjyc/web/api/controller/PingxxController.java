@@ -2,11 +2,13 @@ package com.cjyc.web.api.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.cjkj.common.utils.IPUtil;
+import com.cjyc.common.model.dto.customer.pingxx.ValidateSweepCodeDto;
 import com.cjyc.common.model.dto.web.pingxx.WebOutOfStockDto;
 import com.cjyc.common.model.dto.web.pingxx.WebPrePayDto;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.StringUtil;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.customer.order.ValidateSweepCodePayVo;
 import com.cjyc.common.system.service.ICsPingPayService;
 import com.cjyc.web.api.service.IPingxxService;
 import com.cjyc.web.api.util.QRcodeUtil;
@@ -103,5 +105,10 @@ public class PingxxController {
         return BaseResultUtil.success(map);
     }
 
+    @ApiOperation(value = "验证支付状态")
+    @PostMapping(value = "/validate")
+    public ResultVo<ValidateSweepCodePayVo> validateCarPayState(@RequestBody ValidateSweepCodeDto validateSweepCodeDto) {
 
+        return csPingPayService.validateCarPayState(validateSweepCodeDto, false);
+    }
 }

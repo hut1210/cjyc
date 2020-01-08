@@ -35,6 +35,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -80,7 +81,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
     private RedisUtils redisUtil;
     @Resource
     private ICsDriverService csDriverService;
-    @Resource
+    @Autowired
     private ICsStorageLogService csStorageLogService;
     @Resource
     private ICsSmsService csSmsService;
@@ -582,6 +583,23 @@ public class CsTaskServiceImpl implements ICsTaskService {
     }
 
     @Override
+    public ResultVo inStoreForLocal(ReplenishInfoDto paramsDto) {
+        //提车上传信息
+        ResultVo resultVo = replenishInfo(paramsDto);
+        if (ResultEnum.SUCCESS.getCode() != resultVo.getCode()) {
+            return BaseResultUtil.fail(resultVo.getMsg());
+        }
+        //提车
+        TaskCar taskCar = taskCarDao.selectById(paramsDto.getTaskCarId());
+        InStoreTaskDto inStoreTaskDto = new InStoreTaskDto();
+        BeanUtils.copyProperties(paramsDto, inStoreTaskDto);
+        inStoreTaskDto.setTaskId(taskCar.getTaskId());
+        inStoreTaskDto.setTaskCarIdList(Lists.newArrayList(taskCar.getId()));
+
+        return inStore(inStoreTaskDto);
+    }
+
+    @Override
     public ResultVo<ResultReasonVo> inStore(InStoreTaskDto paramsDto) {
         //返回内容
         ResultReasonVo resultReasonVo = new ResultReasonVo();
@@ -1046,19 +1064,17 @@ public class CsTaskServiceImpl implements ICsTaskService {
             orderCarDao.updateForPaySuccess(orderCar.getId());
             //处理车辆相关运单车辆
             WaybillCar waybillCar = waybillCarDao.findWaitReceiptWaybill(orderCar.getId());
-            if (waybillCar == null) {
-                continue;
+            if (waybillCar != null) {
+                waybillCarDao.updateForFinish(waybillCar.getId());
+                //添加日志
+                csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.RECEIPT,
+                        new String[]{MessageFormat.format(OrderCarLogEnum.RECEIPT.getInnerLog(), orderCar.getNo()),
+                                MessageFormat.format(OrderCarLogEnum.RECEIPT.getOutterLog(), orderCar.getNo())},
+                        userInfo);
+                // 提取数据
+                orderIdSet.add(orderCar.getOrderId());
+                waybillCarIdSet.add(waybillCar.getId());
             }
-            waybillCarDao.updateForPaySuccess(waybillCar.getId());
-
-            //添加日志
-            csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.RECEIPT,
-                    new String[]{MessageFormat.format(OrderCarLogEnum.RECEIPT.getInnerLog(), orderCar.getNo()),
-                            MessageFormat.format(OrderCarLogEnum.RECEIPT.getOutterLog(), orderCar.getNo())},
-                    userInfo);
-            // 提取数据
-            orderIdSet.add(orderCar.getOrderId());
-            waybillCarIdSet.add(waybillCar.getId());
         }
         //处理订单
         if (CollectionUtils.isEmpty(orderIdSet)) {
