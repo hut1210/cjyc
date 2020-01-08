@@ -49,4 +49,11 @@ public interface ITaskService extends IService<Task> {
      * @return com.cjyc.common.model.vo.ResultVo
      */
     ResultVo<PageVo<TaskPageVo>> getTaskPage(TaskPageDto dto);
+
+
+
+
+    /************************************韵车集成改版 st***********************************/
+
+    ResultVo<PageVo<CrTaskVo>> crTaskListNew(CrTaskDto reqDto);
 }
