@@ -184,5 +184,5 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
 
     int cancelBatch(@Param("collect") Collection<Long> afterWaybillCarIds);
 
-    int countPrev(@Param("id") Long id, @Param("orderCarId") Long orderCarId);
+    WaybillCar findFirst(@Param("id") Long id, @Param("orderCarId") Long orderCarId);
 }

@@ -1393,13 +1393,15 @@
         o.start_city as dispatchStartCity,
         o.start_area_code as dispatchStartAreaCode,
         o.start_area as dispatchStartArea,
+        o.start_address as dispatchStartAddress,
 
-        s.province_code as dispatchEndProvinceCode,
-        s.province as dispatchEndProvince,
-        s.city_code as dispatchEndCityCode,
-        s.city as dispatchEndCity,
-        s.area_code as dispatchEndAreaCode,
-        s.area as dispatchEndArea,
+        ss.province_code as dispatchEndProvinceCode,
+        ss.province as dispatchEndProvince,
+        ss.city_code as dispatchEndCityCode,
+        ss.city as dispatchEndCity,
+        ss.area_code as dispatchEndAreaCode,
+        ss.area as dispatchEndArea,
+        ss.detail_addr as dispatchEndAddress,
         concat(left(o.start_city,2), '-', left(s.city,2)) as nodes,
 
         o.input_store_id as inputStoreId,
@@ -1424,7 +1426,7 @@
         temp.waybill_no as waybillNo
         from w_order o
         join w_order_car oc on oc.order_id = o.id
-        join s_store s on s.id = o.start_store_id
+        join s_store ss on ss.id = o.start_store_id
         left join (
             select
             wc.*
@@ -1442,12 +1444,13 @@
     </sql>
     <sql id="back_wait_dispatch_car_list_For_App">
         select
-        s.province_code as dispatchStartProvinceCode,
-        s.province as dispatchStartProvince,
-        s.city_code as dispatchStartCityCode,
-        s.city as dispatchStartCity,
-        s.area_code as dispatchStartAreaCode,
-        s.area as dispatchStartArea,
+        se.province_code as dispatchStartProvinceCode,
+        se.province as dispatchStartProvince,
+        se.city_code as dispatchStartCityCode,
+        se.city as dispatchStartCity,
+        se.area_code as dispatchStartAreaCode,
+        se.area as dispatchStartArea,
+        se.detail_addr as dispatchEndAddress,
         concat(left(s.city,2), '-', left(o.end_city,2)) as nodes,
 
         o.end_province_code as dispatchEndProvinceCode,
@@ -1456,6 +1459,7 @@
         o.end_city as dispatchEndCity,
         o.end_area_code as dispatchEndAreaCode,
         o.end_area as dispatchEndArea,
+        o.end_address as dispatchEndAddress,
 
         o.input_store_id as inputStoreId,
         o.start_city as startCity,
@@ -1479,7 +1483,7 @@
         temp.waybill_no as waybillNo
         from w_order o
         join w_order_car oc on oc.order_id = o.id
-        join s_store s on s.id = o.end_store_id
+        join s_store se on se.id = o.end_store_id
         left join (
             select
             wc.*

@@ -8,6 +8,7 @@ import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.List;
@@ -45,12 +46,13 @@ public class SaveOrderDto {
     @NotNull
     @ApiModelProperty(value = "1C端 2大客户 3-伙人", required = true)
     private int customerType;
-    //@ApiModelProperty(value = "客户id")
+    @ApiModelProperty(value = "客户id")
     private Long customerId;
-    //@NotBlank(message = "客户电话不能为空")
+    @NotBlank(message = "客户电话不能为空")
+    @Pattern(regexp = "^[1]\\d{10}$", message = "请输入正确的手机号")
     @ApiModelProperty(value = "客户电话", required = true)
     private String customerPhone;
-    //@NotBlank(message = "客户姓名不能为空")
+    @NotBlank(message = "客户姓名不能为空")
     @ApiModelProperty(value = "客户姓名", required = true)
     private String customerName;
     @NotBlank(message = "出发城市不能为空")

@@ -95,6 +95,7 @@
         join d_carrier_driver_con con on d.id = con.driver_id
         where con.carrier_id = #{carrierId}
         and con.state = 2
+        and d.business_state = 0
         limit 1
     </select>
 
