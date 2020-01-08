@@ -1071,10 +1071,10 @@ public class CsTaskServiceImpl implements ICsTaskService {
                         new String[]{MessageFormat.format(OrderCarLogEnum.RECEIPT.getInnerLog(), orderCar.getNo()),
                                 MessageFormat.format(OrderCarLogEnum.RECEIPT.getOutterLog(), orderCar.getNo())},
                         userInfo);
-                // 提取数据
-                orderIdSet.add(orderCar.getOrderId());
                 waybillCarIdSet.add(waybillCar.getId());
             }
+            // 提取数据
+            orderIdSet.add(orderCar.getOrderId());
         }
         //处理订单
         if (CollectionUtils.isEmpty(orderIdSet)) {
