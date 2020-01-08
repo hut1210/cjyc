@@ -106,7 +106,7 @@ public class DispatchController {
     }
 
     @ApiOperation(value = "根据订单车辆ID查询可调度起始地和目的地")
-    @PostMapping(value = "/car/from/to/get")
+    //@PostMapping(value = "/car/from/to/get")
     public ResultVo validateCanDispatch(@RequestBody ComputeCarEndpointDto reqDto) {
         return csOrderService.validateCanDispatch(reqDto);
     }
