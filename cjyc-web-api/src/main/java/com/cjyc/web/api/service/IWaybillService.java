@@ -42,4 +42,8 @@ public interface IWaybillService extends IService<Waybill> {
     List<TrunkSubListWaybillVo> getTrunkSubAllList(TrunkSubListWaybillDto reqDto);
 
     ResultVo<WaybillVo> get(getWaybillDto reqDto);
+
+
+    /************************************韵车集成改版 st***********************************/
+    ResultVo<PageVo<CrWaybillVo>> crListForMineCarrierNew(CrWaybillDto reqDto);
 }

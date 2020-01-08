@@ -1,6 +1,7 @@
 package com.cjyc.web.api.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cjyc.common.model.dao.ICarrierDao;
 import com.cjyc.common.model.dao.IWaybillCarDao;
 import com.cjyc.common.model.dao.IWaybillDao;
 import com.cjyc.common.model.dto.web.waybill.*;
@@ -43,6 +44,8 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
     private ICsWaybillService csWaybillService;
     @Resource
     private ICsSysService csSysService;
+    @Resource
+    private ICarrierDao carrierDao;
 
 
     @Override
@@ -165,5 +168,24 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
     }
 
 
+
+    /************************************韵车集成改版 st***********************************/
+    @Override
+    public ResultVo<PageVo<CrWaybillVo>> crListForMineCarrierNew(CrWaybillDto paramsDto) {
+        //根据角色查询承运商ID
+        Carrier carrier = carrierDao.selectById(paramsDto.getCarrierId());
+        if(carrier == null){
+            return BaseResultUtil.fail("承运商信息不存在");
+        }
+        paramsDto.setCarrierId(carrier.getId());
+        //查询承运商信息
+        PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
+        List<CrWaybillVo> list = waybillDao.findCrListForMineCarrier(paramsDto);
+        PageInfo<CrWaybillVo> pageInfo = new PageInfo<>(list);
+        if(paramsDto.getCurrentPage() > pageInfo.getPages()){
+            pageInfo.setList(null);
+        }
+        return BaseResultUtil.success(pageInfo);
+    }
 
 }

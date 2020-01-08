@@ -9,6 +9,7 @@ import com.cjyc.common.model.dto.driver.mine.CarrierDriverNameDto;
 import com.cjyc.common.model.dto.web.driver.DispatchDriverDto;
 import com.cjyc.common.model.entity.CarrierDriverCon;
 import com.cjyc.common.model.entity.Driver;
+import com.cjyc.common.model.entity.Role;
 import com.cjyc.common.model.vo.FreeDriverVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -95,4 +96,42 @@ public interface ICsDriverService {
      * @return
      */
     ResultVo<PageVo<DispatchDriverVo>> dispatchDriver(DispatchDriverDto dto);
+
+
+    /************************************韵车集成改版 st***********************************/
+
+    /**
+     * 调度社会司机
+     * @param dto
+     * @return
+     */
+    ResultVo<PageVo<DispatchDriverVo>> dispatchDriverNew(DispatchDriverDto dto);
+
+    /**
+     * 根据承运商id获取该承运商下的空闲司机
+     * @param dto
+     * @return
+     */
+    ResultVo<CarrierDriverVo> findCompanyFreeDriverNew(CarrierDriverNameDto dto);
+
+    /**
+     * 添加和修改承运商下司机信息
+     * @param dto
+     * @return
+     */
+    ResultVo saveOrModifyDriverAppNew(CarrierDriverDto dto);
+
+    /**
+     * 添加和修改承运商下司机信息
+     * @param dto
+     * @return
+     */
+    ResultVo saveOrModifyDriverWebNew(CarrierDriverDto dto);
+
+    /**
+     * 获取该承运商下空闲司机
+     * @param dto
+     * @return
+     */
+    ResultVo<List<FreeDriverVo>> findCarrierFreeDriverNew(FreeDto dto);
 }

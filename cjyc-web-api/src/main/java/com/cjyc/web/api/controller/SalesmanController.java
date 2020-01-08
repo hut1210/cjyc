@@ -28,7 +28,7 @@ public class SalesmanController {
         return salesmanService.saveAdmin(dto);
     }
 
-    @PostMapping("/assignRoles")
+//    @PostMapping("/assignRoles")
     @ApiOperation(value = "分配角色(即分配业务范围)")
     public ResultVo assignRoles(@Valid @RequestBody AssignRoleDto dto){
         return salesmanService.assignRoles(dto);
@@ -48,7 +48,8 @@ public class SalesmanController {
     }
 
     /************************************韵车集成改版 st***********************************/
-    @PostMapping("/assignRolesNew")
+//    @PostMapping("/assignRolesNew")
+    @PostMapping("/assignRoles")
     @ApiOperation(value = "分配角色(即分配业务范围)")
     public ResultVo assignRolesNew(@Valid @RequestBody AssignRoleNewDto dto){
         return salesmanService.assignRolesNew(dto);

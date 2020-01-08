@@ -80,5 +80,25 @@ public interface IRoleService extends IService<Role> {
      * @return
      */
     ResultVo<List<SelectUserByRoleVo>> getUsersByRoleIdNew(Long roleId);
+
+    /**
+     * 查询所有角色信息列表
+     * @return
+     */
+    ResultVo<List<Role>> getAllListNew(String roleName);
+
+    /**
+     * 根据角色id获取角色所拥有的末级id列表
+     * @param roleId
+     * @return
+     */
+    ResultVo<List<String>> getBtmMenuIdsByRoleIdNew(Long roleId);
+
+    /**
+     * 变更角色-资源列表信息
+     * @param dto
+     * @return
+     */
+    ResultVo modifyRoleMenusNew(ModifyRoleMenusDto dto);
     /*********************************韵车集成改版 ed*****************************/
 }

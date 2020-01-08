@@ -8,11 +8,10 @@ import com.cjyc.common.model.dto.web.store.StoreUpdateDto;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Store;
 import com.cjyc.common.model.entity.defined.FullCity;
-import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.store.StoreVo;
-import com.cjyc.web.api.service.IStoreService;
+import com.cjyc.web.api.service.IStoreService_1;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -32,10 +31,10 @@ import java.util.List;
  **/
 @Api(tags = "基础数据-业务中心")
 @RestController
-//@RequestMapping("/store")
-public class StoreController {
+@RequestMapping("/store")
+public class StoreController_1 {
     @Resource
-    private IStoreService storeService;
+    private IStoreService_1 storeService;
 
     /**
      * 根据二级城市编码查询业务中心
@@ -143,8 +142,7 @@ public class StoreController {
     @ApiOperation(value = "修改", notes = "\t 请求接口为json格式")
     @PostMapping("/modify")
     public ResultVo modify(@RequestBody @Validated StoreUpdateDto storeUpdateDto) {
-        boolean result = storeService.modify(storeUpdateDto);
-        return result ? BaseResultUtil.success() : BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
+        return storeService.modify(storeUpdateDto);
     }
 
     /**
@@ -170,7 +168,7 @@ public class StoreController {
      * @return com.cjyc.common.model.vo.ResultVo<java.util.List<com.cjyc.common.model.entity.Admin>>
      */
     @ApiOperation(value = "业务中心下用户列表信息", notes = "查询用户关联此用户中心角色信息")
-    @GetMapping("/listAdminsByStoreId/{storeId}")
+    //@GetMapping("/listAdminsByStoreId/{storeId}")
     public ResultVo<List<Admin>> listAdminsByStoreId(
             @ApiParam(name = "storeId", value = "业务中心标识", required = true)
             @PathVariable Long storeId){

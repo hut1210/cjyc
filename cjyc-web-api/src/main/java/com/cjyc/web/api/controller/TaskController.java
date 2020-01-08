@@ -142,9 +142,23 @@ public class TaskController {
      * 我的运单-承运商
      */
     @ApiOperation(value = "我的运单-承运商")
-    @PostMapping(value = "/cr/task/list")
+    //@PostMapping(value = "/cr/task/list")
     public ResultVo<PageVo<CrTaskVo>> crAllottedList(@RequestBody CrTaskDto reqDto) {
         return taskService.crTaskList(reqDto);
+    }
+
+
+
+    /************************************韵车集成改版 st***********************************/
+
+    /**
+     * 我的运单-承运商
+     */
+    @ApiOperation(value = "我的运单-承运商_改版")
+    //@PostMapping(value = "/cr/task/listNew")
+    @PostMapping(value = "/cr/task/list")
+    public ResultVo<PageVo<CrTaskVo>> crAllottedListNew(@RequestBody CrTaskDto reqDto) {
+        return taskService.crTaskListNew(reqDto);
     }
 
 

@@ -5,6 +5,7 @@ import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
 import com.cjkj.usercenter.dto.yc.SelectPageUsersByDeptReq;
 import com.cjkj.usercenter.dto.yc.SelectUsersByRoleResp;
+import com.cjyc.common.model.dao.IAdminDao;
 import com.cjyc.common.model.dao.IWaybillCarDao;
 import com.cjyc.common.model.dto.web.mineStore.ListMineSalesmanDto;
 import com.cjyc.common.model.dto.web.mineStore.SetContactPersonDto;
@@ -53,6 +54,8 @@ public class MineStoreServiceImpl implements IMineStoreService {
     private IAdminService adminService;
     @Resource
     private IWaybillCarDao waybillCarDao;
+    @Resource
+    private IAdminDao adminDao;
 
     @Override
     public ResultVo<PageVo<MySalesmanVo>> listSalesman(ListMineSalesmanDto dto) {
@@ -135,6 +138,18 @@ public class MineStoreServiceImpl implements IMineStoreService {
         return BaseResultUtil.success(pageInfo,map);
     }
 
+    /************************************韵车集成改版 st***********************************/
+    @Override
+    public ResultVo<PageVo<MySalesmanVo>> listSalesmanNew(ListMineSalesmanDto dto) {
+        PageHelper.startPage(dto.getPageNum(), dto.getPageSize());
+        List<MySalesmanVo> list = adminDao.getMineSalesmanList(dto);
+        PageInfo<MySalesmanVo> pageInfo = new PageInfo(list);
+        if (dto.getPageNum() > pageInfo.getPages()) {
+            pageInfo.setList(list);
+        }
+        return BaseResultUtil.success(pageInfo);
+    }
+    /************************************韵车集成改版 ed***********************************/
     /**
      * 验证ResultData状态是否正常
      * @param resultData

@@ -374,6 +374,10 @@ public class SalesmanServiceImpl extends ServiceImpl<IAdminDao, Admin> implement
      * @param dto
      */
     private void updateUserRoleDept(AssignRoleNewDto dto) {
+        userRoleDeptDao.delete(new QueryWrapper<UserRoleDept>().lambda()
+            .eq(UserRoleDept::getUserId, dto.getId())
+            .eq(UserRoleDept::getDeptType, UserTypeEnum.ADMIN.code)
+            .eq(UserRoleDept::getUserType, UserTypeEnum.ADMIN.code));
         dto.getDeptIdList().forEach(dId -> {
             //关系表中存在有效关系无需变更否则新增一条
             List<UserRoleDept> userRoleDeptList = userRoleDeptDao.selectList(new QueryWrapper<UserRoleDept>()

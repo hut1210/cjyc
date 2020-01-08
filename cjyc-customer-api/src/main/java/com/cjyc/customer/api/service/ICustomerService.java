@@ -35,4 +35,17 @@ public interface ICustomerService extends IService<Customer> {
      * @return
      */
     ResultVo<ShowPartnerVo> showPartner(AppCustomerDto dto);
+
+
+
+
+    /************************************韵车集成改版 st***********************************/
+
+    /**
+     * 获取客户信息_改版
+     * @param dto
+     * @return
+     */
+    ResultVo<AppCustomerInfoVo> findNewCustomerInfoNew(AppCustomerDto dto);
+
 }

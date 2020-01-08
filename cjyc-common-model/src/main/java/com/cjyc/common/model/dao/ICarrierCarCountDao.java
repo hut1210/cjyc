@@ -30,4 +30,13 @@ public interface ICarrierCarCountDao extends BaseMapper<CarrierCarCount> {
      */
     CarrierCarCount driverCount(@Param("driverId") Long driverId);
 
+    /*********************************韵车集成改版 st*****************************/
+    /**
+     * 根据承运商id查询该承运商的运车数和总收入_改版
+     * @param carrierId
+     * @return
+     */
+    CarrierCarCount countNew(@Param("carrierId") Long carrierId);
+    /*********************************韵车集成改版 ed*****************************/
+
 }

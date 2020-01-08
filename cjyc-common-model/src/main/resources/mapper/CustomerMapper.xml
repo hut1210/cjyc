@@ -346,5 +346,172 @@
         </where>
     </select>
 
+    <!--************************************韵车集成改版 st***********************************-->
+
+    <!--根据用户名/手机号模糊匹配用户信息-->
+    <select id="findCustomerByKey" resultType="java.util.Map"
+            parameterType="java.lang.String">
+       select
+            cc.user_id as userId,
+            cc.name as name,
+            cc.contact_man as contactMan,
+            cc.contact_phone AS contactPhone
+        from c_customer cc
+		left join (SELECT * FROM s_user_role_dept WHERE dept_type = 3 AND user_type = 3) surd ON surd.user_id = cc.id
+        <where>
+            <if test="keyword != null and keyword.trim() !=''">
+               (cc.name like concat('%',#{keyword},'%') or
+                cc.contact_phone like concat('%',#{keyword},'%') or
+                cc.contact_man like concat('%',#{keyword},'%'))
+            </if>
+            and surd.state = 2
+        </where>
+    </select>
+
+    <!-- 通过手机号，姓名，身份证号查询 -->
+    <select id="findClientCustomer" resultType="com.cjyc.common.model.vo.web.customer.CustomerVo"
+            parameterType="com.cjyc.common.model.dto.web.customer.SelectCustomerDto">
+        SELECT
+            cc.id AS customerId,
+            cc.user_id AS userId,
+            cc.customer_no AS customerNo,
+            cc.contact_phone AS contactPhone,
+            cc.contact_man AS contactMan,
+            cc.id_card AS idCard,
+            cc.source AS source,
+            surd.state AS state,
+            cc.id_card_front_img AS idCardFrontImg,
+            cc.id_card_back_img AS idCardBackImg,
+            cc.create_time AS createTime,
+            ba.NAME AS createUserName
+        FROM
+          c_customer cc
+        LEFT JOIN b_admin ba ON ba.id = cc.create_user_id
+        LEFT JOIN (SELECT * FROM s_user_role_dept WHERE dept_type = 3 AND user_type = 3) surd ON surd.user_id = cc.id
+        <where>
+            <if test="contactPhone != null and contactPhone.trim() != ''">
+                cc.contact_phone like concat('%',#{contactPhone},'%')
+            </if>
+            <if test="contactMan != null  and contactMan.trim() != ''">
+                and  cc.contact_man like concat('%',#{contactMan},'%')
+            </if>
+            <if test="idCard != null and idCard.trim() != ''">
+                and  cc.id_card like concat('%',#{idCard},'%')
+            </if>
+            <if test="flag != null and flag == 0">
+                and  surd.state = 2
+            </if>
+            <if test="state != null">
+                and  surd.state = #{state}
+            </if>
+            and cc.type = 1 order by cc.create_time desc,cc.check_time desc
+        </where>
+    </select>
+
+    <!-- 通过客户编号，客户全称，客户简称等条件查询 -->
+    <select id="findKeyAccountCustomter" resultType="com.cjyc.common.model.vo.web.customer.ListKeyCustomerVo"
+            parameterType="com.cjyc.common.model.dto.web.customer.SelectKeyCustomerDto">
+        SELECT
+            cc.id AS customerId,
+            cc.user_id AS userId,
+            cc.customer_no AS customerNo,
+            cc.NAME AS NAME,
+            surd.state AS state,
+            cc.source AS source,
+            cc.contact_man AS contactMan,
+            cc.contact_phone AS contactPhone,
+            cc.customer_nature AS customerNature,
+            cc.create_time AS createTime,
+            ba.NAME AS createUserName
+        FROM
+          c_customer cc
+        LEFT JOIN b_admin ba ON ba.id = cc.create_user_id
+        LEFT JOIN (SELECT * FROM s_user_role_dept WHERE dept_type = 3 AND user_type = 3) surd ON surd.user_id = cc.id
+        <where>
+            <if test="customerNo != null and customerNo.trim() != ''">
+                cc.customer_no like concat('%',#{customerNo},'%')
+            </if>
+            <if test="name != null and name.trim() != ''">
+                and  cc.name like concat('%',#{name},'%')
+            </if>
+            <if test="state != null">
+                and  surd.state = #{state}
+            </if>
+            <if test="contactMan != null  and contactMan.trim() != ''">
+                and cc.contact_man like concat('%',#{contactMan},'%')
+            </if>
+            <if test="contactPhone != null  and contactPhone.trim() != ''">
+                and  cc.contact_phone like concat('%',#{contactPhone},'%')
+            </if>
+            <if test="createUserName != null and createUserName.trim() != ''">
+                and  ba.name like concat('%',#{createUserName},'%')
+            </if>
+            <if test="customerNature != null ">
+                and cc.customer_nature = #{customerNature}
+            </if>
+            <if test="flag != null and flag == 0">
+                and  surd.state = 2
+            </if>
+            and cc.type = 2 order by cc.create_time desc,cc.check_time desc
+        </where>
+    </select>
+
+    <!-- 根据条件查询合伙人 -->
+    <select id="findCoPartner" resultType="com.cjyc.common.model.vo.web.customer.CustomerPartnerVo"
+            parameterType="com.cjyc.common.model.dto.web.customer.CustomerPartnerDto">
+        SELECT
+            cc.id AS customerId,
+            cc.user_id AS userId,
+            cc.customer_no AS customerNo,
+            cc.NAME AS NAME,
+            surd.state AS state,
+            cc.contact_man AS contactMan,
+            cc.contact_phone AS contactPhone,
+            ccp.is_taxpayer AS isTaxpayer,
+            ccp.is_invoice AS isInvoice,
+            ccp.settle_type AS settleType,
+            ccp.settle_period AS settlePeriod,
+            sbcb.description AS description,
+            cc.social_credit_code AS socialCreditCode,
+            cc.source AS source,
+            cc.create_time AS registerTime,
+            ba.NAME AS createUserName
+        FROM
+          c_customer cc
+        LEFT JOIN c_customer_partner ccp ON ccp.customer_id = cc.id
+        LEFT JOIN s_bank_card_bind sbcb ON sbcb.user_id = cc.id
+        LEFT JOIN b_admin ba ON ba.id = cc.create_user_id
+        LEFT JOIN (SELECT * FROM s_user_role_dept WHERE dept_type = 3 AND user_type = 3) surd ON surd.user_id = cc.id
+        <where>
+            <if test="customerNo != null and customerNo.trim() != ''">
+                cc.customer_no like concat('%',#{customerNo},'%')
+            </if>
+            <if test="name != null and name.trim() != ''">
+                and cc.name like concat('%',#{name},'%')
+            </if>
+            <if test="contactMan != null  and contactMan.trim() != ''">
+                and  cc.contact_man like concat('%',#{contactMan},'%')
+            </if>
+            <if test="contactPhone != null  and contactPhone.trim() != ''">
+                and cc.contact_phone like concat('%',#{contactPhone},'%')
+            </if>
+            <if test="socialCreditCode != null  and socialCreditCode.trim() != ''">
+                and  cc.social_credit_code like concat('%',#{socialCreditCode},'%')
+            </if>
+            <if test="source != null">
+                and  cc.source = #{source}
+            </if>
+            <if test="settleType != null">
+                and  ccp.settle_type = #{settleType}
+            </if>
+            <if test="isInvoice != null">
+                and  ccp.is_invoice = #{isInvoice}
+            </if>
+            <if test="flag != null and flag == 0">
+                and  surd.state = 2
+            </if>
+            and (cc.type = 3 or (cc.type = 1 and surd.state = 1)) order by cc.create_time desc,cc.check_time desc
+        </where>
+    </select>
 
 </mapper>

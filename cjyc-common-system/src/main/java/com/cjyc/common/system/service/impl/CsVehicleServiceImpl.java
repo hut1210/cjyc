@@ -41,6 +41,10 @@ public class CsVehicleServiceImpl implements ICsVehicleService {
     private IVehicleRunningDao vehicleRunningDao;
     @Resource
     private ICsSysService csSysService;
+    @Resource
+    private IUserRoleDeptDao userRoleDeptDao;
+    @Resource
+    private ICarrierDao carrierDao;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -189,4 +193,53 @@ public class CsVehicleServiceImpl implements ICsVehicleService {
         }
         return Collections.emptyList();
     }
+
+
+
+
+    /************************************韵车集成改版 st***********************************/
+
+    @Override
+    public ResultVo<CarrierVehicleVo> findCompanyFreeVehicleNew(CarrierVehicleNoDto dto){
+        UserRoleDept urd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
+                .eq(UserRoleDept::getUserId, dto.getLoginId())
+                .eq(UserRoleDept::getId, dto.getRoleId()));
+        if(urd == null){
+            return BaseResultUtil.fail("该司机管理员不存在,请检查");
+        }
+        List<FreeVehicleVo> freeVehicleVos = vehicleDao.findCarrierVehicle(Long.valueOf(urd.getDeptId()),dto.getPlateNo());
+        CarrierVehicleVo vehicleVo = new CarrierVehicleVo();
+        freeVehicleVos = freeVehicles(freeVehicleVos);
+        vehicleVo.setVehicleVo(freeVehicleVos);
+        return BaseResultUtil.success(vehicleVo);
+    }
+
+    @Override
+    public ResultVo<SocietyVehicleVo> findSocietyFreeVehicleNew(CarrierVehicleNoDto dto){
+        //获取承运商与司机关系
+        UserRoleDept urd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
+                .eq(UserRoleDept::getUserId, dto.getLoginId())
+                .eq(UserRoleDept::getId, dto.getRoleId()));
+        if(urd == null){
+            return BaseResultUtil.fail("该司机管理员不存在,请检查");
+        }
+        //获取社会所有车辆
+        List<FreeVehicleVo> freeVehicleVos = vehicleDao.findSocietyFreeVehicle(Long.valueOf(urd.getDeptId()),dto.getPlateNo());
+        freeVehicleVos = freeVehicles(freeVehicleVos);
+        SocietyVehicleVo vehicleVo = new SocietyVehicleVo();
+        vehicleVo.setVehicleVo(freeVehicleVos);
+        return BaseResultUtil.success(vehicleVo);
+    }
+
+    @Override
+    public ResultVo<List<FreeVehicleVo>> findCarrierFreeVehicleNew(FreeDto dto){
+        //获取承运商
+        Carrier carrier = carrierDao.selectById(dto.getCarrierId());
+        if(carrier == null){
+            return BaseResultUtil.fail("该承运商管理员不存在,请检查");
+        }
+        List<FreeVehicleVo> freeVehicleVos = vehicleDao.findCarrierVehicle(carrier.getId(),dto.getPlateNo());
+        return  BaseResultUtil.success(freeVehicles(freeVehicleVos));
+    }
+
 }

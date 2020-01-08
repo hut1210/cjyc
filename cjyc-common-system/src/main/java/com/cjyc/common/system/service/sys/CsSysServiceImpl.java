@@ -4,10 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.usercenter.dto.common.SelectDeptResp;
 import com.cjkj.usercenter.dto.common.SelectRoleResp;
-import com.cjyc.common.model.dao.ICarrierDao;
-import com.cjyc.common.model.dao.ICityDao;
-import com.cjyc.common.model.dao.IStoreDao;
-import com.cjyc.common.model.dao.IUserRoleDeptDao;
+import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.entity.defined.BizScope;
 import com.cjyc.common.model.enums.BizScopeEnum;
@@ -67,6 +64,8 @@ public class CsSysServiceImpl implements ICsSysService {
     private ICityDao cityDao;
     @Resource
     private IStoreDao storeDao;
+    @Resource
+    private IRoleDao roleDao;
 
     /**
      * 获取角色业务范围: 0全国，-1无业务范围，StoreIds逗号分隔字符串
@@ -227,6 +226,9 @@ public class CsSysServiceImpl implements ICsSysService {
 
     @Override
     public List<Carrier> getCarriersByRoleId(Long loginId, Long roleId) {
+        Role role = roleDao.selectOne(new QueryWrapper<Role>().lambda()
+                .eq(Role::getRoleId, roleId));
+        roleId = role.getId();
         return carrierDao.getListByLoginIdAndRoleId(loginId, roleId);
     }
 
