@@ -1,20 +1,42 @@
 package com.cjyc.common.model.vo.salesman.dispatch;
 
+import com.cjyc.common.model.util.BigDecimalSerizlizer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
 public class WaitDispatchCarListVo {
-    @ApiModelProperty(value = "vin码")
-    private String vin;
+
+    @ApiModelProperty(value = "订单ID")
+    private Long orderId;
+    @ApiModelProperty(value = "订单编号")
+    private String orderNo;
     @ApiModelProperty(value = "品牌")
     private String brand;
-    @ApiModelProperty(value = "车系")
+    @ApiModelProperty(value = "型号")
     private String model;
-    @ApiModelProperty(value = "订单号")
-    private String orderNo;
+    @ApiModelProperty(value = "车牌号")
+    private String plateNo;
+    @ApiModelProperty(value = "vin码")
+    private String vin;
+    @ApiModelProperty(value = "是否能动 0-否 1-是")
+    private Integer isMove;
+    @ApiModelProperty(value = "是否新车 0-否 1-是")
+    private Integer isNew;
+    @ApiModelProperty(value = "状态：0待路由，5待提车调度，10待提车，12待自送交车，15提车中（待交车），25待干线调度<循环>（提车入库），35待干线提车<循环>，40干线中<循环>（待干线交车），45待配送调度（干线入库），50待配送提车，55配送中（待配送交车），70待自取提车，100已签收")
+    private Integer state;
+    @ApiModelProperty(value = "车辆应收提车费")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
+    private BigDecimal pickFee;
+    @ApiModelProperty(value = "车辆应收送车费")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
+    private BigDecimal backFee;
+
+
     @ApiModelProperty(value = "车辆编号")
     private String orderCarNo;
     @ApiModelProperty(value = "车辆ID")
