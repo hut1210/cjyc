@@ -996,7 +996,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         if(customer != null){
             if(dto.getFlag()){
                 UserRoleDept urd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
-                        .eq(UserRoleDept::getUserId, dto.getCustomerId())
+                        .eq(UserRoleDept::getUserId, customer.getId())
                         .eq(UserRoleDept::getDeptType, DeptTypeEnum.CUSTOMER.code)
                         .eq(UserRoleDept::getUserType, UserTypeEnum.CUSTOMER.code));
                 if(urd == null){
