@@ -364,10 +364,10 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 throw new ParameterException("提车运单运单，照片不能为空");
             }
             //验证是否是第一段运单
-            WaybillCar first = waybillCarDao.findFirst(waybillCar.getId(), waybillCar.getOrderCarId());
+            WaybillCar first = waybillCarDao.findFirst(waybillCar.getOrderCarId());
             if(first == null ||
                     (first.getId().equals(waybillCar.getId()) && (waybillCar.getLoadPhotoImg() == null || waybillCar.getLoadPhotoImg().split(",").length < 8))){
-                throw new ParameterException("提车运单运单，照片不能为空");
+                throw new ParameterException("提车运单运单，照片不能少于8张");
             }
             //验证车辆当前所在地是否与出发区县匹配
             OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());

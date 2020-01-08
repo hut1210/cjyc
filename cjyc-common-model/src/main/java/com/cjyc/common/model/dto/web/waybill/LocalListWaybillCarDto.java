@@ -6,6 +6,11 @@ import lombok.Data;
 
 @Data
 public class LocalListWaybillCarDto extends BasePageDto {
+    @ApiModelProperty(value = "登录ID")
+    private Long loginId;
+    @ApiModelProperty(value = "角色ID")
+    private Long roleId;
+
     @ApiModelProperty(value = "业务中心ID")
     private Long storeId;
 
