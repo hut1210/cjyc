@@ -3,7 +3,7 @@ package com.cjyc.web.api.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.dao.ICarrierDao;
 import com.cjyc.common.model.dao.ITaskDao;
-import com.cjyc.common.model.dao.IWaybillCarDao;
+import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.task.*;
 import com.cjyc.common.model.entity.Carrier;
 import com.cjyc.common.model.entity.Task;
@@ -38,7 +38,6 @@ import java.util.List;
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITaskService {
-
     @Resource
     private IWaybillCarDao waybillCarDao;
     @Resource

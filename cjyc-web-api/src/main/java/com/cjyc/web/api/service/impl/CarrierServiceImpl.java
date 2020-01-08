@@ -798,7 +798,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     @Override
     public ResultVo<PageVo<TransportVehicleVo>> transportVehicleNew(TransportDto dto) {
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        List<TransportVehicleVo> transportVehicleVos = vehicleDao.findTransportVehicle(dto);
+        List<TransportVehicleVo> transportVehicleVos = vehicleDao.findTransportVehicleNew(dto);
         PageInfo<TransportVehicleVo> pageInfo = new PageInfo<>(transportVehicleVos);
         return BaseResultUtil.success(pageInfo);
     }

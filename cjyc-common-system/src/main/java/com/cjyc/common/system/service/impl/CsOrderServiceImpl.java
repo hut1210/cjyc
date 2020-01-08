@@ -368,6 +368,12 @@ public class CsOrderServiceImpl implements ICsOrderService {
         return BaseResultUtil.success();
     }
 
+    @Override
+    public ResultVo validateCanDispatch(ComputeCarEndpointDto reqDto) {
+
+        return null;
+    }
+
     /**
      * 审核订单
      * @param paramsDto

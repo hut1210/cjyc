@@ -203,7 +203,7 @@ public class CsCarrierServiceImpl implements ICsCarrierService {
     @Override
     public ResultVo<PageVo<TrailCarrierVo>> trailDriverNew(TrailCarrierDto dto) {
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
-        List<TrailCarrierVo> carrierVos = carrierDao.findTrailDriver(dto);
+        List<TrailCarrierVo> carrierVos = carrierDao.findTrailDriverNew(dto);
         PageInfo<TrailCarrierVo> pageInfo =  new PageInfo<>(carrierVos);
         return BaseResultUtil.success(pageInfo);
     }

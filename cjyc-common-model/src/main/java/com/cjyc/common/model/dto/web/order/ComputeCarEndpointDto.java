@@ -20,7 +20,7 @@ public class ComputeCarEndpointDto {
     @ApiModelProperty(hidden = true)
     private Set<Long> bizScope;
     @ApiModelProperty("调度类型：1提车运单，2干线运单，3送车运单")
-    private Long dispatchType;
+    private Long dispatchType = 0L;
     @NotEmpty(message = "车辆列表不能为空")
     @ApiModelProperty(value = "车辆ID列表",required = true)
     private List<Long> orderCarIdList;

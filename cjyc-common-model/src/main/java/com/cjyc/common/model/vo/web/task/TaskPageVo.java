@@ -40,4 +40,10 @@ public class TaskPageVo implements Serializable {
     @ApiModelProperty(value = "运单车辆状态：0待指派，2已指派(弃)，5待装车，15待装车确认，45已装车，" +
             "90待收车确认, 100确认收车, 105待重连，113已取消，120已重连")
     private Integer waybillCarState;
+
+    @ApiModelProperty(value = "收车人名称")
+    private String unloadLinkName;
+
+    @ApiModelProperty(value = "收车人电话")
+    private String unloadLinkPhone;
 }

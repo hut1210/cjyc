@@ -592,7 +592,9 @@
             oc.order_no as orderNo,
             oc.no as orderCarNo,
             oc.vin as vin,
-            t1.waybillCarId
+            t1.waybillCarId,
+            t1.unloadLinkName,
+            t1.unloadLinkPhone
         from
         (SELECT
             t.id as taskId,
@@ -601,7 +603,9 @@
             wc.state as waybillCarState,
             wc.order_car_id as orderCarId,
             wc.waybill_id as waybillId,
-            wc.id as waybillCarId
+            wc.id as waybillCarId,
+            wc.unload_link_name as unloadLinkName,
+            wc.unload_link_phone as unloadLinkPhone
         FROM
         ( SELECT task.id,task.no as taskNo,tc.id as task_car_id,tc.waybill_car_id
         FROM w_task task
