@@ -17,7 +17,6 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.city.ProvinceCityVo;
 import com.cjyc.common.model.vo.web.city.RegionVo;
-import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.web.api.service.ICityService;
 import com.cjyc.web.api.service.IRegionService_1;
 import com.github.pagehelper.PageHelper;
@@ -45,8 +44,6 @@ public class RegionServiceImpl_1 implements IRegionService_1 {
     private ICityDao cityDao;
     @Resource
     private ICityService cityService;
-    @Resource
-    private ISysDeptService sysDeptService;
 
     @Override
     public ResultVo getRegionPage(RegionQueryDto dto) {
