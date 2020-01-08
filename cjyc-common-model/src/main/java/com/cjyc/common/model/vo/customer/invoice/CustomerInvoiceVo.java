@@ -68,6 +68,9 @@ public class CustomerInvoiceVo implements Serializable {
         return defaultFlag == null ? 0 : defaultFlag;
     }
     public String getTitle() {
+        if (type == 1) {
+            title = "个人";
+        }
         return title == null ? "" : title;
     }
     public String getName() {
