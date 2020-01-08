@@ -209,7 +209,8 @@
             ( CASE dc.type WHEN 1 THEN dc.legal_id_card WHEN 2 THEN '' END ) AS idCard,
             ( CASE dc.type WHEN 1 THEN dvr.carry_car_num WHEN 2 THEN '' END ) AS carryCarNum,
             ( CASE dc.type WHEN 1 THEN dvr.occupied_car_num WHEN 2 THEN '' END ) AS occupiedCarNum,
-            ( CASE dc.type WHEN 1 THEN dvr.running_state WHEN 2 THEN '' END ) AS runningState
+            ( CASE dc.type WHEN 1 THEN dvr.running_state WHEN 2 THEN '' END ) AS runningState,
+            ( CASE dc.type WHEN 1 THEN dd.business_state WHEN 2 THEN '' END ) AS businessState
         FROM
           d_carrier dc
         LEFT JOIN d_carrier_driver_con dcdc ON dcdc.carrier_id = dc.id
@@ -238,6 +239,7 @@
             and dc.state = 2
             and dc.business_state = 0
             and dcdc.state = 2
+            and dd.business_state = 0
             group by dc.id
             order by dc.create_time desc,dc.check_time desc
         </where>
