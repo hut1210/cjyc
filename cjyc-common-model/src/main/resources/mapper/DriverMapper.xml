@@ -994,5 +994,44 @@
         </where>
     </select>
 
+    <!--查询(承运商查看中的)该承该运商下的司机_改版-->
+    <select id="findTransportDriverNew" resultType="com.cjyc.common.model.vo.web.carrier.TransportDriverVo"
+            parameterType="com.cjyc.common.model.dto.web.carrier.TransportDto">
+        SELECT
+            dd.id AS driverId,
+            dc.id AS carrierId,
+            dd.real_name AS realName,
+            dd.phone AS phone,
+            surd.MODE AS MODE,
+            dd.id_card AS idCard,
+            dd.business_state AS businessState,
+            dd.id_card_front_img AS idCardFrontImg,
+            dd.id_card_back_img AS idCardBackImg,
+            surd.state AS state,
+            ( CASE sr.role_name WHEN '个人司机' THEN 0 WHEN '下属司机' THEN 1 WHEN '承运商管理员' THEN 2 WHEN '承运商超级管理员' THEN 3 END ) AS role,
+            dd.identity AS identity,
+            dvr.vehicle_id AS vehicleId,
+            dvr.plate_no AS plateNo,
+            dvr.carry_car_num AS defaultCarryNum
+        FROM
+          d_driver dd
+        LEFT JOIN ( SELECT * FROM s_user_role_dept WHERE dept_type = 2 AND user_type = 2 ) surd ON surd.user_id = dd.id
+        LEFT JOIN d_carrier dc ON dc.id = surd.dept_id
+        LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
+        LEFT JOIN s_role sr ON sr.id = surd.role_id
+        <where>
+            <if test="realName != null and realName.trim() != ''">
+                dd.real_name like CONCAT('%',#{realName},'%')
+            </if>
+            <if test="phone != null and phone.trim() != ''">
+                and  dd.phone like CONCAT('%',#{phone},'%')
+            </if>
+            <if test="plateNo != null and plateNo.trim() != ''">
+                and  dvr.plate_no like CONCAT('%',#{plateNo},'%')
+            </if>
+            and dc.id = #{carrierId} and dc.type = 2 and dc.state &lt; 9
+        </where>
+    </select>
+
 
 </mapper>

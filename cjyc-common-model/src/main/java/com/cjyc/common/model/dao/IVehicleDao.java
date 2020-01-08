@@ -77,5 +77,12 @@ public interface IVehicleDao extends BaseMapper<Vehicle> {
      */
     List<MyCarVo> findMyCarNew(QueryMyCarDto dto);
 
+    /**
+     * 获取该承运商下车辆信息_改版
+     * @param dto
+     * @return
+     */
+    List<TransportVehicleVo> findTransportVehicleNew(TransportDto dto);
+
 
 }

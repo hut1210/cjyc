@@ -111,5 +111,20 @@ public interface ICarrierService {
      * @return
      */
     ResultVo resetPwdNew(Long id);
+
+    /**
+     * 获取承运商下司机_改版
+     * @param dto
+     * @return
+     */
+    ResultVo<PageVo<TransportDriverVo>> transportDriverNew(TransportDto dto);
+
+    /**
+     * 获取该承运商下的车辆信息_改版
+     * @param dto
+     * @return
+     */
+    ResultVo<PageVo<TransportVehicleVo>> transportVehicleNew(TransportDto dto);
+
     /*********************************韵车集成改版 ed*****************************/
 }
