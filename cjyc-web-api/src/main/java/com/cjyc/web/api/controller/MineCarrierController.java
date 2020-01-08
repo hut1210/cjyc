@@ -48,43 +48,43 @@ public class MineCarrierController {
     private ICsSysService csSysService;
 
     @ApiOperation(value = "新增/修改承运商下司机")
-    @PostMapping(value = "/saveOrModifyDriver")
+//    @PostMapping(value = "/saveOrModifyDriver")
     public ResultVo saveOrModifyDriver(@Validated @RequestBody CarrierDriverDto dto){
         return csDriverService.saveOrModifyDriver(dto);
     }
 
     @ApiOperation(value = "查询承运商下司机")
-    @PostMapping(value = "/findPageDriver")
+//    @PostMapping(value = "/findPageDriver")
     public ResultVo<PageVo<MyDriverVo>> findPageDriver(@RequestBody QueryMyDriverDto dto){
         return mimeCarrierService.findPageDriver(dto);
     }
 
     @ApiOperation(value = "操作承运商下司机")
-    @PostMapping(value = "/verifyDriver")
+//    @PostMapping(value = "/verifyDriver")
     public ResultVo verifyDriver(@RequestBody OperateDto dto){
         return mimeCarrierService.verifyDriver(dto);
     }
 
     @ApiOperation(value = "新增/修改承运商下车辆",notes = "根据司机id判断时新增还是修改")
-    @PostMapping(value = "/saveOrModifyVehicle")
+//    @PostMapping(value = "/saveOrModifyVehicle")
     public ResultVo saveOrModifyVehicle(@RequestBody CarrierVehicleDto dto){
         return mimeCarrierService.saveOrModifyVehicle(dto);
     }
 
     @ApiOperation(value = "查询承运商下车辆")
-    @PostMapping(value = "/findPageCar")
+//    @PostMapping(value = "/findPageCar")
     public ResultVo<PageVo<MyCarVo>> findPageCar(@RequestBody QueryMyCarDto dto){
         return mimeCarrierService.findPageCar(dto);
     }
 
     @ApiOperation(value = "查询承运商下的空闲司机")
-    @PostMapping(value = "/findCarrierFreeDriver")
+//    @PostMapping(value = "/findCarrierFreeDriver")
     public ResultVo<List<FreeDriverVo>> findCarrierFreeDriver(@RequestBody FreeDto dto){
         return csDriverService.findCarrierFreeDriver(dto);
     }
 
     @ApiOperation(value = "该承运商下空闲车辆(管理员中的)")
-    @PostMapping(value = "/findCarrierFreeVehicle")
+//    @PostMapping(value = "/findCarrierFreeVehicle")
     public ResultVo<List<FreeVehicleVo>> findCarrierFreeVehicle(@RequestBody FreeDto dto){
         return csVehicleService.findCarrierFreeVehicle(dto);
     }
@@ -110,43 +110,50 @@ public class MineCarrierController {
     }
 
     @ApiOperation(value = "新增/修改承运商下司机_改版")
-    @PostMapping(value = "/saveOrModifyDriverWebNew")
+//    @PostMapping(value = "/saveOrModifyDriverWebNew")
+    @PostMapping(value = "/saveOrModifyDriver")
     public ResultVo saveOrModifyDriverWebNew(@Validated @RequestBody CarrierDriverDto dto){
         return csDriverService.saveOrModifyDriverWebNew(dto);
     }
 
     @ApiOperation(value = "查询承运商下司机_改版")
-    @PostMapping(value = "/findPageDriverNew")
+//    @PostMapping(value = "/findPageDriverNew")
+    @PostMapping(value = "/findPageDriver")
     public ResultVo<PageVo<MyDriverVo>> findPageDriverNew(@RequestBody QueryMyDriverDto dto){
         return mimeCarrierService.findPageDriverNew(dto);
     }
 
     @ApiOperation(value = "操作承运商下司机_改版")
-    @PostMapping(value = "/verifyDriverNew")
+//    @PostMapping(value = "/verifyDriverNew")
+    @PostMapping(value = "/verifyDriver")
     public ResultVo verifyDriverNew(@RequestBody OperateDto dto){
         return mimeCarrierService.verifyDriverNew(dto);
     }
 
     @ApiOperation(value = "新增/修改承运商下车辆_改版",notes = "根据司机id判断时新增还是修改")
-    @PostMapping(value = "/saveOrModifyVehicleNew")
+//    @PostMapping(value = "/saveOrModifyVehicleNew")
+    @PostMapping(value = "/saveOrModifyVehicle")
     public ResultVo saveOrModifyVehicleNew(@RequestBody CarrierVehicleDto dto){
         return mimeCarrierService.saveOrModifyVehicleNew(dto);
     }
 
     @ApiOperation(value = "查询承运商下车辆_改版")
-    @PostMapping(value = "/findPageCarNew")
+//    @PostMapping(value = "/findPageCarNew")
+    @PostMapping(value = "/findPageCar")
     public ResultVo<PageVo<MyCarVo>> findPageCarNew(@RequestBody QueryMyCarDto dto){
         return mimeCarrierService.findPageCarNew(dto);
     }
 
     @ApiOperation(value = "查询承运商下的空闲司机_改版")
-    @PostMapping(value = "/findCarrierFreeDriverNew")
+//    @PostMapping(value = "/findCarrierFreeDriverNew")
+    @PostMapping(value = "/findCarrierFreeDriver")
     public ResultVo<List<FreeDriverVo>> findCarrierFreeDriverNew(@RequestBody FreeDto dto){
         return csDriverService.findCarrierFreeDriverNew(dto);
     }
 
     @ApiOperation(value = "该承运商下空闲车辆(管理员中的)_改版")
-    @PostMapping(value = "/findCarrierFreeVehicleNew")
+//    @PostMapping(value = "/findCarrierFreeVehicleNew")
+    @PostMapping(value = "/findCarrierFreeVehicle")
     public ResultVo<List<FreeVehicleVo>> findCarrierFreeVehicleNew(@RequestBody FreeDto dto){
         return csVehicleService.findCarrierFreeVehicleNew(dto);
     }

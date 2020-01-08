@@ -136,8 +136,9 @@ public class TransactionServiceImpl implements ITransactionService {
             log.info("update chargeType="+chargeType);
 
             if(chargeType!=null){
-                if(chargeType.equals(String.valueOf(ChargeTypeEnum.WEB_PREPAY_QRCODE.getCode()))){
-                    log.info("后台预付码回调");
+                if(chargeType.equals(String.valueOf(ChargeTypeEnum.WEB_PREPAY_QRCODE.getCode()))||
+                        chargeType.equals(String.valueOf(ChargeTypeEnum.SALES_PREPAY_QRCODE.getCode()))){
+                    log.info("预付码回调"+chargeType);
                     String orderNo = pingxxMetaData.getOrderNo();
                     log.info(chargeType+" 物流费预付 orderNo ="+orderNo);
                     updateForPrePay(pingxxMetaData);
@@ -215,7 +216,7 @@ public class TransactionServiceImpl implements ITransactionService {
     }
 
     private void sendMessage(List<String> orderCarNosList,UserInfo userInfo){
-        StringBuilder message = new StringBuilder("韵车物流】VIN码后六位为");
+        StringBuilder message = new StringBuilder("【韵车物流】VIN码后六位为");
         List<OrderCar> orderCarList = orderCarDao.findListByNos(orderCarNosList);
 
         try{
