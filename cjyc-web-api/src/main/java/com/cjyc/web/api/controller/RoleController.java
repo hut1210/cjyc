@@ -35,7 +35,7 @@ public class RoleController {
     @Autowired
     private ISysRoleService sysRoleService;
 
-    @PostMapping("/add")
+//    @PostMapping("/add")
     @ApiOperation(value = "添加角色信息")
     public ResultVo add(@Valid @RequestBody AddRoleDto dto) {
         return roleService.addRole(dto);
@@ -48,7 +48,7 @@ public class RoleController {
         return roleService.deleteRole(id);
     }
 
-    @GetMapping("/getUsersByRoleId/{roleId}")
+//    @GetMapping("/getUsersByRoleId/{roleId}")
     @ApiOperation(value = "根据角色id获取关联用户列表信息")
     public ResultVo<List<SelectUserByRoleVo>> getUsersByRoleId(
             @ApiParam(name = "roleId", value = "角色标识", required = true)
@@ -87,7 +87,7 @@ public class RoleController {
      * 查询所有角色信息列表
      * @return
      */
-    @GetMapping(value = {"/getAllList", "/getAllList/{roleName}"})
+//    @GetMapping(value = {"/getAllList", "/getAllList/{roleName}"})
     @ApiOperation(value = "获取所有角色信息列表")
     public ResultVo<List<Role>> getAllList(
             @ApiParam(name = "roleName", value = "角色名称", required = false)
@@ -119,13 +119,15 @@ public class RoleController {
 
 
     /*********************************韵车集成改版 st*****************************/
-    @PostMapping("/addNew")
+//    @PostMapping("/addNew")
+    @PostMapping("/add")
     @ApiOperation(value = "添加角色信息")
     public ResultVo addNew(@Valid @RequestBody AddRoleDto dto) {
         return roleService.addRoleNew(dto);
     }
 
-    @GetMapping("/getUsersByRoleIdNew/{roleId}")
+//    @GetMapping("/getUsersByRoleIdNew/{roleId}")
+    @GetMapping("/getUsersByRoleId/{roleId}")
     @ApiOperation(value = "根据角色id获取关联用户列表信息")
     public ResultVo<List<SelectUserByRoleVo>> getUsersByRoleIdNew(
             @ApiParam(name = "roleId", value = "角色标识", required = true)
@@ -137,7 +139,8 @@ public class RoleController {
      * 查询所有角色信息列表
      * @return
      */
-    @GetMapping(value = {"/getAllListNew", "/getAllListNew/{roleName}"})
+//    @GetMapping(value = {"/getAllListNew", "/getAllListNew/{roleName}"})
+    @GetMapping(value = {"/getAllList", "/getAllList/{roleName}"})
     @ApiOperation(value = "获取所有角色信息列表")
     public ResultVo<List<Role>> getAllListNew(
             @ApiParam(name = "roleName", value = "角色名称", required = false)

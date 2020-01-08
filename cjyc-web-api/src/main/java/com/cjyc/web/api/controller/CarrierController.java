@@ -38,30 +38,30 @@ public class CarrierController {
     private ICsCarrierService csCarrierService;
 
     @ApiOperation(value = "新增/修改承运商")
-    @PostMapping(value = "/saveOrModifyCarrier")
+//    @PostMapping(value = "/saveOrModifyCarrier")
     public ResultVo saveOrModifyCarrier(@Validated @RequestBody CarrierDto dto){
         return carrierService.saveOrModifyCarrier(dto);
     }
 
     @ApiOperation(value = "根据条件查询承运商")
-    @PostMapping(value = "/findCarrier")
+//    @PostMapping(value = "/findCarrier")
     public ResultVo<PageVo<CarrierVo>> findCarrier(@RequestBody SeleCarrierDto dto){
         return carrierService.findCarrier(dto);
     }
 
     @ApiOperation(value = "根据id审核/冻结/解冻承运商")
-    @PostMapping(value = "/verifyCarrier")
+//    @PostMapping(value = "/verifyCarrier")
     public ResultVo verifyCarrier(@RequestBody OperateDto dto){
         return carrierService.verifyCarrier(dto);
     }
 
     @ApiOperation(value = "根据carrierId查看基本承运商信息")
-    @PostMapping(value = "/showBaseCarrier/{carrierId}")
+//    @PostMapping(value = "/showBaseCarrier/{carrierId}")
     public ResultVo<BaseCarrierVo> showBaseCarrier(@PathVariable @ApiParam(value = "承运商id",required = true) Long carrierId){
         return carrierService.showBaseCarrier(carrierId);
     }
 
-    @PostMapping("/resetPwd/{id}")
+//    @PostMapping("/resetPwd/{id}")
     @ApiOperation(value = "承运商机构超级管理员账户重置密码")
     public ResultVo resetPwd(@ApiParam(name = "id", value = "机构标识", required = true)
                              @PathVariable Long id) {
@@ -109,30 +109,35 @@ public class CarrierController {
 
     /*********************************韵车集成改版 st*****************************/
     @ApiOperation(value = "改版：新增/修改承运商")
-    @PostMapping(value = "/saveOrModifyCarrierNew")
+//    @PostMapping(value = "/saveOrModifyCarrierNew")
+    @PostMapping(value = "/saveOrModifyCarrier")
     public ResultVo saveOrModifyCarrierNew(@Validated @RequestBody CarrierDto dto){
         return carrierService.saveOrModifyCarrierNew(dto);
     }
 
     @ApiOperation(value = "根据条件查询承运商_改版")
-    @PostMapping(value = "/findCarrierNew")
+//    @PostMapping(value = "/findCarrierNew")
+    @PostMapping(value = "/findCarrier")
     public ResultVo<PageVo<CarrierVo>> findCarrierNew(@RequestBody SeleCarrierDto dto){
         return carrierService.findCarrierNew(dto);
     }
 
     @ApiOperation(value = "根据id审核/冻结/解冻承运商_改版")
-    @PostMapping(value = "/verifyCarrierNew")
+//    @PostMapping(value = "/verifyCarrierNew")
+    @PostMapping(value = "/verifyCarrier")
     public ResultVo verifyCarrierNew(@RequestBody OperateDto dto){
         return carrierService.verifyCarrierNew(dto);
     }
 
     @ApiOperation(value = "根据carrierId查看基本承运商信息_改版")
-    @PostMapping(value = "/showBaseCarrierNew/{carrierId}")
+//    @PostMapping(value = "/showBaseCarrierNew/{carrierId}")
+    @PostMapping(value = "/showBaseCarrier/{carrierId}")
     public ResultVo<BaseCarrierVo> showBaseCarrierNew(@PathVariable @ApiParam(value = "承运商id",required = true) Long carrierId){
         return carrierService.showBaseCarrierNew(carrierId);
     }
 
-    @PostMapping("/resetPwdNew/{id}")
+//    @PostMapping("/resetPwdNew/{id}")
+    @PostMapping("/resetPwd/{id}")
     @ApiOperation(value = "承运商机构超级管理员账户重置密码_改版")
     public ResultVo resetPwdNew(@ApiParam(name = "id", value = "机构标识", required = true)
                              @PathVariable Long id) {

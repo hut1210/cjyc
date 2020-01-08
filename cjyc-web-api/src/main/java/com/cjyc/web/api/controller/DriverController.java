@@ -49,25 +49,25 @@ public class DriverController {
     }
 
     @ApiOperation(value = "新增/修改散户司机")
-    @PostMapping(value = "/saveOrModifyDriver")
+//    @PostMapping(value = "/saveOrModifyDriver")
     public ResultVo saveOrModifyDriver(@Validated @RequestBody DriverDto dto){
         return driverService.saveOrModifyDriver(dto);
     }
 
     @ApiOperation(value = "根据查询条件查看司机信息")
-    @PostMapping(value = "/findDriver")
+//    @PostMapping(value = "/findDriver")
     public ResultVo<PageVo<DriverVo>> findDriver(@RequestBody SelectDriverDto dto){
         return driverService.findDriver(dto);
     }
 
     @ApiOperation(value = "根据id进行审核通过/拒绝/冻结解冻")
-    @PostMapping(value = "/verifyDriver")
+//    @PostMapping(value = "/verifyDriver")
     public ResultVo verifyDriver(@Validated @RequestBody OperateDto dto){
         return driverService.verifyDriver(dto);
     }
 
     @ApiOperation(value = "根据承运商id(carrierId)查看司机信息")
-    @PostMapping(value = "/showDriver")
+//    @PostMapping(value = "/showDriver")
     public ResultVo<ShowDriverVo> showDriver(@Validated @RequestBody BaseCarrierIdDto dto){
         return driverService.showDriver(dto);
     }
@@ -88,13 +88,13 @@ public class DriverController {
     }
 
     @ApiOperation(value = "调度个人司机信息")
-    @PostMapping(value = "/dispatchDriver")
+//    @PostMapping(value = "/dispatchDriver")
     public ResultVo<PageVo<DispatchDriverVo>> dispatchDriver(@RequestBody DispatchDriverDto dto){
         return csDriverService.dispatchDriver(dto);
     }
 
     @ApiOperation(value = "查询承运商下属司机")
-    @PostMapping(value = "/carrier/driver/list")
+//    @PostMapping(value = "/carrier/driver/list")
     public ResultVo<PageVo<DispatchDriverVo>> dispatchDriver(@RequestBody CarrierDriverListDto dto){
         return driverService.carrierDrvierList(dto);
     }
@@ -110,37 +110,43 @@ public class DriverController {
     /************************************韵车集成改版 st***********************************/
 
     @ApiOperation(value = "新增/修改社会司机_改版")
-    @PostMapping(value = "/saveOrModifyDriverNew")
+//    @PostMapping(value = "/saveOrModifyDriverNew")
+    @PostMapping(value = "/saveOrModifyDriver")
     public ResultVo saveOrModifyDriverNew(@Validated @RequestBody DriverDto dto){
         return driverService.saveOrModifyDriverNew(dto);
     }
 
     @ApiOperation(value = "根据查询条件查看司机信息_改版")
-    @PostMapping(value = "/findDriverNew")
+//    @PostMapping(value = "/findDriverNew")
+    @PostMapping(value = "/findDriver")
     public ResultVo<PageVo<DriverVo>> findDriverNew(@RequestBody SelectDriverDto dto){
         return driverService.findDriverNew(dto);
     }
 
     @ApiOperation(value = "根据承运商id(carrierId)查看司机信息")
-    @PostMapping(value = "/showDriverNew")
+//    @PostMapping(value = "/showDriverNew")
+    @PostMapping(value = "/showDriver")
     public ResultVo<ShowDriverVo> showDriverNew(@Validated @RequestBody BaseCarrierIdDto dto){
         return driverService.showDriverNew(dto);
     }
     
     @ApiOperation(value = "根据id进行审核通过/拒绝/冻结/解冻_改版")
-    @PostMapping(value = "/verifyDriverNew")
+//    @PostMapping(value = "/verifyDriverNew")
+    @PostMapping(value = "/verifyDriver")
     public ResultVo verifyDriverNew(@Validated @RequestBody OperateDto dto){
         return driverService.verifyDriverNew(dto);
     }
 
     @ApiOperation(value = "调度社会司机信息")
-    @PostMapping(value = "/dispatchDriverNew")
+//    @PostMapping(value = "/dispatchDriverNew")
+    @PostMapping(value = "/dispatchDriver")
     public ResultVo<PageVo<DispatchDriverVo>> dispatchDriverNew(@RequestBody DispatchDriverDto dto){
         return csDriverService.dispatchDriverNew(dto);
     }
 
     @ApiOperation(value = "查询承运商下属司机")
-    @PostMapping(value = "/carrier/driver/listNew")
+//    @PostMapping(value = "/carrier/driver/listNew")
+    @PostMapping(value = "/carrier/driver/list")
     public ResultVo<PageVo<DispatchDriverVo>> dispatchDriverNew(@RequestBody CarrierDriverListDto dto){
         return driverService.carrierDrvierListNew(dto);
     }

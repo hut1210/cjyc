@@ -31,7 +31,7 @@ public class MineStoreController {
     private IMineStoreService mineStoreService;
 
     @ApiOperation(value = "查询我的业务中心-我的业务员列表")
-    @PostMapping("/listSalesman")
+//    @PostMapping("/listSalesman")
     public ResultVo<PageVo<MySalesmanVo>> listSalesman(@Valid @RequestBody ListMineSalesmanDto dto) {
         return mineStoreService.listSalesman(dto);
     }
@@ -57,7 +57,8 @@ public class MineStoreController {
 
     /************************************韵车集成改版 st***********************************/
     @ApiOperation(value = "查询我的业务中心-我的业务员列表")
-    @PostMapping("/listSalesmanNew")
+//    @PostMapping("/listSalesmanNew")
+    @PostMapping("/listSalesman")
     public ResultVo<PageVo<MySalesmanVo>> listSalesmanNew(@Valid @RequestBody ListMineSalesmanDto dto) {
         return mineStoreService.listSalesmanNew(dto);
     }
