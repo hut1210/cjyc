@@ -778,4 +778,28 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         }
         return null;
     }
+
+    @Override
+    public ResultVo<PageVo<TransportDriverVo>> transportDriverNew(TransportDto dto) {
+        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
+        List<TransportDriverVo> transportDriverVos =  driverDao.findTransportDriverNew(dto);
+        if(!CollectionUtils.isEmpty(transportDriverVos)){
+            for(TransportDriverVo vo : transportDriverVos){
+                CarrierCarCount count = carrierCarCountDao.driverCount(vo.getDriverId());
+                if(count != null){
+                    vo.setCarNum(count.getCarNum());
+                }
+            }
+        }
+        PageInfo<TransportDriverVo> pageInfo = new PageInfo<>(transportDriverVos);
+        return BaseResultUtil.success(pageInfo);
+    }
+
+    @Override
+    public ResultVo<PageVo<TransportVehicleVo>> transportVehicleNew(TransportDto dto) {
+        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
+        List<TransportVehicleVo> transportVehicleVos = vehicleDao.findTransportVehicle(dto);
+        PageInfo<TransportVehicleVo> pageInfo = new PageInfo<>(transportVehicleVos);
+        return BaseResultUtil.success(pageInfo);
+    }
 }

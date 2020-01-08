@@ -283,5 +283,13 @@ public interface IDriverDao extends BaseMapper<Driver> {
     List<FreeDriverVo> findCarrierDriverNew(FreeDto dto);
 
 
+    /**
+     * 获取承运商下的司机_改版
+     * @param dto
+     * @return
+     */
+    List<TransportDriverVo> findTransportDriverNew(TransportDto dto);
+
+
 
 }

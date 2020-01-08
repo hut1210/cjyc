@@ -76,13 +76,13 @@ public class CarrierController {
     }
 
     @ApiOperation(value = "根据carrierId查看基本司机信息")
-    @PostMapping(value = "/transportDriver")
+    //@PostMapping(value = "/transportDriver")
     public ResultVo<PageVo<TransportDriverVo>> transportDriver(@Validated @RequestBody TransportDto dto){
         return carrierService.transportDriver(dto);
     }
 
     @ApiOperation(value = "根据carrierId查看基本车辆信息")
-    @PostMapping(value = "/transportVehicle")
+    //@PostMapping(value = "/transportVehicle")
     public ResultVo<PageVo<TransportVehicleVo>> transportVehicle(@Validated @RequestBody TransportDto dto){
         return carrierService.transportVehicle(dto);
     }
@@ -148,6 +148,20 @@ public class CarrierController {
     @PostMapping(value = "/traileDriver")
     public ResultVo<PageVo<TrailCarrierVo>> trailDriverNew(@RequestBody TrailCarrierDto dto){
         return csCarrierService.trailDriverNew(dto);
+    }
+
+    @ApiOperation(value = "根据carrierId查看基本司机信息_改版")
+    //@PostMapping(value = "/transportDriverNew")
+    @PostMapping(value = "/transportDriver")
+    public ResultVo<PageVo<TransportDriverVo>> transportDriverNew(@Validated @RequestBody TransportDto dto){
+        return carrierService.transportDriverNew(dto);
+    }
+
+    @ApiOperation(value = "根据carrierId查看基本车辆信息_改版")
+    //@PostMapping(value = "/transportVehicleNew")
+    @PostMapping(value = "/transportVehicle")
+    public ResultVo<PageVo<TransportVehicleVo>> transportVehicleNew(@Validated @RequestBody TransportDto dto){
+        return carrierService.transportVehicleNew(dto);
     }
     /*********************************韵车集成改版 ed*****************************/
 }

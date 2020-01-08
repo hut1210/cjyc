@@ -363,7 +363,11 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 throw new ParameterException("提车运单运单，照片不能为空");
             }
             //验证是否是第一段运单
-            waybillCarDao.countPrev(waybillCar.getId(), waybillCar.getOrderCarId());
+            WaybillCar first = waybillCarDao.findFirst(waybillCar.getId(), waybillCar.getOrderCarId());
+            if(first == null ||
+                    (first.getId().equals(waybillCar.getId()) && (waybillCar.getLoadPhotoImg() == null || waybillCar.getLoadPhotoImg().split(",").length < 8))){
+                throw new ParameterException("提车运单运单，照片不能为空");
+            }
             //验证车辆当前所在地是否与出发区县匹配
             OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
             if (orderCar == null) {
@@ -442,7 +446,10 @@ public class CsTaskServiceImpl implements ICsTaskService {
             if (orderCar.getState() < orderCarNewState) {
                 orderCarDao.updateStateById(orderCarNewState, orderCar.getId());
             }
-            orderIdSet.add(orderCar.getOrderId());
+            //非业务中心提车，变更订单运输状态
+            if(waybillCar.getStartStoreId() == null || waybillCar.getStartStoreId() <= 0){
+                orderIdSet.add(orderCar.getOrderId());
+            }
             successSet.add(orderCar.getNo());
             count++;
         }
@@ -454,7 +461,6 @@ public class CsTaskServiceImpl implements ICsTaskService {
         taskDao.updateLoadNum(task.getId(), count);
         //更新运单状态
         waybillDao.updateForLoad(waybill.getId());
-
         //更新空车位数
         vehicleRunningDao.updateOccupiedNum(task.getVehicleRunningId());
 

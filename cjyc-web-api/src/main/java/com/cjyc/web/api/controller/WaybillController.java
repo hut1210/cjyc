@@ -336,7 +336,7 @@ public class WaybillController {
      * 我的运单-承运商
      */
     @ApiOperation(value = "我的运单-承运商")
-    @PostMapping(value = "/cr/list")
+    //@PostMapping(value = "/cr/list")
     public ResultVo<PageVo<CrWaybillVo>> crList(@RequestBody CrWaybillDto reqDto) {
         return waybillService.crListForMineCarrier(reqDto);
     }
@@ -437,4 +437,16 @@ public class WaybillController {
         return rsList;
     }
 
+
+    /************************************韵车集成改版 st***********************************/
+
+    /**
+     * 我的运单-承运商
+     */
+    @ApiOperation(value = "我的运单-承运商_改版")
+    //@PostMapping(value = "/cr/listNew")
+    @PostMapping(value = "/cr/listNew")
+    public ResultVo<PageVo<CrWaybillVo>> crListNew(@RequestBody CrWaybillDto reqDto) {
+        return waybillService.crListForMineCarrierNew(reqDto);
+    }
 }

@@ -996,7 +996,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         if(customer != null){
             if(dto.getFlag()){
                 UserRoleDept urd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
-                        .eq(UserRoleDept::getUserId, dto.getCustomerId())
+                        .eq(UserRoleDept::getUserId, customer.getId())
                         .eq(UserRoleDept::getDeptType, DeptTypeEnum.CUSTOMER.code)
                         .eq(UserRoleDept::getUserType, UserTypeEnum.CUSTOMER.code));
                 if(urd == null){
@@ -1255,7 +1255,9 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         if(!CollectionUtils.isEmpty(vos)){
             for(CustomerVo vo : vos){
                 CustomerCountVo count = customerCountDao.count(vo.getCustomerId());
-                BeanUtils.copyProperties(count,vo);
+                if(count != null){
+                    BeanUtils.copyProperties(count,vo);
+                }
             }
         }
         return vos;
@@ -1271,7 +1273,9 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         if(!CollectionUtils.isEmpty(customerVos)){
             for(ListKeyCustomerVo vo : customerVos){
                 CustomerCountVo count = customerCountDao.count(vo.getCustomerId());
-                BeanUtils.copyProperties(count,vo);
+                if(count != null){
+                    BeanUtils.copyProperties(count,vo);
+                }
             }
         }
         return customerVos;
@@ -1287,7 +1291,9 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         if(!CollectionUtils.isEmpty(coPartnerVos)){
             for(CustomerPartnerVo vo : coPartnerVos){
                 CustomerCountVo count = customerCountDao.count(vo.getCustomerId());
-                BeanUtils.copyProperties(count,vo);
+                if(count != null){
+                    BeanUtils.copyProperties(count,vo);
+                }
             }
         }
         return coPartnerVos;
