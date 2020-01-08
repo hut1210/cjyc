@@ -445,7 +445,7 @@ public class WaybillController {
      */
     @ApiOperation(value = "我的运单-承运商_改版")
     //@PostMapping(value = "/cr/listNew")
-    @PostMapping(value = "/cr/listNew")
+    @PostMapping(value = "/cr/list")
     public ResultVo<PageVo<CrWaybillVo>> crListNew(@RequestBody CrWaybillDto reqDto) {
         return waybillService.crListForMineCarrierNew(reqDto);
     }
