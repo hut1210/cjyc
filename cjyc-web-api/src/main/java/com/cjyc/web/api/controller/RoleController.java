@@ -104,13 +104,13 @@ public class RoleController {
     }
 
     @ApiOperation(value = "根据角色标识更新角色-菜单列表信息")
-    @PostMapping("/modifyRoleMenus")
+//    @PostMapping("/modifyRoleMenus")
     public ResultVo modifyRoleMenus(@Valid @RequestBody ModifyRoleMenusDto dto) {
         return roleService.modifyRoleMenus(dto);
     }
 
     @ApiOperation(value = "根据角色标识获取末级角色-菜单id列表信息")
-    @GetMapping("/getBtmMenuIdsByRoleId/{roleId}")
+//    @GetMapping("/getBtmMenuIdsByRoleId/{roleId}")
     public ResultVo<List<String>> getBtmMenuIdsByRoleId(
             @ApiParam(value = "roleId", name = "角色标识", required = true)
             @PathVariable("roleId")Long roleId) {
@@ -146,6 +146,20 @@ public class RoleController {
             @ApiParam(name = "roleName", value = "角色名称", required = false)
             @PathVariable(name = "roleName", required = false) String roleName) {
         return roleService.getAllListNew(roleName);
+    }
+
+    @ApiOperation(value = "根据角色标识获取末级角色-菜单id列表信息_改版")
+    @GetMapping("/getBtmMenuIdsByRoleId/{roleId}")
+    public ResultVo<List<String>> getBtmMenuIdsByRoleIdNew(
+            @ApiParam(value = "roleId", name = "角色标识", required = true)
+            @PathVariable("roleId")Long roleId) {
+        return roleService.getBtmMenuIdsByRoleIdNew(roleId);
+    }
+
+    @ApiOperation(value = "根据角色标识更新角色-菜单列表信息_改版")
+    @PostMapping("/modifyRoleMenus")
+    public ResultVo modifyRoleMenusNew(@Valid @RequestBody ModifyRoleMenusDto dto) {
+        return roleService.modifyRoleMenusNew(dto);
     }
     /*********************************韵车集成改版 ed*****************************/
 
