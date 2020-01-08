@@ -39,7 +39,7 @@ public class LoginController {
     }
 
     @ApiOperation(value = "用户注册登陆")
-    @PostMapping("/login")
+    //@PostMapping("/login")
     public ResultVo<CustomerLoginVo> login(@Validated @RequestBody LoginDto dto) {
         return loginService.login(dto);
     }
@@ -61,7 +61,8 @@ public class LoginController {
     /************************************韵车集成改版 st***********************************/
 
     @ApiOperation(value = "用户注册登陆")
-    @PostMapping("/loginNew")
+    //@PostMapping("/loginNew")
+    @PostMapping("/login")
     public ResultVo<CustomerLoginVo> loginNew(@Validated @RequestBody LoginDto dto) {
         return loginService.loginNew(dto);
     }
