@@ -731,7 +731,9 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         if(!CollectionUtils.isEmpty(driverVos)){
             for(DriverVo vo : driverVos){
                 CarrierCarCount count = carrierCarCountDao.countNew(vo.getCarrierId());
-                BeanUtils.copyProperties(count,vo);
+                if(count != null){
+                    BeanUtils.copyProperties(count,vo);
+                }
             }
         }
         return driverVos;
