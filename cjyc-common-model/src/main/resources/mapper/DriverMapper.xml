@@ -814,8 +814,7 @@
     </select>
 
     <!--根据承运商id获取下属司机信息-->
-    <select id="findDriverInfoNew" resultType="com.cjyc.common.model.vo.driver.mine.DriverInfoVo"
-            parameterType="java.lang.Long">
+    <select id="findDriverInfoNew" resultType="com.cjyc.common.model.vo.driver.mine.DriverInfoVo">
           SELECT
             dc.id as carrierId,
             dd.id AS driverId,
@@ -834,15 +833,9 @@
         LEFT JOIN (SELECT * FROM s_user_role_dept WHERE dept_type = 2 AND user_type = 2) surd ON surd.user_id = dd.id
         LEFT JOIN d_carrier dc ON dc.id = surd.dept_id
         LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
-        where dc.id = #{carrierId} and dc.type = 2 and surd.state &lt; 5 and
-        (
-        SELECT
-            ( CASE sr.role_name WHEN '个人司机' THEN 0 WHEN '下属司机' THEN 1 WHEN '承运商管理员' THEN 2 WHEN '承运商超级管理员' THEN 3 END ) AS role
-        FROM
-            s_role sr
-            LEFT JOIN ( SELECT * FROM s_user_role_dept WHERE dept_type = 2 AND user_type = 2 ) surd ON surd.role_id = sr.id
-            LEFT JOIN d_carrier dc ON dc.id = surd.dept_id  where dc.id = #{carrierId}
-	    ) &lt; 2
+        LEFT JOIN s_role sr ON sr.id = surd.role_id
+        where dc.id = #{carrierId} and dc.type = 2 and surd.state &lt; 5
+        AND sr.role_id = #{roleId}
         order by dd.create_time desc,dd.check_time desc
     </select>
 
@@ -970,7 +963,6 @@
                 and  surd.mode = #{mode}
             </if>
             and dc.id = #{carrierId} and dc.type = 2 and dc.state &lt; 9
-            and surd.mode &lt;= 4
             group by dd.id
             order by dd.create_time desc,dd.check_time desc
         </where>

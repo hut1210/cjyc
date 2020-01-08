@@ -239,7 +239,7 @@ public interface IDriverDao extends BaseMapper<Driver> {
      * @param carrierId
      * @return
      */
-    List<DriverInfoVo> findDriverInfoNew(@Param("carrierId") Long carrierId);
+    List<DriverInfoVo> findDriverInfoNew(@Param("carrierId") Long carrierId,@Param("roleId") Long roleId);
 
     /**
      * 获取该承运商下符合条件的司机

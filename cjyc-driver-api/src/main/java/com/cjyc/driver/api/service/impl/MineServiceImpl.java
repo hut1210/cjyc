@@ -8,6 +8,7 @@ import com.cjyc.common.model.dto.driver.mine.*;
 import com.cjyc.common.model.dto.driver.BaseDriverDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.*;
+import com.cjyc.common.model.enums.role.DeptTypeEnum;
 import com.cjyc.common.model.enums.task.TaskStateEnum;
 import com.cjyc.common.model.enums.transport.RunningStateEnum;
 import com.cjyc.common.model.enums.transport.VehicleOwnerEnum;
@@ -15,9 +16,11 @@ import com.cjyc.common.model.enums.transport.VehicleRunStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.RandomUtil;
+import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.mine.*;
+import com.cjyc.common.system.service.ICsRoleService;
 import com.cjyc.common.system.service.ICsSmsService;
 import com.cjyc.common.system.service.ICsVehicleService;
 import com.cjyc.driver.api.service.IMineService;
@@ -62,6 +65,8 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
     private ICsVehicleService csVehicleService;
     @Resource
     private IUserRoleDeptDao userRoleDeptDao;
+    @Resource
+    private ICsRoleService csRoleService;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -427,8 +432,12 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
         if(urd == null){
             return BaseResultUtil.fail("该司机管理员不存在,请检查");
         }
+        Role role = csRoleService.getByName(YmlProperty.get("cjkj.carrier_sub_driver_role_name"), DeptTypeEnum.CARRIER.code);
+        if(role == null){
+            return BaseResultUtil.fail("下属司机角色不存在，请先添加");
+        }
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        List<DriverInfoVo> driverInfo = driverDao.findDriverInfoNew(Long.valueOf(urd.getDeptId()));
+        List<DriverInfoVo> driverInfo = driverDao.findDriverInfoNew(Long.valueOf(urd.getDeptId()),role.getRoleId());
         PageInfo<DriverInfoVo> pageInfo = new PageInfo(driverInfo);
         return BaseResultUtil.success(pageInfo);
     }
