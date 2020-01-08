@@ -56,6 +56,11 @@ public class RegionServiceImpl_1 implements IRegionService_1 {
         List<City> regionList = cityDao.selectList(queryWrapper);
         PageInfo<City> pageInfo = new PageInfo(regionList);
         // 根据大区编码查询覆盖省
+        getProvince(pageInfo);
+        return BaseResultUtil.success(pageInfo);
+    }
+
+    private void getProvince(PageInfo<City> pageInfo) {
         List<City> list = new ArrayList<>(10);
         List<City> pageInfoList = pageInfo.getList();
         if (!CollectionUtils.isEmpty(pageInfoList)) {
@@ -80,7 +85,6 @@ public class RegionServiceImpl_1 implements IRegionService_1 {
             }
         }
         pageInfo.setList(list);
-        return BaseResultUtil.success(pageInfo);
     }
 
     @Transactional(rollbackFor = Exception.class)
