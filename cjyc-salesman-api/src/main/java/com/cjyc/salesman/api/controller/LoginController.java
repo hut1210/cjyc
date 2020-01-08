@@ -121,7 +121,7 @@ public class LoginController {
             ResultData<AuthLoginResp> loginRd = sysLoginService.getAuthentication(req);
             if (!ResultDataUtil.isSuccess(loginRd)) {
                 return BaseResultUtil.fail("登录失败，原因：" + loginRd.getMsg());
-            }else {
+            }else{
                 SalesmanAppLoginVo vo = packSalesmanAppLoginInfo(loginRd.getData(),
                         (List<String>) rd.getData().get(PRE_LOGIN_BTN_LIST_KEY),
                         (Admin)rd.getData().get(PRE_LOGIN_ADMIN_KEY));

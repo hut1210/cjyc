@@ -14,4 +14,14 @@ public interface ILoginService extends IService<Driver> {
      * @return
      */
     ResultVo<DriverLoginVo> login(LoginDto dto);
+
+
+    /************************************韵车集成改版 st***********************************/
+
+    /**
+     * 司机登陆注册
+     * @param dto
+     * @return
+     */
+    ResultVo<DriverLoginVo> loginNew(LoginDto dto);
 }

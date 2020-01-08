@@ -202,4 +202,94 @@ public interface IDriverDao extends BaseMapper<Driver> {
      * @param dto
      */
     List<DispatchDriverVo> findCarrierDrvierList(CarrierDriverListDto dto);
+
+
+    /************************************韵车集成改版 st***********************************/
+
+    /**
+     * 根据条件查询司机信息
+     * @param dto
+     * @return
+     */
+    List<DriverVo> findDriverByTerm(SelectDriverDto dto);
+
+    /**
+     * 根据司机id查看司机信息
+     * @param carrierId
+     * @return
+     */
+    ShowDriverVo findDriverById(@Param("carrierId") Long carrierId);
+
+    /**
+     * 查询符合条件的调度个人司机
+     * @param dto
+     * @return
+     */
+    List<DispatchDriverVo> findDispatchDriver(DispatchDriverDto dto);
+
+    /**
+     * 查询承运商下属
+     * @param dto
+     * @return
+     */
+    List<DispatchDriverVo> findCarrierDrvierListNew(CarrierDriverListDto dto);
+
+    /**
+     * 根据承运商id获取下属司机信息
+     * @param carrierId
+     * @return
+     */
+    List<DriverInfoVo> findDriverInfoNew(@Param("carrierId") Long carrierId);
+
+    /**
+     * 获取该承运商下符合条件的司机
+     * @param
+     * @return
+     */
+    List<FreeDriverVo> findCarrierAllDriverNew(@Param("carrierId") Long carrierId,@Param("realName") String realName);
+
+    /**
+     * 验证在企业承运商下是否存在
+     * @param dto
+     * @return
+     */
+    Integer existEnterPriseDriverNew(SocietyDriverDto dto);
+
+    /**
+     * 验证在个人承运商下是否存在
+     * @param dto
+     * @return
+     */
+    Integer existPersonDriverNew(SocietyDriverDto dto);
+
+    /**
+     * 司机端查询个人司机信息
+     * @param dto
+     * @return
+     */
+    SocietyDriverVo findPersonInfoNew(AppDriverDto dto);
+
+    /**
+     * 查询该承该运商下的司机
+     * @return
+     */
+    List<MyDriverVo> findMyDriverNew(QueryMyDriverDto dto);
+
+    /**
+     * 查询该承运商下的符合条件的司机
+     * @param dto
+     * @return
+     */
+    List<FreeDriverVo> findCarrierDriverNew(FreeDto dto);
+
+
+    /**
+     * 获取承运商下的司机_改版
+     * @param dto
+     * @return
+     */
+    List<TransportDriverVo> findTransportDriverNew(TransportDto dto);
+
+
+
 }

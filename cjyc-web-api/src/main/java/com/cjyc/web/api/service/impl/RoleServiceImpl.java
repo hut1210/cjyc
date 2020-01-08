@@ -299,6 +299,48 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
         });
         return BaseResultUtil.success(userList);
     }
+
+    @Override
+    public ResultVo<List<Role>> getAllListNew(String roleName) {
+        return BaseResultUtil.success(this.list(new QueryWrapper<Role>()
+                .like(!StringUtils.isEmpty(roleName), "role_name", roleName)
+                .eq("role_range", RoleRangeEnum.INNER.getValue())));
+    }
+
+    @Override
+    public ResultVo<List<String>> getBtmMenuIdsByRoleIdNew(Long roleId) {
+        Role role = baseMapper.selectById(roleId);
+        if (null == role || role.getRoleId() == null || role.getRoleId() <= 0L) {
+            return BaseResultUtil.fail("角色信息错误，请检查");
+        }
+        ResultData<List<Long>> rsRd = sysRoleService.getBottomMenuIdsByRoleId(role.getRoleId());
+        if (!ResultDataUtil.isSuccess(rsRd)) {
+            return BaseResultUtil.fail("查询错误，原因：" + rsRd.getMsg());
+        }
+        if (CollectionUtils.isEmpty(rsRd.getData())) {
+            return BaseResultUtil.success();
+        }else {
+            List<String> rsList = rsRd.getData().stream().map(id -> String.valueOf(id)).collect(Collectors.toList());
+            return BaseResultUtil.success(rsList);
+        }
+    }
+
+    @Override
+    public ResultVo modifyRoleMenusNew(ModifyRoleMenusDto dto) {
+        Role role = baseMapper.selectById(dto.getId());
+        if (null == role) {
+            return BaseResultUtil.success();
+        }
+        UpdateBatchRoleMenusReq req = new UpdateBatchRoleMenusReq();
+        req.setDeptIdList(Arrays.asList(BIZ_TOP_DEPT_ID));
+        req.setMenuIdList(dto.getMenuIdList());
+        req.setRoleName(role.getRoleName());
+        ResultData rd = sysRoleService.batchUpdateRoleMenus(req);
+        if (!ResultDataUtil.isSuccess(rd)) {
+            return BaseResultUtil.fail("变更角色菜单列表失败，原因: " + rd.getMsg());
+        }
+        return BaseResultUtil.success();
+    }
     /*********************************韵车集成改版 ed*****************************/
 
 

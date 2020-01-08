@@ -57,4 +57,13 @@ public class LoginController {
 
         return loginService.loginByPhone(reqDto);
     }*/
+
+    /************************************韵车集成改版 st***********************************/
+
+    @ApiOperation(value = "用户注册登陆")
+    @PostMapping("/loginNew")
+    public ResultVo<CustomerLoginVo> loginNew(@Validated @RequestBody LoginDto dto) {
+        return loginService.loginNew(dto);
+    }
+
 }

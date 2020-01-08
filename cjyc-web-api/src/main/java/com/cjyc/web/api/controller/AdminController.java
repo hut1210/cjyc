@@ -93,7 +93,7 @@ public class AdminController {
     }
 
     @ApiOperation(value = "分页查询指定业务中心下的业务员")
-    @PostMapping(value = "/page")
+//    @PostMapping(value = "/page")
     public ResultVo<PageVo<AdminPageVo>> listByRoleId(@RequestBody AdminPageDto reqDto) {
         return adminService.page(reqDto);
     }
@@ -117,7 +117,8 @@ public class AdminController {
 
     /************************************韵车集成改版 st***********************************/
     @ApiOperation(value = "分页查询指定业务中心下的业务员_改版")
-    @PostMapping(value = "/pageNew")
+//    @PostMapping(value = "/pageNew")
+    @PostMapping(value = "/page")
     public ResultVo<PageVo<AdminPageVo>> listByRoleIdNew(@Valid @RequestBody AdminPageNewDto reqDto) {
         return adminService.pageNew(reqDto);
     }

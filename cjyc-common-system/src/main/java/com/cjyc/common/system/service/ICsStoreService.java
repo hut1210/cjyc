@@ -65,5 +65,4 @@ public interface ICsStoreService {
     ResultVo<StoreListVo> findStore(FindStoreDto dto);
 
     Store getOneBelongByCityCode(String cityCode);
-
 }

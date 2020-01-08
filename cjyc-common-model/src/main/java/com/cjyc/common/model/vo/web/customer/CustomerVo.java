@@ -24,7 +24,7 @@ public class CustomerVo implements Serializable {
     @ApiModelProperty("C端客户编号")
     private String customerNo;
 
-    @ApiModelProperty(value = "状态：0待审核，1审核中，2已审核，3审核拒绝， 7已冻结")
+    @ApiModelProperty(value = "状态  0：待审核 1：审核中  2:已审核 4：已取消  5：已冻结  7：已拒绝   9:停用")
     private Integer state;
 
     @ApiModelProperty(value = "账号（手机号）")

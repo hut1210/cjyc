@@ -37,7 +37,7 @@ public class ListKeyCustomerVo implements Serializable {
     @ApiModelProperty(value = "客户类型  0：电商 1：租赁 2：金融公司 3：经销商 4：其他")
     private Integer customerNature;
 
-    @ApiModelProperty("状态：0待审核，1未登录，2已审核，3审核拒绝， 7已冻结")
+    @ApiModelProperty("状态：状态  0：待审核 1：审核中  2:已审核 4：已取消  5：已冻结  7：已拒绝   9:停用")
     private Integer state;
 
     @ApiModelProperty("账号来源：1：App注册，2：Applet注册，3：韵车后台 4：升级创建")
