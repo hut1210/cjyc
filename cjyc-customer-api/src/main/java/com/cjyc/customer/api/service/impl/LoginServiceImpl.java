@@ -221,11 +221,12 @@ public class LoginServiceImpl extends SuperServiceImpl<ICustomerDao, Customer> i
             }
             customer = rd.getData();
         }
+        UserRoleDept urd = null;
         if(customer != null){
             if(customer.getType() == CustomerTypeEnum.ENTERPRISE.code){
                 return BaseResultUtil.fail("大客户不能登录app");
             }
-            UserRoleDept urd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
+            urd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
                     .eq(UserRoleDept::getUserId, customer.getId())
                     .eq(UserRoleDept::getDeptType, DeptTypeEnum.CUSTOMER.code)
                     .eq(UserRoleDept::getUserType, UserTypeEnum.CUSTOMER.code));
@@ -250,6 +251,7 @@ public class LoginServiceImpl extends SuperServiceImpl<ICustomerDao, Customer> i
         //组装返回给移动端
         CustomerLoginVo loginVo = new CustomerLoginVo();
         BeanUtils.copyProperties(customer,loginVo);
+        loginVo.setState(urd.getState());
         loginVo.setUserId(customer.getUserId() == null ? 0 : customer.getUserId());
         loginVo.setAccessToken(rd.getData().getAccessToken());
         loginVo.setPhotoImg(StringUtils.isNotBlank(customer.getPhotoImg()) ? customer.getPhotoImg():"");
