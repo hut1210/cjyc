@@ -85,4 +85,6 @@ public interface ICsOrderService {
     ResultVo<DispatchAddCarVo> computerCarEndpoint(ComputeCarEndpointDto paramsDto);
 
     ResultVo simpleCommitAndCheck(CheckOrderDto reqDto);
+
+    ResultVo validateCanDispatch(ComputeCarEndpointDto reqDto);
 }

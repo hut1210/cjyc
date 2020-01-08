@@ -57,7 +57,7 @@ public class OrderController {
         reqDto.setCreateUserId(customer.getUserId());
         reqDto.setCreateUserName(customer.getName());
         reqDto.setState(OrderStateEnum.WAIT_SUBMIT.code);
-        //均摊干线费用
+        //干线费用
         List<SaveOrderCarDto> carList = reqDto.getOrderCarList();
         if(!CollectionUtils.isEmpty(carList) && reqDto.getLineWlFreightFee() != null){
             carList.forEach(dto -> dto.setTrunkFee(reqDto.getLineWlFreightFee()));
@@ -80,7 +80,7 @@ public class OrderController {
         reqDto.setCreateUserId(customer.getUserId());
         reqDto.setCreateUserName(customer.getName());
         reqDto.setState(OrderStateEnum.SUBMITTED.code);
-        //均摊干线费用
+        //干线费用
         List<SaveOrderCarDto> carList = reqDto.getOrderCarList();
         if(!CollectionUtils.isEmpty(carList) && reqDto.getLineWlFreightFee() != null){
             carList.forEach(dto -> dto.setTrunkFee(reqDto.getLineWlFreightFee()));

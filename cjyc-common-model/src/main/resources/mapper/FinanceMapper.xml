@@ -425,14 +425,15 @@
 
     <select id="getCollectTicketList" parameterType="com.cjyc.common.model.dto.web.finance.WaitTicketCollectDto"
             resultType="com.cjyc.common.model.vo.web.finance.SettlementVo">
-        select fp.no,fp.serial_number as serialNumber,
-        fp.freight_fee as freightFee,
-        fp.apply_time as applyTime,
-        fp.applicant_id as applicantId,
-        ba.name as applicant
+        select
+            fp.invoice_no as invoiceNo,
+            fp.serial_number as serialNumber,
+            fp.freight_fee as freightFee,
+            fp.apply_time as applyTime,
+            fp.applicant_id as applicantId,
+            ba.name as applicant
         from f_payable fp
         left join b_admin ba on ba.id = fp.applicant_id
-
         where fp.state='0'
         <if test="serialNumber !=null and serialNumber.trim() !=''">
             and fp.serial_number like concat('%',#{serialNumber},'%')
