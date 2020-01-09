@@ -105,7 +105,7 @@ public class OrderCenterDetailVo implements Serializable {
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal backFee;
 
-    @ApiModelProperty(value = "物流费")
+    @ApiModelProperty(value = "车辆应收干线费")
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal trunkFee;
 
@@ -120,6 +120,14 @@ public class OrderCenterDetailVo implements Serializable {
     @ApiModelProperty(value = "应收总价：收车后客户应支付平台的费用，计算值")
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal totalFee;
+
+    @ApiModelProperty(value = "物流费：计算值")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
+    private BigDecimal wlTotalFee;
+
+    @ApiModelProperty(value = "车辆代收中介费（为资源合伙人代收）")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
+    private BigDecimal agencyFee;
 
     @ApiModelProperty(value = "客户付款方式：0到付（默认），1预付，2账期")
     private Integer payType;
@@ -153,6 +161,12 @@ public class OrderCenterDetailVo implements Serializable {
     @ApiModelProperty(value = "目的地业务中心详细地址")
     private String endStoreNameDetail;
 
+    public BigDecimal getWlTotalFee() {
+        return wlTotalFee == null ? new BigDecimal(0) : wlTotalFee;
+    }
+    public BigDecimal getAgencyFee() {
+        return agencyFee == null ? new BigDecimal(0) : agencyFee;
+    }
     public Long getStartStoreId() {
         return startStoreId == null ? 0 : startStoreId;
     }
