@@ -28,6 +28,8 @@ public class ReplenishInfoDto {
     private String brand;
     @ApiModelProperty(value = "型号")
     private String model;
+    @ApiModelProperty(value = "1：提车拍照，2入库拍照")
+    private Integer type = 1;
     @Pattern(regexp = "(^$)|(^\\S{1,20}$)", message = "车牌号格式不正确，请检查")
     @ApiModelProperty(value = "车牌号")
     private String plateNo;

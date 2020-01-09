@@ -29,6 +29,9 @@ public class TaskDetailVo implements Serializable {
     @ApiModelProperty(value = "运单类型：1提车运单，2干线运单，3送车运单")
     private Integer type;
 
+    @ApiModelProperty(value = "(carryType)承运类型：1干线-个人承运商，2干线-企业承运商，3同城-业务员，4同城-代驾，5同城-拖车，6客户自己")
+    private Integer carrierType;
+
     @ApiModelProperty(value = "接单时间")
     @JsonSerialize(using = DateLongSerizlizer.class)
     private Long createTime;
@@ -60,6 +63,9 @@ public class TaskDetailVo implements Serializable {
     @ApiModelProperty(value = "车辆信息列表")
     private List<CarDetailVo> carDetailVoList;
 
+    public Integer getCarrierType() {
+        return carrierType == null ? -1 : carrierType;
+    }
     public Integer getState() {
         return state == null ? -1 : state;
     }

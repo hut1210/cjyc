@@ -80,7 +80,7 @@ public class TaskServiceImpl implements ITaskService {
     @Override
     public ResultVo<TaskDetailVo> getCarryDetail(DetailQueryDto dto) {
         TaskDetailVo taskDetailVo = new TaskDetailVo();
-        // 查询运单类型
+        // 查询运单信息
         Long waybillId = dto.getWaybillId();
         Waybill waybill = waybillDao.selectById(waybillId);
         if (waybill == null) {
@@ -88,6 +88,7 @@ public class TaskServiceImpl implements ITaskService {
             return BaseResultUtil.fail("查询运单为空");
         }
         taskDetailVo.setType(waybill.getType());
+        taskDetailVo.setCarrierType(waybill.getCarrierType());
 
         // 查询任务单信息
         Long taskId = dto.getTaskId();

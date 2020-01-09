@@ -10,6 +10,7 @@ import com.cjyc.common.model.dto.customer.order.OrderDetailDto;
 import com.cjyc.common.model.dto.customer.order.OrderQueryDto;
 import com.cjyc.common.model.dto.customer.order.SimpleSaveOrderDto;
 import com.cjyc.common.model.entity.*;
+import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -150,19 +151,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         // 填充返回数据
         fillData(detailVo, order);
 
-        // 查询待确认订单的保险费与
-        if (order.getState() <= OrderStateEnum.CHECKED.code && order.getState() >= OrderStateEnum.WAIT_SUBMIT.code) {
-            BigDecimal trunkFee = new BigDecimal(0);
-            BigDecimal addInsuranceFee = new BigDecimal(0);
-            List<OrderCar> orderCarList = orderCarDao.selectList(new QueryWrapper<OrderCar>().lambda().eq(OrderCar::getOrderId, order.getId()));
-            for (OrderCar orderCar : orderCarList) {
-                orderCar.getTrunkFee();
-                trunkFee = trunkFee.add(orderCar.getTrunkFee());
-                addInsuranceFee = addInsuranceFee.add(orderCar.getAddInsuranceFee());
-            }
-            detailVo.setTrunkFee(trunkFee);
-            detailVo.setAddInsuranceFee(addInsuranceFee);
-        }
+        // 计算费用
+        fillFee(detailVo, order);
 
         // 查询车辆信息
         getOrderCar(dto, detailVo);
@@ -182,6 +172,39 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         }
 
         return BaseResultUtil.success(detailVo);
+    }
+
+    private void fillFee(OrderCenterDetailVo detailVo, Order order) {
+        List<OrderCar> orderCarList = orderCarDao.selectList(new QueryWrapper<OrderCar>().lambda().eq(OrderCar::getOrderId, order.getId()));
+        // 计算待确认订单的物流费与保险费
+        if (order.getState() <= OrderStateEnum.CHECKED.code && order.getState() >= OrderStateEnum.WAIT_SUBMIT.code) {
+            BigDecimal trunkFee = new BigDecimal(0);
+            BigDecimal addInsuranceFee = new BigDecimal(0);
+            for (OrderCar orderCar : orderCarList) {
+                trunkFee = trunkFee.add(orderCar.getTrunkFee());
+                addInsuranceFee = addInsuranceFee.add(orderCar.getAddInsuranceFee());
+            }
+            detailVo.setTrunkFee(trunkFee);
+            detailVo.setAddInsuranceFee(addInsuranceFee);
+        }
+
+        // 计算合伙人物流费 与 车辆代收中介费
+        if (CustomerTypeEnum.COOPERATOR.code == order.getCustomerType()) {
+            BigDecimal agencyFees  = new BigDecimal(0);
+            BigDecimal wlTotalFees = new BigDecimal(0);
+            for (OrderCar orderCar : orderCarList) {
+                // 代收中介费
+                BigDecimal agencyFee = orderCar.getTotalFee().subtract(orderCar.getTrunkFee()).subtract(orderCar.getPickFee())
+                        .subtract(orderCar.getBackFee()).subtract(orderCar.getAddInsuranceFee());
+                agencyFees = agencyFees.add(agencyFee);
+                // 物流费
+                BigDecimal wlTotalFee = orderCar.getTrunkFee().add(orderCar.getPickFee())
+                        .add(orderCar.getBackFee()).add(orderCar.getAddInsuranceFee());
+                wlTotalFees = wlTotalFees.add(wlTotalFee);
+            }
+            detailVo.setWlTotalFee(wlTotalFees);
+            detailVo.setAgencyFee(agencyFees);
+        }
     }
 
     private void fillData(OrderCenterDetailVo detailVo, Order order) {

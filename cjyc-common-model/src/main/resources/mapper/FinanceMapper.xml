@@ -197,7 +197,7 @@
 
     <select id="getPaymentList" parameterType="com.cjyc.common.model.dto.web.finance.FinanceQueryDto"
             resultType="com.cjyc.common.model.vo.web.finance.PaymentVo">
-        select woc.no,woc.vin,woc.brand,woc.model,
+        select DISTINCT(woc.no),woc.vin,woc.brand,woc.model,
         wo.customer_id as customerId,wo.customer_type as type,zcity.name as largeArea,
         if(cc.pay_mode=0,'时付','账期') as payModeName,woc.total_fee as freightReceivable,
         if(woc.wl_pay_state=2,woc.total_fee,0) as freightPay,
@@ -273,6 +273,7 @@
                 and wo.end_area = #{endAreaCode}
             </if>
         </where>
+        group by woc.no
     </select>
 
     <select id="getCustomerContractById" parameterType="java.lang.Long" resultType="java.lang.Integer">
@@ -511,8 +512,8 @@
     </select>
 
     <update id="writeOffPayable" parameterType="com.cjyc.common.model.vo.web.finance.SettlementVo">
-        update f_payable set state=#{state},writeoff_id=#{writeoffId},
-        writeoff_time=#{writeoffTime}, total_freight_paid=#{totalFreightPaid} where serial_number = #{serialNumber}
+        update f_payable set state=#{state},writeoff_id=#{writeOffId},
+        writeoff_time=#{writeOffTime}, total_freight_paid=#{totalFreightPay} where serial_number = #{serialNumber}
     </update>
     <select id="getPayablePaidList" parameterType="com.cjyc.common.model.dto.web.finance.PayablePaidQueryDto"
             resultType="com.cjyc.common.model.vo.web.finance.PayablePaidVo">

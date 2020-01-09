@@ -134,26 +134,28 @@ public class CsTaskServiceImpl implements ICsTaskService {
         }
         List<String> loadPhotoImgs = reqDto.getLoadPhotoImgs();
         List<String> unloadPhotoImgs = reqDto.getUnloadPhotoImgs();
-        if (WaybillTypeEnum.PICK.code == waybill.getType()) {
-            if(waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code){
-                if (unloadPhotoImgs.size() < Constant.MIN_LOAD_PHOTO_NUM) {
-                    return BaseResultUtil.fail("照片数量不足8张");
-                }
-                if (unloadPhotoImgs.size() > Constant.MAX_LOAD_PHOTO_NUM) {
-                    return BaseResultUtil.fail("照片数量不能超过20张");
-                }
-            }else{
-                if (loadPhotoImgs.size() < Constant.MIN_LOAD_PHOTO_NUM) {
-                    return BaseResultUtil.fail("照片数量不足8张");
-                }
+        if (WaybillTypeEnum.PICK.code == waybill.getType() && reqDto.getType() == 1) {
+            if (loadPhotoImgs.size() < Constant.MIN_LOAD_PHOTO_NUM) {
+                return BaseResultUtil.fail("照片数量不足8张");
+            }
+            if (loadPhotoImgs.size() > Constant.MAX_LOAD_PHOTO_NUM) {
+                return BaseResultUtil.fail("照片数量不能超过20张");
+            }
+        }else if(WaybillTypeEnum.PICK.code == waybill.getType() && waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code && reqDto.getType() == 2){
+            if (unloadPhotoImgs.size() < Constant.MIN_LOAD_PHOTO_NUM) {
+                return BaseResultUtil.fail("照片数量不足8张");
+            }
+            if (unloadPhotoImgs.size() > Constant.MAX_LOAD_PHOTO_NUM) {
+                return BaseResultUtil.fail("照片数量不能超过20张");
+            }
+        } else {
+            if (!CollectionUtils.isEmpty(loadPhotoImgs)) {
                 if (loadPhotoImgs.size() > Constant.MAX_LOAD_PHOTO_NUM) {
                     return BaseResultUtil.fail("照片数量不能超过20张");
                 }
             }
-
-        } else {
-            if (!CollectionUtils.isEmpty(loadPhotoImgs)) {
-                if (loadPhotoImgs.size() > Constant.MAX_LOAD_PHOTO_NUM) {
+            if (!CollectionUtils.isEmpty(unloadPhotoImgs)) {
+                if (unloadPhotoImgs.size() > Constant.MAX_LOAD_PHOTO_NUM) {
                     return BaseResultUtil.fail("照片数量不能超过20张");
                 }
             }

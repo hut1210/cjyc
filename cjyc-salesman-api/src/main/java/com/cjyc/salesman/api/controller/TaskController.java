@@ -6,7 +6,9 @@ import com.cjyc.common.model.dto.salesman.task.OutAndInStorageQueryDto;
 import com.cjyc.common.model.dto.salesman.task.TaskWaybillQueryDto;
 import com.cjyc.common.model.dto.web.task.*;
 import com.cjyc.common.model.entity.Admin;
+import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.enums.UserTypeEnum;
+import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 
 /**
  * @Description 任务控制层
@@ -129,7 +132,19 @@ public class TaskController {
         reqDto.setLoginType(UserTypeEnum.ADMIN);
         return csTaskService.inStore(reqDto);
     }
-
+    /**
+     * 提车完善信息
+     * @author JPG
+     */
+    @ApiOperation(value = "入库完善信息")
+    @PostMapping(value = "/unload/replenish/info")
+    public ResultVo unloadReplenishInfo(@Valid @RequestBody ReplenishInfoDto reqDto) {
+        //验证用户
+        Admin admin = csAdminService.validate(reqDto.getLoginId());
+        reqDto.setLoginName(admin.getName());
+        reqDto.setType(2);
+        return csTaskService.replenishInfo(reqDto);
+    }
     /**
      * 确认入库
      * @author JPG
@@ -142,6 +157,7 @@ public class TaskController {
         reqDto.setLoginName(admin.getName());
         reqDto.setLoginPhone(admin.getPhone());
         reqDto.setLoginType(UserTypeEnum.ADMIN);
+        reqDto.setType(2);
         return csTaskService.inStoreForLocal(reqDto);
     }
 
