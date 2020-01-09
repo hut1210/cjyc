@@ -8,8 +8,10 @@ import java.util.Set;
 
 @Data
 public class TrunkListWaybillCarDto extends BasePageDto {
+
     @ApiModelProperty(value = "角色ID")
     private Long roleId;
+    private Long loginId;
     @ApiModelProperty(value = "业务范围(不用传)")
     private Set<Long> bizScope;
 

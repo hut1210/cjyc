@@ -523,6 +523,9 @@
         ) as tb on tb.waybill_id = w.id
         <where>
             w.type = 2
+            <if test="paramsDto.loginId != null">
+                wc.create_user_id = #{paramsDto.loginId}
+            </if>
             <if test="paramsDto.waybillNo != null and paramsDto.waybillNo != ''">
                 and w.no like concat('%', #{paramsDto.waybillNo}, '%')
             </if>
@@ -573,6 +576,9 @@
         left join d_vehicle_running vr on vr.driver_id = t.driver_id
         <where>
             w.type = 2
+            <if test="paramsDto.loginId != null">
+                wc.create_user_id = #{paramsDto.loginId}
+            </if>
             <if test="paramsDto.waybillNo != null and paramsDto.waybillNo != ''">
                 and w.no like concat('%', #{paramsDto.waybillNo}, '%')
             </if>

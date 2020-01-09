@@ -6,12 +6,10 @@ import com.cjyc.common.model.dao.IOrderDao;
 import com.cjyc.common.model.dao.IWaybillCarDao;
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.entity.*;
+import com.cjyc.common.model.entity.defined.BizScope;
 import com.cjyc.common.model.entity.defined.FullCity;
 import com.cjyc.common.model.entity.defined.UserInfo;
-import com.cjyc.common.model.enums.PayModeEnum;
-import com.cjyc.common.model.enums.ResultEnum;
-import com.cjyc.common.model.enums.SendNoTypeEnum;
-import com.cjyc.common.model.enums.UserTypeEnum;
+import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.city.CityLevelEnum;
 import com.cjyc.common.model.enums.customer.CustomerSourceEnum;
 import com.cjyc.common.model.enums.customer.CustomerStateEnum;
@@ -27,10 +25,12 @@ import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.MoneyUtil;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.OrderCarVo;
 import com.cjyc.common.model.vo.web.order.DispatchAddCarVo;
 import com.cjyc.common.model.vo.web.order.OrderVo;
 import com.cjyc.common.model.vo.web.waybill.WaybillCarVo;
 import com.cjyc.common.system.service.*;
+import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.common.system.util.RedisUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -42,6 +42,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -72,6 +73,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
     private ICsCityService csCityService;
     @Resource
     private ICsLineService csLineService;
+    @Resource
+    private ICsSysService csSysService;
     @Resource
     private ICsSendNoService csSendNoService;
     @Resource
@@ -369,13 +372,43 @@ public class CsOrderServiceImpl implements ICsOrderService {
     }
 
     @Override
-    public ResultVo validateCanDispatch(ComputeCarEndpointDto reqDto) {
+    public ResultVo validateCanDispatch(ComputeCarEndpointDto paramsDto) {
+        //查询角色业务中心范围
+        BizScope bizScope = csSysService.getBizScopeByRoleId(paramsDto.getRoleId(), true);
+        if (bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code) {
+            return BaseResultUtil.fail("没有数据权限");
+        }
+        Set<Long> storeIds = bizScope.getStoreIds();
+        if (bizScope.getCode() == BizScopeEnum.CHINA.code) {
+            return BaseResultUtil.success("验证通过");
+        } else {
+
+            if (paramsDto.getDispatchType() == WaybillTypeEnum.PICK.code) {
+                List<OrderCarVo> orderCarVos = orderCarDao.findVoListByIds(paramsDto.getOrderCarIdList());
+                for (OrderCarVo vo : orderCarVos) {
+                    if (vo.getInputStoreId() == null || !storeIds.contains(vo.getInputStoreId())) {
+                        return BaseResultUtil.fail("车辆{0},不在登录角色的提车调度范围内", vo.getNo());
+                    }
+                }
+            } else if (paramsDto.getDispatchType() == WaybillTypeEnum.BACK.code) {
+                List<OrderCarVo> orderCarVos = orderCarDao.findVoListByIds(paramsDto.getOrderCarIdList());
+                for (OrderCarVo vo : orderCarVos) {
+                    if (vo.getEndStoreId() == null || !storeIds.contains(vo.getEndStoreId())) {
+                        return BaseResultUtil.fail("车辆{0},不在登录角色的送车调度范围内", vo.getNo());
+                    }
+                }
+            } else {
+                List<WaybillCar> list = waybillCarDao.findLastListByOderCarIds(paramsDto.getOrderCarIdList());
+
+            }
+        }
 
         return null;
     }
 
     /**
      * 审核订单
+     *
      * @param paramsDto
      * @author JPG
      * @since 2019/11/5 15:03
@@ -427,32 +460,32 @@ public class CsOrderServiceImpl implements ICsOrderService {
     }
 
     private Order fillOrderInputStore(Order order) {
-        if(order.getInputStoreId() != null && order.getInputStoreId() != -5){
+        if (order.getInputStoreId() != null && order.getInputStoreId() != -5) {
             return order;
         }
         //根据业务范围查询业务中心
         Store store = null;
-        if(StringUtils.isNotBlank(order.getStartAreaCode())){
+        if (StringUtils.isNotBlank(order.getStartAreaCode())) {
             store = csStoreService.getOneBelongByAreaCode(order.getStartAreaCode());
         }
         //根据城市查询业务中心
-        if(store == null && StringUtils.isNotBlank(order.getStartCityCode())){
+        if (store == null && StringUtils.isNotBlank(order.getStartCityCode())) {
             store = csStoreService.getOneBelongByCityCode(order.getStartCityCode());
         }
-        if(store != null){
+        if (store != null) {
             order.setInputStoreId(store.getId());
             order.setInputStoreName(store.getName());
-        }else{
+        } else {
             order.setInputStoreId(0L);
         }
         return order;
     }
 
     private Order fillOrderLocalCarryTypeInfo(Order order) {
-        if(order.getPickType() == null || order.getPickType() <= 0){
+        if (order.getPickType() == null || order.getPickType() <= 0) {
             order.setPickType(null);
         }
-        if(order.getBackType() == null || order.getBackType() <= 0){
+        if (order.getBackType() == null || order.getBackType() <= 0) {
             order.setBackType(null);
         }
         return order;
@@ -517,7 +550,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                     order.setStartStoreName(store.getName());
                 }
                 order.setStartBelongStoreId(store.getId());
-            }else{
+            } else {
                 order.setStartStoreId(0L);
                 order.setStartBelongStoreId(0L);
             }
@@ -534,7 +567,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                     order.setEndStoreName(store.getName());
                 }
                 order.setEndBelongStoreId(store.getId());
-            }else{
+            } else {
                 order.setEndStoreId(0L);
                 order.setEndBelongStoreId(0L);
             }
@@ -559,7 +592,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
             pickFee = pickFee.add(orderCar.getPickFee() == null ? BigDecimal.ZERO : orderCar.getPickFee());
             trunkFee = trunkFee.add(orderCar.getTrunkFee() == null ? BigDecimal.ZERO : orderCar.getTrunkFee());
             backFee = backFee.add(orderCar.getBackFee() == null ? BigDecimal.ZERO : orderCar.getBackFee());
-            addInsuranceFee = addInsuranceFee.add(orderCar.getAddInsuranceFee() == null? BigDecimal.ZERO : orderCar.getAddInsuranceFee());
+            addInsuranceFee = addInsuranceFee.add(orderCar.getAddInsuranceFee() == null ? BigDecimal.ZERO : orderCar.getAddInsuranceFee());
         }
         order.setPickFee(pickFee);
         order.setTrunkFee(trunkFee);
@@ -670,9 +703,9 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 || order.getBackContactPhone() == null) {
             throw new ParameterException("收车联系人/收车方式不能为空，请先通过[修改订单]完善信息");
         }
-        if(order.getStartStoreId() == null || order.getStartStoreId() == -5
+        if (order.getStartStoreId() == null || order.getStartStoreId() == -5
                 || order.getEndStoreId() == null || order.getEndStoreId() == -5
-                || order.getInputStoreId() == null || order.getInputStoreId() == -5){
+                || order.getInputStoreId() == null || order.getInputStoreId() == -5) {
             throw new ParameterException("业务中心信息不能为空，请先通过[修改订单]完善信息");
         }
     }
@@ -843,10 +876,9 @@ public class CsOrderServiceImpl implements ICsOrderService {
         //记录历史数据
         OrderVo oldOrderVo = getFullOrderVo(order, new OrderVo());
 
-
         List<ReplenishOrderCarDto> list = paramsDto.getOrderCarList();
         for (ReplenishOrderCarDto dto : list) {
-            if(dto == null){
+            if (dto == null) {
                 continue;
             }
             OrderCar noc = new OrderCar();
@@ -890,13 +922,13 @@ public class CsOrderServiceImpl implements ICsOrderService {
         }
         paramsDto.setBizScope(bizScope.getCode() == 0 ? null : bizScope.getStoreIds());*/
         List<WaybillCarVo> childList = null;
-        if(paramsDto.getDispatchType() == WaybillTypeEnum.PICK.code){
+        if (paramsDto.getDispatchType() == WaybillTypeEnum.PICK.code) {
             //查询车辆信息
             childList = waybillCarDao.findPickCarEndpoint(paramsDto.getOrderCarIdList());
-        }else if(paramsDto.getDispatchType() == WaybillTypeEnum.BACK.code){
+        } else if (paramsDto.getDispatchType() == WaybillTypeEnum.BACK.code) {
             //查询车辆信息
             childList = waybillCarDao.findBackCarEndpoint(paramsDto.getOrderCarIdList());
-        }else{
+        } else {
             //查询车辆信息
             childList = waybillCarDao.findTrunkCarEndpoint(paramsDto.getOrderCarIdList());
         }
@@ -955,10 +987,10 @@ public class CsOrderServiceImpl implements ICsOrderService {
      * @since 2019/10/29 8:30
      */
     private void shareTotalFee(BigDecimal totalFee, List<OrderCar> orderCarlist) {
-        if(totalFee == null || totalFee.compareTo(BigDecimal.ZERO) <= 0){
+        if (totalFee == null || totalFee.compareTo(BigDecimal.ZERO) <= 0) {
             return;
         }
-        if(CollectionUtils.isEmpty(orderCarlist)){
+        if (CollectionUtils.isEmpty(orderCarlist)) {
             return;
         }
         BigDecimal carTotalFee = BigDecimal.ZERO;
@@ -968,7 +1000,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                     .add(oc.getBackFee() == null ? BigDecimal.ZERO : oc.getBackFee())
                     .add(oc.getAddInsuranceFee() == null ? BigDecimal.ZERO : oc.getAddInsuranceFee());
         }
-        if(carTotalFee.compareTo(BigDecimal.ZERO) <= 0){
+        if (carTotalFee.compareTo(BigDecimal.ZERO) <= 0) {
             return;
         }
 
@@ -978,7 +1010,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
             BigDecimal avgCar = (oc.getPickFee()
                     .add(oc.getTrunkFee() == null ? BigDecimal.ZERO : oc.getTrunkFee())
                     .add(oc.getBackFee() == null ? BigDecimal.ZERO : oc.getBackFee())
-                    .add(oc.getAddInsuranceFee()== null ? BigDecimal.ZERO : oc.getAddInsuranceFee()))
+                    .add(oc.getAddInsuranceFee() == null ? BigDecimal.ZERO : oc.getAddInsuranceFee()))
                     .multiply(avg);
             avgCar = avgCar.setScale(0, BigDecimal.ROUND_HALF_DOWN);
             //赋值
@@ -988,7 +1020,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         }
 
         BigDecimal remainder = totalFee.subtract(avgTotalFee);
-        if(remainder.compareTo(BigDecimal.ZERO) <= 0){
+        if (remainder.compareTo(BigDecimal.ZERO) <= 0) {
             return;
         }
 
@@ -1014,10 +1046,10 @@ public class CsOrderServiceImpl implements ICsOrderService {
      * @since 2019/10/29 8:27
      */
     private void shareCouponOffsetFee(BigDecimal couponOffsetFee, List<OrderCar> orderCarlist) {
-        if(couponOffsetFee == null || couponOffsetFee.compareTo(BigDecimal.ZERO) <= 0){
+        if (couponOffsetFee == null || couponOffsetFee.compareTo(BigDecimal.ZERO) <= 0) {
             return;
         }
-        if(CollectionUtils.isEmpty(orderCarlist)){
+        if (CollectionUtils.isEmpty(orderCarlist)) {
             return;
         }
 
@@ -1025,7 +1057,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         for (OrderCar oc : orderCarlist) {
             carTotalFee = carTotalFee.add(oc.getPickFee()).add(oc.getTrunkFee()).add(oc.getBackFee()).add(oc.getAddInsuranceFee());
         }
-        if(carTotalFee.compareTo(BigDecimal.ZERO) <= 0){
+        if (carTotalFee.compareTo(BigDecimal.ZERO) <= 0) {
             return;
         }
 
@@ -1039,7 +1071,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         }
 
         BigDecimal remainder = couponOffsetFee.subtract(avgTotalFee);
-        if(remainder.compareTo(BigDecimal.ZERO) <= 0){
+        if (remainder.compareTo(BigDecimal.ZERO) <= 0) {
             return;
         }
         BigDecimal[] bigDecimals = remainder.divideAndRemainder(new BigDecimal(orderCarlist.size()));
@@ -1054,6 +1086,5 @@ public class CsOrderServiceImpl implements ICsOrderService {
             }
         }
     }
-
 
 }

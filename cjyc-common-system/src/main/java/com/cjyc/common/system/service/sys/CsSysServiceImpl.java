@@ -13,6 +13,7 @@ import com.cjyc.common.model.enums.UseStateEnum;
 import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.enums.role.RoleLevelEnum;
 import com.cjyc.common.model.util.YmlProperty;
+import com.cjyc.common.model.vo.web.mineCarrier.MyCarrierVo;
 import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.service.ICsAdminService;
@@ -225,7 +226,7 @@ public class CsSysServiceImpl implements ICsSysService {
     }
 
     @Override
-    public List<Carrier> getCarriersByRoleId(Long loginId, Long roleId) {
+    public List<MyCarrierVo> getCarriersByRoleId(Long loginId, Long roleId) {
         Role role = roleDao.selectOne(new QueryWrapper<Role>().lambda()
                 .eq(Role::getRoleId, roleId));
         roleId = role.getId();

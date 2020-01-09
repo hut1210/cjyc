@@ -10,6 +10,7 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.FreeVehicleVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.mineCarrier.MyCarrierVo;
 import com.cjyc.common.model.vo.web.mineCarrier.SettlementDetailVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyCarVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyDriverVo;
@@ -21,6 +22,7 @@ import com.cjyc.web.api.service.IMineCarrierService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -103,9 +105,9 @@ public class MineCarrierController {
 
     @ApiOperation(value = "获取承运商管理员信息")
     @PostMapping(value = "/findAdminCarrier/{loginId}/{roleId}")
-    public ResultVo<List<Carrier>> findAdminCarrier(@PathVariable @ApiParam(value = "承运商管理员id",required = true) Long loginId,
+    public ResultVo<List<MyCarrierVo>> findAdminCarrier(@PathVariable @ApiParam(value = "承运商管理员id",required = true) Long loginId,
                                      @PathVariable @ApiParam(value = "承运商管理员角色id",required = true) Long roleId){
-        List<Carrier> carrierList = csSysService.getCarriersByRoleId(loginId, roleId);
+        List<MyCarrierVo> carrierList = csSysService.getCarriersByRoleId(loginId, roleId);
         return BaseResultUtil.success(carrierList);
     }
 

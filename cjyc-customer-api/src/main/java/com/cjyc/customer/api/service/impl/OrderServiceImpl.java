@@ -34,6 +34,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -87,7 +88,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         }
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
         List<OrderCenterVo> list = orderDao.selectPage(dto);
-        PageInfo<OrderCenterVo> pageInfo = new PageInfo<>(list == null ? new ArrayList<>(0) : list);
+        PageInfo<OrderCenterVo> pageInfo = new PageInfo<>(list);
         Map<String, Object> orderCount = getOrderCount(dto.getLoginId());
         return BaseResultUtil.success(pageInfo,orderCount);
     }
@@ -148,6 +149,20 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         }
         // 填充返回数据
         fillData(detailVo, order);
+
+        // 查询待确认订单的保险费与
+        if (order.getState() <= OrderStateEnum.CHECKED.code && order.getState() >= OrderStateEnum.WAIT_SUBMIT.code) {
+            BigDecimal trunkFee = new BigDecimal(0);
+            BigDecimal addInsuranceFee = new BigDecimal(0);
+            List<OrderCar> orderCarList = orderCarDao.selectList(new QueryWrapper<OrderCar>().lambda().eq(OrderCar::getOrderId, order.getId()));
+            for (OrderCar orderCar : orderCarList) {
+                orderCar.getTrunkFee();
+                trunkFee = trunkFee.add(orderCar.getTrunkFee());
+                addInsuranceFee = addInsuranceFee.add(orderCar.getAddInsuranceFee());
+            }
+            detailVo.setTrunkFee(trunkFee);
+            detailVo.setAddInsuranceFee(addInsuranceFee);
+        }
 
         // 查询车辆信息
         getOrderCar(dto, detailVo);

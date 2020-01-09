@@ -17,6 +17,7 @@ import java.util.Set;
 @ApiModel
 public class ComputeCarEndpointDto {
     private Long loginId;
+    private Long roleId;
     @ApiModelProperty(hidden = true)
     private Set<Long> bizScope;
     @ApiModelProperty("调度类型：1提车运单，2干线运单，3送车运单")

@@ -604,6 +604,9 @@
         ) as tb on tb.waybill_car_id = wc.id
         <where>
             w.type != 2
+            <if test="paramsDto.loginId != null">
+                wc.create_user_id = #{paramsDto.loginId}
+            </if>
             <if test="paramsDto.brand != null and paramsDto.brand != ''">
                 and oc.brand = #{paramsDto.brand}
             </if>
@@ -785,6 +788,9 @@
         ) as tb on tb.waybill_car_id = wc.id
         <where>
             w.type = 2
+            <if test="paramsDto.loginId != null">
+                wc.create_user_id = #{paramsDto.loginId}
+            </if>
             <choose>
                 <when test="paramsDto.outterState == 2">
                     wc.state &lt;= 15
@@ -1822,14 +1828,72 @@
     </select>
     <select id="findFirst" resultType="com.cjyc.common.model.entity.WaybillCar">
         select
-        *
+        wc.*
         from w_waybill w
         join w_waybill_car wc on w.id = wc.waybill_id
         where w.state &lt;= 100
         and wc.state &lt;= 100
-        and wc.order_car_no = 'D19121833807-003'
+        and wc.order_car_id = #{orderCarId}
         order by w.type, wc.id
         limit 1
+    </select>
+    <select id="findLastListByOderCarIds" resultType="com.cjyc.common.model.vo.web.waybill.WaybillCarVo">
+        select * from (
+            select
+            wc.*
+            from w_waybill w
+            join w_waybill_car wc on w.id = wc.waybill_id
+            where w.state &lt;= 100
+            and wc.state &lt;= 100
+            and w.type = 2
+            and wc.order_car_id in
+            <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            order by w.type desc, wc.id desc
+            limit 10000
+        ) as max
+        group by max.order_car_id
+
+
+        select
+        oc.id as orderCarId,
+        oc.no as orderCarNo,
+        oc.vin as vin,
+        oc.brand as brand,
+        oc.model as model,
+        oc.plate_no as plateNo,
+        oc.pick_type as pickType,
+        oc.back_type as backType,
+        o.end_belong_store_id as endBelongStoreId,
+        from w_order o
+        join w_order_car oc on o.id = oc.order_id
+        left join (
+            select * from (
+                select
+                wc.*,
+                concat(s1.province, s1.city, s1.area,s1.detail_addr) as startStoreFullAddress,
+                concat(s2.province, s2.city, s2.area,s2.detail_addr) as endStoreFullAddress
+                from w_waybill w
+                join w_waybill_car wc on w.id = wc.waybill_id
+                left join s_store s1 on s1.id = wc.start_store_id
+                left join s_store s2 on s2.id = wc.end_store_id
+                where w.state &lt;= 100
+                and wc.state &lt;= 100
+                and w.type >= 2
+                and wc.order_car_id in
+                <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+                order by w.type desc, wc.id desc
+                limit 10000
+            ) as max
+            group by max.order_car_id
+        ) as temp on temp.order_car_id = oc.id
+        where oc.id in
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </select>
 
     <delete id="cancelAfterWaybillCar">
