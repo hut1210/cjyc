@@ -21,6 +21,8 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.salesman.order.SalesOrderCarVo;
 import com.cjyc.common.model.vo.salesman.order.SalesOrderDetailVo;
 import com.cjyc.common.model.vo.salesman.order.SalesOrderVo;
+import com.cjyc.common.model.vo.web.OrderCarVo;
+import com.cjyc.common.model.vo.web.order.OrderVo;
 import com.cjyc.common.system.config.LogoImgProperty;
 import com.cjyc.common.system.service.ICsStoreService;
 import com.cjyc.common.system.service.sys.ICsSysService;
@@ -128,6 +130,11 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         detailVo.setTotalTrunkFee(totalTrunkFee);
         detailVo.setCarVoList(carVoList);
         return BaseResultUtil.success(detailVo);
+    }
+
+    @Override
+    public OrderCarVo getCarVoById(Long orderCarId) {
+        return orderCarDao.findVoById(orderCarId);
     }
 
 }

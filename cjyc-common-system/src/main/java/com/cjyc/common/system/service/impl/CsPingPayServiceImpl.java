@@ -295,13 +295,14 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                 } else {
                     //时付
                     if (PayStateEnum.PAID.code == orderCar.getWlPayState()) {
-                        return BaseResultUtil.fail("订单车辆{0}已支付过，请刷新后重试", orderCar.getNo());
-                    }
-                    isNeedPay = 1;
-                    if(CustomerTypeEnum.COOPERATOR.code == order.getCustomerType()){
-                        amount = amount.add(orderCar.getTotalFee());
+                        isNeedPay = 0;
                     }else{
-                        amount = amount.add(orderCar.getTotalFee()).subtract(orderCar.getCouponOffsetFee());
+                        isNeedPay = 1;
+                        if(CustomerTypeEnum.COOPERATOR.code == order.getCustomerType()){
+                            amount = amount.add(orderCar.getTotalFee());
+                        }else{
+                            amount = amount.add(orderCar.getTotalFee()).subtract(orderCar.getCouponOffsetFee());
+                        }
                     }
                 }
                 orderCarNos.add(orderCar.getNo());

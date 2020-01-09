@@ -5,13 +5,13 @@ import com.cjyc.common.model.dto.salesman.order.SalesOrderQueryDto;
 import com.cjyc.common.model.dto.salesman.order.SalesmanQueryDto;
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.entity.Admin;
-import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.salesman.order.SalesOrderDetailVo;
 import com.cjyc.common.model.vo.salesman.order.SalesOrderVo;
+import com.cjyc.common.model.vo.web.OrderCarVo;
 import com.cjyc.common.model.vo.web.admin.AdminPageVo;
 import com.cjyc.common.system.service.ICsAdminService;
 import com.cjyc.common.system.service.ICsOrderService;
@@ -22,10 +22,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
@@ -184,5 +181,18 @@ public class OrderController {
     public ResultVo<SalesOrderDetailVo> findOrderDetail(@Valid @RequestBody SalesOrderDetailDto dto) {
         return orderService.findOrderDetail(dto);
     }
+
+
+    /**
+     * 查询订单-根据车辆ID
+     * @author JPG
+     */
+    @ApiOperation(value = "查询车辆和订单详细信息-根据车辆ID")
+    @PostMapping(value = "/car/vo/get")
+    public ResultVo<OrderCarVo> getCarVo(@Valid @RequestBody OrderCarIdDto reqDto) {
+        OrderCarVo vo = orderService.getCarVoById(reqDto.getOrderCarId());
+        return BaseResultUtil.success(vo);
+    }
+
 
 }

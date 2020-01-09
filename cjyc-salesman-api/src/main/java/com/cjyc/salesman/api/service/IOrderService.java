@@ -10,6 +10,8 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.salesman.order.SalesOrderDetailVo;
 import com.cjyc.common.model.vo.salesman.order.SalesOrderVo;
+import com.cjyc.common.model.vo.web.OrderCarVo;
+import com.cjyc.common.model.vo.web.order.OrderVo;
 
 public interface IOrderService extends IService<Order> {
 
@@ -26,4 +28,6 @@ public interface IOrderService extends IService<Order> {
      * @return
      */
     ResultVo<SalesOrderDetailVo> findOrderDetail(SalesOrderDetailDto dto);
+
+    OrderCarVo getCarVoById(Long orderCarId);
 }

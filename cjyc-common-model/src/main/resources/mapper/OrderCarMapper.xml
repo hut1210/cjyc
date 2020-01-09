@@ -1122,6 +1122,7 @@
         o.end_area_code as endAreaCode,
         o.end_address as endAddress,
         o.end_store_id as endStoreId,
+        o.end_belong_store_id as endBelongStoreId,
         o.end_store_name as endStoreName,
         o.expect_start_date as expectStartDate,
         o.expect_end_date as expectEndDate,
