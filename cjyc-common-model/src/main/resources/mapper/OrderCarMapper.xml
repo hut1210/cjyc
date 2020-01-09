@@ -1398,24 +1398,7 @@
         left join s_store se on se.id = o.end_store_id
         where oc.id = #{orderCarId}
     </select>
-    <sql id="pick_wait_dispatch_car_list_For_App">
-        select
-        o.start_province_code as dispatchStartProvinceCode,
-        o.start_province as dispatchStartProvince,
-        o.start_city_code as dispatchStartCityCode,
-        o.start_city as dispatchStartCity,
-        o.start_area_code as dispatchStartAreaCode,
-        o.start_area as dispatchStartArea,
-        o.start_address as dispatchStartAddress,
-
-        ss.province_code as dispatchEndProvinceCode,
-        ss.province as dispatchEndProvince,
-        ss.city_code as dispatchEndCityCode,
-        ss.city as dispatchEndCity,
-        ss.area_code as dispatchEndAreaCode,
-        ss.area as dispatchEndArea,
-        concat(left(o.start_city,2), '-', left(ss.city,2)) as nodes,
-
+    <sql id="dispatch_car_field">
         o.input_store_id as inputStoreId,
         o.start_city as startCity,
         o.start_city_code as startCityCode,
@@ -1423,6 +1406,7 @@
         o.end_city as endCity,
         o.end_city_code as endCityCode,
         o.end_belong_store_id as endBelongStoreId,
+        o.expect_start_date as expectStartDate,
         oc.order_no as orderNo,
         oc.id as orderCarId,
         oc.no as orderCarNo,
@@ -1434,7 +1418,29 @@
         oc.trunk_state as trunkState,
         oc.back_type as backType,
         oc.back_state as backState,
+        oc.state as state,
         temp.waybill_no as waybillNo
+    </sql>
+    <sql id="pick_wait_dispatch_car_list_For_App">
+        select
+        o.start_province_code as dispatchStartProvinceCode,
+        o.start_province as dispatchStartProvince,
+        o.start_city_code as dispatchStartCityCode,
+        o.start_city as dispatchStartCity,
+        o.start_area_code as dispatchStartAreaCode,
+        o.start_area as dispatchStartArea,
+
+        ss.province_code as dispatchEndProvinceCode,
+        ss.province as dispatchEndProvince,
+        ss.city_code as dispatchEndCityCode,
+        ss.city as dispatchEndCity,
+        ss.area_code as dispatchEndAreaCode,
+        ss.area as dispatchEndArea,
+        concat(left(o.start_city,2), '-', left(ss.city,2)) as pickNodes,
+        '' as trunkNodes,
+        '' as backNodes,
+
+        <include refid="dispatch_car_field"/>
         from w_order o
         join w_order_car oc on oc.order_id = o.id
         join s_store ss on ss.id = o.start_store_id
@@ -1461,7 +1467,6 @@
         se.city as dispatchStartCity,
         se.area_code as dispatchStartAreaCode,
         se.area as dispatchStartArea,
-        concat(left(se.city,2), '-', left(o.end_city,2)) as nodes,
 
         o.end_province_code as dispatchEndProvinceCode,
         o.end_province as dispatchEndProvince,
@@ -1469,27 +1474,11 @@
         o.end_city as dispatchEndCity,
         o.end_area_code as dispatchEndAreaCode,
         o.end_area as dispatchEndArea,
+        '' as pickNodes,
+        '' as trunkNodes,
+        concat(left(se.city,2), '-', left(o.end_city,2)) as backNodes,
 
-        o.input_store_id as inputStoreId,
-        o.start_city as startCity,
-        o.start_city_code as startCityCode,
-        o.start_belong_store_id as startBelongStoreId,
-        o.end_city as endCity,
-        o.end_city_code as endCityCode,
-        o.end_belong_store_id as endBelongStoreId,
-        o.expect_start_date as expectStartDate,
-        oc.order_no as orderNo,
-        oc.id as orderCarId,
-        oc.no as orderCarNo,
-        oc.brand as brand,
-        oc.model as model,
-        oc.vin as vin,
-        oc.pick_type as pickType,
-        oc.pick_state as pickState,
-        oc.trunk_state as trunkState,
-        oc.back_type as backType,
-        oc.back_state as backState,
-        temp.waybill_no as waybillNo
+        <include refid="dispatch_car_field"/>
         from w_order o
         join w_order_car oc on oc.order_id = o.id
         join s_store se on se.id = o.end_store_id
@@ -1522,6 +1511,7 @@
         (case when o.end_store_id > 0 and o.back_type != 4 then se.city_code else o.end_city_code end)  as dispatchEndCityCode,
         (case when o.end_store_id > 0 and o.back_type != 4 then se.area else o.end_area end)  as dispatchEndArea,
         (case when o.end_store_id > 0 and o.back_type != 4 then se.area_code else o.end_area_code end)  as dispatchEndAreaCode,
+        '' as pickNodes,
         (
             select GROUP_CONCAT(concat(left(wc.start_city,2), '-', left(wc.end_city,2)))
             from w_waybill w
@@ -1530,28 +1520,10 @@
             and w.state &lt;= 100
             and w.type = 2
             and wc.state &lt;= 100
-        ) as nodes,
+        ) as trunkNodes,
+        '' as backNodes,
 
-        o.input_store_id as inputStoreId,
-        o.start_city as startCity,
-        o.start_city_code as startCityCode,
-        o.start_belong_store_id as startBelongStoreId,
-        o.end_city as endCity,
-        o.end_city_code as endCityCode,
-        o.end_belong_store_id as endBelongStoreId,
-        o.expect_start_date as expectStartDate,
-        oc.order_no as orderNo,
-        oc.id as orderCarId,
-        oc.no as orderCarNo,
-        oc.brand as brand,
-        oc.model as model,
-        oc.vin as vin,
-        oc.pick_type as pickType,
-        oc.pick_state as pickState,
-        oc.trunk_state as trunkState,
-        oc.back_type as backType,
-        oc.back_state as backState,
-        temp.waybill_no as waybillNo
+        <include refid="dispatch_car_field"/>
         from w_order o
         join w_order_car oc on oc.order_id = o.id
         left join s_store ss on ss.id = o.start_store_id
@@ -1596,8 +1568,11 @@
         shell.trunkState,
         shell.backType,
         shell.backState,
-        shell.nodes,
-        (select logo_img from s_car_series cs where cs.brand = shell.brand and cs.model = shell.model limit 1) as logoImgPath
+        shell.pickNodes,
+        shell.trunkNodes,
+        shell.backNodes,
+        shell.state,
+        concat('${@com.cjyc.common.system.config.LogoImgProperty@logoImg}',(select logo_img from s_car_series cs where cs.brand = shell.brand and cs.model = shell.model limit 1)) as logoImgPath
         from (
             <choose>
                 <when test="param.dispatchType == 1">
