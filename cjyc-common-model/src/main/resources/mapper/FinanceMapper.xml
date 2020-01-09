@@ -467,7 +467,7 @@
 
     <select id="getPayablePaymentList" parameterType="com.cjyc.common.model.dto.web.finance.WaitPaymentDto"
             resultType="com.cjyc.common.model.vo.web.finance.SettlementVo">
-        select fp.no,fp.serial_number as serialNumber,
+        select fp.serial_number as serialNumber,
         fp.freight_fee as freightFee,
         fp.invoice_no as invoiceNo,
         fp.apply_time as applyTime,
@@ -516,7 +516,7 @@
     </update>
     <select id="getPayablePaidList" parameterType="com.cjyc.common.model.dto.web.finance.PayablePaidQueryDto"
             resultType="com.cjyc.common.model.vo.web.finance.PayablePaidVo">
-        select fp.no,fp.serial_number as serialNumber,
+        select fp.serial_number as serialNumber,
         fp.freight_fee as freightFee,
         fp.invoice_no as invoiceNo,
         fp.apply_time as applyTime,
