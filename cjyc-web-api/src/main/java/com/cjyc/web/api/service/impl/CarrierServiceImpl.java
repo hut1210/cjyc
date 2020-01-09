@@ -699,6 +699,16 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
                     return BaseResultUtil.fail("根据角色名称：" + CARRIER_COMMON_ROLE_NAME +
                             ",未查询到角色信息");
                 }
+                //原承运商超级管理员司机
+                Driver origSuperDriver = driverDao.selectById(urd.getUserId());
+                if (origSuperDriver == null) {
+                    return BaseResultUtil.fail("承运商超级管理员信息错误，请检查");
+                }
+                //用户信息同步到物流平台
+                ResultData rd = updateRoleForCarrierToPlatform(origSuperDriver, driver, role, commonRole);
+                if (!ResultDataUtil.isSuccess(rd)) {
+                    return BaseResultUtil.fail("更新司机角色信息错误，原因：" + rd.getMsg());
+                }
                 urd.setRoleId(commonRole.getId());
                 userRoleDeptDao.updateById(urd);
                 UserRoleDept updateUrd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
@@ -801,5 +811,53 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         List<TransportVehicleVo> transportVehicleVos = vehicleDao.findTransportVehicleNew(dto);
         PageInfo<TransportVehicleVo> pageInfo = new PageInfo<>(transportVehicleVos);
         return BaseResultUtil.success(pageInfo);
+    }
+
+    /**
+     * 承运商变更修改角色信息到物流平台
+     * @return
+     */
+    private ResultData updateRoleForCarrierToPlatform(Driver origDriver, Driver newDriver,
+                                                      Role superRole, Role commonRole) {
+        ResultData<List<SelectRoleResp>> rolesRd =
+                sysRoleService.getListByUserId(origDriver.getUserId());
+        if (!ResultDataUtil.isSuccess(rolesRd)) {
+            return ResultData.failed("角色信息查询失败，原因：" + rolesRd.getMsg());
+        }
+        ResultData<List<SelectRoleResp>> newRolesRd = sysRoleService.getListByUserId(newDriver.getUserId());
+        if (!ResultDataUtil.isSuccess(newRolesRd)) {
+            return ResultData.failed("角色信息查询失败，原因：" + newRolesRd.getMsg());
+        }
+        if (!CollectionUtils.isEmpty(rolesRd.getData()) && !CollectionUtils.isEmpty(newRolesRd.getData())) {
+            List<Long> origIdList = rolesRd.getData().stream()
+                    .map(r -> r.getRoleId()).collect(Collectors.toList());
+            origIdList.remove(superRole.getRoleId());
+            if (!origIdList.contains(commonRole.getRoleId())) {
+                origIdList.add(commonRole.getRoleId());
+            }
+            UpdateUserReq origReq = new UpdateUserReq();
+            origReq.setUserId(origDriver.getUserId());
+            origReq.setRoleIdList(origIdList);
+            ResultData updateRd = sysUserService.update(origReq);
+            if (!ResultDataUtil.isSuccess(updateRd)) {
+                return ResultData.failed("用户角色信息更新失败，原因：" + updateRd.getMsg());
+            }
+            List<Long> newIdList = newRolesRd.getData().stream()
+                    .map(r -> r.getRoleId()).collect(Collectors.toList());
+            newIdList.remove(commonRole.getRoleId());
+            if (!newIdList.contains(superRole.getRoleId())) {
+                newIdList.add(superRole.getRoleId());
+            }
+            UpdateUserReq newReq = new UpdateUserReq();
+            newReq.setUserId(newDriver.getUserId());
+            newReq.setRoleIdList(newIdList);
+            ResultData newUpdateRd = sysUserService.update(newReq);
+            if (!ResultDataUtil.isSuccess(newUpdateRd)) {
+                return ResultData.failed("用户角色信息更新失败，原因：" + newUpdateRd.getMsg());
+            }
+            return ResultData.ok("成功");
+        }else {
+            return ResultData.failed("角色信息数据错误，请检查");
+        }
     }
 }

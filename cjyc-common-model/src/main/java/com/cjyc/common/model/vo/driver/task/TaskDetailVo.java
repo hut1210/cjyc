@@ -20,7 +20,7 @@ import java.util.List;
 public class TaskDetailVo implements Serializable {
     private static final long serialVersionUID = -6460478260449465114L;
     @ApiModelProperty(value = "运单状态(待分配明细使用)：0待分配承运商，15待承运商承接任务，20已承接, 55运输中，100已完成，111超时关闭，113已取消，115已拒接；" +
-            "运单车辆状态(已分配的明细使用)：0待指派，5待装车，15待出库(业务中心)，45已装车，90待入库(业务中心）, 100已交付，113已取消")
+            "任务状态(已分配运单使用)：5待装车，55运输中，100已完成，113已取消，115已拒接")
     private Integer state;
 
     @ApiModelProperty(value = "运单编号")
