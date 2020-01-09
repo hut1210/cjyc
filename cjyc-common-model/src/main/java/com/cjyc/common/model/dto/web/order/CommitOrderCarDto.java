@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -24,6 +25,7 @@ public class CommitOrderCarDto implements Serializable {
     private String model;
     @ApiModelProperty(value = "车牌号")
     private String plateNo;
+    @Pattern(regexp = "^[A-Z\\d]{17}$", message = "vin码格式不正确")
     @ApiModelProperty(value = "vin码")
     private String vin;
     @ApiModelProperty(value = "是否能动 0-否 1-是")

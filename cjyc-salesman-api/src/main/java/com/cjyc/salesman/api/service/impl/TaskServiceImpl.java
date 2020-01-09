@@ -66,6 +66,11 @@ public class TaskServiceImpl implements ITaskService {
         if (dto.getCompleteTimeE() != null && dto.getCompleteTimeE() != 0) {
             dto.setCompleteTimeE(TimeStampUtil.convertEndTime(dto.getCompleteTimeE()));
         }
+        Long creatTime = dto.getCreatTime();
+        if (creatTime != null && creatTime != 0) {
+            dto.setCreatTimeS(creatTime);
+            dto.setCreatTimeE(TimeStampUtil.convertEndTime(creatTime));
+        }
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<TaskWaybillVo> list = taskDao.selectCarryList(dto);
         PageInfo<TaskWaybillVo> pageInfo = new PageInfo<>(list);
@@ -261,6 +266,11 @@ public class TaskServiceImpl implements ITaskService {
         }
         if (dto.getOutStorageTimeE() != null && dto.getOutStorageTimeE() != 0) {
             dto.setOutStorageTimeE(TimeStampUtil.convertEndTime(dto.getOutStorageTimeE()));
+        }
+        Long creatTime = dto.getCreatTime();
+        if (creatTime != null && creatTime != 0) {
+            dto.setCreatTimeS(creatTime);
+            dto.setCreatTimeE(TimeStampUtil.convertEndTime(creatTime));
         }
 
         // 根据登录ID查询当前业务员所在业务中心ID

@@ -1136,4 +1136,26 @@ public class RedisUtils {
 		return redisTemplate.opsForZSet().scan(key, options);
 	}
 
+	/**
+	 * 实现命令：HGET key field，返回哈希表 key中给定域 field的值
+	 *
+	 * @param key
+	 * @param field
+	 * @return
+	 */
+	public String hget(String key, String field) {
+		return (String) redisTemplate.opsForHash().get(key, field);
+	}
+
+	/**
+	 * 实现命令：HSET key field value，将哈希表 key中的域 field的值设为 value
+	 *
+	 * @param key
+	 * @param field
+	 * @param value
+	 */
+	public void hset(String key, String field, Object value) {
+		redisTemplate.opsForHash().put(key, field, value);
+	}
+
 }
