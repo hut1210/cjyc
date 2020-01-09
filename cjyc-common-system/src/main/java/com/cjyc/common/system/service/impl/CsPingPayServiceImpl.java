@@ -363,13 +363,13 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         TradeBill tradeBill = cStransactionService.getTradeBillByOrderNo(orderNo);
         if(tradeBill != null){
             throw new CommonException("订单已支付完成","1");
-        }else{
+        }/*else{
             log.info("webPrePay orderNo ="+orderNo);
             String lockKey =getRandomNoKey(orderNo);
             if (!redisLock.lock(lockKey, 1800000, 99, 200)) {
                 throw new CommonException("订单正在支付中","1");
             }
-        }
+        }*/
         try {
             om.setClientIp(prePayDto.getIp());
             BigDecimal wlFee = cStransactionService.getAmountByOrderNo(prePayDto.getOrderNo());
@@ -469,13 +469,13 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         TradeBill tradeBill = cStransactionService.getTradeBillByOrderNo(orderNo);
         if(tradeBill != null){
             throw new CommonException("订单已支付完成","1");
-        }else{
+        }/*else{
             log.info("salesPrePay orderNo ="+orderNo);
             String lockKey =getRandomNoKey(orderNo);
             if (!redisLock.lock(lockKey, 1800000, 99, 200)) {
                 throw new CommonException("订单正在支付中","1");
             }
-        }
+        }*/
         try {
             om.setClientIp(salesPrePayDto.getIp());
             BigDecimal wlFee = cStransactionService.getAmountByOrderNo(salesPrePayDto.getOrderNo());

@@ -149,7 +149,7 @@ public class InvoiceApplyServiceImpl extends ServiceImpl<IInvoiceApplyDao, Invoi
         }
 
         // 根据登录ID查询操作人名称
-        Admin admin = adminDao.selectById(dto.getCustomerId());
+        Admin admin = adminDao.selectById(dto.getLoginId());
 
         // 更新开票信息
         LambdaUpdateWrapper<InvoiceApply> updateWrapper = new UpdateWrapper<InvoiceApply>().lambda()
