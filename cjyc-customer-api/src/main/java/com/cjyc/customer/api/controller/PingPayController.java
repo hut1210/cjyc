@@ -1,5 +1,6 @@
 package com.cjyc.customer.api.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.nacos.client.utils.StringUtils;
 import com.cjkj.common.utils.IPUtil;
@@ -134,6 +135,7 @@ public class PingPayController {
                 if (StringUtils.isNotBlank(buffer.toString())) {
                     Event event = Webhooks.eventParse(buffer.toString());
                     EventData data = event.getData();
+                    log.info("Ping++支付回调结果{}", JSON.toJSONString(data));
                     log.debug("------event.getType()=" + event.getType());
                     if ("order.succeeded".equals(event.getType())) {//ping++订单支付成功
                         Order order = (Order) data.getObject();

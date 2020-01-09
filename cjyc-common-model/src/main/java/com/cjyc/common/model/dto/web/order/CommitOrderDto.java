@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -44,6 +45,7 @@ public class CommitOrderDto {
     @ApiModelProperty(value = "用户不存在，是否创建用户")
     private Boolean createCustomerFlag = false;
 
+    @Valid
     @ApiModelProperty(value = "车辆列表")
     private List<CommitOrderCarDto> orderCarList;
 

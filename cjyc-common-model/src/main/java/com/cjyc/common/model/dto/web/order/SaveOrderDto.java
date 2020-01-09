@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -37,6 +38,7 @@ public class SaveOrderDto {
     @ApiModelProperty(value = "物流券抵消金额")
     private BigDecimal couponOffsetFee;
     @ApiModelProperty(value = "车辆列表")
+    @Valid
     private List<SaveOrderCarDto> orderCarList;
 
 
