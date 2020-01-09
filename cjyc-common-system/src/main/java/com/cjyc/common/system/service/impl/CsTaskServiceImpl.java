@@ -1045,13 +1045,12 @@ public class CsTaskServiceImpl implements ICsTaskService {
      *
      * @param orderCarNoList 车辆编号列表
      * @param userInfo
-     * @return
      * @author JPG
      * @date 2019/12/8 12:06
      */
     @Override
     public void updateForCarFinish(List<String> orderCarNoList, UserInfo userInfo) {
-
+        LogUtil.info("车辆支付完成回调修改状态：{},操作人信息{}", JSON.toJSONString(orderCarNoList), JSON.toJSONString(userInfo));
         //返回内容
         Set<Long> orderIdSet = Sets.newHashSet();
         Set<Long> waybillCarIdSet = Sets.newHashSet();
