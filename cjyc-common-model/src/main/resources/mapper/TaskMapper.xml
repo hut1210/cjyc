@@ -380,7 +380,8 @@
             <where>
                 task.driver_id = #{loginId}
                 <if test="creatTime != null and creatTime != 0">
-                    AND task.create_time = #{creatTime}
+                    AND task.create_time >= #{creatTimeS}
+                    AND task.create_time &lt;= #{creatTimeE}
                 </if>
                 <if test="waybillNo != null and waybillNo.trim() != ''">
                     AND task.no like concat('%',#{waybillNo},'%')
@@ -471,7 +472,8 @@
                 LEFT JOIN w_task_car tc ON task.id = tc.task_id
                 <where>
                     <if test="creatTime != null and creatTime != 0">
-                        AND task.create_time = #{creatTime}
+                        AND task.create_time >= #{creatTimeS}
+                        AND task.create_time &lt;= #{creatTimeE}
                     </if>
                     <if test="waybillNo != null and waybillNo.trim() != ''">
                         AND task.no like concat('%',#{waybillNo},'%')

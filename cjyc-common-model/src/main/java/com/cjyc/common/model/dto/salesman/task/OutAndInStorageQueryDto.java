@@ -26,6 +26,8 @@ public class OutAndInStorageQueryDto extends BasePageDto {
 
     @ApiModelProperty(value = "接单日期")
     private Long creatTime;
+    private Long creatTimeS;
+    private Long creatTimeE;
 
     @ApiModelProperty(value = "运单号")
     private String waybillNo;
