@@ -11,6 +11,7 @@ import com.cjyc.common.model.dto.customer.invoice.OrderAmountDto;
 import com.cjyc.common.model.entity.CustomerInvoice;
 import com.cjyc.common.model.entity.InvoiceApply;
 import com.cjyc.common.model.entity.InvoiceOrderCon;
+import com.cjyc.common.model.enums.InvoiceTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.invoice.InvoiceApplyVo;
@@ -79,6 +80,9 @@ public class InvoiceApplyServiceImpl extends SuperServiceImpl<IInvoiceApplyDao, 
         BeanUtils.copyProperties(dto,invoice);
         invoice.setType(Integer.valueOf(dto.getType()));
         invoice.setCustomerId(dto.getLoginId());
+        if (invoice.getType() == InvoiceTypeEnum.PERSONAL_INVOICE.code) {
+            invoice.setTitle(dto.getName());
+        }
         Long invoiceId = null;
         if (dto.getId() != null) {
             invoiceId = dto.getId();

@@ -1,9 +1,11 @@
 package com.cjyc.common.model.vo.customer.invoice;
 
+import com.cjyc.common.model.enums.InvoiceTypeEnum;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
 
@@ -68,8 +70,8 @@ public class CustomerInvoiceVo implements Serializable {
         return defaultFlag == null ? 0 : defaultFlag;
     }
     public String getTitle() {
-        if (type == 1) {
-            title = "个人";
+        if (type == InvoiceTypeEnum.PERSONAL_INVOICE.code && StringUtils.isEmpty(title)) {
+            title = name;
         }
         return title == null ? "" : title;
     }
