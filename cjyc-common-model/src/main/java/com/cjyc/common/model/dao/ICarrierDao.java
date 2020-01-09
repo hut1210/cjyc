@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.vo.driver.login.BaseLoginVo;
 import com.cjyc.common.model.vo.driver.mine.AppDriverInfoVo;
 import com.cjyc.common.model.vo.web.carrier.*;
+import com.cjyc.common.model.vo.web.mineCarrier.MyCarrierVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -108,8 +109,8 @@ public interface ICarrierDao extends BaseMapper<Carrier> {
     Carrier findByDeptId(Long deptId);
 
     /*********************************韵车集成改版 st*****************************/
-    List<Carrier> getListByLoginIdAndRoleId(@Param("loginId")Long loginId,
-                                            @Param("roleId")Long roleId);
+    List<MyCarrierVo> getListByLoginIdAndRoleId(@Param("loginId")Long loginId,
+                                                @Param("roleId")Long roleId);
 
     /**
      * 修改承运商时验证是否为该承运商下的司机

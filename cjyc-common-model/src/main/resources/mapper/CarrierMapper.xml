@@ -385,8 +385,8 @@
         select * from d_carrier where dept_id = #{deptId}
     </select>
 
-    <select id="getListByLoginIdAndRoleId" resultType="com.cjyc.common.model.entity.Carrier">
-        SELECT dc.* FROM d_carrier dc
+    <select id="getListByLoginIdAndRoleId" resultType="com.cjyc.common.model.vo.web.mineCarrier.MyCarrierVo">
+        SELECT dc.id as id,dc.name as name FROM d_carrier dc
             LEFT JOIN (SELECT * from s_user_role_dept WHERE dept_type = 2) urd
             ON urd.dept_id = dc.id
         WHERE urd.user_id = #{loginId} AND urd.role_id = #{roleId}
