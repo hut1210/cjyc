@@ -166,6 +166,7 @@
                 and city_code = #{cityCode}
             </if>
         </where>
+        and is_delete = 0
         order by create_time desc,update_time desc
     </select>
 

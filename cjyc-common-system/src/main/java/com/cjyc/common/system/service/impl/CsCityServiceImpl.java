@@ -14,6 +14,7 @@ import com.cjyc.common.model.enums.city.CityLevelEnum;
 import com.cjyc.common.model.entity.defined.FullCity;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.JsonUtils;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.city.CityVo;
 import com.cjyc.common.model.vo.customer.city.HotCityVo;
@@ -29,10 +30,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -92,14 +91,17 @@ public class CsCityServiceImpl implements ICsCityService {
     @Override
     public ResultVo<CityVo> queryCity(KeywordDto dto) {
         String key = RedisKeys.getThreeCityKey(dto.getKeyword());
-        String cityVo = redisUtils.get(key);
-
-        CityVo cityvo = new CityVo();
-        //获取热门城市
-        List<HotCityVo> hotCity = cityDao.getHotCity();
-        List<ProvinceTreeVo> cityTreeVos = cityDao.findThreeCity(dto.getKeyword(),null);
-        cityvo.setHotCityVos(hotCity);
-        cityvo.setCityTreeVos(cityTreeVos);
+        CityVo cityvo = JsonUtils.jsonToPojo(redisUtils.get(key), CityVo.class);
+        if(cityvo == null){
+            cityvo = new CityVo();
+            //获取热门城市
+            List<HotCityVo> hotCity = cityDao.getHotCity();
+            List<ProvinceTreeVo> cityTreeVos = cityDao.findThreeCity(dto.getKeyword(),null);
+            cityvo.setHotCityVos(hotCity);
+            cityvo.setCityTreeVos(cityTreeVos);
+            redisUtils.set(key, JsonUtils.objectToJson(cityvo));
+            redisUtils.expire(key, 1, TimeUnit.DAYS);
+        }
         return BaseResultUtil.success(cityvo);
     }
 
