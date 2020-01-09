@@ -33,13 +33,13 @@ public class FinancePayableController {
         return financeService.getFinancePayableList(payableQueryDto);
     }
 
-    @ApiOperation(value = "获取申请开票运单信息")
+    @ApiOperation(value = "申请开票-获取申请开票运单信息")
     @PostMapping(value = "/applyTicket")
     public ResultVo get(@RequestBody List<String> taskNo){
         return financeService.getSettlementPayable(taskNo);
     }
 
-    @ApiOperation(value = "申请开票")
+    @ApiOperation(value = "申请开票-确认")
     @PostMapping(value = "/apply")
     public ResultVo apply(@RequestBody AppSettlementPayableDto appSettlementPayableDto){
         return financeService.apply(appSettlementPayableDto);
@@ -51,13 +51,13 @@ public class FinancePayableController {
         return financeService.collect(waitTicketCollectDto);
     }
 
-    @ApiOperation(value = "获取确认收票运单信息")
+    @ApiOperation(value = "确认收票-获取确认收票运单信息")
     @PostMapping(value = "/confirmTicket/{serialNumber}")
     public ResultVo confirmTicket(@PathVariable String serialNumber){
         return financeService.getConfirmTicket(serialNumber);
     }
 
-    @ApiOperation(value = "确认收票")
+    @ApiOperation(value = "确认收票-确认")
     @PostMapping(value = "/confirm")
     public ResultVo confirm(@RequestBody ConfirmTicketDto confirmTicketDto){
         return financeService.confirm(confirmTicketDto);
@@ -75,13 +75,13 @@ public class FinancePayableController {
         return financeService.payment(waitPaymentDto);
     }
 
-    @ApiOperation(value = "获取核销运单信息")
+    @ApiOperation(value = "核销-获取核销运单信息")
     @PostMapping(value = "/writeOffTicket/{serialNumber}")
     public ResultVo writeOffTicket(@PathVariable String serialNumber){
         return financeService.getWriteOffTicket(serialNumber);
     }
 
-    @ApiOperation(value = "核销")
+    @ApiOperation(value = "核销-确认")
     @PostMapping(value = "/writeOff")
     public ResultVo writeOff(@RequestBody WriteOffTicketDto writeOffTicketDto){
         return financeService.writeOffPayable(writeOffTicketDto);
