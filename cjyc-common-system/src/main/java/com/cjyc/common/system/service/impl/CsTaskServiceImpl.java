@@ -33,6 +33,7 @@ import com.cjyc.common.system.util.RedisUtils;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,8 +52,9 @@ import java.util.stream.Collectors;
 /**
  * @author JPG
  */
+@Slf4j
 @Service
-@Transactional(rollbackFor = Exception.class)
+@Transactional(rollbackFor = RuntimeException.class)
 public class CsTaskServiceImpl implements ICsTaskService {
 
     @Resource
@@ -1045,13 +1047,12 @@ public class CsTaskServiceImpl implements ICsTaskService {
      *
      * @param orderCarNoList 车辆编号列表
      * @param userInfo
-     * @return
      * @author JPG
      * @date 2019/12/8 12:06
      */
     @Override
     public void updateForCarFinish(List<String> orderCarNoList, UserInfo userInfo) {
-
+        log.info("车辆支付完成回调修改状态：{},操作人信息{}", JSON.toJSONString(orderCarNoList), JSON.toJSONString(userInfo));
         //返回内容
         Set<Long> orderIdSet = Sets.newHashSet();
         Set<Long> waybillCarIdSet = Sets.newHashSet();
@@ -1073,7 +1074,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                         userInfo);
                 waybillCarIdSet.add(waybillCar.getId());
             }
-            // 提取数据
+            //提取数据
             orderIdSet.add(orderCar.getOrderId());
         }
         //处理订单
@@ -1081,9 +1082,11 @@ public class CsTaskServiceImpl implements ICsTaskService {
             orderIdSet.forEach(orderId -> validateAndFinishOrder(orderId, userInfo));
         }
         //处理任务
-        List<Task> taskList = taskDao.findListByWaybillCarIds(waybillCarIdSet);
-        if (!CollectionUtils.isEmpty(taskList)) {
-            taskList.forEach(this::validateAndFinishTaskWaybill);
+        if(!CollectionUtils.isEmpty(waybillCarIdSet)){
+            List<Task> taskList = taskDao.findListByWaybillCarIds(waybillCarIdSet);
+            if (!CollectionUtils.isEmpty(taskList)) {
+                taskList.forEach(this::validateAndFinishTaskWaybill);
+            }
         }
 
     }
