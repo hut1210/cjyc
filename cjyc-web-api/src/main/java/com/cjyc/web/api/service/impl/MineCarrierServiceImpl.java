@@ -328,7 +328,9 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
         if(!CollectionUtils.isEmpty(driverVos)){
             for(MyDriverVo driverVo : driverVos){
                 CarrierCarCount count = carrierCarCountDao.driverCount(driverVo.getDriverId());
-                BeanUtils.copyProperties(count,driverVo);
+                if(count != null){
+                    driverVo.setCarNum(count.getCarNum());
+                }
             }
         }
         PageInfo<MyDriverVo> pageInfo = new PageInfo<>(driverVos);
