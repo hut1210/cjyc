@@ -73,7 +73,7 @@ public class CsUserRoleDeptServiceImpl implements ICsUserRoleDeptService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResultVo<UserRoleDept> saveDriverToUserRoleDept(Carrier carrier, Driver driver, Long roleId, Long loginId,Integer flag) {
+    public ResultVo<UserRoleDept> saveDriverToUserRoleDept(Carrier carrier, Driver driver,Integer mode, Long roleId, Long loginId,Integer flag) {
         UserRoleDept urd = new UserRoleDept();
         urd.setUserId(driver.getId());
         urd.setRoleId(roleId);
@@ -82,10 +82,11 @@ public class CsUserRoleDeptServiceImpl implements ICsUserRoleDeptService {
         urd.setUserType(UserTypeEnum.DRIVER.code);
         if(flag == 0){
             urd.setState(CommonStateEnum.CHECKED.code);
+            urd.setMode(mode);
         }else{
             urd.setState(CommonStateEnum.WAIT_CHECK.code);
+            urd.setMode(carrier.getMode());
         }
-        urd.setMode(carrier.getMode());
         urd.setCreateTime(NOW);
         urd.setCreateUserId(loginId);
         userRoleDeptDao.insert(urd);
@@ -93,7 +94,7 @@ public class CsUserRoleDeptServiceImpl implements ICsUserRoleDeptService {
     }
 
     @Override
-    public ResultVo updateDriverToUserRoleDept(Carrier carrier, Driver driver, Long loginId,Integer flag) {
+    public ResultVo updateDriverToUserRoleDept(Carrier carrier, Driver driver,Integer mode, Long loginId,Integer flag) {
         UserRoleDept urd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
                 .eq(UserRoleDept::getUserId, driver.getId())
                 .eq(UserRoleDept::getDeptId, carrier.getId())
@@ -105,8 +106,10 @@ public class CsUserRoleDeptServiceImpl implements ICsUserRoleDeptService {
         urd.setMode(carrier.getMode());
         if(flag == 0){
             urd.setState(CommonStateEnum.CHECKED.code);
+            urd.setMode(mode);
         }else{
             urd.setState(CommonStateEnum.WAIT_CHECK.code);
+            urd.setMode(carrier.getMode());
         }
         urd.setUpdateUserId(loginId);
         urd.setUpdateTime(NOW);

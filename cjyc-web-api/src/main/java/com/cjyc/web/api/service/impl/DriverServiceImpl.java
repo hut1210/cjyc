@@ -552,7 +552,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
             //添加承运商业务范围
             carrierCityConService.batchSave(carrier.getId(),dto.getCodes());
             //保存司机角色机构关系
-            csUserRoleDeptService.saveDriverToUserRoleDept(carrier,driver,role.getId(),dto.getLoginId(),1);
+            csUserRoleDeptService.saveDriverToUserRoleDept(carrier,driver,null,role.getId(),dto.getLoginId(),1);
         }else{
             return modifyDriverNew(dto);
         }
@@ -669,7 +669,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
             return BaseResultUtil.fail("修改用户信息失败，原因：" + updateRd.getMsg());
         }
         //更新司机与用户角色机构关系
-        ResultVo resultVo = csUserRoleDeptService.updateDriverToUserRoleDept(carrier, driver, dto.getLoginId(),1);
+        ResultVo resultVo = csUserRoleDeptService.updateDriverToUserRoleDept(carrier, driver,null, dto.getLoginId(),1);
         if (!ResultEnum.SUCCESS.getCode().equals(resultVo.getCode())) {
             return BaseResultUtil.fail("修改用户信息失败，原因：" + resultVo.getMsg());
         }

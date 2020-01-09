@@ -30,7 +30,7 @@ public interface ICsUserRoleDeptService {
      * @param loginId
      * @param flag 承运商下司机:0  个人司机:1
      */
-    ResultVo<UserRoleDept> saveDriverToUserRoleDept(Carrier carrier, Driver driver, Long roleId, Long loginId,Integer flag);
+    ResultVo<UserRoleDept> saveDriverToUserRoleDept(Carrier carrier, Driver driver,Integer mode, Long roleId, Long loginId,Integer flag);
 
     /**
      * 修改司机更新关系表
@@ -39,5 +39,5 @@ public interface ICsUserRoleDeptService {
      * @param loginId
      * @param flag 承运商下司机:0  个人司机:1
      */
-    ResultVo updateDriverToUserRoleDept(Carrier carrier,Driver driver,Long loginId,Integer flag);
+    ResultVo updateDriverToUserRoleDept(Carrier carrier,Driver driver,Integer mode,Long loginId,Integer flag);
 }

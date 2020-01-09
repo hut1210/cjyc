@@ -581,7 +581,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
                 driverDao.insert(driver);
             }
             //保存司机与承运商关系
-            csUserRoleDeptService.saveDriverToUserRoleDept(carrier, driver, role.getId(), dto.getLoginId(),0);
+            csUserRoleDeptService.saveDriverToUserRoleDept(carrier, driver,dto.getMode(), role.getId(), dto.getLoginId(),0);
             //车牌号不为空
             if(StringUtils.isNotBlank(dto.getPlateNo()) && dto.getVehicleId() != null){
                 //保存司机与车辆关系
@@ -637,7 +637,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
             return BaseResultUtil.fail("修改用户信息失败，原因：" + updateRd.getMsg());
         }
         //更新司机与用户角色机构关系
-        ResultVo resultVo = csUserRoleDeptService.updateDriverToUserRoleDept(carrier, driver, dto.getLoginId(),0);
+        ResultVo resultVo = csUserRoleDeptService.updateDriverToUserRoleDept(carrier, driver,dto.getMode(), dto.getLoginId(),0);
         if (!ResultEnum.SUCCESS.getCode().equals(resultVo.getCode())) {
             return BaseResultUtil.fail("修改用户信息失败，原因：" + resultVo.getMsg());
         }
@@ -721,7 +721,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
                 driverDao.insert(driver);
             }
             //保存司机与承运商关系
-            csUserRoleDeptService.saveDriverToUserRoleDept(carrier, driver, role.getId(), dto.getLoginId(),0);
+            csUserRoleDeptService.saveDriverToUserRoleDept(carrier, driver,dto.getMode(), role.getId(), dto.getLoginId(),0);
             //车牌号不为空
             if(StringUtils.isNotBlank(dto.getPlateNo()) && dto.getVehicleId() != null){
                 //保存司机与车辆关系
@@ -777,7 +777,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
             return BaseResultUtil.fail("修改用户信息失败，原因：" + updateRd.getMsg());
         }
         //更新司机与用户角色机构关系
-        ResultVo resultVo = csUserRoleDeptService.updateDriverToUserRoleDept(carrier, driver, dto.getLoginId(),0);
+        ResultVo resultVo = csUserRoleDeptService.updateDriverToUserRoleDept(carrier, driver,dto.getMode(), dto.getLoginId(),0);
         if (!ResultEnum.SUCCESS.getCode().equals(resultVo.getCode())) {
             return BaseResultUtil.fail("修改用户信息失败，原因：" + resultVo.getMsg());
         }
