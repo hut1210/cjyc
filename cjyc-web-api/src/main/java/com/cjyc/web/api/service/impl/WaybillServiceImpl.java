@@ -79,7 +79,9 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
         if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
             return BaseResultUtil.fail("没有数据权限");
         }
-        paramsDto.setLoginId(null);
+        if(bizScope.getCode() == BizScopeEnum.CHINA.code){
+            paramsDto.setLoginId(null);
+        }
 
         PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
         List<LocalListWaybillCarVo> list = waybillCarDao.findListLocal(paramsDto);
@@ -102,7 +104,9 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
         if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
             return BaseResultUtil.fail("没有数据权限");
         }
-        paramsDto.setLoginId(null);
+        if(bizScope.getCode() == BizScopeEnum.CHINA.code){
+            paramsDto.setLoginId(null);
+        }
 
         PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
         List<TrunkMainListWaybillVo> list = waybillDao.findMainListTrunk(paramsDto);
@@ -125,7 +129,9 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
         if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
             return BaseResultUtil.fail("没有数据权限");
         }
-        paramsDto.setLoginId(null);
+        if(bizScope.getCode() == BizScopeEnum.CHINA.code){
+            paramsDto.setLoginId(null);
+        }
 
         PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
         List<TrunkSubListWaybillVo> list = waybillDao.findSubListTrunk(paramsDto);

@@ -419,9 +419,15 @@
         </where>
 
     </update>
-    <update id="updateForReplenishInfo">
+    <update id="updateForLoadReplenishInfo">
         update w_waybill_car
         set load_photo_img = #{loadPhotoImg}
+        where id = #{id}
+        limit 1
+    </update>
+    <update id="updateForUnloadReplenishInfo">
+        update w_waybill_car
+        set unload_photo_img = #{unloadPhotoImg}
         where id = #{id}
         limit 1
     </update>
@@ -456,6 +462,7 @@
         and state &lt; 100
         limit 1
     </update>
+
 
     <select id="findByTaskCarId" resultType="com.cjyc.common.model.entity.WaybillCar">
         select
@@ -605,7 +612,7 @@
         <where>
             w.type != 2
             <if test="paramsDto.loginId != null">
-                wc.create_user_id = #{paramsDto.loginId}
+              and w.create_user_id = #{paramsDto.loginId}
             </if>
             <if test="paramsDto.brand != null and paramsDto.brand != ''">
                 and oc.brand = #{paramsDto.brand}

@@ -61,4 +61,5 @@ public interface ICsTaskService {
     void updateForTaskCarFinish(List<String> taskCarIdList, int payType, UserInfo userInfo);
 
     ResultVo inStoreForLocal(ReplenishInfoDto reqDto);
+
 }
