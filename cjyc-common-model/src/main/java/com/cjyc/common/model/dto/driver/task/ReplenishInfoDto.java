@@ -8,6 +8,7 @@ import lombok.Data;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.util.List;
 
 @Data
@@ -27,9 +28,11 @@ public class ReplenishInfoDto {
     private String brand;
     @ApiModelProperty(value = "型号")
     private String model;
+    @Pattern(regexp = "(^$)|(^\\S{1,20}$)", message = "车牌号格式不正确，请检查")
     @ApiModelProperty(value = "车牌号")
     private String plateNo;
-    @ApiModelProperty(value = "vin码",required = true)
+    @Pattern(regexp = "(^$)|(^[0-9a-zA-Z]{1,20}$)", message = "vin码格式不正确，请检查")
+    @ApiModelProperty(value = "vin码")
     private String vin;
     @ApiModelProperty(value = "提车图片",required = true)
     private List<String> loadPhotoImgs;
