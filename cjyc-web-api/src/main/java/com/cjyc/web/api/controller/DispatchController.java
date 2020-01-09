@@ -34,9 +34,15 @@ public class DispatchController {
     @Resource
     private ICsOrderService csOrderService;
 
-
     /**
-     * 按地级市查询待调度车辆统计（统计列表）
+     * @author JPG
+     */
+    @ApiOperation(value = "查询待调度车辆列表")
+    @PostMapping(value = "/wait/list")
+    public ResultVo<PageVo<OrderCarWaitDispatchVo>> waitDispatchCarList(@RequestBody WaitDispatchListOrderCarDto reqDto) {
+        return orderService.waitDispatchCarList(reqDto);
+    }
+    /**
      * @author JPG
      */
     @ApiOperation(value = "查询待调度车辆统计")
@@ -46,9 +52,7 @@ public class DispatchController {
         return orderService.waitDispatchCarCountList();
     }
 
-
     /**
-     * 按线路统计待调度车辆（统计列表）
      * @author JPG
      */
     @ApiOperation(value = "按线路统计待调度车辆（统计列表）")
@@ -57,19 +61,20 @@ public class DispatchController {
         return orderService.lineWaitDispatchCarCountList(reqDto,null);
     }
 
+
+
+
+
+
     /**
-     * 查询待调度车辆列表（数据列表）
      * @author JPG
      */
-    @ApiOperation(value = "查询待调度车辆列表")
-    @PostMapping(value = "/wait/list")
-    public ResultVo<PageVo<OrderCarWaitDispatchVo>> waitDispatchCarList(@RequestBody WaitDispatchListOrderCarDto reqDto) {
-        return orderService.waitDispatchCarList(reqDto);
+    @ApiOperation(value = "查询干线待调度车辆列表")
+    @PostMapping(value = "/trunk/wait/list")
+    public ResultVo<PageVo<OrderCarWaitDispatchVo>> waitDispatchTrunkCarList(@RequestBody WaitDispatchTrunkDto reqDto) {
+        return orderService.waitDispatchTrunkCarList(reqDto);
     }
-
-
     /**
-     * 查询待调度车辆列表（数据列表）
      * @author JPG
      */
     @ApiOperation(value = "查询干线待调度车辆按城市统计")
@@ -78,7 +83,6 @@ public class DispatchController {
         return orderService.waitDispatchTrunkCarCountList(reqDto);
     }
     /**
-     * 查询待调度车辆列表（数据列表）
      * @author JPG
      */
     @ApiOperation(value = "查询干线待调度按线路统计列表")
@@ -86,18 +90,13 @@ public class DispatchController {
     public ResultVo<ListVo<Map<String, Object>>> lineWaitDispatchTrunkCarCountList(@RequestBody LineWaitDispatchCountDto reqDto) {
         return orderService.lineWaitDispatchTrunkCarCountList(reqDto);
     }
-    /**
-     * 查询待调度车辆列表（数据列表）
-     * @author JPG
-     */
-    @ApiOperation(value = "查询干线待调度车辆列表")
-    @PostMapping(value = "/trunk/wait/list")
-    public ResultVo<PageVo<OrderCarWaitDispatchVo>> waitDispatchTrunkCarList(@RequestBody WaitDispatchTrunkDto reqDto) {
-        return orderService.waitDispatchTrunkCarList(reqDto);
-    }
+
+
+
+
 
     /**
-     * 根据订单车辆ID查询可调度起始地和目的地
+     * @author JPG
      */
     @ApiOperation(value = "根据订单车辆ID查询可调度起始地和目的地")
     @PostMapping(value = "/car/from/to/get")
@@ -105,8 +104,11 @@ public class DispatchController {
         return csOrderService.computerCarEndpoint(reqDto);
     }
 
-    @ApiOperation(value = "根据订单车辆ID查询可调度起始地和目的地")
-    //@PostMapping(value = "/car/from/to/get")
+    /**
+     * @author JPG
+     */
+    @ApiOperation(value = "验证是否可以调度")
+    @PostMapping(value = "/can/dispatch/validate")
     public ResultVo validateCanDispatch(@RequestBody ComputeCarEndpointDto reqDto) {
         return csOrderService.validateCanDispatch(reqDto);
     }

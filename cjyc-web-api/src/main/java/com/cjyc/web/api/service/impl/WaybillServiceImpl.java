@@ -74,6 +74,13 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
 
     @Override
     public ResultVo<PageVo<LocalListWaybillCarVo>> locallist(LocalListWaybillCarDto paramsDto) {
+        //查询角色业务中心范围
+        BizScope bizScope = csSysService.getBizScopeByRoleId(paramsDto.getRoleId(), true);
+        if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
+            return BaseResultUtil.fail("没有数据权限");
+        }
+        paramsDto.setLoginId(null);
+
         PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
         List<LocalListWaybillCarVo> list = waybillCarDao.findListLocal(paramsDto);
         PageInfo<LocalListWaybillCarVo> pageInfo = new PageInfo<>(list);
@@ -90,6 +97,13 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
 
     @Override
     public ResultVo<PageVo<TrunkMainListWaybillVo>> getTrunkMainList(TrunkMainListWaybillDto paramsDto) {
+        //查询角色业务中心范围
+        BizScope bizScope = csSysService.getBizScopeByRoleId(paramsDto.getRoleId(), true);
+        if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
+            return BaseResultUtil.fail("没有数据权限");
+        }
+        paramsDto.setLoginId(null);
+
         PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
         List<TrunkMainListWaybillVo> list = waybillDao.findMainListTrunk(paramsDto);
         PageInfo<TrunkMainListWaybillVo> pageInfo = new PageInfo<>(list);
@@ -106,6 +120,13 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
 
     @Override
     public ResultVo<PageVo<TrunkSubListWaybillVo>> getTrunkSubList(TrunkSubListWaybillDto paramsDto) {
+        //查询角色业务中心范围
+        BizScope bizScope = csSysService.getBizScopeByRoleId(paramsDto.getRoleId(), true);
+        if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
+            return BaseResultUtil.fail("没有数据权限");
+        }
+        paramsDto.setLoginId(null);
+
         PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
         List<TrunkSubListWaybillVo> list = waybillDao.findSubListTrunk(paramsDto);
         PageInfo<TrunkSubListWaybillVo> pageInfo = new PageInfo<>(list);
@@ -128,7 +149,12 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
         if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
             return BaseResultUtil.fail("无数据权限");
         }
-        paramsDto.setBizScope(bizScope.getCode() == 0 ? null : bizScope.getStoreIds());
+        if(bizScope.getCode() == BizScopeEnum.CHINA.code){
+            paramsDto.setBizScope(null);
+            paramsDto.setLoginId(null);
+        }else{
+            paramsDto.setBizScope(bizScope.getStoreIds());
+        }
 
 
         PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);

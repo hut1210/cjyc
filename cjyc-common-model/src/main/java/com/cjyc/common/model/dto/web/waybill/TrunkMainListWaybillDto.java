@@ -7,6 +7,9 @@ import lombok.Data;
 @Data
 public class TrunkMainListWaybillDto extends BasePageDto {
 
+    private Long loginId;
+    private Long roleId;
+
     @ApiModelProperty(value = "运单单号", required = true)
     private String waybillNo;
     @ApiModelProperty(value = "指导线路")
