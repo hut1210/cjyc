@@ -19,8 +19,8 @@ public class InvoiceDetailAndConfirmDto implements Serializable {
     public interface ConfirmInvoice{}
 
     @ApiModelProperty(value = "登录Id")
-    @NotNull(groups = {GetDetail.class,ConfirmInvoice.class},message = "登录Id不能为空")
-    private Long loginId;
+    @NotNull(groups = {GetDetail.class,ConfirmInvoice.class},message = "客户Id不能为空")
+    private Long customerId;
 
     @ApiModelProperty(value = "发票申请ID")
     @NotNull(groups = {GetDetail.class,ConfirmInvoice.class},message = "发票申请ID不能为空")
