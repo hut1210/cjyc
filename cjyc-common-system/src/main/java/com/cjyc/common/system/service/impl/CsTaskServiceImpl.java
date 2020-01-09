@@ -804,6 +804,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
         if (CollectionUtils.isEmpty(paramsDto.getTaskCarIdList())) {
             return BaseResultUtil.fail("车辆不能为空");
         }
+        Set<Long> orderIdSet = Sets.newHashSet();
         for (Long taskCarId : paramsDto.getTaskCarIdList()) {
             WaybillCar waybillCar = waybillCarDao.findByTaskCarId(taskCarId);
             if (waybillCar == null) {
@@ -877,6 +878,11 @@ public class CsTaskServiceImpl implements ICsTaskService {
                     userInfo);
             //提取数据
             successSet.add(orderCar.getNo());
+            orderIdSet.add(orderCar.getOrderId());
+        }
+        //更新订单状态
+        if (!CollectionUtils.isEmpty(orderIdSet)) {
+            orderDao.updateStateForLoad(OrderStateEnum.TRANSPORTING.code, orderIdSet);
         }
         resultReasonVo.setFailList(failCarNoSet);
         resultReasonVo.setSuccessList(successSet);

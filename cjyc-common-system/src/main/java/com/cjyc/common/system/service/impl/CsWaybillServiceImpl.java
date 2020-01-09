@@ -897,15 +897,31 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             }
         }
         //干线最后一段
-        if (order.getEndCityCode().equals(waybillCar.getEndCityCode())) {
+        if(validateIsArriveEndStore(order.getEndStoreId(), waybillCar.getEndStoreId())){
             noc.setTrunkState(OrderCarTrunkStateEnum.DISPATCHED.code);
         }
+        /*if (order.getEndCityCode().equals(waybillCar.getEndCityCode())) {
+            noc.setTrunkState(OrderCarTrunkStateEnum.DISPATCHED.code);
+        }*/
         //干送
-        if (order.getEndAddress().equals(waybillCar.getEndAddress())) {
+        if (order.getBackContactPhone().equals(waybillCar.getUnloadLinkPhone())) {
             noc.setBackType(OrderPickTypeEnum.WL.code);
             noc.setBackState(OrderCarLocalStateEnum.F_WL.code);
         }
         orderCarDao.updateById(noc);
+    }
+
+    private boolean validateIsArriveEndStore(Long orderEndStoreId, Long waybillCarEndStoreId) {
+        if(orderEndStoreId == null || orderEndStoreId <= 0){
+            return false;
+        }
+        if(waybillCarEndStoreId == null || waybillCarEndStoreId <= 0){
+            return false;
+        }
+        if(!orderEndStoreId.equals(waybillCarEndStoreId)){
+            return false;
+        }
+        return true;
     }
 
     private CarrierInfo validateTrunkCarrierInfo(Long carrierId) {
