@@ -431,7 +431,9 @@ public class FinanceServiceImpl implements IFinanceService {
 
         PayableSettlementVo payableSettlementVo = new PayableSettlementVo();
         SettlementVo settlementVo = financeDao.getPayableSettlement(serialNumber);
-        payableSettlementVo.setInvoiceNo(settlementVo.getInvoiceNo());
+        if(settlementVo!=null&&settlementVo.getInvoiceNo()!=null){
+            payableSettlementVo.setInvoiceNo(settlementVo.getInvoiceNo());
+        }
         payableSettlementVo.setPayableTaskVo(settlementVoList);
         payableSettlementVo.setTotalFreightFee(freightFee);
 
@@ -445,7 +447,7 @@ public class FinanceServiceImpl implements IFinanceService {
         settlementVo.setSerialNumber(writeOffTicketDto.getSerialNumber());
         settlementVo.setWriteOffId(writeOffTicketDto.getWriteOffId());
         settlementVo.setWriteOffTime(System.currentTimeMillis());
-        settlementVo.setTotalFreightPay(writeOffTicketDto.getTotalFreightPay());
+        settlementVo.setTotalFreightPay(writeOffTicketDto.getTotalFreightPay().multiply(new BigDecimal(100)));
         financeDao.writeOffPayable(settlementVo);
         return BaseResultUtil.success();
     }
@@ -473,7 +475,9 @@ public class FinanceServiceImpl implements IFinanceService {
 
         PayableSettlementVo payableSettlementVo = new PayableSettlementVo();
         SettlementVo settlementVo = financeDao.getPayableSettlement(serialNumber);
-        payableSettlementVo.setInvoiceNo(settlementVo.getInvoiceNo());
+        if(settlementVo!=null&&settlementVo.getInvoiceNo()!=null){
+            payableSettlementVo.setInvoiceNo(settlementVo.getInvoiceNo());
+        }
         payableSettlementVo.setPayableTaskVo(settlementVoList);
         payableSettlementVo.setTotalFreightFee(freightFee);
         payableSettlementVo.setTotalFreightPaid(settlementVo.getTotalFreightPay());

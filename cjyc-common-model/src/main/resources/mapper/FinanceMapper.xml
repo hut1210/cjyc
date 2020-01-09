@@ -511,8 +511,8 @@
     </select>
 
     <update id="writeOffPayable" parameterType="com.cjyc.common.model.vo.web.finance.SettlementVo">
-        update f_payable set state=#{state},writeoff_id=#{writeoffId},
-        writeoff_time=#{writeoffTime}, total_freight_paid=#{totalFreightPaid} where serial_number = #{serialNumber}
+        update f_payable set state=#{state},writeoff_id=#{writeOffId},
+        writeoff_time=#{writeOffTime}, total_freight_paid=#{totalFreightPay} where serial_number = #{serialNumber}
     </update>
     <select id="getPayablePaidList" parameterType="com.cjyc.common.model.dto.web.finance.PayablePaidQueryDto"
             resultType="com.cjyc.common.model.vo.web.finance.PayablePaidVo">
