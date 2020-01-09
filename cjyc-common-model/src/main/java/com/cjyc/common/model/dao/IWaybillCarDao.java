@@ -15,6 +15,7 @@ import com.cjyc.common.model.vo.salesman.dispatch.DispatchRecordVo;
 import com.cjyc.common.model.vo.salesman.dispatch.WaitDispatchCarListVo;
 import com.cjyc.common.model.vo.web.WayBillCarrierVo;
 import com.cjyc.common.model.vo.web.mineStore.StorageCarVo;
+import com.cjyc.common.model.vo.web.order.DispatchCarVo;
 import com.cjyc.common.model.vo.web.waybill.WaybillCarTransportVo;
 import com.cjyc.common.model.vo.web.waybill.WaybillCarVo;
 import com.cjyc.common.model.vo.web.waybill.LocalListWaybillCarVo;
@@ -190,7 +191,7 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
 
     List<WaybillCarVo> findBackCarEndpoint(List<Long> orderCarIdList);
 
-    List<WaybillCar> findLastListByOderCarIds(List<Long> orderCarIdList);
-
     void updateForUnloadReplenishInfo(@Param("id") Long id, @Param("unloadPhotoImg") String unloadPhotoImg);
+
+    List<DispatchCarVo> findNextDispatchSegment(@Param("list") List<Long> orderCarIdList);
 }
