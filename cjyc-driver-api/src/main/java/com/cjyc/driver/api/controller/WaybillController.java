@@ -51,6 +51,7 @@ public class WaybillController {
         return csTaskService.replenishInfo(reqDto);
     }
 
+
     /**
      * 提车装车并完善信息
      * @author JPG
@@ -62,6 +63,7 @@ public class WaybillController {
         Driver driver = csDriverService.validate(reqDto.getLoginId());
         reqDto.setLoginName(driver.getName());
         reqDto.setLoginType(UserTypeEnum.DRIVER);
+
         return csTaskService.loadForLocal(reqDto);
     }
     /**
