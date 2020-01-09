@@ -38,6 +38,8 @@ public class RedisKeys {
     private final static String DISPATCH_LOCK_ORDER_UPDATE = "dispatch:lock:order:update";
     private final static String ALLOT_CAR_LOCK_KEY = "allot:car:lock";
     private final static String LOOP_ALLOT_ADMIN_KEY = "loop:allot:admin";
+    private final static String CAR_SERIES = "car:series";
+    private final static String THREE_CITY = "three:city";
 
     private final static String USER_KEY = "user";
 
@@ -124,5 +126,13 @@ public class RedisKeys {
 
     public static String getLoopAllotAdminKey(Long startStoreId) {
         return PROJECT_PREFIX + I + LOOP_ALLOT_ADMIN_KEY + I + startStoreId;
+    }
+
+    public static String getCarSeriesKey(String keyword){
+        return PROJECT_PREFIX + I + CAR_SERIES + I + keyword;
+    }
+
+    public static String getThreeCityKey(String keyword){
+        return PROJECT_PREFIX + I + THREE_CITY + I + keyword;
     }
 }

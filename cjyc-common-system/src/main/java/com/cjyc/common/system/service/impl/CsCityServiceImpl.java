@@ -12,6 +12,7 @@ import com.cjyc.common.model.dto.AdminDto;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.enums.city.CityLevelEnum;
 import com.cjyc.common.model.entity.defined.FullCity;
+import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.city.CityVo;
@@ -21,6 +22,7 @@ import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.service.ICsCityService;
 import com.cjyc.common.system.util.ClpDeptUtil;
+import com.cjyc.common.system.util.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -50,6 +52,8 @@ public class CsCityServiceImpl implements ICsCityService {
     private ClpDeptUtil clpDeptUtil;
     @Resource
     private ISysDeptService sysDeptService;
+    @Resource
+    private RedisUtils redisUtils;
 
     /**
      * 查询全字段城市对象
@@ -87,6 +91,9 @@ public class CsCityServiceImpl implements ICsCityService {
 
     @Override
     public ResultVo<CityVo> queryCity(KeywordDto dto) {
+        String key = RedisKeys.getThreeCityKey(dto.getKeyword());
+        String cityVo = redisUtils.get(key);
+
         CityVo cityvo = new CityVo();
         //获取热门城市
         List<HotCityVo> hotCity = cityDao.getHotCity();
