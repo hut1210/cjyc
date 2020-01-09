@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 
 @RestController
 @Api(tags = "运单")
@@ -40,7 +41,7 @@ public class WaybillController {
      */
     @ApiOperation(value = "提车完善信息")
     @PostMapping(value = "/replenish/info/update")
-    public ResultVo replenishInfo(@RequestBody ReplenishInfoDto reqDto) {
+    public ResultVo replenishInfo(@Valid @RequestBody ReplenishInfoDto reqDto) {
         //验证用户
         Driver driver = csDriverService.getById(reqDto.getLoginId(), true);
         if (driver == null) {
