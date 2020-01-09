@@ -17,7 +17,7 @@ public class LocalListWaybillCarVo extends WaybillCar {
     @ApiModelProperty(value = "承运商ID")
     @JsonSerialize(using = ToStringSerializer.class)
     private Long carrierId;
-    @ApiModelProperty(value = "承运商类型：0承运商，1业务员，2客户自己")
+    @ApiModelProperty(value = "(carryType)承运类型：1干线-个人承运商，2干线-企业承运商，3同城-业务员，4同城-代驾，5同城-拖车，6客户自己")
     private Integer carrierType;
     @Excel(name = "承运商", orderNum = "12")
     @ApiModelProperty(value = "承运商名称")
