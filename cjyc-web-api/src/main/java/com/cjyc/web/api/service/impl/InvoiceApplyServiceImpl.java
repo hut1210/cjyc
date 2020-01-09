@@ -108,7 +108,8 @@ public class InvoiceApplyServiceImpl extends ServiceImpl<IInvoiceApplyDao, Invoi
         InvoiceDetailVo detailVo = new InvoiceDetailVo();
         // 根据客户ID，主键ID查询发票申请信息
         LambdaQueryWrapper<InvoiceApply> queryWrapper = new QueryWrapper<InvoiceApply>().lambda()
-                .eq(InvoiceApply::getCustomerId, dto.getLoginId()).eq(InvoiceApply::getId, dto.getInvoiceApplyId())
+                .eq(InvoiceApply::getCustomerId, dto.getCustomerId())
+                .eq(InvoiceApply::getId, dto.getInvoiceApplyId())
                 .select(InvoiceApply::getAmount,InvoiceApply::getInvoiceId);
         InvoiceApply invoice = super.getOne(queryWrapper);
         detailVo.setAmount(Objects.isNull(invoice) ? new BigDecimal(0) : invoice.getAmount());
@@ -148,7 +149,7 @@ public class InvoiceApplyServiceImpl extends ServiceImpl<IInvoiceApplyDao, Invoi
         }
 
         // 根据登录ID查询操作人名称
-        Admin admin = adminDao.selectById(dto.getLoginId());
+        Admin admin = adminDao.selectById(dto.getCustomerId());
 
         // 更新开票信息
         LambdaUpdateWrapper<InvoiceApply> updateWrapper = new UpdateWrapper<InvoiceApply>().lambda()
@@ -157,7 +158,7 @@ public class InvoiceApplyServiceImpl extends ServiceImpl<IInvoiceApplyDao, Invoi
                 .set(InvoiceApply::getInvoiceTime, System.currentTimeMillis())
                 .set(InvoiceApply::getOperationName, admin.getName())
                 .eq(InvoiceApply::getId, dto.getInvoiceApplyId())
-                .eq(InvoiceApply::getCustomerId, dto.getLoginId());
+                .eq(InvoiceApply::getCustomerId, dto.getCustomerId());
         boolean result = super.update(updateWrapper);
         return result ? BaseResultUtil.success() : BaseResultUtil.fail();
     }

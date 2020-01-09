@@ -31,7 +31,7 @@ public class InvoiceApply implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "发票ID")
+    @ApiModelProperty(value = "发票信息ID")
     private Long invoiceId;
 
     @ApiModelProperty(value = "客户ID")
