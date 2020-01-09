@@ -115,7 +115,6 @@ public class CsTaskServiceImpl implements ICsTaskService {
         }
         return taskNo;
     }
-
     /**
      * 完善提车信息
      *
@@ -134,13 +133,24 @@ public class CsTaskServiceImpl implements ICsTaskService {
             return BaseResultUtil.fail("运单不存在");
         }
         List<String> loadPhotoImgs = reqDto.getLoadPhotoImgs();
+        List<String> unloadPhotoImgs = reqDto.getUnloadPhotoImgs();
         if (WaybillTypeEnum.PICK.code == waybill.getType()) {
-            if (loadPhotoImgs.size() < Constant.MIN_LOAD_PHOTO_NUM) {
-                return BaseResultUtil.fail("照片数量不足8张");
+            if(waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code){
+                if (unloadPhotoImgs.size() < Constant.MIN_LOAD_PHOTO_NUM) {
+                    return BaseResultUtil.fail("照片数量不足8张");
+                }
+                if (unloadPhotoImgs.size() > Constant.MAX_LOAD_PHOTO_NUM) {
+                    return BaseResultUtil.fail("照片数量不能超过20张");
+                }
+            }else{
+                if (loadPhotoImgs.size() < Constant.MIN_LOAD_PHOTO_NUM) {
+                    return BaseResultUtil.fail("照片数量不足8张");
+                }
+                if (loadPhotoImgs.size() > Constant.MAX_LOAD_PHOTO_NUM) {
+                    return BaseResultUtil.fail("照片数量不能超过20张");
+                }
             }
-            if (loadPhotoImgs.size() > Constant.MAX_LOAD_PHOTO_NUM) {
-                return BaseResultUtil.fail("照片数量不能超过20张");
-            }
+
         } else {
             if (!CollectionUtils.isEmpty(loadPhotoImgs)) {
                 if (loadPhotoImgs.size() > Constant.MAX_LOAD_PHOTO_NUM) {
@@ -148,6 +158,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 }
             }
         }
+
         //更新车辆信息
         OrderCar orderCar = new OrderCar();
         orderCar.setId(waybillCar.getOrderCarId());
@@ -158,7 +169,10 @@ public class CsTaskServiceImpl implements ICsTaskService {
         orderCarDao.updateById(orderCar);
         //更新运单车辆信息
         if (!CollectionUtils.isEmpty(loadPhotoImgs)) {
-            waybillCarDao.updateForReplenishInfo(waybillCar.getId(), Joiner.on(",").join(loadPhotoImgs));
+            waybillCarDao.updateForLoadReplenishInfo(waybillCar.getId(), Joiner.on(",").join(loadPhotoImgs));
+        }
+        if (!CollectionUtils.isEmpty(unloadPhotoImgs)){
+            waybillCarDao.updateForUnloadReplenishInfo(waybillCar.getId(), Joiner.on(",").join(unloadPhotoImgs));
         }
         return BaseResultUtil.success();
     }
@@ -601,6 +615,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
         return inStore(inStoreTaskDto);
     }
 
+
     @Override
     public ResultVo<ResultReasonVo> inStore(InStoreTaskDto paramsDto) {
         //返回内容
@@ -923,7 +938,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 failCarNoSet.add(new FailResultReasonVo(taskCarId, "任务ID为{0}对应的运单车辆不存在", taskCarId));
                 continue;
             }
-            if (waybillCar.getState() < WaybillCarStateEnum.LOADED.code) {
+            if (waybill.getCarrierType() != WaybillCarrierTypeEnum.SELF.code && waybillCar.getState() < WaybillCarStateEnum.LOADED.code) {
                 failCarNoSet.add(new FailResultReasonVo(waybillCar.getOrderCarNo(), "运单车辆还未装车", taskCarId));
                 continue;
             }
@@ -1061,11 +1076,13 @@ public class CsTaskServiceImpl implements ICsTaskService {
             if (orderCar.getState() >= OrderCarStateEnum.SIGNED.code) {
                 continue;
             }
-            //更新车辆状态
-            orderCarDao.updateForPaySuccess(orderCar.getId());
+
             //处理车辆相关运单车辆
             WaybillCar waybillCar = waybillCarDao.findWaitReceiptWaybill(orderCar.getId());
             if (waybillCar != null) {
+                //更新车辆状态
+                orderCarDao.updateForPaySuccess(orderCar.getId());
+
                 waybillCarDao.updateForFinish(waybillCar.getId());
                 //添加日志
                 csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.RECEIPT,
@@ -1073,6 +1090,9 @@ public class CsTaskServiceImpl implements ICsTaskService {
                                 MessageFormat.format(OrderCarLogEnum.RECEIPT.getOutterLog(), orderCar.getNo())},
                         userInfo);
                 waybillCarIdSet.add(waybillCar.getId());
+            }else{
+                //更新车辆状态
+                orderCarDao.updateForPrePaySuccess(orderCar.getId());
             }
             //提取数据
             orderIdSet.add(orderCar.getOrderId());

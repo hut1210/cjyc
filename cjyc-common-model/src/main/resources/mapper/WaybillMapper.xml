@@ -524,7 +524,7 @@
         <where>
             w.type = 2
             <if test="paramsDto.loginId != null">
-                wc.create_user_id = #{paramsDto.loginId}
+                and w.create_user_id = #{paramsDto.loginId}
             </if>
             <if test="paramsDto.waybillNo != null and paramsDto.waybillNo != ''">
                 and w.no like concat('%', #{paramsDto.waybillNo}, '%')
@@ -577,7 +577,7 @@
         <where>
             w.type = 2
             <if test="paramsDto.loginId != null">
-                wc.create_user_id = #{paramsDto.loginId}
+                and w.create_user_id = #{paramsDto.loginId}
             </if>
             <if test="paramsDto.waybillNo != null and paramsDto.waybillNo != ''">
                 and w.no like concat('%', #{paramsDto.waybillNo}, '%')

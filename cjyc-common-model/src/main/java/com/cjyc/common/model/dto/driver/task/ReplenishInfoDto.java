@@ -36,4 +36,6 @@ public class ReplenishInfoDto {
     private String vin;
     @ApiModelProperty(value = "提车图片",required = true)
     private List<String> loadPhotoImgs;
+    @ApiModelProperty(value = "提车图片",required = true)
+    private List<String> unloadPhotoImgs;
 }

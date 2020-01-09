@@ -136,7 +136,7 @@
     </update>
     <update id="updateForPrePaySuccess">
         update w_order_car
-        wl_pay_state = 2,
+        set wl_pay_state = 2,
         wl_pay_time = UNIX_TIMESTAMP(NOW()) * 1000
         where state &lt; 100
         and id = #{id}
