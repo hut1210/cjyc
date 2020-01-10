@@ -304,7 +304,7 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
 
     @Override
     public List<Store> listByWebLogin(WebLoginDto reqDto) {
-        BizScope bizScope = csSysService.getBizScopeByRoleIdNew(reqDto.getLoginId(), reqDto.getRoleId(), true);
+        BizScope bizScope = csSysService.getBizScopeBySysRoleIdNew(reqDto.getLoginId(), reqDto.getRoleId(), true);
         if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
             return null;
         }else if(bizScope.getCode() == BizScopeEnum.CHINA.code){
@@ -327,7 +327,7 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
     }
     @Override
     public List<StoreVo> listVoByWebLogin(WebLoginDto reqDto) {
-        BizScope bizScope = csSysService.getBizScopeByRoleIdNew(reqDto.getLoginId(), reqDto.getRoleId(), true);
+        BizScope bizScope = csSysService.getBizScopeBySysRoleIdNew(reqDto.getLoginId(), reqDto.getRoleId(), true);
         if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
             return null;
         }else if(bizScope.getCode() == BizScopeEnum.CHINA.code){

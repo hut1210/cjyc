@@ -19,6 +19,7 @@ public interface ICsSysService {
 
     /*********************************韵车集成改版 st*****************************/
     BizScope getBizScopeByRoleIdNew(Long loginId, Long roleId, boolean isSearchCache);
+    BizScope getBizScopeBySysRoleIdNew(Long loginId, Long sysRoleId, boolean isSearchCache);
 
     BizScope getBizScopeByLoginIdNew(Long loginId, boolean isSearchCache);
 
