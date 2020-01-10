@@ -451,7 +451,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     public ResultVo<PageVo<OrderCarWaitDispatchVo>> waitDispatchCarList(WaitDispatchListOrderCarDto paramsDto) {
 
         //查询角色业务中心范围
-        BizScope bizScope = csSysService.getBizScopeByRoleIdNew(paramsDto.getLoginId(), paramsDto.getRoleId(), true);
+        BizScope bizScope = csSysService.getBizScopeBySysRoleIdNew(paramsDto.getLoginId(), paramsDto.getRoleId(), true);
         if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
             return BaseResultUtil.fail("没有数据权限");
         }
@@ -469,7 +469,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     @Override
     public ResultVo<PageVo<OrderCarWaitDispatchVo>> waitDispatchTrunkCarList(WaitDispatchTrunkDto paramsDto) {
         //查询角色业务中心范围
-        BizScope bizScope = csSysService.getBizScopeByRoleIdNew(paramsDto.getLoginId(), paramsDto.getRoleId(), true);
+        BizScope bizScope = csSysService.getBizScopeBySysRoleIdNew(paramsDto.getLoginId(), paramsDto.getRoleId(), true);
         if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
             return BaseResultUtil.fail("没有数据权限");
         }
@@ -499,7 +499,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     public ResultVo<PageVo<ListOrderVo>> list(ListOrderDto paramsDto) {
 
         //查询角色业务中心范围
-        BizScope bizScope = csSysService.getBizScopeByRoleIdNew(paramsDto.getLoginId(), paramsDto.getRoleId(), true);
+        BizScope bizScope = csSysService.getBizScopeBySysRoleIdNew(paramsDto.getLoginId(), paramsDto.getRoleId(), true);
         if(bizScope == null || BizScopeEnum.NONE.code == bizScope.getCode()){
             return BaseResultUtil.fail("没有数据权限");
         }
@@ -527,7 +527,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     public ResultVo<PageVo<ListOrderCarVo>> carlist(ListOrderCarDto paramsDto) {
 
         //查询角色业务中心范围
-        BizScope bizScope = csSysService.getBizScopeByRoleIdNew(paramsDto.getLoginId(), paramsDto.getRoleId(), true);
+        BizScope bizScope = csSysService.getBizScopeBySysRoleIdNew(paramsDto.getLoginId(), paramsDto.getRoleId(), true);
         if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
             return BaseResultUtil.fail("没有数据权限");
         }

@@ -377,7 +377,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
     @Override
     public ResultVo validateCanDispatch(ComputeCarEndpointDto paramsDto) {
         //查询角色业务中心范围
-        BizScope bizScope = csSysService.getBizScopeByRoleIdNew(paramsDto.getLoginId(), paramsDto.getRoleId(), true);
+        BizScope bizScope = csSysService.getBizScopeBySysRoleIdNew(paramsDto.getLoginId(), paramsDto.getRoleId(), true);
         if (bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code) {
             return BaseResultUtil.fail("没有数据权限");
         }

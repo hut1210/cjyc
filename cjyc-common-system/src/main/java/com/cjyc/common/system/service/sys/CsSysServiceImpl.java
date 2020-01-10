@@ -212,6 +212,12 @@ public class CsSysServiceImpl implements ICsSysService {
                 .eq("state", CommonStateEnum.CHECKED.code));
         return resolveBizScopeByUserRoleDeptList(roleList);
     }
+    @Override
+    public BizScope getBizScopeBySysRoleIdNew(Long loginId, Long sysRoleId, boolean isSearchCache) {
+        Role role = roleDao.selectOne(new QueryWrapper<Role>().lambda()
+                .eq(Role::getRoleId, sysRoleId));
+        return getBizScopeByRoleIdNew(loginId, role.getId(), isSearchCache);
+    }
 
     @Override
     public BizScope getBizScopeByLoginIdNew(Long loginId, boolean isSearchCache) {
