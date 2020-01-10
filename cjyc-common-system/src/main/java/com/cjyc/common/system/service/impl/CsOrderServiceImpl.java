@@ -16,6 +16,7 @@ import com.cjyc.common.model.enums.customer.CustomerStateEnum;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.enums.log.OrderLogEnum;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
+import com.cjyc.common.model.enums.order.OrderCarTrunkStateEnum;
 import com.cjyc.common.model.enums.order.OrderChangeTypeEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.enums.waybill.WaybillTypeEnum;
@@ -25,8 +26,10 @@ import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.MoneyUtil;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.salesman.dispatch.WaitDispatchCarListVo;
 import com.cjyc.common.model.vo.web.OrderCarVo;
 import com.cjyc.common.model.vo.web.order.DispatchAddCarVo;
+import com.cjyc.common.model.vo.web.order.DispatchCarVo;
 import com.cjyc.common.model.vo.web.order.OrderVo;
 import com.cjyc.common.model.vo.web.waybill.WaybillCarVo;
 import com.cjyc.common.system.service.*;
@@ -393,12 +396,20 @@ public class CsOrderServiceImpl implements ICsOrderService {
             } else if (paramsDto.getDispatchType() == WaybillTypeEnum.BACK.code) {
                 List<OrderCarVo> orderCarVos = orderCarDao.findVoListByIds(paramsDto.getOrderCarIdList());
                 for (OrderCarVo vo : orderCarVos) {
-                    if (vo.getEndStoreId() == null || !storeIds.contains(vo.getEndStoreId())) {
+                    if (vo.getEndBelongStoreId() == null || !storeIds.contains(vo.getEndBelongStoreId())) {
                         return BaseResultUtil.fail("车辆{0},不在登录角色的送车调度范围内", vo.getNo());
                     }
                 }
             } else {
-                List<WaybillCar> list = waybillCarDao.findLastListByOderCarIds(paramsDto.getOrderCarIdList());
+                List<DispatchCarVo> list = waybillCarDao.findNextDispatchSegment(paramsDto.getOrderCarIdList());
+                for (DispatchCarVo vo : list) {
+                    if(vo.getTrunkState() >= OrderCarTrunkStateEnum.DISPATCHED.code){
+                        return BaseResultUtil.fail("车辆{0},干线已经调度完成", vo.getOrderCarNo());
+                    }
+                    if(vo.getOrderCarState() >= OrderCarStateEnum.WAIT_BACK.code){
+                        return BaseResultUtil.fail("车辆{0},干线已经结束", vo.getOrderCarNo());
+                    }
+                }
 
             }
         }

@@ -1539,7 +1539,6 @@
                 left join s_store s2 on s2.id = wc.end_store_id
                 where w.state &lt;= 100
                 and wc.state &lt;= 100
-                and w.type >= 2
                 order by w.type desc, wc.id desc
                 limit 10000
             ) as max
