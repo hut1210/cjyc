@@ -155,7 +155,13 @@
           SELECT
             id AS storeId,
             NAME AS NAME,
-            detail_addr AS detailAddr
+            detail_addr AS detailAddr,
+            province  AS province,
+            province_code AS provinceCode,
+            city AS city,
+            city_code AS cityCode,
+            area AS area,
+            area_code AS areaCode
           FROM
             s_store
         <where>
@@ -165,8 +171,8 @@
             <if test="cityCode != null and cityCode.trim() != ''">
                 and city_code = #{cityCode}
             </if>
+            and is_delete = 0
         </where>
-        and is_delete = 0
         order by create_time desc,update_time desc
     </select>
 

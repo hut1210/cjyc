@@ -18,4 +18,22 @@ public class BusinessStoreVo implements Serializable {
 
     @ApiModelProperty("详细地址")
     private String detailAddr;
+
+    @ApiModelProperty(value = "省名称")
+    private String province;
+
+    @ApiModelProperty(value = "省编码")
+    private String provinceCode;
+
+    @ApiModelProperty(value = "城市名称")
+    private String city;
+
+    @ApiModelProperty(value = "城市编码")
+    private String cityCode;
+
+    @ApiModelProperty(value = "区名称")
+    private String area;
+
+    @ApiModelProperty(value = "区编码")
+    private String areaCode;
 }

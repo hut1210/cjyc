@@ -7,10 +7,7 @@ import com.cjkj.usercenter.dto.common.SelectRoleResp;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.entity.defined.BizScope;
-import com.cjyc.common.model.enums.BizScopeEnum;
-import com.cjyc.common.model.enums.CityLevelEnum;
-import com.cjyc.common.model.enums.UseStateEnum;
-import com.cjyc.common.model.enums.UserTypeEnum;
+import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.role.RoleLevelEnum;
 import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.web.mineCarrier.MyCarrierVo;
@@ -212,7 +209,7 @@ public class CsSysServiceImpl implements ICsSysService {
                 .eq("user_id", loginId)
                 .eq("role_id", roleId)
                 .eq("dept_type", UserTypeEnum.ADMIN.code)
-                .eq("state", UseStateEnum.USABLE.code));
+                .eq("state", CommonStateEnum.CHECKED.code));
         return resolveBizScopeByUserRoleDeptList(roleList);
     }
 
@@ -221,7 +218,7 @@ public class CsSysServiceImpl implements ICsSysService {
         List<UserRoleDept> roleList = userRoleDeptDao.selectList(new QueryWrapper<UserRoleDept>()
                 .eq("user_id", loginId)
                 .eq("dept_type", UserTypeEnum.ADMIN.code)
-                .eq("state", UseStateEnum.USABLE.code));
+                .eq("state", CommonStateEnum.CHECKED.code));
         return resolveBizScopeByUserRoleDeptList(roleList);
     }
 

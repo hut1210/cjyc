@@ -132,7 +132,7 @@
     </select>
 
     <select id="getPageList" resultType="com.cjyc.common.model.vo.web.admin.AdminPageVo">
-        SELECT ba.id, ba.user_id, ba.state, ba.`name`, ba.phone, GROUP_CONCAT(sr.role_name) roles, ba.biz_desc,
+        SELECT ba.id, ba.user_id, ba.state, ba.`name`, ba.phone as account, GROUP_CONCAT(sr.role_name) roles, ba.biz_desc,
         ba.create_time, ba.create_user
         FROM b_admin ba
             LEFT JOIN (SELECT * FROM s_user_role_dept WHERE dept_type = 1) sur ON sur.user_id = ba.id
