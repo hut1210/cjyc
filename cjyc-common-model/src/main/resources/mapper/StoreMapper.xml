@@ -155,7 +155,13 @@
           SELECT
             id AS storeId,
             NAME AS NAME,
-            detail_addr AS detailAddr
+            detail_addr AS detailAddr,
+            province  AS province,
+            province_code AS provinceCode,
+            city AS city,
+            city_code AS cityCode,
+            area AS area,
+            area_code AS areaCode
           FROM
             s_store
         <where>
