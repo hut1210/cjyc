@@ -9,7 +9,7 @@ public class CrWaybillDto extends BasePageDto {
 
     @ApiModelProperty(value = "用户登录ID-司机")
     private Long roleId;
-    @ApiModelProperty(value = "承运商ID（不需要传）")
+    @ApiModelProperty(value = "承运商ID")
     private Long carrierId;
     @ApiModelProperty(value = "运单号")
     private String waybillNo;

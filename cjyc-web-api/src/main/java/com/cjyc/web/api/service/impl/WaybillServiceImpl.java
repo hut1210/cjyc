@@ -56,12 +56,7 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
 
     @Override
     public ResultVo<PageVo<CrWaybillVo>> crListForMineCarrier(CrWaybillDto paramsDto) {
-        //根据角色查询承运商ID
-        Carrier carrier = csSysService.getCarrierByRoleId(paramsDto.getRoleId());
-        if(carrier == null){
-            return BaseResultUtil.fail("承运商信息不存在");
-        }
-        paramsDto.setCarrierId(carrier.getId());
+        paramsDto.setCarrierId(paramsDto.getCarrierId());
         //查询承运商信息
         PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
         List<CrWaybillVo> list = waybillDao.findCrListForMineCarrier(paramsDto);
@@ -75,7 +70,7 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
     @Override
     public ResultVo<PageVo<LocalListWaybillCarVo>> locallist(LocalListWaybillCarDto paramsDto) {
         //查询角色业务中心范围
-        BizScope bizScope = csSysService.getBizScopeByRoleId(paramsDto.getRoleId(), true);
+        BizScope bizScope = csSysService.getBizScopeByRoleIdNew(paramsDto.getLoginId(), paramsDto.getRoleId(), true);
         if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
             return BaseResultUtil.fail("没有数据权限");
         }
@@ -100,7 +95,7 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
     @Override
     public ResultVo<PageVo<TrunkMainListWaybillVo>> getTrunkMainList(TrunkMainListWaybillDto paramsDto) {
         //查询角色业务中心范围
-        BizScope bizScope = csSysService.getBizScopeByRoleId(paramsDto.getRoleId(), true);
+        BizScope bizScope = csSysService.getBizScopeByRoleIdNew(paramsDto.getLoginId(), paramsDto.getRoleId(), true);
         if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
             return BaseResultUtil.fail("没有数据权限");
         }
@@ -125,7 +120,7 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
     @Override
     public ResultVo<PageVo<TrunkSubListWaybillVo>> getTrunkSubList(TrunkSubListWaybillDto paramsDto) {
         //查询角色业务中心范围
-        BizScope bizScope = csSysService.getBizScopeByRoleId(paramsDto.getRoleId(), true);
+        BizScope bizScope = csSysService.getBizScopeByRoleIdNew(paramsDto.getLoginId(), paramsDto.getRoleId(), true);
         if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
             return BaseResultUtil.fail("没有数据权限");
         }
@@ -151,7 +146,7 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
     @Override
     public ResultVo<PageVo<TrunkCarListWaybillCarVo>> trunkCarlist(TrunkListWaybillCarDto paramsDto) {
         //查询角色业务中心范围
-        BizScope bizScope = csSysService.getBizScopeByRoleId(paramsDto.getRoleId(), true);
+        BizScope bizScope = csSysService.getBizScopeByRoleIdNew(paramsDto.getLoginId(), paramsDto.getRoleId(), true);
         if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
             return BaseResultUtil.fail("无数据权限");
         }

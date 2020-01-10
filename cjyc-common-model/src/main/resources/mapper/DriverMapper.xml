@@ -92,9 +92,10 @@
         select
         d.*
         from d_driver d
-        join d_carrier_driver_con con on d.id = con.driver_id
-        where con.carrier_id = #{carrierId}
-        and con.state = 2
+        join s_user_role_dept urd on d.id = urd.user_id
+        where urd.dept_id = #{carrierId}
+        and urd.dept_type = 2 AND urd.user_type = 2
+        and urd.state = 2
         and d.business_state = 0
         limit 1
     </select>

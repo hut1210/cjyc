@@ -11,6 +11,7 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.mineCarrier.MyCarrierVo;
 import com.cjyc.common.model.vo.web.task.CrTaskVo;
 import com.cjyc.common.model.vo.web.task.ListByWaybillTaskVo;
 import com.cjyc.common.model.vo.web.task.TaskPageVo;
@@ -23,6 +24,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -95,13 +97,8 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
 
     @Override
     public ResultVo<PageVo<CrTaskVo>> crTaskList(CrTaskDto paramsDto) {
-
         //根据角色查询承运商ID
-        Carrier carrier = csSysService.getCarrierByRoleId(paramsDto.getRoleId());
-        if(carrier == null){
-            return BaseResultUtil.fail("承运商信息不存在");
-        }
-        paramsDto.setCarrierId(carrier.getId());
+        paramsDto.setCarrierId(paramsDto.getCarrierId());
 
         PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
         List<CrTaskVo> list = taskDao.findListForMineCarrier(paramsDto);
