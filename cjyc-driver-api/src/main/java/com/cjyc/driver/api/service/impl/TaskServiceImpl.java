@@ -309,10 +309,11 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                 .eq(WaybillCar::getId, taskCar.getWaybillCarId());
         if (FieldConstant.WAIT_PICK_CAR.equals(detailType)) {
             // 待提车详情
-            query = query.in(WaybillCar::getState, WaybillCarStateEnum.WAIT_LOAD.code,WaybillCarStateEnum.WAIT_LOAD_CONFIRM.code);
+            query = query.in(WaybillCar::getState, WaybillCarStateEnum.WAIT_LOAD.code);
         } else if(FieldConstant.WAIT_GIVE_CAR.equals(detailType)){
             // 待交车详情
-            query = query.in(WaybillCar::getState,WaybillCarStateEnum.LOADED.code,WaybillCarStateEnum.WAIT_UNLOAD_CONFIRM.code);
+            query = query.in(WaybillCar::getState,WaybillCarStateEnum.LOADED.code,
+                    WaybillCarStateEnum.WAIT_LOAD_CONFIRM.code,WaybillCarStateEnum.WAIT_UNLOAD_CONFIRM.code);
         } else if (FieldConstant.FINISH.equals(detailType)){
             // 已交付
             query = query.eq(WaybillCar::getState,WaybillCarStateEnum.UNLOADED.code);
