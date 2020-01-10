@@ -83,7 +83,7 @@ public class StoreController {
      * @author JPG
      */
     @ApiOperation(value = "根据角色和登录ID查询业务中心")
-    @PostMapping(value = "/list/by/role/login")
+    @PostMapping(value = "/list/vo/by/role/login")
     public ResultVo<List<StoreVo>> getVoByWebLogin(@RequestBody WebLoginDto reqDto) {
         List<StoreVo> list = storeService.listVoByWebLogin(reqDto);
         return BaseResultUtil.success(list);
