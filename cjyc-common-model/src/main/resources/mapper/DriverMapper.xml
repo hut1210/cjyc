@@ -483,6 +483,7 @@
             run.occupied_car_num AS occupiedCarNum,
             run.plate_no AS plateNo,
             run.running_state AS runningState,
+            d.business_state AS businessState,
             d.real_name AS realName,
             d.id_card AS idCard,
             d.phone AS phone,

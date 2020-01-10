@@ -47,6 +47,9 @@ public class TaskDriverVo implements Serializable {
     @ApiModelProperty(value = "司机角色：0个人司机，1下属司机，2管理员，3超级管理员")
     private Integer role;
 
+    @ApiModelProperty(value = "营运状态：0营运中(空闲)，1停运中(繁忙)")
+    private Integer businessState;
+
     public String getPhone() {
         return phone == null ? "" : phone;
     }
@@ -76,5 +79,8 @@ public class TaskDriverVo implements Serializable {
     }
     public Integer getOccupiedCarNum() {
         return occupiedCarNum == null ? 0 : occupiedCarNum;
+    }
+    public Integer getBusinessState() {
+        return businessState == null ? -1 : businessState;
     }
 }
