@@ -14,6 +14,7 @@ import java.util.Set;
 @Accessors(chain = true)
 @ApiModel
 public class ListOrderCarDto extends BasePageDto {
+    private Long loginId;
     @ApiModelProperty(value = "角色ID")
     private Long roleId;
     @ApiModelProperty(value = "业务范围(不用传)")

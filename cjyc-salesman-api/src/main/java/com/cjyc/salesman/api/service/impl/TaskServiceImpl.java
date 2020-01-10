@@ -275,7 +275,7 @@ public class TaskServiceImpl implements ITaskService {
         }
 
         // 根据登录ID查询当前业务员所在业务中心ID
-        BizScope bizScope = csSysService.getBizScopeByLoginId(dto.getLoginId(), true);
+        BizScope bizScope = csSysService.getBizScopeByLoginIdNew(dto.getLoginId(), true);
 
         // 判断当前登录人是否有权限访问
         if (BizScopeEnum.NONE.code == bizScope.getCode()) {
