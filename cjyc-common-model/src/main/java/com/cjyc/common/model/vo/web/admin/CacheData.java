@@ -14,7 +14,7 @@ public class CacheData {
     @JsonSerialize(using = ToStringSerializer.class)
     private Long roleId;
     @JsonSerialize(using = ToStringSerializer.class)
-    private Long deptId;
+    private String deptId;
     private String token;
     private Integer loginType;
 }

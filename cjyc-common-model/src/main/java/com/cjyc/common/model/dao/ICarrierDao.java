@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.vo.driver.login.BaseLoginVo;
 import com.cjyc.common.model.vo.driver.mine.AppDriverInfoVo;
 import com.cjyc.common.model.vo.web.carrier.*;
+import com.cjyc.common.model.vo.web.mineCarrier.MyCarrierVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -108,7 +109,75 @@ public interface ICarrierDao extends BaseMapper<Carrier> {
     Carrier findByDeptId(Long deptId);
 
     /*********************************韵车集成改版 st*****************************/
-    List<Carrier> getListByLoginIdAndRoleId(@Param("loginId")Long loginId,
-                                            @Param("roleId")Long roleId);
+    List<MyCarrierVo> getListByLoginIdAndRoleId(@Param("loginId")Long loginId,
+                                                @Param("roleId")Long roleId);
+
+    /**
+     * 修改承运商时验证是否为该承运商下的司机
+     * @param dto
+     * @return
+     */
+    Integer existBusinessDriverNew(CarrierDto dto);
+
+    /**
+     * 查询承运商信息_改版
+     * @param dto
+     * @return
+     */
+    List<CarrierVo> getCarrierByTermNew(SeleCarrierDto dto);
+
+    /**
+     * 根据承运商id查看承运商信息
+     * @param carrierId
+     * @return
+     */
+    BaseCarrierVo showCarrierByIdNew(@Param("carrierId") Long carrierId);
     /*********************************韵车集成改版 ed*****************************/
+
+
+
+    /**
+     * 根据手机号/身份证号查询个人司机/承运商中是否存在
+     * @param
+     * @return
+     */
+    ExistCarrierVo existCarrierNew(DriverDto dto);
+
+    /**
+     * 根据司机id获取信息(司机登录)
+     * @param driverId
+     * @return
+     */
+    List<BaseLoginVo> findDriverLoginNew(@Param("driverId") Long driverId);
+
+    /**
+     * 判断个人承运商下司机是否存在
+     * @param dto
+     * @return
+     */
+    Integer existPersonalCarrierNew(CarrierDriverDto dto);
+
+    /**
+     * 判断在该承运商下司机是否存在
+     * @param dto
+     * @return
+     */
+    Integer existBusinessCarrierNew(CarrierDriverDto dto);
+
+    /**
+     * 获取司机信息
+     * @param roleId
+     * @param loginId
+     * @return
+     */
+    AppDriverInfoVo findAppDriverInfoNew(@Param("roleId") Long roleId,@Param("loginId") Long loginId);
+
+
+    /**
+     * 调度中心中提车干线调度中代驾和拖车列表
+     * @param dto
+     * @return
+     */
+    List<TrailCarrierVo> findTrailDriverNew(TrailCarrierDto dto);
+
 }

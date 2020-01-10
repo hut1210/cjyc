@@ -19,12 +19,14 @@ import com.cjyc.common.model.entity.Role;
 import com.cjyc.common.model.entity.UserRoleDept;
 import com.cjyc.common.model.enums.UseStateEnum;
 import com.cjyc.common.model.enums.UserTypeEnum;
+import com.cjyc.common.model.enums.role.RoleRangeEnum;
 import com.cjyc.common.model.enums.saleman.SalemanStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.feign.ISysDeptService;
+import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.util.ResultDataUtil;
 import com.cjyc.web.api.service.IRoleService;
@@ -41,6 +43,7 @@ import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 /**
  * 业务员service
@@ -60,6 +63,8 @@ public class SalesmanServiceImpl extends ServiceImpl<IAdminDao, Admin> implement
     private IDriverDao driverDao;
     @Resource
     private ICustomerDao customerDao;
+    @Resource
+    private ISysRoleService sysRoleService;
     /**
      * 社会车辆事业部机构id
      */
@@ -160,11 +165,38 @@ public class SalesmanServiceImpl extends ServiceImpl<IAdminDao, Admin> implement
         }
         UpdateUserReq user = new UpdateUserReq();
         user.setUserId(admin.getUserId());
-        //查询当前用户的非业务员角色列表
-        List<Long> nonSalesmanRoleIds = userRoleDeptDao.getNonSalesmanRoleIds(admin.getUserId());
-        if (!CollectionUtils.isEmpty(nonSalesmanRoleIds)) {
-            nonSalesmanRoleIds.add(role.getRoleId());
-            user.setRoleIdList(nonSalesmanRoleIds);
+        /**
+         * 逻辑修改
+         *  1.查询当前用户角色列表
+         *  2.不为空，查询业务员角色列表
+         *  3.用户角色列表去除业务员角色列表
+         */
+        ResultData<List<SelectRoleResp>> rolesRd = sysRoleService.getListByUserId(admin.getUserId());
+        if (!ResultDataUtil.isSuccess(rolesRd)) {
+            return BaseResultUtil.fail("查询角色列表信息错误，原因：" + rolesRd.getMsg());
+        }
+        if (!CollectionUtils.isEmpty(rolesRd.getData())) {
+            List<Long> idList = rolesRd.getData().stream()
+                    .map(r -> r.getRoleId()).collect(Collectors.toList());
+            List<UserRoleDept> userRoleDeptList = userRoleDeptDao.selectList(new QueryWrapper<UserRoleDept>().lambda()
+                    .eq(UserRoleDept::getUserId, admin.getUserId())
+                    .eq(UserRoleDept::getDeptType, RoleRangeEnum.INNER.getValue())
+                    .eq(UserRoleDept::getUserType, UserTypeEnum.ADMIN.code));
+            if (!CollectionUtils.isEmpty(userRoleDeptList)) {
+                List<Long> sRoleIdList = userRoleDeptList.stream()
+                        .map(urd -> urd.getRoleId()).collect(Collectors.toList());
+                List<Role> sRoleList = roleService.list(new QueryWrapper<Role>().lambda()
+                        .in(Role::getId, sRoleIdList));
+                if (!CollectionUtils.isEmpty(sRoleList)) {
+                    List<Long> existRoleIdList = sRoleList.stream()
+                            .map(r -> r.getRoleId()).collect(Collectors.toList());
+                    idList.removeAll(existRoleIdList);
+                }
+            }
+            if (!idList.contains(role.getRoleId())){
+                idList.add(role.getRoleId());
+            }
+            user.setRoleIdList(idList);
         }else {
             user.setRoleIdList(Arrays.asList(role.getRoleId()));
         }
@@ -374,6 +406,10 @@ public class SalesmanServiceImpl extends ServiceImpl<IAdminDao, Admin> implement
      * @param dto
      */
     private void updateUserRoleDept(AssignRoleNewDto dto) {
+        userRoleDeptDao.delete(new QueryWrapper<UserRoleDept>().lambda()
+            .eq(UserRoleDept::getUserId, dto.getId())
+            .eq(UserRoleDept::getDeptType, UserTypeEnum.ADMIN.code)
+            .eq(UserRoleDept::getUserType, UserTypeEnum.ADMIN.code));
         dto.getDeptIdList().forEach(dId -> {
             //关系表中存在有效关系无需变更否则新增一条
             List<UserRoleDept> userRoleDeptList = userRoleDeptDao.selectList(new QueryWrapper<UserRoleDept>()

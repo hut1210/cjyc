@@ -38,19 +38,19 @@ public class CarrierController {
     private ICsCarrierService csCarrierService;
 
     @ApiOperation(value = "新增/修改承运商")
-    @PostMapping(value = "/saveOrModifyCarrier")
+//    @PostMapping(value = "/saveOrModifyCarrier")
     public ResultVo saveOrModifyCarrier(@Validated @RequestBody CarrierDto dto){
         return carrierService.saveOrModifyCarrier(dto);
     }
 
     @ApiOperation(value = "根据条件查询承运商")
-    @PostMapping(value = "/findCarrier")
+//    @PostMapping(value = "/findCarrier")
     public ResultVo<PageVo<CarrierVo>> findCarrier(@RequestBody SeleCarrierDto dto){
         return carrierService.findCarrier(dto);
     }
 
     @ApiOperation(value = "根据id审核/冻结/解冻承运商")
-    @PostMapping(value = "/verifyCarrier")
+//    @PostMapping(value = "/verifyCarrier")
     public ResultVo verifyCarrier(@RequestBody OperateDto dto){
         return carrierService.verifyCarrier(dto);
     }
@@ -61,7 +61,7 @@ public class CarrierController {
         return carrierService.showBaseCarrier(carrierId);
     }
 
-    @PostMapping("/resetPwd/{id}")
+//    @PostMapping("/resetPwd/{id}")
     @ApiOperation(value = "承运商机构超级管理员账户重置密码")
     public ResultVo resetPwd(@ApiParam(name = "id", value = "机构标识", required = true)
                              @PathVariable Long id) {
@@ -76,13 +76,13 @@ public class CarrierController {
     }
 
     @ApiOperation(value = "根据carrierId查看基本司机信息")
-    @PostMapping(value = "/transportDriver")
+    //@PostMapping(value = "/transportDriver")
     public ResultVo<PageVo<TransportDriverVo>> transportDriver(@Validated @RequestBody TransportDto dto){
         return carrierService.transportDriver(dto);
     }
 
     @ApiOperation(value = "根据carrierId查看基本车辆信息")
-    @PostMapping(value = "/transportVehicle")
+    //@PostMapping(value = "/transportVehicle")
     public ResultVo<PageVo<TransportVehicleVo>> transportVehicle(@Validated @RequestBody TransportDto dto){
         return carrierService.transportVehicle(dto);
     }
@@ -94,7 +94,7 @@ public class CarrierController {
     }
 
     @ApiOperation(value = "调度中心中提车/送车调度中代驾和拖车列表")
-    @PostMapping(value = "/traileDriver")
+//    @PostMapping(value = "/traileDriver")
     public ResultVo<PageVo<TrailCarrierVo>> trailDriver(@RequestBody TrailCarrierDto dto){
         return csCarrierService.trailDriver(dto);
     }
@@ -106,4 +106,62 @@ public class CarrierController {
         carrierService.exportCarrierExcel(request,response);
     }
 
+
+    /*********************************韵车集成改版 st*****************************/
+    @ApiOperation(value = "改版：新增/修改承运商")
+//    @PostMapping(value = "/saveOrModifyCarrierNew")
+    @PostMapping(value = "/saveOrModifyCarrier")
+    public ResultVo saveOrModifyCarrierNew(@Validated @RequestBody CarrierDto dto){
+        return carrierService.saveOrModifyCarrierNew(dto);
+    }
+
+    @ApiOperation(value = "根据条件查询承运商_改版")
+//    @PostMapping(value = "/findCarrierNew")
+    @PostMapping(value = "/findCarrier")
+    public ResultVo<PageVo<CarrierVo>> findCarrierNew(@RequestBody SeleCarrierDto dto){
+        return carrierService.findCarrierNew(dto);
+    }
+
+    @ApiOperation(value = "根据id审核/冻结/解冻承运商_改版")
+//    @PostMapping(value = "/verifyCarrierNew")
+    @PostMapping(value = "/verifyCarrier")
+    public ResultVo verifyCarrierNew(@RequestBody OperateDto dto){
+        return carrierService.verifyCarrierNew(dto);
+    }
+
+    @ApiOperation(value = "根据carrierId查看基本承运商信息_改版")
+    @PostMapping(value = "/showBaseCarrierNew/{carrierId}")
+    public ResultVo<BaseCarrierVo> showBaseCarrierNew(@PathVariable @ApiParam(value = "承运商id",required = true) Long carrierId){
+        return carrierService.showBaseCarrierNew(carrierId);
+    }
+
+//    @PostMapping("/resetPwdNew/{id}")
+    @PostMapping("/resetPwd/{id}")
+    @ApiOperation(value = "承运商机构超级管理员账户重置密码_改版")
+    public ResultVo resetPwdNew(@ApiParam(name = "id", value = "机构标识", required = true)
+                             @PathVariable Long id) {
+        return carrierService.resetPwdNew(id);
+    }
+
+    @ApiOperation(value = "调度中心中提车/送车调度中代驾和拖车列表_改版")
+//    @PostMapping(value = "/traileDriverNew")
+    @PostMapping(value = "/traileDriver")
+    public ResultVo<PageVo<TrailCarrierVo>> trailDriverNew(@RequestBody TrailCarrierDto dto){
+        return csCarrierService.trailDriverNew(dto);
+    }
+
+    @ApiOperation(value = "根据carrierId查看基本司机信息_改版")
+    //@PostMapping(value = "/transportDriverNew")
+    @PostMapping(value = "/transportDriver")
+    public ResultVo<PageVo<TransportDriverVo>> transportDriverNew(@Validated @RequestBody TransportDto dto){
+        return carrierService.transportDriverNew(dto);
+    }
+
+    @ApiOperation(value = "根据carrierId查看基本车辆信息_改版")
+    //@PostMapping(value = "/transportVehicleNew")
+    @PostMapping(value = "/transportVehicle")
+    public ResultVo<PageVo<TransportVehicleVo>> transportVehicleNew(@Validated @RequestBody TransportDto dto){
+        return carrierService.transportVehicleNew(dto);
+    }
+    /*********************************韵车集成改版 ed*****************************/
 }

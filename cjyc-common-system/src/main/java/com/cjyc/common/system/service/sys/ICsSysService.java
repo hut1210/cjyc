@@ -2,6 +2,7 @@ package com.cjyc.common.system.service.sys;
 
 import com.cjyc.common.model.entity.Carrier;
 import com.cjyc.common.model.entity.defined.BizScope;
+import com.cjyc.common.model.vo.web.mineCarrier.MyCarrierVo;
 
 import java.util.List;
 
@@ -21,6 +22,6 @@ public interface ICsSysService {
 
     BizScope getBizScopeByLoginIdNew(Long loginId, boolean isSearchCache);
 
-    List<Carrier> getCarriersByRoleId(Long loginId, Long roleId);
+    List<MyCarrierVo> getCarriersByRoleId(Long loginId, Long roleId);
     /*********************************韵车集成改版 ed*****************************/
 }

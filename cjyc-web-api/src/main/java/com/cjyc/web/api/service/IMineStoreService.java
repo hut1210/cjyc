@@ -35,4 +35,8 @@ public interface IMineStoreService {
      */
     ResultVo getStorageCarPage(StorageCarQueryDto dto);
 
+    /************************************韵车集成改版 st***********************************/
+    ResultVo<PageVo<MySalesmanVo>> listSalesmanNew(ListMineSalesmanDto dto);
+    /************************************韵车集成改版 ed***********************************/
+
 }

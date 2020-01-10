@@ -65,4 +65,24 @@ public interface IVehicleDao extends BaseMapper<Vehicle> {
      */
     List<FreeVehicleVo> findCarrierVehicle(@Param("carrierId") Long carrierId,@Param("plateNo") String plateNo);
 
+
+
+
+    /************************************韵车集成改版 st***********************************/
+
+    /**
+     * 根据条件查询该承运商下的车辆
+     * @param dto
+     * @return
+     */
+    List<MyCarVo> findMyCarNew(QueryMyCarDto dto);
+
+    /**
+     * 获取该承运商下车辆信息_改版
+     * @param dto
+     * @return
+     */
+    List<TransportVehicleVo> findTransportVehicleNew(TransportDto dto);
+
+
 }

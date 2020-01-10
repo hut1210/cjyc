@@ -11,4 +11,15 @@ public interface IApplyPartnerService {
      * @return
      */
     ResultVo applyPartner(ApplyPartnerDto dto);
+
+
+    /************************************韵车集成改版 st***********************************/
+
+    /**
+     * C端用户申请合伙人
+     * @param dto
+     * @return
+     */
+    ResultVo applyPartnerNew(ApplyPartnerDto dto);
+
 }

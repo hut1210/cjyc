@@ -1,7 +1,7 @@
 package com.cjyc.common.model.dao;
 
-import com.cjyc.common.model.entity.UserRoleDept;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cjyc.common.model.entity.UserRoleDept;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

@@ -4,10 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.usercenter.dto.common.SelectDeptResp;
 import com.cjkj.usercenter.dto.common.SelectRoleResp;
-import com.cjyc.common.model.dao.ICarrierDao;
-import com.cjyc.common.model.dao.ICityDao;
-import com.cjyc.common.model.dao.IStoreDao;
-import com.cjyc.common.model.dao.IUserRoleDeptDao;
+import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.entity.defined.BizScope;
 import com.cjyc.common.model.enums.BizScopeEnum;
@@ -16,6 +13,7 @@ import com.cjyc.common.model.enums.UseStateEnum;
 import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.enums.role.RoleLevelEnum;
 import com.cjyc.common.model.util.YmlProperty;
+import com.cjyc.common.model.vo.web.mineCarrier.MyCarrierVo;
 import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.service.ICsAdminService;
@@ -67,6 +65,8 @@ public class CsSysServiceImpl implements ICsSysService {
     private ICityDao cityDao;
     @Resource
     private IStoreDao storeDao;
+    @Resource
+    private IRoleDao roleDao;
 
     /**
      * 获取角色业务范围: 0全国，-1无业务范围，StoreIds逗号分隔字符串
@@ -226,7 +226,10 @@ public class CsSysServiceImpl implements ICsSysService {
     }
 
     @Override
-    public List<Carrier> getCarriersByRoleId(Long loginId, Long roleId) {
+    public List<MyCarrierVo> getCarriersByRoleId(Long loginId, Long roleId) {
+        Role role = roleDao.selectOne(new QueryWrapper<Role>().lambda()
+                .eq(Role::getRoleId, roleId));
+        roleId = role.getId();
         return carrierDao.getListByLoginIdAndRoleId(loginId, roleId);
     }
 
