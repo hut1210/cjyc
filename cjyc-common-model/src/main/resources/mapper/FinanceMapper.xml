@@ -455,7 +455,7 @@
     </select>
 
     <update id="confirm" parameterType="com.cjyc.common.model.vo.web.finance.SettlementVo">
-        update f_payable set state=#{state},confirm_id=#{confirmId},
+        update f_payable set state=#{state},confirm_id=#{confirmId},invoice_no=#{invoiceNo},
         confirm_time=#{confirmTime} where serial_number = #{serialNumber}
     </update>
 
