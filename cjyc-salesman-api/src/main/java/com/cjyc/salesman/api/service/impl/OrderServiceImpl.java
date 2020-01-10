@@ -110,10 +110,10 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         BigDecimal totalTrunkFee = new BigDecimal(0);
         if(!CollectionUtils.isEmpty(orderCars)){
             for(OrderCar orderCar : orderCars){
-                logoImg += carSeriesDao.getLogoImgByBraMod(orderCar.getBrand(), orderCar.getModel());
+                String carLogoImg = carSeriesDao.getLogoImgByBraMod(orderCar.getBrand(), orderCar.getModel());
                 SalesOrderCarVo carVo = new SalesOrderCarVo();
                 carVo.setOrderCarId(orderCar.getId());
-                carVo.setLogoImg(logoImg);
+                carVo.setLogoImg(logoImg+carLogoImg);
                 BeanUtils.copyProperties(orderCar,carVo);
                 carVoList.add(carVo);
                 totalPickFee = totalPickFee.add(orderCar.getPickFee());
