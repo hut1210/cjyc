@@ -77,8 +77,8 @@ public class MineServiceImpl extends ServiceImpl<IWaybillCarDao, WaybillCar> imp
         List<StockCarVo> stockCarVos = orderCarDao.findStockCar(dto);
         if(!CollectionUtils.isEmpty(stockCarVos)){
             for(StockCarVo vo : stockCarVos){
-                logoImg += carSeriesDao.getLogoImgByBraMod(vo.getBrand(), vo.getModel());
-                vo.setLogoImg(logoImg);
+                String carLogoImg = carSeriesDao.getLogoImgByBraMod(vo.getBrand(), vo.getModel());
+                vo.setLogoImg(logoImg+carLogoImg);
             }
         }
         PageInfo<StockCarVo> pageInfo = new PageInfo(stockCarVos);
@@ -91,8 +91,8 @@ public class MineServiceImpl extends ServiceImpl<IWaybillCarDao, WaybillCar> imp
         //订单车辆信息
         StockCarDetailVo orderCarVo = orderCarDao.findOrderCar(dto);
         if(orderCarVo != null){
-            logoImg += carSeriesDao.getLogoImgByBraMod(orderCarVo.getBrand(), orderCarVo.getModel());
-            orderCarVo.setLogoImg(logoImg);
+            String carLogoImg = carSeriesDao.getLogoImgByBraMod(orderCarVo.getBrand(), orderCarVo.getModel());
+            orderCarVo.setLogoImg(logoImg+carLogoImg);
         }
         List<StockTaskVo> listStockTask = taskDao.findListStockTask(dto);
         orderCarVo.setStockVos(listStockTask);
