@@ -325,11 +325,16 @@ public class FinanceServiceImpl implements IFinanceService {
                     freightFee.add(settlementVo.getFreightFee());
                 }
             }
-
+            financePayableVo.setRemainDate(financePayableVo.getSettlePeriod()-formatDuring(System.currentTimeMillis()-financePayableVo.getCompleteTime()));
             financePayableVo.setFreightPayable(freightFee);
         }
         PageInfo<FinancePayableVo> pageInfo = new PageInfo<>(financeVoList);
         return BaseResultUtil.success(pageInfo);
+    }
+
+    private Long formatDuring(long time){
+        long days = time / (1000 * 60 * 60 * 24);
+        return days;
     }
 
     @Override

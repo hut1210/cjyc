@@ -2,6 +2,8 @@ package com.cjyc.web.api.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.dao.*;
+import com.cjyc.common.model.dto.web.BaseWebDto;
+import com.cjyc.common.model.dto.web.dispatch.LineWaitCountDto;
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.entity.defined.BizScope;
@@ -402,14 +404,57 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         }
         return BaseResultUtil.success(list, countInfo);
     }
-
     @Override
-    public ResultVo<ListVo<Map<String, Object>>> waitDispatchTrunkCarCountList(WaitDispatchCountDto reqDto) {
-        List<Map<String, Object>> list = orderCarDao.countTrunkListWaitDispatchCar();
+    public ResultVo<ListVo<Map<String, Object>>> waitDispatchCarCountListV2(BaseWebDto paramsDto) {
+        //查询角色业务中心范围
+        BizScope bizScope = csSysService.getBizScopeBySysRoleIdNew(paramsDto.getLoginId(), paramsDto.getRoleId(), true);
+        if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
+            return BaseResultUtil.fail("没有数据权限");
+        }
+
+        paramsDto.setBizScope(bizScope.getStoreIds());
+        List<Map<String, Object>> list = orderCarDao.countListWaitDispatchCarV2(paramsDto);
         //查询统计
         Map<String, Object> countInfo = null;
         if (list != null && !list.isEmpty()) {
-            countInfo = orderCarDao.countTotalTrunkWaitDispatchCar();
+            countInfo = orderCarDao.countTotalWaitDispatchCarV2(paramsDto);
+        }
+        return BaseResultUtil.success(list, countInfo);
+    }
+
+    @Override
+    public ResultVo<ListVo<Map<String, Object>>> lineWaitDispatchCarCountListV2(LineWaitCountDto paramsDto) {
+        //查询角色业务中心范围
+        BizScope bizScope = csSysService.getBizScopeBySysRoleIdNew(paramsDto.getLoginId(), paramsDto.getRoleId(), true);
+        if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
+            return BaseResultUtil.fail("没有数据权限");
+        }
+
+        paramsDto.setBizScope(bizScope.getStoreIds());
+        //查询统计列表
+        List<Map<String, Object>> list = orderCarDao.findLineWaitDispatchCarCountListV2(paramsDto);
+        //查询统计
+        Map<String, Object> countInfo = null;
+        if (list != null && !list.isEmpty()) {
+            countInfo = orderCarDao.countTotalWaitDispatchCarByStartCityV2(paramsDto);
+        }
+        return BaseResultUtil.success(list, countInfo);
+    }
+
+    @Override
+    public ResultVo<ListVo<Map<String, Object>>> waitDispatchTrunkCarCountList(BaseWebDto paramsDto) {
+        //查询角色业务中心范围
+        BizScope bizScope = csSysService.getBizScopeBySysRoleIdNew(paramsDto.getLoginId(), paramsDto.getRoleId(), true);
+        if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
+            return BaseResultUtil.fail("没有数据权限");
+        }
+        paramsDto.setBizScope(bizScope.getStoreIds());
+
+        List<Map<String, Object>> list = orderCarDao.countTrunkListWaitDispatchCar(paramsDto);
+        //查询统计
+        Map<String, Object> countInfo = null;
+        if (list != null && !list.isEmpty()) {
+            countInfo = orderCarDao.countTotalTrunkWaitDispatchCar(paramsDto);
         }
         return BaseResultUtil.success(list, countInfo);
     }
@@ -436,6 +481,14 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
 
     @Override
     public ResultVo<ListVo<Map<String, Object>>> lineWaitDispatchTrunkCarCountList(LineWaitDispatchCountDto paramsDto) {
+        //查询角色业务中心范围
+        BizScope bizScope = csSysService.getBizScopeBySysRoleIdNew(paramsDto.getLoginId(), paramsDto.getRoleId(), true);
+        if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
+            return BaseResultUtil.fail("没有数据权限");
+        }
+
+        paramsDto.setBizScope(bizScope.getStoreIds());
+
         //查询统计列表
         List<Map<String, Object>> list = orderCarDao.findLineWaitDispatchTrunkCarCountList(paramsDto);
         //查询统计
@@ -447,11 +500,12 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     }
 
 
+
     @Override
     public ResultVo<PageVo<OrderCarWaitDispatchVo>> waitDispatchCarList(WaitDispatchListOrderCarDto paramsDto) {
 
         //查询角色业务中心范围
-        BizScope bizScope = csSysService.getBizScopeByRoleId(paramsDto.getRoleId(), true);
+        BizScope bizScope = csSysService.getBizScopeBySysRoleIdNew(paramsDto.getLoginId(), paramsDto.getRoleId(), true);
         if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
             return BaseResultUtil.fail("没有数据权限");
         }
@@ -463,17 +517,19 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         if (paramsDto.getCurrentPage() > pageInfo.getPages()) {
             pageInfo.setList(null);
         }
+
         return BaseResultUtil.success(pageInfo);
     }
 
     @Override
     public ResultVo<PageVo<OrderCarWaitDispatchVo>> waitDispatchTrunkCarList(WaitDispatchTrunkDto paramsDto) {
         //查询角色业务中心范围
-        BizScope bizScope = csSysService.getBizScopeByRoleId(paramsDto.getRoleId(), true);
+        BizScope bizScope = csSysService.getBizScopeBySysRoleIdNew(paramsDto.getLoginId(), paramsDto.getRoleId(), true);
         if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
             return BaseResultUtil.fail("没有数据权限");
         }
         paramsDto.setBizScope(bizScope.getStoreIds());
+
         PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
         List<OrderCarWaitDispatchVo> list = orderCarDao.findWaitDispatchTrunkCarList(paramsDto);
         PageInfo<OrderCarWaitDispatchVo> pageInfo = new PageInfo<>(list);
@@ -499,7 +555,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     public ResultVo<PageVo<ListOrderVo>> list(ListOrderDto paramsDto) {
 
         //查询角色业务中心范围
-        BizScope bizScope = csSysService.getBizScopeByRoleId(paramsDto.getRoleId(), true);
+        BizScope bizScope = csSysService.getBizScopeBySysRoleIdNew(paramsDto.getLoginId(), paramsDto.getRoleId(), true);
         if(bizScope == null || BizScopeEnum.NONE.code == bizScope.getCode()){
             return BaseResultUtil.fail("没有数据权限");
         }
@@ -527,7 +583,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     public ResultVo<PageVo<ListOrderCarVo>> carlist(ListOrderCarDto paramsDto) {
 
         //查询角色业务中心范围
-        BizScope bizScope = csSysService.getBizScopeByRoleId(paramsDto.getRoleId(), true);
+        BizScope bizScope = csSysService.getBizScopeBySysRoleIdNew(paramsDto.getLoginId(), paramsDto.getRoleId(), true);
         if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
             return BaseResultUtil.fail("没有数据权限");
         }

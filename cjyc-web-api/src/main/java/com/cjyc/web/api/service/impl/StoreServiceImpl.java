@@ -18,11 +18,9 @@ import com.cjyc.common.model.dao.IAdminDao;
 import com.cjyc.common.model.dao.ICityDao;
 import com.cjyc.common.model.dao.IStoreCityConDao;
 import com.cjyc.common.model.dao.IStoreDao;
+import com.cjyc.common.model.dto.web.BaseWebDto;
 import com.cjyc.common.model.dto.web.city.StoreDto;
-import com.cjyc.common.model.dto.web.store.GetStoreDto;
-import com.cjyc.common.model.dto.web.store.StoreAddDto;
-import com.cjyc.common.model.dto.web.store.StoreQueryDto;
-import com.cjyc.common.model.dto.web.store.StoreUpdateDto;
+import com.cjyc.common.model.dto.web.store.*;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.City;
 import com.cjyc.common.model.entity.Store;
@@ -306,8 +304,31 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
     }
 
     @Override
+    public List<Store> listByWebLogin(BaseWebDto reqDto) {
+        BizScope bizScope = csSysService.getBizScopeBySysRoleIdNew(reqDto.getLoginId(), reqDto.getRoleId(), true);
+        if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
+            return null;
+        }else if(bizScope.getCode() == BizScopeEnum.CHINA.code){
+            return storeDao.findAll();
+        }else{
+            return storeDao.findByIds(bizScope.getStoreIds());
+        }
+    }
+
+    @Override
     public List<StoreVo> getVoListByRoleId(Long roleId) {
         BizScope bizScope = csSysService.getBizScopeByRoleId(roleId, true);
+        if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
+            return null;
+        }else if(bizScope.getCode() == BizScopeEnum.CHINA.code){
+            return storeDao.findVoAll();
+        }else{
+            return storeDao.findVoByIds(bizScope.getStoreIds());
+        }
+    }
+    @Override
+    public List<StoreVo> listVoByWebLogin(BaseWebDto reqDto) {
+        BizScope bizScope = csSysService.getBizScopeBySysRoleIdNew(reqDto.getLoginId(), reqDto.getRoleId(), true);
         if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
             return null;
         }else if(bizScope.getCode() == BizScopeEnum.CHINA.code){
@@ -341,6 +362,7 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
             return BaseResultUtil.fail("删除失败，原因：" + usersRd.getMsg());
         }
     }
+
 
     @Override
     public List<Store> get(GetStoreDto reqDto) {

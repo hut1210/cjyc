@@ -1,6 +1,7 @@
 package com.cjyc.web.api.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cjyc.common.model.dao.ICarrierDao;
 import com.cjyc.common.model.dao.IWaybillCarDao;
 import com.cjyc.common.model.dao.IWaybillDao;
 import com.cjyc.common.model.dto.web.waybill.*;
@@ -43,6 +44,8 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
     private ICsWaybillService csWaybillService;
     @Resource
     private ICsSysService csSysService;
+    @Resource
+    private ICarrierDao carrierDao;
 
 
     @Override
@@ -53,12 +56,7 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
 
     @Override
     public ResultVo<PageVo<CrWaybillVo>> crListForMineCarrier(CrWaybillDto paramsDto) {
-        //根据角色查询承运商ID
-        Carrier carrier = csSysService.getCarrierByRoleId(paramsDto.getRoleId());
-        if(carrier == null){
-            return BaseResultUtil.fail("承运商信息不存在");
-        }
-        paramsDto.setCarrierId(carrier.getId());
+        paramsDto.setCarrierId(paramsDto.getCarrierId());
         //查询承运商信息
         PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
         List<CrWaybillVo> list = waybillDao.findCrListForMineCarrier(paramsDto);
@@ -72,7 +70,7 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
     @Override
     public ResultVo<PageVo<LocalListWaybillCarVo>> locallist(LocalListWaybillCarDto paramsDto) {
         //查询角色业务中心范围
-        BizScope bizScope = csSysService.getBizScopeByRoleId(paramsDto.getRoleId(), true);
+        BizScope bizScope = csSysService.getBizScopeBySysRoleIdNew(paramsDto.getLoginId(), paramsDto.getRoleId(), true);
         if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
             return BaseResultUtil.fail("没有数据权限");
         }
@@ -97,7 +95,7 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
     @Override
     public ResultVo<PageVo<TrunkMainListWaybillVo>> getTrunkMainList(TrunkMainListWaybillDto paramsDto) {
         //查询角色业务中心范围
-        BizScope bizScope = csSysService.getBizScopeByRoleId(paramsDto.getRoleId(), true);
+        BizScope bizScope = csSysService.getBizScopeBySysRoleIdNew(paramsDto.getLoginId(), paramsDto.getRoleId(), true);
         if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
             return BaseResultUtil.fail("没有数据权限");
         }
@@ -122,7 +120,7 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
     @Override
     public ResultVo<PageVo<TrunkSubListWaybillVo>> getTrunkSubList(TrunkSubListWaybillDto paramsDto) {
         //查询角色业务中心范围
-        BizScope bizScope = csSysService.getBizScopeByRoleId(paramsDto.getRoleId(), true);
+        BizScope bizScope = csSysService.getBizScopeBySysRoleIdNew(paramsDto.getLoginId(), paramsDto.getRoleId(), true);
         if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
             return BaseResultUtil.fail("没有数据权限");
         }
@@ -148,7 +146,7 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
     @Override
     public ResultVo<PageVo<TrunkCarListWaybillCarVo>> trunkCarlist(TrunkListWaybillCarDto paramsDto) {
         //查询角色业务中心范围
-        BizScope bizScope = csSysService.getBizScopeByRoleId(paramsDto.getRoleId(), true);
+        BizScope bizScope = csSysService.getBizScopeBySysRoleIdNew(paramsDto.getLoginId(), paramsDto.getRoleId(), true);
         if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
             return BaseResultUtil.fail("无数据权限");
         }
@@ -197,5 +195,24 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
     }
 
 
+
+    /************************************韵车集成改版 st***********************************/
+    @Override
+    public ResultVo<PageVo<CrWaybillVo>> crListForMineCarrierNew(CrWaybillDto paramsDto) {
+        //根据角色查询承运商ID
+        Carrier carrier = carrierDao.selectById(paramsDto.getCarrierId());
+        if(carrier == null){
+            return BaseResultUtil.fail("承运商信息不存在");
+        }
+        paramsDto.setCarrierId(carrier.getId());
+        //查询承运商信息
+        PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
+        List<CrWaybillVo> list = waybillDao.findCrListForMineCarrier(paramsDto);
+        PageInfo<CrWaybillVo> pageInfo = new PageInfo<>(list);
+        if(paramsDto.getCurrentPage() > pageInfo.getPages()){
+            pageInfo.setList(null);
+        }
+        return BaseResultUtil.success(pageInfo);
+    }
 
 }

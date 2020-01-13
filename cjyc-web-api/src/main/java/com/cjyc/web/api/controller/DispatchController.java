@@ -1,5 +1,7 @@
 package com.cjyc.web.api.controller;
 
+import com.cjyc.common.model.dto.web.BaseWebDto;
+import com.cjyc.common.model.dto.web.dispatch.LineWaitCountDto;
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
@@ -42,9 +44,21 @@ public class DispatchController {
     public ResultVo<PageVo<OrderCarWaitDispatchVo>> waitDispatchCarList(@RequestBody WaitDispatchListOrderCarDto reqDto) {
         return orderService.waitDispatchCarList(reqDto);
     }
+
     /**
+     * V2.0
      * @author JPG
      */
+    @ApiOperation(value = "查询待调度车辆统计")
+    @PostMapping(value = "/wait/count/list/v2")
+    public ResultVo<ListVo<Map<String, Object>>> waitDispatchCarCountListV2(@RequestBody BaseWebDto reqDto) {
+        return orderService.waitDispatchCarCountListV2(reqDto);
+    }
+    /**
+     * @author JPG
+     * @deprecated replace by {@link DispatchController#waitDispatchCarCountListV2}
+     */
+    @Deprecated
     @ApiOperation(value = "查询待调度车辆统计")
     @PostMapping(value = "/wait/count/list/{userId}")
     public ResultVo<ListVo<Map<String, Object>>> waitDispatchCarCountList(@ApiParam(value = "用户userId", required = true)
@@ -53,18 +67,24 @@ public class DispatchController {
     }
 
     /**
+     * V2.0
      * @author JPG
      */
+    @ApiOperation(value = "按线路统计待调度车辆（统计列表）")
+    @PostMapping(value = "/line/wait/count/list/v2")
+    public ResultVo<ListVo<Map<String, Object>>> lineWaitDispatchCarCountListV2(@RequestBody LineWaitCountDto reqDto) {
+        return orderService.lineWaitDispatchCarCountListV2(reqDto);
+    }
+    /**
+     * @author JPG
+     * @deprecated replace by {@link DispatchController#lineWaitDispatchCarCountListV2}
+     */
+    @Deprecated
     @ApiOperation(value = "按线路统计待调度车辆（统计列表）")
     @PostMapping(value = "/line/wait/count/list")
     public ResultVo<ListVo<Map<String, Object>>> lineWaitDispatchCarCountList(@RequestBody LineWaitDispatchCountDto reqDto) {
         return orderService.lineWaitDispatchCarCountList(reqDto,null);
     }
-
-
-
-
-
 
     /**
      * @author JPG
@@ -79,7 +99,7 @@ public class DispatchController {
      */
     @ApiOperation(value = "查询干线待调度车辆按城市统计")
     @PostMapping(value = "/wait/trunk/count/list")
-    public ResultVo<ListVo<Map<String, Object>>> waitDispatchTrunkCarCountList(@RequestBody WaitDispatchCountDto reqDto) {
+    public ResultVo<ListVo<Map<String, Object>>> waitDispatchTrunkCarCountList(@RequestBody BaseWebDto reqDto) {
         return orderService.waitDispatchTrunkCarCountList(reqDto);
     }
     /**
@@ -91,10 +111,6 @@ public class DispatchController {
         return orderService.lineWaitDispatchTrunkCarCountList(reqDto);
     }
 
-
-
-
-
     /**
      * @author JPG
      */
@@ -102,15 +118,6 @@ public class DispatchController {
     @PostMapping(value = "/car/from/to/get")
     public ResultVo<DispatchAddCarVo> computerCarEndpoint(@RequestBody ComputeCarEndpointDto reqDto) {
         return csOrderService.computerCarEndpoint(reqDto);
-    }
-
-    /**
-     * @author JPG
-     */
-    @ApiOperation(value = "验证是否可以调度")
-    @PostMapping(value = "/can/dispatch/validate")
-    public ResultVo validateCanDispatch(@RequestBody ComputeCarEndpointDto reqDto) {
-        return csOrderService.validateCanDispatch(reqDto);
     }
 
 }

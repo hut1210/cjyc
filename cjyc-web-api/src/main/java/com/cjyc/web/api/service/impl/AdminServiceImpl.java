@@ -1,5 +1,6 @@
 package com.cjyc.web.api.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.model.PageData;
@@ -12,6 +13,7 @@ import com.cjkj.usercenter.dto.yc.SelectPageUsersForSalesmanReq;
 import com.cjkj.usercenter.dto.yc.SelectUsersByRoleResp;
 import com.cjyc.common.model.dao.IAdminDao;
 import com.cjyc.common.model.dao.IRoleDao;
+import com.cjyc.common.model.dao.IUserRoleDeptDao;
 import com.cjyc.common.model.dto.web.salesman.AdminPageDto;
 import com.cjyc.common.model.dto.web.salesman.AdminPageNewDto;
 import com.cjyc.common.model.dto.web.salesman.TypeSalesmanDto;
@@ -84,6 +86,8 @@ public class AdminServiceImpl extends ServiceImpl<IAdminDao, Admin> implements I
     private IRoleDao roleDao;
     @Resource
     private IRoleService roleService;
+    @Resource
+    private IUserRoleDeptDao userRoleDeptDao;
 
 
     @Override
@@ -246,7 +250,7 @@ public class AdminServiceImpl extends ServiceImpl<IAdminDao, Admin> implements I
         if(userType == UserTypeEnum.ADMIN.code){
             Admin admin = adminDao.findByUserId(userId);
             if (admin != null) {
-                cacheData.setDeptId(resultData.getData().getDeptId());
+                cacheData.setDeptId(resultData.getData().getDeptId()+"");
                 cacheData.setLoginId(admin.getId());
                 cacheData.setLoginName(admin.getName());
                 cacheData.setLoginPhone(admin.getPhone());
@@ -258,7 +262,7 @@ public class AdminServiceImpl extends ServiceImpl<IAdminDao, Admin> implements I
             //客户
             Customer customer = csCustomerService.getByUserId(userId, true);
             if(customer != null){
-                cacheData.setDeptId(resultData.getData().getDeptId());
+                cacheData.setDeptId(resultData.getData().getDeptId()+"");
                 cacheData.setLoginId(customer.getId());
                 cacheData.setLoginName(customer.getName());
                 cacheData.setLoginPhone(customer.getContactPhone());
@@ -269,7 +273,7 @@ public class AdminServiceImpl extends ServiceImpl<IAdminDao, Admin> implements I
             //司机
             Driver driver = csDriverService.getByUserId(userId);
             if(driver != null){
-                cacheData.setDeptId(resultData.getData().getDeptId());
+                cacheData.setDeptId(resultData.getData().getDeptId()+"");
                 cacheData.setLoginId(driver.getId());
                 cacheData.setLoginName(driver.getName());
                 cacheData.setLoginPhone(driver.getPhone());
@@ -312,6 +316,65 @@ public class AdminServiceImpl extends ServiceImpl<IAdminDao, Admin> implements I
         }
         return BaseResultUtil.success(pageInfo);
     }
+
+    @Override
+    public CacheData getCacheDataNew(Long userId, Long roleId) {
+        CacheData cacheData = new CacheData();
+        //根据角色查询机构ID
+        Role role = roleDao.selectOne(new QueryWrapper<Role>().lambda()
+            .eq(Role::getRoleId, roleId));
+        if (role == null) {
+            return null;
+        }
+        Long ycUserId = null;
+        Integer userType = role.getRoleRange();
+        if(userType == UserTypeEnum.ADMIN.code){
+            Admin admin = adminDao.findByUserId(userId);
+            if (admin != null) {
+                ycUserId = admin.getId();
+                cacheData.setLoginId(admin.getId());
+                cacheData.setLoginName(admin.getName());
+                cacheData.setLoginPhone(admin.getPhone());
+                cacheData.setRoleId(roleId);
+                cacheData.setLoginType(UserTypeEnum.ADMIN.code);
+            }
+
+        }else if(userType == UserTypeEnum.CUSTOMER.code){
+            //客户
+            Customer customer = csCustomerService.getByUserId(userId, true);
+            if(customer != null){
+                ycUserId = customer.getId();
+                cacheData.setLoginId(customer.getId());
+                cacheData.setLoginName(customer.getName());
+                cacheData.setLoginPhone(customer.getContactPhone());
+                cacheData.setRoleId(roleId);
+                cacheData.setLoginType(UserTypeEnum.CUSTOMER.code);
+            }
+        }else if(userType == UserTypeEnum.DRIVER.code){
+            //司机
+            Driver driver = csDriverService.getByUserId(userId);
+            if(driver != null){
+                ycUserId = driver.getId();
+                cacheData.setLoginId(driver.getId());
+                cacheData.setLoginName(driver.getName());
+                cacheData.setLoginPhone(driver.getPhone());
+                cacheData.setRoleId(roleId);
+                cacheData.setLoginType(UserTypeEnum.DRIVER.code);
+            }
+        }else{
+            return null;
+        }
+        if (ycUserId != null) {
+            List<UserRoleDept> urdList = userRoleDeptDao.selectList(new QueryWrapper<UserRoleDept>().lambda()
+                    .eq(UserRoleDept::getUserId, ycUserId)
+                    .eq(UserRoleDept::getRoleId, role.getId()));
+            if (!CollectionUtils.isEmpty(urdList)) {
+                cacheData.setDeptId(urdList.get(0).getDeptId());
+            }
+        }
+        return cacheData;
+    }
+
     /************************************韵车集成改版 ed***********************************/
 
     private int getPages(long total, Integer pageSize) {

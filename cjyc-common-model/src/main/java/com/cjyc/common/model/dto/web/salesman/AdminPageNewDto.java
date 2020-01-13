@@ -31,7 +31,7 @@ public class AdminPageNewDto extends BasePageDto {
     private Long roleId;
 
     @ApiModelProperty(value = "条件-电话")
-    @Pattern(regexp = "^((13[0-9])|(14[5,7])|(15[0-3,5-9])|(17[0,3,5-8])|(18[0-9])|(147))\\d{8}$",message = "电话号码格式不对")
+//    @Pattern(regexp = "^((13[0-9])|(14[5,7])|(15[0-3,5-9])|(17[0,3,5-8])|(18[0-9])|(147))\\d{8}$",message = "电话号码格式不对")
     private String phone;
 
 }

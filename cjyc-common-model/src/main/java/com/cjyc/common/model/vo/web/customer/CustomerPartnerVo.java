@@ -14,64 +14,64 @@ import java.math.BigDecimal;
 public class CustomerPartnerVo implements Serializable {
     private static final long serialVersionUID = -3153565792285453161L;
 
-    @ApiModelProperty("合伙人id(customerId)")
+    @ApiModelProperty(value = "合伙人id(customerId)")
     @JsonSerialize(using= ToStringSerializer.class)
     private Long customerId;
 
-    @ApiModelProperty("合伙人userId")
+    @ApiModelProperty(value = "合伙人userId")
     @JsonSerialize(using= ToStringSerializer.class)
     private Long userId;
 
-    @ApiModelProperty("客户编号")
+    @ApiModelProperty(value = "客户编号")
     private String customerNo;
 
-    @ApiModelProperty("合伙人名称")
+    @ApiModelProperty(value = "合伙人名称")
     private String name;
 
-    @ApiModelProperty("状态：0待审核，1审核中，2已审核，3审核拒绝， 7已冻结")
+    @ApiModelProperty(value = "状态  0：待审核 1：审核中  2:已审核 4：已取消  5：已冻结  7：已拒绝   9:停用")
     private Integer state;
 
-    @ApiModelProperty("联系人")
+    @ApiModelProperty(value = "联系人")
     private String contactMan;
 
-    @ApiModelProperty("联系人手机号")
+    @ApiModelProperty(value = "联系人手机号")
     private String contactPhone;
 
-    @ApiModelProperty("是否一般纳税人 0：否  1：是")
+    @ApiModelProperty(value = "是否一般纳税人 0：否  1：是")
     private Integer isTaxpayer;
 
-    @ApiModelProperty("是否可以开票 0：否 1：是")
+    @ApiModelProperty(value = "是否可以开票 0：否 1：是")
     private Integer isInvoice;
 
-    @ApiModelProperty("结算方式：0时付，1账期")
+    @ApiModelProperty(value = "结算方式：0时付，1账期")
     private Integer settleType;
 
-    @ApiModelProperty("账期/天")
+    @ApiModelProperty(value = "账期/天")
     private Integer settlePeriod;
 
-    @ApiModelProperty("总单量")
+    @ApiModelProperty(value = "总单量")
     private Integer totalOrder;
 
-    @ApiModelProperty("总运车量")
+    @ApiModelProperty(value = "总运车量")
     private Integer totalCar;
 
-    @ApiModelProperty("订单总金额")
+    @ApiModelProperty(value = "订单总金额")
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal totalAmount;
 
-    @ApiModelProperty("统一社会信用代码")
+    @ApiModelProperty(value = "统一社会信用代码")
     private String socialCreditCode;
 
-    @ApiModelProperty("备注")
+    @ApiModelProperty(value = "备注")
     private String description;
 
-    @ApiModelProperty("账号来源：1：App注册，2：Applet注册，3：韵车后台 4：升级创建")
+    @ApiModelProperty(value = "账号来源：1：App注册，2：Applet注册，3：韵车后台 4：升级创建")
     private Integer source;
 
-    @ApiModelProperty("注册时间")
+    @ApiModelProperty(value = "注册时间")
     @JsonSerialize(using = DateLongSerizlizer.class)
     private Long registerTime;
 
-    @ApiModelProperty("创建人名称")
+    @ApiModelProperty(value = "创建人名称")
     private String createUserName;
 }

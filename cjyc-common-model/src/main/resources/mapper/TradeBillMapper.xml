@@ -77,8 +77,14 @@
         where ftbd.source_no = #{orderNo} and state =2 order by create_time desc limit 1
     </select>
 
+    <select id="getTradeBillByOrderNoAndType" parameterType="map" resultType="com.cjyc.common.model.entity.TradeBill">
+        select ftb.* from f_trade_bill ftb
+        left join f_trade_bill_detail ftbd on ftb.id = ftbd.trade_bill_id
+        where ftbd.source_no = #{orderNo} and state =2 and type=#{type} order by create_time desc limit 1
+    </select>
+
     <select id="getAmountByOrderNo" parameterType="String" resultType="java.math.BigDecimal">
-        select if(customer_type=3,(total_fee-agency_fee),total_fee) as amount from w_order where no=#{orderNo}
+        select if(customer_type=3,total_fee,(total_fee-coupon_offset_fee)) as amount from w_order where no=#{orderNo}
     </select>
 
     <update id="updateOrderState" parameterType="map">

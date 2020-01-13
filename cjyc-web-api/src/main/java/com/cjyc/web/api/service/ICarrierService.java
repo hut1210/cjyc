@@ -75,4 +75,56 @@ public interface ICarrierService {
      * @param response
      */
     void exportCarrierExcel(HttpServletRequest request, HttpServletResponse response);
+
+    /*********************************韵车集成改版 st*****************************/
+    /**
+     * 添加承运商信息
+     * @param dto
+     * @return
+     */
+    ResultVo saveOrModifyCarrierNew(CarrierDto dto);
+
+    /**
+     * 根据条件查询承运商
+     * @param dto
+     * @return
+     */
+    ResultVo findCarrierNew(SeleCarrierDto dto);
+
+    /**
+     * 根据承运商id进行审核通过/拒绝/冻结_改版
+     * @param dto
+     * @return
+     */
+    ResultVo verifyCarrierNew(OperateDto dto);
+
+    /**
+     * 根据承运商carrierId查看承运商信息_改版
+     * @param carrierId
+     * @return
+     */
+    ResultVo showBaseCarrierNew(Long carrierId);
+
+    /**
+     * 重置承运商超级管理员密码_改版
+     * @param id
+     * @return
+     */
+    ResultVo resetPwdNew(Long id);
+
+    /**
+     * 获取承运商下司机_改版
+     * @param dto
+     * @return
+     */
+    ResultVo<PageVo<TransportDriverVo>> transportDriverNew(TransportDto dto);
+
+    /**
+     * 获取该承运商下的车辆信息_改版
+     * @param dto
+     * @return
+     */
+    ResultVo<PageVo<TransportVehicleVo>> transportVehicleNew(TransportDto dto);
+
+    /*********************************韵车集成改版 ed*****************************/
 }

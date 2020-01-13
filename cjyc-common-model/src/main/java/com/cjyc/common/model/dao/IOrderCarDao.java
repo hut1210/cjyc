@@ -2,9 +2,13 @@ package com.cjyc.common.model.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.dto.customer.invoice.InvoiceApplyQueryDto;
+import com.cjyc.common.model.dto.salesman.BaseSalesDto;
 import com.cjyc.common.model.dto.salesman.dispatch.DispatchListDto;
+import com.cjyc.common.model.dto.salesman.dispatch.WaitCountLineDto;
 import com.cjyc.common.model.dto.salesman.mine.OrderCarDto;
 import com.cjyc.common.model.dto.salesman.mine.StockCarDto;
+import com.cjyc.common.model.dto.web.BaseWebDto;
+import com.cjyc.common.model.dto.web.dispatch.LineWaitCountDto;
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.vo.customer.invoice.InvoiceOrderVo;
@@ -18,6 +22,7 @@ import com.cjyc.common.model.vo.web.OrderCarVo;
 import com.cjyc.common.model.vo.web.order.ListOrderCarVo;
 import com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo;
 import com.cjyc.common.model.vo.web.order.TransportInfoOrderCarVo;
+import com.cjyc.common.model.vo.web.waybill.WaybillCarVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.math.BigDecimal;
@@ -225,7 +230,7 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
      */
     Integer orderCarCount(@Param("flag") Integer flag,@Param("userId") Long userId);
 
-    List<Map<String, Object>> countTrunkListWaitDispatchCar();
+    List<Map<String, Object>> countTrunkListWaitDispatchCar(@Param("paramsDto") BaseWebDto paramsDto);
 
     List<Map<String, Object>> findLineWaitDispatchTrunkCarCountList(@Param("paramsDto") LineWaitDispatchCountDto paramsDto);
 
@@ -233,7 +238,29 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
 
     Map<String, Object> countTotalTrunkWaitDispatchCarByStartCity(@Param("paramsDto") LineWaitDispatchCountDto paramsDto);
 
-    Map<String, Object> countTotalTrunkWaitDispatchCar();
+    Map<String, Object> countTotalTrunkWaitDispatchCar(@Param("paramsDto") BaseWebDto paramsDto);
 
     int updateForFinish(@Param("orderCarId") Long orderCarId, @Param("areaCode")String areaCode);
+
+    List<Map<String, Object>> countListWaitDispatchCarV2(@Param("paramsDto") BaseWebDto paramsDto);
+
+    Map<String, Object> countTotalWaitDispatchCarV2(@Param("paramsDto")BaseWebDto paramsDto);
+
+    List<Map<String, Object>> findWaitDispatchCarCountListForApp(@Param("param") BaseSalesDto param);
+
+    Map<String, Object> countTotalWaitDispatchCarCountListForApp(@Param("param")BaseSalesDto param);
+
+    List<Map<String, Object>> findWaitDispatchCarCountLineListForApp(@Param("param")WaitCountLineDto param);
+
+    Map<String, Object> countTotalWaitDispatchCarCountLineListForApp(@Param("param")WaitCountLineDto param);
+
+    List<Map<String, Object>> findLineWaitDispatchCarCountListV2(@Param("paramsDto")LineWaitCountDto paramsDto);
+
+    Map<String, Object> countTotalWaitDispatchCarByStartCityV2(@Param("paramsDto")LineWaitCountDto paramsDto);
+
+    List<WaybillCarVo> findPickCarEndpoint(@Param("list")List<Long> orderCarIdList);
+
+    List<WaybillCarVo> findBackCarEndpoint(@Param("list")List<Long> orderCarIdList);
+
+    List<WaybillCarVo> findTrunkCarEndpoint(@Param("list")List<Long> orderCarIdList);
 }

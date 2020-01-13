@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjkj.usercenter.dto.yc.SelectUsersByRoleResp;
 import com.cjyc.common.model.dto.web.role.AddRoleDto;
 import com.cjyc.common.model.dto.web.role.ModifyRoleMenusDto;
+import com.cjyc.common.model.dto.web.role.SetRoleForAppDto;
 import com.cjyc.common.model.entity.Role;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.role.SelectUserByRoleVo;
@@ -80,5 +81,32 @@ public interface IRoleService extends IService<Role> {
      * @return
      */
     ResultVo<List<SelectUserByRoleVo>> getUsersByRoleIdNew(Long roleId);
+
+    /**
+     * 查询所有角色信息列表
+     * @return
+     */
+    ResultVo<List<Role>> getAllListNew(String roleName);
+
+    /**
+     * 根据角色id获取角色所拥有的末级id列表
+     * @param roleId
+     * @return
+     */
+    ResultVo<List<String>> getBtmMenuIdsByRoleIdNew(Long roleId);
+
+    /**
+     * 变更角色-资源列表信息
+     * @param dto
+     * @return
+     */
+    ResultVo modifyRoleMenusNew(ModifyRoleMenusDto dto);
+
+    /**
+     * 更新业务员APP相关角色信息
+     * @param dto
+     * @return
+     */
+    ResultVo setRoleForApp(SetRoleForAppDto dto);
     /*********************************韵车集成改版 ed*****************************/
 }

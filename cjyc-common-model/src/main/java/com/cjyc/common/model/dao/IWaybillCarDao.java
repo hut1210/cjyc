@@ -7,6 +7,7 @@ import com.cjyc.common.model.dto.web.mineStore.StorageCarQueryDto;
 import com.cjyc.common.model.dto.web.waybill.LocalListWaybillCarDto;
 import com.cjyc.common.model.dto.web.waybill.TrunkListWaybillCarDto;
 import com.cjyc.common.model.dto.web.waybill.getWaybillDto;
+import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.entity.WaybillCar;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.entity.defined.FullWaybillCar;
@@ -110,7 +111,6 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
 
     WaybillCar findWaitReceiptWaybill(Long orderCarId);
 
-    List<WaybillCarVo> findTrunkCarEndpoint(@Param("list") List<Long> orderCarIds);
     List<DispatchListVo> getDispatchList(Page<DispatchListVo> page,
                                          @Param("param") DispatchListDto dto);
 
@@ -187,11 +187,7 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
 
     WaybillCar findFirst(@Param("orderCarId") Long orderCarId);
 
-    List<WaybillCarVo> findPickCarEndpoint(List<Long> orderCarIdList);
-
-    List<WaybillCarVo> findBackCarEndpoint(List<Long> orderCarIdList);
-
     void updateForUnloadReplenishInfo(@Param("id") Long id, @Param("unloadPhotoImg") String unloadPhotoImg);
 
-    List<DispatchCarVo> findNextDispatchSegment(@Param("list") List<Long> orderCarIdList);
+    List<WaybillCar> findListByOrderCarIds(@Param("list") List<Long> orderCarIds);
 }

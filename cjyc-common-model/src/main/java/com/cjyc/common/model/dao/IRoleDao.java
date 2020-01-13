@@ -24,4 +24,6 @@ public interface IRoleDao extends BaseMapper<Role> {
      * @return
      */
     List<SelectUserByRoleVo> getUsersByRoleId(Long roleId);
+
+    Role findBySysRoleId(Long sysRoleId);
 }

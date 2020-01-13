@@ -1,11 +1,9 @@
 package com.cjyc.web.api.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.cjyc.common.model.dto.web.BaseWebDto;
 import com.cjyc.common.model.dto.web.city.StoreDto;
-import com.cjyc.common.model.dto.web.store.GetStoreDto;
-import com.cjyc.common.model.dto.web.store.StoreAddDto;
-import com.cjyc.common.model.dto.web.store.StoreQueryDto;
-import com.cjyc.common.model.dto.web.store.StoreUpdateDto;
+import com.cjyc.common.model.dto.web.store.*;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Store;
 import com.cjyc.common.model.vo.ResultVo;
@@ -99,11 +97,15 @@ public interface IStoreService extends IService<Store> {
      */
     ResultVo removeCoveredArea(StoreDto dto);
 
+    @Deprecated
     List<Store> getListByRoleId(Long roleId);
+    List<Store> listByWebLogin(BaseWebDto reqDto);
 
     List<Store> get(GetStoreDto reqDto);
-
+    @Deprecated
     List<StoreVo> getVoListByRoleId(Long roleId);
+
+    List<StoreVo> listVoByWebLogin(BaseWebDto reqDto);
 
     /**
      * 功能描述: 删除业务中心
@@ -113,4 +115,6 @@ public interface IStoreService extends IService<Store> {
      * @return com.cjyc.common.model.vo.ResultVo
      */
     ResultVo remove(Long id);
+
+
 }
