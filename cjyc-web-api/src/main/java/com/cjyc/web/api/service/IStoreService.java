@@ -1,6 +1,7 @@
 package com.cjyc.web.api.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.cjyc.common.model.dto.web.BaseWebDto;
 import com.cjyc.common.model.dto.web.city.StoreDto;
 import com.cjyc.common.model.dto.web.store.*;
 import com.cjyc.common.model.entity.Admin;
@@ -98,13 +99,13 @@ public interface IStoreService extends IService<Store> {
 
     @Deprecated
     List<Store> getListByRoleId(Long roleId);
-    List<Store> listByWebLogin(WebLoginDto reqDto);
+    List<Store> listByWebLogin(BaseWebDto reqDto);
 
     List<Store> get(GetStoreDto reqDto);
     @Deprecated
     List<StoreVo> getVoListByRoleId(Long roleId);
 
-    List<StoreVo> listVoByWebLogin(WebLoginDto reqDto);
+    List<StoreVo> listVoByWebLogin(BaseWebDto reqDto);
 
     /**
      * 功能描述: 删除业务中心

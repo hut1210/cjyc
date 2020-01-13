@@ -59,4 +59,6 @@ public interface ICsWaybillService {
      */
     ResultVo trunkMidwayUnload(TrunkMidwayUnload paramsDto);
 
+    void validateAndFinishWaybill(Long waybillId);
+
 }

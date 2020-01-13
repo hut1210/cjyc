@@ -176,4 +176,16 @@
         </where>
         GROUP BY ba.phone
     </select>
+    <select id="findListByStoreId" resultType="com.cjyc.common.model.entity.Admin">
+        select m.*
+        from b_admin m
+        join s_user_role_dept urd on urd.user_id = m.id
+        join s_role r on r.id = urd.role_id
+        WHERE
+        urd.user_type = 1
+        and urd.dept_type = 1
+        and urd.dept_id = #{storeId}
+        and r.role_range = 1
+        and r.role_level = 5
+    </select>
 </mapper>

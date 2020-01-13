@@ -11,10 +11,13 @@ import java.util.List;
  * @author JPG
  */
 public interface ICsSysService {
+    @Deprecated
     BizScope getBizScopeByRoleId(Long roleId, boolean isSearchCache);
 
+    @Deprecated
     BizScope getBizScopeByLoginId(Long loginId, boolean isSearchCache);
 
+    @Deprecated
     Carrier getCarrierByRoleId(Long roleId);
 
     /*********************************韵车集成改版 st*****************************/

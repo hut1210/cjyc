@@ -1,5 +1,6 @@
 package com.cjyc.common.model.dto.web.order;
 
+import com.cjyc.common.model.dto.web.BaseWebDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -15,13 +16,9 @@ import java.util.Set;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel
-public class ComputeCarEndpointDto {
-    private Long loginId;
-    private Long roleId;
-    @ApiModelProperty(hidden = true)
-    private Set<Long> bizScope;
+public class ComputeCarEndpointDto extends BaseWebDto {
     @ApiModelProperty("调度类型：1提车运单，2干线运单，3送车运单")
-    private Long dispatchType = 0L;
+    private Long dispatchType = 2L;
     @NotEmpty(message = "车辆列表不能为空")
     @ApiModelProperty(value = "车辆ID列表",required = true)
     private List<Long> orderCarIdList;

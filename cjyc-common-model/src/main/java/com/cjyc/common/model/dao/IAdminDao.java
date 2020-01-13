@@ -48,7 +48,6 @@ public interface IAdminDao extends BaseMapper<Admin> {
 
     Admin findNext(@Param("startStoreId") Long startStoreId, Long valueOf);
 
-    Admin findTop(Long startStoreId);
 
     /************************************韵车集成改版 st***********************************/
     List<AdminPageVo> getPageList(@Param("param") AdminPageNewDto dto);
@@ -59,5 +58,7 @@ public interface IAdminDao extends BaseMapper<Admin> {
      * @return
      */
     List<MySalesmanVo> getMineSalesmanList(@Param("param") ListMineSalesmanDto dto);
+
+    List<Admin> findListByStoreId(Long storeId);
     /************************************韵车集成改版 ed***********************************/
 }
