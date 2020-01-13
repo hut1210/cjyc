@@ -393,7 +393,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                         }
                     }
                 }
-                BigDecimal payableFee = order.getTotalFee().subtract(wlFee);//给合伙人费用
+                BigDecimal payableFee = order.getTotalFee().subtract(wlFee).add(order.getCouponOffsetFee());//给合伙人费用
                 Transfer transfer = allinpayToCooperatorCreate(showPartnerVo,payableFee,order.getNo());
                 cStransactionService.saveTransactions(transfer, "0");
             }else{
