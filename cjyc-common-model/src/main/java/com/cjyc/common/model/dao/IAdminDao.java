@@ -60,5 +60,7 @@ public interface IAdminDao extends BaseMapper<Admin> {
     List<MySalesmanVo> getMineSalesmanList(@Param("param") ListMineSalesmanDto dto);
 
     List<Admin> findListByStoreId(Long storeId);
+
+    List<TypeSalesmanVo> deliverySalesmanNew(Long storeId);
     /************************************韵车集成改版 ed***********************************/
 }

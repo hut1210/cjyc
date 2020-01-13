@@ -112,28 +112,28 @@ public class DispatchController {
     }
 
     /**
-     * 功能描述: 根据车辆编号查询车辆明细
+     * 功能描述: 调度页面-根据车辆编号查询车辆明细
      * @author liuxingxiang
      * @date 2019/12/13
      * @param dto
      * @return com.cjyc.common.model.vo.ResultVo
      */
-    @ApiOperation(value = "根据车辆编号查询车辆明细")
+    @ApiOperation(value = "调度页面-根据车辆编号查询车辆明细")
     @PostMapping("/getCarDetail")
     public ResultVo<DispatchCarDetailVo> getCarDetail(@RequestBody @Validated CarDetailDto dto) {
         return dispatchService.getCarDetail(dto.getCarNo());
     }
 
     /**
-     * 功能描述: 查询历史调度记录列表分页
+     * 功能描述: 调度页面-查询历史调度记录列表分页
      * @author liuxingxiang
      * @date 2019/12/13
      * @param dto
      * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.vo.salesman.dispatch.HistoryDispatchRecordVo>
      */
-    @ApiOperation(value = "查询历史调度记录列表分页")
+    @ApiOperation(value = "调度页面-查询历史记录列表分页")
     @PostMapping("/getHistoryRecord")
-    public ResultVo<HistoryDispatchRecordVo> getHistoryRecord(@RequestBody @Validated HistoryDispatchRecordDto dto) {
+    public ResultVo<PageVo<HistoryDispatchRecordVo>> getHistoryRecord(@RequestBody @Validated HistoryDispatchRecordDto dto) {
         return dispatchService.getHistoryRecord(dto);
     }
 
@@ -156,13 +156,13 @@ public class DispatchController {
     }
 
     /**
-     * 功能描述: 根据运单ID查询历史调度记录明细
+     * 功能描述: 历史记录页面-根据运单ID查询历史调度记录明细
      * @author liuxingxiang
      * @date 2019/12/16
      * @param dto
      * @return com.cjyc.common.model.vo.ResultVo
      */
-    @ApiOperation(value = "根据运单ID查询历史调度记录明细")
+    @ApiOperation(value = "历史记录页面-根据运单ID查询历史调度记录明细")
     @PostMapping(value = "/getWaybillDetail")
     public ResultVo<WaybillDetailVo> getWaybillDetail(@RequestBody @Validated WaybillDetailDto dto){
         return dispatchService.getWaybillDetail(dto.getWaybillId());

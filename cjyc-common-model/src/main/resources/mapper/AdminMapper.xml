@@ -30,6 +30,13 @@
         <result column="biz_desc" property="bizDesc" />
     </resultMap>
 
+    <resultMap id="salesmanListByStoreIdMap" type="com.cjyc.common.model.vo.web.admin.TypeSalesmanVo">
+        <id column="id" property="adminId" />
+        <result column="name" property="name"/>
+        <result column="phone" property="phone"/>
+        <association property="storeName" column="{userId=id}" select="getStoreNamesByAdminId"/>
+    </resultMap>
+
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id, user_id, no, name, phone, tel, type, state, id_number, sex, leader_id, store_id, photo_img, create_time, create_user, create_user_id, check_user_id, hire_time, leave_time, account_id, client_type, biz_scope, biz_desc
@@ -188,5 +195,20 @@
         and urd.dept_id = #{storeId}
         and r.role_range = 1
         and r.role_level = 5
+    </select>
+
+    <select id="deliverySalesmanNew" resultMap="salesmanListByStoreIdMap">
+        SELECT
+            ba.id, ba.`name`, ba.phone
+        FROM
+        (SELECT * FROM s_user_role_dept WHERE dept_type = 1 AND user_type = 1 AND dept_id = #{storeId}) sur
+        LEFT JOIN b_admin ba ON ba.id = sur.user_id
+        LEFT JOIN s_role sr ON sr.id = sur.role_id
+        WHERE ba.state = 2
+        GROUP BY ba.phone
+    </select>
+
+    <select id="getStoreNamesByAdminId" resultType="string">
+        SELECT GROUP_CONCAT(st.`name`) FROM s_store st LEFT JOIN s_user_role_dept urd ON urd.dept_id = st.id WHERE urd.user_id = #{userId} GROUP BY urd.user_id
     </select>
 </mapper>
