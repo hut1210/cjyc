@@ -216,7 +216,7 @@ public class CsSysServiceImpl implements ICsSysService {
     public BizScope getBizScopeBySysRoleIdNew(Long loginId, Long sysRoleId, boolean isSearchCache) {
         Role role = roleDao.selectOne(new QueryWrapper<Role>().lambda()
                 .eq(Role::getRoleId, sysRoleId));
-        return getBizScopeByRoleIdNew(loginId, role.getId(), isSearchCache);
+        return getBizScopeByRoleIdNew(loginId, role == null ? null : role.getId(), isSearchCache);
     }
 
     @Override

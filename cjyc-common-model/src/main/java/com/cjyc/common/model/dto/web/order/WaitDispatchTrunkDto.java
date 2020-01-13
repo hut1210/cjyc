@@ -1,25 +1,14 @@
 package com.cjyc.common.model.dto.web.order;
 
-import com.cjyc.common.model.dto.BasePageDto;
+import com.cjyc.common.model.dto.web.PageWebDto;
 import com.cjyc.common.model.dto.web.line.FromToCityDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.List;
-import java.util.Set;
 
 @Data
-public class WaitDispatchTrunkDto extends BasePageDto {
-
-    @ApiModelProperty(value = "用户ID")
-    private Long loginId;
-    @ApiModelProperty(value = "用户ID")
-    private Long roleId;
-
-    @ApiModelProperty(value = "业务范围(不用传)", hidden = true)
-    private Set<Long> bizScope;
-
-
+public class WaitDispatchTrunkDto extends PageWebDto {
 
     @ApiModelProperty(value = "省编号")
     private String startProvinceCode;

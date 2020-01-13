@@ -15,10 +15,7 @@ import com.cjyc.common.model.enums.customer.CustomerSourceEnum;
 import com.cjyc.common.model.enums.customer.CustomerStateEnum;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.enums.log.OrderLogEnum;
-import com.cjyc.common.model.enums.order.OrderCarStateEnum;
-import com.cjyc.common.model.enums.order.OrderCarTrunkStateEnum;
-import com.cjyc.common.model.enums.order.OrderChangeTypeEnum;
-import com.cjyc.common.model.enums.order.OrderStateEnum;
+import com.cjyc.common.model.enums.order.*;
 import com.cjyc.common.model.enums.waybill.WaybillTypeEnum;
 import com.cjyc.common.model.exception.ParameterException;
 import com.cjyc.common.model.exception.ServerException;
@@ -322,7 +319,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
             ocList.forEach(orderCar -> orderCarDao.updateById(orderCar));
 
             //合计费用：提、干、送、保险
-            fillOrderFeeInfo(order, ocList);
+            //fillOrderFeeInfo(order, ocList);
             order.setCarNum(ocList.size());
             orderDao.updateById(order);
 
@@ -356,7 +353,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         orderCarList.forEach(orderCar -> orderCarDao.updateById(orderCar));
 
         //合计费用：提、干、送、保险
-        fillOrderFeeInfo(order, orderCarList);
+        //fillOrderFeeInfo(order, orderCarList);
         order.setCarNum(orderCarList.size());
         orderDao.updateById(order);
         //记录发车人和收车人
@@ -372,49 +369,6 @@ public class CsOrderServiceImpl implements ICsOrderService {
         check(paramsDto);
 
         return BaseResultUtil.success();
-    }
-
-    @Override
-    public ResultVo validateCanDispatch(ComputeCarEndpointDto paramsDto) {
-        //查询角色业务中心范围
-        BizScope bizScope = csSysService.getBizScopeBySysRoleIdNew(paramsDto.getLoginId(), paramsDto.getRoleId(), true);
-        if (bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code) {
-            return BaseResultUtil.fail("没有数据权限");
-        }
-        Set<Long> storeIds = bizScope.getStoreIds();
-        if (bizScope.getCode() == BizScopeEnum.CHINA.code) {
-            return BaseResultUtil.success("验证通过");
-        } else {
-
-            if (paramsDto.getDispatchType() == WaybillTypeEnum.PICK.code) {
-                List<OrderCarVo> orderCarVos = orderCarDao.findVoListByIds(paramsDto.getOrderCarIdList());
-                for (OrderCarVo vo : orderCarVos) {
-                    if (vo.getInputStoreId() == null || !storeIds.contains(vo.getInputStoreId())) {
-                        return BaseResultUtil.fail("车辆{0},不在登录角色的提车调度范围内", vo.getNo());
-                    }
-                }
-            } else if (paramsDto.getDispatchType() == WaybillTypeEnum.BACK.code) {
-                List<OrderCarVo> orderCarVos = orderCarDao.findVoListByIds(paramsDto.getOrderCarIdList());
-                for (OrderCarVo vo : orderCarVos) {
-                    if (vo.getEndBelongStoreId() == null || !storeIds.contains(vo.getEndBelongStoreId())) {
-                        return BaseResultUtil.fail("车辆{0},不在登录角色的送车调度范围内", vo.getNo());
-                    }
-                }
-            } else {
-                List<DispatchCarVo> list = waybillCarDao.findNextDispatchSegment(paramsDto.getOrderCarIdList());
-                for (DispatchCarVo vo : list) {
-                    if(vo.getTrunkState() >= OrderCarTrunkStateEnum.DISPATCHED.code){
-                        return BaseResultUtil.fail("车辆{0},干线已经调度完成", vo.getOrderCarNo());
-                    }
-                    if(vo.getOrderCarState() >= OrderCarStateEnum.WAIT_BACK.code){
-                        return BaseResultUtil.fail("车辆{0},干线已经结束", vo.getOrderCarNo());
-                    }
-                }
-
-            }
-        }
-
-        return null;
     }
 
     /**
@@ -594,7 +548,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
      * @author JPG
      * @since 2019/12/12 14:41
      */
-    private Order fillOrderFeeInfo(Order order, List<OrderCar> orderCarList) {
+    /*private Order fillOrderFeeInfo(Order order, List<OrderCar> orderCarList) {
         BigDecimal pickFee = BigDecimal.ZERO;
         BigDecimal trunkFee = BigDecimal.ZERO;
         BigDecimal backFee = BigDecimal.ZERO;
@@ -610,7 +564,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         order.setBackFee(backFee);
         order.setAddInsuranceFee(addInsuranceFee);
         return order;
-    }
+    }*/
 
     /**
      * 提交并审核
@@ -859,7 +813,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         orderCarList.forEach(orderCar -> orderCarDao.updateById(orderCar));
 
         //合计费用：提、干、送、保险
-        fillOrderFeeInfo(order, orderCarList);
+        //fillOrderFeeInfo(order, orderCarList);
         order.setTotalFee(MoneyUtil.convertYuanToFen(paramsDto.getTotalFee()));
         orderDao.updateById(order);
 
@@ -925,29 +879,80 @@ public class CsOrderServiceImpl implements ICsOrderService {
     @Override
     public ResultVo<DispatchAddCarVo> computerCarEndpoint(ComputeCarEndpointDto paramsDto) {
         DispatchAddCarVo dispatchAddCarVo = new DispatchAddCarVo();
-
-        //业务范围
-        /*BizScope bizScope = csSysService.getBizScopeByLoginId(paramsDto.getLoginId(), true);
-        if(BizScopeEnum.NONE.code == bizScope.getCode()){
-            return BaseResultUtil.fail("无数据权限");
+        //查询角色业务中心范围
+        BizScope bizScope = csSysService.getBizScopeBySysRoleIdNew(paramsDto.getLoginId(), paramsDto.getRoleId(), true);
+        if (bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code) {
+            return BaseResultUtil.fail("没有数据权限");
         }
-        paramsDto.setBizScope(bizScope.getCode() == 0 ? null : bizScope.getStoreIds());*/
-        List<WaybillCarVo> childList = null;
+        Set<Long> storeIds = bizScope.getStoreIds();
+        List<Long> orderCarIdList = paramsDto.getOrderCarIdList();
+        List<WaybillCarVo> list = null;
         if (paramsDto.getDispatchType() == WaybillTypeEnum.PICK.code) {
-            //查询车辆信息
-            childList = waybillCarDao.findPickCarEndpoint(paramsDto.getOrderCarIdList());
+            list = orderCarDao.findPickCarEndpoint(orderCarIdList);
+            for (WaybillCarVo vo : list) {
+                //验证状态
+                if(vo.getPickState() >= OrderCarLocalStateEnum.DISPATCHED.code){
+                    return BaseResultUtil.fail("车辆{0},提车已经调度完成", vo.getOrderCarNo());
+                }
+                if(vo.getOrderCarState() >= OrderCarStateEnum.WAIT_TRUNK_DISPATCH.code){
+                    return BaseResultUtil.fail("车辆{0},提车已经结束", vo.getOrderCarNo());
+                }
+                //验证数据范围
+                if(bizScope.getCode() != BizScopeEnum.CHINA.code){
+                    if (vo.getEndBelongStoreId() == null || !storeIds.contains(vo.getStartBelongStoreId())) {
+                        Store store = csStoreService.getById(vo.getStartBelongStoreId(), true);
+                        String city = store == null ? store.getCity() : "总部";
+                        return BaseResultUtil.fail("车辆{0},不在调度权限范围内，请联系{1}业务员", vo.getOrderCarNo(), city);
+                    }
+                }
+            }
+
         } else if (paramsDto.getDispatchType() == WaybillTypeEnum.BACK.code) {
-            //查询车辆信息
-            childList = waybillCarDao.findBackCarEndpoint(paramsDto.getOrderCarIdList());
+            list = orderCarDao.findBackCarEndpoint(orderCarIdList);
+            for (WaybillCarVo vo : list) {
+                //验证状态
+                if(vo.getBackState() >= OrderCarLocalStateEnum.DISPATCHED.code){
+                    return BaseResultUtil.fail("车辆{0},配送已经调度完成", vo.getOrderCarNo());
+                }
+                if(vo.getOrderCarState() >= OrderCarStateEnum.WAIT_TRUNK_DISPATCH.code){
+                    return BaseResultUtil.fail("车辆{0},配送已经结束", vo.getOrderCarNo());
+                }
+                //验证数据范围
+                if(bizScope.getCode() != BizScopeEnum.CHINA.code){
+                    if (vo.getEndBelongStoreId() == null || !storeIds.contains(vo.getStartBelongStoreId())) {
+                        Store store = csStoreService.getById(vo.getStartBelongStoreId(), true);
+                        String city = store == null ? store.getCity() : "总部";
+                        return BaseResultUtil.fail("车辆{0},不在调度权限范围内，请联系{1}业务员", vo.getOrderCarNo(), city);
+                    }
+                }
+            }
         } else {
-            //查询车辆信息
-            childList = waybillCarDao.findTrunkCarEndpoint(paramsDto.getOrderCarIdList());
+            list = orderCarDao.findTrunkCarEndpoint(orderCarIdList);
+            for (WaybillCarVo vo : list) {
+                //验证状态
+                if(vo.getTrunkState() >= OrderCarTrunkStateEnum.DISPATCHED.code){
+                    return BaseResultUtil.fail("车辆{0},干线已经调度完成", vo.getOrderCarNo());
+                }
+                if(vo.getOrderCarState() >= OrderCarStateEnum.WAIT_BACK.code){
+                    return BaseResultUtil.fail("车辆{0},干线已经结束", vo.getOrderCarNo());
+                }
+                //验证数据范围
+                if(bizScope.getCode() != BizScopeEnum.CHINA.code){
+                    if(vo.getEndBelongStoreId() == null || !storeIds.contains(vo.getStartBelongStoreId())){
+                        Store store = csStoreService.getById(vo.getStartBelongStoreId(), true);
+                        String city = store == null ? store.getCity() : "总部";
+                        return BaseResultUtil.fail("车辆{0},不在调度权限范围内，请联系{1}业务员", vo.getOrderCarNo(), city);
+                    }
+                }
+            }
+
         }
+
         //计算推荐线路
         /*List<String> guideLines = csLineNodeService.getGuideLine(citySet, store.getCity());
         dispatchAddCarVo.setGuideLine(guideLines == null ? store.getCity() : guideLines.get(0));*/
 
-        dispatchAddCarVo.setList(childList);
+        dispatchAddCarVo.setList(list);
         return BaseResultUtil.success(dispatchAddCarVo);
     }
 

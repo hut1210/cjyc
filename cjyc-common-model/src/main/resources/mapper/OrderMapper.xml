@@ -60,15 +60,9 @@
         <result column="remark" property="remark" />
         <result column="invoice_flag" property="invoiceFlag" />
         <result column="invoice_type" property="invoiceType" />
-        <result column="pick_fee" property="pickFee" />
-        <result column="trunk_fee" property="trunkFee" />
-        <result column="back_fee" property="backFee" />
-        <result column="add_insurance_fee" property="addInsuranceFee" />
         <result column="coupon_offset_fee" property="couponOffsetFee" />
-        <result column="agency_fee" property="agencyFee" />
         <result column="total_fee" property="totalFee" />
         <result column="deposit_fee" property="depositFee" />
-        <result column="fee_share_type" property="feeShareType" />
         <result column="customer_contract_id" property="customerContractId" />
         <result column="pay_type" property="payType" />
         <result column="wl_pay_state" property="wlPayState" />
@@ -80,7 +74,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, no, customer_id, customer_name, customer_phone, customer_type, input_store_id, input_store_name, start_province, start_province_code, start_city, start_city_code, start_area, start_area_code, start_address, start_lng, start_lat, start_store_id, start_store_name, start_belong_store_id, end_province, end_province_code, end_city, end_city_code, end_area, end_area_code, end_address, end_lng, end_lat, end_store_id, end_store_name, end_belong_store_id, expect_start_date, expect_end_date, car_num, line_id, pick_type, pick_contact_name, pick_contact_phone, back_type, back_contact_name, back_contact_phone, hurry_days, source, create_time, create_user_name, create_user_id, allot_to_user_name, allot_to_user_id, check_time, check_user_name, check_user_id, state, remark, invoice_flag, invoice_type, pick_fee, trunk_fee, back_fee, add_insurance_fee, coupon_offset_fee, agency_fee, total_fee, deposit_fee, fee_share_type, customer_contract_id, pay_type, wl_pay_state, wl_pay_time, finish_time, offline_pay_flag, coupon_send_id
+        id, no, customer_id, customer_name, customer_phone, customer_type, input_store_id, input_store_name, start_province, start_province_code, start_city, start_city_code, start_area, start_area_code, start_address, start_lng, start_lat, start_store_id, start_store_name, start_belong_store_id, end_province, end_province_code, end_city, end_city_code, end_area, end_area_code, end_address, end_lng, end_lat, end_store_id, end_store_name, end_belong_store_id, expect_start_date, expect_end_date, car_num, line_id, pick_type, pick_contact_name, pick_contact_phone, back_type, back_contact_name, back_contact_phone, hurry_days, source, create_time, create_user_name, create_user_id, allot_to_user_name, allot_to_user_id, check_time, check_user_name, check_user_id, state, remark, invoice_flag, invoice_type, coupon_offset_fee, total_fee, deposit_fee, customer_contract_id, pay_type, wl_pay_state, wl_pay_time, finish_time, offline_pay_flag, coupon_send_id
     </sql>
 
 

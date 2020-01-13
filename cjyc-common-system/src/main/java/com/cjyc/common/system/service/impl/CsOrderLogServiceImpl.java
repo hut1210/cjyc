@@ -11,8 +11,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import javax.validation.constraints.NotNull;
-import java.text.MessageFormat;
 
 @Service
 public class CsOrderLogServiceImpl implements ICsOrderLogService {
@@ -35,7 +33,8 @@ public class CsOrderLogServiceImpl implements ICsOrderLogService {
             orderLog.setCreateUserPhone(userInfo.getPhone());
             orderLogDao.insert(orderLog);
         } catch (Exception e) {
-            LogUtil.error(MessageFormat.format("订单{0}下单保存订单日志失败",order.getNo()), e);
+            LogUtil.error("订单{}下单保存订单日志失败", order.getNo());
+            LogUtil.error(e.getMessage(), e);
         }
     }
 }

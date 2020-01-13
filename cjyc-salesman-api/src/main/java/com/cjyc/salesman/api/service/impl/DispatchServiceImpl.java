@@ -4,14 +4,18 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cjyc.common.model.dao.*;
+import com.cjyc.common.model.dto.salesman.BaseSalesDto;
 import com.cjyc.common.model.dto.salesman.dispatch.DispatchListDto;
 import com.cjyc.common.model.dto.salesman.dispatch.HistoryDispatchRecordDto;
+import com.cjyc.common.model.dto.salesman.dispatch.WaitCountDto;
+import com.cjyc.common.model.dto.salesman.dispatch.WaitCountLineDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.entity.defined.BizScope;
 import com.cjyc.common.model.enums.BizScopeEnum;
 import com.cjyc.common.model.enums.waybill.WaybillCarrierTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.TimeStampUtil;
+import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.task.CarDetailVo;
@@ -92,7 +96,7 @@ public class DispatchServiceImpl implements IDispatchService {
         if (BizScopeEnum.NONE.code == bizScope.getCode()) {
             return BaseResultUtil.fail("无权访问");
         }
-        dto.setBizStoreIds(bizScope.getStoreIds());
+        dto.setBizScope(bizScope.getStoreIds());
         Page<DispatchListVo> page = new Page<>();
         page.setCurrent(dto.getCurrentPage());
         page.setSize(dto.getPageSize());
@@ -132,14 +136,14 @@ public class DispatchServiceImpl implements IDispatchService {
 
 
     @Override
-    public ResultVo<PageVo<WaitDispatchCarListVo>> waitDispatchCarList(DispatchListDto dto) {
+    public ResultVo<PageVo<WaitDispatchCarListVo>> waitList(DispatchListDto dto) {
         // 根据登录ID查询当前业务员所在业务中心ID
         BizScope bizScope = csSysService.getBizScopeByLoginIdNew(dto.getLoginId(), true);
         // 判断当前登录人是否有权限访问
         if (BizScopeEnum.NONE.code == bizScope.getCode()) {
             return BaseResultUtil.fail("无权访问");
         }
-        dto.setBizStoreIds(bizScope.getStoreIds());
+        dto.setBizScope(bizScope.getStoreIds());
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize(), true);
         List<WaitDispatchCarListVo> list = orderCarDao.findWaitDispatchCarListForApp(dto);
 
@@ -184,6 +188,44 @@ public class DispatchServiceImpl implements IDispatchService {
         detail.setCarDetailVoList(carDetailVoList);
 
         return BaseResultUtil.success(detail);
+    }
+
+    @Override
+    public ResultVo<ListVo<Map<String, Object>>> waitCountList(WaitCountDto paramsDto) {
+        // 根据登录ID查询当前业务员所在业务中心ID
+        BizScope bizScope = csSysService.getBizScopeByLoginIdNew(paramsDto.getLoginId(), true);
+        // 判断当前登录人是否有权限访问
+        if (BizScopeEnum.NONE.code == bizScope.getCode()) {
+            return BaseResultUtil.fail("无权访问");
+        }
+        paramsDto.setBizScope(bizScope.getStoreIds());
+
+        //查询统计
+        Map<String, Object> countInfo = null;
+        List<Map<String, Object>> list = orderCarDao.findWaitDispatchCarCountListForApp(paramsDto);
+        if(CollectionUtils.isEmpty(list)){
+            countInfo = orderCarDao.countTotalWaitDispatchCarCountListForApp(paramsDto);
+        }
+        return BaseResultUtil.success(list, countInfo);
+    }
+
+    @Override
+    public ResultVo<ListVo<Map<String, Object>>> waitCountLineList(WaitCountLineDto paramsDto) {
+        // 根据登录ID查询当前业务员所在业务中心ID
+        BizScope bizScope = csSysService.getBizScopeByLoginIdNew(paramsDto.getLoginId(), true);
+        // 判断当前登录人是否有权限访问
+        if (BizScopeEnum.NONE.code == bizScope.getCode()) {
+            return BaseResultUtil.fail("无权访问");
+        }
+        paramsDto.setBizScope(bizScope.getStoreIds());
+
+        //查询统计
+        Map<String, Object> countInfo = null;
+        List<Map<String, Object>> list = orderCarDao.findWaitDispatchCarCountLineListForApp(paramsDto);
+        if(CollectionUtils.isEmpty(list)){
+            countInfo = orderCarDao.countTotalWaitDispatchCarCountLineListForApp(paramsDto);
+        }
+        return BaseResultUtil.success(list, countInfo);
     }
 
     private String getCarrierPhone(Long carrierId,Integer carrierType) {

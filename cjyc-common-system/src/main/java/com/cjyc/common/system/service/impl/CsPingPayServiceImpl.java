@@ -23,6 +23,7 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.ValidateReceiptCarPayVo;
 import com.cjyc.common.model.vo.customer.order.ValidateSweepCodePayVo;
 import com.cjyc.common.model.vo.web.carrier.BaseCarrierVo;
+import com.cjyc.common.model.vo.web.order.OrderVo;
 import com.cjyc.common.model.vo.web.task.TaskVo;
 import com.cjyc.common.system.config.PingProperty;
 import com.cjyc.common.system.service.ICsPingPayService;
@@ -351,6 +352,12 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         }
 
         return BaseResultUtil.success("通联代付成功");
+    }
+
+    @Override
+    public void allinpayToCooperator(Long orderId) {
+        log.info("完成订单（ID：{}），支付合伙人服务费", orderId);
+        //支付校验
     }
 
     @Override

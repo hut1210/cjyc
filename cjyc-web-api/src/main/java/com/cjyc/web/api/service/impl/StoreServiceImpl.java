@@ -18,6 +18,7 @@ import com.cjyc.common.model.dao.IAdminDao;
 import com.cjyc.common.model.dao.ICityDao;
 import com.cjyc.common.model.dao.IStoreCityConDao;
 import com.cjyc.common.model.dao.IStoreDao;
+import com.cjyc.common.model.dto.web.BaseWebDto;
 import com.cjyc.common.model.dto.web.city.StoreDto;
 import com.cjyc.common.model.dto.web.store.*;
 import com.cjyc.common.model.entity.Admin;
@@ -303,7 +304,7 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
     }
 
     @Override
-    public List<Store> listByWebLogin(WebLoginDto reqDto) {
+    public List<Store> listByWebLogin(BaseWebDto reqDto) {
         BizScope bizScope = csSysService.getBizScopeBySysRoleIdNew(reqDto.getLoginId(), reqDto.getRoleId(), true);
         if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
             return null;
@@ -326,7 +327,7 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
         }
     }
     @Override
-    public List<StoreVo> listVoByWebLogin(WebLoginDto reqDto) {
+    public List<StoreVo> listVoByWebLogin(BaseWebDto reqDto) {
         BizScope bizScope = csSysService.getBizScopeBySysRoleIdNew(reqDto.getLoginId(), reqDto.getRoleId(), true);
         if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
             return null;
