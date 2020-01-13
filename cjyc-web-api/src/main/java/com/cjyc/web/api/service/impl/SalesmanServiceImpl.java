@@ -179,9 +179,9 @@ public class SalesmanServiceImpl extends ServiceImpl<IAdminDao, Admin> implement
         if (dto.getOverwriteFlag() == null) {
             dto.setOverwriteFlag(1);
         }
-        if (dto.getDeptType() == null) {
+//        if (dto.getDeptType() == null) {
             dto.setDeptType(role.getRoleLevel());
-        }
+//        }
         //TODO 改写角色列表获取
         user.setRoleIdList(resolvePlatformRoleIds(rolesRd.getData(), dto, admin, role));
 //        if (!CollectionUtils.isEmpty(rolesRd.getData())) {
