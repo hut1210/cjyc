@@ -167,6 +167,7 @@
         LEFT JOIN b_admin ba ON ba.id = sur.user_id
         LEFT JOIN s_role sr ON sr.id = sur.role_id
         <where>
+            ba.state = 2
             <if test="param.name != null and param.name != ''">
                 AND ba.`name` LIKE CONCAT('%', #{param.name}, '%')
             </if>

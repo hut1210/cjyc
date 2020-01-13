@@ -6,6 +6,7 @@ import com.cjkj.usercenter.dto.asc.MenuResp;
 import com.cjkj.usercenter.dto.yc.SelectUsersByRoleResp;
 import com.cjyc.common.model.dto.web.role.AddRoleDto;
 import com.cjyc.common.model.dto.web.role.ModifyRoleMenusDto;
+import com.cjyc.common.model.dto.web.role.SetRoleForAppDto;
 import com.cjyc.common.model.entity.Role;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
@@ -160,6 +161,12 @@ public class RoleController {
     @PostMapping("/modifyRoleMenus")
     public ResultVo modifyRoleMenusNew(@Valid @RequestBody ModifyRoleMenusDto dto) {
         return roleService.modifyRoleMenusNew(dto);
+    }
+
+    @ApiOperation(value = "更新业务员APP相关角色信息")
+    @PostMapping("/setRoleForApp")
+    public ResultVo setRoleForApp(@Valid @RequestBody SetRoleForAppDto dto) {
+        return roleService.setRoleForApp(dto);
     }
     /*********************************韵车集成改版 ed*****************************/
 
