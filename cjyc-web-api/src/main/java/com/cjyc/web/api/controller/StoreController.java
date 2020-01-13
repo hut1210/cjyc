@@ -1,5 +1,6 @@
 package com.cjyc.web.api.controller;
 
+import com.cjyc.common.model.dto.web.BaseWebDto;
 import com.cjyc.common.model.dto.web.city.StoreDto;
 import com.cjyc.common.model.dto.web.store.*;
 import com.cjyc.common.model.entity.Admin;
@@ -63,7 +64,7 @@ public class StoreController {
      */
     @ApiOperation(value = "根据角色和登录ID查询业务中心")
     @PostMapping(value = "/list/by/role/login")
-    public ResultVo<List<Store>> getByWebLogin(@RequestBody WebLoginDto reqDto) {
+    public ResultVo<List<Store>> getByWebLogin(@RequestBody BaseWebDto reqDto) {
         List<Store> list = storeService.listByWebLogin(reqDto);
         return BaseResultUtil.success(list);
     }
@@ -84,7 +85,7 @@ public class StoreController {
      */
     @ApiOperation(value = "根据角色和登录ID查询业务中心")
     @PostMapping(value = "/list/vo/by/role/login")
-    public ResultVo<List<StoreVo>> getVoByWebLogin(@RequestBody WebLoginDto reqDto) {
+    public ResultVo<List<StoreVo>> getVoByWebLogin(@RequestBody BaseWebDto reqDto) {
         List<StoreVo> list = storeService.listVoByWebLogin(reqDto);
         return BaseResultUtil.success(list);
     }

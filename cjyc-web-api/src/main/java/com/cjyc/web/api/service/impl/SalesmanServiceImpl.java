@@ -31,6 +31,7 @@ import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.util.ResultDataUtil;
 import com.cjyc.web.api.service.IRoleService;
 import com.cjyc.web.api.service.ISalesmanService;
+import com.google.common.collect.Lists;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -175,31 +176,39 @@ public class SalesmanServiceImpl extends ServiceImpl<IAdminDao, Admin> implement
         if (!ResultDataUtil.isSuccess(rolesRd)) {
             return BaseResultUtil.fail("查询角色列表信息错误，原因：" + rolesRd.getMsg());
         }
-        if (!CollectionUtils.isEmpty(rolesRd.getData())) {
-            List<Long> idList = rolesRd.getData().stream()
-                    .map(r -> r.getRoleId()).collect(Collectors.toList());
-            List<UserRoleDept> userRoleDeptList = userRoleDeptDao.selectList(new QueryWrapper<UserRoleDept>().lambda()
-                    .eq(UserRoleDept::getUserId, admin.getUserId())
-                    .eq(UserRoleDept::getDeptType, RoleRangeEnum.INNER.getValue())
-                    .eq(UserRoleDept::getUserType, UserTypeEnum.ADMIN.code));
-            if (!CollectionUtils.isEmpty(userRoleDeptList)) {
-                List<Long> sRoleIdList = userRoleDeptList.stream()
-                        .map(urd -> urd.getRoleId()).collect(Collectors.toList());
-                List<Role> sRoleList = roleService.list(new QueryWrapper<Role>().lambda()
-                        .in(Role::getId, sRoleIdList));
-                if (!CollectionUtils.isEmpty(sRoleList)) {
-                    List<Long> existRoleIdList = sRoleList.stream()
-                            .map(r -> r.getRoleId()).collect(Collectors.toList());
-                    idList.removeAll(existRoleIdList);
-                }
-            }
-            if (!idList.contains(role.getRoleId())){
-                idList.add(role.getRoleId());
-            }
-            user.setRoleIdList(idList);
-        }else {
-            user.setRoleIdList(Arrays.asList(role.getRoleId()));
+        if (dto.getOverwriteFlag() == null) {
+            dto.setOverwriteFlag(1);
         }
+        if (dto.getDeptType() == null) {
+            dto.setDeptType(role.getRoleLevel());
+        }
+        //TODO 改写角色列表获取
+        user.setRoleIdList(resolvePlatformRoleIds(rolesRd.getData(), dto, admin, role));
+//        if (!CollectionUtils.isEmpty(rolesRd.getData())) {
+//            List<Long> idList = rolesRd.getData().stream()
+//                    .map(r -> r.getRoleId()).collect(Collectors.toList());
+//            List<UserRoleDept> userRoleDeptList = userRoleDeptDao.selectList(new QueryWrapper<UserRoleDept>().lambda()
+//                    .eq(UserRoleDept::getUserId, admin.getUserId())
+//                    .eq(UserRoleDept::getDeptType, RoleRangeEnum.INNER.getValue())
+//                    .eq(UserRoleDept::getUserType, UserTypeEnum.ADMIN.code));
+//            if (!CollectionUtils.isEmpty(userRoleDeptList)) {
+//                List<Long> sRoleIdList = userRoleDeptList.stream()
+//                        .map(urd -> urd.getRoleId()).collect(Collectors.toList());
+//                List<Role> sRoleList = roleService.list(new QueryWrapper<Role>().lambda()
+//                        .in(Role::getId, sRoleIdList));
+//                if (!CollectionUtils.isEmpty(sRoleList)) {
+//                    List<Long> existRoleIdList = sRoleList.stream()
+//                            .map(r -> r.getRoleId()).collect(Collectors.toList());
+//                    idList.removeAll(existRoleIdList);
+//                }
+//            }
+//            if (!idList.contains(role.getRoleId())){
+//                idList.add(role.getRoleId());
+//            }
+//            user.setRoleIdList(idList);
+//        }else {
+//            user.setRoleIdList(Arrays.asList(role.getRoleId()));
+//        }
         ResultData updateRd = sysUserService.updateUser(user);
         if (!ResultDataUtil.isSuccess(updateRd)) {
             return BaseResultUtil.fail("分配角色信息失败，原因：" + updateRd.getMsg());
@@ -406,10 +415,12 @@ public class SalesmanServiceImpl extends ServiceImpl<IAdminDao, Admin> implement
      * @param dto
      */
     private void updateUserRoleDept(AssignRoleNewDto dto) {
-        userRoleDeptDao.delete(new QueryWrapper<UserRoleDept>().lambda()
-            .eq(UserRoleDept::getUserId, dto.getId())
-            .eq(UserRoleDept::getDeptType, UserTypeEnum.ADMIN.code)
-            .eq(UserRoleDept::getUserType, UserTypeEnum.ADMIN.code));
+        if (dto.getOverwriteFlag().equals(1)) {
+            userRoleDeptDao.delete(new QueryWrapper<UserRoleDept>().lambda()
+                .eq(UserRoleDept::getUserId, dto.getId())
+                .eq(UserRoleDept::getDeptType, UserTypeEnum.ADMIN.code)
+                .eq(UserRoleDept::getUserType, UserTypeEnum.ADMIN.code));
+        }
         dto.getDeptIdList().forEach(dId -> {
             //关系表中存在有效关系无需变更否则新增一条
             List<UserRoleDept> userRoleDeptList = userRoleDeptDao.selectList(new QueryWrapper<UserRoleDept>()
@@ -424,7 +435,7 @@ public class SalesmanServiceImpl extends ServiceImpl<IAdminDao, Admin> implement
                 userRoleDept.setUserId(dto.getId());
                 userRoleDept.setRoleId(dto.getRoleId());
                 userRoleDept.setDeptId(dId);
-                userRoleDept.setDeptLevel(dto.getDeptType().equals(5)?5: 1);
+                userRoleDept.setDeptLevel(dto.getDeptType());
                 userRoleDept.setDeptType(UserTypeEnum.ADMIN.code);
                 userRoleDept.setUserType(UserTypeEnum.ADMIN.code);
                 userRoleDept.setCreateTime(NOW);
@@ -438,5 +449,49 @@ public class SalesmanServiceImpl extends ServiceImpl<IAdminDao, Admin> implement
                 });
             }
         });
+    }
+
+    /**
+     * 获取应该同步到物流平台角色列表
+     * @return
+     */
+    private List<Long> resolvePlatformRoleIds(List<SelectRoleResp> roleList, AssignRoleNewDto dto,
+                                              Admin admin, Role role) {
+        if (!CollectionUtils.isEmpty(roleList)) {
+            List<Long> idList = roleList.stream()
+                    .map(r -> r.getRoleId()).collect(Collectors.toList());
+            if (dto.getOverwriteFlag().equals(1)) {
+                //覆盖写
+                List<UserRoleDept> userRoleDeptList = userRoleDeptDao.selectList(new QueryWrapper<UserRoleDept>().lambda()
+                        .eq(UserRoleDept::getUserId, admin.getUserId())
+                        .eq(UserRoleDept::getDeptType, RoleRangeEnum.INNER.getValue())
+                        .eq(UserRoleDept::getUserType, UserTypeEnum.ADMIN.code));
+                if (!CollectionUtils.isEmpty(userRoleDeptList)) {
+                    List<Long> sRoleIdList = userRoleDeptList.stream()
+                            .map(urd -> urd.getRoleId()).collect(Collectors.toList());
+                    List<Role> sRoleList = roleService.list(new QueryWrapper<Role>().lambda()
+                            .in(Role::getId, sRoleIdList));
+                    if (!CollectionUtils.isEmpty(sRoleList)) {
+                        List<Long> existRoleIdList = sRoleList.stream()
+                                .map(r -> r.getRoleId()).collect(Collectors.toList());
+                        idList.removeAll(existRoleIdList);
+                    }
+                }
+                if (!idList.contains(role.getRoleId())){
+                    idList.add(role.getRoleId());
+                }
+                return idList;
+            }else if (dto.getOverwriteFlag().equals(2)) {
+                //追加写
+                if (!idList.contains(role.getRoleId())) {
+                    idList.add(role.getRoleId());
+                }
+                return idList;
+            }else {
+                throw new RuntimeException("不支持此角色绑定方式");
+            }
+        }else {
+            return Arrays.asList(role.getRoleId());
+        }
     }
 }
