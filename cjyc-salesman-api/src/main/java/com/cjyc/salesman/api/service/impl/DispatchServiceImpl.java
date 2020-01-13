@@ -256,7 +256,7 @@ public class DispatchServiceImpl implements IDispatchService {
         dto.setBizStoreIds(bizScope.getStoreIds());
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<HistoryDispatchRecordVo> list = waybillDao.selectHistoryDispatchRecord(dto);
-        PageInfo pageInfo = new PageInfo(list);
+        PageInfo<HistoryDispatchRecordVo> pageInfo = new PageInfo(list);
         return BaseResultUtil.success(pageInfo);
     }
 }
