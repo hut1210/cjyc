@@ -769,7 +769,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
                 .eq(UserRoleDept::getDeptId, carrier.getId())
                 .eq(UserRoleDept::getUserId, driver.getId())
                 .eq(UserRoleDept::getDeptType, DeptTypeEnum.CARRIER.code)
-                .eq(UserRoleDept::getUserId, UserTypeEnum.DRIVER.code));
+                .eq(UserRoleDept::getUserType, UserTypeEnum.DRIVER.code));
         if(urd == null){
             return BaseResultUtil.fail("该数据错误，请检查");
         }
@@ -778,11 +778,15 @@ public class CsDriverServiceImpl implements ICsDriverService {
         if(role == null){
             return BaseResultUtil.fail("该数据错误，请检查");
         }
-        Role roleN = csRoleService.getByName(YmlProperty.get("cjkj.carrier_super_role_name"), DeptTypeEnum.CARRIER.code);
-        if(roleN == null){
+        Role roleS = csRoleService.getByName(YmlProperty.get("cjkj.carrier_super_role_name"), DeptTypeEnum.CARRIER.code);
+        if(roleS == null){
+            return BaseResultUtil.fail("承运商超级管理员角色不存在，请先添加");
+        }
+        Role roleC = csRoleService.getByName(YmlProperty.get("cjkj.carrier_common_role_name"), DeptTypeEnum.CARRIER.code);
+        if(roleC == null){
             return BaseResultUtil.fail("承运商管理员角色不存在，请先添加");
         }
-        if(roleN.getRoleName().equals(role.getRoleName())){
+        if(roleS.getRoleName().equals(role.getRoleName()) || roleC.getRoleName().equals(role.getRoleName())){
             BeanUtils.copyProperties(dto,carrier);
             carrier.setLinkmanPhone(dto.getPhone());
             carrier.setLegalName(dto.getRealName());
