@@ -880,16 +880,16 @@ public class CsOrderServiceImpl implements ICsOrderService {
     public ResultVo<DispatchAddCarVo> computerCarEndpoint(ComputeCarEndpointDto paramsDto) {
         DispatchAddCarVo dispatchAddCarVo = new DispatchAddCarVo();
         //查询角色业务中心范围
-        BizScope bizScope = csSysService.getBizScopeBySysRoleIdNew(paramsDto.getLoginId(), paramsDto.getRoleId(), true);
+/*        BizScope bizScope = csSysService.getBizScopeBySysRoleIdNew(paramsDto.getLoginId(), paramsDto.getRoleId(), true);
         if (bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code) {
             return BaseResultUtil.fail("没有数据权限");
         }
-        Set<Long> storeIds = bizScope.getStoreIds();
+        Set<Long> storeIds = bizScope.getStoreIds();*/
         List<Long> orderCarIdList = paramsDto.getOrderCarIdList();
         List<WaybillCarVo> list = null;
         if (paramsDto.getDispatchType() == WaybillTypeEnum.PICK.code) {
             list = orderCarDao.findPickCarEndpoint(orderCarIdList);
-            for (WaybillCarVo vo : list) {
+/*            for (WaybillCarVo vo : list) {
                 //验证状态
                 if(vo.getPickState() >= OrderCarLocalStateEnum.DISPATCHED.code){
                     return BaseResultUtil.fail("车辆{0},提车已经调度完成", vo.getOrderCarNo());
@@ -905,11 +905,11 @@ public class CsOrderServiceImpl implements ICsOrderService {
                         return BaseResultUtil.fail("车辆{0},不在调度权限范围内，请联系{1}业务员", vo.getOrderCarNo(), city);
                     }
                 }
-            }
+            }*/
 
         } else if (paramsDto.getDispatchType() == WaybillTypeEnum.BACK.code) {
             list = orderCarDao.findBackCarEndpoint(orderCarIdList);
-            for (WaybillCarVo vo : list) {
+ /*           for (WaybillCarVo vo : list) {
                 //验证状态
                 if(vo.getBackState() >= OrderCarLocalStateEnum.DISPATCHED.code){
                     return BaseResultUtil.fail("车辆{0},配送已经调度完成", vo.getOrderCarNo());
@@ -925,10 +925,10 @@ public class CsOrderServiceImpl implements ICsOrderService {
                         return BaseResultUtil.fail("车辆{0},不在调度权限范围内，请联系{1}业务员", vo.getOrderCarNo(), city);
                     }
                 }
-            }
+            }*/
         } else {
             list = orderCarDao.findTrunkCarEndpoint(orderCarIdList);
-            for (WaybillCarVo vo : list) {
+ /*           for (WaybillCarVo vo : list) {
                 //验证状态
                 if(vo.getTrunkState() >= OrderCarTrunkStateEnum.DISPATCHED.code){
                     return BaseResultUtil.fail("车辆{0},干线已经调度完成", vo.getOrderCarNo());
@@ -944,7 +944,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                         return BaseResultUtil.fail("车辆{0},不在调度权限范围内，请联系{1}业务员", vo.getOrderCarNo(), city);
                     }
                 }
-            }
+            }*/
 
         }
 
