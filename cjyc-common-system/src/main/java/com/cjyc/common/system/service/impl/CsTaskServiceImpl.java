@@ -35,6 +35,7 @@ import com.cjyc.common.system.util.RedisUtils;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.pingplusplus.exception.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -44,6 +45,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.io.FileNotFoundException;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.HashSet;
@@ -552,7 +554,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 throw new ParameterException("订单车辆不存在");
             }
             if (waybillCar.getEndStoreId() == null || waybillCar.getEndStoreId() <= 0 || paramsDto.getLoginType() == UserTypeEnum.ADMIN) {
-                waybillCarDao.updateStateById(waybillCar.getId(), WaybillCarStateEnum.UNLOADED.code);
+                waybillCarDao.updateForFinish(waybillCar.getId());
                 validateAndFinishTask(task.getId());
                 csWaybillService.validateAndFinishWaybill(waybillCar.getWaybillId());
                 orderCarDao.updateLocation(waybillCar.getOrderCarId(), 0L, waybillCar.getEndAreaCode());
@@ -1055,7 +1057,13 @@ public class CsTaskServiceImpl implements ICsTaskService {
                             MessageFormat.format(OrderLogEnum.RECEIPT.getOutterLog(), order.getNo())},
                     userInfo);
             //支付合伙人服务费
-            csPingPayService.allinpayToCooperator(order.getId());
+
+            try {
+                csPingPayService.allinpayToCooperator(order.getId());
+            } catch (Exception e) {
+                log.error("");
+                log.error(e.getMessage(), e);
+            }
         }
     }
 

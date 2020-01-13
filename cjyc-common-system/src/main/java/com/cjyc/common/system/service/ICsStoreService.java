@@ -5,6 +5,7 @@ import com.cjyc.common.model.entity.Store;
 import com.cjyc.common.model.entity.defined.BizScope;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.customerLine.StoreListVo;
+import com.cjyc.common.model.vo.salesman.store.StoreVo;
 
 import java.util.List;
 import java.util.Set;
@@ -65,4 +66,6 @@ public interface ICsStoreService {
     ResultVo<StoreListVo> findStore(FindStoreDto dto);
 
     Store getOneBelongByCityCode(String cityCode);
+
+    ResultVo<List<StoreVo>> listByAdminId(Long adminId);
 }

@@ -6,7 +6,6 @@ import com.cjyc.common.model.dao.IOrderDao;
 import com.cjyc.common.model.dao.IWaybillCarDao;
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.entity.*;
-import com.cjyc.common.model.entity.defined.BizScope;
 import com.cjyc.common.model.entity.defined.FullCity;
 import com.cjyc.common.model.entity.defined.UserInfo;
 import com.cjyc.common.model.enums.*;
@@ -23,10 +22,7 @@ import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.MoneyUtil;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.salesman.dispatch.WaitDispatchCarListVo;
-import com.cjyc.common.model.vo.web.OrderCarVo;
 import com.cjyc.common.model.vo.web.order.DispatchAddCarVo;
-import com.cjyc.common.model.vo.web.order.DispatchCarVo;
 import com.cjyc.common.model.vo.web.order.OrderVo;
 import com.cjyc.common.model.vo.web.waybill.WaybillCarVo;
 import com.cjyc.common.system.service.*;
@@ -42,13 +38,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 订单公共业务
@@ -89,6 +85,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
     private ICsCustomerContactService csCustomerContactService;
     @Resource
     private ICsCustomerLineService csCustomerLineService;
+    @Resource
+    private ICsWaybillService csWaybillService;
 
     @Override
     public ResultVo save(SaveOrderDto paramsDto) {
@@ -742,6 +740,12 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
         order.setState(OrderStateEnum.F_CANCEL.code);
         orderDao.updateById(order);
+
+        //取消所有调度
+        List<OrderCar> orderCars = orderCarDao.findListByOrderId(order.getId());
+        List<Long> collect = orderCars.stream().map(OrderCar::getId).collect(Collectors.toList());
+        List<WaybillCar> waybillCars = waybillCarDao.findListByOrderCarIds(collect);
+        waybillCars.forEach(wc -> csWaybillService.cancelWaybillCar(wc));
 
         //添加操作日志
         orderChangeLogService.asyncSave(order, OrderChangeTypeEnum.CANCEL,

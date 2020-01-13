@@ -1,6 +1,8 @@
 package com.cjyc.common.system.service;
 
 import com.cjyc.common.model.dto.web.waybill.*;
+import com.cjyc.common.model.entity.Waybill;
+import com.cjyc.common.model.entity.WaybillCar;
 import com.cjyc.common.model.vo.BaseTipVo;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -50,7 +52,6 @@ public interface ICsWaybillService {
      */
     ResultVo updateTrunk(UpdateTrunkWaybillDto paramsDto);
 
-
     /**
      * 中途强制卸车
      * @author JPG
@@ -60,5 +61,10 @@ public interface ICsWaybillService {
     ResultVo trunkMidwayUnload(TrunkMidwayUnload paramsDto);
 
     void validateAndFinishWaybill(Long waybillId);
+
+    void cancelWaybill(Waybill waybill);
+
+    void cancelWaybillCar(Integer waybillType, WaybillCar waybillCar);
+    void cancelWaybillCar(WaybillCar waybillCar);
 
 }

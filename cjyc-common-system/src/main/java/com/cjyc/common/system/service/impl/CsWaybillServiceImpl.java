@@ -985,7 +985,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         return BaseResultUtil.success();
     }
 
-    private void cancelWaybill(Waybill waybill) {
+    @Override
+    public void cancelWaybill(Waybill waybill) {
 
         //状态不大于待承接
         if (waybill.getState() >= WaybillStateEnum.TRANSPORTING.code) {
@@ -1002,16 +1003,24 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         waybillDao.updateStateById(WaybillStateEnum.F_CANCEL.code, waybill.getId());
 
     }
-
+    @Override
+    public void cancelWaybillCar(WaybillCar waybillCar) {
+        cancelWaybillCar(null, waybillCar);
+    }
     /**
      * 取消运单车辆
      *
      * @author JPG
      * @since 2019/10/29 9:57
      */
-    private void cancelWaybillCar(int waybillType, WaybillCar waybillCar) {
+    @Override
+    public void cancelWaybillCar(Integer waybillType, WaybillCar waybillCar) {
         if(waybillCar == null){
             return;
+        }
+        if(waybillType == null){
+            Waybill waybill = waybillDao.selectById(waybillCar.getId());
+            waybillType = waybill.getType();
         }
 
         if (waybillCar.getState() >= WaybillCarStateEnum.LOADED.code) {
@@ -1114,6 +1123,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
 
     }
+
+
 
     /**
      * 中途强制卸车

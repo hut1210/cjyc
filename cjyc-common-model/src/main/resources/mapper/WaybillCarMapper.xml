@@ -1660,6 +1660,18 @@
         order by w.type, wc.id
         limit 1
     </select>
+    <select id="findListByOrderCarIds" resultType="com.cjyc.common.model.entity.WaybillCar">
+        select
+        wc.*
+        from w_waybill w
+        join w_waybill_car wc on w.id = wc.waybill_id
+        where w.state &lt;= 100
+        and wc.state &lt;= 100
+        and wc.order_car_id in 
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
 
     <delete id="cancelAfterWaybillCar">
         update w_waybill_car wc

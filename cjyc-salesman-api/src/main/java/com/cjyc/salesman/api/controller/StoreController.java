@@ -3,7 +3,7 @@ package com.cjyc.salesman.api.controller;
 import com.cjyc.common.model.dto.salesman.BaseSalesDto;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.salesman.store.StoreVo;
-import com.cjyc.salesman.api.service.IStoreService;
+import com.cjyc.common.system.service.ICsStoreService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.experimental.Accessors;
@@ -22,11 +22,11 @@ import java.util.List;
 @RequestMapping("/store")
 public class StoreController {
     @Autowired
-    private IStoreService storeService;
+    private ICsStoreService csStoreService;
 
     @ApiOperation(value = "根据loginId查询业务中心列表")
     @PostMapping("/list")
     public ResultVo<List<StoreVo>> getStoreListByLoginId(@Valid @RequestBody BaseSalesDto dto) {
-        return storeService.listByLoginId(dto.getLoginId());
+        return csStoreService.listByAdminId(dto.getLoginId());
     }
 }

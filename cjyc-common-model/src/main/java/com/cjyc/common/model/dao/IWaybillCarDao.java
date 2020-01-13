@@ -7,6 +7,7 @@ import com.cjyc.common.model.dto.web.mineStore.StorageCarQueryDto;
 import com.cjyc.common.model.dto.web.waybill.LocalListWaybillCarDto;
 import com.cjyc.common.model.dto.web.waybill.TrunkListWaybillCarDto;
 import com.cjyc.common.model.dto.web.waybill.getWaybillDto;
+import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.entity.WaybillCar;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.entity.defined.FullWaybillCar;
@@ -188,4 +189,5 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
 
     void updateForUnloadReplenishInfo(@Param("id") Long id, @Param("unloadPhotoImg") String unloadPhotoImg);
 
+    List<WaybillCar> findListByOrderCarIds(@Param("list") List<Long> orderCarIds);
 }

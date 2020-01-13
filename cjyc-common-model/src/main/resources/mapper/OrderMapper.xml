@@ -135,9 +135,7 @@
         left join c_coupon cc on cc.id = cs.coupon_id
         where w.id = #{orderId}
     </select>
-    <select id="findListSelective" resultType="com.cjyc.common.model.vo.web.order.ListOrderVo">
-        select
-        o.*,
+    <sql id="order_outter_state">
         (case
         when o.state = 0 then '预订单'
         when o.state &gt; 0 and o.state &lt; 15 then '待确认'
@@ -149,6 +147,21 @@
         when o.state = 114 then '已作废'
         end
         ) as outterState,
+    </sql>
+    <select id="findListSelective" resultType="com.cjyc.common.model.vo.web.order.ListOrderVo">
+        select
+        (case
+        when o.state = 0 then '预订单'
+        when o.state &gt; 0 and o.state &lt; 15 then '待确认'
+        when o.state = 15 then '待付款'
+        when o.state = 25 then '待调度'
+        when o.state = 55 then '运输中'
+        when o.state = 100 then '已交付'
+        when o.state = 113 then '已取消'
+        when o.state = 114 then '已作废'
+        end
+        ) as outterState,
+        o.*,
         CONCAT(start_province,start_city,start_area,start_address) as startFullAddress,
         CONCAT(end_province,end_city,end_area,end_address) as endFullAddress,
         (sum(IFNULL(oc.pick_fee,0)) + sum(IFNULL(oc.trunk_fee,0)) + sum(IFNULL(oc.back_fee,0)) +sum(IFNULL(oc.add_insurance_fee,0))) as wlTotalFee,

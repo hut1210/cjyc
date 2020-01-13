@@ -2036,7 +2036,7 @@
         select
         <include refid="pick_wait_dispatch_car_field"/>,
         (case when o.expect_end_date > UNIX_TIMESTAMP(now()) * 1000 then o.expect_end_date else UNIX_TIMESTAMP(now()) * 1000 end) as expectStartTime,
-        o.pick_fee as freightFee,
+        oc.pick_fee as freightFee,
         oc.id as orderCarId,
         oc.no as orderCarNo,
         oc.vin as vin,
@@ -2079,7 +2079,7 @@
         select
         <include refid="back_wait_dispatch_car_field"/>,
         UNIX_TIMESTAMP(now()) as expectStartTime,
-        o.back_fee as freightFee,
+        oc.back_fee as freightFee,
         oc.id as orderCarId,
         oc.no as orderCarNo,
         oc.vin as vin,
