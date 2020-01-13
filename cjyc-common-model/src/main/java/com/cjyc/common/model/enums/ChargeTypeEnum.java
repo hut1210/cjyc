@@ -13,7 +13,8 @@ public enum ChargeTypeEnum {
     WEB_OUT_STOCK_QRCODE("后台确认出库二维码收款","web_out_stock_qrcode",8),
 
     SALES_PREPAY_QRCODE("业务员端预付款二维码收款", "salesman_prepay_qrcode", 9),
-    UNION_PAY("通联代付给承运商打款","union_pay",20);
+    UNION_PAY("通联代付给承运商打款","union_pay",20),
+    UNION_PAY_PARTNER("通联代付给合伙人打款","union_pay_partner",21);
     private String name;
     private String tag;
     private int code;

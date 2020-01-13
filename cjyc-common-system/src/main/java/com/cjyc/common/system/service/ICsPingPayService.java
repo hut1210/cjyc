@@ -26,7 +26,7 @@ public interface ICsPingPayService {
             APIConnectionException, AuthenticationException, FileNotFoundException;
 
     ResultVo allinpayToCarrier(Long waybillId) throws AuthenticationException, InvalidRequestException, APIConnectionException, APIException, ChannelException, RateLimitException, FileNotFoundException ;
-    void allinpayToCooperator(Long orderId);
+    ResultVo allinpayToCooperator(Long orderId) throws FileNotFoundException, RateLimitException, APIException, ChannelException, InvalidRequestException, APIConnectionException, AuthenticationException;
 
     Charge prePay(WebPrePayDto prePayDto) throws RateLimitException, APIException, ChannelException, InvalidRequestException,
             APIConnectionException, AuthenticationException, FileNotFoundException;

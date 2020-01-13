@@ -9,6 +9,7 @@ import com.cjyc.common.model.dto.customer.pingxx.ValidateSweepCodeDto;
 import com.cjyc.common.model.dto.web.pingxx.SalesPrePayDto;
 import com.cjyc.common.model.dto.web.pingxx.WebOutOfStockDto;
 import com.cjyc.common.model.dto.web.pingxx.WebPrePayDto;
+import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.entity.TradeBill;
 import com.cjyc.common.model.entity.Waybill;
@@ -23,6 +24,7 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.ValidateReceiptCarPayVo;
 import com.cjyc.common.model.vo.customer.order.ValidateSweepCodePayVo;
 import com.cjyc.common.model.vo.web.carrier.BaseCarrierVo;
+import com.cjyc.common.model.vo.web.customer.ShowPartnerVo;
 import com.cjyc.common.model.vo.web.order.OrderVo;
 import com.cjyc.common.model.vo.web.task.TaskVo;
 import com.cjyc.common.system.config.PingProperty;
@@ -85,6 +87,9 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
 
     @Autowired
     private ICsSmsService csSmsService;
+
+    @Resource
+    private ICustomerDao customerDao;
 
     @Override
     public Charge sweepDriveCode(SweepCodeDto sweepCodeDto) throws RateLimitException, APIException, ChannelException, InvalidRequestException,
@@ -355,9 +360,99 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
     }
 
     @Override
-    public void allinpayToCooperator(Long orderId) {
+    public ResultVo allinpayToCooperator(Long orderId) throws FileNotFoundException, RateLimitException, APIException, ChannelException, InvalidRequestException, APIConnectionException, AuthenticationException {
         log.info("完成订单（ID：{}），支付合伙人服务费", orderId);
         //支付校验
+
+        try{
+            Order order = orderDao.selectById(orderId);
+
+            if(order!=null){
+                TradeBill tradeBill = cStransactionService.getTradeBillByOrderNoAndType(order.getNo(),ChargeTypeEnum.UNION_PAY_PARTNER.getCode());
+                if(tradeBill != null){
+                    throw new CommonException("订单已支付完成","1");
+                }
+                Long customId = order.getCustomerId();
+                ShowPartnerVo showPartnerVo = customerDao.showPartner(customId);
+                List<OrderCar> orderCarList = orderCarDao.findListByOrderId(orderId);
+                BigDecimal wlFee = new BigDecimal(0);
+                for (int i=0;i<orderCarList.size();i++){
+                    OrderCar orderCar = orderCarList.get(i);
+                    if(orderCar!=null){
+                        if(orderCar.getPickFee()!=null){
+                            wlFee.add(orderCar.getPickFee());
+                        }
+                        if(orderCar.getTrunkFee()!=null){
+                            wlFee.add(orderCar.getTrunkFee());
+                        }
+                        if(orderCar.getBackFee()!=null){
+                            wlFee.add(orderCar.getBackFee());
+                        }
+                        if(orderCar.getAddInsuranceFee()!=null){
+                            wlFee.add(orderCar.getAddInsuranceFee());
+                        }
+                    }
+                }
+                BigDecimal payableFee = order.getTotalFee().subtract(wlFee);//给合伙人费用
+                Transfer transfer = allinpayToCooperatorCreate(showPartnerVo,payableFee,order.getNo());
+                cStransactionService.saveTransactions(transfer, "0");
+            }else{
+                return BaseResultUtil.fail("合伙人通联代付失败");
+            }
+        }catch (Exception e){
+            return BaseResultUtil.fail("合伙人通联代付异常");
+        }
+
+        return BaseResultUtil.success("合伙人通联代付成功");
+    }
+
+    private Transfer allinpayToCooperatorCreate(ShowPartnerVo showPartnerVo, BigDecimal payableFee,String orderNo) throws AuthenticationException, InvalidRequestException,
+            APIConnectionException, APIException, ChannelException, RateLimitException, FileNotFoundException {
+        initPingApiKey();
+        Map<String, Object> params = new HashMap<>();
+        Map<String, Object> app = new HashMap<>();
+        app.put("id", PingProperty.customerAppId);
+        params.put("app", app);
+        // 付款使用的商户内部订单号。 allinpay 限长20-40位不能重复的数字字母组合，必须以签约的通联的商户号开头（建议组合格式：通联商户号 + 时间戳 + 固定位数顺序流水号，不包含+号）
+        params.put("order_no", PingProperty.businessCode + System.currentTimeMillis());
+
+        // 订单总金额, 人民币单位：分（如订单总金额为 1 元，此处请填 100,企业付款最小发送金额为1 元）
+        //确认手续费
+        BigDecimal amount = payableFee;
+        BigDecimal src_amount = amount;
+        params.put("amount", amount);
+        // 目前支持 支付宝：alipay，银联：unionpay，微信公众号：wx_pub，通联：allinpay，京东：jdpay 余额：balance
+        params.put("channel", "allinpay");
+        params.put("type", "b2c");//付款类型，转账到个人用户为 b2c，转账到企业用户为 b2b（wx、wx_pub、wx_lite 和 balance 渠道的企业付款，仅支持 b2c）
+        params.put("currency", "cny");
+        params.put("description", "通联代付合伙人费用");
+
+        Map<String, String> extra = new HashMap<String, String>();
+        //1~100位，收款人姓名。必须
+        extra.put("user_name", showPartnerVo.getCardName());
+
+        //1~32位，收款人银行卡号或者存折号。 必须
+        extra.put("card_number", showPartnerVo.getCardNo());
+        //4位，开户银行编号，详情请参考通联代付银行编号说明。 必须
+        extra.put("open_bank_code",showPartnerVo.getBankName());
+
+        params.put("extra", extra);
+
+        PingxxMetaData pingxxMetaData = new PingxxMetaData();
+        pingxxMetaData.setChargeType(String.valueOf(ChargeTypeEnum.UNION_PAY_PARTNER.getCode()));
+        pingxxMetaData.setLoginId(String.valueOf(showPartnerVo.getCustomerId()));
+        pingxxMetaData.setOrderNo(orderNo);
+
+        Map<String, Object> meta = BeanMapUtil.beanToMap(pingxxMetaData);
+        params.put("metadata",meta);//自定义参数
+
+        Transfer obj = Transfer.create(params);
+        if(Pingpp.apiKey.contains("_test_")){//test模式调用查询相当于企业付款成功
+            obj = transferRetrieve(obj.getId());
+        }
+        obj.setAmount(Integer.parseInt(src_amount.multiply(new BigDecimal(100)).toString()));
+        return obj;
+
     }
 
     @Override
@@ -553,6 +648,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         PingxxMetaData pingxxMetaData = new PingxxMetaData();
         pingxxMetaData.setChargeType(String.valueOf(ChargeTypeEnum.UNION_PAY.getCode()));
         pingxxMetaData.setWaybillId(waybill.getId());
+        pingxxMetaData.setLoginId(String.valueOf(baseCarrierVo.getCarrierId()));
 
         Map<String, Object> meta = BeanMapUtil.beanToMap(pingxxMetaData);
         params.put("metadata",meta);//自定义参数
