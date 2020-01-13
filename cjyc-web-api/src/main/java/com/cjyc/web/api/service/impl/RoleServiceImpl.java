@@ -11,9 +11,11 @@ import com.cjkj.usercenter.dto.yc.UpdateBatchRoleMenusReq;
 import com.cjyc.common.model.dao.IRoleDao;
 import com.cjyc.common.model.dto.web.role.AddRoleDto;
 import com.cjyc.common.model.dto.web.role.ModifyRoleMenusDto;
+import com.cjyc.common.model.dto.web.role.SetRoleForAppDto;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Role;
 import com.cjyc.common.model.enums.UserTypeEnum;
+import com.cjyc.common.model.enums.role.RoleBtnForAppEnum;
 import com.cjyc.common.model.enums.role.RoleLevelEnum;
 import com.cjyc.common.model.enums.role.RoleRangeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -61,6 +63,8 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
     private IAdminService adminService;
     @Resource
     private ClpDeptUtil clpDeptUtil;
+    @Resource
+    private IRoleDao roleDao;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -339,6 +343,62 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
         if (!ResultDataUtil.isSuccess(rd)) {
             return BaseResultUtil.fail("变更角色菜单列表失败，原因: " + rd.getMsg());
         }
+        return BaseResultUtil.success();
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public ResultVo setRoleForApp(SetRoleForAppDto dto) {
+        Role role = roleDao.selectById(dto.getRoleId());
+        if (null == role) {
+            return BaseResultUtil.fail("根据角色id：{0}, 未获取到角色信息",
+                    dto.getRoleId());
+        }
+        if (dto.getLoginApp() != null && (dto.getLoginApp().equals(1)
+                || dto.getLoginApp().equals(2))) {
+            role.setLoginApp(dto.getLoginApp());
+        }
+        if (!CollectionUtils.isEmpty(dto.getAppBtnList())) {
+            List<String> btnList = new ArrayList<>();
+            dto.getAppBtnList().forEach(bId -> {
+                switch (bId) {
+                    case 1:
+                        if (!btnList.contains(RoleBtnForAppEnum.ALLOCATE_ORDER.name)) {
+                            btnList.add(RoleBtnForAppEnum.ALLOCATE_ORDER.name);
+                        }
+                        break;
+                    case 2:
+                        if (!btnList.contains(RoleBtnForAppEnum.PICK_DISPATCH.name)) {
+                            btnList.add(RoleBtnForAppEnum.PICK_DISPATCH.name);
+                        }
+                        break;
+                    case 3:
+                        if (!btnList.contains(RoleBtnForAppEnum.TRUNK_DISPATCH.name)) {
+                            btnList.add(RoleBtnForAppEnum.TRUNK_DISPATCH.name);
+                        }
+                        break;
+                    case 4:
+                        if (!btnList.contains(RoleBtnForAppEnum.SEND_DISPATCH.name)) {
+                            btnList.add(RoleBtnForAppEnum.SEND_DISPATCH.name);
+                        }
+                        break;
+                    default:
+                        log.debug("按钮类型不匹配");
+                        break;
+                }
+            });
+            if (!CollectionUtils.isEmpty(btnList)) {
+                StringBuilder sb = new StringBuilder();
+                btnList.forEach(btn -> {
+                    if (sb.length() > 0) {
+                        sb.append(",");
+                    }
+                    sb.append(btn);
+                });
+                role.setAppBtns(sb.toString());
+            }
+        }
+        roleDao.updateById(role);
         return BaseResultUtil.success();
     }
     /*********************************韵车集成改版 ed*****************************/
