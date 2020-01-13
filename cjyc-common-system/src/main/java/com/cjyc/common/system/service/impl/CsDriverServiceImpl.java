@@ -14,6 +14,7 @@ import com.cjyc.common.model.dto.web.driver.DispatchDriverDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.ResultEnum;
+import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.enums.driver.DriverIdentityEnum;
 import com.cjyc.common.model.enums.role.DeptTypeEnum;
 import com.cjyc.common.model.enums.role.RoleNameEnum;
@@ -79,6 +80,8 @@ public class CsDriverServiceImpl implements ICsDriverService {
     private ICsCustomerService csCustomerService;
     @Resource
     private ICsUserRoleDeptService csUserRoleDeptService;
+    @Resource
+    private IRoleDao roleDao;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -760,6 +763,31 @@ public class CsDriverServiceImpl implements ICsDriverService {
         Carrier carrier = carrierDao.selectById(dto.getCarrierId());
         if(carrier == null){
             return BaseResultUtil.fail("该承运商不存在，请检查");
+        }
+        //修改承运商管理员时操作
+        UserRoleDept urd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
+                .eq(UserRoleDept::getDeptId, carrier.getId())
+                .eq(UserRoleDept::getUserId, driver.getId())
+                .eq(UserRoleDept::getDeptType, DeptTypeEnum.CARRIER.code)
+                .eq(UserRoleDept::getUserId, UserTypeEnum.DRIVER.code));
+        if(urd == null){
+            return BaseResultUtil.fail("该数据错误，请检查");
+        }
+        Role role = roleDao.selectOne(new QueryWrapper<Role>().lambda()
+                .eq(Role::getId, urd.getRoleId()));
+        if(role == null){
+            return BaseResultUtil.fail("该数据错误，请检查");
+        }
+        Role roleN = csRoleService.getByName(YmlProperty.get("cjkj.carrier_super_role_name"), DeptTypeEnum.CARRIER.code);
+        if(roleN == null){
+            return BaseResultUtil.fail("承运商管理员角色不存在，请先添加");
+        }
+        if(roleN.getRoleName().equals(role.getRoleName())){
+            BeanUtils.copyProperties(dto,carrier);
+            carrier.setLinkmanPhone(dto.getPhone());
+            carrier.setLegalName(dto.getRealName());
+            carrier.setLegalIdCard(dto.getIdCard());
+            carrierDao.updateById(carrier);
         }
         DriverVehicleCon dvc = driverVehicleConDao.selectOne(new QueryWrapper<DriverVehicleCon>().lambda().eq(DriverVehicleCon::getDriverId,driver.getId()));
         VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda().eq(VehicleRunning::getDriverId,driver.getId()));
