@@ -197,7 +197,7 @@
                     and o.state = 114
                 </when>
                 <otherwise>
-                    and o.state > 0
+                    and (o.state > 0 or (o.state = 0 and o.create_user_id = #{paramsDto.loginId}))
                 </otherwise>
             </choose>
 
