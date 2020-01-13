@@ -133,7 +133,7 @@ public class DispatchController {
      */
     @ApiOperation(value = "查询历史调度记录列表分页")
     @PostMapping("/getHistoryRecord")
-    public ResultVo<HistoryDispatchRecordVo> getHistoryRecord(@RequestBody @Validated HistoryDispatchRecordDto dto) {
+    public ResultVo<PageVo<HistoryDispatchRecordVo>> getHistoryRecord(@RequestBody @Validated HistoryDispatchRecordDto dto) {
         return dispatchService.getHistoryRecord(dto);
     }
 
