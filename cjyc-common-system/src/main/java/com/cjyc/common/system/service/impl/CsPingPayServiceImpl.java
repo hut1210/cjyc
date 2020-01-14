@@ -370,7 +370,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             if(order!=null){
                 TradeBill tradeBill = cStransactionService.getTradeBillByOrderNoAndType(order.getNo(),ChargeTypeEnum.UNION_PAY_PARTNER.getCode());
                 if(tradeBill != null){
-                    throw new CommonException("订单已支付完成","1");
+                    throw new CommonException("合伙人服务费已支付完成","1");
                 }
                 Long customId = order.getCustomerId();
                 ShowPartnerVo showPartnerVo = customerDao.showPartner(customId);

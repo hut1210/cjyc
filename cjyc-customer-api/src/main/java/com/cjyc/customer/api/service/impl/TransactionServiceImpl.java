@@ -276,7 +276,15 @@ public class TransactionServiceImpl implements ITransactionService {
         //更新运单支付状态
         Map<String, Object> metadata = transfer.getMetadata();
         PingxxMetaData pingxxMetaData = BeanMapUtil.mapToBean(metadata, new PingxxMetaData());
-        Long waybillId = pingxxMetaData.getWaybillId();
+        String chargeType = pingxxMetaData.getChargeType();
+        if(chargeType.equals(String.valueOf(ChargeTypeEnum.UNION_PAY.getCode()))){
+            //给承运商付款
+            Long waybillId = pingxxMetaData.getWaybillId();
+        }
+        if(chargeType.equals(String.valueOf(ChargeTypeEnum.UNION_PAY_PARTNER.getCode()))){
+            //给合伙人付款
+        }
+
     }
 
     @Override
