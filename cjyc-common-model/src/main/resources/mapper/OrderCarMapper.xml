@@ -1881,11 +1881,11 @@
     <select id="findWaitDispatchCarCountLineListForApp" resultType="java.util.Map">
         select
             count(0) as carNum,
-            o.start_city_code as startCityCode,
-            o.start_city as startCity,
-            o.end_city_code as endCityCode,
-            o.end_city as endCity,
-            CONCAT(o.start_city,'-',o.end_city) as line
+            shell.startCityCode,
+            shell.startCity,
+            shell.endCityCode,
+            shell.endCity,
+            CONCAT(shell.startCity,'-',shell.endCity) as line
         from (
         <choose>
             <when test="param.dispatchType == 1">
