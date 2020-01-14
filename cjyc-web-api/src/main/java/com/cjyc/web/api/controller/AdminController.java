@@ -110,7 +110,7 @@ public class AdminController {
 
 
     @ApiOperation(value = "提送车业务员")
-    @PostMapping(value = "/deliverySalesman")
+    //@PostMapping(value = "/deliverySalesman")
     public ResultVo deliverySalesman(@Validated @RequestBody TypeSalesmanDto dto){
         return adminService.deliverySalesman(dto);
     }
@@ -139,6 +139,14 @@ public class AdminController {
         CacheData cacheData = adminService.getCacheDataNew(resultData.getData().getUserId(), roleId);
         //发送推送信息
         return BaseResultUtil.success(cacheData);
+    }
+
+
+    @ApiOperation(value = "提送车业务员_改版")
+    //@PostMapping(value = "/deliverySalesmanNew")
+    @PostMapping(value = "/deliverySalesman")
+    public ResultVo deliverySalesmanNew(@Validated @RequestBody TypeSalesmanDto dto){
+        return adminService.deliverySalesmanNew(dto);
     }
     /************************************韵车集成改版 ed***********************************/
 }
