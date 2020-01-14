@@ -611,6 +611,9 @@
         ) as tb on tb.waybill_car_id = wc.id
         <where>
             w.type != 2
+            <if test="paramsDto.state != null">
+                and wc.state = #{paramsDto.state}
+            </if>
             <if test="paramsDto.loginId != null">
               and w.create_user_id = #{paramsDto.loginId}
             </if>
@@ -764,7 +767,7 @@
     </select>
     <select id="findTrunkCarList" resultType="com.cjyc.common.model.vo.web.waybill.TrunkCarListWaybillCarVo">
         select
-        <include refid="waybill_car_outter_state"/>,
+        <include refid="waybill_car_inner_state"/>,
         w.carrier_id as carrierId,
         w.carrier_type as carrierType,
         w.carrier_name as carrierName,
@@ -796,19 +799,11 @@
         <where>
             w.type = 2
             <if test="paramsDto.loginId != null">
-                wc.create_user_id = #{paramsDto.loginId}
+                and wc.create_user_id = #{paramsDto.loginId}
             </if>
-            <choose>
-                <when test="paramsDto.outterState == 2">
-                    wc.state &lt;= 15
-                </when>
-                <when test="paramsDto.outterState == 3">
-                    wc.state between 45 and 99
-                </when>
-                <when test="paramsDto.outterState == 4">
-                    wc.state = 100
-                </when>
-            </choose>
+            <if test="paramsDto.state != null">
+                and wc.state = #{paramsDto.state}
+            </if>
             <if test="paramsDto.orderStartProvinceCode != null and paramsDto.orderStartProvinceCode != ''">
                 and o.start_province_code = #{paramsDto.orderStartProvinceCode}
             </if>
@@ -852,13 +847,13 @@
                 and w.create_user = #{paramsDto.createUser}
             </if>
             <if test="paramsDto.driverName != null and paramsDto.driverName != ''">
-                and t.driver_name like concat('%', #{paramsDto.driverName}, '%')
+                and tb.driver_name like concat('%', #{paramsDto.driverName}, '%')
             </if>
             <if test="paramsDto.driverPhone != null and paramsDto.driverPhone != ''">
-                and t.driver_phone like concat('%', #{paramsDto.driverPhone}, '%')
+                and tb.driver_phone like concat('%', #{paramsDto.driverPhone}, '%')
             </if>
             <if test="paramsDto.vehiclePlateNo != null and paramsDto.vehiclePlateNo != ''">
-                and t.vehicle_plate_no like concat('%', #{paramsDto.vehiclePlateNo}, '%')
+                and tb.vehicle_plate_no like concat('%', #{paramsDto.vehiclePlateNo}, '%')
             </if>
             <if test="paramsDto.outterState != null and paramsDto.outterState != ''">
                 and wc.outter_state = #{paramsDto.outterState}
@@ -1032,9 +1027,12 @@
         left join s_line l on l.from_code = wc.start_city_code and l.to_code = wc.end_city_code
         where wc.waybill_id = #{waybillId}
         and wc.state &lt;= 100
-        <if test="state != null">
-            <if test="state = 1">
+        <if test="queryType != null">
+            <if test="queryType = 1">
                 and wc.state = 0
+            </if>
+            <if test="queryType = 9">
+                and wc.state &lt;= 100
             </if>
         </if>
     </select>

@@ -4,9 +4,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
-public class getWaybillDto {
-
+public class GetDto {
     private Long waybillId;
-    @ApiModelProperty(value = "状态：0全部，1待指派")
-    private Integer state;
+    @ApiModelProperty("查询类型：0全部车辆，1待指派车辆，9全部正常车辆")
+    private Long state;
 }

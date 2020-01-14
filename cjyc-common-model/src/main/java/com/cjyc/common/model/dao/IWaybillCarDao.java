@@ -4,19 +4,17 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cjyc.common.model.dto.salesman.dispatch.DispatchListDto;
 import com.cjyc.common.model.dto.web.WayBillCarrierDto;
 import com.cjyc.common.model.dto.web.mineStore.StorageCarQueryDto;
+import com.cjyc.common.model.dto.web.waybill.GetDto;
 import com.cjyc.common.model.dto.web.waybill.LocalListWaybillCarDto;
 import com.cjyc.common.model.dto.web.waybill.TrunkListWaybillCarDto;
-import com.cjyc.common.model.dto.web.waybill.getWaybillDto;
-import com.cjyc.common.model.entity.OrderCar;
+import com.cjyc.common.model.dto.web.waybill.GetWaybillTaskDto;
 import com.cjyc.common.model.entity.WaybillCar;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.entity.defined.FullWaybillCar;
 import com.cjyc.common.model.vo.salesman.dispatch.DispatchListVo;
 import com.cjyc.common.model.vo.salesman.dispatch.DispatchRecordVo;
-import com.cjyc.common.model.vo.salesman.dispatch.WaitDispatchCarListVo;
 import com.cjyc.common.model.vo.web.WayBillCarrierVo;
 import com.cjyc.common.model.vo.web.mineStore.StorageCarVo;
-import com.cjyc.common.model.vo.web.order.DispatchCarVo;
 import com.cjyc.common.model.vo.web.waybill.WaybillCarTransportVo;
 import com.cjyc.common.model.vo.web.waybill.WaybillCarVo;
 import com.cjyc.common.model.vo.web.waybill.LocalListWaybillCarVo;
@@ -103,7 +101,7 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
 
     int updateForLoadReplenishInfo(@Param("id") Long id, @Param("loadPhotoImg") String loadPhotoImg);
 
-    List<WaybillCarVo> findVo(getWaybillDto paramsDto);
+    List<WaybillCarVo> findVo(GetDto paramsDto);
 
     List<WaybillCar> findWaitReceiptListByOrderCarId(Long orderCarId);
 

@@ -86,4 +86,5 @@ public interface ICsOrderService {
 
     ResultVo simpleCommitAndCheck(CheckOrderDto reqDto);
 
+    int changeOrderCarCarryType(ChangeCarryTypeDto reqDto);
 }

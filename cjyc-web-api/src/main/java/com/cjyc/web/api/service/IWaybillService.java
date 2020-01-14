@@ -29,7 +29,7 @@ public interface IWaybillService extends IService<Waybill> {
 
     ResultVo<PageVo<TrunkCarListWaybillCarVo>> trunkCarlist(TrunkListWaybillCarDto reqDto);
 
-    ResultVo<WaybillVo> get(Long id);
+
 
     ResultVo<List<WaybillCarTransportVo>> getCarByType(Long orderCarId, Integer waybillType);
 
@@ -41,9 +41,10 @@ public interface IWaybillService extends IService<Waybill> {
 
     List<TrunkSubListWaybillVo> getTrunkSubAllList(TrunkSubListWaybillDto reqDto);
 
-    ResultVo<WaybillVo> get(getWaybillDto reqDto);
-
-
+    ResultVo<WaybillVo> get(GetDto reqDto);
+    ResultVo<WaybillVo> get(Long id);
     /************************************韵车集成改版 st***********************************/
     ResultVo<PageVo<CrWaybillVo>> crListForMineCarrierNew(CrWaybillDto reqDto);
+
+
 }

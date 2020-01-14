@@ -178,7 +178,7 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
     }
 
     @Override
-    public ResultVo<WaybillVo> get(getWaybillDto paramsDto) {
+    public ResultVo<WaybillVo> get(GetDto paramsDto) {
         WaybillVo waybillVo = waybillDao.findVoById(paramsDto.getWaybillId());
         List<WaybillCarVo> waybillCarVo = waybillCarDao.findVo(paramsDto);
         if(waybillCarVo != null){
@@ -186,7 +186,6 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
         }
         return BaseResultUtil.success(waybillVo);
     }
-
 
     @Override
     public ResultVo<List<WaybillCarTransportVo>> getCarByType(Long orderCarId, Integer waybillType) {
