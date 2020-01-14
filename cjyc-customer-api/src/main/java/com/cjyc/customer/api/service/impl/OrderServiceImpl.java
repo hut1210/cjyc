@@ -12,6 +12,7 @@ import com.cjyc.common.model.dto.customer.order.SimpleSaveOrderDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
+import com.cjyc.common.model.enums.order.OrderPickTypeEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.TimeStampUtil;
@@ -169,6 +170,16 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         if (order.getEndStoreId() != null) {
             Store endStore = storeDao.selectById(order.getEndStoreId());
             detailVo.setEndStoreNameDetail(endStore == null ? "" : endStore.getDetailAddr());
+        }
+
+        // 自提自送订单设置业务中心地址
+        if (OrderPickTypeEnum.SELF.code == order.getPickType()) {
+            detailVo.setStartStoreNameDetail(detailVo.getStartAddress());
+            detailVo.setStartAddress("");
+        }
+        if (OrderPickTypeEnum.SELF.code == order.getBackType()) {
+            detailVo.setEndStoreNameDetail(detailVo.getEndAddress());
+            detailVo.setEndAddress("");
         }
 
         return BaseResultUtil.success(detailVo);
