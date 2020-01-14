@@ -417,9 +417,8 @@ public class CsDriverServiceImpl implements ICsDriverService {
                     }
                 }
             }
-            return freeDriverVos;
         }
-       return Collections.emptyList();
+        return freeDriverVos;
     }
     /**
      * 修改承运商下司机与车辆关系

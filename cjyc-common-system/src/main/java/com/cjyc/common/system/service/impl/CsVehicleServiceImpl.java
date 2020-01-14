@@ -189,9 +189,8 @@ public class CsVehicleServiceImpl implements ICsVehicleService {
                     }
                 }
             }
-            return freeVehicleVos;
         }
-        return Collections.emptyList();
+        return freeVehicleVos;
     }
 
 
