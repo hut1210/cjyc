@@ -511,10 +511,12 @@
             <if test="createEndTime != null and createEndTime != 0">
                 and wo.create_time &lt; #{createEndTime}
             </if>
-              and wo.input_store_id in
-            <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
-                #{item}
-            </foreach>
+            <if test="storeIds != null and storeIds.size() != 0">
+                  and wo.input_store_id in
+                <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
             order by wo.create_time desc,wo.check_time desc
         </where>
     </select>
