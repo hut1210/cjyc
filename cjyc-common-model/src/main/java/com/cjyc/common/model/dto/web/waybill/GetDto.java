@@ -7,5 +7,5 @@ import lombok.Data;
 public class GetDto {
     private Long waybillId;
     @ApiModelProperty("查询类型：0全部车辆，1待指派车辆，9全部正常车辆")
-    private Long queryType;
+    private Long state;
 }
