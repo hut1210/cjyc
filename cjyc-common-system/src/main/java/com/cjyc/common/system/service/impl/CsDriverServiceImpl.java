@@ -765,8 +765,8 @@ public class CsDriverServiceImpl implements ICsDriverService {
         }
         Carrier oldCarrier = carrierDao.selectOne(new QueryWrapper<Carrier>().lambda()
                 .eq(Carrier::getLinkmanPhone, driver.getPhone()));
-        if(oldCarrier != null && !dto.getPhone().equals(driver.getPhone())){
-            return BaseResultUtil.fail("修改该承运商管理员手机号，请到运力中心--承运商管理中修改...");
+        if(oldCarrier != null && (!dto.getPhone().equals(driver.getPhone()) || !dto.getIdCard().equals(driver.getIdCard()))){
+            return BaseResultUtil.fail("修改该承运商管理员手机号/身份证号，请到运力中心--承运商管理中修改...");
         }
         //修改承运商管理员时操作
         UserRoleDept urd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
