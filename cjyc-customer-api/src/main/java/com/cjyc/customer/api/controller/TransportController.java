@@ -1,6 +1,5 @@
 package com.cjyc.customer.api.controller;
 
-import com.cjyc.common.model.dao.IStoreDao;
 import com.cjyc.common.model.dto.customer.freightBill.FindStoreDto;
 import com.cjyc.common.model.dto.customer.freightBill.TransportDto;
 import com.cjyc.common.model.vo.ResultVo;
