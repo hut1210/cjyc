@@ -201,10 +201,21 @@
         SELECT
             ba.id, ba.`name`, ba.phone
         FROM
-        (SELECT * FROM s_user_role_dept WHERE dept_type = 1 AND user_type = 1 AND dept_id = #{storeId}) sur
+        (SELECT * FROM s_user_role_dept WHERE dept_type = 1 AND user_type = 1 AND dept_id = #{pickBackStoreId}) sur
         LEFT JOIN b_admin ba ON ba.id = sur.user_id
         LEFT JOIN s_role sr ON sr.id = sur.role_id
-        WHERE ba.state = 2
+        <where>
+            <if test="name != null and name.trim() != ''">
+                  ba.name like CONCAT('%',#{name},'%')
+            </if>
+            <if test="phone != null and phone.trim() != ''">
+                and  ba.phone = #{phone}
+            </if>
+            <if test="storeName != null and storeName.trim() != ''">
+                and  ba.biz_desc like CONCAT('%',#{storeName},'%')
+            </if>
+            and ba.state = 2
+        </where>
         GROUP BY ba.phone
     </select>
 

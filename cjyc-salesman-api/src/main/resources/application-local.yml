@@ -116,6 +116,15 @@ cjkj:
     1199275720784027649
   carries_menus:
     enable: true
+  carrier_super_role_name: 承运商超级管理员
+  carrier_common_role_name: 承运商管理员
+  carrier_sub_driver_role_name: 下属司机
+  carrier_personal_driver_role_name: 个人司机
+  customer_client_role_name: C端客户
+  customer_key_role_name: 大客户
+  customer_copartner_role_name: 合伙人
+
+  signature: 韵车物流
 
 cjyc:
   swagger:
