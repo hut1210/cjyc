@@ -460,11 +460,12 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
                     ",未查询到角色信息");
         }
         Carrier carrier = carrierDao.selectById(dto.getId());
-        Driver driver = findDriverNew(carrier.getId(), role);
+        Driver driver = driverDao.selectOne(new QueryWrapper<Driver>().lambda()
+                .eq(Driver::getPhone, carrier.getLinkmanPhone()));
+        //Driver driver = findDriverNew(carrier.getId(), role);
         UserRoleDept userRoleDept = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
             .eq(UserRoleDept::getDeptId, carrier.getId())
-            .eq(UserRoleDept::getUserId, driver.getId())
-            .eq(UserRoleDept::getRoleId, role.getId()));
+            .eq(UserRoleDept::getUserId, driver.getId()));
         if (null == carrier || null == driver || null == userRoleDept) {
             return BaseResultUtil.fail("承运商信息有误，请检查");
         }
