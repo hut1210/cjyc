@@ -803,7 +803,7 @@
                     wc.state &lt;= 15
                 </when>
                 <when test="paramsDto.outterState == 3">
-                    wc.state between 16 and 99
+                    wc.state between 45 and 99
                 </when>
                 <when test="paramsDto.outterState == 4">
                     wc.state = 100
