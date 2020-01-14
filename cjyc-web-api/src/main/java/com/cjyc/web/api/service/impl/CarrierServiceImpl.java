@@ -512,9 +512,19 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             return BaseResultUtil.fail("根据角色名称：" + CARRIER_SUPER_ROLE_NAME +
                     ",未查询到角色信息");
         }
+        Role roleC = csRoleService.getByName(CARRIER_COMMON_ROLE_NAME, 2);
+        if (roleC == null) {
+            return BaseResultUtil.fail("根据角色名称：" + CARRIER_COMMON_ROLE_NAME +
+                    ",未查询到角色信息");
+        }
         UserRoleDept userRoleDept = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
             .eq(UserRoleDept::getDeptId, id)
             .eq(UserRoleDept::getRoleId, role.getId()));
+        if(userRoleDept == null){
+            userRoleDept = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
+                    .eq(UserRoleDept::getDeptId, id)
+                    .eq(UserRoleDept::getRoleId, roleC.getId()));
+        }
         if (userRoleDept != null) {
             Driver driver = driverDao.selectById(userRoleDept.getUserId());
             if (driver != null) {
