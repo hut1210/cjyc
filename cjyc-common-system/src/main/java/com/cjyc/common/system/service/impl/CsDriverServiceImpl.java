@@ -764,6 +764,12 @@ public class CsDriverServiceImpl implements ICsDriverService {
         if(carrier == null){
             return BaseResultUtil.fail("该承运商不存在，请检查");
         }
+        Carrier oldCarrier = carrierDao.selectOne(new QueryWrapper<Carrier>().lambda()
+                .eq(Carrier::getLinkmanPhone, driver.getPhone()));
+        if(oldCarrier != null){
+            return BaseResultUtil.fail("修改该承运商管理员，请到运力中心--承运商管理中修改...");
+        }
+        /*
         //修改承运商管理员时操作
         UserRoleDept urd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
                 .eq(UserRoleDept::getDeptId, carrier.getId())
@@ -792,7 +798,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
             carrier.setLegalName(dto.getRealName());
             carrier.setLegalIdCard(dto.getIdCard());
             carrierDao.updateById(carrier);
-        }
+        }*/
         DriverVehicleCon dvc = driverVehicleConDao.selectOne(new QueryWrapper<DriverVehicleCon>().lambda().eq(DriverVehicleCon::getDriverId,driver.getId()));
         VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda().eq(VehicleRunning::getDriverId,driver.getId()));
         if(vr != null) {

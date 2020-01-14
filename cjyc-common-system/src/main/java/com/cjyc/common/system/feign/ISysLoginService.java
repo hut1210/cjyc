@@ -6,6 +6,7 @@ import com.cjkj.usercenter.dto.common.SelectDeptResp;
 import com.cjkj.usercenter.dto.common.auth.AuthLoginReq;
 import com.cjkj.usercenter.dto.common.auth.AuthLoginResp;
 import com.cjkj.usercenter.dto.common.auth.AuthMobileLoginReq;
+import com.cjkj.usercenter.dto.common.auth.SendSmsCodeReq;
 import com.cjyc.common.model.constant.FeignServiceContant;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,9 +40,9 @@ public interface ISysLoginService {
 
     /**
      * 根据手机号获取验证码
-     * @param mobile
+     * @param req
      * @return
      */
-    @GetMapping("/sms/code/{mobile}")
-    ResultData verifyCode(@PathVariable(value = "mobile") String mobile);
+    @PostMapping("/sms/code")
+    ResultData verifyCode(@RequestBody SendSmsCodeReq req);
 }
