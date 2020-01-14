@@ -750,7 +750,7 @@
                                     </foreach>
             </if>
             <if test="key != null and key.trim() != ''">
-                and (w.linkman_phone like CONCAT('%',#{key},'%') or w.no like CONCAT('%',#{key},'%'))
+                and (carrier.linkman_phone like CONCAT('%',#{key},'%') or w.no like CONCAT('%',#{key},'%'))
             </if>
             <if test="type != null and type.trim() != 0">
                 and w.type=#{type}
