@@ -740,6 +740,7 @@
         select
             w.id as waybillId,
             w.no as waybillNo,
+            w.type as waybillType,
             w.guide_line as guideLine,
             w.car_num as carNum,
             w.freight_fee as freightFee,

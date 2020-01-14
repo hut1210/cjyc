@@ -23,6 +23,9 @@ public class HistoryDispatchRecordVo implements Serializable {
     @ApiModelProperty(value = "运单编号")
     private String waybillNo;
 
+    @ApiModelProperty(value = "运单类型：1提车运单，2干线运单，3送车运单")
+    private Integer waybillType;
+
     @ApiModelProperty(value = "指导线路")
     private String guideLine;
 
