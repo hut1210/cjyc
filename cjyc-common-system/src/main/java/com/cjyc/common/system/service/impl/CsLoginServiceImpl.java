@@ -9,6 +9,7 @@ import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.feign.ISysLoginService;
 import com.cjyc.common.system.service.ICsLoginService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -22,6 +23,9 @@ public class CsLoginServiceImpl implements ICsLoginService {
     @Override
     public ResultVo verifyCode(VerifyCodeDto dto) {
         String signature = YmlProperty.get("cjkj.signature");
+        if(StringUtils.isBlank(signature)){
+            return BaseResultUtil.fail("签名不能为空，请先添加签名");
+        }
         SendSmsCodeReq req = new SendSmsCodeReq();
         req.setPhone(dto.getPhone());
         req.setSignature(signature);
