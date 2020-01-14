@@ -56,4 +56,8 @@ public class WaybillCarVo extends WaybillCar {
     @ApiModelProperty(value = "送车状态(调度状态)：1待调度，5已调度，7无需调度")
     private Integer backState;
 
+
+    private String orderStartCityCode;
+    private String orderEndCityCode;
+
 }

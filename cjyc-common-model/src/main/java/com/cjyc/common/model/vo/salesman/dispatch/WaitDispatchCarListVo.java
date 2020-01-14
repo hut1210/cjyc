@@ -50,4 +50,5 @@ public class WaitDispatchCarListVo {
     private String endCityCode;
     private String endBelongStoreId;
     private String expectStartDate;
+
 }

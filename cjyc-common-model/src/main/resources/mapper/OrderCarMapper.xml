@@ -1520,8 +1520,8 @@
         o.end_area as endArea,
         o.end_address as endAddress,
         o.end_belong_store_id as endBelongStoreId,
-        o.back_contact_name as backContactName,
-        o.back_contact_phone as backContactPhone,
+        o.back_contact_name as unloadLinkName,
+        o.back_contact_phone as unloadLinkPhone,
         true as endFixedFlag
     </sql>
     <sql id="back_wait_dispatch_car_list_For_App">
@@ -2040,7 +2040,9 @@
         oc.state as orderCarState,
         oc.pick_state as pickState,
         oc.trunk_state as trunkState,
-        oc.back_state as backState
+        oc.back_state as backState,
+        o.start_city_code as orderStartCityCode,
+        o.end_city_code as orderEndCityCode
         from w_order o
         join w_order_car oc on oc.order_id = o.id
         left join s_store ss on ss.id = o.start_store_id
@@ -2070,7 +2072,7 @@
     <select id="findBackCarEndpoint" resultType="com.cjyc.common.model.vo.web.waybill.WaybillCarVo">
         select
         <include refid="back_wait_dispatch_car_field"/>,
-        UNIX_TIMESTAMP(now()) as expectStartTime,
+        UNIX_TIMESTAMP(now()) * 1000 as expectStartTime,
         oc.back_fee as freightFee,
         oc.id as orderCarId,
         oc.no as orderCarNo,
@@ -2083,7 +2085,9 @@
         oc.state as orderCarState,
         oc.pick_state as pickState,
         oc.trunk_state as trunkState,
-        oc.back_state as backState
+        oc.back_state as backState,
+        o.start_city_code as orderStartCityCode,
+        o.end_city_code as orderEndCityCode
         from w_order o
         join w_order_car oc on oc.order_id = o.id
         left join s_store se on se.id = o.end_store_id
@@ -2154,6 +2158,8 @@
             oc.pick_state as pickState,
             oc.trunk_state as trunkState,
             oc.back_state as backState,
+            o.start_city_code as orderStartCityCode,
+            o.end_city_code as orderEndCityCode,
             <include refid="trunk_wait_dispatch_car_field"/>,
 
             (case when temp.id is not null

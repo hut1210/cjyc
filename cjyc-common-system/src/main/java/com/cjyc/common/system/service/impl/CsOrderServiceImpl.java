@@ -897,7 +897,6 @@ public class CsOrderServiceImpl implements ICsOrderService {
         DispatchAddCarVo dispatchAddCarVo = new DispatchAddCarVo();
         //查询角色业务中心范围
         BizScope bizScope = csSysService.getBizScopeBySysRoleIdNew(paramsDto.getLoginId(), paramsDto.getRoleId(), true);
-        bizScope.setCode(BizScopeEnum.CHINA.code);
         if (bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code) {
             return BaseResultUtil.fail("没有数据权限");
         }
@@ -914,6 +913,9 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 if(vo.getOrderCarState() >= OrderCarStateEnum.WAIT_TRUNK_DISPATCH.code){
                     return BaseResultUtil.fail("车辆{0},提车已经结束", vo.getOrderCarNo());
                 }
+           /*     if(vo.getHasWaybill()){
+                    return BaseResultUtil.fail("车辆{0},提车已经调度过", vo.getOrderCarNo());
+                }*/
                 //验证数据范围
                 if(bizScope.getCode() != BizScopeEnum.CHINA.code){
                     if (vo.getEndBelongStoreId() == null || !storeIds.contains(vo.getStartBelongStoreId())) {
@@ -933,6 +935,12 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 }
                 if(vo.getOrderCarState() >= OrderCarStateEnum.WAIT_TRUNK_DISPATCH.code){
                     return BaseResultUtil.fail("车辆{0},配送已经结束", vo.getOrderCarNo());
+                }
+             /*   if(vo.getHasWaybill()){
+                    return BaseResultUtil.fail("车辆{0},配送已经调度过", vo.getOrderCarNo());
+                }*/
+                if(vo.getOrderEndCityCode() != null && vo.getOrderEndCityCode() != null && !vo.getOrderEndCityCode().equals(vo.getStartCityCode())){
+                    return BaseResultUtil.fail("车辆{0},干线尚未调度到订单目的地城市范围内，不能送车调度", vo.getOrderCarNo());
                 }
                 //验证数据范围
                 if(bizScope.getCode() != BizScopeEnum.CHINA.code){

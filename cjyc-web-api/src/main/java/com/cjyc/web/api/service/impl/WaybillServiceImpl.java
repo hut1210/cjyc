@@ -20,6 +20,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -180,9 +181,9 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
     @Override
     public ResultVo<WaybillVo> get(GetDto paramsDto) {
         WaybillVo waybillVo = waybillDao.findVoById(paramsDto.getWaybillId());
-        List<WaybillCarVo> waybillCarVo = waybillCarDao.findVo(paramsDto);
-        if(waybillCarVo != null){
-            waybillVo.setList(waybillCarVo);
+        List<WaybillCarVo> voList = waybillCarDao.findVo(paramsDto);
+        if(!CollectionUtils.isEmpty(voList)){
+            waybillVo.setList(voList);
         }
         return BaseResultUtil.success(waybillVo);
     }
