@@ -68,7 +68,8 @@ public class TrunkListWaybillCarDto extends BasePageDto {
      */
     @ApiModelProperty(value = "0全部，2待提车，3已提车，4已交付")
     private Integer outterState;
-
+    @ApiModelProperty(value = "状态")
+    private Integer state;
 
     @ApiModelProperty(value = "运单编号")
     private String waybillNo;

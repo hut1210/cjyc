@@ -12,6 +12,9 @@ public class TrunkMainListWaybillDto extends BasePageDto {
 
     @ApiModelProperty(value = "运单单号", required = true)
     private String waybillNo;
+
+    @ApiModelProperty(value = "状态")
+    private String state;
     @ApiModelProperty(value = "指导线路")
     private String guideLine;
     @ApiModelProperty(value = "承运商名称")

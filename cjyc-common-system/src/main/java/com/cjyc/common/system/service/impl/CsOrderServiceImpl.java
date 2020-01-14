@@ -370,6 +370,17 @@ public class CsOrderServiceImpl implements ICsOrderService {
         return BaseResultUtil.success();
     }
 
+    @Override
+    public int changeOrderCarCarryType(ChangeCarryTypeDto paramsDto) {
+        OrderCar noc = new OrderCar();
+        if(paramsDto.getDispatchType() == WaybillTypeEnum.PICK.code){
+            noc.setPickType(paramsDto.getCarryType());
+        }else{
+            noc.setBackType(paramsDto.getCarryType());
+        }
+        return orderCarDao.updateById(noc);
+    }
+
     /**
      * 审核订单
      *
@@ -886,6 +897,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         DispatchAddCarVo dispatchAddCarVo = new DispatchAddCarVo();
         //查询角色业务中心范围
         BizScope bizScope = csSysService.getBizScopeBySysRoleIdNew(paramsDto.getLoginId(), paramsDto.getRoleId(), true);
+        bizScope.setCode(BizScopeEnum.CHINA.code);
         if (bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code) {
             return BaseResultUtil.fail("没有数据权限");
         }

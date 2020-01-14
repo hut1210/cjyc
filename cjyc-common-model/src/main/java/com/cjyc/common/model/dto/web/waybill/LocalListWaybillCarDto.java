@@ -25,7 +25,8 @@ public class LocalListWaybillCarDto extends BasePageDto {
     private String plateNo;
     @ApiModelProperty(value = "vin码")
     private String vin;
-
+    @ApiModelProperty(value = "状态")
+    private Long state;
 
     @ApiModelProperty(value = "运单类型：1提车运单，2干线运单，3送车运单")
     private Integer type;

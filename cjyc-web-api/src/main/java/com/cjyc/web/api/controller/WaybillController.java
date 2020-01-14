@@ -305,6 +305,7 @@ public class WaybillController {
     /**
      * 查询运单（含车辆）
      */
+    @Deprecated
     @ApiOperation(value = "查询运单（含车辆）")
     @PostMapping(value = "/get/{waybillId}")
     public ResultVo<WaybillVo> get(@ApiParam(value = "运单ID") @PathVariable Long waybillId) {
@@ -316,7 +317,7 @@ public class WaybillController {
      */
     @ApiOperation(value = "查询运单（含车辆）")
     @PostMapping(value = "/get")
-    public ResultVo<WaybillVo> get(@RequestBody getWaybillDto reqDto) {
+    public ResultVo<WaybillVo> get(@RequestBody GetDto reqDto) {
         return waybillService.get(reqDto);
     }
 

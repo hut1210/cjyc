@@ -3,6 +3,7 @@ package com.cjyc.web.api.controller;
 import com.cjyc.common.model.dto.web.BaseWebDto;
 import com.cjyc.common.model.dto.web.dispatch.LineWaitCountDto;
 import com.cjyc.common.model.dto.web.order.*;
+import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -118,6 +119,16 @@ public class DispatchController {
     @PostMapping(value = "/car/from/to/get")
     public ResultVo<DispatchAddCarVo> computerCarEndpoint(@RequestBody ComputeCarEndpointDto reqDto) {
         return csOrderService.computerCarEndpoint(reqDto);
+    }
+
+    /**
+     * @author JPG
+     */
+    @ApiOperation(value = "根据订单车辆ID查询可调度起始地和目的地")
+    @PostMapping(value = "/car/carry/type/update")
+    public ResultVo<DispatchAddCarVo> changeOrderCarCarryType(@RequestBody ChangeCarryTypeDto reqDto) {
+        csOrderService.changeOrderCarCarryType(reqDto);
+        return BaseResultUtil.success();
     }
 
 }
