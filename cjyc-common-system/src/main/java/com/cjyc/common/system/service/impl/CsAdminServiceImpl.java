@@ -63,17 +63,18 @@ public class CsAdminServiceImpl implements ICsAdminService {
      */
     @Override
     public List<Admin> getListByStoreId(Long storeId) {
-        Store store = csStoreService.getById(storeId, true);
-        if(store == null){
-            return null;
-        }
-        ResultData<List<SelectUsersByRoleResp>> resultData = sysDeptService.getUsersByDeptId(store.getDeptId());
-        if(ResultDataUtil.isEmpty(resultData)){
-            return null;
-        }
-        Set<Long> userIds = resultData.getData().stream().map(SelectUsersByRoleResp::getUserId).collect(Collectors.toSet());
-        List<Admin> admins = adminDao.findListByUserIds(userIds);
-        return admins;
+//        Store store = csStoreService.getById(storeId, true);
+//        if(store == null){
+//            return null;
+//        }
+//        ResultData<List<SelectUsersByRoleResp>> resultData = sysDeptService.getUsersByDeptId(store.getDeptId());
+//        if(ResultDataUtil.isEmpty(resultData)){
+//            return null;
+//        }
+//        Set<Long> userIds = resultData.getData().stream().map(SelectUsersByRoleResp::getUserId).collect(Collectors.toSet());
+//        List<Admin> admins = adminDao.findListByUserIds(userIds);
+//        return admins;
+        return adminDao.findListByStoreId(storeId);
     }
 
 
