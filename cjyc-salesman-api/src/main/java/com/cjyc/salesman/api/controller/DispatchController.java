@@ -1,14 +1,12 @@
 package com.cjyc.salesman.api.controller;
 
 import com.cjyc.common.model.dto.CommonDto;
-import com.cjyc.common.model.dto.salesman.dispatch.CarDetailDto;
-import com.cjyc.common.model.dto.salesman.dispatch.DispatchListDto;
-import com.cjyc.common.model.dto.salesman.dispatch.HistoryDispatchRecordDto;
-import com.cjyc.common.model.dto.salesman.dispatch.WaybillDetailDto;
+import com.cjyc.common.model.dto.salesman.dispatch.*;
 import com.cjyc.common.model.dto.web.carrier.DispatchCarrierDto;
 import com.cjyc.common.model.dto.web.carrier.TrailCarrierDto;
 import com.cjyc.common.model.dto.web.driver.DispatchDriverDto;
 import com.cjyc.common.model.dto.web.order.ComputeCarEndpointDto;
+import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.salesman.dispatch.*;
@@ -25,10 +23,14 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.util.Map;
 
 /**
  * @Description 调度模块接口控制层
@@ -55,6 +57,7 @@ public class DispatchController {
      * @param dto
      * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.vo.PageVo<com.cjyc.common.model.vo.salesman.task.TaskWaybillVo>>
      */
+    @Deprecated
     @ApiOperation(value = "查询所有出发城市-目的地城市的车辆数量")
     @PostMapping("/getCityCarCount")
     public ResultVo<CityCarCountVo> getCityCarCount(@RequestBody @Validated CommonDto dto) {
@@ -76,18 +79,33 @@ public class DispatchController {
     }
 
     /**
-     * 查询待调度车辆列表（数据列表）
      * @author JPG
      */
-    @ApiOperation(value = "查询待调度车辆列表")
+    @ApiOperation(value = "调度池列表")
     @PostMapping(value = "/wait/list")
-    public ResultVo<PageVo<WaitDispatchCarListVo>> waitDispatchCarList(@RequestBody DispatchListDto reqDto) {
-        return dispatchService.waitDispatchCarList(reqDto);
+    public ResultVo<PageVo<WaitDispatchCarListVo>> waitList(@RequestBody DispatchListDto reqDto) {
+        return dispatchService.waitList(reqDto);
     }
     /**
-     * 根据订单车辆ID查询可调度起始地和目的地
+     * @author JPG
      */
-    @ApiOperation(value = "根据订单车辆ID查询可调度起始地和目的地")
+    @ApiOperation(value = "调度池按城市分组统计数量列表")
+    @PostMapping(value = "/wait/count/list")
+    public ResultVo<ListVo<Map<String, Object>>> waitCountList(@RequestBody WaitCountDto reqDto) {
+        return dispatchService.waitCountList(reqDto);
+    }
+    /**
+     * @author JPG
+     */
+    @ApiOperation(value = "调度池按城市线路分组统计数量列表")
+    @PostMapping(value = "/wait/count/line/list")
+    public ResultVo<ListVo<Map<String, Object>>> waitCountLineList(@RequestBody WaitCountLineDto reqDto) {
+        return dispatchService.waitCountLineList(reqDto);
+    }
+    /**
+     * @author JPG
+     */
+    @ApiOperation(value = "根据订单车辆ID查询调度起始地和目的地")
     @PostMapping(value = "/car/from/to/get")
     public ResultVo<DispatchAddCarVo> computerCarEndpoint(@RequestBody ComputeCarEndpointDto reqDto) {
         return csOrderService.computerCarEndpoint(reqDto);

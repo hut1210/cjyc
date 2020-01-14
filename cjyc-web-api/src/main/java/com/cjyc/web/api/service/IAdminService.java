@@ -30,5 +30,8 @@ public interface IAdminService extends IService<Admin> {
 
     /************************************韵车集成改版 st***********************************/
     ResultVo<PageVo<AdminPageVo>> pageNew(AdminPageNewDto reqDto);
+    CacheData getCacheDataNew(Long userId, Long roleId);
+
+    ResultVo deliverySalesmanNew(TypeSalesmanDto dto);
     /************************************韵车集成改版 ed***********************************/
 }

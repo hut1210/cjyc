@@ -20,12 +20,13 @@ public class DispatchListDto extends BasePageDto {
     @NotNull(message = "用户标识不能为空")
     @ApiModelProperty(value = "用户标识", required = true)
     private Long loginId;
+    @NotNull(message = "调度类型不能为空")
+    @ApiModelProperty(value = "调度类型 0：全部 1：提车调度 2：干线调度 3：送车调度")
+    private Integer dispatchType;
     @ApiModelProperty(value = "开始城市")
     private String startCity;
     @ApiModelProperty(value = "目的城市")
     private String endCity;
-    @ApiModelProperty(value = "调度类型 0：全部 1：提车调度 2：干线调度 3：送车调度")
-    private Integer dispatchType;
     @ApiModelProperty(value = "提车日期排序 1：升序 2：降序")
     private Integer pickDateSort;
     @ApiModelProperty(value = "提车开始日期")
@@ -41,5 +42,5 @@ public class DispatchListDto extends BasePageDto {
     @ApiModelProperty(value = "车系")
     private String model;
     @ApiModelProperty(hidden = true)
-    private Set<Long> bizStoreIds;
+    private Set<Long> bizScope;
 }

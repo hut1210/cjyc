@@ -17,7 +17,8 @@ import java.math.BigDecimal;
 @Accessors(chain = true)
 @ApiModel
 public class ListOrderVo extends Order {
-
+    @ApiModelProperty("状态")
+    private String outterState;
     @ApiModelProperty("出发地址（全）")
     @Excel(name = "出发地址（全）", orderNum = "0")
     private String startFullAddress;

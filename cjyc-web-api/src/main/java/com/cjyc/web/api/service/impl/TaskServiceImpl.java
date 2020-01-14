@@ -1,6 +1,7 @@
 package com.cjyc.web.api.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cjyc.common.model.dao.ICarrierDao;
 import com.cjyc.common.model.dao.ITaskDao;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.task.*;
@@ -10,6 +11,7 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.mineCarrier.MyCarrierVo;
 import com.cjyc.common.model.vo.web.task.CrTaskVo;
 import com.cjyc.common.model.vo.web.task.ListByWaybillTaskVo;
 import com.cjyc.common.model.vo.web.task.TaskPageVo;
@@ -22,6 +24,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -45,6 +48,8 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
     private ICsTaskService csTaskService;
     @Resource
     private ICsSysService csSysService;
+    @Resource
+    private ICarrierDao carrierDao;
 
     @Override
     public ResultVo allot(AllotTaskDto paramsDto) {
@@ -92,13 +97,8 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
 
     @Override
     public ResultVo<PageVo<CrTaskVo>> crTaskList(CrTaskDto paramsDto) {
-
         //根据角色查询承运商ID
-        Carrier carrier = csSysService.getCarrierByRoleId(paramsDto.getRoleId());
-        if(carrier == null){
-            return BaseResultUtil.fail("承运商信息不存在");
-        }
-        paramsDto.setCarrierId(carrier.getId());
+        paramsDto.setCarrierId(paramsDto.getCarrierId());
 
         PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
         List<CrTaskVo> list = taskDao.findListForMineCarrier(paramsDto);
@@ -114,6 +114,30 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<TaskPageVo> list = taskDao.selectMyTaskList(dto);
         PageInfo<TaskPageVo> pageInfo = new PageInfo<>(list);
+        return BaseResultUtil.success(pageInfo);
+    }
+
+
+
+
+    /************************************韵车集成改版 st***********************************/
+
+    @Override
+    public ResultVo<PageVo<CrTaskVo>> crTaskListNew(CrTaskDto paramsDto) {
+
+        //根据角色查询承运商ID
+        Carrier carrier = carrierDao.selectById(paramsDto.getCarrierId());
+        if(carrier == null){
+            return BaseResultUtil.fail("承运商信息不存在");
+        }
+        paramsDto.setCarrierId(carrier.getId());
+
+        PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
+        List<CrTaskVo> list = taskDao.findListForMineCarrier(paramsDto);
+        PageInfo<CrTaskVo> pageInfo = new PageInfo<>(list);
+        if(paramsDto.getCurrentPage() > pageInfo.getPages()){
+            pageInfo.setList(list);
+        }
         return BaseResultUtil.success(pageInfo);
     }
 

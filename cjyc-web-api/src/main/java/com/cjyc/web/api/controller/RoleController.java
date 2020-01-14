@@ -6,6 +6,7 @@ import com.cjkj.usercenter.dto.asc.MenuResp;
 import com.cjkj.usercenter.dto.yc.SelectUsersByRoleResp;
 import com.cjyc.common.model.dto.web.role.AddRoleDto;
 import com.cjyc.common.model.dto.web.role.ModifyRoleMenusDto;
+import com.cjyc.common.model.dto.web.role.SetRoleForAppDto;
 import com.cjyc.common.model.entity.Role;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
@@ -35,7 +36,7 @@ public class RoleController {
     @Autowired
     private ISysRoleService sysRoleService;
 
-    @PostMapping("/add")
+//    @PostMapping("/add")
     @ApiOperation(value = "添加角色信息")
     public ResultVo add(@Valid @RequestBody AddRoleDto dto) {
         return roleService.addRole(dto);
@@ -48,7 +49,7 @@ public class RoleController {
         return roleService.deleteRole(id);
     }
 
-    @GetMapping("/getUsersByRoleId/{roleId}")
+//    @GetMapping("/getUsersByRoleId/{roleId}")
     @ApiOperation(value = "根据角色id获取关联用户列表信息")
     public ResultVo<List<SelectUserByRoleVo>> getUsersByRoleId(
             @ApiParam(name = "roleId", value = "角色标识", required = true)
@@ -87,7 +88,7 @@ public class RoleController {
      * 查询所有角色信息列表
      * @return
      */
-    @GetMapping(value = {"/getAllList", "/getAllList/{roleName}"})
+//    @GetMapping(value = {"/getAllList", "/getAllList/{roleName}"})
     @ApiOperation(value = "获取所有角色信息列表")
     public ResultVo<List<Role>> getAllList(
             @ApiParam(name = "roleName", value = "角色名称", required = false)
@@ -104,13 +105,13 @@ public class RoleController {
     }
 
     @ApiOperation(value = "根据角色标识更新角色-菜单列表信息")
-    @PostMapping("/modifyRoleMenus")
+//    @PostMapping("/modifyRoleMenus")
     public ResultVo modifyRoleMenus(@Valid @RequestBody ModifyRoleMenusDto dto) {
         return roleService.modifyRoleMenus(dto);
     }
 
     @ApiOperation(value = "根据角色标识获取末级角色-菜单id列表信息")
-    @GetMapping("/getBtmMenuIdsByRoleId/{roleId}")
+//    @GetMapping("/getBtmMenuIdsByRoleId/{roleId}")
     public ResultVo<List<String>> getBtmMenuIdsByRoleId(
             @ApiParam(value = "roleId", name = "角色标识", required = true)
             @PathVariable("roleId")Long roleId) {
@@ -119,18 +120,53 @@ public class RoleController {
 
 
     /*********************************韵车集成改版 st*****************************/
-    @PostMapping("/addNew")
+//    @PostMapping("/addNew")
+    @PostMapping("/add")
     @ApiOperation(value = "添加角色信息")
     public ResultVo addNew(@Valid @RequestBody AddRoleDto dto) {
         return roleService.addRoleNew(dto);
     }
 
-    @GetMapping("/getUsersByRoleIdNew/{roleId}")
+//    @GetMapping("/getUsersByRoleIdNew/{roleId}")
+    @GetMapping("/getUsersByRoleId/{roleId}")
     @ApiOperation(value = "根据角色id获取关联用户列表信息")
     public ResultVo<List<SelectUserByRoleVo>> getUsersByRoleIdNew(
             @ApiParam(name = "roleId", value = "角色标识", required = true)
             @PathVariable Long roleId) {
         return roleService.getUsersByRoleIdNew(roleId);
+    }
+
+    /**
+     * 查询所有角色信息列表
+     * @return
+     */
+//    @GetMapping(value = {"/getAllListNew", "/getAllListNew/{roleName}"})
+    @GetMapping(value = {"/getAllList", "/getAllList/{roleName}"})
+    @ApiOperation(value = "获取所有角色信息列表")
+    public ResultVo<List<Role>> getAllListNew(
+            @ApiParam(name = "roleName", value = "角色名称", required = false)
+            @PathVariable(name = "roleName", required = false) String roleName) {
+        return roleService.getAllListNew(roleName);
+    }
+
+    @ApiOperation(value = "根据角色标识获取末级角色-菜单id列表信息_改版")
+    @GetMapping("/getBtmMenuIdsByRoleId/{roleId}")
+    public ResultVo<List<String>> getBtmMenuIdsByRoleIdNew(
+            @ApiParam(value = "roleId", name = "角色标识", required = true)
+            @PathVariable("roleId")Long roleId) {
+        return roleService.getBtmMenuIdsByRoleIdNew(roleId);
+    }
+
+    @ApiOperation(value = "根据角色标识更新角色-菜单列表信息_改版")
+    @PostMapping("/modifyRoleMenus")
+    public ResultVo modifyRoleMenusNew(@Valid @RequestBody ModifyRoleMenusDto dto) {
+        return roleService.modifyRoleMenusNew(dto);
+    }
+
+    @ApiOperation(value = "更新业务员APP相关角色信息")
+    @PostMapping("/setRoleForApp")
+    public ResultVo setRoleForApp(@Valid @RequestBody SetRoleForAppDto dto) {
+        return roleService.setRoleForApp(dto);
     }
     /*********************************韵车集成改版 ed*****************************/
 

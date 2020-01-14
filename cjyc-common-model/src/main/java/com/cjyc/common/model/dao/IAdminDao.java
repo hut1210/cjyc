@@ -1,5 +1,6 @@
 package com.cjyc.common.model.dao;
 
+import com.cjyc.common.model.dto.web.mineStore.ListMineSalesmanDto;
 import com.cjyc.common.model.dto.web.salesman.AdminPageDto;
 import com.cjyc.common.model.dto.web.salesman.AdminPageNewDto;
 import com.cjyc.common.model.dto.web.salesman.TypeSalesmanDto;
@@ -8,6 +9,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.vo.web.admin.AdminPageVo;
 import com.cjyc.common.model.vo.web.admin.AdminVo;
 import com.cjyc.common.model.vo.web.admin.TypeSalesmanVo;
+import com.cjyc.common.model.vo.web.mineStore.MySalesmanVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -46,9 +48,19 @@ public interface IAdminDao extends BaseMapper<Admin> {
 
     Admin findNext(@Param("startStoreId") Long startStoreId, Long valueOf);
 
-    Admin findTop(Long startStoreId);
 
-    /************************************韵车集成改版 ed***********************************/
-    List<AdminPageVo> getPageList(@Param("param") AdminPageNewDto dto);
     /************************************韵车集成改版 st***********************************/
+    List<AdminPageVo> getPageList(@Param("param") AdminPageNewDto dto);
+
+    /**
+     * 我的业务中心-我的业务员
+     * @param dto
+     * @return
+     */
+    List<MySalesmanVo> getMineSalesmanList(@Param("param") ListMineSalesmanDto dto);
+
+    List<Admin> findListByStoreId(Long storeId);
+
+    List<TypeSalesmanVo> deliverySalesmanNew(Long storeId);
+    /************************************韵车集成改版 ed***********************************/
 }

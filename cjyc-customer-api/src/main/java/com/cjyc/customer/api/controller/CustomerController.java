@@ -51,7 +51,7 @@ public class CustomerController {
     }
 
     @ApiOperation(value = "获取个人最新信息")
-    @PostMapping("/findNewCustomerInfo")
+    //@PostMapping("/findNewCustomerInfo")
     public ResultVo<AppCustomerInfoVo> findNewCustomerInfo(@Validated @RequestBody AppCustomerDto dto){
         return customerService.findNewCustomerInfo(dto);
     }
@@ -61,5 +61,17 @@ public class CustomerController {
     public ResultVo<ShowPartnerVo> findPartnerInfo(@Validated @RequestBody AppCustomerDto dto){
         return customerService.showPartner(dto);
     }
+
+
+
+    /************************************韵车集成改版 st***********************************/
+
+    @ApiOperation(value = "获取个人最新信息_改版")
+    //@PostMapping("/findNewCustomerInfoNew")
+    @PostMapping("/findNewCustomerInfo")
+    public ResultVo<AppCustomerInfoVo> findNewCustomerInfoNew(@Validated @RequestBody AppCustomerDto dto){
+        return customerService.findNewCustomerInfoNew(dto);
+    }
+
 
 }

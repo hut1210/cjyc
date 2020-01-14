@@ -13,6 +13,7 @@ import com.cjyc.common.model.entity.defined.CarrierInfo;
 import com.cjyc.common.model.entity.defined.UserInfo;
 import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.log.OrderCarLogEnum;
+import com.cjyc.common.model.enums.log.OrderLogEnum;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.enums.task.TaskStateEnum;
@@ -64,13 +65,13 @@ public class CsTaskServiceImpl implements ICsTaskService {
     @Resource
     private IWaybillDao waybillDao;
     @Resource
+    private ICsWaybillService csWaybillService;
+    @Resource
     private IWaybillCarDao waybillCarDao;
     @Resource
     private IOrderDao orderDao;
     @Resource
     private IOrderCarDao orderCarDao;
-    @Resource
-    private ICsOrderLogService orderLogService;
     @Resource
     private ICsOrderCarLogService csOrderCarLogService;
     @Resource
@@ -86,11 +87,11 @@ public class CsTaskServiceImpl implements ICsTaskService {
     @Autowired
     private ICsStorageLogService csStorageLogService;
     @Resource
-    private ICsSmsService csSmsService;
-    @Resource
-    private ICsUserService csUserService;
-    @Resource
     private ICsStoreService csStoreService;
+    @Resource
+    private ICsOrderLogService csOrderLogService;
+    @Resource
+    private ICsPingPayService csPingPayService;
 
     /**
      * 获取任务编号
@@ -550,11 +551,16 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 throw new ParameterException("订单车辆不存在");
             }
             if (waybillCar.getEndStoreId() == null || waybillCar.getEndStoreId() <= 0 || paramsDto.getLoginType() == UserTypeEnum.ADMIN) {
-                waybillCarDao.updateStateById(waybillCar.getId(), WaybillCarStateEnum.UNLOADED.code);
+                waybillCarDao.updateForFinish(waybillCar.getId());
                 validateAndFinishTask(task.getId());
-                validateAndFinishWaybill(waybillCar.getWaybillId());
-                orderCarDao.updateLocation(waybillCar.getOrderCarId(), 0L, waybillCar.getEndAreaCode());
-
+                csWaybillService.validateAndFinishWaybill(waybillCar.getWaybillId());
+                OrderCar noc = new OrderCar();
+                noc.setState(computeOrderCarStateForDirectUnload(waybillCar));
+                noc.setId(orderCar.getId());
+                noc.setNowStoreId(0L);
+                noc.setNowAreaCode(waybillCar.getEndAreaCode());
+                noc.setNowUpdateTime(System.currentTimeMillis());
+                orderCarDao.updateById(noc);
                 if(paramsDto.getLoginType() == UserTypeEnum.ADMIN){
                     CarStorageLog carStorageLog = CarStorageLog.builder()
                             .storeId(waybillCar.getEndStoreId())
@@ -598,6 +604,16 @@ public class CsTaskServiceImpl implements ICsTaskService {
         resultReasonVo.setSuccessList(successSet);
         resultReasonVo.setFailList(failCarNoSet);
         return BaseResultUtil.success(resultReasonVo);
+    }
+
+    private Integer computeOrderCarStateForDirectUnload(WaybillCar waybillCar) {
+        Order order = orderDao.findByCarId(waybillCar.getOrderCarId());
+        if(waybillCar.getEndStoreId() != null || waybillCar.getEndStoreId().equals(order.getEndStoreId())){
+            return OrderCarStateEnum.WAIT_BACK_DISPATCH.code;
+        }else{
+            return OrderCarStateEnum.WAIT_TRUNK_DISPATCH.code;
+        }
+
     }
 
     @Override
@@ -746,7 +762,8 @@ public class CsTaskServiceImpl implements ICsTaskService {
         return BaseResultUtil.success(resultReasonVo);
     }
 
-    private void validateAndFinishTask(Long taskId) {
+    @Override
+    public void validateAndFinishTask(Long taskId) {
         int count = taskCarDao.countUnFinishByTaskId(taskId);
         if (count > 0) {
             return;
@@ -754,26 +771,15 @@ public class CsTaskServiceImpl implements ICsTaskService {
         taskDao.updateForFinish(taskId);
     }
 
-    private void validateAndFinishWaybill(Long waybillId) {
-        int count = waybillCarDao.countUnFinishByWaybillId(waybillId);
-        if (count > 0) {
-            return;
-        }
-        waybillDao.updateForFinish(waybillId);
-    }
-
-    private void validateAndFinishTaskWaybill(Task task) {
+    @Override
+    public void validateAndFinishTaskWaybill(Task task) {
         if (task == null) {
             return;
         }
         int count = taskCarDao.countUnFinishByTaskId(task.getId());
         if (count <= 0) {
             taskDao.updateForFinish(task.getId());
-            int n = waybillCarDao.countUnFinishByWaybillId(task.getWaybillId());
-            if (n > 0) {
-                return;
-            }
-            waybillDao.updateForFinish(task.getWaybillId());
+            csWaybillService.validateAndFinishWaybill(task.getWaybillId());
         }
     }
 
@@ -1058,10 +1064,18 @@ public class CsTaskServiceImpl implements ICsTaskService {
             Order order = orderDao.selectById(orderId);
             orderDao.updateForFinish(orderId);
             //订单完成日志
-            /*orderLogService.asyncSave(order, OrderLogEnum.RECEIPT,
+            csOrderLogService.asyncSave(order, OrderLogEnum.RECEIPT,
                     new String[]{MessageFormat.format(OrderLogEnum.RECEIPT.getInnerLog(), order.getNo()),
                             MessageFormat.format(OrderLogEnum.RECEIPT.getOutterLog(), order.getNo())},
-                    userInfo);*/
+                    userInfo);
+            //支付合伙人服务费
+
+            try {
+                csPingPayService.allinpayToCooperator(order.getId());
+            } catch (Exception e) {
+                log.error("");
+                log.error(e.getMessage(), e);
+            }
         }
     }
 

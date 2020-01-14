@@ -1,10 +1,8 @@
 package com.cjyc.web.api.controller;
 
+import com.cjyc.common.model.dto.web.BaseWebDto;
 import com.cjyc.common.model.dto.web.city.StoreDto;
-import com.cjyc.common.model.dto.web.store.GetStoreDto;
-import com.cjyc.common.model.dto.web.store.StoreAddDto;
-import com.cjyc.common.model.dto.web.store.StoreQueryDto;
-import com.cjyc.common.model.dto.web.store.StoreUpdateDto;
+import com.cjyc.common.model.dto.web.store.*;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Store;
 import com.cjyc.common.model.entity.defined.FullCity;
@@ -32,7 +30,7 @@ import java.util.List;
  **/
 @Api(tags = "基础数据-业务中心")
 @RestController
-@RequestMapping("/store")
+//@RequestMapping("/store")
 public class StoreController {
     @Resource
     private IStoreService storeService;
@@ -52,6 +50,7 @@ public class StoreController {
      * 根据角色查询角色所属机构下属业务中心
      * @author JPG
      */
+    @Deprecated
     @ApiOperation(value = "根据角色查询业务中心")
     @PostMapping(value = "/get/by/{roleId}")
     public ResultVo<List<Store>> getByRole(@PathVariable Long roleId) {
@@ -60,13 +59,34 @@ public class StoreController {
     }
 
     /**
-     * 根据角色查询角色所属机构下属业务中心
+     * v2.0
      * @author JPG
      */
+    @ApiOperation(value = "根据角色和登录ID查询业务中心")
+    @PostMapping(value = "/list/by/role/login")
+    public ResultVo<List<Store>> getByWebLogin(@RequestBody BaseWebDto reqDto) {
+        List<Store> list = storeService.listByWebLogin(reqDto);
+        return BaseResultUtil.success(list);
+    }
+
+    /**
+     * @author JPG
+     */
+    @Deprecated
     @ApiOperation(value = "根据角色查询业务中心")
     @PostMapping(value = "/get/vo/by/{roleId}")
     public ResultVo<List<StoreVo>> getVoByRole(@PathVariable Long roleId) {
         List<StoreVo> list = storeService.getVoListByRoleId(roleId);
+        return BaseResultUtil.success(list);
+    }
+    /**
+     * v2.0
+     * @author JPG
+     */
+    @ApiOperation(value = "根据角色和登录ID查询业务中心")
+    @PostMapping(value = "/list/vo/by/role/login")
+    public ResultVo<List<StoreVo>> getVoByWebLogin(@RequestBody BaseWebDto reqDto) {
+        List<StoreVo> list = storeService.listVoByWebLogin(reqDto);
         return BaseResultUtil.success(list);
     }
 

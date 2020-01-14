@@ -54,4 +54,37 @@ public interface IMineCarrierService extends IService<Carrier> {
      * @return
      */
     ResultVo<PageVo<SettlementDetailVo>> getSettlementDetail(SettlementDetailQueryDto settlementDetailQueryDto);
+
+
+
+    /************************************韵车集成改版 st***********************************/
+
+    /**
+     * 分页查询承运商下司机
+     * @param dto
+     * @return
+     */
+    ResultVo<PageVo<MyDriverVo>> findPageDriverNew(QueryMyDriverDto dto);
+
+    /**
+     * 操作承运商下的司机
+     * @param dto
+     * @return
+     */
+    ResultVo verifyDriverNew(OperateDto dto);
+
+    /**
+     * 新增承运商下车辆
+     * @param dto
+     * @return
+     */
+    ResultVo saveOrModifyVehicleNew(CarrierVehicleDto dto);
+
+    /**
+     * 分页查询该承运商下的车辆
+     * @param dto
+     * @return
+     */
+    ResultVo<PageVo<MyCarVo>> findPageCarNew(QueryMyCarDto dto);
+
 }

@@ -2,6 +2,7 @@ package com.cjyc.common.system.service.impl;
 
 import com.Pingxx.model.MetaDataEntiy;
 import com.Pingxx.model.Order;
+import com.Pingxx.model.PingxxMetaData;
 import com.cjyc.common.model.dao.ITradeBillDao;
 import com.cjyc.common.model.dao.ITradeBillDetailDao;
 import com.cjyc.common.model.entity.TradeBill;
@@ -93,6 +94,11 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
     @Override
     public List<String> getOrderCarNosByTaskCarIds(List<Long> taskCarIdList) {
         return tradeBillDao.getOrderCarNosByTaskCarIds(taskCarIdList);
+    }
+
+    @Override
+    public TradeBill getTradeBillByOrderNoAndType(String orderNo, int type) {
+        return tradeBillDao.getTradeBillByOrderNoAndType(orderNo,type);
     }
 
     @Override
@@ -258,10 +264,7 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
 
     private TradeBill transferToTransactions(Transfer transfer,Event event,String state) {
         TradeBill tb = new TradeBill();
-        if(transfer.getType()!=null&&"b2c".equals(transfer.getType())){
-            tb.setSubject("通联代付承运商运费");
-            tb.setBody("打款运费到承运商银行卡");
-        }
+        Map<String, Object> metadata = transfer.getMetadata();
 
         tb.setAmount(transfer.getAmount()==null?BigDecimal.valueOf(0):BigDecimal.valueOf(transfer.getAmount()));
         tb.setCreateTime(System.currentTimeMillis());
@@ -272,20 +275,27 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
             tb.setChannelName(channelEnum.getName());
         }
         tb.setChannelFee(new BigDecimal(0));
-        tb.setReceiverId(0L);
         tb.setLivemode(transfer.getLivemode() ? LiveModeEnum.LIVE.getTag() : LiveModeEnum.TEST.getTag());
         if(event != null){
             tb.setEventId(event.getId());
             tb.setEventType(event.getType());
         }
 
-        Map<String, Object> metadata = transfer.getMetadata();
         if(metadata!=null){
-            String type =(String) metadata.get("type");
-            String uid = (String) metadata.get("uid");
+            PingxxMetaData pingxxMetaData =  BeanMapUtil.mapToBean(metadata, new PingxxMetaData());
+            String chargeType = pingxxMetaData.getChargeType();
 
-            tb.setReceiverId(Long.valueOf(uid));
-            tb.setType((Integer.valueOf(type)));
+            if(transfer.getType()!=null&&"b2c".equals(transfer.getType())){
+                if(chargeType.equals(String.valueOf(ChargeTypeEnum.UNION_PAY.getCode()))){
+                    tb.setSubject("通联代付承运商运费");
+                    tb.setBody("打款运费到承运商银行卡");
+                }else{
+                    tb.setSubject("通联代付合伙人费用");
+                    tb.setBody("打款运费到合伙人银行卡");
+                }
+            }
+            tb.setReceiverId(pingxxMetaData.getLoginId()!=null?Long.valueOf(pingxxMetaData.getLoginId()):0L);
+            tb.setType((Integer.valueOf(chargeType)));
         }
         tb.setPingPayId(transfer.getId());
         tb.setState(Integer.valueOf(state));//待支付/已支付/付款失败

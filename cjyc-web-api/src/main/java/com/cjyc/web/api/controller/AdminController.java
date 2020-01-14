@@ -56,7 +56,7 @@ public class AdminController {
      * @author JPG
      */
     @ApiOperation(value = "校验用户并获取缓存数据")
-    @PostMapping(value = "/validate/{roleId}")
+//    @PostMapping(value = "/validate/{roleId}")
     public ResultVo<CacheData> validateUser(@RequestHeader(SecurityConstants.USER_HEADER) String account,
                                             @PathVariable Long roleId) {
         ResultData<UserResp> resultData = sysUserService.getByAccount(account);
@@ -93,7 +93,7 @@ public class AdminController {
     }
 
     @ApiOperation(value = "分页查询指定业务中心下的业务员")
-    @PostMapping(value = "/page")
+//    @PostMapping(value = "/page")
     public ResultVo<PageVo<AdminPageVo>> listByRoleId(@RequestBody AdminPageDto reqDto) {
         return adminService.page(reqDto);
     }
@@ -110,16 +110,43 @@ public class AdminController {
 
 
     @ApiOperation(value = "提送车业务员")
-    @PostMapping(value = "/deliverySalesman")
+    //@PostMapping(value = "/deliverySalesman")
     public ResultVo deliverySalesman(@Validated @RequestBody TypeSalesmanDto dto){
         return adminService.deliverySalesman(dto);
     }
 
     /************************************韵车集成改版 st***********************************/
     @ApiOperation(value = "分页查询指定业务中心下的业务员_改版")
-    @PostMapping(value = "/pageNew")
+//    @PostMapping(value = "/pageNew")
+    @PostMapping(value = "/page")
     public ResultVo<PageVo<AdminPageVo>> listByRoleIdNew(@Valid @RequestBody AdminPageNewDto reqDto) {
         return adminService.pageNew(reqDto);
+    }
+
+    /**
+     * 校验用户并获取缓存数据
+     *
+     * @author JPG
+     */
+    @ApiOperation(value = "校验用户并获取缓存数据")
+    @PostMapping(value = "/validate/{roleId}")
+    public ResultVo<CacheData> validateUserNew(@RequestHeader(SecurityConstants.USER_HEADER) String account,
+                                            @PathVariable Long roleId) {
+        ResultData<UserResp> resultData = sysUserService.getByAccount(account);
+        if (resultData == null || resultData.getData() == null || resultData.getData().getUserId() == null) {
+            return BaseResultUtil.fail(resultData == null ? "用户不存在" : resultData.getMsg());
+        }
+        CacheData cacheData = adminService.getCacheDataNew(resultData.getData().getUserId(), roleId);
+        //发送推送信息
+        return BaseResultUtil.success(cacheData);
+    }
+
+
+    @ApiOperation(value = "提送车业务员_改版")
+    //@PostMapping(value = "/deliverySalesmanNew")
+    @PostMapping(value = "/deliverySalesman")
+    public ResultVo deliverySalesmanNew(@Validated @RequestBody TypeSalesmanDto dto){
+        return adminService.deliverySalesmanNew(dto);
     }
     /************************************韵车集成改版 ed***********************************/
 }

@@ -29,4 +29,6 @@ public interface ICsTransactionService {
     List<String> getOrderCarNosByTaskId(Long taskId);
 
     List<String> getOrderCarNosByTaskCarIds(List<Long> taskCarIdList);
+
+    TradeBill getTradeBillByOrderNoAndType(String no,int type);
 }

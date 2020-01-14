@@ -1,7 +1,6 @@
 package com.cjyc.common.system.service.impl;
 
 import com.cjkj.common.model.ResultData;
-import com.cjkj.common.redis.template.StringRedisUtil;
 import com.cjkj.usercenter.dto.common.UserResp;
 import com.cjkj.usercenter.dto.yc.SelectUsersByRoleResp;
 import com.cjyc.common.model.dao.IAdminDao;
@@ -10,14 +9,12 @@ import com.cjyc.common.model.entity.Store;
 import com.cjyc.common.model.enums.AdminStateEnum;
 import com.cjyc.common.model.exception.ParameterException;
 import com.cjyc.common.model.keys.RedisKeys;
-import com.cjyc.common.model.util.StringUtil;
 import com.cjyc.common.model.vo.web.admin.AdminVo;
 import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.*;
 import com.cjyc.common.system.util.RedisUtils;
 import com.cjyc.common.system.util.ResultDataUtil;
-import net.sf.jsqlparser.expression.LongValue;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -119,33 +116,25 @@ public class CsAdminServiceImpl implements ICsAdminService {
         if(storeId == null){
             return null;
         }
-
         String key = RedisKeys.getLoopAllotAdminKey(storeId);
         String value = redisUtil.get(key);
-        Long cachedUserId  = StringUtils.isBlank(value) ? 0L : Long.valueOf(value);
-
-        //查询业务中心机构ID
+        Long cachedId  = StringUtils.isBlank(value) ? 0L : Long.valueOf(value);
         Store store = storeService.getById(storeId, true);
-        ResultData<List<SelectUsersByRoleResp>> resultData = sysUserService.getUsersByDeptId(store.getDeptId());
-        if(resultData == null || CollectionUtils.isEmpty(resultData.getData())){
-            throw new ParameterException("业务中心(ID:{0})没有业务员", storeId);
+
+        List<Admin> admins = adminDao.findListByStoreId(storeId);
+        if(CollectionUtils.isEmpty(admins)){
+            throw new ParameterException("{0}没有业务员", store.getName());
         }
-        List<Long> collect = resultData.getData().stream().map(SelectUsersByRoleResp::getUserId).collect(Collectors.toList());
-        Long selectUserId = null;
-        for (Long userId : collect) {
-            if(userId > cachedUserId){
-                selectUserId = userId;
+        Admin selectAdmin = null;
+        for (Admin admin: admins) {
+            if(admin.getId() > cachedId){
+                selectAdmin = admin;
             }
         }
-        if(selectUserId == null){
-            selectUserId = collect.get(0);
+        if(selectAdmin == null){
+            selectAdmin = admins.get(0);
         }
-        
-        redisUtil.set(key, String.valueOf(selectUserId));
-        Admin admin = adminDao.findByUserId(selectUserId);
-        if(admin == null){
-            throw new ParameterException("业务中心(ID:{0})没有业务员", storeId);
-        }
-        return admin;
+        redisUtil.set(key, String.valueOf(selectAdmin.getId()));
+        return selectAdmin;
     }
 }

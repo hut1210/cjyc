@@ -1,6 +1,8 @@
 package com.cjyc.web.api.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.cjyc.common.model.dto.web.BaseWebDto;
+import com.cjyc.common.model.dto.web.dispatch.LineWaitCountDto;
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Order;
@@ -9,19 +11,17 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.OrderCarVo;
 import com.cjyc.common.model.vo.web.order.*;
-import com.cjyc.common.model.dto.web.order.CommitOrderDto;
 
 import java.util.List;
 import java.util.Map;
 
 /**
- * @auther litan
- * @description: com.cjyc.web.api.system
- * @date:2019/10/15
+ * @author JPG
  */
 public interface IOrderService extends IService<Order> {
 
 
+    @Deprecated
     ResultVo<ListVo<Map<String, Object>>> waitDispatchCarCountList();
 
     /**
@@ -37,6 +37,7 @@ public interface IOrderService extends IService<Order> {
      * @since 2019/10/16 10:04
      * @param bizScopeStoreIds
      */
+    @Deprecated
     ResultVo<ListVo<Map<String, Object>>> lineWaitDispatchCarCountList(LineWaitDispatchCountDto paramsDto, List<Long> bizScopeStoreIds);
 
     OrderVo getVoById(Long orderId);
@@ -70,7 +71,11 @@ public interface IOrderService extends IService<Order> {
 
     ResultVo<PageVo<OrderCarWaitDispatchVo>> waitDispatchTrunkCarList(WaitDispatchTrunkDto reqDto);
 
-    ResultVo<ListVo<Map<String, Object>>> waitDispatchTrunkCarCountList(WaitDispatchCountDto reqDto);
+    ResultVo<ListVo<Map<String, Object>>> waitDispatchTrunkCarCountList(BaseWebDto reqDto);
 
     ResultVo<ListVo<Map<String, Object>>> lineWaitDispatchTrunkCarCountList(LineWaitDispatchCountDto reqDto);
+
+    ResultVo<ListVo<Map<String, Object>>> waitDispatchCarCountListV2(BaseWebDto reqDto);
+
+    ResultVo<ListVo<Map<String, Object>>> lineWaitDispatchCarCountListV2(LineWaitCountDto reqDto);
 }

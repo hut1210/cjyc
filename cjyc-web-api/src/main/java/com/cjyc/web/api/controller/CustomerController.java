@@ -45,31 +45,31 @@ public class CustomerController {
     }
 
     @ApiOperation(value = "新增移动端用户")
-    @PostMapping(value = "/saveCustomer")
+//    @PostMapping(value = "/saveCustomer")
     public ResultVo saveCustomer(@Validated @RequestBody CustomerDto customerDto){
         return customerService.saveCustomer(customerDto);
     }
 
     @ApiOperation(value = "更新移动端用户")
-    @PostMapping(value = "/modifyCustomer")
+//    @PostMapping(value = "/modifyCustomer")
     public ResultVo modifyCustomer(@Validated @RequestBody CustomerDto customerDto){
         return customerService.modifyCustomer(customerDto);
     }
 
     @ApiOperation(value = "根据条件查询移动端用户")
-    @PostMapping(value = "/findCustomer")
+//    @PostMapping(value = "/findCustomer")
     public ResultVo<PageVo<CustomerVo>> findCustomer(@RequestBody SelectCustomerDto dto){
         return customerService.findCustomer(dto);
     }
 
     @ApiOperation(value = "新增/修改大客户&合同")
-    @PostMapping(value = "/saveOrModifyKey")
+//    @PostMapping(value = "/saveOrModifyKey")
     public ResultVo saveOrModifyKey(@Validated @RequestBody KeyCustomerDto dto){
         return customerService.saveOrModifyKey(dto);
     }
 
     @ApiOperation(value = "当前登陆用户loginId冻结/解冻/审核用户")
-    @PostMapping(value = "/verifyCustomer")
+//    @PostMapping(value = "/verifyCustomer")
     public ResultVo verifyCustomer(@RequestBody OperateDto dto){
         return customerService.verifyCustomer(dto);
     }
@@ -81,19 +81,19 @@ public class CustomerController {
     }
 
     @ApiOperation(value = "根据条件查询大客户")
-    @PostMapping(value = "/findKeyCustomer")
+//    @PostMapping(value = "/findKeyCustomer")
     public ResultVo<PageVo<ListKeyCustomerVo>> findKeyCustomer(@RequestBody SelectKeyCustomerDto dto){
         return customerService.findKeyCustomer(dto);
     }
 
     @ApiOperation(value = "新增/修改合伙人")
-    @PostMapping(value = "/saveOrModifyPartner")
+//    @PostMapping(value = "/saveOrModifyPartner")
     public ResultVo saveOrModifyPartner(@Validated  @RequestBody PartnerDto dto){
         return customerService.saveOrModifyPartner(dto);
     }
 
     @ApiOperation(value = "根据条件分页查看合伙人")
-    @PostMapping(value = "/findPartner")
+//    @PostMapping(value = "/findPartner")
     public ResultVo<PageVo<CustomerPartnerVo>> findPartner(@RequestBody CustomerPartnerDto dto){
         return customerService.findPartner(dto);
     }
@@ -105,7 +105,7 @@ public class CustomerController {
     }
 
     @ApiOperation(value = "根据输入手机号/用户名称模糊查询用户信息")
-    @PostMapping(value = "/getAllCustomerByKey/{keyword}")
+//    @PostMapping(value = "/getAllCustomerByKey/{keyword}")
     public ResultVo getAllCustomerByKey(@PathVariable @ApiParam(value = "手机号/用户名",required = true) String keyword){
         return customerService.getAllCustomerByKey(keyword);
     }
@@ -146,5 +146,72 @@ public class CustomerController {
     @GetMapping("/exportPartnerExcel")
     public void exportPartnerExcel(HttpServletRequest request, HttpServletResponse response){
         customerService.exportPartnerExcel(request,response);
+    }
+
+    /************************************韵车集成改版 st***********************************/
+
+    @ApiOperation(value = "新增移动端用户")
+//    @PostMapping(value = "/saveCustomerNew")
+    @PostMapping(value = "/saveCustomer")
+    public ResultVo saveCustomerNew(@Validated @RequestBody CustomerDto customerDto){
+        return customerService.saveCustomerNew(customerDto);
+    }
+
+    @ApiOperation(value = "更新移动端用户")
+//    @PostMapping(value = "/modifyCustomerNew")
+    @PostMapping(value = "/modifyCustomer")
+    public ResultVo modifyCustomerNew(@Validated @RequestBody CustomerDto customerDto){
+        return customerService.modifyCustomerNew(customerDto);
+    }
+
+    @ApiOperation(value = "新增/修改大客户&合同")
+//    @PostMapping(value = "/saveOrModifyKeyNew")
+    @PostMapping(value = "/saveOrModifyKey")
+    public ResultVo saveOrModifyKeyNew(@Validated @RequestBody KeyCustomerDto dto){
+        return customerService.saveOrModifyKeyNew(dto);
+    }
+
+    @ApiOperation(value = "新增/修改合伙人")
+//    @PostMapping(value = "/saveOrModifyPartnerNew")
+    @PostMapping(value = "/saveOrModifyPartner")
+    public ResultVo saveOrModifyPartnerNew(@Validated  @RequestBody PartnerDto dto){
+        return customerService.saveOrModifyPartnerNew(dto);
+    }
+
+    @ApiOperation(value = "根据条件查询移动端用户")
+//    @PostMapping(value = "/findCustomerNew")
+    @PostMapping(value = "/findCustomer")
+    public ResultVo<PageVo<CustomerVo>> findCustomerNew(@RequestBody SelectCustomerDto dto){
+        return customerService.findCustomerNew(dto);
+    }
+
+    @ApiOperation(value = "根据条件查询大客户")
+//    @PostMapping(value = "/findKeyCustomerNew")
+    @PostMapping(value = "/findKeyCustomer")
+    public ResultVo<PageVo<ListKeyCustomerVo>> findKeyCustomerNew(@RequestBody SelectKeyCustomerDto dto){
+        return customerService.findKeyCustomerNew(dto);
+    }
+
+    @ApiOperation(value = "根据条件分页查看合伙人")
+//    @PostMapping(value = "/findPartnerNew")
+    @PostMapping(value = "/findPartner")
+    public ResultVo<PageVo<CustomerPartnerVo>> findPartnerNew(@RequestBody CustomerPartnerDto dto){
+        return customerService.findPartnerNew(dto);
+    }
+
+
+    @ApiOperation(value = "当前登陆用户loginId冻结/解冻/审核用户")
+//    @PostMapping(value = "/verifyCustomerNew")
+    @PostMapping(value = "/verifyCustomer")
+    public ResultVo verifyCustomerNew(@RequestBody OperateDto dto){
+        return customerService.verifyCustomerNew(dto);
+    }
+
+
+    @ApiOperation(value = "根据输入手机号/用户名称模糊查询用户信息")
+//    @PostMapping(value = "/getAllCustomerByKeyNew/{keyword}")
+    @PostMapping(value = "/getAllCustomerByKey/{keyword}")
+    public ResultVo findCustomerByKey(@PathVariable @ApiParam(value = "手机号/用户名",required = true) String keyword){
+        return customerService.findCustomerByKey(keyword);
     }
 }

@@ -44,4 +44,20 @@
             driver_id = #{driverId}
     </select>
 
+
+    <!-- 根据承运商id查询车数和总收入_改版 -->
+    <select id="countNew" resultType="com.cjyc.common.model.entity.CarrierCarCount" parameterType="java.lang.Long">
+        SELECT
+            IFNULL(sum(ddcc.car_num), 0) AS carNum,
+            IFNULL(SUM(ddcc.income), 0) AS income
+        FROM
+            d_driver_car_count ddcc
+        WHERE
+            ddcc.driver_id IN (
+                SELECT urd.user_id
+                FROM s_user_role_dept urd LEFT JOIN d_carrier dc ON dc.id = urd.dept_id
+                AND urd.dept_type = 2 AND urd.user_type = 2
+                WHERE
+                dc.id = #{carrierId})
+    </select>
 </mapper>

@@ -28,7 +28,8 @@ public class WaybillCarVo extends WaybillCar {
 
     @ApiModelProperty(value = "vin码")
     private String vin;
-
+    @ApiModelProperty(value = "车辆状态")
+    private Integer orderCarState;
     @ApiModelProperty(value = "价卡运费")
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal lineFreightFee;
@@ -45,5 +46,14 @@ public class WaybillCarVo extends WaybillCar {
 
     @ApiModelProperty(value = "送车方式：1自提，2代驾上门，3拖车上门，4物流上门")
     private String backType;
+
+    @ApiModelProperty(value = "提车状态(调度状态)：1待调度，5已调度，7无需调度")
+    private Integer pickState;
+
+    @ApiModelProperty(value = "干线状态(调度状态)：1待调度，2节点调度，5已调度，7无需调度")
+    private Integer trunkState;
+
+    @ApiModelProperty(value = "送车状态(调度状态)：1待调度，5已调度，7无需调度")
+    private Integer backState;
 
 }
