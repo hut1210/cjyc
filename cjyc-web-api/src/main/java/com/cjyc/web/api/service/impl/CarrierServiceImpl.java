@@ -454,17 +454,18 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     @Transactional(rollbackFor = Exception.class)
     @Override
     public ResultVo verifyCarrierNew(OperateDto dto) {
-        Role role = csRoleService.getByName(CARRIER_SUPER_ROLE_NAME, 2);
+       /* Role role = csRoleService.getByName(CARRIER_SUPER_ROLE_NAME, 2);
         if (role == null) {
             return BaseResultUtil.fail("根据角色名称：" + CARRIER_SUPER_ROLE_NAME +
                     ",未查询到角色信息");
-        }
+        }*/
         Carrier carrier = carrierDao.selectById(dto.getId());
-        Driver driver = findDriverNew(carrier.getId(), role);
+        Driver driver = driverDao.selectOne(new QueryWrapper<Driver>().lambda()
+                .eq(Driver::getPhone, carrier.getLinkmanPhone()));
+        //Driver driver = findDriverNew(carrier.getId(), role);
         UserRoleDept userRoleDept = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
             .eq(UserRoleDept::getDeptId, carrier.getId())
-            .eq(UserRoleDept::getUserId, driver.getId())
-            .eq(UserRoleDept::getRoleId, role.getId()));
+            .eq(UserRoleDept::getUserId, driver.getId()));
         if (null == carrier || null == driver || null == userRoleDept) {
             return BaseResultUtil.fail("承运商信息有误，请检查");
         }
@@ -511,9 +512,19 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             return BaseResultUtil.fail("根据角色名称：" + CARRIER_SUPER_ROLE_NAME +
                     ",未查询到角色信息");
         }
+        Role roleC = csRoleService.getByName(CARRIER_COMMON_ROLE_NAME, 2);
+        if (roleC == null) {
+            return BaseResultUtil.fail("根据角色名称：" + CARRIER_COMMON_ROLE_NAME +
+                    ",未查询到角色信息");
+        }
         UserRoleDept userRoleDept = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
             .eq(UserRoleDept::getDeptId, id)
             .eq(UserRoleDept::getRoleId, role.getId()));
+        if(userRoleDept == null){
+            userRoleDept = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
+                    .eq(UserRoleDept::getDeptId, id)
+                    .eq(UserRoleDept::getRoleId, roleC.getId()));
+        }
         if (userRoleDept != null) {
             Driver driver = driverDao.selectById(userRoleDept.getUserId());
             if (driver != null) {
