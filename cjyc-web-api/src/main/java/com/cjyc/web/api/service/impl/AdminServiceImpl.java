@@ -375,6 +375,19 @@ public class AdminServiceImpl extends ServiceImpl<IAdminDao, Admin> implements I
         return cacheData;
     }
 
+
+    @Override
+    public ResultVo deliverySalesmanNew(TypeSalesmanDto dto) {
+        PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
+        List<TypeSalesmanVo> salesmanVos = adminDao.deliverySalesmanNew(dto.getPickBackStoreId());
+        if(dto.getIsPage() == 0){
+            //不分页
+            return BaseResultUtil.success(salesmanVos);
+        }
+        PageInfo<TypeSalesmanVo> pageInfo =  new PageInfo<>(salesmanVos);
+        return BaseResultUtil.success(pageInfo);
+    }
+
     /************************************韵车集成改版 ed***********************************/
 
     private int getPages(long total, Integer pageSize) {
