@@ -379,7 +379,7 @@ public class AdminServiceImpl extends ServiceImpl<IAdminDao, Admin> implements I
     @Override
     public ResultVo deliverySalesmanNew(TypeSalesmanDto dto) {
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
-        List<TypeSalesmanVo> salesmanVos = adminDao.deliverySalesmanNew(dto.getPickBackStoreId());
+        List<TypeSalesmanVo> salesmanVos = adminDao.deliverySalesmanNew(dto);
         if(dto.getIsPage() == 0){
             //不分页
             return BaseResultUtil.success(salesmanVos);

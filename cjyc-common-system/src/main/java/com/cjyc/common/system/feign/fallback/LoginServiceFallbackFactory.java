@@ -4,6 +4,7 @@ import com.cjkj.common.model.ResultData;
 import com.cjkj.usercenter.dto.common.auth.AuthLoginReq;
 import com.cjkj.usercenter.dto.common.auth.AuthLoginResp;
 import com.cjkj.usercenter.dto.common.auth.AuthMobileLoginReq;
+import com.cjkj.usercenter.dto.common.auth.SendSmsCodeReq;
 import com.cjyc.common.system.feign.ISysLoginService;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.log4j.Log4j2;
@@ -28,7 +29,7 @@ public class LoginServiceFallbackFactory implements FallbackFactory<ISysLoginSer
             }
 
             @Override
-            public ResultData verifyCode(String mobile) {
+            public ResultData verifyCode(SendSmsCodeReq req) {
                 log.error("调用登录服务，降级");
                 return ResultData.failed("网络异常，请稍后再试");
             }
