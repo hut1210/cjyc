@@ -1427,14 +1427,7 @@
         where oc.id = #{orderCarId}
     </select>
     <sql id="dispatch_car_field">
-        o.input_store_id as inputStoreId,
-        o.start_city as startCity,
-        o.start_city_code as startCityCode,
-        o.start_belong_store_id as startBelongStoreId,
-        o.end_city as endCity,
-        o.end_city_code as endCityCode,
-        o.end_belong_store_id as endBelongStoreId,
-        o.expect_start_date as expectStartDate,
+
         oc.order_no as orderNo,
         oc.id as orderCarId,
         oc.no as orderCarNo,
@@ -1479,7 +1472,7 @@
     </sql>
     <sql id="pick_wait_dispatch_car_list_For_App">
         select
-        <include refid="pick_wait_dispatch_car_field"/>
+        <include refid="pick_wait_dispatch_car_field"/>,
         concat(left(o.start_city,2), '-', left(ss.city,2)) as pickNodes,
         '' as trunkNodes,
         '' as backNodes,
@@ -1529,12 +1522,11 @@
         o.end_belong_store_id as endBelongStoreId,
         o.back_contact_name as backContactName,
         o.back_contact_phone as backContactPhone,
-        true as startFixedFlag
+        true as endFixedFlag
     </sql>
     <sql id="back_wait_dispatch_car_list_For_App">
         select
         <include refid="back_wait_dispatch_car_field"/>,
-        true as startFixedFlag,
         '' as pickNodes,
         '' as trunkNodes,
         concat(left(se.city,2), '-', left(o.end_city,2)) as backNodes,
@@ -1821,8 +1813,8 @@
     <select id="findWaitDispatchCarCountListForApp" resultType="java.util.Map">
         select
         count(0) as carNum,
-        o.start_city_code as startCityCode,
-        o.start_city as startCity
+        shell.startCityCode,
+        shell.startCity
         from (
             <choose>
                 <when test="param.dispatchType == 1">
@@ -2051,7 +2043,7 @@
         oc.back_state as backState
         from w_order o
         join w_order_car oc on oc.order_id = o.id
-        join s_store ss on ss.id = o.start_store_id
+        left join s_store ss on ss.id = o.start_store_id
         left join (
             select
             wc.*
@@ -2094,7 +2086,7 @@
         oc.back_state as backState
         from w_order o
         join w_order_car oc on oc.order_id = o.id
-        join s_store se on se.id = o.end_store_id
+        left join s_store se on se.id = o.end_store_id
         left join (
             select * from (
             select

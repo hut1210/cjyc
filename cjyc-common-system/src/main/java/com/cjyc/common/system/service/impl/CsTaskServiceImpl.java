@@ -12,7 +12,6 @@ import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.entity.defined.CarrierInfo;
 import com.cjyc.common.model.entity.defined.UserInfo;
 import com.cjyc.common.model.enums.*;
-import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.enums.log.OrderCarLogEnum;
 import com.cjyc.common.model.enums.log.OrderLogEnum;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
@@ -35,7 +34,6 @@ import com.cjyc.common.system.util.RedisUtils;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.pingplusplus.exception.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -45,7 +43,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.io.FileNotFoundException;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.HashSet;
@@ -557,8 +554,13 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 waybillCarDao.updateForFinish(waybillCar.getId());
                 validateAndFinishTask(task.getId());
                 csWaybillService.validateAndFinishWaybill(waybillCar.getWaybillId());
-                orderCarDao.updateLocation(waybillCar.getOrderCarId(), 0L, waybillCar.getEndAreaCode());
-
+                OrderCar noc = new OrderCar();
+                noc.setState(computeOrderCarStateForDirectUnload(waybillCar));
+                noc.setId(orderCar.getId());
+                noc.setNowStoreId(0L);
+                noc.setNowAreaCode(waybillCar.getEndAreaCode());
+                noc.setNowUpdateTime(System.currentTimeMillis());
+                orderCarDao.updateById(noc);
                 if(paramsDto.getLoginType() == UserTypeEnum.ADMIN){
                     CarStorageLog carStorageLog = CarStorageLog.builder()
                             .storeId(waybillCar.getEndStoreId())
@@ -602,6 +604,16 @@ public class CsTaskServiceImpl implements ICsTaskService {
         resultReasonVo.setSuccessList(successSet);
         resultReasonVo.setFailList(failCarNoSet);
         return BaseResultUtil.success(resultReasonVo);
+    }
+
+    private Integer computeOrderCarStateForDirectUnload(WaybillCar waybillCar) {
+        Order order = orderDao.findByCarId(waybillCar.getOrderCarId());
+        if(waybillCar.getEndStoreId() != null || waybillCar.getEndStoreId().equals(order.getEndStoreId())){
+            return OrderCarStateEnum.WAIT_BACK_DISPATCH.code;
+        }else{
+            return OrderCarStateEnum.WAIT_TRUNK_DISPATCH.code;
+        }
+
     }
 
     @Override
