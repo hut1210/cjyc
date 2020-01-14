@@ -35,8 +35,7 @@ public class WaybillDetailVo implements Serializable {
     @ApiModelProperty(value = "运单类型")
     private Integer type;
 
-    @ApiModelProperty(value = "运单状态：运单状态：0待分配承运商，15待承运商承接任务，" +
-            "20已承接, 55运输中，100已完成，111超时关闭，113已取消，115已拒接")
+    @ApiModelProperty(value = "运单状态：")
     private Integer state;
 
     @ApiModelProperty(value = "指导线路")

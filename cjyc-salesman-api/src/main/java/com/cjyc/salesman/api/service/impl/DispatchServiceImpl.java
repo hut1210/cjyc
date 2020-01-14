@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cjyc.common.model.dao.*;
-import com.cjyc.common.model.dto.salesman.BaseSalesDto;
 import com.cjyc.common.model.dto.salesman.dispatch.DispatchListDto;
 import com.cjyc.common.model.dto.salesman.dispatch.HistoryDispatchRecordDto;
 import com.cjyc.common.model.dto.salesman.dispatch.WaitCountDto;
@@ -13,6 +12,7 @@ import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.entity.defined.BizScope;
 import com.cjyc.common.model.enums.BizScopeEnum;
 import com.cjyc.common.model.enums.waybill.WaybillCarrierTypeEnum;
+import com.cjyc.common.model.enums.waybill.WaybillTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.ListVo;
@@ -32,7 +32,10 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @Description 调度业务接口实现
@@ -176,6 +179,15 @@ public class DispatchServiceImpl implements IDispatchService {
             for (WaybillCar waybillCar : waybillCarList) {
                 carDetailVo = new CarDetailVo();
                 BeanUtils.copyProperties(waybillCar,carDetailVo);
+                // 运单状态
+                detail.setState(waybillCar.getState());
+
+                // 指导路线
+                fillGuideLine(detail,waybillCar);
+                carDetailVo.setGuideLine(detail.getGuideLine());
+
+                // 获取车辆运输图片
+                getCarPhotoImg(carDetailVo,waybillCar);
 
                 // 查询品牌车系信息
                 OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
@@ -188,6 +200,71 @@ public class DispatchServiceImpl implements IDispatchService {
         detail.setCarDetailVoList(carDetailVoList);
 
         return BaseResultUtil.success(detail);
+    }
+
+    private void getCarPhotoImg(CarDetailVo carDetailVo,WaybillCar waybillCar) {
+        // 查询车辆历史图片
+        StringBuilder sb = getCarHistoryPhotoImg(waybillCar);
+
+        // 封装当前车辆图片
+        fillCarPhotoImg(waybillCar, sb);
+
+        // 封装历史图片
+        carDetailVo.setHistoryLoadPhotoImg(sb.toString());
+    }
+
+    private void fillCarPhotoImg(WaybillCar waybillCar, StringBuilder sb) {
+        // 提车图片
+        String loadPhotoImg = waybillCar.getLoadPhotoImg();
+        if (sb.length() > 0 && !StringUtils.isEmpty(loadPhotoImg)) {
+            sb.append(",");
+        }
+        if (!StringUtils.isEmpty(loadPhotoImg)) {
+            sb.append(loadPhotoImg);
+        }
+
+        // 交车图片
+        String unloadPhotoImg = waybillCar.getUnloadPhotoImg();
+        if (sb.length() > 0 && !StringUtils.isEmpty(unloadPhotoImg)) {
+            sb.append(",");
+        }
+        if (!StringUtils.isEmpty(unloadPhotoImg)) {
+            sb.append(unloadPhotoImg);
+        }
+    }
+
+    private StringBuilder getCarHistoryPhotoImg(WaybillCar waybillCar) {
+        LambdaQueryWrapper<WaybillCar> query = new QueryWrapper<WaybillCar>().lambda()
+                .eq(WaybillCar::getOrderCarId, waybillCar.getOrderCarId())
+                .lt(WaybillCar::getId, waybillCar.getId());
+        List<WaybillCar> waybillCarList = waybillCarDao.selectList(query);
+        StringBuilder sb = new StringBuilder();
+        if (!CollectionUtils.isEmpty(waybillCarList)) {
+            for (WaybillCar car : waybillCarList) {
+                String loadPhotoImg = car.getLoadPhotoImg();
+                String unloadPhotoImg = car.getUnloadPhotoImg();
+                if (sb.length() > 0 && !StringUtils.isEmpty(loadPhotoImg)) {
+                    sb.append(",");
+                }
+                if (!StringUtils.isEmpty(loadPhotoImg)) {
+                    sb.append(loadPhotoImg);
+                }
+                if (sb.length() > 0 && !StringUtils.isEmpty(unloadPhotoImg)) {
+                    sb.append(",");
+                }
+                if (!StringUtils.isEmpty(unloadPhotoImg)) {
+                    sb.append(unloadPhotoImg);
+                }
+            }
+        }
+        return sb;
+    }
+
+    private void fillGuideLine(WaybillDetailVo taskDetailVo, WaybillCar waybillCar) {
+        boolean b = WaybillTypeEnum.PICK.code == taskDetailVo.getType() || WaybillTypeEnum.BACK.code == taskDetailVo.getType();
+        if (b && StringUtils.isEmpty(taskDetailVo.getGuideLine())) {
+            taskDetailVo.setGuideLine(waybillCar.getStartCity() + "-" + waybillCar.getEndCity());
+        }
     }
 
     @Override

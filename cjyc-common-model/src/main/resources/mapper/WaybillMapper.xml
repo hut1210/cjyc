@@ -741,7 +741,8 @@
             w.id as waybillId,
             w.no as waybillNo,
             w.type as waybillType,
-            w.guide_line as guideLine,
+            (case w.type when 1 then concat(car.start_city,'-',car.end_city)
+                         when 3 then concat(car.start_city,'-',car.end_city) else t.guide_line end) AS guideLine,
             w.car_num as carNum,
             w.freight_fee as freightFee,
             w.create_time as createTime,
@@ -750,6 +751,7 @@
         from
             w_waybill w
             left join d_carrier carrier on w.carrier_id=carrier.id
+            left join w_waybill_car car on w.id=car.waybill_id and w.type in(1,3)
         <where>
             <if test="bizStoreIds != null">
                 and input_store_id in <foreach collection="bizStoreIds" item="item" index="index" open="(" close=")" separator=",">
