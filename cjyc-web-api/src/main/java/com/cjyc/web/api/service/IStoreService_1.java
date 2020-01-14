@@ -1,6 +1,7 @@
 package com.cjyc.web.api.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.cjyc.common.model.dto.web.BaseWebDto;
 import com.cjyc.common.model.dto.web.city.StoreDto;
 import com.cjyc.common.model.dto.web.store.GetStoreDto;
 import com.cjyc.common.model.dto.web.store.StoreAddDto;
@@ -27,7 +28,8 @@ public interface IStoreService_1 extends IService<Store> {
 
     List<Store> getByAreaCode(String areaCode);
     List<Store> getByCityCode(String areaCode);
-
+    List<Store> listByWebLogin(BaseWebDto reqDto);
+    List<StoreVo> listVoByWebLogin(BaseWebDto reqDto);
     /**
      * 分页查询
      * @param storeQueryDto

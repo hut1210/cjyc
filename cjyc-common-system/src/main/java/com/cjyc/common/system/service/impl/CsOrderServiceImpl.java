@@ -913,7 +913,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 if(vo.getOrderCarState() >= OrderCarStateEnum.WAIT_TRUNK_DISPATCH.code){
                     return BaseResultUtil.fail("车辆{0},提车已经结束", vo.getOrderCarNo());
                 }
-           /*     if(vo.getHasWaybill()){
+                /*if(vo.getHasWaybill()){
                     return BaseResultUtil.fail("车辆{0},提车已经调度过", vo.getOrderCarNo());
                 }*/
                 //验证数据范围
@@ -936,7 +936,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 if(vo.getOrderCarState() >= OrderCarStateEnum.WAIT_TRUNK_DISPATCH.code){
                     return BaseResultUtil.fail("车辆{0},配送已经结束", vo.getOrderCarNo());
                 }
-             /*   if(vo.getHasWaybill()){
+             /*if(vo.getHasWaybill()){
                     return BaseResultUtil.fail("车辆{0},配送已经调度过", vo.getOrderCarNo());
                 }*/
                 if(vo.getOrderEndCityCode() != null && vo.getOrderEndCityCode() != null && !vo.getOrderEndCityCode().equals(vo.getStartCityCode())){

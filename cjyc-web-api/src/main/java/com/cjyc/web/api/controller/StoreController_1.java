@@ -1,5 +1,6 @@
 package com.cjyc.web.api.controller;
 
+import com.cjyc.common.model.dto.web.BaseWebDto;
 import com.cjyc.common.model.dto.web.city.StoreDto;
 import com.cjyc.common.model.dto.web.store.GetStoreDto;
 import com.cjyc.common.model.dto.web.store.StoreAddDto;
@@ -11,6 +12,8 @@ import com.cjyc.common.model.entity.defined.FullCity;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.store.StoreVo;
+import com.cjyc.common.system.service.ICsStoreService;
+import com.cjyc.web.api.service.IStoreService;
 import com.cjyc.web.api.service.IStoreService_1;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
@@ -51,24 +54,53 @@ public class StoreController_1 {
      * 根据角色查询角色所属机构下属业务中心
      * @author JPG
      */
+    @Deprecated
     @ApiOperation(value = "根据角色查询业务中心")
-    @PostMapping(value = "/get/by/{roleId}")
-    public ResultVo<List<Store>> getByRole(@PathVariable Long roleId) {
-        List<Store> list = storeService.getListByRoleId(roleId);
+    @PostMapping(value = "/get/by/{roleId}/{loginId}")
+    public ResultVo<List<Store>> getByRole(@PathVariable Long roleId,
+                                           @PathVariable Long loginId) {
+        BaseWebDto baseWebDto = new BaseWebDto();
+        baseWebDto.setRoleId(roleId);
+        baseWebDto.setLoginId(loginId);
+        List<Store> list = storeService.listByWebLogin(baseWebDto);
         return BaseResultUtil.success(list);
     }
 
     /**
-     * 根据角色查询角色所属机构下属业务中心
+     * v2.0
      * @author JPG
      */
-    @ApiOperation(value = "根据角色查询业务中心")
-    @PostMapping(value = "/get/vo/by/{roleId}")
-    public ResultVo<List<StoreVo>> getVoByRole(@PathVariable Long roleId) {
-        List<StoreVo> list = storeService.getVoListByRoleId(roleId);
+    @ApiOperation(value = "根据角色和登录ID查询业务中心")
+    @PostMapping(value = "/list/by/role/login")
+    public ResultVo<List<Store>> getByWebLogin(@RequestBody BaseWebDto reqDto) {
+        List<Store> list = storeService.listByWebLogin(reqDto);
         return BaseResultUtil.success(list);
     }
 
+    /**
+     * @author JPG
+     */
+    @Deprecated
+    @ApiOperation(value = "根据角色查询业务中心")
+    @PostMapping(value = "/get/vo/by/{roleId}/{loginId}")
+    public ResultVo<List<StoreVo>> getVoByRole(@PathVariable Long roleId,
+                                               @PathVariable Long loginId) {
+        BaseWebDto baseWebDto = new BaseWebDto();
+        baseWebDto.setRoleId(roleId);
+        baseWebDto.setLoginId(loginId);
+        List<StoreVo> list = storeService.listVoByWebLogin(baseWebDto);
+        return BaseResultUtil.success(list);
+    }
+    /**
+     * v2.0
+     * @author JPG
+     */
+    @ApiOperation(value = "根据角色和登录ID查询业务中心")
+    @PostMapping(value = "/list/vo/by/role/login")
+    public ResultVo<List<StoreVo>> getVoByWebLogin(@RequestBody BaseWebDto reqDto) {
+        List<StoreVo> list = storeService.listVoByWebLogin(reqDto);
+        return BaseResultUtil.success(list);
+    }
     /**
      * 根据角色查询角色所属机构下属业务中心
      * @author JPG

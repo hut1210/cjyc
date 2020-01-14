@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.utils.ExcelUtil;
 import com.cjyc.common.model.constant.FieldConstant;
 import com.cjyc.common.model.dao.*;
+import com.cjyc.common.model.dto.web.BaseWebDto;
 import com.cjyc.common.model.dto.web.city.StoreDto;
 import com.cjyc.common.model.dto.web.store.GetStoreDto;
 import com.cjyc.common.model.dto.web.store.StoreAddDto;
@@ -68,6 +69,29 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
     @Override
     public List<Store> getByCityCode(String cityCode) {
         return storeDao.findByCityCode(cityCode);
+    }
+
+    @Override
+    public List<Store> listByWebLogin(BaseWebDto reqDto) {
+        BizScope bizScope = csSysService.getBizScopeBySysRoleIdNew(reqDto.getLoginId(), reqDto.getRoleId(), true);
+        if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
+            return null;
+        }else if(bizScope.getCode() == BizScopeEnum.CHINA.code){
+            return storeDao.findAll();
+        }else{
+            return storeDao.findByIds(bizScope.getStoreIds());
+        }
+    }
+    @Override
+    public List<StoreVo> listVoByWebLogin(BaseWebDto reqDto) {
+        BizScope bizScope = csSysService.getBizScopeBySysRoleIdNew(reqDto.getLoginId(), reqDto.getRoleId(), true);
+        if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
+            return null;
+        }else if(bizScope.getCode() == BizScopeEnum.CHINA.code){
+            return storeDao.findVoAll();
+        }else{
+            return storeDao.findVoByIds(bizScope.getStoreIds());
+        }
     }
 
     @Override
