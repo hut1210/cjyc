@@ -742,7 +742,7 @@
             w.no as waybillNo,
             w.type as waybillType,
             (case w.type when 1 then concat(car.start_city,'-',car.end_city)
-                         when 3 then concat(car.start_city,'-',car.end_city) else t.guide_line end) AS guideLine,
+                         when 3 then concat(car.start_city,'-',car.end_city) else w.guide_line end) AS guideLine,
             w.car_num as carNum,
             w.freight_fee as freightFee,
             w.create_time as createTime,
