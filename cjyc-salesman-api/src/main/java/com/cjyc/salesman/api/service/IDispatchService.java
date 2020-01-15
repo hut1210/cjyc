@@ -10,6 +10,7 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.salesman.dispatch.DispatchListVo;
 import com.cjyc.common.model.vo.salesman.dispatch.WaitDispatchCarListVo;
+import com.cjyc.common.model.vo.web.dispatch.WaitCountVo;
 
 import java.util.Map;
 
@@ -63,7 +64,7 @@ public interface IDispatchService {
      */
     ResultVo getWaybillDetail(Long waybillId);
 
-    ResultVo<ListVo<Map<String, Object>>> waitCountList(WaitCountDto reqDto);
+    ResultVo<ListVo<WaitCountVo>> waitCountList(WaitCountDto reqDto);
 
     ResultVo<ListVo<Map<String, Object>>> waitCountLineList(WaitCountLineDto reqDto);
 }

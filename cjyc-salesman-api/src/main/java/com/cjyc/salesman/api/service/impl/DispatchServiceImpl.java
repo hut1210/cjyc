@@ -20,6 +20,8 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.task.CarDetailVo;
 import com.cjyc.common.model.vo.salesman.dispatch.*;
+import com.cjyc.common.model.vo.web.dispatch.WaitCountLineVo;
+import com.cjyc.common.model.vo.web.dispatch.WaitCountVo;
 import com.cjyc.common.system.config.LogoImgProperty;
 import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.salesman.api.service.IDispatchService;
@@ -277,7 +279,7 @@ public class DispatchServiceImpl implements IDispatchService {
     }
 
     @Override
-    public ResultVo<ListVo<Map<String, Object>>> waitCountList(WaitCountDto paramsDto) {
+    public ResultVo<ListVo<WaitCountVo>> waitCountList(WaitCountDto paramsDto) {
         // 根据登录ID查询当前业务员所在业务中心ID
         BizScope bizScope = csSysService.getBizScopeByLoginIdNew(paramsDto.getLoginId(), true);
         // 判断当前登录人是否有权限访问
@@ -288,10 +290,19 @@ public class DispatchServiceImpl implements IDispatchService {
 
         //查询统计
         Map<String, Object> countInfo = null;
-        List<Map<String, Object>> list = orderCarDao.findWaitDispatchCarCountListForApp(paramsDto);
-        if(CollectionUtils.isEmpty(list)){
+        List<WaitCountVo> list = orderCarDao.findWaitDispatchCarCountListForApp(paramsDto);
+        if(!CollectionUtils.isEmpty(list)){
             countInfo = orderCarDao.countTotalWaitDispatchCarCountListForApp(paramsDto);
+
+            for (WaitCountVo vo: list) {
+                List<WaitCountLineVo> child = vo.getList();
+                if(CollectionUtils.isEmpty(child)){
+                    int sum = child.stream().mapToInt(WaitCountLineVo::getCarCount).sum();
+                    vo.setTotalCarCount(sum);
+                }
+            }
         }
+
         return BaseResultUtil.success(list, countInfo);
     }
 

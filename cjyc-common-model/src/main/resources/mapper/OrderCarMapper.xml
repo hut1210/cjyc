@@ -1849,24 +1849,24 @@
         shell.endCity,
         CONCAT(shell.startCity,'-',shell.endCity) as line
         from (
-            <choose>
-                <when test="param.dispatchType == 1">
-                    <include refid="pick_wait_dispatch_car_list_For_App"/>
-                </when>
-                <when test="param.dispatchType == 2">
-                    <include refid="trunk_wait_dispatch_car_list_For_App"/>
-                </when>
-                <when test="param.dispatchType == 3">
-                    <include refid="back_wait_dispatch_car_list_For_App"/>
-                </when>
-                <otherwise>
-                    <include refid="pick_wait_dispatch_car_list_For_App"/>
-                    union all
-                    <include refid="trunk_wait_dispatch_car_list_For_App"/>
-                    union all
-                    <include refid="back_wait_dispatch_car_list_For_App"/>
-                </otherwise>
-            </choose>
+        <choose>
+            <when test="param.dispatchType == 1">
+                <include refid="pick_wait_dispatch_car_list_For_App"/>
+            </when>
+            <when test="param.dispatchType == 2">
+                <include refid="trunk_wait_dispatch_car_list_For_App"/>
+            </when>
+            <when test="param.dispatchType == 3">
+                <include refid="back_wait_dispatch_car_list_For_App"/>
+            </when>
+            <otherwise>
+                <include refid="pick_wait_dispatch_car_list_For_App"/>
+                union all
+                <include refid="trunk_wait_dispatch_car_list_For_App"/>
+                union all
+                <include refid="back_wait_dispatch_car_list_For_App"/>
+            </otherwise>
+        </choose>
         ) as shell
         <where>
             <if test="param.bizScope != null">
@@ -1877,7 +1877,6 @@
             </if>
         </where>
         group by shell.startCityCode, shell.endCityCode
-
     </select>
     <select id="countTotalWaitDispatchCarCountListForApp" resultType="java.util.Map">
         select

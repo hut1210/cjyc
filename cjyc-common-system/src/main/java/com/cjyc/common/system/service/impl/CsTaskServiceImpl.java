@@ -608,7 +608,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
 
     private Integer computeOrderCarStateForDirectUnload(WaybillCar waybillCar) {
         Order order = orderDao.findByCarId(waybillCar.getOrderCarId());
-        if(waybillCar.getEndStoreId() != null || waybillCar.getEndStoreId().equals(order.getEndStoreId())){
+        if(waybillCar.getEndStoreId() != null && waybillCar.getEndStoreId().equals(order.getEndStoreId())){
             return OrderCarStateEnum.WAIT_BACK_DISPATCH.code;
         }else{
             return OrderCarStateEnum.WAIT_TRUNK_DISPATCH.code;

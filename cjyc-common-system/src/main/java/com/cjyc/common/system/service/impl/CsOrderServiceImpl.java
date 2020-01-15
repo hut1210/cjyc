@@ -976,9 +976,6 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 if(vo.getOrderCarState() >= OrderCarStateEnum.WAIT_BACK.code){
                     return BaseResultUtil.fail("车辆{0},干线已经结束", vo.getOrderCarNo());
                 }
-                if(vo.getStartStoreId() == null || vo.getStartStoreId() <= 0){
-                    return BaseResultUtil.fail("车辆{0},没有业务中心，无法送车调度", vo.getOrderCarNo());
-                }
                 //验证数据范围
                 if(bizScope.getCode() != BizScopeEnum.CHINA.code){
                     if(vo.getEndBelongStoreId() == null || !storeIds.contains(vo.getStartBelongStoreId())){

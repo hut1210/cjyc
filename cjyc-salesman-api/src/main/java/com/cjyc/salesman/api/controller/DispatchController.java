@@ -12,6 +12,7 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.salesman.dispatch.*;
 import com.cjyc.common.model.vo.web.carrier.DispatchCarrierVo;
 import com.cjyc.common.model.vo.web.carrier.TrailCarrierVo;
+import com.cjyc.common.model.vo.web.dispatch.WaitCountVo;
 import com.cjyc.common.model.vo.web.driver.DispatchDriverVo;
 import com.cjyc.common.model.vo.web.order.DispatchAddCarVo;
 import com.cjyc.common.system.service.ICsCarrierService;
@@ -91,7 +92,7 @@ public class DispatchController {
      */
     @ApiOperation(value = "调度池按城市分组统计数量列表")
     @PostMapping(value = "/wait/count/list")
-    public ResultVo<ListVo<Map<String, Object>>> waitCountList(@RequestBody WaitCountDto reqDto) {
+    public ResultVo<ListVo<WaitCountVo>> waitCountList(@RequestBody WaitCountDto reqDto) {
         return dispatchService.waitCountList(reqDto);
     }
     /**
