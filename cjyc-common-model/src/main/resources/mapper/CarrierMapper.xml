@@ -668,10 +668,12 @@
             <if test="cityCode != null and cityCode.trim() != ''">
                 and  dccc.city_code = #{cityCode}
             </if>
-            and dc.mode in
-            <foreach collection="mode" item="item" index="index" open="(" close=")" separator=",">
-                #{item}
-            </foreach>
+            <if test="mode != null and mode.size() > 0">
+                and dc.mode in
+                <foreach collection="mode" item="item" index="index" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
             and dc.state = 2
             and dc.business_state = 0
             and dd.business_state = 0
