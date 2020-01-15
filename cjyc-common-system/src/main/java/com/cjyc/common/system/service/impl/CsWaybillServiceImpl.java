@@ -289,9 +289,6 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             if (orderCar == null) {
                 return BaseResultUtil.fail("运单,车辆{0}，车辆所属订单车辆不存在", orderCarNo);
             }
-            if(orderCar.getPickState() >= OrderCarLocalStateEnum.DISPATCHED.code){
-                return BaseResultUtil.fail("运单已经调度过，无法调度", orderCarNo);
-            }
             //【验证】订单状态
             Order order = orderDao.selectById(orderCar.getOrderId());
             if (order == null) {

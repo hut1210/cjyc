@@ -31,6 +31,7 @@ public class CsOrderCarLogServiceImpl implements ICsOrderCarLogService {
      * @author JPG
      * @since 2019/12/9 19:59
      */
+    @Async
     @Override
     public void asyncSave(OrderCar orderCar, OrderCarLogEnum logTypeEnum, String[] log, UserInfo userInfo) {
         if(orderCar == null){
