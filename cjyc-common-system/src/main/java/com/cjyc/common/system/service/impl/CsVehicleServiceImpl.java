@@ -220,7 +220,7 @@ public class CsVehicleServiceImpl implements ICsVehicleService {
                 .eq(UserRoleDept::getUserId, dto.getLoginId())
                 .eq(UserRoleDept::getId, dto.getRoleId()));
         if(urd == null){
-            return BaseResultUtil.fail("该司机管理员不存在,请检查");
+            return BaseResultUtil.fail("该司机不存在,请检查");
         }
         //获取社会所有车辆
         List<FreeVehicleVo> freeVehicleVos = vehicleDao.findSocietyFreeVehicle(Long.valueOf(urd.getDeptId()),dto.getPlateNo());

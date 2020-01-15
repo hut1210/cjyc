@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 @Data
@@ -32,4 +33,11 @@ public class CustomerLineVo implements Serializable {
 
     @ApiModelProperty("目的地联系人电话")
     private String endContactPhone;
+
+    public String getStartAdress(){return StringUtils.isBlank(startAdress) ? "":startAdress; }
+    public String getStartContact(){return StringUtils.isBlank(startContact) ? "":startContact; }
+    public String getStartContactPhone(){return StringUtils.isBlank(startContactPhone) ? "":startContactPhone; }
+    public String getEndAdress(){return StringUtils.isBlank(endAdress) ? "":endAdress; }
+    public String getEndContact(){return StringUtils.isBlank(endContact) ? "":endContact; }
+    public String getEndContactPhone(){return StringUtils.isBlank(endContactPhone) ? "":endContactPhone; }
 }
