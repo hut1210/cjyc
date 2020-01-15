@@ -244,7 +244,7 @@ public class CsCityServiceImpl implements ICsCityService {
         //获取所属业务中心
         Set<Long> storeIds = bizScope.getStoreIds();
         //存储大区code
-        List<String> multAreaCode = Lists.newArrayList();
+        List<String> multAreaCodes = Lists.newArrayList();
         if(!CollectionUtils.isEmpty(storeIds)){
             //根据业务中心获取省code
             for(Long storeId : storeIds){
@@ -253,13 +253,17 @@ public class CsCityServiceImpl implements ICsCityService {
                     //根据省code获取上一级大区
                     City city = cityDao.selectById(store.getProvinceCode());
                     if(city != null){
-                        multAreaCode.add(city.getParentCode());
+                        multAreaCodes.add(city.getParentCode());
                     }
                 }
             }
         }
-        cityTreeVos = cityDao.findThreeCity(Constant.EMPTY_STRING, multAreaCode);
-        cityVo.setCityTreeVos(cityTreeVos);
+        if(!CollectionUtils.isEmpty(multAreaCodes)){
+            cityTreeVos = cityDao.findThreeCity(Constant.EMPTY_STRING, multAreaCodes);
+            cityVo.setCityTreeVos(cityTreeVos);
+        }else{
+            cityVo.setCityTreeVos(Collections.EMPTY_LIST);
+        }
         return BaseResultUtil.success(cityVo);
     }
 }

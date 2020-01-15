@@ -3,8 +3,8 @@ package com.cjyc.common.model.vo.salesman.dispatch;
 import com.cjyc.common.model.enums.waybill.WaybillStateEnum;
 import com.cjyc.common.model.util.BigDecimalSerizlizer;
 import com.cjyc.common.model.util.DateLongSerizlizer;
-import com.cjyc.common.model.vo.driver.task.CarDetailVo;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -20,6 +20,14 @@ import java.util.List;
 @Data
 public class WaybillDetailVo implements Serializable {
     private static final long serialVersionUID = 1170810595535938015L;
+    @ApiModelProperty(value = "承运商ID")
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long carrierId;
+
+    @ApiModelProperty(value = "司机ID")
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long driverId;
+
     @ApiModelProperty(value = "承运商联系人")
     private String carrierName;
 
@@ -53,7 +61,7 @@ public class WaybillDetailVo implements Serializable {
     private BigDecimal freightFee;
 
     @ApiModelProperty(value = "车辆信息列表")
-    private List<CarDetailVo> carDetailVoList;
+    private List<WaybillCarDetailVo> carDetailVoList;
 
     public String getStateDes() {
         if (state == WaybillStateEnum.WAIT_ALLOT.code) {

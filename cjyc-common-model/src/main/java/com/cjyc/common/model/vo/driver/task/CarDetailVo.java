@@ -9,7 +9,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * @Description 车辆详情
+ * @Description 运单车辆详情
  * @Author Liu Xing Xiang
  * @Date 2019/11/20 13:26
  **/

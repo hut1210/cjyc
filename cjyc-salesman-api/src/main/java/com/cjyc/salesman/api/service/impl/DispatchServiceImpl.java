@@ -18,7 +18,6 @@ import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.driver.task.CarDetailVo;
 import com.cjyc.common.model.vo.salesman.dispatch.*;
 import com.cjyc.common.model.vo.web.dispatch.WaitCountLineVo;
 import com.cjyc.common.model.vo.web.dispatch.WaitCountVo;
@@ -68,6 +67,8 @@ public class DispatchServiceImpl implements IDispatchService {
     private IAdminDao adminDao;
     @Resource
     private ICustomerDao customerDao;
+    @Resource
+    private ITaskDao taskDao;
 
     @Override
     public ResultVo getCityCarCount(Long loginId) {
@@ -168,18 +169,25 @@ public class DispatchServiceImpl implements IDispatchService {
             return BaseResultUtil.fail("运单ID错误");
         }
         BeanUtils.copyProperties(waybill,detail);
+
         // 查询承运商管理员手机号
         String carrierPhone = getCarrierPhone(waybill.getCarrierId(), waybill.getCarrierType());
         detail.setLinkmanPhone(carrierPhone);
 
+        // 查询任务单，获取司机id
+        List<Task> taskList = taskDao.selectList(new QueryWrapper<Task>().lambda().eq(Task::getWaybillId, waybill.getId()));
+        if (!CollectionUtils.isEmpty(taskList) && taskList.size() == 1) {
+            detail.setDriverId(taskList.get(0).getDriverId());
+        }
+
         // 查询车辆信息
         LambdaQueryWrapper<WaybillCar> queryWrapper = new QueryWrapper<WaybillCar>().lambda().eq(WaybillCar::getWaybillId, waybillId);
         List<WaybillCar> waybillCarList = waybillCarDao.selectList(queryWrapper);
-        List<CarDetailVo> carDetailVoList = new ArrayList<>(10);
-        CarDetailVo carDetailVo = null;
+        List<WaybillCarDetailVo> carDetailVoList = new ArrayList<>(10);
+        WaybillCarDetailVo carDetailVo = null;
         if (!CollectionUtils.isEmpty(waybillCarList)) {
             for (WaybillCar waybillCar : waybillCarList) {
-                carDetailVo = new CarDetailVo();
+                carDetailVo = new WaybillCarDetailVo();
                 BeanUtils.copyProperties(waybillCar,carDetailVo);
 
                 // 指导路线
@@ -211,7 +219,7 @@ public class DispatchServiceImpl implements IDispatchService {
         return BaseResultUtil.success(detail);
     }
 
-    private void getCarPhotoImg(CarDetailVo carDetailVo,WaybillCar waybillCar) {
+    private void getCarPhotoImg(WaybillCarDetailVo carDetailVo,WaybillCar waybillCar) {
         // 查询车辆历史图片
         StringBuilder sb = getCarHistoryPhotoImg(waybillCar);
 
