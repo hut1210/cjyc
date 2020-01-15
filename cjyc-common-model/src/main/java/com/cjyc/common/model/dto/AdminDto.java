@@ -8,9 +8,9 @@ import java.io.Serializable;
 public class AdminDto implements Serializable {
     private static final long serialVersionUID = 4260332178119799044L;
 
-    @ApiModelProperty(value = "角色id,web端传",required = true)
+    @ApiModelProperty(value = "角色id",required = true)
     private Long roleId;
 
-    @ApiModelProperty(value = "登录用户id,app端传",required = true)
+    @ApiModelProperty(value = "登录用户id",required = true)
     private Long loginId;
 }

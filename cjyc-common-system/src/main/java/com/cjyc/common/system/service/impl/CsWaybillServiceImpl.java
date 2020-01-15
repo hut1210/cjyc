@@ -2,7 +2,6 @@ package com.cjyc.common.system.service.impl;
 
 import com.cjkj.common.redis.lock.RedisDistributedLock;
 import com.cjkj.common.redis.template.StringRedisUtil;
-import com.cjkj.log.monitor.LogUtil;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.waybill.*;
 import com.cjyc.common.model.entity.*;
@@ -27,7 +26,6 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.service.*;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.pingplusplus.exception.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -36,7 +34,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.io.FileNotFoundException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.MessageFormat;
@@ -1019,7 +1016,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             return;
         }
         if(waybillType == null){
-            Waybill waybill = waybillDao.selectById(waybillCar.getId());
+            Waybill waybill = waybillDao.selectById(waybillCar.getWaybillId());
             waybillType = waybill.getType();
         }
 

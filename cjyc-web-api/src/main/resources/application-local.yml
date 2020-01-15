@@ -169,13 +169,13 @@ cjyc:
       businessCode: 200604000004527
       apikey: sk_test_40WD00COyLKOKKCiD8vH04qL
       customer:
-        appid: app_WHKWv9XDWTyPz1G8
+        appid: app_br5Ce99OOqnPybff
         webhooks: http://39.106.134.87:80/manycc/pingpay/webhooksNotice
       driver:
-        appid: app_XzvvzPDmDm1GbTi1
+        appid: app_08OCuPPi5e94eLiz
         webhooks: http://39.106.134.87:80/manycc/pingpay/webhooksNotice
       salesman:
-        appid: app_LSm9WLS4SmLSSC48
+        appid: app_9i5O08OKG40OqXP0
         webhooks: http://39.106.134.87:80/manycc/pingpay/webhooksNotice
 
     #车系logo

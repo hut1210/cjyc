@@ -1218,10 +1218,12 @@
             <if test="endTime != null and endTime != 0">
                 and wo.expect_start_date &lt; #{endTime}
             </if>
-            and woc.now_store_id in
-            <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
-                #{item}
-            </foreach>
+            <if test="storeIds != null and storeIds.size() != 0">
+                and woc.now_store_id in
+                <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
             and woc.state in (25,35,45,50)
             order by woc.now_update_time desc
         </where>
@@ -1883,11 +1885,11 @@
     <select id="findWaitDispatchCarCountLineListForApp" resultType="java.util.Map">
         select
             count(0) as carNum,
-            o.start_city_code as startCityCode,
-            o.start_city as startCity,
-            o.end_city_code as endCityCode,
-            o.end_city as endCity,
-            CONCAT(o.start_city,'-',o.end_city) as line
+            shell.startCityCode,
+            shell.startCity,
+            shell.endCityCode,
+            shell.endCity,
+            CONCAT(shell.startCity,'-',shell.endCity) as line
         from (
         <choose>
             <when test="param.dispatchType == 1">
