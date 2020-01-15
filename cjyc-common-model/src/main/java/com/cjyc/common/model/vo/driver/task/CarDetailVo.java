@@ -86,9 +86,21 @@ public class CarDetailVo implements Serializable {
     @ApiModelProperty(value = "客户付款方式：0到付（默认），1预付，2账期")
     private Integer payType;
 
+    @ApiModelProperty(value = "提车方式:1 自送，2代驾上门，3拖车上门，4物流上门")
+    private Integer pickType;
+
+    @ApiModelProperty(value = "送车方式： 1 自提，2代驾上门，3拖车上门，4物流上门")
+    private Integer backType;
+
     @ApiModelProperty(value = "最后一次运输标识：0否，1是")
     private Boolean receiptFlag;
 
+    public Integer getPickType() {
+        return pickType == null ? -1 : pickType;
+    }
+    public Integer getBackType() {
+        return backType == null ? -1 : backType;
+    }
     public String getGuideLine() {
         return guideLine == null ? "" : guideLine;
     }
