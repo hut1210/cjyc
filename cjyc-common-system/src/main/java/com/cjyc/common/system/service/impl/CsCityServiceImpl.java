@@ -258,8 +258,12 @@ public class CsCityServiceImpl implements ICsCityService {
                 }
             }
         }
-        cityTreeVos = cityDao.findThreeCity(Constant.EMPTY_STRING, multAreaCodes);
-        cityVo.setCityTreeVos(cityTreeVos);
+        if(!CollectionUtils.isEmpty(multAreaCodes)){
+            cityTreeVos = cityDao.findThreeCity(Constant.EMPTY_STRING, multAreaCodes);
+            cityVo.setCityTreeVos(cityTreeVos);
+        }else{
+            cityVo.setCityTreeVos(Collections.EMPTY_LIST);
+        }
         return BaseResultUtil.success(cityVo);
     }
 }
