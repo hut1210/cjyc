@@ -1,15 +1,9 @@
 package com.cjyc.salesman.api.controller;
 
-import com.cjkj.common.model.UserType;
-import com.cjyc.common.model.dto.driver.task.ReplenishInfoDto;
 import com.cjyc.common.model.dto.web.waybill.*;
 import com.cjyc.common.model.entity.Admin;
-import com.cjyc.common.model.entity.Driver;
-import com.cjyc.common.model.enums.UserTypeEnum;
-import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.BaseTipVo;
 import com.cjyc.common.model.vo.ListVo;
-import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.service.ICsAdminService;
 import com.cjyc.common.system.service.ICsTaskService;

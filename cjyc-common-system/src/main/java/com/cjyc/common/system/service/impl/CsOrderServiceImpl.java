@@ -928,14 +928,15 @@ public class CsOrderServiceImpl implements ICsOrderService {
         List<Long> orderCarIdList = paramsDto.getOrderCarIdList();
         List<WaybillCarVo> list = null;
         if (paramsDto.getDispatchType() == WaybillTypeEnum.PICK.code) {
+            /**提车*/
             list = orderCarDao.findPickCarEndpoint(orderCarIdList);
             for (WaybillCarVo vo : list) {
                 //验证状态
                 if(vo.getPickState() >= OrderCarLocalStateEnum.DISPATCHED.code){
                     return BaseResultUtil.fail("车辆{0},提车已经调度完成", vo.getOrderCarNo());
                 }
-                if(vo.getOrderCarState() >= OrderCarStateEnum.WAIT_TRUNK_DISPATCH.code){
-                    return BaseResultUtil.fail("车辆{0},提车已经结束", vo.getOrderCarNo());
+                if(vo.getOrderCarState() >= OrderCarStateEnum.WAIT_PICK.code){
+                    return BaseResultUtil.fail("车辆{0},提车调度已经结束", vo.getOrderCarNo());
                 }
                 if(vo.getEndStoreId() == null || vo.getEndStoreId() <= 0){
                     return BaseResultUtil.fail("车辆{0},没有业务中心，无法提送车调度", vo.getOrderCarNo());
@@ -951,17 +952,18 @@ public class CsOrderServiceImpl implements ICsOrderService {
             }
 
         } else if (paramsDto.getDispatchType() == WaybillTypeEnum.BACK.code) {
+            /**送车*/
             list = orderCarDao.findBackCarEndpoint(orderCarIdList);
             for (WaybillCarVo vo : list) {
                 //验证状态
                 if(vo.getBackState() >= OrderCarLocalStateEnum.DISPATCHED.code){
                     return BaseResultUtil.fail("车辆{0},配送已经调度完成", vo.getOrderCarNo());
                 }
-                if(vo.getOrderCarState() >= OrderCarStateEnum.SIGNED.code){
-                    return BaseResultUtil.fail("车辆{0},配送已经结束", vo.getOrderCarNo());
+                if(vo.getOrderCarState() >= OrderCarStateEnum.WAIT_BACK.code){
+                    return BaseResultUtil.fail("车辆{0},配送调度已经结束", vo.getOrderCarNo());
                 }
                 if(vo.getStartStoreId() == null || vo.getStartStoreId() <= 0){
-                    return BaseResultUtil.fail("车辆{0},始发地没有业务中心，无法提车调度", vo.getOrderCarNo());
+                    return BaseResultUtil.fail("车辆{0},始发地没有业务中心，无法配送调度", vo.getOrderCarNo());
                 }
                 if(vo.getOrderEndCityCode() != null && vo.getOrderEndCityCode() != null && !vo.getOrderEndCityCode().equals(vo.getStartCityCode())){
                     return BaseResultUtil.fail("车辆{0},干线尚未调度到订单目的地城市范围内，不能送车调度", vo.getOrderCarNo());
@@ -976,14 +978,15 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 }
             }
         } else {
+            /**干线*/
             list = orderCarDao.findTrunkCarEndpoint(orderCarIdList);
             for (WaybillCarVo vo : list) {
                 //验证状态
                 if(vo.getTrunkState() >= OrderCarTrunkStateEnum.DISPATCHED.code){
                     return BaseResultUtil.fail("车辆{0},干线已经调度完成", vo.getOrderCarNo());
                 }
-                if(vo.getOrderCarState() >= OrderCarStateEnum.WAIT_BACK.code){
-                    return BaseResultUtil.fail("车辆{0},干线已经结束", vo.getOrderCarNo());
+                if(vo.getOrderCarState() >= OrderCarStateEnum.WAIT_BACK_DISPATCH.code){
+                    return BaseResultUtil.fail("车辆{0},干线调度已经结束", vo.getOrderCarNo());
                 }
                 //验证数据范围
                 if(bizScope.getCode() != BizScopeEnum.CHINA.code){
