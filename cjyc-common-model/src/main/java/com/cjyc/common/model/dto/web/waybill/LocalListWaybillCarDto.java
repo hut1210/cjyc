@@ -13,7 +13,6 @@ public class LocalListWaybillCarDto extends BasePageDto {
 
     @ApiModelProperty(value = "业务中心ID")
     private Long storeId;
-
     @ApiModelProperty(value = "订单编号")
     private String orderNo;
 

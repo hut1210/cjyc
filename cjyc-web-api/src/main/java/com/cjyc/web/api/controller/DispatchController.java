@@ -59,6 +59,17 @@ public class DispatchController {
      * @author JPG
      * @deprecated replace by {@link DispatchController#waitDispatchCarCountListV2}
      */
+    @ApiOperation(value = "查询待调度车辆统计")
+    @PostMapping(value = "/wait/count/list/{roleId}/{loginId}")
+    public ResultVo<ListVo<Map<String, Object>>> waitDispatchCarCountList(@PathVariable Long loginId,
+                                                                          @PathVariable Long roleId) {
+        return orderService.waitDispatchCarCountListV2(new BaseWebDto(loginId, roleId));
+    }
+
+    /**
+     * @author JPG
+     * @deprecated replace by {@link DispatchController#waitDispatchCarCountListV2}
+     */
     @Deprecated
     @ApiOperation(value = "查询待调度车辆统计")
     @PostMapping(value = "/wait/count/list/{userId}")
@@ -72,19 +83,9 @@ public class DispatchController {
      * @author JPG
      */
     @ApiOperation(value = "按线路统计待调度车辆（统计列表）")
-    @PostMapping(value = "/line/wait/count/list/v2")
+    @PostMapping(value = "/line/wait/count/list")
     public ResultVo<ListVo<Map<String, Object>>> lineWaitDispatchCarCountListV2(@RequestBody LineWaitCountDto reqDto) {
         return orderService.lineWaitDispatchCarCountListV2(reqDto);
-    }
-    /**
-     * @author JPG
-     * @deprecated replace by {@link DispatchController#lineWaitDispatchCarCountListV2}
-     */
-    @Deprecated
-    @ApiOperation(value = "按线路统计待调度车辆（统计列表）")
-    @PostMapping(value = "/line/wait/count/list")
-    public ResultVo<ListVo<Map<String, Object>>> lineWaitDispatchCarCountList(@RequestBody LineWaitDispatchCountDto reqDto) {
-        return orderService.lineWaitDispatchCarCountList(reqDto,null);
     }
 
     /**

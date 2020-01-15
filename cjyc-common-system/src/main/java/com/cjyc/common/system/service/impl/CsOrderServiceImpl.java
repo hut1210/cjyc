@@ -253,6 +253,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
             fillOrderStoreInfo(order);
             //提送车类型
             fillOrderLocalCarryTypeInfo(order);
+            //计算预计到达时间
+            fillOrderExpectEndTime(order);
             //订单编号
             if (isNewOrder) {
                 order.setNo(csSendNoService.getNo(SendNoTypeEnum.ORDER));
@@ -338,6 +340,19 @@ public class CsOrderServiceImpl implements ICsOrderService {
             }
         }
 
+    }
+
+    private Order fillOrderExpectEndTime(Order order) {
+        if(order.getExpectStartDate() != null){
+            Line line = csLineService.getLineByCity(order.getStartCityCode(), order.getEndCityCode(), true);
+            if(line == null){
+                throw new ParameterException("线路不存在");
+            }
+            if(line.getDays() != null){
+                order.setExpectEndDate(order.getExpectStartDate() + (86400000 * line.getDays().intValue()));
+            }
+        }
+        return order;
     }
 
     @Override
@@ -913,6 +928,9 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 if(vo.getOrderCarState() >= OrderCarStateEnum.WAIT_TRUNK_DISPATCH.code){
                     return BaseResultUtil.fail("车辆{0},提车已经结束", vo.getOrderCarNo());
                 }
+                if(vo.getEndStoreId() == null || vo.getEndStoreId() <= 0){
+                    return BaseResultUtil.fail("车辆{0},没有业务中心，无法提送车调度", vo.getOrderCarNo());
+                }
                 /*if(vo.getHasWaybill()){
                     return BaseResultUtil.fail("车辆{0},提车已经调度过", vo.getOrderCarNo());
                 }*/
@@ -939,6 +957,9 @@ public class CsOrderServiceImpl implements ICsOrderService {
              /*if(vo.getHasWaybill()){
                     return BaseResultUtil.fail("车辆{0},配送已经调度过", vo.getOrderCarNo());
                 }*/
+                if(vo.getStartStoreId() == null || vo.getStartStoreId() <= 0){
+                    return BaseResultUtil.fail("车辆{0},没有业务中心，无法提送车调度", vo.getOrderCarNo());
+                }
                 if(vo.getOrderEndCityCode() != null && vo.getOrderEndCityCode() != null && !vo.getOrderEndCityCode().equals(vo.getStartCityCode())){
                     return BaseResultUtil.fail("车辆{0},干线尚未调度到订单目的地城市范围内，不能送车调度", vo.getOrderCarNo());
                 }

@@ -611,6 +611,18 @@
         ) as tb on tb.waybill_car_id = wc.id
         <where>
             w.type != 2
+            <if test="paramsDto.carrierName != null and paramsDto.carrierName.trim() != ''">
+                and w.carrier_name like concat('%', #{paramsDto.carrierName},'%')
+            </if>
+            <if test="paramsDto.driverName != null and paramsDto.driverName.trim() != ''">
+                and tb.driver_name like concat('%', #{paramsDto.driverName},'%')
+            </if>
+            <if test="paramsDto.driverPhone != null and paramsDto.driverPhone.trim() != ''">
+                and tb.driver_phone  like concat('%', #{paramsDto.driverPhone},'%')
+            </if>
+            <if test="paramsDto.vehiclePlateNo != null and paramsDto.vehiclePlateNo.trim() != ''">
+                and tb.vehicle_plate_no  like concat('%', #{paramsDto.vehiclePlateNo},'%')
+            </if>
             <if test="paramsDto.state != null">
                 and wc.state = #{paramsDto.state}
             </if>
@@ -650,9 +662,6 @@
             <if test="paramsDto.startAreaCode != null and paramsDto.startAreaCode != ''">
                 and wc.start_area_code = #{paramsDto.startAreaCode}
             </if>
-            <if test="paramsDto.storeId != null">
-                and wc.start_store_id = #{paramsDto.storeId}
-            </if>
             <if test="paramsDto.endProvinceCode != null and paramsDto.endProvinceCode != ''">
                 and wc.end_province_code = #{paramsDto.endProvinceCode}
             </if>
@@ -663,7 +672,7 @@
                 and wc.end_area_code = #{paramsDto.endAreaCode}
             </if>
             <if test="paramsDto.storeId != null">
-                and wc.end_store_id = #{paramsDto.storeId}
+                and (wc.end_store_id = #{paramsDto.storeId} or wc.start_store_id = #{paramsDto.storeId})
             </if>
             <if test="paramsDto.beginExpectStartTime != null">
                 and wc.expect_start_time &gt;= #{paramsDto.beginExpectStartTime}

@@ -59,5 +59,7 @@ public class WaybillCarVo extends WaybillCar {
 
     private String orderStartCityCode;
     private String orderEndCityCode;
+    private String startStoreFullAddress;
+    private String endStoreFullAddress;
 
 }

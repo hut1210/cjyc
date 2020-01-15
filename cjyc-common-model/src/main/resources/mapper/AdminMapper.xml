@@ -189,8 +189,8 @@
         from b_admin m
         join s_user_role_dept urd on urd.user_id = m.id
         join s_role r on r.id = urd.role_id
-        WHERE
-        urd.user_type = 1
+        WHERE urd.user_type = 1
+        and m.state = 2
         and urd.dept_type = 1
         and urd.dept_id = #{storeId}
         and r.role_range = 1

@@ -380,7 +380,7 @@
                 </when>
                 <when test="paramsDto.dispatchType == 4">
                     and (
-                        (oc.back_state >= 5 or oc.pick_type = 4)
+                        (oc.pick_state >= 5 or oc.pick_type = 4)
                         and (oc.trunk_state >= 5)
                         and (oc.back_state >= 5 or oc.back_type &lt; 4)
                         )
@@ -1462,6 +1462,7 @@
         (case when temp.id is not null then temp.start_area else (case when oc.pick_type != 4 and o.start_store_id > 0 then ss.area else null end) end ) as endArea,
         (case when temp.id is not null then temp.start_area_code else (case when oc.pick_type != 4 and o.start_store_id > 0 then ss.area_code else null end) end ) as endAreaCode,
         (case when temp.id is not null then temp.start_address else (case when oc.pick_type != 4 and o.start_store_id > 0 then ss.detail_addr else null end) end ) as endAddress,
+        concat(ss.province, ss.city, ss.area,ss.detail_addr) as endStoreFullAddress,
         (case when temp.id is not null then temp.start_store_name else (case when oc.pick_type != 4 and o.start_store_id > 0 then ss.name else null end) end ) as endStoreName,
         (case when temp.id is not null then temp.start_store_id else (case when oc.pick_type != 4 and o.start_store_id > 0 then ss.id else 0 end) end ) as endStoreId,
         (case when temp.id is not null then temp.start_belong_store_id else (case when oc.pick_type != 4 and o.start_store_id > 0 then ss.id else 0 end) end ) as endBelongStoreId,
@@ -1504,6 +1505,7 @@
         (case when temp.id is not null then temp.end_area else (case when oc.back_type != 4 and o.end_store_id > 0 then se.area else o.start_area end) end ) as startArea,
         (case when temp.id is not null then temp.end_area_code else (case when oc.back_type != 4 and o.end_store_id > 0 then se.area_code else o.start_area_code end) end ) as startAreaCode,
         (case when temp.id is not null then temp.end_address else (case when oc.back_type != 4 and o.end_store_id > 0 then se.detail_addr else o.start_address end) end ) as startAddress,
+        concat(se.province, se.city, se.area,se.detail_addr) as startStoreFullAddress,
         (case when temp.id is not null then temp.end_store_name else (case when oc.back_type != 4 and o.end_store_id > 0 then se.name else null end) end ) as startStoreName,
         (case when temp.id is not null then temp.end_store_id else (case when oc.back_type != 4 and o.end_store_id > 0 then se.id else 0 end) end ) as startStoreId,
         (case when temp.id is not null then temp.end_belong_store_id else (case when oc.back_type != 4 and o.end_store_id > 0 then se.id else 0 end) end ) as startBelongStoreId,
