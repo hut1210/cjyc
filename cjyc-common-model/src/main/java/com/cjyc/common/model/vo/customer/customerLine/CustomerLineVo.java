@@ -1,6 +1,5 @@
 package com.cjyc.common.model.vo.customer.customerLine;
 
-import com.cjyc.common.model.dto.BasePageDto;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
