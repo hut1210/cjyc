@@ -228,7 +228,7 @@ public class BaseResultUtil<T> {
                 .totalRecords(pageInfo.getTotal())
                 .totalPages(pageInfo.getPages())
                 .currentPage(pageInfo.getPageNum())
-                .pageSize(pageInfo.getSize())
+                .pageSize(pageInfo.getPageSize())
                 .list(pageInfo.getList() == null ? new ArrayList<>() : pageInfo.getList())
                 .build();
 

@@ -931,9 +931,6 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 if(vo.getEndStoreId() == null || vo.getEndStoreId() <= 0){
                     return BaseResultUtil.fail("车辆{0},没有业务中心，无法提送车调度", vo.getOrderCarNo());
                 }
-                /*if(vo.getHasWaybill()){
-                    return BaseResultUtil.fail("车辆{0},提车已经调度过", vo.getOrderCarNo());
-                }*/
                 //验证数据范围
                 if(bizScope.getCode() != BizScopeEnum.CHINA.code){
                     if (vo.getEndBelongStoreId() == null || !storeIds.contains(vo.getStartBelongStoreId())) {
@@ -954,11 +951,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 if(vo.getOrderCarState() >= OrderCarStateEnum.WAIT_TRUNK_DISPATCH.code){
                     return BaseResultUtil.fail("车辆{0},配送已经结束", vo.getOrderCarNo());
                 }
-             /*if(vo.getHasWaybill()){
-                    return BaseResultUtil.fail("车辆{0},配送已经调度过", vo.getOrderCarNo());
-                }*/
                 if(vo.getStartStoreId() == null || vo.getStartStoreId() <= 0){
-                    return BaseResultUtil.fail("车辆{0},没有业务中心，无法提送车调度", vo.getOrderCarNo());
+                    return BaseResultUtil.fail("车辆{0},始发地没有业务中心，无法提车调度", vo.getOrderCarNo());
                 }
                 if(vo.getOrderEndCityCode() != null && vo.getOrderEndCityCode() != null && !vo.getOrderEndCityCode().equals(vo.getStartCityCode())){
                     return BaseResultUtil.fail("车辆{0},干线尚未调度到订单目的地城市范围内，不能送车调度", vo.getOrderCarNo());
@@ -981,6 +975,9 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 }
                 if(vo.getOrderCarState() >= OrderCarStateEnum.WAIT_BACK.code){
                     return BaseResultUtil.fail("车辆{0},干线已经结束", vo.getOrderCarNo());
+                }
+                if(vo.getStartStoreId() == null || vo.getStartStoreId() <= 0){
+                    return BaseResultUtil.fail("车辆{0},没有业务中心，无法送车调度", vo.getOrderCarNo());
                 }
                 //验证数据范围
                 if(bizScope.getCode() != BizScopeEnum.CHINA.code){
