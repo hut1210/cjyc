@@ -7,9 +7,14 @@ import com.cjkj.usercenter.dto.common.SelectRoleResp;
 import com.cjyc.common.model.constant.Constant;
 import com.cjyc.common.model.dao.IAdminDao;
 import com.cjyc.common.model.dao.ICityDao;
+import com.cjyc.common.model.dao.IStoreDao;
 import com.cjyc.common.model.dto.KeywordDto;
 import com.cjyc.common.model.dto.AdminDto;
 import com.cjyc.common.model.entity.Admin;
+import com.cjyc.common.model.entity.City;
+import com.cjyc.common.model.entity.Store;
+import com.cjyc.common.model.entity.defined.BizScope;
+import com.cjyc.common.model.enums.BizScopeEnum;
 import com.cjyc.common.model.enums.city.CityLevelEnum;
 import com.cjyc.common.model.entity.defined.FullCity;
 import com.cjyc.common.model.keys.RedisKeys;
@@ -22,14 +27,18 @@ import com.cjyc.common.model.vo.customer.city.ProvinceTreeVo;
 import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.service.ICsCityService;
+import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.common.system.util.ClpDeptUtil;
 import com.cjyc.common.system.util.RedisUtils;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -53,6 +62,10 @@ public class CsCityServiceImpl implements ICsCityService {
     private ISysDeptService sysDeptService;
     @Resource
     private RedisUtils redisUtils;
+    @Resource
+    private ICsSysService csSysService;
+    @Resource
+    private IStoreDao storeDao;
 
     /**
      * 查询全字段城市对象
@@ -105,7 +118,6 @@ public class CsCityServiceImpl implements ICsCityService {
         return BaseResultUtil.success(cityvo);
     }
 
-    @Override
     public ResultVo<CityVo> findThreeCityByAdmin(AdminDto dto) {
         //保存用户的deptId
         List<Long> adminDeptIds = new ArrayList<>(4);
@@ -207,6 +219,47 @@ public class CsCityServiceImpl implements ICsCityService {
                 cityVo.setCityTreeVos(cityTreeVos);
             }
         }
+        return BaseResultUtil.success(cityVo);
+    }
+
+    @Override
+    public ResultVo<CityVo> findThreeCityByAdminNew(AdminDto dto) {
+        BizScope bizScope = null;
+        CityVo cityVo = new CityVo();
+        List<ProvinceTreeVo> cityTreeVos = null;
+        cityVo.setHotCityVos(Collections.EMPTY_LIST);
+        if(dto.getRoleId() == null){
+            //业务员登录
+            bizScope = csSysService.getBizScopeByLoginIdNew(dto.getLoginId(),true);
+        }else{
+            bizScope = csSysService.getBizScopeByRoleIdNew(dto.getLoginId(),dto.getRoleId(),true);
+        }
+        // 判断当前登录人是否全国
+        if(BizScopeEnum.CHINA.code == bizScope.getCode()) {
+            //是全国范围，则查询所有省市区
+            cityTreeVos = cityDao.findThreeCity(Constant.EMPTY_STRING,null);
+            cityVo.setCityTreeVos(cityTreeVos);
+            return BaseResultUtil.success(cityVo);
+        }
+        //获取所属业务中心
+        Set<Long> storeIds = bizScope.getStoreIds();
+        //存储大区code
+        List<String> multAreaCode = Lists.newArrayList();
+        if(!CollectionUtils.isEmpty(storeIds)){
+            //根据业务中心获取省code
+            for(Long storeId : storeIds){
+                Store store = storeDao.selectById(storeId);
+                if(store != null){
+                    //根据省code获取上一级大区
+                    City city = cityDao.selectById(store.getProvinceCode());
+                    if(city != null){
+                        multAreaCode.add(city.getParentCode());
+                    }
+                }
+            }
+        }
+        cityTreeVos = cityDao.findThreeCity(Constant.EMPTY_STRING, multAreaCode);
+        cityVo.setCityTreeVos(cityTreeVos);
         return BaseResultUtil.success(cityVo);
     }
 }

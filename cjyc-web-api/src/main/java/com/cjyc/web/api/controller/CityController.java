@@ -110,7 +110,7 @@ public class CityController {
     @ApiOperation(value = "根据roleId/loginId查询省/城市区树形结构")
     @PostMapping(value = "/findThreeCityByAdmin")
     public ResultVo<CityVo> findThreeCityByAdmin(@RequestBody AdminDto dto) {
-        return csCityService.findThreeCityByAdmin(dto);
+        return csCityService.findThreeCityByAdminNew(dto);
     }
 
 }

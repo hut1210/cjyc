@@ -35,5 +35,5 @@ public interface ICsCityService {
      * @param dto
      * @return
      */
-    ResultVo<CityVo> findThreeCityByAdmin(AdminDto dto);
+    ResultVo<CityVo> findThreeCityByAdminNew(AdminDto dto);
 }

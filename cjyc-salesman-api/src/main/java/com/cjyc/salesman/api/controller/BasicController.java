@@ -64,7 +64,7 @@ public class BasicController {
     @ApiOperation(value = "查询省/城市区树形结构")
     @PostMapping(value = "/findThreeCityByAdmin")
     public ResultVo<CityVo> findThreeCityByAdmin(@RequestBody AdminDto dto) {
-        return csCityService.findThreeCityByAdmin(dto);
+        return csCityService.findThreeCityByAdminNew(dto);
     }
 
     @ApiOperation(value = "获取业务中心")
