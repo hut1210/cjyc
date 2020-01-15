@@ -114,7 +114,7 @@ public class MineServiceImpl extends ServiceImpl<IWaybillCarDao, WaybillCar> imp
         SalesAchieveDto achieveDto = new SalesAchieveDto();
         achieveDto.setThisMonthTime(thisMonthTime);
         achieveDto.setNextMonthTime(nextMonthTime);
-        Long userId = admin.getUserId();
+        Long userId = admin.getId();
         Long driverId = admin.getId();
         Map<String,Object> mapCount = new HashMap<>(5);
         //我下的订单的台数

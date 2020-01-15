@@ -143,7 +143,8 @@ public class TransactionServiceImpl implements ITransactionService {
                     log.info(chargeType+" 物流费预付 orderNo ="+orderNo);
                     updateForPrePay(pingxxMetaData);
                 }
-                if(chargeType.equals(String.valueOf(ChargeTypeEnum.DRIVER_COLLECT_QRCODE.getCode()))||chargeType.equals(String.valueOf(ChargeTypeEnum.WEB_OUT_STOCK_QRCODE.getCode()))){
+                if(chargeType.equals(String.valueOf(ChargeTypeEnum.DRIVER_COLLECT_QRCODE.getCode()))||chargeType.equals(String.valueOf(ChargeTypeEnum.WEB_OUT_STOCK_QRCODE.getCode()))
+                ||chargeType.equals(String.valueOf(ChargeTypeEnum.SALESMAN_COLLECT_QRCODE.getCode()))){
                     Long taskId = Long.valueOf((String)metadata.get("taskId"));
 
                     List<String> taskCarIdList = pingxxMetaData.getTaskCarIdList();

@@ -1063,6 +1063,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
 
     private void validateAndFinishOrder(Long orderId, UserInfo userInfo) {
         int count = orderCarDao.countUnFinishByOrderId(orderId);
+        log.info("validateAndFinishOrder count = "+count);
         if (count <= 0) {
             Order order = orderDao.selectById(orderId);
             orderDao.updateForFinish(orderId);
@@ -1097,6 +1098,8 @@ public class CsTaskServiceImpl implements ICsTaskService {
         Set<Long> orderIdSet = Sets.newHashSet();
         Set<Long> waybillCarIdSet = Sets.newHashSet();
         List<OrderCar> list = orderCarDao.findListByNos(orderCarNoList);
+
+        log.info("updateForCarFinish list ="+list.toString());
         for (OrderCar orderCar : list) {
             if (orderCar.getState() >= OrderCarStateEnum.SIGNED.code) {
                 continue;
@@ -1122,6 +1125,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             //提取数据
             orderIdSet.add(orderCar.getOrderId());
         }
+        log.info("updateForCarFinish orderIdSet ="+orderIdSet.toString());
         //处理订单
         if (CollectionUtils.isEmpty(orderIdSet)) {
             orderIdSet.forEach(orderId -> validateAndFinishOrder(orderId, userInfo));
