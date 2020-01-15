@@ -20,6 +20,10 @@ import java.util.List;
 @Data
 public class WaybillDetailVo implements Serializable {
     private static final long serialVersionUID = 1170810595535938015L;
+    @ApiModelProperty(value = "运单ID")
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long id;
+
     @ApiModelProperty(value = "承运商ID")
     @JsonSerialize(using = ToStringSerializer.class)
     private Long carrierId;
