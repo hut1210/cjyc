@@ -193,6 +193,10 @@ public class DispatchServiceImpl implements IDispatchService {
                 OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
                 BeanUtils.copyProperties(orderCar,carDetailVo);
 
+                // 查询车辆logo图片
+                String logoImg = carSeriesDao.getLogoImgByBraMod(carDetailVo.getBrand(),carDetailVo.getModel());
+                carDetailVo.setLogoPhotoImg(LogoImgProperty.logoImg+logoImg);
+
                 carDetailVo.setId(waybillCar.getId());
                 carDetailVoList.add(carDetailVo);
             }
