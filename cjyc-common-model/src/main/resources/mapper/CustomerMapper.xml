@@ -330,11 +330,12 @@
             parameterType="com.cjyc.common.model.dto.salesman.customer.SalesCustomerDto">
         SELECT
             cc.id AS customerId,
-            cc.name AS name,
+            cc.NAME AS NAME,
             cc.contact_man AS contactMan,
             cc.contact_phone AS contactPhone
         FROM
           c_customer cc
+        LEFT JOIN ( SELECT * FROM s_user_role_dept WHERE dept_type = 3 AND user_type = 3 ) surd ON surd.user_id = cc.id
         <where>
             <if test="phone != null and phone.trim() !=''">
                 cc.contact_phone like concat('%',#{phone},'%')
@@ -342,7 +343,7 @@
             <if test="name != null and name.trim() !=''">
                 or cc.contact_man like concat('%',#{name},'%')
             </if>
-            and cc.type = 2 and cc.state = 2
+            and cc.type = 2 and surd.state = 2
         </where>
     </select>
 
