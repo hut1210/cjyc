@@ -122,7 +122,7 @@ public class CsCityServiceImpl implements ICsCityService {
         //保存用户的deptId
         List<Long> adminDeptIds = new ArrayList<>(4);
         //保存大区deptId
-        List<String> regionDeptIds = new ArrayList<>(6);
+        Set<String> regionDeptIds = new HashSet<>(6);
 
         boolean result = false;
         CityVo cityVo = new CityVo();
@@ -245,7 +245,7 @@ public class CsCityServiceImpl implements ICsCityService {
         //获取所属业务中心
         Set<Long> storeIds = bizScope.getStoreIds();
         //存储大区code
-        List<String> multAreaCodes = Lists.newArrayList();
+        Set<String> multAreaCodes = Sets.newHashSet();
         if(!CollectionUtils.isEmpty(storeIds)){
             //根据业务中心获取省code
             for(Long storeId : storeIds){

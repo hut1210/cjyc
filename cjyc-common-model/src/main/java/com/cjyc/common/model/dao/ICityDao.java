@@ -83,7 +83,7 @@ public interface ICityDao extends BaseMapper<City> {
      * @param keyword
      * @return
      */
-    List<ProvinceTreeVo> findThreeCity(@Param("keyword") String keyword,@Param("code") List<String> code);
+    List<ProvinceTreeVo> findThreeCity(@Param("keyword") String keyword,@Param("code") Set<String> code);
 
     /**
      * 查询多级城市实体
