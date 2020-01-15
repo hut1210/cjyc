@@ -229,9 +229,10 @@ public class CsCityServiceImpl implements ICsCityService {
         List<ProvinceTreeVo> cityTreeVos = null;
         cityVo.setHotCityVos(Collections.EMPTY_LIST);
         if(dto.getRoleId() == null){
-            //业务员登录
+            //业务员app登录
             bizScope = csSysService.getBizScopeByLoginIdNew(dto.getLoginId(),true);
         }else{
+            //业务员后台web登录
             bizScope = csSysService.getBizScopeByRoleIdNew(dto.getLoginId(),dto.getRoleId(),true);
         }
         // 判断当前登录人所属范围是否全国
