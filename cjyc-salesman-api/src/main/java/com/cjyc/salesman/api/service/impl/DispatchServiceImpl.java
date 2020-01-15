@@ -179,8 +179,6 @@ public class DispatchServiceImpl implements IDispatchService {
             for (WaybillCar waybillCar : waybillCarList) {
                 carDetailVo = new CarDetailVo();
                 BeanUtils.copyProperties(waybillCar,carDetailVo);
-                // 运单状态
-                detail.setState(waybillCar.getState());
 
                 // 指导路线
                 fillGuideLine(detail,waybillCar);
