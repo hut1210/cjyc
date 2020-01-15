@@ -37,6 +37,17 @@
         <result column="wl_pay_time" property="wlPayTime" />
         <result column="finish_time" property="finishTime" />
     </resultMap>
+    <resultMap id="Wait_Dispatch_Car_Count_ResultMap" type="com.cjyc.common.model.vo.web.dispatch.WaitCountVo">
+        <result column="totalCarCount" property="totalCarCount"/>
+        <result column="startCityCode" property="startCityCode"/>
+        <result column="startCity" property="startCity"/>
+        <collection property="list" ofType="com.cjyc.common.model.vo.web.dispatch.WaitCountLineVo" javaType="java.util.List">
+            <result column="carCount" property="carCount"/>
+            <result column="endCityCode" property="endCityCode"/>
+            <result column="endCity" property="endCity"/>
+            <result column="line" property="line"/>
+        </collection>
+    </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
@@ -1452,9 +1463,14 @@
         o.start_area_code as startAreaCode,
         o.start_area as startArea,
         o.start_address as startAddress,
+        '' as startStoreFullAddress,
+        null as startStoreId,
+        null as startStoreName,
+        o.input_store_id as startBelongStoreId,
         o.pick_contact_name as loadLinkName,
         o.pick_contact_phone as loadLinkPhone,
-        o.input_store_id as startBelongStoreId,
+        null as loadLinkUserId,
+        (case when o.expect_start_date > UNIX_TIMESTAMP(now()) * 1000 then o.expect_start_date else UNIX_TIMESTAMP(now()) * 1000 end) as expectStartTime,
         true as startFixedFlag,
 
         (case when temp.id is not null then temp.start_province else (case when oc.pick_type != 4 and o.start_store_id > 0 then ss.province else null end) end ) as endProvince,
@@ -1515,6 +1531,7 @@
         (case when temp.id is not null then temp.unload_link_user_id else null end) as loadLinkUserId,
         (case when temp.id is not null then temp.unload_link_phone else (case when oc.back_type != 4 and o.end_store_id > 0 then null else null end) end ) as loadLinkPhone,
         (case when temp.id is not null then true else false end) as startFixedFlag,
+        UNIX_TIMESTAMP(now()) * 1000 as expectStartTime,
 
         o.end_province_code as endProvinceCode,
         o.end_province as endProvince,
@@ -1523,9 +1540,13 @@
         o.end_area_code as endAreaCode,
         o.end_area as endArea,
         o.end_address as endAddress,
+        null as endStoreName,
+        null as endStoreId,
         o.end_belong_store_id as endBelongStoreId,
         o.back_contact_name as unloadLinkName,
         o.back_contact_phone as unloadLinkPhone,
+        null as unloadLinkUserId,
+        '' as endStoreFullAddress,
         true as endFixedFlag
     </sql>
     <sql id="back_wait_dispatch_car_list_For_App">
@@ -1562,6 +1583,7 @@
         (case when temp.id is not null then temp.end_area else (case when oc.pick_type != 4 and o.start_store_id > 0 then ss.area else o.start_area end) end ) as startArea,
         (case when temp.id is not null then temp.end_area_code else (case when oc.pick_type != 4 and o.start_store_id > 0 then ss.area_code else o.start_area_code end) end ) as startAreaCode,
         (case when temp.id is not null then temp.end_address else (case when oc.pick_type != 4 and o.start_store_id > 0 then ss.detail_addr else o.start_address end) end ) as startAddress,
+        concat(ss.province, ss.city, ss.area,ss.detail_addr) as startStoreFullAddress,
         (case when temp.id is not null then temp.end_store_name else (case when oc.pick_type != 4 and o.start_store_id > 0 then ss.name else null end) end ) as startStoreName,
         (case when temp.id is not null then temp.end_store_id else (case when oc.pick_type != 4 and o.start_store_id > 0 then ss.id else 0 end) end ) as startStoreId,
         (case when temp.id is not null then temp.end_belong_store_id else o.input_store_id end) as startBelongStoreId,
@@ -1569,6 +1591,10 @@
         (case when temp.id is not null then temp.unload_link_user_id else null end) as loadLinkUserId,
         (case when temp.id is not null then temp.unload_link_phone else (case when oc.pick_type != 4 and o.start_store_id > 0 then null else o.pick_contact_phone end) end ) as loadLinkPhone,
         (case when temp.id is not null then true else false end) as startFixedFlag,
+        (case when temp.id is not null
+        then (case when temp.expect_end_time > UNIX_TIMESTAMP(now()) * 1000 then temp.expect_end_time else UNIX_TIMESTAMP(now()) * 1000 end)
+        else (case when o.expect_start_date > UNIX_TIMESTAMP(now()) * 1000 then o.expect_start_date else UNIX_TIMESTAMP(now()) * 1000 end) end
+        ) as expectStartTime,
 
         (case when o.end_store_id > 0 and o.back_type != 4 then se.province else o.end_province end) as endProvince,
         (case when o.end_store_id > 0 and o.back_type != 4 then se.province_code else o.end_province_code end)  as endProvinceCode,
@@ -1577,6 +1603,7 @@
         (case when o.end_store_id > 0 and o.back_type != 4 then se.area else o.end_area end)  as endArea,
         (case when o.end_store_id > 0 and o.back_type != 4 then se.area_code else o.end_area_code end)  as endAreaCode,
         (case when o.end_store_id > 0 and o.back_type != 4 then se.detail_addr else o.end_address end)  as endAddress,
+        concat(se.province, se.city, se.area,se.detail_addr) as endStoreFullAddress,
         (case when o.end_store_id > 0 and o.back_type != 4 then se.name else null end)  as endStoreName,
         (case when o.end_store_id > 0 and o.back_type != 4 then se.id else 0 end)  as endStoreId,
         (case when o.end_store_id > 0 and o.back_type != 4 then null else null end)  as unloadLinkUserId,
@@ -1626,18 +1653,17 @@
     </sql>
     <select id="findWaitDispatchCarListForApp" resultType="com.cjyc.common.model.vo.salesman.dispatch.WaitDispatchCarListVo">
         select
-        shell.inputStoreId,
         shell.startCity,
         shell.startCityCode,
         shell.startBelongStoreId,
         shell.endCity,
         shell.endCityCode,
         shell.endBelongStoreId,
-        shell.expectStartDate,
+        shell.expectStartTime as expectStartDate,
         shell.orderCarId,
         shell.orderCarNo,
-        shell.brand as brand,
-        shell.model as model,
+        shell.brand,
+        shell.model,
         shell.vin,
         shell.pickType,
         shell.pickState,
@@ -1814,11 +1840,14 @@
             group by o.start_city_code
         ) as t
     </select>
-    <select id="findWaitDispatchCarCountListForApp" resultType="java.util.Map">
+    <select id="findWaitDispatchCarCountListForApp" resultMap="Wait_Dispatch_Car_Count_ResultMap">
         select
-        count(0) as carNum,
+        count(0) as carCount,
         shell.startCityCode,
-        shell.startCity
+        shell.startCity,
+        shell.endCityCode,
+        shell.endCity,
+        CONCAT(shell.startCity,'-',shell.endCity) as line
         from (
             <choose>
                 <when test="param.dispatchType == 1">
@@ -1847,7 +1876,7 @@
                 </foreach>
             </if>
         </where>
-        group by shell.startCityCode
+        group by shell.startCityCode, shell.endCityCode
 
     </select>
     <select id="countTotalWaitDispatchCarCountListForApp" resultType="java.util.Map">
@@ -2031,7 +2060,7 @@
     <select id="findPickCarEndpoint" resultType="com.cjyc.common.model.vo.web.waybill.WaybillCarVo">
         select
         <include refid="pick_wait_dispatch_car_field"/>,
-        (case when o.expect_end_date > UNIX_TIMESTAMP(now()) * 1000 then o.expect_end_date else UNIX_TIMESTAMP(now()) * 1000 end) as expectStartTime,
+
         oc.pick_fee as freightFee,
         oc.id as orderCarId,
         oc.no as orderCarNo,
@@ -2076,7 +2105,7 @@
     <select id="findBackCarEndpoint" resultType="com.cjyc.common.model.vo.web.waybill.WaybillCarVo">
         select
         <include refid="back_wait_dispatch_car_field"/>,
-        UNIX_TIMESTAMP(now()) * 1000 as expectStartTime,
+
         oc.back_fee as freightFee,
         oc.id as orderCarId,
         oc.no as orderCarNo,
@@ -2166,10 +2195,7 @@
             o.end_city_code as orderEndCityCode,
             <include refid="trunk_wait_dispatch_car_field"/>,
 
-            (case when temp.id is not null
-            then (case when temp.expect_end_time > UNIX_TIMESTAMP(now()) * 1000 then temp.expect_end_time else UNIX_TIMESTAMP(now()) * 1000 end)
-            else (case when o.expect_start_date > UNIX_TIMESTAMP(now()) * 1000 then o.expect_start_date else UNIX_TIMESTAMP(now()) * 1000 end) end
-            ) as expectStartTime,
+
 
             (
                 select
