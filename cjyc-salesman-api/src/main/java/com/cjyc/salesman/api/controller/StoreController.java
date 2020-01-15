@@ -1,6 +1,8 @@
 package com.cjyc.salesman.api.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.cjyc.common.model.dto.salesman.BaseSalesDto;
+import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.salesman.store.StoreVo;
 import com.cjyc.common.system.service.ICsStoreService;
@@ -26,7 +28,9 @@ public class StoreController {
 
     @ApiOperation(value = "根据loginId查询业务中心列表")
     @PostMapping("/list")
-    public ResultVo<List<StoreVo>> getStoreListByLoginId(@Valid @RequestBody BaseSalesDto dto) {
-        return csStoreService.listByAdminId(dto.getLoginId());
+    public ResultVo<JSONObject> getStoreListByLoginId(@Valid @RequestBody BaseSalesDto dto) {
+        JSONObject jo = new JSONObject();
+        jo.put("storeVoList", csStoreService.listByAdminId(dto.getLoginId()));
+        return BaseResultUtil.success(jo);
     }
 }

@@ -20,6 +20,10 @@ public class StoreVo implements Serializable {
     @JsonSerialize(using= ToStringSerializer.class)
     private Long id;
 
+    @ApiModelProperty(value = "storeId")
+    @JsonSerialize(using= ToStringSerializer.class)
+    private Long storeId;
+
     @ApiModelProperty(value = "业务中心名称")
     private String name;
 
@@ -159,5 +163,9 @@ public class StoreVo implements Serializable {
 
     public Integer getIsDelete() {
         return isDelete == null?-1: isDelete;
+    }
+
+    public Long getStoreId() {
+        return this.getId();
     }
 }
