@@ -234,7 +234,7 @@ public class CsCityServiceImpl implements ICsCityService {
         }else{
             bizScope = csSysService.getBizScopeByRoleIdNew(dto.getLoginId(),dto.getRoleId(),true);
         }
-        // 判断当前登录人是否全国
+        // 判断当前登录人所属范围是否全国
         if(BizScopeEnum.CHINA.code == bizScope.getCode()) {
             //是全国范围，则查询所有省市区
             cityTreeVos = cityDao.findThreeCity(Constant.EMPTY_STRING,null);
