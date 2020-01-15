@@ -539,8 +539,11 @@ public class CsTaskServiceImpl implements ICsTaskService {
             if (waybillCar == null) {
                 throw new ParameterException("任务ID为{0}对应的运单车辆不存在", taskCarId);
             }
-            if (waybillCar.getState() < WaybillCarStateEnum.LOADED.code) {
+            if (waybillCar.getState() <= WaybillCarStateEnum.WAIT_LOAD.code) {
                 throw new ParameterException("运单车辆{0}尚未装车", waybillCar.getOrderCarNo());
+            }
+            if (waybillCar.getState() <= WaybillCarStateEnum.LOADED.code) {
+                throw new ParameterException("运单车辆{0}尚未出库，请联系始发地业务中心业务员", waybillCar.getOrderCarNo());
             }
             if (waybillCar.getState() >= WaybillCarStateEnum.UNLOADED.code) {
                 throw new ParameterException("运单车辆{0}已经卸过车", waybillCar.getOrderCarNo());

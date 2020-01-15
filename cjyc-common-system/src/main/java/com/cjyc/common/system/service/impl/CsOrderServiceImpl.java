@@ -911,10 +911,19 @@ public class CsOrderServiceImpl implements ICsOrderService {
     public ResultVo<DispatchAddCarVo> computerCarEndpoint(ComputeCarEndpointDto paramsDto) {
         DispatchAddCarVo dispatchAddCarVo = new DispatchAddCarVo();
         //查询角色业务中心范围
-        BizScope bizScope = csSysService.getBizScopeBySysRoleIdNew(paramsDto.getLoginId(), paramsDto.getRoleId(), true);
-        if (bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code) {
-            return BaseResultUtil.fail("没有数据权限");
+        BizScope bizScope = null;
+        if(paramsDto.getRoleId() == null){
+            bizScope = csSysService.getBizScopeByLoginIdNew(paramsDto.getLoginId(), true);
+            if (bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code) {
+                return BaseResultUtil.fail("没有数据权限");
+            }
+        }else{
+            bizScope = csSysService.getBizScopeBySysRoleIdNew(paramsDto.getLoginId(), paramsDto.getRoleId(), true);
+            if (bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code) {
+                return BaseResultUtil.fail("没有数据权限");
+            }
         }
+
         Set<Long> storeIds = bizScope.getStoreIds();
         List<Long> orderCarIdList = paramsDto.getOrderCarIdList();
         List<WaybillCarVo> list = null;
@@ -948,7 +957,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 if(vo.getBackState() >= OrderCarLocalStateEnum.DISPATCHED.code){
                     return BaseResultUtil.fail("车辆{0},配送已经调度完成", vo.getOrderCarNo());
                 }
-                if(vo.getOrderCarState() >= OrderCarStateEnum.WAIT_TRUNK_DISPATCH.code){
+                if(vo.getOrderCarState() >= OrderCarStateEnum.SIGNED.code){
                     return BaseResultUtil.fail("车辆{0},配送已经结束", vo.getOrderCarNo());
                 }
                 if(vo.getStartStoreId() == null || vo.getStartStoreId() <= 0){
