@@ -45,7 +45,7 @@ public class WaybillDetailVo implements Serializable {
     @JsonSerialize(using = DateLongSerizlizer.class)
     private Long createTime;
 
-    @ApiModelProperty(value = "运单类型")
+    @ApiModelProperty(value = "运单类型：1提车运单，2干线运单，3送车运单")
     private Integer type;
 
     @ApiModelProperty(value = "(carryType)承运类型：1干线-个人承运商，2干线-企业承运商，3同城-业务员，4同城-代驾，5同城-拖车，6客户自己")
