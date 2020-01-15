@@ -30,4 +30,7 @@ public class TrailCarrierDto extends BasePageDto {
     @ApiModelProperty("承运商类型：1个人承运商，2企业承运商")
     private Integer type;
 
+    @ApiModelProperty(value = "订单起始/目的城市code")
+    private String cityCode;
+
 }

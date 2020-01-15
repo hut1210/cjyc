@@ -144,13 +144,13 @@ public class DispatchController {
     }
 
     @ApiOperation(value = "干线调度个人(承运商)司机信息")
-    @PostMapping(value = "/dispatchDriver")
+    //@PostMapping(value = "/dispatchDriver")
     public ResultVo<PageVo<DispatchDriverVo>> dispatchDriver(@RequestBody DispatchDriverDto dto){
         return csDriverService.dispatchDriver(dto);
     }
 
     @ApiOperation(value = "调度中心中提车/送车调度中代驾和拖车列表")
-    @PostMapping(value = "/traileDriver")
+    //@PostMapping(value = "/traileDriver")
     public ResultVo<PageVo<TrailCarrierVo>> trailDriver(@RequestBody TrailCarrierDto dto){
         return csCarrierService.trailDriver(dto);
     }
@@ -166,6 +166,23 @@ public class DispatchController {
     @PostMapping(value = "/getWaybillDetail")
     public ResultVo<WaybillDetailVo> getWaybillDetail(@RequestBody @Validated WaybillDetailDto dto){
         return dispatchService.getWaybillDetail(dto.getWaybillId());
+    }
+
+
+    /************************************韵车集成改版 st***********************************/
+
+    @ApiOperation(value = "干线调度个人(承运商)司机信息_改版")
+    //@PostMapping(value = "/dispatchDriverNew")
+    @PostMapping(value = "/dispatchDriver")
+    public ResultVo<PageVo<DispatchDriverVo>> dispatchDriverNew(@RequestBody DispatchDriverDto dto){
+        return csDriverService.dispatchDriverNew(dto);
+    }
+
+    @ApiOperation(value = "调度中心中提车/送车调度中代驾和拖车列表_改版")
+    //@PostMapping(value = "/traileDriver")
+    @PostMapping(value = "/traileDriver")
+    public ResultVo<PageVo<TrailCarrierVo>> trailDriverNew(@RequestBody TrailCarrierDto dto){
+        return csCarrierService.trailDriverNew(dto);
     }
 
 }

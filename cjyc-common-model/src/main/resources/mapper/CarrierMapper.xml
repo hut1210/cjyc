@@ -648,6 +648,7 @@
         LEFT JOIN ( SELECT * FROM s_user_role_dept WHERE dept_type = 2 AND user_type = 2 ) surd ON surd.dept_id = dc.id
         LEFT JOIN d_driver dd ON dd.id = surd.user_id
         LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
+        LEFT JOIN d_carrier_city_con dccc ON dccc.carrier_id = dc.id
         <where>
             <if test="name != null and name.trim() != ''">
                 dc.name like CONCAT('%',#{name},'%')
@@ -663,6 +664,9 @@
             </if>
             <if test="plateNo != null and plateNo.trim() != ''">
                 and  dvr.plate_no = #{plateNo}
+            </if>
+            <if test="cityCode != null and cityCode.trim() != ''">
+                and  dccc.city_code = #{cityCode}
             </if>
             and dc.mode in
             <foreach collection="mode" item="item" index="index" open="(" close=")" separator=",">
