@@ -1132,8 +1132,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             //提取数据
             orderIdSet.add(orderCar.getOrderId());
         }
-        log.info("updateForCarFinish orderIdSet ="+orderIdSet.toString());
-        log.info("updateForCarFinish CollectionUtils.isEmpty(orderIdSet) ="+CollectionUtils.isEmpty(orderIdSet));
+
         //处理订单
         if (!CollectionUtils.isEmpty(orderIdSet)) {
             orderIdSet.forEach(orderId -> validateAndFinishOrder(orderId, userInfo));
