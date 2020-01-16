@@ -522,6 +522,12 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
     private Order fillOrderInputStore(Order order) {
         if (order.getInputStoreId() != null && order.getInputStoreId() != -5) {
+            if(StringUtils.isBlank(order.getInputStoreName())){
+                Store store = csStoreService.getById(order.getInputStoreId(), true);
+                if(store != null){
+                    order.setInputStoreName(store.getName());
+                }
+            }
             return order;
         }
         //根据业务范围查询业务中心
@@ -600,6 +606,12 @@ public class CsOrderServiceImpl implements ICsOrderService {
      */
     private Order fillOrderStoreInfo(Order order) {
         if (order.getStartStoreId() != null && order.getStartStoreId() > 0) {
+            if(StringUtils.isBlank(order.getStartStoreName())){
+                Store store = csStoreService.getById(order.getStartStoreId(), true);
+                if(store != null){
+                    order.setStartStoreName(store.getName());
+                }
+            }
             order.setStartBelongStoreId(order.getStartStoreId());
         } else {
             //查询地址所属业务中心
@@ -618,6 +630,13 @@ public class CsOrderServiceImpl implements ICsOrderService {
         }
         if (order.getEndStoreId() != null && order.getEndStoreId() > 0) {
             order.setEndBelongStoreId(order.getEndStoreId());
+            if(StringUtils.isBlank(order.getEndStoreName())){
+                Store store = csStoreService.getById(order.getEndStoreId(), true);
+                if(store != null){
+                    order.setStartStoreName(store.getName());
+                }
+            }
+            order.setStartBelongStoreId(order.getStartStoreId());
         } else {
             //查询地址所属业务中心
             Store store = csStoreService.getOneBelongByCityCode(order.getEndCityCode());
