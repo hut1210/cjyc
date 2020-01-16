@@ -219,6 +219,7 @@ public class DispatchServiceImpl implements IDispatchService {
                 carDetailVo.setLogoPhotoImg(LogoImgProperty.logoImg+logoImg);
 
                 carDetailVo.setId(waybillCar.getId());
+                carDetailVo.setWaybillCarState(waybillCar.getState());
                 carDetailVoList.add(carDetailVo);
             }
         }
