@@ -430,11 +430,9 @@ public class CsOrderServiceImpl implements ICsOrderService {
     @Override
     public int changeOrderCarCarryType(ChangeCarryTypeDto paramsDto) {
         OrderCar noc = new OrderCar();
-        if(paramsDto.getDispatchType() == WaybillTypeEnum.PICK.code){
-            noc.setPickType(paramsDto.getCarryType());
-        }else{
-            noc.setBackType(paramsDto.getCarryType());
-        }
+        noc.setId(paramsDto.getOrderCarId());
+        noc.setPickType(paramsDto.getPickType());
+        noc.setBackType(paramsDto.getBackType());
         return orderCarDao.updateById(noc);
     }
 
