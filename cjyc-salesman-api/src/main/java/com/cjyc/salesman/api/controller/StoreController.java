@@ -2,6 +2,7 @@ package com.cjyc.salesman.api.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.cjyc.common.model.dto.salesman.BaseSalesDto;
+import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.salesman.store.StoreVo;
@@ -30,7 +31,13 @@ public class StoreController {
     @PostMapping("/list")
     public ResultVo<JSONObject> getStoreListByLoginId(@Valid @RequestBody BaseSalesDto dto) {
         JSONObject jo = new JSONObject();
-        jo.put("storeVoList", csStoreService.listByAdminId(dto.getLoginId()));
-        return BaseResultUtil.success(jo);
+        ResultVo<List<StoreVo>> resultVo = csStoreService.listByAdminId(dto.getLoginId());
+        if (ResultEnum.SUCCESS.getCode().equals(resultVo.getCode())) {
+            jo.put("storeVoList", resultVo == null?null: resultVo.getData());
+            return BaseResultUtil.success(jo);
+        }else {
+            return BaseResultUtil.fail(resultVo.getMsg());
+        }
+
     }
 }
