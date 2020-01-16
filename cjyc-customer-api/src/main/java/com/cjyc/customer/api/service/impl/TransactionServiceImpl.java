@@ -279,13 +279,33 @@ public class TransactionServiceImpl implements ITransactionService {
         PingxxMetaData pingxxMetaData = BeanMapUtil.mapToBean(metadata, new PingxxMetaData());
         String chargeType = pingxxMetaData.getChargeType();
         if(chargeType.equals(String.valueOf(ChargeTypeEnum.UNION_PAY.getCode()))){
+
+            log.info("给承运商付款");
             //给承运商付款
             Long waybillId = pingxxMetaData.getWaybillId();
+
+            try{
+                tradeBillDao.updateWayBillPayState(waybillId,transfer.getId());
+            }catch (Exception e){
+                log.error("给承运商付款更新运单支付状态失败"+e.getMessage(),e);
+            }
+
         }
         if(chargeType.equals(String.valueOf(ChargeTypeEnum.UNION_PAY_PARTNER.getCode()))){
             //给合伙人付款
+            log.info("给合伙人付款");
         }
 
+    }
+
+    @Override
+    public void transferFailed(Transfer transfer, Event event) {
+        //更新交易流水表状态
+        TradeBill tradeBill = new TradeBill();
+        tradeBill.setPingPayId(transfer.getId());
+        tradeBill.setState(-2);
+        tradeBill.setTradeTime(System.currentTimeMillis());
+        tradeBillDao.updateTradeBillByPingPayId(tradeBill);
     }
 
     @Override
