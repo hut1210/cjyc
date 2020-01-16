@@ -606,7 +606,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     public void exportCustomerExcel(HttpServletRequest request, HttpServletResponse response) {
         // 获取参数
         SelectCustomerDto dto = getSelectCustomerDto(request);
-        List<CustomerVo> customerVos = encapCustomer(dto);
+        List<CustomerVo> customerVos = encapClientCustomer(dto);
         if (!CollectionUtils.isEmpty(customerVos)) {
             // 生成导出数据
             List<CustomerExportExcel> exportExcelList = new ArrayList<>();
@@ -632,7 +632,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     public void exportKeyExcel(HttpServletRequest request, HttpServletResponse response) {
         // 获取参数
         SelectKeyCustomerDto dto = getKeyCustomerDto(request);
-        List<ListKeyCustomerVo> keyCustomerList = encapKey(dto);
+        List<ListKeyCustomerVo> keyCustomerList = encapKeyAccountCustomer(dto);
         if (!CollectionUtils.isEmpty(keyCustomerList)) {
             // 生成导出数据
             List<KeyExportExcel> exportExcelList = new ArrayList<>();
@@ -657,7 +657,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     @Override
     public void exportPartnerExcel(HttpServletRequest request, HttpServletResponse response) {
         CustomerPartnerDto dto = getPartnerDto(request);
-        List<CustomerPartnerVo> partnerVos = encapPartner(dto);
+        List<CustomerPartnerVo> partnerVos = encapCoPartner(dto);
         if (!CollectionUtils.isEmpty(partnerVos)) {
             // 生成导出数据
             List<PartnerExportExcel> exportExcelList = new ArrayList<>();

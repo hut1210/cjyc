@@ -361,7 +361,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
     @Override
     public void exportDriverExcel(HttpServletRequest request, HttpServletResponse response) {
         SelectDriverDto dto = getDriverDto(request);
-        List<DriverVo> driverVos = encapDriver(dto);
+        List<DriverVo> driverVos = encapPersonDriver(dto);
         if (!CollectionUtils.isEmpty(driverVos)) {
             // 生成导出数据
             List<DriverExportExcel> exportExcelList = new ArrayList<>();

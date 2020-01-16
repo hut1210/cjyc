@@ -337,7 +337,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     @Override
     public void exportCarrierExcel(HttpServletRequest request, HttpServletResponse response) {
         SeleCarrierDto dto = getCarrierDto(request);
-        List<CarrierVo> carrierVos = encapCarrier(dto);
+        List<CarrierVo> carrierVos = encapCarrierNew(dto);
         if (!CollectionUtils.isEmpty(carrierVos)) {
             // 生成导出数据
             List<CarrierExportExcel> exportExcelList = new ArrayList<>();
