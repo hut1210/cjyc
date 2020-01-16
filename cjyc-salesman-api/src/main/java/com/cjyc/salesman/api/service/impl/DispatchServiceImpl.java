@@ -301,35 +301,15 @@ public class DispatchServiceImpl implements IDispatchService {
             countInfo = orderCarDao.countTotalWaitDispatchCarCountListForApp(paramsDto);
 
             for (WaitCountVo vo: list) {
-                List<WaitCountLineVo> child = vo.getList();
-                if(CollectionUtils.isEmpty(child)){
-                    int sum = child.stream().mapToInt(WaitCountLineVo::getCarCount).sum();
-                    vo.setTotalCarCount(sum);
-                }
+                paramsDto.setCityCode(vo.getStartCityCode());
+                List<WaitCountLineVo> child = orderCarDao.findWaitDispatchCarCountLineListForApp(paramsDto);
+                vo.setList(child);
             }
         }
 
         return BaseResultUtil.success(list, countInfo);
     }
 
-    @Override
-    public ResultVo<ListVo<Map<String, Object>>> waitCountLineList(WaitCountLineDto paramsDto) {
-        // 根据登录ID查询当前业务员所在业务中心ID
-        BizScope bizScope = csSysService.getBizScopeByLoginIdNew(paramsDto.getLoginId(), true);
-        // 判断当前登录人是否有权限访问
-        if (BizScopeEnum.NONE.code == bizScope.getCode()) {
-            return BaseResultUtil.fail("无权访问");
-        }
-        paramsDto.setBizScope(bizScope.getStoreIds());
-
-        //查询统计
-        Map<String, Object> countInfo = null;
-        List<Map<String, Object>> list = orderCarDao.findWaitDispatchCarCountLineListForApp(paramsDto);
-        if(CollectionUtils.isEmpty(list)){
-            countInfo = orderCarDao.countTotalWaitDispatchCarCountLineListForApp(paramsDto);
-        }
-        return BaseResultUtil.success(list, countInfo);
-    }
 
     private String getCarrierPhone(Long carrierId,Integer carrierType) {
         int code1 = WaybillCarrierTypeEnum.TRUNK_INDIVIDUAL.code;

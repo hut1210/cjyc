@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.dto.customer.invoice.InvoiceApplyQueryDto;
 import com.cjyc.common.model.dto.salesman.BaseSalesDto;
 import com.cjyc.common.model.dto.salesman.dispatch.DispatchListDto;
+import com.cjyc.common.model.dto.salesman.dispatch.WaitCountDto;
 import com.cjyc.common.model.dto.salesman.dispatch.WaitCountLineDto;
 import com.cjyc.common.model.dto.salesman.mine.OrderCarDto;
 import com.cjyc.common.model.dto.salesman.mine.StockCarDto;
@@ -19,6 +20,7 @@ import com.cjyc.common.model.vo.salesman.dispatch.WaitDispatchCarListVo;
 import com.cjyc.common.model.vo.salesman.mine.StockCarDetailVo;
 import com.cjyc.common.model.vo.salesman.mine.StockCarVo;
 import com.cjyc.common.model.vo.web.OrderCarVo;
+import com.cjyc.common.model.vo.web.dispatch.WaitCountLineVo;
 import com.cjyc.common.model.vo.web.dispatch.WaitCountVo;
 import com.cjyc.common.model.vo.web.order.ListOrderCarVo;
 import com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo;
@@ -251,7 +253,7 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
 
     Map<String, Object> countTotalWaitDispatchCarCountListForApp(@Param("param")BaseSalesDto param);
 
-    List<Map<String, Object>> findWaitDispatchCarCountLineListForApp(@Param("param")WaitCountLineDto param);
+    List<WaitCountLineVo> findWaitDispatchCarCountLineListForApp(@Param("param") WaitCountDto param);
 
     Map<String, Object> countTotalWaitDispatchCarCountLineListForApp(@Param("param")WaitCountLineDto param);
 

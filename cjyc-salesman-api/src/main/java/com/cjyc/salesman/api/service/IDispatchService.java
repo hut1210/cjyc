@@ -66,5 +66,4 @@ public interface IDispatchService {
 
     ResultVo<ListVo<WaitCountVo>> waitCountList(WaitCountDto reqDto);
 
-    ResultVo<ListVo<Map<String, Object>>> waitCountLineList(WaitCountLineDto reqDto);
 }

@@ -37,17 +37,7 @@
         <result column="wl_pay_time" property="wlPayTime" />
         <result column="finish_time" property="finishTime" />
     </resultMap>
-    <resultMap id="Wait_Dispatch_Car_Count_ResultMap" type="com.cjyc.common.model.vo.web.dispatch.WaitCountVo">
-        <result column="totalCarCount" property="totalCarCount"/>
-        <result column="startCityCode" property="startCityCode"/>
-        <result column="startCity" property="startCity"/>
-        <collection property="list" ofType="com.cjyc.common.model.vo.web.dispatch.WaitCountLineVo" javaType="java.util.List">
-            <result column="carCount" property="carCount"/>
-            <result column="endCityCode" property="endCityCode"/>
-            <result column="endCity" property="endCity"/>
-            <result column="line" property="line"/>
-        </collection>
-    </resultMap>
+
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
@@ -1840,14 +1830,11 @@
             group by o.start_city_code
         ) as t
     </select>
-    <select id="findWaitDispatchCarCountListForApp" resultMap="Wait_Dispatch_Car_Count_ResultMap">
+    <select id="findWaitDispatchCarCountListForApp" resultType="com.cjyc.common.model.vo.web.dispatch.WaitCountVo">
         select
-        count(0) as carCount,
+        count(0) as carNum,
         shell.startCityCode,
-        shell.startCity,
-        shell.endCityCode,
-        shell.endCity,
-        CONCAT(shell.startCity,'-',shell.endCity) as line
+        shell.startCity
         from (
         <choose>
             <when test="param.dispatchType == 1">
@@ -1876,7 +1863,8 @@
                 </foreach>
             </if>
         </where>
-        group by shell.startCityCode, shell.endCityCode
+        group by shell.startCityCode
+
     </select>
     <select id="countTotalWaitDispatchCarCountListForApp" resultType="java.util.Map">
         select
@@ -1910,7 +1898,7 @@
             </if>
         </where>
     </select>
-    <select id="findWaitDispatchCarCountLineListForApp" resultType="java.util.Map">
+    <select id="findWaitDispatchCarCountLineListForApp" resultType="com.cjyc.common.model.vo.web.dispatch.WaitCountLineVo">
         select
             count(0) as carNum,
             shell.startCityCode,

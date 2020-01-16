@@ -84,7 +84,7 @@ public class DispatchController {
      */
     @ApiOperation(value = "调度池列表")
     @PostMapping(value = "/wait/list")
-    public ResultVo<PageVo<WaitDispatchCarListVo>> waitList(@RequestBody DispatchListDto reqDto) {
+    public ResultVo<PageVo<WaitDispatchCarListVo>> waitList(@Validated @RequestBody DispatchListDto reqDto) {
         return dispatchService.waitList(reqDto);
     }
     /**
@@ -92,16 +92,8 @@ public class DispatchController {
      */
     @ApiOperation(value = "调度池按城市分组统计数量列表")
     @PostMapping(value = "/wait/count/list")
-    public ResultVo<ListVo<WaitCountVo>> waitCountList(@RequestBody WaitCountDto reqDto) {
+    public ResultVo<ListVo<WaitCountVo>> waitCountList(@Validated @RequestBody WaitCountDto reqDto) {
         return dispatchService.waitCountList(reqDto);
-    }
-    /**
-     * @author JPG
-     */
-    @ApiOperation(value = "调度池按城市线路分组统计数量列表")
-    @PostMapping(value = "/wait/count/line/list")
-    public ResultVo<ListVo<Map<String, Object>>> waitCountLineList(@RequestBody WaitCountLineDto reqDto) {
-        return dispatchService.waitCountLineList(reqDto);
     }
     /**
      * @author JPG

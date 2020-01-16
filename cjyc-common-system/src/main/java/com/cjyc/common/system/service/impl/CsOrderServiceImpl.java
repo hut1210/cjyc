@@ -358,6 +358,48 @@ public class CsOrderServiceImpl implements ICsOrderService {
     @Override
     public ResultVo simpleCommitAndCheck(CheckOrderDto paramsDto) {
         Order order = orderDao.selectById(paramsDto.getOrderId());
+
+        Customer customer = null;
+        if (order.getCustomerId() != null) {
+            customer = csCustomerService.getById(order.getCustomerId(), true);
+            if (customer != null && !customer.getName().equals(order.getCustomerName())) {
+                return BaseResultUtil.fail(ResultEnum.CREATE_NEW_CUSTOMER.getCode(),
+                        "客户手机号存在，名称不一致：新名称（{0}）旧名称（{1}），请返回订单重新选择客户",
+                        order.getCustomerName(), customer.getName());
+            }
+        }
+        if (customer == null) {
+            customer = csCustomerService.getByPhone(order.getCustomerPhone(), true);
+            if (customer != null && !customer.getName().equals(order.getCustomerName())) {
+                return BaseResultUtil.fail(ResultEnum.CREATE_NEW_CUSTOMER.getCode(),
+                        "客户手机号存在，名称不一致：新名称（{0}）旧名称（{1}），请返回订单重新选择客户",
+                        order.getCustomerName(), customer.getName());
+            }
+        }
+        if (customer == null) {
+            customer = new Customer();
+            if (order.getCustomerType() == CustomerTypeEnum.INDIVIDUAL.code) {
+                customer.setCustomerNo(csSendNoService.getNo(SendNoTypeEnum.CUSTOMER));
+                customer.setName(order.getCustomerName());
+                customer.setContactMan(order.getCustomerName());
+                customer.setContactPhone(order.getCustomerPhone());
+                customer.setType(CustomerTypeEnum.INDIVIDUAL.code);
+                //customer.setInitial()
+                customer.setState(CustomerStateEnum.CHECKED.code);
+                customer.setPayMode(PayModeEnum.COLLECT.code);
+                customer.setSource(CustomerSourceEnum.WEB.code);
+                customer.setCreateTime(System.currentTimeMillis());
+                customer.setCreateUserId(paramsDto.getLoginId());
+                //添加
+                csCustomerService.save(customer);
+            } else {
+                return BaseResultUtil.fail("企业客户/合伙人不存在");
+            }
+        }
+        order.setCustomerId(customer.getId());
+
+
+
         List<OrderCar> orderCarList = orderCarDao.findListByOrderId(order.getId());
         //均摊优惠券费用
         shareCouponOffsetFee(order.getCouponOffsetFee(), orderCarList);
