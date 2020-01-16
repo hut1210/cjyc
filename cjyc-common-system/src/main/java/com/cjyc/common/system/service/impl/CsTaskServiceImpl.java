@@ -397,7 +397,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             //验证目的地业务中心是否与当前业务中心匹配
             if (waybillCar.getStartStoreId() != null && waybillCar.getStartStoreId() != 0) {
                 if (!waybillCar.getStartStoreId().equals(orderCar.getNowStoreId())) {
-                    throw new ParameterException("订单车辆尚未到达提车业务中心");
+                    throw new ParameterException("订单车辆未入库，请业务员先将车辆入库");
                 }
             } else {
                 if (!waybillCar.getStartAreaCode().equals(orderCar.getNowAreaCode())) {

@@ -39,6 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -429,13 +430,40 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
     @Override
     public ResultVo changeOrderCarCarryType(ChangeCarryTypeDto  paramsDto) {
-        paramsDto.getOrderCarIdList().forEach(orderCarId ->{
+        List<Long> orderCarIdList = paramsDto.getOrderCarIdList();
+        if(paramsDto.getPickType() == null && paramsDto.getBackType() == null){
+            return BaseResultUtil.fail("至少更改一种承运方式");
+        }
+        //验证
+        for (Long orderCarId : orderCarIdList) {
+            OrderCar orderCar = orderCarDao.selectById(orderCarId);
+            //验证车辆提车是否结束
+            if(paramsDto.getPickType() != null){
+                if(orderCar.getPickState() >= OrderCarLocalStateEnum.DISPATCHED.code){
+                    return BaseResultUtil.fail("车辆{0},提车已经调度完成，无法变更承运方式", orderCar.getNo());
+                }
+                if(orderCar.getState() >= OrderCarStateEnum.WAIT_PICK.code){
+                    return BaseResultUtil.fail("车辆{0},提车调度已经结束，无法变更承运方式", orderCar.getNo());
+                }
+            }
+            if(paramsDto.getBackType() != null){
+                if(orderCar.getBackState() >= OrderCarLocalStateEnum.DISPATCHED.code){
+                    return BaseResultUtil.fail("车辆{0},配送已经调度完成，无法变更承运方式", orderCar.getNo());
+                }
+                if(orderCar.getState() >= OrderCarStateEnum.WAIT_BACK.code){
+                    return BaseResultUtil.fail("车辆{0},配送调度已经结束，无法变更承运方式", orderCar.getNo());
+                }
+            }
+        }
+        //更新
+        orderCarIdList.forEach(orderCarId ->{
             OrderCar noc = new OrderCar();
             noc.setId(orderCarId);
             noc.setPickType(paramsDto.getPickType());
             noc.setBackType(paramsDto.getBackType());
             orderCarDao.updateById(noc);
         });
+
         return BaseResultUtil.success();
     }
 

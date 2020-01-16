@@ -129,7 +129,7 @@ public class DispatchController {
      */
     @ApiOperation(value = "根据订单车辆ID查询可调度起始地和目的地")
     @PostMapping(value = "/car/carry/type/update")
-    public ResultVo changeOrderCarCarryType(@RequestBody ChangeCarryTypeDto dtoList) {
+    public ResultVo changeOrderCarCarryType(@Validated @RequestBody ChangeCarryTypeDto dtoList) {
         return csOrderService.changeOrderCarCarryType(dtoList);
     }
 
