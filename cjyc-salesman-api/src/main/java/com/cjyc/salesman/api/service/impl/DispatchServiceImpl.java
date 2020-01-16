@@ -213,6 +213,8 @@ public class DispatchServiceImpl implements IDispatchService {
                 Order order = orderDao.selectById(orderCar.getOrderId());
                 carDetailVo.setPickType(order.getPickType());
                 carDetailVo.setBackType(order.getBackType());
+                carDetailVo.setPayType(order.getPayType());
+
 
                 // 查询车辆logo图片
                 String logoImg = carSeriesDao.getLogoImgByBraMod(carDetailVo.getBrand(),carDetailVo.getModel());
