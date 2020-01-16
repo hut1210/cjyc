@@ -19,6 +19,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.Map;
 
 
@@ -128,9 +129,8 @@ public class DispatchController {
      */
     @ApiOperation(value = "根据订单车辆ID查询可调度起始地和目的地")
     @PostMapping(value = "/car/carry/type/update")
-    public ResultVo<DispatchAddCarVo> changeOrderCarCarryType(@RequestBody ChangeCarryTypeDto reqDto) {
-        csOrderService.changeOrderCarCarryType(reqDto);
-        return BaseResultUtil.success();
+    public ResultVo changeOrderCarCarryType(@RequestBody ChangeCarryTypeDto dtoList) {
+        return csOrderService.changeOrderCarCarryType(dtoList);
     }
 
 }

@@ -428,12 +428,15 @@ public class CsOrderServiceImpl implements ICsOrderService {
     }
 
     @Override
-    public int changeOrderCarCarryType(ChangeCarryTypeDto paramsDto) {
-        OrderCar noc = new OrderCar();
-        noc.setId(paramsDto.getOrderCarId());
-        noc.setPickType(paramsDto.getPickType());
-        noc.setBackType(paramsDto.getBackType());
-        return orderCarDao.updateById(noc);
+    public ResultVo changeOrderCarCarryType(ChangeCarryTypeDto  paramsDto) {
+        paramsDto.getOrderCarIdList().forEach(orderCarId ->{
+            OrderCar noc = new OrderCar();
+            noc.setId(orderCarId);
+            noc.setPickType(paramsDto.getPickType());
+            noc.setBackType(paramsDto.getBackType());
+            orderCarDao.updateById(noc);
+        });
+        return BaseResultUtil.success();
     }
 
     /**
