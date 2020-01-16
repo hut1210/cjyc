@@ -299,6 +299,16 @@ public class TransactionServiceImpl implements ITransactionService {
     }
 
     @Override
+    public void transferFailed(Transfer transfer, Event event) {
+        //更新交易流水表状态
+        TradeBill tradeBill = new TradeBill();
+        tradeBill.setPingPayId(transfer.getId());
+        tradeBill.setState(-2);
+        tradeBill.setTradeTime(System.currentTimeMillis());
+        tradeBillDao.updateTradeBillByPingPayId(tradeBill);
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveTransactions(Object obj, String state) {
         TradeBill tb;

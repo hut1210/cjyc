@@ -163,6 +163,7 @@ public class PingPayController {
                     } else if("transfer.failed".equals(event.getType())){//通联支付司机运费
                         if(data.getObject() instanceof Transfer){
                             log.debug("---------------->transfer.failed");
+                            transactionService.transferFailed((Transfer)data.getObject(),event);
                         }
                     }
                 }
