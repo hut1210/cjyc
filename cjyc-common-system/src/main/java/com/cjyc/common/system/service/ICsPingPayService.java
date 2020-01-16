@@ -38,4 +38,7 @@ public interface ICsPingPayService {
             APIConnectionException, AuthenticationException, FileNotFoundException;
 
 
+    ResultVo unlock(String orderNo);
+
+    ResultVo unlockQrcode(String orderCarNo);
 }

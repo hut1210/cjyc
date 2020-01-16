@@ -609,6 +609,28 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         return charge;
     }
 
+    @Override
+    public ResultVo unlock(String orderNo) {
+        try {
+            String key = getRandomNoKey(orderNo);
+            redisUtils.delete(key);
+        }catch (Exception e){
+            return BaseResultUtil.fail("解锁预付单失败");
+        }
+        return BaseResultUtil.success();
+    }
+
+    @Override
+    public ResultVo unlockQrcode(String orderCarNo) {
+        try{
+            String key = RedisKeys.getWlCollectPayLockKey(orderCarNo);
+            redisUtils.delete(key);
+        }catch (Exception e){
+           return BaseResultUtil.fail("解锁扫码付款");
+        }
+        return BaseResultUtil.success();
+    }
+
     private String getRandomNoKey(String prefix) {
         return "cjyc:random:no:prepay:" + prefix;
     }
