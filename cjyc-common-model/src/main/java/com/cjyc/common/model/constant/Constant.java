@@ -12,4 +12,6 @@ public class Constant {
     public static final String SOCIAL_VEHICLE_DEPT = "120000";
 
     public static final String EMPTY_STRING = "";
+
+    public static final char NO = 'N';
 }
