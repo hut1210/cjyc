@@ -143,4 +143,8 @@
         w_order_car woc left join w_order wo on wo.id = woc.order_id
         where wo.no=#{no} and woc.wl_pay_state=0
     </select>
+
+    <update id="updateWayBillPayState" parameterType="map" >
+        update w_waybill set freight_pay_state = 1 where id =#{waybillId}
+    </update>
 </mapper>
