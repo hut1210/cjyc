@@ -273,4 +273,6 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
     List<WaybillCarVo> findBackCarEndpoint(@Param("list")List<Long> orderCarIdList);
 
     List<WaybillCarVo> findTrunkCarEndpoint(@Param("list")List<Long> orderCarIdList);
+
+    List<String> findTrunkNodes(String orderCarId);
 }
