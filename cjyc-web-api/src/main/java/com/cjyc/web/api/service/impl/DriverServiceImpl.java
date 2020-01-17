@@ -745,7 +745,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
 
     @Override
     public boolean importDriverExcel(MultipartFile file, Long loginId) {
-        boolean result = false;
+        boolean result;
         try {
             List<DriverImportExcel> driverImportExcelList = ExcelUtil.importExcel(file, 0, 1, DriverImportExcel.class);
             if (!CollectionUtils.isEmpty(driverImportExcelList)) {
@@ -804,6 +804,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
                     //保存司机角色机构关系
                     csUserRoleDeptService.saveDriverToUserRoleDept(carrier, driver, null, role.getId(), loginId, 1);
                 }
+                result = true;
             } else {
                 result = false;
             }

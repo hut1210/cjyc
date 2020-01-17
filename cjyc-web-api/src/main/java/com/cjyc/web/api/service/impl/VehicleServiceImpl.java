@@ -166,7 +166,7 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
 
     @Override
     public boolean importVehicleExcel(MultipartFile file, Long loginId) {
-        boolean result = false;
+        boolean result;
         try {
             List<VehicleImportExcel> vehicleImportExcelList = ExcelUtil.importExcel(file, 0, 1, VehicleImportExcel.class);
             if(!CollectionUtils.isEmpty(vehicleImportExcelList)){
@@ -182,6 +182,7 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
                     vehicle.setCreateTime(NOW);
                     super.save(vehicle);
                 }
+                result = true;
             }else{
                 result = false;
             }

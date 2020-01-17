@@ -877,7 +877,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
 
     @Override
     public boolean importCarrierExcel(MultipartFile file, Long loginId) {
-        boolean result = false;
+        boolean result;
         try {
             List<CarrierImportExcel> carrierImportExcelList = ExcelUtil.importExcel(file, 0, 1, CarrierImportExcel.class);
             if (!CollectionUtils.isEmpty(carrierImportExcelList)) {
@@ -942,6 +942,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
                     //保存银行卡信息
                     saveBankCardBand(null,carrierImportExcel,carrier.getId());
                 }
+                result = true;
             } else {
                 result = false;
             }

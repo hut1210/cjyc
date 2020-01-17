@@ -1308,7 +1308,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
 
     @Override
     public boolean importCustomerExcel(MultipartFile file, Long loginId) {
-        boolean result = false;
+        boolean result;
         try {
             List<CustomerImportExcel> customerImportExcelList = ExcelUtil.importExcel(file, 0, 1, CustomerImportExcel.class);
             if(!CollectionUtils.isEmpty(customerImportExcelList)){
@@ -1346,6 +1346,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                     //保存用户角色机构关系
                     csUserRoleDeptService.saveCustomerToUserRoleDept(customer, role.getId(), loginId);
                 }
+                result = true;
             }else {
                 result = false;
             }
@@ -1358,7 +1359,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
 
     @Override
     public boolean importKeyExcel(MultipartFile file, Long loginId) {
-        boolean result = false;
+        boolean result;
         try {
             List<KeyImportExcel> keyImportExcelList = ExcelUtil.importExcel(file, 0, 1, KeyImportExcel.class);
             if(!CollectionUtils.isEmpty(keyImportExcelList)){
@@ -1395,6 +1396,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                     //保存用户角色机构关系
                     csUserRoleDeptService.saveCustomerToUserRoleDept(customer,role.getId(),loginId);
                 }
+                result = true;
             }else {
                 result = false;
             }
@@ -1407,7 +1409,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
 
     @Override
     public boolean importPartnerExcel(MultipartFile file, Long loginId) {
-        boolean result = false;
+        boolean result;
         try {
             List<PartnerImportExcel> partnerImportExcelList = ExcelUtil.importExcel(file, 0, 1, PartnerImportExcel.class);
             if(!CollectionUtils.isEmpty(partnerImportExcelList)){
@@ -1444,6 +1446,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                     //保存用户角色机构关系
                     csUserRoleDeptService.saveCustomerToUserRoleDept(customer,role.getId(),loginId);
                 }
+                result = true;
             }else {
                 result = false;
             }
