@@ -167,7 +167,7 @@ public class OrderController {
     @ApiOperation(value = "选择业务员")
     @PostMapping("/admin/list")
     public ResultVo<PageVo<AdminPageVo>> listAdmins(@Valid @RequestBody SalesmanQueryDto dto) {
-        return BaseResultUtil.success(adminService.listPage(dto));
+        return BaseResultUtil.success(adminService.listPageNew(dto));
     }
 
     @ApiOperation(value = "下单/接单/全部列表")

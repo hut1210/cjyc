@@ -14,4 +14,11 @@ public interface IAdminService {
      * @return
      */
     PageVo<AdminPageVo> listPage(SalesmanQueryDto dto);
+
+    /**
+     * 分页查询_改版
+     * @param dto
+     * @return
+     */
+    PageVo<AdminPageVo> listPageNew(SalesmanQueryDto dto);
 }

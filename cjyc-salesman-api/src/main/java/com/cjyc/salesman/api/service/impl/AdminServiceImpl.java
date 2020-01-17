@@ -9,14 +9,18 @@ import com.cjyc.common.model.dao.IAdminDao;
 import com.cjyc.common.model.dao.IOrderDao;
 import com.cjyc.common.model.dao.IStoreDao;
 import com.cjyc.common.model.dto.salesman.order.SalesmanQueryDto;
+import com.cjyc.common.model.dto.web.salesman.AdminPageNewDto;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.entity.Store;
+import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.web.admin.AdminPageVo;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.util.ResultDataUtil;
 import com.cjyc.salesman.api.service.IAdminService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -116,6 +120,21 @@ public class AdminServiceImpl implements IAdminService {
                     .list(new ArrayList<AdminPageVo>())
                     .build();
         }
+    }
+
+    @Override
+    public PageVo<AdminPageVo> listPageNew(SalesmanQueryDto dto) {
+        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
+        List<AdminPageVo> pageList = adminDao.getPageListForSalesmanApp(dto);
+        int totalRecords = CollectionUtils.isEmpty(pageList)?0: pageList.size();
+        return PageVo.<AdminPageVo>builder()
+                .totalRecords(totalRecords)
+                .totalPages(totalRecords % dto.getPageSize() == 0? totalRecords / dto.getPageSize():
+                        totalRecords / dto.getPageSize() + 1)
+                .pageSize(dto.getPageSize())
+                .currentPage(dto.getCurrentPage())
+                .list(pageList)
+                .build();
     }
 
     private int getPages(long total, Integer pageSize) {
