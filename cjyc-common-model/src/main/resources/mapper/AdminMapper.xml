@@ -222,4 +222,23 @@
     <select id="getStoreNamesByAdminId" resultType="string">
         SELECT GROUP_CONCAT(st.`name`) FROM s_store st LEFT JOIN s_user_role_dept urd ON urd.dept_id = st.id WHERE urd.user_id = #{userId} GROUP BY urd.user_id
     </select>
+
+    <select id="getPageListForSalesmanApp" resultType="com.cjyc.common.model.vo.web.admin.AdminPageVo">
+        SELECT ba.id, ba.user_id, ba.state, ba.`name`, ba.phone as account, GROUP_CONCAT(sr.role_name) roles, ba.biz_desc,
+        ba.create_time, ba.create_user
+        FROM b_admin ba
+        LEFT JOIN (SELECT * FROM s_user_role_dept WHERE dept_type = 1) sur ON sur.user_id = ba.id
+        LEFT JOIN s_role sr ON sr.id = sur.role_id
+        <where>
+            <if test="param.searchValue != null and param.searchValue !=''">
+                and (ba.`name` LIKE CONCAT('%',#{param.searchValue},'%') or
+                ba.phone LIKE CONCAT('%', #{param.searchValue} ,'%'))
+            </if>
+            <if test="param.inputStoreId != null and param.inputStoreId != ''">
+                AND sur.dept_id = #{param.inputStoreId}
+            </if>
+        </where>
+        GROUP BY ba.phone
+        ORDER BY create_time DESC
+    </select>
 </mapper>

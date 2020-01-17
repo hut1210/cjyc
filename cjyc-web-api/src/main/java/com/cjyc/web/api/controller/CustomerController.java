@@ -2,6 +2,8 @@ package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.customer.*;
+import com.cjyc.common.model.enums.ResultEnum;
+import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.web.coupon.CustomerCouponSendVo;
 import com.cjyc.common.model.vo.web.customer.*;
@@ -13,6 +15,7 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -213,5 +216,26 @@ public class CustomerController {
     @PostMapping(value = "/getAllCustomerByKey/{keyword}")
     public ResultVo findCustomerByKey(@PathVariable @ApiParam(value = "手机号/用户名",required = true) String keyword){
         return customerService.findCustomerByKey(keyword);
+    }
+
+    @ApiOperation(value = "C端客户导入Excel", notes = "\t 请求接口为/importCustomerExcel/loginId(导入用户ID)格式")
+    @PostMapping("/importCustomerExcel/{loginId}")
+    public ResultVo importCustomerExcel(@RequestParam("file") MultipartFile file, @PathVariable Long loginId){
+        boolean result = customerService.importCustomerExcel(file, loginId);
+        return result ? BaseResultUtil.success() : BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
+    }
+
+    @ApiOperation(value = "大客户导入Excel", notes = "\t 请求接口为/importKeyExcel/loginId(导入用户ID)格式")
+    @PostMapping("/importKeyExcel/{loginId}")
+    public ResultVo importKeyExcel(@RequestParam("file") MultipartFile file, @PathVariable Long loginId){
+        boolean result = customerService.importKeyExcel(file, loginId);
+        return result ? BaseResultUtil.success() : BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
+    }
+
+    @ApiOperation(value = "合伙人导入Excel", notes = "\t 请求接口为/importPartnerExcel/loginId(导入用户ID)格式")
+    @PostMapping("/importPartnerExcel/{loginId}")
+    public ResultVo importPartnerExcel(@RequestParam("file") MultipartFile file, @PathVariable Long loginId){
+        boolean result = customerService.importPartnerExcel(file, loginId);
+        return result ? BaseResultUtil.success() : BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
 }

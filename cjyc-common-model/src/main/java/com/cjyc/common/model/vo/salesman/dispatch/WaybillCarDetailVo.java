@@ -95,7 +95,7 @@ public class WaybillCarDetailVo implements Serializable {
     private Integer backType;
 
     @ApiModelProperty(value = "最后一次运输标识：0否，1是")
-    private Boolean receiptFlag;
+    private boolean receiptFlag;
 
     @ApiModelProperty(value = "运单ID")
     private Long waybillId;
@@ -335,11 +335,5 @@ public class WaybillCarDetailVo implements Serializable {
     }
     public String getUnloadLinkPhone() {
         return unloadLinkPhone == null ? "" : unloadLinkPhone;
-    }
-    public Integer getReceiptFlag() {
-        if (receiptFlag == null) {
-            return -1;
-        }
-        return receiptFlag == false ? 0 : 1;
     }
 }

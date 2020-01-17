@@ -366,9 +366,11 @@ public class DispatchServiceImpl implements IDispatchService {
         String logoImg = carSeriesDao.getLogoImgByBraMod(orderCar.getBrand(), orderCar.getModel());
         detail.setLogoImg(LogoImgProperty.logoImg+logoImg);
         BeanUtils.copyProperties(orderCar,detail);
+
         // 查询订单信息
         Order order = orderDao.selectById(orderCar.getOrderId());
         BeanUtils.copyProperties(order,detail);
+
         // 查询调度记录
         List<DispatchRecordVo> dispatchRecordVoList = waybillCarDao.selectWaybillRecordList(orderCar.getId());
         // 查询承运商手机号

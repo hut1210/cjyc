@@ -3,6 +3,8 @@ package com.cjyc.web.api.controller;
 import com.cjyc.common.model.dto.CarrierDriverDto;
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.carrier.*;
+import com.cjyc.common.model.enums.ResultEnum;
+import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.carrier.*;
@@ -14,6 +16,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -163,5 +166,14 @@ public class CarrierController {
     public ResultVo<PageVo<TransportVehicleVo>> transportVehicleNew(@Validated @RequestBody TransportDto dto){
         return carrierService.transportVehicleNew(dto);
     }
+
+
+    @ApiOperation(value = "承运商导入Excel", notes = "\t 请求接口为/importCarrierExcel/loginId(导入用户ID)格式")
+    @PostMapping("/importCarrierExcel/{loginId}")
+    public ResultVo importCarrierExcel(@RequestParam("file") MultipartFile file, @PathVariable Long loginId){
+        boolean result = carrierService.importCarrierExcel(file, loginId);
+        return result ? BaseResultUtil.success() : BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
+    }
+
     /*********************************韵车集成改版 ed*****************************/
 }

@@ -184,38 +184,37 @@ public class SalesmanServiceImpl extends ServiceImpl<IAdminDao, Admin> implement
 //        }
         //TODO 改写角色列表获取
         user.setRoleIdList(resolvePlatformRoleIds(rolesRd.getData(), dto, admin, role));
-//        if (!CollectionUtils.isEmpty(rolesRd.getData())) {
-//            List<Long> idList = rolesRd.getData().stream()
-//                    .map(r -> r.getRoleId()).collect(Collectors.toList());
-//            List<UserRoleDept> userRoleDeptList = userRoleDeptDao.selectList(new QueryWrapper<UserRoleDept>().lambda()
-//                    .eq(UserRoleDept::getUserId, admin.getUserId())
-//                    .eq(UserRoleDept::getDeptType, RoleRangeEnum.INNER.getValue())
-//                    .eq(UserRoleDept::getUserType, UserTypeEnum.ADMIN.code));
-//            if (!CollectionUtils.isEmpty(userRoleDeptList)) {
-//                List<Long> sRoleIdList = userRoleDeptList.stream()
-//                        .map(urd -> urd.getRoleId()).collect(Collectors.toList());
-//                List<Role> sRoleList = roleService.list(new QueryWrapper<Role>().lambda()
-//                        .in(Role::getId, sRoleIdList));
-//                if (!CollectionUtils.isEmpty(sRoleList)) {
-//                    List<Long> existRoleIdList = sRoleList.stream()
-//                            .map(r -> r.getRoleId()).collect(Collectors.toList());
-//                    idList.removeAll(existRoleIdList);
-//                }
-//            }
-//            if (!idList.contains(role.getRoleId())){
-//                idList.add(role.getRoleId());
-//            }
-//            user.setRoleIdList(idList);
-//        }else {
-//            user.setRoleIdList(Arrays.asList(role.getRoleId()));
-//        }
         ResultData updateRd = sysUserService.updateUser(user);
         if (!ResultDataUtil.isSuccess(updateRd)) {
             return BaseResultUtil.fail("分配角色信息失败，原因：" + updateRd.getMsg());
         }
         //用户角色机构信息同步
         updateUserRoleDept(dto);
-        admin.setBizDesc(dto.getBizDesc());
+        if (dto.getOverwriteFlag().equals(1)) {
+            admin.setBizDesc(dto.getBizDesc());
+        }else if (dto.getOverwriteFlag().equals(2)) {
+            if (!StringUtils.isEmpty(admin.getBizDesc())) {
+                List<String> bizList = Arrays.asList(admin.getBizDesc().split(","));
+                StringBuilder sb = new StringBuilder();
+                sb.append(admin.getBizDesc());
+                if (!StringUtils.isEmpty(dto.getBizDesc())) {
+                    String[] bizArr = dto.getBizDesc().split(",");
+                    if (bizArr != null && bizArr.length > 0) {
+                        for (String biz: bizArr) {
+                            if (!bizList.contains(biz)) {
+                                if (sb.length() > 0) {
+                                    sb.append(",");
+                                }
+                                sb.append(biz);
+                            }
+                        }
+                    }
+                    admin.setBizDesc(sb.toString());
+                }
+            }else {
+                admin.setBizDesc(dto.getBizDesc());
+            }
+        }
         this.updateById(admin);
         return BaseResultUtil.success();
     }

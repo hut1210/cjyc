@@ -1,5 +1,6 @@
 package com.cjyc.common.model.dao;
 
+import com.cjyc.common.model.dto.salesman.order.SalesmanQueryDto;
 import com.cjyc.common.model.dto.web.mineStore.ListMineSalesmanDto;
 import com.cjyc.common.model.dto.web.salesman.AdminPageDto;
 import com.cjyc.common.model.dto.web.salesman.AdminPageNewDto;
@@ -62,5 +63,7 @@ public interface IAdminDao extends BaseMapper<Admin> {
     List<Admin> findListByStoreId(Long storeId);
 
     List<TypeSalesmanVo> deliverySalesmanNew(TypeSalesmanDto dto);
+
+    List<AdminPageVo>  getPageListForSalesmanApp(@Param("param")SalesmanQueryDto dto);
     /************************************韵车集成改版 ed***********************************/
 }
