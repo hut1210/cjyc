@@ -111,4 +111,18 @@ public class PingxxController {
 
         return csPingPayService.validateCarPayState(validateSweepCodeDto, false);
     }
+
+    @ApiOperation(value = "解锁预付单")
+    @PostMapping(value = "/prepay/unlock/{orderNo}")
+    public ResultVo unlock(@PathVariable String orderNo) {
+
+        return csPingPayService.unlock(orderNo);
+    }
+
+    @ApiOperation(value = "解锁扫码付款")
+    @PostMapping(value = "/qrcode/unlock/{orderCarNo}")
+    public ResultVo unlockQrcode(@PathVariable String orderCarNo) {
+
+        return csPingPayService.unlockQrcode(orderCarNo);
+    }
 }

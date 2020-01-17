@@ -7,7 +7,6 @@ import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.salesman.dispatch.DispatchListDto;
 import com.cjyc.common.model.dto.salesman.dispatch.HistoryDispatchRecordDto;
 import com.cjyc.common.model.dto.salesman.dispatch.WaitCountDto;
-import com.cjyc.common.model.dto.salesman.dispatch.WaitCountLineDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.entity.defined.BizScope;
 import com.cjyc.common.model.enums.BizScopeEnum;
@@ -33,6 +32,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -69,6 +69,8 @@ public class DispatchServiceImpl implements IDispatchService {
     private ICustomerDao customerDao;
     @Resource
     private ITaskDao taskDao;
+    @Resource
+    private ILineDao lineDao;
 
     @Override
     public ResultVo getCityCarCount(Long loginId) {
@@ -190,6 +192,12 @@ public class DispatchServiceImpl implements IDispatchService {
                 carDetailVo = new WaybillCarDetailVo();
                 BeanUtils.copyProperties(waybillCar,carDetailVo);
 
+                // 查询干线线路费
+                if (waybillCar.getLineId() != null) {
+                    Line line = lineDao.selectById(waybillCar.getLineId());
+                    carDetailVo.setLineFreightFee(line == null ? new BigDecimal(0) : line.getDefaultFreightFee());
+                }
+
                 // 指导路线
                 fillGuideLine(detail,waybillCar);
                 carDetailVo.setGuideLine(detail.getGuideLine());
@@ -205,12 +213,15 @@ public class DispatchServiceImpl implements IDispatchService {
                 Order order = orderDao.selectById(orderCar.getOrderId());
                 carDetailVo.setPickType(order.getPickType());
                 carDetailVo.setBackType(order.getBackType());
+                carDetailVo.setPayType(order.getPayType());
+
 
                 // 查询车辆logo图片
                 String logoImg = carSeriesDao.getLogoImgByBraMod(carDetailVo.getBrand(),carDetailVo.getModel());
                 carDetailVo.setLogoPhotoImg(LogoImgProperty.logoImg+logoImg);
 
                 carDetailVo.setId(waybillCar.getId());
+                carDetailVo.setWaybillCarState(waybillCar.getState());
                 carDetailVoList.add(carDetailVo);
             }
         }

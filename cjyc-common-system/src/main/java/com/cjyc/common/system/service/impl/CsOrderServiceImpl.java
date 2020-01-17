@@ -39,6 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -428,12 +429,42 @@ public class CsOrderServiceImpl implements ICsOrderService {
     }
 
     @Override
-    public int changeOrderCarCarryType(ChangeCarryTypeDto paramsDto) {
-        OrderCar noc = new OrderCar();
-        noc.setId(paramsDto.getOrderCarId());
-        noc.setPickType(paramsDto.getPickType());
-        noc.setBackType(paramsDto.getBackType());
-        return orderCarDao.updateById(noc);
+    public ResultVo changeOrderCarCarryType(ChangeCarryTypeDto  paramsDto) {
+        List<Long> orderCarIdList = paramsDto.getOrderCarIdList();
+        if(paramsDto.getPickType() == null && paramsDto.getBackType() == null){
+            return BaseResultUtil.fail("至少更改一种承运方式");
+        }
+        //验证
+        for (Long orderCarId : orderCarIdList) {
+            OrderCar orderCar = orderCarDao.selectById(orderCarId);
+            //验证车辆提车是否结束
+            if(paramsDto.getPickType() != null){
+                if(orderCar.getPickState() >= OrderCarLocalStateEnum.DISPATCHED.code){
+                    return BaseResultUtil.fail("车辆{0},提车已经调度完成，无法变更承运方式", orderCar.getNo());
+                }
+                if(orderCar.getState() >= OrderCarStateEnum.WAIT_PICK.code){
+                    return BaseResultUtil.fail("车辆{0},提车调度已经结束，无法变更承运方式", orderCar.getNo());
+                }
+            }
+            if(paramsDto.getBackType() != null){
+                if(orderCar.getBackState() >= OrderCarLocalStateEnum.DISPATCHED.code){
+                    return BaseResultUtil.fail("车辆{0},配送已经调度完成，无法变更承运方式", orderCar.getNo());
+                }
+                if(orderCar.getState() >= OrderCarStateEnum.WAIT_BACK.code){
+                    return BaseResultUtil.fail("车辆{0},配送调度已经结束，无法变更承运方式", orderCar.getNo());
+                }
+            }
+        }
+        //更新
+        orderCarIdList.forEach(orderCarId ->{
+            OrderCar noc = new OrderCar();
+            noc.setId(orderCarId);
+            noc.setPickType(paramsDto.getPickType());
+            noc.setBackType(paramsDto.getBackType());
+            orderCarDao.updateById(noc);
+        });
+
+        return BaseResultUtil.success();
     }
 
     /**
@@ -491,6 +522,12 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
     private Order fillOrderInputStore(Order order) {
         if (order.getInputStoreId() != null && order.getInputStoreId() != -5) {
+            if(StringUtils.isBlank(order.getInputStoreName())){
+                Store store = csStoreService.getById(order.getInputStoreId(), true);
+                if(store != null){
+                    order.setInputStoreName(store.getName());
+                }
+            }
             return order;
         }
         //根据业务范围查询业务中心
@@ -569,6 +606,12 @@ public class CsOrderServiceImpl implements ICsOrderService {
      */
     private Order fillOrderStoreInfo(Order order) {
         if (order.getStartStoreId() != null && order.getStartStoreId() > 0) {
+            if(StringUtils.isBlank(order.getStartStoreName())){
+                Store store = csStoreService.getById(order.getStartStoreId(), true);
+                if(store != null){
+                    order.setStartStoreName(store.getName());
+                }
+            }
             order.setStartBelongStoreId(order.getStartStoreId());
         } else {
             //查询地址所属业务中心
@@ -587,6 +630,13 @@ public class CsOrderServiceImpl implements ICsOrderService {
         }
         if (order.getEndStoreId() != null && order.getEndStoreId() > 0) {
             order.setEndBelongStoreId(order.getEndStoreId());
+            if(StringUtils.isBlank(order.getEndStoreName())){
+                Store store = csStoreService.getById(order.getEndStoreId(), true);
+                if(store != null){
+                    order.setStartStoreName(store.getName());
+                }
+            }
+            order.setStartBelongStoreId(order.getStartStoreId());
         } else {
             //查询地址所属业务中心
             Store store = csStoreService.getOneBelongByCityCode(order.getEndCityCode());

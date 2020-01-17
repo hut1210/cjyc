@@ -191,6 +191,13 @@ public class WaybillCarDetailVo implements Serializable {
     @ApiModelProperty(value = "创建时间")
     private Long createTime;
 
+    @ApiModelProperty(value = "干线线路费")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
+    private BigDecimal lineFreightFee;
+
+    public BigDecimal getLineFreightFee() {
+        return lineFreightFee == null ? new BigDecimal(0) : lineFreightFee;
+    }
     public BigDecimal getFreightFee() {
         return freightFee == null ? new BigDecimal(0) : freightFee;
     }

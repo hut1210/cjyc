@@ -1571,21 +1571,21 @@
     <select id="selectStorageCarPage" parameterType="com.cjyc.common.model.dto.web.mineStore.StorageCarQueryDto"
             resultType="com.cjyc.common.model.vo.web.mineStore.StorageCarVo">
         select
-        oc.no AS carNo,
-        oc.brand AS brand,
-        oc.model AS model,
-        oc.plate_no AS plateNo,
-        oc.vin AS vin,
-        oc.order_no AS orderNo,
-        oc.is_new AS isNew,
-        oc.add_insurance_fee AS addInsuranceFee,
-        oc.add_insurance_amount AS addInsuranceAmount,
-        oc.valuation AS valuation
+            oc.no AS carNo,
+            oc.brand AS brand,
+            oc.model AS model,
+            oc.plate_no AS plateNo,
+            oc.vin AS vin,
+            oc.order_no AS orderNo,
+            oc.is_new AS isNew,
+            oc.add_insurance_fee AS addInsuranceFee,
+            oc.add_insurance_amount AS addInsuranceAmount,
+            oc.valuation AS valuation
         from w_order o
         join w_order_car oc on o.id = oc.order_id
         <where>
+            oc.state in (25,35,45,50)
             and oc.now_store_id = #{nowStoreId}
-            and oc.state in (25,35,45,50)
             <if test="isNew != null">
                 and oc.is_new=#{isNew}
             </if>

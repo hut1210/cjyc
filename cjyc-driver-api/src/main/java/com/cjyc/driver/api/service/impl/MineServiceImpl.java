@@ -13,10 +13,7 @@ import com.cjyc.common.model.enums.task.TaskStateEnum;
 import com.cjyc.common.model.enums.transport.RunningStateEnum;
 import com.cjyc.common.model.enums.transport.VehicleOwnerEnum;
 import com.cjyc.common.model.enums.transport.VehicleRunStateEnum;
-import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.util.LocalDateTimeUtil;
-import com.cjyc.common.model.util.RandomUtil;
-import com.cjyc.common.model.util.YmlProperty;
+import com.cjyc.common.model.util.*;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.mine.*;
@@ -720,6 +717,10 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
                 .eq(UserRoleDept::getId, dto.getRoleId()));
         if(urd == null){
             return BaseResultUtil.fail("该司机不存在,请检查");
+        }
+        boolean flag = BankCardUtil.checkBankCard(dto.getCardNo());
+        if(!flag){
+            return BaseResultUtil.fail("银行卡号输入不符合,请检查");
         }
         BankCardBind bcb = new BankCardBind();
         bcb.setUserId(Long.valueOf(urd.getDeptId()));

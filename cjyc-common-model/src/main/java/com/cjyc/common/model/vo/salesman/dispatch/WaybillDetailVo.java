@@ -54,6 +54,9 @@ public class WaybillDetailVo implements Serializable {
     @ApiModelProperty(value = "运单状态：0待承接，20待运输, 55运输中，100已完成，113已取消")
     private Integer state;
 
+    @ApiModelProperty(value = "运费是否固定（包板）0否，1是")
+    private boolean fixedFreightFee;
+
     @ApiModelProperty(value = "运单状态描述")
     private String stateDes;
 

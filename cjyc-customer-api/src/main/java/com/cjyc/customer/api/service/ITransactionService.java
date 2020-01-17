@@ -33,4 +33,6 @@ public interface ITransactionService {
     ResultVo update(Charge object, Event event, String s);
 
     void updateTransfer(Transfer object, Event event, String s);
+
+    void transferFailed(Transfer object, Event event);
 }

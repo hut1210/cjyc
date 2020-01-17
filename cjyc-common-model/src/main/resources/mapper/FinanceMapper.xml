@@ -8,7 +8,7 @@
         zcity.name as largeArea,
         wo.input_store_name as inputStoreName,wo.start_address as startAddress,
         wo.end_address as endAddress,
-        wt.complete_time as deliveryDate,
+        woc.finish_time as deliveryDate,
 
         wo.customer_id as customerId,
         wo.customer_type as type,cc.name as customerName,

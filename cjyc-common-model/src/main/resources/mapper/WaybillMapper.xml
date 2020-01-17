@@ -713,11 +713,12 @@
         select
             w.id as waybillId,
             w.no as waybillNo,
-            w.guide_line as guideLine,
             w.car_num as carNum,
             w.type as type,
             w.freight_fee as freightFee,
             w.create_time as createTime,
+            (case w.type when 1 then concat(wcar.start_city,'-',wcar.end_city)
+                         when 3 then concat(wcar.start_city,'-',wcar.end_city) else w.guide_line end) AS guideLine,
             wcar.start_city as startCity,
             wcar.end_city as endCity
         from

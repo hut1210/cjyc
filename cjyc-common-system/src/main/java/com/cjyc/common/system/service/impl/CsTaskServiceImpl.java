@@ -371,6 +371,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
         int count = 0;
         long currentTimeMillis = System.currentTimeMillis();
         Set<Long> orderIdSet = Sets.newHashSet();
+        Set<CarStorageLog> storageLogSet = Sets.newHashSet();
         for (Long taskCarId : paramsDto.getTaskCarIdList()) {
             WaybillCar waybillCar = waybillCarDao.findByTaskCarId(taskCarId);
             if (waybillCar == null) {
@@ -396,42 +397,46 @@ public class CsTaskServiceImpl implements ICsTaskService {
             //验证目的地业务中心是否与当前业务中心匹配
             if (waybillCar.getStartStoreId() != null && waybillCar.getStartStoreId() != 0) {
                 if (!waybillCar.getStartStoreId().equals(orderCar.getNowStoreId())) {
-                    throw new ParameterException("订单车辆尚未到达提车业务中心");
+                    throw new ParameterException("订单车辆未入库，请业务员先将车辆入库");
                 }
             } else {
                 if (!waybillCar.getStartAreaCode().equals(orderCar.getNowAreaCode())) {
                     throw new ParameterException("订单车辆尚未到达提车地址区县范围内");
                 }
             }
-
             //验证运单车辆信息是否完全
             if (!validateOrderCarInfo(orderCar)) {
                 throw new ParameterException("订单车辆{0}信息不完整", orderCar.getNo());
             }
-/*            if (!validateWaybillCarInfo(waybillCar)) {
-                throw new ParameterException("运单车辆{0}信息不完整", orderCar.getNo());
-            }*/
 
             //运单和车辆状态
             int waybillCarNewState = WaybillCarStateEnum.WAIT_LOAD_CONFIRM.code;
             int orderCarNewState = orderCar.getState();
+            if (waybill.getType() == WaybillTypeEnum.PICK.code) {
+                //提车任务、自送到业务中心
+                orderCarNewState = OrderCarStateEnum.WAIT_PICK.code;
+            } else if (waybill.getType() == WaybillTypeEnum.TRUNK.code) {
+                //干线、提干、干送、提干送任务
+                orderCarNewState = OrderCarStateEnum.WAIT_TRUNK.code;
+            } else if (waybill.getType() == WaybillTypeEnum.BACK.code) {
+                //送车、自提
+                orderCarNewState = OrderCarStateEnum.WAIT_BACK.code;
+            }
             //运单不经过业务中心,无出入库确认操作
             if (waybillCar.getStartStoreId() == null || waybillCar.getStartStoreId() <= 0 || paramsDto.getLoginType() == UserTypeEnum.ADMIN) {
+                waybillCarNewState = WaybillCarStateEnum.LOADED.code;
                 if (waybill.getType() == WaybillTypeEnum.PICK.code) {
                     //提车任务、自送到业务中心
-                    waybillCarNewState = WaybillCarStateEnum.LOADED.code;
                     orderCarNewState = OrderCarStateEnum.PICKING.code;
                 } else if (waybill.getType() == WaybillTypeEnum.TRUNK.code) {
                     //干线、提干、干送、提干送任务
-                    waybillCarNewState = WaybillCarStateEnum.LOADED.code;
                     orderCarNewState = OrderCarStateEnum.TRUNKING.code;
                 } else if (waybill.getType() == WaybillTypeEnum.BACK.code) {
                     //送车、自提
-                    waybillCarNewState = WaybillCarStateEnum.LOADED.code;
                     orderCarNewState = OrderCarStateEnum.BACKING.code;
                 }
 
-                if(paramsDto.getLoginType() == UserTypeEnum.ADMIN){
+                if(waybillCar.getStartStoreId() != null && waybillCar.getStartStoreId() > 0){
                     CarStorageLog carStorageLog = CarStorageLog.builder()
                             .storeId(waybillCar.getStartStoreId())
                             .type(CarStorageTypeEnum.OUT.code)
@@ -452,7 +457,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                             .createUserId(paramsDto.getLoginId())
                             .createUser(paramsDto.getLoginName())
                             .build();
-
+                    storageLogSet.add(carStorageLog);
                     //出库日志
                     csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.OUT_STORE,
                             new String[]{MessageFormat.format(OrderCarLogEnum.OUT_STORE.getInnerLog(), orderCar.getNo(), waybillCar.getEndStoreName()),
@@ -484,6 +489,8 @@ public class CsTaskServiceImpl implements ICsTaskService {
         //更新空车位数
         vehicleRunningDao.updateOccupiedNum(task.getVehicleRunningId());
 
+        //添加出库日志
+        csStorageLogService.asyncSaveBatch(storageLogSet);
         resultReasonVo.setSuccessList(successSet);
         resultReasonVo.setFailList(failCarNoSet);
         return BaseResultUtil.success(resultReasonVo);
@@ -542,7 +549,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             if (waybillCar.getState() <= WaybillCarStateEnum.WAIT_LOAD.code) {
                 throw new ParameterException("运单车辆{0}尚未装车", waybillCar.getOrderCarNo());
             }
-            if (waybillCar.getState() <= WaybillCarStateEnum.LOADED.code) {
+            if (waybillCar.getState() < WaybillCarStateEnum.LOADED.code) {
                 throw new ParameterException("运单车辆{0}尚未出库，请联系始发地业务中心业务员", waybillCar.getOrderCarNo());
             }
             if (waybillCar.getState() >= WaybillCarStateEnum.UNLOADED.code) {
@@ -1125,9 +1132,9 @@ public class CsTaskServiceImpl implements ICsTaskService {
             //提取数据
             orderIdSet.add(orderCar.getOrderId());
         }
-        log.info("updateForCarFinish orderIdSet ="+orderIdSet.toString());
+
         //处理订单
-        if (CollectionUtils.isEmpty(orderIdSet)) {
+        if (!CollectionUtils.isEmpty(orderIdSet)) {
             orderIdSet.forEach(orderId -> validateAndFinishOrder(orderId, userInfo));
         }
         //处理任务

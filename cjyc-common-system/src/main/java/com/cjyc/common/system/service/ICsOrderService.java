@@ -4,6 +4,8 @@ import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.order.DispatchAddCarVo;
 
+import java.util.List;
+
 /**
  * 订单公用业务
  * @author JPG
@@ -86,5 +88,5 @@ public interface ICsOrderService {
 
     ResultVo simpleCommitAndCheck(CheckOrderDto reqDto);
 
-    int changeOrderCarCarryType(ChangeCarryTypeDto reqDto);
+    ResultVo changeOrderCarCarryType(ChangeCarryTypeDto reqDto);
 }
