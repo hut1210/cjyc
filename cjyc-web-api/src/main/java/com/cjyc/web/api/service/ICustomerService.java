@@ -8,6 +8,7 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.vo.web.coupon.CustomerCouponSendVo;
 import com.cjyc.common.model.vo.web.customer.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -226,4 +227,25 @@ public interface ICustomerService  extends IService<Customer> {
      * @return
      */
     ResultVo findCustomerByKey(String keyword);
+
+    /**
+     * C端客户导入Excel文件
+     * @param file
+     * @return
+     */
+    boolean importCustomerExcel(MultipartFile file, Long loginId);
+
+    /**
+     * 大客户导入Excel文件
+     * @param file
+     * @return
+     */
+    boolean importKeyExcel(MultipartFile file, Long loginId);
+
+    /**
+     * 合伙人导入Excel文件
+     * @param file
+     * @return
+     */
+    boolean importPartnerExcel(MultipartFile file, Long loginId);
 }

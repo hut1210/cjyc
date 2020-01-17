@@ -5,6 +5,7 @@ import com.cjyc.common.model.dto.web.vehicle.*;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.vehicle.VehicleVo;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -50,4 +51,11 @@ public interface IVehicleService {
      * @param response
      */
     void exportVehicleExcel(HttpServletRequest request, HttpServletResponse response);
+
+    /**
+     * 社会车辆导入Excel文件
+     * @param file
+     * @return
+     */
+    boolean importVehicleExcel(MultipartFile file, Long loginId);
 }

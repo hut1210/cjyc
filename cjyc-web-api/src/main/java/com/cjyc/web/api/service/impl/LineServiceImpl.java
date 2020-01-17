@@ -201,7 +201,7 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
                 result = false;
             }
         } catch (Exception e) {
-            log.error("导入品牌车系失败异常:{}",e);
+            log.error("导入班线失败异常:{}",e);
             result = false;
         }
         return result;
