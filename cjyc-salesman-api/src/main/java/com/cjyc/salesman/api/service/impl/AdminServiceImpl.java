@@ -129,8 +129,7 @@ public class AdminServiceImpl implements IAdminService {
         int totalRecords = CollectionUtils.isEmpty(pageList)?0: pageList.size();
         return PageVo.<AdminPageVo>builder()
                 .totalRecords(totalRecords)
-                .totalPages(totalRecords % dto.getPageSize() == 0? totalRecords / dto.getPageSize():
-                        totalRecords / dto.getPageSize() + 1)
+                .totalPages(getPages(totalRecords, dto.getPageSize()))
                 .pageSize(dto.getPageSize())
                 .currentPage(dto.getCurrentPage())
                 .list(pageList)
