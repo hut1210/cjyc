@@ -7,6 +7,7 @@ import com.cjyc.common.model.dto.salesman.dispatch.DispatchListDto;
 import com.cjyc.common.model.dto.salesman.dispatch.WaitCountDto;
 import com.cjyc.common.model.dto.salesman.dispatch.WaitCountLineDto;
 import com.cjyc.common.model.dto.salesman.mine.OrderCarDto;
+import com.cjyc.common.model.dto.salesman.mine.SalesAchieveDto;
 import com.cjyc.common.model.dto.salesman.mine.StockCarDto;
 import com.cjyc.common.model.dto.web.BaseWebDto;
 import com.cjyc.common.model.dto.web.dispatch.LineWaitCountDto;
@@ -227,11 +228,17 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
 
     /**
      * 业务员端我下的订单车辆台数
-     * @param flag
-     * @param userId
+     * @param achieveDto
      * @return
      */
-    Integer orderCarCount(@Param("flag") Integer flag,@Param("userId") Long userId);
+    Integer orderCarCount(SalesAchieveDto achieveDto);
+
+    /**
+     * 业务员端我已确认车辆台数
+     * @param achieveDto
+     * @return
+     */
+    Integer orderCarCheckCount(SalesAchieveDto achieveDto);
 
     List<Map<String, Object>> countTrunkListWaitDispatchCar(@Param("paramsDto") BaseWebDto paramsDto);
 

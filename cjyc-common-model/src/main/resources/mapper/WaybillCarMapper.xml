@@ -1528,8 +1528,9 @@
         and w.type = 2
     </select>
 
-    <!--业务员端提送车完成台数-->
-    <select id="waybillCarCount" resultType="java.lang.Integer">
+    <!--业务员端提车完成台数-->
+    <select id="waybillCarPickCount" resultType="java.lang.Integer"
+            parameterType="com.cjyc.common.model.dto.salesman.mine.SalesAchieveDto">
        SELECT
             count( wwc.id )
         FROM
@@ -1537,15 +1538,43 @@
 		LEFT JOIN w_task_car wtc ON wtc.task_id = wt.id
 		LEFT JOIN w_waybill_car wwc ON wwc.id = wtc.waybill_car_id
 		LEFT JOIN w_waybill ww ON ww.id = wwc.waybill_id
-        WHERE
-            ww.type = #{type}
+        <where>
+            <if test="driverId != null">
+                wt.driver_id = #{driverId}
+            </if>
+            <if test="thisMonthTime != null and thisMonthTime != 0 and nextMonthTime != null and nextMonthTime != 0">
+                and wt.complete_time > #{thisMonthTime} and wt.complete_time &lt; #{nextMonthTime}
+            </if>
+            AND ww.type = 1
             AND wt.state = 100
-            AND wt.driver_id = #{driverId}
+        </where>
+    </select>
+
+    <!--业务员端送车完成台数-->
+    <select id="waybillCarBackCount" resultType="java.lang.Integer"
+            parameterType="com.cjyc.common.model.dto.salesman.mine.SalesAchieveDto">
+        SELECT
+        count( wwc.id )
+        FROM
+        w_task wt
+        LEFT JOIN w_task_car wtc ON wtc.task_id = wt.id
+        LEFT JOIN w_waybill_car wwc ON wwc.id = wtc.waybill_car_id
+        LEFT JOIN w_waybill ww ON ww.id = wwc.waybill_id
+        <where>
+            <if test="driverId != null">
+                wt.driver_id = #{driverId}
+            </if>
+            <if test="thisMonthTime != null and thisMonthTime != 0 and nextMonthTime != null and nextMonthTime != 0">
+                and wt.complete_time > #{thisMonthTime} and wt.complete_time &lt; #{nextMonthTime}
+            </if>
+            AND ww.type = 3
+            AND wt.state = 100
+        </where>
     </select>
 
     <!--业务员端我确认/下单我送车任务交付客户-->
     <select id="deliveredCarCount" resultType="java.lang.Integer"
-            parameterType="java.lang.Long">
+            parameterType="com.cjyc.common.model.dto.salesman.mine.SalesAchieveDto">
         SELECT
             count( wwc.id )
         FROM
@@ -1553,19 +1582,26 @@
 		LEFT JOIN w_task_car wtc ON wtc.task_id = wt.id
 		LEFT JOIN w_waybill_car wwc ON wwc.id = wtc.waybill_car_id
 		LEFT JOIN w_waybill ww ON ww.id = wwc.waybill_id
-        WHERE
-            ww.type = 3
+        <where>
+            <if test="driverId != null">
+                AND wt.driver_id = #{driverId}
+            </if>
+            <if test="thisMonthTime != null and thisMonthTime != 0 and nextMonthTime != null and nextMonthTime != 0">
+                AND wt.complete_time > #{thisMonthTime} and wt.complete_time &lt; #{nextMonthTime}
+            </if>
+            AND ww.type = 3
             AND wt.state = 100
             AND wwc.order_car_id IN (
-        SELECT
-            woc.id
-        FROM
-            w_order_car woc
+              SELECT
+                woc.id
+              FROM
+                w_order_car woc
             LEFT JOIN w_order wo ON wo.id = woc.order_id
-        WHERE
-            wo.check_user_id = #{userId}
-            OR wo.create_user_id = #{userId}
+            WHERE
+                wo.check_user_id = #{userId}
+                OR wo.create_user_id = #{userId}
             )
+        </where>
     </select>
 
     <!--分页查询在库列表-->
