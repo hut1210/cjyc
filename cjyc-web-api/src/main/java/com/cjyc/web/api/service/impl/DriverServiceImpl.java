@@ -41,6 +41,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -739,5 +740,77 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
             }
         }
         return driverVos;
+    }
+
+
+    @Override
+    public boolean importDriverExcel(MultipartFile file, Long loginId) {
+        boolean result = false;
+        try {
+            List<DriverImportExcel> driverImportExcelList = ExcelUtil.importExcel(file, 0, 1, DriverImportExcel.class);
+            if (!CollectionUtils.isEmpty(driverImportExcelList)) {
+                for (DriverImportExcel driverImportExcel : driverImportExcelList) {
+                    DriverDto dto = new DriverDto();
+                    dto.setPhone(driverImportExcel.getPhone());
+                    dto.setIdCard(driverImportExcel.getIdCard());
+                    ExistCarrierVo carrierVo = carrierDao.existCarrierNew(dto);
+                    if (carrierVo != null) {
+                        if (carrierVo.getType() == CarrierTypeEnum.PERSONAL.code) {
+                            continue;
+                        }
+                        if (carrierVo.getType() == CarrierTypeEnum.ENTERPRISE.code) {
+                            continue;
+                        }
+                    }
+                    Role role = csRoleService.getByName(YmlProperty.get("cjkj.carrier_personal_driver_role_name"), DeptTypeEnum.CARRIER.code);
+                    if (role == null) {
+                        continue;
+                    }
+                    ResultData<Long> rd = csCustomerService.addUserToPlatform(driverImportExcel.getPhone(), driverImportExcel.getRealName(), role);
+                    if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+                        continue;
+                    }
+                    if (rd.getData() == null) {
+                        continue;
+                    }
+                    //保存个人承运商
+                    Carrier carrier = new Carrier();
+                    carrier.setLegalName(driverImportExcel.getRealName());
+                    carrier.setLegalIdCard(driverImportExcel.getIdCard());
+                    carrier.setName(driverImportExcel.getRealName());
+                    carrier.setLinkman(driverImportExcel.getRealName());
+                    carrier.setLinkmanPhone(driverImportExcel.getPhone());
+                    carrier.setMode(driverImportExcel.getMode());
+                    carrier.setType(CarrierTypeEnum.PERSONAL.code);
+                    carrier.setSettleType(ModeTypeEnum.TIME.code);
+                    carrier.setState(CommonStateEnum.WAIT_CHECK.code);
+                    carrier.setBusinessState(BusinessStateEnum.BUSINESS.code);
+                    carrier.setCreateTime(NOW);
+                    carrier.setCreateUserId(loginId);
+                    carrierDao.insert(carrier);
+
+                    //保存散户司机
+                    Driver driver = new Driver();
+                    BeanUtils.copyProperties(driverImportExcel, driver);
+                    driver.setUserId(rd.getData());
+                    driver.setName(driverImportExcel.getRealName());
+                    driver.setType(DriverTypeEnum.SOCIETY.code);
+                    driver.setIdentity(DriverIdentityEnum.GENERAL_DRIVER.code);
+                    driver.setBusinessState(BusinessStateEnum.BUSINESS.code);
+                    driver.setSource(DriverSourceEnum.SALEMAN_WEB.code);
+                    driver.setCreateTime(NOW);
+                    driver.setCreateUserId(loginId);
+                    super.save(driver);
+                    //保存司机角色机构关系
+                    csUserRoleDeptService.saveDriverToUserRoleDept(carrier, driver, null, role.getId(), loginId, 1);
+                }
+            } else {
+                result = false;
+            }
+        } catch (Exception e) {
+            log.error("导入社会司机失败异常:{}", e);
+            result = false;
+        }
+        return result;
     }
 }

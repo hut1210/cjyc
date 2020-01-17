@@ -3,6 +3,8 @@ package com.cjyc.web.api.controller;
 import com.cjyc.common.model.dto.KeywordDto;
 import com.cjyc.common.model.dto.web.vehicle.VehicleDto;
 import com.cjyc.common.model.dto.web.vehicle.*;
+import com.cjyc.common.model.enums.ResultEnum;
+import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.FreeVehicleVo;
@@ -13,6 +15,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -75,5 +78,12 @@ public class VehicleController {
     @GetMapping("/exportVehicleExcel")
     public void exportVehicleExcel(HttpServletRequest request, HttpServletResponse response){
         vehicleService.exportVehicleExcel(request,response);
+    }
+
+    @ApiOperation(value = "社会车辆导入Excel", notes = "\t 请求接口为/importVehicleExcel/loginId(导入用户ID)格式")
+    @PostMapping("/importVehicleExcel/{loginId}")
+    public ResultVo importVehicleExcel(@RequestParam("file") MultipartFile file, @PathVariable Long loginId){
+        boolean result = vehicleService.importVehicleExcel(file, loginId);
+        return result ? BaseResultUtil.success() : BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
 }

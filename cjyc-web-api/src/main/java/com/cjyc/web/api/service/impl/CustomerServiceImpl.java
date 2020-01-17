@@ -14,7 +14,6 @@ import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.customer.*;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.*;
-import com.cjyc.common.model.enums.customer.CustomerPayEnum;
 import com.cjyc.common.model.enums.customer.CustomerSourceEnum;
 import com.cjyc.common.model.enums.customer.CustomerStateEnum;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
@@ -44,7 +43,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -432,7 +431,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                 c.setCreateTime(NOW);
                 super.updateById(c);
                 //合伙人附加信息
-                encapPartner(dto,c,NOW);
+                encapPartner(dto,null,c,NOW);
                 return BaseResultUtil.success();
             }else{
                 //返回前端，flag重置为true
@@ -465,7 +464,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         customer.setCreateTime(NOW);
         customer.setCreateUserId(dto.getLoginId());
         customerDao.insert(customer);
-        encapPartner(dto,customer,NOW);
+        encapPartner(dto,null,customer,NOW);
         return BaseResultUtil.success();
     }
 
@@ -512,7 +511,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             customerPartnerDao.removeByCustomerId(customer.getId());
             //删除合伙人银行卡信息
             bankCardBindDao.removeBandCarBind(customer.getId());
-            encapPartner(dto,customer,NOW);
+            encapPartner(dto,null,customer,NOW);
         }
         return BaseResultUtil.success();
     }
@@ -795,15 +794,23 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
      * @param now
      * @return
      */
-    private void encapPartner(PartnerDto dto,Customer customer,Long now){
+    private void encapPartner(PartnerDto dto,PartnerImportExcel partnerImport,Customer customer,Long now){
         //新增合伙人附加信息c_customer_partner
         CustomerPartner cp = new CustomerPartner();
-        BeanUtils.copyProperties(dto,cp);
+        if(dto != null){
+            BeanUtils.copyProperties(dto,cp);
+        }else{
+            BeanUtils.copyProperties(partnerImport,cp);
+        }
         cp.setCustomerId(customer.getId());
         customerPartnerDao.insert(cp);
         //新增绑定银行卡信息s_bank_card_bind
         BankCardBind bcb = new BankCardBind();
-        BeanUtils.copyProperties(dto,bcb);
+        if(dto != null){
+            BeanUtils.copyProperties(dto,bcb);
+        }else{
+            BeanUtils.copyProperties(partnerImport,bcb);
+        }
         bcb.setUserId(customer.getId());
         bcb.setCardPhone(customer.getContactPhone());
         bcb.setUserType(UserTypeEnum.CUSTOMER.code);
@@ -1015,7 +1022,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                 customer.setCreateTime(NOW);
                 super.updateById(customer);
                 //合伙人附加信息
-                encapPartner(dto,customer,NOW);
+                encapPartner(dto,null,customer,NOW);
                 //修改用户与角色机构关系
                 ResultVo resultVo = csUserRoleDeptService.updateCustomerToUserRoleDept(customer, dto.getLoginId());
                 if (!ResultEnum.SUCCESS.getCode().equals(resultVo.getCode())) {
@@ -1205,7 +1212,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         customer.setCreateTime(NOW);
         customer.setCreateUserId(dto.getLoginId());
         customerDao.insert(customer);
-        encapPartner(dto,customer,NOW);
+        encapPartner(dto,null,customer,NOW);
         //保存用户角色机构关系
         csUserRoleDeptService.saveCustomerToUserRoleDept(customer,role.getId(),dto.getLoginId());
         return BaseResultUtil.success();
@@ -1241,7 +1248,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         customerPartnerDao.removeByCustomerId(customer.getId());
         //删除合伙人银行卡信息
         bankCardBindDao.removeBandCarBind(customer.getId());
-        encapPartner(dto,customer,NOW);
+        encapPartner(dto,null,customer,NOW);
         return BaseResultUtil.success();
     }
 
@@ -1297,6 +1304,154 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             }
         }
         return coPartnerVos;
+    }
+
+    @Override
+    public boolean importCustomerExcel(MultipartFile file, Long loginId) {
+        boolean result = false;
+        try {
+            List<CustomerImportExcel> customerImportExcelList = ExcelUtil.importExcel(file, 0, 1, CustomerImportExcel.class);
+            if(!CollectionUtils.isEmpty(customerImportExcelList)){
+                for(CustomerImportExcel customerExcel : customerImportExcelList){
+                    Customer customer = customerDao.selectOne(new QueryWrapper<Customer>().lambda().eq(Customer::getContactPhone, customerExcel.getContactPhone()));
+                    if(customer != null){
+                        continue;
+                    }
+                    Role role = csRoleService.getByName(YmlProperty.get("cjkj.customer_client_role_name"), DeptTypeEnum.CUSTOMER.code);
+                    if(role == null){
+                        continue;
+                    }
+                    //新增个人用户信息到物流平台
+                    ResultData<Long> rd = csCustomerService.addUserToPlatform(customerExcel.getContactPhone(),customerExcel.getContactMan(),role);
+                    if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+                        continue;
+                    }
+                    if(rd.getData() == null){
+                        continue;
+                    }
+                    customer = new Customer();
+                    BeanUtils.copyProperties(customerExcel,customer);
+                    customer.setUserId(rd.getData());
+                    customer.setCustomerNo(sendNoService.getNo(SendNoTypeEnum.CUSTOMER));
+                    customer.setAlias(customerExcel.getContactMan());
+                    customer.setName(customerExcel.getContactMan());
+                    customer.setType(CustomerTypeEnum.INDIVIDUAL.code);
+                    customer.setPayMode(PayModeEnum.COLLECT.code);
+                    customer.setSource(CustomerSourceEnum.WEB.code);
+                    customer.setCreateUserId(loginId);
+                    customer.setCreateTime(NOW);
+                    customer.setCheckUserId(loginId);
+                    customer.setCheckTime(NOW);
+                    super.save(customer);
+                    //保存用户角色机构关系
+                    csUserRoleDeptService.saveCustomerToUserRoleDept(customer, role.getId(), loginId);
+                }
+            }else {
+                result = false;
+            }
+        }catch (Exception e){
+            log.error("导入C端客户失败异常:{}",e);
+            result = false;
+        }
+        return result;
+    }
+
+    @Override
+    public boolean importKeyExcel(MultipartFile file, Long loginId) {
+        boolean result = false;
+        try {
+            List<KeyImportExcel> keyImportExcelList = ExcelUtil.importExcel(file, 0, 1, KeyImportExcel.class);
+            if(!CollectionUtils.isEmpty(keyImportExcelList)){
+                for(KeyImportExcel keyImportExcel : keyImportExcelList){
+                    Customer customer = customerDao.selectOne(new QueryWrapper<Customer>().lambda().eq(Customer::getContactPhone, keyImportExcel.getContactPhone()));
+                    if(customer != null){
+                        continue;
+                    }
+                    Role role = csRoleService.getByName(YmlProperty.get("cjkj.customer_key_role_name"), DeptTypeEnum.CUSTOMER.code);
+                    if(role == null){
+                        continue;
+                    }
+                    //新增大客户信息到物流平台
+                    ResultData<Long> rd = csCustomerService.addUserToPlatform(keyImportExcel.getContactPhone(),keyImportExcel.getContactMan(),role);
+                    if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+                        continue;
+                    }
+                    if(rd.getData() == null){
+                        continue;
+                    }
+                    //新增大客户
+                    customer = new Customer();
+                    BeanUtils.copyProperties(keyImportExcel,customer);
+                    customer.setUserId(rd.getData());
+                    customer.setCustomerNo(sendNoService.getNo(SendNoTypeEnum.CUSTOMER));
+                    customer.setAlias(keyImportExcel.getName());
+                    customer.setType(CustomerTypeEnum.ENTERPRISE.code);
+                    customer.setSource(CustomerSourceEnum.WEB.code);
+                    customer.setCreateTime(NOW);
+                    customer.setCreateUserId(loginId);
+                    super.save(customer);
+                    //合同集合
+
+                    //保存用户角色机构关系
+                    csUserRoleDeptService.saveCustomerToUserRoleDept(customer,role.getId(),loginId);
+                }
+            }else {
+                result = false;
+            }
+        }catch (Exception e){
+            log.error("导入大客户失败异常:{}",e);
+            result = false;
+        }
+        return result;
+    }
+
+    @Override
+    public boolean importPartnerExcel(MultipartFile file, Long loginId) {
+        boolean result = false;
+        try {
+            List<PartnerImportExcel> partnerImportExcelList = ExcelUtil.importExcel(file, 0, 1, PartnerImportExcel.class);
+            if(!CollectionUtils.isEmpty(partnerImportExcelList)){
+                for(PartnerImportExcel partnerExcel : partnerImportExcelList){
+                    Customer customer = customerDao.selectOne(new QueryWrapper<Customer>().lambda().eq(Customer::getContactPhone, partnerExcel.getContactPhone()));
+                    if(customer != null){
+                        continue;
+                    }
+                    Role role = csRoleService.getByName(YmlProperty.get("cjkj.customer_copartner_role_name"), DeptTypeEnum.CUSTOMER.code);
+                    if(role == null){
+                        continue;
+                    }
+                    //新增合伙人用户信息到物流平台
+                    ResultData<Long> rd = csCustomerService.addUserToPlatform(partnerExcel.getContactPhone(),partnerExcel.getContactMan(),role);
+                    if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+                        continue;
+                    }
+                    ResultData resultData = sysRoleService.revokeRole(rd.getData(), role.getRoleId());
+                    if (!ReturnMsg.SUCCESS.getCode().equals(resultData.getCode())) {
+                        return false;
+                    }
+                    //新增c_customer
+                    customer = new Customer();
+                    BeanUtils.copyProperties(partnerExcel,customer);
+                    customer.setUserId(rd.getData());
+                    customer.setAlias(partnerExcel.getName());
+                    customer.setCustomerNo(sendNoService.getNo(SendNoTypeEnum.CUSTOMER));
+                    customer.setSource(CustomerSourceEnum.WEB.code);
+                    customer.setType(CustomerTypeEnum.COOPERATOR.code);
+                    customer.setCreateTime(NOW);
+                    customer.setCreateUserId(loginId);
+                    customerDao.insert(customer);
+                    encapPartner(null,partnerExcel,customer,NOW);
+                    //保存用户角色机构关系
+                    csUserRoleDeptService.saveCustomerToUserRoleDept(customer,role.getId(),loginId);
+                }
+            }else {
+                result = false;
+            }
+        }catch (Exception e){
+            log.error("导入合伙人失败异常:{}",e);
+            result = false;
+        }
+        return result;
     }
 
 }

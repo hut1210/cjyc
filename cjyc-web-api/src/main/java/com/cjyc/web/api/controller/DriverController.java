@@ -3,6 +3,8 @@ package com.cjyc.web.api.controller;
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.driver.*;
 import com.cjyc.common.model.dto.web.user.DriverListDto;
+import com.cjyc.common.model.enums.ResultEnum;
+import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.driver.DispatchDriverVo;
@@ -17,6 +19,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -149,5 +152,12 @@ public class DriverController {
     @PostMapping(value = "/carrier/driver/list")
     public ResultVo<PageVo<DispatchDriverVo>> dispatchDriverNew(@RequestBody CarrierDriverListDto dto){
         return driverService.carrierDrvierListNew(dto);
+    }
+
+    @ApiOperation(value = "社会司机导入Excel", notes = "\t 请求接口为/importDriverExcel/loginId(导入用户ID)格式")
+    @PostMapping("/importDriverExcel/{loginId}")
+    public ResultVo importDriverExcel(@RequestParam("file") MultipartFile file, @PathVariable Long loginId){
+        boolean result = driverService.importDriverExcel(file, loginId);
+        return result ? BaseResultUtil.success() : BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
 }

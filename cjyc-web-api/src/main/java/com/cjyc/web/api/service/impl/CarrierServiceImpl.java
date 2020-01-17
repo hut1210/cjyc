@@ -10,9 +10,11 @@ import com.cjkj.usercenter.dto.yc.AddDeptAndUserResp;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.carrier.*;
+import com.cjyc.common.model.dto.web.driver.DriverDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.driver.DriverIdentityEnum;
+import com.cjyc.common.model.enums.role.DeptTypeEnum;
 import com.cjyc.common.model.enums.role.RoleLevelEnum;
 import com.cjyc.common.model.enums.role.RoleRangeEnum;
 import com.cjyc.common.model.enums.transport.*;
@@ -23,6 +25,7 @@ import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.carrier.*;
+import com.cjyc.common.model.vo.web.driver.DriverImportExcel;
 import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.ICsCarrierService;
@@ -40,6 +43,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -155,7 +159,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             cdc.setRole(DriverRoleEnum.SUPERADMIN.code);
             carrierDriverConDao.insert(cdc);
 
-            saveBankCardBand(dto,carrier.getId());
+            saveBankCardBand(dto,null,carrier.getId());
             //添加承运商业务范围
             carrierCityConService.batchSave(carrier.getId(),dto.getCodes());
         }else{
@@ -225,7 +229,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
 
         //更新银行卡信息(先删除后添加)
         bankCardBindDao.removeBandCarBind(dto.getCarrierId());
-        saveBankCardBand(dto,origCarrier.getId());
+        saveBankCardBand(dto,null,origCarrier.getId());
 
         //承运商业务范围,先批量删除，再添加
         carrierCityConService.batchDelete(origCarrier.getId());
@@ -370,11 +374,6 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     public ResultVo saveOrModifyCarrierNew(CarrierDto dto) {
         if (dto.getCarrierId() == null) {
             //新增
-            Carrier existCarrier = carrierDao.selectOne(new QueryWrapper<Carrier>().lambda()
-                .eq(Carrier::getName, dto.getName()));
-            if (existCarrier != null) {
-                return BaseResultUtil.fail("该企业名称已存在，不可重复添加");
-            }
             List<Driver> existDriverList = driverDao.selectList(new QueryWrapper<Driver>().lambda()
                 .eq(Driver::getPhone, dto.getLinkmanPhone())
                 .or()
@@ -429,7 +428,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             userRoleDept.setCreateUserId(dto.getLoginId());
             userRoleDeptDao.insert(userRoleDept);
 
-            saveBankCardBand(dto,carrier.getId());
+            saveBankCardBand(dto,null,carrier.getId());
             //添加承运商业务范围
             carrierCityConService.batchSave(carrier.getId(),dto.getCodes());
         }else {
@@ -582,10 +581,14 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
      * @param dto
      * @param carrierId
      */
-    private void saveBankCardBand(CarrierDto dto,Long carrierId){
+    private void saveBankCardBand(CarrierDto dto,CarrierImportExcel excel,Long carrierId){
         //保存银行卡信息
         BankCardBind bcb = new BankCardBind();
-        BeanUtils.copyProperties(dto,bcb);
+        if(dto != null){
+            BeanUtils.copyProperties(dto,bcb);
+        }else{
+            BeanUtils.copyProperties(excel,bcb);
+        }
         //承运商id
         bcb.setUserId(carrierId);
         //承运商超级管理员
@@ -751,7 +754,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
 
         //更新银行卡信息(先删除后添加)
         bankCardBindDao.removeBandCarBind(dto.getCarrierId());
-        saveBankCardBand(dto,origCarrier.getId());
+        saveBankCardBand(dto,null, origCarrier.getId());
 
         //承运商业务范围,先批量删除，再添加
         carrierCityConService.batchDelete(origCarrier.getId());
@@ -870,5 +873,82 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         }else {
             return ResultData.failed("角色信息数据错误，请检查");
         }
+    }
+
+    @Override
+    public boolean importCarrierExcel(MultipartFile file, Long loginId) {
+        boolean result = false;
+        try {
+            List<CarrierImportExcel> carrierImportExcelList = ExcelUtil.importExcel(file, 0, 1, CarrierImportExcel.class);
+            if (!CollectionUtils.isEmpty(carrierImportExcelList)) {
+                for (CarrierImportExcel carrierImportExcel : carrierImportExcelList) {
+                    //新增
+                    List<Driver> existDriverList = driverDao.selectList(new QueryWrapper<Driver>().lambda()
+                            .eq(Driver::getPhone, carrierImportExcel.getLinkmanPhone())
+                            .or()
+                            .eq(Driver::getIdCard, carrierImportExcel.getLegalIdCard()));
+                    if (!CollectionUtils.isEmpty(existDriverList)) {
+                        continue;
+                    }
+                    //将承运商超级管理员账号、分配角色信息同步到物流平台
+                    Role role = csRoleService
+                            .getByName(CARRIER_SUPER_ROLE_NAME, 2);
+                    ResultData<Long> addUserRd = saveCarrierSuperAdminToPlatform(carrierImportExcel.getLinkman(),
+                            carrierImportExcel.getLinkmanPhone(), role);
+                    if (!ResultDataUtil.isSuccess(addUserRd)) {
+                        continue;
+                    }
+                    Long userId = addUserRd.getData();
+                    if(userId == null){
+                        continue;
+                    }
+                    //添加承运商
+                    Carrier carrier = new Carrier();
+                    BeanUtils.copyProperties(carrierImportExcel,carrier);
+                    carrier.setState(CommonStateEnum.WAIT_CHECK.code);
+                    carrier.setType(CarrierTypeEnum.ENTERPRISE.code);
+                    carrier.setBusinessState(BusinessStateEnum.BUSINESS.code);
+                    carrier.setCreateUserId(loginId);
+                    carrier.setCreateTime(NOW);
+                    super.save(carrier);
+
+                    //添加承运商司机管理员
+                    Driver driver = new Driver();
+                    driver.setName(carrierImportExcel.getName());
+                    driver.setPhone(carrierImportExcel.getLinkmanPhone());
+                    driver.setType(DriverTypeEnum.SOCIETY.code);
+                    driver.setIdentity(DriverIdentityEnum.CARRIER_MANAGER.code);
+                    driver.setBusinessState(BusinessStateEnum.BUSINESS.code);
+                    driver.setSource(DriverSourceEnum.SALEMAN_WEB.code);
+                    driver.setIdCard(carrierImportExcel.getLegalIdCard());
+                    driver.setRealName(carrierImportExcel.getLinkman());
+                    driver.setCreateUserId(loginId);
+                    driver.setCreateTime(NOW);
+                    driver.setUserId(userId);
+                    driverDao.insert(driver);
+
+                    //承运商、用户、角色关系维护
+                    UserRoleDept userRoleDept = new UserRoleDept();
+                    userRoleDept.setUserId(driver.getId());
+                    userRoleDept.setRoleId(role.getId());
+                    userRoleDept.setDeptId(String.valueOf(carrier.getId()));
+                    userRoleDept.setDeptType(2);
+                    userRoleDept.setUserType(UserTypeEnum.DRIVER.code);
+                    userRoleDept.setState(CommonStateEnum.WAIT_CHECK.code);
+                    userRoleDept.setMode(carrierImportExcel.getMode());
+                    userRoleDept.setCreateTime(NOW);
+                    userRoleDept.setCreateUserId(loginId);
+                    userRoleDeptDao.insert(userRoleDept);
+                    //保存银行卡信息
+                    saveBankCardBand(null,carrierImportExcel,carrier.getId());
+                }
+            } else {
+                result = false;
+            }
+        } catch (Exception e) {
+            log.error("导入社会司机失败异常:{}", e);
+            result = false;
+        }
+        return result;
     }
 }

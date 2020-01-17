@@ -9,6 +9,7 @@ import com.cjyc.common.model.vo.web.carrier.TrailCarrierVo;
 
 import com.cjyc.common.model.vo.web.carrier.TransportDriverVo;
 import com.cjyc.common.model.vo.web.carrier.TransportVehicleVo;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -125,6 +126,14 @@ public interface ICarrierService {
      * @return
      */
     ResultVo<PageVo<TransportVehicleVo>> transportVehicleNew(TransportDto dto);
+
+
+    /**
+     * 承运商导入Excel文件
+     * @param file
+     * @return
+     */
+    boolean importCarrierExcel(MultipartFile file, Long loginId);
 
     /*********************************韵车集成改版 ed*****************************/
 }

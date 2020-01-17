@@ -19,14 +19,17 @@ import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.vehicle.VehicleExportExcel;
+import com.cjyc.common.model.vo.web.vehicle.VehicleImportExcel;
 import com.cjyc.common.model.vo.web.vehicle.VehicleVo;
 import com.cjyc.web.api.service.IVehicleService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -159,5 +162,33 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
         dto.setRealName(request.getParameter("realName"));
         dto.setPhone(request.getParameter("phone"));
         return dto;
+    }
+
+    @Override
+    public boolean importVehicleExcel(MultipartFile file, Long loginId) {
+        boolean result = false;
+        try {
+            List<VehicleImportExcel> vehicleImportExcelList = ExcelUtil.importExcel(file, 0, 1, VehicleImportExcel.class);
+            if(!CollectionUtils.isEmpty(vehicleImportExcelList)){
+                for(VehicleImportExcel vehicleImportExcel : vehicleImportExcelList ){
+                    Vehicle vehicle = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda().eq(Vehicle::getPlateNo, vehicleImportExcel.getPlateNo()));
+                    if(vehicle != null){
+                        continue;
+                    }
+                    vehicle = new Vehicle();
+                    BeanUtils.copyProperties(vehicleImportExcel, vehicle);
+                    vehicle.setOwnershipType(VehicleOwnerEnum.PERSONAL.code);
+                    vehicle.setCreateUserId(loginId);
+                    vehicle.setCreateTime(NOW);
+                    super.save(vehicle);
+                }
+            }else{
+                result = false;
+            }
+        }catch(Exception e){
+            log.error("导入社会车辆失败异常:{}",e);
+            result = false;
+        }
+        return result;
     }
 }

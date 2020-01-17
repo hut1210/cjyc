@@ -11,6 +11,7 @@ import com.cjyc.common.model.vo.web.driver.DriverVo;
 import com.cjyc.common.model.vo.web.driver.ExistDriverVo;
 import com.cjyc.common.model.vo.web.driver.ShowDriverVo;
 import com.cjyc.common.model.vo.web.user.DriverListVo;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -117,4 +118,12 @@ public interface IDriverService {
      * @return
      */
     ResultVo<PageVo<DispatchDriverVo>> carrierDrvierListNew(CarrierDriverListDto dto);
+
+
+    /**
+     * 社会司机导入Excel文件
+     * @param file
+     * @return
+     */
+    boolean importDriverExcel(MultipartFile file, Long loginId);
 }
