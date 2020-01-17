@@ -375,7 +375,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
     private Integer getWaybillCarState(Waybill waybill, CarrierInfo carrierInfo) {
         if(carrierInfo.getCarryType() == WaybillCarrierTypeEnum.SELF.code){
-            return waybill.getType() == WaybillTypeEnum.PICK.code ? WaybillCarStateEnum.WAIT_UNLOAD_CONFIRM.code : WaybillCarStateEnum.WAIT_LOAD_CONFIRM.code;
+            return waybill.getType() == WaybillTypeEnum.PICK.code ? WaybillCarStateEnum.WAIT_UNLOAD_CONFIRM.code : WaybillCarStateEnum.WAIT_LOAD.code;
         }else{
             if(carrierInfo.getCarrierType() == CarrierTypeEnum.ENTERPRISE.code){
                 return WaybillCarStateEnum.WAIT_ALLOT.code;
