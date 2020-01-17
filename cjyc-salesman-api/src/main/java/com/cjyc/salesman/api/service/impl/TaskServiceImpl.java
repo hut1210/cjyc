@@ -186,7 +186,7 @@ public class TaskServiceImpl implements ITaskService {
                 || FieldConstant.FINISH_CAR.equals(detailState)
                 || FieldConstant.WAIT_PUT_IN.equals(detailState)
                 || FieldConstant.FINISH_PUT_IN.equals(detailState)) {
-            // 待交车 已出库 已交付 已入库
+            // 待交车 待入库 已出库 已交付 已入库
             String loadPhotoImg = waybillCar.getLoadPhotoImg();
             if (sb.length() > 0 && !StringUtils.isEmpty(loadPhotoImg)) {
                 sb.append(",");
