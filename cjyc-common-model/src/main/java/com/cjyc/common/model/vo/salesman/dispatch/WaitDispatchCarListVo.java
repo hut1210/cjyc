@@ -30,7 +30,7 @@ public class WaitDispatchCarListVo {
     @ApiModelProperty(value = "提车节点")
     private String pickNodes;
     @ApiModelProperty(value = "干线节点")
-    private String trunkNodes;
+    private List<String> trunkNodes;
     @ApiModelProperty(value = "送车节点")
     private String backNodes;
     @ApiModelProperty(value = "干线状态：1待调度，2节点调度，5已调度，7无需调度")

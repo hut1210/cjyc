@@ -154,6 +154,12 @@ public class DispatchServiceImpl implements IDispatchService {
         dto.setBizScope(bizScope.getStoreIds());
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize(), true);
         List<WaitDispatchCarListVo> list = orderCarDao.findWaitDispatchCarListForApp(dto);
+        if(!CollectionUtils.isEmpty(list)){
+            for (WaitDispatchCarListVo vo : list) {
+                List<String> nodes = orderCarDao.findTrunkNodes(vo.getOrderCarId());
+                vo.setTrunkNodes(nodes);
+            }
+        }
 
         PageInfo<WaitDispatchCarListVo> pageInfo = new PageInfo<>(list);
         if(pageInfo.getPages() < dto.getCurrentPage()){

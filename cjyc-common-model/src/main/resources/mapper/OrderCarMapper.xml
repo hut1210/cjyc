@@ -1430,7 +1430,6 @@
         where oc.id = #{orderCarId}
     </select>
     <sql id="dispatch_car_field">
-
         oc.order_no as orderNo,
         oc.id as orderCarId,
         oc.no as orderCarNo,
@@ -1443,6 +1442,11 @@
         oc.back_type as backType,
         oc.back_state as backState,
         oc.state as state,
+        o.start_city_code AS orderStartCityCode,
+	    o.end_city_code AS orderEndCityCode,
+        o.start_city AS orderStartCity,
+	    o.end_city AS orderEndCity,
+	    o.expect_start_date as expectStartDate,
         temp.waybill_no as waybillNo
     </sql>
     <sql id="pick_wait_dispatch_car_field">
@@ -1463,10 +1467,10 @@
         (case when o.expect_start_date > UNIX_TIMESTAMP(now()) * 1000 then o.expect_start_date else UNIX_TIMESTAMP(now()) * 1000 end) as expectStartTime,
         true as startFixedFlag,
 
-        (case when temp.id is not null then temp.start_province else (case when oc.pick_type != 4 and o.start_store_id > 0 then ss.province else o.end_province end) end ) as endProvince,
-        (case when temp.id is not null then temp.start_province_code else (case when oc.pick_type != 4 and o.start_store_id > 0 then ss.province_code else o.end_province_code end) end ) as endProvinceCode,
-        (case when temp.id is not null then temp.start_city else (case when oc.pick_type != 4 and o.start_store_id > 0 then ss.city else o.end_city end) end ) as endCity,
-        (case when temp.id is not null then temp.start_city_code else (case when oc.pick_type != 4 and o.start_store_id > 0 then ss.city_code else o.end_city_code end) end ) as endCityCode,
+        (case when temp.id is not null then temp.start_province else (case when oc.pick_type != 4 and o.start_store_id > 0 then ss.province else o.start_province end) end ) as endProvince,
+        (case when temp.id is not null then temp.start_province_code else (case when oc.pick_type != 4 and o.start_store_id > 0 then ss.province_code else o.start_province end) end ) as endProvinceCode,
+        (case when temp.id is not null then temp.start_city else (case when oc.pick_type != 4 and o.start_store_id > 0 then ss.city else o.start_city end) end ) as endCity,
+        (case when temp.id is not null then temp.start_city_code else (case when oc.pick_type != 4 and o.start_store_id > 0 then ss.city_code else o.start_city_code end) end ) as endCityCode,
         (case when temp.id is not null then temp.start_area else (case when oc.pick_type != 4 and o.start_store_id > 0 then ss.area else null end) end ) as endArea,
         (case when temp.id is not null then temp.start_area_code else (case when oc.pick_type != 4 and o.start_store_id > 0 then ss.area_code else null end) end ) as endAreaCode,
         (case when temp.id is not null then temp.start_address else (case when oc.pick_type != 4 and o.start_store_id > 0 then ss.detail_addr else null end) end ) as endAddress,
@@ -1482,10 +1486,6 @@
     <sql id="pick_wait_dispatch_car_list_For_App">
         select
         <include refid="pick_wait_dispatch_car_field"/>,
-        concat(left(o.start_city,2), '-', left(ss.city,2)) as pickNodes,
-        '' as trunkNodes,
-        '' as backNodes,
-
         <include refid="dispatch_car_field"/>
         from w_order o
         join w_order_car oc on oc.order_id = o.id
@@ -1542,10 +1542,6 @@
     <sql id="back_wait_dispatch_car_list_For_App">
         select
         <include refid="back_wait_dispatch_car_field"/>,
-        '' as pickNodes,
-        '' as trunkNodes,
-        concat(left(se.city,2), '-', left(o.end_city,2)) as backNodes,
-
         <include refid="dispatch_car_field"/>
         from w_order o
         join w_order_car oc on oc.order_id = o.id
@@ -1605,18 +1601,6 @@
     <sql id="trunk_wait_dispatch_car_list_For_App">
         select
         <include refid="trunk_wait_dispatch_car_field"/>,
-        '' as pickNodes,
-        (
-            select GROUP_CONCAT(concat(left(wc.start_city,2), '-', left(wc.end_city,2)))
-            from w_waybill w
-            join w_waybill_car wc on w.id = wc.waybill_id
-            where wc.order_car_id = oc.id
-            and w.state &lt;= 100
-            and w.type = 2
-            and wc.state &lt;= 100
-        ) as trunkNodes,
-        '' as backNodes,
-
         <include refid="dispatch_car_field"/>
         from w_order o
         join w_order_car oc on oc.order_id = o.id
@@ -1643,11 +1627,11 @@
     </sql>
     <select id="findWaitDispatchCarListForApp" resultType="com.cjyc.common.model.vo.salesman.dispatch.WaitDispatchCarListVo">
         select
-        shell.startCity,
-        shell.startCityCode,
+        shell.orderStartCity as startCity,
+        shell.orderStartCityCode as startCityCode,
         shell.startBelongStoreId,
-        shell.endCity,
-        shell.endCityCode,
+        shell.orderEndCity as endCity,
+        shell.orderEndCityCode as endCityCode,
         shell.endBelongStoreId,
         shell.expectStartTime as expectStartDate,
         shell.orderCarId,
@@ -1660,11 +1644,8 @@
         shell.trunkState,
         shell.backType,
         shell.backState,
-        shell.pickNodes,
-        shell.trunkNodes,
-        shell.backNodes,
         shell.state,
-        concat('${@com.cjyc.common.system.config.LogoImgProperty@logoImg}',(select logo_img from s_car_series cs where cs.brand = shell.brand and cs.model = shell.model limit 1)) as logoImgPath
+        concat('${@com.cjyc.common.system.config.LogoImgProperty@logoImg}', cs.logo_img) as logoImgPath
         from (
             <choose>
                 <when test="param.dispatchType == 1">
@@ -1678,14 +1659,14 @@
                 </when>
                 <otherwise>
                     <include refid="pick_wait_dispatch_car_list_For_App"/>
-                    union
+                    union ALL
                     <include refid="trunk_wait_dispatch_car_list_For_App"/>
-                    union
+                    union ALL
                     <include refid="back_wait_dispatch_car_list_For_App"/>
-                    group by oc.no
                 </otherwise>
             </choose>
         ) as shell
+        left join(select brand,logo_img from s_car_series group by brand) cs on cs.brand = shell.brand
         <where>
             <if test="param.searchValue != null and param.searchValue != ''">
                 and (
@@ -2062,10 +2043,12 @@
         oc.trunk_state as trunkState,
         oc.back_state as backState,
         o.start_city_code as orderStartCityCode,
-        o.end_city_code as orderEndCityCode
+        o.end_city_code as orderEndCityCode,
+        cs.logo_img as logoImg
         from w_order o
         join w_order_car oc on oc.order_id = o.id
         left join s_store ss on ss.id = o.start_store_id
+        left join(select brand,logo_img from s_car_series group by brand) cs on cs.brand = oc.brand
         left join (
             select
             wc.*
@@ -2107,10 +2090,12 @@
         oc.trunk_state as trunkState,
         oc.back_state as backState,
         o.start_city_code as orderStartCityCode,
-        o.end_city_code as orderEndCityCode
+        o.end_city_code as orderEndCityCode,
+        cs.logo_img as logoImg
         from w_order o
         join w_order_car oc on oc.order_id = o.id
         left join s_store se on se.id = o.end_store_id
+        left join(select brand,logo_img from s_car_series group by brand) cs on cs.brand = oc.brand
         left join (
             select * from (
             select
@@ -2181,7 +2166,7 @@
             o.start_city_code as orderStartCityCode,
             o.end_city_code as orderEndCityCode,
             <include refid="trunk_wait_dispatch_car_field"/>,
-
+            cs.logo_img as logoImg,
 
 
             (
@@ -2197,6 +2182,7 @@
             join w_order_car oc on o.id = oc.order_id
             left join s_store se on se.id = o.end_store_id
             left join s_store ss on ss.id = o.start_store_id
+            left join(select brand,logo_img from s_car_series group by brand) cs on cs.brand = oc.brand
             left join (
                 select * from (
                     select
@@ -2224,5 +2210,26 @@
             </foreach>
         ) as shell
         left join s_line l on shell.startCityCode = l.from_code and shell.endCityCode = l.to_code
+    </select>
+    <select id="findTrunkNodes" resultType="java.lang.String">
+        select * from (
+            select concat(left(wc.start_city,2), '-', left(wc.end_city,2)) as node
+            from w_waybill w
+            join w_waybill_car wc on w.id = wc.waybill_id
+            where wc.order_car_id = #{orderCarId}
+            and w.state &lt;= 100
+            and w.type = 2
+            and wc.state &lt;= 100
+            order by w.type
+            limit 100
+        ) as shell
+
+        union
+
+        select concat(left(shell.startCity,2), '-', left(shell.endCity,2)) as node
+        from (
+          <include refid="trunk_wait_dispatch_car_list_For_App"/>
+          and oc.id = #{orderCarId}
+        ) as shell
     </select>
 </mapper>
