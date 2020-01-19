@@ -196,7 +196,12 @@ public class CsOrderServiceImpl implements ICsOrderService {
             customer = new Customer();
             if (paramsDto.getCustomerType() == CustomerTypeEnum.INDIVIDUAL.code) {
                 if (paramsDto.getCreateCustomerFlag()) {
-                    csCustomerService.saveCustomer(paramsDto.getCustomerPhone(), paramsDto.getCustomerName(), paramsDto.getLoginId());
+                    ResultVo<Customer> res = csCustomerService.saveCustomer(paramsDto.getCustomerPhone(), paramsDto.getCustomerName(), paramsDto.getLoginId());
+                    if(res.getCode() == ResultEnum.SUCCESS.getCode()){
+                        customer = res.getData();
+                    }else{
+                        return BaseResultUtil.fail(res.getMsg());
+                    }
                 } else {
                     return BaseResultUtil.getVo(ResultEnum.CREATE_NEW_CUSTOMER.getCode(), ResultEnum.CREATE_NEW_CUSTOMER.getMsg());
                 }
@@ -368,7 +373,12 @@ public class CsOrderServiceImpl implements ICsOrderService {
         if (customer == null) {
             customer = new Customer();
             if (order.getCustomerType() == CustomerTypeEnum.INDIVIDUAL.code) {
-                csCustomerService.saveCustomer(order.getCustomerPhone(), order.getCustomerName(), paramsDto.getLoginId());
+                ResultVo<Customer> res = csCustomerService.saveCustomer(order.getCustomerPhone(), order.getCustomerName(), paramsDto.getLoginId());
+                if(res.getCode() == ResultEnum.SUCCESS.getCode()){
+                    customer = res.getData();
+                }else{
+                    return BaseResultUtil.fail(res.getMsg());
+                }
             } else {
                 return BaseResultUtil.fail("企业客户/合伙人不存在");
             }
@@ -688,7 +698,12 @@ public class CsOrderServiceImpl implements ICsOrderService {
             if (paramsDto.getCustomerType() == CustomerTypeEnum.INDIVIDUAL.code) {
 
                 if (paramsDto.getCreateCustomerFlag()) {
-                    csCustomerService.saveCustomer(paramsDto.getCustomerPhone(), paramsDto.getCustomerName(), paramsDto.getLoginId());
+                    ResultVo<Customer> res = csCustomerService.saveCustomer(paramsDto.getCustomerPhone(), paramsDto.getCustomerName(), paramsDto.getLoginId());
+                    if(res.getCode() == ResultEnum.SUCCESS.getCode()){
+                        customer = res.getData();
+                    }else{
+                        return BaseResultUtil.fail(res.getMsg());
+                    }
                 } else {
                     return BaseResultUtil.getVo(ResultEnum.CREATE_NEW_CUSTOMER.getCode(), ResultEnum.CREATE_NEW_CUSTOMER.getMsg());
                 }
