@@ -815,7 +815,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 if (waybill.getFixedFreightFee() && waybillCar.getLineId() == null) {
                     throw new ParameterException("运单中车辆{0}，线路不能为空", orderCarNo);
                 }
-                if(dto.getStartAddress().equals(dto.getEndAddress())){
+                if(dto.getStartAddress().equals(dto.getEndAddress()) && dto.getStartAreaCode().equals(dto.getEndAreaCode())){
                     throw new ParameterException("起始地与目的地不能相同", orderCarNo);
                 }
                 lockSet.add(lockCarKey);
@@ -826,11 +826,11 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 } else {
                     prevWc = waybillCarDao.findLastByOderCarIdAndId(waybillCar.getId(), orderCarId);
                 }
-                /*if (prevWc != null) {
+                if (prevWc != null) {
                     if (!prevWc.getEndAddress().equals(dto.getStartAddress())) {
                         throw new ServerException("运单中车辆{0}，本次调度出发地址与上次调度结束地址不一致", orderCarNo);
                     }
-                }*/
+                }
 
                 //车辆数据
                 BeanUtils.copyProperties(dto, waybillCar);
@@ -910,16 +910,18 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         }else{
             noc.setTrunkState(OrderCarTrunkStateEnum.WAIT_NEXT_DISPATCH.code);
         }
-        if (order.getEndStoreId().equals(waybillCar.getEndStoreId())) {
-            noc.setTrunkState(OrderCarTrunkStateEnum.DISPATCHED.code);
-        }
+
         //干送
         if (order.getBackContactPhone().equals(waybillCar.getUnloadLinkPhone())) {
             noc.setTrunkState(OrderCarTrunkStateEnum.DISPATCHED.code);
             noc.setBackType(OrderPickTypeEnum.WL.code);
             noc.setBackState(OrderCarLocalStateEnum.F_WL.code);
         }else{
-            noc.setTrunkState(OrderCarTrunkStateEnum.WAIT_NEXT_DISPATCH.code);
+            if (order.getEndStoreId().equals(waybillCar.getEndStoreId())) {
+                noc.setTrunkState(OrderCarTrunkStateEnum.DISPATCHED.code);
+            }else{
+                noc.setTrunkState(OrderCarTrunkStateEnum.WAIT_NEXT_DISPATCH.code);
+            }
             noc.setBackType(order.getBackType());
             noc.setBackState(OrderCarLocalStateEnum.WAIT_DISPATCH.code);
         }

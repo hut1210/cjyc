@@ -8,7 +8,6 @@ import com.cjyc.common.model.dto.web.mineStore.StorageCarQueryDto;
 import com.cjyc.common.model.dto.web.waybill.GetDto;
 import com.cjyc.common.model.dto.web.waybill.LocalListWaybillCarDto;
 import com.cjyc.common.model.dto.web.waybill.TrunkListWaybillCarDto;
-import com.cjyc.common.model.dto.web.waybill.GetWaybillTaskDto;
 import com.cjyc.common.model.entity.WaybillCar;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.entity.defined.FullWaybillCar;
@@ -197,4 +196,6 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
     List<WaybillCar> findListByOrderCarIds(@Param("list") List<Long> orderCarIds);
 
     WaybillCar findBackWaybill(Long orderCarId);
+
+    int countByStartAddress(@Param("orderCarId") Long orderCarId, @Param("areaCode") String areaCode, @Param("address") String address);
 }

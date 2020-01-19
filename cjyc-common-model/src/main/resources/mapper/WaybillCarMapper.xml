@@ -1727,6 +1727,17 @@
         and w.carrier_type = 6
         and wc.state &lt; 15
     </select>
+    <select id="countByStartAddress" resultType="java.lang.Integer">
+         select
+        count(0)
+        from w_waybill w
+        join w_waybill_car wc on wc.waybill_id = w.id
+        where w.state &lt;= 100
+        and wc.state &lt;= 5
+        and wc.order_car_id = #{orderCarId}
+        and wc.start_area_code = #{areaCode}
+        and wc.start_address = #{address}
+    </select>
 
     <delete id="cancelAfterWaybillCar">
         update w_waybill_car wc

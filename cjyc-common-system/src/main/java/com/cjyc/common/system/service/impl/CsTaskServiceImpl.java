@@ -578,18 +578,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 noc.setNowUpdateTime(System.currentTimeMillis());
                 orderCarDao.updateById(noc);
             } else if (paramsDto.getLoginType() == UserTypeEnum.ADMIN){
-                /*if (waybillCar.getEndStoreId().equals(order.getEndStoreId())) {
-                    //配送
-                    newState = m == 0 ? OrderCarStateEnum.WAIT_BACK_DISPATCH.code : OrderCarStateEnum.WAIT_BACK.code;
-                    //更新自提运单状态
-                    WaybillCar wc = waybillCarDao.findBackWaybill(waybillCar.getOrderCarId());
-                    if(wc != null){
-                        waybillCarDao.updateStateById(wc.getId(), WaybillCarStateEnum.WAIT_LOAD_CONFIRM.code);
-                    }
-                } else {
-                    //干线
-                    newState = m == 0 ? OrderCarStateEnum.WAIT_TRUNK_DISPATCH.code : OrderCarStateEnum.WAIT_TRUNK.code;
-                }*/
+
                 waybillCarDao.updateForFinish(waybillCar.getId());
                 validateAndFinishTask(task.getId());
                 csWaybillService.validateAndFinishWaybill(waybillCar.getWaybillId());
@@ -645,11 +634,24 @@ public class CsTaskServiceImpl implements ICsTaskService {
 
     private Integer computeOrderCarStateForDirectUnload(WaybillCar waybillCar) {
         Order order = orderDao.findByCarId(waybillCar.getOrderCarId());
-        if(waybillCar.getEndStoreId() != null && waybillCar.getEndStoreId().equals(order.getEndStoreId())){
-            return OrderCarStateEnum.WAIT_BACK_DISPATCH.code;
-        }else{
-            return OrderCarStateEnum.WAIT_TRUNK_DISPATCH.code;
+        //当前状态
+        int newState;
+        //下一段是否调度
+        int m = waybillCarDao.countByStartAddress(waybillCar.getOrderCarId(), waybillCar.getEndAreaCode(),waybillCar.getEndAddress());
+        //计算是否到达目的地城市范围
+        if (waybillCar.getEndStoreId() != null && order.getEndStoreId() != null && waybillCar.getEndStoreId().equals(order.getEndStoreId())) {
+            //配送
+            newState = m == 0 ? OrderCarStateEnum.WAIT_BACK_DISPATCH.code : OrderCarStateEnum.WAIT_BACK.code;
+            //更新自提运单状态
+            WaybillCar wc = waybillCarDao.findBackWaybill(waybillCar.getOrderCarId());
+            if(wc != null){
+                waybillCarDao.updateStateById(wc.getId(), WaybillCarStateEnum.WAIT_LOAD_CONFIRM.code);
+            }
+        } else {
+            //干线
+            newState = m == 0 ? OrderCarStateEnum.WAIT_TRUNK_DISPATCH.code : OrderCarStateEnum.WAIT_TRUNK.code;
         }
+        return newState;
     }
 
     @Override
@@ -719,39 +721,13 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 continue;
             }
             //当前状态
-            int newState;
-            //下一段是否调度
-            Order order = orderDao.selectById(oc.getOrderId());
-            if (order == null) {
-                failCarNoSet.add(new FailResultReasonVo(waybillCar.getOrderCarNo(), "订单不存在"));
-                continue;
-            }
-            int m = waybillCarDao.countByStartCityAndOrderCar(waybillCar.getEndCityCode(), waybillCar.getEndStoreId());
-            //计算是否到达目的地城市范围
-/*            if(validateIsArriveEndCity(order, waybillCar)){
-                failCarNoSet.add(new FailResultReasonVo(waybillCar.getOrderCarNo(), "订单尚未到达业务中心范围"));
-                continue;
-            }*/
-            if (waybillCar.getEndStoreId().equals(order.getEndStoreId())) {
-                //配送
-                newState = m == 0 ? OrderCarStateEnum.WAIT_BACK_DISPATCH.code : OrderCarStateEnum.WAIT_BACK.code;
-                //更新自提运单状态
-                WaybillCar wc = waybillCarDao.findBackWaybill(waybillCar.getOrderCarId());
-                if(wc != null){
-                    waybillCarDao.updateStateById(wc.getId(), WaybillCarStateEnum.WAIT_LOAD_CONFIRM.code);
-                }
-            } else {
-                //干线
-                newState = m == 0 ? OrderCarStateEnum.WAIT_TRUNK_DISPATCH.code : OrderCarStateEnum.WAIT_TRUNK.code;
-            }
-
             //更新运单车辆状态
             waybillCarDao.updateForInStore(waybillCar.getId());
 
             //更新车辆状态和所在位置
             OrderCar noc = new OrderCar();
             noc.setId(oc.getId());
-            noc.setState(newState);
+            noc.setState(computeOrderCarStateForDirectUnload(waybillCar));
             noc.setNowStoreId(waybillCar.getEndStoreId());
             noc.setNowAreaCode(waybillCar.getEndAreaCode());
             noc.setNowUpdateTime(System.currentTimeMillis());
@@ -786,7 +762,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                     new String[]{MessageFormat.format(OrderCarLogEnum.IN_STORE.getInnerLog(), oc.getNo(), waybillCar.getEndStoreName()),
                             MessageFormat.format(OrderCarLogEnum.IN_STORE.getOutterLog(), oc.getNo(), waybillCar.getEndStoreName())},
                     new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), paramsDto.getLoginType()));
-            successSet.add(order.getNo());
+            successSet.add(waybillCar.getOrderCarNo());
         }
         resultReasonVo.setSuccessList(successSet);
         resultReasonVo.setFailList(failCarNoSet);
