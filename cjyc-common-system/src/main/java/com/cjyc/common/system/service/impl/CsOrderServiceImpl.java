@@ -175,25 +175,13 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
     @Override
     public ResultVo commit(CommitOrderDto paramsDto) {
-        Customer customer = null;
-        if (paramsDto.getCustomerId() != null) {
-            customer = csCustomerService.getById(paramsDto.getCustomerId(), true);
-            if (customer != null && !customer.getName().equals(paramsDto.getCustomerName())) {
-                return BaseResultUtil.fail(ResultEnum.CREATE_NEW_CUSTOMER.getCode(),
-                        "客户手机号存在，名称不一致：新名称（{0}）旧名称（{1}），请返回订单重新选择客户",
-                        paramsDto.getCustomerName(), customer.getName());
-            }
+        Customer customer = csCustomerService.getByPhone(paramsDto.getCustomerPhone(), true);
+        if (customer != null && !customer.getName().equals(paramsDto.getCustomerName())) {
+            return BaseResultUtil.fail(ResultEnum.CREATE_NEW_CUSTOMER.getCode(),
+                    "客户手机号存在，名称不一致：新名称（{0}）旧名称（{1}），请返回订单重新选择客户",
+                    paramsDto.getCustomerName(), customer.getName());
         }
         if (customer == null) {
-            customer = csCustomerService.getByPhone(paramsDto.getCustomerPhone(), true);
-            if (customer != null && !customer.getName().equals(paramsDto.getCustomerName())) {
-                return BaseResultUtil.fail(ResultEnum.CREATE_NEW_CUSTOMER.getCode(),
-                        "客户手机号存在，名称不一致：新名称（{0}）旧名称（{1}），请返回订单重新选择客户",
-                        paramsDto.getCustomerName(), customer.getName());
-            }
-        }
-        if (customer == null) {
-            customer = new Customer();
             if (paramsDto.getCustomerType() == CustomerTypeEnum.INDIVIDUAL.code) {
                 if (paramsDto.getCreateCustomerFlag()) {
                     ResultVo<Customer> res = csCustomerService.saveCustomer(paramsDto.getCustomerPhone(), paramsDto.getCustomerName(), paramsDto.getLoginId());
@@ -353,25 +341,13 @@ public class CsOrderServiceImpl implements ICsOrderService {
     public ResultVo simpleCommitAndCheck(CheckOrderDto paramsDto) {
         Order order = orderDao.selectById(paramsDto.getOrderId());
 
-        Customer customer = null;
-        if (order.getCustomerId() != null) {
-            customer = csCustomerService.getById(order.getCustomerId(), true);
-            if (customer != null && !customer.getName().equals(order.getCustomerName())) {
-                return BaseResultUtil.fail(ResultEnum.CREATE_NEW_CUSTOMER.getCode(),
-                        "客户手机号存在，名称不一致：新名称（{0}）旧名称（{1}），请返回订单重新选择客户",
-                        order.getCustomerName(), customer.getName());
-            }
+        Customer customer = csCustomerService.getByPhone(order.getCustomerPhone(), true);
+        if (customer != null && !customer.getName().equals(order.getCustomerName())) {
+            return BaseResultUtil.fail(ResultEnum.CREATE_NEW_CUSTOMER.getCode(),
+                    "客户手机号存在，名称不一致：新名称（{0}）旧名称（{1}），请返回订单重新选择客户",
+                    order.getCustomerName(), customer.getName());
         }
         if (customer == null) {
-            customer = csCustomerService.getByPhone(order.getCustomerPhone(), true);
-            if (customer != null && !customer.getName().equals(order.getCustomerName())) {
-                return BaseResultUtil.fail(ResultEnum.CREATE_NEW_CUSTOMER.getCode(),
-                        "客户手机号存在，名称不一致：新名称（{0}）旧名称（{1}），请返回订单重新选择客户",
-                        order.getCustomerName(), customer.getName());
-            }
-        }
-        if (customer == null) {
-            customer = new Customer();
             if (order.getCustomerType() == CustomerTypeEnum.INDIVIDUAL.code) {
                 ResultVo<Customer> res = csCustomerService.saveCustomer(order.getCustomerPhone(), order.getCustomerName(), paramsDto.getLoginId());
                 if(res.getCode() == ResultEnum.SUCCESS.getCode()){
@@ -676,25 +652,13 @@ public class CsOrderServiceImpl implements ICsOrderService {
     @Override
     public ResultVo commitAndCheck(CommitOrderDto paramsDto) {
         //验证客户
-        Customer customer = null;
-        if (paramsDto.getCustomerId() != null) {
-            customer = csCustomerService.getById(paramsDto.getCustomerId(), true);
-            if (customer != null && !customer.getName().equals(paramsDto.getCustomerName())) {
-                return BaseResultUtil.fail(ResultEnum.CREATE_NEW_CUSTOMER.getCode(),
-                        "客户手机号存在，名称不一致：新名称（{0}）旧名称（{1}），请返回订单重新选择客户",
-                        paramsDto.getCustomerName(), customer.getName());
-            }
+        Customer customer = csCustomerService.getByPhone(paramsDto.getCustomerPhone(), true);
+        if (customer != null && !customer.getName().equals(paramsDto.getCustomerName())) {
+            return BaseResultUtil.fail(ResultEnum.CREATE_NEW_CUSTOMER.getCode(),
+                    "客户手机号存在，名称不一致：新名称（{0}）旧名称（{1}），请返回订单重新选择客户",
+                    paramsDto.getCustomerName(), customer.getName());
         }
         if (customer == null) {
-            customer = csCustomerService.getByPhone(paramsDto.getCustomerPhone(), true);
-            if (customer != null && !customer.getName().equals(paramsDto.getCustomerName())) {
-                return BaseResultUtil.fail(ResultEnum.CREATE_NEW_CUSTOMER.getCode(),
-                        "客户手机号存在，名称不一致：新名称（{0}）旧名称（{1}），请返回订单重新选择客户",
-                        paramsDto.getCustomerName(), customer.getName());
-            }
-        }
-        if (customer == null) {
-            customer = new Customer();
             if (paramsDto.getCustomerType() == CustomerTypeEnum.INDIVIDUAL.code) {
 
                 if (paramsDto.getCreateCustomerFlag()) {
