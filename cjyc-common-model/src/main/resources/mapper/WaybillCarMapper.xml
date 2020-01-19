@@ -1723,6 +1723,7 @@
         from w_waybill w
         join w_waybill_car wc on w.id = wc.waybill_id
         where w.state &lt;= 100
+        and wc.order_car_id = #{orderCarId}
         and w.type = 3
         and w.carrier_type = 6
         and wc.state &lt; 15
