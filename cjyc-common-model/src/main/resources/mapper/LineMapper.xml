@@ -34,10 +34,10 @@
           <include refid="Base_Column_List"/>
         from s_line
         <where>
-            <if test="fromCode != null and fromCode != ''">
+            <if test="fromCode != null and fromCode.trim() != ''">
                 from_code = #{fromCode}
             </if>
-            <if test="toCode != null  and toCode != ''">
+            <if test="toCode != null  and toCode.trim() != ''">
                 and to_code = #{toCode}
             </if>
             and state = 1 limit 1
