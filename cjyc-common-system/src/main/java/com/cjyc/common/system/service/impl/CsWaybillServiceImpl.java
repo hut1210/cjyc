@@ -219,7 +219,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 fillWaybillCarExpectEndTime(waybillCar);
                 waybillCar.setReceiptFlag(waybillCar.getUnloadLinkPhone().equals(order.getBackContactPhone()));
                 //运单车辆状态
-                waybillCar.setState(getWaybillCarState(waybill, orderCar.getNowStoreId().equals(waybillCar.getStartStoreId()),carrierInfo));
+                Boolean isInStore = getOrderCarIsInEndStore(orderCar.getNowStoreId(), waybillCar.getStartStoreId());
+                waybillCar.setState(getWaybillCarState(waybill, isInStore, carrierInfo));
                 if (waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code) {
                     waybillCar.setLoadTime(currentMillisTime);
                 }
@@ -230,7 +231,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 csTaskService.reCreate(waybill, Lists.newArrayList(waybillCar), Lists.newArrayList(waybillCar), carrierInfo);
 
                 /**5、更新订单车辆状态*/
-                updateOrderCarForDispatchLocal(orderCar.getId(), waybill, orderCar.getState());
+                updateOrderCarForDispatchLocal(orderCar.getId(), waybill, orderCar.getState(), isInStore);
             }
             return BaseResultUtil.success();
         } finally {
@@ -324,7 +325,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             fillWaybillCarExpectEndTime(waybillCar);
             waybillCar.setReceiptFlag(waybillCar.getUnloadLinkPhone().equals(order.getBackContactPhone()));
             //运单车辆状态
-            waybillCar.setState(getWaybillCarState(waybill, orderCar.getNowStoreId().equals(waybillCar.getStartStoreId()), carrierInfo));
+            Boolean isInStore = getOrderCarIsInEndStore(orderCar.getNowStoreId(), waybillCar.getStartStoreId());
+            waybillCar.setState(getWaybillCarState(waybill, isInStore, carrierInfo));
             if (waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code) {
                 waybillCar.setLoadTime(currentTimeMillis);
             }
@@ -337,7 +339,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             csTaskService.reCreate(waybill, Lists.newArrayList(waybillCar),null, carrierInfo);
 
             /**5、更新订单车辆状态*/
-            updateOrderCarForDispatchLocal(orderCar.getId(), waybill, orderCar.getState());
+            updateOrderCarForDispatchLocal(orderCar.getId(), waybill, orderCar.getState(), isInStore);
             return BaseResultUtil.success();
         } finally {
             if (!CollectionUtils.isEmpty(lockSet)) {
@@ -349,7 +351,11 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         }
     }
 
-    private void updateOrderCarForDispatchLocal(Long orderCarId, Waybill waybill, Integer orderCarState) {
+    private Boolean getOrderCarIsInEndStore(Long nowStoreId, Long startStoreId) {
+        return nowStoreId != null && startStoreId != null && startStoreId.equals(nowStoreId);
+    }
+
+    private void updateOrderCarForDispatchLocal(Long orderCarId, Waybill waybill, Integer orderCarState, Boolean isInStore) {
         OrderCar noc = new OrderCar();
         noc.setId(orderCarId);
         if (waybill.getType() == WaybillTypeEnum.PICK.code) {
@@ -360,7 +366,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         } else {
             //车辆实际运输状态
             if (orderCarState == OrderCarStateEnum.WAIT_BACK.code) {
-                noc.setState(waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code ? OrderCarStateEnum.BACKING.code : OrderCarStateEnum.WAIT_BACK.code);
+                noc.setState(waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code ? (isInStore ? OrderCarStateEnum.BACKING.code : OrderCarStateEnum.WAIT_BACK.code ): OrderCarStateEnum.WAIT_BACK.code);
             }
             noc.setBackType(getLocalOrderCarCarryType(waybill.getCarrierType()));
             noc.setBackState(OrderCarLocalStateEnum.DISPATCHED.code);

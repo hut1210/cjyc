@@ -1719,7 +1719,7 @@
         </if>
     </select>
     <select id="findBackWaybill" resultType="com.cjyc.common.model.entity.WaybillCar">
-        select *
+        select wc.*
         from w_waybill w
         join w_waybill_car wc on w.id = wc.waybill_id
         where w.state &lt;= 100
