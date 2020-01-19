@@ -1691,10 +1691,10 @@
                 and shell.expectStartDate &lt;= #{param.pickDateEd}
             </if>
             <if test="param.startCity != null and param.startCity != ''">
-                and shell.startCity like CONCAT('%',#{param.startCity},'%')
+                and shell.startCityCode = #{param.startCity}
             </if>
             <if test="param.endCity != null and param.endCity != ''">
-                and shell.endCity like CONCAT('%',#{param.endCity},'%')
+                and shell.endCityCode = #{param.endCity}
             </if>
         </where>
         group by shell.orderCarId
@@ -1791,7 +1791,15 @@
     </select>
     <select id="countListWaitDispatchCarV2" resultType="java.util.Map">
         select count(0) as car_num, IFNULL(o.start_city_code,'-1') as cityCode, IFNULL(o.start_city, '无城市') as cityName from w_order o
-        join w_order_car c on o.id = c.order_id
+        join w_order_car oc on o.id = oc.order_id
+        left join (
+            select
+            wc1.*
+            from w_waybill w
+            join w_waybill_car wc1 on w.id = wc1.waybill_id
+            where w.state &lt;= 100
+            and wc1.state &lt;= 100
+        ) as wc on wc.order_car_id = oc.id
         where o.state BETWEEN 25 and 100
         <if test="paramsDto.bizScope != null">
             and (
@@ -1812,7 +1820,15 @@
         from (
             select count(0) as carNum
             from w_order o
-            join w_order_car c on o.id = c.order_id
+            join w_order_car oc on o.id = oc.order_id
+            left join (
+                select
+                wc1.*
+                from w_waybill w
+                join w_waybill_car wc1 on w.id = wc1.waybill_id
+                where w.state &lt;= 100
+                and wc1.state &lt;= 100
+            ) as wc on wc.order_car_id = oc.id
             where o.state BETWEEN 25 and 100
             <if test="paramsDto.bizScope != null">
                 and (

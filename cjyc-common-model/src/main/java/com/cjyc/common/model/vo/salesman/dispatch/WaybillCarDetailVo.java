@@ -95,7 +95,7 @@ public class WaybillCarDetailVo implements Serializable {
     private Integer backType;
 
     @ApiModelProperty(value = "最后一次运输标识：0否，1是")
-    private boolean receiptFlag;
+    private Boolean receiptFlag;
 
     @ApiModelProperty(value = "运单ID")
     private Long waybillId;

@@ -826,11 +826,11 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 } else {
                     prevWc = waybillCarDao.findLastByOderCarIdAndId(waybillCar.getId(), orderCarId);
                 }
-                if (prevWc != null) {
+                /*if (prevWc != null) {
                     if (!prevWc.getEndAddress().equals(dto.getStartAddress())) {
                         throw new ServerException("运单中车辆{0}，本次调度出发地址与上次调度结束地址不一致", orderCarNo);
                     }
-                }
+                }*/
 
                 //车辆数据
                 BeanUtils.copyProperties(dto, waybillCar);
@@ -910,9 +910,9 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         }else{
             noc.setTrunkState(OrderCarTrunkStateEnum.WAIT_NEXT_DISPATCH.code);
         }
-        /*if (order.getEndCityCode().equals(waybillCar.getEndCityCode())) {
+        if (order.getEndStoreId().equals(waybillCar.getEndStoreId())) {
             noc.setTrunkState(OrderCarTrunkStateEnum.DISPATCHED.code);
-        }*/
+        }
         //干送
         if (order.getBackContactPhone().equals(waybillCar.getUnloadLinkPhone())) {
             noc.setTrunkState(OrderCarTrunkStateEnum.DISPATCHED.code);

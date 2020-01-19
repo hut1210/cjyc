@@ -1035,7 +1035,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 if(bizScope.getCode() != BizScopeEnum.CHINA.code){
                     if (vo.getEndBelongStoreId() == null || !storeIds.contains(vo.getStartBelongStoreId())) {
                         Store store = csStoreService.getById(vo.getStartBelongStoreId(), true);
-                        String city = store == null ? store.getCity() : "总部";
+                        String city = store == null ? "总部" : store.getCity();
                         return BaseResultUtil.fail("车辆{0},不在调度权限范围内，请联系{1}业务员", vo.getOrderCarNo(), city);
                     }
                 }
@@ -1062,7 +1062,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 if(bizScope.getCode() != BizScopeEnum.CHINA.code){
                     if (vo.getEndBelongStoreId() == null || !storeIds.contains(vo.getStartBelongStoreId())) {
                         Store store = csStoreService.getById(vo.getStartBelongStoreId(), true);
-                        String city = store == null ? store.getCity() : "总部";
+                        String city = store == null ? "总部" : store.getCity();
                         return BaseResultUtil.fail("车辆{0},不在调度权限范围内，请联系{1}业务员", vo.getOrderCarNo(), city);
                     }
                 }
@@ -1081,9 +1081,9 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
                 //验证数据范围
                 if(bizScope.getCode() != BizScopeEnum.CHINA.code){
-                    if(vo.getEndBelongStoreId() == null || !storeIds.contains(vo.getStartBelongStoreId())){
+                    if(vo.getStartBelongStoreId() == null || !storeIds.contains(vo.getStartBelongStoreId())){
                         Store store = csStoreService.getById(vo.getStartBelongStoreId(), true);
-                        String city = store == null ? store.getCity() : "总部";
+                        String city = store == null ? "总部" : store.getCity();
                         return BaseResultUtil.fail("车辆{0},不在调度权限范围内，请联系{1}业务员", vo.getOrderCarNo(), city);
                     }
                 }

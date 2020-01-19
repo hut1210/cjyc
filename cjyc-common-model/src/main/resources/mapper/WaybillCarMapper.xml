@@ -487,7 +487,8 @@
         count(0)
         from w_waybill w
         join w_waybill_car wc on wc.waybill_id = w.id
-        where w.state &lt; 100
+        where w.state &lt;= 100
+        and wc.state &lt;= 100
         and wc.state &lt;= 5
         and wc.start_store_id = #{inStoreId}
         and wc.start_city = #{cityCode}
@@ -1716,6 +1717,15 @@
                 #{item}
             </foreach>
         </if>
+    </select>
+    <select id="findBackWaybill" resultType="com.cjyc.common.model.entity.WaybillCar">
+        select *
+        from w_waybill w
+        join w_waybill_car wc on w.id = wc.waybill_id
+        where w.state &lt;= 100
+        and w.type = 3
+        and w.carrier_type = 6
+        and wc.state &lt; 15
     </select>
 
     <delete id="cancelAfterWaybillCar">
