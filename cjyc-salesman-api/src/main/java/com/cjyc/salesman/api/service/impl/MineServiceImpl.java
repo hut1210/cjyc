@@ -107,26 +107,29 @@ public class MineServiceImpl extends ServiceImpl<IWaybillCarDao, WaybillCar> imp
         }
         //转成localDate
         LocalDate localDate = LocalDateTimeUtil.convertToLocalDate(dto.getDate(), TimePatternConstant.DATE);
+        Long thisMonthTime = LocalDateTimeUtil.convertToLong(localDate) * 1000;
         //获取下一个月起始日
         LocalDate nextMonth = LocalDateTimeUtil.getNextMouth(localDate,1);
-        Long thisMonthTime = LocalDateTimeUtil.convertToLong(localDate);
-        Long nextMonthTime = TimeStampUtil.addDays(LocalDateTimeUtil.convertToLong(nextMonth),1);
+        Long nextMonthTime = LocalDateTimeUtil.convertToLong(nextMonth) * 1000;
+        Long userId = admin.getId();
+        Long driverId = admin.getId();
+
         SalesAchieveDto achieveDto = new SalesAchieveDto();
         achieveDto.setThisMonthTime(thisMonthTime);
         achieveDto.setNextMonthTime(nextMonthTime);
-        Long userId = admin.getId();
-        Long driverId = admin.getId();
+        achieveDto.setUserId(userId);
+        achieveDto.setDriverId(driverId);
         Map<String,Object> mapCount = new HashMap<>(5);
         //我下的订单的台数
-        mapCount.put("orderCarCount",orderCarDao.orderCarCount(0,userId));
+        mapCount.put("orderCarCount",orderCarDao.orderCarCount(achieveDto));
         //我确认过的全部订单的车辆
-        mapCount.put("confirmedCarCount",orderCarDao.orderCarCount(1,userId));
+        mapCount.put("confirmedCarCount",orderCarDao.orderCarCheckCount(achieveDto));
         //我下的确认过的订单送车任务交付客户
-        mapCount.put("deliveredCarCount",waybillCarDao.deliveredCarCount(userId));
+        mapCount.put("deliveredCarCount",waybillCarDao.deliveredCarCount(achieveDto));
         //我已经完成提车的台数
-        mapCount.put("pickCarCount",waybillCarDao.waybillCarCount(1, driverId));
+        mapCount.put("pickCarCount",waybillCarDao.waybillCarPickCount(achieveDto));
         //我已完成送车的台数
-        mapCount.put("backCarCount",waybillCarDao.waybillCarCount(3, driverId));
+        mapCount.put("backCarCount",waybillCarDao.waybillCarBackCount(achieveDto));
         return BaseResultUtil.success(mapCount);
     }
 

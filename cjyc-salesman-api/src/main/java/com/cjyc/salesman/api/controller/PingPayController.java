@@ -36,7 +36,7 @@ public class PingPayController {
 
     @ApiOperation("业务员出示二维码")
     @PostMapping("/sweepSalesCode")
-    public ResultVo sweepDriveCode(HttpServletRequest request, @RequestBody SweepCodeDto sweepCodeDto){
+    public ResultVo sweepSalesCode(HttpServletRequest request, @RequestBody SweepCodeDto sweepCodeDto){
         sweepCodeDto.setIp(IPUtil.getIpAddr(request));
         Charge charge;
         try {

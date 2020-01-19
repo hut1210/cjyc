@@ -7,7 +7,10 @@ import com.cjyc.common.model.dto.customer.pingxx.PrePayDto;
 import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.ValidateReceiptCarPayVo;
+import com.pingplusplus.exception.*;
 import com.pingplusplus.model.Order;
+
+import java.io.FileNotFoundException;
 
 /**
  * @Author:Hut
@@ -18,7 +21,7 @@ public interface IPingPayService {
     /*Charge sweepDriveCode(SweepCodeDto sweepCodeDto) throws RateLimitException, APIException, ChannelException,InvalidRequestException,
             APIConnectionException, AuthenticationException,FileNotFoundException;*/
 
-    com.pingplusplus.model.Order pay(PrePayDto reqDto);
+    com.pingplusplus.model.Order pay(PrePayDto reqDto) throws FileNotFoundException, RateLimitException, APIException, ChannelException, InvalidRequestException, APIConnectionException, AuthenticationException;
 
     /*Charge sweepSalesmanCode(OrderModel om) throws RateLimitException, APIException, ChannelException,InvalidRequestException,
             APIConnectionException, AuthenticationException,FileNotFoundException;*/

@@ -114,7 +114,7 @@ public class PingPayServiceImpl implements IPingPayService {
     }
     
     @Override
-    public com.pingplusplus.model.Order pay(PrePayDto reqDto) {
+    public com.pingplusplus.model.Order pay(PrePayDto reqDto) throws FileNotFoundException, RateLimitException, APIException, ChannelException, InvalidRequestException, APIConnectionException, AuthenticationException {
         String orderNo = reqDto.getOrderNo();
         OrderModel om = new OrderModel();
         Order order = new Order();
@@ -129,7 +129,7 @@ public class PingPayServiceImpl implements IPingPayService {
                 throw new CommonException("订单正在支付中","1");
             }
         }
-        try {
+        //try {
             BigDecimal wlFee = transactionService.getAmountByOrderNo(reqDto.getOrderNo());
             om.setClientIp(reqDto.getIp());
             om.setUid(String.valueOf(reqDto.getUid()));
@@ -152,9 +152,9 @@ public class PingPayServiceImpl implements IPingPayService {
             order = payOrder(om);
             log.debug(order.toString());
             transactionService.saveTransactions(order, "0");
-        } catch (Exception e) {
+        /*} catch (Exception e) {
             log.error(e.getMessage(),e);
-        }
+        }*/
         return order;
     }
 

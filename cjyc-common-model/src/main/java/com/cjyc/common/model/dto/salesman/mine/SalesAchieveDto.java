@@ -12,4 +12,9 @@ public class SalesAchieveDto implements Serializable {
     private Long thisMonthTime;
     @ApiModelProperty(value = "下一个月起始日时间戳")
     private Long nextMonthTime;
+    @ApiModelProperty(value = "业务员id")
+    private Long userId;
+    @ApiModelProperty(value = "司机id")
+    private Long driverId;
+
 }

@@ -2,6 +2,7 @@ package com.cjyc.common.model.dao;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cjyc.common.model.dto.salesman.dispatch.DispatchListDto;
+import com.cjyc.common.model.dto.salesman.mine.SalesAchieveDto;
 import com.cjyc.common.model.dto.web.WayBillCarrierDto;
 import com.cjyc.common.model.dto.web.mineStore.StorageCarQueryDto;
 import com.cjyc.common.model.dto.web.waybill.GetDto;
@@ -138,19 +139,25 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
     int countTrunkWaybillCar(String orderCarNo);
 
     /**
-     * 业务员端我确认/下单我送车任务交付客户
-     * @param driverId
+     * 业务员端已交付台数
+     * @param achieveDto
      * @return
      */
-    Integer deliveredCarCount(@Param("userId") Long driverId);
+    Integer deliveredCarCount(SalesAchieveDto achieveDto);
 
     /**
-     * 获取业务员端提送车完成台数
-     * @param type
-     * @param driverId
+     * 获取业务员端提车完成台数
+     * @param achieveDto
      * @return
      */
-    Integer waybillCarCount(@Param("type") Integer type,@Param("driverId") Long driverId);
+    Integer waybillCarPickCount(SalesAchieveDto achieveDto);
+
+    /**
+     * 获取业务员端送车完成台数
+     * @param achieveDto
+     * @return
+     */
+    Integer waybillCarBackCount(SalesAchieveDto achieveDto);
 
     int updateForInStore(Long id);
     int updateForFinish(Long id);
