@@ -201,7 +201,7 @@ public class LoginServiceImpl extends SuperServiceImpl<ICustomerDao, Customer> i
         customer.setPayMode(PayModeEnum.COLLECT.code);
         customer.setRegisterTime(currentTimeMillis);
         customer.setCreateTime(currentTimeMillis);
-        customer = comCustomerService.save(customer);
+        //customer = comCustomerService.save(customer);
         return customer;
     }
 

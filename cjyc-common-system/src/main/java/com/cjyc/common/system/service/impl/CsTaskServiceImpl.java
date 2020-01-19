@@ -723,11 +723,11 @@ public class CsTaskServiceImpl implements ICsTaskService {
             //当前状态
             //更新运单车辆状态
             waybillCarDao.updateForInStore(waybillCar.getId());
-
+            Integer newState = computeOrderCarStateForDirectUnload(waybillCar);
             //更新车辆状态和所在位置
             OrderCar noc = new OrderCar();
             noc.setId(oc.getId());
-            noc.setState(computeOrderCarStateForDirectUnload(waybillCar));
+            noc.setState(newState);
             noc.setNowStoreId(waybillCar.getEndStoreId());
             noc.setNowAreaCode(waybillCar.getEndAreaCode());
             noc.setNowUpdateTime(System.currentTimeMillis());
