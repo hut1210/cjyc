@@ -40,14 +40,6 @@ public interface ICsCustomerService {
      */
     Customer getByPhone(String customerPhone, boolean isCache);
 
-    /**
-     * 保存客户
-     * @author JPG
-     * @since 2019/11/5 12:30
-     * @param customer
-     * @return Customer 返回userId
-     */
-    Customer save(Customer customer);
 
     /**
      * 将用户保存到物流平台

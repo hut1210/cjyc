@@ -196,19 +196,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
             customer = new Customer();
             if (paramsDto.getCustomerType() == CustomerTypeEnum.INDIVIDUAL.code) {
                 if (paramsDto.getCreateCustomerFlag()) {
-                    customer.setCustomerNo(csSendNoService.getNo(SendNoTypeEnum.CUSTOMER));
-                    customer.setName(paramsDto.getCustomerName());
-                    customer.setContactMan(paramsDto.getCustomerName());
-                    customer.setContactPhone(paramsDto.getCustomerPhone());
-                    customer.setType(CustomerTypeEnum.INDIVIDUAL.code);
-                    //customer.setInitial()
-                    customer.setState(CustomerStateEnum.CHECKED.code);
-                    customer.setPayMode(PayModeEnum.COLLECT.code);
-                    customer.setSource(CustomerSourceEnum.WEB.code);
-                    customer.setCreateTime(System.currentTimeMillis());
-                    customer.setCreateUserId(paramsDto.getLoginId());
-                    //添加
-                    csCustomerService.save(customer);
+                    csCustomerService.saveCustomer(paramsDto.getCustomerPhone(), paramsDto.getCustomerName(), paramsDto.getLoginId());
                 } else {
                     return BaseResultUtil.getVo(ResultEnum.CREATE_NEW_CUSTOMER.getCode(), ResultEnum.CREATE_NEW_CUSTOMER.getMsg());
                 }
@@ -380,19 +368,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         if (customer == null) {
             customer = new Customer();
             if (order.getCustomerType() == CustomerTypeEnum.INDIVIDUAL.code) {
-                customer.setCustomerNo(csSendNoService.getNo(SendNoTypeEnum.CUSTOMER));
-                customer.setName(order.getCustomerName());
-                customer.setContactMan(order.getCustomerName());
-                customer.setContactPhone(order.getCustomerPhone());
-                customer.setType(CustomerTypeEnum.INDIVIDUAL.code);
-                //customer.setInitial()
-                customer.setState(CustomerStateEnum.CHECKED.code);
-                customer.setPayMode(PayModeEnum.COLLECT.code);
-                customer.setSource(CustomerSourceEnum.WEB.code);
-                customer.setCreateTime(System.currentTimeMillis());
-                customer.setCreateUserId(paramsDto.getLoginId());
-                //添加
-                csCustomerService.save(customer);
+                csCustomerService.saveCustomer(order.getCustomerPhone(), order.getCustomerName(), paramsDto.getLoginId());
             } else {
                 return BaseResultUtil.fail("企业客户/合伙人不存在");
             }
@@ -710,20 +686,9 @@ public class CsOrderServiceImpl implements ICsOrderService {
         if (customer == null) {
             customer = new Customer();
             if (paramsDto.getCustomerType() == CustomerTypeEnum.INDIVIDUAL.code) {
+
                 if (paramsDto.getCreateCustomerFlag()) {
-                    customer.setCustomerNo(csSendNoService.getNo(SendNoTypeEnum.CUSTOMER));
-                    customer.setName(paramsDto.getCustomerName());
-                    customer.setContactMan(paramsDto.getCustomerName());
-                    customer.setContactPhone(paramsDto.getCustomerPhone());
-                    customer.setType(CustomerTypeEnum.INDIVIDUAL.code);
-                    //customer.setInitial()
-                    customer.setState(CustomerStateEnum.CHECKED.code);
-                    customer.setPayMode(PayModeEnum.COLLECT.code);
-                    customer.setSource(CustomerSourceEnum.WEB.code);
-                    customer.setCreateTime(System.currentTimeMillis());
-                    customer.setCreateUserId(paramsDto.getLoginId());
-                    //添加
-                    csCustomerService.save(customer);
+                    csCustomerService.saveCustomer(paramsDto.getCustomerPhone(), paramsDto.getCustomerName(), paramsDto.getLoginId());
                 } else {
                     return BaseResultUtil.getVo(ResultEnum.CREATE_NEW_CUSTOMER.getCode(), ResultEnum.CREATE_NEW_CUSTOMER.getMsg());
                 }

@@ -96,38 +96,6 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
     }
 
     @Override
-    public Customer save(Customer customer) {
-        //
-        ResultData<List<SelectRoleResp>> roleData = sysRoleService.getSingleLevelList(Long.valueOf(CUSTOMER_FIXED_DEPTID));
-        if (roleData == null || roleData.getData() == null) {
-            throw new ServerException(roleData == null ? "添加用户失败" : roleData.getMsg());
-        }
-
-        Long roleId = null;
-        for (SelectRoleResp selectRoleResp : roleData.getData()) {
-            if(selectRoleResp.getRoleName().equals(CustomerTypeEnum.INDIVIDUAL.name)){
-                roleId = selectRoleResp.getRoleId();
-            }
-        }
-        //添加架构组数据
-        AddUserReq addUserReq = new AddUserReq();
-        addUserReq.setAccount(customer.getContactPhone());
-        addUserReq.setPassword(CUSTOMER_FIXED_PWD);
-        addUserReq.setRoleIdList(roleId == null ? null : Collections.singletonList(roleId));
-        addUserReq.setDeptId(Long.valueOf(CUSTOMER_FIXED_DEPTID));
-        addUserReq.setMobile(customer.getContactPhone());
-        addUserReq.setName(customer.getName());
-        ResultData<AddUserResp> resultData = sysUserService.save(addUserReq);
-
-        if(resultData == null || resultData.getData() == null || resultData.getData().getUserId() == null){
-            throw new ServerException(resultData == null ? "添加用户失败" : resultData.getMsg());
-        }
-        customer.setUserId(resultData.getData().getUserId());
-        customerDao.insert(customer);
-        return customer;
-    }
-
-    @Override
     public ResultData<Long> addCustomerToPlatform(Customer customer) {
         ResultData<UserResp> accountRd = sysUserService.getByAccount(customer.getContactPhone());
         if (!ReturnMsg.SUCCESS.getCode().equals(accountRd.getCode())) {

@@ -219,7 +219,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 fillWaybillCarExpectEndTime(waybillCar);
                 waybillCar.setReceiptFlag(waybillCar.getUnloadLinkPhone().equals(order.getBackContactPhone()));
                 //运单车辆状态
-                waybillCar.setState(getWaybillCarState(waybill, carrierInfo));
+                waybillCar.setState(getWaybillCarState(waybill, orderCar.getNowStoreId().equals(waybillCar.getStartStoreId()),carrierInfo));
                 if (waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code) {
                     waybillCar.setLoadTime(currentMillisTime);
                 }
@@ -324,7 +324,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             fillWaybillCarExpectEndTime(waybillCar);
             waybillCar.setReceiptFlag(waybillCar.getUnloadLinkPhone().equals(order.getBackContactPhone()));
             //运单车辆状态
-            waybillCar.setState(getWaybillCarState(waybill, carrierInfo));
+            waybillCar.setState(getWaybillCarState(waybill, orderCar.getNowStoreId().equals(waybillCar.getStartStoreId()), carrierInfo));
             if (waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code) {
                 waybillCar.setLoadTime(currentTimeMillis);
             }
@@ -368,9 +368,9 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         }
     }
 
-    private Integer getWaybillCarState(Waybill waybill, CarrierInfo carrierInfo) {
+    private Integer getWaybillCarState(Waybill waybill, Boolean isInStore, CarrierInfo carrierInfo) {
         if(carrierInfo.getCarryType() == WaybillCarrierTypeEnum.SELF.code){
-            return waybill.getType() == WaybillTypeEnum.PICK.code ? WaybillCarStateEnum.WAIT_UNLOAD_CONFIRM.code : WaybillCarStateEnum.WAIT_LOAD.code;
+            return waybill.getType() == WaybillTypeEnum.PICK.code ? WaybillCarStateEnum.WAIT_UNLOAD_CONFIRM.code : (isInStore ? WaybillCarStateEnum.WAIT_LOAD_CONFIRM.code : WaybillCarStateEnum.WAIT_LOAD.code);
         }else{
             if(carrierInfo.getCarrierType() == CarrierTypeEnum.ENTERPRISE.code){
                 return WaybillCarStateEnum.WAIT_ALLOT.code;

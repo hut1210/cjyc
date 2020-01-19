@@ -14,6 +14,8 @@ public class BaseWebDto {
     private Long loginId;
     @ApiModelProperty("角色ID")
     private Long roleId;
+    @ApiModelProperty(value = "登录人ID", hidden = true)
+    private String loginName;
     @ApiModelProperty(value = "业务范围(无需传参)", hidden = true)
     private Set<Long> bizScope;
 

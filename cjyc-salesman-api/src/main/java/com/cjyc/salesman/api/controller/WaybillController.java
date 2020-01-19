@@ -62,6 +62,9 @@ public class WaybillController {
     @ApiOperation(value = "修改同城调度", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @PostMapping("/local/update")
     public ResultVo updateLocal(@Validated @RequestBody UpdateLocalDto reqDto) {
+        //验证用户
+        Admin admin = csAdminService.validate(reqDto.getLoginId());
+        reqDto.setLoginName(admin.getName());
         return csWaybillService.updateLocal(reqDto);
     }
 
@@ -75,6 +78,9 @@ public class WaybillController {
     @ApiOperation("干线调度")
     @PostMapping("/trunk/save")
     public ResultVo saveTrunk(@Validated @RequestBody SaveTrunkWaybillDto reqDto) {
+        //验证用户
+        Admin admin = csAdminService.validate(reqDto.getLoginId());
+        reqDto.setLoginName(admin.getName());
         return csWaybillService.saveTrunk(reqDto);
     }
 
@@ -87,6 +93,9 @@ public class WaybillController {
     @ApiOperation("修改干线调度")
     @PostMapping("/trunk/update")
     public ResultVo updateTrunk(@Validated @RequestBody UpdateTrunkWaybillDto reqDto) {
+        //验证用户
+        Admin admin = csAdminService.validate(reqDto.getLoginId());
+        reqDto.setLoginName(admin.getName());
         return csWaybillService.updateTrunk(reqDto);
     }
 
@@ -100,6 +109,9 @@ public class WaybillController {
     @ApiOperation("中途卸载车辆")
     @PostMapping("/trunk/midway/unload")
     public ResultVo trunkMidwayUnload(@Validated @RequestBody TrunkMidwayUnload reqDto) {
+        //验证用户
+        Admin admin = csAdminService.validate(reqDto.getLoginId());
+        reqDto.setLoginName(admin.getName());
         return csWaybillService.trunkMidwayUnload(reqDto);
     }
 
@@ -112,6 +124,9 @@ public class WaybillController {
     @ApiOperation("取消调度")
     @PostMapping("/cancel")
     public ResultVo<ListVo<BaseTipVo>> cancel(@Validated @RequestBody CancelWaybillDto reqDto) {
+        //验证用户
+        Admin admin = csAdminService.validate(reqDto.getLoginId());
+        reqDto.setLoginName(admin.getName());
         return csWaybillService.cancel(reqDto);
     }
 

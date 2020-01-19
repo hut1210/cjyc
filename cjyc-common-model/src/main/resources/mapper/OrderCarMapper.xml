@@ -2275,9 +2275,7 @@
             o.start_city_code as orderStartCityCode,
             o.end_city_code as orderEndCityCode,
             <include refid="trunk_wait_dispatch_car_field"/>,
-            CONCAT('${@com.cjyc.common.system.config.LogoImgProperty@logoImg}', cs.logo_img) as logoImg
-
-
+            CONCAT('${@com.cjyc.common.system.config.LogoImgProperty@logoImg}', cs.logo_img) as logoImg,
             (
                 select
                 CONCAT_WS(',',GROUP_CONCAT(wcsub.load_photo_img),GROUP_CONCAT(wcsub.unload_photo_img))

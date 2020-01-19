@@ -1,5 +1,6 @@
 package com.cjyc.common.model.dto.web.waybill;
 
+import com.cjyc.common.model.dto.web.BaseWebDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -14,14 +15,7 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class CancelWaybillDto {
-
-    @NotNull(message = "loginId不能为空")
-    @ApiModelProperty(value = "用户ID",required = true)
-    private Long loginId;
-
-    @ApiModelProperty(hidden = true)
-    private String loginName;
+public class CancelWaybillDto extends BaseWebDto {
 
     @NotEmpty(message = "waybillIdList不能为空")
     @ApiModelProperty(value = "运单ID列表", required = true)

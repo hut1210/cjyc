@@ -1,5 +1,6 @@
 package com.cjyc.common.model.dto.web.waybill;
 
+import com.cjyc.common.model.dto.web.BaseWebDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -9,7 +10,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Data
-public class TrunkMidwayUnload {
+public class TrunkMidwayUnload extends BaseWebDto {
 
     @NotNull(message = "运单ID不能为空")
     @ApiModelProperty(value = "运单ID")

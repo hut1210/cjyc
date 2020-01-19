@@ -118,6 +118,9 @@ public class WaybillController {
     @ApiOperation("中途卸载车辆")
     @PostMapping("/trunk/midway/unload")
     public ResultVo trunkMidwayUnload(@Validated @RequestBody TrunkMidwayUnload reqDto) {
+        //验证用户
+        Admin admin = csAdminService.validate(reqDto.getLoginId());
+        reqDto.setLoginName(admin.getName());
         return csWaybillService.trunkMidwayUnload(reqDto);
     }
 
@@ -131,6 +134,9 @@ public class WaybillController {
     @ApiOperation("取消调度")
     @PostMapping("/cancel")
     public ResultVo<ListVo<BaseTipVo>> cancel(@Validated @RequestBody CancelWaybillDto reqDto) {
+        //验证用户
+        Admin admin = csAdminService.validate(reqDto.getLoginId());
+        reqDto.setLoginName(admin.getName());
         return csWaybillService.cancel(reqDto);
     }
 
