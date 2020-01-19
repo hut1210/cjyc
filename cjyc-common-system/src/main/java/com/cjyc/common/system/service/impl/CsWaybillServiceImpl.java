@@ -179,9 +179,6 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                         throw new ParameterException("车辆{0}，尚未到达目的地所属业务中心或目的地城市范围内", orderCarNo);
                     }
                 }
-                if(dto.getStartAddress().equals(dto.getEndAddress()) && dto.getStartAreaCode().equals(dto.getEndAreaCode())){
-                    throw new ParameterException("起始地与目的地不能相同", orderCarNo);
-                }
                 //TODO 验证提车和送车人是否与订单一致
 
                 /**1、添加运单信息*/
@@ -297,9 +294,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             if (order == null) {
                 return BaseResultUtil.fail("运单,车辆{0}，当前车辆不存在", orderCarNo);
             }
-            if(dto.getStartAddress().equals(dto.getEndAddress()) && dto.getStartAreaCode().equals(dto.getEndAreaCode())){
-                throw new ParameterException("起始地与目的地不能相同", orderCarNo);
-            }
+
             //承运商类型
             waybill.setCarrierId(carrierInfo.getCarrierId());
             waybill.setCarrierName(carrierInfo.getCarrierName());
@@ -664,9 +659,6 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 if (n > 0) {
                     throw new ParameterException("运单中车辆{0}，已经调度过", orderCarNos);
                 }*/
-                if(dto.getStartAddress().equals(dto.getEndAddress()) && dto.getStartAreaCode().equals(dto.getEndAreaCode())){
-                    throw new ParameterException("起始地与目的地不能相同", orderCarNo);
-                }
                 //验证出发地与上一次调度目的地是否一致
                 WaybillCar prevWc = waybillCarDao.findLastByOderCarId(orderCarId);
                 if (prevWc != null) {
@@ -814,9 +806,6 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 //包板线路不能为空
                 if (waybill.getFixedFreightFee() && waybillCar.getLineId() == null) {
                     throw new ParameterException("运单中车辆{0}，线路不能为空", orderCarNo);
-                }
-                if(dto.getStartAddress().equals(dto.getEndAddress()) && dto.getStartAreaCode().equals(dto.getEndAreaCode())){
-                    throw new ParameterException("起始地与目的地不能相同", orderCarNo);
                 }
                 lockSet.add(lockCarKey);
                 //验证出发地与上一次调度目的地是否一致
