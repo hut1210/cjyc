@@ -1,7 +1,5 @@
 package com.cjyc.common.model.dao;
 
-import com.cjyc.common.model.dto.web.inquiry.SelectInquiryDto;
-import com.cjyc.common.model.dto.web.line.ListLineDto;
 import com.cjyc.common.model.dto.web.line.SelectLineDto;
 import com.cjyc.common.model.entity.Line;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
