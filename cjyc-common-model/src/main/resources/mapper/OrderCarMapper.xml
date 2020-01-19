@@ -2153,7 +2153,7 @@
         oc.back_state as backState,
         o.start_city_code as orderStartCityCode,
         o.end_city_code as orderEndCityCode,
-        cs.logo_img as logoImg
+        CONCAT('${@com.cjyc.common.system.config.LogoImgProperty@logoImg}', cs.logo_img) as logoImg
         from w_order o
         join w_order_car oc on oc.order_id = o.id
         left join s_store ss on ss.id = o.start_store_id
@@ -2200,7 +2200,7 @@
         oc.back_state as backState,
         o.start_city_code as orderStartCityCode,
         o.end_city_code as orderEndCityCode,
-        cs.logo_img as logoImg
+        CONCAT('${@com.cjyc.common.system.config.LogoImgProperty@logoImg}', cs.logo_img) as logoImg
         from w_order o
         join w_order_car oc on oc.order_id = o.id
         left join s_store se on se.id = o.end_store_id
@@ -2275,7 +2275,7 @@
             o.start_city_code as orderStartCityCode,
             o.end_city_code as orderEndCityCode,
             <include refid="trunk_wait_dispatch_car_field"/>,
-            cs.logo_img as logoImg,
+            CONCAT('${@com.cjyc.common.system.config.LogoImgProperty@logoImg}', cs.logo_img) as logoImg
 
 
             (
