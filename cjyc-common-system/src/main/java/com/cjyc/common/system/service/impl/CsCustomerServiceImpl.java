@@ -352,6 +352,8 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
         customer.setCustomerNo(sendNoService.getNo(SendNoTypeEnum.CUSTOMER));
         customer.setAlias(customerName);
         customer.setName(customerName);
+        customer.setContactMan(customerName);
+        customer.setContactPhone(customerPhone);
         customer.setType(CustomerTypeEnum.INDIVIDUAL.code);
         customer.setPayMode(PayModeEnum.COLLECT.code);
         customer.setSource(CustomerSourceEnum.WEB.code);
