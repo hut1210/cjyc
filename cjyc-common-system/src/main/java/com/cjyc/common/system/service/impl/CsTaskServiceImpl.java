@@ -1123,7 +1123,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             WaybillCar waybillCar = waybillCarDao.findWaitReceiptWaybill(orderCar.getId());
             if (waybillCar != null) {
                 //更新车辆状态
-                orderCarDao.updateForPaySuccess(orderCar.getId());
+                orderCarDao.updateForPaySuccess(orderCar.getId(), waybillCar.getEndAreaCode());
 
                 waybillCarDao.updateForFinish(waybillCar.getId());
                 //添加日志
@@ -1178,7 +1178,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
 
             //更新支付车辆状态
             if(payType == ChargeTypeEnum.COLLECT_PAY.getCode()){
-                orderCarDao.updateForPaySuccess(orderCar.getId());
+                orderCarDao.updateForPaySuccess(orderCar.getId(), waybillCar.getEndAreaCode());
             }else{
                 orderCarDao.updateForPrePaySuccess(orderCar.getId());
             }
