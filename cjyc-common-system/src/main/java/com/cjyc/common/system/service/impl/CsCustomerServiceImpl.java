@@ -10,6 +10,10 @@ import com.cjyc.common.model.dto.salesman.customer.SalesCustomerDto;
 import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.entity.Role;
 import com.cjyc.common.model.dto.salesman.mine.AppCustomerIdDto;
+import com.cjyc.common.model.enums.PayModeEnum;
+import com.cjyc.common.model.enums.SendNoTypeEnum;
+import com.cjyc.common.model.enums.customer.CustomerSourceEnum;
+import com.cjyc.common.model.enums.role.DeptTypeEnum;
 import com.cjyc.common.model.enums.role.RoleNameEnum;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.salesman.customer.SalesCustomerListVo;
@@ -25,7 +29,11 @@ import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.ICsCustomerService;
+import com.cjyc.common.system.service.ICsRoleService;
+import com.cjyc.common.system.service.ICsSendNoService;
+import com.cjyc.common.system.service.ICsUserRoleDeptService;
 import com.cjyc.common.system.util.ResultDataUtil;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -48,6 +56,7 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
 
     private static final String CUSTOMER_FIXED_PWD = YmlProperty.get("cjkj.customer.password");
     private static final String CUSTOMER_FIXED_DEPTID = YmlProperty.get("cjkj.dept_customer_id");
+    private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
     @Resource
     private ICustomerDao customerDao;
@@ -57,6 +66,16 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
     private ISysRoleService sysRoleService;
     @Resource
     private StringRedisUtil redisUtil;
+    @Resource
+    private ICsRoleService csRoleService;
+    @Resource
+    private ICsCustomerService csCustomerService;
+    @Resource
+    private ICsSendNoService sendNoService;
+    @Resource
+    private ICsUserRoleDeptService csUserRoleDeptService;
+
+
 
     @Override
     public Customer getByUserId(Long userId, boolean isSearchCache) {
@@ -312,5 +331,37 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
             return ResultData.ok(true);
         }
         return ResultData.ok(false);
+    }
+
+    @Override
+    public ResultVo<Customer> saveCustomer(String customerPhone,String customerName,Long loginId) {
+        Role role = csRoleService.getByName(YmlProperty.get("cjkj.customer_client_role_name"), DeptTypeEnum.CUSTOMER.code);
+        if(role == null){
+            return BaseResultUtil.fail("C端客户角色不存在，请先添加");
+        }
+        //新增个人用户信息到物流平台
+        ResultData<Long> rd = csCustomerService.addUserToPlatform(customerPhone,customerName,role);
+        if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+            return BaseResultUtil.fail(rd.getMsg());
+        }
+        if(rd.getData() == null){
+            return BaseResultUtil.fail("获取架构组userId失败");
+        }
+        Customer customer = new Customer();
+        customer.setUserId(rd.getData());
+        customer.setCustomerNo(sendNoService.getNo(SendNoTypeEnum.CUSTOMER));
+        customer.setAlias(customerName);
+        customer.setName(customerName);
+        customer.setType(CustomerTypeEnum.INDIVIDUAL.code);
+        customer.setPayMode(PayModeEnum.COLLECT.code);
+        customer.setSource(CustomerSourceEnum.WEB.code);
+        customer.setCreateUserId(loginId);
+        customer.setCreateTime(NOW);
+        customer.setCheckUserId(loginId);
+        customer.setCheckTime(NOW);
+        customerDao.insert(customer);
+        //保存用户角色机构关系
+        csUserRoleDeptService.saveCustomerToUserRoleDept(customer, role.getId(), loginId);
+        return BaseResultUtil.success(customer);
     }
 }

@@ -95,6 +95,15 @@ public interface ICsCustomerService {
      */
     ResultData<Boolean> updateUserToPlatform(Customer customer, Driver driver, String newPhone);
 
+    /**
+     * 保存用户
+     * @param customerPhone
+     * @param customerName
+     * @param loginId
+     * @return
+     */
+    ResultVo<Customer> saveCustomer(String customerPhone,String customerName,Long loginId);
+
 
 
 
