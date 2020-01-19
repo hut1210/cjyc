@@ -116,7 +116,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
 
         //创建Charge对象
         Charge charge = new Charge();
-        try {
+        //try {
             List<String> tempList = sweepCodeDto.getTaskCarIdList();
 
             List<Long> taskCarIdList = convertToLongList(tempList);
@@ -147,9 +147,9 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             charge = createDriverCode(om);
 
             cStransactionService.saveTransactions(charge, "0");
-        } catch (Exception e) {
+       /* } catch (Exception e) {
             log.error("扫码支付异常",e);
-        }
+        }*/
         return charge;
     }
 
@@ -579,7 +579,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                 throw new CommonException("订单正在支付中","1");
             }
         }*/
-        try {
+        //try {
             om.setClientIp(salesPrePayDto.getIp());
             BigDecimal wlFee = cStransactionService.getAmountByOrderNo(salesPrePayDto.getOrderNo());
             om.setClientIp(salesPrePayDto.getIp());
@@ -603,9 +603,9 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             charge = createDriverCode(om);
 
             cStransactionService.saveTransactions(charge, "0");
-        } catch (Exception e) {
+        /*} catch (Exception e) {
             log.error("业务员预付款出示二维码异常",e);
-        }
+        }*/
         return charge;
     }
 
