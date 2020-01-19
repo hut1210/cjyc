@@ -725,9 +725,9 @@
             w_waybill_car wcar
             left join w_waybill w on wcar.waybill_id = w.id
         where
-            w.carrier_id in (select carrier_id
-                            from d_carrier_driver_con
-                            where driver_id = #{loginId} and
+            w.carrier_id in (select dept_id
+                            from s_user_role_dept
+                            where user_id = #{loginId} and
                             state = ${@com.cjyc.common.model.enums.CommonStateEnum@CHECKED.code}
                             )
             and wcar.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_ALLOT.code}

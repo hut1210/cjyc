@@ -478,8 +478,8 @@
     <select id="selectDriverList" parameterType="com.cjyc.common.model.dto.driver.task.DriverQueryDto"
             resultType="com.cjyc.common.model.vo.driver.task.TaskDriverVo">
         SELECT
-            con.role AS role,
-            con.driver_id AS driverId,
+            ( CASE sr.role_name WHEN '个人司机' THEN 0 WHEN '下属司机' THEN 1 WHEN '承运商管理员' THEN 2 WHEN '承运商超级管理员' THEN 3 END ) AS role,
+            surd.user_id AS driverId,
             run.carry_car_num AS carryCarNum,
             run.occupied_car_num AS occupiedCarNum,
             run.plate_no AS plateNo,
@@ -490,12 +490,13 @@
             d.phone AS phone,
             d.id AS loginId
         FROM
-            d_driver d
-            LEFT JOIN d_carrier_driver_con con ON d.id = con.driver_id
-            LEFT JOIN d_vehicle_running run ON d.id = run.driver_id
+          d_driver d
+        LEFT JOIN s_user_role_dept surd ON d.id = surd.user_id
+        LEFT JOIN d_vehicle_running run ON d.id = run.driver_id
+        LEFT JOIN s_role sr ON sr.id = surd.role_id
         <where>
-            con.state = ${@com.cjyc.common.model.enums.CommonStateEnum@CHECKED.code}
-            and con.carrier_id=#{carrierId} and run.driver_id is not null
+            surd.state = ${@com.cjyc.common.model.enums.CommonStateEnum@CHECKED.code}
+            and surd.dept_id=#{carrierId} and run.driver_id is not null
             <if test="keyword != null and keyword.trim() != ''">
                 and (
                 d.real_name like CONCAT('%',#{keyword},'%')
