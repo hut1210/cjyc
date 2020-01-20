@@ -21,6 +21,7 @@ import com.cjyc.common.model.vo.web.line.LineVo;
 import com.cjyc.web.api.service.ILineService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -176,7 +177,7 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
         try {
             List<LineImportExcel> lineImportExcelList = ExcelUtil.importExcel(file, 1, 1, LineImportExcel.class);
             if (!CollectionUtils.isEmpty(lineImportExcelList)) {
-                List<Line> list = new ArrayList<>(10);
+                List<Line> list = Lists.newArrayList();
                 for (LineImportExcel lineExcel : lineImportExcelList) {
                     //根据城市名称查询城市code
                     String fromCode = cityDao.getCodeByName(lineExcel.getFromCity());
