@@ -195,6 +195,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
             }
         }
         paramsDto.setCustomerId(customer.getId());
+        paramsDto.setCustomerType(customer.getType());
+
         //提交订单
         Order order = commitOrder(paramsDto);
         return BaseResultUtil.success("下单{0}成功", order.getNo());
@@ -322,7 +324,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
     }
 
     private Order fillOrderExpectEndTime(Order order) {
-        if(order.getExpectStartDate() != null){
+        if(order.getExpectStartDate() != null && order.getExpectEndDate() == null){
             Line line = csLineService.getLineByCity(order.getStartCityCode(), order.getEndCityCode(), true);
             if(line == null){
                 throw new ParameterException("线路不存在");
@@ -357,8 +359,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
             }
         }
         order.setCustomerId(customer.getId());
-
-
+        order.setCustomerType(customer.getType());
 
         List<OrderCar> orderCarList = orderCarDao.findListByOrderId(order.getId());
         //均摊优惠券费用
@@ -673,6 +674,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
             }
         }
         paramsDto.setCustomerId(customer.getId());
+        paramsDto.setCustomerType(customer.getType());
         //提交订单
         Order order = commitOrder(paramsDto);
         //审核订单

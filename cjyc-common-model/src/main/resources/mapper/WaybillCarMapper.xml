@@ -1739,6 +1739,15 @@
         and wc.start_area_code = #{areaCode}
         and wc.start_address = #{address}
     </select>
+    <select id="findUploadPhoto" resultType="java.lang.String">
+        select
+        CONCAT_WS(',',GROUP_CONCAT(wcsub.load_photo_img),GROUP_CONCAT(wcsub.unload_photo_img))
+        from w_waybill w
+        join w_waybill_car wc on wc.waybill_id = w.id
+        where w.state &lt;= 100
+        and wc.state &lt;= 100
+        and wc.order_car_id = #{orderCarId}
+    </select>
 
     <delete id="cancelAfterWaybillCar">
         update w_waybill_car wc

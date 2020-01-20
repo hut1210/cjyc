@@ -135,7 +135,26 @@ public class CsTaskServiceImpl implements ICsTaskService {
         }
         List<String> loadPhotoImgs = reqDto.getLoadPhotoImgs();
         List<String> unloadPhotoImgs = reqDto.getUnloadPhotoImgs();
-        if (WaybillTypeEnum.PICK.code == waybill.getType() && reqDto.getType() == 1) {
+        //查询车辆照片是否上传过
+        String photo = waybillCarDao.findUploadPhoto(waybillCar.getOrderCarId());
+        if(StringUtils.isBlank(photo) || photo.split(",").length < Constant.MIN_LOAD_PHOTO_NUM){
+            if((loadPhotoImgs == null || loadPhotoImgs.size() < Constant.MAX_LOAD_PHOTO_NUM) && (unloadPhotoImgs == null || unloadPhotoImgs.size() < Constant.MAX_LOAD_PHOTO_NUM)){
+                return BaseResultUtil.fail("第一次完善信息至少上传8张照片");
+            }
+        }
+
+        if (!CollectionUtils.isEmpty(loadPhotoImgs)) {
+            if (loadPhotoImgs.size() > Constant.MAX_LOAD_PHOTO_NUM) {
+                return BaseResultUtil.fail("照片数量不能超过20张");
+            }
+        }
+        if (!CollectionUtils.isEmpty(unloadPhotoImgs)) {
+            if (unloadPhotoImgs.size() > Constant.MAX_LOAD_PHOTO_NUM) {
+                return BaseResultUtil.fail("照片数量不能超过20张");
+            }
+        }
+
+       /* if (WaybillTypeEnum.PICK.code == waybill.getType() && reqDto.getType() == 1) {
             if (loadPhotoImgs.size() < Constant.MIN_LOAD_PHOTO_NUM) {
                 return BaseResultUtil.fail("照片数量不足8张");
             }
@@ -160,7 +179,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                     return BaseResultUtil.fail("照片数量不能超过20张");
                 }
             }
-        }
+        }*/
 
         //更新车辆信息
         OrderCar orderCar = new OrderCar();
