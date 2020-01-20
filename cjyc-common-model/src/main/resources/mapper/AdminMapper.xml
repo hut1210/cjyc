@@ -237,6 +237,7 @@
             <if test="param.inputStoreId != null and param.inputStoreId != ''">
                 AND sur.dept_id = #{param.inputStoreId}
             </if>
+            and ba.state = 2
         </where>
         GROUP BY ba.phone
         ORDER BY create_time DESC
