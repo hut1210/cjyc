@@ -394,9 +394,9 @@
             o.line_id as lineId,
             #{model} as model
         from
-            w_order o
+            w_order o left join w_order_car oc on oc.order_no = o.no
         <where>
-            customer_id = #{loginId}
+            o.customer_id = #{loginId}
             /*待确认*/
             <if test="state != null and state == 0">
                 and o.state between ${@com.cjyc.common.model.enums.order.OrderStateEnum@WAIT_SUBMIT.code}
@@ -425,6 +425,9 @@
             </if>
             <if test="orderNo != null and orderNo.trim() != ''">
                 and o.no like concat('%',#{orderNo},'%')
+            </if>
+            <if test="model != null and model.trim() != ''">
+                and oc.model = #{model}
             </if>
         </where>
         order by o.create_time desc
