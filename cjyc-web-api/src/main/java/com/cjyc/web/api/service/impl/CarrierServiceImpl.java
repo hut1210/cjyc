@@ -586,18 +586,25 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         BankCardBind bcb = new BankCardBind();
         if(dto != null){
             BeanUtils.copyProperties(dto,bcb);
+            bcb.setIdCard(dto.getLegalIdCard());
+            bcb.setCardPhone(dto.getLinkmanPhone());
         }else{
             BeanUtils.copyProperties(excel,bcb);
+            if("对公".equals(excel.getCardType())){
+                bcb.setCardType(1);
+            }else{
+                bcb.setCardType(2);
+            }
+            bcb.setIdCard(excel.getLegalIdCard());
+            bcb.setCardPhone(excel.getLinkmanPhone());
         }
         //承运商id
         bcb.setUserId(carrierId);
         //承运商超级管理员
         bcb.setUserType(UserTypeEnum.DRIVER.code);
-        bcb.setIdCard(dto.getLegalIdCard());
         bcb.setState(UseStateEnum.USABLE.code);
         bcb.setCardColour(RandomUtil.getIntRandom());
         bcb.setCreateTime(NOW);
-        bcb.setCardPhone(dto.getLinkmanPhone());
         bankCardBindDao.insert(bcb);
     }
 
@@ -876,6 +883,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean importCarrierExcel(MultipartFile file, Long loginId) {
         boolean result;
         try {
@@ -905,6 +913,16 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
                     //添加承运商
                     Carrier carrier = new Carrier();
                     BeanUtils.copyProperties(carrierImportExcel,carrier);
+                    if("是".equals(carrierImportExcel.getIsInvoice())){
+                        carrier.setIsInvoice(1);
+                    }else{
+                        carrier.setIsInvoice(0);
+                    }
+                    if("账期".equals(carrierImportExcel.getSettleType())){
+                        carrier.setSettleType(1);
+                    }else{
+                        carrier.setSettleType(0);
+                    }
                     carrier.setState(CommonStateEnum.WAIT_CHECK.code);
                     carrier.setType(CarrierTypeEnum.ENTERPRISE.code);
                     carrier.setBusinessState(BusinessStateEnum.BUSINESS.code);
@@ -935,7 +953,6 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
                     userRoleDept.setDeptType(2);
                     userRoleDept.setUserType(UserTypeEnum.DRIVER.code);
                     userRoleDept.setState(CommonStateEnum.WAIT_CHECK.code);
-                    userRoleDept.setMode(carrierImportExcel.getMode());
                     userRoleDept.setCreateTime(NOW);
                     userRoleDept.setCreateUserId(loginId);
                     userRoleDeptDao.insert(userRoleDept);
