@@ -46,7 +46,6 @@ public class WaitDispatchCarListVo {
     @ApiModelProperty(value = "品牌logo图片路径")
     private String logoImgPath;
 
-    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private String startCity;
     private String startCityCode;
     private String startBelongStoreId;
