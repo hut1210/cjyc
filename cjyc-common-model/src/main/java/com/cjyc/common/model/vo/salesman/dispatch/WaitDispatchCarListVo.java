@@ -46,11 +46,11 @@ public class WaitDispatchCarListVo {
     private String logoImgPath;
     private String startCity;
     private String startCityCode;
-    private String startBelongStoreId;
+    private Long startBelongStoreId;
     private String endCity;
     private String endCityCode;
-    private String endBelongStoreId;
+    private Long endBelongStoreId;
     @JsonSerialize(using = DateLongSerizlizer.class)
-    private String expectStartDate;
+    private Long expectStartDate;
 
 }
