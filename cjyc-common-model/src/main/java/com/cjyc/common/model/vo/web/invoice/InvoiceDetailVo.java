@@ -2,7 +2,7 @@ package com.cjyc.common.model.vo.web.invoice;
 
 import com.cjyc.common.model.dto.customer.invoice.OrderAmountDto;
 import com.cjyc.common.model.entity.CustomerInvoice;
-import com.cjyc.common.model.util.BigDecimalSerizlizer;
+import com.cjyc.common.model.serizlizer.BigDecimalSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

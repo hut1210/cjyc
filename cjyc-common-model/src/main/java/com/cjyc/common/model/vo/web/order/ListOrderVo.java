@@ -2,7 +2,7 @@ package com.cjyc.common.model.vo.web.order;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.cjyc.common.model.entity.Order;
-import com.cjyc.common.model.util.BigDecimalSerizlizer;
+import com.cjyc.common.model.serizlizer.BigDecimalSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

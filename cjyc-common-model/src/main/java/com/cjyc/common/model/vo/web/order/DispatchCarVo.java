@@ -1,12 +1,8 @@
 package com.cjyc.common.model.vo.web.order;
 
 import com.cjyc.common.model.entity.WaybillCar;
-import com.cjyc.common.model.util.BigDecimalSerizlizer;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
-import java.math.BigDecimal;
 
 @Data
 public class DispatchCarVo extends WaybillCar {

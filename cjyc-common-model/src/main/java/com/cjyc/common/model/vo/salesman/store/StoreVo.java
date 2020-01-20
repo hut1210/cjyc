@@ -1,7 +1,6 @@
 package com.cjyc.common.model.vo.salesman.store;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.cjyc.common.model.util.DateLongSerizlizer;
+import com.cjyc.common.model.serizlizer.DateLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;

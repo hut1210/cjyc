@@ -1,11 +1,10 @@
 package com.cjyc.common.model.vo.salesman.order;
 
-import com.cjyc.common.model.util.BigDecimalSerizlizer;
-import com.cjyc.common.model.util.DateLongSerizlizer;
+import com.cjyc.common.model.serizlizer.BigDecimalSerizlizer;
+import com.cjyc.common.model.serizlizer.DateLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
-import io.swagger.annotations.ApiParam;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 

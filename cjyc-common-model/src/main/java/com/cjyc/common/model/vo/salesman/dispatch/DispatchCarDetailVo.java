@@ -1,6 +1,6 @@
 package com.cjyc.common.model.vo.salesman.dispatch;
 
-import com.cjyc.common.model.util.DateLongSerizlizer;
+import com.cjyc.common.model.serizlizer.DateLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

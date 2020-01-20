@@ -1,13 +1,9 @@
 package com.cjyc.common.model.vo.web.waybill;
 
 import com.cjyc.common.model.entity.Waybill;
-import com.cjyc.common.model.util.BigDecimalSerizlizer;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Data

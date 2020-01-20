@@ -1,9 +1,8 @@
 package com.cjyc.common.model.dto.web.finance;
 
-import com.cjyc.common.model.util.BigDecimalSerizlizer;
+import com.cjyc.common.model.serizlizer.BigDecimalSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModelProperty;
-import io.swagger.annotations.ApiOperation;
 import lombok.Data;
 
 import java.io.Serializable;

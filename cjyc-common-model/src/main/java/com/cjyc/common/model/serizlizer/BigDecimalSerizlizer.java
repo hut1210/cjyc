@@ -1,4 +1,4 @@
-package com.cjyc.common.model.util;
+package com.cjyc.common.model.serizlizer;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
