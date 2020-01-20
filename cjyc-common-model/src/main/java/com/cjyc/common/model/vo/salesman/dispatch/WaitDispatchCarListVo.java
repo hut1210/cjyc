@@ -1,7 +1,10 @@
 package com.cjyc.common.model.vo.salesman.dispatch;
 
+import com.cjyc.common.model.util.BigDecimalSerizlizer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.List;
 
@@ -43,6 +46,7 @@ public class WaitDispatchCarListVo {
     @ApiModelProperty(value = "品牌logo图片路径")
     private String logoImgPath;
 
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private String startCity;
     private String startCityCode;
     private String startBelongStoreId;

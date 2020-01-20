@@ -1,18 +1,14 @@
 package com.cjyc.salesman.api.service;
 
-import com.cjyc.common.model.dto.salesman.BaseSalesDto;
 import com.cjyc.common.model.dto.salesman.dispatch.DispatchListDto;
 import com.cjyc.common.model.dto.salesman.dispatch.HistoryDispatchRecordDto;
 import com.cjyc.common.model.dto.salesman.dispatch.WaitCountDto;
-import com.cjyc.common.model.dto.salesman.dispatch.WaitCountLineDto;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.salesman.dispatch.DispatchListVo;
 import com.cjyc.common.model.vo.salesman.dispatch.WaitDispatchCarListVo;
 import com.cjyc.common.model.vo.web.dispatch.WaitCountVo;
-
-import java.util.Map;
 
 /**
  * @Description 调度业务接口
