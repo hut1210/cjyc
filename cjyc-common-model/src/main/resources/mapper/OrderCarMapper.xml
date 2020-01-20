@@ -1055,6 +1055,9 @@
             o.finish_time DESC
     </select>
     <sql id="transport_state">
+        <!--提：1待调度，2待提车，3待交车，5已完成，21自送待调度，23自送待交车，25自送已交付，100物流上门
+        干：1待调度，2待提车，3待交车，5已完成, 100无干线
+        送：1待调度，2待提车，3待交车，5已完成，21自提待调度，22自提待提车，23自提待交车，25自提已交付，100物流上门*/-->
         (case
         when oc.pick_type = 4 then 100
         when oc.pick_type &lt;= 1 then
@@ -1085,8 +1088,8 @@
         when oc.back_type &lt;= 1 then
             (case
             when oc.state &lt;= 45 and oc.back_state &lt;= 1 then 21
-            when oc.state &lt;= 45 and oc.back_state > 1 then 23
-            when oc.state > 45 and oc.state &lt; 100 then 23
+            when oc.state &lt;= 45 and oc.back_state > 1 then 22
+            when oc.state > 45 and oc.state &lt; 100  then 23
             when oc.state &gt;= 100 then 25 end)
         else
             (case
@@ -1098,10 +1101,6 @@
     </sql>
     <select id="findTransportStateByOrderId"
             resultType="com.cjyc.common.model.vo.web.order.TransportInfoOrderCarVo">
-
-        <!--提：1待调度，2待提车，3待交车，5已完成，21自送待调度，23自送待交车，25自送已交付，100物流上门
-        干：1待调度，2待提车，3待交车，5已完成, 100无干线
-        送：1待调度，2待提车，3待交车，5已完成，21自提待调度，23自提待交车，25自提已交付，100物流上门*/-->
 
         select
             <include refid="transport_state"/>
@@ -1471,6 +1470,7 @@
         o.pick_contact_name as loadLinkName,
         o.pick_contact_phone as loadLinkPhone,
         (case when o.expect_start_date > UNIX_TIMESTAMP(now()) * 1000 then o.expect_start_date else UNIX_TIMESTAMP(now()) * 1000 end) as expectStartTime,
+        o.expect_start_date as expectStartDate,
         true as startFixedFlag,
 
         (case when temp.id is not null then temp.start_province else (case when oc.pick_type != 4 and o.start_store_id > 0 then ss.province else o.start_province end) end ) as endProvince,
@@ -1530,6 +1530,7 @@
         (case when temp.id is not null then temp.unload_link_name else (case when oc.back_type != 4 and o.end_store_id > 0 then null else null end) end) as loadLinkName,
         (case when temp.id is not null then temp.unload_link_phone else (case when oc.back_type != 4 and o.end_store_id > 0 then null else null end) end ) as loadLinkPhone,
         UNIX_TIMESTAMP(now()) * 1000 as expectStartTime,
+        o.expect_start_date as expectStartDate,
         (case when temp.id is not null then true else false end) as startFixedFlag,
 
         o.end_province as endProvince,
@@ -1593,6 +1594,7 @@
         then (case when temp.expect_end_time > UNIX_TIMESTAMP(now()) * 1000 then temp.expect_end_time else UNIX_TIMESTAMP(now()) * 1000 end)
         else (case when o.expect_start_date > UNIX_TIMESTAMP(now()) * 1000 then o.expect_start_date else UNIX_TIMESTAMP(now()) * 1000 end) end
         ) as expectStartTime,
+        o.expect_start_date as expectStartDate,
         (case when temp.id is not null then true else false end) as startFixedFlag,
 
         (case when o.end_store_id > 0 and o.back_type != 4 then se.province else o.end_province end) as endProvince,
@@ -1649,7 +1651,7 @@
         shell.orderEndCity as endCity,
         shell.orderEndCityCode as endCityCode,
         shell.endBelongStoreId,
-        shell.expectStartTime as expectStartDate,
+        shell.expectStartDate,
         shell.orderCarId,
         shell.orderCarNo,
         shell.brand,

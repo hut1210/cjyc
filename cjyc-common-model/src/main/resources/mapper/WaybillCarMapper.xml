@@ -1062,7 +1062,7 @@
         join w_waybill_car wc on wc.waybill_id = w.id
         where wc.order_car_id = #{orderCarId}
         and w.state &lt;= 100
-        and wc.state between 45 and 100
+        and (wc.state between 45 and 100 or (wc.state between 15 and 100 and w.carrier_type = 6))
         and wc.receipt_flag = 1
         limit 1
     </select>
