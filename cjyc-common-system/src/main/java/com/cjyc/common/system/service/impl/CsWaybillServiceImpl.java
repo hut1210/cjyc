@@ -352,7 +352,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
     }
 
     private Boolean getOrderCarIsInEndStore(Long nowStoreId, Long startStoreId) {
-        return nowStoreId != null && startStoreId != null && startStoreId.equals(nowStoreId);
+        return startStoreId != null && startStoreId.equals(nowStoreId);
     }
 
     private void updateOrderCarForDispatchLocal(Long orderCarId, Waybill waybill, Integer orderCarState, Boolean isInStore) {
@@ -365,7 +365,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             orderCarDao.updateById(noc);
         } else {
             //车辆实际运输状态
-            if (orderCarState == OrderCarStateEnum.WAIT_BACK.code) {
+            if (orderCarState == OrderCarStateEnum.WAIT_BACK_DISPATCH.code) {
                 noc.setState(waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code ? (isInStore ? OrderCarStateEnum.BACKING.code : OrderCarStateEnum.WAIT_BACK.code ): OrderCarStateEnum.WAIT_BACK.code);
             }
             noc.setBackType(getLocalOrderCarCarryType(waybill.getCarrierType()));
