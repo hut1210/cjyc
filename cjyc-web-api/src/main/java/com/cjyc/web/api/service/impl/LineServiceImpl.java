@@ -195,9 +195,9 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
                     line.setDefaultWlFee(lineExcel.getDefaultWlFee() == null ? BigDecimal.ZERO:lineExcel.getDefaultWlFee().multiply(new BigDecimal(100)));
                     line.setDefaultFreightFee(lineExcel.getDefaultFreightFee() == null ? BigDecimal.ZERO:lineExcel.getDefaultFreightFee().multiply(new BigDecimal(100)));
 
-                    String location = PositionUtil.getLngAndLat(lineExcel.getFromCity());
-                    String location2 = PositionUtil.getLngAndLat(lineExcel.getToCity());
-                    double distance = PositionUtil.getDistance(Double.valueOf(location.split(",")[0]), Double.valueOf(location.split(",")[1]), Double.valueOf(location2.split(",")[0]), Double.valueOf(location2.split(",")[1]));
+                    String fromCityLocation = PositionUtil.getLngAndLat(lineExcel.getFromCity());
+                    String toCityLocation = PositionUtil.getLngAndLat(lineExcel.getToCity());
+                    double distance = PositionUtil.getDistance(Double.valueOf(fromCityLocation.split(",")[0]), Double.valueOf(fromCityLocation.split(",")[1]), Double.valueOf(toCityLocation.split(",")[0]), Double.valueOf(toCityLocation.split(",")[1]));
                     BigDecimal bd = new BigDecimal(distance).setScale(0, BigDecimal.ROUND_DOWN);
                     line.setKilometer(bd);
 
