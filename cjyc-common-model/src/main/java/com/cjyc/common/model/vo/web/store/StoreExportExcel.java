@@ -1,4 +1,4 @@
-package com.cjyc.common.model.vo.store;
+package com.cjyc.common.model.vo.web.store;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.cjyc.common.model.util.LocalDateTimeUtil;

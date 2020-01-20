@@ -12,6 +12,7 @@ import com.cjyc.common.model.enums.CityLevelEnum;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
+import com.cjyc.common.model.util.PositionUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.city.ProvinceCityVo;
@@ -35,6 +36,8 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
+
+import static com.cjyc.common.model.util.PositionUtil.getLngAndLat;
 
 /**
  * <p>
@@ -191,6 +194,14 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
                     line.setCode(fromCode+toCode);
                     line.setDefaultWlFee(lineExcel.getDefaultWlFee() == null ? BigDecimal.ZERO:lineExcel.getDefaultWlFee().multiply(new BigDecimal(100)));
                     line.setDefaultFreightFee(lineExcel.getDefaultFreightFee() == null ? BigDecimal.ZERO:lineExcel.getDefaultFreightFee().multiply(new BigDecimal(100)));
+
+                    String location = PositionUtil.getLngAndLat(lineExcel.getFromCity());
+                    String location2 = PositionUtil.getLngAndLat(lineExcel.getToCity());
+                    double distance = PositionUtil.getDistance(Double.valueOf(location.split(",")[0]), Double.valueOf(location.split(",")[1]), Double.valueOf(location2.split(",")[0]), Double.valueOf(location2.split(",")[1]));
+                    BigDecimal bd = new BigDecimal(distance).setScale(0, BigDecimal.ROUND_DOWN);
+                    line.setKilometer(bd);
+
+                    line.setDays(BigDecimal.valueOf(lineExcel.getDays()));
                     line.setName(lineExcel.getFromCity()+NoConstant.SEPARATOR+lineExcel.getToCity());
                     line.setCreateTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
                     line.setCreateUserId(loginId);

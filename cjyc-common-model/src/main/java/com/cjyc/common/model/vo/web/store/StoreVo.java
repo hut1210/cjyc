@@ -1,4 +1,4 @@
-package com.cjyc.common.model.vo.store;
+package com.cjyc.common.model.vo.web.store;
 
 import com.cjyc.common.model.entity.Store;
 import io.swagger.annotations.ApiModelProperty;

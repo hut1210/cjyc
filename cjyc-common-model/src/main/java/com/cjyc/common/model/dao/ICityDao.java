@@ -133,5 +133,20 @@ public interface ICityDao extends BaseMapper<City> {
      * @return java.util.List<com.cjyc.common.model.entity.defined.FullCity>
      */
     List<FullCity> selectNoCoveredList(StoreDto dto);
+
+    /**
+     * 根据省/城市/区名字和级别查询code
+     * @param name
+     * @param level
+     * @return
+     */
+    String findCodeByName(@Param("name") String name,@Param("parentName") String parentName,@Param("level") Integer level);
+
+    /**
+     * 根据省名称获取省code
+     * @param name
+     * @return
+     */
+    String findProvinceCode(@Param("name") String name);
 }
 

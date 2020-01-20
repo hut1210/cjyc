@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.dto.customer.freightBill.FindStoreDto;
 import com.cjyc.common.model.entity.Store;
 import com.cjyc.common.model.vo.customer.customerLine.BusinessStoreVo;
-import com.cjyc.common.model.vo.store.StoreVo;
+import com.cjyc.common.model.vo.web.store.StoreVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

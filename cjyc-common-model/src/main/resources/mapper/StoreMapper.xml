@@ -80,7 +80,7 @@
         where is_delete = 0
     </select>
 
-    <select id="findVoAll" resultType="com.cjyc.common.model.vo.store.StoreVo">
+    <select id="findVoAll" resultType="com.cjyc.common.model.vo.web.store.StoreVo">
         select
         s.*,
         m.phone as  contactAdminPhone,
@@ -106,7 +106,7 @@
             </foreach>
         </where>
     </select>
-    <select id="findVoByIds" resultType="com.cjyc.common.model.vo.store.StoreVo">
+    <select id="findVoByIds" resultType="com.cjyc.common.model.vo.web.store.StoreVo">
         select
         s.*,
         m.phone as contactAdminPhone,

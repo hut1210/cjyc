@@ -16,15 +16,15 @@ public class LineImportExcel implements Serializable {
     @Excel(name = "目的市" ,orderNum = "1")
     private String toCity;
 
-    @Excel(name = "物流费" ,orderNum = "2")
+    @Excel(name = "物流费/元（上游）" ,orderNum = "2")
     private BigDecimal defaultWlFee;
 
-    @Excel(name = "运费" ,orderNum = "3")
+    @Excel(name = "运费/元（下游）" ,orderNum = "3")
     private BigDecimal defaultFreightFee;
 
-    @Excel(name = "总里程(km)" ,orderNum = "4",width = 15)
-    private BigDecimal kilometer;
+    /*@Excel(name = "总里程(km)" ,orderNum = "4",width = 15)
+    private BigDecimal kilometer;*/
 
-    @Excel(name = "总耗时(天)" ,orderNum = "5",width = 15)
+    @Excel(name = "总耗时(天)" ,orderNum = "4",width = 15)
     private Integer days;
 }

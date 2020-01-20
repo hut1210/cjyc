@@ -22,9 +22,12 @@ import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.DeleteStateEnum;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.store.StoreExportExcel;
-import com.cjyc.common.model.vo.store.StoreVo;
+import com.cjyc.common.model.vo.web.customer.PartnerImportExcel;
+import com.cjyc.common.model.vo.web.store.StoreExportExcel;
+import com.cjyc.common.model.vo.web.store.StoreImportExcel;
+import com.cjyc.common.model.vo.web.store.StoreVo;
 import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.web.api.service.IStoreService_1;
 import com.github.pagehelper.PageHelper;
@@ -34,11 +37,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -65,6 +70,8 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
     private ICityDao cityDao;
     @Resource
     private IUserRoleDeptDao userRoleDeptDao;
+
+    private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
     @Override
     public List<Store> getByCityCode(String cityCode) {
@@ -340,5 +347,38 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
                 .eq(Store::getIsDelete,DeleteStateEnum.NO_DELETE.code)
                 .like(!StringUtils.isEmpty(storeQueryDto.getName()),Store::getName,storeQueryDto.getName());
         return super.list(queryWrapper);
+    }
+
+    @Override
+    public boolean importStoreExcel(MultipartFile file, Long loginId) {
+        boolean result;
+        try {
+            List<StoreImportExcel> storeImportExcelList = ExcelUtil.importExcel(file, 0, 1, StoreImportExcel.class);
+            if(!CollectionUtils.isEmpty(storeImportExcelList)){
+                for(StoreImportExcel storeExcel : storeImportExcelList){
+                    Store store = new Store();
+                    store.setName(storeExcel.getName());
+                    store.setProvince(storeExcel.getProvince());
+                    store.setProvinceCode(cityDao.findProvinceCode(storeExcel.getProvince()));
+                    store.setCity(storeExcel.getCity());
+                    store.setCityCode(cityDao.findCodeByName(storeExcel.getCity(),storeExcel.getProvince(),2));
+                    store.setArea(storeExcel.getArea());
+                    store.setAreaCode(cityDao.findCodeByName(storeExcel.getArea(),storeExcel.getCity(),3));
+                    store.setDetailAddr(storeExcel.getDetailAddr());
+                    store.setState(CommonStateEnum.CHECKED.code);
+                    store.setCreateUserId(loginId);
+                    store.setCreateTime(NOW);
+                    store.setIsDelete(DeleteStateEnum.NO_DELETE.code);
+                    storeDao.insert(store);
+                }
+                result = true;
+            }else{
+                result = false;
+            }
+        } catch (Exception e) {
+            log.error("导入业务中心失败异常:{}",e);
+            result = false;
+        }
+        return result;
     }
 }

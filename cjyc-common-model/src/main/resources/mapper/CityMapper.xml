@@ -406,4 +406,14 @@
         </where>
     </select>
 
+    <!--根据城市/区名称模糊匹配查询城市code -->
+    <select id="findCodeByName" resultType="java.lang.String">
+        select code from s_city where name like concat('%',#{name},'%') and parent_name like concat('%',#{parentName},'%')  and level = #{level}
+    </select>
+
+    <!--根据省名称模糊匹配查询城市code -->
+    <select id="findProvinceCode" resultType="java.lang.String">
+        select code from s_city where name like concat('%',#{name},'%')  and level = 1
+    </select>
+
 </mapper>
