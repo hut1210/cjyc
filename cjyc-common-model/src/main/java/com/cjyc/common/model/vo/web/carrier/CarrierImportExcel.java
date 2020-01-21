@@ -12,7 +12,7 @@ public class CarrierImportExcel implements Serializable {
     private String name;
 
     @Excel(name = "是否能开发票" ,orderNum = "1")
-    private Integer isInvoice;
+    private String isInvoice;
 
     @Excel(name = "法人姓名" ,orderNum = "2")
     private String legalName;
@@ -27,10 +27,10 @@ public class CarrierImportExcel implements Serializable {
     private String linkmanPhone;
 
     @Excel(name = "结算类型（时付/账期）" ,orderNum = "6")
-    private Integer settleType;
+    private String settleType;
 
     @Excel(name = "对公/对私账户" ,orderNum = "7")
-    private Integer cardType;
+    private String cardType;
 
     @Excel(name = "开户名称" ,orderNum = "8")
     private String cardName;
