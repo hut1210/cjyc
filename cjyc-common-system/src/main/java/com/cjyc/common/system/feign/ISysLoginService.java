@@ -46,3 +46,4 @@ public interface ISysLoginService {
     @PostMapping("/sms/code")
     ResultData verifyCode(@RequestBody SendSmsCodeReq req);
 }
+
