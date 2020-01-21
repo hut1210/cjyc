@@ -327,7 +327,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             //运单车辆状态
             Boolean isInStore = getOrderCarIsInEndStore(orderCar.getNowStoreId(), waybillCar.getStartStoreId());
             waybillCar.setState(getWaybillCarState(waybill, isInStore, carrierInfo));
-            if (waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code) {
+            if (waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code && waybill.getType() == WaybillTypeEnum.PICK.code) {
                 waybillCar.setLoadTime(currentTimeMillis);
             }
             waybillCar.setLoadLinkUserId(waybillCar.getLoadLinkUserId());
@@ -892,8 +892,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         noc.setTrunkState(OrderCarTrunkStateEnum.WAIT_NEXT_DISPATCH.code);
         int n = waybillCarDao.countPrevTrunk(waybillCar.getId());
         if (n == 0) {
-            //提干
-            if (order.getStartAddress().equals(waybillCar.getStartAddress())) {
+            //提干,APP 自送单起始地是业务中心，无法验证地址，只能验证手机号
+            if (order.getPickContactPhone().equals(waybillCar.getLoadLinkPhone())) {
                 noc.setPickType(OrderPickTypeEnum.WL.code);
                 noc.setPickState(OrderCarLocalStateEnum.F_WL.code);
                 noc.setState(OrderCarStateEnum.WAIT_TRUNK.code);

@@ -82,7 +82,6 @@ public class CommitOrderDto {
     @ApiModelProperty(value = "目的地业务中心名称")
     private String endStoreName;
 
-
     @ApiModelProperty(value = "订单所属业务中心ID")
     private Long inputStoreId;
     @ApiModelProperty(value = "订单所属业务中心名称")
@@ -97,8 +96,11 @@ public class CommitOrderDto {
     @ApiModelProperty(value = "线路ID", required = true)
     private Long lineId;
     @NotNull(message = "提车方式不能为空")
-    @ApiModelProperty(value = "提车方式:1 自送，2代驾上门，3拖车上门, 4.物流上门", required = true)
-    private int pickType;
+    @ApiModelProperty(value = "提车方式:1 自送，2代驾上门，3拖车上门, 4.物流上门, 9我去提车", required = true)
+    private Integer pickType;
+    @ApiModelProperty(value = "是否调度", hidden = true)
+    private boolean isDispatch = false;
+
     @NotBlank(message = "发车联系人不能为空")
     @ApiModelProperty(value = "发车联系人", required = true)
     private String pickContactName;
@@ -106,7 +108,7 @@ public class CommitOrderDto {
     @ApiModelProperty(value = "发车联系人电话", required = true)
     private String pickContactPhone;
     @ApiModelProperty(value = "送车方式： 1 自提，2代驾上门，3拖车上门, 4.物流上门", required = true)
-    private int backType;
+    private Integer backType;
     @NotBlank(message = "收车联系人电话不能为空")
     @ApiModelProperty(value = "收车联系人", required = true)
     private String backContactName;
@@ -114,9 +116,9 @@ public class CommitOrderDto {
     @ApiModelProperty(value = "收车联系人电话", required = true)
     private String backContactPhone;
     @ApiModelProperty(value = "是否开票：0否（默认根据设置），1是")
-    private int invoiceFlag;
+    private Integer invoiceFlag;
     @ApiModelProperty(value = "发票类型：0无， 1-普通(个人) ，2增值普票(企业) ，3增值专用发票")
-    private int invoiceType;
+    private Integer invoiceType;
     @ApiModelProperty(value = "合同ID")
     private Long customerContractId;
     @ApiModelProperty(value = "加急")

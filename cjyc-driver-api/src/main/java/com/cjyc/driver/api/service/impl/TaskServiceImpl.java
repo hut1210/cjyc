@@ -35,6 +35,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -268,7 +269,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
 
                     // 如果指导路线为空，且运单是提车或者送车，将始发成和结束城市用“-”拼接
                     fillGuideLine(taskDetailVo,waybillCar);
-                    carDetailVo.setGuideLine(taskDetailVo.getGuideLine());
+                    carDetailVo.setGuideLine(MessageFormat.format("{0}-{1}", waybillCar.getStartCity(), waybillCar.getEndCity()));
 
                     // 查询品牌车系信息
                     OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
@@ -339,6 +340,9 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
     private void fillHistoryWaybillCarImg(List<WaybillCar> waybillCarList, StrBuilder sb) {
         if (!CollectionUtils.isEmpty(waybillCarList)) {
             for (WaybillCar car : waybillCarList) {
+                if(car.getState() > WaybillCarStateEnum.UNLOADED.code){
+                    continue;
+                }
                 String loadPhotoImg = car.getLoadPhotoImg();
                 if (sb.length() > 0 && !StringUtils.isEmpty(loadPhotoImg)) {
                     sb.append(",");

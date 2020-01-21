@@ -138,7 +138,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
         //查询车辆照片是否上传过
         String photo = waybillCarDao.findUploadPhoto(waybillCar.getOrderCarId());
         if(StringUtils.isBlank(photo) || photo.split(",").length < Constant.MIN_LOAD_PHOTO_NUM){
-            if((loadPhotoImgs == null || loadPhotoImgs.size() < Constant.MAX_LOAD_PHOTO_NUM) && (unloadPhotoImgs == null || unloadPhotoImgs.size() < Constant.MAX_LOAD_PHOTO_NUM)){
+            if((loadPhotoImgs == null || loadPhotoImgs.size() < Constant.MIN_LOAD_PHOTO_NUM) && (unloadPhotoImgs == null || unloadPhotoImgs.size() < Constant.MIN_LOAD_PHOTO_NUM)){
                 return BaseResultUtil.fail("第一次完善信息至少上传8张照片");
             }
         }
@@ -997,7 +997,12 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 continue;
             }
             Order order = orderDao.findByCarId(waybillCar.getOrderCarId());
-            waybillCarDao.updateForFinish(waybillCar.getId());
+            if(waybill.getType() == WaybillTypeEnum.BACK.code && waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code){
+                waybillCarDao.updateSelfCarryForFinish(waybillCar.getId());
+            }else{
+                waybillCarDao.updateForFinish(waybillCar.getId());
+            }
+
 
             orderCarDao.updateForFinish(waybillCar.getOrderCarId(), waybillCar.getEndAreaCode());
 

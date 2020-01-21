@@ -942,7 +942,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
      */
     @Override
     public ResultVo<DispatchAddCarVo> computerCarEndpoint(ComputeCarEndpointDto paramsDto) {
-        DispatchAddCarVo dispatchAddCarVo = new DispatchAddCarVo();
+         DispatchAddCarVo dispatchAddCarVo = new DispatchAddCarVo();
         //查询角色业务中心范围
         BizScope bizScope = null;
         if(paramsDto.getRoleId() == null){

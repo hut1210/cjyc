@@ -200,4 +200,6 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
     int countByStartAddress(@Param("orderCarId") Long orderCarId, @Param("areaCode") String areaCode, @Param("address") String address);
 
     String findUploadPhoto(Long orderCarId);
+
+    int updateSelfCarryForFinish(Long id);
 }

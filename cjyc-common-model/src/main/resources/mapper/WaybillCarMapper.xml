@@ -462,6 +462,15 @@
         and state &lt; 100
         limit 1
     </update>
+    <update id="updateSelfCarryForFinish">
+        update w_waybill_car
+        set state = 100,
+        load_time = unix_timestamp(now()) * 1000,
+        unload_time = unix_timestamp(now()) * 1000
+        where id = #{id}
+        and state &lt; 100
+        limit 1
+    </update>
 
 
     <select id="findByTaskCarId" resultType="com.cjyc.common.model.entity.WaybillCar">
@@ -1741,7 +1750,7 @@
     </select>
     <select id="findUploadPhoto" resultType="java.lang.String">
         select
-        CONCAT_WS(',',GROUP_CONCAT(wcsub.load_photo_img),GROUP_CONCAT(wcsub.unload_photo_img))
+        CONCAT_WS(',',GROUP_CONCAT(wc.load_photo_img),GROUP_CONCAT(wc.unload_photo_img))
         from w_waybill w
         join w_waybill_car wc on wc.waybill_id = w.id
         where w.state &lt;= 100

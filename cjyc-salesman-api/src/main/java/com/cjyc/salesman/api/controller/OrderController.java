@@ -5,6 +5,7 @@ import com.cjyc.common.model.dto.salesman.order.SalesOrderQueryDto;
 import com.cjyc.common.model.dto.salesman.order.SalesmanQueryDto;
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.entity.Admin;
+import com.cjyc.common.model.enums.order.OrderPickTypeEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
@@ -75,6 +76,9 @@ public class OrderController {
         reqDto.setLoginPhone(admin.getPhone());
         reqDto.setCreateUserId(admin.getId());
         reqDto.setCreateUserName(admin.getName());
+        if(reqDto.getPickType() == OrderPickTypeEnum.DISPATCH_SELF.code){
+
+        }
         //发送短信
         return csOrderService.commitAndCheck(reqDto);
     }

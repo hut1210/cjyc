@@ -32,6 +32,7 @@ import java.util.List;
  **/
 @Api(tags = "基础数据-业务中心")
 @RestController
+@Deprecated
 //@RequestMapping("/store")
 public class StoreController {
     @Resource
