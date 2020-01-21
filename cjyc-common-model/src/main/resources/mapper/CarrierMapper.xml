@@ -399,7 +399,7 @@
         FROM d_driver dd LEFT JOIN s_user_role_dept urd ON dd.id = urd.user_id
             LEFT JOIN d_carrier dc ON dc.id = urd.dept_id
         where urd.dept_type = 2 AND urd.user_type = 2
-        AND dc.id = #{carrierId} and  dd.phone = #{linkmanPhone}  and  dd.id_card = #{legalIdCard}
+        AND dc.id = #{carrierId} and  dd.phone = #{linkmanPhone}
     </select>
 
     <!-- 根据条件查询承运商 -->
