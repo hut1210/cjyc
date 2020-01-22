@@ -762,7 +762,7 @@
                 dd.real_name like CONCAT('%',#{realName},'%')
             </if>
             <if test="plateNo != null and plateNo.trim() != ''">
-                and dvr.plate_no = #{plateNo}
+                or dvr.plate_no like CONCAT('%',#{plateNo},'%')
             </if>
             <if test="phone != null and phone.trim() != ''">
                 or dd.phone like CONCAT('%',#{phone},'%')
