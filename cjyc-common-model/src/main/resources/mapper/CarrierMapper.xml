@@ -633,8 +633,8 @@
         SELECT
             dc.id AS carrierId,
             dc.NAME AS businessName,
-            ( CASE dc.type WHEN 1 THEN dc.linkman WHEN 2 THEN '' END ) AS NAME,
-            ( CASE dc.type WHEN 1 THEN dc.linkman_phone WHEN 2 THEN '' END ) AS phone,
+            dc.linkman AS `name`,
+            dc.linkman_phone AS phone,
             dc.type AS type,
             dc.MODE AS MODE,
             ( CASE dc.type WHEN 1 THEN dvr.plate_no WHEN 2 THEN '' END ) AS plateNo,
