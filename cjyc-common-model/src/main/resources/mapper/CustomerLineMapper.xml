@@ -25,23 +25,24 @@
     <!-- 根据客户id获取历史线路 -->
     <select id="findCustomerLine" resultType="com.cjyc.common.model.vo.customer.customerLine.CustomerLineVo">
         SELECT
-            id AS id,
-            start_adress AS startAdress,
-            start_contact AS startContact,
-            start_contact_phone AS startContactPhone,
-            end_adress AS endAdress,
-            end_contact AS endContact,
-            end_contact_phone AS endContactPhone
+            wo.id AS id,
+            wo.start_address AS startAdress,
+            ccl.start_contact AS startContact,
+            ccl.start_contact_phone AS startContactPhone,
+            wo.end_address AS endAdress,
+            ccl.end_contact AS endContact,
+            ccl.end_contact_phone AS endContactPhone
         FROM
-            c_customer_line
+          c_customer_line ccl
+        LEFT JOIN w_order wo ON wo.customer_id = ccl.customer_id
         <where>
             <if test="flag != null and flag == 0">
-                customer_id = #{customerId} and operate_id = #{customerId}
+                ccl.customer_id = #{customerId} and ccl.operate_id = #{customerId}
             </if>
             <if test="flag != null and flag == 1">
-                and operate_id = #{customerId}
+                and wo.customer_id = #{customerId}
             </if>
-              order by create_time desc
+             group by wo.id order by wo.create_time asc
         </where>
     </select>
 
