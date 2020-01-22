@@ -86,13 +86,10 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         if(order == null){
             return BaseResultUtil.success(detailVo);
         }
-        if(order.getCustomerType() == CustomerTypeEnum.ENTERPRISE.code){
-            //大客户
-            Customer customer = customerDao.selectById(order.getCustomerId());
-            BeanUtils.copyProperties(customer,detailVo);
-        }
-        Customer customer = customerDao.findByUserId(order.getCreateUserId());
-        if(customer != null){
+        Customer customer = customerDao.selectById(order.getCustomerId());
+        BeanUtils.copyProperties(customer,detailVo);
+        Customer cust = customerDao.findByUserId(order.getCreateUserId());
+        if(cust != null){
             //客户下单
             detailVo.setFlag(1);
         }else{
