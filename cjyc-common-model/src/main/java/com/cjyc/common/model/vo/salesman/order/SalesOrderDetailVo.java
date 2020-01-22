@@ -57,8 +57,10 @@ public class SalesOrderDetailVo implements Serializable {
     @ApiModelProperty(value = "客户id")
     @JsonSerialize(using= ToStringSerializer.class)
     private Long customerId;
-    @ApiModelProperty(value = "大客户名称")
+    @ApiModelProperty(value = "客户名称")
     private String name;
+    @ApiModelProperty(value = "客户手机号")
+    private String customerPhone;
     @ApiModelProperty(value = "合同ID")
     @JsonSerialize(using= ToStringSerializer.class)
     private Long customerContractId;
