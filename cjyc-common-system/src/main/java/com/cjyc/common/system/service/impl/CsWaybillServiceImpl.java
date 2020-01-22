@@ -408,6 +408,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             if (admin == null || admin.getState() != AdminStateEnum.CHECKED.code) {
                 throw new ParameterException("车辆{0}，所选业务员已离职", orderCarNo);
             }
+            carrierInfo.setCarrierName(admin.getName());
             carrierInfo.setCarrierType(CarrierTypeEnum.PERSONAL.code);
             carrierInfo.setDriverId(admin.getId());
             carrierInfo.setDriverName(admin.getName());
@@ -428,6 +429,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             if (carrier.getState() == null || carrier.getState() != CommonStateEnum.CHECKED.code || carrier.getBusinessState() == null || carrier.getBusinessState() != 0) {
                 throw new ParameterException("车辆{0}，所选承运商停运中", orderCarNo);
             }
+            carrierInfo.setCarrierName(carrier.getName());
             carrierInfo.setCarrierType(carrier.getType());
             //验证司机信息
             if (carrier.getType() == 1) {
