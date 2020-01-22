@@ -759,13 +759,13 @@
         LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
         <where>
             <if test="realName != null and realName.trim() != ''">
-                and dd.real_name like CONCAT('%',#{realName},'%')
+                dd.real_name like CONCAT('%',#{realName},'%')
             </if>
             <if test="plateNo != null and plateNo.trim() != ''">
                 and dvr.plate_no = #{plateNo}
             </if>
             <if test="phone != null and phone.trim() != ''">
-                and dd.phone = #{phone}
+                or dd.phone like CONCAT('%',#{phone},'%')
             </if>
             <if test="idCard != null and idCard.trim() != ''">
                 and dd.id_card = #{idCard}

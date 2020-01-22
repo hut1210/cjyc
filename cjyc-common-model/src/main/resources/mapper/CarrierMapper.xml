@@ -657,7 +657,7 @@
                 and  dc.type = #{type}
             </if>
             <if test="phone != null and phone.trim() != ''">
-                and  dc.linkman_phone = #{phone}
+                or  dc.linkman_phone like CONCAT('%',#{phone},'%')
             </if>
             <if test="idCard != null and idCard.trim() != ''">
                 and  dc.legal_id_card = #{idCard}
