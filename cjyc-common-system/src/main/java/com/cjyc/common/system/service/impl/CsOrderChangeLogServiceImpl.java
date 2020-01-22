@@ -28,11 +28,11 @@ public class CsOrderChangeLogServiceImpl implements ICsOrderChangeLogService {
      * @author JPG
      * @since 2019/11/5 16:12
      */
-    @Async
+    /*@Async
     @Override
     public void asyncSave(OrderChangeLog orderChangeLog) {
         orderChangeLogDao.insert(orderChangeLog);
-    }
+    }*/
 
     /**
      * 保存操作内容

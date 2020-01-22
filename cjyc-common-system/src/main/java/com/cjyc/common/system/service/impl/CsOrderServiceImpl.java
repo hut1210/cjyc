@@ -307,8 +307,6 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
             //记录发车人和收车人
             csCustomerContactService.asyncSave(order);
-            //记录客户历史线路
-            csCustomerLineService.asyncSave(order);
             //记录订单日志
             csOrderLogService.asyncSave(order, OrderLogEnum.COMMIT,
                     new String[]{MessageFormat.format(OrderLogEnum.COMMIT.getInnerLog(), order.getNo()),
@@ -375,8 +373,6 @@ public class CsOrderServiceImpl implements ICsOrderService {
         orderDao.updateById(order);
         //记录发车人和收车人
         csCustomerContactService.asyncSave(order);
-        //记录客户历史线路
-        csCustomerLineService.asyncSave(order);
         //记录订单日志
         csOrderLogService.asyncSave(order, OrderLogEnum.COMMIT,
                 new String[]{MessageFormat.format(OrderLogEnum.COMMIT.getInnerLog(), order.getNo()),

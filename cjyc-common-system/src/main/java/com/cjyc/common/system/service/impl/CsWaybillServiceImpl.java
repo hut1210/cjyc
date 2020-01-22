@@ -914,7 +914,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             noc.setBackType(OrderPickTypeEnum.WL.code);
             noc.setBackState(OrderCarLocalStateEnum.F_WL.code);
         }else{
-            if (order.getEndStoreId().equals(waybillCar.getEndStoreId())) {
+            if (order.getEndStoreId() != null && order.getEndStoreId() >0 && order.getEndStoreId().equals(waybillCar.getEndStoreId())) {
                 noc.setTrunkState(OrderCarTrunkStateEnum.DISPATCHED.code);
             }else{
                 noc.setTrunkState(OrderCarTrunkStateEnum.WAIT_NEXT_DISPATCH.code);

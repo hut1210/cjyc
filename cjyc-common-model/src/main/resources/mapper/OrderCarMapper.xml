@@ -1441,10 +1441,10 @@
         oc.model as model,
         oc.vin as vin,
         oc.pick_type as pickType,
-        oc.pick_state as pickState,
+        (case when oc.pick_state = 0 then 1 else oc.pick_state end) as pickState,
         oc.trunk_state as trunkState,
         oc.back_type as backType,
-        oc.back_state as backState,
+        (case when oc.back_state = 0 then 1 else oc.back_state end) as backState,
         oc.state as state,
         o.start_city_code AS orderStartCityCode,
 	    o.end_city_code AS orderEndCityCode,
@@ -2262,7 +2262,7 @@
         shell.*,
         l.default_freight_fee as lineFreightFee,
         l.id as lineId,
-        l.default_freight_fee as freightFee,
+        (case when l.default_freight_fee is null then 0 else l.default_freight_fee end) as freightFee,
         (case when l.id is not null then true else false end) as hasLine,
         (shell.expectStartTime + l.days * 24 * 60 * 60 * 1000) as expectEndTime
         from (

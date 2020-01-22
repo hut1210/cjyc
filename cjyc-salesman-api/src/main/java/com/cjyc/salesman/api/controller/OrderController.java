@@ -76,9 +76,6 @@ public class OrderController {
         reqDto.setLoginPhone(admin.getPhone());
         reqDto.setCreateUserId(admin.getId());
         reqDto.setCreateUserName(admin.getName());
-        if(reqDto.getPickType() == OrderPickTypeEnum.DISPATCH_SELF.code){
-
-        }
         //发送短信
         return csOrderService.commitAndCheck(reqDto);
     }

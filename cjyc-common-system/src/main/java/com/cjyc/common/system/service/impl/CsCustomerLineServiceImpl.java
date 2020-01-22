@@ -1,13 +1,10 @@
 package com.cjyc.common.system.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.cjkj.log.monitor.LogUtil;
 import com.cjyc.common.model.dao.ICustomerDao;
 import com.cjyc.common.model.dao.ICustomerLineDao;
 import com.cjyc.common.model.dto.CommonDto;
 import com.cjyc.common.model.entity.Customer;
-import com.cjyc.common.model.entity.CustomerLine;
-import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -15,11 +12,9 @@ import com.cjyc.common.model.vo.customer.customerLine.CustomerLineVo;
 import com.cjyc.common.system.service.ICsCustomerLineService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.text.MessageFormat;
 import java.util.List;
 
 @Service
@@ -46,7 +41,7 @@ public class CsCustomerLineServiceImpl implements ICsCustomerLineService {
         return BaseResultUtil.success(pageInfo);
     }
 
-    @Async
+   /* @Async
     @Override
     public void asyncSave(Order order) {
         try {
@@ -83,6 +78,6 @@ public class CsCustomerLineServiceImpl implements ICsCustomerLineService {
                 + order.getEndCity() == null ? "" : order.getEndCity()
                 + order.getEndArea() == null ? "" : order.getEndArea()
                 + order.getEndAddress() == null ? "" : order.getEndAddress();
-    }
+    }*/
 
 }

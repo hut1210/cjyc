@@ -36,6 +36,7 @@ public class WaybillCarVo extends WaybillCar {
 
     @ApiModelProperty(value = "始发地是否可以编辑")
     private Boolean startFixedFlag;
+
     @ApiModelProperty(value = "目的地是否可以编辑")
     private Boolean endFixedFlag;
     @ApiModelProperty(value = "目的地是否可以编辑")
@@ -61,5 +62,8 @@ public class WaybillCarVo extends WaybillCar {
     private String orderEndCityCode;
     private String startStoreFullAddress;
     private String endStoreFullAddress;
+
+
+
 
 }

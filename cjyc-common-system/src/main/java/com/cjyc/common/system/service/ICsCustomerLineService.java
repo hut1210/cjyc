@@ -15,5 +15,5 @@ public interface ICsCustomerLineService {
      */
     ResultVo<PageVo<CustomerLineVo>> queryLinePage(CommonDto dto);
 
-    void asyncSave(Order order);
+    //void asyncSave(Order order);
 }
