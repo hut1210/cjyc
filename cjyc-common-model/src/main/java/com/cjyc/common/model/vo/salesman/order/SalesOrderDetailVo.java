@@ -148,6 +148,7 @@ public class SalesOrderDetailVo implements Serializable {
     public String getEndStoreName(){return StringUtils.isBlank(endStoreName) ? "":endStoreName;}
     public Integer getCustomerType(){return customerType == null ? 0:customerType;}
     public String getName(){return StringUtils.isBlank(name) ? "":name;}
+    public String getCustomerPhone(){return StringUtils.isBlank(customerPhone) ? "":customerPhone;}
     public Long getCustomerId(){return customerId == null ? 0:customerId;}
     public Long getCustomerContractId(){return customerContractId == null ? 0:customerContractId;}
     public String getContactMan(){return StringUtils.isBlank(contactMan) ? "":contactMan;}
