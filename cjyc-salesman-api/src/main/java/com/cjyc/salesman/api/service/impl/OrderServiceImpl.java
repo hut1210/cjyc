@@ -86,10 +86,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         if(order == null){
             return BaseResultUtil.success(detailVo);
         }
-        Customer customer = customerDao.selectById(order.getCustomerId());
-        BeanUtils.copyProperties(customer,detailVo);
-        Customer cust = customerDao.findByUserId(order.getCreateUserId());
-        if(cust != null){
+        Customer customer = customerDao.findByUserId(order.getCreateUserId());
+        if(customer != null){
             //客户下单
             detailVo.setFlag(1);
         }else{
@@ -98,6 +96,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         }
         detailVo.setOrderId(order.getId());
         detailVo.setOrderNo(order.getNo());
+        detailVo.setName(order.getCustomerName());
         BeanUtils.copyProperties(order,detailVo);
         List<OrderCar> orderCars = orderCarDao.selectList(new QueryWrapper<OrderCar>().lambda().eq(OrderCar::getOrderId, order.getId()));
         String logoImg = LogoImgProperty.logoImg;
