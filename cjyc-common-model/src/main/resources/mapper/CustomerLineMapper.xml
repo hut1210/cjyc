@@ -27,23 +27,19 @@
         SELECT
             wo.id AS id,
             wo.start_address AS startAdress,
-            ccl.start_contact AS startContact,
-            ccl.start_contact_phone AS startContactPhone,
+            wo.pick_contact_name AS startContact,
+            wo.pick_contact_phone AS startContactPhone,
             wo.end_address AS endAdress,
-            ccl.end_contact AS endContact,
-            ccl.end_contact_phone AS endContactPhone
+            wo.back_contact_name AS endContact,
+            wo.back_contact_phone AS endContactPhone
         FROM
-          c_customer_line ccl
-        LEFT JOIN w_order wo ON wo.customer_id = ccl.customer_id
+          w_order wo
         <where>
-            <if test="flag != null and flag == 0">
-                ccl.customer_id = #{customerId} and ccl.operate_id = #{customerId}
+            <if test="customerId != null">
+                wo.customer_id = #{customerId}
             </if>
-            <if test="flag != null and flag == 1">
-                and wo.customer_id = #{customerId}
-            </if>
-             group by wo.id order by wo.create_time asc
         </where>
+        group by wo.id order by wo.expect_start_date ASC
     </select>
 
 </mapper>

@@ -27,16 +27,8 @@ public class CsCustomerLineServiceImpl implements ICsCustomerLineService {
 
     @Override
     public ResultVo<PageVo<CustomerLineVo>> queryLinePage(CommonDto dto) {
-        Customer customer = customerDao.selectOne(new QueryWrapper<Customer>().lambda()
-                .eq(Customer::getId, dto.getLoginId()));
-        Integer flag;
-        if(customer == null){
-            flag = 0;
-        }else{
-            flag = 1;
-        }
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        List<CustomerLineVo> lineVos = customerLineDao.findCustomerLine(dto.getLoginId(),flag);
+        List<CustomerLineVo> lineVos = customerLineDao.findCustomerLine(dto.getLoginId());
         PageInfo<CustomerLineVo> pageInfo =  new PageInfo<>(lineVos);
         return BaseResultUtil.success(pageInfo);
     }
