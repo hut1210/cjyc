@@ -36,10 +36,12 @@ public class CustomerLineVo implements Serializable {
     @Override
     public boolean equals(Object obj) {
         if(this == obj){
-            return true;//地址相等
+            //地址相等
+            return true;
         }
         if(obj == null){
-            return false;//非空性：对于任意非空引用x，x.equals(null)应该返回false。
+            //非空性：对于任意非空引用x，x.equals(null)应该返回false。s
+            return false;
         }
         if(obj instanceof CustomerLineVo){
             CustomerLineVo other = (CustomerLineVo) obj;
@@ -49,8 +51,7 @@ public class CustomerLineVo implements Serializable {
                     && equalsStr(this.startContactPhone, other.startContactPhone)
                     && equalsStr(this.endAdress, other.endAdress)
                     && equalsStr(this.endContact, other.endContact)
-                    && equalsStr(this.endContactPhone, other.endContactPhone)
-            ){
+                    && equalsStr(this.endContactPhone, other.endContactPhone)){
                 return true;
             }
         }
