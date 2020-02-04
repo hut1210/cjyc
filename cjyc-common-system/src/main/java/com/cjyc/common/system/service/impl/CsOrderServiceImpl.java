@@ -354,8 +354,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
     @Override
     public ResultVo simpleCommitAndCheck(CheckOrderDto paramsDto) {
         Order order = orderDao.selectById(paramsDto.getOrderId());
-        fillOrderStoreInfo(order);
- /*       if(order == null || order.getStartStoreId() == null || order.getStartStoreId() < 0 ){
+ /*     if(order == null || order.getStartStoreId() == null || order.getStartStoreId() < 0 ){
 
         }
         if(order.getEndStoreId() == null || order.getEndStoreId() < 0 ){
@@ -464,6 +463,12 @@ public class CsOrderServiceImpl implements ICsOrderService {
         long currentTimeMillis = System.currentTimeMillis();
 
         Order order = orderDao.selectById(orderId);
+        if(order.getSource() != null && ClientEnum.APP_CUSTOMER.code == order.getSource() || ClientEnum.APPLET_CUSTOMER.code == order.getSource()){
+            fillOrderStoreInfo(order);
+        }
+        if(order.getStartStoreId() == null && order.getEndStoreId() == null){
+            fillOrderStoreInfo(order);
+        }
         //验证必要信息是否完全
         validateOrderFeild(order);
 
@@ -717,9 +722,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         if (order == null) {
             throw new ParameterException("订单不存在");
         }
-        /*if (order.getState() <= OrderStateEnum.WAIT_SUBMIT.code) {
-            throw new ParameterException("订单未提交，无法审核");
-        }*/
+
         if (order.getState() >= OrderStateEnum.CHECKED.code) {
             throw new ParameterException("订单已经审核过，无法审核");
         }

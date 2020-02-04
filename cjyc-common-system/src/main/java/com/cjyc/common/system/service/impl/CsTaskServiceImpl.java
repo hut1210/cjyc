@@ -400,7 +400,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             if (waybillCar.getState() >= WaybillCarStateEnum.WAIT_LOAD_CONFIRM.code) {
                 throw new ParameterException("车辆{0}已经装过车", orderCarNo);
             }
-            //验证是否是第一段运单
+            //验证是否上传过照片
             String photo = waybillCarDao.findUploadPhoto(waybillCar.getOrderCarId());
             if(StringUtils.isBlank(photo) || photo.split(",").length < Constant.MIN_LOAD_PHOTO_NUM){
                 throw new ParameterException("车辆{0}尚未上传照片,至少上传8张照片", orderCarNo);
