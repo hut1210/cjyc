@@ -658,7 +658,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
         //下一段是否调度
         int m = waybillCarDao.countByStartAddress(waybillCar.getOrderCarId(), waybillCar.getEndAreaCode(),waybillCar.getEndAddress());
         //计算是否到达目的地城市范围
-        if (waybillCar.getEndStoreId() != null && order.getEndStoreId() != null && waybillCar.getEndStoreId().equals(order.getEndStoreId())) {
+        if (order.getEndStoreId() != null && order.getEndStoreId().equals(waybillCar.getEndStoreId())) {
             //配送
             newState = m == 0 ? OrderCarStateEnum.WAIT_BACK_DISPATCH.code : OrderCarStateEnum.WAIT_BACK.code;
             //更新自提运单状态

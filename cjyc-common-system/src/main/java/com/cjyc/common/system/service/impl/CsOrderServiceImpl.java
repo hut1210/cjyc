@@ -167,6 +167,23 @@ public class CsOrderServiceImpl implements ICsOrderService {
             //统计数量
             noCount++;
         }
+
+        List<OrderCar> orderCarList = orderCarDao.findListByOrderId(order.getId());
+        if(!CollectionUtils.isEmpty(orderCarList)){
+            //均摊优惠券费用
+            shareCouponOffsetFee(order.getCouponOffsetFee(), orderCarList);
+            //均摊总费用
+            shareTotalFee(order.getTotalFee(), orderCarList);
+            //更新车辆信息
+            orderCarList.forEach(orderCar -> orderCarDao.updateById(orderCar));
+
+            //合计费用：提、干、送、保险
+            //fillOrderFeeInfo(order, orderCarList);
+            order.setCarNum(orderCarList.size());
+            orderDao.updateById(order);
+        }
+
+
         return BaseResultUtil.success("下单成功，订单编号{0}", order.getNo());
     }
 

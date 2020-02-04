@@ -17,6 +17,7 @@ import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.exception.CommonException;
+import com.cjyc.common.model.exception.ServerException;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.BeanMapUtil;
@@ -317,7 +318,9 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                 return BaseResultUtil.fail("至少包含一辆车编号");
             }
             if(amount.compareTo(BigDecimal.ZERO) <= 0){
-                isNeedPay = 0;
+                //金额验证
+                return BaseResultUtil.fail("获取金额失败");
+                //isNeedPay = 0;
             }
 
             ValidateSweepCodePayVo resVo = new ValidateSweepCodePayVo();
