@@ -396,36 +396,33 @@ public class CsTaskServiceImpl implements ICsTaskService {
             if (waybillCar == null) {
                 throw new ParameterException("运单车辆不存在");
             }
+            String orderCarNo = waybillCar.getOrderCarNo();
             if (waybillCar.getState() >= WaybillCarStateEnum.WAIT_LOAD_CONFIRM.code) {
-                throw new ParameterException("运单车辆已经装过车");
-            }
-            if (WaybillTypeEnum.PICK.code == waybill.getType() && !validateWaybillCarInfo(waybillCar)) {
-                throw new ParameterException("提车运单运单，照片不能为空");
+                throw new ParameterException("车辆{0}已经装过车", orderCarNo);
             }
             //验证是否是第一段运单
-            WaybillCar first = waybillCarDao.findFirst(waybillCar.getOrderCarId());
-            if(first == null ||
-                    (first.getId().equals(waybillCar.getId()) && (waybillCar.getLoadPhotoImg() == null || waybillCar.getLoadPhotoImg().split(",").length < 8))){
-                throw new ParameterException("提车运单运单，照片不能少于8张");
+            String photo = waybillCarDao.findUploadPhoto(waybillCar.getOrderCarId());
+            if(StringUtils.isBlank(photo) || photo.split(",").length < Constant.MIN_LOAD_PHOTO_NUM){
+                throw new ParameterException("车辆{0}尚未上传照片,至少上传8张照片", orderCarNo);
             }
             //验证车辆当前所在地是否与出发区县匹配
             OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
             if (orderCar == null) {
-                throw new ParameterException("订单车辆不存在");
+                throw new ParameterException("订单车辆{0}不存在", orderCarNo);
             }
             //验证目的地业务中心是否与当前业务中心匹配
             if (waybillCar.getStartStoreId() != null && waybillCar.getStartStoreId() != 0) {
                 if (!waybillCar.getStartStoreId().equals(orderCar.getNowStoreId())) {
-                    throw new ParameterException("订单车辆未入库，请业务员先将车辆入库");
+                    throw new ParameterException("订单车辆{0}未入库，请业务员先将车辆入库", orderCarNo);
                 }
             } else {
                 if (!waybillCar.getStartAreaCode().equals(orderCar.getNowAreaCode())) {
-                    throw new ParameterException("订单车辆尚未到达提车地址区县范围内");
+                    throw new ParameterException("订单车辆{0}尚未到达提车地址区县范围内", orderCarNo);
                 }
             }
             //验证运单车辆信息是否完全
             if (!validateOrderCarInfo(orderCar)) {
-                throw new ParameterException("订单车辆{0}信息不完整", orderCar.getNo());
+                throw new ParameterException("订单车辆{0}信息不完整", orderCarNo);
             }
 
             //运单和车辆状态
