@@ -337,6 +337,12 @@ public class CsOrderServiceImpl implements ICsOrderService {
     @Override
     public ResultVo simpleCommitAndCheck(CheckOrderDto paramsDto) {
         Order order = orderDao.selectById(paramsDto.getOrderId());
+        if(order == null || order.getStartStoreId() == null || order.getStartStoreId() < 0 ){
+            return BaseResultUtil.fail("始发地业务中心未处理，请点击订单进入[下单详情]中修改并确认下单");
+        }
+        if(order.getEndStoreId() == null || order.getEndStoreId() < 0 ){
+            return BaseResultUtil.fail("目的地业务中心未处理，请点击订单进入[下单详情]中修改并确认下单");
+        }
 
         Customer customer = csCustomerService.getByPhone(order.getCustomerPhone(), true);
         if (customer != null && !customer.getName().equals(order.getCustomerName())) {
@@ -360,6 +366,9 @@ public class CsOrderServiceImpl implements ICsOrderService {
         order.setCustomerType(customer.getType());
 
         List<OrderCar> orderCarList = orderCarDao.findListByOrderId(order.getId());
+        if(orderCarList == null || orderCarList.size() <= 0){
+            return BaseResultUtil.fail("车辆数不能小于1, 请点击订单进入[下单详情]中修改");
+        }
         //均摊优惠券费用
         shareCouponOffsetFee(order.getCouponOffsetFee(), orderCarList);
         //均摊总费用
@@ -383,6 +392,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
         return BaseResultUtil.success();
     }
+
 
     @Override
     public ResultVo changeOrderCarCarryType(ChangeCarryTypeDto  paramsDto) {
