@@ -49,4 +49,12 @@ public class HistoryDispatchRecordVo implements Serializable {
     public String getGuideLine() {
         return guideLine == null ? "" : guideLine;
     }
+
+    public String getLinkMan() {
+        return linkMan == null ? "" : linkMan;
+    }
+
+    public String getLinkmanPhone() {
+        return linkmanPhone == null ? "" : linkmanPhone;
+    }
 }
