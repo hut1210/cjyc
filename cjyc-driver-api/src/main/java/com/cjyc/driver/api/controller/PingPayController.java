@@ -10,6 +10,7 @@ import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.enums.ClientEnum;
 import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.StringUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.ValidateReceiptCarPayVo;
 import com.cjyc.common.model.vo.customer.order.ValidateSweepCodePayVo;
@@ -50,7 +51,7 @@ public class PingPayController {
         Driver driver = csDriverService.validate(sweepCodeDto.getLoginId());
         sweepCodeDto.setLoginName(driver.getName());
         sweepCodeDto.setLoginType(UserTypeEnum.DRIVER);
-        sweepCodeDto.setIp(IPUtil.getIpAddr(request));
+        sweepCodeDto.setIp(StringUtil.getIp(IPUtil.getIpAddr(request)));
 
         Charge charge;
         try {

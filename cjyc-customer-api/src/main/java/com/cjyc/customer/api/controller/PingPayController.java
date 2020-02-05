@@ -11,6 +11,7 @@ import com.cjyc.common.model.dto.customer.pingxx.PrePayDto;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.StringUtil;
 import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.ValidateReceiptCarPayVo;
@@ -76,7 +77,7 @@ public class PingPayController {
     @ApiOperation("付款")
     @PostMapping("/pay")
     public ResultVo prepay(HttpServletRequest request,@RequestBody PrePayDto reqDto){
-        reqDto.setIp(IPUtil.getIpAddr(request));
+        reqDto.setIp(StringUtil.getIp(IPUtil.getIpAddr(request)));
         Order order;
         try{
             log.debug("pay---------"+reqDto.toString());
@@ -257,7 +258,7 @@ public class PingPayController {
     public ResultVo carCollectPay(HttpServletRequest request, @RequestBody CarCollectPayDto reqDto) {
         Customer customer = csCustomerService.validate(reqDto.getLoginId());
         reqDto.setLoginName(customer.getName());
-        reqDto.setIp(IPUtil.getIpAddr(request));
+        reqDto.setIp(StringUtil.getIp(IPUtil.getIpAddr(request)));
         return pingPayService.carCollectPay(reqDto);
     }
 

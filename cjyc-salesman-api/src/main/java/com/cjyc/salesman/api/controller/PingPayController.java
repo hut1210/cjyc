@@ -6,6 +6,7 @@ import com.cjyc.common.model.dto.customer.pingxx.SweepCodeDto;
 import com.cjyc.common.model.dto.customer.pingxx.ValidateSweepCodeDto;
 import com.cjyc.common.model.dto.web.pingxx.SalesPrePayDto;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.StringUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.ValidateSweepCodePayVo;
 import com.cjyc.common.system.service.ICsPingPayService;
@@ -37,7 +38,7 @@ public class PingPayController {
     @ApiOperation("业务员出示二维码")
     @PostMapping("/sweepSalesCode")
     public ResultVo sweepSalesCode(HttpServletRequest request, @RequestBody SweepCodeDto sweepCodeDto){
-        sweepCodeDto.setIp(IPUtil.getIpAddr(request));
+        sweepCodeDto.setIp(StringUtil.getIp(IPUtil.getIpAddr(request)));
         Charge charge;
         try {
             charge = pingPayService.sweepSalesCode(sweepCodeDto);
@@ -58,7 +59,7 @@ public class PingPayController {
     @ApiOperation("业务员预付款出示二维码")
     @PostMapping("/prepay/sweepSalesCode")
     public ResultVo prepay(HttpServletRequest request, @RequestBody SalesPrePayDto salesPrePayDto){
-        salesPrePayDto.setIp(IPUtil.getIpAddr(request));
+        salesPrePayDto.setIp(StringUtil.getIp(IPUtil.getIpAddr(request)));
         Charge charge;
         try {
             charge = pingPayService.salesPrePay(salesPrePayDto);
