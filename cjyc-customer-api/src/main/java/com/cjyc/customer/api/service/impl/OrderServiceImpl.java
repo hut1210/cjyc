@@ -174,12 +174,10 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
 
         // 自提自送订单设置业务中心地址
         if (OrderPickTypeEnum.SELF.code == order.getPickType()) {
-            detailVo.setStartStoreNameDetail(detailVo.getStartAddress());
-            detailVo.setStartAddress("");
+            detailVo.setStartAddress(detailVo.getStartStoreNameDetail());
         }
         if (OrderPickTypeEnum.SELF.code == order.getBackType()) {
-            detailVo.setEndStoreNameDetail(detailVo.getEndAddress());
-            detailVo.setEndAddress("");
+            detailVo.setEndAddress(detailVo.getEndStoreNameDetail());
         }
 
         return BaseResultUtil.success(detailVo);
