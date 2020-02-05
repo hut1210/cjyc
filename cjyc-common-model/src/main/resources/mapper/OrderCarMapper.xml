@@ -1704,7 +1704,7 @@
                 </choose>
             </when>
             <otherwise>
-                ORDER BY shell.createTime desc
+                ORDER BY shell.createTime desc, shell.orderCarId
             </otherwise>
         </choose>
     </select>
