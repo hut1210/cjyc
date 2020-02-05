@@ -17,6 +17,7 @@ import com.cjyc.common.model.entity.Role;
 import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.enums.role.RoleBtnForAppEnum;
 import com.cjyc.common.model.enums.role.RoleLevelEnum;
+import com.cjyc.common.model.enums.role.RoleLoginAppEnum;
 import com.cjyc.common.model.enums.role.RoleRangeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.YmlProperty;
@@ -269,6 +270,10 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
         BeanUtils.copyProperties(dto, role);
         role.setRoleLevel(dto.getRoleLevel());
         role.setRoleRange(dto.getRoleRange());
+        if(dto.getRoleRange() != null &&
+                dto.getRoleRange().equals(RoleRangeEnum.INNER.getValue())) {
+            role.setLoginApp(RoleLoginAppEnum.CAN_LOGIN_APP.getFlag());
+        }
         //将物流平台角色标识存储
         Long clpRoleId = saveRd.getData().getRoleId();
         role.setRoleId(clpRoleId);
