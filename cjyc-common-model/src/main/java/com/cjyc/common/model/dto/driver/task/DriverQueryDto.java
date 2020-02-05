@@ -4,6 +4,7 @@ import com.cjyc.common.model.dto.driver.BaseDriverDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -20,4 +21,8 @@ public class DriverQueryDto extends BaseDriverDto {
 
     @ApiModelProperty("关键字：姓名，电话，车牌")
     private String keyword;
+
+    @ApiModelProperty("运单类型")
+    @NotNull(message = "运单类型不能为空")
+    private Integer waybillType;
 }
