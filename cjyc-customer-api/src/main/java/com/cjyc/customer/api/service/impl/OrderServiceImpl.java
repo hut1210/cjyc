@@ -185,17 +185,22 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
 
     private void fillFee(OrderCenterDetailVo detailVo, Order order) {
         List<OrderCar> orderCarList = orderCarDao.selectList(new QueryWrapper<OrderCar>().lambda().eq(OrderCar::getOrderId, order.getId()));
-        // 计算待确认订单的物流费与保险费
-        if (order.getState() <= OrderStateEnum.CHECKED.code && order.getState() >= OrderStateEnum.WAIT_SUBMIT.code) {
-            BigDecimal trunkFee = new BigDecimal(0);
-            BigDecimal addInsuranceFee = new BigDecimal(0);
-            for (OrderCar orderCar : orderCarList) {
-                trunkFee = trunkFee.add(orderCar.getTrunkFee());
-                addInsuranceFee = addInsuranceFee.add(orderCar.getAddInsuranceFee());
-            }
-            detailVo.setTrunkFee(trunkFee);
-            detailVo.setAddInsuranceFee(addInsuranceFee);
+        // 计算待确认订单的代驾提车费，拖车送车费，物流费，保险费
+        BigDecimal pickFee = new BigDecimal(0);
+        BigDecimal backFee = new BigDecimal(0);
+        BigDecimal trunkFee = new BigDecimal(0);
+        BigDecimal addInsuranceFee = new BigDecimal(0);
+        for (OrderCar orderCar : orderCarList) {
+            pickFee = pickFee.add(orderCar.getPickFee());
+            backFee = backFee.add(orderCar.getBackFee());
+            trunkFee = trunkFee.add(orderCar.getTrunkFee());
+            addInsuranceFee = addInsuranceFee.add(orderCar.getAddInsuranceFee());
         }
+        detailVo.setPickFee(pickFee);
+        detailVo.setBackFee(backFee);
+        detailVo.setTrunkFee(trunkFee);
+        detailVo.setAddInsuranceFee(addInsuranceFee);
+
 
         // 计算合伙人物流费 与 车辆代收中介费
         if (CustomerTypeEnum.COOPERATOR.code == order.getCustomerType()) {
