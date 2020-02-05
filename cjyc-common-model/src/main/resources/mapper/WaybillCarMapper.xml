@@ -1476,7 +1476,7 @@
             w_waybill_car car
             left join w_waybill w on car.waybill_id=w.id
         where
-            order_car_id=#{id}
+            car.order_car_id=#{id} and car.state &lt; 113
     </select>
     <select id="findLastByOderCarId" resultType="com.cjyc.common.model.entity.WaybillCar">
         select

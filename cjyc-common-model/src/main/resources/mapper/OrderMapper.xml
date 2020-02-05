@@ -394,7 +394,7 @@
             o.line_id as lineId,
             #{model} as model
         from
-            w_order o left join w_order_car oc on oc.order_no = o.no
+            w_order o
         <where>
             o.customer_id = #{loginId}
             /*待确认*/
@@ -425,9 +425,6 @@
             </if>
             <if test="orderNo != null and orderNo.trim() != ''">
                 and o.no like concat('%',#{orderNo},'%')
-            </if>
-            <if test="model != null and model.trim() != ''">
-                and oc.model = #{model}
             </if>
         </where>
         order by o.create_time desc
