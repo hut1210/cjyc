@@ -248,7 +248,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
             //所属业务中心
             fillOrderInputStore(order);
             //业务中心
-            fillOrderStoreInfo(order);
+            fillOrderStoreInfo(order, false);
             //提送车类型
             fillOrderLocalCarryTypeInfo(order);
             //计算预计到达时间
@@ -464,10 +464,10 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
         Order order = orderDao.selectById(orderId);
         if(order.getSource() != null && ClientEnum.APP_CUSTOMER.code == order.getSource() || ClientEnum.APPLET_CUSTOMER.code == order.getSource()){
-            fillOrderStoreInfo(order);
+            fillOrderStoreInfo(order, true);
         }
         if(order.getStartStoreId() == null && order.getEndStoreId() == null){
-            fillOrderStoreInfo(order);
+            fillOrderStoreInfo(order, true);
         }
         //验证必要信息是否完全
         validateOrderFeild(order);
@@ -593,7 +593,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
      * @author JPG
      * @since 2019/12/12 11:55
      */
-    private Order fillOrderStoreInfo(Order order) {
+    private Order fillOrderStoreInfo(Order order, boolean isForceUpdate) {
         if (order.getStartStoreId() != null && order.getStartStoreId() > 0) {
             if(StringUtils.isBlank(order.getStartStoreName())){
                 Store store = csStoreService.getById(order.getStartStoreId(), true);
@@ -606,7 +606,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
             //查询地址所属业务中心
             Store store = csStoreService.getOneBelongByCityCode(order.getStartCityCode());
             if (store != null) {
-                if (order.getStartStoreId() == null || order.getStartStoreId() == -5) {
+                if (order.getStartStoreId() == null || order.getStartStoreId() == -5 || isForceUpdate) {
                     //无主观操作
                     order.setStartStoreId(store.getId());
                     order.setStartStoreName(store.getName());
@@ -630,7 +630,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
             //查询地址所属业务中心
             Store store = csStoreService.getOneBelongByCityCode(order.getEndCityCode());
             if (store != null) {
-                if (order.getEndStoreId() == null || order.getEndStoreId() == -5) {
+                if (order.getEndStoreId() == null || order.getEndStoreId() == -5 || isForceUpdate) {
                     //无主观操作
                     order.setEndStoreId(store.getId());
                     order.setEndStoreName(store.getName());

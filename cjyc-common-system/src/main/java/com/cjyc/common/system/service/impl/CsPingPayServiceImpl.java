@@ -310,7 +310,14 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                         }else{
                             amount = amount.add(orderCar.getTotalFee()).subtract(orderCar.getCouponOffsetFee());
                         }
+
+                        if(amount.compareTo(BigDecimal.ZERO) <= 0){
+                            //金额验证
+                            return BaseResultUtil.fail("获取金额失败");
+                            //isNeedPay = 0;
+                        }
                     }
+
                 }
                 orderCarNos.add(orderCar.getNo());
             }
@@ -319,8 +326,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             }
             if(amount.compareTo(BigDecimal.ZERO) <= 0){
                 //金额验证
-                return BaseResultUtil.fail("获取金额失败");
-                //isNeedPay = 0;
+                isNeedPay = 0;
             }
 
             ValidateSweepCodePayVo resVo = new ValidateSweepCodePayVo();
