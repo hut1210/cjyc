@@ -700,7 +700,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 waybillCarDao.insert(waybillCar);
 
                 //更新订单车辆状态
-                updateOrderCarForDispatchTrunk(orderCar.getId(), waybillCar, order);
+                updateOrderCarForDispatchTrunk(orderCar, waybillCar, order);
 
                 //提取属性
                 orderCarNoSet.add(waybillCar.getOrderCarNo());
@@ -851,7 +851,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 }
 
                 //更新车辆信息
-                updateOrderCarForDispatchTrunk(orderCar.getId(), waybillCar, order);
+                updateOrderCarForDispatchTrunk(orderCar, waybillCar, order);
                 //提取信息
                 unCancelWaybillCarIds.add(waybillCar.getId());
                 waybillCars.add(waybillCar);
@@ -888,7 +888,9 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         return carrierInfo.getCarryType() == CarrierTypeEnum.PERSONAL.code ? WaybillCarStateEnum.WAIT_LOAD.code : WaybillCarStateEnum.WAIT_ALLOT.code;
     }
 
-    private void updateOrderCarForDispatchTrunk(Long orderCarId, WaybillCar waybillCar, Order order) {
+    private void updateOrderCarForDispatchTrunk(OrderCar orderCar, WaybillCar waybillCar, Order order) {
+        Long orderCarId = orderCar.getId();
+
         OrderCar noc = new OrderCar();
         noc.setId(orderCarId);
         noc.setTrunkState(OrderCarTrunkStateEnum.WAIT_NEXT_DISPATCH.code);
@@ -914,13 +916,22 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             noc.setBackType(OrderPickTypeEnum.WL.code);
             noc.setBackState(OrderCarLocalStateEnum.F_WL.code);
         }else{
-            if (order.getEndStoreId() != null && order.getEndStoreId() >0 && order.getEndStoreId().equals(waybillCar.getEndStoreId())) {
-                noc.setTrunkState(OrderCarTrunkStateEnum.DISPATCHED.code);
-            }else{
-                noc.setTrunkState(OrderCarTrunkStateEnum.WAIT_NEXT_DISPATCH.code);
+            if(order.getEndStoreId() != null && order.getEndStoreId().equals(waybillCar.getEndStoreId())){
+                if (order.getEndStoreId() != null && order.getEndStoreId() >0 && order.getEndStoreId().equals(waybillCar.getEndStoreId())) {
+                    noc.setTrunkState(OrderCarTrunkStateEnum.DISPATCHED.code);
+                }else{
+                    noc.setTrunkState(OrderCarTrunkStateEnum.WAIT_NEXT_DISPATCH.code);
+                }
+                //如果提车方式是物流上门变更为订单提送车方式
+                if(OrderPickTypeEnum.WL.code == orderCar.getBackType()){
+                    if(OrderPickTypeEnum.WL.code != order.getBackType()){
+                        noc.setBackType(order.getBackType());
+                    }else{
+                        noc.setBackType(OrderPickTypeEnum.PILOT.code);
+                    }
+                }
+                noc.setBackState(OrderCarLocalStateEnum.WAIT_DISPATCH.code);
             }
-            noc.setBackType(order.getBackType());
-            noc.setBackState(OrderCarLocalStateEnum.WAIT_DISPATCH.code);
         }
         orderCarDao.updateById(noc);
     }
