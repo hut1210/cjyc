@@ -1199,6 +1199,8 @@
     <select id="findStockCar" resultType="com.cjyc.common.model.vo.salesman.mine.StockCarVo"
             parameterType="com.cjyc.common.model.dto.salesman.mine.StockCarDto">
       SELECT
+        wo.start_city AS startCity,
+        wo.end_city AS endCity,
         woc.id AS orderCarId,
         woc.brand AS brand,
         woc.model AS model,
