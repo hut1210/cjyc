@@ -87,10 +87,10 @@
                 and woc.wl_pay_state = #{state}
             </if>
             <if test="receiveStartTime!= null">
-                and wt.wl_pay_time &lt;= #{receiveStartTime}
+                and woc.wl_pay_time &lt;= #{receiveStartTime}
             </if>
             <if test="receiveEndTime!= null">
-                and wt.wl_pay_time &lt;= #{receiveEndTime}
+                and woc.wl_pay_time &lt;= #{receiveEndTime}
             </if>
         </where>
         group by woc.no
