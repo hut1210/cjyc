@@ -355,7 +355,7 @@
 
     <select id="countForAllTab" resultType="java.util.Map">
         select
-        count(0) as totalCount,<!--全部订单-->
+        IFNULL(sum(case when o.state > 0 or (o.state = 0 and o.create_user_id = #{paramsDto.loginId}) then 1 else 0 end ),0) as totalCount,<!--全部订单-->
         IFNULL(sum(case when o.state = 0 and o.create_user_id = #{paramsDto.loginId} then 1 else 0 end ),0) as waitCommitCount,<!--待提交-->
         IFNULL(sum(case when o.state &gt; 0 and o.state &lt; 15 then 1 else 0 end ),0)  as waitCheckCount,<!--待确认-->
         IFNULL(sum(case when o.state = 15 then 1 else 0 end ),0)  as waitPrePayCount,<!--带预付款-->
