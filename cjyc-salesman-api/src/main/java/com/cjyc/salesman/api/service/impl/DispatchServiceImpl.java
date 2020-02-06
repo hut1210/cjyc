@@ -205,8 +205,8 @@ public class DispatchServiceImpl implements IDispatchService {
                 }
 
                 // 指导路线
-                fillGuideLine(detail,waybillCar);
-                carDetailVo.setGuideLine(detail.getGuideLine());
+                fillGuideLine(carDetailVo,waybillCar);
+                detail.setGuideLine(carDetailVo.getGuideLine());
 
                 // 获取车辆运输图片
                 getCarPhotoImg(carDetailVo,waybillCar);
@@ -294,11 +294,10 @@ public class DispatchServiceImpl implements IDispatchService {
         return sb;
     }
 
-    private void fillGuideLine(WaybillDetailVo taskDetailVo, WaybillCar waybillCar) {
-        boolean b = WaybillTypeEnum.PICK.code == taskDetailVo.getType() || WaybillTypeEnum.BACK.code == taskDetailVo.getType();
-        if (b && StringUtils.isEmpty(taskDetailVo.getGuideLine())) {
-            taskDetailVo.setGuideLine(waybillCar.getStartCity() + "-" + waybillCar.getEndCity());
-        }
+    private void fillGuideLine(WaybillCarDetailVo carDetailVo, WaybillCar waybillCar) {
+        //boolean b = WaybillTypeEnum.PICK.code == taskDetailVo.getType() || WaybillTypeEnum.BACK.code == taskDetailVo.getType();
+        carDetailVo.setGuideLine(waybillCar.getStartCity() + "-" + waybillCar.getEndCity());
+
     }
 
     @Override

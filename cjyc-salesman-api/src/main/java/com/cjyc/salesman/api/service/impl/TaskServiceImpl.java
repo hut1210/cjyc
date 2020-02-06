@@ -122,8 +122,8 @@ public class TaskServiceImpl implements ITaskService {
                     freightFee = freightFee.add(waybillCar.getFreightFee());
 
                     // 如果指导路线为空，且运单是提车或者送车，将始发成和结束城市用“-”拼接
-                    fillGuideLine(taskDetailVo,waybillCar);
-                    carDetailVo.setGuideLine(taskDetailVo.getGuideLine());
+                    fillGuideLine(carDetailVo,waybillCar);
+                    taskDetailVo.setGuideLine(carDetailVo.getGuideLine());
 
                     // 获取车辆运输图片
                     getCarPhotoImg(carDetailVo, detailState, waybillCar);
@@ -173,11 +173,10 @@ public class TaskServiceImpl implements ITaskService {
         carDetailVo.setHistoryLoadPhotoImg(sb.toString());
     }
 
-    private void fillGuideLine(TaskDetailVo taskDetailVo,WaybillCar waybillCar) {
-        boolean b = WaybillTypeEnum.PICK.code == taskDetailVo.getType() || WaybillTypeEnum.BACK.code == taskDetailVo.getType();
-        if (b && StringUtils.isEmpty(taskDetailVo.getGuideLine())) {
-            taskDetailVo.setGuideLine(waybillCar.getStartCity() + "-" + waybillCar.getEndCity());
-        }
+    private void fillGuideLine(CarDetailVo carDetailVo,WaybillCar waybillCar) {
+        //boolean b = WaybillTypeEnum.PICK.code == taskDetailVo.getType() || WaybillTypeEnum.BACK.code == taskDetailVo.getType();
+        carDetailVo.setGuideLine(waybillCar.getStartCity() + "-" + waybillCar.getEndCity());
+
     }
 
     private void fillCarPhotoImg(String detailState, WaybillCar waybillCar, StringBuilder sb) {

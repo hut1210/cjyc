@@ -1461,8 +1461,9 @@
         select
             w.carrier_id as carrierId,
             w.type as type,
-            (case w.type when 1 then concat(car.start_city,'-',car.end_city)
-                         when 3 then concat(car.start_city,'-',car.end_city) else w.guide_line end) AS guideLine,
+            /*(case w.type when 1 then concat(car.start_city,'-',car.end_city)
+                         when 3 then concat(car.start_city,'-',car.end_city) else w.guide_line end) AS guideLine,*/
+                         concat(car.start_city,'-',car.end_city) AS guideLine,
             w.no as waybillNo,
             w.carrier_name as carrierName,
             w.carrier_type as carrierType,
