@@ -104,7 +104,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         CustomerInfoVo infoVo = new CustomerInfoVo();
         if(customer != null){
             infoVo.setCustomerId(customer.getId());
-            infoVo.setContactMan(customer.getContactMan());
+            infoVo.setContactMan(customer.getName());
             infoVo.setContactPhone(customer.getContactPhone());
             return BaseResultUtil.success(infoVo);
         }

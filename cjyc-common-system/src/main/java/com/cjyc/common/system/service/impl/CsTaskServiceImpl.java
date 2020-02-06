@@ -1112,7 +1112,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             try {
                 csPingPayService.allinpayToCooperator(order.getId());
             } catch (Exception e) {
-                log.error("");
+                log.error("支付合伙人{}（ID{}）服务费失败", order.getCustomerName(), order.getCustomerId());
                 log.error(e.getMessage(), e);
             }
         }
