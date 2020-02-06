@@ -87,7 +87,7 @@
                 and woc.wl_pay_state = #{state}
             </if>
             <if test="receiveStartTime!= null">
-                and woc.wl_pay_time &lt;= #{receiveStartTime}
+                and woc.wl_pay_time >= #{receiveStartTime}
             </if>
             <if test="receiveEndTime!= null">
                 and woc.wl_pay_time &lt;= #{receiveEndTime}
