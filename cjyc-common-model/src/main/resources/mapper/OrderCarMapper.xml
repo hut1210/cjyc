@@ -1485,8 +1485,8 @@
         concat(ss.province, ss.city, ss.area,ss.detail_addr) as endStoreFullAddress,
         (case when temp.id is not null then temp.start_belong_store_id else (case when o.start_store_id > 0 then ss.id else 0 end) end ) as endBelongStoreId,
         (case when temp.id is not null then temp.load_link_user_id else null end) as unloadLinkUserId,
-        (case when temp.id is not null then temp.load_link_name else (case when o.start_store_id > 0 then null else null end) end) as unloadLinkName,
-        (case when temp.id is not null then temp.load_link_phone else (case when o.start_store_id > 0 then null else null end) end ) as unloadLinkPhone,
+        (case when temp.id is not null then temp.load_link_name else null end) as unloadLinkName,
+        (case when temp.id is not null then temp.load_link_phone else null end ) as unloadLinkPhone,
         (case when temp.id is not null then false else true end) as endFixedFlag
     </sql>
     <sql id="pick_wait_dispatch_car_list_For_App">
@@ -1528,8 +1528,8 @@
         concat(se.province, se.city, se.area,se.detail_addr) as startStoreFullAddress,
         (case when temp.id is not null then temp.end_belong_store_id else (case when o.end_store_id > 0 then se.id else 0 end) end ) as startBelongStoreId,
         (case when temp.id is not null then temp.unload_link_user_id else null end) as loadLinkUserId,
-        (case when temp.id is not null then temp.unload_link_name else (case when o.end_store_id > 0 then null else null end) end) as loadLinkName,
-        (case when temp.id is not null then temp.unload_link_phone else (case when o.end_store_id > 0 then null else null end) end ) as loadLinkPhone,
+        (case when temp.id is not null then temp.unload_link_name else null end) as loadLinkName,
+        (case when temp.id is not null then temp.unload_link_phone else null end ) as loadLinkPhone,
         UNIX_TIMESTAMP(now()) * 1000 as expectStartTime,
         (case when temp.id is not null then true else false end) as startFixedFlag,
 
