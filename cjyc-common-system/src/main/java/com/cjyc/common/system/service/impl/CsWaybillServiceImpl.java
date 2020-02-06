@@ -889,11 +889,16 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
     }
 
     private void updateOrderCarForDispatchTrunk(OrderCar orderCar, WaybillCar waybillCar, Order order) {
-        Long orderCarId = orderCar.getId();
+        OrderCar noc = getOrderCarForChangeTrunk(orderCar, waybillCar, order, null);
+        orderCarDao.updateById(noc);
+    }
 
+    private OrderCar getOrderCarForChangeTrunk(OrderCar orderCar, WaybillCar waybillCar, Order order, Integer defaultTrunkState) {
+        Long orderCarId = orderCar.getId();
         OrderCar noc = new OrderCar();
         noc.setId(orderCarId);
-        noc.setTrunkState(OrderCarTrunkStateEnum.WAIT_NEXT_DISPATCH.code);
+        noc.setTrunkState(defaultTrunkState == null ? OrderCarTrunkStateEnum.WAIT_NEXT_DISPATCH.code : defaultTrunkState);
+        //第一段干线运单
         int n = waybillCarDao.countPrevTrunk(waybillCar.getId());
         if (n == 0) {
             //提干,APP 自送单起始地是业务中心，无法验证地址，只能验证手机号
@@ -903,37 +908,28 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 noc.setState(OrderCarStateEnum.WAIT_TRUNK.code);
             }
         }
-        //干线最后一段
+
+        // 最后一段干线运单
         if(validateIsArriveEndStore(order.getEndStoreId(), waybillCar.getEndStoreId())){
             noc.setTrunkState(OrderCarTrunkStateEnum.DISPATCHED.code);
-        }else{
-            noc.setTrunkState(OrderCarTrunkStateEnum.WAIT_NEXT_DISPATCH.code);
+            //如果送车方式是物流上门变更为订单提送车方式
+            if(OrderPickTypeEnum.WL.code == orderCar.getBackType()){
+                if(OrderPickTypeEnum.WL.code != order.getBackType()){
+                    noc.setBackType(order.getBackType());
+                }else{
+                    noc.setBackType(OrderPickTypeEnum.PILOT.code);
+                }
+            }
+            noc.setBackState(OrderCarLocalStateEnum.WAIT_DISPATCH.code);
         }
 
-        //干送
+        //是否交付客户-干送运单
         if (order.getBackContactPhone().equals(waybillCar.getUnloadLinkPhone())) {
             noc.setTrunkState(OrderCarTrunkStateEnum.DISPATCHED.code);
             noc.setBackType(OrderPickTypeEnum.WL.code);
             noc.setBackState(OrderCarLocalStateEnum.F_WL.code);
-        }else{
-            if(order.getEndStoreId() != null && order.getEndStoreId().equals(waybillCar.getEndStoreId())){
-                if (order.getEndStoreId() != null && order.getEndStoreId() >0 && order.getEndStoreId().equals(waybillCar.getEndStoreId())) {
-                    noc.setTrunkState(OrderCarTrunkStateEnum.DISPATCHED.code);
-                }else{
-                    noc.setTrunkState(OrderCarTrunkStateEnum.WAIT_NEXT_DISPATCH.code);
-                }
-                //如果提车方式是物流上门变更为订单提送车方式
-                if(OrderPickTypeEnum.WL.code == orderCar.getBackType()){
-                    if(OrderPickTypeEnum.WL.code != order.getBackType()){
-                        noc.setBackType(order.getBackType());
-                    }else{
-                        noc.setBackType(OrderPickTypeEnum.PILOT.code);
-                    }
-                }
-                noc.setBackState(OrderCarLocalStateEnum.WAIT_DISPATCH.code);
-            }
         }
-        orderCarDao.updateById(noc);
+        return noc;
     }
 
     private boolean validateIsArriveEndStore(Long orderEndStoreId, Long waybillCarEndStoreId) {
@@ -1041,22 +1037,22 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         if (waybillCar.getState() >= WaybillCarStateEnum.LOADED.code) {
             throw new ParameterException("车辆{0}运输中，不允许取消", waybillCar.getOrderCarNo());
         }
-        OrderCar oc = orderCarDao.selectById(waybillCar.getOrderCarId());
-        if (oc == null) {
+        OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
+        if (orderCar == null) {
             throw new ParameterException("车辆{0}, 订单信息错误", waybillCar.getOrderCarNo());
         }
-        Order order = orderDao.selectById(oc.getOrderId());
+        Order order = orderDao.selectById(orderCar.getOrderId());
         if (order == null) {
             throw new ParameterException("车辆{0}, 车辆信息错误", waybillCar.getOrderCarNo());
         }
 
         OrderCar noc = new OrderCar();
-        noc.setId(oc.getId());
+        noc.setId(orderCar.getId());
         //修改车辆状态
         if (WaybillTypeEnum.PICK.code == waybillType) {
             noc.setPickType(order.getPickType());
             //订单车辆状态
-            if (OrderCarStateEnum.WAIT_PICK.code == oc.getState()) {
+            if (OrderCarStateEnum.WAIT_PICK.code == orderCar.getState()) {
                 noc.setState(OrderCarStateEnum.WAIT_PICK_DISPATCH.code);
             }
             //订单车辆提车状态
@@ -1065,7 +1061,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         } else if (WaybillTypeEnum.BACK.code == waybillType) {
             noc.setBackType(order.getBackType());
             //订单车辆状态
-            if (OrderCarStateEnum.WAIT_BACK.code == oc.getState()) {
+            if (OrderCarStateEnum.WAIT_BACK.code == orderCar.getState()) {
                 noc.setState(OrderCarStateEnum.WAIT_BACK_DISPATCH.code);
             }
             //订单车辆配送状态
@@ -1091,20 +1087,24 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                         validateAndFinishWaybill(waybill.getId());
                     });
                 }
+                afterWaybillCars.add(0, waybillCar);
+            }else{
+                afterWaybillCars = Lists.newArrayList(waybillCar);
+            }
+            for (WaybillCar afterWaybillCar : afterWaybillCars) {
+                noc = getOrderCarForChangeTrunk(orderCar, afterWaybillCar, order, noc.getTrunkState());
             }
             //查询是否还有干线调度
             int num = waybillCarDao.countTrunkWaybillCar(waybillCar.getOrderCarNo());
             if (num <= 0) {
                 noc.setTrunkState(OrderCarTrunkStateEnum.WAIT_DISPATCH.code);
             } else {
-                //订单车辆干线状态
                 noc.setTrunkState(OrderCarTrunkStateEnum.WAIT_NEXT_DISPATCH.code);
             }
-            //订单车辆状态
-            if (OrderCarStateEnum.WAIT_TRUNK.code == oc.getState()) {
+            /*//订单车辆状态
+            if (OrderCarStateEnum.WAIT_TRUNK.code == orderCar.getState()) {
                 noc.setState(OrderCarStateEnum.WAIT_TRUNK_DISPATCH.code);
             }
-
             //提干
             if (order.getStartAddress().equals(waybillCar.getStartAddress())) {
                 noc.setPickType(order.getPickType());
@@ -1119,7 +1119,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             }
             //干送
             noc.setBackType(order.getBackType());
-            noc.setBackState(OrderCarLocalStateEnum.WAIT_DISPATCH.code);
+            noc.setBackState(OrderCarLocalStateEnum.WAIT_DISPATCH.code);*/
         } else {
             throw new ParameterException("运单类型错误");
         }
@@ -1218,6 +1218,21 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 if(next != null){
                     cancelWaybillCar(waybill.getType(), next);
                 }
+                //更新车辆状态和所在位置和状态、调度状态
+                OrderCar noc = getOrderCarForChangeTrunk(orderCar, waybillCar, order, null);
+                if(order.getBackContactPhone().equals(waybillCar.getUnloadLinkPhone())){
+                    noc.setState(OrderCarStateEnum.SIGNED.code);
+                    throw new ParameterException("卸载车辆暂时不支持直接交付客户" );
+                    //开发直接交付客户
+                }else if(validateIsArriveEndStore(order.getEndStoreId(), waybillCar.getEndStoreId())){
+                    noc.setState(OrderCarStateEnum.WAIT_BACK_DISPATCH.code);
+                }else{
+                    noc.setState(OrderCarStateEnum.WAIT_TRUNK_DISPATCH.code);
+                }
+                noc.setNowStoreId(waybillCar.getEndStoreId());
+                noc.setNowAreaCode(waybillCar.getEndAreaCode());
+                noc.setNowUpdateTime(System.currentTimeMillis());
+                orderCarDao.updateById(noc);
                 //提取属性
                 oldTotalFee = oldTotalFee.add(waybillCar.getFreightFee());
                 waybillCars.add(waybillCar);

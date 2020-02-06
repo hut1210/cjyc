@@ -57,6 +57,7 @@ public class CommitOrderDto {
     @ApiModelProperty(value = "客户id")
     private Long customerId;
     //@NotBlank(message = "客户电话不能为空")
+    //@Pattern(regexp = "(^$)|(^[1]\\d{10}$)", message = "手机号格式不正确")
     @ApiModelProperty(value = "客户电话", required = true)
     private String customerPhone;
     //@NotBlank(message = "客户姓名不能为空")
