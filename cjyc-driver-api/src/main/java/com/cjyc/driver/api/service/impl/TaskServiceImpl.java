@@ -74,7 +74,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
         List<TaskBillVo> taskList = waybillDao.selectWaitHandleTaskPage(dto);
         PageInfo pageInfo = new PageInfo(taskList);
         // 填充指导线路
-        fillGuideLine(pageInfo);
+        //fillGuideLine(pageInfo);
         return BaseResultUtil.success(pageInfo);
     }
 
@@ -85,7 +85,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
         List<TaskBillVo> taskList = taskDao.selectNoFinishTaskPage(dto);
         PageInfo pageInfo = new PageInfo(taskList);
         // 填充指导线路
-        fillGuideLine(pageInfo);
+        //fillGuideLine(pageInfo);
         return BaseResultUtil.success(pageInfo);
     }
 
@@ -126,22 +126,8 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
         List<TaskBillVo> taskList = taskDao.selectHistoryTaskPage(dto);
         PageInfo<TaskBillVo> pageInfo = new PageInfo(taskList);
         // 填充指导线路
-        fillGuideLine(pageInfo);
+        //fillGuideLine(pageInfo);
         return BaseResultUtil.success(pageInfo);
-    }
-
-    private void fillGuideLine(PageInfo<TaskBillVo> pageInfo) {
-        List<TaskBillVo> list = pageInfo.getList();
-        if (!CollectionUtils.isEmpty(list)) {
-            for (TaskBillVo taskBillVo : list) {
-                Integer type = taskBillVo.getType();
-                boolean b = WaybillTypeEnum.PICK.code == type || WaybillTypeEnum.BACK.code == type;
-                if (StringUtils.isEmpty(taskBillVo.getGuideLine()) && b) {
-                    taskBillVo.setGuideLine(taskBillVo.getStartCity() +"-"+ taskBillVo.getEndCity());
-                }
-            }
-        }
-        pageInfo.setList(list);
     }
 
     @Override
@@ -157,7 +143,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
         List<TaskBillVo> taskList = taskDao.selectFinishTaskPage(dto);
         PageInfo<TaskBillVo> pageInfo = new PageInfo(taskList);
         // 填充指导线路
-        fillGuideLine(pageInfo);
+        //fillGuideLine(pageInfo);
         return BaseResultUtil.success(pageInfo);
     }
 
@@ -189,8 +175,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                 freightFee = freightFee.add(waybillCar.getFreightFee()==null?new BigDecimal(0):waybillCar.getFreightFee());
 
                 // 如果指导路线为空，且运单是提车或者送车，将始发成和结束城市用“-”拼接
-                fillGuideLine(taskDetailVo,waybillCar);
-                carDetailVo.setGuideLine(taskDetailVo.getGuideLine());
+                carDetailVo.setGuideLine(waybillCar.getStartCity() + "-" + waybillCar.getEndCity());
 
                 // 查询除了当前车辆运单的历史车辆运单图片
                 getHistoryWaybillCarImg(carDetailVo, waybillCar,dto.getDetailType());
@@ -212,13 +197,6 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
         taskDetailVo.setFreightFee(freightFee);
         taskDetailVo.setCarDetailVoList(carDetailVoList);
         return BaseResultUtil.success(taskDetailVo);
-    }
-
-    private void fillGuideLine(TaskDetailVo taskDetailVo,WaybillCar waybillCar) {
-        boolean b = WaybillTypeEnum.PICK.code == taskDetailVo.getType() || WaybillTypeEnum.BACK.code == taskDetailVo.getType();
-        if (b && StringUtils.isEmpty(taskDetailVo.getGuideLine())) {
-            taskDetailVo.setGuideLine(waybillCar.getStartCity() + "-" + waybillCar.getEndCity());
-        }
     }
 
     @Override
@@ -267,9 +245,8 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                     // 运费
                     freightFee = freightFee.add(waybillCar.getFreightFee()==null?new BigDecimal(0):waybillCar.getFreightFee());
 
-                    // 如果指导路线为空，且运单是提车或者送车，将始发成和结束城市用“-”拼接
-                    fillGuideLine(taskDetailVo,waybillCar);
-                    carDetailVo.setGuideLine(MessageFormat.format("{0}-{1}", waybillCar.getStartCity(), waybillCar.getEndCity()));
+                    // 如果指导路线，运单是提车或者送车，将始发成和结束城市用“-”拼接
+                    carDetailVo.setGuideLine(waybillCar.getStartCity()+"-"+waybillCar.getEndCity());
 
                     // 查询品牌车系信息
                     OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());

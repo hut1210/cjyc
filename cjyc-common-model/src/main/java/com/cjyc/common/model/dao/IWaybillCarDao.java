@@ -1,6 +1,7 @@
 package com.cjyc.common.model.dao;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.cjyc.common.model.dto.driver.task.DetailQueryDto;
 import com.cjyc.common.model.dto.salesman.dispatch.DispatchListDto;
 import com.cjyc.common.model.dto.salesman.mine.SalesAchieveDto;
 import com.cjyc.common.model.dto.web.WayBillCarrierDto;
@@ -202,4 +203,6 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
     String findUploadPhoto(Long orderCarId);
 
     int updateSelfCarryForFinish(Long id);
+
+    WaybillCar selectWaybillCar(DetailQueryDto dto);
 }

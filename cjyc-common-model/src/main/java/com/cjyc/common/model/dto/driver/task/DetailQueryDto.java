@@ -7,6 +7,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @Description 明细查询条件
@@ -38,4 +40,11 @@ public class DetailQueryDto implements Serializable {
     @Pattern(regexp = "(1|2|3|4|5|6|7)",message = "详情状态只能是1,2,3,4,5,6,7中的一位数")
     private String detailState;
 
+    @ApiModelProperty(value = "登录id")
+    @NotNull(groups = {GetSalesmanWaybillDetail.class},message = "登录id不能为空")
+    private Long loginId;
+
+    private Set<Long> storeIds;
+
+    private Long waybillCarId;
 }

@@ -111,19 +111,31 @@ public class TaskServiceImpl implements ITaskService {
         List<CarDetailVo> carDetailVoList = new ArrayList<>(10);
         BigDecimal freightFee = new BigDecimal(0);
         if (!CollectionUtils.isEmpty(taskCarList)) {
+            // 根据登录ID查询当前业务员所在业务中心ID
+            BizScope bizScope = csSysService.getBizScopeByLoginIdNew(dto.getLoginId(), true);
+
+            // 判断当前登录人是否有权限访问
+            if (BizScopeEnum.NONE.code == bizScope.getCode()) {
+                return BaseResultUtil.fail("您没有访问权限!");
+            }
+
+            dto.setStoreIds(bizScope.getStoreIds());
+
             CarDetailVo carDetailVo = null;
             for (TaskCar taskCar : taskCarList) {
                 // 查询任务单车辆信息
                 String detailState = dto.getDetailState();
-                WaybillCar waybillCar = getWaybillCar(detailState, taskCar);
+                //WaybillCar waybillCar = getWaybillCar(detailState, taskCar);
+
+                dto.setWaybillCarId(taskCar.getWaybillCarId());
+                WaybillCar waybillCar = waybillCarDao.selectWaybillCar(dto);
                 if (waybillCar != null) {
                     carDetailVo = new CarDetailVo();
                     BeanUtils.copyProperties(waybillCar,carDetailVo);
                     freightFee = freightFee.add(waybillCar.getFreightFee());
 
-                    // 如果指导路线为空，且运单是提车或者送车，将始发成和结束城市用“-”拼接
-                    fillGuideLine(carDetailVo,waybillCar);
-                    taskDetailVo.setGuideLine(carDetailVo.getGuideLine());
+                    // 指导路线,运单是提车或者送车，将始发成和结束城市用“-”拼接
+                    carDetailVo.setGuideLine(waybillCar.getStartCity() + "-" + waybillCar.getEndCity());
 
                     // 获取车辆运输图片
                     getCarPhotoImg(carDetailVo, detailState, waybillCar);
@@ -173,11 +185,6 @@ public class TaskServiceImpl implements ITaskService {
         carDetailVo.setHistoryLoadPhotoImg(sb.toString());
     }
 
-    private void fillGuideLine(CarDetailVo carDetailVo,WaybillCar waybillCar) {
-        //boolean b = WaybillTypeEnum.PICK.code == taskDetailVo.getType() || WaybillTypeEnum.BACK.code == taskDetailVo.getType();
-        carDetailVo.setGuideLine(waybillCar.getStartCity() + "-" + waybillCar.getEndCity());
-
-    }
 
     private void fillCarPhotoImg(String detailState, WaybillCar waybillCar, StringBuilder sb) {
         if (FieldConstant.WAIT_TO_CAR.equals(detailState)
