@@ -124,7 +124,7 @@ public class TaskServiceImpl implements ITaskService {
             CarDetailVo carDetailVo = null;
             for (TaskCar taskCar : taskCarList) {
                 // 查询任务单车辆信息
-                //String detailState = dto.getDetailState();
+                String detailState = dto.getDetailState();
                 //WaybillCar waybillCar = getWaybillCar(detailState, taskCar);
 
                 dto.setWaybillCarId(taskCar.getWaybillCarId());
