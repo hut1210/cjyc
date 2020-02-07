@@ -111,11 +111,24 @@ public class TaskServiceImpl implements ITaskService {
         List<CarDetailVo> carDetailVoList = new ArrayList<>(10);
         BigDecimal freightFee = new BigDecimal(0);
         if (!CollectionUtils.isEmpty(taskCarList)) {
+            // 根据登录ID查询当前业务员所在业务中心ID
+            BizScope bizScope = csSysService.getBizScopeByLoginIdNew(dto.getLoginId(), true);
+
+            // 判断当前登录人是否有权限访问
+            if (BizScopeEnum.NONE.code == bizScope.getCode()) {
+                return BaseResultUtil.fail("您没有访问权限!");
+            }
+
+            dto.setStoreIds(bizScope.getStoreIds());
+
             CarDetailVo carDetailVo = null;
             for (TaskCar taskCar : taskCarList) {
                 // 查询任务单车辆信息
-                String detailState = dto.getDetailState();
-                WaybillCar waybillCar = getWaybillCar(detailState, taskCar);
+                //String detailState = dto.getDetailState();
+                //WaybillCar waybillCar = getWaybillCar(detailState, taskCar);
+
+                dto.setWaybillCarId(taskCar.getWaybillCarId());
+                WaybillCar waybillCar = waybillCarDao.selectWaybillCar(dto);
                 if (waybillCar != null) {
                     carDetailVo = new CarDetailVo();
                     BeanUtils.copyProperties(waybillCar,carDetailVo);

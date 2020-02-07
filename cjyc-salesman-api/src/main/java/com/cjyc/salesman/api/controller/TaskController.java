@@ -191,7 +191,7 @@ public class TaskController {
     }
 
     /**
-     * 功能描述: 查询提送车任务详情
+     * 功能描述: 查询提送车,提送车历史记录任务详情；查询出入库,出入库历史记录任务详情
      * @author liuxingxiang
      * @date 2019/12/9
      * @param dto
