@@ -23,6 +23,12 @@ public class CarrierDriverListDto extends BasePageDto {
     @ApiModelProperty("身份证号")
     private String driverIdCard;
 
+    @ApiModelProperty(value = "运单类型,提车运单:1 干线运单:2 送车运单:3")
+    private Integer waybillType;
+
+    @ApiModelProperty(value = "指导线路")
+    private String guideLine;
+
 
 
 }

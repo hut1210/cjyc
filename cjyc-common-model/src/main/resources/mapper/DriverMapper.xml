@@ -819,6 +819,12 @@
         <if test="driverIdCard != null and driverIdCard.trim() != ''">
             and dd.id_card = #{driverIdCard}
         </if>
+        <if test="waybillType != 2">
+            and surd.mode in (2,4,5,6,7,9)
+        </if>
+        <if test="waybillType == 2">
+            and surd.mode in (3,5,7,9)
+        </if>
         group by dd.phone
     </select>
 
