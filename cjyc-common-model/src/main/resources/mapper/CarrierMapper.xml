@@ -669,7 +669,7 @@
                 and  dccc.city_code = #{cityCode}
             </if>
             <if test="mode != null and mode.size() > 0">
-                and surd.mode in
+                and dc.mode in
                 <foreach collection="mode" item="item" index="index" open="(" close=")" separator=",">
                     #{item}
                 </foreach>
