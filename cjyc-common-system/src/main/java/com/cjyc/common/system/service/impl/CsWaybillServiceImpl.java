@@ -626,7 +626,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             waybill.setCreateUser(paramsDto.getLoginName());
             waybill.setCreateUserId(paramsDto.getLoginId());
             waybill.setFixedFreightFee(paramsDto.getFixedFreightFee());
-            if(!CollectionUtils.isEmpty(dtoList) && dtoList.size() == 1){
+            if(!CollectionUtils.isEmpty(dtoList) && dtoList.size() == 1 && StringUtils.isBlank(paramsDto.getGuideLine())){
                 waybill.setGuideLine(computeGuideLine(dtoList.get(0).getStartAreaCode(), dtoList.get(0).getEndAreaCode()));
             }
             //TODO 干线运单所属业务中心
@@ -768,7 +768,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             waybill.setFreightFee(MoneyUtil.convertYuanToFen(paramsDto.getFreightFee()));
             waybill.setFixedFreightFee(paramsDto.getFixedFreightFee());
             waybill.setRemark(paramsDto.getRemark());
-            if(!CollectionUtils.isEmpty(dtoList) && dtoList.size() == 1){
+            if(!CollectionUtils.isEmpty(dtoList) && dtoList.size() == 1 && StringUtils.isBlank(paramsDto.getGuideLine())){
                 waybill.setGuideLine(computeGuideLine(dtoList.get(0).getStartAreaCode(), dtoList.get(0).getEndAreaCode()));
             }
             waybillDao.updateByIdForNull(waybill);
