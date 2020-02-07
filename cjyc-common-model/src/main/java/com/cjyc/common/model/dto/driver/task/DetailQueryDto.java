@@ -38,4 +38,8 @@ public class DetailQueryDto implements Serializable {
     @Pattern(regexp = "(1|2|3|4|5|6|7)",message = "详情状态只能是1,2,3,4,5,6,7中的一位数")
     private String detailState;
 
+    @ApiModelProperty(value = "登录id")
+    //@NotNull(groups = {GetSalesmanWaybillDetail.class},message = "登录id不能为空")
+    private Long loginId;
+
 }

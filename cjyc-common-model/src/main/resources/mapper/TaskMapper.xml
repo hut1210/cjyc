@@ -372,9 +372,8 @@
             t.complete_time AS completeTime,
             t.state AS taskState,
             (case w.carrier_type when 2 then t.no else w.no end) AS waybillNo,
-            /*(case w.type when 1 then concat(car.start_city,'-',car.end_city)
-                         when 3 then concat(car.start_city,'-',car.end_city) else t.guide_line end) AS guideLine,*/
-        concat(car.start_city,'-',car.end_city) AS guideLine,
+            (case w.type when 1 then concat(car.start_city,'-',car.end_city)
+                         when 3 then concat(car.start_city,'-',car.end_city) else t.guide_line end) AS guideLine,
             w.type AS type,
             sum(car.freight_fee) AS freightFee
         FROM
@@ -462,9 +461,8 @@
             t.complete_time AS completeTime,
             t.state AS taskState,
             (case w.carrier_type when 2 then t.no else w.no end) AS waybillNo,
-            /*(case w.type when 1 then concat(car.start_city,'-',car.end_city)
-                         when 3 then concat(car.start_city,'-',car.end_city) else t.guide_line end) AS guideLine,*/
-        concat(car.start_city,'-',car.end_city) AS guideLine,
+            (case w.type when 1 then concat(car.start_city,'-',car.end_city)
+                         when 3 then concat(car.start_city,'-',car.end_city) else t.guide_line end) AS guideLine,
             w.type AS type,
             car.unload_time AS unloadTime,
             car.load_time AS loadTime,
