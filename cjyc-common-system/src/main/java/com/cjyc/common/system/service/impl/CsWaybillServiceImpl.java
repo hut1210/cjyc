@@ -200,7 +200,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 waybill.setCreateUserId(paramsDto.getLoginId());
                 waybill.setFixedFreightFee(false);
                 waybill.setInputStoreId(getLocalWaybillInputStoreId(waybill.getType(), order));
-                //waybill.setGuideLine();
+                waybill.setGuideLine(computeGuideLine(dto.getStartAreaCode(), dto.getEndAreaCode()));
                 waybillDao.insert(waybill);
 
                 /**2、添加运单车辆信息*/
@@ -241,6 +241,11 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         }
     }
 
+    private String computeGuideLine(String startAreaCode, String endAreaCode) {
+        FullCity startFullCity = csCityService.findFullCity(startAreaCode, CityLevelEnum.PROVINCE);
+        FullCity endFullCity = csCityService.findFullCity(endAreaCode, CityLevelEnum.PROVINCE);
+        return MessageFormat.format("{0}-{1}",startFullCity.getCity(), endFullCity.getCity());
+    }
 
     /**
      * 修改同城运单
@@ -305,7 +310,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             waybill.setFreightFee(getLocalWaybillFreightFee(waybill, orderCar));
             waybill.setRemark(paramsDto.getRemark());
             waybill.setFixedFreightFee(false);
-            //waybill.setGuideLine();
+            waybill.setGuideLine(computeGuideLine(dto.getStartAreaCode(), dto.getEndAreaCode()));
             waybillDao.updateByIdForNull(waybill);
             ////TODO TODO
             /**2、添加运单车辆信息*/
@@ -621,6 +626,9 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             waybill.setCreateUser(paramsDto.getLoginName());
             waybill.setCreateUserId(paramsDto.getLoginId());
             waybill.setFixedFreightFee(paramsDto.getFixedFreightFee());
+            if(!CollectionUtils.isEmpty(dtoList) && dtoList.size() == 1){
+                waybill.setGuideLine(computeGuideLine(dtoList.get(0).getStartAreaCode(), dtoList.get(0).getEndAreaCode()));
+            }
             //TODO 干线运单所属业务中心
             //waybill.setInputStoreId(paramsDto.);
             waybillDao.insert(waybill);
@@ -760,6 +768,9 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             waybill.setFreightFee(MoneyUtil.convertYuanToFen(paramsDto.getFreightFee()));
             waybill.setFixedFreightFee(paramsDto.getFixedFreightFee());
             waybill.setRemark(paramsDto.getRemark());
+            if(!CollectionUtils.isEmpty(dtoList) && dtoList.size() == 1){
+                waybill.setGuideLine(computeGuideLine(dtoList.get(0).getStartAreaCode(), dtoList.get(0).getEndAreaCode()));
+            }
             waybillDao.updateByIdForNull(waybill);
 
             /**2、运单中车辆循环*/
