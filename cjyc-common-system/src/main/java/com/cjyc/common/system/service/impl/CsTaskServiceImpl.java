@@ -457,6 +457,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 }
 
                 if(waybillCar.getStartStoreId() != null && waybillCar.getStartStoreId() > 0){
+
                     CarStorageLog carStorageLog = CarStorageLog.builder()
                             .storeId(waybillCar.getStartStoreId())
                             .type(CarStorageTypeEnum.OUT.code)
@@ -609,6 +610,8 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 noc.setNowAreaCode(waybillCar.getEndAreaCode());
                 noc.setNowUpdateTime(System.currentTimeMillis());
                 orderCarDao.updateById(noc);
+
+
                 CarStorageLog carStorageLog = CarStorageLog.builder()
                         .storeId(waybillCar.getEndStoreId())
                         .type(CarStorageTypeEnum.IN.code)
@@ -646,6 +649,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
         taskDao.updateUnloadNum(task.getId(), count);
         //更新实时运力信息
         vehicleRunningDao.updateOccupiedNum(task.getId());
+
         //TODO 发送收车推送信息
         resultReasonVo.setSuccessList(successSet);
         resultReasonVo.setFailList(failCarNoSet);
@@ -793,6 +797,9 @@ public class CsTaskServiceImpl implements ICsTaskService {
         //验证任务和运单是否完成
         validateAndFinishTaskWaybill(task);
 
+        //更新实时运力信息
+        vehicleRunningDao.updateOccupiedNum(task.getId());
+
         //写入入库日志
         csStorageLogService.asyncSaveBatch(storageLogSet);
 
@@ -927,6 +934,10 @@ public class CsTaskServiceImpl implements ICsTaskService {
         if (!CollectionUtils.isEmpty(orderIdSet)) {
             orderDao.updateStateForLoad(OrderStateEnum.TRANSPORTING.code, orderIdSet);
         }
+
+        //更新实时运力信息
+        vehicleRunningDao.updateOccupiedNum(task.getId());
+
         resultReasonVo.setFailList(failCarNoSet);
         resultReasonVo.setSuccessList(successSet);
         if (CollectionUtils.isEmpty(successSet)) {
