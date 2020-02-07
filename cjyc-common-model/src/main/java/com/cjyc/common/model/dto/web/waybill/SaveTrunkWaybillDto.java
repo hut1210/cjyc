@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
@@ -47,5 +48,6 @@ public class SaveTrunkWaybillDto {
 
     @NotEmpty(message = "车辆列表不能为空")
     @ApiModelProperty(value = "调度车辆列表", required = true)
+    @Valid
     private List<SaveTrunkWaybillCarDto> list;
 }

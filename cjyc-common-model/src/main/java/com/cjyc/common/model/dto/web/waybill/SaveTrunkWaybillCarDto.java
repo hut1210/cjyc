@@ -26,13 +26,10 @@ import java.math.BigDecimal;
 public class SaveTrunkWaybillCarDto implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @NotNull(message = "id不能为空")
     @ApiModelProperty(value = "ID")
     private Long id;
-    @NotNull(message = "waybillId不能为空")
     @ApiModelProperty(value = "运单ID")
     private Long waybillId;
-    @NotNull(message = "waybillNo不能为空")
     @ApiModelProperty(value = "运单编号")
     private String waybillNo;
     @NotNull(message = "orderCarId不能为空")
@@ -44,19 +41,14 @@ public class SaveTrunkWaybillCarDto implements Serializable {
     @NotNull(message = "freightFee不能为空")
     @ApiModelProperty(value = "运费")
     private BigDecimal freightFee;
-    @NotBlank(message = "startProvince不能为空")
     @ApiModelProperty(value = "省")
     private String startProvince;
-    @NotBlank(message = "startProvinceCode不能为空")
     @ApiModelProperty(value = "省编码")
     private String startProvinceCode;
-    @NotBlank(message = "startCity不能为空")
     @ApiModelProperty(value = "市")
     private String startCity;
-    @NotBlank(message = "startCityCode不能为空")
     @ApiModelProperty(value = "市编码")
     private String startCityCode;
-    @NotBlank(message = "startArea不能为空")
     @ApiModelProperty(value = "区")
     private String startArea;
     @NotBlank(message = "startAreaCode不能为空")
@@ -72,19 +64,14 @@ public class SaveTrunkWaybillCarDto implements Serializable {
     @ApiModelProperty(value = "出发地业务中心ID")
     private Long startStoreId;
 
-    @NotBlank(message = "endProvince不能为空")
     @ApiModelProperty(value = "省")
     private String endProvince;
-    @NotBlank(message = "endProvinceCode不能为空")
     @ApiModelProperty(value = "省编码")
     private String endProvinceCode;
-    @NotBlank(message = "endCity不能为空")
     @ApiModelProperty(value = "市")
     private String endCity;
-    @NotBlank(message = "endCityCode不能为空")
     @ApiModelProperty(value = "市编码")
     private String endCityCode;
-    @NotBlank(message = "endArea不能为空")
     @ApiModelProperty(value = "区")
     private String endArea;
     @NotBlank(message = "endAreaCode不能为空")
