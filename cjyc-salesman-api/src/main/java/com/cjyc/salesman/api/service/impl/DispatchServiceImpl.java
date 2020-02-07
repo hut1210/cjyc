@@ -25,6 +25,7 @@ import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.salesman.api.service.IDispatchService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.common.collect.Lists;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -157,7 +158,7 @@ public class DispatchServiceImpl implements IDispatchService {
         if(!CollectionUtils.isEmpty(list)){
             for (WaitDispatchCarListVo vo : list) {
                 List<String> nodes = orderCarDao.findTrunkNodes(vo.getOrderCarId());
-                vo.setTrunkNodes(nodes);
+                vo.setTrunkNodes(nodes == null ? new ArrayList<>() : nodes);
             }
         }
 
@@ -217,8 +218,8 @@ public class DispatchServiceImpl implements IDispatchService {
 
                 // 查询提车，送车方式
                 Order order = orderDao.selectById(orderCar.getOrderId());
-                carDetailVo.setPickType(order.getPickType());
-                carDetailVo.setBackType(order.getBackType());
+                carDetailVo.setPickType(orderCar.getPickType());
+                carDetailVo.setBackType(orderCar.getBackType());
                 carDetailVo.setPayType(order.getPayType());
 
 
