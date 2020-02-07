@@ -158,7 +158,7 @@ public class DispatchServiceImpl implements IDispatchService {
         if(!CollectionUtils.isEmpty(list)){
             for (WaitDispatchCarListVo vo : list) {
                 List<String> nodes = orderCarDao.findTrunkNodes(vo.getOrderCarId());
-                vo.setTrunkNodes(nodes == null ? new ArrayList<>() : nodes);
+                vo.setTrunkNodes(nodes == null ? Lists.newArrayList() : nodes);
             }
         }
 

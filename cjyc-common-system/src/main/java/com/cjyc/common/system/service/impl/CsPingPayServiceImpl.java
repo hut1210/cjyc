@@ -2,6 +2,7 @@ package com.cjyc.common.system.service.impl;
 
 import com.Pingxx.model.OrderModel;
 import com.Pingxx.model.PingxxMetaData;
+import com.cjkj.log.monitor.LogUtil;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.customer.pingxx.PrePayDto;
 import com.cjyc.common.model.dto.customer.pingxx.SweepCodeDto;
@@ -352,16 +353,18 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
 
     @Override
     public ResultVo allinpayToCarrier(Long waybillId) throws AuthenticationException, InvalidRequestException, APIConnectionException, APIException, ChannelException, RateLimitException, FileNotFoundException {
-
         Waybill waybill = waybillDao.selectById(waybillId);
         try{
-            if(waybill!=null){
+            if(waybill != null){
                 Long carrierId = waybill.getCarrierId();
                 BaseCarrierVo baseCarrierVo = carrierDao.showCarrierById(carrierId);
                 Transfer transfer = allinpayTransferDriverCreate(baseCarrierVo,waybill);
+                log.debug("【通联代付支付运费】运单{}，支付运费，账单{}", waybill.getNo(), transfer);
                 cStransactionService.saveTransactions(transfer, "0");
             }
         }catch (Exception e){
+            log.error("【通联代付支付运费】运单{}，支付运费", waybill.getNo());
+            log.error(e.getMessage(), e);
             return BaseResultUtil.fail("通联代付失败");
         }
 
@@ -372,12 +375,14 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
     public ResultVo allinpayToCooperator(Long orderId) throws FileNotFoundException, RateLimitException, APIException, ChannelException, InvalidRequestException, APIConnectionException, AuthenticationException {
         log.info("完成订单（ID：{}），支付合伙人服务费", orderId);
         //支付校验
-
+        Order order = null;
         try{
-            Order order = orderDao.selectById(orderId);
+            order = orderDao.selectById(orderId);
 
             if(order!=null){
+                log.debug("【通联代付支付服务费】订单{}，准备支付服务费", order.getNo());
                 TradeBill tradeBill = cStransactionService.getTradeBillByOrderNoAndType(order.getNo(),ChargeTypeEnum.UNION_PAY_PARTNER.getCode());
+                log.debug("【通联代付支付服务费】订单{}，支付服务费，账单内容{}", order.getNo(), tradeBill);
                 if(tradeBill != null){
                     throw new CommonException("合伙人服务费已支付完成","1");
                 }
@@ -406,9 +411,11 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                 Transfer transfer = allinpayToCooperatorCreate(showPartnerVo,payableFee,order.getNo());
                 cStransactionService.saveTransactions(transfer, "0");
             }else{
-                return BaseResultUtil.fail("合伙人通联代付失败");
+                return BaseResultUtil.fail("合伙人通联代付失败,订单{}不存在", orderId);
             }
         }catch (Exception e){
+            log.error("【通联代付支付服务费】订单{}，支付服务费失败", order.getNo());
+            log.error(e.getMessage(), e);
             return BaseResultUtil.fail("合伙人通联代付异常");
         }
 
