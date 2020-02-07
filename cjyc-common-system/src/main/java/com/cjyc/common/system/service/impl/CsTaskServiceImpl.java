@@ -321,6 +321,10 @@ public class CsTaskServiceImpl implements ICsTaskService {
             task.setCreateTime(System.currentTimeMillis());
             task.setCreateUser(paramsDto.getLoginName());
             task.setCreateUserId(paramsDto.getLoginId());
+            if(!CollectionUtils.isEmpty(list)){
+                task.setGuideLine(csWaybillService.computeGuideLine(list.get(0).getStartAreaCode(), list.get(0).getEndAreaCode(), paramsDto.getGuideLine(), list.size()));
+            }
+
             taskDao.insert(task);
 
             for (WaybillCar waybillCar : list) {

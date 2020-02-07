@@ -36,6 +36,8 @@ public interface ICsWaybillService {
      */
     ResultVo<ListVo<BaseTipVo>> cancel(CancelWaybillDto paramsDto);
 
+    String computeGuideLine(String startAreaCode, String endAreaCode, String defaultGuideLine, Integer carNum);
+
     /**
      * 修改同城运单
      * @author JPG

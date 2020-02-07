@@ -200,7 +200,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 waybill.setCreateUserId(paramsDto.getLoginId());
                 waybill.setFixedFreightFee(false);
                 waybill.setInputStoreId(getLocalWaybillInputStoreId(waybill.getType(), order));
-                waybill.setGuideLine(computeGuideLine(dto.getStartAreaCode(), dto.getEndAreaCode()));
+                waybill.setGuideLine(computeGuideLine(dto.getStartAreaCode(), dto.getEndAreaCode(), null, 1));
                 waybillDao.insert(waybill);
 
                 /**2、添加运单车辆信息*/
@@ -241,10 +241,22 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         }
     }
 
-    private String computeGuideLine(String startAreaCode, String endAreaCode) {
-        FullCity startFullCity = csCityService.findFullCity(startAreaCode, CityLevelEnum.PROVINCE);
-        FullCity endFullCity = csCityService.findFullCity(endAreaCode, CityLevelEnum.PROVINCE);
-        return MessageFormat.format("{0}-{1}",startFullCity.getCity(), endFullCity.getCity());
+    @Override
+    public String computeGuideLine(String startAreaCode, String endAreaCode, String defaultGuideLine, Integer carNum) {
+        if(carNum == null || carNum <= 0){
+            return null;
+        }else {
+            if(StringUtils.isNotBlank(defaultGuideLine) && !"-".equals(defaultGuideLine.trim()) && defaultGuideLine.split("-").length >= 2){
+                return defaultGuideLine;
+            }
+            if(StringUtils.isBlank(startAreaCode) || StringUtils.isBlank(endAreaCode)){
+                return null;
+            }
+            FullCity startFullCity = csCityService.findFullCity(startAreaCode, CityLevelEnum.PROVINCE);
+            FullCity endFullCity = csCityService.findFullCity(endAreaCode, CityLevelEnum.PROVINCE);
+            return MessageFormat.format("{0}-{1}",startFullCity.getCity(), endFullCity.getCity());
+        }
+
     }
 
     /**
@@ -310,7 +322,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             waybill.setFreightFee(getLocalWaybillFreightFee(waybill, orderCar));
             waybill.setRemark(paramsDto.getRemark());
             waybill.setFixedFreightFee(false);
-            waybill.setGuideLine(computeGuideLine(dto.getStartAreaCode(), dto.getEndAreaCode()));
+            waybill.setGuideLine(computeGuideLine(dto.getStartAreaCode(), dto.getEndAreaCode(), null, 1));
             waybillDao.updateByIdForNull(waybill);
             ////TODO TODO
             /**2、添加运单车辆信息*/
@@ -626,8 +638,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             waybill.setCreateUser(paramsDto.getLoginName());
             waybill.setCreateUserId(paramsDto.getLoginId());
             waybill.setFixedFreightFee(paramsDto.getFixedFreightFee());
-            if(!CollectionUtils.isEmpty(dtoList) && dtoList.size() == 1 && StringUtils.isBlank(paramsDto.getGuideLine())){
-                waybill.setGuideLine(computeGuideLine(dtoList.get(0).getStartAreaCode(), dtoList.get(0).getEndAreaCode()));
+            if(!CollectionUtils.isEmpty(dtoList)){
+                waybill.setGuideLine(computeGuideLine(dtoList.get(0).getStartAreaCode(), dtoList.get(0).getEndAreaCode(), paramsDto.getGuideLine(), dtoList.size()));
             }
             //TODO 干线运单所属业务中心
             //waybill.setInputStoreId(paramsDto.);
@@ -768,8 +780,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             waybill.setFreightFee(MoneyUtil.convertYuanToFen(paramsDto.getFreightFee()));
             waybill.setFixedFreightFee(paramsDto.getFixedFreightFee());
             waybill.setRemark(paramsDto.getRemark());
-            if(!CollectionUtils.isEmpty(dtoList) && dtoList.size() == 1 && StringUtils.isBlank(paramsDto.getGuideLine())){
-                waybill.setGuideLine(computeGuideLine(dtoList.get(0).getStartAreaCode(), dtoList.get(0).getEndAreaCode()));
+            if(!CollectionUtils.isEmpty(dtoList)){
+                waybill.setGuideLine(computeGuideLine(dtoList.get(0).getStartAreaCode(), dtoList.get(0).getEndAreaCode(), paramsDto.getGuideLine(), dtoList.size()));
             }
             waybillDao.updateByIdForNull(waybill);
 
