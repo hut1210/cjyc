@@ -4,7 +4,7 @@ import com.Pingxx.model.MetaDataEntiy;
 import com.Pingxx.model.PingxxMetaData;
 import com.cjyc.common.model.enums.log.OrderCarLogEnum;
 import com.cjyc.common.model.keys.RedisKeys;
-import com.cjyc.common.system.service.ICsOrderCarLogService;
+import com.cjyc.common.system.service.*;
 import com.cjyc.common.system.util.MiaoxinSmsUtil;
 import com.pingplusplus.model.*;
 import com.cjyc.common.model.dao.*;
@@ -20,9 +20,6 @@ import com.cjyc.common.model.enums.waybill.WaybillStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.BeanMapUtil;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.system.service.ICsSendNoService;
-import com.cjyc.common.system.service.ICsTaskService;
-import com.cjyc.common.system.service.ICsUserService;
 import com.cjyc.common.system.util.RedisUtils;
 import com.cjyc.customer.api.service.ITransactionService;
 import com.pingplusplus.model.Order;
@@ -88,6 +85,9 @@ public class TransactionServiceImpl implements ITransactionService {
 
     @Resource
     private IOrderCarDao orderCarDao;
+
+    @Resource
+    private ICsPingPayService csPingPayService;
 
     @Override
     public int save(Object obj) {
@@ -196,6 +196,11 @@ public class TransactionServiceImpl implements ITransactionService {
                             log.debug("更新运单状态");
                             //更新运单状态
                             tradeBillDao.updateForReceipt(task.getWaybillId(), System.currentTimeMillis());
+                            try{
+                                csPingPayService.allinpayToCarrier(task.getWaybillId());
+                            }catch (Exception e){
+                                log.error("通联代付给下游付款异常 "+e.getMessage(),e);
+                            }
 
                             //更新订单状态
                             List<com.cjyc.common.model.entity.Order> list = orderDao.findListByCarNos(orderCarNosList);
