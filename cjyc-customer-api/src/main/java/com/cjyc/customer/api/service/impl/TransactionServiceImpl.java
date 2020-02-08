@@ -184,12 +184,16 @@ public class TransactionServiceImpl implements ITransactionService {
                     }
                     //验证任务是否完成
                     int row = taskCarDao.countUnFinishByTaskId(taskId);
+                    log.debug("验证任务是否完成 taskId = {},row = {}",taskId,row);
                     if (row == 0) {
+
                         //更新任务状态
                         taskDao.updateStateById(task.getId(), TaskStateEnum.FINISHED.code);
                         //验证运单是否完成
                         int n = waybillCarDao.countUnFinishByWaybillId(task.getWaybillId());
+                        log.debug("验证运单是否完成 waybillId = {},n = {}",task.getWaybillId(),n);
                         if (n == 0) {
+                            log.debug("更新运单状态");
                             //更新运单状态
                             tradeBillDao.updateForReceipt(task.getWaybillId(), System.currentTimeMillis());
 
