@@ -363,7 +363,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                 cStransactionService.saveTransactions(transfer, "0");
             }
         }catch (Exception e){
-            log.error("【通联代付支付运费】运单{}，支付运费", waybill.getNo());
+            log.error("【通联代付支付运费】运单{}，支付运费支付失败", waybill.getNo());
             log.error(e.getMessage(), e);
             return BaseResultUtil.fail("通联代付失败");
         }
