@@ -101,6 +101,13 @@ public interface ICsDriverService {
     /************************************韵车集成改版 st***********************************/
 
     /**
+     * 调度社会司机(业务员端)
+     * @param dto
+     * @return
+     */
+    ResultVo<PageVo<DispatchDriverVo>> dispatchAppDriverNew(DispatchDriverDto dto);
+
+    /**
      * 调度社会司机
      * @param dto
      * @return

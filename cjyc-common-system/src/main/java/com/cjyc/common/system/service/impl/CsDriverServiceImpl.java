@@ -497,6 +497,15 @@ public class CsDriverServiceImpl implements ICsDriverService {
     /************************************韵车集成改版 st***********************************/
 
     @Override
+    public ResultVo<PageVo<DispatchDriverVo>> dispatchAppDriverNew(DispatchDriverDto dto){
+        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
+        dto.setKeyword(dto.getRealName());
+        List<DispatchDriverVo> dispatchDriverVos = driverDao.findAppDispatchDriver(dto);
+        PageInfo<DispatchDriverVo> pageInfo = new PageInfo<>(dispatchDriverVos);
+        return BaseResultUtil.success(pageInfo);
+    }
+
+    @Override
     public ResultVo<PageVo<DispatchDriverVo>> dispatchDriverNew(DispatchDriverDto dto){
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<DispatchDriverVo> dispatchDriverVos = driverDao.findDispatchDriver(dto);

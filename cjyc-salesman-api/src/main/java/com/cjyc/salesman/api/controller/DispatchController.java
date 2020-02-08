@@ -132,7 +132,7 @@ public class DispatchController {
     @ApiOperation(value = "调度中心中干线调度承运商信息")
     @PostMapping(value = "/dispatchCarrier")
     public ResultVo<PageVo<DispatchCarrierVo>> dispatchCarrier(@RequestBody DispatchCarrierDto dto){
-        return csCarrierService.dispatchCarrier(dto);
+        return csCarrierService.dispatchAppCarrier(dto);
     }
 
     @ApiOperation(value = "干线调度个人(承运商)司机信息")
@@ -167,7 +167,7 @@ public class DispatchController {
     //@PostMapping(value = "/dispatchDriverNew")
     @PostMapping(value = "/dispatchDriver")
     public ResultVo<PageVo<DispatchDriverVo>> dispatchDriverNew(@RequestBody DispatchDriverDto dto){
-        return csDriverService.dispatchDriverNew(dto);
+        return csDriverService.dispatchAppDriverNew(dto);
     }
 
     @ApiOperation(value = "调度中心中提车/送车调度中代驾和拖车列表_改版")

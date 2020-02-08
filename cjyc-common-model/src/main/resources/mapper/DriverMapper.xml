@@ -768,10 +768,47 @@
                 dd.real_name like CONCAT('%',#{realName},'%')
             </if>
             <if test="plateNo != null and plateNo.trim() != ''">
-                or dvr.plate_no like CONCAT('%',#{plateNo},'%')
+                and dvr.plate_no like CONCAT('%',#{plateNo},'%')
             </if>
             <if test="phone != null and phone.trim() != ''">
-                or dd.phone like CONCAT('%',#{phone},'%')
+                and dd.phone like CONCAT('%',#{phone},'%')
+            </if>
+            <if test="idCard != null and idCard.trim() != ''">
+                and dd.id_card = #{idCard}
+            </if>
+            AND dc.state = 2
+            AND dc.business_state = 0
+            AND surd.state = 2
+            AND dc.type = 1
+            AND dc.mode = 3
+            group by dd.phone
+        </where>
+    </select>
+
+    <!--查询符合条件的调度个人司机(业务员端)-->
+    <select id="findAppDispatchDriver" resultType="com.cjyc.common.model.vo.web.driver.DispatchDriverVo"
+            parameterType="com.cjyc.common.model.dto.web.driver.DispatchDriverDto">
+        SELECT
+            dc.id AS carrierId,
+            dc.`name` AS `name`,
+            dd.id AS driverId,
+            dd.real_name AS driverName,
+            dd.phone AS driverPhone,
+            dvr.plate_no AS vehiclePlateNo,
+            dd.id_card AS idCard,
+            dvr.carry_car_num AS carryCarNum,
+            dvr.occupied_car_num AS occupiedCarNum,
+            dd.business_state AS businessState,
+            surd.MODE AS MODE
+        FROM
+          d_carrier dc
+        LEFT JOIN ( SELECT * FROM s_user_role_dept WHERE dept_type = 2 AND user_type = 2 ) surd ON surd.dept_id = dc.id
+        LEFT JOIN d_driver dd ON surd.user_id = dd.id
+        LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
+        <where>
+            <if test="keyword != null and keyword.trim() !=''">
+               (dd.real_name like concat('%',#{keyword},'%') or
+                dd.phone like concat('%',#{keyword},'%'))
             </if>
             <if test="idCard != null and idCard.trim() != ''">
                 and dd.id_card = #{idCard}

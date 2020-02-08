@@ -228,6 +228,13 @@ public interface IDriverDao extends BaseMapper<Driver> {
     List<DispatchDriverVo> findDispatchDriver(DispatchDriverDto dto);
 
     /**
+     * 查询符合条件的调度个人司机(业务员端)
+     * @param dto
+     * @return
+     */
+    List<DispatchDriverVo> findAppDispatchDriver(DispatchDriverDto dto);
+
+    /**
      * 查询承运商下属
      * @param dto
      * @return
