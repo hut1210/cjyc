@@ -22,4 +22,12 @@ public interface ICustomerLineDao extends BaseMapper<CustomerLine>{
      * @return
      */
     List<CustomerLineVo> findCustomerLine(@Param("customerId") Long customerId);
+
+    /**
+     * 根据客户id和登录id获取历史线路
+     * @param loginId
+     * @param customerId
+     * @return
+     */
+    List<CustomerLineVo> findAppCustomerLine(@Param("loginId") Long loginId,@Param("customerId") Long customerId);
 }

@@ -12,4 +12,7 @@ public class CommonDto extends BasePageDto implements Serializable {
     @NotNull(message = "登录用户id不能为空")
     private Long loginId;
 
+    @ApiModelProperty(value = "客户手机号")
+    private String customerPhone;
+
 }

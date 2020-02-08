@@ -82,7 +82,7 @@ public class BasicController {
     @ApiOperation(value = "查看用户历史线路")
     @PostMapping(value = "/findLine")
     public ResultVo<PageVo<CustomerLineVo>> queryLinePage(@Validated @RequestBody CommonDto dto){
-        return csCustomerLineService.queryLinePage(dto);
+        return csCustomerLineService.findCustomerLine(dto);
     }
 
     @ApiOperation(value = "模糊查询大客户信息")
