@@ -208,4 +208,13 @@ public class CsCarrierServiceImpl implements ICsCarrierService {
         return BaseResultUtil.success(pageInfo);
     }
 
+    @Override
+    public ResultVo<PageVo<DispatchCarrierVo>> dispatchAppCarrier(DispatchCarrierDto dto) {
+        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
+        dto.setKeyword(dto.getLinkmanPhone());
+        List<DispatchCarrierVo> carrierVos = carrierDao.findAppDispatchCarrier(dto);
+        PageInfo<DispatchCarrierVo> pageInfo = new PageInfo<>(carrierVos);
+        return BaseResultUtil.success(pageInfo);
+    }
+
 }

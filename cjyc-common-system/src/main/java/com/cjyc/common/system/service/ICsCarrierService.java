@@ -57,4 +57,12 @@ public interface ICsCarrierService {
      * @return
      */
     ResultVo<PageVo<TrailCarrierVo>> trailDriverNew(TrailCarrierDto dto);
+
+
+    /**
+     * 调度承运商信息(业务员端)
+     * @param dto
+     * @return
+     */
+    ResultVo<PageVo<DispatchCarrierVo>> dispatchAppCarrier(DispatchCarrierDto dto);
 }

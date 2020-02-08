@@ -24,4 +24,7 @@ public class DispatchDriverDto extends BasePageDto {
 
     @ApiModelProperty("身份证号")
     private String idCard;
+
+    @ApiModelProperty(value = "关键字")
+    private String keyword;
 }

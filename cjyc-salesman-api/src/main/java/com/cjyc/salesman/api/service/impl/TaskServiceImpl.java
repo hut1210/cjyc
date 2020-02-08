@@ -128,6 +128,7 @@ public class TaskServiceImpl implements ITaskService {
                 //WaybillCar waybillCar = getWaybillCar(detailState, taskCar);
 
                 dto.setWaybillCarId(taskCar.getWaybillCarId());
+                System.out.println("====>查询运单车辆参数："+dto.toString());
                 WaybillCar waybillCar = waybillCarDao.selectWaybillCar(dto);
                 if (waybillCar != null) {
                     carDetailVo = new CarDetailVo();

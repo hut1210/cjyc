@@ -52,6 +52,14 @@ public interface ICarrierDao extends BaseMapper<Carrier> {
      */
     List<DispatchCarrierVo> findDispatchCarrier(DispatchCarrierDto dto);
 
+
+    /**
+     * 调度出符合条件的承运商(业务员端)
+     * @param dto
+     * @return
+     */
+    List<DispatchCarrierVo> findAppDispatchCarrier(DispatchCarrierDto dto);
+
     /**
      * 调度中心中提车干线调度中代驾和拖车列表
      * @param dto

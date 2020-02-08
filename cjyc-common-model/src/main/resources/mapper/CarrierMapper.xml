@@ -178,10 +178,45 @@
                 dc.name like CONCAT('%',#{name},'%')
             </if>
             <if test="linkman != null and linkman.trim() != ''">
-                or dc.linkman like CONCAT('%',#{linkman},'%')
+                and dc.linkman like CONCAT('%',#{linkman},'%')
             </if>
             <if test="linkmanPhone != null and linkmanPhone.trim() != ''">
-                or dc.linkman_phone like CONCAT('%',#{linkmanPhone},'%')
+                and dc.linkman_phone like CONCAT('%',#{linkmanPhone},'%')
+            </if>
+            <if test="settleType != null">
+                and  dc.settle_type = #{settleType}
+            </if>
+            and dc.type = 2
+            and dc.state = 2
+            and dc.business_state = 0
+            and dc.mode in (3,5,7,9)
+            group by dc.id
+            order by dc.create_time desc, dc.check_time desc
+        </where>
+    </select>
+
+
+    <!-- 调度出符合条件的承运商(业务员端) -->
+    <select id="findAppDispatchCarrier" resultType="com.cjyc.common.model.vo.web.carrier.DispatchCarrierVo"
+            parameterType="com.cjyc.common.model.dto.web.carrier.DispatchCarrierDto">
+        SELECT
+            dc.id AS carrierId,
+            dc.NAME AS NAME,
+            dc.linkman AS linkman,
+            dc.linkman_phone AS linkmanPhone,
+            dc.legal_name AS legalName,
+            dc.legal_id_card AS legalIdCard,
+            dc.settle_type AS settleType,
+            dc.settle_period AS settlePeriod,
+            dc.MODE AS MODE,
+            dc.is_invoice AS isInvoice
+        FROM
+          d_carrier dc
+        <where>
+            <if test="keyword != null and keyword.trim() !=''">
+               (dc.name like concat('%',#{keyword},'%') or
+                dc.linkman like concat('%',#{keyword},'%') or
+                dc.linkman_phone like concat('%',#{keyword},'%'))
             </if>
             <if test="settleType != null">
                 and  dc.settle_type = #{settleType}
