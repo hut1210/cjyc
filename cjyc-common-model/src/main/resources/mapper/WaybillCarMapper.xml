@@ -1788,7 +1788,7 @@
             <if test="detailState == 1">
                 and state in(5,15)
             </if>
-            <if test="storeIds != null">
+            <if test="storeIds != null and detailState == 1">
                 and (start_belong_store_id in <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
                                                 #{item}
                                             </foreach>
@@ -1798,7 +1798,7 @@
             <if test="detailState == 2">
                 and state in(45,90)
             </if>
-            <if test="storeIds != null">
+            <if test="storeIds != null and detailState == 2">
                 and (end_belong_store_id in <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
                                             #{item}
                                         </foreach>
@@ -1808,7 +1808,7 @@
             <if test="detailState == 3 or detailState == 5">
                 and state =100
             </if>
-            <if test="storeIds != null">
+            <if test="storeIds != null and (detailState == 3 or detailState == 5)">
                 and (end_belong_store_id in <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
                                                 #{item}
                                             </foreach>
@@ -1818,7 +1818,7 @@
             <if test="detailState == 4">
                 and state =90
             </if>
-            <if test="storeIds != null">
+            <if test="storeIds != null and detailState == 4">
                 and (end_belong_store_id in <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
                                             #{item}
                                         </foreach>
@@ -1828,7 +1828,7 @@
             <if test="detailState == 6">
                 and state =15
             </if>
-            <if test="storeIds != null">
+            <if test="storeIds != null and detailState == 6">
                 and (start_belong_store_id in <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
                                                 #{item}
                                             </foreach>
@@ -1838,7 +1838,7 @@
             <if test="detailState == 7">
                 and state > 15
             </if>
-            <if test="storeIds != null">
+            <if test="storeIds != null detailState == 7">
                 and (start_belong_store_id in <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
                                                 #{item}
                                             </foreach>
