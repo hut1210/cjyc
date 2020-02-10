@@ -2,6 +2,7 @@ package com.cjyc.customer.api.service.impl;
 
 import com.Pingxx.model.MetaDataEntiy;
 import com.Pingxx.model.PingxxMetaData;
+import com.cjkj.common.utils.DateUtil;
 import com.cjyc.common.model.enums.log.OrderCarLogEnum;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.system.service.*;
@@ -34,6 +35,7 @@ import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -299,7 +301,7 @@ public class TransactionServiceImpl implements ITransactionService {
 
             String no = tradeBillDao.getTradeBillByPingPayId(transfer.getId());
             try{
-                tradeBillDao.updateWayBillPayState(waybillId,no,System.currentTimeMillis());
+                tradeBillDao.updateWayBillPayState(waybillId,no, DateUtil.format(new Date()));
             }catch (Exception e){
                 log.error("回调给承运商付款更新运单支付状态失败"+e.getMessage(),e);
             }
