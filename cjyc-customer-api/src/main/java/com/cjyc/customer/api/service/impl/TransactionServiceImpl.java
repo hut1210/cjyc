@@ -293,14 +293,15 @@ public class TransactionServiceImpl implements ITransactionService {
         String chargeType = pingxxMetaData.getChargeType();
         if(chargeType.equals(String.valueOf(ChargeTypeEnum.UNION_PAY.getCode()))){
 
-            log.info("给承运商付款");
+            log.info("回调给承运商付款");
             //给承运商付款
             Long waybillId = Long.valueOf(pingxxMetaData.getWaybillId());
 
+            String no = tradeBillDao.getTradeBillByPingPayId(transfer.getId());
             try{
-                tradeBillDao.updateWayBillPayState(waybillId,transfer.getId());
+                tradeBillDao.updateWayBillPayState(waybillId,no,System.currentTimeMillis());
             }catch (Exception e){
-                log.error("给承运商付款更新运单支付状态失败"+e.getMessage(),e);
+                log.error("回调给承运商付款更新运单支付状态失败"+e.getMessage(),e);
             }
 
         }
@@ -308,11 +309,11 @@ public class TransactionServiceImpl implements ITransactionService {
             String orderId = pingxxMetaData.getOrderId();
             com.cjyc.common.model.entity.Order order = orderDao.selectById(orderId);
             if(order!=null){
-                log.info("给合伙人付款");
+                log.info("回调给合伙人付款");
                 try {
                     csPingPayService.allinpayToCooperator(order.getId());
                 } catch (Exception e) {
-                    log.error("支付合伙人{}（ID{}）服务费失败", order.getCustomerName(), order.getCustomerId());
+                    log.error("回调支付合伙人{}（ID{}）服务费失败", order.getCustomerName(), order.getCustomerId());
                     log.error(e.getMessage(), e);
                 }
             }
