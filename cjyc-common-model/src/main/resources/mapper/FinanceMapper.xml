@@ -32,7 +32,7 @@
                 and woc.no like concat('%',#{no},'%')
             </if>
             <if test="vin != null and vin.trim() != ''">
-                and  woc.vin = #{vin}
+                and  woc.vin like concat('%',#{vin},'%')
             </if>
             <if test="orderNo != null and orderNo.trim() != ''">
                 and  woc.order_no like concat('%',#{orderNo},'%')
@@ -45,22 +45,22 @@
             </if>
 
             <if test="startProvinceCode != null and startProvinceCode.trim() != ''">
-                and wo.start_province = #{startProvinceCode}
+                and wo.start_province_code = #{startProvinceCode}
             </if>
             <if test="startCityCode != null and startCityCode.trim() != ''">
-                and wo.start_city = #{startCityCode}
+                and wo.start_city_code = #{startCityCode}
             </if>
             <if test="startAreaCode != null and startAreaCode.trim() != ''">
-                and wo.start_area = #{startAreaCode}
+                and wo.start_area_code = #{startAreaCode}
             </if>
             <if test="endProvinceCode != null and endProvinceCode.trim() != ''">
-                and wo.end_province = #{endProvinceCode}
+                and wo.end_province_code = #{endProvinceCode}
             </if>
             <if test="endCityCode != null and endCityCode.trim() != ''">
-                and wo.end_city = #{endCityCode}
+                and wo.end_city_code = #{endCityCode}
             </if>
             <if test="endAreaCode != null and endAreaCode.trim() != ''">
-                and wo.end_area = #{endAreaCode}
+                and wo.end_area_code = #{endAreaCode}
             </if>
             <if test="area != null and area.trim() != ''">
                 and zcity.code = #{area}
@@ -156,22 +156,22 @@
         </if>
 
         <if test="startProvinceCode != null and startProvinceCode.trim() != ''">
-            and wo.start_province = #{startProvinceCode}
+            and wo.start_province_code = #{startProvinceCode}
         </if>
         <if test="startCityCode != null and startCityCode.trim() != ''">
-            and wo.start_city = #{startCityCode}
+            and wo.start_city_code = #{startCityCode}
         </if>
         <if test="startAreaCode != null and startAreaCode.trim() != ''">
-            and wo.start_area = #{startAreaCode}
+            and wo.start_area_code = #{startAreaCode}
         </if>
         <if test="endProvinceCode != null and endProvinceCode.trim() != ''">
-            and wo.end_province = #{endProvinceCode}
+            and wo.end_province_code = #{endProvinceCode}
         </if>
         <if test="endCityCode != null and endCityCode.trim() != ''">
-            and wo.end_city = #{endCityCode}
+            and wo.end_city_code = #{endCityCode}
         </if>
         <if test="endAreaCode != null and endAreaCode.trim() != ''">
-            and wo.end_area = #{endAreaCode}
+            and wo.end_area_code = #{endAreaCode}
         </if>
 
         <if test="type != null">
@@ -257,22 +257,22 @@
                 and wt.complete_time &lt;= #{completeEndTime}
             </if>
             <if test="startProvinceCode != null and startProvinceCode.trim() != ''">
-                and wo.start_province = #{startProvinceCode}
+                and wo.start_province_code = #{startProvinceCode}
             </if>
             <if test="startCityCode != null and startCityCode.trim() != ''">
-                and wo.start_city = #{startCityCode}
+                and wo.start_city_code = #{startCityCode}
             </if>
             <if test="startAreaCode != null and startAreaCode.trim() != ''">
-                and wo.start_area = #{startAreaCode}
+                and wo.start_area_code = #{startAreaCode}
             </if>
             <if test="endProvinceCode != null and endProvinceCode.trim() != ''">
-                and wo.end_province = #{endProvinceCode}
+                and wo.end_province_code = #{endProvinceCode}
             </if>
             <if test="endCityCode != null and endCityCode.trim() != ''">
-                and wo.end_city = #{endCityCode}
+                and wo.end_city_code = #{endCityCode}
             </if>
             <if test="endAreaCode != null and endAreaCode.trim() != ''">
-                and wo.end_area = #{endAreaCode}
+                and wo.end_area_code = #{endAreaCode}
             </if>
         </where>
         group by woc.no
