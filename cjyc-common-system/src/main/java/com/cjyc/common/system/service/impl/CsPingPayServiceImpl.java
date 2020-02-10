@@ -679,7 +679,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         //1~32位，收款人银行卡号或者存折号。 必须
         extra.put("card_number", baseCarrierVo.getCardNo());
         //4位，开户银行编号，详情请参考通联代付银行编号说明。 必须
-        extra.put("open_bank_code",baseCarrierVo.getBankName());
+        extra.put("open_bank_code","0105");
 
         params.put("extra", extra);
 
