@@ -25,8 +25,8 @@
         left join w_waybill_car wwc on woc.id = wwc.order_car_id
         left join w_task_car wtc on wtc.waybill_car_id = wwc.id
         left join w_task wt on wtc.task_id = wt.id
-        left join zcity zc on zc.code = wo.start_province_code
-        left join zcity zcity on zcity.code = zc.parent_code
+        left join s_city zc on zc.code = wo.start_province_code
+        left join s_city zcity on zcity.code = zc.parent_code
         <where>
             <if test="no != null and no.trim() != ''">
                 and woc.no like concat('%',#{no},'%')
@@ -217,8 +217,8 @@
         left join c_customer cc on cc.id = wo.customer_id
         left join w_waybill_car wwc on wwc.order_car_no = woc.no
         left join w_task wt on wt.waybill_no = wwc.waybill_no
-        left join zcity zc on zc.code = wo.start_province_code
-        left join zcity zcity on zcity.code = zc.parent_code
+        left join s_city zc on zc.code = wo.start_province_code
+        left join s_city zcity on zcity.code = zc.parent_code
 
         <where>
             <if test="no != null and no.trim() != ''">
