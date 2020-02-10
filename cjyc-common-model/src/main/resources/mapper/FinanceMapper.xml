@@ -62,7 +62,9 @@
             <if test="endAreaCode != null and endAreaCode.trim() != ''">
                 and wo.end_area = #{endAreaCode}
             </if>
-
+            <if test="area != null and area.trim() != ''">
+                and zcity.code = #{area}
+            </if>
             <if test="type != null">
                 and cc.type = #{type}
             </if>
