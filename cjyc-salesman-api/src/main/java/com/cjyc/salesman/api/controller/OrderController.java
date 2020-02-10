@@ -58,7 +58,9 @@ public class OrderController {
         reqDto.setCreateUserId(admin.getId());
         reqDto.setCreateUserName(admin.getName());
         reqDto.setState(OrderStateEnum.WAIT_SUBMIT.code);
-
+        if(OrderPickTypeEnum.DISPATCH_SELF.code == reqDto.getPickType()){
+            reqDto.setPickType(OrderPickTypeEnum.PILOT.code);
+        }
         return csOrderService.save(reqDto);
     }
 
@@ -76,6 +78,10 @@ public class OrderController {
         reqDto.setLoginPhone(admin.getPhone());
         reqDto.setCreateUserId(admin.getId());
         reqDto.setCreateUserName(admin.getName());
+        if(OrderPickTypeEnum.DISPATCH_SELF.code == reqDto.getPickType()){
+            reqDto.setPickType(OrderPickTypeEnum.PILOT.code);
+            reqDto.setDispatch(true);
+        }
         //发送短信
         return csOrderService.commitAndCheck(reqDto);
     }

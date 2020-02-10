@@ -1,10 +1,13 @@
 package com.cjyc.common.system.service.impl;
 
 import com.cjkj.common.redis.lock.RedisDistributedLock;
+import com.cjyc.common.model.constant.TimeConstant;
 import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IOrderDao;
 import com.cjyc.common.model.dao.IWaybillCarDao;
 import com.cjyc.common.model.dto.web.order.*;
+import com.cjyc.common.model.dto.web.waybill.SaveLocalDto;
+import com.cjyc.common.model.dto.web.waybill.SaveLocalWaybillDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.entity.defined.BizScope;
 import com.cjyc.common.model.entity.defined.FullCity;
@@ -14,11 +17,13 @@ import com.cjyc.common.model.enums.city.CityLevelEnum;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.enums.log.OrderLogEnum;
 import com.cjyc.common.model.enums.order.*;
+import com.cjyc.common.model.enums.waybill.WaybillCarrierTypeEnum;
 import com.cjyc.common.model.enums.waybill.WaybillTypeEnum;
 import com.cjyc.common.model.exception.ParameterException;
 import com.cjyc.common.model.exception.ServerException;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.MoneyUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.order.DispatchAddCarVo;
@@ -41,6 +46,7 @@ import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.MessageFormat;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -708,7 +714,66 @@ public class CsOrderServiceImpl implements ICsOrderService {
         Order order = commitOrder(paramsDto);
         //审核订单
         check(new CheckOrderDto(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), order.getId()));
+        //调度
+        if(paramsDto.isDispatch()){
+            SaveLocalDto slDto = getPickSaveLocalDto(order, new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone()));
+            csWaybillService.saveLocal(slDto);
+        }
         return BaseResultUtil.success("下单{0}成功", order.getNo());
+    }
+
+    private SaveLocalDto getPickSaveLocalDto(Order order, UserInfo userInfo) {
+        SaveLocalDto slDto = new SaveLocalDto();
+        slDto.setLoginId(userInfo.getId());
+        slDto.setLoginName(userInfo.getName());
+        slDto.setType(WaybillTypeEnum.PICK.code);
+
+
+        if(order.getStartStoreId() == null || order.getStartStoreId() <= 0){
+            throw new ParameterException("提车业务中心为空，不能设置业务员提车");
+        }
+        Store startStore = csStoreService.getById(order.getStartStoreId(), true);
+        if(startStore == null){
+            throw new ParameterException("提车业务中心不存在或者已停用，不能设置业务员提车");
+        }
+        List<OrderCar> orderCars = orderCarDao.findListByOrderId(order.getId());
+        if(CollectionUtils.isEmpty(orderCars)){
+            throw new ParameterException("车辆列表为空，不能设置业务员提车");
+        }
+        List<SaveLocalWaybillDto> list = Lists.newArrayList();
+        for (OrderCar orderCar : orderCars) {
+            if(orderCar == null){
+                continue;
+            }
+            SaveLocalWaybillDto wDto = new SaveLocalWaybillDto();
+            wDto.setCarrierId(userInfo.getId());
+            wDto.setCarrierType(WaybillCarrierTypeEnum.LOCAL_ADMIN.code);
+            wDto.setCarrierName(userInfo.getName());
+            wDto.setRemark("确认订单的业务员，自己提车");
+            wDto.setOrderCarId(orderCar.getId());
+            wDto.setOrderCarNo(orderCar.getNo());
+            wDto.setStartAreaCode(order.getStartAreaCode());
+            wDto.setStartAddress(order.getStartAddress());
+            wDto.setStartStoreId(0L);
+            wDto.setEndAreaCode(startStore.getAreaCode());
+            wDto.setEndAddress(startStore.getDetailAddr());
+            wDto.setEndStoreName(startStore.getName());
+            wDto.setEndStoreId(startStore.getId());
+            wDto.setExpectStartTime(order.getExpectStartDate() == null || order.getExpectStartDate() < System.currentTimeMillis() ? System.currentTimeMillis() : order.getExpectStartDate());
+            wDto.setExpectEndTime(wDto.getExpectStartTime() + TimeConstant.MILLS_OF_ONE_DAY);
+            wDto.setLoadLinkName(order.getPickContactName());
+            wDto.setLoadLinkPhone(order.getPickContactPhone());
+            wDto.setUnloadLinkName(userInfo.getName());
+            wDto.setUnloadLinkUserId(userInfo.getId());
+            wDto.setUnloadLinkPhone(userInfo.getPhone());
+
+            list.add(wDto);
+        }
+        if(CollectionUtils.isEmpty(list)){
+            throw new ParameterException("车辆列表为空，不能设置业务员提车");
+        }
+        slDto.setList(list);
+        return slDto;
     }
 
     /**
