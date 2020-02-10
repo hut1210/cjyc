@@ -10,6 +10,7 @@ import com.cjyc.common.model.dto.salesman.dispatch.WaitCountDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.entity.defined.BizScope;
 import com.cjyc.common.model.enums.BizScopeEnum;
+import com.cjyc.common.model.enums.waybill.WaybillCarStateEnum;
 import com.cjyc.common.model.enums.waybill.WaybillCarrierTypeEnum;
 import com.cjyc.common.model.enums.waybill.WaybillTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -190,7 +191,8 @@ public class DispatchServiceImpl implements IDispatchService {
         }
 
         // 查询车辆信息
-        LambdaQueryWrapper<WaybillCar> queryWrapper = new QueryWrapper<WaybillCar>().lambda().eq(WaybillCar::getWaybillId, waybillId);
+        LambdaQueryWrapper<WaybillCar> queryWrapper = new QueryWrapper<WaybillCar>().lambda()
+                .eq(WaybillCar::getWaybillId, waybillId).le(WaybillCar::getState, WaybillCarStateEnum.UNLOADED.code);
         List<WaybillCar> waybillCarList = waybillCarDao.selectList(queryWrapper);
         List<WaybillCarDetailVo> carDetailVoList = new ArrayList<>(10);
         WaybillCarDetailVo carDetailVo = null;
