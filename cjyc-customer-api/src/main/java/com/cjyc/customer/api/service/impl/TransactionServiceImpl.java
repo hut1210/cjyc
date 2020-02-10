@@ -301,7 +301,7 @@ public class TransactionServiceImpl implements ITransactionService {
 
             String no = tradeBillDao.getTradeBillByPingPayId(transfer.getId());
             try{
-                tradeBillDao.updateWayBillPayState(waybillId,no, DateUtil.format(new Date()));
+                tradeBillDao.updateWayBillPayState(waybillId,no, DateUtil.format(new Date(),"yyyyMMdd"));
             }catch (Exception e){
                 log.error("回调给承运商付款更新运单支付状态失败"+e.getMessage(),e);
             }
