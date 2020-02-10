@@ -1270,12 +1270,14 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             }
         }
 
-        //按比例均摊运费
-        shareWaybillCarFreightFee(waybillCars, oldTotalFee, paramsDto.getFreightFee());
+        if(!CollectionUtils.isEmpty(waybillCars)){
+            //按比例均摊运费
+            shareWaybillCarFreightFee(waybillCars, oldTotalFee, paramsDto.getFreightFee());
 
-        waybillCars.forEach(wc -> waybillCarDao.updateById(wc));
-        //更新运单费用
-        waybillDao.updateFreightFee(waybill.getId());
+            waybillCars.forEach(wc -> waybillCarDao.updateById(wc));
+            //更新运单费用
+            waybillDao.updateFreightFee(waybill.getId());
+        }
         //验证并完成运单
         validateAndFinishWaybill(waybill.getId());
         return BaseResultUtil.success();
@@ -1297,6 +1299,9 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
     }
 
     private void shareWaybillCarFreightFee(Set<WaybillCar> waybillCars, BigDecimal oldTotalFee, BigDecimal newTotalFee) {
+        if(CollectionUtils.isEmpty(waybillCars)){
+            return;
+        }
         newTotalFee = MoneyUtil.convertYuanToFen(newTotalFee);
         if(newTotalFee.compareTo(BigDecimal.ZERO) == 0){
             waybillCars.forEach(waybillCar -> {
