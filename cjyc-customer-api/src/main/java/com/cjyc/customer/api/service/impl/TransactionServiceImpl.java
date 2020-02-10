@@ -6,6 +6,7 @@ import com.cjyc.common.model.enums.log.OrderCarLogEnum;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.system.service.*;
 import com.cjyc.common.system.util.MiaoxinSmsUtil;
+import com.cjyc.customer.api.service.IOrderService;
 import com.pingplusplus.model.*;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.entity.*;
@@ -88,6 +89,9 @@ public class TransactionServiceImpl implements ITransactionService {
 
     @Resource
     private ICsPingPayService csPingPayService;
+
+    @Resource
+    private IOrderService orderService;
 
     @Override
     public int save(Object obj) {
@@ -291,7 +295,7 @@ public class TransactionServiceImpl implements ITransactionService {
 
             log.info("给承运商付款");
             //给承运商付款
-            Long waybillId = pingxxMetaData.getWaybillId();
+            Long waybillId = Long.valueOf(pingxxMetaData.getWaybillId());
 
             try{
                 tradeBillDao.updateWayBillPayState(waybillId,transfer.getId());
@@ -301,8 +305,18 @@ public class TransactionServiceImpl implements ITransactionService {
 
         }
         if(chargeType.equals(String.valueOf(ChargeTypeEnum.UNION_PAY_PARTNER.getCode()))){
-            //给合伙人付款
-            log.info("给合伙人付款");
+            String orderId = pingxxMetaData.getOrderId();
+            com.cjyc.common.model.entity.Order order = orderDao.selectById(orderId);
+            if(order!=null){
+                log.info("给合伙人付款");
+                try {
+                    csPingPayService.allinpayToCooperator(order.getId());
+                } catch (Exception e) {
+                    log.error("支付合伙人{}（ID{}）服务费失败", order.getCustomerName(), order.getCustomerId());
+                    log.error(e.getMessage(), e);
+                }
+            }
+
         }
 
     }

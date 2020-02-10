@@ -16,6 +16,8 @@ public class PingxxMetaData {
 
     private String orderNo; //平台订单编号
 
+    private String orderId;
+
     private String chargeType;
 
     private String clientType;	//客户端类型 customer:用户端	driver:司机端    user:业务员端  web:后台

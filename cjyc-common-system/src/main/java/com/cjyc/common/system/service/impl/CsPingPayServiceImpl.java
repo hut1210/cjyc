@@ -408,7 +408,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                     }
                 }
                 BigDecimal payableFee = order.getTotalFee().subtract(wlFee).add(order.getCouponOffsetFee());//给合伙人费用
-                Transfer transfer = allinpayToCooperatorCreate(showPartnerVo,payableFee,order.getNo());
+                Transfer transfer = allinpayToCooperatorCreate(showPartnerVo,payableFee,order.getNo(),orderId);
                 cStransactionService.saveTransactions(transfer, "0");
             }else{
                 return BaseResultUtil.fail("合伙人通联代付失败,订单{}不存在", orderId);
@@ -422,7 +422,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         return BaseResultUtil.success("合伙人通联代付成功");
     }
 
-    private Transfer allinpayToCooperatorCreate(ShowPartnerVo showPartnerVo, BigDecimal payableFee,String orderNo) throws AuthenticationException, InvalidRequestException,
+    private Transfer allinpayToCooperatorCreate(ShowPartnerVo showPartnerVo, BigDecimal payableFee, String orderNo, Long orderId) throws AuthenticationException, InvalidRequestException,
             APIConnectionException, APIException, ChannelException, RateLimitException, FileNotFoundException {
         initPingApiKey();
         Map<String, Object> params = new HashMap<>();
@@ -458,6 +458,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         pingxxMetaData.setChargeType(String.valueOf(ChargeTypeEnum.UNION_PAY_PARTNER.getCode()));
         pingxxMetaData.setLoginId(String.valueOf(showPartnerVo.getCustomerId()));
         pingxxMetaData.setOrderNo(orderNo);
+        pingxxMetaData.setOrderId(String.valueOf(orderId));
 
         Map<String, Object> meta = BeanMapUtil.beanToMap(pingxxMetaData);
         params.put("metadata",meta);//自定义参数
@@ -685,7 +686,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
 
         PingxxMetaData pingxxMetaData = new PingxxMetaData();
         pingxxMetaData.setChargeType(String.valueOf(ChargeTypeEnum.UNION_PAY.getCode()));
-        pingxxMetaData.setWaybillId(waybill.getId());
+        pingxxMetaData.setWaybillId(String.valueOf(waybill.getId()));
         pingxxMetaData.setLoginId(String.valueOf(baseCarrierVo.getCarrierId()));
 
         Map<String, Object> meta = BeanMapUtil.beanToMap(pingxxMetaData);
