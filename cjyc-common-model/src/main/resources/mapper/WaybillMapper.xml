@@ -752,12 +752,13 @@
         from
             w_waybill w
             left join d_carrier carrier on w.carrier_id=carrier.id
-            left join w_waybill_car car on w.id=car.waybill_id and w.type in(1,3)
+            left join w_waybill_car car on w.id=car.waybill_id
         <where>
             <if test="bizStoreIds != null">
-                and input_store_id in <foreach collection="bizStoreIds" item="item" index="index" open="(" close=")" separator=",">
+                and (input_store_id in <foreach collection="bizStoreIds" item="item" index="index" open="(" close=")" separator=",">
                                         #{item}
                                     </foreach>
+                or w.create_user_id=#{loginId})
             </if>
             <if test="key != null and key.trim() != ''">
                 and (carrier.linkman_phone like CONCAT('%',#{key},'%') or w.no like CONCAT('%',#{key},'%'))
