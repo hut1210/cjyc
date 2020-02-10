@@ -74,10 +74,10 @@
             </if>
 
             <if test="brand != null and brand.trim() != ''">
-                and cc.brand = #{brand}
+                and woc.brand = #{brand}
             </if>
             <if test="model != null and model.trim() != ''">
-                and cc.model = #{model}
+                and woc.model = #{model}
             </if>
             <if test="inputStoreName != null and inputStoreName.trim() != ''">
                 and wo.input_store_name = #{inputStoreName}
