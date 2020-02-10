@@ -97,13 +97,10 @@ public class SaveTrunkWaybillCarDto implements Serializable {
     @ApiModelProperty(value = "预计到达时间")
     private Long expectEndTime;
 
-    @NotNull(message = "loadLinkName不能为空")
     @ApiModelProperty(value = "提车联系人")
     private String loadLinkName;
-
     @ApiModelProperty(value = "提车联系人userid")
     private Long loadLinkUserId;
-    @NotNull(message = "loadLinkPhone不能为空")
     @ApiModelProperty(value = "提车联系人电话")
     private String loadLinkPhone;
 

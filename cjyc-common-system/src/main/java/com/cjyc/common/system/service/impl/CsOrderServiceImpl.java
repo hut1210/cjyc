@@ -895,9 +895,11 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
         //取消所有调度
         List<OrderCar> orderCars = orderCarDao.findListByOrderId(order.getId());
-        List<Long> collect = orderCars.stream().map(OrderCar::getId).collect(Collectors.toList());
-        List<WaybillCar> waybillCars = waybillCarDao.findListByOrderCarIds(collect);
-        waybillCars.forEach(wc -> csWaybillService.cancelWaybillCar(wc));
+        if(!CollectionUtils.isEmpty(orderCars)){
+            List<Long> collect = orderCars.stream().map(OrderCar::getId).collect(Collectors.toList());
+            List<WaybillCar> waybillCars = waybillCarDao.findListByOrderCarIds(collect);
+            waybillCars.forEach(wc -> csWaybillService.cancelWaybillCar(wc));
+        }
 
         //添加操作日志
         orderChangeLogService.asyncSave(order, OrderChangeTypeEnum.CANCEL,
