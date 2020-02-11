@@ -471,6 +471,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                             cStransactionService.saveTransactions(transfer, "0");
                         }else{
                             log.error("【通联代付支付合伙人费用】收款人信息不全 orderId = {}", orderId);
+                            return BaseResultUtil.fail("通联代付支付合伙人费用失败,收款人信息不全");
                         }
                     }else{
                         log.info("【通联代付支付合伙人费用】为0,orderId = {}",orderId);
