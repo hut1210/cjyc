@@ -385,7 +385,8 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                             log.error(e.getMessage(), e);
                         }
 
-                        if(baseCarrierVo!=null && baseCarrierVo.getCardName()!=null && baseCarrierVo.getCardNo()!=null){
+                        if(baseCarrierVo!=null && baseCarrierVo.getCardName()!=null && baseCarrierVo.getCardNo()!=null
+                                && baseCarrierVo.getBankCode()!=null){
                             Transfer transfer = allinpayTransferDriverCreate(baseCarrierVo,waybill);
                             log.debug("【通联代付支付运费】运单{}，支付运费，账单{}", waybill.getNo(), transfer);
                             cStransactionService.saveTransactions(transfer, "0");
@@ -462,7 +463,8 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
 
                     BigDecimal payableFee = order.getTotalFee().subtract(wlFee).add(order.getCouponOffsetFee());//给合伙人费用
                     if(payableFee.compareTo(BigDecimal.ZERO)>0){
-                        if(showPartnerVo!=null && showPartnerVo.getCardName()!=null && showPartnerVo.getCardNo()!=null){
+                        if(showPartnerVo!=null && showPartnerVo.getCardName()!=null && showPartnerVo.getCardNo()!=null
+                        && showPartnerVo.getBankCode()!=null){
                             Transfer transfer = allinpayToCooperatorCreate(showPartnerVo,payableFee,order.getNo(),orderId);
                             cStransactionService.saveTransactions(transfer, "0");
                         }else{
@@ -516,7 +518,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         //1~32位，收款人银行卡号或者存折号。 必须
         extra.put("card_number", showPartnerVo.getCardNo());
         //4位，开户银行编号，详情请参考通联代付银行编号说明。 必须
-        extra.put("open_bank_code","0105");
+        extra.put("open_bank_code",showPartnerVo.getBankCode());
 
         params.put("extra", extra);
 
@@ -746,7 +748,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         //1~32位，收款人银行卡号或者存折号。 必须
         extra.put("card_number", baseCarrierVo.getCardNo());
         //4位，开户银行编号，详情请参考通联代付银行编号说明。 必须
-        extra.put("open_bank_code","0105");
+        extra.put("open_bank_code",baseCarrierVo.getBankCode());
 
         params.put("extra", extra);
 
