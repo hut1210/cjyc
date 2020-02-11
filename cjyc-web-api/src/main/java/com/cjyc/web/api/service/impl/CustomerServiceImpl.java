@@ -95,6 +95,8 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     private ICsUserRoleDeptService csUserRoleDeptService;
     @Resource
     private IUserRoleDeptDao userRoleDeptDao;
+    @Resource
+    private IBankInfoDao bankInfoDao;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -606,7 +608,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         // 获取参数
         SelectCustomerDto dto = getSelectCustomerDto(request);
         List<CustomerVo> customerVos = encapClientCustomer(dto);
-        if (!CollectionUtils.isEmpty(customerVos)) {
+        //if (!CollectionUtils.isEmpty(customerVos)) {
             // 生成导出数据
             List<CustomerExportExcel> exportExcelList = new ArrayList<>();
             for (CustomerVo vo : customerVos) {
@@ -618,13 +620,13 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             String sheetName = "C端客户";
             String fileName = "C端客户.xls";
             try {
-                if(!CollectionUtils.isEmpty(exportExcelList)){
+                //if(!CollectionUtils.isEmpty(exportExcelList)){
                     ExcelUtil.exportExcel(exportExcelList, title, sheetName, CustomerExportExcel.class, fileName, response);
-                }
+                //}
             } catch (IOException e) {
                 log.error("导出C端客户异常:{}",e);
             }
-        }
+        //}
     }
 
     @Override
@@ -632,7 +634,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         // 获取参数
         SelectKeyCustomerDto dto = getKeyCustomerDto(request);
         List<ListKeyCustomerVo> keyCustomerList = encapKeyAccountCustomer(dto);
-        if (!CollectionUtils.isEmpty(keyCustomerList)) {
+        //if (!CollectionUtils.isEmpty(keyCustomerList)) {
             // 生成导出数据
             List<KeyExportExcel> exportExcelList = new ArrayList<>();
             for (ListKeyCustomerVo vo : keyCustomerList) {
@@ -644,20 +646,20 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             String sheetName = "大客户";
             String fileName = "大客户.xls";
             try {
-                if(!CollectionUtils.isEmpty(exportExcelList)){
+                //if(!CollectionUtils.isEmpty(exportExcelList)){
                     ExcelUtil.exportExcel(exportExcelList, title, sheetName, KeyExportExcel.class, fileName, response);
-                }
+                //}
             } catch (IOException e) {
                 log.error("导出大客户异常:{}",e);
             }
-        }
+        //}
     }
 
     @Override
     public void exportPartnerExcel(HttpServletRequest request, HttpServletResponse response) {
         CustomerPartnerDto dto = getPartnerDto(request);
         List<CustomerPartnerVo> partnerVos = encapCoPartner(dto);
-        if (!CollectionUtils.isEmpty(partnerVos)) {
+        //if (!CollectionUtils.isEmpty(partnerVos)) {
             // 生成导出数据
             List<PartnerExportExcel> exportExcelList = new ArrayList<>();
             for (CustomerPartnerVo vo : partnerVos) {
@@ -669,13 +671,13 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             String sheetName = "合伙人";
             String fileName = "合伙人.xls";
             try {
-                if(!CollectionUtils.isEmpty(exportExcelList)){
+                //if(!CollectionUtils.isEmpty(exportExcelList)){
                     ExcelUtil.exportExcel(exportExcelList, title, sheetName, PartnerExportExcel.class, fileName, response);
-                }
+                //}
             } catch (IOException e) {
                 log.error("导出合伙人信息异常:{}",e);
             }
-        }
+        //}
     }
 
     /**
@@ -817,6 +819,13 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         bcb.setCardColour(RandomUtil.getIntRandom());
         bcb.setState(UseStateEnum.USABLE.code);
         bcb.setCreateTime(now);
+        //获取银行编码
+        if(!StringUtils.isBlank(bcb.getBankName())){
+            List<BankInfo> bankInfoList = bankInfoDao.findBankInfo(bcb.getBankName());
+            if(!CollectionUtils.isEmpty(bankInfoList)){
+                bcb.setBankCode(bankInfoList.get(0).getOpenBankCode());
+            }
+        }
         bankCardBindDao.insert(bcb);
     }
 
@@ -1452,6 +1461,30 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             }
         }catch (Exception e){
             log.error("导入合伙人失败异常:{}",e);
+            result = false;
+        }
+        return result;
+    }
+
+
+    @Override
+    public boolean importBankInfoExcel(MultipartFile file) {
+        boolean result;
+        try {
+            List<BankInfoImportExcel> bankInfoImportExcelList = ExcelUtil.importExcel(file, 0, 1, BankInfoImportExcel.class);
+            if(!CollectionUtils.isEmpty(bankInfoImportExcelList)){
+                for(BankInfoImportExcel bankInfoExcel : bankInfoImportExcelList){
+                    BankInfo bankInfo = new BankInfo();
+                    bankInfo.setOpenBankCode(bankInfoExcel.getBankCode());
+                    bankInfo.setBankName(bankInfoExcel.getBankName());
+                    bankInfoDao.insert(bankInfo);
+                }
+                result = true;
+            }else {
+                result = false;
+            }
+        }catch (Exception e){
+            log.error("导入银行信息失败异常:{}",e);
             result = false;
         }
         return result;

@@ -68,7 +68,7 @@ public class InquiryServiceImpl extends ServiceImpl<IInquiryDao, Inquiry> implem
     public void exportInquiryExcel(HttpServletRequest request, HttpServletResponse response) {
         SelectInquiryDto dto = getInquiryDto(request);
         List<InquiryVo> inquiryVos = encapInquiry(dto);
-        if (!CollectionUtils.isEmpty(inquiryVos)) {
+        //if (!CollectionUtils.isEmpty(inquiryVos)) {
             // 生成导出数据
             List<InquiryExportExcel> exportExcelList = new ArrayList<>();
             for (InquiryVo vo : inquiryVos) {
@@ -80,13 +80,13 @@ public class InquiryServiceImpl extends ServiceImpl<IInquiryDao, Inquiry> implem
             String sheetName = "询价管理";
             String fileName = "询价管理.xls";
             try {
-                if(!CollectionUtils.isEmpty(exportExcelList)){
+                //if(!CollectionUtils.isEmpty(exportExcelList)){
                     ExcelUtil.exportExcel(exportExcelList, title, sheetName, InquiryExportExcel.class, fileName, response);
-                }
+                //}
             } catch (IOException e) {
                 log.error("导出询价管理信息异常:{}",e);
             }
-        }
+        //}
     }
 
     /**

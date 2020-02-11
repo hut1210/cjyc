@@ -148,7 +148,8 @@
             sbcb.card_type AS cardType,
             sbcb.card_name AS cardName,
             sbcb.bank_name AS bankName,
-            sbcb.card_no AS cardNo
+            sbcb.card_no AS cardNo,
+            sbcb.bank_code AS bankCode
         FROM
             d_carrier dc
             LEFT JOIN d_carrier_driver_con dcdc ON dcdc.carrier_id = dc.id

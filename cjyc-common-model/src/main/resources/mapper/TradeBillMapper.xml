@@ -151,4 +151,8 @@
     <select id="getTradeBillByPingPayId" resultType="java.lang.String">
         select no from f_trade_bill where ping_pay_id = #{pingPayId}
     </select>
+    <update id="updateWayBillPayStateNoPay" parameterType="map" >
+        update w_waybill set freight_pay_state = 1,freight_pay_time=#{time} where id =#{waybillId}
+    </update>
+
 </mapper>

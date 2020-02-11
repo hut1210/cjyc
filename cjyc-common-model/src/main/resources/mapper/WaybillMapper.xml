@@ -771,7 +771,7 @@
             left join w_waybill_car car on w.id=car.waybill_id
         <where>
             <if test="bizStoreIds != null">
-                and (input_store_id in <foreach collection="bizStoreIds" item="item" index="index" open="(" close=")" separator=",">
+                and (w.input_store_id in <foreach collection="bizStoreIds" item="item" index="index" open="(" close=")" separator=",">
                                         #{item}
                                     </foreach>
                 or w.create_user_id=#{loginId})
@@ -798,6 +798,7 @@
                 and w.guide_line like concat('%-',#{endCity},'%')
             </if>
         </where>
+        group by w.id
         order by w.id desc
     </select>
 

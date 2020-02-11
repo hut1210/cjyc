@@ -150,7 +150,7 @@ public class CarSeriesServiceImpl extends ServiceImpl<ICarSeriesDao,CarSeries> i
         // 查询列表
         List<CarSeries> list = getCarSeriesList(carSeriesQueryDto);
 
-        if (!CollectionUtils.isEmpty(list)) {
+        //if (!CollectionUtils.isEmpty(list)) {
             // 生成导出数据
             List<CarSeriesExportExcel> exportExcelList = new ArrayList<>(10);
             for (CarSeries carSeries : list) {
@@ -166,7 +166,7 @@ public class CarSeriesServiceImpl extends ServiceImpl<ICarSeriesDao,CarSeries> i
             } catch (IOException e) {
                 log.error("导出品牌车系异常:",e);
             }
-        }
+        //}
     }
 
     @Override

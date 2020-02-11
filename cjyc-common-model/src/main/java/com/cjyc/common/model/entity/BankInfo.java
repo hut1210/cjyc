@@ -36,5 +36,8 @@ public class BankInfo implements Serializable {
     @ApiModelProperty(value = "开户支行名称")
     private String subBank;
 
+    @ApiModelProperty(value = "开户行名称")
+    private String bankName;
+
 
 }

@@ -35,7 +35,7 @@ public class DetailQueryDto implements Serializable {
     @Pattern(regexp = "(0|1|2|3)",message = "详情类型只能是0,1,2,3中的一位数")
     private String detailType;
 
-    @ApiModelProperty(value = "司业务员端详情状态：1待提车，2待交车，3已交付，4待入库，5已入库，6待出库，7已出库")
+    @ApiModelProperty(value = "业务员端详情状态：1待提车，2待交车，3已交付，4待入库，5已入库，6待出库，7已出库")
     @NotBlank(groups = {GetSalesmanWaybillDetail.class},message = "详情类型不能为空")
     @Pattern(regexp = "(1|2|3|4|5|6|7)",message = "详情状态只能是1,2,3,4,5,6,7中的一位数")
     private String detailState;

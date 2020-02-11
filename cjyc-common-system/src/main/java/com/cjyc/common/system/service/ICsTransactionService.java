@@ -3,6 +3,7 @@ package com.cjyc.common.system.service;
 import com.Pingxx.model.Order;
 import com.cjyc.common.model.entity.TradeBill;
 import com.pingplusplus.model.Event;
+import org.apache.ibatis.annotations.Param;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -31,4 +32,6 @@ public interface ICsTransactionService {
     List<String> getOrderCarNosByTaskCarIds(List<Long> taskCarIdList);
 
     TradeBill getTradeBillByOrderNoAndType(String no,int type);
+
+    void updateWayBillPayStateNoPay(Long waybillId,String time);
 }

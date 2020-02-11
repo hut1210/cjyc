@@ -363,7 +363,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
     public void exportDriverExcel(HttpServletRequest request, HttpServletResponse response) {
         SelectDriverDto dto = getDriverDto(request);
         List<DriverVo> driverVos = encapPersonDriver(dto);
-        if (!CollectionUtils.isEmpty(driverVos)) {
+        //if (!CollectionUtils.isEmpty(driverVos)) {
             // 生成导出数据
             List<DriverExportExcel> exportExcelList = new ArrayList<>();
             for (DriverVo vo : driverVos) {
@@ -375,13 +375,13 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
             String sheetName = "司机管理";
             String fileName = "司机管理.xls";
             try {
-                if(!CollectionUtils.isEmpty(exportExcelList)){
+                //if(!CollectionUtils.isEmpty(exportExcelList)){
                     ExcelUtil.exportExcel(exportExcelList, title, sheetName, DriverExportExcel.class, fileName, response);
-                }
+                //}
             } catch (IOException e) {
                 log.error("导出司机管理信息异常:{}",e);
             }
-        }
+        //}
     }
 
     /**

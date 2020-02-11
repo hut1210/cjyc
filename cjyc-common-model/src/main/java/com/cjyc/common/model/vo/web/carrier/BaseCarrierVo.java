@@ -58,6 +58,9 @@ public class BaseCarrierVo implements Serializable {
     @ApiModelProperty("银行卡号")
     private String cardNo;
 
+    @ApiModelProperty("银行编码")
+    private String bankCode;
+
     @ApiModelProperty("营业执照正面")
     private String busLicenseFrontImg;
 

@@ -64,6 +64,8 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
     private IUserRoleDeptDao userRoleDeptDao;
     @Resource
     private ICsRoleService csRoleService;
+    @Resource
+    private IBankInfoDao bankInfoDao;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -734,6 +736,13 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
         bcb.setBankName(dto.getBankName());
         bcb.setState(UseStateEnum.USABLE.code);
         bcb.setCreateTime(NOW);
+        //获取银行编码
+        if(!StringUtils.isBlank(bcb.getBankName())){
+            List<BankInfo> bankInfoList = bankInfoDao.findBankInfo(bcb.getBankName());
+            if(!CollectionUtils.isEmpty(bankInfoList)){
+                bcb.setBankCode(bankInfoList.get(0).getOpenBankCode());
+            }
+        }
         bankCardBindDao.insert(bcb);
         return BaseResultUtil.success();
     }
