@@ -326,7 +326,7 @@ public class FinanceServiceImpl implements IFinanceService {
                 }
             }
             financePayableVo.setRemainDate(financePayableVo.getSettlePeriod()-formatDuring(System.currentTimeMillis()-financePayableVo.getCompleteTime()));
-            financePayableVo.setFreightPayable(freightFee);
+            financePayableVo.setFreightPayable(freightFee.divide(new BigDecimal(100)));
         }
         PageInfo<FinancePayableVo> pageInfo = new PageInfo<>(financeVoList);
         return BaseResultUtil.success(pageInfo);
