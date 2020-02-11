@@ -1617,7 +1617,6 @@
     </sql>
     <sql id="trunk_wait_dispatch_car_list_For_App">
         select * from(
-
             select
             <include refid="trunk_wait_dispatch_car_field"/>,
             <include refid="dispatch_car_field"/>

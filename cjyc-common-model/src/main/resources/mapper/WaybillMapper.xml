@@ -358,6 +358,22 @@
         where w.id = #{id}
         limit 1
     </update>
+    <update id="updateNumAndFreightFee">
+        update w_waybill
+        set car_num = (
+            select count(0)
+            from w_waybill_car
+            where waybill_id = #{waybillId}
+            and state &lt;= 100
+        ),
+        freight_fee = (
+            select sum(IFNULL(wc.freight_fee,0))
+            from w_waybill_car wc
+            where wc.waybill_id = #{waybillId}
+            and wc.state &lt;= 100
+        )
+        where id = #{waybillId}
+    </update>
     <select id="findByNo" resultType="com.cjyc.common.model.entity.Waybill">
         select
         <include refid="Base_Column_List"/>
