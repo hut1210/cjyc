@@ -393,6 +393,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                             cStransactionService.saveTransactions(transfer, "0");
                         }else{
                             log.error("【通联代付支付运费】收款人信息不全 waybillId = {}", waybillId);
+                            return BaseResultUtil.fail("通联代付失败,收款人信息不全");
                         }
                     }else{
                         log.debug("【通联代付支付运费】运单{}，支付运费为0", waybill.getNo());
