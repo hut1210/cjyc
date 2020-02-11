@@ -83,6 +83,8 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     private ISysRoleService sysRoleService;
     @Resource
     private IUserRoleDeptDao userRoleDeptDao;
+    @Resource
+    private IBankInfoDao bankInfoDao;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -605,6 +607,13 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         bcb.setState(UseStateEnum.USABLE.code);
         bcb.setCardColour(RandomUtil.getIntRandom());
         bcb.setCreateTime(NOW);
+        //获取银行编码
+        if(!StringUtils.isBlank(bcb.getBankName())){
+            List<BankInfo> bankInfoList = bankInfoDao.findBankInfo(bcb.getBankName());
+            if(!CollectionUtils.isEmpty(bankInfoList)){
+                bcb.setBankCode(bankInfoList.get(0).getOpenBankCode());
+            }
+        }
         bankCardBindDao.insert(bcb);
     }
 

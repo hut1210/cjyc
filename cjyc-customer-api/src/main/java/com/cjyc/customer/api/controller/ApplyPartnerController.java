@@ -25,7 +25,7 @@ public class ApplyPartnerController {
     private IApplyPartnerService applyPartnerService;
 
     @ApiOperation(value = "申请合伙人")
-    @PostMapping(value = "/applyPartner")
+    //@PostMapping(value = "/applyPartner")
     public ResultVo applyPartner(@Validated @RequestBody ApplyPartnerDto dto) {
         return applyPartnerService.applyPartner(dto);
     }
@@ -34,7 +34,8 @@ public class ApplyPartnerController {
     /************************************韵车集成改版 st***********************************/
 
     @ApiOperation(value = "申请合伙人")
-    @PostMapping(value = "/applyPartnerNew")
+    //@PostMapping(value = "/applyPartnerNew")
+    @PostMapping(value = "/applyPartner")
     public ResultVo applyPartnerNew(@Validated @RequestBody ApplyPartnerDto dto) {
         return applyPartnerService.applyPartnerNew(dto);
     }

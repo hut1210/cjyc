@@ -5,15 +5,9 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
 import com.cjkj.usercenter.dto.common.UpdateUserReq;
-import com.cjyc.common.model.dao.IBankCardBindDao;
-import com.cjyc.common.model.dao.ICustomerDao;
-import com.cjyc.common.model.dao.ICustomerPartnerDao;
-import com.cjyc.common.model.dao.IUserRoleDeptDao;
+import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.customer.partner.ApplyPartnerDto;
-import com.cjyc.common.model.entity.BankCardBind;
-import com.cjyc.common.model.entity.Customer;
-import com.cjyc.common.model.entity.CustomerPartner;
-import com.cjyc.common.model.entity.UserRoleDept;
+import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.UseStateEnum;
 import com.cjyc.common.model.enums.UserTypeEnum;
@@ -31,13 +25,16 @@ import com.cjyc.common.system.service.ICsUserRoleDeptService;
 import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.customer.api.service.IApplyPartnerService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -51,6 +48,8 @@ public class ApplyPartnerServiceImpl extends ServiceImpl<ICustomerDao, Customer>
     private ICustomerDao customerDao;
     @Resource
     private IUserRoleDeptDao userRoleDeptDao;
+    @Resource
+    private IBankInfoDao bankInfoDao;
     @Resource
     private ICsUserRoleDeptService csUserRoleDeptService;
 
@@ -129,6 +128,13 @@ public class ApplyPartnerServiceImpl extends ServiceImpl<ICustomerDao, Customer>
         bcb.setUserType(UserTypeEnum.CUSTOMER.code);
         bcb.setState(UseStateEnum.USABLE.code);
         bcb.setCreateTime(NOW);
+        //获取银行编码
+        if(!StringUtils.isBlank(bcb.getBankName())){
+            List<BankInfo> bankInfoList = bankInfoDao.findBankInfo(bcb.getBankName());
+            if(!CollectionUtils.isEmpty(bankInfoList)){
+                bcb.setBankCode(bankInfoList.get(0).getOpenBankCode());
+            }
+        }
         bankCardBindDao.insert(bcb);
         return BaseResultUtil.success();
     }

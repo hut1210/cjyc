@@ -819,6 +819,13 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         bcb.setCardColour(RandomUtil.getIntRandom());
         bcb.setState(UseStateEnum.USABLE.code);
         bcb.setCreateTime(now);
+        //获取银行编码
+        if(!StringUtils.isBlank(bcb.getBankName())){
+            List<BankInfo> bankInfoList = bankInfoDao.findBankInfo(bcb.getBankName());
+            if(!CollectionUtils.isEmpty(bankInfoList)){
+                bcb.setBankCode(bankInfoList.get(0).getOpenBankCode());
+            }
+        }
         bankCardBindDao.insert(bcb);
     }
 
