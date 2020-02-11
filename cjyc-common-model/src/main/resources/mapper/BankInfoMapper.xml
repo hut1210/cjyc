@@ -7,11 +7,12 @@
         <result column="open_bank_code" property="openBankCode" />
         <result column="sub_bank_code" property="subBankCode" />
         <result column="sub_bank" property="subBank" />
+        <result column="bank_name" property="bankName" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        open_bank_code, sub_bank_code, sub_bank
+        open_bank_code, sub_bank_code, sub_bank, bank_name
     </sql>
 
 </mapper>

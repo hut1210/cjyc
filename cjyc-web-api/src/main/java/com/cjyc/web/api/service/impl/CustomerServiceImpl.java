@@ -95,6 +95,8 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     private ICsUserRoleDeptService csUserRoleDeptService;
     @Resource
     private IUserRoleDeptDao userRoleDeptDao;
+    @Resource
+    private IBankInfoDao bankInfoDao;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -1452,6 +1454,30 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             }
         }catch (Exception e){
             log.error("导入合伙人失败异常:{}",e);
+            result = false;
+        }
+        return result;
+    }
+
+
+    @Override
+    public boolean importBankInfoExcel(MultipartFile file) {
+        boolean result;
+        try {
+            List<BankInfoImportExcel> bankInfoImportExcelList = ExcelUtil.importExcel(file, 0, 1, BankInfoImportExcel.class);
+            if(!CollectionUtils.isEmpty(bankInfoImportExcelList)){
+                for(BankInfoImportExcel bankInfoExcel : bankInfoImportExcelList){
+                    BankInfo bankInfo = new BankInfo();
+                    bankInfo.setOpenBankCode(bankInfoExcel.getBankCode());
+                    bankInfo.setBankName(bankInfoExcel.getBankName());
+                    bankInfoDao.insert(bankInfo);
+                }
+                result = true;
+            }else {
+                result = false;
+            }
+        }catch (Exception e){
+            log.error("导入银行信息失败异常:{}",e);
             result = false;
         }
         return result;

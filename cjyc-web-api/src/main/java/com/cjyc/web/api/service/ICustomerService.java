@@ -248,4 +248,11 @@ public interface ICustomerService  extends IService<Customer> {
      * @return
      */
     boolean importPartnerExcel(MultipartFile file, Long loginId);
+
+    /**
+     * 银行信息导入Excel文件
+     * @param file
+     * @return
+     */
+    boolean importBankInfoExcel(MultipartFile file);
 }
