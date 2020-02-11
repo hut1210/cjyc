@@ -239,6 +239,7 @@ public class CustomerController {
         return result ? BaseResultUtil.success() : BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
 
+    @Deprecated
     @ApiOperation(value = "银行信息导入Excel", notes = "\t 请求接口为/importBankInfoExcel/格式")
     @PostMapping("/importBankInfoExcel")
     public ResultVo importBankInfoExcel(@RequestParam("file") MultipartFile file){
