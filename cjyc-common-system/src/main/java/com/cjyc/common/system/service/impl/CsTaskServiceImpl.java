@@ -29,6 +29,7 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.FailResultReasonVo;
 import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.driver.mine.BankCardVo;
 import com.cjyc.common.system.service.*;
 import com.cjyc.common.system.util.RedisUtils;
 import com.google.common.base.Joiner;
@@ -76,6 +77,10 @@ public class CsTaskServiceImpl implements ICsTaskService {
     private ICsOrderCarLogService csOrderCarLogService;
     @Resource
     private IVehicleRunningDao vehicleRunningDao;
+    @Resource
+    private IBankCardBindDao bankCardBindDao;
+    @Resource
+    private IUserRoleDeptDao userRoleDeptDao;
     @Resource
     private RedisDistributedLock redisLock;
     @Resource
@@ -296,6 +301,15 @@ public class CsTaskServiceImpl implements ICsTaskService {
             }
             if (driver.getBusinessState() != BizStateEnum.BUSINESS.code) {
                 return BaseResultUtil.fail("司机不在运营中");
+            }
+            //判断司机绑定银行卡
+            List<Long> carrierIds = userRoleDeptDao.findDeptIds(driverId);
+            if (CollectionUtils.isEmpty(carrierIds)){
+                return BaseResultUtil.fail("数据有误,司机不存在");
+            }
+            List<BankCardVo> binkCardInfoList = bankCardBindDao.findBinkCardInfo(carrierIds.get(0));
+            if (CollectionUtils.isEmpty(binkCardInfoList)) {
+                return BaseResultUtil.fail("所选承运商没有绑定或者没有可用的银行卡");
             }
             //验证司机运力信息
             VehicleRunning vr = vehicleRunningDao.findByDriverId(driverId);
