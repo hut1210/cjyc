@@ -51,4 +51,6 @@ public interface ITradeBillDao extends BaseMapper<TradeBill> {
     void updateWayBillPayState(@Param("waybillId") Long waybillId, @Param("no") String no,@Param("time") String time);
 
     String getTradeBillByPingPayId(String pingPayId);
+
+    void updateWayBillPayStateNoPay(@Param("waybillId")Long waybillId,@Param("waybillId") String time);
 }

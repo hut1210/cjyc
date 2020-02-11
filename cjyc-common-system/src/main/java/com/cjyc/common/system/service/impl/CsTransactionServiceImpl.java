@@ -102,8 +102,8 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
     }
 
     @Override
-    public void updateWayBillPayState(Long waybillId, String time) {
-
+    public void updateWayBillPayStateNoPay(Long waybillId, String time) {
+        tradeBillDao.updateWayBillPayStateNoPay(waybillId,time);
     }
 
     @Override

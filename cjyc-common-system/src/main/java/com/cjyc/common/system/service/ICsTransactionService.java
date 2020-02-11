@@ -33,5 +33,5 @@ public interface ICsTransactionService {
 
     TradeBill getTradeBillByOrderNoAndType(String no,int type);
 
-    void updateWayBillPayStateNoPay(@Param("waybillId") Long waybillId,@Param("time") String time);
+    void updateWayBillPayStateNoPay(Long waybillId,String time);
 }
