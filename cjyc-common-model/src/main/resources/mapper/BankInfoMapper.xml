@@ -15,4 +15,13 @@
         open_bank_code, sub_bank_code, sub_bank, bank_name
     </sql>
 
+    <select id="findBankInfo" resultType="com.cjyc.common.model.entity.BankInfo"
+            parameterType="java.lang.String">
+        SELECT
+            <include refid="Base_Column_List"/>
+          FROM
+            s_bank_info
+          where bank_name like concat('%',#{bankName},'%')
+    </select>
+
 </mapper>
