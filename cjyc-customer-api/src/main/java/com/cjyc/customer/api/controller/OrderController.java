@@ -62,7 +62,6 @@ public class OrderController {
         if(!CollectionUtils.isEmpty(carList) && reqDto.getLineWlFreightFee() != null){
             carList.forEach(dto -> dto.setTrunkFee(reqDto.getLineWlFreightFee()));
         }
-        //发送推送信息
         return csOrderService.save(reqDto);
     }
 
@@ -85,7 +84,6 @@ public class OrderController {
         if(!CollectionUtils.isEmpty(carList) && reqDto.getLineWlFreightFee() != null){
             carList.forEach(dto -> dto.setTrunkFee(reqDto.getLineWlFreightFee()));
         }
-        //发送推送信息
         return csOrderService.save(reqDto);
     }
 

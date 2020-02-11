@@ -1303,10 +1303,11 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             return;
         }
         newTotalFee = MoneyUtil.convertYuanToFen(newTotalFee);
-        if(newTotalFee.compareTo(BigDecimal.ZERO) == 0){
+        if(newTotalFee.compareTo(oldTotalFee) == 0){
+            return;
+        }else if(newTotalFee.compareTo(BigDecimal.ZERO) == 0){
             waybillCars.forEach(waybillCar -> {
                 waybillCar.setFreightFee(BigDecimal.ZERO);
-                waybillCarDao.updateById(waybillCar);
             });
         }else if(oldTotalFee.compareTo(BigDecimal.ZERO) == 0){
 
@@ -1321,7 +1322,6 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 } else {
                     waybillCar.setFreightFee(rAvg);
                 }
-                waybillCarDao.updateById(waybillCar);
             }
         }else{
             BigDecimal avg = newTotalFee.divide(oldTotalFee, 8, RoundingMode.FLOOR);

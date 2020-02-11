@@ -5,6 +5,7 @@ import com.cjyc.common.model.dto.salesman.order.SalesOrderQueryDto;
 import com.cjyc.common.model.dto.salesman.order.SalesmanQueryDto;
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.entity.Admin;
+import com.cjyc.common.model.enums.PayModeEnum;
 import com.cjyc.common.model.enums.order.OrderPickTypeEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -79,6 +80,9 @@ public class OrderController {
         reqDto.setCreateUserId(admin.getId());
         reqDto.setCreateUserName(admin.getName());
         if(OrderPickTypeEnum.DISPATCH_SELF.code == reqDto.getPickType()){
+            if(reqDto.getPayType() == PayModeEnum.PREPAY.code){
+                return BaseResultUtil.fail("预付订单不能选择业务员上门，付款成功后再进行调度");
+            }
             reqDto.setPickType(OrderPickTypeEnum.PILOT.code);
             reqDto.setDispatch(true);
         }
