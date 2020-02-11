@@ -375,7 +375,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                     Long carrierId = waybill.getCarrierId();
                     BaseCarrierVo baseCarrierVo = carrierDao.showCarrierById(carrierId);
                     log.info("【通联代付支付运费】运单Id{},支付状态 state {}",waybillId,waybill.getFreightPayState());
-                    if(waybill != null && waybill.getFreightPayState()==null && waybill.getFreightFee().compareTo(BigDecimal.ZERO)>0){
+                    if(waybill != null && waybill.getFreightPayState()==0 && waybill.getFreightFee().compareTo(BigDecimal.ZERO)>0){
                         Transfer transfer = allinpayTransferDriverCreate(baseCarrierVo,waybill);
                         log.debug("【通联代付支付运费】运单{}，支付运费，账单{}", waybill.getNo(), transfer);
                         cStransactionService.saveTransactions(transfer, "0");
