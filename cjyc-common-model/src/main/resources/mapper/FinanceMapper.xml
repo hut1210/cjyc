@@ -220,61 +220,60 @@
         left join s_city zc on zc.code = wo.start_province_code
         left join s_city zcity on zcity.code = zc.parent_code
 
-        <where>
-            <if test="no != null and no.trim() != ''">
-                and woc.no like concat('%',#{no},'%')
-            </if>
-            <if test="vin != null and vin.trim() != ''">
-                and  woc.vin = #{vin}
-            </if>
-            <if test="orderNo != null and orderNo.trim() != ''">
-                and  woc.order_no like concat('%',#{orderNo},'%')
-            </if>
+        where woc.wl_pay_state=2
+        <if test="no != null and no.trim() != ''">
+            and woc.no like concat('%',#{no},'%')
+        </if>
+        <if test="vin != null and vin.trim() != ''">
+            and  woc.vin = #{vin}
+        </if>
+        <if test="orderNo != null and orderNo.trim() != ''">
+            and  woc.order_no like concat('%',#{orderNo},'%')
+        </if>
 
-            <if test="type != null">
-                and cc.type = #{type}
-            </if>
-            <if test="customerName != null  and customerName.trim() != ''">
-                and  cc.name  like concat('%',#{customerName},'%')
-            </if>
-            <if test="payMode != null">
-                and  cc.pay_mode =#{payMode}
-            </if>
+        <if test="type != null">
+            and cc.type = #{type}
+        </if>
+        <if test="customerName != null  and customerName.trim() != ''">
+            and  cc.name  like concat('%',#{customerName},'%')
+        </if>
+        <if test="payMode != null">
+            and  cc.pay_mode =#{payMode}
+        </if>
 
-            <if test="brand != null and brand.trim() != ''">
-                and cc.brand = #{brand}
-            </if>
-            <if test="model != null and model.trim() != ''">
-                and cc.model = #{model}
-            </if>
-            <if test="inputStoreName != null and inputStoreName.trim() != ''">
-                and wo.input_store_name = #{inputStoreName}
-            </if>
-            <if test="completeStartTime!= null">
-                and wt.complete_time &gt;= #{completeStartTime}
-            </if>
-            <if test="completeEndTime!= null">
-                and wt.complete_time &lt;= #{completeEndTime}
-            </if>
-            <if test="startProvinceCode != null and startProvinceCode.trim() != ''">
-                and wo.start_province_code = #{startProvinceCode}
-            </if>
-            <if test="startCityCode != null and startCityCode.trim() != ''">
-                and wo.start_city_code = #{startCityCode}
-            </if>
-            <if test="startAreaCode != null and startAreaCode.trim() != ''">
-                and wo.start_area_code = #{startAreaCode}
-            </if>
-            <if test="endProvinceCode != null and endProvinceCode.trim() != ''">
-                and wo.end_province_code = #{endProvinceCode}
-            </if>
-            <if test="endCityCode != null and endCityCode.trim() != ''">
-                and wo.end_city_code = #{endCityCode}
-            </if>
-            <if test="endAreaCode != null and endAreaCode.trim() != ''">
-                and wo.end_area_code = #{endAreaCode}
-            </if>
-        </where>
+        <if test="brand != null and brand.trim() != ''">
+            and cc.brand = #{brand}
+        </if>
+        <if test="model != null and model.trim() != ''">
+            and cc.model = #{model}
+        </if>
+        <if test="inputStoreName != null and inputStoreName.trim() != ''">
+            and wo.input_store_name = #{inputStoreName}
+        </if>
+        <if test="completeStartTime!= null">
+            and wt.complete_time &gt;= #{completeStartTime}
+        </if>
+        <if test="completeEndTime!= null">
+            and wt.complete_time &lt;= #{completeEndTime}
+        </if>
+        <if test="startProvinceCode != null and startProvinceCode.trim() != ''">
+            and wo.start_province_code = #{startProvinceCode}
+        </if>
+        <if test="startCityCode != null and startCityCode.trim() != ''">
+            and wo.start_city_code = #{startCityCode}
+        </if>
+        <if test="startAreaCode != null and startAreaCode.trim() != ''">
+            and wo.start_area_code = #{startAreaCode}
+        </if>
+        <if test="endProvinceCode != null and endProvinceCode.trim() != ''">
+            and wo.end_province_code = #{endProvinceCode}
+        </if>
+        <if test="endCityCode != null and endCityCode.trim() != ''">
+            and wo.end_city_code = #{endCityCode}
+        </if>
+        <if test="endAreaCode != null and endAreaCode.trim() != ''">
+            and wo.end_area_code = #{endAreaCode}
+        </if>
         group by woc.no
     </select>
 
