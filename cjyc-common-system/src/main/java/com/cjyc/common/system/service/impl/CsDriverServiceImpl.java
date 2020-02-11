@@ -635,10 +635,10 @@ public class CsDriverServiceImpl implements ICsDriverService {
         DriverVehicleCon dvc = driverVehicleConDao.selectOne(new QueryWrapper<DriverVehicleCon>().lambda().eq(DriverVehicleCon::getDriverId,driver.getId()));
         VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda().eq(VehicleRunning::getDriverId,driver.getId()));
         if(vr != null) {
-            Task task = taskDao.selectOne(new QueryWrapper<Task>().lambda()
+            List<Task> taskList = taskDao.selectList(new QueryWrapper<Task>().lambda()
                     .eq(Task::getVehicleRunningId,vr.getId())
                     .eq(Task::getState,TaskStateEnum.TRANSPORTING.code));
-            if(task != null){
+            if(!CollectionUtils.isEmpty(taskList)){
                 return BaseResultUtil.fail("该运力正在运输中，不可修改");
             }
         }
@@ -809,10 +809,10 @@ public class CsDriverServiceImpl implements ICsDriverService {
         DriverVehicleCon dvc = driverVehicleConDao.selectOne(new QueryWrapper<DriverVehicleCon>().lambda().eq(DriverVehicleCon::getDriverId,driver.getId()));
         VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda().eq(VehicleRunning::getDriverId,driver.getId()));
         if(vr != null) {
-            Task task = taskDao.selectOne(new QueryWrapper<Task>().lambda()
+            List<Task> taskList = taskDao.selectList(new QueryWrapper<Task>().lambda()
                     .eq(Task::getVehicleRunningId,vr.getId())
                     .eq(Task::getState,TaskStateEnum.TRANSPORTING.code));
-            if(task != null){
+            if(!CollectionUtils.isEmpty(taskList)){
                 return BaseResultUtil.fail("该运力正在运输中，不可修改");
             }
         }
