@@ -782,6 +782,7 @@
                 and w.guide_line like concat('%-',#{endCity},'%')
             </if>
         </where>
+        group by w.id
         order by w.id desc
     </select>
 
