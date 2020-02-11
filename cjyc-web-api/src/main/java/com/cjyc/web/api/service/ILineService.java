@@ -52,7 +52,7 @@ public interface ILineService extends IService<Line> {
     ResultVo<List<Line>> listByTwoCity(ListLineDto reqDto);
 
     /**
-     * 班线导入到excel中
+     * 班线导出到excel中
      * @param request
      * @param response
      */

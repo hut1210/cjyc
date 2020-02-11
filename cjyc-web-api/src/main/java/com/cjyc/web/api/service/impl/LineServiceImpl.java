@@ -150,7 +150,7 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
         //PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         // 查询列表
         List<LineVo> lineVos = queryAllByTerm(dto);
-        if (!CollectionUtils.isEmpty(lineVos)) {
+        //if (!CollectionUtils.isEmpty(lineVos)) {
             // 生成导出数据
             List<LineExportExcel> exportExcelList = new ArrayList<>();
             for (LineVo vo : lineVos) {
@@ -162,13 +162,13 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
             String sheetName = "运输班线";
             String fileName = "运输班线.xls";
             try {
-                if(!CollectionUtils.isEmpty(exportExcelList)){
+                //if(!CollectionUtils.isEmpty(exportExcelList)){
                     ExcelUtil.exportExcel(exportExcelList, title, sheetName, LineExportExcel.class, fileName, response);
-                }
+                //}
             } catch (IOException e) {
                 log.error("导出运输班线异常:{}",e);
             }
-        }
+        //}
     }
 
     @Override

@@ -197,7 +197,7 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
         // 查询列表
         List<Store> storeList = getStoreList(storeQueryDto);
 
-        if (!CollectionUtils.isEmpty(storeList)) {
+        //if (!CollectionUtils.isEmpty(storeList)) {
             // 生成导出数据
             List<StoreExportExcel> exportExcelList = new ArrayList<>(10);
             for (Store store : storeList) {
@@ -219,7 +219,7 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
             } catch (IOException e) {
                 log.error("导出业务中心异常:{}",e);
             }
-        }
+        //}
     }
 
     @Override

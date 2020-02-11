@@ -344,7 +344,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     public void exportCarrierExcel(HttpServletRequest request, HttpServletResponse response) {
         SeleCarrierDto dto = getCarrierDto(request);
         List<CarrierVo> carrierVos = encapCarrierNew(dto);
-        if (!CollectionUtils.isEmpty(carrierVos)) {
+        //if (!CollectionUtils.isEmpty(carrierVos)) {
             // 生成导出数据
             List<CarrierExportExcel> exportExcelList = new ArrayList<>();
             for (CarrierVo vo : carrierVos) {
@@ -356,13 +356,13 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             String sheetName = "承运商管理";
             String fileName = "承运商管理.xls";
             try {
-                if(!CollectionUtils.isEmpty(exportExcelList)){
+                //if(!CollectionUtils.isEmpty(exportExcelList)){
                     ExcelUtil.exportExcel(exportExcelList, title, sheetName, CarrierExportExcel.class, fileName, response);
-                }
+                //}
             } catch (IOException e) {
                 log.error("导出承运商管理信息异常:{}",e);
             }
-        }
+        //}
     }
 
     /*********************************韵车集成改版 st*****************************/
