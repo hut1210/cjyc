@@ -2,8 +2,10 @@ package com.cjyc.common.system.service.impl;
 
 import com.Pingxx.model.OrderModel;
 import com.Pingxx.model.PingxxMetaData;
+import com.cjkj.common.utils.DateUtil;
 import com.cjkj.log.monitor.LogUtil;
 import com.cjyc.common.model.dao.*;
+import com.cjyc.common.model.dto.customer.pingxx.ExternalPaymentDto;
 import com.cjyc.common.model.dto.customer.pingxx.PrePayDto;
 import com.cjyc.common.model.dto.customer.pingxx.SweepCodeDto;
 import com.cjyc.common.model.dto.customer.pingxx.ValidateSweepCodeDto;
@@ -53,6 +55,8 @@ import javax.annotation.Resource;
 import java.io.FileNotFoundException;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @Author: Hut
@@ -92,6 +96,11 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
 
     @Resource
     private ICustomerDao customerDao;
+
+    @Resource
+    private IExternalPaymentDao externalPaymentDao;
+
+    private final Lock lock = new ReentrantLock();
 
     @Override
     public Charge sweepDriveCode(SweepCodeDto sweepCodeDto) throws RateLimitException, APIException, ChannelException, InvalidRequestException,
@@ -356,11 +365,40 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         Waybill waybill = waybillDao.selectById(waybillId);
         try{
             if(waybill != null){
-                Long carrierId = waybill.getCarrierId();
-                BaseCarrierVo baseCarrierVo = carrierDao.showCarrierById(carrierId);
-                Transfer transfer = allinpayTransferDriverCreate(baseCarrierVo,waybill);
-                log.debug("【通联代付支付运费】运单{}，支付运费，账单{}", waybill.getNo(), transfer);
-                cStransactionService.saveTransactions(transfer, "0");
+                lock.lock();
+                try{
+                    TradeBill tradeBill = cStransactionService.getTradeBillByOrderNoAndType(String.valueOf(waybillId),ChargeTypeEnum.UNION_PAY.getCode());
+                    if(tradeBill != null){
+                        throw new CommonException("运费已支付完成","1");
+                    }
+                    waybill = waybillDao.selectById(waybillId);
+                    Long carrierId = waybill.getCarrierId();
+                    BaseCarrierVo baseCarrierVo = carrierDao.showCarrierById(carrierId);
+                    log.info("【通联代付支付运费】运单Id{},支付状态 state {}",waybillId,waybill.getFreightPayState());
+                    if(waybill != null && waybill.getFreightPayState()==null && waybill.getFreightFee().compareTo(BigDecimal.ZERO)>0){
+                        Transfer transfer = allinpayTransferDriverCreate(baseCarrierVo,waybill);
+                        log.debug("【通联代付支付运费】运单{}，支付运费，账单{}", waybill.getNo(), transfer);
+                        cStransactionService.saveTransactions(transfer, "0");
+
+                        try{
+                            //添加打款日志详情
+                            ExternalPaymentDto externalPaymentDto = new ExternalPaymentDto();
+                            externalPaymentDto.setCarrierId(carrierId);
+                            externalPaymentDto.setWaybillId(waybillId);
+                            externalPaymentDao.insert(externalPaymentDto);
+                        }catch (Exception e){
+                            log.error("添加打款日志详情失败 waybillId = {}", waybillId);
+                            log.error(e.getMessage(), e);
+                        }
+
+                    }else{
+                        log.debug("【通联代付支付运费】运单{}，支付运费为0", waybill.getNo());
+                        cStransactionService.updateWayBillPayStateNoPay(waybillId, DateUtil.format(new Date(),"yyyyMMdd"));
+                    }
+                }finally {
+                    lock.unlock();
+                }
+
             }
         }catch (Exception e){
             log.error("【通联代付支付运费】运单{}，支付运费支付失败", waybill.getNo());

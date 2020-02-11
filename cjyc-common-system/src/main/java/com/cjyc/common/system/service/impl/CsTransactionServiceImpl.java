@@ -102,6 +102,11 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
     }
 
     @Override
+    public void updateWayBillPayState(Long waybillId, String time) {
+
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveTransactions(Object obj, String state) {
         TradeBill tb;

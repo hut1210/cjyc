@@ -31,4 +31,6 @@ public interface ICsTransactionService {
     List<String> getOrderCarNosByTaskCarIds(List<Long> taskCarIdList);
 
     TradeBill getTradeBillByOrderNoAndType(String no,int type);
+
+    void updateWayBillPayStateNoPay(Long waybillId, String yyyyMMdd);
 }
