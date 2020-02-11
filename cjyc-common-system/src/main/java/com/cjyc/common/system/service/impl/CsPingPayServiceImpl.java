@@ -385,7 +385,8 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                             log.error(e.getMessage(), e);
                         }
 
-                        if(baseCarrierVo!=null && baseCarrierVo.getCardName()!=null && baseCarrierVo.getCardNo()!=null
+                        if(baseCarrierVo!=null && baseCarrierVo.getSettleType()==0
+                        && baseCarrierVo.getCardName()!=null && baseCarrierVo.getCardNo()!=null
                                 && baseCarrierVo.getBankCode()!=null){
                             Transfer transfer = allinpayTransferDriverCreate(baseCarrierVo,waybill);
                             log.debug("【通联代付支付运费】运单{}，支付运费，账单{}", waybill.getNo(), transfer);
