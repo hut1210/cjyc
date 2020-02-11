@@ -322,7 +322,7 @@ public class FinanceServiceImpl implements IFinanceService {
             for (int j=0;j<settlementVoList.size();j++){
                 PayableTaskVo settlementVo = settlementVoList.get(j);
                 if(settlementVo!=null && settlementVo.getFreightFee()!=null){
-                    freightFee.add(settlementVo.getFreightFee());
+                    freightFee = freightFee.add(settlementVo.getFreightFee());
                 }
             }
             financePayableVo.setRemainDate(financePayableVo.getSettlePeriod()-formatDuring(System.currentTimeMillis()-financePayableVo.getCompleteTime()));
