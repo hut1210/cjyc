@@ -54,6 +54,8 @@ public class ShowPartnerVo implements Serializable {
     private String description;
     @ApiModelProperty("身份证号")
     private String idCard;
+    @ApiModelProperty("银行编码")
+    private String bankCode;
 
     @ApiModelProperty("企业执照正面")
     private String businessLicenseFrontImg;
