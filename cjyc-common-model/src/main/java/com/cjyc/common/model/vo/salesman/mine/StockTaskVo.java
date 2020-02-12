@@ -2,6 +2,7 @@ package com.cjyc.common.model.vo.salesman.mine;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 @Data
@@ -37,4 +38,23 @@ public class StockTaskVo implements Serializable {
     private String unloadLinkPhone;
     @ApiModelProperty(value = "卸/交车地址")
     private String endAddress;
+
+    public String getTaskNo(){return StringUtils.isBlank(taskNo) ? "":taskNo;}
+    public Integer getType(){return type == null ? 0 : type;}
+    public String getStartCity(){return StringUtils.isBlank(startCity) ? "":startCity;}
+    public String getEndCity(){return StringUtils.isBlank(endCity) ? "":endCity;}
+
+    public String getCarrierName(){return StringUtils.isBlank(carrierName) ? "":carrierName;}
+    public String getDriverName(){return StringUtils.isBlank(driverName) ? "":driverName;}
+    public String getVehiclePlateNo(){return StringUtils.isBlank(vehiclePlateNo) ? "":vehiclePlateNo; }
+    public String getDriverPhone(){return StringUtils.isBlank(driverPhone) ? "":driverPhone;}
+
+    public String getLoadLinkName(){return StringUtils.isBlank(loadLinkName) ? "":loadLinkName;}
+    public String getLoadLinkPhone(){return StringUtils.isBlank(loadLinkPhone) ? "":loadLinkPhone;}
+
+    public String getStartAddress(){return StringUtils.isBlank(startAddress) ? "":startAddress;}
+    public String getUnloadLinkName(){return StringUtils.isBlank(unloadLinkName) ? "":unloadLinkName;}
+    public String getUnloadLinkPhone(){return StringUtils.isBlank(unloadLinkPhone) ? "":unloadLinkPhone; }
+    public String getEndAddress(){return StringUtils.isBlank(endAddress) ? "":endAddress;}
+
 }
