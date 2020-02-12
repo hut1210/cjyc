@@ -397,7 +397,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                         }
                     }else{
                         log.debug("【通联代付支付运费】运单{}，支付运费为0", waybill.getNo());
-                        cStransactionService.updateWayBillPayStateNoPay(waybillId, DateUtil.format(new Date(),"yyyyMMdd"));
+                        cStransactionService.updateWayBillPayStateNoPay(waybillId, System.currentTimeMillis());
                     }
                 }finally {
                     lock.unlock();
