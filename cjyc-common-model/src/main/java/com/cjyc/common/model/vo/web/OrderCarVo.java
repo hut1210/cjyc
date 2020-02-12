@@ -76,22 +76,16 @@ public class OrderCarVo extends OrderCar implements Serializable {
 
     @ApiModelProperty(value = "省")
     private String endProvince;
-
     @ApiModelProperty(value = "省编号")
     private String endProvinceCode;
-
     @ApiModelProperty(value = "市")
     private String endCity;
-
     @ApiModelProperty(value = "市编号")
     private String endCityCode;
-
     @ApiModelProperty(value = "区")
     private String endArea;
-
     @ApiModelProperty(value = "区编号")
     private String endAreaCode;
-
     @ApiModelProperty(value = "目的地详细地址")
     private String endAddress;
 
@@ -108,6 +102,18 @@ public class OrderCarVo extends OrderCar implements Serializable {
         return endStoreName == null ? "" : endStoreName;
     }
 
+    @ApiModelProperty(value = "省")
+    private String endStoreProvince;
+    @ApiModelProperty(value = "省编号")
+    private String endStoreProvinceCode;
+    @ApiModelProperty(value = "市")
+    private String endStoreCity;
+    @ApiModelProperty(value = "市编号")
+    private String endStoreCityCode;
+    @ApiModelProperty(value = "区")
+    private String endStoreArea;
+    @ApiModelProperty(value = "区编号")
+    private String endStoreAreaCode;
     @ApiModelProperty(value = "目的地业务中心地址")
     private String endStoreAddress;
 

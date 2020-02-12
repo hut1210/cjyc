@@ -1428,6 +1428,12 @@
         o.back_contact_name as backContactName,
         o.back_contact_phone as backContactPhone,
         o.state as orderState,
+        se.end_province as endStoreProvince,
+        se.end_province_code as endStoreProvinceCode,
+        se.end_city as endStoreCity,
+        se.end_city_code as endStoreCityCode,
+        se.end_area as endStoreArea,
+        se.end_area_code as endStoreAreaCode,
         se.detail_addr as endStoreAddress,
         oc.*
         from w_order o
