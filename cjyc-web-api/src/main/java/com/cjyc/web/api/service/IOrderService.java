@@ -44,7 +44,7 @@ public interface IOrderService extends IService<Order> {
 
     ResultVo<PageVo<ListOrderVo>> list(ListOrderDto paramsDto);
 
-    List<ListOrderVo> listAll(ListOrderDto dto);
+    ResultVo<List<ListOrderVo>> listAll(ListOrderDto dto);
 
     ResultVo<PageVo<ListOrderCarVo>> carlist(ListOrderCarDto paramsDto);
 

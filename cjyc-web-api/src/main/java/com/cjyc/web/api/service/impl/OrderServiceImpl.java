@@ -575,8 +575,14 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
 
 
     @Override
-    public List<ListOrderVo> listAll(ListOrderDto dto) {
-        return orderDao.findListSelective(dto);
+    public ResultVo<List<ListOrderVo>> listAll(ListOrderDto dto) {
+        //查询角色业务中心范围
+        BizScope bizScope = csSysService.getBizScopeBySysRoleIdNew(dto.getLoginId(), dto.getRoleId(), true);
+        if(bizScope == null || BizScopeEnum.NONE.code == bizScope.getCode()){
+            return BaseResultUtil.fail("没有数据权限");
+        }
+        dto.setBizScope(bizScope.getCode() == 0 ? null : bizScope.getStoreIds());
+        return BaseResultUtil.success(orderDao.findListSelective(dto));
     }
 
     @Override
