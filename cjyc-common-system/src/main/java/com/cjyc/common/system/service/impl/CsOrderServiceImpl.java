@@ -189,6 +189,9 @@ public class CsOrderServiceImpl implements ICsOrderService {
             orderDao.updateById(order);
         }
 
+        if(OrderStateEnum.SUBMITTED.code == paramsDto.getState()){
+
+        }
 
         return BaseResultUtil.success("下单成功，订单编号{0}", order.getNo());
     }
@@ -426,21 +429,24 @@ public class CsOrderServiceImpl implements ICsOrderService {
         //验证
         for (Long orderCarId : orderCarIdList) {
             OrderCar orderCar = orderCarDao.selectById(orderCarId);
+            if(orderCar.getState() >= OrderCarStateEnum.SIGNED.code){
+                return BaseResultUtil.fail("车辆{0}，已经完结无法修改", orderCar.getNo());
+            }
             //验证车辆提车是否结束
             if(paramsDto.getPickType() != null){
                 if(orderCar.getPickState() >= OrderCarLocalStateEnum.DISPATCHED.code){
-                    return BaseResultUtil.fail("车辆{0},提车已经调度完成，无法变更承运方式", orderCar.getNo());
+                    return BaseResultUtil.fail("车辆{0}，提车已经调度完成，无法变更承运方式", orderCar.getNo());
                 }
                 if(orderCar.getState() >= OrderCarStateEnum.WAIT_PICK.code){
-                    return BaseResultUtil.fail("车辆{0},提车调度已经结束，无法变更承运方式", orderCar.getNo());
+                    return BaseResultUtil.fail("车辆{0}，提车调度已经结束，无法变更承运方式", orderCar.getNo());
                 }
             }
             if(paramsDto.getBackType() != null){
                 if(orderCar.getBackState() >= OrderCarLocalStateEnum.DISPATCHED.code){
-                    return BaseResultUtil.fail("车辆{0},配送已经调度完成，无法变更承运方式", orderCar.getNo());
+                    return BaseResultUtil.fail("车辆{0}，配送已经调度完成，无法变更承运方式", orderCar.getNo());
                 }
                 if(orderCar.getState() >= OrderCarStateEnum.WAIT_BACK.code){
-                    return BaseResultUtil.fail("车辆{0},配送调度已经结束，无法变更承运方式", orderCar.getNo());
+                    return BaseResultUtil.fail("车辆{0}，配送调度已经结束，无法变更承运方式", orderCar.getNo());
                 }
             }
         }

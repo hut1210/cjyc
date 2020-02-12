@@ -1428,6 +1428,12 @@
         o.back_contact_name as backContactName,
         o.back_contact_phone as backContactPhone,
         o.state as orderState,
+        se.province as endStoreProvince,
+        se.province_code as endStoreProvinceCode,
+        se.city as endStoreCity,
+        se.city_code as endStoreCityCode,
+        se.area as endStoreArea,
+        se.area_code as endStoreAreaCode,
         se.detail_addr as endStoreAddress,
         oc.*
         from w_order o
@@ -1617,7 +1623,6 @@
     </sql>
     <sql id="trunk_wait_dispatch_car_list_For_App">
         select * from(
-
             select
             <include refid="trunk_wait_dispatch_car_field"/>,
             <include refid="dispatch_car_field"/>

@@ -768,7 +768,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         if(Pingpp.apiKey.contains("_test_")){//test模式调用查询相当于企业付款成功
             obj = transferRetrieve(obj.getId());
         }
-        obj.setAmount(Integer.parseInt(src_amount.multiply(new BigDecimal(100)).toString()));
+        obj.setAmount(Integer.parseInt(src_amount.toString()));
         return obj;
     }
 

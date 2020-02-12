@@ -1117,7 +1117,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 List<Waybill> afterWaybills = waybillDao.findListByWaybillCarIds(collect);
                 if(!CollectionUtils.isEmpty(afterWaybills)){
                     afterWaybills.forEach(waybill -> {
-                        waybillDao.updateNum(waybill.getId());
+                        waybillDao.updateNumAndFreightFee(waybillCar.getWaybillId());
                         validateAndFinishWaybill(waybill.getId());
                     });
                 }
@@ -1160,7 +1160,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         //取消运单车辆
         waybillCarDao.updateStateById(waybillCar.getId(), WaybillCarStateEnum.F_CANCEL.code);
         //更新运单车辆数
-        waybillDao.updateNum(waybillCar.getWaybillId());
+        waybillDao.updateNumAndFreightFee(waybillCar.getWaybillId());
         orderCarDao.updateById(noc);
 
         //更新任务车辆数
@@ -1314,10 +1314,11 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             return;
         }
         newTotalFee = MoneyUtil.convertYuanToFen(newTotalFee);
-        if(newTotalFee.compareTo(BigDecimal.ZERO) == 0){
+        if(newTotalFee.compareTo(oldTotalFee) == 0){
+            return;
+        }else if(newTotalFee.compareTo(BigDecimal.ZERO) == 0){
             waybillCars.forEach(waybillCar -> {
                 waybillCar.setFreightFee(BigDecimal.ZERO);
-                waybillCarDao.updateById(waybillCar);
             });
         }else if(oldTotalFee.compareTo(BigDecimal.ZERO) == 0){
 
@@ -1332,7 +1333,6 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 } else {
                     waybillCar.setFreightFee(rAvg);
                 }
-                waybillCarDao.updateById(waybillCar);
             }
         }else{
             BigDecimal avg = newTotalFee.divide(oldTotalFee, 8, RoundingMode.FLOOR);

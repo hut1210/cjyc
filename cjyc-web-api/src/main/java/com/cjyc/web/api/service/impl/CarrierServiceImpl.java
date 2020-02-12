@@ -18,10 +18,7 @@ import com.cjyc.common.model.enums.role.DeptTypeEnum;
 import com.cjyc.common.model.enums.role.RoleLevelEnum;
 import com.cjyc.common.model.enums.role.RoleRangeEnum;
 import com.cjyc.common.model.enums.transport.*;
-import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.util.LocalDateTimeUtil;
-import com.cjyc.common.model.util.RandomUtil;
-import com.cjyc.common.model.util.YmlProperty;
+import com.cjyc.common.model.util.*;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.carrier.*;
@@ -374,6 +371,10 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     @Transactional(rollbackFor = Exception.class)
     @Override
     public ResultVo saveOrModifyCarrierNew(CarrierDto dto) {
+        boolean flag = BankCardUtil.checkBankCard(dto.getCardNo());
+        if(!flag){
+            return BaseResultUtil.fail("银行卡号输入不符合,请检查");
+        }
         if (dto.getCarrierId() == null) {
             //新增
             List<Driver> existDriverList = driverDao.selectList(new QueryWrapper<Driver>().lambda()
