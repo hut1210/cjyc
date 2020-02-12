@@ -1792,7 +1792,7 @@
                 and (start_belong_store_id in <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
                                                 #{item}
                                             </foreach>
-                or (ISNULL(start_belong_store_id) or LENGTH(trim(start_belong_store_id)) &lt; 1 or LENGTH(trim(start_belong_store_id)) = 0))
+                or (ISNULL(start_belong_store_id) or LENGTH(trim(start_belong_store_id)) &lt; 1 or start_belong_store_id = 0))
             </if>
             /*待交车*/
             <if test="detailState == 2">
@@ -1802,7 +1802,7 @@
                 and (end_belong_store_id in <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
                                             #{item}
                                         </foreach>
-                or (ISNULL(end_belong_store_id) or LENGTH(trim(end_belong_store_id)) &lt; 1 or LENGTH(trim(end_belong_store_id)) = 0))
+                or (ISNULL(end_belong_store_id) or LENGTH(trim(end_belong_store_id)) &lt; 1 or end_belong_store_id = 0))
             </if>
             /*已交付 已入库*/
             <if test="detailState == 3 or detailState == 5">
@@ -1812,7 +1812,7 @@
                 and (end_belong_store_id in <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
                                                 #{item}
                                             </foreach>
-                or (ISNULL(end_belong_store_id) or LENGTH(trim(end_belong_store_id)) &lt; 1 or LENGTH(trim(end_belong_store_id)) = 0))
+                or (ISNULL(end_belong_store_id) or LENGTH(trim(end_belong_store_id)) &lt; 1 or end_belong_store_id = 0))
             </if>
             /*待入库*/
             <if test="detailState == 4">
@@ -1822,7 +1822,7 @@
                 and (end_belong_store_id in <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
                                             #{item}
                                         </foreach>
-                or (ISNULL(end_belong_store_id) or LENGTH(trim(end_belong_store_id)) &lt; 1 or LENGTH(trim(end_belong_store_id)) = 0))
+                or (ISNULL(end_belong_store_id) or LENGTH(trim(end_belong_store_id)) &lt; 1 or end_belong_store_id = 0))
             </if>
             /*待出库*/
             <if test="detailState == 6">
@@ -1832,7 +1832,7 @@
                 and (start_belong_store_id in <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
                                                 #{item}
                                             </foreach>
-                or (ISNULL(start_belong_store_id) or LENGTH(trim(start_belong_store_id)) &lt; 1 or LENGTH(trim(start_belong_store_id)) = 0))
+                or (ISNULL(start_belong_store_id) or LENGTH(trim(start_belong_store_id)) &lt; 1 or start_belong_store_id = 0))
             </if>
             /*已出库*/
             <if test="detailState == 7">
@@ -1842,7 +1842,7 @@
                 and (start_belong_store_id in <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
                                                 #{item}
                                             </foreach>
-                or (ISNULL(start_belong_store_id) or LENGTH(trim(start_belong_store_id)) &lt; 1 or LENGTH(trim(start_belong_store_id)) = 0))
+                or (ISNULL(start_belong_store_id) or LENGTH(trim(start_belong_store_id)) &lt; 1 or start_belong_store_id = 0))
             </if>
         </where>
     </select>

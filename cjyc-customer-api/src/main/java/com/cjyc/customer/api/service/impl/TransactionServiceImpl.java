@@ -25,6 +25,7 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.util.RedisUtils;
 import com.cjyc.customer.api.service.ITransactionService;
 import com.pingplusplus.model.Order;
+import com.pingplusplus.model.Refund;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -94,6 +95,9 @@ public class TransactionServiceImpl implements ITransactionService {
 
     @Resource
     private IOrderService orderService;
+
+    @Resource
+    private IOrderRefundDao orderRefundDao;
 
     @Override
     public int save(Object obj) {
@@ -332,6 +336,26 @@ public class TransactionServiceImpl implements ITransactionService {
         tradeBill.setState(-2);
         tradeBill.setTradeTime(System.currentTimeMillis());
         tradeBillDao.updateTradeBillByPingPayId(tradeBill);
+    }
+
+    @Override
+    public void refund(Refund refund, Event event) {
+        /*TradeBill tradeBill = new TradeBill();
+        tradeBill.setPingPayId(refund.getId());
+        tradeBill.setState(10);
+        tradeBill.setTradeTime(System.currentTimeMillis());
+        tradeBillDao.updateTradeBillByPingPayId(tradeBill);*/
+        Map<String, Object> metadata = refund.getMetadata();
+        PingxxMetaData pingxxMetaData = BeanMapUtil.mapToBean(metadata, new PingxxMetaData());
+        String orderNo = pingxxMetaData.getOrderNo();
+        log.info("refund orderNo = {}",orderNo);
+        try{
+            orderRefundDao.updateRefund(orderNo);
+        }catch (Exception e){
+            log.error("回调退款更新异常 orderNo = {}",orderNo);
+            log.error(e.getMessage(),e);
+        }
+
     }
 
     @Override

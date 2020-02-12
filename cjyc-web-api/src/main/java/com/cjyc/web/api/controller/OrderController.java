@@ -283,7 +283,11 @@ public class OrderController {
     @ApiOperation(value = "导出全部订单列表")
     @GetMapping(value = "/exportAllList")
     public ResultVo exportAllList(ListOrderDto reqDto, HttpServletResponse response) {
-        List<ListOrderVo> orderList = orderService.listAll(reqDto);
+        ResultVo<List<ListOrderVo>> orderRs = orderService.listAll(reqDto);
+        if (!isResultSuccess(orderRs)) {
+            return BaseResultUtil.fail(orderRs.getMsg());
+        }
+        List<ListOrderVo> orderList = orderRs.getData();
         if (CollectionUtils.isEmpty(orderList)) {
             return BaseResultUtil.success("未查询到结果");
         }

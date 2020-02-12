@@ -147,7 +147,7 @@ public class PingPayController {
                     }else if("order.refunded".equals(event.getType())){
                         Order order = (Order) data.getObject();
                         if(data.getObject() instanceof Charge){
-                            log.debug("------------->charge.succeeded");
+                            log.debug("------------->order.refunded.succeeded");
                             //transactionService.update((Charge)data.getObject(),event,"1");
                         }
                     }else if("charge.succeeded".equals(event.getType())){
@@ -165,6 +165,11 @@ public class PingPayController {
                         if(data.getObject() instanceof Transfer){
                             log.debug("---------------->transfer.failed");
                             transactionService.transferFailed((Transfer)data.getObject(),event);
+                        }
+                    }else if("refund.succeeded".equals(event.getType())){
+                        if(data.getObject() instanceof Refund) {
+                            log.debug("---------------->refund.succeeded");
+                            transactionService.refund((Refund)data.getObject(),event);
                         }
                     }
                 }

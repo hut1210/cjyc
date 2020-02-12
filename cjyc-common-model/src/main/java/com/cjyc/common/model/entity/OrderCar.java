@@ -42,11 +42,11 @@ public class OrderCar implements Serializable {
     private Long orderId;
 
     @ApiModelProperty(value = "订单编号")
-    @Excel(name = "订单编号", orderNum = "9")
+    @Excel(name = "订单编号", orderNum = "20")
     private String orderNo;
 
     @ApiModelProperty(value = "车辆编码")
-    @Excel(name = "车辆编码", orderNum = "0")
+    @Excel(name = "车辆编码", orderNum = "5")
     private String no;
 
     @ApiModelProperty(value = "品牌")
@@ -54,14 +54,15 @@ public class OrderCar implements Serializable {
     private String brand;
 
     @ApiModelProperty(value = "型号")
-    @Excel(name = "型号", orderNum = "9")
+    @Excel(name = "车系", orderNum = "10")
     private String model;
 
     @ApiModelProperty(value = "车牌号")
+    @Excel(name = "车牌号", orderNum = "11")
     private String plateNo;
 
     @ApiModelProperty(value = "vin码")
-    @Excel(name = "vin码", orderNum = "1")
+    @Excel(name = "vin码", orderNum = "6")
     private String vin;
 
     @ApiModelProperty(value = "是否能动 0-否 1-是")
@@ -71,6 +72,7 @@ public class OrderCar implements Serializable {
     private Integer isNew;
 
     @ApiModelProperty(value = "估值/万")
+    @Excel(name = "车值(万元)", orderNum = "12")
     private Integer valuation;
 
     @ApiModelProperty(value = "当前所在地所属业务中心")
@@ -85,7 +87,7 @@ public class OrderCar implements Serializable {
     @ApiModelProperty(value = "状态：0待路由，5待提车调度，10待提车，12待自送交车，15提车中（待交车），25待干线调度<循环>（提车入库），35待干线提车<循环>，40干线中<循环>（待干线交车），45待配送调度（干线入库），50待配送提车，55配送中（待配送交车），70待自取提车，100已签收")
     private Integer state;
 
-    @Excel(name = "订单状态", orderNum = "9")
+//    @Excel(name = "订单状态", orderNum = "9")
     @TableField(exist = false)
     private String stateStr;
 
@@ -103,14 +105,17 @@ public class OrderCar implements Serializable {
 
     @ApiModelProperty(value = "车辆应收提车费")
     @JsonSerialize(using = BigDecimalSerizlizer.class)
+    @Excel(name = "提车费(元)", orderNum = "15")
     private BigDecimal pickFee;
 
     @ApiModelProperty(value = "车辆应收干线费")
     @JsonSerialize(using = BigDecimalSerizlizer.class)
+    @Excel(name = "物流费(元)", orderNum = "16")
     private BigDecimal trunkFee;
 
     @ApiModelProperty(value = "车辆应收送车费")
     @JsonSerialize(using = BigDecimalSerizlizer.class)
+    @Excel(name = "送车费(元)", orderNum = "17")
     private BigDecimal backFee;
 
     @ApiModelProperty(value = "实际提车类型")
@@ -122,9 +127,11 @@ public class OrderCar implements Serializable {
 
     @ApiModelProperty(value = "车辆应收保险费")
     @JsonSerialize(using = BigDecimalSerizlizer.class)
+    @Excel(name = "保费(元)", orderNum = "14")
     private BigDecimal addInsuranceFee;
 
     @ApiModelProperty(value = "保额/万")
+    @Excel(name = "追保额(万元)", orderNum = "13")
     private Integer addInsuranceAmount;
 
     @ApiModelProperty(value = "物流券抵消金额")
@@ -136,8 +143,8 @@ public class OrderCar implements Serializable {
     private BigDecimal agencyFee;
 
     @ApiModelProperty(value = "单车总费用")
-    @Excel(name = "单车总费用", orderNum = "9")
     @JsonSerialize(using = BigDecimalSerizlizer.class)
+    @Excel(name = "实收总运费(元)", orderNum = "18")
     private BigDecimal totalFee;
 
     @ApiModelProperty(value = "应收状态：0未支付，2已支付")
