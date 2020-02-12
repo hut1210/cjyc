@@ -366,7 +366,7 @@ public class PingPayServiceImpl implements IPingPayService {
 
         }catch (Exception e){
             //添加退款记录
-            try{
+            /*try{
                 Refund refund1 = new Refund();
                 refund1.setOrderNo(orderCode);
                 refund1.setState(-1);
@@ -375,7 +375,7 @@ public class PingPayServiceImpl implements IPingPayService {
             }catch (Exception e1){
                 log.error("添加退款记录异常1 orderCode={}",orderCode);
                 log.error(e1.getMessage(),e1);
-            }
+            }*/
 
             log.error("退款异常 orderCode={}",orderCode);
             log.error(e.getMessage(),e);
