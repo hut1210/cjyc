@@ -2,6 +2,7 @@ package com.cjyc.common.model.vo.salesman.mine;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
@@ -31,4 +32,11 @@ public class StockCarDetailVo extends StockCarVo {
     @ApiModelProperty(value = "运输")
     private List<StockTaskVo> stockVos;
 
+    public String getOrderNo(){return StringUtils.isBlank(orderNo) ? "":orderNo;}
+    public String getPickContactName(){return StringUtils.isBlank(pickContactName) ? "":pickContactName;}
+    public String getPickContactPhone(){return StringUtils.isBlank(pickContactPhone) ? "":pickContactPhone;}
+    public String getStartAddress(){return StringUtils.isBlank(startAddress) ? "":startAddress;}
+    public String getBackContactName(){return StringUtils.isBlank(backContactName) ? "":backContactName;}
+    public String getBackContactPhone(){return StringUtils.isBlank(backContactPhone) ? "":backContactPhone;}
+    public String getEndAddress(){return StringUtils.isBlank(endAddress) ? "":endAddress;}
 }
