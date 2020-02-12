@@ -740,7 +740,7 @@
         LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
         LEFT JOIN s_bank_card_bind sbcb ON sbcb.user_id = dc.id
       WHERE
-            dc.id = #{carrierId}
+            sbcb.state = 1 and dc.id = #{carrierId}
       limit 1
     </select>
 
