@@ -23,6 +23,7 @@ import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.MoneyUtil;
 import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.driver.mine.BankCardVo;
 import com.cjyc.common.system.service.*;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -73,6 +74,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
     private IDriverDao driverDao;
     @Resource
     private ITaskDao taskDao;
+    @Resource
+    private IBankCardBindDao bankCardBindDao;
     @Resource
     private ICsCityService csCityService;
     @Resource
@@ -453,6 +456,10 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 Driver driver = driverDao.findTopByCarrierId(newCarrierId);
                 if (driver == null) {
                     throw new ParameterException("车辆{0}，所选承运商没有运营中的司机", orderCarNo);
+                }
+                List<BankCardVo> binkCardInfoList = bankCardBindDao.findBinkCardInfo(newCarrierId);
+                if (CollectionUtils.isEmpty(binkCardInfoList)) {
+                    throw new ParameterException("车辆{0}，所选承运商没有绑定或者没有可用的银行卡", orderCarNo);
                 }
                 carrierInfo.setDriverId(driver.getId());
                 carrierInfo.setDriverName(driver.getName());
@@ -982,6 +989,10 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             Driver driver = driverDao.findTopByCarrierId(carrierId);
             if (driver == null) {
                 throw new ParameterException("运单，所选承运商没有运营中的司机");
+            }
+            List<BankCardVo> binkCardInfoList = bankCardBindDao.findBinkCardInfo(carrierId);
+            if (CollectionUtils.isEmpty(binkCardInfoList)) {
+                throw new ParameterException("运单，所选承运商没有绑定或没有可用的银行卡");
             }
             VehicleRunning vr = vehicleRunningDao.findByDriverId(driver.getId());
             if(vr == null){

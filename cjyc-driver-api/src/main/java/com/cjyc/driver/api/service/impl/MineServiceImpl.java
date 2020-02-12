@@ -166,10 +166,10 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
                                     .eq(dto.getVehicleId() != null,DriverVehicleCon::getVehicleId, dto.getVehicleId()));
             if(vr != null && dvc != null){
                 //判断该运力是否在运输中
-                Task task = taskDao.selectOne(new QueryWrapper<Task>().lambda()
+                List<Task> taskList = taskDao.selectList(new QueryWrapper<Task>().lambda()
                         .eq(Task::getVehicleRunningId,vr.getId())
                         .eq(Task::getState,TaskStateEnum.TRANSPORTING.code));
-                if(task != null){
+                if(!CollectionUtils.isEmpty(taskList)){
                     return BaseResultUtil.fail("该运力正在运输中，不可修改");
                 }
             }
@@ -207,10 +207,10 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
                 .eq(VehicleRunning::getDriverId, dto.getDriverId())
                 .eq(VehicleRunning::getVehicleId, dto.getVehicleId()));
         if(vr != null){
-            Task task = taskDao.selectOne(new QueryWrapper<Task>().lambda()
+            List<Task> taskList = taskDao.selectList(new QueryWrapper<Task>().lambda()
                     .eq(Task::getVehicleRunningId,vr.getId())
                     .eq(Task::getState,TaskStateEnum.TRANSPORTING.code));
-            if(task != null){
+            if(!CollectionUtils.isEmpty(taskList)){
                 return BaseResultUtil.fail("该运力正在运输中，不可修改");
             }
         }
@@ -305,10 +305,10 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
             VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda()
                     .eq(VehicleRunning::getDriverId, dto.getLoginId()));
             if(vr != null){
-                Task task = taskDao.selectOne(new QueryWrapper<Task>().lambda()
+                List<Task> taskList = taskDao.selectList(new QueryWrapper<Task>().lambda()
                         .eq(Task::getVehicleRunningId,vr.getId())
                         .eq(Task::getState,TaskStateEnum.TRANSPORTING.code));
-                if(task != null){
+                if(!CollectionUtils.isEmpty(taskList)){
                     return BaseResultUtil.fail("该运力正在运输中，不可修改");
                 }
             }
@@ -484,10 +484,10 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
                     .eq(dto.getVehicleId() != null,DriverVehicleCon::getVehicleId, dto.getVehicleId()));
             if(vr != null && dvc != null){
                 //判断该运力是否在运输中
-                Task task = taskDao.selectOne(new QueryWrapper<Task>().lambda()
+                List<Task> taskList = taskDao.selectList(new QueryWrapper<Task>().lambda()
                         .eq(Task::getVehicleRunningId,vr.getId())
                         .eq(Task::getState,TaskStateEnum.TRANSPORTING.code));
-                if(task != null){
+                if(!CollectionUtils.isEmpty(taskList)){
                     return BaseResultUtil.fail("该运力正在运输中，不可修改");
                 }
             }
@@ -556,10 +556,10 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
                 .eq(VehicleRunning::getDriverId, dto.getDriverId())
                 .eq(VehicleRunning::getVehicleId, dto.getVehicleId()));
         if(vr != null){
-            Task task = taskDao.selectOne(new QueryWrapper<Task>().lambda()
+            List<Task> taskList = taskDao.selectList(new QueryWrapper<Task>().lambda()
                     .eq(Task::getVehicleRunningId,vr.getId())
                     .eq(Task::getState,TaskStateEnum.TRANSPORTING.code));
-            if(task != null){
+            if(!CollectionUtils.isEmpty(taskList)){
                 return BaseResultUtil.fail("该运力正在运输中，不可修改");
             }
         }
@@ -664,10 +664,10 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
             VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda()
                     .eq(VehicleRunning::getDriverId, dto.getLoginId()));
             if(vr != null){
-                Task task = taskDao.selectOne(new QueryWrapper<Task>().lambda()
+                List<Task> taskList = taskDao.selectList(new QueryWrapper<Task>().lambda()
                         .eq(Task::getVehicleRunningId,vr.getId())
                         .eq(Task::getState,TaskStateEnum.TRANSPORTING.code));
-                if(task != null){
+                if(!CollectionUtils.isEmpty(taskList)){
                     return BaseResultUtil.fail("该运力正在运输中，不可修改");
                 }
             }

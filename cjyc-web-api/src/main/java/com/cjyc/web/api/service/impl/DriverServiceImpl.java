@@ -647,10 +647,10 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         //获取运力信息
         VehicleRunning vRun = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda().eq(VehicleRunning::getDriverId,dto.getDriverId()));
         if(vRun != null){
-            Task task = taskDao.selectOne(new QueryWrapper<Task>().lambda()
+            List<Task> taskList = taskDao.selectList(new QueryWrapper<Task>().lambda()
                         .eq(Task::getVehicleRunningId,vRun.getId())
                         .eq(Task::getState,TaskStateEnum.TRANSPORTING.code));
-            if(task != null){
+            if(!CollectionUtils.isEmpty(taskList)){
                 return BaseResultUtil.fail("该运力正在运输中，不可修改");
             }
         }
@@ -671,11 +671,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
             log.error("修改用户信息失败，原因：" + updateRd.getMsg());
             return BaseResultUtil.fail("修改用户信息失败，原因：" + updateRd.getMsg());
         }
-        //更新司机与用户角色机构关系
-        ResultVo resultVo = csUserRoleDeptService.updateDriverToUserRoleDept(carrier, driver,null, dto.getLoginId(),1);
-        if (!ResultEnum.SUCCESS.getCode().equals(resultVo.getCode())) {
-            return BaseResultUtil.fail("修改用户信息失败，原因：" + resultVo.getMsg());
-        }
+
         //更新承运商信息
         BeanUtils.copyProperties(dto,carrier);
         carrier.setState(CommonStateEnum.WAIT_CHECK.code);
@@ -692,6 +688,15 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         driver.setCheckTime(NOW);
         driver.setCheckUserId(dto.getLoginId());
         super.updateById(driver);
+
+        carrier = carrierDao.selectById(dto.getCarrierId());
+        driver = driverDao.selectById(dto.getDriverId());
+
+        //更新司机与用户角色机构关系
+        ResultVo resultVo = csUserRoleDeptService.updateDriverToUserRoleDept(carrier, driver,null, dto.getLoginId(),1);
+        if (!ResultEnum.SUCCESS.getCode().equals(resultVo.getCode())) {
+            return BaseResultUtil.fail("修改用户信息失败，原因：" + resultVo.getMsg());
+        }
 
         //车牌号不为空 & 之前司机绑定不为空 & 车牌号与之前不同
         DriverVehicleCon dvc = driverVehicleConDao.getDriVehConByDriId(dto.getDriverId());

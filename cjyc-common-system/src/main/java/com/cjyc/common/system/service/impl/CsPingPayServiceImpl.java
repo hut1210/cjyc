@@ -393,10 +393,11 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                             cStransactionService.saveTransactions(transfer, "0");
                         }else{
                             log.error("【通联代付支付运费】收款人信息不全 waybillId = {}", waybillId);
+                            return BaseResultUtil.fail("通联代付失败,收款人信息不全");
                         }
                     }else{
                         log.debug("【通联代付支付运费】运单{}，支付运费为0", waybill.getNo());
-                        cStransactionService.updateWayBillPayStateNoPay(waybillId, DateUtil.format(new Date(),"yyyyMMdd"));
+                        cStransactionService.updateWayBillPayStateNoPay(waybillId, System.currentTimeMillis());
                     }
                 }finally {
                     lock.unlock();
@@ -470,6 +471,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                             cStransactionService.saveTransactions(transfer, "0");
                         }else{
                             log.error("【通联代付支付合伙人费用】收款人信息不全 orderId = {}", orderId);
+                            return BaseResultUtil.fail("通联代付支付合伙人费用失败,收款人信息不全");
                         }
                     }else{
                         log.info("【通联代付支付合伙人费用】为0,orderId = {}",orderId);
