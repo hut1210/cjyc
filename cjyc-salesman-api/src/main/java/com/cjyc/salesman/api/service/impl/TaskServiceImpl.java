@@ -187,10 +187,11 @@ public class TaskServiceImpl implements ITaskService {
 
 
     private void fillCarPhotoImg(String detailState, WaybillCar waybillCar, StringBuilder sb) {
-        if (FieldConstant.WAIT_TO_CAR.equals(detailState)
+        if (FieldConstant.WAIT_TO_CAR.equals(detailState)//
                 || FieldConstant.FINISH_PUT_OUT.equals(detailState)
                 || FieldConstant.FINISH_CAR.equals(detailState)
                 || FieldConstant.WAIT_PUT_IN.equals(detailState)
+                || FieldConstant.WAIT_PUT_OUT.equals(detailState)
                 || FieldConstant.FINISH_PUT_IN.equals(detailState)) {
             // 待交车 待入库 已出库 已交付 已入库
             String loadPhotoImg = waybillCar.getLoadPhotoImg();
