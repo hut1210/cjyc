@@ -385,16 +385,21 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                             log.error(e.getMessage(), e);
                         }
 
-                        if(baseCarrierVo!=null && baseCarrierVo.getSettleType()==0
-                        && baseCarrierVo.getCardName()!=null && baseCarrierVo.getCardNo()!=null
-                                && baseCarrierVo.getBankCode()!=null){
-                            Transfer transfer = allinpayTransferDriverCreate(baseCarrierVo,waybill);
-                            log.debug("【通联代付支付运费】运单{}，支付运费，账单{}", waybill.getNo(), transfer);
-                            cStransactionService.saveTransactions(transfer, "0");
+
+                        if(baseCarrierVo.getSettleType()==0){
+                            if(baseCarrierVo!=null && baseCarrierVo.getCardName()!=null && baseCarrierVo.getCardNo()!=null
+                                    && baseCarrierVo.getBankCode()!=null){
+                                Transfer transfer = allinpayTransferDriverCreate(baseCarrierVo,waybill);
+                                log.debug("【通联代付支付运费】运单{}，支付运费，账单{}", waybill.getNo(), transfer);
+                                cStransactionService.saveTransactions(transfer, "0");
+                            }else{
+                                log.error("【通联代付支付运费】收款人信息不全 waybillId = {}", waybillId);
+                                return BaseResultUtil.fail("通联代付失败,收款人信息不全");
+                            }
                         }else{
-                            log.error("【通联代付支付运费】收款人信息不全 waybillId = {}", waybillId);
-                            return BaseResultUtil.fail("通联代付失败,收款人信息不全");
+                            log.info("【通联代付支付运费】收款人为账期用户 waybillId = {}", waybillId);
                         }
+
                     }else{
                         log.debug("【通联代付支付运费】运单{}，支付运费为0", waybill.getNo());
                         cStransactionService.updateWayBillPayStateNoPay(waybillId, System.currentTimeMillis());
