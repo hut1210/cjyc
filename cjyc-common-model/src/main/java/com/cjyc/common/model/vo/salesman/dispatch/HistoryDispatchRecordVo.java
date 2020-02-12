@@ -57,4 +57,8 @@ public class HistoryDispatchRecordVo implements Serializable {
     public String getLinkmanPhone() {
         return linkmanPhone == null ? "" : linkmanPhone;
     }
+
+    public BigDecimal getFreightFee() {
+        return freightFee == null ? new BigDecimal(0) : freightFee;
+    }
 }
