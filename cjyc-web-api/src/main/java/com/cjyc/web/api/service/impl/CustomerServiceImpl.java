@@ -19,10 +19,7 @@ import com.cjyc.common.model.enums.customer.CustomerStateEnum;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.enums.role.DeptTypeEnum;
 import com.cjyc.common.model.exception.ServerException;
-import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.util.LocalDateTimeUtil;
-import com.cjyc.common.model.util.RandomUtil;
-import com.cjyc.common.model.util.YmlProperty;
+import com.cjyc.common.model.util.*;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.customer.*;
@@ -1198,6 +1195,10 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         if(role == null){
             return BaseResultUtil.fail("合伙人角色不存在，请先添加");
         }
+        boolean flag = BankCardUtil.checkBankCard(dto.getCardNo());
+        if(!flag){
+            return BaseResultUtil.fail("银行卡号输入不符合,请检查");
+        }
         //保存大客户信息到物流平台
         ResultData<Long> rd = csCustomerService.addUserToPlatform(dto.getContactPhone(),dto.getContactMan(),role);
         if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
@@ -1236,6 +1237,10 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         Customer customer = customerDao.selectById(dto.getCustomerId());
         if(customer == null){
             return BaseResultUtil.fail("合伙人不存在,数据错误，请检查");
+        }
+        boolean flag = BankCardUtil.checkBankCard(dto.getCardNo());
+        if(!flag){
+            return BaseResultUtil.fail("银行卡号输入不符合,请检查");
         }
         //更新架构组用户数据
         ResultData<Boolean> updateRd = csCustomerService.updateUserToPlatform(customer,null, dto.getContactPhone());

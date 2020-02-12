@@ -741,6 +741,7 @@
         LEFT JOIN s_bank_card_bind sbcb ON sbcb.user_id = dc.id
       WHERE
             dc.id = #{carrierId}
+      limit 1
     </select>
 
     <!--查询符合条件的调度个人司机-->

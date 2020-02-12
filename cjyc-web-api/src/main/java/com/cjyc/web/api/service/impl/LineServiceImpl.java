@@ -221,8 +221,6 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
 
     private SelectLineDto getSelectLineDto(HttpServletRequest request) {
         SelectLineDto dto = new SelectLineDto();
-        dto.setCurrentPage(Integer.valueOf(request.getParameter("currentPage")));
-        dto.setPageSize(Integer.valueOf(request.getParameter("pageSize")));
         dto.setFromCityCode(request.getParameter("fromCityCode"));
         dto.setToCityCode(request.getParameter("toCityCode"));
         dto.setLineCode(request.getParameter("lineCode"));

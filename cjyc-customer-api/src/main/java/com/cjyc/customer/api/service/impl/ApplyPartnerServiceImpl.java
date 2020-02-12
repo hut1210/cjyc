@@ -15,10 +15,7 @@ import com.cjyc.common.model.enums.customer.CustomerSourceEnum;
 import com.cjyc.common.model.enums.customer.CustomerStateEnum;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.enums.role.DeptTypeEnum;
-import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.util.ExcelUtil;
-import com.cjyc.common.model.util.LocalDateTimeUtil;
-import com.cjyc.common.model.util.YmlProperty;
+import com.cjyc.common.model.util.*;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.ICsUserRoleDeptService;
@@ -102,6 +99,10 @@ public class ApplyPartnerServiceImpl extends ServiceImpl<ICustomerDao, Customer>
                 .eq(UserRoleDept::getUserType, UserTypeEnum.CUSTOMER.code));
         if(customer == null || urd == null){
             return BaseResultUtil.fail("该用户不存在,请检查");
+        }
+        boolean flag = BankCardUtil.checkBankCard(dto.getCardNo());
+        if(!flag){
+            return BaseResultUtil.fail("银行卡号输入不符合,请检查");
         }
         if(urd.getState() == CommonStateEnum.IN_CHECK.code){
             //删除合伙人信息与银行卡信息
