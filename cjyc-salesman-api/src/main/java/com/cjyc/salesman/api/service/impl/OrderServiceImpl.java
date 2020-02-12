@@ -5,15 +5,9 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.salesman.order.SalesOrderDetailDto;
 import com.cjyc.common.model.dto.salesman.order.SalesOrderQueryDto;
-import com.cjyc.common.model.dto.web.order.CommitOrderDto;
-import com.cjyc.common.model.dto.web.order.SimpleCommitOrderDto;
-import com.cjyc.common.model.entity.Customer;
-import com.cjyc.common.model.entity.Line;
-import com.cjyc.common.model.entity.Order;
-import com.cjyc.common.model.entity.OrderCar;
+import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.entity.defined.BizScope;
 import com.cjyc.common.model.enums.BizScopeEnum;
-import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.PageVo;
@@ -22,9 +16,8 @@ import com.cjyc.common.model.vo.salesman.order.SalesOrderCarVo;
 import com.cjyc.common.model.vo.salesman.order.SalesOrderDetailVo;
 import com.cjyc.common.model.vo.salesman.order.SalesOrderVo;
 import com.cjyc.common.model.vo.web.OrderCarVo;
-import com.cjyc.common.model.vo.web.order.OrderVo;
 import com.cjyc.common.system.config.LogoImgProperty;
-import com.cjyc.common.system.service.ICsStoreService;
+import com.cjyc.common.system.service.ICsAdminService;
 import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.salesman.api.service.IOrderService;
 import com.github.pagehelper.PageHelper;
@@ -36,8 +29,6 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -55,6 +46,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     private ILineDao lineDao;
     @Resource
     private ICsSysService csSysService;
+    @Resource
+    private ICsAdminService csAdminService;
 
     @Override
     public ResultVo<PageVo<SalesOrderVo>> findOrder(SalesOrderQueryDto dto) {
@@ -130,7 +123,15 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
 
     @Override
     public OrderCarVo getCarVoById(Long orderCarId) {
-        return orderCarDao.findVoById(orderCarId);
+
+        OrderCarVo vo = orderCarDao.findVoById(orderCarId);
+        Admin admin = csAdminService.findLoop(vo.getEndStoreId());
+        if(admin != null){
+            vo.setEndStoreLooplinkUserId(admin.getId());
+            vo.setEndStoreLooplinkName(admin.getName());
+            vo.setEndStorelooplinkPhone(admin.getPhone());
+        }
+        return vo;
     }
 
 }

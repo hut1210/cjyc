@@ -63,7 +63,4 @@ public class WaybillCarVo extends WaybillCar {
     private String startStoreFullAddress;
     private String endStoreFullAddress;
 
-
-
-
 }

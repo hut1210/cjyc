@@ -10,7 +10,6 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 
 /**
  * <p>
@@ -104,6 +103,7 @@ public class OrderCarVo extends OrderCar implements Serializable {
 
     @ApiModelProperty(value = "省")
     private String endStoreProvince;
+
     @ApiModelProperty(value = "省编号")
     private String endStoreProvinceCode;
     @ApiModelProperty(value = "市")
@@ -116,7 +116,12 @@ public class OrderCarVo extends OrderCar implements Serializable {
     private String endStoreAreaCode;
     @ApiModelProperty(value = "目的地业务中心地址")
     private String endStoreAddress;
-
+    @ApiModelProperty(value = "目的地业务中心联系人ID")
+    private Long endStoreLooplinkUserId;
+    @ApiModelProperty(value = "目的地业务中心联系人")
+    private String endStoreLooplinkName;
+    @ApiModelProperty(value = "目的地业务中心联系人手机号")
+    private String endStorelooplinkPhone;
     @ApiModelProperty(value = "预计出发时间（提车日期）")
     private Long expectStartDate;
 
@@ -150,5 +155,51 @@ public class OrderCarVo extends OrderCar implements Serializable {
     @ApiModelProperty(value = "订单状态：0待提交，2待分配，5待确认，10待复确认，15待预付款，25已确认，55运输中，88待付款，100已完成，111原返（待），112异常结束，113取消（待），114作废（待）")
     private Integer orderState;
 
+
+
+
+    public Long getEndStoreId() {
+        return endStoreId == null ? 0 : endStoreId;
+    }
+
+    public String getEndStoreProvince() {
+        return endStoreProvince == null ? "" : endStoreProvince;
+    }
+
+    public String getEndStoreProvinceCode() {
+        return endStoreProvinceCode == null ? "" : endStoreProvinceCode;
+    }
+
+    public String getEndStoreCity() {
+        return endStoreCity == null ? "" : endStoreCity;
+    }
+
+    public String getEndStoreCityCode() {
+        return endStoreCityCode == null ? "" : endStoreCityCode;
+    }
+
+    public String getEndStoreArea() {
+        return endStoreArea == null ? "" : endStoreArea;
+    }
+
+    public String getEndStoreAreaCode() {
+        return endStoreAreaCode == null ? "" : endStoreAreaCode;
+    }
+
+    public String getEndStoreAddress() {
+        return endStoreAddress == null ? "" : endStoreAddress;
+    }
+
+    public Long getEndStoreLooplinkUserId() {
+        return endStoreLooplinkUserId;
+    }
+
+    public String getEndStoreLooplinkName() {
+        return endStoreLooplinkName == null ? "" : endStoreLooplinkName;
+    }
+
+    public String getEndStorelooplinkPhone() {
+        return endStorelooplinkPhone == null ? "" : endStorelooplinkPhone;
+    }
 
 }

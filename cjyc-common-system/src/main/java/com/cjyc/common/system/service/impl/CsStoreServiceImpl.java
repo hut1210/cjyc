@@ -5,6 +5,7 @@ import com.cjyc.common.model.dao.ICityDao;
 import com.cjyc.common.model.dao.IStoreDao;
 import com.cjyc.common.model.dao.IUserRoleDeptDao;
 import com.cjyc.common.model.dto.customer.freightBill.FindStoreDto;
+import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.City;
 import com.cjyc.common.model.entity.Store;
 import com.cjyc.common.model.entity.UserRoleDept;
@@ -18,7 +19,9 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.customerLine.BusinessStoreVo;
 import com.cjyc.common.model.vo.customer.customerLine.StoreListVo;
+import com.cjyc.common.model.vo.salesman.store.StoreLoopAdminVo;
 import com.cjyc.common.model.vo.salesman.store.StoreVo;
+import com.cjyc.common.system.service.ICsAdminService;
 import com.cjyc.common.system.service.ICsStoreService;
 import com.google.common.collect.Lists;
 import org.springframework.beans.BeanUtils;
@@ -51,6 +54,8 @@ public class CsStoreServiceImpl implements ICsStoreService {
     private IUserRoleDeptDao userRoleDeptDao;
     @Resource
     private ICityDao cityDao;
+    @Resource
+    private ICsAdminService csAdminService;
 
     /**
      * 查询区县所属业务中心-业务范围
@@ -134,6 +139,27 @@ public class CsStoreServiceImpl implements ICsStoreService {
             return BaseResultUtil.success(convertStoreListToStoreVoList(stores));
         }
         return BaseResultUtil.success(new ArrayList<>());
+    }
+
+    @Override
+    public ResultVo<List<StoreLoopAdminVo>> listLoopAdminByAdminId(Long loginId) {
+        ResultVo<List<StoreVo>> listResultVo = listByAdminId(loginId);
+        if(listResultVo == null || listResultVo.getData() == null){
+            return BaseResultUtil.getVo(listResultVo.getCode(), listResultVo.getMsg());
+        }
+        List<StoreLoopAdminVo> list = Lists.newArrayList();
+        for (StoreVo storeVo : listResultVo.getData()) {
+            StoreLoopAdminVo storeLoopAdminVo = new StoreLoopAdminVo();
+            BeanUtils.copyProperties(storeVo, storeLoopAdminVo);
+            Admin admin = csAdminService.findLoop(storeVo.getId());
+            if(admin != null){
+                storeLoopAdminVo.setStoreLooplinkUserId(admin.getId());
+                storeLoopAdminVo.setStoreLooplinkName(admin.getName());
+                storeLoopAdminVo.setStoreLooplinkPhone(admin.getPhone());
+            }
+            list.add(storeLoopAdminVo);
+        }
+        return BaseResultUtil.success(list);
     }
 
     /**

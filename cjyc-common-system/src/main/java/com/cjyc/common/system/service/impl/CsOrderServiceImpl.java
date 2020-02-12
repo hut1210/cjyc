@@ -92,6 +92,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
     private ICsCustomerLineService csCustomerLineService;
     @Resource
     private ICsWaybillService csWaybillService;
+    @Resource
+    private ICsAdminService csAdminService;
 
     @Override
     public ResultVo save(SaveOrderDto paramsDto) {
@@ -1137,7 +1139,14 @@ public class CsOrderServiceImpl implements ICsOrderService {
         //计算推荐线路
         /*List<String> guideLines = csLineNodeService.getGuideLine(citySet, store.getCity());
         dispatchAddCarVo.setGuideLine(guideLines == null ? store.getCity() : guideLines.get(0));*/
-
+        for (WaybillCarVo waybillCarVo : list) {
+            Admin admin = csAdminService.findLoop(waybillCarVo.getEndStoreId());
+            if(admin != null){
+                waybillCarVo.setUnloadLinkUserId(admin.getId());
+                waybillCarVo.setUnloadLinkName(admin.getName());
+                waybillCarVo.setUnloadLinkPhone(admin.getPhone());
+            }
+        }
         dispatchAddCarVo.setList(list);
         return BaseResultUtil.success(dispatchAddCarVo);
     }

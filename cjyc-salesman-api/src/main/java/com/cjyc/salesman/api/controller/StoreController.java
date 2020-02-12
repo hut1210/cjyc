@@ -5,6 +5,7 @@ import com.cjyc.common.model.dto.salesman.BaseSalesDto;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.salesman.store.StoreLoopAdminVo;
 import com.cjyc.common.model.vo.salesman.store.StoreVo;
 import com.cjyc.common.system.service.ICsStoreService;
 import io.swagger.annotations.Api;
@@ -32,6 +33,19 @@ public class StoreController {
     public ResultVo<JSONObject> getStoreListByLoginId(@Valid @RequestBody BaseSalesDto dto) {
         JSONObject jo = new JSONObject();
         ResultVo<List<StoreVo>> resultVo = csStoreService.listByAdminId(dto.getLoginId());
+        if (ResultEnum.SUCCESS.getCode().equals(resultVo.getCode())) {
+            jo.put("storeVoList", resultVo == null?null: resultVo.getData());
+            return BaseResultUtil.success(jo);
+        }else {
+            return BaseResultUtil.fail(resultVo.getMsg());
+        }
+
+    }
+    @ApiOperation(value = "根据loginId查询业务中心列表")
+    @PostMapping("/list/loop/admin")
+    public ResultVo<JSONObject> getStoreListWithAdminByLoginId(@Valid @RequestBody BaseSalesDto dto) {
+        JSONObject jo = new JSONObject();
+        ResultVo<List<StoreLoopAdminVo>> resultVo = csStoreService.listLoopAdminByAdminId(dto.getLoginId());
         if (ResultEnum.SUCCESS.getCode().equals(resultVo.getCode())) {
             jo.put("storeVoList", resultVo == null?null: resultVo.getData());
             return BaseResultUtil.success(jo);
