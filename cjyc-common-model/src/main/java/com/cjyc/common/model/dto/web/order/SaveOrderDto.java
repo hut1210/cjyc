@@ -34,6 +34,8 @@ public class SaveOrderDto {
     @ApiModelProperty(hidden = true)
     private String loginName;
     @ApiModelProperty(hidden = true)
+    private String loginPhone;
+    @ApiModelProperty(hidden = true)
     private Integer state;
     @ApiModelProperty(value = "物流券抵消金额")
     private BigDecimal couponOffsetFee;

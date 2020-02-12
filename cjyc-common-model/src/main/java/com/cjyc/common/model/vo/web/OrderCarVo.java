@@ -121,7 +121,7 @@ public class OrderCarVo extends OrderCar implements Serializable {
     @ApiModelProperty(value = "目的地业务中心联系人")
     private String endStoreLooplinkName;
     @ApiModelProperty(value = "目的地业务中心联系人手机号")
-    private String endStorelooplinkPhone;
+    private String endStoreLooplinkPhone;
     @ApiModelProperty(value = "预计出发时间（提车日期）")
     private Long expectStartDate;
 
@@ -198,8 +198,8 @@ public class OrderCarVo extends OrderCar implements Serializable {
         return endStoreLooplinkName == null ? "" : endStoreLooplinkName;
     }
 
-    public String getEndStorelooplinkPhone() {
-        return endStorelooplinkPhone == null ? "" : endStorelooplinkPhone;
+    public String getEndStoreLooplinkPhone() {
+        return endStoreLooplinkPhone == null ? "" : endStoreLooplinkPhone;
     }
 
 }

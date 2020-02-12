@@ -28,5 +28,5 @@ public interface ICsOrderCarLogService {
      * @param log 日志内容
      * @param userInfo 用户信息
      */
-    void asyncSave(List<OrderCar> orderCarList, OrderCarLogEnum logTypeEnum, String[] log, Object[] args, UserInfo userInfo);
+    void asyncSaveBatch(List<OrderCar> orderCarList, OrderCarLogEnum logTypeEnum, String[] log, Object[] args, UserInfo userInfo);
 }

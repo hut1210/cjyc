@@ -12,7 +12,7 @@ public interface ICsOrderChangeLogService {
      * @since 2019/11/5 16:12
      * @param orderChangeLog
      */
-    //void asyncSave(OrderChangeLog orderChangeLog);
+    //void asyncSaveBatch(OrderChangeLog orderChangeLog);
 
     /**
      * 保存操作记录

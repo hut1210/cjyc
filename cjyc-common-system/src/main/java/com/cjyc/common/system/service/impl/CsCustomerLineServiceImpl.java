@@ -46,7 +46,7 @@ public class CsCustomerLineServiceImpl implements ICsCustomerLineService {
 
    /* @Async
     @Override
-    public void asyncSave(Order order) {
+    public void asyncSaveBatch(Order order) {
         try {
             if(order.getLineId() == null){
                 return;

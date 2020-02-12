@@ -6,6 +6,7 @@ import com.cjyc.common.model.dto.salesman.order.SalesmanQueryDto;
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.enums.PayModeEnum;
+import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.enums.order.OrderPickTypeEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -171,6 +172,8 @@ public class OrderController {
     public ResultVo cancel(@RequestBody CancelOrderDto reqDto) {
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
+        reqDto.setLoginPhone(admin.getPhone());
+        reqDto.setLoginType(UserTypeEnum.ADMIN);
         return csOrderService.cancel(reqDto);
     }
 

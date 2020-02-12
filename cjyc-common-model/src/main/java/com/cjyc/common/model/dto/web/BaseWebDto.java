@@ -1,5 +1,6 @@
 package com.cjyc.common.model.dto.web;
 
+import com.cjyc.common.model.enums.UserTypeEnum;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,6 +17,10 @@ public class BaseWebDto {
     private Long roleId;
     @ApiModelProperty(value = "登录人ID", hidden = true)
     private String loginName;
+    @ApiModelProperty(value = "登录人手机号", hidden = true)
+    private String loginPhone;
+    @ApiModelProperty(value = "登录人手机号", hidden = true)
+    private UserTypeEnum loginType;
     @ApiModelProperty(value = "业务范围(无需传参)", hidden = true)
     private Set<Long> bizScope;
 

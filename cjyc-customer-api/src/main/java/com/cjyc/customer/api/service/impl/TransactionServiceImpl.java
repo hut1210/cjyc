@@ -535,14 +535,11 @@ public class TransactionServiceImpl implements ITransactionService {
                     OrderCar orderCar = orderCarList.get(i);
                     if(orderCar != null){
                         tradeBillDao.updateOrderCar(orderCar.getNo(),2,System.currentTimeMillis());
-
-                        if(userInfo!=null){
-                            //添加日志
-                            csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.RECEIPT,
-                                    new String[]{MessageFormat.format(OrderCarLogEnum.RECEIPT.getInnerLog(), orderCar.getNo()),
-                                            MessageFormat.format(OrderCarLogEnum.RECEIPT.getOutterLog(), orderCar.getNo())},
-                                    userInfo);
-                        }
+                        //添加日志
+                        csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.RECEIPT,
+                                new String[]{OrderCarLogEnum.RECEIPT.getOutterLog(),
+                                        MessageFormat.format(OrderCarLogEnum.RECEIPT.getInnerLog(), userInfo.getName(), userInfo.getPhone())},
+                                userInfo);
 
                     }
 

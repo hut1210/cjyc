@@ -129,7 +129,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         if(admin != null){
             vo.setEndStoreLooplinkUserId(admin.getId());
             vo.setEndStoreLooplinkName(admin.getName());
-            vo.setEndStorelooplinkPhone(admin.getPhone());
+            vo.setEndStoreLooplinkPhone(admin.getPhone());
         }
         return vo;
     }

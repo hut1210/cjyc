@@ -76,12 +76,15 @@ public class OrderController {
             //验证用户存不存在
             Customer customer = csCustomerService.validate(reqDto.getLoginId());
             reqDto.setLoginName(customer.getName());
+            reqDto.setLoginPhone(customer.getContactPhone());
             reqDto.setCreateUserId(customer.getId());
             reqDto.setCreateUserName(customer.getName());
         }else{
             //验证用户存不存在
             Admin admin = csAdminService.validate(reqDto.getLoginId());
             reqDto.setLoginName(admin.getName());
+            reqDto.setLoginName(admin.getName());
+            reqDto.setLoginPhone(admin.getPhone());
             reqDto.setCreateUserId(admin.getId());
             reqDto.setCreateUserName(admin.getName());
         }

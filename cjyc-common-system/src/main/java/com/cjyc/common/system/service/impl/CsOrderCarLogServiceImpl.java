@@ -42,13 +42,15 @@ public class CsOrderCarLogServiceImpl implements ICsOrderCarLogService {
             orderCarLog.setOrderCarId(orderCar.getId());
             orderCarLog.setOrderCarNo(orderCar.getNo());
             orderCarLog.setType(logTypeEnum.getCode());
-            orderCarLog.setInnerLog(String.valueOf(log[0]));
-            orderCarLog.setOuterLog(String.valueOf(log[1]));
+            orderCarLog.setOuterLog(String.valueOf(log[0]));
+            orderCarLog.setInnerLog(String.valueOf(log[1]));
             orderCarLog.setCreateTime(System.currentTimeMillis());
-            orderCarLog.setCreateUser(userInfo.getName());
-            orderCarLog.setCreateUserType(userInfo.getUserType().code);
-            orderCarLog.setCreateUserId(userInfo.getId());
-            orderCarLog.setCreateUserPhone(userInfo.getPhone());
+            if(userInfo != null){
+                orderCarLog.setCreateUser(userInfo.getName());
+                orderCarLog.setCreateUserId(userInfo.getId());
+                orderCarLog.setCreateUserPhone(userInfo.getPhone());
+                orderCarLog.setCreateUserType(userInfo.getUserType().code);
+            }
             orderCarLogDao.insert(orderCarLog);
         } catch (Exception e) {
             e.printStackTrace();
@@ -58,7 +60,7 @@ public class CsOrderCarLogServiceImpl implements ICsOrderCarLogService {
 
     @Async
     @Override
-    public void asyncSave(List<OrderCar> orderCarList, OrderCarLogEnum logTypeEnum, String[] log, Object[] args, UserInfo userInfo) {
+    public void asyncSaveBatch(List<OrderCar> orderCarList, OrderCarLogEnum logTypeEnum, String[] log, Object[] args, UserInfo userInfo) {
         if(CollectionUtils.isEmpty(orderCarList)){
             return;
         }

@@ -15,6 +15,7 @@ import com.cjyc.common.model.entity.defined.UserInfo;
 import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.city.CityLevelEnum;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
+import com.cjyc.common.model.enums.log.OrderCarLogEnum;
 import com.cjyc.common.model.enums.log.OrderLogEnum;
 import com.cjyc.common.model.enums.order.*;
 import com.cjyc.common.model.enums.waybill.WaybillCarrierTypeEnum;
@@ -191,8 +192,12 @@ public class CsOrderServiceImpl implements ICsOrderService {
             orderDao.updateById(order);
         }
 
-        if(OrderStateEnum.SUBMITTED.code == paramsDto.getState()){
-
+        if(OrderStateEnum.SUBMITTED.code == paramsDto.getState() && !CollectionUtils.isEmpty(orderCarList)){
+            //记录订单日志
+            csOrderLogService.asyncSave(order, OrderLogEnum.SUBMIT,
+                    new String[]{OrderLogEnum.SUBMIT.getOutterLog(),
+                            MessageFormat.format(OrderLogEnum.SUBMIT.getInnerLog(), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
+                    new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), UserTypeEnum.ADMIN));
         }
 
         return BaseResultUtil.success("下单成功，订单编号{0}", order.getNo());
@@ -337,8 +342,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
             csCustomerContactService.asyncSave(order);
             //记录订单日志
             csOrderLogService.asyncSave(order, OrderLogEnum.COMMIT,
-                    new String[]{MessageFormat.format(OrderLogEnum.COMMIT.getInnerLog(), order.getNo()),
-                            MessageFormat.format(OrderLogEnum.COMMIT.getInnerLog(), order.getNo())},
+                    new String[]{OrderLogEnum.COMMIT.getOutterLog(),
+                            MessageFormat.format(OrderLogEnum.COMMIT.getInnerLog(), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
                     new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), UserTypeEnum.ADMIN));
             return order;
         } finally {
@@ -412,8 +417,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
         csCustomerContactService.asyncSave(order);
         //记录订单日志
         csOrderLogService.asyncSave(order, OrderLogEnum.COMMIT,
-                new String[]{MessageFormat.format(OrderLogEnum.COMMIT.getInnerLog(), order.getNo()),
-                        MessageFormat.format(OrderLogEnum.COMMIT.getInnerLog(), order.getNo())},
+                new String[]{OrderLogEnum.COMMIT.getOutterLog(),
+                        MessageFormat.format(OrderLogEnum.COMMIT.getInnerLog(), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
                 new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), UserTypeEnum.ADMIN));
 
         check(paramsDto);
@@ -505,8 +510,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
         //记录订单日志
         csOrderLogService.asyncSave(order, OrderLogEnum.CHECK,
-                new String[]{MessageFormat.format(OrderLogEnum.CHECK.getInnerLog(), order.getNo()),
-                        MessageFormat.format(OrderLogEnum.CHECK.getInnerLog(), order.getNo())},
+                new String[]{OrderLogEnum.CHECK.getOutterLog(),
+                        MessageFormat.format(OrderLogEnum.CHECK.getInnerLog(), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
                 new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), UserTypeEnum.ADMIN));
         //TODO 处理优惠券为使用状态，优惠券有且仅能验证一次
 
@@ -875,6 +880,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         orderChangeLogService.asyncSave(order, OrderChangeTypeEnum.REJECT,
                 new Object[]{oldState, order.getState(), paramsDto.getReason()},
                 new Object[]{paramsDto.getLoginId(), paramsDto.getLoginName()});
+
         //TODO 发送消息给创建人
         return BaseResultUtil.success();
     }
@@ -913,6 +919,12 @@ public class CsOrderServiceImpl implements ICsOrderService {
         orderChangeLogService.asyncSave(order, OrderChangeTypeEnum.CANCEL,
                 new Object[]{oldStateName, OrderStateEnum.F_CANCEL.name, paramsDto.getReason()},
                 new Object[]{paramsDto.getLoginId(), paramsDto.getLoginName()});
+
+        //记录订单日志
+        csOrderLogService.asyncSave(order, OrderLogEnum.CANCEL,
+                new String[]{OrderLogEnum.CANCEL.getOutterLog(),
+                        MessageFormat.format(OrderLogEnum.CANCEL.getInnerLog(), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
+                new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), paramsDto.getLoginType()));
         //TODO 发送消息
         return BaseResultUtil.success();
     }

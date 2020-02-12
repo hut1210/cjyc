@@ -1,6 +1,6 @@
 package com.cjyc.salesman.api.config;
 
-import com.fasterxml.jackson.core.JsonGenerator;
+/*import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,9 +13,9 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import java.io.IOException;
 
-//@Configuration
+@Configuration
 public class ResultConfig {
-    /*@Bean
+    @Bean
     @Primary
     @ConditionalOnMissingBean(ObjectMapper.class)
     public ObjectMapper jacksonObjectMapper(Jackson2ObjectMapperBuilder builder) {
@@ -24,9 +24,9 @@ public class ResultConfig {
             @Override
             public void serialize(Object o, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) 
                     throws IOException, JsonProcessingException {
-                jsonGenerator.writeString("");
+                    jsonGenerator.writeString("");
             }
         });
         return objectMapper;
-    }*/
-}
+    }
+}*/

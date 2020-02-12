@@ -25,8 +25,8 @@ public class CsOrderLogServiceImpl implements ICsOrderLogService {
             orderLog.setOrderId(order.getId());
             orderLog.setOrderNo(order.getNo());
             orderLog.setType(type.getCode());
-            orderLog.setInnerLog(logs[0]);
-            orderLog.setOuterLog(logs[1]);
+            orderLog.setOuterLog(logs[0]);
+            orderLog.setInnerLog(logs[1]);
             orderLog.setCreateTime(System.currentTimeMillis());
             orderLog.setCreateUser(userInfo.getName());
             orderLog.setCreateUserId(userInfo.getId());

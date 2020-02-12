@@ -23,5 +23,5 @@ public interface ICsCustomerLineService {
      */
     ResultVo<PageVo<CustomerLineVo>> findCustomerLine(CommonDto dto);
 
-    //void asyncSave(Order order);
+    //void asyncSaveBatch(Order order);
 }

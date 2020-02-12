@@ -2269,7 +2269,7 @@
         shell.*,
         l.default_freight_fee as lineFreightFee,
         l.id as lineId,
-        (case when l.default_freight_fee is null then 0 else l.default_freight_fee end) as freightFee,
+        IFNULL(l.default_freight_fee, 0) as freightFee,
         (case when l.id is not null then true else false end) as hasLine,
         (shell.expectStartTime + l.days * 24 * 60 * 60 * 1000) as expectEndTime
         from (

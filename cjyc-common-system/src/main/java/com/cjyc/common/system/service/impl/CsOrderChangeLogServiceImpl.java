@@ -30,7 +30,7 @@ public class CsOrderChangeLogServiceImpl implements ICsOrderChangeLogService {
      */
     /*@Async
     @Override
-    public void asyncSave(OrderChangeLog orderChangeLog) {
+    public void asyncSaveBatch(OrderChangeLog orderChangeLog) {
         orderChangeLogDao.insert(orderChangeLog);
     }*/
 

@@ -1,12 +1,13 @@
 package com.cjyc.common.model.dto.web.order;
 
+import com.cjyc.common.model.dto.web.BaseWebDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 
 @Data
-public class RejectOrderDto {
+public class RejectOrderDto extends BaseWebDto {
     @NotNull
     @ApiModelProperty(value = "loginId", required = true)
     private Long loginId;
