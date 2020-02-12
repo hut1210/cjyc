@@ -2,10 +2,7 @@ package com.cjyc.customer.api.service;
 
 import com.cjyc.common.model.entity.TradeBill;
 import com.cjyc.common.model.vo.ResultVo;
-import com.pingplusplus.model.Charge;
-import com.pingplusplus.model.Event;
-import com.pingplusplus.model.Order;
-import com.pingplusplus.model.Transfer;
+import com.pingplusplus.model.*;
 
 import java.math.BigDecimal;
 
@@ -35,4 +32,6 @@ public interface ITransactionService {
     void updateTransfer(Transfer object, Event event, String s);
 
     void transferFailed(Transfer object, Event event);
+
+    void refund(Refund object, Event event);
 }

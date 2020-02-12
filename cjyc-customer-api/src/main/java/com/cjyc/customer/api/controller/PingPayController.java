@@ -166,6 +166,11 @@ public class PingPayController {
                             log.debug("---------------->transfer.failed");
                             transactionService.transferFailed((Transfer)data.getObject(),event);
                         }
+                    }else if("refund.succeeded".equals(event.getType())){
+                        if(data.getObject() instanceof Refund) {
+                            log.debug("---------------->refund.succeeded");
+                            transactionService.refund((Refund)data.getObject(),event);
+                        }
                     }
                 }
             }

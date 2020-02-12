@@ -8,11 +8,13 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.nacos.client.utils.StringUtils;
 import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IOrderDao;
+import com.cjyc.common.model.dao.IOrderRefundDao;
 import com.cjyc.common.model.dto.customer.order.CarCollectPayDto;
 import com.cjyc.common.model.dto.customer.order.CarPayStateDto;
 import com.cjyc.common.model.dto.customer.order.ReceiptBatchDto;
 import com.cjyc.common.model.dto.customer.pingxx.PrePayDto;
 import com.cjyc.common.model.entity.OrderCar;
+import com.cjyc.common.model.entity.Refund;
 import com.cjyc.common.model.entity.TradeBill;
 import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
@@ -54,6 +56,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author:Hut
@@ -82,6 +86,11 @@ public class PingPayServiceImpl implements IPingPayService {
 
     @Autowired
     private ITransactionService transactionService;
+
+    @Resource
+    private IOrderRefundDao orderRefundDao;
+
+    private final Lock lock = new ReentrantLock();
 
     @Override
     public Order prePay(PrePayDto reqDto) {
@@ -304,25 +313,78 @@ public class PingPayServiceImpl implements IPingPayService {
     }
 
     @Override
-    public void cancelOrderRefund(String orderCode) {
+    public ResultVo cancelOrderRefund(String orderCode) {
+        lock.lock();
         try{
-            String description = "订单号：" + orderCode + "，定金退款";
-            if(StringUtils.isBlank(description)){
-                log.error("定金退款异常，description不能为空。");
-            }else if(StringUtils.isBlank(orderCode)){
-                log.error("定金退款异常，orderCode不能为空。");
+            //先查询 是否已退款
+            Refund refund = orderRefundDao.selectByOrderCode(orderCode);
+            if(refund!=null){
+                if(refund.getState()==2){
+                    log.error("已退款 orderCode={}",orderCode);
+                    return BaseResultUtil.fail("已退款");
+                }else if(refund.getState()==0){
+                    log.error("已申请退款，请勿重复操作 orderCode={}",orderCode);
+                    return BaseResultUtil.fail("已申请退款，请勿重复操作");
+                }
             }else{
-                TradeBill tradeBill = transactionService.getTradeBillByOrderNo(orderCode);
-                String pingPayId = tradeBill.getPingPayId();
-                initPingApiKey();
-                Map<String, Object> params = new HashMap<String, Object>();
-                params.put("description", description); // 必传
-                params.put("refund_mode", "to_source");//退款方式 原路退回
-                OrderRefund.create(pingPayId, params);
+                String description = "订单号：" + orderCode + "，退款";
+                if(StringUtils.isBlank(description)){
+                    log.error("退款异常，description不能为空。");
+                    return BaseResultUtil.fail("退款异常，description不能为空。");
+                }else if(StringUtils.isBlank(orderCode)){
+                    log.error("退款异常，orderCode不能为空。");
+                    return BaseResultUtil.fail("退款异常，orderCode不能为空。");
+                }else{
+                    TradeBill tradeBill = transactionService.getTradeBillByOrderNo(orderCode);
+                    String pingPayId = tradeBill.getPingPayId();
+                    initPingApiKey();
+                    Map<String, Object> params = new HashMap<String, Object>();
+                    params.put("description", description); // 必传
+                    params.put("refund_mode", "to_source");//退款方式 原路退回
+
+                    PingxxMetaData pingxxMetaData = new PingxxMetaData();
+                    pingxxMetaData.setOrderNo(orderCode);
+
+                    Map<String, Object> meta = BeanMapUtil.beanToMap(pingxxMetaData);
+                    params.put("metadata",meta);//自定义参数
+                    OrderRefund.create(pingPayId, params);
+
+                    //添加退款记录
+                    try{
+                        Refund refund1 = new Refund();
+                        refund1.setOrderNo(orderCode);
+                        refund1.setState(0);
+                        refund1.setCreateTime(System.currentTimeMillis());
+                        orderRefundDao.insert(refund1);
+                    }catch (Exception e){
+                        log.error("添加退款记录异常 orderCode={}",orderCode);
+                        log.error(e.getMessage(),e);
+                    }
+
+                }
             }
+
         }catch (Exception e){
+            //添加退款记录
+            try{
+                Refund refund1 = new Refund();
+                refund1.setOrderNo(orderCode);
+                refund1.setState(-1);
+                refund1.setCreateTime(System.currentTimeMillis());
+                orderRefundDao.insert(refund1);
+            }catch (Exception e1){
+                log.error("添加退款记录异常1 orderCode={}",orderCode);
+                log.error(e1.getMessage(),e1);
+            }
+
+            log.error("退款异常 orderCode={}",orderCode);
             log.error(e.getMessage(),e);
+            return BaseResultUtil.fail("退款异常 orderCode="+orderCode);
+        }finally {
+            lock.unlock();
         }
+
+        return BaseResultUtil.success();
     }
 
     @Override
