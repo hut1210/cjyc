@@ -522,6 +522,17 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     }
 
     @Override
+    public ResultVo<List<OrderCarWaitDispatchVo>> waitDispatchCarAllList(WaitDispatchListOrderCarDto dto) {
+        //查询角色业务中心范围
+        BizScope bizScope = csSysService.getBizScopeBySysRoleIdNew(dto.getLoginId(), dto.getRoleId(), true);
+        if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
+            return BaseResultUtil.fail("没有数据权限");
+        }
+        dto.setBizScope(bizScope.getStoreIds());
+        return BaseResultUtil.success(orderCarDao.findWaitDispatchCarList(dto));
+    }
+
+    @Override
     public ResultVo<PageVo<OrderCarWaitDispatchVo>> waitDispatchTrunkCarList(WaitDispatchTrunkDto paramsDto) {
         //查询角色业务中心范围
         BizScope bizScope = csSysService.getBizScopeBySysRoleIdNew(paramsDto.getLoginId(), paramsDto.getRoleId(), true);

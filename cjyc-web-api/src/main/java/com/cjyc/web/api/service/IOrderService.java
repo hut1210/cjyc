@@ -32,6 +32,12 @@ public interface IOrderService extends IService<Order> {
     ResultVo<PageVo<OrderCarWaitDispatchVo>> waitDispatchCarList(WaitDispatchListOrderCarDto paramsDto);
 
     /**
+     * 导出待调度车辆列表
+     * @param dto
+     * @return
+     */
+    ResultVo<List<OrderCarWaitDispatchVo>> waitDispatchCarAllList(WaitDispatchListOrderCarDto dto);
+    /**
      * 按线路统计待调度车辆（统计列表）
      * @author JPG
      * @since 2019/10/16 10:04
