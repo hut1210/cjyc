@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.model.PageData;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
+import com.cjkj.common.utils.ExcelUtil;
 import com.cjkj.usercenter.dto.common.SelectDeptListByParentIdsReq;
 import com.cjkj.usercenter.dto.common.SelectDeptResp;
 import com.cjkj.usercenter.dto.common.SelectRoleResp;
@@ -26,7 +27,10 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.admin.AdminPageVo;
 import com.cjyc.common.model.vo.web.admin.CacheData;
+import com.cjyc.common.model.vo.web.admin.ExportAdminVo;
 import com.cjyc.common.model.vo.web.admin.TypeSalesmanVo;
+import com.cjyc.common.model.vo.web.task.CrTaskVo;
+import com.cjyc.common.model.vo.web.task.ExportCrTaskVo;
 import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.feign.ISysUserService;
@@ -44,6 +48,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -476,4 +483,57 @@ public class AdminServiceImpl extends ServiceImpl<IAdminDao, Admin> implements I
         return ReturnMsg.SUCCESS.getCode().equals(rd.getCode());
     }
 
+
+    @Override
+    public void exportAdminListExcel(HttpServletRequest request, HttpServletResponse response) {
+        AdminPageNewDto dto = findAdminPageNewDto(request);
+        List<AdminPageVo> adminVoList = adminDao.getPageList(dto);
+        if (!CollectionUtils.isEmpty(adminVoList)) {
+            adminVoList.forEach(admin -> {
+                if (!StringUtils.isEmpty(admin.getRoles())) {
+                    Set<String> set = new HashSet<>();
+                    String[] roles = admin.getRoles().split(",");
+                    for (String role: roles) {
+                        set.add(role.trim());
+                    }
+                    StringBuilder sb = new StringBuilder();
+                    set.forEach(r -> {
+                        if (sb.length() > 0) {
+                            sb.append(",");
+                        }
+                        sb.append(r);
+                    });
+                    admin.setRoles(sb.toString());
+                }
+            });
+        }
+        List<ExportAdminVo> exportExcelList = Lists.newArrayList();
+        for (AdminPageVo vo : adminVoList) {
+            ExportAdminVo exportAdminVo = new ExportAdminVo();
+            BeanUtils.copyProperties(vo, exportAdminVo);
+            exportExcelList.add(exportAdminVo);
+        }
+        String title = "用户管理";
+        String sheetName = "用户管理";
+        String fileName = "用户管理.xls";
+        try {
+            ExcelUtil.exportExcel(exportExcelList, title, sheetName, ExportAdminVo.class, fileName, response);
+        } catch (IOException e) {
+            log.error("导出用户管理信息异常:{}",e);
+        }
+    }
+
+    /**
+     * 封装运单excel请求
+     * @param request
+     * @return
+     */
+    private AdminPageNewDto findAdminPageNewDto(HttpServletRequest request){
+        AdminPageNewDto dto = new AdminPageNewDto();
+        dto.setName(request.getParameter("name"));
+        dto.setPhone(request.getParameter("phone"));
+        dto.setStoreId(StringUtils.isBlank(request.getParameter("storeId")) ? null:Long.valueOf(request.getParameter("storeId")));
+        dto.setRoleId(StringUtils.isBlank(request.getParameter("roleId")) ? null:Long.valueOf(request.getParameter("roleId")));
+        return dto;
+    }
 }

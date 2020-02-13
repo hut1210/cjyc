@@ -28,6 +28,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Objects;
@@ -147,6 +149,13 @@ public class AdminController {
     @PostMapping(value = "/deliverySalesman")
     public ResultVo deliverySalesmanNew(@Validated @RequestBody TypeSalesmanDto dto){
         return adminService.deliverySalesmanNew(dto);
+    }
+
+    @ApiOperation(value = "用户管理导出Excel", notes = "\t 请求接口为/admin/exportAdminListExcel?name=名称&phone=电话&roleId=角色id" +
+            "&storeId=业务中心id")
+    @GetMapping("/exportAdminListExcel")
+    public void exportAdminListExcel(HttpServletRequest request, HttpServletResponse response){
+        adminService.exportAdminListExcel(request,response);
     }
     /************************************韵车集成改版 ed***********************************/
 }
