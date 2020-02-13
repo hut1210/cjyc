@@ -23,6 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.*;
 
@@ -218,5 +220,11 @@ public class RoleController {
             rsList.add(mvo);
         });
         return rsList;
+    }
+
+    @ApiOperation(value = "角色管理导出Excel", notes = "\t 请求接口为/role/exportRoleListExcel?roleName=角色名称")
+    @GetMapping("/exportRoleListExcel")
+    public void exportRoleListExcel(HttpServletRequest request, HttpServletResponse response){
+        roleService.exportRoleListExcel(request,response);
     }
 }

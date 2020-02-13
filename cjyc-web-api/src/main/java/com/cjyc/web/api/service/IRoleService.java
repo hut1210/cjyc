@@ -9,6 +9,8 @@ import com.cjyc.common.model.entity.Role;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.role.SelectUserByRoleVo;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -108,5 +110,12 @@ public interface IRoleService extends IService<Role> {
      * @return
      */
     ResultVo setRoleForApp(SetRoleForAppDto dto);
+
+    /**
+     * 角色管理导出到excel
+     * @param request
+     * @param response
+     */
+    void exportRoleListExcel(HttpServletRequest request, HttpServletResponse response);
     /*********************************韵车集成改版 ed*****************************/
 }
