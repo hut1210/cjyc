@@ -724,6 +724,10 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         return BaseResultUtil.success();
     }
 
+    @Override
+    public void cancelOrderRefund(Long orderId) {
+    }
+
     private String getRandomNoKey(String prefix) {
         return "cjyc:random:no:prepay:" + prefix;
     }

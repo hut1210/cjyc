@@ -92,6 +92,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
     private ICsWaybillService csWaybillService;
     @Resource
     private ICsAdminService csAdminService;
+    @Resource
+    private ICsPingPayService csPingPayService;
 
     @Override
     public ResultVo save(SaveOrderDto paramsDto) {
@@ -909,6 +911,10 @@ public class CsOrderServiceImpl implements ICsOrderService {
             List<Long> collect = orderCars.stream().map(OrderCar::getId).collect(Collectors.toList());
             List<WaybillCar> waybillCars = waybillCarDao.findListByOrderCarIds(collect);
             waybillCars.forEach(wc -> csWaybillService.cancelWaybillCar(wc));
+        }
+        //退款
+        if(order.getState() == PayStateEnum.PAID.code){
+            csPingPayService.cancelOrderRefund(order.getId());
         }
 
         //添加操作日志
