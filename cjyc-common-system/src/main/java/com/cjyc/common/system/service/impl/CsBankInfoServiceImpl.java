@@ -1,7 +1,6 @@
 package com.cjyc.common.system.service.impl;
 
 import com.cjyc.common.model.dao.IBankInfoDao;
-import com.cjyc.common.model.dto.BasePageDto;
 import com.cjyc.common.model.dto.KeywordDto;
 import com.cjyc.common.model.dto.driver.mine.BankInfoDto;
 import com.cjyc.common.model.entity.BankInfo;
@@ -9,7 +8,6 @@ import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.JsonUtils;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.customer.city.CityVo;
 import com.cjyc.common.model.vo.web.bankInfo.BankInfoVo;
 import com.cjyc.common.system.service.ICsBankInfoService;
 import com.cjyc.common.system.util.RedisUtils;
