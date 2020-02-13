@@ -172,22 +172,22 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         detailVo.setCouponName(couponSend == null ? "" : couponSend.getCouponName());
 
         // 查询出发地，目的地业务中心详细地址
-        if (order.getStartStoreId() != null) {
+        /*if (order.getStartStoreId() != null) {
             Store startStore = storeDao.selectById(order.getStartStoreId());
             detailVo.setStartStoreNameDetail(startStore == null ? "" : startStore.getDetailAddr());
         }
         if (order.getEndStoreId() != null) {
             Store endStore = storeDao.selectById(order.getEndStoreId());
             detailVo.setEndStoreNameDetail(endStore == null ? "" : endStore.getDetailAddr());
-        }
+        }*/
 
         // 自提自送订单设置业务中心地址
-        if (OrderPickTypeEnum.SELF.code == order.getPickType()) {
+        /*if (OrderPickTypeEnum.SELF.code == order.getPickType()) {
             detailVo.setStartAddress(detailVo.getStartStoreNameDetail());
         }
         if (OrderPickTypeEnum.SELF.code == order.getBackType()) {
             detailVo.setEndAddress(detailVo.getEndStoreNameDetail());
-        }
+        }*/
 
         return BaseResultUtil.success(detailVo);
     }
