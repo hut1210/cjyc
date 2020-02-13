@@ -324,6 +324,7 @@ public class FinanceServiceImpl implements IFinanceService {
                 if(settlementVo!=null && settlementVo.getFreightFee()!=null){
                     freightFee = freightFee.add(settlementVo.getFreightFee());
                 }
+                settlementVo.setFreightFee(settlementVo.getFreightFee().divide(new BigDecimal(100)));
             }
             financePayableVo.setRemainDate(financePayableVo.getSettlePeriod()-formatDuring(System.currentTimeMillis()-financePayableVo.getCompleteTime()));
             financePayableVo.setFreightPayable(freightFee.divide(new BigDecimal(100)));
@@ -385,6 +386,7 @@ public class FinanceServiceImpl implements IFinanceService {
             if(settlementVo!=null && settlementVo.getFreightFee()!=null){
                 freightFee = freightFee.add(settlementVo.getFreightFee());
             }
+            settlementVo.setFreightFee(settlementVo.getFreightFee().divide(new BigDecimal(100)));
         }
 
         PayableSettlementVo payableSettlementVo = new PayableSettlementVo();
@@ -432,6 +434,7 @@ public class FinanceServiceImpl implements IFinanceService {
             if(settlementVo!=null && settlementVo.getFreightFee()!=null){
                 freightFee = freightFee.add(settlementVo.getFreightFee());
             }
+            settlementVo.setFreightFee(settlementVo.getFreightFee().divide(new BigDecimal(100)));
         }
 
         PayableSettlementVo payableSettlementVo = new PayableSettlementVo();
@@ -476,6 +479,7 @@ public class FinanceServiceImpl implements IFinanceService {
             if(settlementVo!=null && settlementVo.getFreightFee()!=null){
                 freightFee = freightFee.add(settlementVo.getFreightFee());
             }
+            settlementVo.setFreightFee(settlementVo.getFreightFee().divide(new BigDecimal(100)));
         }
 
         PayableSettlementVo payableSettlementVo = new PayableSettlementVo();
