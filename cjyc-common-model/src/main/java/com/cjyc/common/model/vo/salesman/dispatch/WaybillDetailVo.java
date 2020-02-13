@@ -88,4 +88,8 @@ public class WaybillDetailVo implements Serializable {
     public String getGuideLine() {
         return guideLine == null ? "" : guideLine;
     }
+
+    public BigDecimal getFreightFee() {
+        return freightFee == null ? new BigDecimal(0) : freightFee;
+    }
 }
