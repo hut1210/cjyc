@@ -2,9 +2,7 @@ package com.cjyc.customer.api.service.impl;
 
 import com.Pingxx.model.MetaDataEntiy;
 import com.Pingxx.model.PingxxMetaData;
-import com.cjkj.common.utils.DateUtil;
 import com.cjyc.common.model.enums.log.OrderCarLogEnum;
-import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.system.service.*;
 import com.cjyc.common.system.util.MiaoxinSmsUtil;
 import com.cjyc.customer.api.service.IOrderService;
@@ -36,7 +34,6 @@ import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;

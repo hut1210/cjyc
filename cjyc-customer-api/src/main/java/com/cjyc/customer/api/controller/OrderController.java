@@ -6,6 +6,7 @@ import com.cjyc.common.model.dto.customer.order.SimpleSaveOrderDto;
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.entity.OrderCarLog;
+import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
@@ -57,6 +58,9 @@ public class OrderController {
         //验证用户存不存在
         Customer customer = csCustomerService.validate(reqDto.getLoginId());
         reqDto.setLoginName(customer.getName());
+        reqDto.setLoginName(customer.getName());
+        reqDto.setLoginPhone(customer.getContactPhone());
+
         reqDto.setCreateUserId(customer.getUserId());
         reqDto.setCreateUserName(customer.getName());
         reqDto.setState(OrderStateEnum.WAIT_SUBMIT.code);
@@ -101,6 +105,8 @@ public class OrderController {
         //验证用户存不存在
         Customer customer = csCustomerService.validate(reqDto.getLoginId());
         reqDto.setLoginName(customer.getName());
+        reqDto.setLoginPhone(customer.getContactPhone());
+        reqDto.setLoginType(UserTypeEnum.CUSTOMER);
 
         //发送推送信息
         return orderService.simpleSubmit(reqDto);

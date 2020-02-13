@@ -15,7 +15,6 @@ import com.cjyc.common.model.entity.defined.UserInfo;
 import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.city.CityLevelEnum;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
-import com.cjyc.common.model.enums.log.OrderCarLogEnum;
 import com.cjyc.common.model.enums.log.OrderLogEnum;
 import com.cjyc.common.model.enums.order.*;
 import com.cjyc.common.model.enums.waybill.WaybillCarrierTypeEnum;
@@ -24,7 +23,6 @@ import com.cjyc.common.model.exception.ParameterException;
 import com.cjyc.common.model.exception.ServerException;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.MoneyUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.order.DispatchAddCarVo;
@@ -47,7 +45,6 @@ import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.MessageFormat;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -197,7 +194,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
             csOrderLogService.asyncSave(order, OrderLogEnum.SUBMIT,
                     new String[]{OrderLogEnum.SUBMIT.getOutterLog(),
                             MessageFormat.format(OrderLogEnum.SUBMIT.getInnerLog(), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
-                    new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), UserTypeEnum.ADMIN));
+                    new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), UserTypeEnum.valueOf(paramsDto.getLoginType())));
         }
 
         return BaseResultUtil.success("下单成功，订单编号{0}", order.getNo());
@@ -342,8 +339,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
             csCustomerContactService.asyncSave(order);
             //记录订单日志
             csOrderLogService.asyncSave(order, OrderLogEnum.COMMIT,
-                    new String[]{OrderLogEnum.COMMIT.getOutterLog(),
-                            MessageFormat.format(OrderLogEnum.COMMIT.getInnerLog(), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
+                    new String[]{OrderLogEnum.COMMIT.getOutterLog(), MessageFormat.format(OrderLogEnum.COMMIT.getInnerLog(), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
                     new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), UserTypeEnum.ADMIN));
             return order;
         } finally {

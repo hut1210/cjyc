@@ -1,5 +1,6 @@
 package com.cjyc.common.model.dto.web.order;
 
+import com.cjyc.common.model.dto.BaseLoginDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

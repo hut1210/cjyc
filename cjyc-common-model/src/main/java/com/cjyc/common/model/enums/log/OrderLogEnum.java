@@ -12,14 +12,14 @@ public enum OrderLogEnum {
 
 
     private String name;
-    private String innerLog;
     private String outterLog;
+    private String innerLog;
     private int code;
 
-    OrderLogEnum(String name, String innerLog, String outterLog, int code) {
+    OrderLogEnum(String name, String outterLog, String innerLog, int code) {
         this.name = name;
-        this.innerLog = innerLog;
         this.outterLog = outterLog;
+        this.innerLog = innerLog;
         this.code = code;
     }
 
