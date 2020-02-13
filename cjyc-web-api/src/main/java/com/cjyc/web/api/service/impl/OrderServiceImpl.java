@@ -71,6 +71,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     private ICsCityService csCityService;
     @Resource
     private ICsSysService csSysService;
+    @Resource
+    private ICsAdminService csAdminService;
     @Autowired
     private ICsSendNoService csSendNoService;
 
@@ -220,7 +222,14 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
 
     @Override
     public OrderCarVo getCarVoById(Long orderCarId) {
-        return orderCarDao.findVoById(orderCarId);
+        OrderCarVo vo = orderCarDao.findVoById(orderCarId);
+        Admin admin = csAdminService.findLoop(vo.getEndStoreId());
+        if(admin != null){
+            vo.setEndStoreLooplinkUserId(admin.getUserId());
+            vo.setEndStoreLooplinkName(admin.getName());
+            vo.setEndStoreLooplinkPhone(admin.getPhone());
+        }
+        return vo;
     }
 
     @Override

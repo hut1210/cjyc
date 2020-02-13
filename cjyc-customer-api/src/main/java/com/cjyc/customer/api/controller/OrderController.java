@@ -58,8 +58,8 @@ public class OrderController {
         //验证用户存不存在
         Customer customer = csCustomerService.validate(reqDto.getLoginId());
         reqDto.setLoginName(customer.getName());
-        reqDto.setLoginName(customer.getName());
         reqDto.setLoginPhone(customer.getContactPhone());
+        reqDto.setLoginType(UserTypeEnum.CUSTOMER.code);
 
         reqDto.setCreateUserId(customer.getUserId());
         reqDto.setCreateUserName(customer.getName());
@@ -83,6 +83,8 @@ public class OrderController {
         //验证用户存不存在
         Customer customer = csCustomerService.validate(reqDto.getLoginId());
         reqDto.setLoginName(customer.getName());
+        reqDto.setLoginPhone(customer.getContactPhone());
+        reqDto.setLoginType(UserTypeEnum.CUSTOMER.code);
         reqDto.setCreateUserId(customer.getUserId());
         reqDto.setCreateUserName(customer.getName());
         reqDto.setState(OrderStateEnum.SUBMITTED.code);
@@ -134,6 +136,8 @@ public class OrderController {
     public ResultVo cancel(@RequestBody CancelOrderDto reqDto) {
         Customer customer = csCustomerService.validate(reqDto.getLoginId());
         reqDto.setLoginName(customer.getName());
+        reqDto.setLoginPhone(customer.getContactPhone());
+        reqDto.setLoginType(UserTypeEnum.CUSTOMER);
         return csOrderService.cancel(reqDto);
     }
 
