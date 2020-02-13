@@ -174,6 +174,7 @@
             dc.is_invoice AS isInvoice
         FROM
             d_carrier dc
+        LEFT JOIN s_bank_card_bind sbcb ON sbcb.user_id = dc.id
         <where>
             <if test="name != null and name.trim() != ''">
                 dc.name like CONCAT('%',#{name},'%')
@@ -191,6 +192,8 @@
             and dc.state = 2
             and dc.business_state = 0
             and dc.mode in (3,5,7,9)
+            and sbcb.bank_name != ''
+            and sbcb.state = 1
             group by dc.id
             order by dc.create_time desc, dc.check_time desc
         </where>
@@ -213,6 +216,7 @@
             dc.is_invoice AS isInvoice
         FROM
           d_carrier dc
+        LEFT JOIN s_bank_card_bind sbcb ON dc.id = sbcb.user_id
         <where>
             <if test="keyword != null and keyword.trim() !=''">
                (dc.name like concat('%',#{keyword},'%') or
@@ -226,6 +230,8 @@
             and dc.state = 2
             and dc.business_state = 0
             and dc.mode in (3,5,7,9)
+            and sbcb.bank_name != ''
+            and sbcb.state = 1
             group by dc.id
             order by dc.create_time desc, dc.check_time desc
         </where>
@@ -685,6 +691,7 @@
         LEFT JOIN d_driver dd ON dd.id = surd.user_id
         LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
         LEFT JOIN d_carrier_city_con dccc ON dccc.carrier_id = dc.id
+        LEFT JOIN s_bank_card_bind sbcb ON sbcb.user_id = dc.id
         <where>
             <if test="name != null and name.trim() != ''">
                 dc.name like CONCAT('%',#{name},'%')
@@ -714,6 +721,8 @@
             and dc.business_state = 0
             and dd.business_state = 0
             and surd.state = 2
+            AND sbcb.bank_name != ''
+            AND sbcb.state = 1
             group by dc.id
             order by dc.create_time desc,dc.check_time desc
         </where>

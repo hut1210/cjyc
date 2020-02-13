@@ -764,6 +764,7 @@
         LEFT JOIN ( SELECT * FROM s_user_role_dept WHERE dept_type = 2 AND user_type = 2 ) surd ON surd.dept_id = dc.id
         LEFT JOIN d_driver dd ON surd.user_id = dd.id
         LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
+        LEFT JOIN s_bank_card_bind sbcb ON sbcb.user_id = dc.id
         <where>
             <if test="realName != null and realName.trim() != ''">
                 dd.real_name like CONCAT('%',#{realName},'%')
@@ -782,6 +783,8 @@
             AND surd.state = 2
             AND dc.type = 1
             AND dc.mode = 3
+            AND sbcb.bank_name != ''
+            AND sbcb.state = 1
             group by dd.phone
         </where>
     </select>
@@ -806,6 +809,7 @@
         LEFT JOIN ( SELECT * FROM s_user_role_dept WHERE dept_type = 2 AND user_type = 2 ) surd ON surd.dept_id = dc.id
         LEFT JOIN d_driver dd ON surd.user_id = dd.id
         LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
+        LEFT JOIN s_bank_card_bind sbcb ON dc.id = sbcb.user_id
         <where>
             <if test="keyword != null and keyword.trim() !=''">
                (dd.real_name like concat('%',#{keyword},'%') or
@@ -819,6 +823,8 @@
             AND surd.state = 2
             AND dc.type = 1
             AND dc.mode = 3
+            AND sbcb.bank_name != ''
+            AND sbcb.state = 1
             group by dd.phone
         </where>
     </select>

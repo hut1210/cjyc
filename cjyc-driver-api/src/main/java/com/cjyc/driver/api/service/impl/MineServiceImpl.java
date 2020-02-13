@@ -17,6 +17,7 @@ import com.cjyc.common.model.util.*;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.mine.*;
+import com.cjyc.common.system.service.ICsBankInfoService;
 import com.cjyc.common.system.service.ICsRoleService;
 import com.cjyc.common.system.service.ICsSmsService;
 import com.cjyc.common.system.service.ICsVehicleService;
@@ -65,7 +66,7 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
     @Resource
     private ICsRoleService csRoleService;
     @Resource
-    private IBankInfoDao bankInfoDao;
+    private ICsBankInfoService bankInfoService;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -737,11 +738,9 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
         bcb.setState(UseStateEnum.USABLE.code);
         bcb.setCreateTime(NOW);
         //获取银行编码
-        if(!StringUtils.isBlank(bcb.getBankName())){
-            List<BankInfo> bankInfoList = bankInfoDao.findBankInfo(bcb.getBankName());
-            if(!CollectionUtils.isEmpty(bankInfoList)){
-                bcb.setBankCode(bankInfoList.get(0).getOpenBankCode());
-            }
+        BankInfo bankInfo = bankInfoService.findBankCode(bcb.getBankName());
+        if(bankInfo != null){
+            bcb.setBankCode(bankInfo.getOpenBankCode());
         }
         bankCardBindDao.insert(bcb);
         return BaseResultUtil.success();

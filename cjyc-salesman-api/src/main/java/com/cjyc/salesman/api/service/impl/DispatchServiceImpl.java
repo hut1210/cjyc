@@ -193,6 +193,11 @@ public class DispatchServiceImpl implements IDispatchService {
         // 查询车辆信息
         LambdaQueryWrapper<WaybillCar> queryWrapper = new QueryWrapper<WaybillCar>().lambda()
                 .eq(WaybillCar::getWaybillId, waybillId).le(WaybillCar::getState, WaybillCarStateEnum.UNLOADED.code);
+        if (waybill.getState > WaybillStateEnum.FINISHED.code) {
+            queryWrapper = new QueryWrapper<WaybillCar>().lambda()
+                    .eq(WaybillCar::getWaybillId, waybillId);
+        }
+
         List<WaybillCar> waybillCarList = waybillCarDao.selectList(queryWrapper);
         List<WaybillCarDetailVo> carDetailVoList = new ArrayList<>(10);
         WaybillCarDetailVo carDetailVo = null;

@@ -15,13 +15,22 @@
         open_bank_code, sub_bank_code, sub_bank, bank_name
     </sql>
 
-    <select id="findBankInfo" resultType="com.cjyc.common.model.entity.BankInfo"
+    <select id="findBankCode" resultType="com.cjyc.common.model.entity.BankInfo"
             parameterType="java.lang.String">
         SELECT
             <include refid="Base_Column_List"/>
           FROM
             s_bank_info
           where bank_name like concat('%',#{bankName},'%')
+    </select>
+
+    <!-- 获取全部银行信息 -->
+    <select id="findAllBankInfo" resultType="com.cjyc.common.model.vo.web.bankInfo.BankInfoVo">
+        SELECT
+            open_bank_code AS bankCode,
+            bank_name AS bankName
+        FROM
+          s_bank_info
     </select>
 
 </mapper>
