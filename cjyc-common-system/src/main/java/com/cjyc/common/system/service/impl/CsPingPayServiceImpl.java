@@ -731,6 +731,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
 
     @Override
     public void cancelOrderRefund(Long orderId) {
+        log.info("cancelOrderRefund 退款，orderId = {}",orderId);
         lock.lock();
         try{
             Order order = orderDao.selectById(orderId);
@@ -749,6 +750,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                     if(StringUtils.isBlank(description)){
                         log.error("退款异常，description不能为空。");
                     }else{
+                        log.info("退款 start，orderId = {}",orderId);
                         TradeBill tradeBill = cStransactionService.getTradeBillByOrderNo(orderNo);
                         String pingPayId = tradeBill.getPingPayId();
                         initPingApiKey();
