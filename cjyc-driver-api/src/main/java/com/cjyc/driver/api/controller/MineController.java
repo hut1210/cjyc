@@ -264,7 +264,7 @@ public class MineController {
 
     @ApiOperation(value = "获取全部银行信息")
     @PostMapping(value = "/findBankInfo")
-    public ResultVo<PageVo<BankInfoVo>> findBankInfo(@Validated @RequestBody BasePageDto dto) {
-        return csBankInfoService.findBankInfo(dto);
+    public ResultVo<PageVo<BankInfoVo>> findBankInfo(@Validated @RequestBody BankInfoDto dto) {
+        return csBankInfoService.findAppBankInfo(dto);
     }
 }

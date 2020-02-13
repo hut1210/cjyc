@@ -2,6 +2,7 @@ package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.BasePageDto;
 import com.cjyc.common.model.dto.CarrierDriverDto;
+import com.cjyc.common.model.dto.KeywordDto;
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.carrier.*;
 import com.cjyc.common.model.enums.ResultEnum;
@@ -24,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  *  @author: zj
@@ -182,8 +184,8 @@ public class CarrierController {
 
     @ApiOperation(value = "获取全部银行信息")
     @PostMapping(value = "/findBankInfo")
-    public ResultVo<PageVo<BankInfoVo>> findBankInfo(@Validated @RequestBody BasePageDto dto) {
-        return csBankInfoService.findBankInfo(dto);
+    public ResultVo<List<BankInfoVo>> findBankInfo(@Validated @RequestBody KeywordDto dto) {
+        return csBankInfoService.findWebBankInfo(dto);
     }
 
     /*********************************韵车集成改版 ed*****************************/

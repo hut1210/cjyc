@@ -123,7 +123,7 @@ public class ApplyPartnerServiceImpl extends ServiceImpl<ICustomerDao, Customer>
         //获取银行编码
         BankInfo bankInfo = bankInfoService.findBankCode(bcb.getBankName());
         if(bankInfo != null){
-            bcb.setBankCode(bankInfo.getOpenBankCode());
+            bcb.setBankCode(bankInfo.getBankCode());
         }
         bankCardBindDao.insert(bcb);
         return BaseResultUtil.success();

@@ -2,6 +2,7 @@ package com.cjyc.customer.api.controller;
 
 import com.cjyc.common.model.dto.BasePageDto;
 import com.cjyc.common.model.dto.customer.partner.ApplyPartnerDto;
+import com.cjyc.common.model.dto.driver.mine.BankInfoDto;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.bankInfo.BankInfoVo;
@@ -48,8 +49,8 @@ public class ApplyPartnerController {
 
     @ApiOperation(value = "获取全部银行信息")
     @PostMapping(value = "/findBankInfo")
-    public ResultVo<PageVo<BankInfoVo>> findBankInfo(@Validated @RequestBody BasePageDto dto) {
-        return csBankInfoService.findBankInfo(dto);
+    public ResultVo<PageVo<BankInfoVo>> findBankInfo(@Validated @RequestBody BankInfoDto dto) {
+        return csBankInfoService.findAppBankInfo(dto);
     }
 
 }

@@ -1,6 +1,8 @@
 package com.cjyc.common.system.service;
 
 import com.cjyc.common.model.dto.BasePageDto;
+import com.cjyc.common.model.dto.KeywordDto;
+import com.cjyc.common.model.dto.driver.mine.BankInfoDto;
 import com.cjyc.common.model.entity.BankInfo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -22,5 +24,11 @@ public interface ICsBankInfoService {
      * 获取全部银行信息
      * @return
      */
-    ResultVo findBankInfo(BasePageDto dto);
+    ResultVo findAppBankInfo(BankInfoDto dto);
+
+    /**
+     * 获取全部银行信息
+     * @return
+     */
+    ResultVo findWebBankInfo(KeywordDto dto);
 }

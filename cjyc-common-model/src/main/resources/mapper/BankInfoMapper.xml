@@ -4,15 +4,13 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.BankInfo">
-        <result column="open_bank_code" property="openBankCode" />
-        <result column="sub_bank_code" property="subBankCode" />
-        <result column="sub_bank" property="subBank" />
+        <result column="bank_code" property="bankCode" />
         <result column="bank_name" property="bankName" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        open_bank_code, sub_bank_code, sub_bank, bank_name
+        bank_code, bank_name
     </sql>
 
     <select id="findBankCode" resultType="com.cjyc.common.model.entity.BankInfo"
@@ -24,13 +22,34 @@
           where bank_name like concat('%',#{bankName},'%')
     </select>
 
-    <!-- 获取全部银行信息 -->
-    <select id="findAllBankInfo" resultType="com.cjyc.common.model.vo.web.bankInfo.BankInfoVo">
+    <!-- 获取全部银行信息(app) -->
+    <select id="findAppBankInfo" resultType="com.cjyc.common.model.vo.web.bankInfo.BankInfoVo"
+            parameterType="com.cjyc.common.model.dto.driver.mine.BankInfoDto">
         SELECT
-            open_bank_code AS bankCode,
-            bank_name AS bankName
+            sbi.bank_code AS bankCode,
+            sbi.bank_name AS bankName
         FROM
-          s_bank_info
+          s_bank_info sbi
+        <where>
+            <if test="keyword != null and keyword.trim() != ''">
+                sbi.bank_name like CONCAT('%',#{keyword},'%')
+            </if>
+        </where>
+    </select>
+
+    <!-- 获取全部银行信息(web) -->
+    <select id="findWebBankInfo" resultType="com.cjyc.common.model.vo.web.bankInfo.BankInfoVo"
+            parameterType="com.cjyc.common.model.dto.KeywordDto">
+        SELECT
+            sbi.bank_code AS bankCode,
+            sbi.bank_name AS bankName
+        FROM
+          s_bank_info sbi
+        <where>
+            <if test="keyword != null and keyword.trim() != ''">
+                sbi.bank_name like CONCAT('%',#{keyword},'%')
+            </if>
+        </where>
     </select>
 
 </mapper>
