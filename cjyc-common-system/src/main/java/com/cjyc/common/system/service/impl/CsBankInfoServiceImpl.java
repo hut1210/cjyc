@@ -56,7 +56,14 @@ public class CsBankInfoServiceImpl implements ICsBankInfoService {
 
     @Override
     public ResultVo findWebBankInfo(KeywordDto dto) {
-        List<BankInfoVo> bankInvoVos = bankInfoDao.findWebBankInfo(dto);
-        return BaseResultUtil.success(bankInvoVos);
+        List<BankInfoVo> bankInfoVos = null;
+        String key = RedisKeys.getBankInfoKey(dto.getKeyword());
+        bankInfoVos = JsonUtils.jsonToList(redisUtils.get(key), BankInfoVo.class);
+        if(CollectionUtils.isEmpty(bankInfoVos)){
+            bankInfoVos = bankInfoDao.findWebBankInfo(dto);
+            redisUtils.set(key, JsonUtils.objectToJson(bankInfoVos));
+            redisUtils.expire(key, 1, TimeUnit.DAYS);
+        }
+        return BaseResultUtil.success(bankInfoVos);
     }
 }
