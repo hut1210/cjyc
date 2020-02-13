@@ -489,7 +489,7 @@ public class FinanceServiceImpl implements IFinanceService {
         }
         payableSettlementVo.setPayableTaskVo(settlementVoList);
         payableSettlementVo.setTotalFreightFee(freightFee.divide(new BigDecimal(100)));
-        payableSettlementVo.setTotalFreightPaid(settlementVo.getTotalFreightPay());
+        payableSettlementVo.setTotalFreightPaid(settlementVo.getTotalFreightPay().divide(new BigDecimal(100)));
         payableSettlementVo.setWriteOffTime(settlementVo.getWriteOffTime());
 
         return BaseResultUtil.success(payableSettlementVo);
