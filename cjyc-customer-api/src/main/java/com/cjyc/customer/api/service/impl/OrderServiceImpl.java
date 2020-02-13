@@ -20,10 +20,7 @@ import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.invoice.InvoiceOrderVo;
-import com.cjyc.common.model.vo.customer.order.OrderCarCenterVo;
-import com.cjyc.common.model.vo.customer.order.OrderCenterDetailVo;
-import com.cjyc.common.model.vo.customer.order.OrderCenterVo;
-import com.cjyc.common.model.vo.customer.order.OutterOrderCarLogVo;
+import com.cjyc.common.model.vo.customer.order.*;
 import com.cjyc.common.system.config.LogoImgProperty;
 import com.cjyc.common.system.service.ICsOrderService;
 import com.cjyc.common.system.service.ICsSendNoService;
@@ -87,9 +84,13 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
     }
 
     @Override
-    public ResultVo<ListVo<OutterOrderCarLogVo>> ListOrderCarLog(String orderCarNo) {
+    public ResultVo<OutterLogVo> ListOrderCarLog(String orderCarNo) {
+        OutterLogVo outterLogVo = new OutterLogVo();
+        String state = orderCarDao.findOutterState(orderCarNo);
+        outterLogVo.setOutterState(state);
         List<OutterOrderCarLogVo> list = orderCarLogDao.findCarLogByOrderNoAndCarNo(orderCarNo.split("-")[0], orderCarNo);
-        return BaseResultUtil.success(list, CollectionUtils.isEmpty(list) ? 0 : (long) list.size());
+        outterLogVo.setList(list);
+        return BaseResultUtil.success(outterLogVo);
     }
 
     @Override

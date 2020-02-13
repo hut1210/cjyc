@@ -14,6 +14,7 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterDetailVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterVo;
+import com.cjyc.common.model.vo.customer.order.OutterLogVo;
 import com.cjyc.common.model.vo.customer.order.OutterOrderCarLogVo;
 import com.cjyc.common.model.vo.web.OrderCarVo;
 import com.cjyc.common.system.service.ICsCustomerService;
@@ -154,15 +155,13 @@ public class OrderController {
     public ResultVo<OrderCenterDetailVo> getDetail(@RequestBody @Validated OrderDetailDto dto){
         return orderService.getDetail(dto);
     }
-
-
     /**
      * 车辆日志
      * @author JPG
      */
     @ApiOperation(value = "查询车辆和订单详细信息-根据车辆ID")
     @PostMapping(value = "/car/log/list")
-    public ResultVo<ListVo<OutterOrderCarLogVo>> ListOrderCarLog(@Valid @RequestBody OrderCarNoDto reqDto) {
+    public ResultVo<OutterLogVo> ListOrderCarLog(@Valid @RequestBody OrderCarNoDto reqDto) {
         return orderService.ListOrderCarLog(reqDto.getOrderCarNo());
     }
 

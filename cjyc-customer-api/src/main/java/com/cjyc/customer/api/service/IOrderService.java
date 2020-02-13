@@ -9,6 +9,7 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterDetailVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterVo;
+import com.cjyc.common.model.vo.customer.order.OutterLogVo;
 import com.cjyc.common.model.vo.customer.order.OutterOrderCarLogVo;
 
 import java.util.List;
@@ -57,5 +58,5 @@ public interface IOrderService extends IService<Order> {
 
     ResultVo simpleSubmit(SimpleSaveOrderDto reqDto);
 
-    ResultVo<ListVo<OutterOrderCarLogVo>> ListOrderCarLog(String orderCarNo);
+    ResultVo<OutterLogVo> ListOrderCarLog(String orderCarNo);
 }
