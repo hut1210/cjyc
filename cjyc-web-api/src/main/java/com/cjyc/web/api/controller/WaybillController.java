@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 运单
@@ -306,6 +307,28 @@ public class WaybillController {
     @PostMapping(value = "/trunk/car/list")
     public ResultVo<PageVo<TrunkCarListWaybillCarVo>> getCarTrunklist(@RequestBody TrunkListWaybillCarDto reqDto) {
         return waybillService.trunkCarlist(reqDto);
+    }
+
+    @ApiOperation(value = "干线运单明细导出")
+    @GetMapping(value = "/trunk/car/exportAllList")
+    public ResultVo exportAllList(TrunkListWaybillCarDto reqDto, HttpServletResponse response) {
+        ResultVo<List<TrunkCarDetailExportVo>> listRs = waybillService.trunkCarAllList(reqDto);
+        if (!isResultSuccess(listRs)) {
+            return BaseResultUtil.fail(listRs.getMsg());
+        }
+        List<TrunkCarDetailExportVo> list = listRs.getData();
+        if (CollectionUtils.isEmpty(list)) {
+            return BaseResultUtil.success("未查询到结果");
+        }
+        list = list.stream().filter(l -> l != null).collect(Collectors.toList());
+        try{
+            ExcelUtil.exportExcel(list, "运单干线明细", "运单干线明细",
+                    TrunkCarDetailExportVo.class, System.currentTimeMillis()+"运单干线明细.xls", response);
+            return null;
+        }catch(Exception e) {
+            LogUtil.error("导出运单干线明细信息异常", e);
+            return BaseResultUtil.fail("导出运单干线明细信息异常: " + e.getMessage());
+        }
     }
 
     /**

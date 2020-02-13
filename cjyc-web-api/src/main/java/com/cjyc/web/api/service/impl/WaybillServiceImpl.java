@@ -18,11 +18,14 @@ import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.web.api.service.IWaybillService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.common.collect.Lists;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -166,6 +169,33 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
             pageInfo.setList(null);
         }
         return BaseResultUtil.success(pageInfo);
+    }
+
+    @Override
+    public ResultVo<List<TrunkCarDetailExportVo>> trunkCarAllList(TrunkListWaybillCarDto dto) {
+        //查询角色业务中心范围
+        BizScope bizScope = csSysService.getBizScopeBySysRoleIdNew(dto.getLoginId(), dto.getRoleId(), true);
+        if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
+            return BaseResultUtil.fail("无数据权限");
+        }
+        if(bizScope.getCode() == BizScopeEnum.CHINA.code){
+            dto.setBizScope(null);
+            dto.setLoginId(null);
+        }else{
+            dto.setBizScope(bizScope.getStoreIds());
+        }
+        List<TrunkCarListWaybillCarVo> list = waybillCarDao.findTrunkCarList(dto);
+        if (CollectionUtils.isEmpty(list)) {
+            return BaseResultUtil.success();
+        }else {
+            List<TrunkCarDetailExportVo> rsList = new ArrayList<>(list.size());
+            list.stream().forEach(l -> {
+                TrunkCarDetailExportVo vo = new TrunkCarDetailExportVo();
+                BeanUtils.copyProperties(l, vo);
+                rsList.add(vo);
+            });
+            return BaseResultUtil.success(rsList);
+        }
     }
 
     @Override
