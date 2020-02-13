@@ -285,14 +285,18 @@ public class WaybillController {
     @ApiOperation(value = "导出全部运单干线子运单列表信息")
     @GetMapping(value = "/trunk/sub/exportAllList")
     public ResultVo exportTrunkSubAllList(TrunkSubListWaybillDto reqDto, HttpServletResponse response) {
-        List<TrunkSubListWaybillVo> list = waybillService.getTrunkSubAllList(reqDto);
+        ResultVo<List<TrunkSubListExportVo>> listRs = waybillService.getTrunkSubAllList(reqDto);
+        if(!isResultSuccess(listRs)) {
+            return BaseResultUtil.fail(listRs.getMsg());
+        }
+        List<TrunkSubListExportVo> list = listRs.getData();
         if (CollectionUtils.isEmpty(list)) {
             return BaseResultUtil.success("未查询到数据");
         }
         try {
-            List<ExportTrunkMainListWaybillVo> rsList = dealTrunkSubListForExport(list);
-            ExcelUtil.exportExcel(rsList, "运单干线子运单信息", "运单干线子运单信息",
-                    ExportTrunkMainListWaybillVo.class, System.currentTimeMillis() + "运单干线子运单信息.xls", response);
+//            List<ExportTrunkMainListWaybillVo> rsList = dealTrunkSubListForExport(list);
+            ExcelUtil.exportExcel(list, "运单干线子运单信息", "运单干线子运单信息",
+                    TrunkSubListExportVo.class, System.currentTimeMillis() + "运单干线子运单信息.xls", response);
             return null;
         } catch (Exception e) {
             LogUtil.error("导出全部运单干线子运单列表异常", e);

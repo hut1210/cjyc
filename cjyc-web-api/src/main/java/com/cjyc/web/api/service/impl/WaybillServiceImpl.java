@@ -142,8 +142,27 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
     }
 
     @Override
-    public List<TrunkSubListWaybillVo> getTrunkSubAllList(TrunkSubListWaybillDto reqDto) {
-        return waybillDao.findSubListTrunk(reqDto);
+    public ResultVo<List<TrunkSubListExportVo>> getTrunkSubAllList(TrunkSubListWaybillDto reqDto) {
+        //查询角色业务中心范围
+        BizScope bizScope = csSysService.getBizScopeBySysRoleIdNew(reqDto.getLoginId(), reqDto.getRoleId(), true);
+        if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
+            return BaseResultUtil.fail("没有数据权限");
+        }
+        if(bizScope.getCode() == BizScopeEnum.CHINA.code){
+            reqDto.setLoginId(null);
+        }
+        List<TrunkSubListWaybillVo> list = waybillDao.findSubListTrunk(reqDto);
+        if (CollectionUtils.isEmpty(list)) {
+            return BaseResultUtil.success();
+        }else {
+            List<TrunkSubListExportVo> rsList = new ArrayList<>(list.size());
+            list.forEach(l -> {
+                TrunkSubListExportVo vo = new TrunkSubListExportVo();
+                BeanUtils.copyProperties(l, vo);
+                rsList.add(vo);
+            });
+            return BaseResultUtil.success(rsList);
+        }
     }
 
 

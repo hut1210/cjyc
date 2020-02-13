@@ -39,7 +39,7 @@ public interface IWaybillService extends IService<Waybill> {
 
     ResultVo<PageVo<TrunkSubListWaybillVo>> getTrunkSubList(TrunkSubListWaybillDto reqDto);
 
-    List<TrunkSubListWaybillVo> getTrunkSubAllList(TrunkSubListWaybillDto reqDto);
+    ResultVo<List<TrunkSubListExportVo>> getTrunkSubAllList(TrunkSubListWaybillDto reqDto);
 
     ResultVo<WaybillVo> get(GetDto reqDto);
     ResultVo<WaybillVo> get(Long id);
