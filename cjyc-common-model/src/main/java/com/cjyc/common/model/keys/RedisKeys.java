@@ -140,7 +140,7 @@ public class RedisKeys {
         return PROJECT_PREFIX + I + THREE_CITY + I + keyword;
     }
 
-    public static String getBankInfoKey(BankInfoDto dto){
+    public static String getAppBankInfoKey(BankInfoDto dto){
         return PROJECT_PREFIX + I + BANK_INFO + I + dto.getCurrentPage() + I + dto.getPageSize() + I + dto.getKeyword();
     }
 
