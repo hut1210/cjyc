@@ -57,6 +57,8 @@ public class OrderController {
         //验证用户存不存在
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
+        reqDto.setLoginPhone(admin.getPhone());
+        reqDto.setLoginType(UserTypeEnum.ADMIN.code);
         reqDto.setCreateUserId(admin.getId());
         reqDto.setCreateUserName(admin.getName());
         reqDto.setState(OrderStateEnum.WAIT_SUBMIT.code);
@@ -78,6 +80,7 @@ public class OrderController {
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
         reqDto.setLoginPhone(admin.getPhone());
+        reqDto.setLoginType(UserTypeEnum.ADMIN.code);
         reqDto.setCreateUserId(admin.getId());
         reqDto.setCreateUserName(admin.getName());
         if(OrderPickTypeEnum.DISPATCH_SELF.code == reqDto.getPickType()){
@@ -117,6 +120,7 @@ public class OrderController {
         //验证用户存不存在
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
+        reqDto.setLoginPhone(admin.getPhone());
         return csOrderService.check(reqDto);
     }
 

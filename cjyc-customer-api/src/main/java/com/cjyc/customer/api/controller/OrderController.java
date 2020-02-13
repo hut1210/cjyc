@@ -9,6 +9,7 @@ import com.cjyc.common.model.entity.OrderCarLog;
 import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterDetailVo;
@@ -161,7 +162,7 @@ public class OrderController {
      */
     @ApiOperation(value = "查询车辆和订单详细信息-根据车辆ID")
     @PostMapping(value = "/car/log/list")
-    public ResultVo<List<OutterOrderCarLogVo>> ListOrderCarLog(@Valid @RequestBody OrderCarNoDto reqDto) {
+    public ResultVo<ListVo<OutterOrderCarLogVo>> ListOrderCarLog(@Valid @RequestBody OrderCarNoDto reqDto) {
         return orderService.ListOrderCarLog(reqDto.getOrderCarNo());
     }
 
