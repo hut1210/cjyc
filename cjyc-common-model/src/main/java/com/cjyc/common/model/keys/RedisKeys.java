@@ -40,6 +40,7 @@ public class RedisKeys {
     private final static String LOOP_ALLOT_ADMIN_KEY = "loop:allot:admin";
     private final static String CAR_SERIES = "car:series";
     private final static String THREE_CITY = "three:city";
+    private final static String BANK_INFO = "bankInfo:bankName";
 
     private final static String USER_KEY = "user";
 
@@ -134,5 +135,9 @@ public class RedisKeys {
 
     public static String getThreeCityKey(String keyword){
         return PROJECT_PREFIX + I + THREE_CITY + I + keyword;
+    }
+
+    public static String getBankInfoKey(String keyword){
+        return PROJECT_PREFIX + I + BANK_INFO + I + keyword;
     }
 }
