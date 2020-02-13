@@ -7,6 +7,8 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.waybill.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -46,5 +48,5 @@ public interface IWaybillService extends IService<Waybill> {
     /************************************韵车集成改版 st***********************************/
     ResultVo<PageVo<CrWaybillVo>> crListForMineCarrierNew(CrWaybillDto reqDto);
 
-
+    void exportCrListExcel(HttpServletRequest request, HttpServletResponse response);
 }

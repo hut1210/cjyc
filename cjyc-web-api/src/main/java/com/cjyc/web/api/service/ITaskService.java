@@ -11,6 +11,8 @@ import com.cjyc.common.model.vo.web.task.ListByWaybillTaskVo;
 import com.cjyc.common.model.vo.web.task.TaskPageVo;
 import com.cjyc.common.model.vo.web.task.TaskVo;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -56,4 +58,6 @@ public interface ITaskService extends IService<Task> {
     /************************************韵车集成改版 st***********************************/
 
     ResultVo<PageVo<CrTaskVo>> crTaskListNew(CrTaskDto reqDto);
+
+    void exportCrAllottedListExcel(HttpServletRequest request, HttpServletResponse response);
 }
