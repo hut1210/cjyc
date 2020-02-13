@@ -25,8 +25,8 @@
     <!-- 获取全部银行信息 -->
     <select id="findWebBankInfo" resultType="com.cjyc.common.model.vo.web.bankInfo.BankInfoVo">
         SELECT
-          sbi.bank_code AS bankCode,
-          sbi.bank_name AS bankName
+            sbi.bank_code AS bankCode,
+            sbi.bank_name AS bankName
         FROM
           s_bank_info sbi
         <where>
@@ -39,10 +39,10 @@
     <!-- 获取全部银行信息 -->
     <select id="findAllBankInfo" resultType="com.cjyc.common.model.vo.web.bankInfo.BankInfoVo">
         SELECT
-        sbi.bank_code AS bankCode,
-        sbi.bank_name AS bankName
+            sbi.bank_code AS bankCode,
+            sbi.bank_name AS bankName
         FROM
-        s_bank_info sbi
+         s_bank_info sbi
         <where>
             <if test="keyword != null and keyword.trim() != ''">
                 sbi.bank_name like CONCAT('%',#{keyword},'%')
