@@ -26,6 +26,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -482,5 +483,11 @@ public class WaybillController {
     @PostMapping(value = "/cr/list")
     public ResultVo<PageVo<CrWaybillVo>> crListNew(@RequestBody CrWaybillDto reqDto) {
         return waybillService.crListForMineCarrierNew(reqDto);
+    }
+
+    @ApiOperation(value = "我的公司-我的运单导出Excel", notes = "\t 请求接口为/waybill/exportCrListExcel?waybillNo=运单编号&carrierId=承运商id")
+    @GetMapping("/exportCrListExcel")
+    public void exportCrListExcel(HttpServletRequest request, HttpServletResponse response){
+        waybillService.exportCrListExcel(request,response);
     }
 }

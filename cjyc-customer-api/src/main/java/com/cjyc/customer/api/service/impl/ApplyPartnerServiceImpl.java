@@ -2,9 +2,6 @@ package com.cjyc.customer.api.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.cjkj.common.model.ResultData;
-import com.cjkj.common.model.ReturnMsg;
-import com.cjkj.usercenter.dto.common.UpdateUserReq;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.customer.partner.ApplyPartnerDto;
 import com.cjyc.common.model.entity.*;
@@ -13,25 +10,19 @@ import com.cjyc.common.model.enums.UseStateEnum;
 import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.enums.customer.CustomerSourceEnum;
 import com.cjyc.common.model.enums.customer.CustomerStateEnum;
-import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.enums.role.DeptTypeEnum;
 import com.cjyc.common.model.util.*;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.system.feign.ISysUserService;
+import com.cjyc.common.system.service.ICsBankInfoService;
 import com.cjyc.common.system.service.ICsUserRoleDeptService;
-import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.customer.api.service.IApplyPartnerService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
 
 @Service
 @Slf4j
@@ -46,9 +37,9 @@ public class ApplyPartnerServiceImpl extends ServiceImpl<ICustomerDao, Customer>
     @Resource
     private IUserRoleDeptDao userRoleDeptDao;
     @Resource
-    private IBankInfoDao bankInfoDao;
-    @Resource
     private ICsUserRoleDeptService csUserRoleDeptService;
+    @Resource
+    private ICsBankInfoService bankInfoService;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -130,11 +121,9 @@ public class ApplyPartnerServiceImpl extends ServiceImpl<ICustomerDao, Customer>
         bcb.setState(UseStateEnum.USABLE.code);
         bcb.setCreateTime(NOW);
         //获取银行编码
-        if(!StringUtils.isBlank(bcb.getBankName())){
-            List<BankInfo> bankInfoList = bankInfoDao.findBankInfo(bcb.getBankName());
-            if(!CollectionUtils.isEmpty(bankInfoList)){
-                bcb.setBankCode(bankInfoList.get(0).getOpenBankCode());
-            }
+        BankInfo bankInfo = bankInfoService.findBankCode(bcb.getBankName());
+        if(bankInfo != null){
+            bcb.setBankCode(bankInfo.getOpenBankCode());
         }
         bankCardBindDao.insert(bcb);
         return BaseResultUtil.success();

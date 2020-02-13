@@ -10,21 +10,17 @@ import com.cjkj.usercenter.dto.yc.AddDeptAndUserResp;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.carrier.*;
-import com.cjyc.common.model.dto.web.driver.DriverDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.driver.DriverIdentityEnum;
-import com.cjyc.common.model.enums.role.DeptTypeEnum;
-import com.cjyc.common.model.enums.role.RoleLevelEnum;
-import com.cjyc.common.model.enums.role.RoleRangeEnum;
 import com.cjyc.common.model.enums.transport.*;
 import com.cjyc.common.model.util.*;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.carrier.*;
-import com.cjyc.common.model.vo.web.driver.DriverImportExcel;
 import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.feign.ISysUserService;
+import com.cjyc.common.system.service.ICsBankInfoService;
 import com.cjyc.common.system.service.ICsCarrierService;
 import com.cjyc.common.system.service.ICsRoleService;
 import com.cjyc.common.system.util.ResultDataUtil;
@@ -34,7 +30,6 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.util.PropertiesUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -81,7 +76,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     @Resource
     private IUserRoleDeptDao userRoleDeptDao;
     @Resource
-    private IBankInfoDao bankInfoDao;
+    private ICsBankInfoService bankInfoService;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -609,11 +604,9 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         bcb.setCardColour(RandomUtil.getIntRandom());
         bcb.setCreateTime(NOW);
         //获取银行编码
-        if(!StringUtils.isBlank(bcb.getBankName())){
-            List<BankInfo> bankInfoList = bankInfoDao.findBankInfo(bcb.getBankName());
-            if(!CollectionUtils.isEmpty(bankInfoList)){
-                bcb.setBankCode(bankInfoList.get(0).getOpenBankCode());
-            }
+        BankInfo bankInfo = bankInfoService.findBankCode(bcb.getBankName());
+        if(bankInfo != null){
+            bcb.setBankCode(bankInfo.getOpenBankCode());
         }
         bankCardBindDao.insert(bcb);
     }

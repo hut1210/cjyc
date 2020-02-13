@@ -26,10 +26,7 @@ import com.cjyc.common.model.vo.web.customer.*;
 import com.cjyc.common.model.vo.web.coupon.CustomerCouponSendVo;
 import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.feign.ISysUserService;
-import com.cjyc.common.system.service.ICsCustomerService;
-import com.cjyc.common.system.service.ICsRoleService;
-import com.cjyc.common.system.service.ICsSendNoService;
-import com.cjyc.common.system.service.ICsUserRoleDeptService;
+import com.cjyc.common.system.service.*;
 import com.cjyc.web.api.service.ICustomerContractService;
 import com.cjyc.web.api.service.ICustomerService;
 import com.github.pagehelper.PageHelper;
@@ -94,6 +91,8 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     private IUserRoleDeptDao userRoleDeptDao;
     @Resource
     private IBankInfoDao bankInfoDao;
+    @Resource
+    private ICsBankInfoService bankInfoService;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -817,11 +816,9 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         bcb.setState(UseStateEnum.USABLE.code);
         bcb.setCreateTime(now);
         //获取银行编码
-        if(!StringUtils.isBlank(bcb.getBankName())){
-            List<BankInfo> bankInfoList = bankInfoDao.findBankInfo(bcb.getBankName());
-            if(!CollectionUtils.isEmpty(bankInfoList)){
-                bcb.setBankCode(bankInfoList.get(0).getOpenBankCode());
-            }
+        BankInfo bankInfo = bankInfoService.findBankCode(bcb.getBankName());
+        if(bankInfo != null){
+            bcb.setBankCode(bankInfo.getOpenBankCode());
         }
         bankCardBindDao.insert(bcb);
     }

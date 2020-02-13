@@ -1,7 +1,9 @@
 package com.cjyc.common.model.dao;
 
+import com.cjyc.common.model.dto.BasePageDto;
 import com.cjyc.common.model.entity.BankInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cjyc.common.model.vo.web.bankInfo.BankInfoVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -21,5 +23,11 @@ public interface IBankInfoDao extends BaseMapper<BankInfo> {
      * @param bankName
      * @return
      */
-    List<BankInfo> findBankInfo(@Param("bankName") String bankName);
+    BankInfo findBankCode(@Param("bankName") String bankName);
+
+    /**
+     * 获取银行信息
+     * @return
+     */
+    List<BankInfoVo> findAllBankInfo(BasePageDto dto);
 }

@@ -22,6 +22,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -161,6 +163,11 @@ public class TaskController {
         return taskService.crTaskListNew(reqDto);
     }
 
-
+    @ApiOperation(value = "我的公司-已指派导出Excel", notes = "\t 请求接口为/task/exportCrAllottedListExcel?waybillNo=主运单编号&taskNo=运单号&" +
+            "driverName=司机名称&driverPhone=司机电话&vehiclePlateNo=车牌号&carrierId=承运商id")
+    @GetMapping("/exportCrAllottedListExcel")
+    public void exportCrAllottedListExcel(HttpServletRequest request, HttpServletResponse response){
+        taskService.exportCrAllottedListExcel(request,response);
+    }
 
 }
