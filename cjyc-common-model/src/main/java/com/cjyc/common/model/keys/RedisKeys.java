@@ -1,5 +1,8 @@
 package com.cjyc.common.model.keys;
 
+import com.cjyc.common.model.dto.BasePageDto;
+import com.cjyc.common.model.dto.KeywordDto;
+import com.cjyc.common.model.dto.driver.mine.BankInfoDto;
 import com.cjyc.common.model.enums.CaptchaTypeEnum;
 import com.cjyc.common.model.enums.ClientEnum;
 import com.google.common.collect.Lists;
@@ -137,7 +140,11 @@ public class RedisKeys {
         return PROJECT_PREFIX + I + THREE_CITY + I + keyword;
     }
 
-    public static String getBankInfoKey(String keyword){
-        return PROJECT_PREFIX + I + BANK_INFO + I + keyword;
+    public static String getBankInfoKey(BankInfoDto dto){
+        return PROJECT_PREFIX + I + BANK_INFO + I + dto.getCurrentPage() + I + dto.getPageSize() + I + dto.getKeyword();
+    }
+
+    public static String getWebBankInfoKey(KeywordDto dto){
+        return PROJECT_PREFIX + I + BANK_INFO + I + dto.getKeyword();
     }
 }
