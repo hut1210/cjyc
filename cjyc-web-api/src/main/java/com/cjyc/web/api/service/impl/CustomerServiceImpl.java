@@ -818,7 +818,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         //获取银行编码
         BankInfo bankInfo = bankInfoService.findBankCode(bcb.getBankName());
         if(bankInfo != null){
-            bcb.setBankCode(bankInfo.getOpenBankCode());
+            bcb.setBankCode(bankInfo.getBankCode());
         }
         bankCardBindDao.insert(bcb);
     }
@@ -1477,7 +1477,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             if(!CollectionUtils.isEmpty(bankInfoImportExcelList)){
                 for(BankInfoImportExcel bankInfoExcel : bankInfoImportExcelList){
                     BankInfo bankInfo = new BankInfo();
-                    bankInfo.setOpenBankCode(bankInfoExcel.getBankCode());
+                    bankInfo.setBankCode(bankInfoExcel.getBankCode());
                     bankInfo.setBankName(bankInfoExcel.getBankName());
                     bankInfoDao.insert(bankInfo);
                 }

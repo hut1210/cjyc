@@ -1,7 +1,7 @@
 package com.cjyc.common.model.dao;
 
-import com.cjyc.common.model.entity.OrderLog;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cjyc.common.model.entity.OrderLog;
 
 /**
  * <p>

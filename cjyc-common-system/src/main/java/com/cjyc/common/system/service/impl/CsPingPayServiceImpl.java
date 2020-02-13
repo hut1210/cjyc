@@ -1,6 +1,7 @@
 package com.cjyc.common.system.service.impl;
 
 import com.Pingxx.model.OrderModel;
+import com.Pingxx.model.OrderRefund;
 import com.Pingxx.model.PingxxMetaData;
 import com.cjkj.common.utils.DateUtil;
 import com.cjkj.log.monitor.LogUtil;
@@ -41,6 +42,7 @@ import com.pingplusplus.exception.*;
 import com.pingplusplus.model.Charge;
 import com.pingplusplus.model.Transfer;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -96,6 +98,9 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
 
     @Resource
     private IExternalPaymentDao externalPaymentDao;
+
+    @Resource
+    private IOrderRefundDao orderRefundDao;
 
     private final Lock lock = new ReentrantLock();
 
@@ -722,6 +727,65 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
            return BaseResultUtil.fail("解锁扫码付款");
         }
         return BaseResultUtil.success();
+    }
+
+    @Override
+    public void cancelOrderRefund(Long orderId) {
+        lock.lock();
+        try{
+            Order order = orderDao.selectById(orderId);
+            if(order!=null&&order.getNo()!=null){
+                String orderNo = order.getNo();
+                //先查询 是否已退款
+                Refund refund = orderRefundDao.selectByOrderCode(orderNo);
+                if(refund!=null){
+                    if(refund.getState()==2){
+                        log.error("已退款 orderNo={}",orderNo);
+                    }else if(refund.getState()==0){
+                        log.error("已申请退款，请勿重复操作 orderNo={}",orderNo);
+                    }
+                }else{
+                    String description = "订单号：" + orderNo + "，退款";
+                    if(StringUtils.isBlank(description)){
+                        log.error("退款异常，description不能为空。");
+                    }else{
+                        TradeBill tradeBill = cStransactionService.getTradeBillByOrderNo(orderNo);
+                        String pingPayId = tradeBill.getPingPayId();
+                        initPingApiKey();
+                        Map<String, Object> params = new HashMap<String, Object>();
+                        params.put("description", description); // 必传
+                        params.put("refund_mode", "to_source");//退款方式 原路退回
+
+                        PingxxMetaData pingxxMetaData = new PingxxMetaData();
+                        pingxxMetaData.setOrderNo(orderNo);
+
+                        Map<String, Object> meta = BeanMapUtil.beanToMap(pingxxMetaData);
+                        params.put("metadata",meta);//自定义参数
+                        OrderRefund.create(pingPayId, params);
+
+                        //添加退款记录
+                        try{
+                            Refund refund1 = new Refund();
+                            refund1.setOrderNo(orderNo);
+                            refund1.setState(0);
+                            refund1.setCreateTime(System.currentTimeMillis());
+                            orderRefundDao.insert(refund1);
+                        }catch (Exception e){
+                            log.error("添加退款记录异常 orderNo={}",orderNo);
+                            log.error(e.getMessage(),e);
+                        }
+                    }
+                }
+            }else{
+                log.error("退款异常,订单不存在 orderId={}",orderId);
+            }
+
+        }catch (Exception e){
+            log.error("退款异常 orderId={}",orderId);
+            log.error(e.getMessage(),e);
+        }finally {
+            lock.unlock();
+        }
     }
 
     private String getRandomNoKey(String prefix) {

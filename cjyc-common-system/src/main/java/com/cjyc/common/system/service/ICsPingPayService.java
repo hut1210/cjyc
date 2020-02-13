@@ -41,4 +41,6 @@ public interface ICsPingPayService {
     ResultVo unlock(String orderNo);
 
     ResultVo unlockQrcode(String orderCarNo);
+
+    void cancelOrderRefund(Long orderId);
 }
