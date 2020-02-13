@@ -2,6 +2,10 @@ package com.cjyc.common.model.dao;
 
 import com.cjyc.common.model.entity.OrderCarLog;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cjyc.common.model.vo.customer.order.OutterOrderCarLogVo;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +17,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface IOrderCarLogDao extends BaseMapper<OrderCarLog> {
 
+    List<OutterOrderCarLogVo> findCarLogByOrderNoAndCarNo(@Param("orderNo") String orderNo, @Param("orderCarNo") String orderCarNo);
 }

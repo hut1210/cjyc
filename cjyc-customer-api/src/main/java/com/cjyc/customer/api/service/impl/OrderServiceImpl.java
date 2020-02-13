@@ -22,6 +22,7 @@ import com.cjyc.common.model.vo.customer.invoice.InvoiceOrderVo;
 import com.cjyc.common.model.vo.customer.order.OrderCarCenterVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterDetailVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterVo;
+import com.cjyc.common.model.vo.customer.order.OutterOrderCarLogVo;
 import com.cjyc.common.system.config.LogoImgProperty;
 import com.cjyc.common.system.service.ICsOrderService;
 import com.cjyc.common.system.service.ICsSendNoService;
@@ -66,7 +67,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
     @Resource
     private IStoreDao storeDao;
     @Resource
-    private ICsSendNoService csSendNoService;
+    private IOrderCarLogDao orderCarLogDao;
 
 
     @Override
@@ -81,6 +82,12 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         order.setState(OrderStateEnum.SUBMITTED.code);
         orderDao.updateById(order);
         return BaseResultUtil.success();
+    }
+
+    @Override
+    public ResultVo<List<OutterOrderCarLogVo>> ListOrderCarLog(String orderCarNo) {
+        List<OutterOrderCarLogVo> list = orderCarLogDao.findCarLogByOrderNoAndCarNo(orderCarNo.split("-")[0], orderCarNo);
+        return BaseResultUtil.success(list);
     }
 
     @Override

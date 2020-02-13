@@ -22,5 +22,42 @@
     <sql id="Base_Column_List">
         id, order_car_id, order_car_no, type, inner_log, outer_log, remark, create_time, create_user, create_user_type, create_user_id, create_user_phone
     </sql>
+    <select id="findCarLogByOrderNoAndCarNo"
+            resultType="com.cjyc.common.model.vo.customer.order.OutterOrderCarLogVo">
+        select * from (
+            select
+            #{orderCarNo} as orderCarNo,
+            (case type
+            when 1 then '已下单'
+            when 2 then '已确认'
+            when 3 then '待付款'
+            when 4 then '已接单'
+            when 100 then '已完成'
+            when 113 then '已取消'
+            else ''
+            end) as typeStr,
+            outer_log as outerLog,
+            create_time as createTime
+            from w_order_log
+            where order_no = #{orderNo}
+            union all
+            select
+            order_car_no as orderCarNo,
+            (case type
+            when 21 then '已装车'
+            when 22 then '已卸车'
+            when 23 then '已卸载'
+            when 24 then '已入库'
+            when 25 then '已出库'
+            when 29 then '已签收'
+            else ''
+            end) as typeStr,
+            outer_log as outerLog,
+            create_time as createTime
+            from w_order_car_log
+            where order_car_no = #{orderCarNo}
+        ) as shell
+        order by shell.createTime
+    </select>
 
 </mapper>

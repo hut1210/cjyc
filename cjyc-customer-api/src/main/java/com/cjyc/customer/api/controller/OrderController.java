@@ -3,15 +3,17 @@ package com.cjyc.customer.api.controller;
 import com.cjyc.common.model.dto.customer.order.OrderDetailDto;
 import com.cjyc.common.model.dto.customer.order.OrderQueryDto;
 import com.cjyc.common.model.dto.customer.order.SimpleSaveOrderDto;
-import com.cjyc.common.model.dto.web.order.CancelOrderDto;
-import com.cjyc.common.model.dto.web.order.SaveOrderCarDto;
-import com.cjyc.common.model.dto.web.order.SaveOrderDto;
+import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.entity.Customer;
+import com.cjyc.common.model.entity.OrderCarLog;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
+import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterDetailVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterVo;
+import com.cjyc.common.model.vo.customer.order.OutterOrderCarLogVo;
+import com.cjyc.common.model.vo.web.OrderCarVo;
 import com.cjyc.common.system.service.ICsCustomerService;
 import com.cjyc.common.system.service.ICsOrderService;
 import com.cjyc.customer.api.service.IOrderService;
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -141,6 +144,16 @@ public class OrderController {
         return orderService.getDetail(dto);
     }
 
+
+    /**
+     * 车辆日志
+     * @author JPG
+     */
+    @ApiOperation(value = "查询车辆和订单详细信息-根据车辆ID")
+    @PostMapping(value = "/car/log/list")
+    public ResultVo<List<OutterOrderCarLogVo>> ListOrderCarLog(@Valid @RequestBody OrderCarNoDto reqDto) {
+        return orderService.ListOrderCarLog(reqDto.getOrderCarNo());
+    }
 
 
 }
