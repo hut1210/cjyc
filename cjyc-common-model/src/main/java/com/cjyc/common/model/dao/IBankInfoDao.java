@@ -30,7 +30,7 @@ public interface IBankInfoDao extends BaseMapper<BankInfo> {
      * 获取银行信息
      * @return
      */
-    List<BankInfoVo> findAllBankInfo(BankInfoDto dto);
+    List<BankInfoVo> findAppBankInfo(BankInfoDto dto);
 
     /**
      * 获取银行信息

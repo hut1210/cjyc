@@ -39,12 +39,12 @@ public class CsBankInfoServiceImpl implements ICsBankInfoService {
     }
 
     @Override
-    public ResultVo findBankInfo(BankInfoDto dto) {
+    public ResultVo findAppBankInfo(BankInfoDto dto) {
         String key = RedisKeys.getBankInfoKey(dto.getKeyword());
         PageInfo<BankInfoVo> pageInfo = JsonUtils.jsonToPojo(redisUtils.get(key), PageInfo.class);
         if(pageInfo == null){
             PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-            List<BankInfoVo> bankInvoVos = bankInfoDao.findAllBankInfo(dto);
+            List<BankInfoVo> bankInvoVos = bankInfoDao.findAppBankInfo(dto);
             pageInfo = new PageInfo<>(bankInvoVos);
             redisUtils.set(key, JsonUtils.objectToJson(pageInfo));
             redisUtils.expire(key, 1, TimeUnit.DAYS);

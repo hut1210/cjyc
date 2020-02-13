@@ -24,7 +24,7 @@ public interface ICsBankInfoService {
      * 获取全部银行信息
      * @return
      */
-    ResultVo findBankInfo(BankInfoDto dto);
+    ResultVo findAppBankInfo(BankInfoDto dto);
 
     /**
      * 获取全部银行信息
