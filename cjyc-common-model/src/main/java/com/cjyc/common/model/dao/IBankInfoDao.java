@@ -1,6 +1,5 @@
 package com.cjyc.common.model.dao;
 
-import com.cjyc.common.model.dto.BasePageDto;
 import com.cjyc.common.model.dto.KeywordDto;
 import com.cjyc.common.model.dto.driver.mine.BankInfoDto;
 import com.cjyc.common.model.entity.BankInfo;
