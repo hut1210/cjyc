@@ -205,8 +205,8 @@
         if(woc.wl_pay_state=2,woc.total_fee,0) as freightPay,
         woc.order_no as orderNo,
         wo.start_province,wo.start_city,
-        wo.start_address as startAddress,
-        wo.end_address as endAddress,
+        wo.start_city as startAddress,
+        wo.end_city as endAddress,
         woc.now_area_code,wo.input_store_id,
         wo.input_store_name as inputStoreName,
         wo.customer_name as customerName,
@@ -230,6 +230,9 @@
         <if test="orderNo != null and orderNo.trim() != ''">
             and  woc.order_no like concat('%',#{orderNo},'%')
         </if>
+        <if test="area != null and area.trim() != ''">
+            and zcity.code = #{area}
+        </if>
 
         <if test="type != null">
             and cc.type = #{type}
@@ -242,10 +245,10 @@
         </if>
 
         <if test="brand != null and brand.trim() != ''">
-            and cc.brand = #{brand}
+            and woc.brand = #{brand}
         </if>
         <if test="model != null and model.trim() != ''">
-            and cc.model = #{model}
+            and woc.model = #{model}
         </if>
         <if test="inputStoreName != null and inputStoreName.trim() != ''">
             and wo.input_store_name = #{inputStoreName}
@@ -312,8 +315,6 @@
         </if>
         <if test="invoiceNo!= null and invoiceNo.trim() != ''">
         </if>
-        <if test="pingPayNo!= null and pingPayNo.trim() != ''">
-        </if>
         <if test="carrierName!= null and carrierName.trim() != ''">
             and ww.carrier_name like concat('%',#{carrierName},'%')
         </if>
@@ -322,6 +323,9 @@
         </if>
         <if test="driverPhone!= null and driverPhone.trim() != ''">
             and wt.driver_phone like concat('%',#{driverPhone},'%')
+        </if>
+        <if test="vehiclePlateNo!= null and vehiclePlateNo.trim() != ''">
+            and wt.vehicle_plate_no like concat('%',#{vehiclePlateNo},'%')
         </if>
 
         order by ww.create_time desc
@@ -504,6 +508,9 @@
         <if test="confirmMan !=null and confirmMan.trim() !=''">
             and ba.name like concat('%',#{confirmMan},'%')
         </if>
+        <if test="invoiceNo !=null and invoiceNo.trim!=''">
+            and fp.invoice_no like concat('%',#{invoiceNo},'%')
+        </if>
     </select>
 
     <select id="getPayableSettlement" resultType="com.cjyc.common.model.vo.web.finance.SettlementVo">
@@ -566,8 +573,11 @@
         <if test="confirmEndTime !=null">
             and fp.writeoff_time &lt;=#{writeOffEndTime}
         </if>
-        <if test="confirmMan !=null and confirmMan.trim() !=''">
+        <if test="writeOffMan !=null and writeOffMan.trim() !=''">
             and bd.name like concat('%',#{writeOffMan},'%')
+        </if>
+        <if test="invoiceNo !=null and invoiceNo.trim!=''">
+            and fp.invoice_no like concat('%',#{invoiceNo},'%')
         </if>
     </select>
 

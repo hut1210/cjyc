@@ -204,8 +204,7 @@ public class TaskServiceImpl implements ITaskService {
         }
 
         if (FieldConstant.FINISH_CAR.equals(detailState)
-                || FieldConstant.FINISH_PUT_IN.equals(detailState)
-                || FieldConstant.WAIT_PUT_IN.equals(detailState)) {
+                || FieldConstant.FINISH_PUT_IN.equals(detailState)) {
             // 已交付 已入库
             String unloadPhotoImg = waybillCar.getUnloadPhotoImg();
             if (sb.length() > 0 && !StringUtils.isEmpty(unloadPhotoImg)) {
