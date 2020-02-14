@@ -87,6 +87,9 @@ public class OrderController {
         reqDto.setLoginName(customer.getName());
         reqDto.setLoginPhone(customer.getContactPhone());
         reqDto.setLoginType(UserTypeEnum.CUSTOMER.code);
+        reqDto.setCustomerId(customer.getId());
+        reqDto.setCustomerName(customer.getName());
+        reqDto.setCustomerType(customer.getType());
         reqDto.setCreateUserId(customer.getUserId());
         reqDto.setCreateUserName(customer.getName());
         reqDto.setState(OrderStateEnum.SUBMITTED.code);
