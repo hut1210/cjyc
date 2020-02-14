@@ -1860,7 +1860,8 @@
 
     <select id="selectWaybillCarList" parameterType="java.util.Map" resultType="com.cjyc.common.model.entity.WaybillCar">
         SELECT
-            car.*
+        car.id,car.load_photo_img as loadPhotoImg,
+            car.unload_photo_img as unloadPhotoImg
         FROM
             w_waybill_car car
         left join w_waybill w on car.waybill_id=w.id
