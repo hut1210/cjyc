@@ -174,6 +174,9 @@ public class WaybillCarDetailVo implements Serializable {
     @ApiModelProperty(value = "线路ID")
     private Long lineId;
 
+    @ApiModelProperty(value = "是否有线路")
+    private boolean hasLine;
+
     @ApiModelProperty(value = "预计到达时间")
     private Long expectEndTime;
 
@@ -336,4 +339,12 @@ public class WaybillCarDetailVo implements Serializable {
     public String getUnloadLinkPhone() {
         return unloadLinkPhone == null ? "" : unloadLinkPhone;
     }
+
+    public boolean isHasLine() {
+        if (lineId != null && lineId > 0) {
+            hasLine = true;
+        }
+        return hasLine;
+    }
+
 }

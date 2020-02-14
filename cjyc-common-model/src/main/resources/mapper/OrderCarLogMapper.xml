@@ -24,7 +24,8 @@
     </sql>
     <select id="findCarLogByOrderNoAndCarNo"
             resultType="com.cjyc.common.model.vo.customer.order.OutterOrderCarLogVo">
-        select * from (
+        select *
+        from (
             select
             #{orderCarNo} as orderCarNo,
             (case type

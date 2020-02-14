@@ -455,7 +455,7 @@ public class FinanceServiceImpl implements IFinanceService {
         settlementVo.setSerialNumber(writeOffTicketDto.getSerialNumber());
         settlementVo.setWriteOffId(writeOffTicketDto.getWriteOffId());
         settlementVo.setWriteOffTime(System.currentTimeMillis());
-        settlementVo.setTotalFreightPay(writeOffTicketDto.getTotalFreightPay().multiply(new BigDecimal(100)));
+        settlementVo.setTotalFreightPay(writeOffTicketDto.getTotalFreightPay());
         financeDao.writeOffPayable(settlementVo);
         return BaseResultUtil.success();
     }

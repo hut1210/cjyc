@@ -12,6 +12,7 @@ import com.cjyc.common.model.dto.salesman.mine.StockCarDto;
 import com.cjyc.common.model.dto.web.BaseWebDto;
 import com.cjyc.common.model.dto.web.dispatch.LineWaitCountDto;
 import com.cjyc.common.model.dto.web.order.*;
+import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.vo.customer.invoice.InvoiceOrderVo;
 import com.cjyc.common.model.vo.customer.order.OrderCarCenterVo;
@@ -275,4 +276,6 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
     List<WaybillCarVo> findTrunkCarEndpoint(@Param("list")List<Long> orderCarIdList);
 
     List<String> findTrunkNodes(String orderCarId);
+
+    String findOutterState(String orderCarNo);
 }

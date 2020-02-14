@@ -16,13 +16,11 @@ import com.cjyc.common.model.enums.order.OrderPickTypeEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.TimeStampUtil;
+import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.invoice.InvoiceOrderVo;
-import com.cjyc.common.model.vo.customer.order.OrderCarCenterVo;
-import com.cjyc.common.model.vo.customer.order.OrderCenterDetailVo;
-import com.cjyc.common.model.vo.customer.order.OrderCenterVo;
-import com.cjyc.common.model.vo.customer.order.OutterOrderCarLogVo;
+import com.cjyc.common.model.vo.customer.order.*;
 import com.cjyc.common.system.config.LogoImgProperty;
 import com.cjyc.common.system.service.ICsOrderService;
 import com.cjyc.common.system.service.ICsSendNoService;
@@ -30,6 +28,7 @@ import com.cjyc.common.system.util.RedisUtils;
 import com.cjyc.customer.api.service.IOrderService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -85,9 +84,13 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
     }
 
     @Override
-    public ResultVo<List<OutterOrderCarLogVo>> ListOrderCarLog(String orderCarNo) {
+    public ResultVo<OutterLogVo> ListOrderCarLog(String orderCarNo) {
+        OutterLogVo outterLogVo = new OutterLogVo();
+        String state = orderCarDao.findOutterState(orderCarNo);
+        outterLogVo.setOutterState(state);
         List<OutterOrderCarLogVo> list = orderCarLogDao.findCarLogByOrderNoAndCarNo(orderCarNo.split("-")[0], orderCarNo);
-        return BaseResultUtil.success(list);
+        outterLogVo.setList(list);
+        return BaseResultUtil.success(outterLogVo);
     }
 
     @Override
@@ -170,22 +173,22 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         detailVo.setCouponName(couponSend == null ? "" : couponSend.getCouponName());
 
         // 查询出发地，目的地业务中心详细地址
-        if (order.getStartStoreId() != null) {
+        /*if (order.getStartStoreId() != null) {
             Store startStore = storeDao.selectById(order.getStartStoreId());
             detailVo.setStartStoreNameDetail(startStore == null ? "" : startStore.getDetailAddr());
         }
         if (order.getEndStoreId() != null) {
             Store endStore = storeDao.selectById(order.getEndStoreId());
             detailVo.setEndStoreNameDetail(endStore == null ? "" : endStore.getDetailAddr());
-        }
+        }*/
 
         // 自提自送订单设置业务中心地址
-        if (OrderPickTypeEnum.SELF.code == order.getPickType()) {
+        /*if (OrderPickTypeEnum.SELF.code == order.getPickType()) {
             detailVo.setStartAddress(detailVo.getStartStoreNameDetail());
         }
         if (OrderPickTypeEnum.SELF.code == order.getBackType()) {
             detailVo.setEndAddress(detailVo.getEndStoreNameDetail());
-        }
+        }*/
 
         return BaseResultUtil.success(detailVo);
     }

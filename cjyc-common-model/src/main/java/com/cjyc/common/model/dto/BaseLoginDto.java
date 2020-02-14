@@ -11,7 +11,7 @@ public class BaseLoginDto {
     @NotNull
     @ApiModelProperty("登录人ID")
     private Long loginId;
-    @NotNull
+    //@NotNull
     @ApiModelProperty(value = "1WEB管理后台, 2业务员APP, 4司机APP, 6用户端APP, 7用户端小程序", required = true)
     private int clientId;
 

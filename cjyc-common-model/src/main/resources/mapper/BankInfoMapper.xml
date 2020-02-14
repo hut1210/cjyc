@@ -26,10 +26,10 @@
     <select id="findAppBankInfo" resultType="com.cjyc.common.model.vo.web.bankInfo.BankInfoVo"
             parameterType="com.cjyc.common.model.dto.driver.mine.BankInfoDto">
         SELECT
-        sbi.bank_code AS bankCode,
-        sbi.bank_name AS bankName
+            sbi.bank_code AS bankCode,
+            sbi.bank_name AS bankName
         FROM
-        s_bank_info sbi
+          s_bank_info sbi
         <where>
             <if test="keyword != null and keyword.trim() != ''">
                 sbi.bank_name like CONCAT('%',#{keyword},'%')

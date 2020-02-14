@@ -2264,6 +2264,7 @@
         when 100 then '已签收'
         end ) as outterState
     </sql>
+
     <select id="findTrunkCarEndpoint" resultType="com.cjyc.common.model.vo.web.waybill.WaybillCarVo">
         select
         shell.*,
@@ -2352,5 +2353,26 @@
           <include refid="trunk_wait_dispatch_car_list_For_App"/>
           where tb.orderCarId = #{orderCarId}
         ) as shell
+    </select>
+    <select id="findOutterState" resultType="java.lang.String">
+        select
+        (case
+        when o.state = 0 then '待提交'
+        when o.state = 2 then '待确认'
+        when o.state = 5 then '待审核'
+        when o.state = 15 then '待支付'
+        when o.state >= 25 and o.state &lt; 100 then (
+            case
+            when oc.state &lt;= 10 then '待运输'
+            when oc.state > 10 and oc.state &lt; 100 then '待运输'
+            when oc.state = 100 then '已签收'
+            end
+            )
+        when o.state = 100 then '已完结'
+        when o.state = 113 then '已取消'
+        end ) as outterState
+        from w_order o
+        join w_order_car oc on o.id = oc.order_id
+        where oc.no = #{orderCarNo}
     </select>
 </mapper>

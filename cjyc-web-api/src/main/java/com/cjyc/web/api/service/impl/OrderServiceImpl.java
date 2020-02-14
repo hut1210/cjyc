@@ -71,6 +71,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     private ICsCityService csCityService;
     @Resource
     private ICsSysService csSysService;
+    @Resource
+    private ICsAdminService csAdminService;
     @Autowired
     private ICsSendNoService csSendNoService;
 
@@ -96,28 +98,25 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
                 }
             });
             //生成订单号并批量保存
-            orderMap.forEach(new BiConsumer<Integer, ImportCustomerOrderDto>() {
-                @Override
-                public void accept(Integer integer, ImportCustomerOrderDto dto) {
-                    String orderNo = csSendNoService.getNo(SendNoTypeEnum.ORDER);
-                    List<ImportCustomerOrderCarDto> carList = carMap.get(dto.getOrderNo());
-                    if (!CollectionUtils.isEmpty(carList)) {
-                        //保存订单、车辆信息
-                        BigDecimal totalFee = new BigDecimal(0);
-                        for (ImportCustomerOrderCarDto c: carList) {
-                            totalFee = totalFee.add(c.getPickFee())
-                                    .add(c.getSendFee()).add(c.getWlFee());
-                        }
-                        Order order = packCustomerOrderForImport(dto, orderNo,
-                                admin, carList.size(), totalFee);
-                        orderDao.insert(order);
-                        Long orderId = order.getId();
-                        for (int i = 1; i < carList.size() + 1; i++) {
-                            String carNo = csSendNoService.formatNo(orderNo, i, 3);
-                            OrderCar car = packCustomerCarForImport(orderNo, orderId,
-                                    carNo, carList.get(i-1));
-                            orderCarDao.insert(car);
-                        }
+            orderMap.forEach((integer, dto) -> {
+                String orderNo = csSendNoService.getNo(SendNoTypeEnum.ORDER);
+                List<ImportCustomerOrderCarDto> carList1 = carMap.get(dto.getOrderNo());
+                if (!CollectionUtils.isEmpty(carList1)) {
+                    //保存订单、车辆信息
+                    BigDecimal totalFee = new BigDecimal(0);
+                    for (ImportCustomerOrderCarDto c: carList1) {
+                        totalFee = totalFee.add(c.getPickFee())
+                                .add(c.getSendFee()).add(c.getWlFee());
+                    }
+                    Order order = packCustomerOrderForImport(dto, orderNo,
+                            admin, carList1.size(), totalFee);
+                    orderDao.insert(order);
+                    Long orderId = order.getId();
+                    for (int i = 1; i < carList1.size() + 1; i++) {
+                        String carNo = csSendNoService.formatNo(orderNo, i, 3);
+                        OrderCar car = packCustomerCarForImport(orderNo, orderId,
+                                carNo, carList1.get(i-1));
+                        orderCarDao.insert(car);
                     }
                 }
             });
@@ -220,7 +219,14 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
 
     @Override
     public OrderCarVo getCarVoById(Long orderCarId) {
-        return orderCarDao.findVoById(orderCarId);
+        OrderCarVo vo = orderCarDao.findVoById(orderCarId);
+        Admin admin = csAdminService.findLoop(vo.getEndStoreId());
+        if(admin != null){
+            vo.setEndStoreLooplinkUserId(admin.getUserId());
+            vo.setEndStoreLooplinkName(admin.getName());
+            vo.setEndStoreLooplinkPhone(admin.getPhone());
+        }
+        return vo;
     }
 
     @Override

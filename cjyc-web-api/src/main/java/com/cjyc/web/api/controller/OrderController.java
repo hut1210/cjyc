@@ -85,14 +85,15 @@ public class OrderController {
             Customer customer = csCustomerService.validate(reqDto.getLoginId());
             reqDto.setLoginName(customer.getName());
             reqDto.setLoginPhone(customer.getContactPhone());
+            reqDto.setLoginType(UserTypeEnum.CUSTOMER.code);
             reqDto.setCreateUserId(customer.getId());
             reqDto.setCreateUserName(customer.getName());
         }else{
             //验证用户存不存在
             Admin admin = csAdminService.validate(reqDto.getLoginId());
             reqDto.setLoginName(admin.getName());
-            reqDto.setLoginName(admin.getName());
             reqDto.setLoginPhone(admin.getPhone());
+            reqDto.setLoginType(UserTypeEnum.ADMIN.code);
             reqDto.setCreateUserId(admin.getId());
             reqDto.setCreateUserName(admin.getName());
         }
@@ -115,6 +116,7 @@ public class OrderController {
             Customer customer = csCustomerService.validate(reqDto.getLoginId());
             reqDto.setLoginName(customer.getName());
             reqDto.setLoginPhone(customer.getContactPhone());
+            reqDto.setLoginType(UserTypeEnum.CUSTOMER.code);
             reqDto.setCreateUserId(customer.getId());
             reqDto.setCreateUserName(customer.getName());
         }else{
@@ -122,6 +124,7 @@ public class OrderController {
             Admin admin = csAdminService.validate(reqDto.getLoginId());
             reqDto.setLoginName(admin.getName());
             reqDto.setLoginPhone(admin.getPhone());
+            reqDto.setLoginType(UserTypeEnum.ADMIN.code);
             reqDto.setCreateUserId(admin.getId());
             reqDto.setCreateUserName(admin.getName());
         }
@@ -149,8 +152,7 @@ public class OrderController {
         //验证用户存不存在
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
-        reqDto.setLoginName(admin.getName());
-        reqDto.setLoginName(admin.getName());
+        reqDto.setLoginPhone(admin.getPhone());
         return csOrderService.check(reqDto);
     }
 
@@ -164,6 +166,8 @@ public class OrderController {
         //验证用户存不存在
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
+        reqDto.setLoginPhone(admin.getPhone());
+        reqDto.setLoginType(UserTypeEnum.ADMIN);
         return csOrderService.reject(reqDto);
     }
 
@@ -205,6 +209,8 @@ public class OrderController {
     public ResultVo cancel(@RequestBody CancelOrderDto reqDto) {
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
+        reqDto.setLoginPhone(admin.getPhone());
+        reqDto.setLoginType(UserTypeEnum.ADMIN);
         return csOrderService.cancel(reqDto);
     }
 

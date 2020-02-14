@@ -507,7 +507,7 @@
     </select>
 
     <select id="getPayableSettlement" resultType="com.cjyc.common.model.vo.web.finance.SettlementVo">
-        select invoice_no as invoiceNo,total_freight_paid as totalFreightPaid,
+        select invoice_no as invoiceNo,total_freight_paid as totalFreightPay,
         writeoff_time as writeoffTime
         from f_payable where serial_number=#{serialNumber}
     </select>
@@ -527,7 +527,7 @@
         fp.confirm_time as confirmTime,
         fp.writeoff_id as writeoffId,
         fp.writeoff_time as writeoffTime,
-        fp.total_freight_paid as totalFreightPaid,
+        fp.total_freight_paid as totalFreightPay,
         (fp.freight_fee-fp.total_freight_paid) as difference,
         ba.name as applicant,
         bc.name as confirmMan,

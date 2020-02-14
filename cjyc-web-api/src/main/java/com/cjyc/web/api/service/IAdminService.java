@@ -10,6 +10,9 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.admin.AdminPageVo;
 import com.cjyc.common.model.vo.web.admin.CacheData;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * <p>
  * 韵车后台管理员表 服务类
@@ -33,5 +36,7 @@ public interface IAdminService extends IService<Admin> {
     CacheData getCacheDataNew(Long userId, Long roleId);
 
     ResultVo deliverySalesmanNew(TypeSalesmanDto dto);
+
+    void exportAdminListExcel(HttpServletRequest request, HttpServletResponse response);
     /************************************韵车集成改版 ed***********************************/
 }
