@@ -378,7 +378,10 @@ public class FinanceServiceImpl implements IFinanceService {
     @Override
     public ResultVo getConfirmTicket(String serialNumber) {
         List<String> list = financeDao.getTaskNoList(serialNumber);
-        List<PayableTaskVo> settlementVoList = financeDao.getSettlementInfo(list);
+        List<PayableTaskVo> settlementVoList = new ArrayList<>();
+        if(list!=null&&list.size()>0){
+            settlementVoList = financeDao.getSettlementInfo(list);
+        }
 
         BigDecimal freightFee = new BigDecimal(0);
         for (int j=0;j<settlementVoList.size();j++){
