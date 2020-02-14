@@ -2,9 +2,13 @@ package com.cjyc.web.api.util;
 
 import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.ExcelImportUtil;
+import cn.afterturn.easypoi.excel.annotation.Excel;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.ImportParams;
 import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
+import com.cjkj.log.monitor.LogUtil;
+import com.google.common.collect.Lists;
+import lombok.Data;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -100,4 +104,47 @@ public class ExcelUtil {
         }
         return list;
     }
+
+    /**
+     * 导出错误或没有结果时使用此方法封装提示工作簿
+     * @param title
+     * @param msg
+     * @return
+     */
+    public static Workbook getWorkBookForShowMsg(String title, String msg) {
+        if (StringUtils.isBlank(title)) {
+            title = "提示信息";
+        }
+        if (StringUtils.isBlank(msg)) {
+            msg = "";
+        }
+        ShowInfo info = new ShowInfo();
+        info.setShowMsg(msg);
+        Workbook wk = ExcelExportUtil.exportExcel(new ExportParams(title, title), ShowInfo.class,
+                Lists.newArrayList(info));
+        return wk;
+    }
+
+    /**
+     * 输出Excel文件
+     * @param workbook
+     * @param fileName
+     * @param response
+     */
+    public static void printExcelResult(Workbook workbook, String fileName, HttpServletResponse response) {
+        try {
+            response.setCharacterEncoding("UTF-8");
+            response.setContentType("multipart/form-data");
+            response.setHeader("Content-disposition", "attachment; filename="
+                    + new String(fileName.getBytes("UTF-8"), "ISO8859-1"));
+            workbook.write(response.getOutputStream());
+        }catch (Exception e) {
+            LogUtil.error("响应信息异常", e);
+        }
+    }
+}
+@Data
+class ShowInfo {
+    @Excel(name = "提示信息", orderNum = "0")
+    private String showMsg;
 }
