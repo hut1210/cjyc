@@ -2,6 +2,7 @@ package com.cjyc.common.model.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.dto.customer.freightBill.FindStoreDto;
+import com.cjyc.common.model.dto.salesman.StoreListLoopAdminDto;
 import com.cjyc.common.model.entity.Store;
 import com.cjyc.common.model.vo.customer.customerLine.BusinessStoreVo;
 import com.cjyc.common.model.vo.web.store.StoreVo;
@@ -50,4 +51,5 @@ public interface IStoreDao extends BaseMapper<Store> {
 
     Store findOneBelongByCityCode(String cityCode);
 
+    List<Store> findList(StoreListLoopAdminDto dto);
 }

@@ -1,15 +1,14 @@
 package com.cjyc.common.system.service;
 
 import com.cjyc.common.model.dto.customer.freightBill.FindStoreDto;
+import com.cjyc.common.model.dto.salesman.StoreListLoopAdminDto;
 import com.cjyc.common.model.entity.Store;
-import com.cjyc.common.model.entity.defined.BizScope;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.customerLine.StoreListVo;
 import com.cjyc.common.model.vo.salesman.store.StoreLoopAdminVo;
 import com.cjyc.common.model.vo.salesman.store.StoreVo;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * 公用业务中心类
@@ -70,5 +69,5 @@ public interface ICsStoreService {
 
     ResultVo<List<StoreVo>> listByAdminId(Long adminId);
 
-    ResultVo<List<StoreLoopAdminVo>> listLoopAdminByAdminId(Long loginId);
+    ResultVo<List<StoreLoopAdminVo>> listLoopAdmin(StoreListLoopAdminDto loginId);
 }
