@@ -1,6 +1,7 @@
 package com.cjyc.common.model.util;
 
 import com.cjyc.common.model.constant.Constant;
+import com.cjyc.common.model.vo.web.bankInfo.BankCardVerifyVo;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -52,7 +53,14 @@ public class BankCardUtil {
 
     public static void main(String[] args){
         String cardNo = "622908323075106088";
-        System.out.println(checkBankCard(cardNo));
+        System.out.println(getCardDetail(cardNo));
+        String jsonStr = getCardDetail(cardNo);
+        BankCardVerifyVo bankCardVerifyVo = JsonUtils.jsonToPojo(jsonStr, BankCardVerifyVo.class);
+        if(bankCardVerifyVo == null){
+            System.out.println("不符合");
+        }else{
+            System.out.println(bankCardVerifyVo.getBank());
+        }
     }
 
     /**
