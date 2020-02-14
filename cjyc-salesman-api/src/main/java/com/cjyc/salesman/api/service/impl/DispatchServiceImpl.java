@@ -217,7 +217,7 @@ public class DispatchServiceImpl implements IDispatchService {
                 carDetailVo.setGuideLine(waybillCar.getStartCity() + "-" + waybillCar.getEndCity());
 
                 // 获取车辆运输图片
-                getCarPhotoImg(carDetailVo,waybillCar);
+                getCarPhotoImg(carDetailVo,waybillCar,waybill);
 
                 // 查询品牌车系信息
                 OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
@@ -244,9 +244,9 @@ public class DispatchServiceImpl implements IDispatchService {
         return BaseResultUtil.success(detail);
     }
 
-    private void getCarPhotoImg(WaybillCarDetailVo carDetailVo,WaybillCar waybillCar) {
+    private void getCarPhotoImg(WaybillCarDetailVo carDetailVo,WaybillCar waybillCar,Waybill waybill) {
         // 查询车辆历史图片
-        StringBuilder sb = getCarHistoryPhotoImg(waybillCar);
+        StringBuilder sb = getCarHistoryPhotoImg(waybillCar,waybill);
 
         // 封装当前车辆图片
         fillCarPhotoImg(waybillCar, sb);
@@ -275,11 +275,16 @@ public class DispatchServiceImpl implements IDispatchService {
         }
     }
 
-    private StringBuilder getCarHistoryPhotoImg(WaybillCar waybillCar) {
-        LambdaQueryWrapper<WaybillCar> query = new QueryWrapper<WaybillCar>().lambda()
+    private StringBuilder getCarHistoryPhotoImg(WaybillCar waybillCar,Waybill waybill) {
+        /*LambdaQueryWrapper<WaybillCar> query = new QueryWrapper<WaybillCar>().lambda()
                 .eq(WaybillCar::getOrderCarId, waybillCar.getOrderCarId())
-                .lt(WaybillCar::getId, waybillCar.getId());
-        List<WaybillCar> waybillCarList = waybillCarDao.selectList(query);
+                .lt(WaybillCar::getId, waybillCar.getId());*/
+
+        Map<String,Object> map = new HashMap<>(3);
+        map.put("orderCarId",waybillCar.getOrderCarId());
+        map.put("waybillCarId",waybillCar.getId());
+        map.put("waybillType",waybill.getType());
+        List<WaybillCar> waybillCarList = waybillCarDao.selectWaybillCarList(map);
         StringBuilder sb = new StringBuilder();
         if (!CollectionUtils.isEmpty(waybillCarList)) {
             for (WaybillCar car : waybillCarList) {

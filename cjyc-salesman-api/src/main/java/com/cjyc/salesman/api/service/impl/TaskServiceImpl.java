@@ -34,7 +34,9 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description 任务业务接口实现类
@@ -138,7 +140,7 @@ public class TaskServiceImpl implements ITaskService {
                     carDetailVo.setGuideLine(waybillCar.getStartCity() + "-" + waybillCar.getEndCity());
 
                     // 获取车辆运输图片
-                    getCarPhotoImg(carDetailVo, detailState, waybillCar);
+                    getCarPhotoImg(carDetailVo, detailState, waybillCar,waybill);
 
                     // 查询品牌车系信息
                     OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
@@ -174,9 +176,9 @@ public class TaskServiceImpl implements ITaskService {
         return BaseResultUtil.success(taskDetailVo);
     }
 
-    private void getCarPhotoImg(CarDetailVo carDetailVo, String detailState, WaybillCar waybillCar) {
+    private void getCarPhotoImg(CarDetailVo carDetailVo, String detailState, WaybillCar waybillCar,Waybill waybill) {
         // 查询车辆历史图片
-        StringBuilder sb = getCarHistoryPhotoImg(waybillCar);
+        StringBuilder sb = getCarHistoryPhotoImg(waybillCar,waybill);
 
         // 封装当前车辆图片
         fillCarPhotoImg(detailState, waybillCar, sb);
@@ -216,11 +218,15 @@ public class TaskServiceImpl implements ITaskService {
         }
     }
 
-    private StringBuilder getCarHistoryPhotoImg(WaybillCar waybillCar) {
-        LambdaQueryWrapper<WaybillCar> query = new QueryWrapper<WaybillCar>().lambda()
-                .eq(WaybillCar::getOrderCarId, waybillCar.getOrderCarId())
-                .lt(WaybillCar::getId, waybillCar.getId());
-        List<WaybillCar> waybillCarList = waybillCarDao.selectList(query);
+    private StringBuilder getCarHistoryPhotoImg(WaybillCar waybillCar,Waybill waybill) {
+        /*LambdaQueryWrapper<WaybillCar> query = new QueryWrapper<WaybillCar>().lambda()
+                .eq(WaybillCar::getOrderCarId, waybillCar.getOrderCarId().lt(WaybillCar::getId, waybillCar.getId()));*/
+
+        Map<String,Object> map = new HashMap<>(3);
+        map.put("orderCarId",waybillCar.getOrderCarId());
+        map.put("waybillCarId",waybillCar.getId());
+        map.put("waybillType",waybill.getType());
+        List<WaybillCar> waybillCarList = waybillCarDao.selectWaybillCarList(map);
         StringBuilder sb = new StringBuilder();
         if (!CollectionUtils.isEmpty(waybillCarList)) {
             for (WaybillCar car : waybillCarList) {
