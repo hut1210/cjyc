@@ -1,5 +1,6 @@
 package com.cjyc.web.api.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.cjkj.log.monitor.LogUtil;
 import com.cjyc.common.model.dto.web.BaseWebDto;
 import com.cjyc.common.model.dto.web.dispatch.LineWaitCountDto;
@@ -55,7 +56,8 @@ public class DispatchController {
 
     @ApiOperation(value = "导出全部调度池列表")
     @GetMapping(value = "/wait/exportAllList")
-    public void exportAllList(WaitDispatchListOrderCarDto reqDto, HttpServletResponse response) {
+    public void exportAllList(String param, HttpServletResponse response) {
+        WaitDispatchListOrderCarDto reqDto = JSON.parseObject(param, WaitDispatchListOrderCarDto.class);
         ResultVo<List<OrderCarWaitDispatchVo>> dispatchRs = orderService.waitDispatchCarAllList(reqDto);
         if (!isResultSuccess(dispatchRs)) {
             ExcelUtil.printExcelResult(ExcelUtil.getWorkBookForShowMsg("提示信息", dispatchRs.getMsg()),
