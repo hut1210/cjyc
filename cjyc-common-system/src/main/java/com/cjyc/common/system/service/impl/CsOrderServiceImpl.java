@@ -1,5 +1,6 @@
 package com.cjyc.common.system.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.cjkj.common.redis.lock.RedisDistributedLock;
 import com.cjyc.common.model.constant.TimeConstant;
 import com.cjyc.common.model.dao.IOrderCarDao;
@@ -200,7 +201,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                     new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), UserTypeEnum.valueOf(paramsDto.getLoginType())));
         }
 
-        return BaseResultUtil.success("下单成功，订单编号{0}", order.getNo());
+        return BaseResultUtil.success(OrderStateEnum.SUBMITTED.code == paramsDto.getState() ? "下单成功，订单编号{0}" : "保存成功，订单编号{0}", order.getNo());
     }
 
     @Override
@@ -880,8 +881,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
         orderDao.updateStateById(OrderStateEnum.WAIT_SUBMIT.code, order.getId());
         //添加操作日志
         orderChangeLogService.asyncSave(order, OrderChangeTypeEnum.REJECT,
-                new Object[]{oldState, order.getState(), paramsDto.getReason()},
-                new Object[]{paramsDto.getLoginId(), paramsDto.getLoginName()});
+                new String[]{OrderStateEnum.valueOf(oldState).name, OrderStateEnum.valueOf(order.getState()).name, paramsDto.getReason()},
+                new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone()));
 
         //TODO 发送消息给创建人
         return BaseResultUtil.success();
@@ -921,8 +922,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
         //添加操作日志
         orderChangeLogService.asyncSave(order, OrderChangeTypeEnum.CANCEL,
-                new Object[]{oldStateName, OrderStateEnum.F_CANCEL.name, paramsDto.getReason()},
-                new Object[]{paramsDto.getLoginId(), paramsDto.getLoginName()});
+                new String[]{oldStateName, OrderStateEnum.F_CANCEL.name, paramsDto.getReason()},
+                new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone()));
 
         //记录订单日志
         csOrderLogService.asyncSave(order, OrderLogEnum.CANCEL,
@@ -950,8 +951,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
         //添加操作日志
         orderChangeLogService.asyncSave(order, OrderChangeTypeEnum.OBSOLETE,
-                new Object[]{oldStateName, OrderStateEnum.F_OBSOLETE.name, paramsDto.getReason()},
-                new Object[]{paramsDto.getLoginId(), paramsDto.getLoginName()});
+                new String[]{oldStateName, OrderStateEnum.F_OBSOLETE.name, paramsDto.getReason()},
+                new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone()));
 
         return BaseResultUtil.success();
     }
@@ -961,6 +962,9 @@ public class CsOrderServiceImpl implements ICsOrderService {
         //参数
         Long orderId = paramsDto.getOrderId();
         Order order = orderDao.selectById(orderId);
+        if(order.getState() >= OrderStateEnum.FINISHED.code){
+            return BaseResultUtil.fail("订单已完结，不能修改价格");
+        }
         //记录历史数据
         OrderVo oldOrderVo = getFullOrderVo(order, new OrderVo());
 
@@ -973,8 +977,14 @@ public class CsOrderServiceImpl implements ICsOrderService {
             }
             OrderCar orderCar = orderCarDao.selectById(dto.getId());
             if (orderCar == null) {
-                throw new ServerException("ID为{}的车辆，不存在", dto.getId());
+                return BaseResultUtil.fail("ID为{}的车辆，不存在", dto.getId());
             }
+            if(orderCar.getState() >= OrderCarStateEnum.SIGNED.code){
+                return BaseResultUtil.fail("ID为{}的车辆，不存在", orderCar.getOrderNo());
+            }
+        }
+        carDtoList.forEach(dto -> {
+            OrderCar orderCar = orderCarDao.selectById(dto.getId());
             OrderCar noc = new OrderCar();
             noc.setId(orderCar.getId());
             noc.setPickFee(MoneyUtil.convertYuanToFen(dto.getPickFee()));
@@ -983,7 +993,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
             noc.setAddInsuranceFee(MoneyUtil.convertYuanToFen(dto.getAddInsuranceFee()));
             noc.setAddInsuranceAmount(dto.getAddInsuranceAmount());
             orderCarDao.updateById(noc);
-        }
+        });
         //新数据
         List<OrderCar> orderCarList = orderCarDao.findListByOrderId(orderId);
 
@@ -1003,9 +1013,11 @@ public class CsOrderServiceImpl implements ICsOrderService {
         OrderVo newOrderVo = new OrderVo();
         BeanUtils.copyProperties(order, newOrderVo);
         newOrderVo.setOrderCarList(orderCarList);
+
+        //日志
         orderChangeLogService.asyncSave(order, OrderChangeTypeEnum.CHANGE_FEE,
-                new Object[]{oldOrderVo, newOrderVo, ""},
-                new Object[]{paramsDto.getLoginId(), paramsDto.getLoginName()});
+                new String[]{JSON.toJSONString(oldOrderVo), JSON.toJSONString(newOrderVo), paramsDto.getReason()},
+                new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone()));
         return BaseResultUtil.success();
     }
 
@@ -1039,9 +1051,10 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
         OrderVo newOrderVo = getFullOrderVo(order, new OrderVo());
 
+        //日志
         orderChangeLogService.asyncSave(order, OrderChangeTypeEnum.CHANGE_ORDER,
-                new Object[]{oldOrderVo, newOrderVo, ""},
-                new Object[]{paramsDto.getLoginId(), paramsDto.getLoginName()});
+                new String[]{JSON.toJSONString(oldOrderVo), JSON.toJSONString(newOrderVo), ""},
+                new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone()));
         return BaseResultUtil.success();
     }
 

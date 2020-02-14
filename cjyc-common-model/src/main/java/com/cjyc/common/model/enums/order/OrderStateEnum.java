@@ -15,16 +15,15 @@ public enum OrderStateEnum {
     WAIT_SUBMIT("待提交", 0),
     SUBMITTED("待分配", 2),
     WAIT_CHECK("待确认", 5),
-    WAIT_RECHECK("待复确认", 10),
-    WAIT_PREPAY("待预付款",15),
+    //WAIT_RECHECK("待复确认", 10),
+    WAIT_PREPAY("待支付",15),
     CHECKED("已确认",25),
     TRANSPORTING("运输中",55),
-    WAIT_PAY("待付款",88),
     FINISHED("已完成",100),
-    F_RETURN("原返（待）",111),
-    F_EXCEPTION("异常结束",112),
-    F_CANCEL("取消（待）",113),
-    F_OBSOLETE("作废（待）",114);
+    //F_RETURN("原返（待）",111),
+    //F_EXCEPTION("异常结束",112),
+    F_CANCEL("已取消",113),
+    F_OBSOLETE("已作废",114);
 
     public String name;
     public int code;

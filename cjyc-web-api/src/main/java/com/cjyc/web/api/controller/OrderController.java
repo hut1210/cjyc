@@ -203,6 +203,7 @@ public class OrderController {
     public ResultVo changePrice(@RequestBody ChangePriceOrderDto reqDto) {
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
+        reqDto.setLoginPhone(admin.getPhone());
         return csOrderService.changePrice(reqDto);
     }
 
