@@ -5,11 +5,9 @@ import com.cjyc.common.model.dto.web.BaseWebDto;
 import com.cjyc.common.model.dto.web.dispatch.LineWaitCountDto;
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.enums.ResultEnum;
-import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.salesman.dispatch.WaitDispatchCarListVo;
 import com.cjyc.common.model.vo.web.order.DispatchAddCarVo;
 import com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo;
 import com.cjyc.common.system.service.ICsOrderService;
@@ -57,23 +55,28 @@ public class DispatchController {
 
     @ApiOperation(value = "导出全部调度池列表")
     @GetMapping(value = "/wait/exportAllList")
-    public ResultVo exportAllList(WaitDispatchListOrderCarDto reqDto, HttpServletResponse response) {
+    public void exportAllList(WaitDispatchListOrderCarDto reqDto, HttpServletResponse response) {
         ResultVo<List<OrderCarWaitDispatchVo>> dispatchRs = orderService.waitDispatchCarAllList(reqDto);
         if (!isResultSuccess(dispatchRs)) {
-            return BaseResultUtil.fail(dispatchRs.getMsg());
+            ExcelUtil.printExcelResult(ExcelUtil.getWorkBookForShowMsg("提示信息", dispatchRs.getMsg()),
+                    "导出异常.xls", response);
+            return;
         }
         List<OrderCarWaitDispatchVo> dispatchList = dispatchRs.getData();
         if (CollectionUtils.isEmpty(dispatchList)) {
-            return BaseResultUtil.success("未查询到结果");
+            ExcelUtil.printExcelResult(ExcelUtil.getWorkBookForShowMsg("提示信息", "未查询到结果信息"),
+                    "结果为空.xls", response);
+            return;
         }
         dispatchList = dispatchList.stream().filter(d -> d != null).collect(Collectors.toList());
         try{
             ExcelUtil.exportExcel(dispatchList, "调度信息", "调度信息",
                     OrderCarWaitDispatchVo.class, System.currentTimeMillis()+"调度信息.xls", response);
-            return null;
+            return;
         }catch (Exception e) {
             LogUtil.error("导出订单信息异常", e);
-            return BaseResultUtil.fail("导出订单信息异常: " + e.getMessage());
+            ExcelUtil.printExcelResult(ExcelUtil.getWorkBookForShowMsg("提示信息", "导出调度池信息异常: " + e.getMessage()),
+                    "导出异常.xls", response);
         }
     }
 

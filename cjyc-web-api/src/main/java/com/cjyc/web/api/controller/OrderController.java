@@ -1,7 +1,10 @@
 package com.cjyc.web.api.controller;
 
+import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.ExcelImportUtil;
+import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.ImportParams;
+import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
 import cn.afterturn.easypoi.excel.entity.result.ExcelImportResult;
 import com.alibaba.fastjson.JSONObject;
 import com.cjkj.log.monitor.LogUtil;
@@ -24,9 +27,13 @@ import com.cjyc.web.api.util.CustomerOrderExcelVerifyHandler;
 import com.cjyc.web.api.util.ExcelUtil;
 import com.cjyc.web.api.util.KeyCustomerOrderExcelVerifyHandler;
 import com.cjyc.web.api.util.PatCustomerOrderExcelVerifyHandler;
+import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.util.CollectionUtils;
@@ -36,8 +43,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
-import java.util.Objects;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -288,23 +296,28 @@ public class OrderController {
 
     @ApiOperation(value = "导出全部订单列表")
     @GetMapping(value = "/exportAllList")
-    public ResultVo exportAllList(ListOrderDto reqDto, HttpServletResponse response) {
+    public void exportAllList(ListOrderDto reqDto, HttpServletResponse response) throws IOException, InvalidFormatException {
         ResultVo<List<ListOrderVo>> orderRs = orderService.listAll(reqDto);
         if (!isResultSuccess(orderRs)) {
-            return BaseResultUtil.fail(orderRs.getMsg());
+            ExcelUtil.printExcelResult(ExcelUtil.getWorkBookForShowMsg("提示信息", orderRs.getMsg()),
+                    "导出异常.xls", response);
+            return;
         }
         List<ListOrderVo> orderList = orderRs.getData();
         if (CollectionUtils.isEmpty(orderList)) {
-            return BaseResultUtil.success("未查询到结果");
+            ExcelUtil.printExcelResult(ExcelUtil.getWorkBookForShowMsg("提示信息", "未查询到结果信息"),
+                    "结果为空.xls", response);
+            return;
         }
         orderList = orderList.stream().filter(o -> o != null).collect(Collectors.toList());
         try{
             ExcelUtil.exportExcel(orderList, "订单信息", "订单信息",
                     ListOrderVo.class, System.currentTimeMillis()+"订单信息.xls", response);
-            return null;
+            return ;
         }catch (Exception e) {
             LogUtil.error("导出订单信息异常", e);
-            return BaseResultUtil.fail("导出订单信息异常: " + e.getMessage());
+            ExcelUtil.printExcelResult(ExcelUtil.getWorkBookForShowMsg("提示信息", "导出订单信息异常: " + e.getMessage()),
+                    "导出异常.xls", response);
         }
     }
 
