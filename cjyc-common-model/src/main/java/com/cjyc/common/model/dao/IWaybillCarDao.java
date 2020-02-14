@@ -25,6 +25,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -206,6 +207,8 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
     int updateSelfCarryForFinish(Long id);
 
     WaybillCar selectWaybillCar(DetailQueryDto dto);
+
+    List<WaybillCar>  selectWaybillCarList(Map<String,Object> map);
 
     DispatchNum countOrderDispatchState(Long orderCarId);
 }

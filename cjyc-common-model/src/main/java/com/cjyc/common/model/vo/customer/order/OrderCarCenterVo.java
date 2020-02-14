@@ -22,12 +22,12 @@ public class OrderCarCenterVo implements Serializable {
     @ApiModelProperty(value = "车辆估值/万")
     private Integer valuation;
 
-    @ApiModelProperty(value = "追加保险费")
+    @ApiModelProperty(value = "保险费")
     @JsonSerialize(using = BigDecimalSerizlizer.class)
-    private BigDecimal insuranceFee;
+    private BigDecimal addInsuranceFee;
 
     @ApiModelProperty(value = "保费/万")
-    private Integer insuredAmount;
+    private Integer addInsuranceAmount;
 
     @ApiModelProperty("车辆logo图片链接")
     private String logoImg;
@@ -56,12 +56,6 @@ public class OrderCarCenterVo implements Serializable {
     public Integer getValuation() {
         return valuation == null ? 0 : valuation;
     }
-    public BigDecimal getInsuranceFee() {
-        return insuranceFee == null ? new BigDecimal(0) : insuranceFee;
-    }
-    public Integer getInsuredAmount() {
-        return insuredAmount == null ? 0 : insuredAmount;
-    }
     public Integer getIsMove() {
         return isMove == null ? 0 : isMove;
     }
@@ -85,5 +79,11 @@ public class OrderCarCenterVo implements Serializable {
     }
     public List<String> getCarImgList() {
         return carImgList == null ? new ArrayList<>(0) : carImgList;
+    }
+    public BigDecimal getAddInsuranceFee() {
+        return addInsuranceFee == null ? new BigDecimal(0) : addInsuranceFee;
+    }
+    public Integer getAddInsuranceAmount() {
+        return addInsuranceAmount == null ? 0 : addInsuranceAmount;
     }
 }
