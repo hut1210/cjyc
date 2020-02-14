@@ -171,6 +171,14 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                 carDetailVo = new CarDetailVo();
                 BeanUtils.copyProperties(waybillCar,carDetailVo);
 
+                // 给详细地址拼接市区
+                if (waybillCar.getStartBelongStoreId() == null || waybillCar.getStartBelongStoreId() <= 0) {
+                    carDetailVo.setStartAddress(waybillCar.getStartCity()+waybillCar.getStartArea()+waybillCar.getStartAddress());
+                }
+                if (waybillCar.getEndBelongStoreId() == null || waybillCar.getEndBelongStoreId() <= 0) {
+                    carDetailVo.setEndAddress(waybillCar.getEndCity()+waybillCar.getEndArea()+waybillCar.getEndAddress());
+                }
+
                 // 获取运单车辆费用
                 freightFee = freightFee.add(waybillCar.getFreightFee()==null?new BigDecimal(0):waybillCar.getFreightFee());
 
