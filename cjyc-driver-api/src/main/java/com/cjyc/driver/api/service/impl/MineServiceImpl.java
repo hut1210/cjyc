@@ -721,6 +721,17 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
         if(urd == null){
             return BaseResultUtil.fail("该司机不存在,请检查");
         }
+
+        //司机审核通过放可以添加银行卡
+        if(CommonStateEnum.CHECKED.code != urd.getState()){
+            return BaseResultUtil.fail("该司机审核未通过,不可添加银行卡");
+        }
+        //司机只可添加一张银行卡
+        int bankCardInfoNum = bankCardBindDao.findBankCardInfoNum(Long.parseLong(urd.getDeptId()));
+        if(bankCardInfoNum >= 1){
+            return BaseResultUtil.fail("该司机已绑定过银行卡,不可再绑定");
+        }
+
         boolean flag = BankCardUtil.checkBankCard(dto.getCardNo());
         if(!flag){
             return BaseResultUtil.fail("银行卡号输入不符合,请检查");

@@ -1860,20 +1860,20 @@
 
     <select id="selectWaybillCarList" parameterType="java.util.Map" resultType="com.cjyc.common.model.entity.WaybillCar">
         SELECT
-            car.load_photo_img as loadPhotoImg,
+        car.id,car.load_photo_img as loadPhotoImg,
             car.unload_photo_img as unloadPhotoImg
         FROM
             w_waybill_car car
         left join w_waybill w on car.waybill_id=w.id
         <where>
             car.order_car_id=#{orderCarId}
-            <if test="waybillType != null and waybillType=1">
+            <if test="waybillType != null and waybillType==1">
                 and car.id=#{waybillCarId}
             </if>
-            <if test="waybillType != null and waybillType=2">
+            <if test="waybillType != null and waybillType==2">
                 and (car.id &lt; #{waybillCarId} or w.type=1)
             </if>
-            <if test="waybillType != null and waybillType=3">
+            <if test="waybillType != null and waybillType==3">
                 and (car.id &lt; #{waybillCarId} or w.type in(1,2))
             </if>
         </where>

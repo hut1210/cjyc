@@ -31,4 +31,11 @@ public interface IBankCardBindDao extends BaseMapper<BankCardBind> {
      */
     List<BankCardVo> findBinkCardInfo(@Param("carrierId") Long carrierId);
 
+    /**
+     *  根据承运商id获取绑定有效银行卡张数
+     * @param carrierId
+     * @return
+     */
+    int findBankCardInfoNum(@Param("carrierId") Long carrierId);
+
 }

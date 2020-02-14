@@ -44,4 +44,17 @@
             order by sbcb.create_time desc
     </select>
 
+    <!-- 根据用户userId和用户类型删除银行卡信息-->
+    <select id="findBankCardInfoNum" resultType="java.lang.Integer"
+            parameterType="java.lang.Long">
+        SELECT
+            count( id )
+        FROM
+            s_bank_card_bind
+        WHERE
+            state = 1
+            AND user_type = 2
+            AND user_id = #{carrierId}
+    </select>
+
 </mapper>
