@@ -10,11 +10,13 @@ import com.cjyc.common.model.entity.defined.BizScope;
 import com.cjyc.common.model.entity.defined.FullCity;
 import com.cjyc.common.model.entity.defined.FullWaybillCar;
 import com.cjyc.common.model.enums.BizScopeEnum;
+import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
 import com.cjyc.common.model.enums.city.CityLevelEnum;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
+import com.cjyc.common.model.exception.ParameterException;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
@@ -75,6 +77,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     private ICsAdminService csAdminService;
     @Autowired
     private ICsSendNoService csSendNoService;
+    @Resource
+    private ICsCustomerService csCustomerService;
 
 
     @Transactional(rollbackFor = Exception.class)
@@ -100,6 +104,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
             //生成订单号并批量保存
             orderMap.forEach((integer, dto) -> {
                 String orderNo = csSendNoService.getNo(SendNoTypeEnum.ORDER);
+
                 List<ImportCustomerOrderCarDto> carList1 = carMap.get(dto.getOrderNo());
                 if (!CollectionUtils.isEmpty(carList1)) {
                     //保存订单、车辆信息
@@ -108,14 +113,13 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
                         totalFee = totalFee.add(c.getPickFee())
                                 .add(c.getSendFee()).add(c.getWlFee());
                     }
-                    Order order = packCustomerOrderForImport(dto, orderNo,
-                            admin, carList1.size(), totalFee);
+
+                    Order order = packCustomerOrderForImport(dto, orderNo, admin, carList1.size(), totalFee);
                     orderDao.insert(order);
                     Long orderId = order.getId();
                     for (int i = 1; i < carList1.size() + 1; i++) {
                         String carNo = csSendNoService.formatNo(orderNo, i, 3);
-                        OrderCar car = packCustomerCarForImport(orderNo, orderId,
-                                carNo, carList1.get(i-1));
+                        OrderCar car = packCustomerCarForImport(order, carNo, carList1.get(i-1));
                         orderCarDao.insert(car);
                     }
                 }
@@ -150,13 +154,12 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
                     List<ImportKeyCustomerOrderCarDto> carList = carMap.get(dto.getOrderNo());
                     if (!CollectionUtils.isEmpty(carList)) {
                         //导入大客户订单信息
-                        Order order = packKeyCustomerOrderForImport(dto, orderNo,
-                                admin, carList.size());
+                        Order order = packKeyCustomerOrderForImport(dto, orderNo, admin, carList.size());
                         orderDao.insert(order);
                         Long orderId = order.getId();
                         for (int i = 1; i < carList.size() + 1; i++) {
                             String carNo = csSendNoService.formatNo(orderNo, i, 3);
-                            OrderCar car = packKeyCustomerCarForImport(orderNo, orderId,
+                            OrderCar car = packKeyCustomerCarForImport(order,
                                     carNo, carList.get(i-1));
                             orderCarDao.insert(car);
                         }
@@ -206,7 +209,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
                         Long orderId = order.getId();
                         for (int i = 1; i < carList.size() + 1; i++) {
                             String carNo = csSendNoService.formatNo(orderNo, i, 3);
-                            OrderCar car = packPatCustomerCarForImport(orderNo, orderId,
+                            OrderCar car = packPatCustomerCarForImport(order,
                                     carNo, carList.get(i-1));
                             orderCarDao.insert(car);
                         }
@@ -637,6 +640,17 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
      */
     private Order packCustomerOrderForImport(ImportCustomerOrderDto dto, String orderNo,
                                              Admin admin, int carNum, BigDecimal totalFee) {
+
+        //验证用户
+        Customer customer = csCustomerService.getByPhone(dto.getCustomerPhone(), true);
+        if (customer == null) {
+            ResultVo<Customer> res = csCustomerService.saveCustomer(dto.getCustomerPhone(), dto.getCustomerName(), admin.getId());
+            if(res.getCode() == ResultEnum.SUCCESS.getCode()){
+                customer = res.getData();
+            }else{
+                throw new ParameterException(res.getMsg());
+            }
+        }
         Order order = new Order();
         order.setNo(orderNo);
         order.setState(OrderStateEnum.WAIT_SUBMIT.code);
@@ -655,6 +669,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
                 pickType = 4;
         }
         order.setPickType(pickType);
+        order.setPickContactName(dto.getPickPerson());
+        order.setPickContactPhone(dto.getPickPhone());
         int backType = 0;
         switch (dto.getDeliveryType()) {
             case "自提":
@@ -689,14 +705,16 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         order.setStartProvinceCode(dto.getStartProvinceCode());
         order.setExpectEndDate(dto.getSendDate().getTime());
         order.setExpectStartDate(dto.getPickDate().getTime());
+        order.setRemark("批量导入");
         //创建人信息
-        order.setCreateUserId(admin.getUserId());
+        order.setCreateUserId(admin.getId());
         order.setCreateTime(System.currentTimeMillis());
         order.setCreateUserName(admin.getName());
         order.setTotalFee(totalFee);//车辆信息列表：提车费、物流费、送车费总和
-        order.setCustomerName(dto.getCustomerName());
+        order.setCustomerId(customer.getId());
+        order.setCustomerName(customer.getName());
         order.setCustomerPhone(dto.getCustomerPhone());
-        order.setCustomerType(CustomerTypeEnum.INDIVIDUAL.code);
+        order.setCustomerType(customer.getType());
         order.setEndAddress(dto.getDeliveryAddr());
 //        order.setEndBelongStoreId();
 //        order.setEndStoreId();
@@ -706,7 +724,6 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
 //        order.setFinishTime();
 //        order.setEndLat();
 //        order.setEndLng();
-//        order.setBackFee();
 //        order.setStartBelongStoreId()
 //        order.setAddInsuranceFee();
 //        order.setHurryDays();
@@ -718,25 +735,25 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         order.setPayType("到付".equals(dto.getPayType())?0: 1);
 //        order.setStartStoreId();
 //        order.setStartStoreName();
-//        order.setTrunkFee();
 //        order.setWlPayState();
 //        order.setWlPayTime();
+        //
+        csOrderService.fillOrderInputStore(order);
+        csOrderService.fillOrderStoreInfo(order, true);
         return order;
     }
 
     /**
      * Customer car信息包装
-     * @param orderNo
-     * @param orderId
      * @param no
      * @param dto
      * @return
      */
-    private OrderCar packCustomerCarForImport(String orderNo, Long orderId, String no,
+    private OrderCar packCustomerCarForImport(Order order, String no,
                                               ImportCustomerOrderCarDto dto) {
         OrderCar car = new OrderCar();
-        car.setOrderId(orderId);
-        car.setOrderNo(orderNo);
+        car.setOrderId(order.getId());
+        car.setOrderNo(order.getNo());
         car.setNo(no);
         car.setBrand(dto.getBrand());
         car.setModel(dto.getModel());
@@ -747,7 +764,9 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         car.setValuation(dto.getVehicleValue() == null?null: dto.getVehicleValue().intValue());
         car.setState(OrderCarStateEnum.WAIT_ROUTE.code);
         car.setPickFee(dto.getPickFee());
+        car.setPickType(order.getPickType());
         car.setBackFee(dto.getSendFee());
+        car.setBackType(order.getBackType());
         car.setTrunkFee(dto.getWlFee());
         return car;
     }
@@ -762,6 +781,16 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
      */
     private Order packKeyCustomerOrderForImport(ImportKeyCustomerOrderDto dto, String orderNo,
                                                 Admin admin, int carNum) {
+        //验证用户
+        Customer customer = csCustomerService.getByPhone(dto.getCustomerPhone(), true);
+        if (customer == null) {
+            ResultVo<Customer> res = csCustomerService.saveCustomer(dto.getCustomerPhone(), dto.getCustomerName(), admin.getId());
+            if(res.getCode() == ResultEnum.SUCCESS.getCode()){
+                customer = res.getData();
+            }else{
+                throw new ParameterException(res.getMsg());
+            }
+        }
         Order order = new Order();
         order.setNo(orderNo);
         order.setState(OrderStateEnum.WAIT_SUBMIT.code);
@@ -780,6 +809,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
                 pickType = 4;
         }
         order.setPickType(pickType);
+        order.setPickContactName(dto.getPickPerson());
+        order.setPickContactPhone(dto.getPickPhone());
         int backType = 0;
         switch (dto.getDeliveryType()) {
             case "自提":
@@ -815,13 +846,14 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         order.setExpectEndDate(dto.getSendDate().getTime());
         order.setExpectStartDate(dto.getPickDate().getTime());
         //创建人信息
-        order.setCreateUserId(admin.getUserId());
+        order.setCreateUserId(admin.getId());
         order.setCreateTime(System.currentTimeMillis());
         order.setCreateUserName(admin.getName());
 //        order.setTotalFee();// 计算规则
-        order.setCustomerName(dto.getCustomerName());
+        order.setCustomerId(customer.getId());
+        order.setCustomerName(customer.getName());
         order.setCustomerPhone(dto.getCustomerPhone());
-        order.setCustomerType(CustomerTypeEnum.INDIVIDUAL.code);
+        order.setCustomerType(customer.getType());
         order.setEndAddress(dto.getDeliveryAddr());
 //        order.setEndBelongStoreId();
 //        order.setEndStoreId();
@@ -846,22 +878,22 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
 //        order.setTrunkFee();
 //        order.setWlPayState();
 //        order.setWlPayTime();
+        csOrderService.fillOrderInputStore(order);
+        csOrderService.fillOrderStoreInfo(order, true);
         return order;
     }
 
     /**
      * 大客户导入车辆封装
-     * @param orderNo
-     * @param orderId
      * @param no
      * @param dto
      * @return
      */
-    private OrderCar packKeyCustomerCarForImport(String orderNo, Long orderId, String no,
+    private OrderCar packKeyCustomerCarForImport(Order order, String no,
                                               ImportKeyCustomerOrderCarDto dto) {
         OrderCar car = new OrderCar();
-        car.setOrderId(orderId);
-        car.setOrderNo(orderNo);
+        car.setOrderId(order.getId());
+        car.setOrderNo(order.getNo());
         car.setNo(no);
         car.setBrand(dto.getBrand());
         car.setModel(dto.getModel());
@@ -871,6 +903,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         car.setIsNew("是".equals(dto.getIsNew())?1: 0);
         car.setValuation(dto.getVehicleValue() == null?null: dto.getVehicleValue().intValue());
         car.setState(OrderCarStateEnum.WAIT_ROUTE.code);
+        car.setPickType(order.getPickType());
+        car.setBackType(order.getBackType());
         car.setTrunkFee(dto.getWlFee());
         return car;
     }
@@ -885,6 +919,16 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
      */
     private Order packPatCustomerOrderForImport(ImportPatCustomerOrderDto dto, String orderNo,
                                              Admin admin, int carNum, BigDecimal totalFee) {
+        //验证用户
+        Customer customer = csCustomerService.getByPhone(dto.getCustomerPhone(), true);
+        if (customer == null) {
+            ResultVo<Customer> res = csCustomerService.saveCustomer(dto.getCustomerPhone(), dto.getCustomerName(), admin.getId());
+            if(res.getCode() == ResultEnum.SUCCESS.getCode()){
+                customer = res.getData();
+            }else{
+                throw new ParameterException(res.getMsg());
+            }
+        }
         Order order = new Order();
         order.setNo(orderNo);
         order.setState(OrderStateEnum.WAIT_SUBMIT.code);
@@ -903,6 +947,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
                 pickType = 4;
         }
         order.setPickType(pickType);
+        order.setPickContactName(dto.getPickPerson());
+        order.setPickContactPhone(dto.getPickPhone());
         int backType = 0;
         switch (dto.getDeliveryType()) {
             case "自提":
@@ -938,13 +984,14 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         order.setExpectEndDate(dto.getSendDate().getTime());
         order.setExpectStartDate(dto.getPickDate().getTime());
         //创建人信息
-        order.setCreateUserId(admin.getUserId());
+        order.setCreateUserId(admin.getId());
         order.setCreateTime(System.currentTimeMillis());
         order.setCreateUserName(admin.getName());
         order.setTotalFee(totalFee);//车辆信息列表：提车费、物流费、送车费总和
-        order.setCustomerName(dto.getCustomerName());
+        order.setCustomerId(customer.getId());
+        order.setCustomerName(customer.getName());
         order.setCustomerPhone(dto.getCustomerPhone());
-        order.setCustomerType(CustomerTypeEnum.INDIVIDUAL.code);
+        order.setCustomerType(customer.getType());
         order.setEndAddress(dto.getDeliveryAddr());
 //        order.setEndBelongStoreId();
 //        order.setEndStoreId();
@@ -969,22 +1016,22 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
 //        order.setTrunkFee();
 //        order.setWlPayState();
 //        order.setWlPayTime();
+        csOrderService.fillOrderInputStore(order);
+        csOrderService.fillOrderStoreInfo(order, true);
         return order;
     }
 
     /**
      * 合伙人 car信息包装
-     * @param orderNo
-     * @param orderId
      * @param no
      * @param dto
      * @return
      */
-    private OrderCar packPatCustomerCarForImport(String orderNo, Long orderId, String no,
+    private OrderCar packPatCustomerCarForImport(Order order, String no,
                                               ImportPatCustomerOrderCarDto dto) {
         OrderCar car = new OrderCar();
-        car.setOrderId(orderId);
-        car.setOrderNo(orderNo);
+        car.setOrderId(order.getId());
+        car.setOrderNo(order.getNo());
         car.setNo(no);
         car.setBrand(dto.getBrand());
         car.setModel(dto.getModel());
@@ -995,7 +1042,9 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         car.setValuation(dto.getVehicleValue() == null?null: dto.getVehicleValue().intValue());
         car.setState(OrderCarStateEnum.WAIT_ROUTE.code);
         car.setPickFee(dto.getPickFee());
+        car.setPickType(order.getPickType());
         car.setBackFee(dto.getSendFee());
+        car.setBackType(order.getBackType());
         car.setTrunkFee(dto.getWlFee());
         return car;
     }

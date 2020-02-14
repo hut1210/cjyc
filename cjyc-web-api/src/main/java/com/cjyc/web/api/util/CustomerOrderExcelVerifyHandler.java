@@ -5,13 +5,21 @@ import cn.afterturn.easypoi.handler.inter.IExcelVerifyHandler;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjyc.common.model.dto.web.order.ImportCustomerOrderDto;
 import com.cjyc.common.model.entity.City;
+import com.cjyc.common.model.entity.Customer;
+import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.city.CityLevelEnum;
+import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
+import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.system.service.ICsAdminService;
+import com.cjyc.common.system.service.ICsCustomerService;
 import com.cjyc.web.api.service.ICityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -22,6 +30,8 @@ import java.util.List;
 public class CustomerOrderExcelVerifyHandler implements IExcelVerifyHandler<ImportCustomerOrderDto> {
     @Autowired
     private ICityService cityService;
+    @Resource
+    private ICsCustomerService csCustomerService;
 
     @Override
     public ExcelVerifyHandlerResult verifyHandler(ImportCustomerOrderDto dto) {
@@ -33,6 +43,7 @@ public class CustomerOrderExcelVerifyHandler implements IExcelVerifyHandler<Impo
             result.setMsg("始发城市(省)名称有误");
         } else {
             dto.setStartProvinceCode(stProvince.getCode());
+            dto.setStartProvince(stProvince.getName());
         }
         City stCity = getCityLikeName(dto.getStartCity(), CityLevelEnum.CITY.code,
                 dto.getStartProvinceCode());
@@ -41,6 +52,7 @@ public class CustomerOrderExcelVerifyHandler implements IExcelVerifyHandler<Impo
             result.setMsg("始发城市(市)名称有误");
         } else {
             dto.setStartCityCode(stCity.getCode());
+            dto.setStartCity(stCity.getName());
         }
         City stArea = getCityLikeName(dto.getStartArea(), CityLevelEnum.AREA.code,
                 dto.getStartCityCode());
@@ -49,6 +61,7 @@ public class CustomerOrderExcelVerifyHandler implements IExcelVerifyHandler<Impo
             result.setMsg("始发城市(区/县)名称有误");
         } else {
             dto.setStartAreaCode(stArea.getCode());
+            dto.setStartArea(stArea.getName());
         }
         //到达城市
         City endProvince = getCityLikeName(dto.getEndProvince(), CityLevelEnum.PROVINCE.code,
@@ -58,6 +71,7 @@ public class CustomerOrderExcelVerifyHandler implements IExcelVerifyHandler<Impo
             result.setMsg("目的城市(省)名称有误");
         } else {
             dto.setEndProvinceCode(endProvince.getCode());
+            dto.setEndProvince(endProvince.getName());
         }
         City endCity = getCityLikeName(dto.getEndCity(), CityLevelEnum.CITY.code,
                 dto.getEndProvinceCode());
@@ -66,6 +80,7 @@ public class CustomerOrderExcelVerifyHandler implements IExcelVerifyHandler<Impo
             result.setMsg("目的城市(市)名称有误");
         } else {
             dto.setEndCityCode(endCity.getCode());
+            dto.setEndCity(endCity.getName());
         }
         City endArea = getCityLikeName(dto.getEndArea(), CityLevelEnum.AREA.code,
                 dto.getEndCityCode());
@@ -74,6 +89,7 @@ public class CustomerOrderExcelVerifyHandler implements IExcelVerifyHandler<Impo
             result.setMsg("目的城市(区/县)名称有误");
         } else {
             dto.setEndAreaCode(endArea.getCode());
+            dto.setEndArea(endArea.getName());
         }
         return result;
     }

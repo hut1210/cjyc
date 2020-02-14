@@ -35,6 +35,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.xmlbeans.impl.xb.xsdschema.Public;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -525,8 +526,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
         order.setEndStoreId(endStoreId == null || endStoreId == -5 ? null : endStoreId);
         return order;
     }
-
-    private Order fillOrderInputStore(Order order) {
+    @Override
+    public Order fillOrderInputStore(Order order) {
         if (order.getInputStoreId() != null && order.getInputStoreId() != -5) {
             if(StringUtils.isBlank(order.getInputStoreName())){
                 Store store = csStoreService.getById(order.getInputStoreId(), true);
@@ -536,6 +537,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
             }
             return order;
         }
+        //查询创建人所属业务中心
+        //order.getCreateUserId();
         //根据业务范围查询业务中心
         Store store = null;
         if (StringUtils.isNotBlank(order.getStartAreaCode())) {
@@ -610,7 +613,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
      * @author JPG
      * @since 2019/12/12 11:55
      */
-    private Order fillOrderStoreInfo(Order order, boolean isForceUpdate) {
+    @Override
+    public Order fillOrderStoreInfo(Order order, boolean isForceUpdate) {
         if (order.getStartStoreId() != null && order.getStartStoreId() > 0) {
             if(StringUtils.isBlank(order.getStartStoreName())){
                 Store store = csStoreService.getById(order.getStartStoreId(), true);

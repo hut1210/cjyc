@@ -13,6 +13,7 @@ import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.UserTypeEnum;
+import com.cjyc.common.model.enums.order.OrderPickTypeEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
@@ -127,6 +128,12 @@ public class OrderController {
             reqDto.setLoginType(UserTypeEnum.ADMIN.code);
             reqDto.setCreateUserId(admin.getId());
             reqDto.setCreateUserName(admin.getName());
+        }
+        if(OrderPickTypeEnum.SELF.code == reqDto.getPickType() &&  0 == reqDto.getStartStoreId()){
+            return BaseResultUtil.fail("始发地不经过业务中心的单子，不能选择自送");
+        }
+        if(OrderPickTypeEnum.SELF.code == reqDto.getBackType() &&  0 == reqDto.getEndStoreId()){
+            return BaseResultUtil.fail("目的地不经过业务中心的单子，不能选择自提");
         }
         //发送短信
         return csOrderService.commit(reqDto);
