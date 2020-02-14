@@ -44,7 +44,15 @@ public class StoreController {
     }
     @ApiOperation(value = "根据loginId查询业务中心列表")
     @PostMapping("/list/loop/admin")
-    public ResultVo<List<StoreLoopAdminVo>> getStoreListWithAdminByLoginId(@Valid @RequestBody StoreListLoopAdminDto dto) {
-        return csStoreService.listLoopAdmin(dto);
+    public ResultVo<JSONObject> getStoreListWithAdminByLoginId(@Valid @RequestBody StoreListLoopAdminDto dto) {
+
+        JSONObject jo = new JSONObject();
+        ResultVo<List<StoreLoopAdminVo>> resultVo = csStoreService.listLoopAdmin(dto);
+        if (ResultEnum.SUCCESS.getCode().equals(resultVo.getCode())) {
+            jo.put("storeVoList", resultVo == null?null: resultVo.getData());
+            return BaseResultUtil.success(jo);
+        }else {
+            return BaseResultUtil.fail(resultVo.getMsg());
+        }
     }
 }
