@@ -391,18 +391,22 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                         }
 
 
-                        if(baseCarrierVo.getSettleType()==0){
-                            if(baseCarrierVo!=null && baseCarrierVo.getCardName()!=null && baseCarrierVo.getCardNo()!=null
-                                    && baseCarrierVo.getBankCode()!=null){
-                                Transfer transfer = allinpayTransferDriverCreate(baseCarrierVo,waybill);
-                                log.debug("【通联代付支付运费】运单{}，支付运费，账单{}", waybill.getNo(), transfer);
-                                cStransactionService.saveTransactions(transfer, "0");
+                        if(baseCarrierVo!=null){
+                            if(baseCarrierVo.getSettleType()==0){
+                                if(baseCarrierVo.getCardName()!=null && baseCarrierVo.getCardNo()!=null
+                                        && baseCarrierVo.getBankCode()!=null){
+                                    Transfer transfer = allinpayTransferDriverCreate(baseCarrierVo,waybill);
+                                    log.debug("【通联代付支付运费】运单{}，支付运费，账单{}", waybill.getNo(), transfer);
+                                    cStransactionService.saveTransactions(transfer, "0");
+                                }else{
+                                    log.error("【通联代付支付运费】收款人信息不全 waybillId = {}", waybillId);
+                                    return BaseResultUtil.fail("通联代付失败,收款人信息不全");
+                                }
                             }else{
-                                log.error("【通联代付支付运费】收款人信息不全 waybillId = {}", waybillId);
-                                return BaseResultUtil.fail("通联代付失败,收款人信息不全");
+                                log.info("【通联代付支付运费】收款人为账期用户 waybillId = {}", waybillId);
                             }
                         }else{
-                            log.info("【通联代付支付运费】收款人为账期用户 waybillId = {}", waybillId);
+                            log.info("【通联代付支付运费】收款人不存在 waybillId = {}", waybillId);
                         }
 
                     }else{
@@ -735,51 +739,54 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         lock.lock();
         try{
             Order order = orderDao.selectById(orderId);
-            if(order!=null&&order.getNo()!=null){
-                String orderNo = order.getNo();
-                //先查询 是否已退款
-                Refund refund = orderRefundDao.selectByOrderCode(orderNo);
-                if(refund!=null){
-                    if(refund.getState()==2){
-                        log.error("已退款 orderNo={}",orderNo);
-                    }else if(refund.getState()==0){
-                        log.error("已申请退款，请勿重复操作 orderNo={}",orderNo);
-                    }
-                }else{
-                    String description = "订单号：" + orderNo + "，退款";
-                    if(StringUtils.isBlank(description)){
-                        log.error("退款异常，description不能为空。");
-                    }else{
-                        log.info("退款 start，orderId = {}",orderId);
-                        TradeBill tradeBill = cStransactionService.getTradeBillByOrderNo(orderNo);
-                        String pingPayId = tradeBill.getPingPayId();
-                        initPingApiKey();
-                        Map<String, Object> params = new HashMap<String, Object>();
-                        params.put("description", description); // 必传
-                        params.put("refund_mode", "to_source");//退款方式 原路退回
-
-                        PingxxMetaData pingxxMetaData = new PingxxMetaData();
-                        pingxxMetaData.setOrderNo(orderNo);
-
-                        Map<String, Object> meta = BeanMapUtil.beanToMap(pingxxMetaData);
-                        params.put("metadata",meta);//自定义参数
-                        OrderRefund.create(pingPayId, params);
-
-                        //添加退款记录
-                        try{
-                            Refund refund1 = new Refund();
-                            refund1.setOrderNo(orderNo);
-                            refund1.setState(0);
-                            refund1.setCreateTime(System.currentTimeMillis());
-                            orderRefundDao.insert(refund1);
-                        }catch (Exception e){
-                            log.error("添加退款记录异常 orderNo={}",orderNo);
-                            log.error(e.getMessage(),e);
-                        }
-                    }
+            if(order == null || order.getNo()==null){
+                return;
+            }
+            if(PayStateEnum.PAID.code != order.getWlPayState()) {
+                return;
+            }
+            String orderNo = order.getNo();
+            //先查询 是否已退款
+            Refund refund = orderRefundDao.selectByOrderCode(orderNo);
+            if(refund!=null){
+                if(refund.getState()==2){
+                    log.error("已退款 orderNo={}",orderNo);
+                }else if(refund.getState()==0){
+                    log.error("已申请退款，请勿重复操作 orderNo={}",orderNo);
                 }
             }else{
-                log.error("退款异常,订单不存在 orderId={}",orderId);
+                String description = "订单号：" + orderNo + "，退款";
+                if(StringUtils.isBlank(description)){
+                    log.error("退款异常，description不能为空。");
+                }else{
+                    log.info("退款 start，orderId = {}",orderId);
+                    TradeBill tradeBill = cStransactionService.getTradeBillByOrderNo(orderNo);
+                    String pingPayId = tradeBill.getPingPayId();
+                    initPingApiKey();
+                    Map<String, Object> params = new HashMap<String, Object>();
+                    params.put("description", description); // 必传
+                    params.put("refund_mode", "to_source");//退款方式 原路退回
+
+                    PingxxMetaData pingxxMetaData = new PingxxMetaData();
+                    pingxxMetaData.setOrderNo(orderNo);
+
+                    Map<String, Object> meta = BeanMapUtil.beanToMap(pingxxMetaData);
+                    params.put("metadata",meta);//自定义参数
+                    OrderRefund.create(pingPayId, params);
+
+                    //添加退款记录
+                    try{
+                        Refund refund1 = new Refund();
+                        refund1.setOrderNo(orderNo);
+                        refund1.setState(0);
+                        refund1.setCreateTime(System.currentTimeMillis());
+                        orderRefundDao.insert(refund1);
+                    }catch (Exception e){
+                        log.error("添加退款记录异常 orderNo={}",orderNo);
+                        log.error(e.getMessage(),e);
+                    }
+                }
+
             }
 
         }catch (Exception e){

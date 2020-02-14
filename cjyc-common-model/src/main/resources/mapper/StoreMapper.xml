@@ -78,6 +78,7 @@
         <include refid="Base_Column_List"/>
         from s_store
         where is_delete = 0
+        and state = 2
     </select>
 
     <select id="findVoAll" resultType="com.cjyc.common.model.vo.web.store.StoreVo">
@@ -183,7 +184,18 @@
         and is_delete = 0
         limit 1
     </select>
-
+    <select id="findList" resultType="com.cjyc.common.model.entity.Store">
+        select
+        <include refid="Base_Column_List"/>
+        from s_store
+        <where>
+            and is_delete = 0
+            and state = 2
+            <if test="name != null and name.trim() != ''">
+                and `name` like concat('%', #{name},'%')
+            </if>
+        </where>
+    </select>
 
 
 </mapper>

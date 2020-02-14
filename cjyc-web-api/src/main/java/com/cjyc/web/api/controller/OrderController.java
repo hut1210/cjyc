@@ -402,9 +402,7 @@ public class OrderController {
             List<ImportCustomerOrderDto> orderList = null;
             List<ImportCustomerOrderCarDto> carList = null;
             try {
-                ExcelImportResult<ImportCustomerOrderDto> orderResult =
-                        ExcelImportUtil.importExcelMore(file.getInputStream(),
-                                ImportCustomerOrderDto.class, orderParams);
+                ExcelImportResult<ImportCustomerOrderDto> orderResult = ExcelImportUtil.importExcelMore(file.getInputStream(), ImportCustomerOrderDto.class, orderParams);
                 if (orderResult.isVerfiyFail()) {
                     String fileName = "验证失败.xlsx";
                     printExcelResult(orderResult.getFailWorkbook(), fileName, response);
@@ -434,7 +432,7 @@ public class OrderController {
     }
 
     @ApiOperation(value = "大客户订单导入", notes = "验证失败返回失败Excel文件流，其它情况返回json结果信息")
-    @PostMapping(value = "/importKeyCustomerOrder")
+    @PostMapping(value = "/importEnterpriseOrder")
     public void importKeyCustomerOrder(MultipartFile file, Long loginId, HttpServletResponse response) {
         if (file != null && !file.isEmpty() && loginId != null && loginId > 0L) {
             ImportParams orderParams = new ImportParams();
@@ -481,7 +479,7 @@ public class OrderController {
     }
 
     @ApiOperation(value = "合伙人订单导入", notes = "验证失败返回失败Excel文件流，其它情况返回json结果信息")
-    @PostMapping(value = "importPatCustomerOrder")
+    @PostMapping(value = "importCooperatorOrder")
     public void importPatCustomerOrder(MultipartFile file, Long loginId, HttpServletResponse response) {
         if (file != null && !file.isEmpty() && loginId != null && loginId > 0L) {
             ImportParams orderParams = new ImportParams();

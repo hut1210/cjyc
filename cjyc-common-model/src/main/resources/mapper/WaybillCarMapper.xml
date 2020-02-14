@@ -1846,5 +1846,16 @@
             </if>
         </where>
     </select>
+    <select id="countOrderDispatchState" resultType="com.cjyc.common.model.entity.defined.DispatchNum">
+        select
+        IFNULL(sum(case when w.type = 1 then 1 else 0 end),0) as pickNum,
+        IFNULL(sum(case when w.type = 2 then 1 else 0 end),0) as trunkNum,
+        IFNULL(sum(case when w.type = 3 then 1 else 0 end),0) as backNum
+        from w_waybill w
+        join w_waybill_car wc on wc.waybill_id = w.id
+        where wc.order_car_id = #{orderCarId}
+        and wc.state &lt;= 100
+
+    </select>
 
 </mapper>

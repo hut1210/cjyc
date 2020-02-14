@@ -5,12 +5,11 @@ import com.cjyc.common.model.dao.ICityDao;
 import com.cjyc.common.model.dao.IStoreDao;
 import com.cjyc.common.model.dao.IUserRoleDeptDao;
 import com.cjyc.common.model.dto.customer.freightBill.FindStoreDto;
+import com.cjyc.common.model.dto.salesman.StoreListLoopAdminDto;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.City;
 import com.cjyc.common.model.entity.Store;
 import com.cjyc.common.model.entity.UserRoleDept;
-import com.cjyc.common.model.entity.defined.BizScope;
-import com.cjyc.common.model.enums.BizScopeEnum;
 import com.cjyc.common.model.enums.CityLevelEnum;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.UserTypeEnum;
@@ -24,6 +23,7 @@ import com.cjyc.common.model.vo.salesman.store.StoreVo;
 import com.cjyc.common.system.service.ICsAdminService;
 import com.cjyc.common.system.service.ICsStoreService;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -142,16 +142,13 @@ public class CsStoreServiceImpl implements ICsStoreService {
     }
 
     @Override
-    public ResultVo<List<StoreLoopAdminVo>> listLoopAdminByAdminId(Long loginId) {
-        ResultVo<List<StoreVo>> listResultVo = listByAdminId(loginId);
-        if(listResultVo == null || listResultVo.getData() == null){
-            return BaseResultUtil.getVo(listResultVo.getCode(), listResultVo.getMsg());
-        }
+    public ResultVo<List<StoreLoopAdminVo>> listLoopAdmin(StoreListLoopAdminDto dto) {
+        List<Store> stores = storeDao.findList(dto);
         List<StoreLoopAdminVo> list = Lists.newArrayList();
-        for (StoreVo storeVo : listResultVo.getData()) {
+        for (Store store : stores) {
             StoreLoopAdminVo storeLoopAdminVo = new StoreLoopAdminVo();
-            BeanUtils.copyProperties(storeVo, storeLoopAdminVo);
-            Admin admin = csAdminService.findLoop(storeVo.getId());
+            BeanUtils.copyProperties(store, storeLoopAdminVo);
+            Admin admin = csAdminService.findLoop(store.getId());
             if(admin != null){
                 storeLoopAdminVo.setStoreLooplinkUserId(admin.getId());
                 storeLoopAdminVo.setStoreLooplinkName(admin.getName());

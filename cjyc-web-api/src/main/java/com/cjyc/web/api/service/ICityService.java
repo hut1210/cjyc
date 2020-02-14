@@ -10,6 +10,8 @@ import com.cjyc.common.model.vo.CityTreeVo;
 import com.cjyc.common.model.vo.ResultVo;
 import org.apache.ibatis.annotations.Param;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 
@@ -82,4 +84,11 @@ public interface ICityService extends IService<City> {
      * @return com.cjyc.common.model.vo.ResultVo<java.util.List<com.cjyc.common.model.entity.City>>
      */
     ResultVo<List<City>> getProvinceList(KeywordDto dto);
+
+    /**
+     *  城市管理导出
+     * @param request
+     * @param response
+     */
+    void exportCityListExcel(HttpServletRequest request, HttpServletResponse response);
 }

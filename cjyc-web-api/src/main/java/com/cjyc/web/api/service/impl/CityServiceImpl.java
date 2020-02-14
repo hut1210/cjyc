@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.redis.template.StringRedisUtil;
+import com.cjkj.common.utils.ExcelUtil;
 import com.cjyc.common.model.constant.FieldConstant;
 import com.cjyc.common.model.dao.ICityDao;
 import com.cjyc.common.model.dto.KeywordDto;
@@ -17,10 +18,15 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.CityTreeUtil;
 import com.cjyc.common.model.vo.CityTreeVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.city.ExportCityListVo;
+import com.cjyc.common.model.vo.web.waybill.CrWaybillVo;
+import com.cjyc.common.model.vo.web.waybill.ExportCrWaybillVo;
 import com.cjyc.web.api.service.ICityService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -29,6 +35,9 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -121,6 +130,31 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
                 .or(i ->i.eq(City::getParentCode, FieldConstant.NOT_REGION_CODE).like(!StringUtils.isEmpty(dto.getKeyword()), City::getName, dto.getKeyword()));
         List<City> list = super.list(queryWrapper);
         return BaseResultUtil.success(list);
+    }
+
+    @Override
+    public void exportCityListExcel(HttpServletRequest request, HttpServletResponse response) {
+        CityQueryDto dto = new CityQueryDto();
+        dto.setRegionCode(request.getParameter("regionCode"));
+        dto.setProvinceCode(request.getParameter("provinceCode"));
+        dto.setCityCode(request.getParameter("cityCode"));
+        dto.setAreaCode(request.getParameter("areaCode"));
+        List<FullCity> cityList = cityDao.selectCityList(dto);
+        List<ExportCityListVo> exportExcelList = Lists.newArrayList();
+        for (FullCity vo : cityList) {
+            ExportCityListVo exportCityListVo = new ExportCityListVo();
+            BeanUtils.copyProperties(vo, exportCityListVo);
+            exportExcelList.add(exportCityListVo);
+        }
+        String title = "城市管理";
+        String sheetName = "城市管理";
+        String fileName = "城市管理.xls";
+        try {
+            ExcelUtil.exportExcel(exportExcelList, title, sheetName, ExportCityListVo.class, fileName, response);
+        } catch (IOException e) {
+            log.error("导出城市管理信息异常:{}",e);
+        }
+
     }
 }
 

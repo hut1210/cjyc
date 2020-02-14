@@ -2,6 +2,7 @@ package com.cjyc.salesman.api.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.cjyc.common.model.dto.salesman.BaseSalesDto;
+import com.cjyc.common.model.dto.salesman.StoreListLoopAdminDto;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
@@ -43,15 +44,15 @@ public class StoreController {
     }
     @ApiOperation(value = "根据loginId查询业务中心列表")
     @PostMapping("/list/loop/admin")
-    public ResultVo<JSONObject> getStoreListWithAdminByLoginId(@Valid @RequestBody BaseSalesDto dto) {
+    public ResultVo<JSONObject> getStoreListWithAdminByLoginId(@Valid @RequestBody StoreListLoopAdminDto dto) {
+
         JSONObject jo = new JSONObject();
-        ResultVo<List<StoreLoopAdminVo>> resultVo = csStoreService.listLoopAdminByAdminId(dto.getLoginId());
+        ResultVo<List<StoreLoopAdminVo>> resultVo = csStoreService.listLoopAdmin(dto);
         if (ResultEnum.SUCCESS.getCode().equals(resultVo.getCode())) {
             jo.put("storeVoList", resultVo == null?null: resultVo.getData());
             return BaseResultUtil.success(jo);
         }else {
             return BaseResultUtil.fail(resultVo.getMsg());
         }
-
     }
 }

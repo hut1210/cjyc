@@ -913,9 +913,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
             waybillCars.forEach(wc -> csWaybillService.cancelWaybillCar(wc));
         }
         //退款
-        if(order.getState() == PayStateEnum.PAID.code){
-            csPingPayService.cancelOrderRefund(order.getId());
-        }
+        csPingPayService.cancelOrderRefund(order.getId());
 
         //添加操作日志
         orderChangeLogService.asyncSave(order, OrderChangeTypeEnum.CANCEL,
