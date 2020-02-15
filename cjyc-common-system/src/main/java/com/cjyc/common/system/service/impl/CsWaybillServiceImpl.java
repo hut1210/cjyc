@@ -748,7 +748,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 waybillCarDao.insert(waybillCar);
 
                 //更新订单车辆状态
-                updateOrderCarForDispatchTrunk(orderCar, waybillCar, order, false);
+                OrderCar noc = getOrderCarForChangeTrunk(orderCar, waybillCar, order);
+                orderCarDao.updateById(noc);
 
                 //提取属性
                 orderCarNoSet.add(waybillCar.getOrderCarNo());
@@ -912,9 +913,9 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                     cancelAfterDispatch(waybillCar);
                 }
 
-
                 //更新车辆信息
-                updateOrderCarForDispatchTrunk(orderCar, waybillCar, order, isChangeAddress);
+                OrderCar noc = getOrderCarForChangeTrunk(orderCar, waybillCar, order);
+                orderCarDao.updateById(noc);
                 //提取信息
                 unCancelWaybillCarIds.add(waybillCar.getId());
                 waybillCars.add(waybillCar);
@@ -971,11 +972,6 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
     private Integer getTrunkState(CarrierInfo carrierInfo) {
         return carrierInfo.getCarryType() == CarrierTypeEnum.PERSONAL.code ? WaybillCarStateEnum.WAIT_LOAD.code : WaybillCarStateEnum.WAIT_ALLOT.code;
-    }
-
-    private void updateOrderCarForDispatchTrunk(OrderCar orderCar, WaybillCar waybillCar, Order order, boolean isChangeAddress) {
-        OrderCar noc = getOrderCarForChangeTrunk(orderCar, waybillCar, order);
-        orderCarDao.updateById(noc);
     }
 
     private OrderCar getOrderCarForChangeTrunk(OrderCar orderCar, WaybillCar waybillCar, Order order) {
@@ -1164,26 +1160,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             noc.setBackState(OrderCarLocalStateEnum.WAIT_DISPATCH.code);
         } else if (WaybillTypeEnum.TRUNK.code == waybillType) {
             //取消该车辆所有后续调度
-            List<WaybillCar> afterWaybillCars = waybillCarDao.findAfterWaybillCar(waybillCar.getId(), waybillCar.getOrderCarNo());
-            if(!CollectionUtils.isEmpty(afterWaybillCars)){
-
-                List<Long> collect = afterWaybillCars.stream().map(WaybillCar::getId).collect(Collectors.toList());
-                waybillCarDao.cancelBatch(collect);
-                List<Task> afterTasks = taskDao.findListByWaybillCarIds(collect);
-                if(!CollectionUtils.isEmpty(afterTasks)){
-                    afterTasks.forEach(task -> {
-                        taskDao.updateNum(task.getId());
-                        csTaskService.validateAndFinishTask(task.getId());
-                    });
-                }
-                List<Waybill> afterWaybills = waybillDao.findListByWaybillCarIds(collect);
-                if(!CollectionUtils.isEmpty(afterWaybills)){
-                    afterWaybills.forEach(w -> {
-                        waybillDao.updateNumAndFreightFee(w.getId());
-                        validateAndFinishWaybill(w.getId());
-                    });
-                }
-            }
+            cancelAfterDispatch(waybillCar);
 
             //查询是否还有干线调度
             DispatchNum dsEntity = waybillCarDao.countOrderDispatchState(waybillCar.getOrderCarId());
