@@ -37,7 +37,9 @@ import org.springframework.util.StringUtils;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -186,7 +188,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                 carDetailVo.setGuideLine(waybillCar.getStartCity() + "-" + waybillCar.getEndCity());
 
                 // 查询除了当前车辆运单的历史车辆运单图片
-                getHistoryWaybillCarImg(carDetailVo, waybillCar,dto.getDetailType());
+                getHistoryWaybillCarImg(carDetailVo, waybillCar,dto.getDetailType(),waybill);
 
                 // 查询品牌车系信息
                 OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
@@ -256,7 +258,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                     }
 
                     // 查询除了当前车辆运单的历史车辆运单图片
-                    getHistoryWaybillCarImg(carDetailVo, waybillCar,detailType);
+                    getHistoryWaybillCarImg(carDetailVo, waybillCar,detailType,waybill);
 
                     // 运费
                     freightFee = freightFee.add(waybillCar.getFreightFee()==null?new BigDecimal(0):waybillCar.getFreightFee());
@@ -317,10 +319,13 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
         return waybillCarDao.selectOne(query);
     }
 
-    private void getHistoryWaybillCarImg(CarDetailVo carDetailVo, WaybillCar waybillCar,String detailType) {
-        List<WaybillCar> waybillCarList = waybillCarDao.selectList(new QueryWrapper<WaybillCar>().lambda()
-                .eq(WaybillCar::getOrderCarNo, waybillCar.getOrderCarNo())
-                .lt(WaybillCar::getId, waybillCar.getId()));
+    private void getHistoryWaybillCarImg(CarDetailVo carDetailVo, WaybillCar waybillCar,String detailType,Waybill waybill) {
+        Map<String,Object> map = new HashMap<>(3);
+        map.put("orderCarId",waybillCar.getOrderCarId());
+        map.put("waybillCarId",waybillCar.getId());
+        map.put("waybillType",waybill.getType());
+        List<WaybillCar> waybillCarList = waybillCarDao.selectWaybillCarList(map);
+
         StrBuilder sb = new StrBuilder();
         // 封装历史运单车辆图片
         fillHistoryWaybillCarImg(waybillCarList, sb);
