@@ -203,7 +203,7 @@ public class TaskServiceImpl implements ITaskService {
                 || FieldConstant.WAIT_PUT_IN.equals(detailState)
                 || FieldConstant.WAIT_PUT_OUT.equals(detailState)
                 || FieldConstant.FINISH_PUT_IN.equals(detailState)) {
-            // 待交车 待入库 已出库 已交付 已入库
+            // 待交车 待出库，待入库 已出库 已交付 已入库
             String loadPhotoImg = waybillCar.getLoadPhotoImg();
             if (sb.length() > 0 && !StringUtils.isEmpty(loadPhotoImg)) {
                 sb.append(",");
@@ -227,9 +227,6 @@ public class TaskServiceImpl implements ITaskService {
     }
 
     private StringBuilder getCarHistoryPhotoImg(WaybillCar waybillCar,Waybill waybill) {
-        /*LambdaQueryWrapper<WaybillCar> query = new QueryWrapper<WaybillCar>().lambda()
-                .eq(WaybillCar::getOrderCarId, waybillCar.getOrderCarId().lt(WaybillCar::getId, waybillCar.getId()));*/
-
         Map<String,Object> map = new HashMap<>(3);
         map.put("orderCarId",waybillCar.getOrderCarId());
         map.put("waybillCarId",waybillCar.getId());
