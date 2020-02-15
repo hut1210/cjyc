@@ -25,6 +25,9 @@ public class DispatchCarDetailVo implements Serializable {
     @ApiModelProperty(value = "订单号")
     private String orderNo;
 
+    @ApiModelProperty(value = "订单车辆编码")
+    private String orderCarNo;
+
     @ApiModelProperty(value = "vin码")
     private String vin;
 

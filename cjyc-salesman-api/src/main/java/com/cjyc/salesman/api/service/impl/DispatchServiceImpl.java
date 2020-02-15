@@ -380,6 +380,7 @@ public class DispatchServiceImpl implements IDispatchService {
         String logoImg = carSeriesDao.getLogoImgByBraMod(orderCar.getBrand(), orderCar.getModel());
         detail.setLogoImg(LogoImgProperty.logoImg+logoImg);
         BeanUtils.copyProperties(orderCar,detail);
+        detail.setOrderCarNo(orderCar.getNo());
 
         // 查询订单信息
         Order order = orderDao.selectById(orderCar.getOrderId());
