@@ -5,10 +5,7 @@ import com.cjkj.common.redis.template.StringRedisUtil;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.waybill.*;
 import com.cjyc.common.model.entity.*;
-import com.cjyc.common.model.entity.defined.CarrierInfo;
-import com.cjyc.common.model.entity.defined.DispatchNum;
-import com.cjyc.common.model.entity.defined.FullCity;
-import com.cjyc.common.model.entity.defined.UserInfo;
+import com.cjyc.common.model.entity.defined.*;
 import com.cjyc.common.model.enums.AdminStateEnum;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
@@ -282,7 +279,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
     @Override
     public ResultVo updateLocal(UpdateLocalDto paramsDto) {
         //历史数据
-        //FullWaybill oldFw = waybillDao.findFullWaybillById(paramsDto.getCarDto().getWaybillId());
+        FullWaybill oldFw = getFullWaybill(paramsDto.getCarDto().getWaybillId());
 
         Set<String> lockSet = new HashSet<>();
         try {
@@ -370,6 +367,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
             /**5、更新订单车辆状态*/
             updateOrderCarForDispatchLocal(orderCar.getId(), waybill, orderCar.getState(), isInStore);
+
+            //记录修改历史
             return BaseResultUtil.success();
         } finally {
             if (!CollectionUtils.isEmpty(lockSet)) {
@@ -379,6 +378,18 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 //redisUtil.del(lockSet.toArray(new String[0]));
             }
         }
+    }
+
+    private FullWaybill getFullWaybill(Long waybillId) {
+        if(waybillId == null){
+            return null;
+        }
+        FullWaybill fullWaybill = new FullWaybill();
+        Waybill waybill = waybillDao.selectById(waybillId);
+        BeanUtils.copyProperties(waybill, fullWaybill);
+        List<WaybillCar> list = waybillCarDao.findListByWaybillId(waybillId);
+        fullWaybill.setWaybillCarList(list);
+        return fullWaybill;
     }
 
     private Boolean getOrderCarIsInEndStore(Long nowStoreId, Long startStoreId) {
@@ -964,9 +975,6 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
     private void updateOrderCarForDispatchTrunk(OrderCar orderCar, WaybillCar waybillCar, Order order, boolean isChangeAddress) {
         OrderCar noc = getOrderCarForChangeTrunk(orderCar, waybillCar, order);
-        if(isChangeAddress){
-            noc.setBackState(OrderCarLocalStateEnum.WAIT_DISPATCH.code);
-        }
         orderCarDao.updateById(noc);
     }
 
@@ -979,7 +987,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         if(dsEntity.getTrunkNum() == 0){
             noc.setPickState(dsEntity.getPickNum() > 0 ? OrderCarLocalStateEnum.DISPATCHED.code : OrderCarLocalStateEnum.WAIT_DISPATCH.code);
         }
-        noc.setTrunkState(dsEntity.getTrunkNum() > 0 ? OrderCarTrunkStateEnum.WAIT_DISPATCH.code : OrderCarTrunkStateEnum.WAIT_NEXT_DISPATCH.code);
+        noc.setTrunkState(dsEntity.getTrunkNum() > 0 ? OrderCarTrunkStateEnum.WAIT_NEXT_DISPATCH.code : OrderCarTrunkStateEnum.WAIT_DISPATCH.code);
         noc.setBackState(dsEntity.getBackNum() > 0 ? OrderCarLocalStateEnum.DISPATCHED.code : OrderCarLocalStateEnum.WAIT_DISPATCH.code);
         //第一段干线运单
         int n = waybillCarDao.countPrevTrunk(waybillCar.getId());

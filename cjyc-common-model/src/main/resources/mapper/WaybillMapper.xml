@@ -26,73 +26,6 @@
         <result column="create_user_id" property="createUserId" />
         <result column="input_store_id" property="inputStoreId" />
     </resultMap>
-    <resultMap id="FullWaybillResultVo" type="com.cjyc.common.model.entity.defined.FullWaybill">
-        <id column="id" property="id" />
-        <result column="no" property="no" />
-        <result column="type" property="type" />
-        <result column="source" property="source" />
-        <result column="guide_line" property="guideLine" />
-        <result column="recommend_line" property="recommendLine" />
-        <result column="carrier_id" property="carrierId" />
-        <result column="carrier_type" property="carrierType" />
-        <result column="carrier_name" property="carrierName" />
-        <result column="car_num" property="carNum" />
-        <result column="state" property="state" />
-        <result column="freight_fee" property="freightFee" />
-        <result column="freight_pay_state" property="freightPayState" />
-        <result column="freight_pay_time" property="freightPayTime" />
-        <result column="freight_pay_billno" property="freightPayBillno" />
-        <result column="fixed_freight_fee" property="fixedFreightFee" />
-        <result column="remark" property="remark" />
-        <result column="create_time" property="createTime" />
-        <result column="create_user" property="createUser" />
-        <result column="create_user_id" property="createUserId" />
-        <result column="input_store_id" property="inputStoreId" />
-        <collection property="waybillCarList" ofType="com.cjyc.common.model.entity.WaybillCar" javaType="java.util.List">
-            <id column="waybill_car_id" property="id"/>
-            <result column="waybill_id" property="waybillId"/>
-            <result column="waybill_no" property="waybillNo"/>
-            <result column="order_car_id" property="orderCarId"/>
-            <result column="order_car_no" property="orderCarNo"/>
-            <result column="car_freight_fee" property="freightFee"/>
-            <result column="start_province" property="startProvince"/>
-            <result column="start_province_code" property="startProvinceCode"/>
-            <result column="start_city" property="startCity"/>
-            <result column="start_city_code" property="startCityCode"/>
-            <result column="start_area" property="startArea"/>
-            <result column="start_area_code" property="startAreaCode"/>
-            <result column="start_address" property="startAddress"/>
-            <result column="start_store_name" property="startStoreName"/>
-            <result column="start_store_id" property="startStoreId"/>
-            <result column="start_belong_store_id" property="startBelongStoreId"/>
-            <result column="end_province" property="endProvince"/>
-            <result column="end_province_code" property="endProvinceCode"/>
-            <result column="end_city" property="endCity"/>
-            <result column="end_city_code" property="endCityCode"/>
-            <result column="end_area" property="endArea"/>
-            <result column="end_area_code" property="endAreaCode"/>
-            <result column="end_address" property="endAddress"/>
-            <result column="end_store_name" property="endStoreName"/>
-            <result column="end_store_id" property="endStoreId"/>
-            <result column="end_belong_store_id" property="endBelongStoreId"/>
-            <result column="line_id" property="lineId"/>
-            <result column="car_state" property="state"/>
-            <result column="expect_start_time" property="expectStartTime"/>
-            <result column="expect_end_time" property="expectEndTime"/>
-            <result column="load_link_name" property="loadLinkName"/>
-            <result column="load_link_user_id" property="loadLinkUserId"/>
-            <result column="load_link_phone" property="loadLinkPhone"/>
-            <result column="load_photo_img" property="loadPhotoImg"/>
-            <result column="load_time" property="loadTime"/>
-            <result column="unload_link_name" property="unloadLinkName"/>
-            <result column="unload_link_user_id" property="unloadLinkUserId"/>
-            <result column="unload_link_phone" property="unloadLinkPhone"/>
-            <result column="unload_photo_img" property="unloadPhotoImg"/>
-            <result column="unload_time" property="unloadTime"/>
-            <result column="receipt_flag" property="receiptFlag" />
-            <result column="car_create_time" property="createTime"/>
-        </collection>
-    </resultMap>
     <resultMap id="TrunkListResultMap" type="com.cjyc.common.model.vo.web.waybill.TrunkListWaybillVo">
         <id column="id" property="id" />
         <result column="no" property="no" />
@@ -814,14 +747,6 @@
 
         where dc.id = #{carrierId}
 
-    </select>
-    <select id="findFullWaybillById" resultType="com.cjyc.common.model.entity.defined.FullWaybill">
-        select
-        w.*,
-        <include refid="Base_Car_Column_List_Rename_id"/>
-        from w_waybill w
-        join w_waybill_car wc on w.id = wc.waybill_id
-        and w.id = #{waybillId}
     </select>
     <select id="findListByWaybillCarIds" resultType="com.cjyc.common.model.entity.Waybill">
         select w.*
