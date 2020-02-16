@@ -78,6 +78,9 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         if(order.getState() > OrderStateEnum.WAIT_SUBMIT.code){
             return BaseResultUtil.fail("订单已经提交过");
         }
+        if(order.getLineId() == null){
+            return BaseResultUtil.fail("线路不存在，请重新选择城市");
+        }
         order.setState(OrderStateEnum.SUBMITTED.code);
         orderDao.updateById(order);
         return BaseResultUtil.success();

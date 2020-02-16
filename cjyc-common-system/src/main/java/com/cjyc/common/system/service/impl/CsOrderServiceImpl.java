@@ -206,6 +206,9 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
     @Override
     public ResultVo commit(CommitOrderDto paramsDto) {
+        if(paramsDto.getLineId() == null){
+            return BaseResultUtil.fail("线路不存在，请重新选择城市");
+        }
         Customer customer = csCustomerService.getByPhone(paramsDto.getCustomerPhone(), true);
         if (customer != null && !customer.getName().equals(paramsDto.getCustomerName())) {
             return BaseResultUtil.fail(ResultEnum.CREATE_NEW_CUSTOMER.getCode(),
@@ -376,6 +379,9 @@ public class CsOrderServiceImpl implements ICsOrderService {
         if(order.getEndStoreId() == null || order.getEndStoreId() < 0 ){
             return BaseResultUtil.fail("目的地业务中心未处理，请点击订单进入[下单详情]中修改并确认下单");
         }*/
+        if(order.getLineId() == null){
+            return BaseResultUtil.fail("线路不存在，请重新选择城市");
+        }
 
         Customer customer = csCustomerService.getByPhone(order.getCustomerPhone(), true);
         if (customer != null && !customer.getName().equals(order.getCustomerName())) {

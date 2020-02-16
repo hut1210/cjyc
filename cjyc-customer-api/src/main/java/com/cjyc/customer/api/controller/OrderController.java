@@ -22,6 +22,7 @@ import com.cjyc.common.system.service.ICsOrderService;
 import com.cjyc.customer.api.service.IOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
@@ -97,6 +98,9 @@ public class OrderController {
         List<SaveOrderCarDto> carList = reqDto.getOrderCarList();
         if(!CollectionUtils.isEmpty(carList) && reqDto.getLineWlFreightFee() != null){
             carList.forEach(dto -> dto.setTrunkFee(reqDto.getLineWlFreightFee()));
+        }
+        if(reqDto.getLineId() == null){
+            return BaseResultUtil.fail("线路不存在，请重新选择城市");
         }
         return csOrderService.save(reqDto);
     }

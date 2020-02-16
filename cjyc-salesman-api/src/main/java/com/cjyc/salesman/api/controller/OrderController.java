@@ -96,6 +96,9 @@ public class OrderController {
         if(OrderPickTypeEnum.SELF.code == reqDto.getBackType() &&  0 == reqDto.getEndStoreId()){
             return BaseResultUtil.fail("目的地不经过业务中心的单子，不能选择自提");
         }
+        if(reqDto.getLineId() == null){
+            return BaseResultUtil.fail("线路不存在，请重新选择城市");
+        }
         //发送短信
         return csOrderService.commitAndCheck(reqDto);
     }
