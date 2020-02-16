@@ -1095,6 +1095,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                 }
             }
             urd.setState(CommonStateEnum.CHECKED.code);
+            customer.setType(CustomerTypeEnum.COOPERATOR.code);
         }else if(dto.getFlag() == FlagEnum.AUDIT_REJECT.code){
             //审核拒绝
             if(customer.getType() == CustomerTypeEnum.INDIVIDUAL.code && urd.getState() == CommonStateEnum.IN_CHECK.code){
