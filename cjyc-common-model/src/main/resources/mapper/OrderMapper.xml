@@ -479,7 +479,7 @@
             w_order wo
         <where>
             <if test="flag != null and flag == 0">
-                wo.state = 0
+                wo.state = 0 and wo.create_user_id = #{loginId}
             </if>
             <if test="flag != null and flag == 1">
                  and wo.state between 2 and 15
