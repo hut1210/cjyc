@@ -209,34 +209,41 @@ public class CsOrderServiceImpl implements ICsOrderService {
         if(paramsDto.getLineId() == null){
             return BaseResultUtil.fail("线路不存在，请重新选择城市");
         }
-        Customer customer = csCustomerService.getByPhone(paramsDto.getCustomerPhone(), true);
-        if (customer != null && !customer.getName().equals(paramsDto.getCustomerName())) {
-            return BaseResultUtil.fail(ResultEnum.CREATE_NEW_CUSTOMER.getCode(),
-                    "客户手机号存在，名称不一致：新名称（{0}）旧名称（{1}），请返回订单重新选择客户",
-                    paramsDto.getCustomerName(), customer.getName());
+        ResultVo<Customer> validateVo = validateCustomerForOrder(paramsDto.getCustomerName(), paramsDto.getCustomerPhone(), paramsDto.getCustomerType(), paramsDto.getLoginId(), paramsDto.getCreateCustomerFlag());
+        if(validateVo.getCode() != ResultEnum.SUCCESS.getCode()){
+            return BaseResultUtil.getVo(validateVo.getCode(), validateVo.getMsg());
         }
-        if (customer == null) {
-            if (paramsDto.getCustomerType() == CustomerTypeEnum.INDIVIDUAL.code) {
-                if (paramsDto.getCreateCustomerFlag()) {
-                    ResultVo<Customer> res = csCustomerService.saveCustomer(paramsDto.getCustomerPhone(), paramsDto.getCustomerName(), paramsDto.getLoginId());
-                    if(res.getCode() == ResultEnum.SUCCESS.getCode()){
-                        customer = res.getData();
-                    }else{
-                        return BaseResultUtil.fail(res.getMsg());
-                    }
-                } else {
-                    return BaseResultUtil.getVo(ResultEnum.CREATE_NEW_CUSTOMER.getCode(), ResultEnum.CREATE_NEW_CUSTOMER.getMsg());
-                }
-            } else {
-                return BaseResultUtil.fail("企业客户/合伙人不存在");
-            }
-        }
+        Customer customer = validateVo.getData();
         paramsDto.setCustomerId(customer.getId());
         paramsDto.setCustomerType(customer.getType());
-
         //提交订单
         Order order = commitOrder(paramsDto);
         return BaseResultUtil.success("下单{0}成功", order.getNo());
+    }
+
+    private ResultVo<Customer> validateCustomerForOrder( String customerName, String customerPhone, Integer customerType, Long loginId, Boolean createCustomerFlag) {
+
+        Customer customer = csCustomerService.getByPhone(customerPhone, true);
+        if (customer != null && !customer.getName().equals(customerName)) {
+            return BaseResultUtil.fail(ResultEnum.CREATE_NEW_CUSTOMER.getCode(),
+                    "客户手机号存在，名称不一致：新名称（{0}）旧名称（{1}），请返回订单重新选择客户",
+                    customerName, customer.getName());
+        }
+        if (customer == null) {
+            if (customerType != CustomerTypeEnum.INDIVIDUAL.code) {
+                return BaseResultUtil.fail("企业客户/合伙人不存在");
+            }
+            if(!createCustomerFlag){
+                return BaseResultUtil.getVo(ResultEnum.CREATE_NEW_CUSTOMER.getCode(), ResultEnum.CREATE_NEW_CUSTOMER.getMsg());
+            }
+            //创建新用户
+            ResultVo<Customer> res = csCustomerService.saveCustomer(customerPhone, customerName, loginId);
+            if(res.getCode() != ResultEnum.SUCCESS.getCode()){
+                return BaseResultUtil.fail(res.getMsg());
+            }
+            customer = res.getData();
+        }
+        return BaseResultUtil.success(customer);
     }
 
     private Order commitOrder(CommitOrderDto paramsDto) {
@@ -382,25 +389,11 @@ public class CsOrderServiceImpl implements ICsOrderService {
         if(order.getLineId() == null){
             return BaseResultUtil.fail("线路不存在，请重新选择城市");
         }
-
-        Customer customer = csCustomerService.getByPhone(order.getCustomerPhone(), true);
-        if (customer != null && !customer.getName().equals(order.getCustomerName())) {
-            return BaseResultUtil.fail(ResultEnum.CREATE_NEW_CUSTOMER.getCode(),
-                    "客户手机号存在，名称不一致：新名称（{0}）旧名称（{1}），请返回订单重新选择客户",
-                    order.getCustomerName(), customer.getName());
+        ResultVo<Customer> validateVo = validateCustomerForOrder(order.getCustomerName(), order.getCustomerPhone(), order.getCustomerType(), paramsDto.getLoginId(), true);
+        if(validateVo.getCode() != ResultEnum.SUCCESS.getCode()){
+            return BaseResultUtil.getVo(validateVo.getCode(), validateVo.getMsg());
         }
-        if (customer == null) {
-            if (order.getCustomerType() == CustomerTypeEnum.INDIVIDUAL.code) {
-                ResultVo<Customer> res = csCustomerService.saveCustomer(order.getCustomerPhone(), order.getCustomerName(), paramsDto.getLoginId());
-                if(res.getCode() == ResultEnum.SUCCESS.getCode()){
-                    customer = res.getData();
-                }else{
-                    return BaseResultUtil.fail(res.getMsg());
-                }
-            } else {
-                return BaseResultUtil.fail("企业客户/合伙人不存在");
-            }
-        }
+        Customer customer = validateVo.getData();
         order.setCustomerId(customer.getId());
         order.setCustomerType(customer.getType());
 
@@ -415,8 +408,6 @@ public class CsOrderServiceImpl implements ICsOrderService {
         //更新车辆信息
         orderCarList.forEach(orderCar -> orderCarDao.updateById(orderCar));
 
-        //合计费用：提、干、送、保险
-        //fillOrderFeeInfo(order, orderCarList);
         order.setCarNum(orderCarList.size());
         orderDao.updateById(order);
         //记录发车人和收车人
@@ -706,30 +697,14 @@ public class CsOrderServiceImpl implements ICsOrderService {
      */
     @Override
     public ResultVo commitAndCheck(CommitOrderDto paramsDto) {
-        //验证客户
-        Customer customer = csCustomerService.getByPhone(paramsDto.getCustomerPhone(), true);
-        if (customer != null && !customer.getName().equals(paramsDto.getCustomerName())) {
-            return BaseResultUtil.fail(ResultEnum.CREATE_NEW_CUSTOMER.getCode(),
-                    "客户手机号存在，名称不一致：新名称（{0}）旧名称（{1}），请返回订单重新选择客户",
-                    paramsDto.getCustomerName(), customer.getName());
+        if(paramsDto.getLineId() == null){
+            return BaseResultUtil.fail("线路不存在，请重新选择城市");
         }
-        if (customer == null) {
-            if (paramsDto.getCustomerType() == CustomerTypeEnum.INDIVIDUAL.code) {
-
-                if (paramsDto.getCreateCustomerFlag()) {
-                    ResultVo<Customer> res = csCustomerService.saveCustomer(paramsDto.getCustomerPhone(), paramsDto.getCustomerName(), paramsDto.getLoginId());
-                    if(res.getCode() == ResultEnum.SUCCESS.getCode()){
-                        customer = res.getData();
-                    }else{
-                        return BaseResultUtil.fail(res.getMsg());
-                    }
-                } else {
-                    return BaseResultUtil.getVo(ResultEnum.CREATE_NEW_CUSTOMER.getCode(), ResultEnum.CREATE_NEW_CUSTOMER.getMsg());
-                }
-            } else {
-                return BaseResultUtil.fail("企业客户/合伙人不存在");
-            }
+        ResultVo<Customer> validateVo = validateCustomerForOrder(paramsDto.getCustomerName(), paramsDto.getCustomerPhone(), paramsDto.getCustomerType(), paramsDto.getLoginId(), paramsDto.getCreateCustomerFlag());
+        if(validateVo.getCode() != ResultEnum.SUCCESS.getCode()){
+            return BaseResultUtil.getVo(validateVo.getCode(), validateVo.getMsg());
         }
+        Customer customer = validateVo.getData();
         paramsDto.setCustomerId(customer.getId());
         paramsDto.setCustomerType(customer.getType());
         //提交订单

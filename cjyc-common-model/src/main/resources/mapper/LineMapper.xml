@@ -94,5 +94,19 @@
         where from_code = #{startCityCode}
         and to_code = #{endCityCode}
     </select>
+    <select id="validateCarsLine" resultType="com.cjyc.common.model.vo.salesman.dispatch.ValidateLineVo">
+        <foreach collection="list" item="item" index="index" separator="union all">
+            select
+            #{item.orderCarNo} as orderCarNo,
+            (case when id > 0 then true else false end) as hasLine,
+            id as lineId,
+            default_freight_fee as lineFreightFee
+            from s_line
+            <where>
+                and from_code = #{item.fromCode} and to_code = #{item.toCode}
+            </where>
+        </foreach>
+
+    </select>
 
 </mapper>

@@ -1,9 +1,14 @@
 package com.cjyc.common.system.service;
 
 import com.cjyc.common.model.dto.customer.freightBill.TransportDto;
+import com.cjyc.common.model.dto.web.dispatch.ValidateLineDto;
+import com.cjyc.common.model.dto.web.dispatch.ValidateLineShellDto;
 import com.cjyc.common.model.entity.Line;
+import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.salesman.dispatch.ValidateLineVo;
 
+import java.util.List;
 import java.util.Map;
 
 public interface ICsLineService {
@@ -15,4 +20,6 @@ public interface ICsLineService {
      * @return
      */
     ResultVo<Map<String,Object>> linePriceByCode(TransportDto dto);
+
+    ResultVo<ListVo<ValidateLineVo>> validateLines(ValidateLineShellDto reqDto);
 }
