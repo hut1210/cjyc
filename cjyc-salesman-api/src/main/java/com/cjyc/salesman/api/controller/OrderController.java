@@ -90,10 +90,10 @@ public class OrderController {
             reqDto.setPickType(OrderPickTypeEnum.PILOT.code);
             reqDto.setDispatch(true);
         }
-        if(OrderPickTypeEnum.SELF.code == reqDto.getPickType() &&  0 == reqDto.getStartStoreId()){
+        if(OrderPickTypeEnum.SELF.code == reqDto.getPickType() && ( reqDto.getStartStoreId() == null || reqDto.getStartStoreId() == 0)){
             return BaseResultUtil.fail("始发地不经过业务中心的单子，不能选择自送");
         }
-        if(OrderPickTypeEnum.SELF.code == reqDto.getBackType() &&  0 == reqDto.getEndStoreId()){
+        if(OrderPickTypeEnum.SELF.code == reqDto.getBackType() &&  (reqDto.getEndStoreId() == null || reqDto.getEndStoreId() == 0)){
             return BaseResultUtil.fail("目的地不经过业务中心的单子，不能选择自提");
         }
         if(reqDto.getLineId() == null){
