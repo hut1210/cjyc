@@ -8,6 +8,7 @@ import com.cjyc.common.model.entity.CustomerInvoice;
 import com.cjyc.common.model.entity.InvoiceReceipt;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.ExcelUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.finance.*;
@@ -25,9 +26,12 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @Author:Hut
@@ -120,9 +124,69 @@ public class FinanceServiceImpl implements IFinanceService {
     }
 
     @Override
-    public void exportExcel(HttpServletRequest request, HttpServletResponse response) {
-        FinanceQueryDto financeQueryDto = getFinanceQueryDto(request);
-        List<FinanceVo> financeVoList = getAllFinanceList(financeQueryDto);
+    public List<ExportFinanceVo> exportExcel(HttpServletResponse response, FinanceQueryDto financeQueryDto) {
+        log.info("financeQueryDto ="+financeQueryDto.toString());
+        List<ExportFinanceVo> financeVoList = financeDao.getAllFinanceList(financeQueryDto);
+        if(financeVoList==null){
+            return financeVoList;
+        }
+        for(int i=0;i<financeVoList.size();i++){
+            ExportFinanceVo financeVo = financeVoList.get(i);
+
+            if(financeVo != null){
+                //TODO 实收金额  收入合计
+
+                String orderCarNo = financeVo.getNo();
+                BigDecimal pickUpCarFee = financeDao.getFee(orderCarNo,1);
+                BigDecimal trunkLineFee = financeDao.getFee(orderCarNo,2);
+                BigDecimal carryCarFee = financeDao.getFee(orderCarNo,3);
+
+                financeVo.setPickUpCarFee(pickUpCarFee!=null?pickUpCarFee.divide(new BigDecimal(100)): null);
+                financeVo.setTrunkLineFee(trunkLineFee!=null?trunkLineFee.divide(new BigDecimal(100)): null);
+                financeVo.setCarryCarFee(carryCarFee!=null?carryCarFee.divide(new BigDecimal(100)): null);
+
+                List<TrunkLineVo> pickUpCarList = financeDao.getTrunkCostList(orderCarNo,1);
+                List<TrunkLineVo> trunkLineVoList = financeDao.getTrunkCostList(orderCarNo,2);
+                List<TrunkLineVo> carryCarList = financeDao.getTrunkCostList(orderCarNo,3);
+
+                BigDecimal totalCost = new BigDecimal(0);
+                //成本合计
+                if(pickUpCarList!=null){
+                    for(int j=0;j<pickUpCarList.size();j++){
+                        if(pickUpCarList.get(j)!=null&&pickUpCarList.get(j).getFreightFee()!=null){
+                            totalCost = totalCost.add(pickUpCarList.get(j).getFreightFee());
+                        }
+                    }
+                }
+
+                if(trunkLineVoList!=null){
+                    for(int k=0;k<trunkLineVoList.size();k++){
+                        if(trunkLineVoList.get(k)!=null&&trunkLineVoList.get(k).getFreightFee()!=null){
+                            totalCost = totalCost.add(trunkLineVoList.get(k).getFreightFee());
+                        }
+                    }
+                }
+
+                if(carryCarList!=null){
+                    for(int m=0;m<carryCarList.size();m++){
+                        if(carryCarList.get(m)!=null&&carryCarList.get(m).getFreightFee()!=null){
+                            totalCost = totalCost.add(carryCarList.get(m).getFreightFee());
+                        }
+                    }
+                }
+
+                financeVo.setFreightReceivable(financeVo.getFreightReceivable()!=null?financeVo.getFreightReceivable().divide(new BigDecimal(100)):financeVo.getFreightReceivable());
+
+                financeVo.setFeeShare(financeVo.getFeeShare()!=null?financeVo.getFeeShare().divide(new BigDecimal(100)):financeVo.getFeeShare());
+                financeVo.setAmountReceived(financeVo.getAmountReceived()!=null?financeVo.getAmountReceived().divide(new BigDecimal(100)):financeVo.getAmountReceived());
+                financeVo.setTotalCost(totalCost!=null?totalCost.divide(new BigDecimal(100)):null);
+
+                financeVo.setGrossProfit((financeVo.getTotalIncome().subtract(totalCost)).divide(new BigDecimal(100)));
+                financeVo.setTotalIncome(financeVo.getTotalIncome()!=null?financeVo.getTotalIncome().divide(new BigDecimal(100)):financeVo.getTotalIncome());
+            }
+        }
+
+        return financeVoList;
     }
 
     private List<FinanceVo> getAllFinanceList(FinanceQueryDto financeQueryDto) {

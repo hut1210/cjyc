@@ -55,4 +55,6 @@ public interface IFinanceDao extends BaseMapper {
     List<PayablePaidVo> getPayablePaidList(PayablePaidQueryDto payablePaidQueryDto);
 
     void writeOffPayable(SettlementVo settlementVo);
+
+    List<ExportFinanceVo> getAllFinanceList(FinanceQueryDto financeQueryDto);
 }

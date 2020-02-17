@@ -2,18 +2,25 @@ package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.web.finance.*;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.ExcelUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.finance.*;
 import com.cjyc.web.api.service.IFinanceService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * 财务
@@ -23,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 @Api(tags = "资金-财务")
 @RequestMapping(value = "/finance",
         produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@Slf4j
 public class FinanceController {
 
     @Autowired
@@ -35,9 +43,25 @@ public class FinanceController {
     }
 
     @ApiOperation(value = "导出Excel")
-    @GetMapping("/exportExcel")
-    public void exportExcel(HttpServletRequest request, HttpServletResponse response){
-        financeService.exportExcel(request,response);
+    @GetMapping(value = "/export")
+    public ResultVo exportExcel(HttpServletResponse response,FinanceQueryDto financeQueryDto){
+
+        log.info("financeQueryDto ={}",financeQueryDto.toString());
+        List<ExportFinanceVo> financeVoList = financeService.exportExcel(response,financeQueryDto);
+        if (CollectionUtils.isEmpty(financeVoList)) {
+            return BaseResultUtil.success("未查询到结果");
+        }
+        String title = "财务总流水";
+        String sheetName = "财务总流水";
+        String fileName = "财务总流水.xls";
+        log.info("financeVoList.size = "+financeVoList.size());
+        try {
+            ExcelUtil.exportExcel(financeVoList, title, sheetName, ExportFinanceVo.class, fileName, response);
+            return null;
+        } catch (IOException e) {
+            log.error("导出财务总流水异常:",e);
+            return BaseResultUtil.fail("导出财务总流水异常"+e.getMessage());
+        }
     }
 
     @ApiOperation(value = "财务应收账款列表")
