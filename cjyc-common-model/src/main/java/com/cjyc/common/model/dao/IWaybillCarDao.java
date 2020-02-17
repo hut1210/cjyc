@@ -13,6 +13,7 @@ import com.cjyc.common.model.entity.WaybillCar;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.entity.defined.DispatchNum;
 import com.cjyc.common.model.entity.defined.FullWaybillCar;
+import com.cjyc.common.model.entity.defined.WaybillCarNum;
 import com.cjyc.common.model.vo.salesman.dispatch.DispatchListVo;
 import com.cjyc.common.model.vo.salesman.dispatch.DispatchRecordVo;
 import com.cjyc.common.model.vo.web.WayBillCarrierVo;
@@ -211,4 +212,6 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
     List<WaybillCar>  selectWaybillCarList(Map<String,Object> map);
 
     DispatchNum countOrderDispatchState(Long orderCarId);
+
+    WaybillCarNum countUnFinishForState(Long waybillId);
 }

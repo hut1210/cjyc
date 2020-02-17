@@ -953,6 +953,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
             List<Long> collect = afterWaybillCars.stream().map(WaybillCar::getId).collect(Collectors.toList());
             waybillCarDao.cancelBatch(collect);
+
             List<Task> afterTasks = taskDao.findListByWaybillCarIds(collect);
             if(!CollectionUtils.isEmpty(afterTasks)){
                 afterTasks.forEach(task -> {
@@ -1185,6 +1186,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             csTaskService.validateAndFinishTask(task.getId());
         }
 
+        validateAndFinishWaybill(waybillCar.getWaybillId());
+
 
     }
 
@@ -1321,17 +1324,24 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
     @Override
     public void validateAndFinishWaybill(Long waybillId) {
-        int count = waybillCarDao.countUnFinishByWaybillId(waybillId);
-        if(count > 0){
+        WaybillCarNum wcNum = waybillCarDao.countUnFinishForState(waybillId);
+        if(wcNum.getUnFinishCarNum() > 0){
             return;
         }
-        waybillDao.updateForFinish(waybillId);
-        try {
-            csPingPayService.allinpayToCarrier(waybillId);
-        } catch (Exception e) {
-            log.error("完成运单（ID：{}）支付司机运费失败！", waybillId);
-            log.error(e.getMessage(), e);
+        int newState = WaybillStateEnum.FINISHED.code;
+        if(wcNum.getTotalCarNum().equals(wcNum.getCancelCarNum())){
+            newState = WaybillStateEnum.F_CANCEL.code;
         }
+        waybillDao.updateStateById(newState, waybillId);
+        if(newState == WaybillStateEnum.FINISHED.code){
+            try {
+                csPingPayService.allinpayToCarrier(waybillId);
+            } catch (Exception e) {
+                log.error("完成运单（ID：{}）支付司机运费失败！", waybillId);
+                log.error(e.getMessage(), e);
+            }
+        }
+
     }
 
     private void shareWaybillCarFreightFee(Set<WaybillCar> waybillCars, BigDecimal oldTotalFee, BigDecimal newTotalFee) {

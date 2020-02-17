@@ -36,7 +36,7 @@ public class CsLineServiceImpl implements ICsLineService {
     public ResultVo<Map<String, Object>> linePriceByCode(TransportDto dto) {
         Line line = lineDao.getLinePriceByCode(dto.getFromCode(), dto.getToCode());
         if(line == null){
-            return BaseResultUtil.fail("该班线不存在");
+            return BaseResultUtil.fail("该班线在");
         }
         Map<String,Object> map = new HashMap<>(10);
         map.put("defaultWlFee",line.getDefaultWlFee() == null ? BigDecimal.ZERO : line.getDefaultWlFee().divide(new BigDecimal(100)));
