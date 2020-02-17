@@ -5,7 +5,6 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.finance.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
@@ -16,7 +15,7 @@ import java.util.List;
 public interface IFinanceService {
     ResultVo<PageVo<FinanceVo>> getFinanceList(FinanceQueryDto financeQueryDto);
 
-    void exportExcel(HttpServletRequest request, HttpServletResponse response);
+    List<ExportFinanceVo> exportExcel(HttpServletResponse response, FinanceQueryDto financeQueryDto);
 
     ResultVo<PageVo<FinanceReceiptVo>> getFinanceReceiptList(FinanceQueryDto financeQueryDto);
 
