@@ -10,22 +10,15 @@ import org.springframework.context.annotation.Configuration;
  * @author JPG
  */
 @Configuration
-@ConditionalOnProperty(prefix = "cjyc.push.jiguang", name = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "cjkj.push", name = "enabled", havingValue = "true")
 @RefreshScope
 public class JiGuangProperty {
 
-    public static String appKey;
-    public static String masterSecret;
+    public static String apiKey;
 
-
-    @Value("${cjyc.push.jiguang.appKey}")
-    public void setAppKey(String appKey) {
-        JiGuangProperty.appKey = appKey;
-    }
-
-    @Value("${cjyc.push.jiguang.masterSecret}")
-    public void setMasterSecret(String masterSecret) {
-        JiGuangProperty.masterSecret = masterSecret;
+    @Value("${cjkj.push.apikey}")
+    public void setAppKey(String apiKey) {
+        JiGuangProperty.apiKey = apiKey;
     }
 
 }

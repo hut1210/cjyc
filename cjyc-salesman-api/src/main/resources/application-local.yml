@@ -89,6 +89,9 @@ logging:
 
 ##-----------------------------------cjyc-------------------------------------------
 cjkj:
+  push:
+    enabled: true
+    apikey: 672774b924254b2cb96be3a4c5aaae96
   dept_customer_id: 100000
   dept_driver_id: 110000
   dept_admin_id: 120000
@@ -153,11 +156,11 @@ cjyc:
       secret: ba9jet8miibxepu4gb5q
 
   #推送
-  push:
-    jiguang:
-      enabled: true
-      appKey: 8a4abf674ba61fc9c47d6616
-      masterSecret: 6fc93a75e2f813f4798e88ff
+  #push:
+    #jiguang:
+      #enabled: true
+      #appKey: 8a4abf674ba61fc9c47d6616
+      #masterSecret: 6fc93a75e2f813f4798e88ff
 
   #支付
   pay:

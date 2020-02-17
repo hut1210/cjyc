@@ -519,7 +519,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
     }
 
     private WaybillCar fillWaybillCarAdmin(WaybillCar waybillCar, Integer type) {
-        if (WaybillTypeEnum.BACK.code == type) {
+        if (WaybillTypeEnum.PICK.code != type) {
             if (StringUtils.isBlank(waybillCar.getLoadLinkPhone())) {
                 Admin admin = csAdminService.findLoop(waybillCar.getStartStoreId());
                 if (admin == null) {
@@ -529,27 +529,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 waybillCar.setLoadLinkName(admin.getName());
                 waybillCar.setLoadLinkPhone(admin.getPhone());
             }
-        } else if (WaybillTypeEnum.PICK.code == type){
-
-            if (StringUtils.isBlank(waybillCar.getUnloadLinkPhone())) {
-                Admin admin = csAdminService.findLoop(waybillCar.getEndStoreId());
-                if (admin == null) {
-                    throw new ParameterException("业务中心无人员");
-                }
-                waybillCar.setUnloadLinkUserId(admin.getId());
-                waybillCar.setUnloadLinkName(admin.getName());
-                waybillCar.setUnloadLinkPhone(admin.getPhone());
-            }
-        }else{
-            if (StringUtils.isBlank(waybillCar.getLoadLinkPhone())) {
-                Admin admin = csAdminService.findLoop(waybillCar.getStartStoreId());
-                if (admin == null) {
-                    throw new ParameterException("业务中心无人员");
-                }
-                waybillCar.setLoadLinkUserId(admin.getId());
-                waybillCar.setLoadLinkName(admin.getName());
-                waybillCar.setLoadLinkPhone(admin.getPhone());
-            }
+        }
+        if (WaybillTypeEnum.BACK.code != type){
             if (StringUtils.isBlank(waybillCar.getUnloadLinkPhone())) {
                 Admin admin = csAdminService.findLoop(waybillCar.getEndStoreId());
                 if (admin == null) {

@@ -153,8 +153,8 @@ public class CsStoreServiceImpl implements ICsStoreService {
                 storeLoopAdminVo.setStoreLooplinkUserId(admin.getId());
                 storeLoopAdminVo.setStoreLooplinkName(admin.getName());
                 storeLoopAdminVo.setStoreLooplinkPhone(admin.getPhone());
+                list.add(storeLoopAdminVo);
             }
-            list.add(storeLoopAdminVo);
         }
         return BaseResultUtil.success(list);
     }

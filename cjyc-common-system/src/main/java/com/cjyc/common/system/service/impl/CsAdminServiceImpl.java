@@ -120,11 +120,9 @@ public class CsAdminServiceImpl implements ICsAdminService {
         String key = RedisKeys.getLoopAllotAdminKey(storeId);
         String value = redisUtil.get(key);
         Long cachedId  = StringUtils.isBlank(value) ? 0L : Long.valueOf(value);
-        Store store = storeService.getById(storeId, true);
-
         List<Admin> admins = adminDao.findListByStoreId(storeId);
         if(CollectionUtils.isEmpty(admins)){
-            throw new ParameterException("{0}没有业务员", store.getName());
+            return null;
         }
         Admin selectAdmin = null;
         for (Admin admin: admins) {
