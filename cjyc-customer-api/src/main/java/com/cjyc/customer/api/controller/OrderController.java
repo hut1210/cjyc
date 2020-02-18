@@ -6,7 +6,9 @@ import com.cjyc.common.model.dto.customer.order.SimpleSaveOrderDto;
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.entity.OrderCarLog;
+import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.UserTypeEnum;
+import com.cjyc.common.model.enums.message.PushMessageEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ListVo;
@@ -19,6 +21,7 @@ import com.cjyc.common.model.vo.customer.order.OutterOrderCarLogVo;
 import com.cjyc.common.model.vo.web.OrderCarVo;
 import com.cjyc.common.system.service.ICsCustomerService;
 import com.cjyc.common.system.service.ICsOrderService;
+import com.cjyc.common.system.service.ICsPushMsgService;
 import com.cjyc.customer.api.service.IOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -99,6 +102,7 @@ public class OrderController {
         if(!CollectionUtils.isEmpty(carList) && reqDto.getLineWlFreightFee() != null){
             carList.forEach(dto -> dto.setTrunkFee(reqDto.getLineWlFreightFee()));
         }
+
         return csOrderService.save(reqDto);
     }
 

@@ -17,6 +17,7 @@ import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.city.CityLevelEnum;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.enums.log.OrderLogEnum;
+import com.cjyc.common.model.enums.message.PushMessageEnum;
 import com.cjyc.common.model.enums.order.*;
 import com.cjyc.common.model.enums.waybill.WaybillCarrierTypeEnum;
 import com.cjyc.common.model.enums.waybill.WaybillTypeEnum;
@@ -92,6 +93,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
     private ICsAdminService csAdminService;
     @Resource
     private ICsPingPayService csPingPayService;
+    @Resource
+    private ICsPushMsgService csPushMsgService;
 
     @Override
     public ResultVo save(SaveOrderDto paramsDto) {
@@ -203,7 +206,10 @@ public class CsOrderServiceImpl implements ICsOrderService {
                     new String[]{OrderLogEnum.SUBMIT.getOutterLog(),
                             MessageFormat.format(OrderLogEnum.SUBMIT.getInnerLog(), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
                     new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), UserTypeEnum.valueOf(paramsDto.getLoginType())));
+            //推送给客户
+            csPushMsgService.send(order.getCustomerId(), PushMessageEnum.COMMIT_ORDER.getCode(), order.getNo());
         }
+
 
         return BaseResultUtil.success(OrderStateEnum.SUBMITTED.code == paramsDto.getState() ? "下单成功，订单编号{0}" : "保存成功，订单编号{0}", order.getNo());
     }

@@ -5,15 +5,18 @@ import java.text.MessageFormat;
 public enum PushMessageEnum {
 
     /***/
-    COMMIT_ORDER("下单提醒", "【韵车物流】您的订单{0}，下单成功，请到订单中心查看"),
-    CHECK_ORDER("揽货提醒", "【韵车物流】您的订单{0}，已揽货");
+    COMMIT_ORDER("下单提醒", "您的订单：{0}已成功下单，稍后将由工作人员与您确认发运信息，请保持手机畅通，如有疑问请咨询客户服务热线：4009199266", 28),
+    PILOT_PICK("代驾上门提醒", "您的订单：{0}由韵车司机（{2}）提车中，请保持手机畅通，如有疑问请咨询客户服务热线：4009199266", 30),
+    CONSIGN_PICK("拖车上门提醒", "您的订单：{0}由韵车救援车（{1}）（{2}）提车中，请保持手机畅通，如有疑问请咨询客户服务热线：4009199266", 31);
 
     private String title;
     private String msg;
+    private long code;
 
-    PushMessageEnum(String title, String msg) {
+    PushMessageEnum(String title, String msg, long code) {
         this.title = title;
         this.msg = msg;
+        this.code = code;
     }
 
     public String getTitle() {
@@ -22,6 +25,10 @@ public enum PushMessageEnum {
 
     public String getMsg() {
         return msg;
+    }
+
+    public long getCode() {
+        return code;
     }
 
     public String getMsg(String... args) {
