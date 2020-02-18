@@ -1,6 +1,5 @@
 package com.cjyc.web.api.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.utils.ExcelUtil;
 import com.cjyc.common.model.constant.NoConstant;
@@ -17,7 +16,6 @@ import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.PositionUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.city.ProvinceCityVo;
 import com.cjyc.common.model.vo.web.line.LineExportExcel;
 import com.cjyc.common.model.vo.web.line.LineVo;
 import com.cjyc.web.api.service.ILineService;
@@ -53,9 +51,6 @@ import static com.cjyc.common.model.util.PositionUtil.getLngAndLat;
 @Service
 @Slf4j
 public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILineService {
-
-    @Resource
-    private ILineNodeDao lineNodeDao;
 
     @Resource
     private ILineDao lineDao;

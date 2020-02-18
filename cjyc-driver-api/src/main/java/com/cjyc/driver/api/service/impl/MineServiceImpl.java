@@ -673,17 +673,20 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
                 }
             }
             //更新
-            vehicleCon.setDriverId(dto.getLoginId());
-            vehicleCon.setVehicleId(dto.getVehicleId());
-            driverVehicleConDao.updateById(vehicleCon);
-
-            vr.setDriverId(dto.getLoginId());
-            vr.setVehicleId(dto.getVehicleId());
-            vr.setPlateNo(dto.getPlateNo());
-            vr.setCarryCarNum(dto.getDefaultCarryNum());
-            vr.setState(RunningStateEnum.EFFECTIVE.code);
-            vr.setRunningState(VehicleRunStateEnum.FREE.code);
-            vehicleRunningDao.updateById(vr);
+            if(vehicleCon != null){
+                vehicleCon.setDriverId(dto.getLoginId());
+                vehicleCon.setVehicleId(dto.getVehicleId());
+                driverVehicleConDao.updateById(vehicleCon);
+            }
+            if(vr != null){
+                vr.setDriverId(dto.getLoginId());
+                vr.setVehicleId(dto.getVehicleId());
+                vr.setPlateNo(dto.getPlateNo());
+                vr.setCarryCarNum(dto.getDefaultCarryNum());
+                vr.setState(RunningStateEnum.EFFECTIVE.code);
+                vr.setRunningState(VehicleRunStateEnum.FREE.code);
+                vehicleRunningDao.updateById(vr);
+            }
         }
         return BaseResultUtil.success();
     }
