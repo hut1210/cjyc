@@ -1,7 +1,6 @@
 package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.web.finance.*;
-import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.finance.FinancePayableVo;
