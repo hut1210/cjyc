@@ -1,6 +1,7 @@
 package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.web.finance.*;
+import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.finance.FinancePayableVo;
@@ -99,4 +100,9 @@ public class FinancePayableController {
         return financeService.payableDetail(serialNumber);
     }
 
+    @ApiOperation(value = "对外支付")
+    @PostMapping(value = "/externalPay")
+    public ResultVo externalPayment(@RequestBody List<Long> waybillIds){
+        return financeService.externalPayment(waybillIds);
+    }
 }

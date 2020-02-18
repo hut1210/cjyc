@@ -4,6 +4,7 @@ import com.cjyc.common.model.dto.web.finance.*;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.finance.*;
+import com.sun.org.apache.xpath.internal.operations.String;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
@@ -70,4 +71,6 @@ public interface IFinanceService {
     ResultVo payableDetail(String serialNumber);
 
     ResultVo<PageVo<PaidNewVo>> getPaidListNew(PayMentQueryDto payMentQueryDto);
+
+    ResultVo externalPayment(List<Long> waybillIds);
 }
