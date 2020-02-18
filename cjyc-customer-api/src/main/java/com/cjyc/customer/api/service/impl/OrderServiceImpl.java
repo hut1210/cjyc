@@ -22,6 +22,7 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.invoice.InvoiceOrderVo;
 import com.cjyc.common.model.vo.customer.order.*;
 import com.cjyc.common.system.config.LogoImgProperty;
+import com.cjyc.common.system.service.ICsLineService;
 import com.cjyc.common.system.service.ICsOrderService;
 import com.cjyc.common.system.service.ICsSendNoService;
 import com.cjyc.common.system.util.RedisUtils;
@@ -64,7 +65,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
     @Resource
     private ICarSeriesDao carSeriesDao;
     @Resource
-    private IStoreDao storeDao;
+    private ICsLineService csLineService;
     @Resource
     private IOrderCarLogDao orderCarLogDao;
 
@@ -79,7 +80,11 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
             return BaseResultUtil.fail("订单已经提交过");
         }
         if(order.getLineId() == null){
-            return BaseResultUtil.fail("线路不存在，请重新选择城市");
+            Line line = csLineService.getLineByCity(order.getStartCityCode(), order.getEndCityCode(), true);
+            if(line == null){
+                return BaseResultUtil.fail("线路不存在，请重新选择城市");
+            }
+            order.setLineId(line.getId());
         }
         order.setState(OrderStateEnum.SUBMITTED.code);
         orderDao.updateById(order);

@@ -40,4 +40,6 @@ public interface ILineDao extends BaseMapper<Line> {
     List<Line> findListByCity(@Param("startCityCode") String startCityCode, @Param("endCityCode")String endCityCode);
 
     List<ValidateLineVo> validateCarsLine(@Param("list") List<ValidateLineDto> list);
+
+    Line findOneByArea(@Param("startAreaCode") String startAreaCode, @Param("endAreaCode") String endAreaCode);
 }

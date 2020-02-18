@@ -62,9 +62,11 @@ public class OrderController {
         reqDto.setCreateUserId(admin.getId());
         reqDto.setCreateUserName(admin.getName());
         reqDto.setState(OrderStateEnum.WAIT_SUBMIT.code);
+        //业务员上门变为代驾上门
         if(OrderPickTypeEnum.DISPATCH_SELF.code == reqDto.getPickType()){
             reqDto.setPickType(OrderPickTypeEnum.PILOT.code);
         }
+
         return csOrderService.save(reqDto);
     }
 
@@ -83,6 +85,7 @@ public class OrderController {
         reqDto.setLoginType(UserTypeEnum.ADMIN.code);
         reqDto.setCreateUserId(admin.getId());
         reqDto.setCreateUserName(admin.getName());
+        //业务员上门变为代驾上门
         if(OrderPickTypeEnum.DISPATCH_SELF.code == reqDto.getPickType()){
             if(reqDto.getPayType() == PayModeEnum.PREPAY.code){
                 return BaseResultUtil.fail("预付订单不能选择业务员上门，付款成功后再进行调度");
@@ -90,15 +93,7 @@ public class OrderController {
             reqDto.setPickType(OrderPickTypeEnum.PILOT.code);
             reqDto.setDispatch(true);
         }
-        if(OrderPickTypeEnum.SELF.code == reqDto.getPickType() && ( reqDto.getStartStoreId() == null || reqDto.getStartStoreId() == 0)){
-            return BaseResultUtil.fail("始发地不经过业务中心的单子，不能选择自送");
-        }
-        if(OrderPickTypeEnum.SELF.code == reqDto.getBackType() &&  (reqDto.getEndStoreId() == null || reqDto.getEndStoreId() == 0)){
-            return BaseResultUtil.fail("目的地不经过业务中心的单子，不能选择自提");
-        }
-        if(reqDto.getLineId() == null){
-            return BaseResultUtil.fail("线路不存在，请重新选择城市");
-        }
+
         //发送短信
         return csOrderService.commitAndCheck(reqDto);
     }
