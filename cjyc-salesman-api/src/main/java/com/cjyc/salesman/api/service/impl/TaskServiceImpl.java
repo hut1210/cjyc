@@ -137,12 +137,9 @@ public class TaskServiceImpl implements ITaskService {
                     freightFee = freightFee.add(waybillCar.getFreightFee());
 
                     // 给详细地址拼接市区
-                    if (waybillCar.getStartBelongStoreId() == null || waybillCar.getStartBelongStoreId() <= 0) {
-                        carDetailVo.setStartAddress(waybillCar.getStartCity()+waybillCar.getStartArea()+waybillCar.getStartAddress());
-                    }
-                    if (waybillCar.getEndBelongStoreId() == null || waybillCar.getEndBelongStoreId() <= 0) {
-                        carDetailVo.setEndAddress(waybillCar.getEndCity()+waybillCar.getEndArea()+waybillCar.getEndAddress());
-                    }
+                    carDetailVo.setStartAddress(waybillCar.getStartCity()+waybillCar.getStartArea()+waybillCar.getStartAddress());
+                    carDetailVo.setEndAddress(waybillCar.getEndCity()+waybillCar.getEndArea()+waybillCar.getEndAddress());
+
 
                     // 指导路线,运单是提车或者送车，将始发成和结束城市用“-”拼接
                     carDetailVo.setGuideLine(waybillCar.getStartCity() + "-" + waybillCar.getEndCity());

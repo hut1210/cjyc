@@ -171,12 +171,8 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                 BeanUtils.copyProperties(waybillCar,carDetailVo);
 
                 // 给详细地址拼接市区
-                if (waybillCar.getStartBelongStoreId() == null || waybillCar.getStartBelongStoreId() <= 0) {
-                    carDetailVo.setStartAddress(waybillCar.getStartCity()+waybillCar.getStartArea()+waybillCar.getStartAddress());
-                }
-                if (waybillCar.getEndBelongStoreId() == null || waybillCar.getEndBelongStoreId() <= 0) {
-                    carDetailVo.setEndAddress(waybillCar.getEndCity()+waybillCar.getEndArea()+waybillCar.getEndAddress());
-                }
+                carDetailVo.setStartAddress(waybillCar.getStartCity()+waybillCar.getStartArea()+waybillCar.getStartAddress());
+                carDetailVo.setEndAddress(waybillCar.getEndCity()+waybillCar.getEndArea()+waybillCar.getEndAddress());
 
                 // 获取运单车辆费用
                 freightFee = freightFee.add(waybillCar.getFreightFee()==null?new BigDecimal(0):waybillCar.getFreightFee());
@@ -247,12 +243,9 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                     BeanUtils.copyProperties(waybillCar,carDetailVo);
 
                     // 给详细地址拼接市区
-                    if (waybillCar.getStartBelongStoreId() == null || waybillCar.getStartBelongStoreId() <= 0) {
-                        carDetailVo.setStartAddress(waybillCar.getStartCity()+waybillCar.getStartArea()+waybillCar.getStartAddress());
-                    }
-                    if (waybillCar.getEndBelongStoreId() == null || waybillCar.getEndBelongStoreId() <= 0) {
-                        carDetailVo.setEndAddress(waybillCar.getEndCity()+waybillCar.getEndArea()+waybillCar.getEndAddress());
-                    }
+                    carDetailVo.setStartAddress(waybillCar.getStartCity()+waybillCar.getStartArea()+waybillCar.getStartAddress());
+                    carDetailVo.setEndAddress(waybillCar.getEndCity()+waybillCar.getEndArea()+waybillCar.getEndAddress());
+
 
                     // 查询除了当前车辆运单的历史车辆运单图片
                     getHistoryWaybillCarImg(carDetailVo, waybillCar,detailType,waybill);
