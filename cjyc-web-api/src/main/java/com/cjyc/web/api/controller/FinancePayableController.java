@@ -5,6 +5,7 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.finance.FinancePayableVo;
+import com.cjyc.common.model.vo.web.finance.PaidNewVo;
 import com.cjyc.common.model.vo.web.finance.SettlementVo;
 import com.cjyc.web.api.service.IFinanceService;
 import io.swagger.annotations.Api;
@@ -100,9 +101,15 @@ public class FinancePayableController {
         return financeService.payableDetail(serialNumber);
     }
 
+    @ApiOperation(value = "已付款(时付)列表")
+    @PostMapping(value = "/getPaidList")
+    public ResultVo<PageVo<PaidNewVo>> getPaidList(@RequestBody PayMentQueryDto payMentQueryDto){
+        return financeService.getPaidListNew(payMentQueryDto);
+    }
+
     @ApiOperation(value = "对外支付")
     @PostMapping(value = "/externalPay")
-    public ResultVo externalPayment(@RequestBody List<Long> waybillIds){
+    public ResultVo externalPayment(@RequestBody List<Long> waybillIds,Long loginId){
         return financeService.externalPayment(waybillIds);
     }
 }
