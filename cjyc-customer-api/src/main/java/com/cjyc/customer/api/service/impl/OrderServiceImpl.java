@@ -252,6 +252,9 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         end.append(order.getEndCity() == null ? "" : order.getEndCity()+" ");
         end.append(order.getEndArea() == null ? "" : order.getEndArea());
         detailVo.setEndProvinceCityAreaName(end.toString().trim());
+
+        detailVo.setStartAddress(order.getStartCity()+order.getStartArea()+order.getStartAddress());
+        detailVo.setEndAddress(order.getEndCity()+order.getEndArea()+order.getEndAddress());
     }
 
     private void getOrderCar(OrderDetailDto dto, OrderCenterDetailVo detailVo) {
@@ -273,7 +276,9 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
                 // 查询车辆图片
                 this.getCarImg(orderCar, orderCarCenter);
                 // 查询品牌logo图片
-                List<CarSeries> carSeriesList = carSeriesDao.selectList(new QueryWrapper<CarSeries>().lambda().eq(CarSeries::getModel, orderCar.getModel()));
+                List<CarSeries> carSeriesList = carSeriesDao.selectList(new QueryWrapper<CarSeries>().lambda()
+                        .eq(CarSeries::getModel, orderCar.getModel())
+                        .eq(CarSeries::getBrand, orderCar.getBrand()));
                 if(!CollectionUtils.isEmpty(carSeriesList)) {
                     orderCarCenter.setLogoImg(LogoImgProperty.logoImg+carSeriesList.get(0).getLogoImg());
                 }
