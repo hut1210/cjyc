@@ -51,7 +51,15 @@ public class CsLineServiceImpl implements ICsLineService {
         for (ValidateLineDto dto : reqDto.getList()) {
             ValidateLineVo vo = lineDao.validateCarLine(dto);
             if (vo == null) {
-                return BaseResultUtil.fail("车辆{0}，线路不存在", dto.getOrderCarNo());
+                if(reqDto.isValidateLine()){
+                    return BaseResultUtil.fail("车辆{0}，线路不存在", dto.getOrderCarNo());
+                }else{
+                    vo = new ValidateLineVo();
+                    vo.setOrderCarNo(dto.getOrderCarNo());
+                    vo.setHasLine(false);
+                    vo.setLineId(0L);
+                    vo.setLineFreightFee(BigDecimal.ZERO);
+                }
             }
             list.add(vo);
         }
