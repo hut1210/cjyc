@@ -44,43 +44,6 @@ public class CsCustomerLineServiceImpl implements ICsCustomerLineService {
         return BaseResultUtil.success(pageInfo);
     }
 
-   /* @Async
-    @Override
-    public void asyncSaveBatch(Order order) {
-        try {
-            if(order.getLineId() == null){
-                return;
-            }
-            CustomerLine customerLine = new CustomerLine();
-            customerLine.setCustomerId(order.getCustomerId());
-            customerLine.setOperateId(order.getCreateUserId());
-            customerLine.setLineCode(order.getStartCityCode() + order.getEndCityCode());
-            customerLine.setStartAdress(getOrderStartAddress(order));
-            customerLine.setStartContact(order.getPickContactName());
-            customerLine.setStartContactPhone(order.getPickContactPhone());
-            customerLine.setEndAdress(getOrderEndAddress(order));
-            customerLine.setEndContact(order.getBackContactName());
-            customerLine.setEndContactPhone(order.getBackContactPhone());
-            customerLine.setCreateTime(System.currentTimeMillis());
-            customerLineDao.insert(customerLine);
-        } catch (Exception e) {
-            LogUtil.error(MessageFormat.format("订单{0}下单保存历史线路失败",order.getNo()), e);
-        }
 
-    }
-
-    private String getOrderStartAddress(Order order) {
-        return order.getStartProvince() == null ? "" : order.getStartProvince()
-                + order.getStartCity() == null ? "" : order.getStartCity()
-                + order.getStartArea() == null ? "" : order.getStartArea()
-                + order.getStartAddress() == null ? "" : order.getStartAddress();
-    }
-
-    private String getOrderEndAddress(Order order) {
-        return order.getEndProvince() == null ? "" : order.getEndProvince()
-                + order.getEndCity() == null ? "" : order.getEndCity()
-                + order.getEndArea() == null ? "" : order.getEndArea()
-                + order.getEndAddress() == null ? "" : order.getEndAddress();
-    }*/
 
 }

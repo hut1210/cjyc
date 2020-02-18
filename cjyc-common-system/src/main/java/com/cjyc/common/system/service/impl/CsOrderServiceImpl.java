@@ -21,7 +21,6 @@ import com.cjyc.common.model.enums.order.*;
 import com.cjyc.common.model.enums.waybill.WaybillCarrierTypeEnum;
 import com.cjyc.common.model.enums.waybill.WaybillTypeEnum;
 import com.cjyc.common.model.exception.ParameterException;
-import com.cjyc.common.model.exception.ServerException;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.MoneyUtil;
@@ -36,7 +35,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.xmlbeans.impl.xb.xsdschema.Public;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -89,8 +87,6 @@ public class CsOrderServiceImpl implements ICsOrderService {
     @Resource
     private ICsCustomerContactService csCustomerContactService;
     @Resource
-    private ICsCustomerLineService csCustomerLineService;
-    @Resource
     private ICsWaybillService csWaybillService;
     @Resource
     private ICsAdminService csAdminService;
@@ -99,6 +95,14 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
     @Override
     public ResultVo save(SaveOrderDto paramsDto) {
+        //验证线路
+        if(paramsDto.getLineId() == null){
+            Line line = csLineService.getlineByArea(paramsDto.getStartAreaCode(), paramsDto.getEndAreaCode());
+            if(line == null){
+                return BaseResultUtil.fail("线路不存在，请重新选择城市");
+            }
+            paramsDto.setLineId(line.getId());
+        }
         //获取参数
         Long orderId = paramsDto.getOrderId();
         long currentTimeMillis = System.currentTimeMillis();
@@ -206,9 +210,13 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
     @Override
     public ResultVo commit(CommitOrderDto paramsDto) {
-        if(paramsDto.getLineId() == null){
-            return BaseResultUtil.fail("线路不存在，请重新选择城市");
+
+        //验证属性
+        ResultVo<CommitOrderDto> validVo = validateOrderForCommit(paramsDto);
+        if(validVo.getCode() != ResultEnum.SUCCESS.getCode()){
+            return BaseResultUtil.fail(validVo.getMsg());
         }
+        //验证用户
         ResultVo<Customer> validateVo = validateCustomerForOrder(paramsDto.getCustomerName(), paramsDto.getCustomerPhone(), paramsDto.getCustomerType(), paramsDto.getLoginId(), paramsDto.getCreateCustomerFlag());
         if(validateVo.getCode() != ResultEnum.SUCCESS.getCode()){
             return BaseResultUtil.getVo(validateVo.getCode(), validateVo.getMsg());
@@ -216,12 +224,16 @@ public class CsOrderServiceImpl implements ICsOrderService {
         Customer customer = validateVo.getData();
         paramsDto.setCustomerId(customer.getId());
         paramsDto.setCustomerType(customer.getType());
+
+
         //提交订单
         Order order = commitOrder(paramsDto);
         return BaseResultUtil.success("下单{0}成功", order.getNo());
     }
 
-    private ResultVo<Customer> validateCustomerForOrder( String customerName, String customerPhone, Integer customerType, Long loginId, Boolean createCustomerFlag) {
+
+
+    private ResultVo<Customer> validateCustomerForOrder(String customerName, String customerPhone, Integer customerType, Long loginId, Boolean createCustomerFlag) {
 
         Customer customer = csCustomerService.getByPhone(customerPhone, true);
         if (customer != null && !customer.getName().equals(customerName)) {
@@ -380,15 +392,15 @@ public class CsOrderServiceImpl implements ICsOrderService {
     @Override
     public ResultVo simpleCommitAndCheck(CheckOrderDto paramsDto) {
         Order order = orderDao.selectById(paramsDto.getOrderId());
- /*     if(order == null || order.getStartStoreId() == null || order.getStartStoreId() < 0 ){
+        ResultVo<Order> validVo = validateOrderForSimpleCommit(order);
+        if(validVo.getCode() != ResultEnum.SUCCESS.getCode()){
+            return BaseResultUtil.fail(validVo.getMsg());
+        }
 
-        }
-        if(order.getEndStoreId() == null || order.getEndStoreId() < 0 ){
+        if(order.getEndStoreId() == null || order.getEndStoreId() <= 0 ){
             return BaseResultUtil.fail("目的地业务中心未处理，请点击订单进入[下单详情]中修改并确认下单");
-        }*/
-        if(order.getLineId() == null){
-            return BaseResultUtil.fail("线路不存在，请重新选择城市");
         }
+
         ResultVo<Customer> validateVo = validateCustomerForOrder(order.getCustomerName(), order.getCustomerPhone(), order.getCustomerType(), paramsDto.getLoginId(), true);
         if(validateVo.getCode() != ResultEnum.SUCCESS.getCode()){
             return BaseResultUtil.getVo(validateVo.getCode(), validateVo.getMsg());
@@ -422,7 +434,42 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
         return BaseResultUtil.success();
     }
+    private ResultVo<CommitOrderDto> validateOrderForCommit(CommitOrderDto paramsDto) {
+        if(paramsDto.getLineId() == null){
+            Line line = csLineService.getlineByArea(paramsDto.getStartAreaCode(), paramsDto.getEndAreaCode());
+            if(line == null){
+                return BaseResultUtil.fail("线路不存在，请重新选择城市");
+            }
+            paramsDto.setLineId(line.getId());
+        }
+        if(OrderPickTypeEnum.SELF.code == paramsDto.getPickType() && ( paramsDto.getStartStoreId() == null || paramsDto.getStartStoreId() == 0)){
+            return BaseResultUtil.fail("始发地不经过业务中心的单子，不能选择自送");
+        }
+        if(OrderPickTypeEnum.SELF.code == paramsDto.getBackType() &&  (paramsDto.getEndStoreId() == null || paramsDto.getEndStoreId() == 0)){
+            return BaseResultUtil.fail("目的地不经过业务中心的单子，不能选择自提");
+        }
+        return BaseResultUtil.success(paramsDto);
+    }
 
+    private ResultVo<Order> validateOrderForSimpleCommit(Order order) {
+        if(order == null){
+            return BaseResultUtil.fail("订单不存在");
+        }
+        if(order.getLineId() == null){
+            Line line = csLineService.getLineByCity(order.getStartCityCode(), order.getEndCityCode(), true);
+            if(line == null){
+                return BaseResultUtil.fail("线路不存在，请重新选择城市");
+            }
+            order.setLineId(line.getId());
+        }
+        if(OrderPickTypeEnum.SELF.code == order.getPickType() && ( order.getStartStoreId() == null || order.getStartStoreId() == 0)){
+            return BaseResultUtil.fail("始发地不经过业务中心的单子，不能选择自送");
+        }
+        if(OrderPickTypeEnum.SELF.code == order.getBackType() &&  (order.getEndStoreId() == null || order.getEndStoreId() == 0)){
+            return BaseResultUtil.fail("目的地不经过业务中心的单子，不能选择自提");
+        }
+        return BaseResultUtil.success(order);
+    }
 
     @Override
     public ResultVo changeOrderCarCarryType(ChangeCarryTypeDto  paramsDto) {
@@ -697,9 +744,12 @@ public class CsOrderServiceImpl implements ICsOrderService {
      */
     @Override
     public ResultVo commitAndCheck(CommitOrderDto paramsDto) {
-        if(paramsDto.getLineId() == null){
-            return BaseResultUtil.fail("线路不存在，请重新选择城市");
+        //验证属性
+        ResultVo<CommitOrderDto> validVo = validateOrderForCommit(paramsDto);
+        if(validVo.getCode() != ResultEnum.SUCCESS.getCode()){
+            return BaseResultUtil.fail(validVo.getMsg());
         }
+
         ResultVo<Customer> validateVo = validateCustomerForOrder(paramsDto.getCustomerName(), paramsDto.getCustomerPhone(), paramsDto.getCustomerType(), paramsDto.getLoginId(), paramsDto.getCreateCustomerFlag());
         if(validateVo.getCode() != ResultEnum.SUCCESS.getCode()){
             return BaseResultUtil.getVo(validateVo.getCode(), validateVo.getMsg());
@@ -718,6 +768,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         }
         return BaseResultUtil.success("下单{0}成功", order.getNo());
     }
+
 
     private SaveLocalDto getPickSaveLocalDto(Order order, UserInfo userInfo) {
         SaveLocalDto slDto = new SaveLocalDto();

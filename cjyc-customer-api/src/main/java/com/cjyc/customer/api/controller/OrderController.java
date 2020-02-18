@@ -99,9 +99,6 @@ public class OrderController {
         if(!CollectionUtils.isEmpty(carList) && reqDto.getLineWlFreightFee() != null){
             carList.forEach(dto -> dto.setTrunkFee(reqDto.getLineWlFreightFee()));
         }
-        if(reqDto.getLineId() == null){
-            return BaseResultUtil.fail("线路不存在，请重新选择城市");
-        }
         return csOrderService.save(reqDto);
     }
 

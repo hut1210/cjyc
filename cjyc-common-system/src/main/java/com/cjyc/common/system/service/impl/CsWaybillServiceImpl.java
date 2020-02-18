@@ -1236,7 +1236,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 waybillCar.setEndStoreName(paramsDto.getEndStoreName());
                 waybillCar.setEndAddress(paramsDto.getEndAddress());
                 Long endStoreId = paramsDto.getEndStoreId();
-                if (endStoreId == null || endStoreId <= 0) {
+                boolean isDriectUnload = endStoreId == null || endStoreId <= 0;
+                if (isDriectUnload) {
                     //计算目的地所属业务中心
                     waybillCar.setEndBelongStoreId(waybillCar.getStartBelongStoreId());
                     waybillCar.setState(WaybillCarStateEnum.UNLOADED.code);
@@ -1252,11 +1253,6 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 waybillCar.setUnloadTime(paramsDto.getUnloadTime());
                 waybillCarDao.updateByIdForNull(waybillCar);
 
-                WaybillCar next = waybillCarDao.findNextWaybillCar(waybillCar.getId(), waybillCar.getOrderCarNo());
-                if(next != null){
-                    cancelWaybillCar(waybill.getType(), next);
-                }
-
                 //变更地址取消后续运单
                 if(isChangeAddress){
                     //取消该车辆所有后续调度
@@ -1270,9 +1266,11 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                     throw new ParameterException("卸载车辆暂时不支持直接交付客户" );
                     //开发直接交付客户
                 }
-                noc.setNowStoreId(waybillCar.getEndStoreId());
-                noc.setNowAreaCode(waybillCar.getEndAreaCode());
-                noc.setNowUpdateTime(System.currentTimeMillis());
+                if(isDriectUnload){
+                    noc.setNowStoreId(waybillCar.getEndStoreId());
+                    noc.setNowAreaCode(waybillCar.getEndAreaCode());
+                    noc.setNowUpdateTime(System.currentTimeMillis());
+                }
                 orderCarDao.updateById(noc);
 
 

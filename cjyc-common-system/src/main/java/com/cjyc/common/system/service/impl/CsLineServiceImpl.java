@@ -28,8 +28,7 @@ public class CsLineServiceImpl implements ICsLineService {
 
     @Override
     public Line getLineByCity(String startCityCode, String endCityCode, boolean isSearchCache) {
-        Line line = lineDao.findOneByCity(startCityCode, endCityCode);
-        return line;
+        return lineDao.findOneByCity(startCityCode, endCityCode);
     }
 
     @Override
@@ -51,5 +50,10 @@ public class CsLineServiceImpl implements ICsLineService {
             list = Lists.newArrayList();
         }
         return BaseResultUtil.success(list, Long.valueOf(list.size()));
+    }
+
+    @Override
+    public Line getlineByArea(String startAreaCode, String endAreaCode) {
+        return lineDao.findOneByArea(startAreaCode, endAreaCode);
     }
 }

@@ -120,5 +120,14 @@
         </foreach>
 
     </select>
+    <select id="findOneByArea" resultType="com.cjyc.common.model.entity.Line">
+        select
+        <include refid="Base_Column_List"/>
+        from s_line
+        where from_code = (select parent_code from s_city where `code` = #{startAreaCode})
+        and to_code = (select parent_code from s_city where `code` = #{endAreaCode})
+        limit 1
+
+    </select>
 
 </mapper>

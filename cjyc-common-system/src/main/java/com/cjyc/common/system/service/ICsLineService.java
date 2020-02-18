@@ -22,4 +22,6 @@ public interface ICsLineService {
     ResultVo<Map<String,Object>> linePriceByCode(TransportDto dto);
 
     ResultVo<ListVo<ValidateLineVo>> validateLines(ValidateLineShellDto reqDto);
+
+    Line getlineByArea(String startAreaCode, String endAreaCode);
 }
