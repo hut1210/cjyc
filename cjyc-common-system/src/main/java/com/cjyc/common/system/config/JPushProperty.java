@@ -1,4 +1,4 @@
-package com.cjyc.customer.api.config;
+package com.cjyc.common.system.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -12,13 +12,13 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConditionalOnProperty(prefix = "cjkj.push", name = "enabled", havingValue = "true")
 @RefreshScope
-public class JiGuangProperty {
+public class JPushProperty {
 
     public static String apiKey;
 
     @Value("${cjkj.push.apikey}")
     public void setAppKey(String apiKey) {
-        JiGuangProperty.apiKey = apiKey;
+        JPushProperty.apiKey = apiKey;
     }
 
 }
