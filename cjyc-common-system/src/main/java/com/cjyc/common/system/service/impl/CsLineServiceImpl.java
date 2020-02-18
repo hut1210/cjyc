@@ -15,7 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,9 +47,13 @@ public class CsLineServiceImpl implements ICsLineService {
 
     @Override
     public ResultVo<ListVo<ValidateLineVo>> validateLines(ValidateLineShellDto reqDto) {
-        List<ValidateLineVo> list = lineDao.validateCarsLine(reqDto.getList());
-        if(CollectionUtils.isEmpty(list)){
-            list = Lists.newArrayList();
+        List<ValidateLineVo> list = Lists.newArrayList();
+        for (ValidateLineDto dto : reqDto.getList()) {
+            ValidateLineVo vo = lineDao.validateCarLine(dto);
+            if (vo == null) {
+                return BaseResultUtil.fail("车辆{0}，线路不存在", dto.getOrderCarNo());
+            }
+            list.add(vo);
         }
         return BaseResultUtil.success(list, Long.valueOf(list.size()));
     }
