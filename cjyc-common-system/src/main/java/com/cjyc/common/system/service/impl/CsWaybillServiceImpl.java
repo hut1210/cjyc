@@ -691,6 +691,11 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                     throw new ParameterException("运单中车辆{0}，所属订单状态无法干线调度", orderCarNo);
                 }
 
+                //包板线路不能为空
+                if (paramsDto.getFixedFreightFee() && dto.getLineId() == null) {
+                    throw new ParameterException("运单中车辆{0}，线路不能为空", orderCarNo);
+                }
+
                 //验证是否已经调度过,已经调度的为
 /*                int n = waybillCarDao.countForValidateRepeatTrunkDisPatch(areaList);
                 if (n > 0) {
