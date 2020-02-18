@@ -578,7 +578,13 @@ public class FinanceServiceImpl implements IFinanceService {
         for (int i=0;i<waybillIds.size();i++){
             Long waybillId = waybillIds.get(i);
             try {
-                csPingPayService.allinpayToCarrierNew(waybillIds.get(i));
+                ResultVo resultVo = csPingPayService.allinpayToCarrierNew(waybillIds.get(i));
+                if(resultVo.getCode()==1){
+                    if(result.length()>0){
+                        result.append(",");
+                        result.append(waybillId);
+                    }
+                }
             }catch (Exception e){
                 if(result.length()>0){
                     result.append(",");
