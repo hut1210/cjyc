@@ -125,7 +125,7 @@ public class FinanceServiceImpl implements IFinanceService {
     }
 
     @Override
-    public List<ExportFinanceVo> exportExcel(HttpServletResponse response, FinanceQueryDto financeQueryDto) {
+    public List<ExportFinanceVo> exportExcel(FinanceQueryDto financeQueryDto) {
         log.info("financeQueryDto ="+financeQueryDto.toString());
         List<ExportFinanceVo> financeVoList = financeDao.getAllFinanceList(financeQueryDto);
         if(financeVoList==null){
@@ -572,7 +572,9 @@ public class FinanceServiceImpl implements IFinanceService {
     }
 
     @Override
-    public ResultVo externalPayment(List<Long> waybillIds) {
+    public ResultVo externalPayment(ExternalPaymentDto externalPaymentDto) {
+        System.out.println(externalPaymentDto.getLoginId());
+        List<Long> waybillIds = externalPaymentDto.getWaybillIds();
         StringBuilder result =  new StringBuilder();
         for (int i=0;i<waybillIds.size();i++){
             Long waybillId = waybillIds.get(i);
@@ -597,5 +599,24 @@ public class FinanceServiceImpl implements IFinanceService {
             result.append(" 对外支付失败");
         }
         return BaseResultUtil.success(result.toString());
+    }
+
+    @Override
+    public List<PaymentVo> exportPaymentExcel(FinanceQueryDto financeQueryDto) {
+
+        List<PaymentVo> financeVoList = financeDao.getPaymentList(financeQueryDto);
+        for(int i=0;i<financeVoList.size();i++){
+            PaymentVo paymentVo = financeVoList.get(i);
+            if(paymentVo!=null&&paymentVo.getType()!=null){
+                if(paymentVo.getType()==2){//企业
+                    Integer settleType = financeDao.getCustomerContractById(paymentVo.getCustomerContractId());
+                    paymentVo.setPayModeName(settleType!=null&&settleType==0?"时付":"账期");
+                }else if(paymentVo.getType()==3){//合伙人
+                    Integer settleType = financeDao.getCustomerPartnerById(paymentVo.getCustomerId());
+                    paymentVo.setPayModeName(settleType!=null&&settleType==0?"时付":"账期");
+                }
+            }
+        }
+        return financeVoList;
     }
 }

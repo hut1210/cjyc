@@ -15,7 +15,7 @@ import java.util.List;
 public interface IFinanceService {
     ResultVo<PageVo<FinanceVo>> getFinanceList(FinanceQueryDto financeQueryDto);
 
-    List<ExportFinanceVo> exportExcel(HttpServletResponse response, FinanceQueryDto financeQueryDto);
+    List<ExportFinanceVo> exportExcel(FinanceQueryDto financeQueryDto);
 
     ResultVo<PageVo<FinanceReceiptVo>> getFinanceReceiptList(FinanceQueryDto financeQueryDto);
 
@@ -71,5 +71,7 @@ public interface IFinanceService {
 
     ResultVo<PageVo<PaidNewVo>> getPaidListNew(PayMentQueryDto payMentQueryDto);
 
-    ResultVo externalPayment(List<Long> waybillIds);
+    ResultVo externalPayment(ExternalPaymentDto externalPaymentDto);
+
+    List<PaymentVo> exportPaymentExcel(FinanceQueryDto financeQueryDto);
 }
