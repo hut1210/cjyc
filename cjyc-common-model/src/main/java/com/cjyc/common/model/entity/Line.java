@@ -17,7 +17,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author JPG
- * @since 2019-11-02
+ * @since 2020-02-18
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -38,10 +38,28 @@ public class Line implements Serializable {
     @ApiModelProperty(value = "线路名称")
     private String name;
 
-    @ApiModelProperty(value = "出发地行政区编码")
+    @ApiModelProperty(value = "出发地省名称")
+    private String fromProvince;
+
+    @ApiModelProperty(value = "出发地省编码")
+    private String fromProvinceCode;
+
+    @ApiModelProperty(value = "出发地城市名称")
+    private String fromCity;
+
+    @ApiModelProperty(value = "出发地城市编码")
     private String fromCode;
 
-    @ApiModelProperty(value = "目的地行政区编码")
+    @ApiModelProperty(value = "目的地省名称")
+    private String toProvince;
+
+    @ApiModelProperty(value = "目的地省编码")
+    private String toProvinceCode;
+
+    @ApiModelProperty(value = "目的地城市名称")
+    private String toCity;
+
+    @ApiModelProperty(value = "目的地城市编码")
     private String toCode;
 
     @ApiModelProperty(value = "级别：2市级，3区级")

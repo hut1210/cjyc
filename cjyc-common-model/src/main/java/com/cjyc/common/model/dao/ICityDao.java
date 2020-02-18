@@ -70,7 +70,7 @@ public interface ICityDao extends BaseMapper<City> {
      * @param name
      * @return
      */
-    String getCodeByName(@Param("name") String name);
+    City getCodeByName(@Param("name") String name);
 
     /**
      * 获取热门城市
@@ -148,5 +148,12 @@ public interface ICityDao extends BaseMapper<City> {
      * @return
      */
     String findProvinceCode(@Param("name") String name);
+
+    /**
+     * 根据城市编码获取城市信息
+     * @param cityCode
+     * @return
+     */
+    City findCityByCode(@Param("cityCode") String cityCode);
 }
 

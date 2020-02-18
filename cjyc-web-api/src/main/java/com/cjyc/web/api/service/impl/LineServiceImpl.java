@@ -1,5 +1,6 @@
 package com.cjyc.web.api.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.utils.ExcelUtil;
 import com.cjyc.common.model.constant.NoConstant;
@@ -7,6 +8,7 @@ import com.cjyc.common.model.dao.ICityDao;
 import com.cjyc.common.model.dao.ILineDao;
 import com.cjyc.common.model.dao.ILineNodeDao;
 import com.cjyc.common.model.dto.web.line.*;
+import com.cjyc.common.model.entity.City;
 import com.cjyc.common.model.entity.Line;
 import com.cjyc.common.model.enums.CityLevelEnum;
 import com.cjyc.common.model.enums.ResultEnum;
@@ -90,7 +92,7 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
     @Override
     public ResultVo<PageVo<LineVo>> findPageLine(SelectLineDto dto) {
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
-        List<LineVo> lineVos = queryAllByTerm(dto);
+        List<LineVo> lineVos = lineDao.findAllLine(dto);
         PageInfo<LineVo> pageInfo = new PageInfo<>(lineVos);
         return BaseResultUtil.success(pageInfo);
     }
@@ -149,7 +151,7 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
         SelectLineDto dto = getSelectLineDto(request);
         //PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         // 查询列表
-        List<LineVo> lineVos = queryAllByTerm(dto);
+        List<LineVo> lineVos = lineDao.findAllLine(dto);
         //if (!CollectionUtils.isEmpty(lineVos)) {
             // 生成导出数据
             List<LineExportExcel> exportExcelList = new ArrayList<>();
@@ -180,19 +182,26 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
                 List<Line> list = Lists.newArrayList();
                 for (LineImportExcel lineExcel : lineImportExcelList) {
                     //根据城市名称查询城市code
-                    String fromCode = cityDao.getCodeByName(lineExcel.getFromCity());
-                    String toCode = cityDao.getCodeByName(lineExcel.getToCity());
-                    if(StringUtils.isNotBlank(fromCode) && StringUtils.isNotBlank(toCode)){
-                        Line line = lineDao.getLinePriceByCode(fromCode,toCode);
+                    City fromCity = cityDao.getCodeByName(lineExcel.getFromCity());
+                    City toCity = cityDao.getCodeByName(lineExcel.getToCity());
+                    if(fromCity != null && toCity != null){
+                        Line line = lineDao.getLinePriceByCode(fromCity.getCode(),toCity.getCode());
                         if(line != null){
                             continue;
                         }
                     }
                     Line line = new Line();
                     BeanUtils.copyProperties(lineExcel,line);
-                    line.setFromCode(fromCode);
-                    line.setToCode(toCode);
-                    line.setCode(fromCode+toCode);
+                    line.setFromProvince(fromCity.getParentName());
+                    line.setFromProvinceCode(fromCity.getParentCode());
+                    line.setFromCity(fromCity.getName());
+                    line.setFromCode(fromCity.getCode());
+
+                    line.setToProvince(toCity.getParentName());
+                    line.setToProvinceCode(toCity.getParentCode());
+                    line.setToCode(toCity.getCode());
+                    line.setToCity(toCity.getName());
+                    line.setCode(fromCity.getCode()+toCity.getCode());
                     line.setDefaultWlFee(lineExcel.getDefaultWlFee() == null ? BigDecimal.ZERO:lineExcel.getDefaultWlFee().multiply(new BigDecimal(100)));
                     line.setDefaultFreightFee(lineExcel.getDefaultFreightFee() == null ? BigDecimal.ZERO:lineExcel.getDefaultFreightFee().multiply(new BigDecimal(100)));
 
@@ -226,40 +235,6 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
         dto.setLineCode(request.getParameter("code"));
         return dto;
     }
-
-    /**
-     * 根据条件查询班线
-     * @param dto
-     * @return
-     */
-    private List<LineVo> queryAllByTerm(SelectLineDto dto){
-        List<LineVo> lineVos = lineDao.getLineByTerm(dto);
-        if(!CollectionUtils.isEmpty(lineVos)){
-            for(LineVo vo : lineVos){
-                //获取起始省市
-                if(StringUtils.isNotBlank(vo.getFromCityCode())){
-                    ProvinceCityVo pcvo = cityDao.getProvinceCityByCode(vo.getFromCityCode());
-                    if(pcvo != null){
-                        vo.setFromProvinceCode(pcvo.getProvinceCode());
-                        vo.setFromProvince(pcvo.getProvinceName());
-                        vo.setFromCityCode(pcvo.getCityCode());
-                        vo.setFromCity(pcvo.getCityName());
-                    }
-                }
-                //获取目的省市
-                if(StringUtils.isNotBlank(vo.getToCityCode())){
-                    ProvinceCityVo pcvo = cityDao.getProvinceCityByCode(vo.getToCityCode());
-                    if(pcvo != null){
-                        vo.setToProvinceCode(pcvo.getProvinceCode());
-                        vo.setToProvince(pcvo.getProvinceName());
-                        vo.setToCity(pcvo.getCityName());
-                        vo.setToCityCode(pcvo.getCityCode());
-                    }
-                }
-            }
-        }
-        return lineVos;
-    }
     /**
      * 封装班线line
      * @param line
@@ -267,6 +242,12 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
      */
     private Line encapLine(Line line, AddOrUpdateLineDto dto){
         BeanUtils.copyProperties(dto,line);
+        City fromCity = cityDao.findCityByCode(dto.getFromCode());
+        line.setFromProvince(fromCity.getParentName());
+        line.setFromProvinceCode(fromCity.getParentCode());
+        City toCity = cityDao.findCityByCode(dto.getToCode());
+        line.setToProvince(toCity.getParentName());
+        line.setToProvinceCode(toCity.getParentCode());
         line.setDefaultWlFee(dto.getDefaultWlFee() == null ? BigDecimal.ZERO:dto.getDefaultWlFee().multiply(new BigDecimal(100)));
         line.setDefaultFreightFee(dto.getDefaultFreightFee() == null ? BigDecimal.ZERO:dto.getDefaultFreightFee().multiply(new BigDecimal(100)));
         line.setName(dto.getFromCity()+ NoConstant.SEPARATOR+dto.getToCity());

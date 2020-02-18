@@ -19,7 +19,7 @@ public class PositionUtil {
         String location = "";
         address = address.replace(" ", "");
         //http://api.map.baidu.com/geocoder/v2/?address="地址"&output=json&ak="giPSqLWGrcvOuh9HFPafnT6AoUGaXOjQ"
-        String url = "http://api.map.baidu.com/geocoder/v2/?address=" + address + "&output=json&ak=nSxiPohfziUaCuONe4ViUP2N";
+        String url = "http://api.map.baidu.com/geocoder/v2/?address=" + address + "&output=json&ak=859d16285fd000feec89e9032513f8bb";
         try {
             String json = loadJSON(url);
             JSONObject obj = JSONObject.parseObject(json);
@@ -56,14 +56,14 @@ public class PositionUtil {
     }
 
     public static void main(String[] args) {
-        String location = getLngAndLat("徐州市");
+        String location = getLngAndLat("北京市");
         System.out.println(location);
-        String location2 = getLngAndLat("北京市");
+        /*String location2 = getLngAndLat("北京市");
         System.out.println(location2);
         double distance = getDistance(Double.valueOf(location.split(",")[0]), Double.valueOf(location.split(",")[1]), Double.valueOf(location2.split(",")[0]), Double.valueOf(location2.split(",")[1]));
         System.out.println(new BigDecimal(distance));
         BigDecimal bd = new BigDecimal(distance).setScale(0, BigDecimal.ROUND_DOWN);
-        System.out.println(bd);
+        System.out.println(bd);*/
     }
 
     /**

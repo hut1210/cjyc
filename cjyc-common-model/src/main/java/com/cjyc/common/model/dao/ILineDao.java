@@ -33,7 +33,7 @@ public interface ILineDao extends BaseMapper<Line> {
      * @param dto
      * @return
      */
-    List<LineVo> getLineByTerm(SelectLineDto dto);
+    List<LineVo> findAllLine(SelectLineDto dto);
 
     Line findOneByCity(@Param("startCityCode") String startCityCode, @Param("endCityCode")String endCityCode);
 

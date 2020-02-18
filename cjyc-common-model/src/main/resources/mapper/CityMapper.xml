@@ -133,8 +133,8 @@
     </select>
 
     <!--根据城市名称模糊匹配查询城市code -->
-    <select id="getCodeByName" resultType="java.lang.String" parameterType="java.lang.String">
-        select code from s_city where name like concat('%',#{name},'%') and level = 2
+    <select id="getCodeByName" resultType="com.cjyc.common.model.entity.City" parameterType="java.lang.String">
+        select <include refid="Base_Column_List"/> from s_city where name like concat('%',#{name},'%') and level = 2
     </select>
 
 
@@ -414,6 +414,13 @@
     <!--根据省名称模糊匹配查询城市code -->
     <select id="findProvinceCode" resultType="java.lang.String">
         select code from s_city where name like concat('%',#{name},'%')  and level = 1
+    </select>
+
+    <!--根据城市编码获取城市相关信息 -->
+    <select id="findCityByCode" resultType="com.cjyc.common.model.entity.City"
+            parameterType="java.lang.String">
+        select <include refid="Base_Column_List"/>
+            from s_city where code = #{cityCode}
     </select>
 
 </mapper>
