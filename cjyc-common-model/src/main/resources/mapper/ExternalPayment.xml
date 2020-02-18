@@ -14,6 +14,6 @@
     </resultMap>
 
     <select id="getByWayBillId" resultType="com.cjyc.common.model.entity.ExternalPayment">
-        select * from f_external_payment where waybill_id = {waybillId}
+        select * from f_external_payment where waybill_id = #{waybillId}
     </select>
 </mapper>
