@@ -9,6 +9,7 @@ import com.cjyc.common.model.vo.web.finance.SettlementVo;
 import com.cjyc.web.api.service.IFinanceService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +24,7 @@ import java.util.List;
 @Api(tags = "资金-财务-应付账款")
 @RequestMapping(value = "/finance/payable",
         produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@Slf4j
 public class FinancePayableController {
 
     @Autowired
@@ -108,7 +110,7 @@ public class FinancePayableController {
 
     @ApiOperation(value = "对外支付")
     @PostMapping(value = "/externalPay")
-    public ResultVo externalPayment(@RequestBody List<Long> waybillIds,Long loginId){
-        return financeService.externalPayment(waybillIds);
+    public ResultVo externalPayment(@RequestBody ExternalPaymentDto externalPaymentDto){
+        return financeService.externalPayment(externalPaymentDto);
     }
 }
