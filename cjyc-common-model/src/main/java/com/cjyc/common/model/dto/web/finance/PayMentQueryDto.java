@@ -44,6 +44,12 @@ public class PayMentQueryDto extends BasePageDto implements Serializable {
 
     @ApiModelProperty(value = "运单类型")
     private Integer waybillType;
+
+    @ApiModelProperty(value = "付款状态 0未付款 2已付款")
+    private Integer state;
+
+    @ApiModelProperty(value = "付款操作人")
+    private String operator;
 }
 
 

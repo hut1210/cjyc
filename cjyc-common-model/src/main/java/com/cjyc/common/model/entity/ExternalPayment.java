@@ -26,4 +26,8 @@ public class ExternalPayment {
     private int type;
 
     private Long orderId;
+
+    private Integer state;
+
+    private Long payTime;
 }

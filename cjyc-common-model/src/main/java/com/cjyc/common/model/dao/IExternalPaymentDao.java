@@ -5,7 +5,8 @@ import com.cjyc.common.model.entity.ExternalPayment;
 
 /**
  * @Author: Hut
- * @Date: 2020/02/11 10:05
+ * @Date: 2020/02/18 9:06
  */
 public interface IExternalPaymentDao extends BaseMapper<ExternalPayment> {
+    ExternalPayment getByWayBillId(Long waybillId);
 }

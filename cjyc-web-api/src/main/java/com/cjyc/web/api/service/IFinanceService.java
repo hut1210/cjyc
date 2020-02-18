@@ -68,4 +68,6 @@ public interface IFinanceService {
     ResultVo paid(PayablePaidQueryDto payablePaidQueryDto);
 
     ResultVo payableDetail(String serialNumber);
+
+    ResultVo<PageVo<PaidNewVo>> getPaidListNew(PayMentQueryDto payMentQueryDto);
 }

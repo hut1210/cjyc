@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.cjyc.common.model.dao.IExternalPaymentDao">
+
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.ExternalPayment">
         <id column="id" property="id" />
@@ -8,5 +9,11 @@
         <result column="waybill_id" property="waybillId" />
         <result column="order_id" property="orderId" />
         <result column="type" property="type" />
+        <result column="state" property="state" />
+        <result column="pay_time" property="payTime" />
     </resultMap>
+
+    <select id="getByWayBillId" resultType="com.cjyc.common.model.entity.ExternalPayment">
+        select * from f_external_payment where waybill_id = {waybillId}
+    </select>
 </mapper>

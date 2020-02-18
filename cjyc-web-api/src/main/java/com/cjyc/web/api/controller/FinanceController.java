@@ -15,12 +15,9 @@ import org.springframework.http.MediaType;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * 财务
@@ -149,8 +146,8 @@ public class FinanceController {
 
     @ApiOperation(value = "已付款(时付)列表")
     @PostMapping(value = "/getPaidList")
-    public ResultVo<PageVo<PaidVo>> getPaidList(@RequestBody PayMentQueryDto payMentQueryDto){
-        return financeService.getPaidList(payMentQueryDto);
+    public ResultVo<PageVo<PaidNewVo>> getPaidList(@RequestBody PayMentQueryDto payMentQueryDto){
+        return financeService.getPaidListNew(payMentQueryDto);
     }
 
 }

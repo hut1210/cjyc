@@ -561,4 +561,12 @@ public class FinanceServiceImpl implements IFinanceService {
 
         return BaseResultUtil.success(payableSettlementVo);
     }
+
+    @Override
+    public ResultVo<PageVo<PaidNewVo>> getPaidListNew(PayMentQueryDto payMentQueryDto) {
+        PageHelper.startPage(payMentQueryDto.getCurrentPage(), payMentQueryDto.getPageSize());
+        List<PaidNewVo> financeVoList = financeDao.getPaidListNew(payMentQueryDto);
+        PageInfo<PaidNewVo> pageInfo = new PageInfo<>(financeVoList);
+        return BaseResultUtil.success(pageInfo);
+    }
 }

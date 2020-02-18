@@ -376,10 +376,87 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                     waybill = waybillDao.selectById(waybillId);
                     Long carrierId = waybill.getCarrierId();
                     BaseCarrierVo baseCarrierVo = carrierDao.showCarrierById(carrierId);
+                    //log.info("【通联代付支付运费】运单Id{},支付状态 state {}",waybillId,waybill.getFreightPayState());
+                    //if(waybill != null && waybill.getFreightPayState()==0 && waybill.getFreightFee().compareTo(BigDecimal.ZERO)>0){
+
+                        try{
+                            log.info("【通联代付支付运费】运单Id {},支付状态 state {}",waybillId,waybill.getFreightPayState());
+                            log.info("【添加打款日志详情】运单Id {}",waybillId);
+                            ExternalPayment ep = externalPaymentDao.getByWayBillId(waybillId);
+
+                            if(ep==null){
+                                //添加打款日志详情
+                                ExternalPayment externalPayment = new ExternalPayment();
+                                externalPayment.setCarrierId(carrierId);
+                                externalPayment.setWaybillId(waybillId);
+                                externalPaymentDao.insert(externalPayment);
+                            }else{
+                                log.error("【添加承运商打款日志详情失败】 waybillId = {} 已存在", waybillId);
+                            }
+
+                        }catch (Exception e){
+                            log.error("【添加承运商打款日志详情异常】 waybillId = {}", waybillId);
+                            log.error(e.getMessage(), e);
+                        }
+
+
+                        /*if(baseCarrierVo!=null){
+                            if(baseCarrierVo.getSettleType()==0){
+                                if(baseCarrierVo.getCardName()!=null && baseCarrierVo.getCardNo()!=null
+                                        && baseCarrierVo.getBankCode()!=null){
+                                    Transfer transfer = allinpayTransferDriverCreate(baseCarrierVo,waybill);
+                                    log.debug("【通联代付支付运费】运单{}，支付运费，账单{}", waybill.getNo(), transfer);
+                                    cStransactionService.saveTransactions(transfer, "0");
+                                }else{
+                                    log.error("【通联代付支付运费】收款人信息不全 waybillId = {}", waybillId);
+                                    return BaseResultUtil.fail("通联代付失败,收款人信息不全");
+                                }
+                            }else{
+                                log.info("【通联代付支付运费】收款人为账期用户 waybillId = {}", waybillId);
+                            }
+                        }else{
+                            log.info("【通联代付支付运费】收款人不存在 waybillId = {}", waybillId);
+                        }*/
+
+                    /*}else{
+                        log.debug("【通联代付支付运费】运单{}，支付运费为0", waybill.getNo());
+                        cStransactionService.updateWayBillPayStateNoPay(waybillId, System.currentTimeMillis());
+                    }*/
+                }finally {
+                    lock.unlock();
+                }
+
+            }
+        }catch (Exception e){
+            log.error("【通联代付支付运费】运单{}，支付运费支付失败", waybill.getNo());
+            log.error(e.getMessage(), e);
+            return BaseResultUtil.fail("通联代付失败");
+        }
+
+        return BaseResultUtil.success("通联代付成功");
+    }
+
+    @Override
+    public ResultVo allinpayToCarrierNew(Long waybillId) throws AuthenticationException, InvalidRequestException, APIConnectionException, APIException, ChannelException, RateLimitException, FileNotFoundException {
+        Waybill waybill = waybillDao.selectById(waybillId);
+        try{
+            if(waybill != null){
+                lock.lock();
+                try{
+                    TradeBill tradeBill = cStransactionService.getTradeBillByOrderNoAndType(String.valueOf(waybillId),ChargeTypeEnum.UNION_PAY.getCode());
+                    if(tradeBill != null){
+                        throw new CommonException("运费已支付完成","1");
+                    }
+                    waybill = waybillDao.selectById(waybillId);
+                    Long carrierId = waybill.getCarrierId();
+                    BaseCarrierVo baseCarrierVo = carrierDao.showCarrierById(carrierId);
                     log.info("【通联代付支付运费】运单Id{},支付状态 state {}",waybillId,waybill.getFreightPayState());
                     if(waybill != null && waybill.getFreightPayState()==0 && waybill.getFreightFee().compareTo(BigDecimal.ZERO)>0){
 
-                        try{
+                        /*try{
+
+                            ExternalPayment ep = externalPaymentDao.getByWayBillId(waybillId);
+
                             //添加打款日志详情
                             ExternalPayment externalPayment = new ExternalPayment();
                             externalPayment.setCarrierId(carrierId);
@@ -388,7 +465,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                         }catch (Exception e){
                             log.error("添加承运商打款日志详情失败 waybillId = {}", waybillId);
                             log.error(e.getMessage(), e);
-                        }
+                        }*/
 
 
                         if(baseCarrierVo!=null){
