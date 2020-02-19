@@ -32,13 +32,13 @@ public class SaveTrunkWaybillCarDto implements Serializable {
     private Long waybillId;
     @ApiModelProperty(value = "运单编号")
     private String waybillNo;
-    @NotNull(message = "orderCarId不能为空")
+    @NotNull(message = "订单车辆ID不能为空")
     @ApiModelProperty(value = "订单车辆ID")
     private Long orderCarId;
-    @NotBlank(message = "orderCarNo不能为空")
+    @NotBlank(message = "车辆编号不能为空")
     @ApiModelProperty(value = "车辆编号")
     private String orderCarNo;
-    @NotNull(message = "freightFee不能为空")
+    @NotNull(message = "运费不能为空")
     @ApiModelProperty(value = "运费")
     private BigDecimal freightFee;
     @ApiModelProperty(value = "省")
@@ -51,10 +51,10 @@ public class SaveTrunkWaybillCarDto implements Serializable {
     private String startCityCode;
     @ApiModelProperty(value = "区")
     private String startArea;
-    @NotBlank(message = "startAreaCode不能为空")
+    @NotBlank(message = "区县编码不能为空")
     @ApiModelProperty(value = "区县编码")
     private String startAreaCode;
-    @NotBlank(message = "startAddress不能为空")
+    @NotBlank(message = "目的地装车地址不能为空")
     @ApiModelProperty(value = "装车地址")
     private String startAddress;
 
@@ -74,10 +74,10 @@ public class SaveTrunkWaybillCarDto implements Serializable {
     private String endCityCode;
     @ApiModelProperty(value = "区")
     private String endArea;
-    @NotBlank(message = "endAreaCode不能为空")
+    @NotBlank(message = "目的地区县编码不能为空")
     @ApiModelProperty(value = "区县编码")
     private String endAreaCode;
-    @NotBlank(message = "endAddress不能为空")
+    @NotBlank(message = "卸车地址不能为空")
     @ApiModelProperty(value = "卸车地址")
     private String endAddress;
 
@@ -90,7 +90,7 @@ public class SaveTrunkWaybillCarDto implements Serializable {
     @ApiModelProperty(value = "线路ID")
     private Long lineId;
 
-    @NotNull(message = "expectStartTime不能为空")
+    @NotNull(message = "预计提车日期不能为空")
     @ApiModelProperty(value = "预计提车日期")
     private Long expectStartTime;
 
