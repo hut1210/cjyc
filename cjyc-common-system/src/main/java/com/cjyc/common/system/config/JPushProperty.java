@@ -14,11 +14,23 @@ import org.springframework.context.annotation.Configuration;
 @RefreshScope
 public class JPushProperty {
 
-    public static String apiKey;
+    public static String apiKeyCustomer;
+    public static String apiKeyDriver;
+    public static String apiKeySalesman;
 
-    @Value("${cjkj.push.apikey}")
-    public void setAppKey(String apiKey) {
-        JPushProperty.apiKey = apiKey;
+    @Value("${cjkj.push.apikey.customer}")
+    public void setApiKeyCustomer(String apiKeyCustomer) {
+        JPushProperty.apiKeyCustomer = apiKeyCustomer;
+    }
+
+    @Value("${cjkj.push.apikey.driver}")
+    public void setApiKeyDriver(String apiKeyDriver) {
+        JPushProperty.apiKeyDriver = apiKeyDriver;
+    }
+
+    @Value("${cjkj.push.apikey.salesman}")
+    public void setApiKeySalesman(String apiKeySalesman) {
+        JPushProperty.apiKeySalesman = apiKeySalesman;
     }
 
 }

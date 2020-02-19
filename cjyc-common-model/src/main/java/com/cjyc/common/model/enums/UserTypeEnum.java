@@ -11,8 +11,8 @@ public enum UserTypeEnum {
     DRIVER("司机",2),
     CUSTOMER("客户",3);
 
-    public String name;
-    public int code;
+    final public String name;
+    final public int code;
 
     UserTypeEnum(String name, int code) {
         this.name = name;

@@ -9,7 +9,9 @@ import com.cjyc.common.model.entity.defined.*;
 import com.cjyc.common.model.enums.AdminStateEnum;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
+import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.enums.city.CityLevelEnum;
+import com.cjyc.common.model.enums.message.PushMsgEnum;
 import com.cjyc.common.model.enums.order.*;
 import com.cjyc.common.model.enums.transport.CarrierTypeEnum;
 import com.cjyc.common.model.enums.waybill.*;
@@ -25,6 +27,7 @@ import com.cjyc.common.model.vo.driver.mine.BankCardVo;
 import com.cjyc.common.system.service.*;
 import com.cjyc.common.system.util.RedisUtils;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -39,6 +42,7 @@ import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -91,6 +95,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
     private ICsAdminService csAdminService;
     @Resource
     private ICsPingPayService csPingPayService;
+    @Resource
+    private ICsPushMsgService csPushMsgService;
 
     /**
      * 同城调度
@@ -242,7 +248,18 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
                 /**5、更新订单车辆状态*/
                 updateOrderCarForDispatchLocal(orderCar.getId(), waybill, orderCar.getState(), isInStore);
+
+
+                //推送消息
+                if(waybill.getCarrierType() == WaybillCarrierTypeEnum.LOCAL_CONSIGN.code){
+                    csPushMsgService.send(order.getCustomerId(), UserTypeEnum.CUSTOMER, PushMsgEnum.CONSIGN_PICK, waybillCar.getOrderCarNo(), carrierInfo.getDriverPhone(), carrierInfo.getVehiclePlateNo());
+                }else{
+                    csPushMsgService.send(order.getCustomerId(), UserTypeEnum.CUSTOMER, PushMsgEnum.PILOT_PICK, waybillCar.getOrderCarNo(), carrierInfo.getDriverPhone());
+                }
+
             }
+
+
             return BaseResultUtil.success();
         } finally {
             if (!CollectionUtils.isEmpty(lockSet)) {
@@ -492,6 +509,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                     carrierInfo.setVehicleId(vr.getId());
                     carrierInfo.setVehiclePlateNo(vr.getPlateNo());
                 }
+            }else{
+                carrierInfo.setDriverPhone(carrier.getLinkmanPhone());
             }
         }
 

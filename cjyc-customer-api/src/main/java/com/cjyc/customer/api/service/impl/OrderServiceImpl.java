@@ -10,7 +10,9 @@ import com.cjyc.common.model.dto.customer.order.OrderDetailDto;
 import com.cjyc.common.model.dto.customer.order.OrderQueryDto;
 import com.cjyc.common.model.dto.customer.order.SimpleSaveOrderDto;
 import com.cjyc.common.model.entity.*;
+import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
+import com.cjyc.common.model.enums.message.PushMsgEnum;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.enums.order.OrderPickTypeEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
@@ -24,6 +26,7 @@ import com.cjyc.common.model.vo.customer.order.*;
 import com.cjyc.common.system.config.LogoImgProperty;
 import com.cjyc.common.system.service.ICsLineService;
 import com.cjyc.common.system.service.ICsOrderService;
+import com.cjyc.common.system.service.ICsPushMsgService;
 import com.cjyc.common.system.service.ICsSendNoService;
 import com.cjyc.common.system.util.RedisUtils;
 import com.cjyc.customer.api.service.IOrderService;
@@ -68,6 +71,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
     private ICsLineService csLineService;
     @Resource
     private IOrderCarLogDao orderCarLogDao;
+    @Resource
+    private ICsPushMsgService csPushMsgService;
 
 
     @Override
@@ -88,6 +93,11 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         }
         order.setState(OrderStateEnum.SUBMITTED.code);
         orderDao.updateById(order);
+
+        //给客户发送消息
+        csPushMsgService.send(paramsDto.getLoginId(), UserTypeEnum.CUSTOMER, PushMsgEnum.COMMIT_ORDER, order.getNo());
+        //TODO 给所属业务中心业务员发送消息
+
         return BaseResultUtil.success();
     }
 

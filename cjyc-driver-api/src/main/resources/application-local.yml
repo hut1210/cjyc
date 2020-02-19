@@ -86,7 +86,10 @@ logging:
 cjkj:
   push:
     enabled: true
-    apikey: b4ba93a458614c64835315acf1bcc7fe
+    apikey:
+      customer: 47c449cf81974738beeee5c0e14b6805
+      driver: b4ba93a458614c64835315acf1bcc7fe
+      salesman: 672774b924254b2cb96be3a4c5aaae96
   dept_customer_id: 100000
   dept_driver_id: 110000
   dept_admin_id: 120000

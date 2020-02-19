@@ -9,6 +9,7 @@ public class CarrierInfo {
     private Long carrierId;
     private String carrierName;
     private Integer carrierType = CarrierTypeEnum.PERSONAL.code;//承运商类型 1个人，2企业
+    private Integer carrierPhone;
 
     private Integer carryType;//承运方式
 

@@ -214,4 +214,6 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
     DispatchNum countOrderDispatchState(Long orderCarId);
 
     WaybillCarNum countUnFinishForState(Long waybillId);
+
+    int updateLoadImgsNull(Long id);
 }

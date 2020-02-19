@@ -471,6 +471,9 @@
         and state &lt; 100
         limit 1
     </update>
+    <update id="updateLoadImgsNull">
+        update set load_photo_img = '' where id = #{id}
+    </update>
 
 
     <select id="findByTaskCarId" resultType="com.cjyc.common.model.entity.WaybillCar">

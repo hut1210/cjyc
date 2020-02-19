@@ -58,7 +58,7 @@ spring:
     port: 6379
     password: Qaz123$%^Qaz123$%^Qaz123$%^Qaz123$%^Qaz123$%^
     #Redis默认情况下有16个分片，这里配置具体使用的分片，默认是0
-    database: 0
+    database: 1
     timeout: 1000ms
     #连接池，redis2.x默认连接池
     lettuce:
@@ -83,7 +83,10 @@ logging:
 cjkj:
   push:
     enabled: true
-    apikey: 47c449cf81974738beeee5c0e14b6805
+    apikey:
+      customer: 47c449cf81974738beeee5c0e14b6805
+      driver: b4ba93a458614c64835315acf1bcc7fe
+      salesman: 672774b924254b2cb96be3a4c5aaae96
   dept_customer_id: 100000
   dept_driver_id: 110000
   dept_admin_id: 120000

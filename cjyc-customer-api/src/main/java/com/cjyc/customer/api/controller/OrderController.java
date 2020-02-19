@@ -5,27 +5,18 @@ import com.cjyc.common.model.dto.customer.order.OrderQueryDto;
 import com.cjyc.common.model.dto.customer.order.SimpleSaveOrderDto;
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.entity.Customer;
-import com.cjyc.common.model.entity.OrderCarLog;
-import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.UserTypeEnum;
-import com.cjyc.common.model.enums.message.PushMessageEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
-import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterDetailVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterVo;
 import com.cjyc.common.model.vo.customer.order.OutterLogVo;
-import com.cjyc.common.model.vo.customer.order.OutterOrderCarLogVo;
-import com.cjyc.common.model.vo.web.OrderCarVo;
 import com.cjyc.common.system.service.ICsCustomerService;
 import com.cjyc.common.system.service.ICsOrderService;
-import com.cjyc.common.system.service.ICsPushMsgService;
 import com.cjyc.customer.api.service.IOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
@@ -36,7 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
-import java.math.BigDecimal;
 import java.util.List;
 
 /**

@@ -159,33 +159,6 @@ public class CsTaskServiceImpl implements ICsTaskService {
             }
         }
 
-       /* if (WaybillTypeEnum.PICK.code == waybill.getType() && reqDto.getType() == 1) {
-            if (loadPhotoImgs.size() < Constant.MIN_LOAD_PHOTO_NUM) {
-                return BaseResultUtil.fail("照片数量不足8张");
-            }
-            if (loadPhotoImgs.size() > Constant.MAX_LOAD_PHOTO_NUM) {
-                return BaseResultUtil.fail("照片数量不能超过20张");
-            }
-        }else if(WaybillTypeEnum.PICK.code == waybill.getType() && waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code && reqDto.getType() == 2){
-            if (unloadPhotoImgs.size() < Constant.MIN_LOAD_PHOTO_NUM) {
-                return BaseResultUtil.fail("照片数量不足8张");
-            }
-            if (unloadPhotoImgs.size() > Constant.MAX_LOAD_PHOTO_NUM) {
-                return BaseResultUtil.fail("照片数量不能超过20张");
-            }
-        } else {
-            if (!CollectionUtils.isEmpty(loadPhotoImgs)) {
-                if (loadPhotoImgs.size() > Constant.MAX_LOAD_PHOTO_NUM) {
-                    return BaseResultUtil.fail("照片数量不能超过20张");
-                }
-            }
-            if (!CollectionUtils.isEmpty(unloadPhotoImgs)) {
-                if (unloadPhotoImgs.size() > Constant.MAX_LOAD_PHOTO_NUM) {
-                    return BaseResultUtil.fail("照片数量不能超过20张");
-                }
-            }
-        }*/
-
         //更新车辆信息
         OrderCar orderCar = new OrderCar();
         orderCar.setId(waybillCar.getOrderCarId());
@@ -195,20 +168,8 @@ public class CsTaskServiceImpl implements ICsTaskService {
         orderCar.setPlateNo(reqDto.getPlateNo());
         orderCarDao.updateById(orderCar);
         //更新运单车辆信息
-        if (!CollectionUtils.isEmpty(loadPhotoImgs)) {
-            int i = 0;
-            for (String loadPhotoImg : loadPhotoImgs) {
-                int length = loadPhotoImg.length();
-                i += length;
-                System.out.println(length);
-            }
-            System.out.println(i);
-
-            waybillCarDao.updateForLoadReplenishInfo(waybillCar.getId(), Joiner.on(",").join(loadPhotoImgs));
-        }
-        if (!CollectionUtils.isEmpty(unloadPhotoImgs)){
-            waybillCarDao.updateForUnloadReplenishInfo(waybillCar.getId(), Joiner.on(",").join(unloadPhotoImgs));
-        }
+        waybillCarDao.updateForLoadReplenishInfo(waybillCar.getId(), CollectionUtils.isEmpty(loadPhotoImgs) ? "" : Joiner.on(",").join(loadPhotoImgs));
+        waybillCarDao.updateForUnloadReplenishInfo(waybillCar.getId(), CollectionUtils.isEmpty(unloadPhotoImgs) ? "" : Joiner.on(",").join(unloadPhotoImgs));
         return BaseResultUtil.success();
     }
 
