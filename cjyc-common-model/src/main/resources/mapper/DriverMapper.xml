@@ -749,7 +749,7 @@
             parameterType="com.cjyc.common.model.dto.web.driver.DispatchDriverDto">
         SELECT
             dc.id AS carrierId,
-            dc.`name` AS `name`,
+            ( CASE dc.type WHEN 1 THEN '' WHEN 2 THEN dc.name END ) AS name,
             dd.id AS driverId,
             dd.real_name AS driverName,
             dd.phone AS driverPhone,
@@ -794,7 +794,7 @@
             parameterType="com.cjyc.common.model.dto.web.driver.DispatchDriverDto">
         SELECT
             dc.id AS carrierId,
-            dc.`name` AS `name`,
+            ( CASE dc.type WHEN 1 THEN '' WHEN 2 THEN dc.NAME END ) AS name,
             dd.id AS driverId,
             dd.real_name AS driverName,
             dd.phone AS driverPhone,
