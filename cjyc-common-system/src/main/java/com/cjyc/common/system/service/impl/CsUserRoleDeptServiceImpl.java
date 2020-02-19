@@ -94,6 +94,21 @@ public class CsUserRoleDeptServiceImpl implements ICsUserRoleDeptService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ResultVo<UserRoleDept> saveAppDriverToUserRoleDept(Carrier carrier, Driver driver, Long roleId) {
+        UserRoleDept urd = new UserRoleDept();
+        urd.setUserId(driver.getId());
+        urd.setRoleId(roleId);
+        urd.setDeptId(carrier.getId()+"");
+        urd.setDeptType(DeptTypeEnum.CARRIER.code);
+        urd.setUserType(UserTypeEnum.DRIVER.code);
+        urd.setState(CommonStateEnum.WAIT_CHECK.code);
+        urd.setCreateTime(NOW);
+        userRoleDeptDao.insert(urd);
+        return BaseResultUtil.success(urd);
+    }
+
+    @Override
     public ResultVo updateDriverToUserRoleDept(Carrier carrier, Driver driver,Integer mode, Long loginId,Integer flag) {
         UserRoleDept urd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
                 .eq(UserRoleDept::getUserId, driver.getId())

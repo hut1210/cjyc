@@ -298,7 +298,7 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
         carrierDao.insert(carrier);
 
         //保存司机角色机构关系
-        ResultVo<UserRoleDept> resultVo = csUserRoleDeptService.saveDriverToUserRoleDept(carrier, driver,null, role.getId(), null,1);
+        ResultVo<UserRoleDept> resultVo = csUserRoleDeptService.saveAppDriverToUserRoleDept(carrier, driver, role.getId());
         if (!ResultEnum.SUCCESS.getCode().equals(resultVo.getCode())) {
             return BaseResultUtil.fail("司机信息保存失败，原因：" + rd.getMsg());
         }
