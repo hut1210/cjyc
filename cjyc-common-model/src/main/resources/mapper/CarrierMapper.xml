@@ -674,7 +674,7 @@
             parameterType="com.cjyc.common.model.dto.web.carrier.TrailCarrierDto">
         SELECT
             dc.id AS carrierId,
-            dc.NAME AS businessName,
+            ( CASE dc.NAME WHEN 1 THEN '' WHEN 2 THEN dc.NAME END ) AS businessName,
             dc.linkman AS `name`,
             dc.linkman_phone AS phone,
             dc.type AS type,
