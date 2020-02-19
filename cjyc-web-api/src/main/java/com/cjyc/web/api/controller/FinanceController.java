@@ -158,7 +158,7 @@ public class FinanceController {
         String fileName = "应收账款.xls";
         log.info("financeVoList.size = "+financeVoList.size());
         try {
-            ExcelUtil.exportExcel(financeVoList, title, sheetName, ExportFinanceVo.class, fileName, response);
+            ExcelUtil.exportExcel(financeVoList, title, sheetName, PaymentVo.class, fileName, response);
             return null;
         } catch (IOException e) {
             log.error("导出应收账款异常:",e);

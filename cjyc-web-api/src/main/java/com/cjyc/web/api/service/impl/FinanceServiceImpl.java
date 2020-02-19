@@ -607,6 +607,8 @@ public class FinanceServiceImpl implements IFinanceService {
         List<PaymentVo> financeVoList = financeDao.getPaymentList(financeQueryDto);
         for(int i=0;i<financeVoList.size();i++){
             PaymentVo paymentVo = financeVoList.get(i);
+            paymentVo.setFreightPay(paymentVo.getFreightPay()!=null?paymentVo.getFreightPay().divide(new BigDecimal(100)):null);
+            paymentVo.setFreightReceivable(paymentVo.getFreightReceivable()!=null?paymentVo.getFreightReceivable().divide(new BigDecimal(100)):null);
             if(paymentVo!=null&&paymentVo.getType()!=null){
                 if(paymentVo.getType()==2){//企业
                     Integer settleType = financeDao.getCustomerContractById(paymentVo.getCustomerContractId());
