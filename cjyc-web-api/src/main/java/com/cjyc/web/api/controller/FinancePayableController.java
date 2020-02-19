@@ -208,11 +208,11 @@ public class FinancePayableController {
         String fileName = "应付账款-已付款（时付）.xls";
         log.info("payablePaidVoList.size = "+payablePaidVoList.size());
         try {
-            ExcelUtil.exportExcel(payablePaidVoList, title, sheetName, PayablePaidVo.class, fileName, response);
+            ExcelUtil.exportExcel(payablePaidVoList, title, sheetName, PaidNewVo.class, fileName, response);
             return null;
         } catch (Exception e) {
-            log.error("导出等待付款异常:",e);
-            return BaseResultUtil.fail("导出等待付款异常"+e.getMessage());
+            log.error("导出应付账款-已付款（时付）异常:",e);
+            return BaseResultUtil.fail("导出应付账款-已付款（时付）异常"+e.getMessage());
         }
     }
 
