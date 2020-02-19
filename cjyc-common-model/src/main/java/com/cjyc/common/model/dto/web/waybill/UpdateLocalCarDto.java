@@ -13,19 +13,14 @@ public class UpdateLocalCarDto{
     @NotNull(message = "车辆ID不能为空")
     @ApiModelProperty(value = "ID")
     private Long id;
-    @NotNull(message = "运单ID不能为空")
     @ApiModelProperty(value = "运单ID")
     private Long waybillId;
-    @NotNull(message = "运单编号不能为空")
     @ApiModelProperty(value = "运单编号")
     private String waybillNo;
-    @NotNull(message = "订单车辆ID不能为空")
     @ApiModelProperty(value = "订单车辆ID")
     private Long orderCarId;
-    @NotBlank(message = "车辆编号不能为空")
     @ApiModelProperty(value = "车辆编号")
     private String orderCarNo;
-    @NotNull(message = "运费不能为空")
     @ApiModelProperty(value = "运费")
     private BigDecimal freightFee;
     @ApiModelProperty(value = "省")
@@ -38,7 +33,7 @@ public class UpdateLocalCarDto{
     private String startCityCode;
     @ApiModelProperty(value = "区")
     private String startArea;
-    @NotBlank(message = "区县编码不能为空")
+    //@NotBlank(message = "区县编码不能为空")
     @ApiModelProperty(value = "区县编码")
     private String startAreaCode;
     @NotBlank(message = "始发地地址不能为空")
@@ -61,7 +56,7 @@ public class UpdateLocalCarDto{
     private String endCityCode;
     @ApiModelProperty(value = "区")
     private String endArea;
-    @NotBlank(message = "目的地区县编码不能为空")
+    //@NotBlank(message = "目的地区县编码不能为空")
     @ApiModelProperty(value = "区县编码")
     private String endAreaCode;
     @NotBlank(message = "目的地地址不能为空")
