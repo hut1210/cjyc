@@ -27,7 +27,6 @@ import com.cjyc.common.model.vo.driver.mine.BankCardVo;
 import com.cjyc.common.system.service.*;
 import com.cjyc.common.system.util.RedisUtils;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -42,7 +41,6 @@ import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -252,9 +250,9 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
                 //推送消息
                 if(waybill.getCarrierType() == WaybillCarrierTypeEnum.LOCAL_CONSIGN.code){
-                    csPushMsgService.send(order.getCustomerId(), UserTypeEnum.CUSTOMER, PushMsgEnum.CONSIGN_PICK, waybillCar.getOrderCarNo(), carrierInfo.getDriverPhone(), carrierInfo.getVehiclePlateNo());
+                    csPushMsgService.send(order.getCustomerId(), UserTypeEnum.CUSTOMER, PushMsgEnum.C_CONSIGN_PICK, waybillCar.getOrderCarNo(), carrierInfo.getDriverPhone(), carrierInfo.getVehiclePlateNo());
                 }else{
-                    csPushMsgService.send(order.getCustomerId(), UserTypeEnum.CUSTOMER, PushMsgEnum.PILOT_PICK, waybillCar.getOrderCarNo(), carrierInfo.getDriverPhone());
+                    csPushMsgService.send(order.getCustomerId(), UserTypeEnum.CUSTOMER, PushMsgEnum.C_PILOT_PICK, waybillCar.getOrderCarNo(), carrierInfo.getDriverPhone());
                 }
 
             }

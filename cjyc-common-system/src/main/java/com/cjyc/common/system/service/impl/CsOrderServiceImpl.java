@@ -205,7 +205,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                             MessageFormat.format(OrderLogEnum.SUBMIT.getInnerLog(), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
                     new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), UserTypeEnum.valueOf(paramsDto.getLoginType())));
             //推送给客户消息
-            csPushMsgService.send(paramsDto.getLoginId(), UserTypeEnum.CUSTOMER, PushMsgEnum.COMMIT_ORDER, order.getNo());
+            csPushMsgService.send(paramsDto.getLoginId(), UserTypeEnum.CUSTOMER, PushMsgEnum.C_COMMIT_ORDER, order.getNo());
         }
         return BaseResultUtil.success(OrderStateEnum.SUBMITTED.code == paramsDto.getState() ? "下单成功，订单编号{0}" : "保存成功，订单编号{0}", order.getNo());
     }
@@ -231,7 +231,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         //提交订单
         Order order = commitOrder(paramsDto);
         //推送给客户消息
-        csPushMsgService.send(paramsDto.getLoginId(), UserTypeEnum.CUSTOMER, PushMsgEnum.COMMIT_ORDER, order.getNo());
+        csPushMsgService.send(paramsDto.getLoginId(), UserTypeEnum.CUSTOMER, PushMsgEnum.C_COMMIT_ORDER, order.getNo());
 
         return BaseResultUtil.success("下单{0}成功", order.getNo());
     }
@@ -438,7 +438,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         check(paramsDto);
 
         //推送给客户消息
-        csPushMsgService.send(paramsDto.getLoginId(), UserTypeEnum.CUSTOMER, PushMsgEnum.COMMIT_ORDER, order.getNo());
+        csPushMsgService.send(paramsDto.getLoginId(), UserTypeEnum.CUSTOMER, PushMsgEnum.C_COMMIT_ORDER, order.getNo());
 
         return BaseResultUtil.success();
     }
@@ -570,7 +570,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         //给客户待支付发送消息
         if (PayModeEnum.PREPAY.code == order.getPayType()) {
             //支付提醒
-            //csPushMsgService.send(order.getCustomerId(), UserTypeEnum.CUSTOMER, PushMsgEnum.PAY_ORDER, order.getNo());
+            //csPushMsgService.send(order.getCustomerId(), UserTypeEnum.CUSTOMER, PushMsgEnum.C_PAY_ORDER, order.getNo());
         }
 
         return BaseResultUtil.success();
