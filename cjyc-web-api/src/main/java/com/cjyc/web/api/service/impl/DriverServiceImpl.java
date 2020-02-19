@@ -527,7 +527,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
             carrier.setMode(dto.getMode());
             carrier.setType(CarrierTypeEnum.PERSONAL.code);
             carrier.setSettleType(ModeTypeEnum.TIME.code);
-            carrier.setState(CommonStateEnum.WAIT_CHECK.code);
+            carrier.setState(CommonStateEnum.IN_CHECK.code);
             carrier.setBusinessState(BusinessStateEnum.BUSINESS.code);
             carrier.setCreateTime(NOW);
             carrier.setCreateUserId(dto.getLoginId());
