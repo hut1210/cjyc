@@ -115,7 +115,7 @@
     <select id="getCityTreeByKeyword" resultType="com.cjyc.common.model.entity.City" parameterType="java.lang.String">
         select
           <include refid="Base_Column_List"/>
-        from s_city  where name like concat('%',#{name},'%')
+        from s_city  where name like concat('%',#{name},'%') and level in (1,2)
     </select>
 
     <!--根据城市编码获取省市集合 -->
