@@ -10,7 +10,7 @@ import java.util.List;
 public class ValidateLineShellDto {
 
     @ApiModelProperty(value = "是否检验线路")
-    private boolean validateLine = false;
+    private boolean validateLine = true;
     @Valid
     private List<ValidateLineDto> list;
 }
