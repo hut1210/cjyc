@@ -253,7 +253,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
     @Override
     public String computeGuideLine(String startAreaCode, String endAreaCode, String defaultGuideLine, Integer carNum) {
-        if(carNum == null || carNum <= 0){
+        if(carNum == null || carNum != 1){
             return null;
         }else {
             if(StringUtils.isNotBlank(defaultGuideLine) && !"-".equals(defaultGuideLine.trim()) && defaultGuideLine.split("-").length >= 2){
@@ -266,7 +266,6 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             FullCity endFullCity = csCityService.findFullCity(endAreaCode, CityLevelEnum.PROVINCE);
             return MessageFormat.format("{0}-{1}",startFullCity.getCity(), endFullCity.getCity());
         }
-
     }
 
     /**
@@ -635,7 +634,6 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             waybill.setNo(sendNoService.getNo(SendNoTypeEnum.WAYBILL));
             waybill.setType(WaybillTypeEnum.TRUNK.code);
             waybill.setSource(WaybillSourceEnum.MANUAL.code);
-            waybill.setGuideLine(paramsDto.getGuideLine());
             waybill.setCarrierId(carrierInfo.getCarrierId());
             waybill.setCarrierName(carrierInfo.getCarrierName());
             waybill.setCarrierType(carrierInfo.getCarryType());
@@ -782,7 +780,6 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 return BaseResultUtil.fail("运单运输中，不能修改司机，请使用[卸载车辆]功能");
             }
             /**1、组装运单信息*/
-            waybill.setGuideLine(paramsDto.getGuideLine());
             waybill.setCarrierId(carrierInfo.getCarrierId());
             waybill.setCarrierName(carrierInfo.getCarrierName());
             waybill.setCarrierType(carrierInfo.getCarryType());
@@ -845,7 +842,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 }
 
                 //包板线路不能为空
-                if (waybill.getFixedFreightFee() && waybillCar.getLineId() == null) {
+                if (waybill.getFixedFreightFee() && (waybillCar.getLineId() == null || waybillCar.getLineId() <= 0)) {
                     throw new ParameterException("运单中车辆{0}，线路不能为空", orderCarNo);
                 }
                 lockSet.add(lockCarKey);

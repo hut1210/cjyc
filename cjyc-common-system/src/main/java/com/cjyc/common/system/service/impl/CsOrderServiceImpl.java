@@ -99,7 +99,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
     @Override
     public ResultVo save(SaveOrderDto paramsDto) {
         //验证线路
-        if(paramsDto.getLineId() == null){
+        if(paramsDto.getLineId() == null || paramsDto.getLineId() <= 0){
             Line line = csLineService.getlineByArea(paramsDto.getStartAreaCode(), paramsDto.getEndAreaCode());
             if(line == null){
                 return BaseResultUtil.fail("线路不存在，请重新选择城市");
@@ -441,7 +441,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         return BaseResultUtil.success();
     }
     private ResultVo<CommitOrderDto> validateOrderForCommit(CommitOrderDto paramsDto) {
-        if(paramsDto.getLineId() == null){
+        if(paramsDto.getLineId() == null || paramsDto.getLineId() <= 0){
             Line line = csLineService.getlineByArea(paramsDto.getStartAreaCode(), paramsDto.getEndAreaCode());
             if(line == null){
                 return BaseResultUtil.fail("线路不存在，请重新选择城市");
@@ -461,7 +461,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         if(order == null){
             return BaseResultUtil.fail("订单不存在");
         }
-        if(order.getLineId() == null){
+        if(order.getLineId() == null || order.getLineId() <= 0){
             Line line = csLineService.getLineByCity(order.getStartCityCode(), order.getEndCityCode(), true);
             if(line == null){
                 return BaseResultUtil.fail("线路不存在，请重新选择城市");
