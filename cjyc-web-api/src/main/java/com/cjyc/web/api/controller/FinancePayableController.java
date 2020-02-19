@@ -4,10 +4,12 @@ import com.cjyc.common.model.dto.web.finance.*;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.finance.FinancePayableVo;
+import com.cjyc.common.model.vo.web.finance.PaidNewVo;
 import com.cjyc.common.model.vo.web.finance.SettlementVo;
 import com.cjyc.web.api.service.IFinanceService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +24,7 @@ import java.util.List;
 @Api(tags = "资金-财务-应付账款")
 @RequestMapping(value = "/finance/payable",
         produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@Slf4j
 public class FinancePayableController {
 
     @Autowired
@@ -99,4 +102,15 @@ public class FinancePayableController {
         return financeService.payableDetail(serialNumber);
     }
 
+    @ApiOperation(value = "已付款(时付)列表")
+    @PostMapping(value = "/getPaidList")
+    public ResultVo<PageVo<PaidNewVo>> getPaidList(@RequestBody PayMentQueryDto payMentQueryDto){
+        return financeService.getPaidListNew(payMentQueryDto);
+    }
+
+    @ApiOperation(value = "对外支付")
+    @PostMapping(value = "/externalPay")
+    public ResultVo externalPayment(@RequestBody ExternalPaymentDto externalPaymentDto){
+        return financeService.externalPayment(externalPaymentDto);
+    }
 }

@@ -8,10 +8,10 @@ import com.cjyc.common.model.entity.CustomerInvoice;
 import com.cjyc.common.model.entity.InvoiceReceipt;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.util.ExcelUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.finance.*;
+import com.cjyc.common.system.service.ICsPingPayService;
 import com.cjyc.common.system.service.ICsSendNoService;
 import com.cjyc.web.api.service.ICustomerService;
 import com.cjyc.web.api.service.IFinanceService;
@@ -19,6 +19,7 @@ import com.cjyc.web.api.service.IOrderService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,12 +27,9 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * @Author:Hut
@@ -59,6 +57,9 @@ public class FinanceServiceImpl implements IFinanceService {
 
     @Resource
     private IOrderService orderService;
+
+    @Autowired
+    private ICsPingPayService csPingPayService;
 
     @Override
     public ResultVo<PageVo<FinanceVo>> getFinanceList(FinanceQueryDto financeQueryDto) {
@@ -124,7 +125,7 @@ public class FinanceServiceImpl implements IFinanceService {
     }
 
     @Override
-    public List<ExportFinanceVo> exportExcel(HttpServletResponse response, FinanceQueryDto financeQueryDto) {
+    public List<ExportFinanceVo> exportExcel(FinanceQueryDto financeQueryDto) {
         log.info("financeQueryDto ="+financeQueryDto.toString());
         List<ExportFinanceVo> financeVoList = financeDao.getAllFinanceList(financeQueryDto);
         if(financeVoList==null){
@@ -568,5 +569,56 @@ public class FinanceServiceImpl implements IFinanceService {
         List<PaidNewVo> financeVoList = financeDao.getPaidListNew(payMentQueryDto);
         PageInfo<PaidNewVo> pageInfo = new PageInfo<>(financeVoList);
         return BaseResultUtil.success(pageInfo);
+    }
+
+    @Override
+    public ResultVo externalPayment(ExternalPaymentDto externalPaymentDto) {
+        System.out.println(externalPaymentDto.getLoginId());
+        List<Long> waybillIds = externalPaymentDto.getWaybillIds();
+        StringBuilder result =  new StringBuilder();
+        for (int i=0;i<waybillIds.size();i++){
+            Long waybillId = waybillIds.get(i);
+            try {
+                ResultVo resultVo = csPingPayService.allinpayToCarrierNew(waybillIds.get(i));
+                if(resultVo.getCode()==1){
+                    if(result.length()>0){
+                        result.append(",");
+                        result.append(waybillId);
+                    }
+                }
+            }catch (Exception e){
+                if(result.length()>0){
+                    result.append(",");
+                    result.append(waybillId);
+                }
+                log.error("运单打款失败 waybillId = {}",waybillId);
+            }
+
+        }
+        if(result.length()>0){
+            result.append(" 对外支付失败");
+        }
+        return BaseResultUtil.success(result.toString());
+    }
+
+    @Override
+    public List<PaymentVo> exportPaymentExcel(FinanceQueryDto financeQueryDto) {
+
+        List<PaymentVo> financeVoList = financeDao.getPaymentList(financeQueryDto);
+        for(int i=0;i<financeVoList.size();i++){
+            PaymentVo paymentVo = financeVoList.get(i);
+            paymentVo.setFreightPay(paymentVo.getFreightPay()!=null?paymentVo.getFreightPay().divide(new BigDecimal(100)):null);
+            paymentVo.setFreightReceivable(paymentVo.getFreightReceivable()!=null?paymentVo.getFreightReceivable().divide(new BigDecimal(100)):null);
+            if(paymentVo!=null&&paymentVo.getType()!=null){
+                if(paymentVo.getType()==2){//企业
+                    Integer settleType = financeDao.getCustomerContractById(paymentVo.getCustomerContractId());
+                    paymentVo.setPayModeName(settleType!=null&&settleType==0?"时付":"账期");
+                }else if(paymentVo.getType()==3){//合伙人
+                    Integer settleType = financeDao.getCustomerPartnerById(paymentVo.getCustomerId());
+                    paymentVo.setPayModeName(settleType!=null&&settleType==0?"时付":"账期");
+                }
+            }
+        }
+        return financeVoList;
     }
 }

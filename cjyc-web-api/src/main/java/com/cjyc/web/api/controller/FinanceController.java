@@ -44,7 +44,7 @@ public class FinanceController {
     public ResultVo exportExcel(HttpServletResponse response,FinanceQueryDto financeQueryDto){
 
         log.info("financeQueryDto ={}",financeQueryDto.toString());
-        List<ExportFinanceVo> financeVoList = financeService.exportExcel(response,financeQueryDto);
+        List<ExportFinanceVo> financeVoList = financeService.exportExcel(financeQueryDto);
         if (CollectionUtils.isEmpty(financeVoList)) {
             return BaseResultUtil.success("未查询到结果");
         }
@@ -142,6 +142,28 @@ public class FinanceController {
     @PostMapping(value = "/getPaymentList")
     public ResultVo<PageVo<PaymentVo>> getPaymentList(@RequestBody FinanceQueryDto financeQueryDto){
         return financeService.getPaymentList(financeQueryDto);
+    }
+
+    @ApiOperation(value = "导出应收账款-已收款（时付）Excel")
+    @GetMapping(value = "/exportPayment")
+    public ResultVo exportPayment(HttpServletResponse response,FinanceQueryDto financeQueryDto){
+
+        log.info("financeQueryDto ={}",financeQueryDto.toString());
+        List<PaymentVo> financeVoList = financeService.exportPaymentExcel(financeQueryDto);
+        if (CollectionUtils.isEmpty(financeVoList)) {
+            return BaseResultUtil.success("未查询到结果");
+        }
+        String title = "应收账款";
+        String sheetName = "已收款（时付）";
+        String fileName = "应收账款.xls";
+        log.info("financeVoList.size = "+financeVoList.size());
+        try {
+            ExcelUtil.exportExcel(financeVoList, title, sheetName, PaymentVo.class, fileName, response);
+            return null;
+        } catch (IOException e) {
+            log.error("导出应收账款异常:",e);
+            return BaseResultUtil.fail("导出应收账款异常"+e.getMessage());
+        }
     }
 
     @ApiOperation(value = "已付款(时付)列表")
