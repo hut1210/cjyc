@@ -74,4 +74,14 @@ public interface IFinanceService {
     ResultVo externalPayment(ExternalPaymentDto externalPaymentDto);
 
     List<PaymentVo> exportPaymentExcel(FinanceQueryDto financeQueryDto);
+
+    List<FinancePayableVo> exportPayableAll(PayableQueryDto payableQueryDto);
+
+    List<SettlementVo> exportPayableCollect(WaitTicketCollectDto waitTicketCollectDto);
+
+    List<SettlementVo> exportPayment(WaitPaymentDto waitPaymentDto);
+
+    List<PayablePaidVo> exportPaid(PayablePaidQueryDto payablePaidQueryDto);
+
+    List<PaidNewVo> exportTimePaid(PayMentQueryDto payMentQueryDto);
 }

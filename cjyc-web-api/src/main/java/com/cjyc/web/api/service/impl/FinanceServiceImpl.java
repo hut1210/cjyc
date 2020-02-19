@@ -26,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -620,5 +619,51 @@ public class FinanceServiceImpl implements IFinanceService {
             }
         }
         return financeVoList;
+    }
+
+    @Override
+    public List<FinancePayableVo> exportPayableAll(PayableQueryDto payableQueryDto) {
+        List<FinancePayableVo> financeVoList = financeDao.getFinancePayableList(payableQueryDto);
+        for (int i=0;i<financeVoList.size();i++) {
+            FinancePayableVo financePayableVo = financeVoList.get(i);
+            BigDecimal freightFee = new BigDecimal(0);
+            List<String> list = new ArrayList<>();
+            list.add(financePayableVo.getNo());
+            List<PayableTaskVo> settlementVoList = financeDao.getSettlementInfo(list);
+            for (int j=0;j<settlementVoList.size();j++){
+                PayableTaskVo settlementVo = settlementVoList.get(j);
+                if(settlementVo!=null && settlementVo.getFreightFee()!=null){
+                    freightFee = freightFee.add(settlementVo.getFreightFee());
+                }
+                settlementVo.setFreightFee(settlementVo.getFreightFee().divide(new BigDecimal(100)));
+            }
+            financePayableVo.setRemainDate(financePayableVo.getSettlePeriod()-formatDuring(System.currentTimeMillis()-financePayableVo.getCompleteTime()));
+            financePayableVo.setFreightPayable(freightFee.divide(new BigDecimal(100)));
+        }
+        return financeVoList;
+    }
+
+    @Override
+    public List<SettlementVo> exportPayableCollect(WaitTicketCollectDto waitTicketCollectDto) {
+        List<SettlementVo> settlementVoList = financeDao.getCollectTicketList(waitTicketCollectDto);
+        return settlementVoList;
+    }
+
+    @Override
+    public List<SettlementVo> exportPayment(WaitPaymentDto waitPaymentDto) {
+        List<SettlementVo> settlementVoList = financeDao.getPayablePaymentList(waitPaymentDto);
+        return settlementVoList;
+    }
+
+    @Override
+    public List<PayablePaidVo> exportPaid(PayablePaidQueryDto payablePaidQueryDto) {
+        List<PayablePaidVo> payablePaidList = financeDao.getPayablePaidList(payablePaidQueryDto);
+        return payablePaidList;
+    }
+
+    @Override
+    public List<PaidNewVo> exportTimePaid(PayMentQueryDto payMentQueryDto) {
+        List<PaidNewVo> paidNewVoList = financeDao.getPaidListNew(payMentQueryDto);
+        return paidNewVoList;
     }
 }
