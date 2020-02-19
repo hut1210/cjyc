@@ -67,13 +67,12 @@ public class CsPushMsgServiceImpl implements ICsPushMsgService {
             pushMessageReq.setDest(Joiner.on(",").join(userIds));
             pushMessageReq.setTemplateId(templateId);
             //pushMessageReq.setSignnameId(null);
-            //pushMessageReq.setSendIp();
+            //            //pushMessageReq.setSendIp();
             pushMessageReq.setParams(params);
             ResultData resultData = clpMessageService.pushMsg(pushMessageReq);
-            LogUtil.debug("推送消息：" + JSON.toJSONString(resultData));
-
+            LogUtil.debug("【推送消息】" + JSON.toJSONString(resultData));
         } catch (Exception e) {
-            LogUtil.error("推送消息失败");
+            LogUtil.error("【推送消息】失败");
             LogUtil.error(e.getMessage(), e);
         }
     }

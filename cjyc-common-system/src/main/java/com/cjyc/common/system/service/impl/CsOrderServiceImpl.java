@@ -207,7 +207,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                             MessageFormat.format(OrderLogEnum.SUBMIT.getInnerLog(), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
                     new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), UserTypeEnum.valueOf(paramsDto.getLoginType())));
             //推送给客户
-            //csPushMsgService.send(order.getCustomerId(), PushMessageEnum.COMMIT_ORDER.getCode(), order.getNo());
+            csPushMsgService.send(order.getCustomerId(), PushMessageEnum.COMMIT_ORDER.getCode(), order.getNo());
         }
 
 
