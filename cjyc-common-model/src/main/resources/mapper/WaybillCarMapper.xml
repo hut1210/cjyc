@@ -1469,10 +1469,10 @@
             w.carrier_type as carrierType,
             car.load_link_name as loadLinkName,
             car.load_link_phone as loadLinkPhone,
-            car.start_address as startAddress,
+            concat(car.start_city,car.start_area,car.start_address) as startAddress,
             car.unload_link_name as unloadLinkName,
             car.unload_link_phone as unloadLinkPhone,
-            car.end_address as endAddress
+            concat(car.end_city,car.end_area,car.end_address) as endAddress
         from
             w_waybill_car car
             left join w_waybill w on car.waybill_id=w.id

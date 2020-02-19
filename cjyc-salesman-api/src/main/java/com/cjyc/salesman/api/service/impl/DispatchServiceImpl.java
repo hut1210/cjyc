@@ -208,8 +208,8 @@ public class DispatchServiceImpl implements IDispatchService {
                 BeanUtils.copyProperties(waybillCar,carDetailVo);
 
                 // 给详细地址拼接市区
-                carDetailVo.setStartAddress(waybillCar.getStartCity()+waybillCar.getStartArea()+waybillCar.getStartAddress());
-                carDetailVo.setEndAddress(waybillCar.getEndCity()+waybillCar.getEndArea()+waybillCar.getEndAddress());
+                /*carDetailVo.setStartAddress(waybillCar.getStartCity()+waybillCar.getStartArea()+waybillCar.getStartAddress());
+                carDetailVo.setEndAddress(waybillCar.getEndCity()+waybillCar.getEndArea()+waybillCar.getEndAddress());*/
 
 
                 // 查询干线线路费
@@ -382,6 +382,8 @@ public class DispatchServiceImpl implements IDispatchService {
         // 查询订单信息
         Order order = orderDao.selectById(orderCar.getOrderId());
         BeanUtils.copyProperties(order,detail);
+        detail.setStartAddress(order.getStartCity()+order.getStartArea()+order.getStartAddress());
+        detail.setEndAddress(order.getEndCity()+order.getEndArea()+order.getEndAddress());
 
         // 查询调度记录
         List<DispatchRecordVo> dispatchRecordVoList = waybillCarDao.selectWaybillRecordList(orderCar.getId());
