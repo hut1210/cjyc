@@ -17,6 +17,8 @@ import java.math.BigDecimal;
 public class PaidNewVo implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    @ApiModelProperty(value = "运单Id")
+    private Long waybillId;
 
     @ApiModelProperty(value = "运单单号")
     @Excel(name = "运单单号" ,orderNum = "0")
