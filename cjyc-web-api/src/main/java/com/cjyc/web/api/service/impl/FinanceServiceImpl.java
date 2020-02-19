@@ -664,6 +664,10 @@ public class FinanceServiceImpl implements IFinanceService {
     @Override
     public List<PaidNewVo> exportTimePaid(PayMentQueryDto payMentQueryDto) {
         List<PaidNewVo> paidNewVoList = financeDao.getPaidListNew(payMentQueryDto);
+        for(int i=0;i<paidNewVoList.size();i++){
+            PaidNewVo paidNewVo = paidNewVoList.get(i);
+            paidNewVo.setFreightFee(paidNewVo.getFreightFee()!=null?paidNewVo.getFreightFee().divide(new BigDecimal(100)):null);
+        }
         return paidNewVoList;
     }
 }
