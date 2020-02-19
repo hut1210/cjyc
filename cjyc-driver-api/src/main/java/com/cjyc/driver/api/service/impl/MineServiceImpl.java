@@ -624,6 +624,9 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
         if(driver == null){
             return BaseResultUtil.fail("该司机不存在，请检查");
         }
+        if(!(dto.getPhone().equals(carrier.getLinkmanPhone()) && dto.getPhone().equals(driver.getPhone()))){
+            return BaseResultUtil.fail("手机号不是该登录用户手机号，请修改一致");
+        }
         //更新承运商信息
         carrier.setState(CommonStateEnum.IN_CHECK.code);
         carrier.setName(dto.getRealName());

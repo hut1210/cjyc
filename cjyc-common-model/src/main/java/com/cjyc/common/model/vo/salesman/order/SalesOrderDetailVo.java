@@ -74,6 +74,9 @@ public class SalesOrderDetailVo implements Serializable {
     @ApiModelProperty(value = "班线id")
     @JsonSerialize(using= ToStringSerializer.class)
     private Long lineId;
+    @ApiModelProperty(value = "目的地业务中心ID: -1不经过业务中心")
+    @JsonSerialize(using= ToStringSerializer.class)
+    private Long endStoreId;
 
     @ApiModelProperty(value = "发车人")
     private String pickContactName;
@@ -148,6 +151,7 @@ public class SalesOrderDetailVo implements Serializable {
     public String getInputStoreName() {return StringUtils.isBlank(inputStoreName) ? "":inputStoreName;}
     public Long getStartBelongStoreId(){return startBelongStoreId == null ? 0:startBelongStoreId;}
     public Long getStartStoreId(){return startStoreId == null ? 0:startStoreId;}
+    public Long getEndStoreId(){return endStoreId == null ? 0:endStoreId;}
     public String getStartStoreName(){return StringUtils.isBlank(startStoreName) ? "":startStoreName;}
     public String getEndStoreName(){return StringUtils.isBlank(endStoreName) ? "":endStoreName;}
     public Integer getCustomerType(){return customerType == null ? 0:customerType;}
