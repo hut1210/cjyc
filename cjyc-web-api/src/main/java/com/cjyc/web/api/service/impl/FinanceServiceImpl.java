@@ -572,7 +572,7 @@ public class FinanceServiceImpl implements IFinanceService {
 
     @Override
     public ResultVo externalPayment(ExternalPaymentDto externalPaymentDto) {
-        System.out.println(externalPaymentDto.getLoginId());
+        log.info("对外支付操作人Id={}",externalPaymentDto.getLoginId());
         List<Long> waybillIds = externalPaymentDto.getWaybillIds();
         StringBuilder result =  new StringBuilder();
         for (int i=0;i<waybillIds.size();i++){
