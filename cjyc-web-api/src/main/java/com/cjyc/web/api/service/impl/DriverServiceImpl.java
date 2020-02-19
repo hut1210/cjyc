@@ -674,7 +674,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
 
         //更新承运商信息
         BeanUtils.copyProperties(dto,carrier);
-        carrier.setState(CommonStateEnum.WAIT_CHECK.code);
+        carrier.setState(CommonStateEnum.IN_CHECK.code);
         carrier.setName(dto.getRealName());
         carrier.setLegalName(dto.getRealName());
         carrier.setLegalIdCard(dto.getIdCard());

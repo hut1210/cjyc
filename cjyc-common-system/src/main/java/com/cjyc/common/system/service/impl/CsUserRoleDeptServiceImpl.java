@@ -123,7 +123,7 @@ public class CsUserRoleDeptServiceImpl implements ICsUserRoleDeptService {
             urd.setState(CommonStateEnum.CHECKED.code);
             urd.setMode(mode);
         }else{
-            urd.setState(CommonStateEnum.WAIT_CHECK.code);
+            urd.setState(CommonStateEnum.IN_CHECK.code);
             urd.setMode(carrier.getMode());
         }
         urd.setUpdateUserId(loginId);
