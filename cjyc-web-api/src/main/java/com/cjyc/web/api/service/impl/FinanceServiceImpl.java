@@ -1,16 +1,20 @@
 package com.cjyc.web.api.service.impl;
 
 import com.cjyc.common.model.dao.ICustomerInvoiceDao;
+import com.cjyc.common.model.dao.IExternalPaymentDao;
 import com.cjyc.common.model.dao.IFinanceDao;
 import com.cjyc.common.model.dao.IInvoiceReceiptDao;
 import com.cjyc.common.model.dto.web.finance.*;
+import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.CustomerInvoice;
+import com.cjyc.common.model.entity.ExternalPayment;
 import com.cjyc.common.model.entity.InvoiceReceipt;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.finance.*;
+import com.cjyc.common.system.service.ICsAdminService;
 import com.cjyc.common.system.service.ICsPingPayService;
 import com.cjyc.common.system.service.ICsSendNoService;
 import com.cjyc.web.api.service.ICustomerService;
@@ -59,6 +63,12 @@ public class FinanceServiceImpl implements IFinanceService {
 
     @Autowired
     private ICsPingPayService csPingPayService;
+
+    @Autowired
+    private IExternalPaymentDao externalPaymentDao;
+
+    @Autowired
+    private ICsAdminService csAdminService;
 
     @Override
     public ResultVo<PageVo<FinanceVo>> getFinanceList(FinanceQueryDto financeQueryDto) {
@@ -585,6 +595,27 @@ public class FinanceServiceImpl implements IFinanceService {
                         result.append(waybillId);
                     }
                 }
+
+                try {
+                    if(externalPaymentDto!=null && externalPaymentDto.getLoginId()!=null){
+                        Admin admin = csAdminService.getById(externalPaymentDto.getLoginId(), true);
+
+                        if(admin != null){
+                            ExternalPayment externalPayment = new ExternalPayment();
+                            externalPayment.setWaybillId(waybillId);
+                            externalPayment.setPayTime(System.currentTimeMillis());
+                            externalPayment.setLoginId(externalPaymentDto.getLoginId());
+                            externalPayment.setOperator(admin.getName());
+                            externalPayment.setState(2);
+                            externalPaymentDao.updateByWayBillId(externalPayment);
+                        }
+
+                    }
+                }catch (Exception e){
+                    log.error("运单打款详情更新失败 waybillId = {}",waybillId);
+                }
+
+
             }catch (Exception e){
                 if(result.length()>0){
                     result.append(",");

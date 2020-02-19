@@ -30,4 +30,10 @@ public class ExternalPayment {
     private Integer state;
 
     private Long payTime;
+
+    @ApiModelProperty("操作人")
+    private String operator;
+
+    @ApiModelProperty("操作人Id")
+    private Long loginId;
 }

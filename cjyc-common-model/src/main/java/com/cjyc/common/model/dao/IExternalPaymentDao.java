@@ -9,4 +9,6 @@ import com.cjyc.common.model.entity.ExternalPayment;
  */
 public interface IExternalPaymentDao extends BaseMapper<ExternalPayment> {
     ExternalPayment getByWayBillId(Long waybillId);
+
+    void updateByWayBillId(ExternalPayment externalPayment);
 }

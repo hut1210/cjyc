@@ -11,9 +11,15 @@
         <result column="type" property="type" />
         <result column="state" property="state" />
         <result column="pay_time" property="payTime" />
+        <result column="operator" property="operator" />
+        <result column="login_id" property="loginId" />
     </resultMap>
 
     <select id="getByWayBillId" resultType="com.cjyc.common.model.entity.ExternalPayment">
         select * from f_external_payment where waybill_id = #{waybillId}
     </select>
+    
+    <update id="updateByWayBillId" parameterType="com.cjyc.common.model.entity.ExternalPayment">
+        update f_external_payment set login_id=#{loginId},operator = #{operator},pay_time=#{payTime},state=#{state} where waybill_id =#{waybillId}
+    </update>
 </mapper>
