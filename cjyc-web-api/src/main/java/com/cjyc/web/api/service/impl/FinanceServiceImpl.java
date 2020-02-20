@@ -589,6 +589,7 @@ public class FinanceServiceImpl implements IFinanceService {
             Long waybillId = waybillIds.get(i);
             try {
                 ResultVo resultVo = csPingPayService.allinpayToCarrierNew(waybillIds.get(i));
+                log.info("resultVo = {}",resultVo.toString());
                 if(resultVo.getCode()==1){
                     if(result.length()>0){
                         result.append(",");
@@ -597,19 +598,22 @@ public class FinanceServiceImpl implements IFinanceService {
                 }
 
                 try {
-                    if(externalPaymentDto!=null && externalPaymentDto.getLoginId()!=null){
-                        Admin admin = csAdminService.getById(externalPaymentDto.getLoginId(), true);
+                    log.info("result = {}",result.toString());
+                    if(result.length()==0){
+                        if(externalPaymentDto!=null && externalPaymentDto.getLoginId()!=null){
+                            Admin admin = csAdminService.getById(externalPaymentDto.getLoginId(), true);
 
-                        if(admin != null){
-                            ExternalPayment externalPayment = new ExternalPayment();
-                            externalPayment.setWaybillId(waybillId);
-                            externalPayment.setPayTime(System.currentTimeMillis());
-                            externalPayment.setLoginId(externalPaymentDto.getLoginId());
-                            externalPayment.setOperator(admin.getName());
-                            externalPayment.setState(2);
-                            externalPaymentDao.updateByWayBillId(externalPayment);
+                            if(admin != null){
+                                ExternalPayment externalPayment = new ExternalPayment();
+                                externalPayment.setWaybillId(waybillId);
+                                externalPayment.setPayTime(System.currentTimeMillis());
+                                externalPayment.setLoginId(externalPaymentDto.getLoginId());
+                                externalPayment.setOperator(admin.getName());
+                                externalPayment.setState(2);
+                                externalPaymentDao.updateByWayBillId(externalPayment);
+                            }
+
                         }
-
                     }
                 }catch (Exception e){
                     log.error("运单打款详情更新失败 waybillId = {}",waybillId);
