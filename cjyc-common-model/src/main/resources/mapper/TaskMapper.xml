@@ -199,10 +199,10 @@
                 and w.type = #{type}
             </if>
             <if test="expectStartDateS != null and expectStartDateS != 0">
-                and car.expect_start_date >= #{expectStartDateS}
+                and car.expect_start_time >= #{expectStartDateS}
             </if>
             <if test="expectStartDateE != null and expectStartDateE != 0">
-                and car.expect_start_date &lt;= #{expectStartDateE}
+                and car.expect_start_time &lt;= #{expectStartDateE}
             </if>
             <if test="completeTimeS != null and completeTimeS != 0">
                 and car.unload_time >= #{completeTimeS}
