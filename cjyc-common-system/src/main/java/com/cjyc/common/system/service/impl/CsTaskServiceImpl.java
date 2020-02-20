@@ -424,9 +424,10 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 orderCarNewState = OrderCarStateEnum.WAIT_BACK.code;
             }
 
-            boolean isNotFromStore = waybillCar.getStartStoreId() == null || waybillCar.getStartStoreId() <= 0;
+            boolean isOutStore = waybillCar.getStartStoreId() != null && waybillCar.getStartStoreId() > 0;
+            boolean isDriectLoad = !isOutStore || paramsDto.getLoginType() == UserTypeEnum.ADMIN;
             //运单不经过业务中心,无出入库确认操作
-            if (isNotFromStore || paramsDto.getLoginType() == UserTypeEnum.ADMIN) {
+            if (isDriectLoad) {
                 waybillCarNewState = WaybillCarStateEnum.LOADED.code;
                 if (waybill.getType() == WaybillTypeEnum.PICK.code) {
                     //提车任务、自送到业务中心
@@ -439,7 +440,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                     orderCarNewState = OrderCarStateEnum.BACKING.code;
                 }
 
-                if(isNotFromStore){
+                if(isOutStore){
                     // 出库记录
                     CarStorageLog carStorageLog = CarStorageLog.builder()
                             .storeId(waybillCar.getStartStoreId())
@@ -462,19 +463,20 @@ public class CsTaskServiceImpl implements ICsTaskService {
                             .createUser(paramsDto.getLoginName())
                             .build();
                     storageLogSet.add(carStorageLog);
-
-                    //非业务中心提车，变更订单运输状态
-                    orderIdSet.add(orderCar.getOrderId());
                 }
+
+                //非业务中心提车或者业务员提车，变更订单运输状态
+                orderIdSet.add(orderCar.getOrderId());
             }
 
             waybillCarDao.updateForLoad(waybillCar.getId(), waybillCarNewState, currentTimeMillis);
+
             //订单车辆
             if (orderCar.getState() < orderCarNewState) {
                 orderCarDao.updateStateById(orderCarNewState, orderCar.getId());
             }
 
-            if(isNotFromStore){
+            if(!isOutStore){
                 //装车日志
                 csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.LOAD,
                         new String[]{MessageFormat.format(OrderCarLogEnum.LOAD.getOutterLog(), getAddress(waybillCar.getStartProvince(), waybillCar.getStartCity(), waybillCar.getStartArea(), waybillCar.getStartAddress())),
