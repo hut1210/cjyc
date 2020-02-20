@@ -99,6 +99,5 @@ public class FinancePayableVo implements Serializable {
     private String vehiclePlateNo;
 
     @ApiModelProperty(value = "车辆数")
-    @Excel(name = "运单类型" ,orderNum = "6")
     private int carNum;
 }
