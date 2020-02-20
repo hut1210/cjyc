@@ -168,8 +168,12 @@ public class CsTaskServiceImpl implements ICsTaskService {
         orderCar.setPlateNo(reqDto.getPlateNo());
         orderCarDao.updateById(orderCar);
         //更新运单车辆信息
-        waybillCarDao.updateForLoadReplenishInfo(waybillCar.getId(), CollectionUtils.isEmpty(loadPhotoImgs) ? "" : Joiner.on(",").join(loadPhotoImgs));
-        waybillCarDao.updateForUnloadReplenishInfo(waybillCar.getId(), CollectionUtils.isEmpty(unloadPhotoImgs) ? "" : Joiner.on(",").join(unloadPhotoImgs));
+        if (!CollectionUtils.isEmpty(loadPhotoImgs)) {
+            waybillCarDao.updateForLoadReplenishInfo(waybillCar.getId(), Joiner.on(",").join(loadPhotoImgs));
+        }
+        if (!CollectionUtils.isEmpty(unloadPhotoImgs)){
+            waybillCarDao.updateForUnloadReplenishInfo(waybillCar.getId(), Joiner.on(",").join(unloadPhotoImgs));
+        }
         return BaseResultUtil.success();
     }
 

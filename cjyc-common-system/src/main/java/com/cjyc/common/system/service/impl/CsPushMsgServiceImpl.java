@@ -58,7 +58,7 @@ public class CsPushMsgServiceImpl implements ICsPushMsgService {
                 return;
             }
             Map<String, Object> params = Maps.newHashMap();
-            for (int i = 0; i < args.length - 1; i++) {
+            for (int i = 0; i < args.length; i++) {
                 params.put(String.valueOf(i), args[i]);
             }
             PushMessageReq pushMessageReq = new PushMessageReq();
@@ -77,11 +77,20 @@ public class CsPushMsgServiceImpl implements ICsPushMsgService {
                     break;
                 default:
             }
+            if(pushMessageReq.getApiKey() == null){
+                LogUtil.info("【推送消息】推送功能未启用");
+                return;
+            }
             LogUtil.debug("【推送消息】-------------->参数" + JSON.toJSONString(pushMessageReq));
             ResultData resultData = clpMessageService.pushMsg(pushMessageReq);
-            LogUtil.debug("【推送消息】" + (resultData.getCode().equals("00000") ? "成功" : "失败") + JSON.toJSONString(resultData));
+            if("00000".equals(resultData.getCode())){
+                //记录消息内容
+                LogUtil.debug("【推送消息】成功！，返回参数" + JSON.toJSONString(resultData));
+            }else{
+                LogUtil.debug("【推送消息】失败！，返回参数" + JSON.toJSONString(resultData));
+            }
         } catch (Exception e) {
-            LogUtil.error("【推送消息】失败");
+            LogUtil.error("【推送消息】异常");
             LogUtil.error(e.getMessage(), e);
         }
     }
