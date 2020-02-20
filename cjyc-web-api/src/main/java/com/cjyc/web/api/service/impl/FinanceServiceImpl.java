@@ -26,7 +26,9 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author:Hut
@@ -348,7 +350,12 @@ public class FinanceServiceImpl implements IFinanceService {
             }
         }
         PageInfo<PaymentVo> pageInfo = new PageInfo<>(financeVoList);
-        return BaseResultUtil.success(pageInfo);
+        FinanceQueryDto fqd = new FinanceQueryDto();
+        List<PaymentVo> pv = financeDao.getPaymentList(fqd);
+        log.info("financeReceiptVoList = {}",pv.size());
+        Map<String, Object> countInfo = new HashMap<>();
+        countInfo.put("receiptCount",pv.size());
+        return BaseResultUtil.success(pageInfo,countInfo);
     }
 
     @Override
@@ -401,7 +408,29 @@ public class FinanceServiceImpl implements IFinanceService {
             financePayableVo.setFreightPayable(freightFee.divide(new BigDecimal(100)));
         }
         PageInfo<FinancePayableVo> pageInfo = new PageInfo<>(financeVoList);
-        return BaseResultUtil.success(pageInfo);
+
+        return BaseResultUtil.success(pageInfo,getCountInfo());
+    }
+
+    private Map getCountInfo(){
+        PayableQueryDto pqd = new PayableQueryDto();
+        List<FinancePayableVo> fpv = financeDao.getFinancePayableList(pqd);
+        WaitTicketCollectDto wc = new WaitTicketCollectDto();
+        List<SettlementVo> sv = financeDao.getCollectTicketList(wc);
+        WaitPaymentDto wp = new WaitPaymentDto();
+        List<SettlementVo> payablePaymentList = financeDao.getPayablePaymentList(wp);
+        PayablePaidQueryDto pp = new PayablePaidQueryDto();
+        List<PayablePaidVo> payablePaidList = financeDao.getPayablePaidList(pp);
+        PayMentQueryDto pq = new PayMentQueryDto();
+        List<PaidNewVo> paidList = financeDao.getPaidListNew(pq);
+        Map<String, Object> countInfo = new HashMap<>();
+        countInfo.put("payableCount",fpv.size());
+        countInfo.put("waitTicketCount",sv.size());
+        countInfo.put("waitPaymentCount",payablePaymentList.size());
+        countInfo.put("paidCount",payablePaidList.size());
+        countInfo.put("timePaidCount",paidList.size());
+
+        return countInfo;
     }
 
     private Long formatDuring(long time){
@@ -443,7 +472,7 @@ public class FinanceServiceImpl implements IFinanceService {
         PageHelper.startPage(waitTicketCollectDto.getCurrentPage(), waitTicketCollectDto.getPageSize());
         List<SettlementVo> settlementVoList = financeDao.getCollectTicketList(waitTicketCollectDto);
         PageInfo<SettlementVo> pageInfo = new PageInfo<>(settlementVoList);
-        return BaseResultUtil.success(pageInfo);
+        return BaseResultUtil.success(pageInfo,getCountInfo());
     }
 
     @Override
@@ -494,7 +523,7 @@ public class FinanceServiceImpl implements IFinanceService {
         PageHelper.startPage(waitPaymentDto.getCurrentPage(), waitPaymentDto.getPageSize());
         List<SettlementVo> settlementVoList = financeDao.getPayablePaymentList(waitPaymentDto);
         PageInfo<SettlementVo> pageInfo = new PageInfo<>(settlementVoList);
-        return BaseResultUtil.success(pageInfo);
+        return BaseResultUtil.success(pageInfo,getCountInfo());
     }
 
     @Override
@@ -539,7 +568,7 @@ public class FinanceServiceImpl implements IFinanceService {
         PageHelper.startPage(payablePaidQueryDto.getCurrentPage(), payablePaidQueryDto.getPageSize());
         List<PayablePaidVo> payablePaidList = financeDao.getPayablePaidList(payablePaidQueryDto);
         PageInfo<PayablePaidVo> pageInfo = new PageInfo<>(payablePaidList);
-        return BaseResultUtil.success(pageInfo);
+        return BaseResultUtil.success(pageInfo,getCountInfo());
     }
 
     @Override
@@ -574,7 +603,7 @@ public class FinanceServiceImpl implements IFinanceService {
         PageHelper.startPage(payMentQueryDto.getCurrentPage(), payMentQueryDto.getPageSize());
         List<PaidNewVo> financeVoList = financeDao.getPaidListNew(payMentQueryDto);
         PageInfo<PaidNewVo> pageInfo = new PageInfo<>(financeVoList);
-        return BaseResultUtil.success(pageInfo);
+        return BaseResultUtil.success(pageInfo,getCountInfo());
     }
 
     @Override
