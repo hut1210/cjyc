@@ -782,7 +782,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             return BaseResultUtil.fail("运单不存在");
         }
         if(waybill.getState() < WaybillStateEnum.ALLOT_CONFIRM.code){
-            return BaseResultUtil.fail("运单尚未承接");
+            return BaseResultUtil.fail("运单尚未分派司机");
         }
         if (waybill.getState() >= WaybillStateEnum.FINISHED.code) {
             return BaseResultUtil.fail("运单已完结");
