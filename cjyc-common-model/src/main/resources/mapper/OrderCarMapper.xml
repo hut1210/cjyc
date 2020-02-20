@@ -1746,7 +1746,7 @@
                 and tb.expectStartDate &gt;= #{param.pickDateSt}
             </if>
             <if test="param.pickDateEd != null and param.pickDateEd > 0">
-                and tb.expectStartDate &lt;= #{param.pickDateEd}
+                and tb.expectStartDate &lt; #{param.pickDateEd}
             </if>
             <if test="param.startCity != null and param.startCity != ''">
                 and tb.startCity = #{param.startCity}

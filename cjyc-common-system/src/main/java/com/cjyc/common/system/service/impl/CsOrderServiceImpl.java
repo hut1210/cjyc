@@ -233,7 +233,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         //推送给客户消息
         csPushMsgService.send(paramsDto.getLoginId(), UserTypeEnum.CUSTOMER, PushMsgEnum.C_COMMIT_ORDER, order.getNo());
 
-        return BaseResultUtil.success("下单{0}成功", order.getNo());
+        return BaseResultUtil.success("下单成功，订单编号{0}", order.getNo());
     }
 
 
