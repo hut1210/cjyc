@@ -44,6 +44,8 @@ public class RedisKeys {
     private final static String CAR_SERIES = "car:series";
     private final static String THREE_CITY = "three:city";
     private final static String BANK_INFO = "bankInfo:bankName";
+    private final static String CITY_TREE = "city:tree";
+    private final static String KEYWORD_CITY_TREE = "keyword:city:tree";
 
     private final static String USER_KEY = "user";
 
@@ -146,5 +148,13 @@ public class RedisKeys {
 
     public static String getWebBankInfoKey(KeywordDto dto){
         return PROJECT_PREFIX + I + BANK_INFO + I + dto.getKeyword();
+    }
+
+    public static String getCityTreeKey(Integer rootLevel, Integer minLeafLevel){
+        return PROJECT_PREFIX + I + CITY_TREE + I + rootLevel + I + minLeafLevel;
+    }
+
+    public static String getKeywordCityTreeKey(String keyword){
+        return PROJECT_PREFIX + I + KEYWORD_CITY_TREE + I + keyword;
     }
 }

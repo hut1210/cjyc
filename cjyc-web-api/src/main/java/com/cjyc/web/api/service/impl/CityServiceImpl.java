@@ -14,13 +14,17 @@ import com.cjyc.common.model.dto.salesman.city.CityPageDto;
 import com.cjyc.common.model.dto.web.city.CityQueryDto;
 import com.cjyc.common.model.entity.City;
 import com.cjyc.common.model.entity.defined.FullCity;
+import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.CityTreeUtil;
+import com.cjyc.common.model.util.JsonUtils;
 import com.cjyc.common.model.vo.CityTreeVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.carSeries.CarSeriesTree;
 import com.cjyc.common.model.vo.web.city.ExportCityListVo;
 import com.cjyc.common.model.vo.web.waybill.CrWaybillVo;
 import com.cjyc.common.model.vo.web.waybill.ExportCrWaybillVo;
+import com.cjyc.common.system.util.RedisUtils;
 import com.cjyc.web.api.service.ICityService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -39,6 +43,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -53,8 +58,8 @@ import java.util.*;
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
 public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICityService {
 
-    @Autowired
-    private StringRedisUtil redisUtil;
+    @Resource
+    private RedisUtils redisUtils;
 
     @Resource
     private ICityDao cityDao;
@@ -88,29 +93,41 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
 
     @Override
     public ResultVo cityTree(Integer rootLevel, Integer minLeafLevel) {
-        List<CityTreeVo> cityTreeVos = cityDao.getAllByLevel(rootLevel, minLeafLevel);
-        List<CityTreeVo> nodeList = null;
-        if (!CollectionUtils.isEmpty(cityTreeVos)) {
-            nodeList = CityTreeUtil.encapTree(cityTreeVos);
+        String key = RedisKeys.getCityTreeKey(rootLevel,minLeafLevel);
+        String cityTreeStr = redisUtils.hget(key,key);
+        List<CityTreeVo> nodeList = JsonUtils.jsonToList(cityTreeStr, CityTreeVo.class);
+        if(CollectionUtils.isEmpty(nodeList)){
+            List<CityTreeVo> cityTreeVos = cityDao.getAllByLevel(rootLevel, minLeafLevel);
+            if (!CollectionUtils.isEmpty(cityTreeVos)) {
+                nodeList = CityTreeUtil.encapTree(cityTreeVos);
+                redisUtils.hset(key, key, JsonUtils.objectToJson(nodeList));
+                redisUtils.expire(key, 1, TimeUnit.DAYS);
+            }
         }
         return BaseResultUtil.success(nodeList);
     }
 
     @Override
     public ResultVo<List<CityTreeVo>> keywordCityTree(String keyword) {
-        List<City> cityList = cityDao.getCityTreeByKeyword(keyword);
-        Set<String> codeSet = new HashSet<>(16);
-        List<CityTreeVo> cityTreeVos = null;
-        List<CityTreeVo> nodeList = null;
-        for(City city : cityList){
-            codeSet.add(city.getCode());
-            codeSet.add(city.getParentCode());
+        String key = RedisKeys.getKeywordCityTreeKey(keyword);
+        String cityTreeStr = redisUtils.hget(key,key);
+        List<CityTreeVo> nodeList = JsonUtils.jsonToList(cityTreeStr, CityTreeVo.class);
+        if(CollectionUtils.isEmpty(nodeList)){
+            List<City> cityList = cityDao.getCityTreeByKeyword(keyword);
+            Set<String> codeSet = new HashSet<>(16);
+            List<CityTreeVo> cityTreeVos = null;
+            for(City city : cityList){
+                codeSet.add(city.getCode());
+                codeSet.add(city.getParentCode());
+            }
+            if(!CollectionUtils.isEmpty(codeSet)){
+                cityTreeVos = cityDao.getCityByCodes(codeSet);
+                nodeList = CityTreeUtil.encapTree(cityTreeVos);
+                redisUtils.hset(key, key, JsonUtils.objectToJson(nodeList));
+                redisUtils.expire(key, 1, TimeUnit.DAYS);
+            }
         }
-        if(!CollectionUtils.isEmpty(codeSet)){
-            cityTreeVos = cityDao.getCityByCodes(codeSet);
-            nodeList = CityTreeUtil.encapTree(cityTreeVos);
-        }
-        return BaseResultUtil.success(nodeList != null ? nodeList:Collections.emptyList());
+        return BaseResultUtil.success(nodeList);
     }
 
     @Override
