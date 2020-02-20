@@ -595,7 +595,7 @@ public class FinanceServiceImpl implements IFinanceService {
             }
             try {
                 ResultVo resultVo = csPingPayService.allinpayToCarrierNew(waybillIds.get(i));
-                log.info("resultVo = {}",resultVo.toString());
+                log.info("resultVo错误码 ={}",resultVo.getCode());
                 if(resultVo.getCode()==1){
                     if(result.length()>0){
                         result.append(",");
@@ -641,8 +641,9 @@ public class FinanceServiceImpl implements IFinanceService {
         }
         if(result.length()>0){
             result.append(" 对外支付失败");
+            return BaseResultUtil.fail(result.toString());
         }
-        return BaseResultUtil.success(result.toString());
+        return BaseResultUtil.success();
     }
 
     @Override
