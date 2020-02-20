@@ -646,7 +646,10 @@ public class CsTaskServiceImpl implements ICsTaskService {
         if (waybill == null) {
             return BaseResultUtil.fail("运单不存在");
         }
-        if (waybill.getState() >= WaybillStateEnum.FINISHED.code || waybill.getState() <= WaybillStateEnum.ALLOT_CONFIRM.code) {
+        if(waybill.getState() < WaybillStateEnum.ALLOT_CONFIRM.code){
+            return BaseResultUtil.fail("运单未分派司机");
+        }
+        if (waybill.getState() >= WaybillStateEnum.FINISHED.code) {
             return BaseResultUtil.fail("运单未运输或已完结");
         }
 
@@ -862,7 +865,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.OUT_STORE,
                     new String[]{MessageFormat.format(OrderCarLogEnum.OUT_STORE.getOutterLog(), waybillCar.getStartStoreName()),
                             MessageFormat.format(OrderCarLogEnum.OUT_STORE.getInnerLog(), waybillCar.getStartStoreName(), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
-                    new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), paramsDto.getLoginType()));
+                    userInfo);
             //提取数据
             successSet.add(orderCar.getNo());
             orderIdSet.add(orderCar.getOrderId());
