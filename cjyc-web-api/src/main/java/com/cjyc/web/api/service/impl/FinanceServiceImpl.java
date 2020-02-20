@@ -586,7 +586,12 @@ public class FinanceServiceImpl implements IFinanceService {
             Long waybillId = waybillIds.get(i);
             Waybill waybill = waybillDao.selectById(waybillId);
             if(waybill!=null&& waybill.getFreightPayState()==1){
-                return BaseResultUtil.fail("运单已支付");
+                if(result.length()>0){
+                    result.append(",");
+                    result.append(waybillId);
+                }else{
+                    result.append(waybillId);
+                }
             }
             try {
                 ResultVo resultVo = csPingPayService.allinpayToCarrierNew(waybillIds.get(i));
@@ -594,6 +599,8 @@ public class FinanceServiceImpl implements IFinanceService {
                 if(resultVo.getCode()==1){
                     if(result.length()>0){
                         result.append(",");
+                        result.append(waybillId);
+                    }else{
                         result.append(waybillId);
                     }
                 }
@@ -624,6 +631,8 @@ public class FinanceServiceImpl implements IFinanceService {
             }catch (Exception e){
                 if(result.length()>0){
                     result.append(",");
+                    result.append(waybillId);
+                }else{
                     result.append(waybillId);
                 }
                 log.error("运单打款失败 waybillId = {}",waybillId);
