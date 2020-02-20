@@ -77,7 +77,7 @@ public class CsPushMsgServiceImpl implements ICsPushMsgService {
                     break;
                 default:
             }
-            LogUtil.debug("【推送消息】" + JSON.toJSONString(pushMessageReq));
+            LogUtil.debug("【推送消息】-------------->参数" + JSON.toJSONString(pushMessageReq));
             ResultData resultData = clpMessageService.pushMsg(pushMessageReq);
             LogUtil.debug("【推送消息】" + (resultData.getCode().equals("00000") ? "成功" : "失败") + JSON.toJSONString(resultData));
         } catch (Exception e) {
