@@ -257,7 +257,7 @@
         where id = #{id}
         and state &lt; 100
     </update>
-    <update id="updateForLoad">
+    <update id="updateForOutStore">
         update w_waybill
         set state = 55
         where id = #{id}

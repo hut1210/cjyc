@@ -49,7 +49,7 @@
         where id = #{taskId}
         and state &lt; 100
     </update>
-    <update id="updateForLoad">
+    <update id="updateForOutStore">
         update w_task
         set state = 55
         where id = #{id}

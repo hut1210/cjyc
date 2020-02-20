@@ -118,7 +118,7 @@ public interface ITaskDao extends BaseMapper<Task> {
 
     List<DriverCarCountVo> findDriverCarCount(@Param("beforeStartDay") Long beforeStartDay,@Param("beforeEndDay") Long beforeEndDay);
 
-    int updateForLoad(Long id);
+    int updateForOutStore(Long id);
 
     /**
      * 功能描述: 查询我的任务列表

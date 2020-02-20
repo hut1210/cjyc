@@ -415,9 +415,9 @@ public class CsTaskServiceImpl implements ICsTaskService {
         //更新订单状态
         if (!CollectionUtils.isEmpty(orderIdSet)) {
             orderDao.updateStateForLoad(OrderStateEnum.TRANSPORTING.code, orderIdSet);
-            taskDao.updateForLoad(task.getId());
+            taskDao.updateForOutStore(task.getId());
             taskDao.updateLoadNum(task.getId(), count);
-            waybillDao.updateForLoad(waybill.getId());
+            waybillDao.updateForOutStore(waybill.getId());
             vehicleRunningDao.updateOccupiedNum(task.getVehicleRunningId());
             //添加出库日志
             csStorageLogService.asyncSaveBatch(storageLogSet);
@@ -646,8 +646,8 @@ public class CsTaskServiceImpl implements ICsTaskService {
         if (waybill == null) {
             return BaseResultUtil.fail("运单不存在");
         }
-        if(waybill.getState() < WaybillStateEnum.ALLOT_CONFIRM.code){
-            return BaseResultUtil.fail("运单未分派司机");
+        if(waybill.getState() <= WaybillStateEnum.ALLOT_CONFIRM.code){
+            return BaseResultUtil.fail("运单尚未运输");
         }
         if (waybill.getState() >= WaybillStateEnum.FINISHED.code) {
             return BaseResultUtil.fail("运单未运输或已完结");
@@ -874,9 +874,9 @@ public class CsTaskServiceImpl implements ICsTaskService {
         //更新订单状态
         if (!CollectionUtils.isEmpty(orderIdSet)) {
             orderDao.updateStateForLoad(OrderStateEnum.TRANSPORTING.code, orderIdSet);
-            taskDao.updateForLoad(task.getId());
+            taskDao.updateForOutStore(task.getId());
             taskDao.updateLoadNum(task.getId(), count);
-            waybillDao.updateForLoad(waybill.getId());
+            waybillDao.updateForOutStore(waybill.getId());
             vehicleRunningDao.updateOccupiedNum(task.getVehicleRunningId());
         }
 
