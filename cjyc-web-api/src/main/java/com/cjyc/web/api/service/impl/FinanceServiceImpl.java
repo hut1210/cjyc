@@ -1,14 +1,8 @@
 package com.cjyc.web.api.service.impl;
 
-import com.cjyc.common.model.dao.ICustomerInvoiceDao;
-import com.cjyc.common.model.dao.IExternalPaymentDao;
-import com.cjyc.common.model.dao.IFinanceDao;
-import com.cjyc.common.model.dao.IInvoiceReceiptDao;
+import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.finance.*;
-import com.cjyc.common.model.entity.Admin;
-import com.cjyc.common.model.entity.CustomerInvoice;
-import com.cjyc.common.model.entity.ExternalPayment;
-import com.cjyc.common.model.entity.InvoiceReceipt;
+import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
@@ -69,6 +63,9 @@ public class FinanceServiceImpl implements IFinanceService {
 
     @Autowired
     private ICsAdminService csAdminService;
+
+    @Resource
+    private IWaybillDao waybillDao;
 
     @Override
     public ResultVo<PageVo<FinanceVo>> getFinanceList(FinanceQueryDto financeQueryDto) {
@@ -587,6 +584,10 @@ public class FinanceServiceImpl implements IFinanceService {
         StringBuilder result =  new StringBuilder();
         for (int i=0;i<waybillIds.size();i++){
             Long waybillId = waybillIds.get(i);
+            Waybill waybill = waybillDao.selectById(waybillId);
+            if(waybill!=null&& waybill.getFreightPayState()==1){
+                return BaseResultUtil.fail("运单已支付");
+            }
             try {
                 ResultVo resultVo = csPingPayService.allinpayToCarrierNew(waybillIds.get(i));
                 log.info("resultVo = {}",resultVo.toString());
