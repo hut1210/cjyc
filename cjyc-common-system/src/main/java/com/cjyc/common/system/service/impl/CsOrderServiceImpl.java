@@ -896,11 +896,21 @@ public class CsOrderServiceImpl implements ICsOrderService {
      */
     @Override
     public ResultVo allot(AllotOrderDto paramsDto) {
+        Order order = orderDao.selectById(paramsDto.getOrderId());
+        if(order == null){
+            return BaseResultUtil.fail("订单不存在");
+        }
+        if(OrderStateEnum.CHECKED.code < order.getState()){
+            return BaseResultUtil.fail("运输中，不能分配");
+        }
         Order o = new Order();
-        o.setId(paramsDto.getOrderId());
+        o.setId(order.getId());
         o.setAllotToUserId(paramsDto.getToAdminId());
         o.setAllotToUserName(paramsDto.getToAdminName());
         orderDao.updateById(o);
+
+        //推送消息
+        csPushMsgService.send(paramsDto.getToAdminId(), UserTypeEnum.ADMIN, PushMsgEnum.S_NEW_ORDER, order.getNo(), order.getCustomerName(), order.getCustomerPhone());
         return BaseResultUtil.success();
     }
 
