@@ -410,7 +410,84 @@ public class CsTaskServiceImpl implements ICsTaskService {
             if (!validateOrderCarInfo(orderCar)) {
                 throw new ParameterException("订单车辆{0}信息不完整", orderCarNo);
             }
+            //运单和车辆状态
+            int waybillCarNewState = WaybillCarStateEnum.WAIT_LOAD_CONFIRM.code;
+            int orderCarNewState = orderCar.getState();
+            if (waybill.getType() == WaybillTypeEnum.PICK.code) {
+                //提车任务、自送到业务中心
+                orderCarNewState = OrderCarStateEnum.WAIT_PICK.code;
+            } else if (waybill.getType() == WaybillTypeEnum.TRUNK.code) {
+                //干线、提干、干送、提干送任务
+                orderCarNewState = OrderCarStateEnum.WAIT_TRUNK.code;
+            } else if (waybill.getType() == WaybillTypeEnum.BACK.code) {
+                //送车、自提
+                orderCarNewState = OrderCarStateEnum.WAIT_BACK.code;
+            }
 
+            boolean isNotFromStore = waybillCar.getStartStoreId() == null || waybillCar.getStartStoreId() <= 0;
+            //运单不经过业务中心,无出入库确认操作
+            if (isNotFromStore || paramsDto.getLoginType() == UserTypeEnum.ADMIN) {
+                waybillCarNewState = WaybillCarStateEnum.LOADED.code;
+                if (waybill.getType() == WaybillTypeEnum.PICK.code) {
+                    //提车任务、自送到业务中心
+                    orderCarNewState = OrderCarStateEnum.PICKING.code;
+                } else if (waybill.getType() == WaybillTypeEnum.TRUNK.code) {
+                    //干线、提干、干送、提干送任务
+                    orderCarNewState = OrderCarStateEnum.TRUNKING.code;
+                } else if (waybill.getType() == WaybillTypeEnum.BACK.code) {
+                    //送车、自提
+                    orderCarNewState = OrderCarStateEnum.BACKING.code;
+                }
+
+                if(isNotFromStore){
+                    // 出库记录
+                    CarStorageLog carStorageLog = CarStorageLog.builder()
+                            .storeId(waybillCar.getStartStoreId())
+                            .type(CarStorageTypeEnum.OUT.code)
+                            .orderNo(orderCar.getOrderNo())
+                            .orderCarNo(orderCar.getNo())
+                            .vin(orderCar.getVin())
+                            .brand(orderCar.getBrand())
+                            .model(orderCar.getModel())
+                            .freight(waybillCar.getFreightFee())
+                            .carryType(waybill.getCarrierType())
+                            .carrierId(waybill.getCarrierId())
+                            .carrier(waybill.getCarrierName())
+                            .driver(task.getDriverName())
+                            .driverId(task.getDriverId())
+                            .drvierPhone(task.getDriverPhone())
+                            .vehiclePlateNo(task.getVehiclePlateNo())
+                            .createTime(currentTimeMillis)
+                            .createUserId(paramsDto.getLoginId())
+                            .createUser(paramsDto.getLoginName())
+                            .build();
+                    storageLogSet.add(carStorageLog);
+
+                    //非业务中心提车，变更订单运输状态
+                    orderIdSet.add(orderCar.getOrderId());
+                }
+            }
+
+            waybillCarDao.updateForLoad(waybillCar.getId(), waybillCarNewState, currentTimeMillis);
+            //订单车辆
+            if (orderCar.getState() < orderCarNewState) {
+                orderCarDao.updateStateById(orderCarNewState, orderCar.getId());
+            }
+
+            if(isNotFromStore){
+                //装车日志
+                csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.LOAD,
+                        new String[]{MessageFormat.format(OrderCarLogEnum.LOAD.getOutterLog(), getAddress(waybillCar.getStartProvince(), waybillCar.getStartCity(), waybillCar.getStartArea(), waybillCar.getStartAddress())),
+                                MessageFormat.format(OrderCarLogEnum.LOAD.getInnerLog(), getAddress(waybillCar.getStartProvince(), waybillCar.getStartCity(), waybillCar.getStartArea(), waybillCar.getStartAddress())), paramsDto.getLoginName(), paramsDto.getLoginPhone()},
+                        new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), paramsDto.getLoginType()));
+            }else{
+                //出库日志
+                csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.OUT_STORE,
+                        new String[]{MessageFormat.format(OrderCarLogEnum.OUT_STORE.getOutterLog(), waybillCar.getStartStoreName()),
+                                MessageFormat.format(OrderCarLogEnum.OUT_STORE.getInnerLog(), waybillCar.getStartStoreName(), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
+                        new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), paramsDto.getLoginType()));
+            }
+            count++;
         }
         //更新订单状态
         if (!CollectionUtils.isEmpty(orderIdSet)) {
