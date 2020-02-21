@@ -32,8 +32,8 @@
             when 1 then '已下单'
             when 2 then '已确认'
             when 3 then '待付款'
-            when 4 then '已付款'
-            when 5 then '已接单'
+            when 5 then '已付款'
+            when 4 then '已接单'
             when 100 then '已交付'
             when 113 then '已取消'
             else ''
@@ -60,7 +60,7 @@
             from w_order_car_log
             where order_car_no = #{orderCarNo}
         ) as shell
-        order by shell.createTime
+        order by shell.createTime desc
     </select>
 
 </mapper>
