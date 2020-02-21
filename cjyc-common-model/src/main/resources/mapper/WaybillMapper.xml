@@ -436,7 +436,7 @@
             (case when w.carrier_type != 2 then dr.id_card else null end) as idCard,
             (case when w.carrier_type != 2 then vr.plate_no else null end) as vehiclePlateNo
         from w_waybill w
-        LEFT JOIN w_task t on t.waybill_id = w.id
+        LEFT JOIN w_task t on t.waybill_id = w.id and t.state &lt;= 100
         LEFT JOIN d_driver dr on dr.id = t.driver_id
         left join d_vehicle_running vr on vr.driver_id = t.driver_id
         where w.id = #{id}

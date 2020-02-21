@@ -33,7 +33,7 @@ public class UpdateLocalCarDto{
     private String startCityCode;
     @ApiModelProperty(value = "区")
     private String startArea;
-    //@NotBlank(message = "区县编码不能为空")
+    @NotBlank(message = "始发地区县编码不能为空")
     @ApiModelProperty(value = "区县编码")
     private String startAreaCode;
     @NotBlank(message = "始发地地址不能为空")
@@ -56,7 +56,7 @@ public class UpdateLocalCarDto{
     private String endCityCode;
     @ApiModelProperty(value = "区")
     private String endArea;
-    //@NotBlank(message = "目的地区县编码不能为空")
+    @NotBlank(message = "目的地区县编码不能为空")
     @ApiModelProperty(value = "区县编码")
     private String endAreaCode;
     @NotBlank(message = "目的地地址不能为空")

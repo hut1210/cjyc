@@ -355,6 +355,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
 
     @Override
     public ResultVo<ResultReasonVo> load(LoadTaskDto paramsDto) {
+        UserInfo userInfo = new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), paramsDto.getLoginType());
         Task task = taskDao.selectById(paramsDto.getTaskId());
         if (task == null) {
             return BaseResultUtil.fail("任务不存在");
@@ -441,27 +442,8 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 }
 
                 if(isOutStore){
-                    // 出库记录
-                    CarStorageLog carStorageLog = CarStorageLog.builder()
-                            .storeId(waybillCar.getStartStoreId())
-                            .type(CarStorageTypeEnum.OUT.code)
-                            .orderNo(orderCar.getOrderNo())
-                            .orderCarNo(orderCar.getNo())
-                            .vin(orderCar.getVin())
-                            .brand(orderCar.getBrand())
-                            .model(orderCar.getModel())
-                            .freight(waybillCar.getFreightFee())
-                            .carryType(waybill.getCarrierType())
-                            .carrierId(waybill.getCarrierId())
-                            .carrier(waybill.getCarrierName())
-                            .driver(task.getDriverName())
-                            .driverId(task.getDriverId())
-                            .drvierPhone(task.getDriverPhone())
-                            .vehiclePlateNo(task.getVehiclePlateNo())
-                            .createTime(currentTimeMillis)
-                            .createUserId(paramsDto.getLoginId())
-                            .createUser(paramsDto.getLoginName())
-                            .build();
+                    // 出库日志
+                    CarStorageLog carStorageLog = getCarStorageLog(CarStorageTypeEnum.OUT, waybill, task, waybillCar, orderCar, userInfo);
                     storageLogSet.add(carStorageLog);
                 }
 
@@ -481,13 +463,13 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.LOAD,
                         new String[]{MessageFormat.format(OrderCarLogEnum.LOAD.getOutterLog(), getAddress(waybillCar.getStartProvince(), waybillCar.getStartCity(), waybillCar.getStartArea(), waybillCar.getStartAddress())),
                                 MessageFormat.format(OrderCarLogEnum.LOAD.getInnerLog(), getAddress(waybillCar.getStartProvince(), waybillCar.getStartCity(), waybillCar.getStartArea(), waybillCar.getStartAddress())), paramsDto.getLoginName(), paramsDto.getLoginPhone()},
-                        new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), paramsDto.getLoginType()));
+                        userInfo);
             }else{
                 //出库日志
                 csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.OUT_STORE,
                         new String[]{MessageFormat.format(OrderCarLogEnum.OUT_STORE.getOutterLog(), waybillCar.getStartStoreName()),
                                 MessageFormat.format(OrderCarLogEnum.OUT_STORE.getInnerLog(), waybillCar.getStartStoreName(), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
-                        new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), paramsDto.getLoginType()));
+                        userInfo);
             }
             count++;
         }
@@ -503,6 +485,29 @@ public class CsTaskServiceImpl implements ICsTaskService {
         }
 
         return BaseResultUtil.success();
+    }
+
+    private CarStorageLog getCarStorageLog(CarStorageTypeEnum csTypeEnum,  Waybill waybill, Task task, WaybillCar waybillCar, OrderCar orderCar, UserInfo userInfo) {
+        return CarStorageLog.builder()
+                .storeId(CarStorageTypeEnum.IN == csTypeEnum ? waybillCar.getEndStoreId() : waybillCar.getStartStoreId())
+                .type(csTypeEnum.code)
+                .orderNo(orderCar.getOrderNo())
+                .orderCarNo(orderCar.getNo())
+                .vin(orderCar.getVin())
+                .brand(orderCar.getBrand())
+                .model(orderCar.getModel())
+                .freight(waybillCar.getFreightFee())
+                .carryType(waybill.getCarrierType())
+                .carrierId(waybill.getCarrierId())
+                .carrier(waybill.getCarrierName())
+                .driver(task.getDriverName())
+                .driverId(task.getDriverId())
+                .drvierPhone(task.getDriverPhone())
+                .vehiclePlateNo(task.getVehiclePlateNo())
+                .createTime(System.currentTimeMillis())
+                .createUserId(userInfo.getId())
+                .createUser(userInfo.getName())
+                .build();
     }
 
     private String getAddress(String startProvince, String startCity, String startArea, String startAddress) {
@@ -539,6 +544,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
         Set<FailResultReasonVo> failCarNoSet = Sets.newHashSet();
         Set<String> successSet = Sets.newHashSet();
 
+        UserInfo userInfo = new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), paramsDto.getLoginType());
         Task task = taskDao.selectById(paramsDto.getTaskId());
         if (task == null) {
             return BaseResultUtil.fail("任务不存在");
@@ -608,28 +614,9 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 orderCarDao.updateById(noc);
 
                 if(waybillCar.getEndStoreId() != null && waybillCar.getEndStoreId() > 0){
-                    CarStorageLog carStorageLog = CarStorageLog.builder()
-                            .storeId(waybillCar.getEndStoreId())
-                            .type(CarStorageTypeEnum.IN.code)
-                            .orderNo(orderCar.getOrderNo())
-                            .orderCarNo(orderCar.getNo())
-                            .vin(orderCar.getVin())
-                            .brand(orderCar.getBrand())
-                            .model(orderCar.getModel())
-                            .freight(waybillCar.getFreightFee())
-                            .carryType(waybill.getCarrierType())
-                            .carrierId(waybill.getCarrierId())
-                            .carrier(waybill.getCarrierName())
-                            .driver(task.getDriverName())
-                            .driverId(task.getDriverId())
-                            .drvierPhone(task.getDriverPhone())
-                            .vehiclePlateNo(task.getVehiclePlateNo())
-                            .createTime(System.currentTimeMillis())
-                            .createUserId(paramsDto.getLoginId())
-                            .createUser(paramsDto.getLoginName())
-                            .build();
+                    //入库日志
+                    CarStorageLog carStorageLog = getCarStorageLog(CarStorageTypeEnum.IN, waybill, task, waybillCar, orderCar, userInfo);
                     csStorageLogService.asyncSave(carStorageLog);
-
                     isInStore = true;
                 }
 
@@ -642,12 +629,12 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.IN_STORE,
                         new String[]{MessageFormat.format(OrderCarLogEnum.IN_STORE.getOutterLog(), waybillCar.getEndStoreName()),
                                 MessageFormat.format(OrderCarLogEnum.IN_STORE.getInnerLog(), waybillCar.getEndStoreName(), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
-                        new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), paramsDto.getLoginType()));
+                        userInfo);
             }else{
                 csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.UNLOAD,
                         new String[]{MessageFormat.format(OrderCarLogEnum.UNLOAD.getInnerLog(), getAddress(waybillCar.getStartProvince(), waybillCar.getStartCity(), waybillCar.getStartArea(), waybillCar.getStartAddress())),
                                 MessageFormat.format(OrderCarLogEnum.UNLOAD.getOutterLog(), getAddress(waybillCar.getStartProvince(), waybillCar.getStartCity(), waybillCar.getStartArea(), waybillCar.getStartAddress()), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
-                        new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), paramsDto.getLoginType()));
+                        userInfo);
             }
 
             waybillCarIdSet.add(waybillCar.getId());
@@ -715,6 +702,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
         Set<FailResultReasonVo> failCarNoSet = Sets.newHashSet();
         Set<String> successSet = Sets.newHashSet();
 
+        UserInfo userInfo = new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), paramsDto.getLoginType());
         //验证任务
         Task task = taskDao.selectById(paramsDto.getTaskId());
         if (task == null) {
@@ -773,26 +761,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             orderCarDao.updateById(noc);
 
             //添加入库日志
-            CarStorageLog carStorageLog = CarStorageLog.builder()
-                    .storeId(waybillCar.getEndStoreId())
-                    .type(CarStorageTypeEnum.IN.code)
-                    .orderNo(orderCar.getOrderNo())
-                    .orderCarNo(orderCar.getNo())
-                    .vin(orderCar.getVin())
-                    .brand(orderCar.getBrand())
-                    .model(orderCar.getModel())
-                    .freight(waybillCar.getFreightFee())
-                    .carryType(waybill.getCarrierType())
-                    .carrierId(waybill.getCarrierId())
-                    .carrier(waybill.getCarrierName())
-                    .driver(task.getDriverName())
-                    .driverId(task.getDriverId())
-                    .drvierPhone(task.getDriverPhone())
-                    .vehiclePlateNo(task.getVehiclePlateNo())
-                    .createTime(currentTimeMillis)
-                    .createUserId(paramsDto.getLoginId())
-                    .createUser(paramsDto.getLoginName())
-                    .build();
+            CarStorageLog carStorageLog = getCarStorageLog(CarStorageTypeEnum.IN, waybill, task, waybillCar, orderCar, userInfo);
 
             storageLogSet.add(carStorageLog);
 
@@ -800,7 +769,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.IN_STORE,
                     new String[]{MessageFormat.format(OrderCarLogEnum.IN_STORE.getOutterLog(), waybillCar.getEndStoreName()),
                             MessageFormat.format(OrderCarLogEnum.IN_STORE.getInnerLog(), waybillCar.getEndStoreName(), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
-                    new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), paramsDto.getLoginType()));
+                    userInfo);
             successSet.add(waybillCar.getOrderCarNo());
         }
         resultReasonVo.setSuccessList(successSet);
@@ -867,7 +836,6 @@ public class CsTaskServiceImpl implements ICsTaskService {
             return BaseResultUtil.fail("运单已完结");
         }
 
-        long currentTimeMillis = System.currentTimeMillis();
         Set<CarStorageLog> storageLogSet = Sets.newHashSet();
         if (CollectionUtils.isEmpty(paramsDto.getTaskCarIdList())) {
             return BaseResultUtil.fail("车辆不能为空");
@@ -918,27 +886,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             orderCarDao.updateById(noc);
 
             //出库日志
-            CarStorageLog carStorageLog = CarStorageLog.builder()
-                    .storeId(waybillCar.getStartStoreId())
-                    .type(CarStorageTypeEnum.OUT.code)
-                    .orderNo(orderCar.getOrderNo())
-                    .orderCarNo(orderCar.getNo())
-                    .vin(orderCar.getVin())
-                    .brand(orderCar.getBrand())
-                    .model(orderCar.getModel())
-                    .freight(waybillCar.getFreightFee())
-                    .carryType(waybill.getCarrierType())
-                    .carrierId(waybill.getCarrierId())
-                    .carrier(waybill.getCarrierName())
-                    .driver(task.getDriverName())
-                    .driverId(task.getDriverId())
-                    .drvierPhone(task.getDriverPhone())
-                    .vehiclePlateNo(task.getVehiclePlateNo())
-                    .createTime(currentTimeMillis)
-                    .createUserId(paramsDto.getLoginId())
-                    .createUser(paramsDto.getLoginName())
-                    .build();
-
+            CarStorageLog carStorageLog = getCarStorageLog(CarStorageTypeEnum.OUT, waybill, task, waybillCar, orderCar, userInfo);
             storageLogSet.add(carStorageLog);
             //出库日志
             csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.OUT_STORE,
