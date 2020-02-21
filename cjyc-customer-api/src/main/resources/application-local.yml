@@ -153,7 +153,10 @@ cjyc:
       enabled: true
       appKey: 8a4abf674ba61fc9c47d6616
       masterSecret: 6fc93a75e2f813f4798e88ff
-
+  customer:
+    clientId: "1186108891007336449"
+    clientSecret: acffa1064e9a629d3140e5b36be31bd3
+    grantType: mobile
   #支付
   pay:
     ping++:

@@ -210,7 +210,7 @@ public class LoginServiceImpl extends SuperServiceImpl<ICustomerDao, Customer> i
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResultVo<CustomerLoginVo> loginNew(LoginDto dto) {
+    public ResultVo<CustomerLoginVo> loginNew(LoginDto dto,String clientId,String clientSecret,String grantType) {
         Customer customer = customerDao.selectOne(new QueryWrapper<Customer>().lambda()
                 .eq(Customer::getContactPhone, dto.getPhone()));
         if(customer == null){
@@ -239,9 +239,9 @@ public class LoginServiceImpl extends SuperServiceImpl<ICustomerDao, Customer> i
         }
         //调用架构组验证手机号验证码登陆
         AuthMobileLoginReq req = new AuthMobileLoginReq();
-        req.setClientId(LoginProperty.clientId);
-        req.setClientSecret(LoginProperty.clientSecret);
-        req.setGrantType(LoginProperty.grantType);
+        req.setClientId(clientId);
+        req.setClientSecret(clientSecret);
+        req.setGrantType(grantType);
         req.setMobile(dto.getPhone());
         req.setSmsCode(dto.getCode());
         ResultData<AuthLoginResp> rd = sysLoginService.mobileLogin(req);

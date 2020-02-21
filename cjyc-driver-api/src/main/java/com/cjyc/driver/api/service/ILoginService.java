@@ -23,5 +23,5 @@ public interface ILoginService extends IService<Driver> {
      * @param dto
      * @return
      */
-    ResultVo<DriverLoginVo> loginNew(LoginDto dto);
+    ResultVo<DriverLoginVo> loginNew(LoginDto dto,String clientId,String clientSecret,String grantType);
 }

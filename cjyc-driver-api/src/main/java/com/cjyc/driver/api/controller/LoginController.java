@@ -9,6 +9,7 @@ import com.cjyc.driver.api.service.ILoginService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,6 +31,13 @@ public class LoginController {
     @Resource
     private ICsLoginService csLoginService;
 
+    @Value("${cjyc.driver.clientId}")
+    private String clientId;
+    @Value("${cjyc.driver.clientSecret}")
+    private String clientSecret;
+    @Value("${cjyc.driver.grantType}")
+    private String grantType;
+
     @ApiOperation(value = "获取验证码")
     @PostMapping("/verifyCode")
     public ResultVo verifyCode(@Validated @RequestBody VerifyCodeDto dto) {
@@ -49,7 +57,7 @@ public class LoginController {
     //@PostMapping("/loginNew")
     @PostMapping("/login")
     public ResultVo<DriverLoginVo> loginNew(@Validated @RequestBody LoginDto dto) {
-        return loginService.loginNew(dto);
+        return loginService.loginNew(dto, clientId, clientSecret, grantType);
     }
 
 

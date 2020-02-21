@@ -189,7 +189,7 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
     /************************************韵车集成改版 st***********************************/
 
     @Override
-    public ResultVo<DriverLoginVo> loginNew(LoginDto dto) {
+    public ResultVo<DriverLoginVo> loginNew(LoginDto dto,String clientId,String clientSecret,String grantType) {
         //查询该手机号是否在司机表中
         Driver driver = driverDao.selectOne(new QueryWrapper<Driver>().lambda()
                 .eq(Driver::getPhone, dto.getPhone()));
@@ -238,9 +238,9 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
         }
         //调用架构组验证手机号验证码登陆
         AuthMobileLoginReq req = new AuthMobileLoginReq();
-        req.setClientId(LoginProperty.clientId);
-        req.setClientSecret(LoginProperty.clientSecret);
-        req.setGrantType(LoginProperty.grantType);
+        req.setClientId(clientId);
+        req.setClientSecret(clientSecret);
+        req.setGrantType(grantType);
         req.setMobile(dto.getPhone());
         req.setSmsCode(dto.getCode());
         ResultData<AuthLoginResp> rd = sysLoginService.mobileLogin(req);
