@@ -2,7 +2,9 @@ package com.cjyc.customer.api.service.impl;
 
 import com.Pingxx.model.MetaDataEntiy;
 import com.Pingxx.model.PingxxMetaData;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjyc.common.model.enums.log.OrderCarLogEnum;
+import com.cjyc.common.model.enums.log.OrderLogEnum;
 import com.cjyc.common.system.service.*;
 import com.cjyc.common.system.util.MiaoxinSmsUtil;
 import com.cjyc.customer.api.service.IOrderService;
@@ -82,7 +84,7 @@ public class TransactionServiceImpl implements ITransactionService {
     private IWaybillCarDao waybillCarDao;
 
     @Resource
-    private ICsOrderCarLogService csOrderCarLogService;
+    private ICsOrderLogService csOrderLogService;
 
     @Resource
     private IOrderCarDao orderCarDao;
@@ -548,6 +550,7 @@ public class TransactionServiceImpl implements ITransactionService {
         UserInfo userInfo = userService.getUserInfo(Long.valueOf(pingxxMetaData.getLoginId()), Integer.valueOf(pingxxMetaData.getLoginType()));
         String  orderNo = pingxxMetaData.getOrderNo();
         if(orderNo!=null){
+            com.cjyc.common.model.entity.Order order = orderDao.findByNo(orderNo);
             tradeBillDao.updateOrderState(orderNo,2,System.currentTimeMillis());
             List<String> list = tradeBillDao.getOrderCarNoList(orderNo);
             List<OrderCar> orderCarList = orderCarDao.findListByNos(list);
@@ -556,16 +559,16 @@ public class TransactionServiceImpl implements ITransactionService {
                     OrderCar orderCar = orderCarList.get(i);
                     if(orderCar != null){
                         tradeBillDao.updateOrderCar(orderCar.getNo(),2,System.currentTimeMillis());
-                        //添加日志
-                        csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.RECEIPT,
-                                new String[]{OrderCarLogEnum.RECEIPT.getOutterLog(),
-                                        MessageFormat.format(OrderCarLogEnum.RECEIPT.getInnerLog(), userInfo.getName(), userInfo.getPhone())},
-                                userInfo);
-
                     }
-
                 }
             }
+
+            //添加日志
+            csOrderLogService.asyncSave(order, OrderLogEnum.PREPAID,
+                    new String[]{OrderLogEnum.PREPAID.getOutterLog(),
+                            MessageFormat.format(OrderLogEnum.PREPAID.getInnerLog(), userInfo.getName(), userInfo.getPhone())},
+                    userInfo);
+
         }
     }
 

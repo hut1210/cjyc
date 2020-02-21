@@ -460,15 +460,15 @@ public class CsTaskServiceImpl implements ICsTaskService {
 
             if(!isOutStore){
                 //装车日志
-                csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.LOAD,
-                        new String[]{MessageFormat.format(OrderCarLogEnum.LOAD.getOutterLog(), getAddress(waybillCar.getStartProvince(), waybillCar.getStartCity(), waybillCar.getStartArea(), waybillCar.getStartAddress())),
-                                MessageFormat.format(OrderCarLogEnum.LOAD.getInnerLog(), getAddress(waybillCar.getStartProvince(), waybillCar.getStartCity(), waybillCar.getStartArea(), waybillCar.getStartAddress())), paramsDto.getLoginName(), paramsDto.getLoginPhone()},
+                csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.C_LOAD,
+                        new String[]{MessageFormat.format(OrderCarLogEnum.C_LOAD.getOutterLog(), getAddress(waybillCar.getStartProvince(), waybillCar.getStartCity(), waybillCar.getStartArea(), waybillCar.getStartAddress())),
+                                MessageFormat.format(OrderCarLogEnum.C_LOAD.getInnerLog(), getAddress(waybillCar.getStartProvince(), waybillCar.getStartCity(), waybillCar.getStartArea(), waybillCar.getStartAddress())), paramsDto.getLoginName(), paramsDto.getLoginPhone()},
                         userInfo);
             }else{
                 //出库日志
-                csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.OUT_STORE,
-                        new String[]{MessageFormat.format(OrderCarLogEnum.OUT_STORE.getOutterLog(), waybillCar.getStartStoreName()),
-                                MessageFormat.format(OrderCarLogEnum.OUT_STORE.getInnerLog(), waybillCar.getStartStoreName(), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
+                csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.C_OUT_STORE,
+                        new String[]{MessageFormat.format(OrderCarLogEnum.C_OUT_STORE.getOutterLog(), waybillCar.getStartStoreName()),
+                                MessageFormat.format(OrderCarLogEnum.C_OUT_STORE.getInnerLog(), waybillCar.getStartStoreName(), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
                         userInfo);
             }
             count++;
@@ -626,14 +626,14 @@ public class CsTaskServiceImpl implements ICsTaskService {
 
             if(isInStore){
                 //添加物流日志
-                csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.IN_STORE,
-                        new String[]{MessageFormat.format(OrderCarLogEnum.IN_STORE.getOutterLog(), waybillCar.getEndStoreName()),
-                                MessageFormat.format(OrderCarLogEnum.IN_STORE.getInnerLog(), waybillCar.getEndStoreName(), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
+                csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.C_IN_STORE,
+                        new String[]{MessageFormat.format(OrderCarLogEnum.C_IN_STORE.getOutterLog(), waybillCar.getEndStoreName()),
+                                MessageFormat.format(OrderCarLogEnum.C_IN_STORE.getInnerLog(), waybillCar.getEndStoreName(), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
                         userInfo);
             }else{
-                csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.UNLOAD,
-                        new String[]{MessageFormat.format(OrderCarLogEnum.UNLOAD.getInnerLog(), getAddress(waybillCar.getStartProvince(), waybillCar.getStartCity(), waybillCar.getStartArea(), waybillCar.getStartAddress())),
-                                MessageFormat.format(OrderCarLogEnum.UNLOAD.getOutterLog(), getAddress(waybillCar.getStartProvince(), waybillCar.getStartCity(), waybillCar.getStartArea(), waybillCar.getStartAddress()), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
+                csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.C_UNLOAD,
+                        new String[]{MessageFormat.format(OrderCarLogEnum.C_UNLOAD.getInnerLog(), getAddress(waybillCar.getStartProvince(), waybillCar.getStartCity(), waybillCar.getStartArea(), waybillCar.getStartAddress())),
+                                MessageFormat.format(OrderCarLogEnum.C_UNLOAD.getOutterLog(), getAddress(waybillCar.getStartProvince(), waybillCar.getStartCity(), waybillCar.getStartArea(), waybillCar.getStartAddress()), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
                         userInfo);
             }
 
@@ -766,9 +766,9 @@ public class CsTaskServiceImpl implements ICsTaskService {
             storageLogSet.add(carStorageLog);
 
             //添加物流日志
-            csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.IN_STORE,
-                    new String[]{MessageFormat.format(OrderCarLogEnum.IN_STORE.getOutterLog(), waybillCar.getEndStoreName()),
-                            MessageFormat.format(OrderCarLogEnum.IN_STORE.getInnerLog(), waybillCar.getEndStoreName(), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
+            csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.C_IN_STORE,
+                    new String[]{MessageFormat.format(OrderCarLogEnum.C_IN_STORE.getOutterLog(), waybillCar.getEndStoreName()),
+                            MessageFormat.format(OrderCarLogEnum.C_IN_STORE.getInnerLog(), waybillCar.getEndStoreName(), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
                     userInfo);
             successSet.add(waybillCar.getOrderCarNo());
         }
@@ -889,9 +889,9 @@ public class CsTaskServiceImpl implements ICsTaskService {
             CarStorageLog carStorageLog = getCarStorageLog(CarStorageTypeEnum.OUT, waybill, task, waybillCar, orderCar, userInfo);
             storageLogSet.add(carStorageLog);
             //出库日志
-            csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.OUT_STORE,
-                    new String[]{MessageFormat.format(OrderCarLogEnum.OUT_STORE.getOutterLog(), waybillCar.getStartStoreName()),
-                            MessageFormat.format(OrderCarLogEnum.OUT_STORE.getInnerLog(), waybillCar.getStartStoreName(), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
+            csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.C_OUT_STORE,
+                    new String[]{MessageFormat.format(OrderCarLogEnum.C_OUT_STORE.getOutterLog(), waybillCar.getStartStoreName()),
+                            MessageFormat.format(OrderCarLogEnum.C_OUT_STORE.getInnerLog(), waybillCar.getStartStoreName(), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
                     userInfo);
             //提取数据
             successSet.add(orderCar.getNo());
@@ -990,9 +990,9 @@ public class CsTaskServiceImpl implements ICsTaskService {
 
             //车辆日志
             OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
-            csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.RECEIPT,
-                    new String[]{OrderCarLogEnum.RECEIPT.getOutterLog(),
-                            MessageFormat.format(OrderCarLogEnum.RECEIPT.getInnerLog(), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
+            csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.C_RECEIPT,
+                    new String[]{OrderCarLogEnum.C_RECEIPT.getOutterLog(),
+                            MessageFormat.format(OrderCarLogEnum.C_RECEIPT.getInnerLog(), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
                     new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), paramsDto.getLoginType()));
 
             customerPhoneSet.add(order.getBackContactPhone());
@@ -1057,9 +1057,9 @@ public class CsTaskServiceImpl implements ICsTaskService {
             orderCarDao.updateForFinish(orderCar.getId(), waybillCar.getEndAreaCode());
 
             //添加日志
-            csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.IN_STORE,
-                    new String[]{MessageFormat.format(OrderCarLogEnum.IN_STORE.getInnerLog(), orderCar.getNo(), waybillCar.getEndStoreName()),
-                            MessageFormat.format(OrderCarLogEnum.IN_STORE.getOutterLog(), orderCar.getNo(), waybillCar.getEndStoreName())},
+            csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.C_IN_STORE,
+                    new String[]{MessageFormat.format(OrderCarLogEnum.C_IN_STORE.getInnerLog(), orderCar.getNo(), waybillCar.getEndStoreName()),
+                            MessageFormat.format(OrderCarLogEnum.C_IN_STORE.getOutterLog(), orderCar.getNo(), waybillCar.getEndStoreName())},
                     new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), paramsDto.getLoginType()));
             //提取数据
             orderIdSet.add(orderCar.getOrderId());
@@ -1140,14 +1140,19 @@ public class CsTaskServiceImpl implements ICsTaskService {
 
                 waybillCarDao.updateForFinish(waybillCar.getId());
                 //出库日志
-                csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.RECEIPT,
-                        new String[]{OrderCarLogEnum.RECEIPT.getOutterLog(),
-                                MessageFormat.format(OrderCarLogEnum.RECEIPT.getInnerLog(), userInfo.getName(), userInfo.getPhone())},
+                csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.C_RECEIPT,
+                        new String[]{OrderCarLogEnum.C_RECEIPT.getOutterLog(),
+                                MessageFormat.format(OrderCarLogEnum.C_RECEIPT.getInnerLog(), userInfo.getName(), userInfo.getPhone())},
                         userInfo);
                 waybillCarIdSet.add(waybillCar.getId());
             }else{
                 //更新车辆状态
                 orderCarDao.updateForPrePaySuccess(orderCar.getId());
+                //出库日志
+                csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.C_PAID,
+                        new String[]{OrderCarLogEnum.C_PAID.getOutterLog(),
+                                MessageFormat.format(OrderCarLogEnum.C_PAID.getInnerLog(), userInfo.getName(), userInfo.getPhone())},
+                        userInfo);
             }
             //提取数据
             orderIdSet.add(orderCar.getOrderId());

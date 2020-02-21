@@ -70,4 +70,6 @@ public interface IOrderDao extends BaseMapper<Order> {
      * @return
      */
     List<Order> findDayOrder(@Param("beforeStartDay") Long beforeStartDay,@Param("beforeEndDay") Long beforeEndDay);
+
+    Order findByNo(String orderNo);
 }

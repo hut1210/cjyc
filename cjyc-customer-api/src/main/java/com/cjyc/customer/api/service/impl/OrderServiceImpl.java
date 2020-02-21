@@ -102,6 +102,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         OutterLogVo outterLogVo = new OutterLogVo();
         String state = orderCarDao.findOutterState(orderCarNo);
         outterLogVo.setOutterState(state);
+        outterLogVo.setOrderCarNo(orderCarNo);
         List<OutterOrderCarLogVo> list = orderCarLogDao.findCarLogByOrderNoAndCarNo(orderCarNo.split("-")[0], orderCarNo);
         outterLogVo.setList(list);
         return BaseResultUtil.success(outterLogVo);

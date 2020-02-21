@@ -200,7 +200,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
             return BaseResultUtil.fail("数据错误,请检查");
         }
         //修改司机信息
-        //if(cdc.getState() == CommonStateEnum.CHECK.code){
+        //if(cdc.getState() == CommonStateEnum.D_CHECK.code){
         ResultData rd = csDriverService.updateUserToPlatform(driver);
         if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
             return BaseResultUtil.fail("司机信息同步失败，原因：" + rd.getMsg());
@@ -346,7 +346,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
             return BaseResultUtil.fail("司机信息错误，请检查");
         }
         //driver.setState(flag.equals(1)?
-                //SalemanStateEnum.REJECTED.code: SalemanStateEnum.CHECK.code);
+                //SalemanStateEnum.REJECTED.code: SalemanStateEnum.D_CHECK.code);
         driverDao.updateById(driver);
         return BaseResultUtil.success();
     }

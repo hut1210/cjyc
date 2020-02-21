@@ -528,4 +528,7 @@
           from w_order
         where create_time between #{beforeStartDay} and #{beforeEndDay}
     </select>
+    <select id="findByNo" resultType="com.cjyc.common.model.entity.Order">
+        select * from w_order where no = #{orderNo}
+    </select>
 </mapper>

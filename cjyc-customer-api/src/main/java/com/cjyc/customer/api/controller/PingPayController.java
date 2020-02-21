@@ -200,14 +200,14 @@ public class PingPayController {
         return publicKey;
     }
 
-    public static void main(String arg[]) throws Exception{
+    /*public static void main(String arg[]) throws Exception{
         File file = ResourceUtils.getFile(ResourceUtils.CLASSPATH_URL_PREFIX+"pingpp_public_key.pem");
         String pubKeyPath = PingPayController.class.getClassLoader().getResource("pingpp_public_key.pem").getPath();
         InputStream resourceAsStream = PingPayController.class.getClassLoader().getResourceAsStream("pingpp_public_key.pem");
         System.out.println(file.getPath());
         System.out.println(pubKeyPath);
 
-    }
+    }*/
 
     /**
      * 读取文件, 部署 web 程序的时候, 签名和验签内容需要从 request 中获得
