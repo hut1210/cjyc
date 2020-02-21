@@ -117,7 +117,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         List<OrderCenterVo> list = orderDao.selectPage(dto);
 
         // 刪除车辆信息为空的元素
-        list.removeIf(item -> CollectionUtils.isEmpty(item.getOrderCarCenterVoList()));
+        //list.removeIf(item -> CollectionUtils.isEmpty(item.getOrderCarCenterVoList()));
 
         PageInfo<OrderCenterVo> pageInfo = new PageInfo<>(list);
         Map<String, Object> orderCount = getOrderCount(dto.getLoginId());
