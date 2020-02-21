@@ -209,7 +209,7 @@
     <select id="findFullCity" resultType="com.cjyc.common.model.entity.defined.FullCity">
         select
             c1.`name` as area,
-            c1.code as areaCode,
+            c1.`code` as areaCode,
             c2.`name` as city,
             c2.`code` as cityCode,
             c2.parent_name as province,

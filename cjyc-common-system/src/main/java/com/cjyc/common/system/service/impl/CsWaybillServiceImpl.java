@@ -1,7 +1,9 @@
 package com.cjyc.common.system.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.cjkj.common.redis.lock.RedisDistributedLock;
 import com.cjkj.common.redis.template.StringRedisUtil;
+import com.cjkj.log.monitor.LogUtil;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.waybill.*;
 import com.cjyc.common.model.entity.*;
@@ -637,6 +639,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
      */
     @Override
     public ResultVo saveTrunk(SaveTrunkWaybillDto paramsDto) {
+        log.debug("【干线调度】------------>参数" + JSON.toJSONString(paramsDto));
         Set<String> lockSet = new HashSet<>();
         try {
             long currentTimeMillis = System.currentTimeMillis();
@@ -731,12 +734,14 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
                 WaybillCar waybillCar = new WaybillCar();
                 BeanUtils.copyProperties(dto, waybillCar);
+                log.debug("【干线调度】车辆拷贝属性：" + JSON.toJSONString(waybillCar));
                 waybillCar.setWaybillId(waybill.getId());
                 waybillCar.setWaybillNo(waybill.getNo());
                 waybillCar.setFreightFee(MoneyUtil.convertYuanToFen(dto.getFreightFee()));
                 waybillCar.setOrderCarId(orderCar.getId());
                 //城市信息赋值
                 fillWaybillCarCityInfo(waybillCar);
+                log.debug("【干线调度】车辆城市赋值：" + JSON.toJSONString(waybillCar));
                 //业务中心信息赋值
                 fillWaybillCarBelongStoreInfo(waybillCar);
                 //提送车业务员
@@ -746,6 +751,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 waybillCar.setReceiptFlag(waybillCar.getUnloadLinkPhone().equals(order.getBackContactPhone()));
                 waybillCar.setState(getTrunkState(carrierInfo));
                 waybillCar.setCreateTime(currentTimeMillis);
+                log.debug("【干线调度】车辆准备写入：" + JSON.toJSONString(waybillCar));
                 waybillCarDao.insert(waybillCar);
 
                 //更新订单车辆状态
@@ -759,8 +765,9 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
             //承运商有且仅有一个司机
             /**1+、写入任务表*/
+            log.debug("【干线调度】准备创建任务：" + JSON.toJSONString(waybillCars));
             csTaskService.reCreate(waybill, waybillCars, waybillCars,carrierInfo);
-
+            log.debug("【干线调度】调度成功：" + JSON.toJSONString(waybillCars));
             return BaseResultUtil.success();
         } finally {
             if (!CollectionUtils.isEmpty(lockSet)) {
@@ -778,6 +785,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
      */
     @Override
     public ResultVo updateTrunk(UpdateTrunkWaybillDto paramsDto) {
+        log.debug("【干线调度修改】------------>参数" + JSON.toJSONString(paramsDto));
         Set<String> lockSet = new HashSet<>();
         try {
             List<UpdateTrunkWaybillCarDto> dtoList = paramsDto.getList();
@@ -834,6 +842,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 if (dto.getId() != null) {
                     //修改的车辆
                     waybillCar = waybillCarDao.selectById(dto.getId());
+                    log.debug("【干线调度修改】已有车辆修改：" + JSON.toJSONString(waybillCar));
                     if (waybillCar.getState() != null && waybillCar.getState() >= WaybillCarStateEnum.LOADED.code && carrierInfo.isReAllotCarrier()) {
                         throw new ParameterException("运单中车辆{0}，运输中不能修改司机，请使用[卸载车辆]功能", orderCarNo);
                     }
@@ -842,6 +851,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                     //新增的车辆
                     isNewWaybillCar = true;
                     waybillCar = new WaybillCar();
+                    log.debug("【干线调度修改】新车辆{}", orderCarNo);
                 }
 
                 //验证订单车辆状态
@@ -888,11 +898,13 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
                 //车辆数据
                 BeanUtils.copyProperties(dto, waybillCar);
+                log.debug("【干线调度修改】车辆拷贝属性：" + JSON.toJSONString(waybillCar));
                 waybillCar.setWaybillId(waybill.getId());
                 waybillCar.setWaybillNo(waybill.getNo());
                 waybillCar.setFreightFee(MoneyUtil.convertYuanToFen(dto.getFreightFee()));
                 //城市信息赋值
                 fillWaybillCarCityInfo(waybillCar);
+                log.debug("【干线调度修改】车辆城市赋值：" + JSON.toJSONString(waybillCar));
                 //业务中心信息赋值
                 fillWaybillCarBelongStoreInfo(waybillCar);
                 //提送车业务员
@@ -900,6 +912,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 //计算预计到达时间
                 fillWaybillCarExpectEndTime(waybillCar);
                 waybillCar.setReceiptFlag(order.getBackContactPhone().equals(waybillCar.getUnloadLinkPhone()));
+                log.debug("【干线调度修改】车辆准备写入：" + JSON.toJSONString(waybillCar));
                 if (isNewWaybillCar) {
                     waybillCar.setState(getTrunkState(carrierInfo));
                     waybillCarDao.insert(waybillCar);
@@ -938,7 +951,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
             //验证运单是否完成
             validateAndFinishWaybill(waybill.getId());
-
+            log.debug("【干线调度修改】------------->修改结束：" + JSON.toJSONString(waybillCars));
             return BaseResultUtil.success();
         } finally {
             if (!CollectionUtils.isEmpty(lockSet)) {

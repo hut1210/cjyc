@@ -152,14 +152,15 @@ public class TransactionServiceImpl implements ITransactionService {
                     log.info(chargeType+" 物流费预付 orderNo ="+orderNo);
                     updateForPrePay(pingxxMetaData);
                 }
-                if(chargeType.equals(String.valueOf(ChargeTypeEnum.DRIVER_COLLECT_QRCODE.getCode()))||chargeType.equals(String.valueOf(ChargeTypeEnum.WEB_OUT_STOCK_QRCODE.getCode()))
-                ||chargeType.equals(String.valueOf(ChargeTypeEnum.SALESMAN_COLLECT_QRCODE.getCode()))){
+                if(chargeType.equals(String.valueOf(ChargeTypeEnum.DRIVER_COLLECT_QRCODE.getCode()))
+                        ||chargeType.equals(String.valueOf(ChargeTypeEnum.WEB_OUT_STOCK_QRCODE.getCode()))
+                        ||chargeType.equals(String.valueOf(ChargeTypeEnum.SALESMAN_COLLECT_QRCODE.getCode()))){
                     Long taskId = Long.valueOf((String)metadata.get("taskId"));
 
                     List<String> taskCarIdList = pingxxMetaData.getTaskCarIdList();
 
                     List<String> orderCarNosList = pingxxMetaData.getOrderCarIds();
-                    log.info("司机出示二维码回调或者后台出库回调");
+                    log.info("【二维码支付回调】司机出示二维码回调或者后台出库回调");
                     Task task = null;
                     if(taskId == null){
                         log.error("回调中参数taskId不存在");
