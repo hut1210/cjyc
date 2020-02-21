@@ -937,7 +937,7 @@
             CONCAT('${@com.cjyc.common.system.config.LogoImgProperty@logoImg}', t.logo_img) as logoImg
         from
             w_order_car car
-            left join(select brand,logo_img,model from s_car_series group by brand) t on car.brand=t.brand and car.model=t.model
+            left join(select brand,logo_img,model from s_car_series) t on car.brand=t.brand and car.model=t.model
             <where>
                 <if test="orderNo != null and orderNo.trim() != ''">
                     and car.order_no = #{orderNo}
