@@ -49,6 +49,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ResourceUtils;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import java.io.FileNotFoundException;
@@ -101,6 +102,9 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
 
     @Resource
     private IOrderRefundDao orderRefundDao;
+
+    @Resource
+    private IConfigDao configDao;
 
     private final Lock lock = new ReentrantLock();
 
@@ -376,12 +380,12 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                     waybill = waybillDao.selectById(waybillId);
                     Long carrierId = waybill.getCarrierId();
                     BaseCarrierVo baseCarrierVo = carrierDao.showCarrierById(carrierId);
-                    //log.info("【通联代付支付运费】运单Id{},支付状态 state {}",waybillId,waybill.getFreightPayState());
-                    //if(waybill != null && waybill.getFreightPayState()==0 && waybill.getFreightFee().compareTo(BigDecimal.ZERO)>0){
+                    log.info("【通联代付支付运费】运单Id{},支付状态 state {}",waybillId,waybill.getFreightPayState());
 
+                    Config config = configDao.getByItemKey("external_pay");
+                    if(config!=null&&config.getState()==1){//对外支付模式
                         try{
-                            log.info("【通联代付支付运费】运单Id {},支付状态 state {}",waybillId,waybill.getFreightPayState());
-                            log.info("【添加打款日志详情】运单Id {}",waybillId);
+                            log.info("【对外支付模式，添加打款日志详情】运单Id {}",waybillId);
                             ExternalPayment ep = externalPaymentDao.getByWayBillId(waybillId);
 
                             if(ep==null){
@@ -398,30 +402,33 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                             log.error("【添加承运商打款日志详情异常】 waybillId = {}", waybillId);
                             log.error(e.getMessage(), e);
                         }
-
-
-                        /*if(baseCarrierVo!=null){
-                            if(baseCarrierVo.getSettleType()==0){
-                                if(baseCarrierVo.getCardName()!=null && baseCarrierVo.getCardNo()!=null
-                                        && baseCarrierVo.getBankCode()!=null){
-                                    Transfer transfer = allinpayTransferDriverCreate(baseCarrierVo,waybill);
-                                    log.debug("【通联代付支付运费】运单{}，支付运费，账单{}", waybill.getNo(), transfer);
-                                    cStransactionService.saveTransactions(transfer, "0");
+                    }else{//自动打款模式
+                        log.info("【自动打款模式】运单Id {}",waybillId);
+                        if(waybill != null && waybill.getFreightPayState()==0 && waybill.getFreightFee().compareTo(BigDecimal.ZERO)>0){
+                            if(baseCarrierVo!=null){
+                                if(baseCarrierVo.getSettleType()==0){
+                                    if(baseCarrierVo.getCardName()!=null && baseCarrierVo.getCardNo()!=null
+                                            && baseCarrierVo.getBankCode()!=null){
+                                        Transfer transfer = allinpayTransferDriverCreate(baseCarrierVo,waybill);
+                                        log.debug("【通联代付支付运费】运单{}，支付运费，账单{}", waybill.getNo(), transfer);
+                                        cStransactionService.saveTransactions(transfer, "0");
+                                    }else{
+                                        log.error("【通联代付支付运费】收款人信息不全 waybillId = {}", waybillId);
+                                        return BaseResultUtil.fail("通联代付失败,收款人信息不全");
+                                    }
                                 }else{
-                                    log.error("【通联代付支付运费】收款人信息不全 waybillId = {}", waybillId);
-                                    return BaseResultUtil.fail("通联代付失败,收款人信息不全");
+                                    log.info("【通联代付支付运费】收款人为账期用户 waybillId = {}", waybillId);
                                 }
                             }else{
-                                log.info("【通联代付支付运费】收款人为账期用户 waybillId = {}", waybillId);
+                                log.info("【通联代付支付运费】收款人不存在 waybillId = {}", waybillId);
                             }
-                        }else{
-                            log.info("【通联代付支付运费】收款人不存在 waybillId = {}", waybillId);
-                        }*/
 
-                    /*}else{
-                        log.debug("【通联代付支付运费】运单{}，支付运费为0", waybill.getNo());
-                        cStransactionService.updateWayBillPayStateNoPay(waybillId, System.currentTimeMillis());
-                    }*/
+                        }else{
+                            log.debug("【通联代付支付运费】运单{}，支付运费为0", waybill.getNo());
+                            cStransactionService.updateWayBillPayStateNoPay(waybillId, System.currentTimeMillis());
+                        }
+                    }
+
                 }finally {
                     lock.unlock();
                 }

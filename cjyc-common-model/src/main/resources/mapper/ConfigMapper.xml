@@ -24,4 +24,10 @@
         from s_config
     </select>
 
+    <select id="getByItemKey" resultType="com.cjyc.common.model.entity.Config">
+        select
+        <include refid="Base_Column_List"/>
+        from s_config where item_key = #{key} limit 1
+    </select>
+
 </mapper>
