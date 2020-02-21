@@ -284,9 +284,9 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                 }
             }
         }
-        if (FieldConstant.ALL_TASK == dto.getDetailType()) {
+        /*if (FieldConstant.ALL_TASK == dto.getDetailType()) {
             taskDetailVo.setState(task.getState());
-        }
+        }*/
         taskDetailVo.setFreightFee(freightFee);
         taskDetailVo.setCarDetailVoList(carDetailVoList);
         return BaseResultUtil.success(taskDetailVo);
