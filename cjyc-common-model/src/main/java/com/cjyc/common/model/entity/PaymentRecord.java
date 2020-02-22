@@ -9,14 +9,14 @@ import lombok.experimental.Accessors;
 
 /**
  * @Author: Hut
- * @Date: 2020/02/11 12:58
+ * @Date: 2020/02/22 16:47
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("f_external_payment")
-@ApiModel(value="ExternalPayment对象", description="对外支付")
-public class ExternalPayment {
+@TableName("f_payment_record")
+@ApiModel(value="PaymentRecord对象", description="打款日志")
+public class PaymentRecord {
 
     private Long carrierId;
 
@@ -27,13 +27,5 @@ public class ExternalPayment {
 
     private Long orderId;
 
-    private Integer state;
-
-    private Long payTime;
-
-    @ApiModelProperty("操作人")
-    private String operator;
-
-    @ApiModelProperty("操作人Id")
-    private Long loginId;
+    private Long createTime;
 }
