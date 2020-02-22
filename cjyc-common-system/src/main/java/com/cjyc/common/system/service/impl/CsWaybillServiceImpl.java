@@ -594,7 +594,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
      * 计算到达时间
      **/
     private WaybillCar fillWaybillCarExpectEndTime(WaybillCar waybillCar) {
-        if (waybillCar.getExpectStartTime() == null) {
+        if (waybillCar.getExpectStartTime() == null || waybillCar.getExpectStartTime() <= 0) {
             throw new ParameterException("请填写预估提车日期");
         }
         Line line = csLineService.getLineByCity(waybillCar.getStartCityCode(), waybillCar.getEndCityCode(), true);

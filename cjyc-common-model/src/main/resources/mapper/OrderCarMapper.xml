@@ -1700,18 +1700,14 @@
         left join(select brand,logo_img from s_car_series group by brand) cs on cs.brand = shell.brand
         group by shell.orderCarId
         <choose>
-            <when test="param.pickDateSort != null">
-                <choose>
-                    <when test="param.pickDateSort == 1">
-                        ORDER BY shell.expectStartDate ASC
-                    </when>
-                    <otherwise>
-                        ORDER BY shell.expectStartDate DESC
-                    </otherwise>
-                </choose>
+            <when test="param.pickDateSort == 1">
+                ORDER BY shell.expectStartDate ASC, shell.orderCarId
+            </when>
+            <when test="param.pickDateSort == 2">
+                ORDER BY shell.createTime desc, shell.orderCarId
             </when>
             <otherwise>
-                ORDER BY shell.createTime desc, shell.orderCarId
+                ORDER BY shell.expectStartDate DESC, shell.orderCarId
             </otherwise>
         </choose>
     </select>
@@ -2150,104 +2146,114 @@
     </select>
     <select id="findPickCarEndpoint" resultType="com.cjyc.common.model.vo.web.waybill.WaybillCarVo">
         select
-        <include refid="pick_wait_dispatch_car_field"/>,
-
-        oc.pick_fee as freightFee,
-        oc.id as orderCarId,
-        oc.no as orderCarNo,
-        oc.vin as vin,
-        oc.brand as brand,
-        oc.model as model,
-        oc.plate_no as plateNo,
-        oc.pick_type as pickType,
-        oc.back_type as backType,
-        oc.state as orderCarState,
-        oc.pick_state as pickState,
-        oc.trunk_state as trunkState,
-        oc.back_state as backState,
-        o.start_city_code as orderStartCityCode,
-        o.end_city_code as orderEndCityCode,
-        CONCAT('${@com.cjyc.common.system.config.LogoImgProperty@logoImg}', cs.logo_img) as logoImg
-        from w_order o
-        join w_order_car oc on oc.order_id = o.id
-        left join s_store ss on ss.id = o.start_store_id
-        left join(select brand,logo_img from s_car_series group by brand) cs on cs.brand = oc.brand
-        left join (
+        *
+        from (
             select
-            wc.*
-            from w_waybill w
-            join w_waybill_car wc on w.id = wc.waybill_id
-            where w.state &lt;= 100
-            and wc.state &lt;= 100
-            and w.type = 2
-            and wc.order_car_id in
+            <include refid="pick_wait_dispatch_car_field"/>,
+
+            oc.pick_fee as freightFee,
+            oc.id as orderCarId,
+            oc.no as orderCarNo,
+            oc.vin as vin,
+            oc.brand as brand,
+            oc.model as model,
+            oc.plate_no as plateNo,
+            oc.pick_type as pickType,
+            oc.back_type as backType,
+            oc.state as orderCarState,
+            oc.pick_state as pickState,
+            oc.trunk_state as trunkState,
+            oc.back_state as backState,
+            o.start_city_code as orderStartCityCode,
+            o.end_city_code as orderEndCityCode,
+            CONCAT('${@com.cjyc.common.system.config.LogoImgProperty@logoImg}', cs.logo_img) as logoImg
+            from w_order o
+            join w_order_car oc on oc.order_id = o.id
+            left join s_store ss on ss.id = o.start_store_id
+            left join(select brand,logo_img from s_car_series group by brand) cs on cs.brand = oc.brand
+            left join (
+                select
+                wc.*
+                from w_waybill w
+                join w_waybill_car wc on w.id = wc.waybill_id
+                where w.state &lt;= 100
+                and wc.state &lt;= 100
+                and w.type = 2
+                and wc.order_car_id in
+                <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+                group by wc.order_car_id
+            ) as temp on temp.order_car_id = oc.id
+            <!-- where o.state between 25 and 100
+            and oc.state &lt; 25
+            and oc.pick_state &lt; 5
+            and oc.pick_type &lt; 4 -->
+            where oc.id in
             <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            group by wc.order_car_id
-        ) as temp on temp.order_car_id = oc.id
-        <!-- where o.state between 25 and 100
-        and oc.state &lt; 25
-        and oc.pick_state &lt; 5
-        and oc.pick_type &lt; 4 -->
-        where oc.id in
-        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
-            #{item}
-        </foreach>
+        ) as shell
+        <include refid="sort_For_app"/>
     </select>
     <select id="findBackCarEndpoint" resultType="com.cjyc.common.model.vo.web.waybill.WaybillCarVo">
         select
-        <include refid="back_wait_dispatch_car_field"/>,
-
-        oc.back_fee as freightFee,
-        oc.id as orderCarId,
-        oc.no as orderCarNo,
-        oc.vin as vin,
-        oc.brand as brand,
-        oc.model as model,
-        oc.plate_no as plateNo,
-        oc.pick_type as pickType,
-        oc.back_type as backType,
-        oc.state as orderCarState,
-        oc.pick_state as pickState,
-        oc.trunk_state as trunkState,
-        oc.back_state as backState,
-        o.start_city_code as orderStartCityCode,
-        o.end_city_code as orderEndCityCode,
-        CONCAT('${@com.cjyc.common.system.config.LogoImgProperty@logoImg}', cs.logo_img) as logoImg
-        from w_order o
-        join w_order_car oc on oc.order_id = o.id
-        left join s_store se on se.id = o.end_store_id
-        left join(select brand,logo_img from s_car_series group by brand) cs on cs.brand = oc.brand
-        left join (
-            select * from (
+        *
+        from (
             select
-            wc.*,
-            concat(s1.province, s1.city, s1.area,s1.detail_addr) as startStoreFullAddress,
-            concat(s2.province, s2.city, s2.area,s2.detail_addr) as endStoreFullAddress
-            from w_waybill w
-            join w_waybill_car wc on w.id = wc.waybill_id
-            left join s_store s1 on s1.id = wc.start_store_id
-            left join s_store s2 on s2.id = wc.end_store_id
-            where w.state &lt;= 100
-            and wc.state &lt;= 100
-            and wc.order_car_id in
+            <include refid="back_wait_dispatch_car_field"/>,
+
+            oc.back_fee as freightFee,
+            oc.id as orderCarId,
+            oc.no as orderCarNo,
+            oc.vin as vin,
+            oc.brand as brand,
+            oc.model as model,
+            oc.plate_no as plateNo,
+            oc.pick_type as pickType,
+            oc.back_type as backType,
+            oc.state as orderCarState,
+            oc.pick_state as pickState,
+            oc.trunk_state as trunkState,
+            oc.back_state as backState,
+            o.start_city_code as orderStartCityCode,
+            o.end_city_code as orderEndCityCode,
+            CONCAT('${@com.cjyc.common.system.config.LogoImgProperty@logoImg}', cs.logo_img) as logoImg
+            from w_order o
+            join w_order_car oc on oc.order_id = o.id
+            left join s_store se on se.id = o.end_store_id
+            left join(select brand,logo_img from s_car_series group by brand) cs on cs.brand = oc.brand
+            left join (
+                select * from (
+                select
+                wc.*,
+                concat(s1.province, s1.city, s1.area,s1.detail_addr) as startStoreFullAddress,
+                concat(s2.province, s2.city, s2.area,s2.detail_addr) as endStoreFullAddress
+                from w_waybill w
+                join w_waybill_car wc on w.id = wc.waybill_id
+                left join s_store s1 on s1.id = wc.start_store_id
+                left join s_store s2 on s2.id = wc.end_store_id
+                where w.state &lt;= 100
+                and wc.state &lt;= 100
+                and wc.order_car_id in
+                <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+                order by w.type desc, wc.id desc
+                limit 10000
+                ) as max
+                group by max.order_car_id
+            ) as temp on temp.order_car_id = oc.id
+            <!--where o.state between 25 and 100
+            and oc.state &lt; 100
+            and oc.back_state &lt; 5
+            and oc.back_type &lt; 4-->
+            where oc.id in
             <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            order by w.type desc, wc.id desc
-            limit 10000
-            ) as max
-            group by max.order_car_id
-        ) as temp on temp.order_car_id = oc.id
-        <!--where o.state between 25 and 100
-        and oc.state &lt; 100
-        and oc.back_state &lt; 5
-        and oc.back_type &lt; 4-->
-        where oc.id in
-        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
-            #{item}
-        </foreach>
+        ) as shell
+        <include refid="sort_For_app"/>
     </select>
     <sql id="order_car_inner_state">
         (case oc.state
@@ -2332,7 +2338,21 @@
             </foreach>
         ) as shell
         left join s_line l on shell.startCityCode = l.from_code and shell.endCityCode = l.to_code
+        <include refid="sort_For_app"/>
     </select>
+    <sql id="sort_For_app">
+        <choose>
+            <when test="param.sort == 1">
+                ORDER BY shell.expectStartDate ASC, shell.orderCarId
+            </when>
+            <when test="param.sort == 2">
+                ORDER BY shell.createTime desc, shell.orderCarId
+            </when>
+            <otherwise>
+                ORDER BY shell.expectStartDate DESC, shell.orderCarId
+            </otherwise>
+        </choose>
+    </sql>
     <select id="findTrunkNodes" resultType="java.lang.String">
         select * from (
             select concat(left(wc.start_city,2), '-', left(wc.end_city,2)) as node
