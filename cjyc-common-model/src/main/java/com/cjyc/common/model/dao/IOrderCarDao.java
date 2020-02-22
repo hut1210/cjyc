@@ -12,7 +12,6 @@ import com.cjyc.common.model.dto.salesman.mine.StockCarDto;
 import com.cjyc.common.model.dto.web.BaseWebDto;
 import com.cjyc.common.model.dto.web.dispatch.LineWaitCountDto;
 import com.cjyc.common.model.dto.web.order.*;
-import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.vo.customer.invoice.InvoiceOrderVo;
 import com.cjyc.common.model.vo.customer.order.OrderCarCenterVo;
@@ -269,11 +268,11 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
 
     Map<String, Object> countTotalWaitDispatchCarByStartCityV2(@Param("paramsDto")LineWaitCountDto paramsDto);
 
-    List<WaybillCarVo> findPickCarEndpoint(@Param("list")List<Long> orderCarIdList);
+    List<WaybillCarVo> findPickCarEndpoint(@Param("list") List<Long> orderCarIdList, @Param("sort") Integer sort);
 
-    List<WaybillCarVo> findBackCarEndpoint(@Param("list")List<Long> orderCarIdList);
+    List<WaybillCarVo> findBackCarEndpoint(@Param("list")List<Long> orderCarIdList, @Param("sort") Integer sort);
 
-    List<WaybillCarVo> findTrunkCarEndpoint(@Param("list")List<Long> orderCarIdList);
+    List<WaybillCarVo> findTrunkCarEndpoint(@Param("list")List<Long> orderCarIdList, @Param("sort") Integer sort);
 
     List<String> findTrunkNodes(String orderCarId);
 

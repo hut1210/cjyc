@@ -6,6 +6,7 @@ import com.cjyc.common.model.dto.driver.mine.BankInfoDto;
 import com.cjyc.common.model.enums.CaptchaTypeEnum;
 import com.cjyc.common.model.enums.ClientEnum;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
@@ -55,15 +56,12 @@ public class RedisKeys {
     private final static String WL_PRE_PAY_LOCK = "wl:pre:pay:lock";
     private final static String WL_COLLECT_PAY_LOCK = "wl:collect:pay:lock";
 
-    /**---------------salesman-------------------------------------------------------------------*/
-    /**验证码*/
-    private final static String CAPTCHA_KEY = "cjyc:sale";
     /**---------------driver-------------------------------------------------------------------*/
 
 
     /**---------------customer-------------------------------------------------------------------*/
     public static String getCaptchaKey(ClientEnum clientEnum, String phone, CaptchaTypeEnum captchaTypeEnum) {
-        return getPreixByCilent(clientEnum) + I + CAPTCHA_KEY + I + captchaTypeEnum.getCode() + I + phone;
+        return getPreixByCilent(clientEnum) + I + captchaTypeEnum.getCode() + I + phone;
     }
 
     public static String getSmsCountKey(String date, String phone) {
@@ -139,7 +137,11 @@ public class RedisKeys {
     }
 
     public static String getThreeCityKey(String keyword){
-        return PROJECT_PREFIX + I + THREE_CITY + I + keyword;
+        String key = PROJECT_PREFIX + I + THREE_CITY;
+        if(StringUtils.isNotBlank(keyword)){
+            key = key + I + keyword;
+        }
+        return key;
     }
 
     public static String getAppBankInfoKey(BankInfoDto dto){

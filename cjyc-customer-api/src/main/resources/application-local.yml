@@ -58,7 +58,7 @@ spring:
     port: 6379
     password: Qaz123$%^Qaz123$%^Qaz123$%^Qaz123$%^Qaz123$%^
     #Redis默认情况下有16个分片，这里配置具体使用的分片，默认是0
-    database: 1
+    database: 0
     timeout: 1000ms
     #连接池，redis2.x默认连接池
     lettuce:

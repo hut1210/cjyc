@@ -2166,6 +2166,7 @@
             oc.back_state as backState,
             o.start_city_code as orderStartCityCode,
             o.end_city_code as orderEndCityCode,
+            o.expect_start_date as expectStartDate,
             CONCAT('${@com.cjyc.common.system.config.LogoImgProperty@logoImg}', cs.logo_img) as logoImg
             from w_order o
             join w_order_car oc on oc.order_id = o.id
@@ -2217,6 +2218,7 @@
             oc.trunk_state as trunkState,
             oc.back_state as backState,
             o.start_city_code as orderStartCityCode,
+            o.expect_start_date as expectStartDate,
             o.end_city_code as orderEndCityCode,
             CONCAT('${@com.cjyc.common.system.config.LogoImgProperty@logoImg}', cs.logo_img) as logoImg
             from w_order o
@@ -2294,6 +2296,7 @@
             oc.trunk_state as trunkState,
             oc.back_state as backState,
             o.start_city_code as orderStartCityCode,
+            o.expect_start_date as expectStartDate,
             o.end_city_code as orderEndCityCode,
             <include refid="trunk_wait_dispatch_car_field"/>,
             CONCAT('${@com.cjyc.common.system.config.LogoImgProperty@logoImg}', cs.logo_img) as logoImg,
@@ -2342,10 +2345,10 @@
     </select>
     <sql id="sort_For_app">
         <choose>
-            <when test="param.sort == 1">
+            <when test="sort == 1">
                 ORDER BY shell.expectStartDate ASC, shell.orderCarId
             </when>
-            <when test="param.sort == 2">
+            <when test="sort == 2">
                 ORDER BY shell.createTime desc, shell.orderCarId
             </when>
             <otherwise>

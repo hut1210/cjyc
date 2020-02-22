@@ -1149,7 +1149,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         List<WaybillCarVo> list = null;
         if (paramsDto.getDispatchType() == WaybillTypeEnum.PICK.code) {
             /**提车*/
-            list = orderCarDao.findPickCarEndpoint(orderCarIdList);
+            list = orderCarDao.findPickCarEndpoint(orderCarIdList, paramsDto.getSort());
             for (WaybillCarVo vo : list) {
                 //验证状态
                 if(vo.getPickState() >= OrderCarLocalStateEnum.DISPATCHED.code){
@@ -1173,7 +1173,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
         } else if (paramsDto.getDispatchType() == WaybillTypeEnum.BACK.code) {
             /**送车*/
-            list = orderCarDao.findBackCarEndpoint(orderCarIdList);
+            list = orderCarDao.findBackCarEndpoint(orderCarIdList, paramsDto.getSort());
             for (WaybillCarVo vo : list) {
                 //验证状态
                 if(vo.getBackState() >= OrderCarLocalStateEnum.DISPATCHED.code){
@@ -1199,7 +1199,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
             }
         } else {
             /**干线*/
-            list = orderCarDao.findTrunkCarEndpoint(orderCarIdList);
+            list = orderCarDao.findTrunkCarEndpoint(orderCarIdList, paramsDto.getSort());
             for (WaybillCarVo vo : list) {
                 //验证状态
                 if(vo.getTrunkState() >= OrderCarTrunkStateEnum.DISPATCHED.code){
