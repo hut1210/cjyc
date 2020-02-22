@@ -3,6 +3,7 @@ package com.cjyc.common.model.dto.web.waybill;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
@@ -43,5 +44,6 @@ public class UpdateTrunkWaybillDto {
 
     @NotEmpty(message = "车辆列表不能为空")
     @ApiModelProperty(value = "车辆列表", required = true)
+    @Valid
     private List<UpdateTrunkWaybillCarDto> list;
 }

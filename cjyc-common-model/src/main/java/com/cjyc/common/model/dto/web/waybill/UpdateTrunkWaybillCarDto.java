@@ -3,6 +3,7 @@ package com.cjyc.common.model.dto.web.waybill;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
@@ -74,19 +75,18 @@ public class UpdateTrunkWaybillCarDto {
     @ApiModelProperty(value = "线路ID")
     private Long lineId;
 
-    @NotNull(message = "预计提车日期不能为空")
+    @Min(value = 1, message = "预计提车日期不合规则")
     @ApiModelProperty(value = "预计提车日期")
     private Long expectStartTime;
 
     @ApiModelProperty(value = "预计到达时间")
     private Long expectEndTime;
 
+    @ApiModelProperty(value = "提车联系人userid")
+    private Long loadLinkUserId;
     @NotNull(message = "提车联系人不能为空")
     @ApiModelProperty(value = "提车联系人")
     private String loadLinkName;
-
-    @ApiModelProperty(value = "提车联系人userid")
-    private Long loadLinkUserId;
     @NotNull(message = "提车联系人电话不能为空")
     @ApiModelProperty(value = "提车联系人电话")
     private String loadLinkPhone;

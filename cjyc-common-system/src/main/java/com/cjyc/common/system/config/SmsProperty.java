@@ -21,7 +21,7 @@ public class SmsProperty {
         SmsProperty.expires = expires;
     }
     @Value("${cjyc.sms.daylimit}")
-    public static void setDaylimit(Integer daylimit) {
+    public void setDaylimit(Integer daylimit) {
         SmsProperty.daylimit = daylimit;
     }
 }

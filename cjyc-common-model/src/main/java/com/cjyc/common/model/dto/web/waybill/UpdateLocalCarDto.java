@@ -3,6 +3,7 @@ package com.cjyc.common.model.dto.web.waybill;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
@@ -72,7 +73,7 @@ public class UpdateLocalCarDto{
     @ApiModelProperty(value = "线路ID")
     private Long lineId;
 
-    @NotNull(message = "预计提车日期不能为空")
+    @Min(value = 1, message = "预计提车日期不合规则")
     @ApiModelProperty(value = "预计提车日期")
     private Long expectStartTime;
 

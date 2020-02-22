@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -90,7 +91,7 @@ public class SaveTrunkWaybillCarDto implements Serializable {
     @ApiModelProperty(value = "线路ID")
     private Long lineId;
 
-    @NotNull(message = "预计提车日期不能为空")
+    @Min(value = 1, message = "预计提车日期不合规则")
     @ApiModelProperty(value = "预计提车日期")
     private Long expectStartTime;
 

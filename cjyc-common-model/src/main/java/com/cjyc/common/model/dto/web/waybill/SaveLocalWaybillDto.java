@@ -7,8 +7,10 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import org.springframework.validation.annotation.Validated;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 /**
@@ -47,10 +49,10 @@ public class SaveLocalWaybillDto implements Serializable {
     @NotBlank(message = "车辆编号不能为空")
     @ApiModelProperty(value = "车辆编号",required = true)
     private String orderCarNo;
-    @NotBlank(message = "装车区县编码不能为空")
+    @NotBlank(message = "始发地区县不能为空")
     @ApiModelProperty(value = "区县编码",required = true)
     private String startAreaCode;
-    @NotBlank(message = "装车地址不能为空")
+    @NotBlank(message = "始发地地址不能为空")
     @ApiModelProperty(value = "装车地址",required = true)
     private String startAddress;
 
@@ -60,10 +62,10 @@ public class SaveLocalWaybillDto implements Serializable {
     @ApiModelProperty(value = "出发地业务中心ID")
     private Long startStoreId;
 
-    @NotBlank(message = "卸车区县编码不能为空")
+    @NotBlank(message = "目的地区县不能为空")
     @ApiModelProperty(value = "区县编码")
     private String endAreaCode;
-    @NotBlank(message = "卸车地址不能为空")
+    @NotBlank(message = "目的地地址不能为空")
     @ApiModelProperty(value = "卸车地址",required = true)
     private String endAddress;
     @ApiModelProperty(value = "目的地业务中心名称")
@@ -71,26 +73,28 @@ public class SaveLocalWaybillDto implements Serializable {
 
     @ApiModelProperty(value = "目的地业务中心ID")
     private Long endStoreId;
-    @NotNull(message = "预计提车日期不能为空")
+    @Min(value = 1, message = "预计提车日期不合规则")
     @ApiModelProperty(value = "预计提车日期",required = true)
     private Long expectStartTime;
 
     @ApiModelProperty(value = "预计到达时间")
     private Long expectEndTime;
 
-    @ApiModelProperty(value = "提车联系人")
-    private String loadLinkName;
-
     @ApiModelProperty(value = "提车联系人ID")
     private Long loadLinkUserId;
+    @NotBlank(message = "提车联系人不能为空")
+    @ApiModelProperty(value = "提车联系人")
+    private String loadLinkName;
+    @NotBlank(message = "提车联系人电话不能为空")
     @ApiModelProperty(value = "提车联系人电话")
     private String loadLinkPhone;
 
-    @ApiModelProperty(value = "收车人名称")
-    private String unloadLinkName;
-
     @ApiModelProperty(value = "收车联系人userId")
     private Long unloadLinkUserId;
+    @NotBlank(message = "收车人不能为空")
+    @ApiModelProperty(value = "收车人名称")
+    private String unloadLinkName;
+    @NotBlank(message = "收车人不能为空")
     @ApiModelProperty(value = "收车人电话")
     private String unloadLinkPhone;
 

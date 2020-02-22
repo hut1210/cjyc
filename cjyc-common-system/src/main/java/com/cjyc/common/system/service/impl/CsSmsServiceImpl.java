@@ -1,5 +1,7 @@
 package com.cjyc.common.system.service.impl;
 
+import cn.hutool.cache.impl.TimedCache;
+import com.cjyc.common.model.constant.TimeConstant;
 import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.enums.CaptchaTypeEnum;
 import com.cjyc.common.model.enums.ClientEnum;
@@ -61,8 +63,7 @@ public class CsSmsServiceImpl implements ICsSmsService {
         String keyPrefix = LocalDateTimeUtil.formatLDT(LocalDateTime.now(), TimePatternConstant.SIMPLE_DATE);
         String countKey = RedisKeys.getSmsCountKey(keyPrefix, phone);
         String count = redisUtils.get(countKey);
-        Integer i = SmsProperty.daylimit;
-        if(count != null && Integer.valueOf(count) >= 20){
+        if(count != null && Integer.valueOf(count) >= SmsProperty.daylimit){
             return BaseResultUtil.fail("发送短信数量超出数量限制，请明天再试");
         }
         //发送短信
@@ -77,7 +78,7 @@ public class CsSmsServiceImpl implements ICsSmsService {
         //放入缓存
         String key = RedisKeys.getCaptchaKey(clientEnum, phone, captchaTypeEnum);
         redisUtils.set(key, captcha);
-        redisUtils.expire(key, SmsProperty.expires, TimeUnit.MILLISECONDS);
+        redisUtils.expire(key, SmsProperty.expires, TimeUnit.MINUTES);
         //计数缓存
         if(redisUtils.hasKey(countKey)){
             redisUtils.incrBy(countKey, 1);
