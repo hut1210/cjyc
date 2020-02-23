@@ -297,6 +297,5 @@ public interface IDriverDao extends BaseMapper<Driver> {
      */
     List<TransportDriverVo> findTransportDriverNew(TransportDto dto);
 
-
-
+    Driver findMasterByCarrierId(Long carrierId);
 }

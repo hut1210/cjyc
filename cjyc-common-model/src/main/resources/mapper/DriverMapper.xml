@@ -1084,6 +1084,18 @@
             and dc.id = #{carrierId} and dc.type = 2 and dc.state &lt; 9
         </where>
     </select>
+    <select id="findMasterByCarrierId" resultType="com.cjyc.common.model.entity.Driver">
+        SELECT
+            *
+        FROM
+            d_driver dr
+        LEFT JOIN ( SELECT * FROM s_user_role_dept WHERE dept_type = 2 AND user_type = 2 ) urd ON urd.user_id = dr.id
+        LEFT JOIN d_carrier cr ON cr.id = urd.dept_id
+        LEFT JOIN s_role r ON r.id = urd.role_id
+        where cr.id = #{carrierId}
+        and r.role_name = '承运商超级管理员'
+
+    </select>
 
 
 </mapper>

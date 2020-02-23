@@ -109,6 +109,7 @@ public class CsPushMsgServiceImpl implements ICsPushMsgService {
         pushInfo.setParams(params);
         return pushInfo;
     }
+
     @Async
     @Override
     public void send(PushInfo p) {

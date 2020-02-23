@@ -1,6 +1,5 @@
 package com.cjyc.common.system.service;
 
-import com.cjyc.common.model.entity.Task;
 import com.cjyc.common.model.entity.defined.PushInfo;
 import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.enums.message.PushMsgEnum;
