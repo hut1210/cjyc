@@ -3,7 +3,6 @@ package com.cjyc.common.system.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.cjkj.common.redis.lock.RedisDistributedLock;
 import com.cjkj.common.redis.template.StringRedisUtil;
-import com.cjkj.log.monitor.LogUtil;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.waybill.*;
 import com.cjyc.common.model.entity.*;
@@ -250,11 +249,18 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 updateOrderCarForDispatchLocal(orderCar.getId(), waybill, orderCar.getState(), isInStore);
 
 
-                //推送消息
+                //推送客户消息
                 if(waybill.getCarrierType() == WaybillCarrierTypeEnum.LOCAL_CONSIGN.code){
-                    csPushMsgService.send(order.getCustomerId(), UserTypeEnum.CUSTOMER, PushMsgEnum.C_CONSIGN_PICK, waybillCar.getOrderCarNo(), carrierInfo.getDriverPhone(), carrierInfo.getVehiclePlateNo());
+                    csPushMsgService.send(order.getCustomerId(), UserTypeEnum.CUSTOMER, PushMsgEnum.C_CONSIGN_PICK, waybillCar.getOrderCarNo(), carrierInfo.getCarrierName(), carrierInfo.getDriverPhone(), carrierInfo.getVehiclePlateNo());
                 }else{
-                    csPushMsgService.send(order.getCustomerId(), UserTypeEnum.CUSTOMER, PushMsgEnum.C_PILOT_PICK, waybillCar.getOrderCarNo(), carrierInfo.getDriverPhone());
+                    csPushMsgService.send(order.getCustomerId(), UserTypeEnum.CUSTOMER, PushMsgEnum.C_PILOT_PICK, waybillCar.getOrderCarNo(), carrierInfo.getCarrierName(), carrierInfo.getDriverPhone());
+                }
+
+                //推送司机消息
+                if(waybill.getCarrierType() == WaybillCarrierTypeEnum.LOCAL_ADMIN.code){
+                    csPushMsgService.send(carrierInfo.getDriverId(), UserTypeEnum.ADMIN, PushMsgEnum.S_NEW_WAYBILL, waybill.getNo(), String.valueOf(waybill.getCarNum()));
+                }else if(waybill.getCarrierType() == WaybillCarrierTypeEnum.LOCAL_CONSIGN.code || waybill.getCarrierType() == WaybillCarrierTypeEnum.LOCAL_PILOT.code){
+                    csPushMsgService.send(carrierInfo.getDriverId(), UserTypeEnum.DRIVER, PushMsgEnum.D_NEW_WAYBILL, waybill.getNo(), String.valueOf(waybill.getCarNum()));
                 }
 
             }
@@ -384,6 +390,13 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             /**5、更新订单车辆状态*/
             updateOrderCarForDispatchLocal(orderCar.getId(), waybill, orderCar.getState(), isInStore);
 
+
+            //推送消息
+            if(waybill.getCarrierType() == WaybillCarrierTypeEnum.LOCAL_CONSIGN.code){
+                csPushMsgService.send(order.getCustomerId(), UserTypeEnum.CUSTOMER, PushMsgEnum.C_CONSIGN_PICK, waybillCar.getOrderCarNo(), carrierInfo.getCarrierName(), carrierInfo.getDriverPhone(), carrierInfo.getVehiclePlateNo());
+            }else{
+                csPushMsgService.send(order.getCustomerId(), UserTypeEnum.CUSTOMER, PushMsgEnum.C_PILOT_PICK, waybillCar.getOrderCarNo(), carrierInfo.getCarrierName(), carrierInfo.getDriverPhone());
+            }
             //记录修改历史
             return BaseResultUtil.success();
         } finally {
@@ -673,6 +686,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             waybillDao.insert(waybill);
 
             /**2、运单中车辆循环*/
+
             Set<String> orderCarNoSet = Sets.newHashSet();
             List<WaybillCar> waybillCars = Lists.newArrayList();
             for (SaveTrunkWaybillCarDto dto : dtoList) {
@@ -761,6 +775,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 //提取属性
                 orderCarNoSet.add(waybillCar.getOrderCarNo());
                 waybillCars.add(waybillCar);
+
+
             }
 
             //承运商有且仅有一个司机
@@ -768,6 +784,10 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             log.debug("【干线调度】准备创建任务：" + JSON.toJSONString(waybillCars));
             csTaskService.reCreate(waybill, waybillCars, waybillCars,carrierInfo);
             log.debug("【干线调度】调度成功：" + JSON.toJSONString(waybillCars));
+
+            //推送司机消息
+            csPushMsgService.send(carrierInfo.getDriverId(), UserTypeEnum.DRIVER, PushMsgEnum.D_NEW_WAYBILL, waybill.getNo(), String.valueOf(waybill.getCarNum()));
+
             return BaseResultUtil.success();
         } finally {
             if (!CollectionUtils.isEmpty(lockSet)) {
@@ -952,6 +972,9 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             //验证运单是否完成
             validateAndFinishWaybill(waybill.getId());
             log.debug("【干线调度修改】------------->修改结束：" + JSON.toJSONString(waybillCars));
+
+            //推送司机消息
+            csPushMsgService.send(carrierInfo.getDriverId(), UserTypeEnum.DRIVER, PushMsgEnum.D_NEW_WAYBILL, waybill.getNo(), String.valueOf(waybill.getCarNum()));
             return BaseResultUtil.success();
         } finally {
             if (!CollectionUtils.isEmpty(lockSet)) {
@@ -971,7 +994,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             if(!CollectionUtils.isEmpty(afterTasks)){
                 afterTasks.forEach(task -> {
                     taskDao.updateNum(task.getId());
-                    csTaskService.validateAndFinishTask(task.getId());
+                    csTaskService.validateAndFinishTask(task);
                 });
             }
             List<Waybill> afterWaybills = waybillDao.findListByWaybillCarIds(collect);
@@ -1196,7 +1219,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         Task task = taskDao.findByWaybillCarId(waybillCar.getId());
         if (task != null) {
             taskDao.updateNum(task.getId());
-            csTaskService.validateAndFinishTask(task.getId());
+            csTaskService.validateAndFinishTask(task);
         }
 
         validateAndFinishWaybill(waybillCar.getWaybillId());
@@ -1316,7 +1339,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             //验证并完成任务
             Task task = taskDao.findByWaybillCarId(waybillCarId);
             if(task != null){
-                csTaskService.validateAndFinishTask(task.getId());
+                csTaskService.validateAndFinishTask(task);
             }
         }
 
@@ -1335,7 +1358,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
     @Override
     public void validateAndFinishWaybill(Long waybillId) {
-        WaybillCarNum wcNum = waybillCarDao.countUnFinishForState(waybillId);
+        BillCarNum wcNum = waybillCarDao.countUnFinishForState(waybillId);
         if(wcNum.getUnFinishCarNum() > 0){
             return;
         }

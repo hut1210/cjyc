@@ -3,8 +3,10 @@ package com.cjyc.customer.api.service.impl;
 import com.Pingxx.model.MetaDataEntiy;
 import com.Pingxx.model.PingxxMetaData;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.enums.log.OrderCarLogEnum;
 import com.cjyc.common.model.enums.log.OrderLogEnum;
+import com.cjyc.common.model.enums.message.PushMsgEnum;
 import com.cjyc.common.system.service.*;
 import com.cjyc.common.system.util.MiaoxinSmsUtil;
 import com.cjyc.customer.api.service.IOrderService;
@@ -97,6 +99,8 @@ public class TransactionServiceImpl implements ITransactionService {
 
     @Resource
     private IOrderRefundDao orderRefundDao;
+    @Resource
+    private ICsPushMsgService csPushMsgService;
 
     @Override
     public int save(Object obj) {
@@ -534,6 +538,7 @@ public class TransactionServiceImpl implements ITransactionService {
             }
             //处理运单订单任务数据
             csTaskService.updateForCarFinish(Arrays.asList(mde.getSourceNos().split(",")), userInfo);
+
         }else if(chargeType == ChargeTypeEnum.PREPAY.getCode() || chargeType == ChargeTypeEnum.PREPAY_QRCODE.getCode()){
             PingxxMetaData pingxxMetaData = BeanMapUtil.mapToBean(metadata, new PingxxMetaData());
             //物流费预付
@@ -542,6 +547,7 @@ public class TransactionServiceImpl implements ITransactionService {
             updateForPrePay(pingxxMetaData);
             String lockKey =getRandomNoKey(orderNo);
             redisUtil.delete(lockKey);
+
         }
 
     }
@@ -569,6 +575,8 @@ public class TransactionServiceImpl implements ITransactionService {
                     new String[]{OrderLogEnum.PREPAID.getOutterLog(),
                             MessageFormat.format(OrderLogEnum.PREPAID.getInnerLog(), userInfo.getName(), userInfo.getPhone())},
                     userInfo);
+
+            csPushMsgService.send(order.getCustomerId(), UserTypeEnum.CUSTOMER, PushMsgEnum.C_PAID_ORDER, order.getNo());
 
         }
     }

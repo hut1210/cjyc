@@ -1882,7 +1882,7 @@
         </where>
 
     </select>
-    <select id="countUnFinishForState" resultType="com.cjyc.common.model.entity.defined.WaybillCarNum">
+    <select id="countUnFinishForState" resultType="com.cjyc.common.model.entity.defined.BillCarNum">
         select
         count(0) as totalCarNum,
         IFNULL(sum(case when state = 113 then 1 else 0 end), 0) as cancelCarNum,

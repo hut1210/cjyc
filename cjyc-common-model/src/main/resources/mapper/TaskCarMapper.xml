@@ -45,5 +45,14 @@
         where tc.task_id = #{taskId}
         and wc.state &lt; 100
     </select>
+    <select id="countUnFinishForState" resultType="com.cjyc.common.model.entity.defined.BillCarNum">
+        select
+        count(0) as totalCarNum,
+        IFNULL(sum(case when state = 113 then 1 else 0 end), 0) as cancelCarNum,
+        IFNULL(sum(case when state &lt; 100 then 1 else 0 end), 0) as unFinishCarNum
+        from w_task_car tc
+        join w_waybill_car wc on wc.id = tc.waybill_car_id
+        where tc.task_id = #{id}
+    </select>
 
 </mapper>
