@@ -364,14 +364,7 @@
         LEFT JOIN s_city ct1 on oc.now_area_code = ct1.code
         LEFT JOIN s_city ct2 on s3.city_code = ct2.code
         left join b_admin m on m.id = o.check_user_id
-        left join (
-            select
-            wc1.*
-            from w_waybill w
-            join w_waybill_car wc1 on w.id = wc1.waybill_id
-            where w.state &lt;= 100
-            and wc1.state &lt;= 100
-        ) as wc on wc.order_car_id = oc.id
+        left join w_waybill_car wc on wc.order_car_id = oc.id and wc.state &lt;= 100
         <where>
             and o.state between 25 and 100
             <choose>
