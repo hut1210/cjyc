@@ -572,16 +572,24 @@ public class CsOrderServiceImpl implements ICsOrderService {
             //支付提醒
             csPushMsgService.send(order.getCustomerId(), UserTypeEnum.CUSTOMER, PushMsgEnum.C_PAY_ORDER, order.getNo());
         }
-        if (order.getPickType() == OrderPickTypeEnum.SELF.code){
-            //自送提醒
-            Store store = csStoreService.getById(order.getStartStoreId(), true);
-            csPushMsgService.send(order.getCustomerId(), UserTypeEnum.CUSTOMER, PushMsgEnum.C_SELF_PICK,
-                    order.getNo(),
-                    order.getStartStoreName(),
-                    getAddress(store.getProvince(), store.getCity(),store.getCity(), store.getDetailAddr()));
-        }
+        sendPushMsgToCustomerForSelfBack(order);
 
         return BaseResultUtil.success();
+    }
+
+    private void sendPushMsgToCustomerForSelfBack(Order order) {
+        try {
+            if (order.getPickType() == OrderPickTypeEnum.SELF.code){
+                //自送提醒
+                Store store = csStoreService.getById(order.getStartStoreId(), true);
+                csPushMsgService.send(order.getCustomerId(), UserTypeEnum.CUSTOMER, PushMsgEnum.C_SELF_PICK,
+                        order.getNo(),
+                        order.getStartStoreName(),
+                        getAddress(store.getProvince(), store.getCity(),store.getCity(), store.getDetailAddr()));
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(),e);
+        }
     }
 
     private String getAddress(String startProvince, String startCity, String startArea, String startAddress) {

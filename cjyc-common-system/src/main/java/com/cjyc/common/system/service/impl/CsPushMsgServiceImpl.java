@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.annotation.Resource;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +43,9 @@ public class CsPushMsgServiceImpl implements ICsPushMsgService {
     @Async
     @Override
     public void send(Long userId, UserTypeEnum userTypeEnum, PushMsgEnum pushMsgEnum, Object... args) {
+        if(userId == null){
+            return;
+        }
         send(Lists.newArrayList(userId), userTypeEnum, pushMsgEnum, args);
     }
 
@@ -79,16 +83,16 @@ public class CsPushMsgServiceImpl implements ICsPushMsgService {
                     break;
                 default:
             }
-            if(pushMessageReq.getApiKey() == null){
+            if (pushMessageReq.getApiKey() == null) {
                 LogUtil.info("【推送消息】推送功能未启用");
                 return;
             }
             LogUtil.debug("【推送消息】-------------->参数" + JSON.toJSONString(pushMessageReq));
             ResultData resultData = clpMessageService.pushMsg(pushMessageReq);
-            if("00000".equals(resultData.getCode())){
+            if ("00000".equals(resultData.getCode())) {
                 //记录消息内容
                 LogUtil.debug("【推送消息】成功！，返回参数" + JSON.toJSONString(resultData));
-            }else{
+            } else {
                 LogUtil.debug("【推送消息】失败！，返回参数" + JSON.toJSONString(resultData));
             }
         } catch (Exception e) {
@@ -96,8 +100,9 @@ public class CsPushMsgServiceImpl implements ICsPushMsgService {
             LogUtil.error(e.getMessage(), e);
         }
     }
+
     @Override
-    public PushInfo getPushInfo(Long toUserId, UserTypeEnum userTypeEnum, PushMsgEnum pushMsgEnum, Object... args){
+    public PushInfo getPushInfo(Long toUserId, UserTypeEnum userTypeEnum, PushMsgEnum pushMsgEnum, Object... args) {
         PushInfo pushInfo = new PushInfo();
         Map<String, Object> params = Maps.newHashMap();
         for (int i = 0; i < args.length; i++) {
@@ -119,11 +124,11 @@ public class CsPushMsgServiceImpl implements ICsPushMsgService {
     @Async
     @Override
     public void send(List<PushInfo> pushList) {
-        if(CollectionUtils.isEmpty(pushList)){
+        if (CollectionUtils.isEmpty(pushList)) {
             return;
         }
-        pushList.forEach(p -> {
-            try {
+        try {
+            pushList.forEach(p -> {
                 if (p.getToUserId() == null) {
                     return;
                 }
@@ -143,24 +148,24 @@ public class CsPushMsgServiceImpl implements ICsPushMsgService {
                         break;
                     default:
                 }
-                if(pushMessageReq.getApiKey() == null){
+                if (pushMessageReq.getApiKey() == null) {
                     LogUtil.info("【推送消息】推送功能未启用");
                     return;
                 }
                 LogUtil.debug("【推送消息】-------------->参数" + JSON.toJSONString(pushMessageReq));
                 ResultData resultData = clpMessageService.pushMsg(pushMessageReq);
-                if("00000".equals(resultData.getCode())){
+                if ("00000".equals(resultData.getCode())) {
                     //记录消息内容
                     LogUtil.debug("【推送消息】成功！，返回参数" + JSON.toJSONString(resultData));
-                }else{
+                } else {
                     LogUtil.debug("【推送消息】失败！，返回参数" + JSON.toJSONString(resultData));
                 }
-            } catch (Exception e) {
-                LogUtil.error("【推送消息】异常");
-                LogUtil.error(e.getMessage(), e);
-            }
-        });
 
+            });
+        } catch (Exception e) {
+            LogUtil.error("【推送消息】异常");
+            LogUtil.error(e.getMessage(), e);
+        }
     }
 
 }

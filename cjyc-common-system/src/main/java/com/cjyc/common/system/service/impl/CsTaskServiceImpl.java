@@ -668,9 +668,9 @@ public class CsTaskServiceImpl implements ICsTaskService {
         vehicleRunningDao.updateOccupiedNum(task.getId());
 
         //给司机交付消息
-        if(waybill.getCarrierType() == WaybillCarrierTypeEnum.LOCAL_ADMIN.code && !CollectionUtils.isEmpty(successSet)){
+        if(waybill.getCarrierType() != null && waybill.getCarrierType() == WaybillCarrierTypeEnum.LOCAL_ADMIN.code && !CollectionUtils.isEmpty(successSet)){
             csPushMsgService.send(task.getDriverId(), UserTypeEnum.ADMIN, PushMsgEnum.S_UNLOAD, waybill.getNo(), Joiner.on(",").join(successSet), successSet.size());
-        }else if(waybill.getCarrierType() == WaybillCarrierTypeEnum.LOCAL_CONSIGN.code || waybill.getCarrierType() == WaybillCarrierTypeEnum.LOCAL_PILOT.code){
+        }else {
             csPushMsgService.send(task.getDriverId(), UserTypeEnum.DRIVER, PushMsgEnum.D_UNLOAD, waybill.getNo(), Joiner.on(",").join(successSet), successSet.size());
         }
 
@@ -803,7 +803,6 @@ public class CsTaskServiceImpl implements ICsTaskService {
             //客户自提推送
             //验证是否订单全部到达业务中心
             if(waybillCar.getEndStoreId().equals(order.getEndStoreId())){
-
                 int i = orderDao.countUnArriveStore(order.getId());
                 if(i <= 0 && !pushMap.containsKey(order.getId())){
                     Store store = csStoreService.getById(waybillCar.getEndStoreId(), true);
@@ -832,9 +831,9 @@ public class CsTaskServiceImpl implements ICsTaskService {
             pushMap.forEach((orderId, p) -> csPushMsgService.send(p));
         }
         //给司机交付消息
-        if(waybill.getCarrierType() == WaybillCarrierTypeEnum.LOCAL_ADMIN.code && !CollectionUtils.isEmpty(successSet)){
+        if(waybill.getCarrierType() != null && waybill.getCarrierType() == WaybillCarrierTypeEnum.LOCAL_ADMIN.code && !CollectionUtils.isEmpty(successSet)){
             csPushMsgService.getPushInfo(task.getDriverId(), UserTypeEnum.ADMIN, PushMsgEnum.S_UNLOAD, waybill.getNo(), Joiner.on(",").join(successSet), successSet.size());
-        }else if(waybill.getCarrierType() == WaybillCarrierTypeEnum.LOCAL_CONSIGN.code || waybill.getCarrierType() == WaybillCarrierTypeEnum.LOCAL_PILOT.code){
+        }else {
             csPushMsgService.send(task.getDriverId(), UserTypeEnum.DRIVER, PushMsgEnum.D_UNLOAD, waybill.getNo(), Joiner.on(",").join(successSet), successSet.size());
         }
 
@@ -856,7 +855,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
         //任务交付消息
         try{
             Waybill waybill = waybillDao.selectById(task.getWaybillId());
-            boolean isAdmin = waybill.getCarrierType() == WaybillCarrierTypeEnum.LOCAL_ADMIN.code;
+            boolean isAdmin = waybill.getCarrierType() != null && waybill.getCarrierType() == WaybillCarrierTypeEnum.LOCAL_ADMIN.code;
             csPushMsgService.send(task.getDriverId(),
                     isAdmin ? UserTypeEnum.ADMIN : UserTypeEnum.DRIVER,
                     isAdmin ? PushMsgEnum.S_FINISHED : PushMsgEnum.D_FINISHED,
@@ -985,9 +984,9 @@ public class CsTaskServiceImpl implements ICsTaskService {
         csStorageLogService.asyncSaveBatch(storageLogSet);
 
         //给司机发送消息
-        if(waybill.getCarrierType() == WaybillCarrierTypeEnum.LOCAL_ADMIN.code && !CollectionUtils.isEmpty(successSet)){
+        if(waybill.getCarrierType() != null && waybill.getCarrierType() == WaybillCarrierTypeEnum.LOCAL_ADMIN.code && !CollectionUtils.isEmpty(successSet)){
             csPushMsgService.getPushInfo(task.getDriverId(), UserTypeEnum.ADMIN, PushMsgEnum.S_LOAD, waybill.getNo(), Joiner.on(",").join(successSet), successSet.size());
-        }else if(waybill.getCarrierType() == WaybillCarrierTypeEnum.LOCAL_CONSIGN.code || waybill.getCarrierType() == WaybillCarrierTypeEnum.LOCAL_PILOT.code){
+        }else {
             csPushMsgService.send(task.getDriverId(), UserTypeEnum.DRIVER, PushMsgEnum.D_LOAD, waybill.getNo(), Joiner.on(",").join(successSet), successSet.size());
         }
         return BaseResultUtil.success(resultReasonVo);
@@ -1279,22 +1278,26 @@ public class CsTaskServiceImpl implements ICsTaskService {
             }
         }
 
-        //发送消息
-        pushCustomerInfoMap.forEach((customerId, carNoList) -> {
-            if(!CollectionUtils.isEmpty(carNoList)){
-                csPushMsgService.send(customerId, UserTypeEnum.CUSTOMER, PushMsgEnum.C_PAID_CAR, Joiner.on(",").join(carNoList));
-            }
-        });
-
-        pushDriverInfoMap.forEach((driverId, pdInfo) -> {
-            if(!CollectionUtils.isEmpty(pdInfo.getOrderCarNos())){
-                if(UserTypeEnum.ADMIN == pdInfo.getUserTypeEnum()){
-                    csPushMsgService.send(driverId, UserTypeEnum.ADMIN, PushMsgEnum.S_PAID_CAR, Joiner.on(",").join(pdInfo.getOrderCarNos()));
-                }else{
-                    csPushMsgService.send(driverId, UserTypeEnum.DRIVER, PushMsgEnum.D_PAID_CAR, Joiner.on(",").join(pdInfo.getOrderCarNos()));
+        try {
+            //发送消息
+            pushCustomerInfoMap.forEach((customerId, carNoList) -> {
+                if(!CollectionUtils.isEmpty(carNoList)){
+                    csPushMsgService.send(customerId, UserTypeEnum.CUSTOMER, PushMsgEnum.C_PAID_CAR, Joiner.on(",").join(carNoList));
                 }
-            }
-        });
+            });
+
+            pushDriverInfoMap.forEach((driverId, pdInfo) -> {
+                if(!CollectionUtils.isEmpty(pdInfo.getOrderCarNos())){
+                    if(UserTypeEnum.ADMIN == pdInfo.getUserTypeEnum()){
+                        csPushMsgService.send(driverId, UserTypeEnum.ADMIN, PushMsgEnum.S_PAID_CAR, Joiner.on(",").join(pdInfo.getOrderCarNos()));
+                    }else{
+                        csPushMsgService.send(driverId, UserTypeEnum.DRIVER, PushMsgEnum.D_PAID_CAR, Joiner.on(",").join(pdInfo.getOrderCarNos()));
+                    }
+                }
+            });
+        } catch (Exception e) {
+            log.error(e.getMessage(),e);
+        }
 
     }
 
