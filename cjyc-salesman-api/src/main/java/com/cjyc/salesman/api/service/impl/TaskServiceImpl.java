@@ -65,6 +65,7 @@ public class TaskServiceImpl implements ITaskService {
 
     @Override
     public ResultVo<PageVo<TaskWaybillVo>> getCarryPage(TaskWaybillQueryDto dto) {
+        log.info("====>业务员端-分页查询提送车；提送车历史记录列表,请求json数据 :: "+JsonUtils.objectToJson(dto));
         if (dto.getCompleteTimeE() != null && dto.getCompleteTimeE() != 0) {
             dto.setCompleteTimeE(TimeStampUtil.convertEndTime(dto.getCompleteTimeE()));
         }
@@ -81,6 +82,7 @@ public class TaskServiceImpl implements ITaskService {
 
     @Override
     public ResultVo<TaskDetailVo> getCarryDetail(DetailQueryDto dto) {
+        log.info("====>业务员端-查询提送车,提送车历史记录任务详情；查询出入库,出入库历史记录任务详情,请求json数据 :: "+JsonUtils.objectToJson(dto));
         TaskDetailVo taskDetailVo = new TaskDetailVo();
         // 查询运单信息
         Long waybillId = dto.getWaybillId();
@@ -267,6 +269,7 @@ public class TaskServiceImpl implements ITaskService {
 
     @Override
     public ResultVo<PageVo<TaskWaybillVo>> getOutAndInStoragePage(OutAndInStorageQueryDto dto) {
+        log.info("====>业务员端-分页查询出入库，出入库历史记录列表,请求json数据 :: "+JsonUtils.objectToJson(dto));
         if (dto.getInStorageTimeE() != null && dto.getInStorageTimeE() != 0) {
             dto.setInStorageTimeE(TimeStampUtil.convertEndTime(dto.getInStorageTimeE()));
         }
