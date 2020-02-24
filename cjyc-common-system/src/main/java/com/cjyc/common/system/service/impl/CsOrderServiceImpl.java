@@ -231,7 +231,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         //提交订单
         Order order = commitOrder(paramsDto);
         //推送给客户消息
-        csPushMsgService.send(paramsDto.getLoginId(), UserTypeEnum.CUSTOMER, PushMsgEnum.C_COMMIT_ORDER, order.getNo());
+        csPushMsgService.send(order.getCustomerId(), UserTypeEnum.CUSTOMER, PushMsgEnum.C_COMMIT_ORDER, order.getNo());
 
         return BaseResultUtil.success("下单成功，订单编号{0}", order.getNo());
     }
@@ -570,11 +570,27 @@ public class CsOrderServiceImpl implements ICsOrderService {
         //给客户待支付发送消息
         if (PayModeEnum.PREPAY.code == order.getPayType()) {
             //支付提醒
-            //csPushMsgService.send(order.getCustomerId(), UserTypeEnum.CUSTOMER, PushMsgEnum.C_PAY_ORDER, order.getNo());
+            csPushMsgService.send(order.getCustomerId(), UserTypeEnum.CUSTOMER, PushMsgEnum.C_PAY_ORDER, order.getNo());
+        }
+        if (order.getPickType() == OrderPickTypeEnum.SELF.code){
+            //自送提醒
+            Store store = csStoreService.getById(order.getStartStoreId(), true);
+            csPushMsgService.send(order.getCustomerId(), UserTypeEnum.CUSTOMER, PushMsgEnum.C_SELF_PICK,
+                    order.getNo(),
+                    order.getStartStoreName(),
+                    getAddress(store.getProvince(), store.getCity(),store.getCity(), store.getDetailAddr()));
         }
 
         return BaseResultUtil.success();
     }
+
+    private String getAddress(String startProvince, String startCity, String startArea, String startAddress) {
+        return (startProvince == null ? "" : startProvince) +
+                (startCity == null ? "" : startCity) +
+                (startArea == null ? "" : startArea) +
+                (startAddress == null ? "" : startAddress);
+    }
+
 
     private Order fillOrderStoreInfoForSave(Order order) {
         Long inputStoreId = order.getInputStoreId();
@@ -780,6 +796,10 @@ public class CsOrderServiceImpl implements ICsOrderService {
             SaveLocalDto slDto = getPickSaveLocalDto(order, new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone()));
             csWaybillService.saveLocal(slDto);
         }
+
+        //推送给客户下单消息
+        csPushMsgService.send(order.getCustomerId(), UserTypeEnum.CUSTOMER, PushMsgEnum.C_COMMIT_ORDER, order.getNo());
+
         return BaseResultUtil.success("下单{0}成功", order.getNo());
     }
 

@@ -63,7 +63,6 @@ public interface ICsTaskService {
 
     ResultVo inStoreForLocal(ReplenishInfoDto reqDto);
 
-    void validateAndFinishTaskWaybill(Task task);
-    void validateAndFinishTask(Long Id);
-
+    int validateAndFinishTaskWaybill(Task task);
+    int validateAndFinishTask(Task task);
 }

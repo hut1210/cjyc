@@ -58,7 +58,7 @@ public class BasicController {
     @PostMapping(value = "/findCity")
     public ResultVo<CityVo> queryCity(@RequestBody KeywordDto dto)
     {
-        return csCityService.queryCity(dto);
+        return csCityService.queryCity(true,dto);
     }
 
     @ApiOperation(value = "查询省/城市区树形结构")

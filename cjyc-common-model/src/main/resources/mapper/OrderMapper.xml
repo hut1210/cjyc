@@ -531,4 +531,12 @@
     <select id="findByNo" resultType="com.cjyc.common.model.entity.Order">
         select * from w_order where no = #{orderNo}
     </select>
+    <select id="countUnArriveStore" resultType="java.lang.Integer">
+        select count(0)
+        from w_order w
+        join w_order_car wc on w.id = wc.order_id
+        where w.id = #{id}
+        and wc.state &lt; 100
+        and (wc.now_store_id is null or wc.now_store_id != w.end_store_id)
+    </select>
 </mapper>
