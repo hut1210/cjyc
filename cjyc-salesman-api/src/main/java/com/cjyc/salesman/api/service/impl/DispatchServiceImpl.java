@@ -46,6 +46,7 @@ import java.util.Map;
  * @Author Liu Xing Xiang
  * @Date 2019/12/11 13:35
  **/
+@Slf4j
 @Service
 public class DispatchServiceImpl implements IDispatchService {
     /**
@@ -173,6 +174,7 @@ public class DispatchServiceImpl implements IDispatchService {
 
     @Override
     public ResultVo getWaybillDetail(Long waybillId) {
+        log.info("====>业务员端-历史记录页面-根据运单ID查询历史调度记录明细,请求json数据 :: "+JsonUtils.objectToJson(waybillId));
         WaybillDetailVo detail = new WaybillDetailVo();
         // 查询运单信息
         Waybill waybill = waybillDao.selectById(waybillId);
@@ -371,6 +373,7 @@ public class DispatchServiceImpl implements IDispatchService {
 
     @Override
     public ResultVo getCarDetail(String carNo) {
+        log.info("====>业务员端-调度页面-根据车辆编号查询车辆明细,请求json数据 :: "+JsonUtils.objectToJson(carNo));
         // 查询车辆信息
         DispatchCarDetailVo detail = new DispatchCarDetailVo();
         OrderCar orderCar = orderCarDao.selectOne(new QueryWrapper<OrderCar>().lambda().eq(OrderCar::getNo, carNo));
@@ -401,6 +404,7 @@ public class DispatchServiceImpl implements IDispatchService {
 
     @Override
     public ResultVo getHistoryRecord(HistoryDispatchRecordDto dto) {
+        log.info("====>业务员端-调度页面-查询历史记录列表分页,请求json数据 :: "+JsonUtils.objectToJson(dto));
         if (dto.getCreateTimeE() != null && dto.getCreateTimeE() != 0) {
             dto.setCreateTimeE(TimeStampUtil.convertEndTime(dto.getCreateTimeE()));
         }
