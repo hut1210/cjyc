@@ -83,6 +83,7 @@ public class ApplyPartnerServiceImpl extends ServiceImpl<ICustomerDao, Customer>
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResultVo applyPartnerNew(ApplyPartnerDto dto) {
+        log.info("申请合伙人请求json数据 :: "+JsonUtils.objectToJson(dto));
         Customer customer = customerDao.selectById(dto.getLoginId());
         UserRoleDept urd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
                 .eq(UserRoleDept::getUserId, dto.getLoginId())

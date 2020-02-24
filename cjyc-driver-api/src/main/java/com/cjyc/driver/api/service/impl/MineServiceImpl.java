@@ -445,6 +445,7 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResultVo saveOrModifyVehicleNew(AppCarrierVehicleDto dto){
+        log.info("新增/修改车辆请求json数据 :: "+ JsonUtils.objectToJson(dto));
         UserRoleDept urd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
                 .eq(UserRoleDept::getUserId, dto.getLoginId())
                 .eq(UserRoleDept::getId, dto.getRoleId()));
@@ -516,6 +517,7 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResultVo frozenDriverNew(FrozenDriverDto dto){
+        log.info("删除(冻结)承运商下司机请求json数据 :: "+ JsonUtils.objectToJson(dto));
         UserRoleDept urd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
                 .eq(UserRoleDept::getUserId, dto.getLoginId())
                 .eq(UserRoleDept::getId, dto.getRoleId()));
@@ -546,6 +548,7 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResultVo removeVehicleNew(RemoveVehicleDto dto){
+        log.info("个人司机删除车辆绑定关系请求json数据 :: "+ JsonUtils.objectToJson(dto));
         UserRoleDept urd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
                 .eq(UserRoleDept::getUserId, dto.getLoginId())
                 .eq(UserRoleDept::getId, dto.getRoleId()));
@@ -591,6 +594,7 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResultVo authOrModifyInfoNew(SocietyDriverDto dto){
+        log.info("个人司机认证/修改个人信息请求json数据 :: "+ JsonUtils.objectToJson(dto));
         UserRoleDept urd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
                 .eq(UserRoleDept::getUserId, dto.getLoginId())
                 .eq(UserRoleDept::getId, dto.getRoleId()));
@@ -721,6 +725,7 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResultVo addBankCardNew(BankCardDto dto){
+        log.info("个人司机添加银行卡请求json数据 :: "+ JsonUtils.objectToJson(dto));
         UserRoleDept urd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
                 .eq(UserRoleDept::getUserId, dto.getLoginId())
                 .eq(UserRoleDept::getId, dto.getRoleId()));
@@ -765,6 +770,7 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
 
     @Override
     public ResultVo removeBankCardNew(RemoveBankCardDto dto){
+        log.info("删除银行卡请求json数据 :: "+ JsonUtils.objectToJson(dto));
         UserRoleDept urd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
                 .eq(UserRoleDept::getUserId, dto.getLoginId())
                 .eq(UserRoleDept::getId, dto.getRoleId()));

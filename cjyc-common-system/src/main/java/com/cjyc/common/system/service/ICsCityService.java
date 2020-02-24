@@ -25,10 +25,11 @@ public interface ICsCityService {
 
     /**
      * 根据关键字查询城市(热门城市/三级城市)
+     * @param isSearchCache
      * @param dto
      * @return
      */
-    ResultVo<CityVo> queryCity(KeywordDto dto);
+    ResultVo<CityVo> queryCity(boolean isSearchCache,KeywordDto dto);
 
     /**
      *  根据角色id或登录id获取三级城市列表

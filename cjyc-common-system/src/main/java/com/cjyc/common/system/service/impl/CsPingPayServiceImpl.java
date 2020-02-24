@@ -106,6 +106,12 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
     @Resource
     private IConfigDao configDao;
 
+    @Resource
+    private IPaymentRecordDao paymentRecordDao;
+
+    @Resource
+    private IPaymentErrorLogDao paymentErrorLogDao;
+
     private final Lock lock = new ReentrantLock();
 
     @Override
@@ -382,24 +388,37 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                     BaseCarrierVo baseCarrierVo = carrierDao.showCarrierById(carrierId);
                     log.info("【通联代付支付运费】运单Id{},支付状态 state {}",waybillId,waybill.getFreightPayState());
 
+                    //新增打款记录日志
+                    try{
+                        PaymentRecord paymentRecord = new PaymentRecord();
+                        paymentRecord.setCarrierId(carrierId);
+                        paymentRecord.setWaybillId(waybillId);
+                        paymentRecord.setType(0);
+                        paymentRecord.setCreateTime(System.currentTimeMillis());
+                        addPaymentRecord(paymentRecord);
+                    }catch (Exception e){
+                        log.error("【新增打款记录日志失败】 waybillId = {}", waybillId);
+                    }
+
+
                     Config config = configDao.getByItemKey("external_pay");
                     if(config!=null&&config.getState()==1){//对外支付模式
                         try{
-                            log.info("【对外支付模式，添加打款日志详情】运单Id {}",waybillId);
+                            log.info("【对外支付模式】运单Id {}",waybillId);
                             ExternalPayment ep = externalPaymentDao.getByWayBillId(waybillId);
 
                             if(ep==null){
-                                //添加打款日志详情
+                                //新增对外支付打款日志详情
                                 ExternalPayment externalPayment = new ExternalPayment();
                                 externalPayment.setCarrierId(carrierId);
                                 externalPayment.setWaybillId(waybillId);
                                 externalPaymentDao.insert(externalPayment);
                             }else{
-                                log.error("【添加承运商打款日志详情失败】 waybillId = {} 已存在", waybillId);
+                                log.error("【承运商对外打款日志新增失败】 waybillId = {} 已存在", waybillId);
                             }
 
                         }catch (Exception e){
-                            log.error("【添加承运商打款日志详情异常】 waybillId = {}", waybillId);
+                            log.error("【承运商对外打款日志新增异常】 waybillId = {}", waybillId);
                             log.error(e.getMessage(), e);
                         }
                     }else{//自动打款模式
@@ -410,21 +429,26 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                                     if(baseCarrierVo.getCardName()!=null && baseCarrierVo.getCardNo()!=null
                                             && baseCarrierVo.getBankCode()!=null){
                                         Transfer transfer = allinpayTransferDriverCreate(baseCarrierVo,waybill);
-                                        log.debug("【通联代付支付运费】运单{}，支付运费，账单{}", waybill.getNo(), transfer);
+                                        log.debug("【自动打款模式，通联代付支付运费】运单{}，支付运费，账单{}", waybill.getNo(), transfer);
                                         cStransactionService.saveTransactions(transfer, "0");
                                     }else{
-                                        log.error("【通联代付支付运费】收款人信息不全 waybillId = {}", waybillId);
+                                        log.error("【自动打款模式，通联代付支付运费】收款人信息不全 waybillId = {}", waybillId);
+                                        addPaymentErrorLog("【自动打款模式，通联代付支付运费】收款人信息不全 waybillId ="+waybillId);
                                         return BaseResultUtil.fail("通联代付失败,收款人信息不全");
                                     }
                                 }else{
-                                    log.info("【通联代付支付运费】收款人为账期用户 waybillId = {}", waybillId);
+                                    log.error("【自动打款模式，通联代付支付运费】收款人为账期用户 waybillId = {}", waybillId);
+                                    addPaymentErrorLog("【自动打款模式，通联代付支付运费】收款人为账期用户 waybillId = "+waybillId);
+                                    return BaseResultUtil.fail("通联代付失败,收款人为账期用户");
                                 }
                             }else{
-                                log.info("【通联代付支付运费】收款人不存在 waybillId = {}", waybillId);
+                                log.error("【自动打款模式，通联代付支付运费】收款人不存在 waybillId = {}", waybillId);
+                                addPaymentErrorLog("【自动打款模式，通联代付支付运费】收款人不存在 waybillId = "+waybillId);
+                                return BaseResultUtil.fail("通联代付失败,收款人不存在");
                             }
 
                         }else{
-                            log.debug("【通联代付支付运费】运单{}，支付运费为0", waybill.getNo());
+                            log.info("【自动打款模式，通联代付支付运费】运单{}，支付运费为0", waybill.getNo());
                             cStransactionService.updateWayBillPayStateNoPay(waybillId, System.currentTimeMillis());
                         }
                     }
@@ -435,12 +459,28 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
 
             }
         }catch (Exception e){
-            log.error("【通联代付支付运费】运单{}，支付运费支付失败", waybill.getNo());
+            log.error("【自动打款模式，通联代付支付运费】运单{}，支付运费支付失败", waybill.getNo());
             log.error(e.getMessage(), e);
+            addPaymentErrorLog("【自动打款模式，通联代付支付运费】运单"+waybill.getNo()+"，支付运费支付失败");
             return BaseResultUtil.fail("通联代付失败");
         }
 
         return BaseResultUtil.success("通联代付成功");
+    }
+
+    /**
+     * 新增打款记录
+     * @param paymentRecord
+     */
+    private void addPaymentRecord(PaymentRecord paymentRecord){
+       paymentRecordDao.insert(paymentRecord);
+    }
+
+    private void addPaymentErrorLog(String remark){
+        PaymentErrorLog paymentErrorLog = new PaymentErrorLog();
+        paymentErrorLog.setRemark(remark);
+        paymentErrorLog.setCreateTime(System.currentTimeMillis());
+        paymentErrorLogDao.insert(paymentErrorLog);
     }
 
     @Override
@@ -457,44 +497,34 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                     waybill = waybillDao.selectById(waybillId);
                     Long carrierId = waybill.getCarrierId();
                     BaseCarrierVo baseCarrierVo = carrierDao.showCarrierById(carrierId);
-                    log.info("【通联代付支付运费】运单Id{},支付状态 state {}",waybillId,waybill.getFreightPayState());
+                    log.info("【对外支付模式，通联代付支付运费】运单Id{},支付状态 state {}",waybillId,waybill.getFreightPayState());
                     if(waybill != null && waybill.getFreightPayState()==0 && waybill.getFreightFee().compareTo(BigDecimal.ZERO)>0){
-
-                        /*try{
-
-                            ExternalPayment ep = externalPaymentDao.getByWayBillId(waybillId);
-
-                            //添加打款日志详情
-                            ExternalPayment externalPayment = new ExternalPayment();
-                            externalPayment.setCarrierId(carrierId);
-                            externalPayment.setWaybillId(waybillId);
-                            externalPaymentDao.insert(externalPayment);
-                        }catch (Exception e){
-                            log.error("添加承运商打款日志详情失败 waybillId = {}", waybillId);
-                            log.error(e.getMessage(), e);
-                        }*/
-
 
                         if(baseCarrierVo!=null){
                             if(baseCarrierVo.getSettleType()==0){
                                 if(baseCarrierVo.getCardName()!=null && baseCarrierVo.getCardNo()!=null
                                         && baseCarrierVo.getBankCode()!=null){
                                     Transfer transfer = allinpayTransferDriverCreate(baseCarrierVo,waybill);
-                                    log.debug("【通联代付支付运费】运单{}，支付运费，账单{}", waybill.getNo(), transfer);
+                                    log.debug("【对外支付模式，通联代付支付运费】运单{}，支付运费，账单{}", waybill.getNo(), transfer);
                                     cStransactionService.saveTransactions(transfer, "0");
                                 }else{
-                                    log.error("【通联代付支付运费】收款人信息不全 waybillId = {}", waybillId);
+                                    log.error("【对外支付模式，通联代付支付运费】收款人信息不全 waybillId = {}", waybillId);
+                                    addPaymentErrorLog("【对外支付模式，通联代付支付运费】收款人信息不全 waybillId ="+waybillId);
                                     return BaseResultUtil.fail("通联代付失败,收款人信息不全");
                                 }
                             }else{
-                                log.info("【通联代付支付运费】收款人为账期用户 waybillId = {}", waybillId);
+                                log.error("【对外支付模式，通联代付支付运费】收款人为账期用户 waybillId = {}", waybillId);
+                                addPaymentErrorLog("【对外支付模式，通联代付支付运费】收款人为账期用户 waybillId = "+waybillId);
+                                return BaseResultUtil.fail("通联代付失败,收款人为账期用户");
                             }
                         }else{
-                            log.info("【通联代付支付运费】收款人不存在 waybillId = {}", waybillId);
+                            log.error("【对外支付模式，通联代付支付运费】收款人不存在 waybillId = {}", waybillId);
+                            addPaymentErrorLog("【对外支付模式，通联代付支付运费】收款人不存在 waybillId = "+waybillId);
+                            return BaseResultUtil.fail("通联代付失败,收款人不存在");
                         }
 
                     }else{
-                        log.debug("【通联代付支付运费】运单{}，支付运费为0", waybill.getNo());
+                        log.debug("【对外支付模式，通联代付支付运费】运单{}，支付运费为0", waybill.getNo());
                         cStransactionService.updateWayBillPayStateNoPay(waybillId, System.currentTimeMillis());
                     }
                 }finally {
@@ -503,8 +533,9 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
 
             }
         }catch (Exception e){
-            log.error("【通联代付支付运费】运单{}，支付运费支付失败", waybill.getNo());
+            log.error("【对外支付模式，通联代付支付运费】运单{}，支付运费支付失败", waybill.getNo());
             log.error(e.getMessage(), e);
+            addPaymentErrorLog("【对外支付模式，通联代付支付运费】运单"+waybill.getNo()+"，支付运费支付失败");
             return BaseResultUtil.fail("通联代付失败");
         }
 
@@ -550,14 +581,15 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                         }
                     }
 
+                    //新增打款记录日志
                     try{
-                        //添加打款日志详情
-                        ExternalPayment externalPayment = new ExternalPayment();
-                        externalPayment.setOrderId(orderId);
-                        externalPayment.setType(2);
-                        externalPaymentDao.insert(externalPayment);
+                        PaymentRecord paymentRecord = new PaymentRecord();
+                        paymentRecord.setOrderId(orderId);
+                        paymentRecord.setType(2);
+                        paymentRecord.setCreateTime(System.currentTimeMillis());
+                        addPaymentRecord(paymentRecord);
                     }catch (Exception e){
-                        log.error("添加合伙人打款日志详情失败 orderId = {}", orderId);
+                        log.error("新增合伙人打款日志详情失败 orderId = {}", orderId);
                         log.error(e.getMessage(), e);
                     }
 
@@ -569,6 +601,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                             cStransactionService.saveTransactions(transfer, "0");
                         }else{
                             log.error("【通联代付支付合伙人费用】收款人信息不全 orderId = {}", orderId);
+                            addPaymentErrorLog("【通联代付支付合伙人费用】收款人信息不全 orderId = "+orderId);
                             return BaseResultUtil.fail("通联代付支付合伙人费用失败,收款人信息不全");
                         }
                     }else{
@@ -580,11 +613,13 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                 }
 
             }else{
+                addPaymentErrorLog("合伙人通联代付失败,订单"+orderId+"不存在");
                 return BaseResultUtil.fail("合伙人通联代付失败,订单{}不存在", orderId);
             }
         }catch (Exception e){
             log.error("【通联代付支付服务费】订单{}，支付服务费失败", order.getNo());
             log.error(e.getMessage(), e);
+            addPaymentErrorLog("【通联代付支付服务费】订单"+order.getNo()+"，支付服务费失败");
             return BaseResultUtil.fail("合伙人通联代付异常");
         }
 
