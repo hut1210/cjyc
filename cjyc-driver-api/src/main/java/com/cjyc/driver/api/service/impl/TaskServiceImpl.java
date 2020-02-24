@@ -16,6 +16,7 @@ import com.cjyc.common.model.enums.waybill.WaybillCarStateEnum;
 import com.cjyc.common.model.enums.waybill.WaybillCarrierTypeEnum;
 import com.cjyc.common.model.enums.waybill.WaybillTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.JsonUtils;
 import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -68,7 +69,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
 
     @Override
     public ResultVo<PageVo<TaskBillVo>> getWaitHandleTaskPage(BaseDriverDto dto) {
-        log.info("====>司机端-查询待分配任务列表,请求json数据 :: "+JsonUtils.objectToJson(dto));
+        log.info("====>司机端-查询待分配任务列表,请求json数据 :: "+ JsonUtils.objectToJson(dto));
         // 分页查询待分配的运单信息
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<TaskBillVo> taskList = waybillDao.selectWaitHandleTaskPage(dto);

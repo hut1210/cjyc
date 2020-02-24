@@ -15,6 +15,7 @@ import com.cjyc.common.model.enums.waybill.WaybillCarrierTypeEnum;
 import com.cjyc.common.model.enums.waybill.WaybillStateEnum;
 import com.cjyc.common.model.enums.waybill.WaybillTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.JsonUtils;
 import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
@@ -28,6 +29,7 @@ import com.cjyc.salesman.api.service.IDispatchService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -174,7 +176,7 @@ public class DispatchServiceImpl implements IDispatchService {
 
     @Override
     public ResultVo getWaybillDetail(Long waybillId) {
-        log.info("====>业务员端-历史记录页面-根据运单ID查询历史调度记录明细,请求json数据 :: "+JsonUtils.objectToJson(waybillId));
+        log.info("====>业务员端-历史记录页面-根据运单ID查询历史调度记录明细,请求json数据 :: "+ JsonUtils.objectToJson(waybillId));
         WaybillDetailVo detail = new WaybillDetailVo();
         // 查询运单信息
         Waybill waybill = waybillDao.selectById(waybillId);
