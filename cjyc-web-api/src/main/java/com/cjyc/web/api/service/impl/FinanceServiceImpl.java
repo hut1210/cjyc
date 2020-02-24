@@ -618,10 +618,9 @@ public class FinanceServiceImpl implements IFinanceService {
                 if(waybill.getFreightPayState()==1){
                     if(result.length()>0){
                         result.append(",");
-                        result.append(waybill.getNo());
-                    }else{
-                        result.append(waybill.getNo());
                     }
+                    result.append(waybill.getNo());
+                    result.append("已支付");
                 }else{
                     try {
                         ResultVo resultVo = csPingPayService.allinpayToCarrierNew(waybillIds.get(i));
@@ -629,10 +628,9 @@ public class FinanceServiceImpl implements IFinanceService {
                         if(resultVo.getCode()==1){
                             if(result.length()>0){
                                 result.append(",");
-                                result.append(waybill.getNo());
-                            }else{
-                                result.append(waybill.getNo());
                             }
+                            result.append(waybill.getNo());
+                            result.append(resultVo.getMsg());
                         }
 
                         try {
@@ -661,10 +659,9 @@ public class FinanceServiceImpl implements IFinanceService {
                     }catch (Exception e){
                         if(result.length()>0){
                             result.append(",");
-                            result.append(waybill.getNo());
-                        }else{
-                            result.append(waybill.getNo());
                         }
+                        result.append(waybill.getNo());
+                        result.append("打款失败");
                         log.error("运单打款失败 waybillId = {}",waybillId);
                     }
                 }
@@ -674,7 +671,6 @@ public class FinanceServiceImpl implements IFinanceService {
             }
         }
         if(result.length()>0){
-            result.append(" 对外支付失败");
             return BaseResultUtil.fail(result.toString());
         }
         return BaseResultUtil.success();
