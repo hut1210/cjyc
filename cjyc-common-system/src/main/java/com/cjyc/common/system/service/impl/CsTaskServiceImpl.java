@@ -591,7 +591,6 @@ public class CsTaskServiceImpl implements ICsTaskService {
         }
 
         int count = 0;
-        Set<Long> waybillCarIdSet = Sets.newHashSet();
         for (Long taskCarId : paramsDto.getTaskCarIdList()) {
             if (taskCarId == null) {
                 continue;
@@ -657,11 +656,11 @@ public class CsTaskServiceImpl implements ICsTaskService {
                         userInfo);
             }
 
-            waybillCarIdSet.add(waybillCar.getId());
+            successSet.add(orderCar.getNo());
             count++;
         }
         if(CollectionUtils.isEmpty(successSet)){
-            return BaseResultUtil.success("");
+            return BaseResultUtil.fail("处理失败");
         }
         validateAndFinishTaskWaybill(task);
         //更新任务信息
