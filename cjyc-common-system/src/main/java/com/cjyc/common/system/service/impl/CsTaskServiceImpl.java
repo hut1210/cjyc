@@ -509,10 +509,12 @@ public class CsTaskServiceImpl implements ICsTaskService {
         csPushMsgService.send(pushCustomerList);
 
         //给司机发送消息
-        if(waybill.getCarrierType() == WaybillCarrierTypeEnum.LOCAL_ADMIN.code && !CollectionUtils.isEmpty(directLoadCarNoSet)){
-            csPushMsgService.getPushInfo(task.getDriverId(), UserTypeEnum.ADMIN, PushMsgEnum.S_LOAD, waybill.getNo(), Joiner.on(",").join(directLoadCarNoSet), directLoadCarNoSet.size());
-        }else {
-            csPushMsgService.send(task.getDriverId(), UserTypeEnum.DRIVER, PushMsgEnum.D_LOAD, waybill.getNo(), Joiner.on(",").join(directLoadCarNoSet), directLoadCarNoSet.size());
+        if(!CollectionUtils.isEmpty(directLoadCarNoSet)){
+            if(waybill.getCarrierType() == WaybillCarrierTypeEnum.LOCAL_ADMIN.code ){
+                csPushMsgService.getPushInfo(task.getDriverId(), UserTypeEnum.ADMIN, PushMsgEnum.S_LOAD, waybill.getNo(), Joiner.on(",").join(directLoadCarNoSet), directLoadCarNoSet.size());
+            }else {
+                csPushMsgService.send(task.getDriverId(), UserTypeEnum.DRIVER, PushMsgEnum.D_LOAD, waybill.getNo(), Joiner.on(",").join(directLoadCarNoSet), directLoadCarNoSet.size());
+            }
         }
         return BaseResultUtil.success();
     }
