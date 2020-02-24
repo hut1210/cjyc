@@ -609,7 +609,7 @@
                     join w_waybill_car wc on w.id = wc.waybill_id
                     where w.state &lt;= 100
                     and wc.state &lt;= 100
-                    order by w.type desc, wc.id desc
+                    /*keep orderby*/order by w.type desc, wc.id desc
                     limit 100000
                 ) as max
                 group by max.order_car_id
@@ -1640,7 +1640,7 @@
                     left join s_store s2 on s2.id = wc.end_store_id
                     where w.state &lt;= 100
                     and wc.state &lt;= 100
-                    order by w.type desc, wc.id desc
+                    /*keep orderby*/order by w.type desc, wc.id desc
                     limit 10000
                 ) as max
                 group by max.order_car_id
@@ -2241,7 +2241,7 @@
                 <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
                     #{item}
                 </foreach>
-                order by w.type desc, wc.id desc
+                /*keep orderby*/order by w.type desc, wc.id desc
                 limit 10000
                 ) as max
                 group by max.order_car_id
@@ -2330,7 +2330,7 @@
                     <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
                         #{item}
                     </foreach>
-                    order by w.type desc, wc.id desc
+                    /*keep orderby*/order by w.type desc, wc.id desc
                     limit 10000
                 ) as max
                 group by max.order_car_id

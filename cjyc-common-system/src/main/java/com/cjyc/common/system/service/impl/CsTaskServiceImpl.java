@@ -659,7 +659,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             count++;
         }
         if(CollectionUtils.isEmpty(successSet)){
-            return BaseResultUtil.fail(resultReasonVo);
+            return BaseResultUtil.success("");
         }
         validateAndFinishTaskWaybill(task);
         //更新任务信息
