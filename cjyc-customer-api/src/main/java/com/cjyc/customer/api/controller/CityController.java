@@ -22,8 +22,7 @@ public class CityController {
 
     @ApiOperation(value = "查看城市")
     @PostMapping(value = "/queryCity")
-    public ResultVo<CityVo> queryCity(@RequestBody KeywordDto dto)
-    {
-        return csCityService.queryCity(dto);
+    public ResultVo<CityVo> queryCity(@RequestBody KeywordDto dto){
+        return csCityService.queryCity(true,dto);
     }
 }

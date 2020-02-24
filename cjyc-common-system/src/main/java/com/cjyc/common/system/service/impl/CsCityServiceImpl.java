@@ -102,20 +102,35 @@ public class CsCityServiceImpl implements ICsCityService {
     }
 
     @Override
-    public ResultVo<CityVo> queryCity(KeywordDto dto) {
-        String key = RedisKeys.getThreeCityKey(dto.getKeyword());
-        CityVo cityvo = JsonUtils.jsonToPojo(redisUtils.get(key), CityVo.class);
-        if(cityvo == null){
-            cityvo = new CityVo();
-            //获取热门城市
-            List<HotCityVo> hotCity = cityDao.getHotCity();
-            List<ProvinceTreeVo> cityTreeVos = cityDao.findThreeCity(dto.getKeyword(),null);
-            cityvo.setHotCityVos(hotCity);
-            cityvo.setCityTreeVos(cityTreeVos);
-            redisUtils.set(key, JsonUtils.objectToJson(cityvo));
-            redisUtils.expire(key, 1, TimeUnit.DAYS);
+    public ResultVo<CityVo> queryCity(boolean isSearchCache,KeywordDto dto) {
+        CityVo cityvo = null;
+        if(isSearchCache){
+            String key = RedisKeys.getThreeCityKey(dto.getKeyword());
+            cityvo = JsonUtils.jsonToPojo(redisUtils.get(key), CityVo.class);
+            if(cityvo == null){
+                cityvo = findTreeCityTree(dto.getKeyword());
+                redisUtils.set(key, JsonUtils.objectToJson(cityvo));
+                redisUtils.expire(key, 1, TimeUnit.DAYS);
+            }
+        }else{
+            cityvo = findTreeCityTree(dto.getKeyword());
         }
         return BaseResultUtil.success(cityvo);
+    }
+
+    /**
+     * 封装城市三级城市列表
+     * @param keyword
+     * @return
+     */
+    private CityVo findTreeCityTree(String keyword){
+        CityVo cityvo = new CityVo();
+        //获取热门城市
+        List<HotCityVo> hotCity = cityDao.getHotCity();
+        List<ProvinceTreeVo> cityTreeVos = cityDao.findThreeCity(keyword,null);
+        cityvo.setHotCityVos(hotCity);
+        cityvo.setCityTreeVos(cityTreeVos);
+        return cityvo;
     }
 
     public ResultVo<CityVo> findThreeCityByAdmin(AdminDto dto) {

@@ -23,6 +23,6 @@ public class CityController {
     @PostMapping(value = "/queryCity")
     public ResultVo<CityVo> queryCity(@RequestBody KeywordDto dto)
     {
-        return csCityService.queryCity(dto);
+        return csCityService.queryCity(true,dto);
     }
 }
