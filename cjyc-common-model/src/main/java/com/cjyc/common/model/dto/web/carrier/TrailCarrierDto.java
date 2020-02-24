@@ -33,4 +33,7 @@ public class TrailCarrierDto extends BasePageDto {
     @ApiModelProperty(value = "订单起始/目的城市code")
     private String cityCode;
 
+    @ApiModelProperty(value = "关键字")
+    private String keyword;
+
 }

@@ -727,4 +727,62 @@
             order by dc.create_time desc,dc.check_time desc
         </where>
     </select>
+
+
+    <!-- 调度中心中提车送车调度中代驾和拖车列表_改版(App端) -->
+    <select id="findAppTrailDriverNew" resultType="com.cjyc.common.model.vo.web.carrier.TrailCarrierVo"
+            parameterType="com.cjyc.common.model.dto.web.carrier.TrailCarrierDto">
+        SELECT
+            dc.id AS carrierId,
+            ( CASE dc.type WHEN 1 THEN '' WHEN 2 THEN dc.NAME END ) AS businessName,
+            dc.linkman AS `name`,
+            dc.linkman_phone AS phone,
+            dc.type AS type,
+            dc.MODE AS MODE,
+            ( CASE dc.type WHEN 1 THEN dvr.plate_no WHEN 2 THEN '' END ) AS plateNo,
+            ( CASE dc.type WHEN 1 THEN dc.legal_id_card WHEN 2 THEN '' END ) AS idCard,
+            ( CASE dc.type WHEN 1 THEN dvr.carry_car_num WHEN 2 THEN '' END ) AS carryCarNum,
+            ( CASE dc.type WHEN 1 THEN dvr.occupied_car_num WHEN 2 THEN '' END ) AS occupiedCarNum,
+            ( CASE dc.type WHEN 1 THEN dvr.running_state WHEN 2 THEN '' END ) AS runningState,
+            ( CASE dc.type WHEN 1 THEN dd.business_state WHEN 2 THEN '' END ) AS businessState
+        FROM
+          d_carrier dc
+        LEFT JOIN ( SELECT * FROM s_user_role_dept WHERE dept_type = 2 AND user_type = 2 ) surd ON surd.dept_id = dc.id
+        LEFT JOIN d_driver dd ON dd.id = surd.user_id
+        LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
+        LEFT JOIN d_carrier_city_con dccc ON dccc.carrier_id = dc.id
+        LEFT JOIN s_bank_card_bind sbcb ON sbcb.user_id = dc.id
+        <where>
+            <if test="keyword != null and keyword.trim() !=''">
+                (dc.name like concat('%',#{keyword},'%') or
+                dc.linkman_phone like concat('%',#{keyword},'%'))
+            </if>
+            <if test="type != null">
+                and  dc.type = #{type}
+            </if>
+            <if test="idCard != null and idCard.trim() != ''">
+                and  dc.legal_id_card = #{idCard}
+            </if>
+            <if test="plateNo != null and plateNo.trim() != ''">
+                and  dvr.plate_no = #{plateNo}
+            </if>
+            <if test="cityCode != null and cityCode.trim() != ''">
+                and  dccc.city_code = #{cityCode}
+            </if>
+            <if test="mode != null and mode.size() > 0">
+                and dc.mode in
+                <foreach collection="mode" item="item" index="index" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+            and dc.state = 2
+            and dc.business_state = 0
+            and dd.business_state = 0
+            and surd.state = 2
+            AND sbcb.bank_name != ''
+            AND sbcb.state = 1
+            group by dc.id
+            order by dc.create_time desc,dc.check_time desc
+        </where>
+    </select>
 </mapper>
