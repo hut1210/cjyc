@@ -6,11 +6,13 @@ import com.cjyc.common.model.dto.web.dispatch.ValidateLineDto;
 import com.cjyc.common.model.dto.web.dispatch.ValidateLineShellDto;
 import com.cjyc.common.model.entity.Line;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.JsonUtils;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.salesman.dispatch.ValidateLineVo;
 import com.cjyc.common.system.service.ICsLineService;
 import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -23,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@Slf4j
 public class CsLineServiceImpl implements ICsLineService {
 
     @Resource
@@ -35,9 +38,10 @@ public class CsLineServiceImpl implements ICsLineService {
 
     @Override
     public ResultVo<Map<String, Object>> linePriceByCode(TransportDto dto) {
+        log.info("查询班线请求json数据 :: "+ JsonUtils.objectToJson(dto));
         Line line = lineDao.getLinePriceByCode(dto.getFromCode(), dto.getToCode());
         if(line == null){
-            return BaseResultUtil.fail("该班线在");
+            return BaseResultUtil.fail("该班线不存在");
         }
         Map<String,Object> map = new HashMap<>(10);
         map.put("defaultWlFee",line.getDefaultWlFee() == null ? BigDecimal.ZERO : line.getDefaultWlFee().divide(new BigDecimal(100)));

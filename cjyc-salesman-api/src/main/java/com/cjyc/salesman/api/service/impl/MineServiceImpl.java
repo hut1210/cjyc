@@ -15,10 +15,7 @@ import com.cjyc.common.model.entity.WaybillCar;
 import com.cjyc.common.model.entity.defined.BizScope;
 import com.cjyc.common.model.enums.BizScopeEnum;
 import com.cjyc.common.model.enums.waybill.WaybillTypeEnum;
-import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.util.LocalDateTimeUtil;
-import com.cjyc.common.model.util.QRCodeUtil;
-import com.cjyc.common.model.util.TimeStampUtil;
+import com.cjyc.common.model.util.*;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.salesman.mine.QRCodeVo;
@@ -31,6 +28,7 @@ import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.salesman.api.service.IMineService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -42,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@Slf4j
 public class MineServiceImpl extends ServiceImpl<IWaybillCarDao, WaybillCar> implements IMineService {
 
     @Resource
@@ -61,6 +60,7 @@ public class MineServiceImpl extends ServiceImpl<IWaybillCarDao, WaybillCar> imp
 
     @Override
     public ResultVo<PageVo<StockCarVo>> findStockCar(StockCarDto dto) {
+        log.info("库存查询请求json数据 :: "+ JsonUtils.objectToJson(dto));
         // 根据登录ID查询当前业务员所在业务中心ID
         BizScope bizScope = csSysService.getBizScopeByLoginIdNew(dto.getLoginId(), true);
         // 判断当前登录人是否有权限访问
@@ -101,6 +101,7 @@ public class MineServiceImpl extends ServiceImpl<IWaybillCarDao, WaybillCar> imp
 
     @Override
     public ResultVo<Map<String,Object>> achieveCount(AchieveDto dto) {
+        log.info("业绩统计请求json数据 :: "+ JsonUtils.objectToJson(dto));
         Admin admin = adminDao.selectById(dto.getLoginId());
         if(admin == null){
             return BaseResultUtil.fail("该用户不存在，请检查");

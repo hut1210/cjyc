@@ -21,6 +21,7 @@ import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.transport.DriverRoleEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.JsonUtils;
 import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -32,6 +33,7 @@ import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.ICsCarrierService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -39,6 +41,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 @Service
+@Slf4j
 public class CsCarrierServiceImpl implements ICsCarrierService {
     @Resource
     private ICarrierDao carrierDao;
@@ -202,6 +205,7 @@ public class CsCarrierServiceImpl implements ICsCarrierService {
 
     @Override
     public ResultVo<PageVo<TrailCarrierVo>> trailDriverNew(TrailCarrierDto dto) {
+        log.info("调度中心中提车/送车调度中代驾和拖车列表请求json数据 :: "+ JsonUtils.objectToJson(dto));
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
         List<TrailCarrierVo> carrierVos = carrierDao.findTrailDriverNew(dto);
         PageInfo<TrailCarrierVo> pageInfo =  new PageInfo<>(carrierVos);
@@ -210,6 +214,7 @@ public class CsCarrierServiceImpl implements ICsCarrierService {
 
     @Override
     public ResultVo<PageVo<DispatchCarrierVo>> dispatchAppCarrier(DispatchCarrierDto dto) {
+        log.info("调度中心中干线调度承运商信息请求json数据 :: "+ JsonUtils.objectToJson(dto));
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         dto.setKeyword(dto.getLinkmanPhone());
         List<DispatchCarrierVo> carrierVos = carrierDao.findAppDispatchCarrier(dto);
