@@ -38,6 +38,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @Author LiuXingXiang
  * @Date 2019/11/7 11:46
  **/
+@Slf4j
 @Service
 public class RegionServiceImpl_1 implements IRegionService_1 {
     @Resource
@@ -47,6 +48,7 @@ public class RegionServiceImpl_1 implements IRegionService_1 {
 
     @Override
     public ResultVo getRegionPage(RegionQueryDto dto) {
+        log.info("====>web端-分页查询大区列表,请求json数据 :: "+JsonUtils.objectToJson(dto));
         // 分页查询大区信息
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         LambdaQueryWrapper<City> queryWrapper = new QueryWrapper<City>().lambda()
@@ -90,6 +92,7 @@ public class RegionServiceImpl_1 implements IRegionService_1 {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public ResultVo addRegion(RegionAddDto dto) {
+        log.info("====>web端-新增大区,请求json数据 :: "+JsonUtils.objectToJson(dto));
         // 验证大区是否存在
         City region = cityService.getOne(new QueryWrapper<City>().lambda()
                 .eq(City::getLevel, FieldConstant.REGION_LEVEL).eq(City::getName, dto.getRegionName()));
@@ -137,6 +140,7 @@ public class RegionServiceImpl_1 implements IRegionService_1 {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public ResultVo modifyRegion(RegionUpdateDto dto) {
+        log.info("====>web端-修改大区,请求json数据 :: "+JsonUtils.objectToJson(dto));
         // 获取被删除省编码，获取新增的省编码
         List<City> deleteProvinceList = this.filterProvince(dto);
         // 给大区新增覆盖省
@@ -157,6 +161,7 @@ public class RegionServiceImpl_1 implements IRegionService_1 {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public ResultVo removeRegion(String regionCode) {
+        log.info("====>web端-删除大区,请求json数据 :: "+JsonUtils.objectToJson(regionCode));
         // 查询当前大区下的省份
         List<City> list = cityService.list(new QueryWrapper<City>().lambda()
                 .eq(City::getLevel, FieldConstant.PROVINCE_LEVEL).eq(City::getParentCode, regionCode));

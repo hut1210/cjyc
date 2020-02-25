@@ -56,6 +56,7 @@ import java.util.Objects;
  * @author JPG
  * @since 2019-10-23
  */
+@Slf4j
 @Service
 public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements IStoreService_1 {
     @Resource
@@ -108,6 +109,7 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
 
     @Override
     public ResultVo queryPage(StoreQueryDto dto) {
+        log.info("====>web端-分页查询业务中心列表,请求json数据 :: "+JsonUtils.objectToJson(dto));
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
         List<Store> list = getStoreList(dto);
         PageInfo<Store> pageInfo = new PageInfo<>(list);
@@ -144,6 +146,7 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
     @Transactional(rollbackFor = Exception.class)
     @Override
     public ResultVo add(StoreAddDto storeAddDto) {
+        log.info("====>web端-新增业务中心,请求json数据 :: "+JsonUtils.objectToJson(storeAddDto));
         // 验证业务中心名称是否重复
         Store queryStore = super.getOne(new QueryWrapper<Store>().lambda()
                 .eq(Store::getName, storeAddDto.getName())
@@ -177,6 +180,7 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
     @Transactional(rollbackFor = Exception.class)
     @Override
     public ResultVo modify(StoreUpdateDto storeUpdateDto) {
+        log.info("====>web端-修改业务中心,请求json数据 :: "+JsonUtils.objectToJson(storeUpdateDto));
         Store store = new Store();
         BeanUtils.copyProperties(storeUpdateDto,store);
         store.setUpdateTime(System.currentTimeMillis());
@@ -236,6 +240,7 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
 
     @Override
     public ResultVo getStoreCoveredAreaList(StoreDto dto) {
+        log.info("====>web端-根据业务中心ID查询覆盖区列表,请求json数据 :: "+JsonUtils.objectToJson(dto));
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<FullCity> list = cityDao.selectCoveredList(dto);
         PageInfo pageInfo = new PageInfo(list);
@@ -253,6 +258,7 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
     @Transactional(rollbackFor = Exception.class)
     @Override
     public ResultVo addCoveredArea(StoreDto dto) {
+        log.info("====>web端-新增前业务中心覆盖区域,请求json数据 :: "+JsonUtils.objectToJson(dto));
         StoreCityCon storeCityCon = new StoreCityCon();
         storeCityCon.setStoreId(dto.getStoreId());
         for (String areaCode : dto.getAreaCodeList()) {
@@ -269,6 +275,7 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
     @Transactional(rollbackFor = Exception.class)
     @Override
     public ResultVo removeCoveredArea(StoreDto dto) {
+        log.info("====>web端-删除当前业务中心覆盖区域,请求json数据 :: "+JsonUtils.objectToJson(dto));
         LambdaUpdateWrapper<StoreCityCon> updateWrapper = null;
         for (String areaCode : dto.getAreaCodeList()) {
             updateWrapper = new UpdateWrapper<StoreCityCon>().lambda().eq(StoreCityCon::getStoreId,dto.getStoreId()).eq(StoreCityCon::getAreaCode,areaCode);
@@ -304,6 +311,7 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
     @Transactional(rollbackFor = Exception.class)
     @Override
     public ResultVo remove(Long id) {
+        log.info("====>web端-删除业务中心,请求json数据 :: "+JsonUtils.objectToJson(id));
         // 查询该业务中心下是否关联了用户
         List<UserRoleDept> userRoleDeptList = userRoleDeptDao.selectList(new QueryWrapper<UserRoleDept>().lambda().eq(UserRoleDept::getDeptId, id));
         // 逻辑删除业务中心
