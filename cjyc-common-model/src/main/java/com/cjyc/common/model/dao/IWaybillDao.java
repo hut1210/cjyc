@@ -123,4 +123,6 @@ public interface IWaybillDao extends BaseMapper<Waybill> {
     List<Waybill> findListByWaybillCarIds(@Param("collection") Collection<Long> waybillCarIds);
 
     int updateNumAndFreightFee(@Param("waybillId") Long waybillId);
+
+    int updateForOver(@Param("id") Long id, @Param("state") int newState);
 }

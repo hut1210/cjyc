@@ -345,7 +345,7 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
     public ResultVo<Customer> validateAndGetActive(Long id) {
         Customer customer = customerDao.findActive(id);
         if(customer == null){
-            BaseResultUtil.fail("当前客户状态不可用");
+            return BaseResultUtil.fail("用户状态不可用");
         }
         return BaseResultUtil.success(customer);
     }

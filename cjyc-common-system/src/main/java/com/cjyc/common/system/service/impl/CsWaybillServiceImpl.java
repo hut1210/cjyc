@@ -1435,6 +1435,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         }
         int newState = wcNum.getTotalCarNum().equals(wcNum.getCancelCarNum()) ? newState = WaybillStateEnum.F_CANCEL.code : WaybillStateEnum.FINISHED.code;
         waybillDao.updateStateById(newState, waybillId);
+        waybillDao.updateForOver(waybillId, newState);
         if(newState == WaybillStateEnum.FINISHED.code){
             try {
                 csPingPayService.allinpayToCarrier(waybillId);

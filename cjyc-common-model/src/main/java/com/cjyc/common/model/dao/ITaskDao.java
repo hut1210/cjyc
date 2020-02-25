@@ -136,4 +136,8 @@ public interface ITaskDao extends BaseMapper<Task> {
     int updateLoadNum(@Param("taskId") Long taskId, @Param("count") int count);
 
     Task findByWcCarId(Long id);
+
+    int updateForCancel(Long id);
+
+    int updateForOver(@Param("id") Long id, @Param("state") Integer state);
 }

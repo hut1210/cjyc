@@ -521,8 +521,9 @@
         FROM
          c_customer cc
         LEFT JOIN  s_user_role_dept  surd ON surd.user_id = cc.id
-        WHERE
-         surd.state = 2
+        WHERE cc.id = #{id}
+        and surd.state = 2
+        group by cc.id
     </select>
 
 </mapper>

@@ -55,6 +55,13 @@
         where id = #{id}
         and state &lt; 55
     </update>
+    <update id="updateForCancel">
+        update w_task
+        set state = 113,
+        complete_time = UNIX_TIMESTAMP(NOW()) * 1000
+        where id = #{id}
+        and state &lt; 100
+    </update>
     <update id="updateForFinish">
         update w_task
         set state = 100,
@@ -76,6 +83,13 @@
     <update id="updateLoadNum">
         update w_task set load_car_num = load_car_num + #{count}
         where id = #{taskId}
+    </update>
+    <update id="updateForOver">
+        update w_task
+        set state = #{state},
+        complete_time = UNIX_TIMESTAMP(NOW()) * 1000
+        where id = #{id}
+        and state &lt; 100
     </update>
     <delete id="cancelBywaybillId">
         update w_task

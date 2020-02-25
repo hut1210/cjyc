@@ -845,8 +845,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             return -1;
         }
         int newState = tcNum.getTotalCarNum().equals(tcNum.getCancelCarNum()) ? WaybillStateEnum.F_CANCEL.code : WaybillStateEnum.FINISHED.code;
-        taskDao.updateStateById(task.getId(), newState);
-
+        taskDao.updateForOver(task.getId(), newState);
         //任务交付消息
         try{
             Waybill waybill = waybillDao.selectById(task.getWaybillId());
