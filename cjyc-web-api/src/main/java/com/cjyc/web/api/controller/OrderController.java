@@ -77,7 +77,11 @@ public class OrderController {
 
         if(reqDto.getLoginType() != null && UserTypeEnum.CUSTOMER.code == reqDto.getLoginType()){
             //验证用户存不存在
-            Customer customer = csCustomerService.validate(reqDto.getLoginId());
+            ResultVo<Customer> vo = csCustomerService.validateAndGetActive(reqDto.getLoginId());
+            if(vo.getCode() != ResultEnum.SUCCESS.getCode()){
+                return BaseResultUtil.fail(vo.getMsg());
+            }
+            Customer customer = vo.getData();
             reqDto.setLoginName(customer.getName());
             reqDto.setLoginPhone(customer.getContactPhone());
             reqDto.setLoginType(UserTypeEnum.CUSTOMER.code);
@@ -108,7 +112,11 @@ public class OrderController {
     public ResultVo commit(@Validated @RequestBody CommitOrderDto reqDto) {
         if(reqDto.getLoginType() != null && UserTypeEnum.CUSTOMER.code == reqDto.getLoginType()){
             //验证用户存不存在
-            Customer customer = csCustomerService.validate(reqDto.getLoginId());
+            ResultVo<Customer> vo = csCustomerService.validateAndGetActive(reqDto.getLoginId());
+            if(vo.getCode() != ResultEnum.SUCCESS.getCode()){
+                return BaseResultUtil.fail(vo.getMsg());
+            }
+            Customer customer = vo.getData();
             reqDto.setLoginName(customer.getName());
             reqDto.setLoginPhone(customer.getContactPhone());
             reqDto.setLoginType(UserTypeEnum.CUSTOMER.code);

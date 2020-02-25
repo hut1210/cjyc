@@ -118,6 +118,5 @@ public interface ICustomerDao extends BaseMapper<Customer> {
      */
     List<CustomerPartnerVo> findCoPartner(CustomerPartnerDto dto);
 
-
-
+    Customer findActive(Long id);
 }

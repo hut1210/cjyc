@@ -96,7 +96,7 @@ public interface ICsCustomerService {
      */
     ResultVo<Customer> saveCustomer(String customerPhone,String customerName,Long loginId);
 
+    boolean validateActive(Long id);
 
-
-
+    ResultVo<Customer> validateAndGetActive(Long id);
 }

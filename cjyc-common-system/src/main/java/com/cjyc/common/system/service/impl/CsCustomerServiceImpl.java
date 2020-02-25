@@ -334,4 +334,19 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
         csUserRoleDeptService.saveCustomerToUserRoleDept(customer, role.getId(), loginId);
         return BaseResultUtil.success(customer);
     }
+
+    @Override
+    public boolean validateActive(Long id) {
+        Customer customer = customerDao.findActive(id);
+        return customer != null;
+    }
+
+    @Override
+    public ResultVo<Customer> validateAndGetActive(Long id) {
+        Customer customer = customerDao.findActive(id);
+        if(customer == null){
+            BaseResultUtil.fail("当前客户状态不可用");
+        }
+        return BaseResultUtil.success(customer);
+    }
 }

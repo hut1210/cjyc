@@ -515,5 +515,14 @@
             and (cc.type = 3 or (cc.type = 1 and surd.state = 1)) order by cc.create_time desc,cc.check_time desc
         </where>
     </select>
+    <select id="findActive" resultType="com.cjyc.common.model.entity.Customer">
+        SELECT
+         cc.*
+        FROM
+         c_customer cc
+        LEFT JOIN  s_user_role_dept  surd ON surd.user_id = cc.id
+        WHERE
+         surd.state = 2
+    </select>
 
 </mapper>

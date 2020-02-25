@@ -136,7 +136,7 @@ public class AccountController {
 
     public static void main(String[] args) {
 
-        BigDecimal total = new BigDecimal(999);
+      /*  BigDecimal total = new BigDecimal(999);
         BigDecimal c1fee = new BigDecimal(333);
         BigDecimal c2fee = new BigDecimal(333);
         BigDecimal c3fee = new BigDecimal(333);
@@ -156,8 +156,22 @@ public class AccountController {
         System.out.println(new1);
         System.out.println(new2);
         System.out.println(new3);
-        System.out.println(new3_1);
+        System.out.println(new3_1);*/
 
+        double t = 1001;
+        double i1 = 333;
+        double i2 = 333;
+        double i3 = 333;
+        double it = i1 + i2 + i3;
 
+        double n1 = t * i1 / it;
+        double n2 = t * i2 / it;
+        double n3 = t * i3 / it;
+        double n3_1 = t - n1 - n2;
+
+        System.out.println(n1);
+        System.out.println(n2);
+        System.out.println(n3);
+        System.out.println(n3_1);
     }
 }

@@ -5,8 +5,10 @@ import com.cjyc.common.model.dto.customer.order.OrderQueryDto;
 import com.cjyc.common.model.dto.customer.order.SimpleSaveOrderDto;
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.entity.Customer;
+import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
+import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterDetailVo;
@@ -52,7 +54,11 @@ public class OrderController {
     public ResultVo save(@RequestBody SaveOrderDto reqDto) {
 
         //验证用户存不存在
-        Customer customer = csCustomerService.validate(reqDto.getLoginId());
+        ResultVo<Customer> vo = csCustomerService.validateAndGetActive(reqDto.getLoginId());
+        if(vo.getCode() != ResultEnum.SUCCESS.getCode()){
+            return BaseResultUtil.fail(vo.getMsg());
+        }
+        Customer customer = vo.getData();
         reqDto.setLoginName(customer.getName());
         reqDto.setLoginPhone(customer.getContactPhone());
         reqDto.setLoginType(UserTypeEnum.CUSTOMER.code);
@@ -77,7 +83,11 @@ public class OrderController {
     public ResultVo submit(@Validated @RequestBody SaveOrderDto reqDto) {
 
         //验证用户存不存在
-        Customer customer = csCustomerService.validate(reqDto.getLoginId());
+        ResultVo<Customer> vo = csCustomerService.validateAndGetActive(reqDto.getLoginId());
+        if(vo.getCode() != ResultEnum.SUCCESS.getCode()){
+            return BaseResultUtil.fail(vo.getMsg());
+        }
+        Customer customer = vo.getData();
         reqDto.setLoginName(customer.getName());
         reqDto.setLoginPhone(customer.getContactPhone());
         reqDto.setLoginType(UserTypeEnum.CUSTOMER.code);
@@ -105,7 +115,11 @@ public class OrderController {
     public ResultVo simpleSubmit(@Validated @RequestBody SimpleSaveOrderDto reqDto) {
 
         //验证用户存不存在
-        Customer customer = csCustomerService.validate(reqDto.getLoginId());
+        ResultVo<Customer> vo = csCustomerService.validateAndGetActive(reqDto.getLoginId());
+        if(vo.getCode() != ResultEnum.SUCCESS.getCode()){
+            return BaseResultUtil.fail(vo.getMsg());
+        }
+        Customer customer = vo.getData();
         reqDto.setLoginName(customer.getName());
         reqDto.setLoginPhone(customer.getContactPhone());
         reqDto.setLoginType(UserTypeEnum.CUSTOMER);
