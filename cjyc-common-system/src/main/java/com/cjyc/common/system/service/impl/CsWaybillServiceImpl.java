@@ -944,7 +944,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                     throw new ParameterException("运单中车辆{0}，线路不能为空", orderCarNo);
                 }
                 lockSet.add(lockCarKey);
-                //验证出发地与上一次调度目的地是否一致
+
+                 //验证出发地与上一次调度目的地是否一致
                 WaybillCar prevWc;
                 if (waybillCar.getId() == null) {
                     prevWc = waybillCarDao.findLastByOderCarId(orderCarId);

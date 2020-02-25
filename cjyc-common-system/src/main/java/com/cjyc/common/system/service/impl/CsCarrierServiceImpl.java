@@ -202,12 +202,22 @@ public class CsCarrierServiceImpl implements ICsCarrierService {
 
 
     /*********************************韵车集成改版 st*****************************/
-
     @Override
     public ResultVo<PageVo<TrailCarrierVo>> trailDriverNew(TrailCarrierDto dto) {
         log.info("调度中心中提车/送车调度中代驾和拖车列表请求json数据 :: "+ JsonUtils.objectToJson(dto));
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
         List<TrailCarrierVo> carrierVos = carrierDao.findTrailDriverNew(dto);
+        PageInfo<TrailCarrierVo> pageInfo =  new PageInfo<>(carrierVos);
+        return BaseResultUtil.success(pageInfo);
+    }
+
+
+    @Override
+    public ResultVo<PageVo<TrailCarrierVo>> trailAppDriverNew(TrailCarrierDto dto) {
+        log.info("调度中心中提车/送车调度中代驾和拖车列表请求json数据 :: "+ JsonUtils.objectToJson(dto));
+        PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
+        dto.setKeyword(dto.getPhone());
+        List<TrailCarrierVo> carrierVos = carrierDao.findAppTrailDriverNew(dto);
         PageInfo<TrailCarrierVo> pageInfo =  new PageInfo<>(carrierVos);
         return BaseResultUtil.success(pageInfo);
     }

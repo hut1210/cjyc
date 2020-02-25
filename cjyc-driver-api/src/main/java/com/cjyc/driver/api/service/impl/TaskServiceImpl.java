@@ -16,6 +16,7 @@ import com.cjyc.common.model.enums.waybill.WaybillCarStateEnum;
 import com.cjyc.common.model.enums.waybill.WaybillCarrierTypeEnum;
 import com.cjyc.common.model.enums.waybill.WaybillTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.JsonUtils;
 import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -68,6 +69,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
 
     @Override
     public ResultVo<PageVo<TaskBillVo>> getWaitHandleTaskPage(BaseDriverDto dto) {
+        log.info("====>司机端-查询待分配任务列表,请求json数据 :: "+ JsonUtils.objectToJson(dto));
         // 分页查询待分配的运单信息
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<TaskBillVo> taskList = waybillDao.selectWaitHandleTaskPage(dto);
@@ -79,6 +81,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
 
     @Override
     public ResultVo<PageVo<TaskBillVo>> getNoFinishTaskPage(NoFinishTaskQueryDto dto) {
+        log.info("====>司机端-分页查询提车,交车任务列表,请求json数据 :: "+JsonUtils.objectToJson(dto));
         // 分页查询提车，交车任务信息
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<TaskBillVo> taskList = taskDao.selectNoFinishTaskPage(dto);
@@ -115,6 +118,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
 
     @Override
     public ResultVo<PageVo<TaskBillVo>> getHistoryTaskPage(TaskQueryDto dto) {
+        log.info("====>司机端-分页查询历史记录列表,请求json数据 :: "+JsonUtils.objectToJson(dto));
         if (dto.getCompleteTimeE() != null && dto.getCompleteTimeE() != 0) {
             dto.setCompleteTimeE(TimeStampUtil.convertEndTime(dto.getCompleteTimeE()));
         }
@@ -131,6 +135,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
 
     @Override
     public ResultVo<PageVo<TaskBillVo>> getFinishTaskPage(TaskQueryDto dto) {
+        log.info("====>司机端-分页查询已交付任务列表,请求json数据 :: "+JsonUtils.objectToJson(dto));
         if (dto.getCompleteTimeE() != null && dto.getCompleteTimeE() != 0) {
             dto.setCompleteTimeE(TimeStampUtil.convertEndTime(dto.getCompleteTimeE()));
         }
@@ -148,6 +153,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
 
     @Override
     public ResultVo<TaskDetailVo> getNoHandleDetail(DetailQueryDto dto) {
+        log.info("====>司机端-查询待分配任务明细,请求json数据 :: "+JsonUtils.objectToJson(dto));
         TaskDetailVo taskDetailVo = new TaskDetailVo();
         // 查询运单信息
         Long waybillId = dto.getWaybillId();
@@ -204,6 +210,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
 
     @Override
     public ResultVo<TaskDetailVo> getHistoryDetail(DetailQueryDto dto) {
+        log.info("====>司机端-查询已分配任务明细,请求json数据 :: "+JsonUtils.objectToJson(dto));
         TaskDetailVo taskDetailVo = new TaskDetailVo();
         // 查询运单信息
         Long waybillId = dto.getWaybillId();

@@ -188,4 +188,11 @@ public interface ICarrierDao extends BaseMapper<Carrier> {
      */
     List<TrailCarrierVo> findTrailDriverNew(TrailCarrierDto dto);
 
+    /**
+     * 调度中心中提车干线调度中代驾和拖车列表(业务员端)
+     * @param dto
+     * @return
+     */
+    List<TrailCarrierVo> findAppTrailDriverNew(TrailCarrierDto dto);
+
 }

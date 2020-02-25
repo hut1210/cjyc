@@ -193,7 +193,7 @@ public class DispatchController {
     //@PostMapping(value = "/traileDriver")
     @PostMapping(value = "/traileDriver")
     public ResultVo<PageVo<TrailCarrierVo>> trailDriverNew(@RequestBody TrailCarrierDto dto){
-        return csCarrierService.trailDriverNew(dto);
+        return csCarrierService.trailAppDriverNew(dto);
     }
 
 }

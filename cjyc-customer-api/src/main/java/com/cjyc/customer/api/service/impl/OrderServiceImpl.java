@@ -16,6 +16,7 @@ import com.cjyc.common.model.enums.message.PushMsgEnum;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.JsonUtils;
 import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -110,6 +111,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
 
     @Override
     public ResultVo<PageVo<OrderCenterVo>> getPage(OrderQueryDto dto) {
+        log.info("====>用户端-查询订单列表,请求json数据 :: "+ JsonUtils.objectToJson(dto));
         if (dto.getEndDate() != null && dto.getEndDate() != 0) {
             dto.setEndDate(TimeStampUtil.convertEndTime(dto.getEndDate()));
         }
@@ -170,6 +172,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
 
     @Override
     public ResultVo<OrderCenterDetailVo> getDetail(OrderDetailDto dto) {
+        log.info("====>用户端-查询订单详情,请求json数据 :: "+JsonUtils.objectToJson(dto));
         OrderCenterDetailVo detailVo = new OrderCenterDetailVo();
         // 查询订单信息
         LambdaQueryWrapper<Order> queryOrderWrapper = new QueryWrapper<Order>().lambda()

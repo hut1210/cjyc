@@ -15,6 +15,7 @@ import com.cjyc.common.model.enums.waybill.WaybillCarrierTypeEnum;
 import com.cjyc.common.model.enums.waybill.WaybillStateEnum;
 import com.cjyc.common.model.enums.waybill.WaybillTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.JsonUtils;
 import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
@@ -28,6 +29,7 @@ import com.cjyc.salesman.api.service.IDispatchService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,6 +48,7 @@ import java.util.Map;
  * @Author Liu Xing Xiang
  * @Date 2019/12/11 13:35
  **/
+@Slf4j
 @Service
 public class DispatchServiceImpl implements IDispatchService {
     /**
@@ -173,6 +176,7 @@ public class DispatchServiceImpl implements IDispatchService {
 
     @Override
     public ResultVo getWaybillDetail(Long waybillId) {
+        log.info("====>业务员端-历史记录页面-根据运单ID查询历史调度记录明细,请求json数据 :: "+ JsonUtils.objectToJson(waybillId));
         WaybillDetailVo detail = new WaybillDetailVo();
         // 查询运单信息
         Waybill waybill = waybillDao.selectById(waybillId);
@@ -371,6 +375,7 @@ public class DispatchServiceImpl implements IDispatchService {
 
     @Override
     public ResultVo getCarDetail(String carNo) {
+        log.info("====>业务员端-调度页面-根据车辆编号查询车辆明细,请求json数据 :: "+JsonUtils.objectToJson(carNo));
         // 查询车辆信息
         DispatchCarDetailVo detail = new DispatchCarDetailVo();
         OrderCar orderCar = orderCarDao.selectOne(new QueryWrapper<OrderCar>().lambda().eq(OrderCar::getNo, carNo));
@@ -401,6 +406,7 @@ public class DispatchServiceImpl implements IDispatchService {
 
     @Override
     public ResultVo getHistoryRecord(HistoryDispatchRecordDto dto) {
+        log.info("====>业务员端-调度页面-查询历史记录列表分页,请求json数据 :: "+JsonUtils.objectToJson(dto));
         if (dto.getCreateTimeE() != null && dto.getCreateTimeE() != 0) {
             dto.setCreateTimeE(TimeStampUtil.convertEndTime(dto.getCreateTimeE()));
         }
