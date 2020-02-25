@@ -1433,8 +1433,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         if(wcNum.getUnFinishCarNum() > 0){
             return;
         }
-        int newState = wcNum.getTotalCarNum().equals(wcNum.getCancelCarNum()) ? newState = WaybillStateEnum.F_CANCEL.code : WaybillStateEnum.FINISHED.code;
-        waybillDao.updateStateById(newState, waybillId);
+        int newState = wcNum.getTotalCarNum().equals(wcNum.getCancelCarNum()) ? WaybillStateEnum.F_CANCEL.code : WaybillStateEnum.FINISHED.code;
         waybillDao.updateForOver(waybillId, newState);
         if(newState == WaybillStateEnum.FINISHED.code){
             try {

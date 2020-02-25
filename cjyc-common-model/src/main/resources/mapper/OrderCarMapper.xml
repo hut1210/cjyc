@@ -1697,10 +1697,10 @@
                 ORDER BY shell.expectStartDate ASC, shell.orderCarId
             </when>
             <when test="param.pickDateSort == 2">
-                ORDER BY shell.createTime desc, shell.orderCarId
+                ORDER BY shell.expectStartDate desc, shell.orderCarId
             </when>
             <otherwise>
-                ORDER BY shell.expectStartDate DESC, shell.orderCarId
+                ORDER BY shell.createTime DESC, shell.orderCarId
             </otherwise>
         </choose>
     </select>
