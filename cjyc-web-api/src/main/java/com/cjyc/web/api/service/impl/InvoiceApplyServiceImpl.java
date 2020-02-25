@@ -13,6 +13,7 @@ import com.cjyc.common.model.dto.web.invoice.InvoiceDetailAndConfirmDto;
 import com.cjyc.common.model.dto.web.invoice.InvoiceQueryDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.JsonUtils;
 import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.invoice.InvoiceApplyVo;
@@ -21,6 +22,7 @@ import com.cjyc.common.model.vo.web.invoice.InvoiceDetailVo;
 import com.cjyc.web.api.service.IInvoiceApplyService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -57,7 +59,7 @@ public class InvoiceApplyServiceImpl extends ServiceImpl<IInvoiceApplyDao, Invoi
 
     @Override
     public ResultVo getInvoiceApplyPage(InvoiceQueryDto dto) {
-        log.info("====>web端-分页查询发票申请信息列表,请求json数据 :: "+JsonUtils.objectToJson(dto));
+        log.info("====>web端-分页查询发票申请信息列表,请求json数据 :: "+ JsonUtils.objectToJson(dto));
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<InvoiceApply> list = getInvoiceApplyList(dto);
         PageInfo pageInfo = new PageInfo(list);

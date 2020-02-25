@@ -22,6 +22,7 @@ import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.DeleteStateEnum;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.JsonUtils;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.customer.PartnerImportExcel;
@@ -32,6 +33,7 @@ import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.web.api.service.IStoreService_1;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -109,7 +111,7 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
 
     @Override
     public ResultVo queryPage(StoreQueryDto dto) {
-        log.info("====>web端-分页查询业务中心列表,请求json数据 :: "+JsonUtils.objectToJson(dto));
+        log.info("====>web端-分页查询业务中心列表,请求json数据 :: "+ JsonUtils.objectToJson(dto));
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
         List<Store> list = getStoreList(dto);
         PageInfo<Store> pageInfo = new PageInfo<>(list);

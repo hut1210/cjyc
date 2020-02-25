@@ -338,7 +338,8 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
     @Override
     public boolean validateActive(Long id) {
         Customer customer = customerDao.findActive(id);
-        return customer != null;
+        boolean b = customer != null;
+        return b;
     }
 
     @Override

@@ -261,7 +261,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
             }
             customer = res.getData();
         }
-        if(csCustomerService.validateActive(customer.getId())){
+        if(!csCustomerService.validateActive(customer.getId())){
             return BaseResultUtil.fail("当前用户不可用");
         }
         return BaseResultUtil.success(customer);
