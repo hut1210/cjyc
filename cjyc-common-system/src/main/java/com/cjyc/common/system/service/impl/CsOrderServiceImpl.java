@@ -47,6 +47,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -1247,19 +1248,41 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 }
             }
 
+
+            //计算提车联系人
+            Set<Long> startStoreIds = list.stream().map(WaybillCarVo::getStartStoreId).collect(Collectors.toSet());
+            Map<Long, Admin> adminMap = csAdminService.findLoops(startStoreIds);
+            for (WaybillCarVo waybillCarVo : list) {
+                if(adminMap.containsKey(waybillCarVo.getStartStoreId())){
+                    Admin admin = adminMap.get(waybillCarVo.getStartStoreId());
+                    if(admin != null){
+                        waybillCarVo.setLoadLinkUserId(admin.getId());
+                        waybillCarVo.setLoadLinkName(admin.getName());
+                        waybillCarVo.setLoadLinkPhone(admin.getPhone());
+                    }
+                }
+            }
+
+        }
+
+        //计算收车联系人
+        Set<Long> endStoreIds = list.stream().map(WaybillCarVo::getEndStoreId).collect(Collectors.toSet());
+        Map<Long, Admin> adminMap = csAdminService.findLoops(endStoreIds);
+        for (WaybillCarVo waybillCarVo : list) {
+            if(adminMap.containsKey(waybillCarVo.getEndStoreId())){
+                Admin admin = adminMap.get(waybillCarVo.getEndStoreId());
+                if(admin != null){
+                    waybillCarVo.setUnloadLinkUserId(admin.getId());
+                    waybillCarVo.setUnloadLinkName(admin.getName());
+                    waybillCarVo.setUnloadLinkPhone(admin.getPhone());
+                }
+            }
         }
 
         //计算推荐线路
         /*List<String> guideLines = csLineNodeService.getGuideLine(citySet, store.getCity());
         dispatchAddCarVo.setGuideLine(guideLines == null ? store.getCity() : guideLines.get(0));*/
-        for (WaybillCarVo waybillCarVo : list) {
-            Admin admin = csAdminService.findLoop(waybillCarVo.getEndStoreId());
-            if(admin != null){
-                waybillCarVo.setUnloadLinkUserId(admin.getId());
-                waybillCarVo.setUnloadLinkName(admin.getName());
-                waybillCarVo.setUnloadLinkPhone(admin.getPhone());
-            }
-        }
+
         dispatchAddCarVo.setList(list);
         return BaseResultUtil.success(dispatchAddCarVo);
     }

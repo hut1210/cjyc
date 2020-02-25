@@ -47,10 +47,7 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -549,16 +546,6 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 (startAddress == null ? "" : startAddress);
     }
 
-    private boolean validateWaybillCarInfo(WaybillCar waybillCar) {
-        if (waybillCar == null) {
-            return false;
-        }
-        if (StringUtils.isBlank(waybillCar.getLoadPhotoImg())) {
-            return false;
-        }
-        return true;
-    }
-
     private boolean validateOrderCarInfo(OrderCar orderCar) {
         if (orderCar == null) {
             return false;
@@ -591,6 +578,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
         }
 
         int count = 0;
+        List<String> directUnloadList = Lists.newArrayList();
         for (Long taskCarId : paramsDto.getTaskCarIdList()) {
             if (taskCarId == null) {
                 continue;
@@ -638,6 +626,8 @@ public class CsTaskServiceImpl implements ICsTaskService {
                     csStorageLogService.asyncSave(carStorageLog);
                 }
 
+                directUnloadList.add(orderCar.getNo());
+
             } else {
                 waybillCarDao.updateStateById(waybillCar.getId(), WaybillCarStateEnum.WAIT_UNLOAD_CONFIRM.code);
             }
@@ -669,10 +659,12 @@ public class CsTaskServiceImpl implements ICsTaskService {
         vehicleRunningDao.updateOccupiedNum(task.getId());
 
         //给司机交付消息
-        if(waybill.getCarrierType() != null && waybill.getCarrierType() == WaybillCarrierTypeEnum.LOCAL_ADMIN.code && !CollectionUtils.isEmpty(successSet)){
-            csPushMsgService.send(task.getDriverId(), UserTypeEnum.ADMIN, PushMsgEnum.S_UNLOAD, waybill.getNo(), Joiner.on(",").join(successSet), successSet.size());
-        }else {
-            csPushMsgService.send(task.getDriverId(), UserTypeEnum.DRIVER, PushMsgEnum.D_UNLOAD, waybill.getNo(), Joiner.on(",").join(successSet), successSet.size());
+        if(!CollectionUtils.isEmpty(directUnloadList)){
+            if(waybill.getCarrierType() != null && waybill.getCarrierType() == WaybillCarrierTypeEnum.LOCAL_ADMIN.code && !CollectionUtils.isEmpty(successSet)){
+                csPushMsgService.send(task.getDriverId(), UserTypeEnum.ADMIN, PushMsgEnum.S_UNLOAD, waybill.getNo(), Joiner.on(",").join(successSet), successSet.size());
+            }else {
+                csPushMsgService.send(task.getDriverId(), UserTypeEnum.DRIVER, PushMsgEnum.D_UNLOAD, waybill.getNo(), Joiner.on(",").join(successSet), successSet.size());
+            }
         }
 
         resultReasonVo.setSuccessList(successSet);

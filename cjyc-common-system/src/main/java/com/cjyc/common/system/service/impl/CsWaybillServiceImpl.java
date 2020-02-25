@@ -251,13 +251,12 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
 
                 //推送客户消息
-                getPushCustomerInfoForDispatch(pushCustomerInfoMap, order.getCustomerId(), orderCar.getNo(), carrierInfo, waybill.getCarrierType() == WaybillCarrierTypeEnum.LOCAL_CONSIGN.code);
-
-                /*if(waybill.getCarrierType() == WaybillCarrierTypeEnum.LOCAL_CONSIGN.code){
-                    csPushMsgService.send(customerId, UserTypeEnum.CUSTOMER, PushMsgEnum.C_CONSIGN_PICK, waybillCar.getOrderCarNo(), carrierInfo.getCarrierName(), carrierInfo.getDriverPhone(), carrierInfo.getVehiclePlateNo());
+                if(waybill.getType() != null && waybill.getType().equals(WaybillTypeEnum.PICK.code)){
+                    getPushCustomerInfoForPick(pushCustomerInfoMap, order.getCustomerId(), orderCar.getNo(), carrierInfo, waybill.getCarrierType() == WaybillCarrierTypeEnum.LOCAL_CONSIGN.code);
                 }else{
-                    csPushMsgService.send(customerId, UserTypeEnum.CUSTOMER, PushMsgEnum.C_PILOT_PICK, waybillCar.getOrderCarNo(), carrierInfo.getCarrierName(), carrierInfo.getDriverPhone());
-                }*/
+                    getPushCustomerInfoForPick(pushCustomerInfoMap, order.getCustomerId(), orderCar.getNo(), carrierInfo, waybill.getCarrierType() == WaybillCarrierTypeEnum.LOCAL_CONSIGN.code);
+                }
+
                 sendPushMsgToDriverForDispatch(carrierInfo.getDriverId(), waybill);
 
             }
@@ -284,7 +283,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         }
     }
 
-    private Map<Long, Map<Long, PushCustomerInfo>> getPushCustomerInfoForDispatch(Map<Long, Map<Long, PushCustomerInfo>> pushCustomerInfoMap, Long customerId, String orderCarNo, CarrierInfo carrierInfo, boolean isHasVehicle) {
+    private Map<Long, Map<Long, PushCustomerInfo>> getPushCustomerInfoForPick(Map<Long, Map<Long, PushCustomerInfo>> pushCustomerInfoMap, Long customerId, String orderCarNo, CarrierInfo carrierInfo, boolean isHasVehicle) {
         if(pushCustomerInfoMap == null){
             pushCustomerInfoMap = Maps.newHashMap();
         }
@@ -819,7 +818,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
                 //推送客户消息
                 if(noc.getPickType() != null && OrderPickTypeEnum.WL.code == noc.getPickType()){
-                    getPushCustomerInfoForDispatch(pushCustomerInfoMap, order.getCustomerId(), orderCar.getNo(), carrierInfo, true);
+                    getPushCustomerInfoForPick(pushCustomerInfoMap, order.getCustomerId(), orderCar.getNo(), carrierInfo, true);
                 }
             }
 
@@ -1004,7 +1003,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 }
 
                 if(carrierInfo.isReAllotCarrier()){
-                    getPushCustomerInfoForDispatch(pushCustomerInfoMap, order.getCustomerId(), orderCar.getNo(), carrierInfo, true);
+                    getPushCustomerInfoForPick(pushCustomerInfoMap, order.getCustomerId(), orderCar.getNo(), carrierInfo, true);
                 }
             }
 

@@ -4,7 +4,10 @@ import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.vo.web.admin.AdminVo;
 import com.cjyc.common.model.vo.web.admin.CacheData;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public interface ICsAdminService {
     /**
@@ -38,4 +41,6 @@ public interface ICsAdminService {
     Admin getAdminByPhone(String phone, boolean isSearchCache);
 
     Admin findLoop(Long startStoreId);
+
+    Map<Long, Admin> findLoops(Collection<Long> storeIds);
 }
