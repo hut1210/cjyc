@@ -579,6 +579,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
 
         int count = 0;
         List<String> directUnloadList = Lists.newArrayList();
+        Set<Long> taskIds = Sets.newHashSet();
         for (Long taskCarId : paramsDto.getTaskCarIdList()) {
             if (taskCarId == null) {
                 continue;
@@ -633,19 +634,20 @@ public class CsTaskServiceImpl implements ICsTaskService {
             }
 
             if(isInStore && paramsDto.getLoginType() == UserTypeEnum.ADMIN){
-                //添加入库日志
+                //添加入库物流
                 csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.C_IN_STORE,
                         new String[]{MessageFormat.format(OrderCarLogEnum.C_IN_STORE.getOutterLog(), waybillCar.getEndStoreName()),
                                 MessageFormat.format(OrderCarLogEnum.C_IN_STORE.getInnerLog(), waybillCar.getEndStoreName(), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
                         userInfo);
             }else{
-                //添加卸车日志
+                //添加卸车物流
                 csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.C_UNLOAD,
                         new String[]{MessageFormat.format(OrderCarLogEnum.C_UNLOAD.getInnerLog(), getAddress(waybillCar.getStartProvince(), waybillCar.getStartCity(), waybillCar.getStartArea(), waybillCar.getStartAddress())),
                                 MessageFormat.format(OrderCarLogEnum.C_UNLOAD.getOutterLog(), getAddress(waybillCar.getStartProvince(), waybillCar.getStartCity(), waybillCar.getStartArea(), waybillCar.getStartAddress()), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
                         userInfo);
             }
 
+            //taskIds.add(taskca)
             successSet.add(orderCar.getNo());
             count++;
         }
@@ -843,7 +845,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             return -1;
         }
         int newState = tcNum.getTotalCarNum().equals(tcNum.getCancelCarNum()) ? WaybillStateEnum.F_CANCEL.code : WaybillStateEnum.FINISHED.code;
-        waybillDao.updateStateById(newState, task.getId());
+        taskDao.updateStateById(task.getId(), newState);
 
         //任务交付消息
         try{
