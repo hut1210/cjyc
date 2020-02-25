@@ -43,6 +43,7 @@ import java.util.Objects;
  * @author JPG
  * @since 2019-11-02
  */
+@Slf4j
 @Service
 public class InvoiceApplyServiceImpl extends ServiceImpl<IInvoiceApplyDao, InvoiceApply> implements IInvoiceApplyService {
     @Autowired
@@ -56,6 +57,7 @@ public class InvoiceApplyServiceImpl extends ServiceImpl<IInvoiceApplyDao, Invoi
 
     @Override
     public ResultVo getInvoiceApplyPage(InvoiceQueryDto dto) {
+        log.info("====>web端-分页查询发票申请信息列表,请求json数据 :: "+JsonUtils.objectToJson(dto));
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<InvoiceApply> list = getInvoiceApplyList(dto);
         PageInfo pageInfo = new PageInfo(list);
@@ -105,6 +107,7 @@ public class InvoiceApplyServiceImpl extends ServiceImpl<IInvoiceApplyDao, Invoi
 
     @Override
     public ResultVo getDetail(InvoiceDetailAndConfirmDto dto) {
+        log.info("====>web端-查看开票明细,请求json数据 :: "+JsonUtils.objectToJson(dto));
         InvoiceDetailVo detailVo = new InvoiceDetailVo();
         // 根据客户ID，主键ID查询发票申请信息
         LambdaQueryWrapper<InvoiceApply> queryWrapper = new QueryWrapper<InvoiceApply>().lambda()
@@ -142,6 +145,7 @@ public class InvoiceApplyServiceImpl extends ServiceImpl<IInvoiceApplyDao, Invoi
 
     @Override
     public ResultVo confirmInvoice(InvoiceDetailAndConfirmDto dto) {
+        log.info("====>web端-确认开票,请求json数据 :: "+JsonUtils.objectToJson(dto));
         // 验证是否已经开过票
         InvoiceApply invoiceApply = super.getById(dto.getInvoiceApplyId());
         if (!Objects.isNull(invoiceApply) && FieldConstant.INVOICE_FINISH == invoiceApply.getState()) {
