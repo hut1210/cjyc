@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -131,5 +132,32 @@ public class AccountController {
         }else {
             return BaseResultUtil.fail("角色信息获取失败");
         }
+    }
+
+    public static void main(String[] args) {
+
+        BigDecimal total = new BigDecimal(999);
+        BigDecimal c1fee = new BigDecimal(333);
+        BigDecimal c2fee = new BigDecimal(333);
+        BigDecimal c3fee = new BigDecimal(333);
+
+        BigDecimal sum = c1fee.add(c2fee).add(c3fee);
+
+        BigDecimal rate1 = c1fee.divide(sum, 10, BigDecimal.ROUND_HALF_DOWN);
+        BigDecimal rate2 = c2fee.divide(sum, 10, BigDecimal.ROUND_HALF_DOWN);
+        BigDecimal rate3 = c3fee.divide(sum, 10, BigDecimal.ROUND_HALF_DOWN);
+
+
+
+        BigDecimal new1 = rate1.multiply(total).setScale(0, BigDecimal.ROUND_DOWN);
+        BigDecimal new2 = rate2.multiply(total).setScale(0, BigDecimal.ROUND_DOWN);
+        BigDecimal new3 = rate3.multiply(total).setScale(0, BigDecimal.ROUND_DOWN);
+        BigDecimal new3_1= total.subtract(new1).subtract(new2);
+        System.out.println(new1);
+        System.out.println(new2);
+        System.out.println(new3);
+        System.out.println(new3_1);
+
+
     }
 }

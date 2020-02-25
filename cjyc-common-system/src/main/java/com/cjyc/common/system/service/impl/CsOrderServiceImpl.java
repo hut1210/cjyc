@@ -15,6 +15,7 @@ import com.cjyc.common.model.entity.defined.FullCity;
 import com.cjyc.common.model.entity.defined.UserInfo;
 import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.city.CityLevelEnum;
+import com.cjyc.common.model.enums.customer.CustomerStateEnum;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.enums.log.OrderLogEnum;
 import com.cjyc.common.model.enums.message.PushMsgEnum;
@@ -260,6 +261,9 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 return BaseResultUtil.fail(res.getMsg());
             }
             customer = res.getData();
+        }
+        if(customer.getState() != CustomerStateEnum.CHECKED.code){
+            return BaseResultUtil.fail("当前用户不可用");
         }
         return BaseResultUtil.success(customer);
     }
