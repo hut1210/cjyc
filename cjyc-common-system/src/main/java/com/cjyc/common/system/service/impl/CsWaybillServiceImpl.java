@@ -240,7 +240,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 //提送车业务员
                 fillWaybillCarAdmin(waybillCar, waybill.getType());
                 //计算预计到达时间
-                fillWaybillCarExpectEndTime(waybillCar);
+                fillWaybillCarExpectEndTime(waybillCar, order.getExpectStartDate());
                 waybillCar.setReceiptFlag(waybillCar.getUnloadLinkPhone().equals(order.getBackContactPhone()));
                 //运单车辆状态
                 Boolean isInStore = getOrderCarIsInEndStore(orderCar.getNowStoreId(), waybillCar.getStartStoreId());
@@ -418,7 +418,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             //提送车业务员
             fillWaybillCarAdmin(waybillCar, waybill.getType());
             //计算预计到达时间
-            fillWaybillCarExpectEndTime(waybillCar);
+            fillWaybillCarExpectEndTime(waybillCar, order.getExpectStartDate());
             //waybillCar.setReceiptFlag(waybillCar.getUnloadLinkPhone().equals(order.getBackContactPhone()));
             waybillCar.setReceiptFlag(validateIsArriveDest(waybillCar, order));
             //运单车辆状态
@@ -672,9 +672,9 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
     /**
      * 计算到达时间
      **/
-    private WaybillCar fillWaybillCarExpectEndTime(WaybillCar waybillCar) {
+    private WaybillCar fillWaybillCarExpectEndTime(WaybillCar waybillCar, Long expectStartDate) {
         if (waybillCar.getExpectStartTime() == null || waybillCar.getExpectStartTime() <= 0) {
-            throw new ParameterException("请填写预估提车日期");
+            waybillCar.setExpectStartTime(System.currentTimeMillis() < expectStartDate ? expectStartDate : System.currentTimeMillis());
         }
         Line line = csLineService.getLineByCity(waybillCar.getStartCityCode(), waybillCar.getEndCityCode(), true);
         if (line != null && line.getDays() != null) {
@@ -836,7 +836,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 //提送车业务员
                 fillWaybillCarAdmin(waybillCar, waybill.getType());
                 //计算预计到达时间
-                fillWaybillCarExpectEndTime(waybillCar);
+                fillWaybillCarExpectEndTime(waybillCar, order.getExpectStartDate());
                 waybillCar.setReceiptFlag(waybillCar.getUnloadLinkPhone().equals(order.getBackContactPhone()));
                 waybillCar.setState(getTrunkState(carrierInfo));
                 waybillCar.setCreateTime(currentTimeMillis);
@@ -1018,7 +1018,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 //提送车业务员
                 fillWaybillCarAdmin(waybillCar, waybill.getType());
                 //计算预计到达时间
-                fillWaybillCarExpectEndTime(waybillCar);
+                fillWaybillCarExpectEndTime(waybillCar, order.getExpectStartDate());
                 waybillCar.setReceiptFlag(order.getBackContactPhone().equals(waybillCar.getUnloadLinkPhone()));
                 log.debug("【干线调度修改】车辆准备写入：" + JSON.toJSONString(waybillCar));
                 if (isNewWaybillCar) {
