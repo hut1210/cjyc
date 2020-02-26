@@ -37,10 +37,7 @@ public class TLDFServiceImpl implements ITLDFService {
         AcQueryReq acQueryReq = new AcQueryReq();
         acQueryReq.setACCTNO(TLDFProperty.acctNo);//商户在通联的虚拟账号
         aipg.addTrx(acQueryReq);
-
-        System.out.println(TLDFProperty.acctNo+"   "+aipg.getINFO().getUSER_NAME());
         xml= XmlTools.buildXml(aipg,true);
-        System.out.print(xml);
         boolean isTLTFront = false;
         String response = sendToTlt(xml,isTLTFront, TLDFProperty.url);
         return formatAccountMsg(response);
@@ -94,7 +91,7 @@ public class TLDFServiceImpl implements ITLDFService {
      * @throws Exception
      */
     public String signMsg(String xml) throws Exception{
-        String pfxPath = this.getClass().getClassLoader().getResource(TLDFProperty.pfxPath).getPath();
+        String pfxPath = this.getClass().getClassLoader().getResource("20010000002141804.p12").getPath();
         xml= XmlTools.signMsg(xml, pfxPath, TLDFProperty.pfxPassword, false);
         return xml;
     }
@@ -104,7 +101,7 @@ public class TLDFServiceImpl implements ITLDFService {
         String resp= XmlTools.send(url,xml);
 //		dealRet(resp);
         log.debug("======================响应内容======================") ;
-        String tltcerPath = this.getClass().getClassLoader().getResource(TLDFProperty.tltcerPath).getPath();;
+        String tltcerPath = this.getClass().getClassLoader().getResource("allinpay-pds.cer").getPath();;
         boolean flag= this.verifyMsg(resp, tltcerPath,isFront);
         if(flag){
             log.debug("响应内容验证通过") ;
