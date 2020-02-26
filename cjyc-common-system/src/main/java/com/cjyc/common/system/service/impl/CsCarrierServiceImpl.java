@@ -12,13 +12,17 @@ import com.cjkj.usercenter.dto.yc.UpdateDeptManagerReq;
 import com.cjyc.common.model.dao.ICarrierDao;
 import com.cjyc.common.model.dao.ICarrierDriverConDao;
 import com.cjyc.common.model.dao.IDriverDao;
+import com.cjyc.common.model.dao.ITaskDao;
 import com.cjyc.common.model.dto.web.carrier.CarrierDto;
 import com.cjyc.common.model.dto.web.carrier.DispatchCarrierDto;
 import com.cjyc.common.model.dto.web.carrier.TrailCarrierDto;
 import com.cjyc.common.model.entity.Carrier;
 import com.cjyc.common.model.entity.CarrierDriverCon;
 import com.cjyc.common.model.entity.Driver;
+import com.cjyc.common.model.entity.Task;
 import com.cjyc.common.model.enums.CommonStateEnum;
+import com.cjyc.common.model.enums.task.TaskStateEnum;
+import com.cjyc.common.model.enums.transport.BusinessStateEnum;
 import com.cjyc.common.model.enums.transport.DriverRoleEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.JsonUtils;
@@ -47,6 +51,8 @@ public class CsCarrierServiceImpl implements ICsCarrierService {
     private ICarrierDao carrierDao;
     @Resource
     private IDriverDao driverDao;
+    @Resource
+    private ITaskDao taskDao;
     @Resource
     private ICarrierDriverConDao carrierDriverConDao;
     @Resource
@@ -207,6 +213,19 @@ public class CsCarrierServiceImpl implements ICsCarrierService {
         log.info("调度中心中提车/送车调度中代驾和拖车列表请求json数据 :: "+ JsonUtils.objectToJson(dto));
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
         List<TrailCarrierVo> carrierVos = carrierDao.findTrailDriverNew(dto);
+        if(!CollectionUtils.isEmpty(carrierVos)){
+            for(TrailCarrierVo vo : carrierVos){
+                //处理该司机当前营运状态
+                Integer taskCount = taskDao.selectCount(new QueryWrapper<Task>().lambda()
+                        .eq(Task::getDriverId, vo.getDriverId())
+                        .lt(Task::getState, TaskStateEnum.FINISHED.code));
+                if(taskCount > 0){
+                    vo.setBusinessState(BusinessStateEnum.OUTAGE.code);
+                }else {
+                    vo.setBusinessState(BusinessStateEnum.BUSINESS.code);
+                }
+            }
+        }
         PageInfo<TrailCarrierVo> pageInfo =  new PageInfo<>(carrierVos);
         return BaseResultUtil.success(pageInfo);
     }

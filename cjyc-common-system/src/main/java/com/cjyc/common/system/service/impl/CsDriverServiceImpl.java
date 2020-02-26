@@ -510,6 +510,19 @@ public class CsDriverServiceImpl implements ICsDriverService {
     public ResultVo<PageVo<DispatchDriverVo>> dispatchDriverNew(DispatchDriverDto dto){
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<DispatchDriverVo> dispatchDriverVos = driverDao.findDispatchDriver(dto);
+        if(!CollectionUtils.isEmpty(dispatchDriverVos)){
+            for(DispatchDriverVo vo : dispatchDriverVos){
+                //处理该司机当前营运状态
+                Integer taskCount = taskDao.selectCount(new QueryWrapper<Task>().lambda()
+                        .eq(Task::getDriverId, vo.getDriverId())
+                        .lt(Task::getState, TaskStateEnum.FINISHED.code));
+                if(taskCount > 0){
+                    vo.setBusinessState(BusinessStateEnum.OUTAGE.code);
+                }else {
+                    vo.setBusinessState(BusinessStateEnum.BUSINESS.code);
+                }
+            }
+        }
         PageInfo<DispatchDriverVo> pageInfo = new PageInfo<>(dispatchDriverVos);
         return BaseResultUtil.success(pageInfo);
     }
