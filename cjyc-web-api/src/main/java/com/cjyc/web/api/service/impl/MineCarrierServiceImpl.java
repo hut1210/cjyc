@@ -331,6 +331,15 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
                 if(count != null){
                     driverVo.setCarNum(count.getCarNum());
                 }
+                //处理该司机当前营运状态
+                Integer taskCount = taskDao.selectCount(new QueryWrapper<Task>().lambda()
+                        .eq(Task::getDriverId, driverVo.getDriverId())
+                        .lt(Task::getState, TaskStateEnum.FINISHED.code));
+                if(taskCount > 0){
+                    driverVo.setBusinessState(BusinessStateEnum.OUTAGE.code);
+                }else{
+                    driverVo.setBusinessState(BusinessStateEnum.BUSINESS.code);
+                }
             }
         }
         PageInfo<MyDriverVo> pageInfo = new PageInfo<>(driverVos);

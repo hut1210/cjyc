@@ -13,6 +13,7 @@ import com.cjyc.common.model.dto.web.carrier.*;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.driver.DriverIdentityEnum;
+import com.cjyc.common.model.enums.task.TaskStateEnum;
 import com.cjyc.common.model.enums.transport.*;
 import com.cjyc.common.model.util.*;
 import com.cjyc.common.model.vo.PageVo;
@@ -63,6 +64,8 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     private ICarrierCarCountDao carrierCarCountDao;
     @Resource
     private IVehicleDao vehicleDao;
+    @Resource
+    private ITaskDao taskDao;
     @Resource
     private ICarrierCityConService carrierCityConService;
     @Autowired
@@ -822,6 +825,15 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
                 CarrierCarCount count = carrierCarCountDao.driverCount(vo.getDriverId());
                 if(count != null){
                     vo.setCarNum(count.getCarNum());
+                }
+                //处理该司机当前营运状态
+                Integer taskCount = taskDao.selectCount(new QueryWrapper<Task>().lambda()
+                        .eq(Task::getDriverId, vo.getDriverId())
+                        .lt(Task::getState, TaskStateEnum.FINISHED.code));
+                if(taskCount > 0){
+                    vo.setBusinessState(BusinessStateEnum.OUTAGE.code);
+                }else{
+                    vo.setBusinessState(BusinessStateEnum.BUSINESS.code);
                 }
             }
         }
