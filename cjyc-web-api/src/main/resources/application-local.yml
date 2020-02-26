@@ -188,3 +188,14 @@ cjyc:
   carSeries:
     logoImg: https://cjwl-test-bucket.obs.cn-north-1.myhuaweicloud.com:443/
 
+tldf:
+  acctNo: 200100000021418000
+  merchantId: 200100000021418
+  all_userName: 20010000002141804
+  all_password: 111111
+  pfxPassword: 111111
+  url: https://tlt.allinpay.com/aipg/ProcessServlet
+  business_code: 19400
+  bankacct: 110061002018800020878
+  pfxPath: 20010000002141804.p12
+  tltcerPath: allinpay-pds.cer

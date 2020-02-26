@@ -31,6 +31,7 @@ import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.mine.BankCardVo;
 import com.cjyc.common.system.service.*;
+import com.cjyc.common.system.util.MiaoxinSmsUtil;
 import com.cjyc.common.system.util.RedisUtils;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
@@ -98,6 +99,9 @@ public class CsTaskServiceImpl implements ICsTaskService {
     private ICsPingPayService csPingPayService;
     @Resource
     private ICsPushMsgService csPushMsgService;
+
+    @Resource
+    private ITradeBillDao tradeBillDao;
 
     /**
      * 获取任务编号
@@ -1175,6 +1179,18 @@ public class CsTaskServiceImpl implements ICsTaskService {
         if (count <= 0) {
             Order order = orderDao.selectById(orderId);
             orderDao.updateForFinish(orderId);
+
+            try{
+                List<String> orderCarNosList = tradeBillDao.getOrderCarNoList(order.getNo());
+                if(orderCarNosList!=null && orderCarNosList.size()>0){
+                    sendMessage(orderCarNosList,userInfo,order.getNo());
+                }else{
+                    log.error("收车短信发送异常 orderId ={} ",orderId);
+                }
+
+            }catch (Exception e){
+                log.error("回调短信发送异常"+e.getMessage(),e);
+            }
             //订单完成日志
             csOrderLogService.asyncSave(order, OrderLogEnum.FINISH,
                     new String[]{OrderLogEnum.FINISH.getOutterLog(),
@@ -1187,6 +1203,54 @@ public class CsTaskServiceImpl implements ICsTaskService {
             } catch (Exception e) {
                 log.error("支付合伙人{}（ID{}）服务费失败", order.getCustomerName(), order.getCustomerId());
                 log.error(e.getMessage(), e);
+            }
+        }
+    }
+
+    private void sendMessage(List<String> orderCarNosList, UserInfo userInfo, String no){
+        StringBuilder message = new StringBuilder("【韵车物流】VIN码后六位为");
+        List<OrderCar> orderCarList = orderCarDao.findListByNos(orderCarNosList);
+
+        try{
+            for(int i=0;i<orderCarList.size();i++){
+                OrderCar orderCar = orderCarList.get(i);
+                if(orderCar!=null){
+                    String vin = orderCar.getVin();
+                    if(vin!=null){
+                        int length = vin.length();
+                        if(length>6){
+                            if(i==orderCarList.size()-1){
+                                message.append(vin.substring(length-6));
+                            }else{
+                                message.append(vin.substring(length-6));
+                                message.append("、");
+                            }
+                        }else{
+                            if(i==orderCarList.size()-1){
+                                message.append(vin);
+                            }else{
+                                message.append(vin);
+                                message.append("、");
+                            }
+                        }
+                    }
+                }
+            }
+        }catch (Exception e){
+            log.error("拼接Vin码异常"+e.getMessage(),e);
+        }
+
+        message.append("的车辆已完成交车收款，收款金额");
+        TradeBill tradeBill = tradeBillDao.getTradeBillByOrderNo(no);
+        if(tradeBill!=null){
+            message.append(tradeBill.getAmount().divide(new BigDecimal(100)));
+        }
+        message.append("元");
+        if(userInfo!=null&&userInfo.getPhone()!=null){
+            try{
+                MiaoxinSmsUtil.send(userInfo.getPhone(), message.toString());
+            }catch (Exception e){
+                log.error("收车短信发送失败"+e.getMessage(),e);
             }
         }
     }
