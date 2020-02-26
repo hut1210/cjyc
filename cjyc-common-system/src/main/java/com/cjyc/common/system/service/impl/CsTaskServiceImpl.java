@@ -1180,17 +1180,6 @@ public class CsTaskServiceImpl implements ICsTaskService {
             Order order = orderDao.selectById(orderId);
             orderDao.updateForFinish(orderId);
 
-            try{
-                List<String> orderCarNosList = tradeBillDao.getOrderCarNoList(order.getNo());
-                if(orderCarNosList!=null && orderCarNosList.size()>0){
-                    sendMessage(orderCarNosList,userInfo,order.getNo());
-                }else{
-                    log.error("收车短信发送异常 orderId ={} ",orderId);
-                }
-
-            }catch (Exception e){
-                log.error("回调短信发送异常"+e.getMessage(),e);
-            }
             //订单完成日志
             csOrderLogService.asyncSave(order, OrderLogEnum.FINISH,
                     new String[]{OrderLogEnum.FINISH.getOutterLog(),
