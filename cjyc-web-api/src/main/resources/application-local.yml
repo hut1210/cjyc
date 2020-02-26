@@ -93,6 +93,12 @@ logging:
 
 ##-----------------------------------cjyc-------------------------------------------
 cjkj:
+  push:
+    enabled: true
+    apikey:
+      customer: 47c449cf81974738beeee5c0e14b6805
+      driver: b4ba93a458614c64835315acf1bcc7fe
+      salesman: 672774b924254b2cb96be3a4c5aaae96
   dept_customer_id: 100000
   dept_driver_id: 110000
   dept_admin_id: 120000
@@ -146,8 +152,8 @@ cjyc:
 
   #短信
   sms:
-    ##短信时效(秒)
-    expires: 300
+    ##短信时效(分钟)
+    expires: 5
     ##单日最大发送条数
     daylimit: 20
     miaoxin:

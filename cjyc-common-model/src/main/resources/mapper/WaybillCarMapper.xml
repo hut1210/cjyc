@@ -1890,5 +1890,13 @@
         from w_waybill_car
         where waybill_id = #{waybillId}
     </select>
+    <select id="countActiveWaybill" resultType="java.lang.Integer">
+        select
+        count(*)
+        from w_waybill_car
+        where order_car_id = #{orderCarId}
+        and state &lt;= 100
+        and type =#{type}
+    </select>
 
 </mapper>

@@ -233,7 +233,7 @@ public class LoginServiceImpl extends SuperServiceImpl<ICustomerDao, Customer> i
             if(urd == null){
                 return BaseResultUtil.fail("数据错误,请先检查");
             }
-            if((urd.getState() == CustomerStateEnum.REJECT.code) || (urd.getState() == CustomerStateEnum.FROZEN.code)){
+            if((urd.getState() == CommonStateEnum.REJECT.code) || (urd.getState() == CommonStateEnum.FROZEN.code)){
                 return BaseResultUtil.fail("账号处于冻结/审核拒绝不能登录app");
             }
         }

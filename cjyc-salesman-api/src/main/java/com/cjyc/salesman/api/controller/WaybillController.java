@@ -1,15 +1,19 @@
 package com.cjyc.salesman.api.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.cjyc.common.model.dto.web.waybill.*;
 import com.cjyc.common.model.entity.Admin;
+import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.BaseTipVo;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.service.ICsAdminService;
+import com.cjyc.common.system.service.ICsStoreService;
 import com.cjyc.common.system.service.ICsTaskService;
 import com.cjyc.common.system.service.ICsWaybillService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -24,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author JPG
  */
 @Api(tags = "运单")
+@Slf4j
 @RestController
 @RequestMapping(value = "/waybill",
         produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -34,7 +39,7 @@ public class WaybillController {
     @Autowired
     private ICsAdminService csAdminService;
     @Autowired
-    private ICsTaskService csTaskService;
+    private ICsStoreService csStoreService;
 
     /**
      * 提送车调度
@@ -114,6 +119,7 @@ public class WaybillController {
         reqDto.setLoginName(admin.getName());
         return csWaybillService.trunkMidwayUnload(reqDto);
     }
+
 
     /**
      * 取消调度

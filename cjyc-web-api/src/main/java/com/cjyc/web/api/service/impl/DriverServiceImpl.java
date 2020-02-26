@@ -740,7 +740,17 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
             for(DriverVo vo : driverVos){
                 CarrierCarCount count = carrierCarCountDao.countNew(vo.getCarrierId());
                 if(count != null){
-                    BeanUtils.copyProperties(count,vo);
+                    vo.setTotalIncome(count.getIncome());
+                    vo.setCarNum(count.getCarNum());
+                }
+                //处理该司机当前营运状态
+                Integer taskCount = taskDao.selectCount(new QueryWrapper<Task>().lambda()
+                        .eq(Task::getDriverId, vo.getDriverId())
+                        .lt(Task::getState, TaskStateEnum.FINISHED.code));
+                if(taskCount > 0){
+                    vo.setBusinessState(BusinessStateEnum.OUTAGE.code);
+                }else {
+                    vo.setBusinessState(BusinessStateEnum.BUSINESS.code);
                 }
             }
         }
