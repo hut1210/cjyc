@@ -710,10 +710,10 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             return BaseResultUtil.fail("根据角色名称：" + CARRIER_SUPER_ROLE_NAME +
                     ",未查询到角色信息");
         }
-        UserRoleDept urd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
-            .eq(UserRoleDept::getDeptId, origCarrier.getId())
-            .eq(UserRoleDept::getRoleId, role.getId()));
         Driver driver = driverDao.selectOne(new QueryWrapper<Driver>().lambda().eq(Driver::getPhone,dto.getLinkmanPhone()));
+        UserRoleDept urd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
+                .eq(UserRoleDept::getDeptId, origCarrier.getId())
+                .eq(UserRoleDept::getUserId, driver.getId()));
         if(origCarrier == null || urd == null || driver == null){
             return BaseResultUtil.fail("数据信息有误");
         }
