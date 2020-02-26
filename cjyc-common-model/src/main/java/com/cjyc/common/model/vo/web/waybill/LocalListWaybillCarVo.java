@@ -31,8 +31,6 @@ public class LocalListWaybillCarVo extends WaybillCar {
     private Integer type;
     @ApiModelProperty(value = "订单编号")
     private String orderNo;
-    @ApiModelProperty(value = "车辆编号")
-    private String orderCarNo;
     @ApiModelProperty(value = "品牌")
     private String brand;
     @ApiModelProperty(value = "型号")
