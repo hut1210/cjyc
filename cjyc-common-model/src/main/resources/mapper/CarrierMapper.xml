@@ -754,17 +754,15 @@
         LEFT JOIN s_bank_card_bind sbcb ON sbcb.user_id = dc.id
         <where>
             <if test="keyword != null and keyword.trim() !=''">
-                (dc.name like concat('%',#{keyword},'%') or
-                dc.linkman_phone like concat('%',#{keyword},'%'))
+                (dc.linkman like concat('%',#{keyword},'%') or
+                dc.linkman_phone like concat('%',#{keyword},'%') or
+                dvr.plate_no like concat('%',#{keyword},'%'))
             </if>
             <if test="type != null">
                 and  dc.type = #{type}
             </if>
             <if test="idCard != null and idCard.trim() != ''">
                 and  dc.legal_id_card = #{idCard}
-            </if>
-            <if test="plateNo != null and plateNo.trim() != ''">
-                and  dvr.plate_no = #{plateNo}
             </if>
             <if test="cityCode != null and cityCode.trim() != ''">
                 and  dccc.city_code = #{cityCode}
