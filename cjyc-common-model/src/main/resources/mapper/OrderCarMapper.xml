@@ -422,13 +422,13 @@
             <if test="paramsDto.endStoreId != null">
                 and o.end_store_id = #{paramsDto.endStoreId,jdbcType=BIGINT}
             </if>
-            <if test="paramsDto.orderNo != null and paramsDto.orderNo != ''">
+            <if test="paramsDto.orderNo != null and paramsDto.orderNo.trim() != ''">
                 and oc.order_no like concat('%', #{paramsDto.orderNo,jdbcType=VARCHAR}, '%')
             </if>
-            <if test="paramsDto.carNo != null and paramsDto.carNo != ''">
+            <if test="paramsDto.carNo != null and paramsDto.carNo.trim() != ''">
                 and oc.no like concat('%', #{paramsDto.carNo,jdbcType=VARCHAR}, '%')
             </if>
-            <if test="paramsDto.vin != null and paramsDto.vin != ''">
+            <if test="paramsDto.vin != null and paramsDto.vin.trim() != ''">
                 and oc.vin like concat('%', #{paramsDto.vin,jdbcType=VARCHAR}, '%')
             </if>
             <if test="paramsDto.beginExpectStartDate != null">
@@ -455,13 +455,13 @@
             <if test="paramsDto.backContactPhone != null and paramsDto.backContactPhone != ''">
                 and o.back_contact_phone like concat('%', #{paramsDto.backContactPhone,jdbcType=VARCHAR}, '%')
             </if>
-            <if test="paramsDto.brand != null and paramsDto.brand != ''">
+            <if test="paramsDto.brand != null and paramsDto.brand.trim() != ''">
                 and oc.brand like concat('%', #{paramsDto.brand,jdbcType=VARCHAR}, '%')
             </if>
-            <if test="paramsDto.model != null and paramsDto.model != ''">
+            <if test="paramsDto.model != null and paramsDto.model.trim() != ''">
                 and oc.model like concat('%', #{paramsDto.model,jdbcType=VARCHAR}, '%')
             </if>
-            <if test="paramsDto.plateNo != null and paramsDto.plateNo != ''">
+            <if test="paramsDto.plateNo != null and paramsDto.plateNo.trim() != ''">
                 and oc.plate_no like concat('%', #{paramsDto.plateNo,jdbcType=VARCHAR}, '%')
             </if>
             <if test="paramsDto.startStoreId != null">
@@ -802,7 +802,7 @@
                 and oc.now_store_id = #{paramsDto.nowStoreId}
             </if>
 
-            <if test="paramsDto.orderNo != null and paramsDto.orderNo != ''">
+            <if test="paramsDto.orderNo != null and paramsDto.orderNo.trim() != ''">
                 and o.no like concat('%', #{paramsDto.orderNo},'%')
             </if>
             <if test="paramsDto.customerName != null and paramsDto.customerName != ''">
@@ -880,7 +880,7 @@
             <if test="paramsDto.isNew != null">
                 and oc.is_new = #{paramsDto.isNew}
             </if>
-            <if test="paramsDto.carNo != null and paramsDto.carNo != ''">
+            <if test="paramsDto.carNo != null and paramsDto.carNo.trim() != ''">
                 and oc.no like concat('%', #{paramsDto.carNo},'%')
             </if>
             <if test="paramsDto.brand != null and paramsDto.brand != ''">

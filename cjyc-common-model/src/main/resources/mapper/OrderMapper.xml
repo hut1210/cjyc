@@ -257,8 +257,8 @@
                     </if>
                 </when>
             </choose>
-            <if test="paramsDto.no != null and paramsDto.no != ''">
-                and o.no = #{paramsDto.no}
+            <if test="paramsDto.no != null and paramsDto.no.trim() != ''">
+                and o.no like concat('%', #{paramsDto.no}, '%')
             </if>
             <if test="paramsDto.customerName != null and paramsDto.customerName != ''">
                 and o.customer_name like concat('%', #{paramsDto.customerName}, '%')

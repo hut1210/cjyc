@@ -640,18 +640,18 @@
                 and wc.state = #{paramsDto.state}
             </if>
             <if test="paramsDto.loginId != null">
-              and w.create_user_id = #{paramsDto.loginId}
+                and w.create_user_id = #{paramsDto.loginId}
             </if>
-            <if test="paramsDto.brand != null and paramsDto.brand != ''">
-                and oc.brand = #{paramsDto.brand}
+            <if test="paramsDto.brand != null and paramsDto.brand.trim() != ''">
+                and oc.brand like concat('%', #{paramsDto.brand}, '%')
             </if>
-            <if test="paramsDto.model != null and paramsDto.model != ''">
-                and oc.model = #{paramsDto.model}
+            <if test="paramsDto.model != null and paramsDto.model.trim() != ''">
+                and oc.model like concat('%', #{paramsDto.model}, '%')
             </if>
-            <if test="paramsDto.plateNo != null and paramsDto.plateNo != ''">
+            <if test="paramsDto.plateNo != null and paramsDto.plateNo.trim() != ''">
                 and oc.plate_no like concat('%', #{paramsDto.plateNo}, '%')
             </if>
-            <if test="paramsDto.vin != null and paramsDto.vin != ''">
+            <if test="paramsDto.vin != null and paramsDto.vin.trim() != ''">
                 and oc.vin like concat('%', #{paramsDto.vin}, '%')
             </if>
             <if test="paramsDto.type != null and paramsDto.type != 0">
@@ -723,8 +723,11 @@
             <if test="paramsDto.endUnloadTime != null">
                 and wc.unload_time &lt;= #{paramsDto.endUnloadTime}
             </if>
-            <if test="paramsDto.orderNo != null and paramsDto.orderNo != ''">
+            <if test="paramsDto.orderNo != null and paramsDto.orderNo.trim() != ''">
                 and oc.order_no like concat('%', #{paramsDto.orderNo}, '%')
+            </if>
+            <if test="paramsDto.orderCarNo != null and paramsDto.orderCarNo.trim() != ''">
+                and oc.no like concat('%', #{paramsDto.orderCarNo}, '%')
             </if>
         </where>
         order by w.create_time desc
@@ -844,43 +847,43 @@
             <if test="paramsDto.orderEndAreaCode != null and paramsDto.orderEndAreaCode != ''">
                 and o.end_area_code = #{paramsDto.orderEndAreaCode}
             </if>
-            <if test="paramsDto.orderNo != null and paramsDto.orderNo != ''">
+            <if test="paramsDto.orderNo != null and paramsDto.orderNo.trim() != ''">
                 and o.no like concat('%', #{paramsDto.orderNo}, '%')
             </if>
             <if test="paramsDto.orderSource != null and paramsDto.orderSource != ''">
                 and o.source = #{paramsDto.orderSource}
             </if>
-            <if test="paramsDto.brand != null and paramsDto.brand != ''">
+            <if test="paramsDto.brand != null and paramsDto.brand.trim() != ''">
                 and oc.brand = #{paramsDto.brand}
             </if>
-            <if test="paramsDto.model != null and paramsDto.model != ''">
+            <if test="paramsDto.model != null and paramsDto.model.trim() != ''">
                 and oc.model = #{paramsDto.model}
             </if>
-            <if test="paramsDto.plateNo != null and paramsDto.plateNo != ''">
+            <if test="paramsDto.plateNo != null and paramsDto.plateNo.trim() != ''">
                 and oc.plate_no like concat('%', #{paramsDto.plateNo}, '%')
             </if>
-            <if test="paramsDto.vin != null and paramsDto.vin != ''">
+            <if test="paramsDto.vin != null and paramsDto.vin.trim() != ''">
                 and oc.vin like concat('%', #{paramsDto.vin}, '%')
             </if>
-            <if test="paramsDto.carrierName != null and paramsDto.carrierName != ''">
+            <if test="paramsDto.carrierName != null and paramsDto.carrierName.trim() != ''">
                 and w.carrier_name like concat('%', #{paramsDto.carrierName}, '%')
             </if>
-            <if test="paramsDto.createUser != null and paramsDto.createUser != ''">
-                and w.create_user = #{paramsDto.createUser}
+            <if test="paramsDto.createUser != null and paramsDto.createUser.trim() != ''">
+                and w.create_user like concat('%', #{paramsDto.createUser},'%')
             </if>
-            <if test="paramsDto.driverName != null and paramsDto.driverName != ''">
+            <if test="paramsDto.driverName != null and paramsDto.driverName.trim() != ''">
                 and tb.driver_name like concat('%', #{paramsDto.driverName}, '%')
             </if>
-            <if test="paramsDto.driverPhone != null and paramsDto.driverPhone != ''">
+            <if test="paramsDto.driverPhone != null and paramsDto.driverPhone.trim() != ''">
                 and tb.driver_phone like concat('%', #{paramsDto.driverPhone}, '%')
             </if>
-            <if test="paramsDto.vehiclePlateNo != null and paramsDto.vehiclePlateNo != ''">
+            <if test="paramsDto.vehiclePlateNo != null and paramsDto.vehiclePlateNo.trim() != ''">
                 and tb.vehicle_plate_no like concat('%', #{paramsDto.vehiclePlateNo}, '%')
             </if>
-            <if test="paramsDto.outterState != null and paramsDto.outterState != ''">
+   <!--         <if test="paramsDto.outterState != null and paramsDto.outterState != ''">
                 and wc.outter_state = #{paramsDto.outterState}
-            </if>
-            <if test="paramsDto.waybillNo != null and paramsDto.waybillNo != ''">
+            </if>-->
+            <if test="paramsDto.waybillNo != null and paramsDto.waybillNo.trim() != ''">
                 and wc.waybill_no like concat('%', #{paramsDto.waybillNo}, '%')
             </if>
             <if test="paramsDto.orderCarNo != null and paramsDto.orderCarNo != ''">

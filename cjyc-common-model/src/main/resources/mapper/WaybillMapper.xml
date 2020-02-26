@@ -485,11 +485,11 @@
             <if test="paramsDto.state != null">
                 and w.state = #{paramsDto.state}
             </if>
-            <if test="paramsDto.waybillNo != null and paramsDto.waybillNo != ''">
+            <if test="paramsDto.waybillNo != null and paramsDto.waybillNo.trim() != ''">
                 and w.no like concat('%', #{paramsDto.waybillNo}, '%')
             </if>
             <if test="paramsDto.guideLine != null and paramsDto.guideLine != ''">
-                and w.guide_line  = #{paramsDto.guideLine}
+                and w.guide_line  like concat('%', #{paramsDto.guideLine}, '%')
             </if>
             <if test="paramsDto.carrierName != null and paramsDto.carrierName != ''">
                 and w.carrier_name like concat('%', #{paramsDto.carrierName}, '%')
@@ -541,22 +541,22 @@
             <if test="paramsDto.loginId != null">
                 and w.create_user_id = #{paramsDto.loginId}
             </if>
-            <if test="paramsDto.waybillNo != null and paramsDto.waybillNo != ''">
+            <if test="paramsDto.waybillNo != null and paramsDto.waybillNo.trim() != ''">
                 and w.no like concat('%', #{paramsDto.waybillNo}, '%')
             </if>
-            <if test="paramsDto.guideLine != null and paramsDto.guideLine != ''">
-                and w.guide_line  = #{paramsDto.guideLine}
+            <if test="paramsDto.guideLine != null and paramsDto.guideLine.trim() != ''">
+                and w.guide_line like concat('%', #{paramsDto.guideLine}, '%')
             </if>
-            <if test="paramsDto.carrierName != null and paramsDto.carrierName != ''">
+            <if test="paramsDto.carrierName != null and paramsDto.carrierName.trim() != ''">
                 and w.carrier_name like concat('%', #{paramsDto.carrierName}, '%')
             </if>
-            <if test="paramsDto.driverName != null and paramsDto.driverName != ''">
+            <if test="paramsDto.driverName != null and paramsDto.driverName.trim() != ''">
                 and t.driver_name  like concat('%', #{paramsDto.driverName}, '%')
             </if>
-            <if test="paramsDto.driverPhone != null and paramsDto.driverPhone != ''">
+            <if test="paramsDto.driverPhone != null and paramsDto.driverPhone.trim() != ''">
                 and t.driver_phone like concat('%', #{paramsDto.driverPhone}, '%')
             </if>
-            <if test="paramsDto.vehiclePlateNo != null and paramsDto.vehiclePlateNo != ''">
+            <if test="paramsDto.vehiclePlateNo != null and paramsDto.vehiclePlateNo.trim() != ''">
                 and t.vehicle_plate_no like concat('%', #{paramsDto.vehiclePlateNo}, '%')
             </if>
             <if test="paramsDto.beginCreateTime != null">
