@@ -799,6 +799,9 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 }
 
                 //包板线路不能为空
+                Line line = csLineService.getLineByCity(dto.getStartCityCode(), dto.getEndCityCode(), true);
+                validateLine(line, dto.getLineId());
+                dto.setLineId(line == null ? null : line.getId());
                 if (paramsDto.getFixedFreightFee() && (dto.getLineId() == null || dto.getLineId() <= 0)) {
                     throw new ParameterException("运单中车辆{0}，线路不能为空", orderCarNo);
                 }
@@ -872,6 +875,14 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             if (!CollectionUtils.isEmpty(lockSet)) {
                 redisUtil.del(lockSet.toArray(new String[0]));
             }
+        }
+    }
+
+    private void validateLine(Line line, Long lineId) {
+        Long vlineId = line == null ? 0 : line.getId();
+        lineId = lineId == null ? 0 : lineId;
+        if(!vlineId.equals(lineId)){
+            throw new ParameterException("线路与城市不配");
         }
     }
 
@@ -981,6 +992,9 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 }
 
                 //包板线路不能为空
+                Line line = csLineService.getLineByCity(dto.getStartCityCode(), dto.getEndCityCode(), true);
+                validateLine(line, dto.getLineId());
+                dto.setLineId(line == null ? null : line.getId());
                 if (paramsDto.getFixedFreightFee() && (dto.getLineId() == null || dto.getLineId() <= 0)) {
                     throw new ParameterException("运单中车辆{0}，线路不能为空", orderCarNo);
                 }
