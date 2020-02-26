@@ -799,7 +799,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 }
 
                 //包板线路不能为空
-                if (paramsDto.getFixedFreightFee() && dto.getLineId() == null) {
+                if (paramsDto.getFixedFreightFee() && (dto.getLineId() == null || dto.getLineId() <= 0)) {
                     throw new ParameterException("运单中车辆{0}，线路不能为空", orderCarNo);
                 }
 
@@ -981,14 +981,14 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 }
 
                 //包板线路不能为空
-                if (waybill.getFixedFreightFee() && (waybillCar.getLineId() == null || waybillCar.getLineId() <= 0)) {
+                if (paramsDto.getFixedFreightFee() && (dto.getLineId() == null || dto.getLineId() <= 0)) {
                     throw new ParameterException("运单中车辆{0}，线路不能为空", orderCarNo);
                 }
                 lockSet.add(lockCarKey);
 
                 //验证出发地与上一次调度目的地是否一致
                 WaybillCar prevWc;
-                if (waybillCar.getId() == null) {
+                if (dto.getId() == null) {
                     prevWc = waybillCarDao.findLastByOderCarId(orderCarId);
                 } else {
                     prevWc = waybillCarDao.findLastByOderCarIdAndId(waybillCar.getId(), orderCarId);

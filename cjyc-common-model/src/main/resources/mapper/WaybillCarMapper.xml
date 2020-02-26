@@ -1891,12 +1891,14 @@
         where waybill_id = #{waybillId}
     </select>
     <select id="countActiveWaybill" resultType="java.lang.Integer">
-        select
+        SELECT
         count(*)
-        from w_waybill_car
-        where order_car_id = #{orderCarId}
-        and state &lt;= 100
-        and type =#{type}
+        FROM w_waybill w
+        join w_waybill_car wc on w.id = wc.waybill_id
+        WHERE wc.order_car_id = #{orderCarId}
+        AND wc.state &lt;= 100
+        and w.state &lt;= 100
+        AND w.type =#{type}
     </select>
 
 </mapper>
