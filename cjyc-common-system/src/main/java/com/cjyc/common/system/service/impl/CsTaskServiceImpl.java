@@ -1034,6 +1034,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
         Set<String> customerPhoneSet = Sets.newHashSet();
         Set<Long> orderSet = Sets.newHashSet();
         List<PushInfo> pushList = Lists.newArrayList();
+        Map<Long,List<String>> map = new HashMap<>();
         for (Long taskCarId : paramsDto.getTaskCarIdList()) {
             if (taskCarId == null) {
                 continue;
@@ -1066,6 +1067,17 @@ public class CsTaskServiceImpl implements ICsTaskService {
                             MessageFormat.format(OrderCarLogEnum.C_RECEIPT.getInnerLog(), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
                     new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), paramsDto.getLoginType()));
 
+            try{
+                List<String> orderCarNoList = map.get(order.getId());
+                if(orderCarNoList==null){
+                    orderCarNoList=new ArrayList<>();
+                }
+                orderCarNoList.add(orderCar.getNo());
+                map.put(order.getId(),orderCarNoList);
+
+            }catch (Exception e){
+                log.error("短信信息异常"+e.getMessage(),e);
+            }
 
             PushInfo pushInfo = csPushMsgService.getPushInfo(order.getCustomerId(), UserTypeEnum.CUSTOMER, PushMsgEnum.C_RECEIPT_CAR, orderCar.getNo());
             pushList.add(pushInfo);
@@ -1085,6 +1097,12 @@ public class CsTaskServiceImpl implements ICsTaskService {
         }
         //验证任务是否完成
         validateAndFinishTaskWaybill(task);
+        try{
+            sendMessage(map);
+        }catch (Exception e){
+            log.error("收车短信发送异常"+e.getMessage(),e);
+        }
+
 
         //验证订单是否完成
         UserInfo userInfo = new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), paramsDto.getLoginType());
@@ -1180,17 +1198,6 @@ public class CsTaskServiceImpl implements ICsTaskService {
             Order order = orderDao.selectById(orderId);
             orderDao.updateForFinish(orderId);
 
-            try{
-                List<String> orderCarNosList = tradeBillDao.getOrderCarNoList(order.getNo());
-                if(orderCarNosList!=null && orderCarNosList.size()>0){
-                    sendMessage(orderCarNosList,userInfo,order.getNo());
-                }else{
-                    log.error("收车短信发送异常 orderId ={} ",orderId);
-                }
-
-            }catch (Exception e){
-                log.error("回调短信发送异常"+e.getMessage(),e);
-            }
             //订单完成日志
             csOrderLogService.asyncSave(order, OrderLogEnum.FINISH,
                     new String[]{OrderLogEnum.FINISH.getOutterLog(),
@@ -1207,52 +1214,51 @@ public class CsTaskServiceImpl implements ICsTaskService {
         }
     }
 
-    private void sendMessage(List<String> orderCarNosList, UserInfo userInfo, String no){
-        StringBuilder message = new StringBuilder("【韵车物流】VIN码后六位为");
-        List<OrderCar> orderCarList = orderCarDao.findListByNos(orderCarNosList);
+    private void sendMessage(Map<Long,List<String>> map){
+        for(Long orderId : map.keySet()){
+            Order order = orderDao.selectById(orderId);
+            List<String> orderCarNosList = map.get(orderId);
+            StringBuilder message = new StringBuilder("【韵车物流】VIN码后六位为");
+            List<OrderCar> orderCarList = orderCarDao.findListByNos(orderCarNosList);
 
-        try{
-            for(int i=0;i<orderCarList.size();i++){
-                OrderCar orderCar = orderCarList.get(i);
-                if(orderCar!=null){
-                    String vin = orderCar.getVin();
-                    if(vin!=null){
-                        int length = vin.length();
-                        if(length>6){
-                            if(i==orderCarList.size()-1){
-                                message.append(vin.substring(length-6));
+            try{
+                for(int i=0;i<orderCarList.size();i++){
+                    OrderCar orderCar = orderCarList.get(i);
+                    if(orderCar!=null){
+                        String vin = orderCar.getVin();
+                        if(vin!=null){
+                            int length = vin.length();
+                            if(length>6){
+                                if(i==orderCarList.size()-1){
+                                    message.append(vin.substring(length-6));
+                                }else{
+                                    message.append(vin.substring(length-6));
+                                    message.append("、");
+                                }
                             }else{
-                                message.append(vin.substring(length-6));
-                                message.append("、");
-                            }
-                        }else{
-                            if(i==orderCarList.size()-1){
-                                message.append(vin);
-                            }else{
-                                message.append(vin);
-                                message.append("、");
+                                if(i==orderCarList.size()-1){
+                                    message.append(vin);
+                                }else{
+                                    message.append(vin);
+                                    message.append("、");
+                                }
                             }
                         }
                     }
                 }
+            }catch (Exception e){
+                log.error("拼接Vin码异常"+e.getMessage(),e);
             }
-        }catch (Exception e){
-            log.error("拼接Vin码异常"+e.getMessage(),e);
+            message.append("的车辆已完成交车");
+            if(order!=null&&order.getCustomerPhone()!=null){
+                try{
+                    MiaoxinSmsUtil.send(order.getCustomerPhone(), message.toString());
+                }catch (Exception e){
+                    log.error("收车短信发送失败"+e.getMessage(),e);
+                }
+            }
         }
 
-        message.append("的车辆已完成交车收款，收款金额");
-        TradeBill tradeBill = tradeBillDao.getTradeBillByOrderNo(no);
-        if(tradeBill!=null){
-            message.append(tradeBill.getAmount().divide(new BigDecimal(100)));
-        }
-        message.append("元");
-        if(userInfo!=null&&userInfo.getPhone()!=null){
-            try{
-                MiaoxinSmsUtil.send(userInfo.getPhone(), message.toString());
-            }catch (Exception e){
-                log.error("收车短信发送失败"+e.getMessage(),e);
-            }
-        }
     }
 
     /**
