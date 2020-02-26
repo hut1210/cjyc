@@ -119,6 +119,15 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 Long orderCarId = dto.getOrderCarId();
                 Long carrierId = dto.getCarrierId();
 
+
+                if(!csStoreService.validateStoreParam(dto.getStartStoreId(), dto.getStartStoreName())){
+                    log.error("业务中心参数错误(saveLocal):" + JSON.toJSONString(paramsDto));
+                    throw new ParameterException("运单中车辆{0}，始发地业务中心参数错误", orderCarNo);
+                }
+                if(!csStoreService.validateStoreParam(dto.getEndStoreId(), dto.getEndStoreName())){
+                    log.error("业务中心参数错误(saveLocal):" + JSON.toJSONString(paramsDto));
+                    throw new ParameterException("运单中车辆{0}，目的地业务中心参数错误", orderCarNo);
+                }
                 //是否分配司机任务标识
                 CarrierInfo carrierInfo = validateLocalCarrierInfo(carrierId, dto.getCarrierName(), dto.getCarrierType(), paramsDto.getType(),
                         new UserInfo(dto.getLoadLinkUserId(), dto.getLoadLinkName(), dto.getLoadLinkPhone()),
@@ -343,6 +352,15 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             Long orderCarId = dto.getOrderCarId();
             Long carrierId = paramsDto.getCarrierId();
 
+
+            if(!csStoreService.validateStoreParam(dto.getStartStoreId(), dto.getStartStoreName())){
+                log.error("业务中心参数错误(updateLocal):" + JSON.toJSONString(paramsDto));
+                throw new ParameterException("运单中车辆{0}，始发地业务中心参数错误", orderCarNo);
+            }
+            if(!csStoreService.validateStoreParam(dto.getEndStoreId(), dto.getEndStoreName())){
+                log.error("业务中心参数错误(updateLocal):" + JSON.toJSONString(paramsDto));
+                throw new ParameterException("运单中车辆{0}，目的地业务中心参数错误", orderCarNo);
+            }
             //【验证】承运商是否可以运营
             CarrierInfo carrierInfo = validateLocalCarrierInfo(carrierId, paramsDto.getCarrierName(), paramsDto.getCarrierType(), paramsDto.getType(),
                     new UserInfo(dto.getLoadLinkUserId(), dto.getLoadLinkName(), dto.getLoadLinkPhone()),
@@ -736,6 +754,14 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 String orderCarNo = dto.getOrderCarNo();
                 Long orderCarId = dto.getOrderCarId();
 
+                if(!csStoreService.validateStoreParam(dto.getStartStoreId(), dto.getStartStoreName())){
+                    log.error("业务中心参数错误(saveTrunk):" + JSON.toJSONString(paramsDto));
+                    throw new ParameterException("运单中车辆{0}，始发地业务中心参数错误", orderCarNo);
+                }
+                if(!csStoreService.validateStoreParam(dto.getEndStoreId(), dto.getEndStoreName())){
+                    log.error("业务中心参数错误(saveTrunk):" + JSON.toJSONString(paramsDto));
+                    throw new ParameterException("运单中车辆{0}，目的地业务中心参数错误", orderCarNo);
+                }
                 //加锁
                 String lockKey = RedisKeys.getDispatchLock(orderCarNo);
                 if (!redisLock.lock(lockKey, 20000, 100, 300L)) {
@@ -897,6 +923,14 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 }
                 String orderCarNo = dto.getOrderCarNo();
                 Long orderCarId = dto.getOrderCarId();
+                if(!csStoreService.validateStoreParam(dto.getStartStoreId(), dto.getStartStoreName())){
+                    log.error("业务中心参数错误(updateTrunk):" + JSON.toJSONString(paramsDto));
+                    throw new ParameterException("运单中车辆{0}，始发地业务中心参数错误", orderCarNo);
+                }
+                if(!csStoreService.validateStoreParam(dto.getEndStoreId(), dto.getEndStoreName())){
+                    log.error("业务中心参数错误(updateTrunk):" + JSON.toJSONString(paramsDto));
+                    throw new ParameterException("运单中车辆{0}，目的地业务中心参数错误", orderCarNo);
+                }
                 //加锁
                 String lockCarKey = RedisKeys.getDispatchLock(orderCarNo);
                 if (!redisLock.lock(lockCarKey, 20000, 100, 300L)) {
@@ -1090,9 +1124,13 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         if (n == 0) {
             //提干,APP 自送单起始地是业务中心，无法验证地址，只能验证手机号
             if (order.getPickContactPhone().equals(waybillCar.getLoadLinkPhone())) {
-                noc.setPickType(OrderPickTypeEnum.WL.code);
-                noc.setPickState(OrderCarLocalStateEnum.F_WL.code);
                 noc.setState(OrderCarStateEnum.WAIT_TRUNK.code);
+                //验证是否存在提车运单
+                int i = waybillCarDao.countActiveWaybill(orderCarId, WaybillTypeEnum.PICK.code);
+                if(i <= 0){
+                    noc.setPickType(OrderPickTypeEnum.WL.code);
+                    noc.setPickState(OrderCarLocalStateEnum.F_WL.code);
+                }
             }
         }
 
@@ -1112,8 +1150,12 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         //是否交付客户-干送运单
         if (order.getBackContactPhone().equals(waybillCar.getUnloadLinkPhone())) {
             noc.setTrunkState(OrderCarTrunkStateEnum.DISPATCHED.code);
-            noc.setBackType(OrderPickTypeEnum.WL.code);
-            noc.setBackState(OrderCarLocalStateEnum.F_WL.code);
+            //验证是否存在提车运单
+            int i = waybillCarDao.countActiveWaybill(orderCarId, WaybillTypeEnum.BACK.code);
+            if(i <= 0){
+                noc.setBackState(OrderCarLocalStateEnum.F_WL.code);
+                noc.setBackType(OrderPickTypeEnum.WL.code);
+            }
         }
         return noc;
     }
@@ -1310,6 +1352,11 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
     @Override
     public ResultVo trunkMidwayUnload(TrunkMidwayUnload paramsDto) {
         List<Long> carIdList = paramsDto.getWaybillCarIdList();
+
+        if(!csStoreService.validateStoreParam(paramsDto.getEndStoreId(), paramsDto.getEndStoreName())){
+            log.error("业务中心参数错误(midwayUnload):" + JSON.toJSONString(paramsDto));
+            return BaseResultUtil.fail("业务中心参数错误");
+        }
         if (CollectionUtils.isEmpty(carIdList)) {
             return BaseResultUtil.fail("车辆不能为空");
         }

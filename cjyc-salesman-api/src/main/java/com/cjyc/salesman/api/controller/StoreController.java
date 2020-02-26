@@ -55,4 +55,16 @@ public class StoreController {
             return BaseResultUtil.fail(resultVo.getMsg());
         }
     }
+
+    private boolean validateStoreParam(Long endStoreId, String endStoreName) {
+        endStoreId = endStoreId == null ? 0 : endStoreId;
+        endStoreName = endStoreName == null ? "" : endStoreName;
+        if(endStoreId > 0 && !endStoreName.endsWith("业务中心")){
+            return false;
+        }
+        if(endStoreId <= 0 && endStoreName.endsWith("业务中心")){
+            return false;
+        }
+        return true;
+    }
 }
