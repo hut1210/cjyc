@@ -75,7 +75,7 @@ public class UpdateTrunkWaybillCarDto {
     @ApiModelProperty(value = "线路ID")
     private Long lineId;
 
-    @Min(value = 1, message = "预计提车日期不合规则")
+    //@Min(value = 1, message = "预计提车日期不合规则")
     @ApiModelProperty(value = "预计提车日期")
     private Long expectStartTime;
 
