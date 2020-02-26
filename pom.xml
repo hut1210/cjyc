@@ -274,6 +274,8 @@
                                 <exclude>*.jks</exclude>
                                 <exclude>*.pem</exclude>
                                 <exclude>*.jks</exclude>
+                                <exclude>*.cer</exclude>
+                                <exclude>*.p12</exclude>
                                 <exclude>*.properties</exclude>
                             </excludes>
                         </configuration>
