@@ -120,6 +120,7 @@ public class ApplyPartnerServiceImpl extends ServiceImpl<ICustomerDao, Customer>
         bcb.setUserId(dto.getLoginId());
         bcb.setUserType(UserTypeEnum.CUSTOMER.code);
         bcb.setState(UseStateEnum.USABLE.code);
+        bcb.setCardColour(RandomUtil.getIntRandom());
         bcb.setCreateTime(NOW);
         //获取银行编码
         BankInfo bankInfo = bankInfoService.findBankCode(bcb.getBankName());

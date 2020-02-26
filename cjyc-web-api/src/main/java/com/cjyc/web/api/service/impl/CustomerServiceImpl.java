@@ -1093,9 +1093,10 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                 if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
                     return BaseResultUtil.fail("更新组织下的所有角色失败");
                 }
+                customer.setType(CustomerTypeEnum.COOPERATOR.code);
+                urd.setRoleId(role.getId());
             }
             urd.setState(CommonStateEnum.CHECKED.code);
-            customer.setType(CustomerTypeEnum.COOPERATOR.code);
         }else if(dto.getFlag() == FlagEnum.AUDIT_REJECT.code){
             //审核拒绝
             if(customer.getType() == CustomerTypeEnum.INDIVIDUAL.code && urd.getState() == CommonStateEnum.IN_CHECK.code){
