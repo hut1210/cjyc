@@ -7,6 +7,8 @@ import com.cjyc.common.model.vo.BaseTipVo;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.ResultVo;
 
+import java.util.Set;
+
 /**
  * 运单接口
  * @author JPG
@@ -37,6 +39,7 @@ public interface ICsWaybillService {
     ResultVo<ListVo<BaseTipVo>> cancel(CancelWaybillDto paramsDto);
 
     String computeGuideLine(String startAreaCode, String endAreaCode, String defaultGuideLine, Integer carNum);
+    String computeGuideLine(Set<String> startAreaCodeSet, Set<String> endAreaCodeSet, String defaultGuideLine, Integer carNum);
 
     /**
      * 修改同城运单

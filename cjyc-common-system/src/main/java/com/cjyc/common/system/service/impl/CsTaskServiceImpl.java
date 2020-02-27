@@ -8,6 +8,7 @@ import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.customer.order.ReceiptBatchDto;
 import com.cjyc.common.model.dto.driver.task.ReplenishInfoDto;
 import com.cjyc.common.model.dto.web.task.*;
+import com.cjyc.common.model.dto.web.waybill.SaveTrunkWaybillCarDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.entity.defined.*;
 import com.cjyc.common.model.enums.*;
@@ -314,7 +315,9 @@ public class CsTaskServiceImpl implements ICsTaskService {
             task.setCreateUser(paramsDto.getLoginName());
             task.setCreateUserId(paramsDto.getLoginId());
             if(!CollectionUtils.isEmpty(list)){
-                task.setGuideLine(csWaybillService.computeGuideLine(list.get(0).getStartAreaCode(), list.get(0).getEndAreaCode(), paramsDto.getGuideLine(), list.size()));
+                Set<String> startAreaCodeSet = list.stream().map(WaybillCar::getStartAreaCode).collect(Collectors.toSet());
+                Set<String> EndAreaCodeSet = list.stream().map(WaybillCar::getEndAreaCode).collect(Collectors.toSet());
+                task.setGuideLine(csWaybillService.computeGuideLine(startAreaCodeSet, EndAreaCodeSet, paramsDto.getGuideLine(), list.size()));
             }
 
             taskDao.insert(task);

@@ -39,6 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.MessageFormat;
@@ -312,22 +313,37 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         }
         return pushCustomerInfoMap;
     }
-
     @Override
     public String computeGuideLine(String startAreaCode, String endAreaCode, String defaultGuideLine, Integer carNum) {
-        if (carNum == null || carNum != 1) {
-            return null;
-        } else {
-            if (StringUtils.isNotBlank(defaultGuideLine) && !"-".equals(defaultGuideLine.trim()) && defaultGuideLine.split("-").length >= 2) {
-                return defaultGuideLine;
-            }
-            if (StringUtils.isBlank(startAreaCode) || StringUtils.isBlank(endAreaCode)) {
-                return null;
-            }
-            FullCity startFullCity = csCityService.findFullCity(startAreaCode, CityLevelEnum.PROVINCE);
-            FullCity endFullCity = csCityService.findFullCity(endAreaCode, CityLevelEnum.PROVINCE);
-            return MessageFormat.format("{0}-{1}", startFullCity.getCity(), endFullCity.getCity());
+        return computeGuideLine(Sets.newHashSet(startAreaCode), Sets.newHashSet(endAreaCode), defaultGuideLine, carNum);
+    }
+    @Override
+    public String computeGuideLine(Set<String> startAreaCodeSet, Set<String> endAreaCodeSet, String defaultGuideLine, Integer carNum) {
+        //优先按输入
+        if (StringUtils.isNotBlank(defaultGuideLine) && !"-".equals(defaultGuideLine.trim()) && defaultGuideLine.split("-").length >= 2) {
+            return defaultGuideLine;
         }
+        if (CollectionUtils.isEmpty(startAreaCodeSet)) {
+            return null;
+        }
+        StringBuilder guideLine = null;
+        if (carNum != null) {
+            if(startAreaCodeSet.size() == 1){
+                FullCity startFullCity = csCityService.findFullCity(startAreaCodeSet.iterator().next(), CityLevelEnum.PROVINCE);
+                if(startFullCity == null || startFullCity.getCity() == null){
+                    return null;
+                }
+                guideLine.append(startFullCity.getCity());
+            }
+            if(endAreaCodeSet != null && startAreaCodeSet.size() == 1){
+                FullCity endFullCity = csCityService.findFullCity(endAreaCodeSet.iterator().next(), CityLevelEnum.PROVINCE);
+                if(endFullCity != null && endFullCity.getCity() != null){
+                    guideLine.append("-");
+                    guideLine.append(endFullCity.getCity());
+                }
+            }
+        }
+        return guideLine == null ? null : guideLine.toString();
     }
 
     /**
@@ -746,7 +762,9 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             waybill.setCreateUserId(paramsDto.getLoginId());
             waybill.setFixedFreightFee(paramsDto.getFixedFreightFee());
             if (!CollectionUtils.isEmpty(dtoList)) {
-                waybill.setGuideLine(computeGuideLine(dtoList.get(0).getStartAreaCode(), dtoList.get(0).getEndAreaCode(), paramsDto.getGuideLine(), dtoList.size()));
+                Set<String> startAreaCodeSet = dtoList.stream().map(SaveTrunkWaybillCarDto::getStartAreaCode).collect(Collectors.toSet());
+                Set<String> EndAreaCodeSet = dtoList.stream().map(SaveTrunkWaybillCarDto::getEndAreaCode).collect(Collectors.toSet());
+                waybill.setGuideLine(computeGuideLine(startAreaCodeSet, EndAreaCodeSet, paramsDto.getGuideLine(), dtoList.size()));
             }
             //TODO 干线运单所属业务中心
             //waybill.setInputStoreId(paramsDto.);
@@ -928,7 +946,9 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             waybill.setFixedFreightFee(paramsDto.getFixedFreightFee());
             waybill.setRemark(paramsDto.getRemark());
             if (!CollectionUtils.isEmpty(dtoList)) {
-                waybill.setGuideLine(computeGuideLine(dtoList.get(0).getStartAreaCode(), dtoList.get(0).getEndAreaCode(), paramsDto.getGuideLine(), dtoList.size()));
+                Set<String> startAreaCodeSet = dtoList.stream().map(UpdateTrunkWaybillCarDto::getStartAreaCode).collect(Collectors.toSet());
+                Set<String> EndAreaCodeSet = dtoList.stream().map(UpdateTrunkWaybillCarDto::getEndAreaCode).collect(Collectors.toSet());
+                waybill.setGuideLine(computeGuideLine(startAreaCodeSet, EndAreaCodeSet, paramsDto.getGuideLine(), dtoList.size()));
             }
             waybillDao.updateByIdForNull(waybill);
 
@@ -1254,6 +1274,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         }
         return BaseResultUtil.success();
     }
+
+
 
     @Override
     public void cancelWaybill(Waybill waybill) {
