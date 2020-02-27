@@ -245,7 +245,7 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
         req.setSmsCode(dto.getCode());
         ResultData<AuthLoginResp> rd = sysLoginService.mobileLogin(req);
         if(rd == null || rd.getData() == null || rd.getData().getAccessToken() == null){
-            return BaseResultUtil.getVo(ResultEnum.LOGIN_FAIL.getCode(),ResultEnum.LOGIN_FAIL.getMsg());
+            return BaseResultUtil.fail(rd.getMsg());
         }
         BeanUtils.copyProperties(baseLoginVo,driverLoginVo);
         driverLoginVo.setIdCard(StringUtils.isNotBlank(baseLoginVo.getIdCard()) ? baseLoginVo.getIdCard():"");
