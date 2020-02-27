@@ -430,9 +430,9 @@ public class FinanceServiceImpl implements IFinanceService {
         Config config = configDao.getByItemKey("external_pay");
         if(config!=null&&config.getState()==1) {//对外支付模式
             log.info("config.getState() "+config.getState().toString());
-            paidList = getExternalPaidList(pq);
+            paidList =  financeDao.getPaidListNew(pq);
         }else{//自动付款
-            paidList = getAutoPaidList(pq);
+            paidList =  financeDao.getAutoPaidList(pq);
         }
 
         Map<String, Object> countInfo = new HashMap<>();
@@ -774,9 +774,9 @@ public class FinanceServiceImpl implements IFinanceService {
         Config config = configDao.getByItemKey("external_pay");
         if(config!=null&&config.getState()==1) {//对外支付模式
             log.info("config.getState() "+config.getState().toString());
-            paidNewVoList = getExternalPaidList(payMentQueryDto);
+            paidNewVoList =  financeDao.getPaidListNew(payMentQueryDto);
         }else{//自动付款
-            paidNewVoList = getAutoPaidList(payMentQueryDto);
+            paidNewVoList = financeDao.getAutoPaidList(payMentQueryDto);;
         }
 
         for(int i=0;i<paidNewVoList.size();i++){
