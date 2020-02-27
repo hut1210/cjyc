@@ -330,7 +330,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         if (CollectionUtils.isEmpty(startAreaCodeSet)) {
             return null;
         }
-        StringBuilder guideLine = null;
+        StringBuilder guideLine = new StringBuilder();
         if (carNum != null) {
             if(startAreaCodeSet.size() == 1){
                 FullCity startFullCity = csCityService.findFullCity(startAreaCodeSet.iterator().next(), CityLevelEnum.PROVINCE);
@@ -347,7 +347,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 }
             }
         }
-        return guideLine == null ? null : guideLine.toString();
+        return guideLine.toString();
     }
 
     /**
@@ -485,6 +485,18 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         if (orderPhone.equals(waybillCar.getUnloadLinkPhone())
                 && orderAreaCode.equals(waybillCar.getEndAreaCode())
                 && orderAddress.equals(waybillCar.getEndAddress())) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean validateIsFromOrigin(WaybillCar waybillCar, Order order) {
+        String orderPhone = order.getPickContactPhone() == null ? "" : order.getPickContactPhone();
+        String orderAreaCode = order.getStartAreaCode() == null ? "" : order.getStartAreaCode();
+        String orderAddress = order.getStartAddress() == null ? "" : order.getStartAddress();
+        if (orderPhone.equals(waybillCar.getLoadLinkPhone())
+                && orderAreaCode.equals(waybillCar.getStartAreaCode())
+                && orderAddress.equals(waybillCar.getStartAddress())) {
             return true;
         }
         return false;
@@ -1170,7 +1182,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         int n = waybillCarDao.countPrevTrunk(waybillCar.getId());
         if (n == 0) {
             //提干,APP 自送单起始地是业务中心，无法验证地址，只能验证手机号
-            if (order.getPickContactPhone().equals(waybillCar.getLoadLinkPhone())) {
+            if (validateIsFromOrigin(waybillCar, order)) {
                 noc.setState(OrderCarStateEnum.WAIT_TRUNK.code);
                 //验证是否存在提车运单
                 int i = waybillCarDao.countActiveWaybill(orderCarId, WaybillTypeEnum.PICK.code);
@@ -1195,7 +1207,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         }
 
         //是否交付客户-干送运单
-        if (order.getBackContactPhone().equals(waybillCar.getUnloadLinkPhone())) {
+        if (validateIsArriveDest(waybillCar, order)) {
             noc.setTrunkState(OrderCarTrunkStateEnum.DISPATCHED.code);
             //验证是否存在提车运单
             int i = waybillCarDao.countActiveWaybill(orderCarId, WaybillTypeEnum.BACK.code);
@@ -1206,6 +1218,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         }
         return noc;
     }
+
+
 
     private boolean validateIsArriveEndStore(Long orderEndStoreId, Long waybillCarEndStoreId) {
         if (orderEndStoreId == null || orderEndStoreId <= 0) {
