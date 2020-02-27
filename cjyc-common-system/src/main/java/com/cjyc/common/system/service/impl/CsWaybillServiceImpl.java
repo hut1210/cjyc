@@ -242,7 +242,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 fillWaybillCarAdmin(waybillCar, waybill.getType());
                 //计算预计到达时间
                 fillWaybillCarExpectEndTime(waybillCar, order.getExpectStartDate());
-                waybillCar.setReceiptFlag(waybillCar.getUnloadLinkPhone().equals(order.getBackContactPhone()));
+                //waybillCar.setReceiptFlag(waybillCar.getUnloadLinkPhone().equals(order.getBackContactPhone()));
+                waybillCar.setReceiptFlag(validateIsArriveDest(waybillCar, order));
                 //运单车辆状态
                 Boolean isInStore = getOrderCarIsInEndStore(orderCar.getNowStoreId(), waybillCar.getStartStoreId());
                 waybillCar.setState(getWaybillCarState(waybill, isInStore, carrierInfo));
@@ -435,8 +436,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             fillWaybillCarAdmin(waybillCar, waybill.getType());
             //计算预计到达时间
             fillWaybillCarExpectEndTime(waybillCar, order.getExpectStartDate());
-            waybillCar.setReceiptFlag(waybillCar.getUnloadLinkPhone().equals(order.getBackContactPhone()));
-            //waybillCar.setReceiptFlag(validateIsArriveDest(waybillCar, order));
+            //waybillCar.setReceiptFlag(waybillCar.getUnloadLinkPhone().equals(order.getBackContactPhone()));
+            waybillCar.setReceiptFlag(validateIsArriveDest(waybillCar, order));
             //运单车辆状态
             Boolean isInStore = getOrderCarIsInEndStore(orderCar.getNowStoreId(), waybillCar.getStartStoreId());
             waybillCar.setState(getWaybillCarState(waybill, isInStore, carrierInfo));
@@ -858,7 +859,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 fillWaybillCarAdmin(waybillCar, waybill.getType());
                 //计算预计到达时间
                 fillWaybillCarExpectEndTime(waybillCar, order.getExpectStartDate());
-                waybillCar.setReceiptFlag(waybillCar.getUnloadLinkPhone().equals(order.getBackContactPhone()));
+                //waybillCar.setReceiptFlag(waybillCar.getUnloadLinkPhone().equals(order.getBackContactPhone()));
+                waybillCar.setReceiptFlag(validateIsArriveDest(waybillCar, order));
                 waybillCar.setState(getTrunkState(carrierInfo));
                 waybillCar.setCreateTime(currentTimeMillis);
                 log.debug("【干线调度】车辆准备写入：" + JSON.toJSONString(waybillCar));
@@ -1053,7 +1055,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 fillWaybillCarAdmin(waybillCar, waybill.getType());
                 //计算预计到达时间
                 fillWaybillCarExpectEndTime(waybillCar, order.getExpectStartDate());
-                waybillCar.setReceiptFlag(order.getBackContactPhone().equals(waybillCar.getUnloadLinkPhone()));
+                //waybillCar.setReceiptFlag(order.getBackContactPhone().equals(waybillCar.getUnloadLinkPhone()));
+                waybillCar.setReceiptFlag(validateIsArriveDest(waybillCar, order));
                 log.debug("【干线调度修改】车辆准备写入：" + JSON.toJSONString(waybillCar));
                 if (isNewWaybillCar) {
                     waybillCar.setState(getTrunkState(carrierInfo));
@@ -1459,7 +1462,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                     waybillCar.setState(WaybillCarStateEnum.WAIT_UNLOAD_CONFIRM.code);
                 }
 
-                waybillCar.setReceiptFlag(waybillCar.getUnloadLinkPhone().equals(order.getBackContactPhone()));
+                //waybillCar.setReceiptFlag(waybillCar.getUnloadLinkPhone().equals(order.getBackContactPhone()));
+                waybillCar.setReceiptFlag(validateIsArriveDest(waybillCar, order));
                 waybillCar.setUnloadLinkUserId(paramsDto.getUnloadLinkUserId());
                 waybillCar.setUnloadLinkName(paramsDto.getUnloadLinkName());
                 waybillCar.setUnloadLinkPhone(paramsDto.getUnloadLinkPhone());
@@ -1474,7 +1478,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
                 //更新车辆状态和所在位置和状态、调度状态
                 OrderCar noc = getOrderCarForChangeTrunk(orderCar, waybillCar, order);
-                if (order.getBackContactPhone().equals(waybillCar.getUnloadLinkPhone())) {
+                if (validateIsArriveDest(waybillCar, order)) {
                     noc.setState(OrderCarStateEnum.SIGNED.code);
                     throw new ParameterException("卸载车辆暂时不支持直接交付客户");
                     //开发直接交付客户
