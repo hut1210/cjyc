@@ -8,6 +8,7 @@ import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.UseStateEnum;
 import com.cjyc.common.model.enums.UserTypeEnum;
+import com.cjyc.common.model.enums.customer.CheckTypeEnum;
 import com.cjyc.common.model.enums.customer.CustomerSourceEnum;
 import com.cjyc.common.model.enums.customer.CustomerStateEnum;
 import com.cjyc.common.model.enums.role.DeptTypeEnum;
@@ -34,6 +35,8 @@ public class ApplyPartnerServiceImpl extends ServiceImpl<ICustomerDao, Customer>
     private IBankCardBindDao bankCardBindDao;
     @Resource
     private ICustomerDao customerDao;
+    @Resource
+    private ICheckDao checkDao;
     @Resource
     private IUserRoleDeptDao userRoleDeptDao;
     @Resource
@@ -96,18 +99,37 @@ public class ApplyPartnerServiceImpl extends ServiceImpl<ICustomerDao, Customer>
         if(!flag){
             return BaseResultUtil.fail("银行卡号输入不符合,请检查");
         }
-        if(urd.getState() == CommonStateEnum.IN_CHECK.code){
+        //查询审核表中是否有该用户信息
+        Check check = checkDao.selectOne(new QueryWrapper<Check>().lambda()
+                .eq(Check::getUserId, dto.getLoginId())
+                .eq(Check::getState, CommonStateEnum.IN_CHECK.code)
+                .eq(Check::getType, CheckTypeEnum.UPGRADE_PARTNER.code)
+                .eq(Check::getSource,CustomerSourceEnum.UPGRADE.code));
+        if(check != null){
             //删除合伙人信息与银行卡信息
             customerPartnerDao.delete(new QueryWrapper<CustomerPartner>().lambda().eq(CustomerPartner::getCustomerId,customer.getId()));
             bankCardBindDao.delete(new QueryWrapper<BankCardBind>().lambda().eq(BankCardBind::getUserId,customer.getId()));
+            checkDao.delete(new QueryWrapper<Check>().lambda().eq(Check::getUserId,dto.getLoginId()).eq(Check::getType,CheckTypeEnum.UPGRADE_PARTNER.code));
         }
-        BeanUtils.copyProperties(dto,customer);
+       /* BeanUtils.copyProperties(dto,customer);
         customer.setAlias(dto.getName());
         customer.setSource(CustomerSourceEnum.UPGRADE.code);
         super.updateById(customer);
 
         //更新用户与角色机构关系
         csUserRoleDeptService.updateCustomerToUserRoleDept(customer,dto.getLoginId());
+*/
+       //保存到审核表中
+        Check ck = new Check();
+        BeanUtils.copyProperties(dto,ck);
+        ck.setUserId(dto.getLoginId());
+        ck.setPhone(customer.getContactPhone());
+        ck.setState(CommonStateEnum.IN_CHECK.code);
+        ck.setType(CheckTypeEnum.UPGRADE_PARTNER.code);
+        ck.setSocialCreditCode(dto.getSocialCreditCode());
+        ck.setCreateTime(NOW);
+        ck.setCreateUserId(dto.getLoginId());
+        checkDao.insert(ck);
 
         //合伙人附加信息
         CustomerPartner cp = new CustomerPartner();

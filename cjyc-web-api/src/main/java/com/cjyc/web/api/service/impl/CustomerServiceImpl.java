@@ -14,6 +14,7 @@ import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.customer.*;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.*;
+import com.cjyc.common.model.enums.customer.CheckTypeEnum;
 import com.cjyc.common.model.enums.customer.CustomerSourceEnum;
 import com.cjyc.common.model.enums.customer.CustomerStateEnum;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
@@ -75,6 +76,8 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     private IAdminDao adminDao;
     @Resource
     private IDriverDao driverDao;
+    @Resource
+    private ICheckDao checkDao;
     @Resource
     private ICustomerCountDao customerCountDao;
     @Resource
@@ -1065,7 +1068,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     public ResultVo findPartnerNew(CustomerPartnerDto dto) {
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<CustomerPartnerVo> partnerVos = encapCoPartner(dto);
-        PageInfo<CustomerPartnerVo> pageInfo = new PageInfo<>(partnerVos);
+        PageInfo<CustomerPartnerVo> pageInfo = new PageInfo(partnerVos);
         return BaseResultUtil.success(pageInfo);
     }
 
@@ -1085,9 +1088,35 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             return BaseResultUtil.fail("角色不存在,请先添加角色");
         }
         //审核通过
+        Check check = null;
         if(dto.getFlag() == FlagEnum.AUDIT_PASS.code){
+            check = checkDao.selectOne(new QueryWrapper<Check>().lambda()
+                    .eq(Check::getUserId, dto.getId())
+                    .eq(Check::getState, CommonStateEnum.IN_CHECK.code)
+                    .eq(Check::getType, CheckTypeEnum.UPGRADE_PARTNER.code)
+                    .eq(Check::getSource,CustomerSourceEnum.UPGRADE.code));
+            if(check != null){
+                //合伙人更新结构组角色
+                ResultData updateRd = updatePlatformRole(customer.getUserId(),role.getRoleId());
+                if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
+                    return BaseResultUtil.fail("更新组织下的所有角色失败");
+                }
+                //更新成合伙人信息
+                customer.setName(check.getName());
+                customer.setContactMan(check.getContactMan());
+                customer.setContactAddress(check.getContactAddress());
+                customer.setType(CustomerTypeEnum.COOPERATOR.code);
+                customer.setSource(CustomerSourceEnum.UPGRADE.code);
+                customer.setSocialCreditCode(check.getSocialCreditCode());
+                //更新审核表
+                check.setState(CommonStateEnum.CHECKED.code);
+                check.setCheckUserId(dto.getLoginId());
+                check.setCheckTime(NOW);
+                //更新关联表角色id
+                urd.setRoleId(role.getId());
+            }
             //合伙人或者是从用户端升级成为的合伙人(此时为c端客户状态为审核中)
-            if(customer.getType() == CustomerTypeEnum.COOPERATOR.code || (customer.getType() == CustomerTypeEnum.INDIVIDUAL.code && urd.getState() == CommonStateEnum.IN_CHECK.code)){
+            /*if(customer.getType() == CustomerTypeEnum.COOPERATOR.code || (customer.getType() == CustomerTypeEnum.INDIVIDUAL.code && urd.getState() == CommonStateEnum.IN_CHECK.code)){
                 //合伙人更新结构组角色
                 ResultData updateRd = updatePlatformRole(customer.getUserId(),role.getRoleId());
                 if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
@@ -1095,7 +1124,8 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                 }
                 customer.setType(CustomerTypeEnum.COOPERATOR.code);
                 urd.setRoleId(role.getId());
-            }
+            }*/
+            customer.setState(CommonStateEnum.CHECKED.code);
             urd.setState(CommonStateEnum.CHECKED.code);
         }else if(dto.getFlag() == FlagEnum.AUDIT_REJECT.code){
             //审核拒绝
@@ -1129,6 +1159,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         customer.setCheckUserId(dto.getLoginId());
         customerDao.updateById(customer);
         userRoleDeptDao.updateById(urd);
+        checkDao.updateById(check);
         return BaseResultUtil.success();
     }
 
@@ -1307,7 +1338,12 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
      * @return
      */
     private List<CustomerPartnerVo> encapCoPartner(CustomerPartnerDto dto){
-        List<CustomerPartnerVo> coPartnerVos = customerDao.findCoPartner(dto);
+        List<CustomerPartnerVo> coPartnerVos = null;
+        if(dto.getFlag() == 0){
+            coPartnerVos = customerDao.findCoPartner(dto);
+        }else{
+            coPartnerVos = customerDao.findPartner(dto);
+        }
         if(!CollectionUtils.isEmpty(coPartnerVos)){
             for(CustomerPartnerVo vo : coPartnerVos){
                 CustomerCountVo count = customerCountDao.count(vo.getCustomerId());

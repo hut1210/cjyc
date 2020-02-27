@@ -8,18 +8,17 @@ import com.cjkj.common.service.impl.SuperServiceImpl;
 import com.cjkj.usercenter.dto.common.auth.AuthLoginReq;
 import com.cjkj.usercenter.dto.common.auth.AuthLoginResp;
 import com.cjkj.usercenter.dto.common.auth.AuthMobileLoginReq;
+import com.cjyc.common.model.dao.ICheckDao;
 import com.cjyc.common.model.dao.ICustomerDao;
 import com.cjyc.common.model.dao.IUserRoleDeptDao;
 import com.cjyc.common.model.dto.LoginDto;
 import com.cjyc.common.model.dto.salesman.login.LoginByPhoneDto;
+import com.cjyc.common.model.entity.Check;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.entity.Role;
 import com.cjyc.common.model.entity.UserRoleDept;
 import com.cjyc.common.model.enums.*;
-import com.cjyc.common.model.enums.customer.CustomerPayEnum;
-import com.cjyc.common.model.enums.customer.CustomerSourceEnum;
-import com.cjyc.common.model.enums.customer.CustomerStateEnum;
-import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
+import com.cjyc.common.model.enums.customer.*;
 import com.cjyc.common.model.enums.role.DeptTypeEnum;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -54,6 +53,8 @@ public class LoginServiceImpl extends SuperServiceImpl<ICustomerDao, Customer> i
 
     @Resource
     private ICustomerDao customerDao;
+    @Resource
+    private ICheckDao checkDao;
     @Autowired
     private StringRedisUtil redisUtil;
     @Resource
@@ -237,6 +238,11 @@ public class LoginServiceImpl extends SuperServiceImpl<ICustomerDao, Customer> i
                 return BaseResultUtil.fail("账号处于冻结/审核拒绝不能登录app");
             }
         }
+        Check check = checkDao.selectOne(new QueryWrapper<Check>().lambda()
+                .eq(Check::getUserId, customer.getId())
+                .eq(Check::getState, CommonStateEnum.IN_CHECK.code)
+                .eq(Check::getType, CheckTypeEnum.UPGRADE_PARTNER.code)
+                .eq(Check::getSource,CustomerSourceEnum.UPGRADE.code));
         //调用架构组验证手机号验证码登陆
         AuthMobileLoginReq req = new AuthMobileLoginReq();
         req.setClientId(clientId);
@@ -250,14 +256,22 @@ public class LoginServiceImpl extends SuperServiceImpl<ICustomerDao, Customer> i
         }
         //组装返回给移动端
         CustomerLoginVo loginVo = new CustomerLoginVo();
-        BeanUtils.copyProperties(customer,loginVo);
-        loginVo.setState(urd.getState());
+        if(check != null){
+            loginVo.setId(customer.getId());
+            loginVo.setState(CommonStateEnum.IN_CHECK.code);
+            loginVo.setName(check.getName());
+            loginVo.setContactMan(check.getContactMan());
+            loginVo.setType(CustomerTypeEnum.INDIVIDUAL.code);
+        }else{
+            BeanUtils.copyProperties(customer,loginVo);
+            loginVo.setState(urd.getState());
+            loginVo.setName(customer.getName());
+            loginVo.setContactMan(customer.getContactMan());
+        }
+        loginVo.setPhone(customer.getContactPhone());
         loginVo.setUserId(customer.getUserId() == null ? 0 : customer.getUserId());
         loginVo.setAccessToken(rd.getData().getAccessToken());
         loginVo.setPhotoImg(StringUtils.isNotBlank(customer.getPhotoImg()) ? customer.getPhotoImg():"");
-        loginVo.setName(customer.getName());
-        loginVo.setContactMan(customer.getContactMan());
-        loginVo.setPhone(customer.getContactPhone());
         return BaseResultUtil.success(loginVo);
     }
 

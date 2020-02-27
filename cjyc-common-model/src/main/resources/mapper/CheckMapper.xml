@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cjyc.common.model.dao.ICheckDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.Check">
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="phone" property="phone" />
+        <result column="name" property="name" />
+        <result column="contact_man" property="contactMan" />
+        <result column="contact_address" property="contactAddress" />
+        <result column="social_credit_code" property="socialCreditCode" />
+        <result column="state" property="state" />
+        <result column="type" property="type" />
+        <result column="source" property="source" />
+        <result column="create_user_id" property="createUserId" />
+        <result column="create_time" property="createTime" />
+        <result column="check_user_id" property="checkUserId" />
+        <result column="check_time" property="checkTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_id, phone, name, contact_man, contact_address, social_credit_code, state, type, source, create_user_id, create_time, check_user_id, check_time
+    </sql>
+
+</mapper>
