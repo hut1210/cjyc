@@ -2542,6 +2542,7 @@
             </choose>
         ) as shell
         group by shell.startCityCode, shell.endCityCode
+        order by shell.startCityCode
     </select>
     <sql id="count_wait_list_for_web">
         select

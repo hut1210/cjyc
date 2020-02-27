@@ -1,5 +1,6 @@
 package com.cjyc.salesman.api.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -326,7 +327,7 @@ public class DispatchServiceImpl implements IDispatchService {
         //查询统计
         Map<String, Object> countInfo = Maps.newHashMap();
         List<WaitCountLineVo> volist = orderCarDao.findWaitDispatchCarCountLineListForAppV2(paramsDto);
-        Map<String, WaitCountVo> map = Maps.newHashMap();
+        Map<String, WaitCountVo> map = Maps.newTreeMap();
         Integer totalCount = 0;
         if(!CollectionUtils.isEmpty(volist)){
             for (WaitCountLineVo vo : volist) {
@@ -341,8 +342,8 @@ public class DispatchServiceImpl implements IDispatchService {
                 }else{
                     WaitCountVo cvo = new WaitCountVo();
                     cvo.setCarNum(vo.getCarNum());
-                    cvo.setStartCityCode(vo.getStartCity());
-                    cvo.setStartCity(vo.getStartCityCode());
+                    cvo.setStartCityCode(startCityCode);
+                    cvo.setStartCity(vo.getStartCity());
                     cvo.setList(Lists.newArrayList(vo));
                     map.put(startCityCode, cvo);
                 }
@@ -350,7 +351,6 @@ public class DispatchServiceImpl implements IDispatchService {
             }
         }
         countInfo.put("totalCount", totalCount);
-
         return BaseResultUtil.success(Lists.newArrayList(map.values()), countInfo);
     }
 
