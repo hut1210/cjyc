@@ -2507,6 +2507,42 @@
         ) as shell
         group by shell.startCityCode, shell.endCityCode
     </select>
+    <select id="findWaitDispatchCarCountLineListForAppV2" resultType="com.cjyc.common.model.vo.web.dispatch.WaitCountLineVo">
+        select
+        count(0) as carNum,
+        shell.startCityCode,
+        shell.startCity,
+        shell.endCityCode,
+        shell.endCity,
+        CONCAT(shell.startCity,'-',shell.endCity) as line
+        from (
+            <choose>
+                <when test="param.dispatchType == 1">
+                    <include refid="pick_wait_dispatch_car_list_For_App"/>
+                    <where> <include refid="where_bizscope"/> </where>
+                </when>
+                <when test="param.dispatchType == 2">
+                    <include refid="trunk_wait_dispatch_car_list_For_App"/>
+                    <where> <include refid="where_bizscope"/> </where>
+                </when>
+                <when test="param.dispatchType == 3">
+                    <include refid="back_wait_dispatch_car_list_For_App"/>
+                    <where> <include refid="where_bizscope"/> </where>
+                </when>
+                <otherwise>
+                    <include refid="pick_wait_dispatch_car_list_For_App"/>
+                    <where> <include refid="where_bizscope"/> </where>
+                    union ALL
+                    <include refid="trunk_wait_dispatch_car_list_For_App"/>
+                    <where> <include refid="where_bizscope"/> </where>
+                    union ALL
+                    <include refid="back_wait_dispatch_car_list_For_App"/>
+                    <where> <include refid="where_bizscope"/> </where>
+                </otherwise>
+            </choose>
+        ) as shell
+        group by shell.startCityCode, shell.endCityCode
+    </select>
     <sql id="count_wait_list_for_web">
         select
         <include refid="wait_list_for_web_field"/>

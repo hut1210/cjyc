@@ -13,7 +13,6 @@ import com.cjyc.common.model.enums.BizScopeEnum;
 import com.cjyc.common.model.enums.waybill.WaybillCarStateEnum;
 import com.cjyc.common.model.enums.waybill.WaybillCarrierTypeEnum;
 import com.cjyc.common.model.enums.waybill.WaybillStateEnum;
-import com.cjyc.common.model.enums.waybill.WaybillTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.JsonUtils;
 import com.cjyc.common.model.util.TimeStampUtil;
@@ -326,20 +325,33 @@ public class DispatchServiceImpl implements IDispatchService {
 
         //查询统计
         Map<String, Object> countInfo = Maps.newHashMap();
-        List<WaitCountVo> list = orderCarDao.findWaitDispatchCarCountListForApp(paramsDto);
-        if(!CollectionUtils.isEmpty(list)){
-            Integer totalCount = list.stream().map(WaitCountVo::getCarNum).reduce(Integer::sum).get();
-            countInfo.put("totalCount", totalCount);
-            for (WaitCountVo vo: list) {
-                paramsDto.setCityCode(vo.getStartCityCode());
-                List<WaitCountLineVo> child = orderCarDao.findWaitDispatchCarCountLineListForApp(paramsDto);
-                vo.setList(child);
+        List<WaitCountLineVo> volist = orderCarDao.findWaitDispatchCarCountLineListForAppV2(paramsDto);
+        Map<String, WaitCountVo> map = Maps.newHashMap();
+        Integer totalCount = 0;
+        if(!CollectionUtils.isEmpty(volist)){
+            for (WaitCountLineVo vo : volist) {
+                String startCityCode = vo.getStartCityCode();
+                if(StringUtils.isEmpty(startCityCode)){
+                    continue;
+                }
+                if(map.containsKey(startCityCode)){
+                    WaitCountVo cvo = map.get(startCityCode);
+                    cvo.getList().add(vo);
+                    cvo.setCarNum(cvo.getCarNum() + vo.getCarNum());
+                }else{
+                    WaitCountVo cvo = new WaitCountVo();
+                    cvo.setCarNum(vo.getCarNum());
+                    cvo.setStartCityCode(vo.getStartCity());
+                    cvo.setStartCity(vo.getStartCityCode());
+                    cvo.setList(Lists.newArrayList(vo));
+                    map.put(startCityCode, cvo);
+                }
+                totalCount += vo.getCarNum();
             }
-        }else{
-            countInfo.put("totalCount", 0);
         }
+        countInfo.put("totalCount", totalCount);
 
-        return BaseResultUtil.success(list, countInfo);
+        return BaseResultUtil.success(Lists.newArrayList(map.values()), countInfo);
     }
 
 

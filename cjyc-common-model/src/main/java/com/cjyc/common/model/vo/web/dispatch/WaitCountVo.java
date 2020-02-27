@@ -20,4 +20,7 @@ public class WaitCountVo {
         return startCity == null ? "" : startCity;
     }
 
+    public Integer getCarNum() {
+        return carNum == null ? 0 : carNum;
+    }
 }
