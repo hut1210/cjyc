@@ -125,6 +125,7 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
 
     BigDecimal getWLTotalFee(Long orderId);
 
+    @Deprecated
     Map<String, Object> countTotalWaitDispatchCarByStartCity(@Param("paramsDto") LineWaitDispatchCountDto paramsDto);
 
     /**
@@ -250,6 +251,7 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
 
     Map<String, Object> countTotalTrunkWaitDispatchCarByStartCity(@Param("paramsDto") LineWaitDispatchCountDto paramsDto);
 
+    @Deprecated
     Map<String, Object> countTotalTrunkWaitDispatchCar(@Param("paramsDto") BaseWebDto paramsDto);
 
     int updateForFinish(@Param("orderCarId") Long orderCarId, @Param("areaCode")String areaCode);

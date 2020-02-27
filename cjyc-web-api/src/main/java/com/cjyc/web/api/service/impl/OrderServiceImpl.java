@@ -467,11 +467,10 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         paramsDto.setBizScope(bizScope.getStoreIds());
 
         List<Map<String, Object>> list = orderCarDao.countTrunkListWaitDispatchCar(paramsDto);
-        //查询统计
-        Map<String, Object> countInfo = null;
-        if (list != null && !list.isEmpty()) {
-            countInfo = orderCarDao.countTotalTrunkWaitDispatchCar(paramsDto);
-        }
+        //统计
+        Map<String, Object> countInfo = Maps.newHashMap();
+        countInfo.put("totalCount", CollectionUtils.isEmpty(list) ? 0 : list.size());
+
         return BaseResultUtil.success(list, countInfo);
     }
 
@@ -507,11 +506,10 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
 
         //查询统计列表
         List<Map<String, Object>> list = orderCarDao.findLineWaitDispatchTrunkCarCountList(paramsDto);
-        //查询统计
-        Map<String, Object> countInfo = null;
-        if (list != null && !list.isEmpty()) {
-            countInfo = orderCarDao.countTotalTrunkWaitDispatchCarByStartCity(paramsDto);
-        }
+        //统计
+        Map<String, Object> countInfo = Maps.newHashMap();
+        countInfo.put("totalCount", CollectionUtils.isEmpty(list) ? 0 : list.size());
+
         return BaseResultUtil.success(list, countInfo);
     }
 
