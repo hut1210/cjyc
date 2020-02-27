@@ -223,6 +223,7 @@ public class TransactionServiceImpl implements ITransactionService {
                             int num = tradeBillDao.countUnFinishByOrderNo(order.getNo());
                             if(num == 0){
                                 orderDao.updateForReceipt(order.getId(),System.currentTimeMillis());
+                                tradeBillDao.updateOrderState(order.getNo(),2,System.currentTimeMillis());
                             }
                         }
                     }
