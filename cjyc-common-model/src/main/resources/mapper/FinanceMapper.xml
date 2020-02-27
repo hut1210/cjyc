@@ -493,6 +493,7 @@
         ww.carrier_name as carrierName,
         wt.driver_name as driverName,
         wt.driver_phone as driverPhone,
+        if(ww.freight_pay_state=0,'未付款','已付款') as state,
         wt.vehicle_plate_no as vehiclePlateNo
         from w_waybill ww
         left join d_carrier dc on dc.id=ww.carrier_id
