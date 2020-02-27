@@ -1,14 +1,19 @@
 package com.cjyc.customer.api.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.cjyc.common.model.dao.ICheckDao;
 import com.cjyc.common.model.dao.ICustomerDao;
 import com.cjyc.common.model.dao.IUserRoleDeptDao;
 import com.cjyc.common.model.dto.customer.AppCustomerDto;
 import com.cjyc.common.model.dto.web.customer.CustomerfuzzyListDto;
+import com.cjyc.common.model.entity.Check;
 import com.cjyc.common.model.entity.Customer;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.entity.UserRoleDept;
+import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.UserTypeEnum;
+import com.cjyc.common.model.enums.customer.CheckTypeEnum;
+import com.cjyc.common.model.enums.customer.CustomerSourceEnum;
 import com.cjyc.common.model.enums.role.DeptTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
@@ -36,6 +41,8 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao, Customer> imp
     private ICustomerDao customerDao;
     @Resource
     private IUserRoleDeptDao userRoleDeptDao;
+    @Resource
+    private ICheckDao checkDao;
 
     @Override
     public ResultVo fuzzyList(CustomerfuzzyListDto paramsDto) {
@@ -83,10 +90,19 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao, Customer> imp
         if(urd == null){
             return BaseResultUtil.fail("数据错误，请联系管理员");
         }
+        Check check = checkDao.selectOne(new QueryWrapper<Check>().lambda()
+                .eq(Check::getUserId, customer.getId())
+                .eq(Check::getState, CommonStateEnum.IN_CHECK.code)
+                .eq(Check::getType, CheckTypeEnum.UPGRADE_PARTNER.code)
+                .eq(Check::getSource, CustomerSourceEnum.UPGRADE.code));
         AppCustomerInfoVo infoVo = new AppCustomerInfoVo();
         BeanUtils.copyProperties(customer,infoVo);
         infoVo.setPhone(customer.getContactPhone());
         infoVo.setState(urd.getState());
+        if(check != null){
+            infoVo.setName(check.getName());
+            infoVo.setContactMan(check.getContactMan());
+        }
         return BaseResultUtil.success(infoVo);
     }
 
