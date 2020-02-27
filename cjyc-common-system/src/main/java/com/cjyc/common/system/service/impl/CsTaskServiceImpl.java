@@ -1096,6 +1096,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
         //验证任务是否完成
         validateAndFinishTaskWaybill(task);
         try{
+            log.info("客户收车发送短信");
             sendMessage(map);
         }catch (Exception e){
             log.error("收车短信发送异常"+e.getMessage(),e);
@@ -1213,6 +1214,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
     }
 
     private void sendMessage(Map<Long,List<String>> map){
+        log.info("客户收车发送短信 start");
         for(Long orderId : map.keySet()){
             Order order = orderDao.selectById(orderId);
             List<String> orderCarNosList = map.get(orderId);
