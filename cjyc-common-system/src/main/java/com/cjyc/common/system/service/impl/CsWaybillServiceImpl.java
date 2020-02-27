@@ -779,8 +779,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             waybill.setFixedFreightFee(paramsDto.getFixedFreightFee());
             if (!CollectionUtils.isEmpty(dtoList)) {
                 Set<String> startAreaCodeSet = dtoList.stream().map(SaveTrunkWaybillCarDto::getStartAreaCode).collect(Collectors.toSet());
-                Set<String> EndAreaCodeSet = dtoList.stream().map(SaveTrunkWaybillCarDto::getEndAreaCode).collect(Collectors.toSet());
-                waybill.setGuideLine(computeGuideLine(startAreaCodeSet, EndAreaCodeSet, paramsDto.getGuideLine(), dtoList.size()));
+                Set<String> endAreaCodeSet = dtoList.stream().map(SaveTrunkWaybillCarDto::getEndAreaCode).collect(Collectors.toSet());
+                waybill.setGuideLine(computeGuideLine(startAreaCodeSet, endAreaCodeSet, paramsDto.getGuideLine(), dtoList.size()));
             }
             //TODO 干线运单所属业务中心
             //waybill.setInputStoreId(paramsDto.);
