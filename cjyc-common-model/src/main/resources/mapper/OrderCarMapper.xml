@@ -487,14 +487,6 @@
                     <foreach collection="paramsDto.bizScope" item="item" index="index" open="(" close=")" separator=",">
                         #{item}
                     </foreach>
-<!--                    or o.end_belong_store_id in
-                    <foreach collection="paramsDto.bizScope" item="item" index="index" open="(" close=")" separator=",">
-                        #{item}
-                    </foreach>-->
-<!--                    or oc.now_store_id in
-                    <foreach collection="paramsDto.bizScope" item="item" index="index" open="(" close=")" separator=",">
-                        #{item}
-                    </foreach>-->
                     or wc.end_belong_store_id in
                     <foreach collection="paramsDto.bizScope" item="item" index="index" open="(" close=")" separator=",">
                         #{item}
@@ -2391,4 +2383,327 @@
         join w_order_car oc on o.id = oc.order_id
         where oc.no = #{orderCarNo}
     </select>
+    <select id="findWaitDispatchCarListWeb" resultType="com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo">
+        select
+        shell.*,
+        ct1.parent_name as nowCityName,
+        ct2.parent_code as regionCode,
+        ct2.parent_name as region,
+        m.phone as checkUserPhone
+        from (
+            select
+            <include refid="wait_list_for_web_field"/>
+
+            from w_order o
+            join w_order_car oc on oc.order_id = o.id
+            <where>
+                <include refid="wait_list_for_web_where"/>
+                <if test="bizScope != null">
+                    and o.input_store_id in
+                    <foreach collection="bizScope" item="item" index="index" open="(" close=")" separator=",">
+                        #{item}
+                    </foreach>
+                </if>
+            </where>
+            union
+
+            select
+            <include refid="wait_list_for_web_field"/>
+            from w_order o
+            join w_order_car oc on oc.order_id = o.id
+            <where>
+                <include refid="wait_list_for_web_where"/>
+                and EXISTS (
+                    select * from (
+                        select order_car_id
+                        from w_waybill_car
+                        where state &lt;= 100
+                        <if test="bizScope != null">
+                            and wc.end_belong_store_id in
+                            <foreach collection="bizScope" item="item" index="index" open="(" close=")" separator=",">
+                                #{item}
+                            </foreach>
+                        </if>
+                        GROUP BY order_car_id
+                    ) as t where t.order_car_id = oc.id
+                )
+            </where>
+
+        ) as shell
+        LEFT JOIN s_store s on s.id = shell.inputStoreId
+        LEFT JOIN s_city ct1 on ct1.code = shell.now_area_code
+        LEFT JOIN s_city ct2 on s.city_code = ct2.code
+        left join b_admin m on m.id = shell.checkUserId
+
+
+
+    </select>
+    <select id="countListWaitDispatchCarWeb" resultType="java.util.Map">
+        select
+        count(0) as car_num,
+        IFNULL(shell.startCityCode,'-1') as cityCode,
+        IFNULL(shell.startCity, '无城市') as cityName
+        from (
+            select
+            <include refid="wait_list_for_web_field"/>
+
+            from w_order o
+            join w_order_car oc on oc.order_id = o.id
+            <where>
+                o.state between 25 and 100
+                <if test="bizScope != null">
+                    and o.input_store_id in
+                    <foreach collection="bizScope" item="item" index="index" open="(" close=")" separator=",">
+                        #{item}
+                    </foreach>
+                </if>
+            </where>
+
+            union
+
+            select
+            <include refid="wait_list_for_web_field"/>
+            from w_order o
+            join w_order_car oc on oc.order_id = o.id
+            <where>
+                o.state between 25 and 100
+                and EXISTS (
+                    select * from (
+                        select order_car_id
+                        from w_waybill_car
+                        where state &lt;= 100
+                        <if test="bizScope != null">
+                            and wc.end_belong_store_id in
+                            <foreach collection="bizScope" item="item" index="index" open="(" close=")" separator=",">
+                                #{item}
+                            </foreach>
+                        </if>
+                        GROUP BY order_car_id
+                    ) as t where t.order_car_id = oc.id
+                )
+            </where>
+        ) as shell
+        group by shell.startCityCode
+    </select>
+    <select id="findLineWaitDispatchCarCountListWeb" resultType="java.util.Map">
+        select
+        count(0) as carNum,
+        shell.startCityCode,
+        shell.startCity,
+        shell.endCityCode,
+        shell.endCity,
+        CONCAT(shell.startCity,'-',shell.endCity) as line
+        from (
+            select
+            <include refid="wait_list_for_web_field"/>
+
+            from w_order o
+            join w_order_car oc on oc.order_id = o.id
+            <where>
+                o.state between 25 and 100
+                and o.start_city_code = #{cityCode}
+                <if test="bizScope != null">
+                    and o.input_store_id in
+                    <foreach collection="bizScope" item="item" index="index" open="(" close=")" separator=",">
+                        #{item}
+                    </foreach>
+                </if>
+            </where>
+
+            union
+
+            select
+            <include refid="wait_list_for_web_field"/>
+            from w_order o
+            join w_order_car oc on oc.order_id = o.id
+            <where>
+                o.state between 25 and 100
+                and o.start_city_code = #{cityCode}
+                and EXISTS (
+                    select * from (
+                        select order_car_id
+                        from w_waybill_car
+                        where state &lt;= 100
+                        <if test="bizScope != null">
+                            and wc.end_belong_store_id in
+                            <foreach collection="bizScope" item="item" index="index" open="(" close=")" separator=",">
+                                #{item}
+                            </foreach>
+                        </if>
+                        GROUP BY order_car_id
+                    ) as t where t.order_car_id = oc.id
+                )
+            </where>
+        ) as shell
+        group by shell.startCityCode, shell.endCityCode
+    </select>
+    <sql id="wait_list_for_web_field">
+        <include refid="transport_state"/>
+        o.customer_id as customerId,
+        o.customer_name as customerName,
+        o.customer_phone as customerPhone,
+        o.customer_type as customerType,
+        o.input_store_id as inputStoreId,
+        o.input_store_name as inputStoreName,
+        o.start_province as startProvince,
+        o.start_province_code as startProvinceCode,
+        o.start_city as startCity,
+        o.start_city_code as startCityCode,
+        o.start_area as startArea,
+        o.start_area_code as startAreaCode,
+        o.start_address as startAddress,
+        o.start_lng as startLng,
+        o.start_lat as startLat,
+        o.start_store_id as startStoreId,
+        o.start_store_name as startStoreName,
+        o.start_belong_store_id as startBelongStoreId,
+        o.end_province as endProvince,
+        o.end_province_code as endProvinceCode,
+        o.end_city as endCity,
+        o.end_city_code as endCityCode,
+        o.end_area as endArea,
+        o.end_area_code as endAreaCode,
+        o.end_address as endAddress,
+        o.end_lng as endLng,
+        o.end_lat as endLat,
+        o.end_store_id as endStoreId,
+        o.end_store_name as endStoreName,
+        o.end_belong_store_id as endBelongStoreId,
+        o.expect_start_date as expectStartDate,
+        o.expect_end_date as expectEndDate,
+        o.car_num as carNum,
+        o.line_id as lineId,
+        o.pick_contact_name as pickContactName,
+        o.pick_contact_phone as pickContactPhone,
+        o.back_contact_name as backContactName,
+        o.back_contact_phone as backContactPhone,
+        o.source as source,
+        o.create_time as createTime,
+        o.create_user_name as createUserName,
+        o.create_user_id as createUserId,
+        o.allot_to_user_name as allotToUserName,
+        o.allot_to_user_id as allotToUserId,
+        o.check_time as checkTime,
+        o.check_user_name as checkUserName,
+        o.check_user_id as checkUserId,
+        concat(o.start_province, o.start_city, o.start_area, o.start_address) as startFullAddress,
+        concat(o.end_province, o.end_city, o.end_area, o.end_address) as endFullAddress,
+        oc.*
+    </sql>
+    <sql id="wait_list_for_web_where">
+        and o.state between 25 and 100
+        <choose>
+            <when test="dispatchType == 1">
+                and oc.pick_state &lt;= 1 and oc.state &lt; 5 and oc.pick_type &lt; 4
+            </when>
+            <when test="dispatchType == 2">
+                and oc.trunk_state &lt;= 2 and oc.state &lt; 45
+            </when>
+            <when test="dispatchType == 3">
+                and oc.back_state &lt;= 1 and oc.state &lt; 99 and oc.back_type &lt; 4
+            </when>
+            <when test="dispatchType == 4">
+                and (
+                (oc.pick_state >= 5 or oc.pick_type = 4)
+                and (oc.trunk_state >= 5)
+                and (oc.back_state >= 5 or oc.back_type &lt; 4)
+                )
+                or oc.state >= 100
+            </when>
+        </choose>
+        <choose>
+            <when test="signState == 1">
+                and oc.state &lt; 100
+            </when>
+            <when test="signState == 2">
+                and oc.state = 100
+            </when>
+            <otherwise>
+                and oc.state &lt;= 100
+            </otherwise>
+        </choose>
+
+        <if test="startProvinceCode != null and startProvinceCode != ''">
+            and o.start_province_code = #{startProvinceCode,jdbcType=VARCHAR}
+        </if>
+        <if test="startCityCode != null and startCityCode != ''">
+            and o.start_city_code = #{startCityCode,jdbcType=VARCHAR}
+        </if>
+        <if test="startAreaCode != null and startAreaCode != ''">
+            and o.start_area_code = #{startAreaCode,jdbcType=VARCHAR}
+        </if>
+        <if test="startStoreId != null">
+            and o.start_store_id = #{startStoreId,jdbcType=BIGINT}
+        </if>
+        <if test="endProvinceCode != null and endProvinceCode != ''">
+            and o.end_province_code = #{endProvinceCode,jdbcType=VARCHAR}
+        </if>
+        <if test="endCityCode != null and endCityCode != ''">
+            and o.end_city_code = #{endCityCode,jdbcType=VARCHAR}
+        </if>
+        <if test="endAreaCode != null and endAreaCode != ''">
+            and o.end_area_code = #{endAreaCode,jdbcType=VARCHAR}
+        </if>
+        <if test="endStoreId != null">
+            and o.end_store_id = #{endStoreId,jdbcType=BIGINT}
+        </if>
+        <if test="orderNo != null and orderNo.trim() != ''">
+            and oc.order_no like concat('%', #{orderNo,jdbcType=VARCHAR}, '%')
+        </if>
+        <if test="carNo != null and carNo.trim() != ''">
+            and oc.no like concat('%', #{carNo,jdbcType=VARCHAR}, '%')
+        </if>
+        <if test="vin != null and vin.trim() != ''">
+            and oc.vin like concat('%', #{vin,jdbcType=VARCHAR}, '%')
+        </if>
+        <if test="beginExpectStartDate != null">
+            and o.expect_start_date &gt;= #{beginExpectStartDate,jdbcType=BIGINT}
+        </if>
+        <if test="endExpectStartDate != null">
+            and o.expect_start_date &lt;= #{endExpectStartDate,jdbcType=BIGINT}
+        </if>
+        <if test="pickType != null">
+            and o.pick_type = #{pickType,jdbcType=TINYINT}
+        </if>
+        <if test="pickContactName != null and pickContactName != ''">
+            and o.pick_contact_name like concat('%', #{pickContactName,jdbcType=VARCHAR}, '%')
+        </if>
+        <if test="pickContactPhone != null and pickContactPhone != ''">
+            and o.pick_contact_phone like concat('%', #{pickContactPhone,jdbcType=VARCHAR}, '%')
+        </if>
+        <if test="backType != null">
+            and o.back_type = #{backType,jdbcType=TINYINT}
+        </if>
+        <if test="backContactName != null and backContactName != ''">
+            and o.back_contact_name like concat('%', #{backContactName,jdbcType=VARCHAR}, '%')
+        </if>
+        <if test="backContactPhone != null and backContactPhone != ''">
+            and o.back_contact_phone like concat('%', #{backContactPhone,jdbcType=VARCHAR}, '%')
+        </if>
+        <if test="brand != null and brand.trim() != ''">
+            and oc.brand like concat('%', #{brand,jdbcType=VARCHAR}, '%')
+        </if>
+        <if test="model != null and model.trim() != ''">
+            and oc.model like concat('%', #{model,jdbcType=VARCHAR}, '%')
+        </if>
+        <if test="plateNo != null and plateNo.trim() != ''">
+            and oc.plate_no like concat('%', #{plateNo,jdbcType=VARCHAR}, '%')
+        </if>
+        <if test="startStoreId != null">
+            and o.start_store_id = #{startStoreId,jdbcType=BIGINT}
+        </if>
+        <if test="endStoreId != null">
+            and o.end_store_id = #{endStoreId,jdbcType=BIGINT}
+        </if>
+        <if test="source != null">
+            and o.source = #{source}
+        </if>
+        <if test="fromToCityList != null and fromToCityList.size > 0">
+            and
+            <foreach collection="fromToCityList" index="index" item="item" open="(" separator=" or " close=")">
+                (o.start_city_code = #{item.fromCityCode}
+                and o.end_city_code = #{item.toCityCode})
+            </foreach>
+        </if>
+    </sql>
 </mapper>

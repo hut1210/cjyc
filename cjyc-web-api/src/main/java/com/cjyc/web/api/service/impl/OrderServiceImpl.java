@@ -422,7 +422,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         }
 
         paramsDto.setBizScope(bizScope.getStoreIds());
-        List<Map<String, Object>> list = orderCarDao.countListWaitDispatchCarV2(paramsDto);
+        List<Map<String, Object>> list = orderCarDao.countListWaitDispatchCarWeb(paramsDto);
         //查询统计
         Map<String, Object> countInfo = null;
         if (list != null && !list.isEmpty()) {
@@ -441,7 +441,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
 
         paramsDto.setBizScope(bizScope.getStoreIds());
         //查询统计列表
-        List<Map<String, Object>> list = orderCarDao.findLineWaitDispatchCarCountListV2(paramsDto);
+        List<Map<String, Object>> list = orderCarDao.findLineWaitDispatchCarCountListWeb(paramsDto);
         //查询统计
         Map<String, Object> countInfo = null;
         if (list != null && !list.isEmpty()) {
@@ -521,7 +521,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
 
         paramsDto.setBizScope(bizScope.getStoreIds());
         PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
-        List<OrderCarWaitDispatchVo> list = orderCarDao.findWaitDispatchCarList(paramsDto);
+        List<OrderCarWaitDispatchVo> list = orderCarDao.findWaitDispatchCarListWeb(paramsDto);
         PageInfo<OrderCarWaitDispatchVo> pageInfo = new PageInfo<>(list);
         if (paramsDto.getCurrentPage() > pageInfo.getPages()) {
             pageInfo.setList(null);

@@ -818,10 +818,8 @@ public class CsTaskServiceImpl implements ICsTaskService {
         }
         //验证任务和运单是否完成
         validateAndFinishTaskWaybill(task);
-
         //更新实时运力信息
         vehicleRunningDao.updateOccupiedNum(task.getId());
-
         //写入入库日志
         csStorageLogService.asyncSaveBatch(storageLogSet);
 

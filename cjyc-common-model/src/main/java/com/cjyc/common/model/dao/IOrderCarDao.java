@@ -52,6 +52,7 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
      * @author JPG
      * @since 2019/10/15 14:12
      */
+    @Deprecated
     List<Map<String, Object>> countListWaitDispatchCar();
 
     /**
@@ -72,6 +73,7 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
      * @author JPG
      * @since 2019/10/16 8:29
      */
+    @Deprecated
     List<OrderCarWaitDispatchVo> findWaitDispatchCarList(@Param("paramsDto") WaitDispatchListOrderCarDto paramsDto, @Param("bizScope") List<Long> bizScope);
 
     /**
@@ -277,4 +279,10 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
     List<String> findTrunkNodes(String orderCarId);
 
     String findOutterState(String orderCarNo);
+
+    List<OrderCarWaitDispatchVo> findWaitDispatchCarListWeb(WaitDispatchListOrderCarDto paramsDto);
+
+    List<Map<String, Object>> countListWaitDispatchCarWeb(BaseWebDto paramsDto);
+
+    List<Map<String, Object>> findLineWaitDispatchCarCountListWeb(LineWaitCountDto paramsDto);
 }
