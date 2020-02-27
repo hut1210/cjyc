@@ -256,6 +256,7 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
 
     List<Map<String, Object>> countListWaitDispatchCarV2(@Param("paramsDto") BaseWebDto paramsDto);
 
+    @Deprecated
     Map<String, Object> countTotalWaitDispatchCarV2(@Param("paramsDto")BaseWebDto paramsDto);
 
     List<WaitCountVo> findWaitDispatchCarCountListForApp(@Param("param") BaseSalesDto param);
@@ -285,4 +286,5 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
     List<Map<String, Object>> countListWaitDispatchCarWeb(BaseWebDto paramsDto);
 
     List<Map<String, Object>> findLineWaitDispatchCarCountListWeb(LineWaitCountDto paramsDto);
+
 }

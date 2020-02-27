@@ -2444,44 +2444,7 @@
         IFNULL(shell.startCityCode,'-1') as cityCode,
         IFNULL(shell.startCity, '无城市') as cityName
         from (
-            select
-            <include refid="wait_list_for_web_field"/>
-
-            from w_order o
-            join w_order_car oc on oc.order_id = o.id
-            <where>
-                o.state between 25 and 100
-                <if test="bizScope != null">
-                    and o.input_store_id in
-                    <foreach collection="bizScope" item="item" index="index" open="(" close=")" separator=",">
-                        #{item}
-                    </foreach>
-                </if>
-            </where>
-
-            union
-
-            select
-            <include refid="wait_list_for_web_field"/>
-            from w_order o
-            join w_order_car oc on oc.order_id = o.id
-            <where>
-                o.state between 25 and 100
-                and EXISTS (
-                    select * from (
-                        select order_car_id
-                        from w_waybill_car
-                        where state &lt;= 100
-                        <if test="bizScope != null">
-                            and wc.end_belong_store_id in
-                            <foreach collection="bizScope" item="item" index="index" open="(" close=")" separator=",">
-                                #{item}
-                            </foreach>
-                        </if>
-                        GROUP BY order_car_id
-                    ) as t where t.order_car_id = oc.id
-                )
-            </where>
+            <include refid="count_wait_list_for_web"/>
         ) as shell
         group by shell.startCityCode
     </select>
@@ -2537,6 +2500,42 @@
         ) as shell
         group by shell.startCityCode, shell.endCityCode
     </select>
+    <sql id="count_wait_list_for_web">
+        select
+        <include refid="wait_list_for_web_field"/>
+
+        from w_order o
+        join w_order_car oc on oc.order_id = o.id
+        where o.state between 25 and 100
+        <if test="bizScope != null">
+            and o.input_store_id in
+            <foreach collection="bizScope" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+
+        union
+
+        select
+        <include refid="wait_list_for_web_field"/>
+        from w_order o
+        join w_order_car oc on oc.order_id = o.id
+        where o.state between 25 and 100
+        and EXISTS (
+            select * from (
+                select order_car_id
+                from w_waybill_car
+                where state &lt;= 100
+                <if test="bizScope != null">
+                    and wc.end_belong_store_id in
+                    <foreach collection="bizScope" item="item" index="index" open="(" close=")" separator=",">
+                        #{item}
+                    </foreach>
+                </if>
+                GROUP BY order_car_id
+            ) as t where t.order_car_id = oc.id
+        )
+    </sql>
     <sql id="wait_list_for_web_field">
         <include refid="transport_state"/>
         o.customer_id as customerId,

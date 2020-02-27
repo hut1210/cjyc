@@ -30,6 +30,7 @@ import com.cjyc.web.api.service.IOrderService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -423,10 +424,13 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
 
         paramsDto.setBizScope(bizScope.getStoreIds());
         List<Map<String, Object>> list = orderCarDao.countListWaitDispatchCarWeb(paramsDto);
-        //查询统计
-        Map<String, Object> countInfo = null;
-        if (list != null && !list.isEmpty()) {
-            countInfo = orderCarDao.countTotalWaitDispatchCarV2(paramsDto);
+        //统计
+        Map<String, Object> countInfo = Maps.newHashMap();
+        if (!CollectionUtils.isEmpty(list)) {
+            Long sum = list.stream().map(m -> m.get("car_num") == null ? 0 : (Long) m.get("car_num")).reduce(Long::sum).get();
+            countInfo.put("totalCount", sum);
+        }else{
+            countInfo.put("totalCount", 0);
         }
         return BaseResultUtil.success(list, countInfo);
     }
@@ -443,9 +447,12 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         //查询统计列表
         List<Map<String, Object>> list = orderCarDao.findLineWaitDispatchCarCountListWeb(paramsDto);
         //查询统计
-        Map<String, Object> countInfo = null;
-        if (list != null && !list.isEmpty()) {
-            countInfo = orderCarDao.countTotalWaitDispatchCarByStartCityV2(paramsDto);
+        Map<String, Object> countInfo = Maps.newHashMap();
+        if (!CollectionUtils.isEmpty(list)) {
+            Long sum = list.stream().map(m -> m.get("carNum") == null ? 0 : (Long) m.get("carNum")).reduce(Long::sum).get();
+            countInfo.put("totalCount", sum);
+        }else{
+            countInfo.put("totalCount", 0);
         }
         return BaseResultUtil.success(list, countInfo);
     }
