@@ -244,6 +244,9 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 fillWaybillCarExpectEndTime(waybillCar, order.getExpectStartDate());
                 //waybillCar.setReceiptFlag(waybillCar.getUnloadLinkPhone().equals(order.getBackContactPhone()));
                 waybillCar.setReceiptFlag(validateIsArriveDest(waybillCar, order));
+                if(waybill.getType() == WaybillTypeEnum.BACK.code && !waybillCar.getReceiptFlag()){
+                    throw new ParameterException("送车调度目前仅支持交付客户");
+                }
                 //运单车辆状态
                 Boolean isInStore = getOrderCarIsInEndStore(orderCar.getNowStoreId(), waybillCar.getStartStoreId());
                 waybillCar.setState(getWaybillCarState(waybill, isInStore, carrierInfo));
