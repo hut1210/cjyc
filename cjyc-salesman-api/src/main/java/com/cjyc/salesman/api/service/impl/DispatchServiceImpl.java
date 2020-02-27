@@ -29,6 +29,7 @@ import com.cjyc.salesman.api.service.IDispatchService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,10 +39,7 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Description 调度业务接口实现
@@ -327,16 +325,18 @@ public class DispatchServiceImpl implements IDispatchService {
         paramsDto.setBizScope(bizScope.getStoreIds());
 
         //查询统计
-        Map<String, Object> countInfo = null;
+        Map<String, Object> countInfo = Maps.newHashMap();
         List<WaitCountVo> list = orderCarDao.findWaitDispatchCarCountListForApp(paramsDto);
         if(!CollectionUtils.isEmpty(list)){
-            countInfo = orderCarDao.countTotalWaitDispatchCarCountListForApp(paramsDto);
-
+            Integer totalCount = list.stream().map(WaitCountVo::getCarNum).reduce(Integer::sum).get();
+            countInfo.put("totalCount", totalCount);
             for (WaitCountVo vo: list) {
                 paramsDto.setCityCode(vo.getStartCityCode());
                 List<WaitCountLineVo> child = orderCarDao.findWaitDispatchCarCountLineListForApp(paramsDto);
                 vo.setList(child);
             }
+        }else{
+            countInfo.put("totalCount", 0);
         }
 
         return BaseResultUtil.success(list, countInfo);
