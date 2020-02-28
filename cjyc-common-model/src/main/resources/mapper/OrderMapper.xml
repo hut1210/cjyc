@@ -354,13 +354,14 @@
         order by o.id desc
     </select>
     <sql id="order_calculate_fee_field">
-        (sum(IFNULL(oc.pick_fee,0)) + sum(IFNULL(oc.trunk_fee,0)) + sum(IFNULL(oc.back_fee,0)) +sum(IFNULL(oc.add_insurance_fee,0))) as wlTotalFee,
+        (case when oc.id > 0 then (
+             sum(IFNULL(oc.pick_fee,0)) + sum(IFNULL(oc.trunk_fee,0)) + sum(IFNULL(oc.back_fee,0)) +sum(IFNULL(oc.add_insurance_fee,0))
+        ) else IFNULL(o.car_num * l.default_wl_fee, 0) end) as wlTotalFee,
 
         (case when o.customer_type =3 then (
             case when oc.id > 0 then (
                  IFNULL(o.total_fee,0) - ((sum(IFNULL(oc.pick_fee,0)) + sum(IFNULL(oc.trunk_fee,0)) + sum(IFNULL(oc.back_fee,0)) +sum(IFNULL(oc.add_insurance_fee,0)) + IFNULL(o.coupon_offset_fee,0)))
-            )
-            else IFNULL(o.total_fee - IFNULL(o.car_num * l.default_wl_fee, 0), 0) end
+            ) else IFNULL(o.total_fee - IFNULL(o.car_num * l.default_wl_fee, 0), 0) end
         ) else 0 end) as totalAgencyFee
     </sql>
     <select id="countForAllTab" resultType="java.util.Map">
