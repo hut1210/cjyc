@@ -1,7 +1,5 @@
 package com.cjyc.common.system.service.impl;
 
-import cn.hutool.cache.impl.TimedCache;
-import com.cjyc.common.model.constant.TimeConstant;
 import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.enums.CaptchaTypeEnum;
 import com.cjyc.common.model.enums.ClientEnum;

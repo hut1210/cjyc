@@ -1159,7 +1159,9 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         customer.setCheckUserId(dto.getLoginId());
         customerDao.updateById(customer);
         userRoleDeptDao.updateById(urd);
-        checkDao.updateById(check);
+        if(check != null){
+            checkDao.updateById(check);
+        }
         return BaseResultUtil.success();
     }
 

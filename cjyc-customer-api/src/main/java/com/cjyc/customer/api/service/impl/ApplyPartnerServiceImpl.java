@@ -127,6 +127,7 @@ public class ApplyPartnerServiceImpl extends ServiceImpl<ICustomerDao, Customer>
         ck.setState(CommonStateEnum.IN_CHECK.code);
         ck.setType(CheckTypeEnum.UPGRADE_PARTNER.code);
         ck.setSocialCreditCode(dto.getSocialCreditCode());
+        ck.setSource(CustomerSourceEnum.UPGRADE.code);
         ck.setCreateTime(NOW);
         ck.setCreateUserId(dto.getLoginId());
         checkDao.insert(ck);

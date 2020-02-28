@@ -16,7 +16,7 @@ public class SalesCustomerVo implements Serializable {
     private Long customerId;
 
     @ApiModelProperty(value = "客户名称")
-    private String name;
+    private String customerName;
 
     @ApiModelProperty(value = "联系人")
     private String contactMan;
@@ -25,7 +25,7 @@ public class SalesCustomerVo implements Serializable {
     private String contactPhone;
 
     public Long getCustomerId(){return customerId == null ? 0:customerId;}
-    public String getName(){return StringUtils.isBlank(name) ? "":name;}
+    public String getCustomerName(){return StringUtils.isBlank(customerName) ? "":customerName;}
     public String getContactMan(){return StringUtils.isBlank(contactMan) ? "":contactMan;}
     public String getContactPhone(){return StringUtils.isBlank(contactPhone) ? "":contactPhone;}
 }
