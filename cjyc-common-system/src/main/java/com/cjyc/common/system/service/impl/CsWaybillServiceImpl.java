@@ -917,7 +917,11 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         Long vlineId = line == null ? 0 : line.getId();
         lineId = lineId == null ? 0 : lineId;
         if(!vlineId.equals(lineId)){
-            throw new ParameterException("线路与城市不配");
+            if(line != null){
+                throw new ParameterException("传参线路{}与查询线路{}({}-{})不匹配", lineId, vlineId, line.getFromCity(), line.getToCity());
+            }else{
+                throw new ParameterException("传参线路{}与查询线路{}不匹配", lineId, vlineId);
+            }
         }
     }
 

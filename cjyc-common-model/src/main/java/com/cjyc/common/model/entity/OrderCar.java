@@ -156,4 +156,32 @@ public class OrderCar implements Serializable {
     @ApiModelProperty(value = "完成时间")
     private Long finishTime;
 
+
+    public BigDecimal getPickFee() {
+        return pickFee == null ? BigDecimal.ZERO : pickFee;
+    }
+
+    public BigDecimal getTrunkFee() {
+        return trunkFee == null ? BigDecimal.ZERO : trunkFee;
+    }
+
+    public BigDecimal getBackFee() {
+        return backFee == null ? BigDecimal.ZERO : backFee;
+    }
+
+    public BigDecimal getAddInsuranceFee() {
+        return addInsuranceFee == null ? BigDecimal.ZERO : addInsuranceFee;
+    }
+
+    public BigDecimal getCouponOffsetFee() {
+        return couponOffsetFee == null ? BigDecimal.ZERO : couponOffsetFee;
+    }
+
+    public BigDecimal getAgencyFee() {
+        return agencyFee == null ? BigDecimal.ZERO : agencyFee;
+    }
+
+    public BigDecimal getTotalFee() {
+        return totalFee == null ? BigDecimal.ZERO : totalFee;
+    }
 }
