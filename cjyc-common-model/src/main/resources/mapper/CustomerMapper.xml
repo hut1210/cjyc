@@ -136,8 +136,7 @@
             AND sc.type = 0
             AND sc.source = 4
             ORDER BY
-            cc.create_time DESC,
-            cc.check_time DESC
+            sc.create_time DESC
         </where>
     </sql>
 
