@@ -860,14 +860,12 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
                 WaybillCar waybillCar = new WaybillCar();
                 BeanUtils.copyProperties(dto, waybillCar);
-                log.debug("【干线调度】车辆拷贝属性：" + JSON.toJSONString(waybillCar));
                 waybillCar.setWaybillId(waybill.getId());
                 waybillCar.setWaybillNo(waybill.getNo());
                 waybillCar.setFreightFee(MoneyUtil.convertYuanToFen(dto.getFreightFee()));
                 waybillCar.setOrderCarId(orderCar.getId());
                 //城市信息赋值
                 fillWaybillCarCityInfo(waybillCar);
-                log.debug("【干线调度】车辆城市赋值：" + JSON.toJSONString(waybillCar));
                 //业务中心信息赋值
                 fillWaybillCarBelongStoreInfo(waybillCar);
                 //提送车业务员
@@ -878,7 +876,6 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 waybillCar.setReceiptFlag(validateIsArriveDest(waybillCar, order));
                 waybillCar.setState(getTrunkState(carrierInfo));
                 waybillCar.setCreateTime(currentTimeMillis);
-                log.debug("【干线调度】车辆准备写入：" + JSON.toJSONString(waybillCar));
                 waybillCarDao.insert(waybillCar);
 
                 //更新订单车辆状态
@@ -897,9 +894,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
             //承运商有且仅有一个司机
             /**1+、写入任务表*/
-            log.debug("【干线调度】准备创建任务：" + JSON.toJSONString(waybillCars));
             csTaskService.reCreate(waybill, waybillCars, waybillCars, carrierInfo);
-            log.debug("【干线调度】调度成功：" + JSON.toJSONString(waybillCars));
 
             sendPushMsgToCustomerForDispatch(pushCustomerInfoMap);
             //推送司机消息
