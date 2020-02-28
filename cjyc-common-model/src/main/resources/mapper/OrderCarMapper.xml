@@ -2152,6 +2152,8 @@
             o.start_city_code as orderStartCityCode,
             o.end_city_code as orderEndCityCode,
             o.expect_start_date as expectStartDate,
+            o.start_store_id as orderStartStoreId,
+            o.end_store_id as orderEndStoreId,
             CONCAT('${@com.cjyc.common.system.config.LogoImgProperty@logoImg}', cs.logo_img) as logoImg
             from w_order o
             join w_order_car oc on oc.order_id = o.id
@@ -2205,6 +2207,8 @@
             o.start_city_code as orderStartCityCode,
             o.expect_start_date as expectStartDate,
             o.end_city_code as orderEndCityCode,
+            o.start_store_id as orderStartStoreId,
+            o.end_store_id as orderEndStoreId,
             CONCAT('${@com.cjyc.common.system.config.LogoImgProperty@logoImg}', cs.logo_img) as logoImg
             from w_order o
             join w_order_car oc on oc.order_id = o.id
@@ -2283,6 +2287,8 @@
             o.start_city_code as orderStartCityCode,
             o.expect_start_date as expectStartDate,
             o.end_city_code as orderEndCityCode,
+            o.start_store_id as orderStartStoreId,
+            o.end_store_id as orderEndStoreId,
             <include refid="trunk_wait_dispatch_car_field"/>,
             CONCAT('${@com.cjyc.common.system.config.LogoImgProperty@logoImg}', cs.logo_img) as logoImg,
             (
