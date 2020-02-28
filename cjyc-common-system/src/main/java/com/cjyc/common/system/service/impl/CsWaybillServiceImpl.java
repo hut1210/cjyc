@@ -912,9 +912,9 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         lineId = lineId == null ? 0 : lineId;
         if(!vlineId.equals(lineId)){
             if(line != null){
-                throw new ParameterException("传参线路{}与查询线路{}({}-{})不匹配", lineId, vlineId, line.getFromCity(), line.getToCity());
+                throw new ParameterException("传参线路{0}与查询线路{1}({2}-{3})不匹配", lineId, vlineId, line.getFromCity(), line.getToCity());
             }else{
-                throw new ParameterException("传参线路{}与查询线路{}不匹配", lineId, vlineId);
+                throw new ParameterException("传参线路{0}与查询线路{1}不匹配", lineId, vlineId);
             }
         }
     }
