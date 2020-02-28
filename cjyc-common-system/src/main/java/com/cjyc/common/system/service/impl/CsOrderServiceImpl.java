@@ -22,6 +22,7 @@ import com.cjyc.common.model.enums.order.*;
 import com.cjyc.common.model.enums.waybill.WaybillCarrierTypeEnum;
 import com.cjyc.common.model.enums.waybill.WaybillTypeEnum;
 import com.cjyc.common.model.exception.ParameterException;
+import com.cjyc.common.model.exception.ServerException;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.MoneyUtil;
@@ -190,7 +191,13 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 //均摊总费用
                 shareTotalFee(order.getTotalFee(), orderCarList);
                 //更新车辆信息
-                orderCarList.forEach(orderCar -> orderCarDao.updateById(orderCar));
+                orderCarList.forEach(orderCar -> {
+                    if (orderCar.getTotalFee() == null || orderCar.getTotalFee().compareTo(BigDecimal.ZERO) <= 0) {
+                        log.error("【均摊费用】失败{}", JSON.toJSONString(paramsDto));
+                        throw new ServerException("订单金额计算错误");
+                    }
+                    orderCarDao.updateById(orderCar);
+                });
 
                 //合计费用：提、干、送、保险
                 //fillOrderFeeInfo(order, orderCarList);
@@ -360,7 +367,13 @@ public class CsOrderServiceImpl implements ICsOrderService {
             //均摊总费用
             shareTotalFee(order.getTotalFee(), ocList);
             //更新车辆信息
-            ocList.forEach(orderCar -> orderCarDao.updateById(orderCar));
+            ocList.forEach(orderCar -> {
+                if (orderCar.getTotalFee() == null || orderCar.getTotalFee().compareTo(BigDecimal.ZERO) <= 0) {
+                    log.error("【均摊费用】失败{}", JSON.toJSONString(paramsDto));
+                    throw new ServerException("订单金额计算错误");
+                }
+                orderCarDao.updateById(orderCar);
+            });
 
             //合计费用：提、干、送、保险
             //fillOrderFeeInfo(order, ocList);
@@ -424,7 +437,13 @@ public class CsOrderServiceImpl implements ICsOrderService {
         //均摊总费用
         shareTotalFee(order.getTotalFee(), orderCarList);
         //更新车辆信息
-        orderCarList.forEach(orderCar -> orderCarDao.updateById(orderCar));
+        orderCarList.forEach(orderCar -> {
+            if (orderCar.getTotalFee() == null || orderCar.getTotalFee().compareTo(BigDecimal.ZERO) <= 0) {
+                log.error("【均摊费用】失败{}", JSON.toJSONString(paramsDto));
+                throw new ServerException("订单金额计算错误");
+            }
+            orderCarDao.updateById(orderCar);
+        });
 
         order.setCarNum(orderCarList.size());
         orderDao.updateById(order);
@@ -1094,7 +1113,13 @@ public class CsOrderServiceImpl implements ICsOrderService {
         //均摊总费用
         shareTotalFee(order.getTotalFee(), orderCarList);
         //更新车辆信息
-        orderCarList.forEach(orderCar -> orderCarDao.updateById(orderCar));
+        orderCarList.forEach(orderCar -> {
+            if (orderCar.getTotalFee() == null || orderCar.getTotalFee().compareTo(BigDecimal.ZERO) <= 0) {
+                log.error("【均摊费用】失败{}", JSON.toJSONString(paramsDto));
+                throw new ServerException("订单金额计算错误");
+            }
+            orderCarDao.updateById(orderCar);
+        });
 
         //合计费用：提、干、送、保险
         //fillOrderFeeInfo(order, orderCarList);
