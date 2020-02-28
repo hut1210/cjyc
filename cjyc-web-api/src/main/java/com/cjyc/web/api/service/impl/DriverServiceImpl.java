@@ -666,7 +666,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
             return BaseResultUtil.fail("数据错误,请检查");
         }
         //更新架构组用户信息
-        ResultData<Boolean> updateRd = csCustomerService.updateUserToPlatform(null,driver, dto.getPhone());
+        ResultData<Boolean> updateRd = csCustomerService.updateUserToPlatform(null,driver, dto.getPhone(),dto.getRealName());
         if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
             log.error("修改用户信息失败，原因：" + updateRd.getMsg());
             return BaseResultUtil.fail("修改用户信息失败，原因：" + updateRd.getMsg());

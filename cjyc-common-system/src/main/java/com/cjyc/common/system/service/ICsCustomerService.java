@@ -85,7 +85,7 @@ public interface ICsCustomerService {
      * @param newPhone
      * @return
      */
-    ResultData<Boolean> updateUserToPlatform(Customer customer, Driver driver, String newPhone);
+    ResultData<Boolean> updateUserToPlatform(Customer customer, Driver driver, String newPhone,String newName);
 
     /**
      * 保存用户

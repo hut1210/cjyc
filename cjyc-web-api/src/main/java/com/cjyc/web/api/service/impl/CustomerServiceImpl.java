@@ -921,7 +921,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         if(customer == null){
             return BaseResultUtil.fail("该客户不存在,请检查");
         }
-        ResultData<Boolean> updateRd = csCustomerService.updateUserToPlatform(customer,null, dto.getContactPhone());
+        ResultData<Boolean> updateRd = csCustomerService.updateUserToPlatform(customer,null, dto.getContactPhone(),dto.getContactMan());
         if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
             log.error("修改用户信息失败，原因：" + updateRd.getMsg());
             return BaseResultUtil.fail("修改用户信息失败，原因：" + updateRd.getMsg());
@@ -1189,7 +1189,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         Customer customer = customerDao.selectById(dto.getCustomerId());
         if(null != customer){
             //判断手机号是否存在
-            ResultData<Boolean> updateRd = csCustomerService.updateUserToPlatform(customer,null, dto.getContactPhone());
+            ResultData<Boolean> updateRd = csCustomerService.updateUserToPlatform(customer,null, dto.getContactPhone(),dto.getContactMan());
             if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
                 log.error("修改用户信息失败，原因：" + updateRd.getMsg());
                 return BaseResultUtil.fail("修改用户信息失败，原因：" + updateRd.getMsg());
@@ -1275,7 +1275,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             return BaseResultUtil.fail("银行卡号输入不符合,请检查");
         }
         //更新架构组用户数据
-        ResultData<Boolean> updateRd = csCustomerService.updateUserToPlatform(customer,null, dto.getContactPhone());
+        ResultData<Boolean> updateRd = csCustomerService.updateUserToPlatform(customer,null, dto.getContactPhone(),dto.getContactMan());
         if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
             log.error("修改用户信息失败，原因：" + updateRd.getMsg());
             return BaseResultUtil.fail("修改用户信息失败，原因：" + updateRd.getMsg());
