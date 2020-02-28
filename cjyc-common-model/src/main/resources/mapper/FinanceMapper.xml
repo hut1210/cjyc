@@ -38,10 +38,10 @@
                 and  woc.order_no like concat('%',#{orderNo},'%')
             </if>
             <if test="completeStartTime!= null">
-                and wt.complete_time &gt;= #{completeStartTime}
+                and woc.finish_time &gt;= #{completeStartTime}
             </if>
             <if test="completeEndTime!= null">
-                and wt.complete_time &lt;= #{completeEndTime}
+                and woc.finish_time &lt;= #{completeEndTime}
             </if>
 
             <if test="startProvinceCode != null and startProvinceCode.trim() != ''">
@@ -96,7 +96,7 @@
             </if>
         </where>
         group by woc.no
-        order by wo.create_time desc
+        order by woc.finish_time desc
     </select>
 
     <select id="getAllFinanceList" parameterType="com.cjyc.common.model.dto.web.finance.FinanceQueryDto"
@@ -136,10 +136,10 @@
                 and  woc.order_no like concat('%',#{orderNo},'%')
             </if>
             <if test="completeStartTime!= null">
-                and wt.complete_time &gt;= #{completeStartTime}
+                and woc.finish_time &gt;= #{completeStartTime}
             </if>
             <if test="completeEndTime!= null">
-                and wt.complete_time &lt;= #{completeEndTime}
+                and woc.finish_time &lt;= #{completeEndTime}
             </if>
 
             <if test="startProvinceCode != null and startProvinceCode.trim() != ''">
@@ -194,7 +194,7 @@
             </if>
         </where>
         group by woc.no
-        order by wo.create_time desc
+        order by woc.finish_time desc
     </select>
 
     <select id="getFee" parameterType="map" resultType="java.math.BigDecimal">
@@ -311,7 +311,7 @@
         wo.input_store_name as inputStoreName,
         wo.customer_name as customerName,
         wo.customer_contract_id as customerContractId,
-        woc.wl_pay_time as deliveryDate
+        woc.finish_time as deliveryDate
         from w_order_car woc
         left join w_order wo on woc.order_id = wo.id
         left join c_customer cc on cc.id = wo.customer_id
@@ -354,10 +354,10 @@
             and wo.input_store_name = #{inputStoreName}
         </if>
         <if test="completeStartTime!= null">
-            and wt.complete_time &gt;= #{completeStartTime}
+            and woc.finish_time &gt;= #{completeStartTime}
         </if>
         <if test="completeEndTime!= null">
-            and wt.complete_time &lt;= #{completeEndTime}
+            and woc.finish_time &lt;= #{completeEndTime}
         </if>
         <if test="startProvinceCode != null and startProvinceCode.trim() != ''">
             and wo.start_province_code = #{startProvinceCode}
@@ -378,6 +378,7 @@
             and wo.end_area_code = #{endAreaCode}
         </if>
         group by woc.no
+        order by woc.finish_time desc
     </select>
 
     <select id="getCustomerContractById" parameterType="java.lang.Long" resultType="java.lang.Integer">
@@ -602,6 +603,7 @@
         <if test="waybillType !=null">
             and ww.type = #{waybillType}
         </if>
+        order by wt.complete_time desc
     </select>
 
     <select id="getSettlementInfo" parameterType="java.util.List"
@@ -651,6 +653,8 @@
         <if test="applicant !=null and applicant.trim() !=''">
             and ba.name like concat('%',#{applicant},'%')
         </if>
+
+        order by fp.apply_time desc
     </select>
 
     <select id="getTaskNoList" resultType="java.lang.String">
@@ -709,6 +713,8 @@
         <if test="invoiceNo !=null and invoiceNo.trim!=''">
             and fp.invoice_no like concat('%',#{invoiceNo},'%')
         </if>
+
+        order by fp.confirm_time desc
     </select>
 
     <select id="getPayableSettlement" resultType="com.cjyc.common.model.vo.web.finance.SettlementVo">
@@ -775,9 +781,9 @@
             and bd.name like concat('%',#{writeOffMan},'%')
         </if>
         <if test="invoiceNo !=null and invoiceNo.trim!=''">
-            and fp.invoice_no like concat('%',#{invoiceNo},'%')
+            and fp.invoice_no lifp.writeoff_timeke concat('%',#{invoiceNo},'%')
         </if>
-
+        order by fp.writeoff_time desc
     </select>
 
 </mapper>

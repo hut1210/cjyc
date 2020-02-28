@@ -223,7 +223,7 @@ public class TransactionServiceImpl implements ITransactionService {
                             int num = tradeBillDao.countUnFinishByOrderNo(order.getNo());
                             if(num == 0){
                                 orderDao.updateForReceipt(order.getId(),System.currentTimeMillis());
-                                tradeBillDao.updateOrderState(order.getNo(),2,System.currentTimeMillis());
+                                tradeBillDao.updateOrderPayState(order.getNo(),System.currentTimeMillis());
                             }
                         }
                     }
@@ -274,7 +274,16 @@ public class TransactionServiceImpl implements ITransactionService {
         }
 
         message.append("的车辆已完成交车收款，收款金额");
-        BigDecimal freightFee = tradeBillDao.getAmountByOrderCarNos(orderCarNosList);
+        List<com.cjyc.common.model.entity.Order> list = orderDao.findListByCarNos(orderCarNosList);
+        com.cjyc.common.model.entity.Order order = list.get(0);
+
+        BigDecimal freightFee = new BigDecimal("0");
+        if(order!=null&&order.getCustomerType()==3){//合伙人
+            freightFee = tradeBillDao.getAmountByOrderCarNosToPartner(orderCarNosList);
+        }else{//非合伙人
+            freightFee = tradeBillDao.getAmountByOrderCarNos(orderCarNosList);
+        }
+
         if(freightFee!=null){
             message.append(freightFee.divide(new BigDecimal(100)));
         }

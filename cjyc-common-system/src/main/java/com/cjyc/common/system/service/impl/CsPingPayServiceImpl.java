@@ -144,7 +144,18 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
 
             List<Long> taskCarIdList = convertToLongList(tempList);
             List<String> orderCarNosList = cStransactionService.getOrderCarNosByTaskCarIds(taskCarIdList);
-            BigDecimal freightFee = cStransactionService.getAmountByOrderCarNos(orderCarNosList);
+
+            List<com.cjyc.common.model.entity.Order> list = orderDao.findListByCarNos(orderCarNosList);
+            com.cjyc.common.model.entity.Order order = list.get(0);
+
+            BigDecimal freightFee = new BigDecimal("0");
+            if(order!=null&&order.getCustomerType()==3){//合伙人
+                freightFee = cStransactionService.getAmountByOrderCarNosToPartner(orderCarNosList);
+            }else{//非合伙人
+                freightFee = cStransactionService.getAmountByOrderCarNos(orderCarNosList);
+            }
+
+            log.info("客户扫码支付费用={}，车辆编号={}",freightFee,orderCarNosList.toString());
             om.setAmount(freightFee);
             pingxxMetaData.setLoginId(String.valueOf(sweepCodeDto.getLoginId()));
             pingxxMetaData.setOrderCarIds(orderCarNosList);
