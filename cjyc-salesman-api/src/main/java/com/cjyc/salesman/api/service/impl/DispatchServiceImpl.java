@@ -1,6 +1,5 @@
 package com.cjyc.salesman.api.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -39,7 +38,10 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @Description 调度业务接口实现
@@ -433,6 +435,36 @@ public class DispatchServiceImpl implements IDispatchService {
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<HistoryDispatchRecordVo> list = waybillDao.selectHistoryDispatchRecord(dto);
         PageInfo<HistoryDispatchRecordVo> pageInfo = new PageInfo(list);
+        // 当承运商是业务员或者客户自己时：查询联系人与联系电话
+        this.getLinkNameAndLinkPhone(pageInfo);
         return BaseResultUtil.success(pageInfo);
+    }
+
+    private void getLinkNameAndLinkPhone(PageInfo<HistoryDispatchRecordVo> pageInfo) {
+        List<HistoryDispatchRecordVo> pageInfoList = pageInfo.getList();
+        if (!CollectionUtils.isEmpty(pageInfoList)) {
+            for (HistoryDispatchRecordVo dispatchRecordVo : pageInfoList) {
+                Integer carrierType = dispatchRecordVo.getCarrierType();
+                if (carrierType != null && carrierType == WaybillCarrierTypeEnum.LOCAL_ADMIN.code) {
+                    // 联系人为业务员
+                    Admin admin = adminDao.selectById(dispatchRecordVo.getCarrierId());
+                    if (admin != null) {
+                        dispatchRecordVo.setLinkMan(admin.getName());
+                        dispatchRecordVo.setLinkmanPhone(admin.getPhone());
+                    }
+                } else if (carrierType != null && carrierType == WaybillCarrierTypeEnum.SELF.code) {
+                    // 联系人为客户自己
+                    OrderCar orderCar = orderCarDao.selectById(dispatchRecordVo.getOrderCarId());
+                    if (orderCar != null) {
+                        Order order = orderDao.selectById(orderCar.getOrderId());
+                        if (order != null) {
+                            dispatchRecordVo.setLinkMan(order.getCustomerName());
+                            dispatchRecordVo.setLinkmanPhone(order.getCustomerPhone());
+                        }
+                    }
+                }
+            }
+            pageInfo.setList(pageInfoList);
+        }
     }
 }

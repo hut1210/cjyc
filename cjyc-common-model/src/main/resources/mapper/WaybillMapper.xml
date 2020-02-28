@@ -703,8 +703,11 @@
             w.car_num as carNum,
             w.freight_fee as freightFee,
             w.create_time as createTime,
+            w.carrier_type as carrierType,
             carrier.linkman as linkMan,
-            carrier.linkman_phone as linkmanPhone
+            carrier.linkman_phone as linkmanPhone,
+            car.order_car_id as orderCarId,
+            w.carrier_id as carrierId
         from
             w_waybill w
             left join d_carrier carrier on w.carrier_id=carrier.id
