@@ -135,8 +135,7 @@
             AND sc.state = 1
             AND sc.type = 0
             AND sc.source = 4
-            ORDER BY
-            sc.create_time DESC
+            ORDER BY sc.create_time DESC
         </where>
     </sql>
 
