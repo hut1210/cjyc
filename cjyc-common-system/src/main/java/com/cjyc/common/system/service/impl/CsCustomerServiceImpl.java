@@ -282,18 +282,18 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
             if (accountRd.getData() != null) {
                 return ResultData.failed("用户账号不允许修改，预修改账号：" + newPhone + " 已存在");
             }
-            UpdateUserReq user = new UpdateUserReq();
-            if(customer != null){
-                user.setUserId(customer.getUserId());
-            }else{
-                user.setUserId(driver.getUserId());
-            }
-            user.setName(newName);
-            user.setAccount(newPhone);
-            user.setMobile(newPhone);
-            ResultData rd = sysUserService.updateUser(user);
+            ResultData rd = updateData(customer, driver, newPhone, newName);
             if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
                 return ResultData.failed("用户信息修改失败，原因：" + rd.getMsg());
+            }
+            return ResultData.ok(true);
+        }else if(oldPhone.equals(newPhone)){
+            if((customer != null && !customer.getName().equals(newName))
+                || (driver != null && !driver.getName().equals(newName))){
+                ResultData rd = updateData(customer, driver, newPhone, newName);
+                if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+                    return ResultData.failed("用户信息修改失败，原因：" + rd.getMsg());
+                }
             }
             return ResultData.ok(true);
         }
@@ -348,5 +348,19 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
             return BaseResultUtil.fail("用户状态不可用");
         }
         return BaseResultUtil.success(customer);
+    }
+
+    private ResultData updateData(Customer customer,Driver driver,String newPhone,String newName){
+        UpdateUserReq user = new UpdateUserReq();
+        if(customer != null){
+            user.setUserId(customer.getUserId());
+        }else{
+            user.setUserId(driver.getUserId());
+        }
+        user.setName(newName);
+        user.setAccount(newPhone);
+        user.setMobile(newPhone);
+        ResultData rd = sysUserService.updateUser(user);
+        return rd;
     }
 }
