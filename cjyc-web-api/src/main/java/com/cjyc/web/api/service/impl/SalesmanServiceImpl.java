@@ -17,6 +17,7 @@ import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.entity.Role;
 import com.cjyc.common.model.entity.UserRoleDept;
+import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.UseStateEnum;
 import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.enums.role.RoleRangeEnum;
@@ -60,10 +61,6 @@ public class SalesmanServiceImpl extends ServiceImpl<IAdminDao, Admin> implement
     private IRoleService roleService;
     @Resource
     private IUserRoleDeptDao userRoleDeptDao;
-    @Resource
-    private IDriverDao driverDao;
-    @Resource
-    private ICustomerDao customerDao;
     @Resource
     private ISysRoleService sysRoleService;
     /**
@@ -125,16 +122,25 @@ public class SalesmanServiceImpl extends ServiceImpl<IAdminDao, Admin> implement
         if (null == admin) {
             return BaseResultUtil.fail("根据用户id：" + dto.getId() + "未查询到用户信息");
         }
-        UpdateUserReq updateUser = new UpdateUserReq();
+    /*    UpdateUserReq updateUser = new UpdateUserReq();
         updateUser.setUserId(admin.getUserId());
         updateUser.setStatus(dto.getState().equals(1)?1:0);
         ResultData rd = sysUserService.updateUser(updateUser);
         if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
             return BaseResultUtil.fail("用户状态设置失败，原因：" + rd.getMsg());
-        }
+        }*/
         admin.setState(
-                dto.getState().equals(1)?SalemanStateEnum.CHECKED.code: SalemanStateEnum.LEAVE.code);
+                dto.getState() == 1 ? SalemanStateEnum.CHECKED.code: SalemanStateEnum.LEAVE.code);
         this.updateById(admin);
+        //更新用户关系表状态
+        UserRoleDept urd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
+                .eq(UserRoleDept::getUserId, dto.getId())
+                .eq(UserRoleDept::getDeptType, UserTypeEnum.ADMIN.code)
+                .eq(UserRoleDept::getUserType, UserTypeEnum.ADMIN.code));
+        if(urd != null){
+            urd.setState(dto.getState() == 1 ? CommonStateEnum.CHECKED.code: CommonStateEnum.DISABLED.code);
+            userRoleDeptDao.updateById(urd);
+        }
         return BaseResultUtil.success();
     }
 

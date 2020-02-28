@@ -142,6 +142,10 @@ public class LoginController {
         if (admin == null || admin.getUserId() == null || admin.getUserId() <= 0L) {
             return ResultData.failed("用户信息有误，请确认");
         }
+        admin = csAdminService.findAdminByPhone(account);
+        if(admin == null){
+            return ResultData.failed("用户未启用，不可登录App");
+        }
         ResultData<List<SelectRoleResp>> roleRd = sysRoleService.getListByUserId(admin.getUserId());
         if (ResultDataUtil.isSuccess(roleRd)) {
             if (!CollectionUtils.isEmpty(roleRd.getData())) {

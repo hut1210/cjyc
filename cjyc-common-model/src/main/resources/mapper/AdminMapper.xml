@@ -242,4 +242,11 @@
         GROUP BY ba.phone
         ORDER BY create_time DESC
     </select>
+
+    <select id="findAdminByPhone" resultType="com.cjyc.common.model.entity.Admin">
+        select
+        <include refid="Base_Column_List"/>
+        from b_admin
+        where phone = #{phone} and state = 2
+    </select>
 </mapper>

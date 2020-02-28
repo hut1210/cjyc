@@ -43,4 +43,11 @@ public interface ICsAdminService {
     Admin findLoop(Long startStoreId);
 
     Map<Long, Admin> findLoops(Collection<Long> storeIds);
+
+    /**
+     * 跟据手机号查询业务员
+     * @param phone
+     * @return
+     */
+    Admin findAdminByPhone(String phone);
 }

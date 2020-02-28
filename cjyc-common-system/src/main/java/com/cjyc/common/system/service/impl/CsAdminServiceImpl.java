@@ -154,4 +154,9 @@ public class CsAdminServiceImpl implements ICsAdminService {
         }
         return map;
     }
+
+    @Override
+    public Admin findAdminByPhone(String phone) {
+        return adminDao.findAdminByPhone(phone);
+    }
 }
