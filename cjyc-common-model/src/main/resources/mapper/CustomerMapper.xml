@@ -416,6 +416,7 @@
             parameterType="com.cjyc.common.model.dto.salesman.customer.SalesCustomerDto">
         SELECT
             cc.id AS customerId,
+            cc.name AS customerName,
             cc.contact_man AS contactMan,
             cc.contact_phone AS contactPhone
         FROM
@@ -425,7 +426,8 @@
                 cc.contact_phone like concat('%',#{phone},'%')
             </if>
             <if test="name != null and name.trim() !=''">
-                and cc.contact_man like concat('%',#{name},'%')
+                and (cc.contact_man like concat('%',#{name},'%')
+                 or cc.name like concat('%',#{name},'%'))
             </if>
         </where>
     </select>
