@@ -551,6 +551,11 @@ public class CsOrderServiceImpl implements ICsOrderService {
         if (CollectionUtils.isEmpty(orderCarList)) {
             throw new ParameterException("订单车辆列表不能为空，请先通过[修改订单]完善信息");
         }
+        for (OrderCar orderCar : orderCarList) {
+            if(orderCar.getTotalFee() == null || orderCar.getTotalFee().compareTo(BigDecimal.ZERO) <= 0){
+                throw new ParameterException("订单车辆金额错误，请联系后台管理员");
+            }
+        }
 
         //根据到付和预付置不同状态
         if (PayModeEnum.PREPAY.code == order.getPayType()) {
@@ -884,6 +889,9 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
         if (order.getState() >= OrderStateEnum.CHECKED.code) {
             throw new ParameterException("订单已经审核过，无法审核");
+        }
+        if (order.getTotalFee().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new ParameterException("订单金额不能为零");
         }
         if (order.getId() == null || order.getNo() == null) {
             throw new ParameterException("订单编号不能为空");

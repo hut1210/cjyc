@@ -77,6 +77,7 @@ public class ListOrderVo extends Order {
     @Excel(name = "接单时间", orderNum = "32")
     private String checkTimeStr;
 
+
     public String getCheckTimeStr() {
         Long date = getCheckTime();
         if (null == date || date <= 0L) {
