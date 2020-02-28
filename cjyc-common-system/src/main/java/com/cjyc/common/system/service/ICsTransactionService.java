@@ -34,4 +34,6 @@ public interface ICsTransactionService {
     TradeBill getTradeBillByOrderNoAndType(String no,int type);
 
     void updateWayBillPayStateNoPay(Long waybillId,long time);
+
+    BigDecimal getAmountByOrderCarNosToPartner(List<String> orderCarNosList);
 }

@@ -103,7 +103,18 @@
 
     <select id="getAmountByOrderCarNos" parameterType="java.util.List" resultType="java.math.BigDecimal">
         <!--select sum(freight_fee) from w_waybill_car wwc where order_car_no in-->
-        select sum(pick_fee+trunk_fee+back_fee+add_insurance_fee-coupon_offset_fee) from w_order_car  where no in
+        <!--select sum(pick_fee+trunk_fee+back_fee+add_insurance_fee-coupon_offset_fee) from w_order_car  where no in
+        <foreach collection="orderCarNos" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>-->
+        select sum(total_fee-coupon_offset_fee) from w_order_car  where no in
+        <foreach collection="orderCarNos" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="getAmountByOrderCarNosToPartner" parameterType="java.util.List" resultType="java.math.BigDecimal">
+        select sum(total_fee) from w_order_car  where no in
         <foreach collection="orderCarNos" index="index" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>
