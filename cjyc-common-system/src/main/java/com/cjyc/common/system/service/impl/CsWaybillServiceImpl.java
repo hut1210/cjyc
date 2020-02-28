@@ -39,7 +39,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.MessageFormat;
