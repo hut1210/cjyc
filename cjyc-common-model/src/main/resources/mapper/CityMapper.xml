@@ -134,7 +134,7 @@
 
     <!--根据城市名称模糊匹配查询城市code -->
     <select id="getCodeByName" resultType="com.cjyc.common.model.entity.City" parameterType="java.lang.String">
-        select <include refid="Base_Column_List"/> from s_city where name like concat('%',#{name},'%') and level = 2
+        select <include refid="Base_Column_List"/> from s_city where name = #{name} and level = 2
     </select>
 
 
