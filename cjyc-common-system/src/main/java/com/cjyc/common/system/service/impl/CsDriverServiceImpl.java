@@ -658,7 +658,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
             }
         }
         //更新架构组用户信息
-        ResultData<Boolean> updateRd = csCustomerService.updateUserToPlatform(null,driver, dto.getPhone());
+        ResultData<Boolean> updateRd = csCustomerService.updateUserToPlatform(null,driver, dto.getPhone(),dto.getRealName());
         if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
             return BaseResultUtil.fail("修改用户信息失败，原因：" + updateRd.getMsg());
         }
@@ -832,7 +832,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
             }
         }
         //更新架构组用户信息
-        ResultData<Boolean> updateRd = csCustomerService.updateUserToPlatform(null,driver, dto.getPhone());
+        ResultData<Boolean> updateRd = csCustomerService.updateUserToPlatform(null,driver, dto.getPhone(),dto.getRealName());
         if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
             return BaseResultUtil.fail("修改用户信息失败，原因：" + updateRd.getMsg());
         }

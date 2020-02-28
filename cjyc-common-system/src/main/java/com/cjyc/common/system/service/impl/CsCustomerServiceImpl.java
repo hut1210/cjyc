@@ -266,7 +266,7 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
     }
 
     @Override
-    public ResultData<Boolean> updateUserToPlatform(Customer customer, Driver driver, String newPhone) {
+    public ResultData<Boolean> updateUserToPlatform(Customer customer, Driver driver, String newPhone,String newName) {
         String oldPhone = null;
         if(customer != null){
             oldPhone = customer.getContactPhone();
@@ -284,12 +284,11 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
             }
             UpdateUserReq user = new UpdateUserReq();
             if(customer != null){
-                user.setName(customer.getName());
                 user.setUserId(customer.getUserId());
             }else{
-                user.setName(driver.getName());
                 user.setUserId(driver.getUserId());
             }
+            user.setName(newName);
             user.setAccount(newPhone);
             user.setMobile(newPhone);
             ResultData rd = sysUserService.updateUser(user);
