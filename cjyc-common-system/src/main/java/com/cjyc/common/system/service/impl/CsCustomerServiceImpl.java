@@ -290,9 +290,16 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
         }else if(oldPhone.equals(newPhone)){
             if((customer != null && !customer.getName().equals(newName))
                 || (driver != null && !driver.getName().equals(newName))){
-                ResultData rd = updateData(customer, driver, newPhone, newName);
+                UpdateUserReq user = new UpdateUserReq();
+                if(customer != null){
+                    user.setUserId(customer.getUserId());
+                }else{
+                    user.setUserId(driver.getUserId());
+                }
+                user.setName(newName);
+                ResultData rd = sysUserService.updateUser(user);
                 if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
-                    return ResultData.failed("用户信息修改失败，原因：" + rd.getMsg());
+                    return ResultData.failed("用户姓名修改失败，原因：" + rd.getMsg());
                 }
             }
             return ResultData.ok(true);
