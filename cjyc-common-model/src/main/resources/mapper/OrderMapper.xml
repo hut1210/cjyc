@@ -127,16 +127,16 @@
         s3.detail_addr as endStoreAddress,
         cc.`name` as couponName,
         <include refid="order_calculate_fee_field"/>,
-        w.*
-        from w_order w
+        o.*
+        from w_order o
         left join w_order_car oc on oc.order_id = o.id
-        left join s_store s1 on s1.id = w.input_store_id
-        left join s_store s2 on s2.id = w.start_store_id
-        left join s_store s3 on s3.id = w.end_store_id
+        left join s_store s1 on s1.id = o.input_store_id
+        left join s_store s2 on s2.id = o.start_store_id
+        left join s_store s3 on s3.id = o.end_store_id
         left join s_line l on l.id = o.line_id
-        left join c_coupon_send cs on cs.id = w.coupon_send_id
+        left join c_coupon_send cs on cs.id = o.coupon_send_id
         left join c_coupon cc on cc.id = cs.coupon_id
-        where w.id = #{orderId}
+        where o.id = #{orderId}
     </select>
     <sql id="order_outter_state">
         (case
