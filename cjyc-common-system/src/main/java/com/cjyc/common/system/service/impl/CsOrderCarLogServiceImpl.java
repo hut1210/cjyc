@@ -56,7 +56,7 @@ public class CsOrderCarLogServiceImpl implements ICsOrderCarLogService {
             LogUtil.debug("【车辆物流日志】" + JSON.toJSONString(orderCarLog));
             orderCarLogDao.insert(orderCarLog);
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e.getMessage(),e);
         }
     }
 

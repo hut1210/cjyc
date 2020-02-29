@@ -723,6 +723,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
 
     @Override
     public ResultVo<ResultReasonVo> inStore(InStoreTaskDto paramsDto) {
+        log.debug("【入库】" + JSON.toJSONString(paramsDto));
         //返回内容
         ResultReasonVo resultReasonVo = new ResultReasonVo();
         Set<FailResultReasonVo> failCarNoSet = Sets.newHashSet();
@@ -809,8 +810,9 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 if(i <= 0 && !pushMap.containsKey(order.getId())){
                     Store store = csStoreService.getById(waybillCar.getEndStoreId(), true);
                     PushInfo pushInfo = csPushMsgService.getPushInfo(order.getCustomerId(), UserTypeEnum.CUSTOMER, PushMsgEnum.C_SELF_BACK,
-                            order.getNo(), order.getEndStoreName(), waybillCar.getUnloadLinkName(), waybillCar.getUnloadLinkPhone(),
-                            getAddress(store.getProvince(), store.getCity(), store.getArea(), store.getDetailAddr()));
+                            order.getNo(), order.getEndStoreName(),
+                            getAddress(store.getProvince(), store.getCity(), store.getArea(), store.getDetailAddr()),
+                            waybillCar.getUnloadLinkName(), waybillCar.getUnloadLinkPhone());
                     pushMap.put(order.getId(), pushInfo);
                 }
             }
@@ -1295,7 +1297,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 orderCarDao.updateForPaySuccess(orderCar.getId(), waybillCar.getEndAreaCode());
 
                 waybillCarDao.updateForFinish(waybillCar.getId());
-                //出库日志
+                //物流日志
                 csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.C_RECEIPT,
                         new String[]{OrderCarLogEnum.C_RECEIPT.getOutterLog(),
                                 MessageFormat.format(OrderCarLogEnum.C_RECEIPT.getInnerLog(), userInfo.getName(), userInfo.getPhone())},
@@ -1427,10 +1429,16 @@ public class CsTaskServiceImpl implements ICsTaskService {
             //更新运单车辆状态
             waybillCarDao.updateForFinish(waybillCar.getId());
 
+            csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.C_RECEIPT,
+                    new String[]{OrderCarLogEnum.C_RECEIPT.getOutterLog(),
+                            MessageFormat.format(OrderCarLogEnum.C_RECEIPT.getInnerLog(), userInfo.getName(), userInfo.getPhone())},
+                    userInfo);
+
             taskIdSet.add(taskCar.getTaskId());
             orderIdSet.add(orderCar.getOrderId());
         }
         taskIdSet.forEach(taskId -> {
+            log.debug("【支付回调-二维码】完成任务{}", taskId);
             Task task = taskDao.selectById(taskId);
             validateAndFinishTaskWaybill(task);
         });

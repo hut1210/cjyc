@@ -2,6 +2,7 @@ package com.cjyc.customer.api.service.impl;
 
 import com.Pingxx.model.MetaDataEntiy;
 import com.Pingxx.model.PingxxMetaData;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.enums.log.OrderCarLogEnum;
@@ -33,6 +34,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+import springfox.documentation.spring.web.json.Json;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -187,15 +190,21 @@ public class TransactionServiceImpl implements ITransactionService {
                             }
                         }
                     }
-                    UserInfo userInfo = new UserInfo();
-                    if(orderCarNosList==null){
+                    if(CollectionUtils.isEmpty(orderCarNosList)){
                         log.error("回调中参数orderCarNosList不存在");
                         return BaseResultUtil.fail("缺少参数orderCarNosList");
-                    }else{
-                        //修改车辆支付状态
-                        userInfo = userService.getUserInfo(Long.valueOf(pingxxMetaData.getLoginId()), Integer.valueOf(pingxxMetaData.getLoginType()));
-                        csTaskService.updateForTaskCarFinish(taskCarIdList, ChargeTypeEnum.COLLECT_PAY.getCode(), userInfo);
                     }
+
+                    //修改车辆支付状态
+                    UserInfo userInfo = new UserInfo();
+                    try {
+                        userInfo = userService.getUserInfo(Long.valueOf(pingxxMetaData.getLoginId()), Integer.valueOf(pingxxMetaData.getLoginType()));
+                    }catch (Exception e){
+                        log.error("【支付回调-二维码】获取用户信息失败{}", JSON.toJSONString(metadata));
+                        log.error(e.getMessage(), e);
+                    }
+                    csTaskService.updateForTaskCarFinish(taskCarIdList, ChargeTypeEnum.COLLECT_PAY.getCode(), userInfo);
+
                     //验证任务是否完成
                     int row = taskCarDao.countUnFinishByTaskId(taskId);
                     log.debug("验证任务是否完成 taskId = {},row = {}",taskId,row);

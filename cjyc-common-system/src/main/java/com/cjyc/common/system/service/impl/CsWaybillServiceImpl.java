@@ -1058,13 +1058,11 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
                 //车辆数据
                 BeanUtils.copyProperties(dto, waybillCar);
-                log.debug("【干线调度修改】车辆拷贝属性：" + JSON.toJSONString(waybillCar));
                 waybillCar.setWaybillId(waybill.getId());
                 waybillCar.setWaybillNo(waybill.getNo());
                 waybillCar.setFreightFee(MoneyUtil.convertYuanToFen(dto.getFreightFee()));
                 //城市信息赋值
                 fillWaybillCarCityInfo(waybillCar);
-                log.debug("【干线调度修改】车辆城市赋值：" + JSON.toJSONString(waybillCar));
                 //业务中心信息赋值
                 fillWaybillCarBelongStoreInfo(waybillCar);
                 //提送车业务员
@@ -1073,7 +1071,6 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 fillWaybillCarExpectEndTime(waybillCar, order.getExpectStartDate());
                 //waybillCar.setReceiptFlag(order.getBackContactPhone().equals(waybillCar.getUnloadLinkPhone()));
                 waybillCar.setReceiptFlag(validateIsArriveDest(waybillCar, order));
-                log.debug("【干线调度修改】车辆准备写入：" + JSON.toJSONString(waybillCar));
                 if (isNewWaybillCar) {
                     waybillCar.setState(getTrunkState(carrierInfo));
                     waybillCarDao.insert(waybillCar);
