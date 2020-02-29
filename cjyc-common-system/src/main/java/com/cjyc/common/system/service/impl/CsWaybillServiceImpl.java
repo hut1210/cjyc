@@ -833,7 +833,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
                 //包板线路不能为空
                 Line line = csLineService.getLineByCity(dto.getStartCityCode(), dto.getEndCityCode(), true);
-                validateLine(line, dto.getLineId());
+                //validateLine(line, dto.getLineId());
                 dto.setLineId(line == null ? null : line.getId());
                 if (paramsDto.getFixedFreightFee() && (dto.getLineId() == null || dto.getLineId() <= 0)) {
                     throw new ParameterException("运单中车辆{0}，线路不能为空", orderCarNo);
@@ -1031,7 +1031,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
                 //包板线路不能为空
                 Line line = csLineService.getLineByCity(dto.getStartCityCode(), dto.getEndCityCode(), true);
-                validateLine(line, dto.getLineId());
+                //validateLine(line, dto.getLineId());
                 dto.setLineId(line == null ? null : line.getId());
                 if (paramsDto.getFixedFreightFee() && (dto.getLineId() == null || dto.getLineId() <= 0)) {
                     throw new ParameterException("运单中车辆{0}，线路不能为空", orderCarNo);
@@ -1482,6 +1482,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
                 //waybillCar.setReceiptFlag(waybillCar.getUnloadLinkPhone().equals(order.getBackContactPhone()));
                 waybillCar.setReceiptFlag(validateIsArriveDest(waybillCar, order));
+                Line line = csLineService.getLineByCity(waybillCar.getStartCityCode(), waybillCar.getEndCityCode(), true);
+                waybillCar.setLineId(line == null ? null : line.getId());
                 waybillCar.setUnloadLinkUserId(paramsDto.getUnloadLinkUserId());
                 waybillCar.setUnloadLinkName(paramsDto.getUnloadLinkName());
                 waybillCar.setUnloadLinkPhone(paramsDto.getUnloadLinkPhone());
