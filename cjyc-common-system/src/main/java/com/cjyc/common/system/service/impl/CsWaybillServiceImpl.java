@@ -999,6 +999,9 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                     if (waybillCar.getState() != null && waybillCar.getState() >= WaybillCarStateEnum.LOADED.code && carrierInfo.isReAllotCarrier()) {
                         throw new ParameterException("运单中车辆{0}，运输中不能修改司机，请使用[卸载车辆]功能", orderCarNo);
                     }
+                    if(waybillCar.getState() != null && waybillCar.getState() >= WaybillCarStateEnum.UNLOADED.code){
+                        continue;
+                    }
                 }
                 if (waybillCar == null) {
                     //新增的车辆
