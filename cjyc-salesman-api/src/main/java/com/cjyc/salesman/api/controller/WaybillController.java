@@ -1,15 +1,12 @@
 package com.cjyc.salesman.api.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.cjyc.common.model.dto.web.waybill.*;
 import com.cjyc.common.model.entity.Admin;
-import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.BaseTipVo;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.service.ICsAdminService;
 import com.cjyc.common.system.service.ICsStoreService;
-import com.cjyc.common.system.service.ICsTaskService;
 import com.cjyc.common.system.service.ICsWaybillService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

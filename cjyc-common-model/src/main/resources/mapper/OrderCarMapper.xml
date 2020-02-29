@@ -2364,8 +2364,35 @@
 
         select concat(left(shell.startCity,2), '-', left(shell.endCity,2)) as node
         from (
-          <include refid="trunk_wait_dispatch_car_list_For_App"/>
-          where tb.orderCarId = #{orderCarId}
+            select * from(
+                select
+                <include refid="trunk_wait_dispatch_car_field"/>,
+                <include refid="dispatch_car_field"/>
+                from w_order o
+                join w_order_car oc on oc.order_id = o.id
+                left join s_store ss on ss.id = o.start_store_id
+                left join s_store se on se.id = o.end_store_id
+                left join (
+                    select * from (
+                        select
+                        wc.*
+                        from w_waybill w
+                        join w_waybill_car wc on w.id = wc.waybill_id
+                        left join s_store s1 on s1.id = wc.start_store_id
+                        left join s_store s2 on s2.id = wc.end_store_id
+                        where w.state &lt;= 100
+                        and wc.state &lt;= 100
+                        and wc.order_car_id = #{orderCarId}
+                        /*keep orderby*/order by w.type desc, wc.id desc
+                        limit 10000
+                    ) as max
+                    group by max.order_car_id
+                ) temp on temp.order_car_id = oc.id
+                where o.state between 25 and 100
+                and oc.state &lt; 45
+                and oc.trunk_state &lt; 5
+            ) as tb
+              where tb.orderCarId = #{orderCarId}
         ) as shell
     </select>
     <select id="findOutterState" resultType="java.lang.String">
