@@ -1382,21 +1382,33 @@ public class CsOrderServiceImpl implements ICsOrderService {
             return orderCarlist;
         }
 
-        BigDecimal carTotalFee = orderCarlist.stream().map(oc -> oc.getPickFee().add(oc.getTrunkFee()).add(oc.getBackFee()).add(oc.getAddInsuranceFee())).reduce(BigDecimal::add).get();
+        BigDecimal carTotalFee = BigDecimal.ZERO;
+        for (OrderCar oc : orderCarlist) {
+            carTotalFee = carTotalFee.add(oc.getPickFee() == null ? BigDecimal.ZERO : oc.getPickFee())
+                    .add(oc.getTrunkFee() == null ? BigDecimal.ZERO : oc.getTrunkFee())
+                    .add(oc.getBackFee() == null ? BigDecimal.ZERO : oc.getBackFee())
+                    .add(oc.getAddInsuranceFee() == null ? BigDecimal.ZERO : oc.getAddInsuranceFee());
+        }
         if (carTotalFee.compareTo(BigDecimal.ZERO) <= 0) {
             return orderCarlist;
         }
 
         BigDecimal avg = totalFee.divide(carTotalFee, 8, RoundingMode.FLOOR);
-        BigDecimal remainder = totalFee;
-        for (OrderCar orderCar : orderCarlist) {
-            BigDecimal avgCar = orderCar.getPickFee().add(orderCar.getTrunkFee()).add(orderCar.getBackFee()).add(orderCar.getAddInsuranceFee())
-                    .multiply(avg).setScale(0, BigDecimal.ROUND_FLOOR);
+        BigDecimal avgTotalFee = BigDecimal.ZERO;
+        for (OrderCar oc : orderCarlist) {
+            BigDecimal avgCar = (oc.getPickFee()
+                    .add(oc.getTrunkFee() == null ? BigDecimal.ZERO : oc.getTrunkFee())
+                    .add(oc.getBackFee() == null ? BigDecimal.ZERO : oc.getBackFee())
+                    .add(oc.getAddInsuranceFee() == null ? BigDecimal.ZERO : oc.getAddInsuranceFee()))
+                    .multiply(avg);
+            avgCar = avgCar.setScale(0, BigDecimal.ROUND_HALF_DOWN);
             //赋值
-            orderCar.setTotalFee(avgCar);
+            oc.setTotalFee(avgCar);
             //统计
-            remainder = remainder.subtract(avgCar);
+            avgTotalFee = avgTotalFee.add(avgCar);
         }
+
+        BigDecimal remainder = totalFee.subtract(avgTotalFee);
 
         if (remainder.compareTo(BigDecimal.ZERO) <= 0) {
             return orderCarlist;
