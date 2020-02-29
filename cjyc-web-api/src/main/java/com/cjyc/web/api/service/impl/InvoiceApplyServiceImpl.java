@@ -104,6 +104,7 @@ public class InvoiceApplyServiceImpl extends ServiceImpl<IInvoiceApplyDao, Invoi
         if (!Objects.isNull(dto.getInvoiceTimeEnd())) {
             queryWrapper = queryWrapper.le(InvoiceApply::getInvoiceTime,dto.getInvoiceTimeEnd());
         }
+        queryWrapper.orderByDesc(InvoiceApply::getApplyTime);
         return queryWrapper;
     }
 
