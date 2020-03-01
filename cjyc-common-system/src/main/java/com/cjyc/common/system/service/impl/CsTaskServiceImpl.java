@@ -650,8 +650,8 @@ public class CsTaskServiceImpl implements ICsTaskService {
             }else{
                 //添加卸车物流
                 csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.C_UNLOAD,
-                        new String[]{MessageFormat.format(OrderCarLogEnum.C_UNLOAD.getInnerLog(), getAddress(waybillCar.getStartProvince(), waybillCar.getStartCity(), waybillCar.getStartArea(), waybillCar.getStartAddress())),
-                                MessageFormat.format(OrderCarLogEnum.C_UNLOAD.getOutterLog(), getAddress(waybillCar.getStartProvince(), waybillCar.getStartCity(), waybillCar.getStartArea(), waybillCar.getStartAddress()), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
+                        new String[]{MessageFormat.format(OrderCarLogEnum.C_UNLOAD.getOutterLog(), getAddress(waybillCar.getStartProvince(), waybillCar.getStartCity(), waybillCar.getStartArea(), waybillCar.getStartAddress())),
+                                MessageFormat.format(OrderCarLogEnum.C_UNLOAD.getInnerLog(), getAddress(waybillCar.getStartProvince(), waybillCar.getStartCity(), waybillCar.getStartArea(), waybillCar.getStartAddress()), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
                         userInfo);
             }
 
