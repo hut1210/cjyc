@@ -16,6 +16,7 @@ import com.cjyc.common.model.enums.log.OrderCarLogEnum;
 import com.cjyc.common.model.enums.log.OrderLogEnum;
 import com.cjyc.common.model.enums.message.PushMsgEnum;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
+import com.cjyc.common.model.enums.order.OrderPickTypeEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.enums.task.TaskStateEnum;
 import com.cjyc.common.model.enums.transport.CarrierTypeEnum;
@@ -805,7 +806,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
 
             //客户自提推送
             //验证是否订单全部到达业务中心
-            if(waybillCar.getEndStoreId().equals(order.getEndStoreId())){
+            if(waybillCar.getEndStoreId().equals(order.getEndStoreId()) && orderCar.getBackType() != null && orderCar.getBackType() == OrderPickTypeEnum.SELF.code){
                 int i = orderDao.countUnArriveStore(order.getId());
                 if(i <= 0 && !pushMap.containsKey(order.getId())){
                     Store store = csStoreService.getById(waybillCar.getEndStoreId(), true);
