@@ -657,7 +657,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     @Override
     public void exportPartnerExcel(HttpServletRequest request, HttpServletResponse response) {
         CustomerPartnerDto dto = getPartnerDto(request);
-        List<CustomerPartnerVo> partnerVos = encapCoPartner(dto);
+        List<CustomerPartnerVo> partnerVos = encapExportPartner(dto);
         //if (!CollectionUtils.isEmpty(partnerVos)) {
             // 生成导出数据
             List<PartnerExportExcel> exportExcelList = new ArrayList<>();
@@ -1346,6 +1346,24 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         }else{
             coPartnerVos = customerDao.findPartner(dto);
         }
+        if(!CollectionUtils.isEmpty(coPartnerVos)){
+            for(CustomerPartnerVo vo : coPartnerVos){
+                CustomerCountVo count = customerCountDao.count(vo.getCustomerId());
+                if(count != null){
+                    BeanUtils.copyProperties(count,vo);
+                }
+            }
+        }
+        return coPartnerVos;
+    }
+
+    /**
+     * 封装查询合伙人信息
+     * @param dto
+     * @return
+     */
+    private List<CustomerPartnerVo> encapExportPartner(CustomerPartnerDto dto){
+        List<CustomerPartnerVo> coPartnerVos = customerDao.findPartner(dto);
         if(!CollectionUtils.isEmpty(coPartnerVos)){
             for(CustomerPartnerVo vo : coPartnerVos){
                 CustomerCountVo count = customerCountDao.count(vo.getCustomerId());
