@@ -703,11 +703,16 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         if (!ResultEnum.SUCCESS.getCode().equals(resultVo.getCode())) {
             return BaseResultUtil.fail("修改用户信息失败，原因：" + resultVo.getMsg());
         }
-
+        Vehicle vehicle = null;
         //车牌号不为空 & 之前司机绑定不为空 & 车牌号与之前不同
         DriverVehicleCon dvc = driverVehicleConDao.getDriVehConByDriId(dto.getDriverId());
         if(StringUtils.isNotBlank(dto.getPlateNo()) && dvc != null
                 && !dvc.getVehicleId().equals(dto.getVehicleId())){
+            //更新旧的车辆信息的carrierId
+            vehicle = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda().eq(Vehicle::getCarrierId, carrier.getId()));
+            vehicle.setCarrierId(null);
+            vehicleDao.updateById(vehicle);
+
             //更新绑定车辆信息
             dvc.setVehicleId(dto.getVehicleId());
             driverVehicleConDao.updateById(dvc);
@@ -720,7 +725,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
                 vehicleRunningDao.updateById(vr);
             }
             //更新车辆信息
-            Vehicle vehicle = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda().eq(Vehicle::getPlateNo, dto.getPlateNo()));
+            vehicle = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda().eq(Vehicle::getPlateNo, dto.getPlateNo()));
             vehicle.setCarrierId(carrier.getId());
             vehicleDao.updateById(vehicle);
         }else if(StringUtils.isBlank(dto.getPlateNo()) && dvc != null){
@@ -729,7 +734,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
             driverVehicleConDao.removeCon(dvc.getDriverId(),dvc.getVehicleId());
             vehicleRunningDao.removeRun(dvc.getDriverId(),dvc.getVehicleId());
             //更新车辆信息
-            Vehicle vehicle = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda().eq(Vehicle::getPlateNo, dto.getPlateNo()));
+            vehicle = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda().eq(Vehicle::getPlateNo, dto.getPlateNo()));
             vehicle.setCarrierId(null);
             vehicleDao.updateById(vehicle);
         }else if(StringUtils.isNotBlank(dto.getPlateNo()) && dvc == null){
