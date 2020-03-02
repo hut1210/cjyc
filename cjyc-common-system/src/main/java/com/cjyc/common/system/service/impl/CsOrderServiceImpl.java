@@ -1081,6 +1081,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         OrderVo oldOrderVo = getFullOrderVo(order, new OrderVo());
 
         /**2、更新或保存车辆信息*/
+        order.setTotalFee(MoneyUtil.convertYuanToFen(paramsDto.getTotalFee()));
         List<ChangePriceOrderCarDto> carDtoList = paramsDto.getOrderCarList();
         //费用统计变量
         for (ChangePriceOrderCarDto dto : carDtoList) {
@@ -1113,7 +1114,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         //均摊优惠券费用
         shareCouponOffsetFee(order.getCouponOffsetFee(), orderCarList);
         //均摊总费用
-        shareTotalFee(paramsDto.getTotalFee(), orderCarList);
+        shareTotalFee(order.getTotalFee(), orderCarList);
         //更新车辆信息
         for (OrderCar orderCar : orderCarList) {
             if (orderCar.getTotalFee() == null || orderCar.getTotalFee().compareTo(BigDecimal.ZERO) <= 0) {
@@ -1126,7 +1127,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
         //合计费用：提、干、送、保险
         //fillOrderFeeInfo(order, orderCarList);
-        order.setTotalFee(MoneyUtil.convertYuanToFen(paramsDto.getTotalFee()));
+
         orderDao.updateById(order);
 
         //变更记录
