@@ -703,7 +703,7 @@
             <if test="mode != null">
                 and  surd.mode = #{mode}
             </if>
-            and  dc.type = 1 and dd.identity = 0 and sbcb.state = 1
+            and  dc.type = 1 and dd.identity = 0 and IFNULL(1, sbcb.state)
             group by dd.phone
             order by dc.create_time desc,dc.check_time desc
         </where>
