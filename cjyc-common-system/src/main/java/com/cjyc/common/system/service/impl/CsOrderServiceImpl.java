@@ -1113,7 +1113,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         //均摊优惠券费用
         shareCouponOffsetFee(order.getCouponOffsetFee(), orderCarList);
         //均摊总费用
-        shareTotalFee(order.getTotalFee(), orderCarList);
+        shareTotalFee(paramsDto.getTotalFee(), orderCarList);
         //更新车辆信息
         for (OrderCar orderCar : orderCarList) {
             if (orderCar.getTotalFee() == null || orderCar.getTotalFee().compareTo(BigDecimal.ZERO) <= 0) {
