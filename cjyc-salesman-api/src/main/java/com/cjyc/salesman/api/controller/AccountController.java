@@ -70,9 +70,6 @@ public class AccountController {
                 return BaseResultUtil.fail("输入手机号与当前登录人手机号不符,请检查");
             }
         }
-        System.out.println("登录用户信息：：："+loginId);
-        System.out.println("登录用户信息：：："+loginId);
-        System.out.println("登录用户信息：：："+loginId);
         if (csSmsService.validateCaptcha(dto.getPhone(), dto.getCaptcha(),
                 CaptchaTypeEnum.FORGET_LOGIN_PWD, ClientEnum.APP_SALESMAN)) {
             Admin admin = csAdminService.getAdminByPhone(dto.getPhone(), true);
