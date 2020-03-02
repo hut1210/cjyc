@@ -709,9 +709,10 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         if(StringUtils.isNotBlank(dto.getPlateNo()) && dvc != null
                 && !dvc.getVehicleId().equals(dto.getVehicleId())){
             //更新旧的车辆信息的carrierId
-            vehicle = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda().eq(Vehicle::getCarrierId, carrier.getId()));
-            vehicle.setCarrierId(null);
-            vehicleDao.updateById(vehicle);
+            Vehicle oleVehicle = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda()
+                                            .eq(Vehicle::getCarrierId, carrier.getId()));
+            oleVehicle.setCarrierId(null);
+            vehicleDao.updateById(oleVehicle);
 
             //更新绑定车辆信息
             dvc.setVehicleId(dto.getVehicleId());
