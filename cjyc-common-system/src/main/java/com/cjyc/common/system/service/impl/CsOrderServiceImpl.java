@@ -1070,6 +1070,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
     @Override
     public ResultVo changePrice(ChangePriceOrderDto paramsDto) {
+        log.debug("【订单改价】参数" + JSON.toJSONString(paramsDto));
         //参数
         Long orderId = paramsDto.getOrderId();
         Order order = orderDao.selectById(orderId);
@@ -1094,7 +1095,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 return BaseResultUtil.fail("ID为{}的车辆，不存在", orderCar.getOrderNo());
             }
         }
-        carDtoList.forEach(dto -> {
+        for (ChangePriceOrderCarDto dto : carDtoList) {
             OrderCar orderCar = orderCarDao.selectById(dto.getId());
             OrderCar noc = new OrderCar();
             noc.setId(orderCar.getId());
@@ -1104,22 +1105,24 @@ public class CsOrderServiceImpl implements ICsOrderService {
             noc.setAddInsuranceFee(MoneyUtil.convertYuanToFen(dto.getAddInsuranceFee()));
             noc.setAddInsuranceAmount(dto.getAddInsuranceAmount());
             orderCarDao.updateById(noc);
-        });
+        }
         //新数据
         List<OrderCar> orderCarList = orderCarDao.findListByOrderId(orderId);
+        log.debug("【订单改价】准备均分金额" + JSON.toJSONString(orderCarList));
 
         //均摊优惠券费用
         shareCouponOffsetFee(order.getCouponOffsetFee(), orderCarList);
         //均摊总费用
         shareTotalFee(order.getTotalFee(), orderCarList);
         //更新车辆信息
-        orderCarList.forEach(orderCar -> {
+        for (OrderCar orderCar : orderCarList) {
             if (orderCar.getTotalFee() == null || orderCar.getTotalFee().compareTo(BigDecimal.ZERO) <= 0) {
                 log.error("【均摊费用】失败{}", JSON.toJSONString(paramsDto));
                 throw new ServerException("订单金额计算错误");
             }
             orderCarDao.updateById(orderCar);
-        });
+        }
+        log.debug("【订单改价】均分金额后" + JSON.toJSONString(orderCarList));
 
         //合计费用：提、干、送、保险
         //fillOrderFeeInfo(order, orderCarList);
