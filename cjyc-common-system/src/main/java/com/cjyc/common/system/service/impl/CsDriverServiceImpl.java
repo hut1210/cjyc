@@ -643,6 +643,9 @@ public class CsDriverServiceImpl implements ICsDriverService {
         if(driver == null){
             return BaseResultUtil.fail("该司机不存在，请检查");
         }
+        if(!dto.getPhone().equals(driver.getPhone())){
+            return BaseResultUtil.fail("该下属司机不可修改其手机号");
+        }
         Carrier carrier = carrierDao.selectById(urd.getDeptId());
         if(carrier == null){
             return BaseResultUtil.fail("该承运商不存在，请检查");

@@ -777,10 +777,10 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
         if(urd == null){
             return BaseResultUtil.fail("该司机不存在,请检查");
         }
-       /* boolean result = csSmsService.validateCaptcha(dto.getPhone(),dto.getCode(),CaptchaTypeEnum.valueOf(dto.getType()), ClientEnum.APP_DRIVER);
+        boolean result = csSmsService.validateCaptcha(dto.getPhone(),dto.getCode(),CaptchaTypeEnum.valueOf(dto.getType()), ClientEnum.APP_DRIVER);
         if(!result){
             return BaseResultUtil.fail("验证码与手机号不匹配或者过期，请核对发送");
-        }*/
+        }
         BankCardBind bcb = bankCardBindDao.selectById(dto.getCardId());
         log.info("删除银行卡信息：：银行卡id: "+bcb.getId()+" 银行卡卡号："+bcb.getCardNo()+" 手机号：："+bcb.getCardName());
         bankCardBindDao.deleteById(bcb);
