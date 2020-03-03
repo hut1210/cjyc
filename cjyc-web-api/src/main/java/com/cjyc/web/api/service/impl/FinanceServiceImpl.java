@@ -430,13 +430,13 @@ public class FinanceServiceImpl implements IFinanceService {
         PayMentQueryDto pq = new PayMentQueryDto();
 
         List<PaidNewVo> paidList = new ArrayList<>();
-        Config config = configDao.getByItemKey("external_pay");
+        /*Config config = configDao.getByItemKey("external_pay");
         if(config!=null&&config.getState()==1) {//对外支付模式
             log.info("config.getState() "+config.getState().toString());
             paidList =  financeDao.getPaidListNew(pq);
-        }else{//自动付款
+        }else{//自动付款*/
             paidList =  financeDao.getAutoPaidList(pq);
-        }
+        /*}*/
 
         Map<String, Object> countInfo = new HashMap<>();
         countInfo.put("payableCount",fpv.size());
@@ -616,6 +616,12 @@ public class FinanceServiceImpl implements IFinanceService {
     @Override
     public ResultVo<PageVo<PaidNewVo>> getPaidListNew(PayMentQueryDto payMentQueryDto) {
         log.info("payMentQueryDto = "+payMentQueryDto.toString());
+        if(payMentQueryDto.getState()!=null){
+            if(payMentQueryDto.getState()!=0){
+                payMentQueryDto.setState(1);
+            }
+        }
+
         List<PaidNewVo> financeVoList = new ArrayList<>();
         /*Config config = configDao.getByItemKey("external_pay");
         if(config!=null&&config.getState()==1) {//对外支付模式
@@ -774,13 +780,13 @@ public class FinanceServiceImpl implements IFinanceService {
     public List<PaidNewVo> exportTimePaid(PayMentQueryDto payMentQueryDto) {
 
         List<PaidNewVo> paidNewVoList = new ArrayList<>();
-        Config config = configDao.getByItemKey("external_pay");
+        /*Config config = configDao.getByItemKey("external_pay");
         if(config!=null&&config.getState()==1) {//对外支付模式
             log.info("config.getState() "+config.getState().toString());
             paidNewVoList =  financeDao.getPaidListNew(payMentQueryDto);
-        }else{//自动付款
+        }else{//自动付款*/
             paidNewVoList = financeDao.getAutoPaidList(payMentQueryDto);;
-        }
+        /*}*/
 
         for(int i=0;i<paidNewVoList.size();i++){
             PaidNewVo paidNewVo = paidNewVoList.get(i);
