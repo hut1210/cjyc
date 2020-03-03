@@ -28,12 +28,14 @@ public class PatCustomerOrderExcelVerifyHandler implements IExcelVerifyHandler<I
     public ExcelVerifyHandlerResult verifyHandler(ImportPatCustomerOrderDto dto) {
         ExcelVerifyHandlerResult result = new ExcelVerifyHandlerResult(true);
         //始发城市
+        //始发城市
         City stProvince = getCityLikeName(dto.getStartProvince(), CityLevelEnum.PROVINCE.code, null);
         if (null == stProvince) {
             result.setSuccess(false);
             result.setMsg("始发城市(省)名称有误");
         } else {
             dto.setStartProvinceCode(stProvince.getCode());
+            dto.setStartProvince(stProvince.getName());
         }
         City stCity = getCityLikeName(dto.getStartCity(), CityLevelEnum.CITY.code,
                 dto.getStartProvinceCode());
@@ -42,6 +44,7 @@ public class PatCustomerOrderExcelVerifyHandler implements IExcelVerifyHandler<I
             result.setMsg("始发城市(市)名称有误");
         } else {
             dto.setStartCityCode(stCity.getCode());
+            dto.setStartCity(stCity.getName());
         }
         City stArea = getCityLikeName(dto.getStartArea(), CityLevelEnum.AREA.code,
                 dto.getStartCityCode());
@@ -50,14 +53,17 @@ public class PatCustomerOrderExcelVerifyHandler implements IExcelVerifyHandler<I
             result.setMsg("始发城市(区/县)名称有误");
         } else {
             dto.setStartAreaCode(stArea.getCode());
+            dto.setStartArea(stArea.getName());
         }
         //到达城市
-        City endProvince = getCityLikeName(dto.getEndProvince(), CityLevelEnum.PROVINCE.code, null);
+        City endProvince = getCityLikeName(dto.getEndProvince(), CityLevelEnum.PROVINCE.code,
+                null);
         if (null == endProvince) {
             result.setSuccess(false);
             result.setMsg("目的城市(省)名称有误");
         } else {
             dto.setEndProvinceCode(endProvince.getCode());
+            dto.setEndProvince(endProvince.getName());
         }
         City endCity = getCityLikeName(dto.getEndCity(), CityLevelEnum.CITY.code,
                 dto.getEndProvinceCode());
@@ -66,6 +72,7 @@ public class PatCustomerOrderExcelVerifyHandler implements IExcelVerifyHandler<I
             result.setMsg("目的城市(市)名称有误");
         } else {
             dto.setEndCityCode(endCity.getCode());
+            dto.setEndCity(endCity.getName());
         }
         City endArea = getCityLikeName(dto.getEndArea(), CityLevelEnum.AREA.code,
                 dto.getEndCityCode());
@@ -74,6 +81,7 @@ public class PatCustomerOrderExcelVerifyHandler implements IExcelVerifyHandler<I
             result.setMsg("目的城市(区/县)名称有误");
         } else {
             dto.setEndAreaCode(endArea.getCode());
+            dto.setEndArea(endArea.getName());
         }
 
 

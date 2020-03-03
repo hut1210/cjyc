@@ -228,14 +228,12 @@ public class ListOrderVo extends Order {
                 str = "待付款"; break;
             case 100:
                 str = "已完成"; break;
-            case 111:
-                str = "原返（待）"; break;
             case 112:
                 str = "异常结束"; break;
             case 113:
-                str = "取消（待）"; break;
+                str = "已取消"; break;
             case 114:
-                str = "作废（待）"; break;
+                str = "已作废"; break;
         }
         return str;
     }
