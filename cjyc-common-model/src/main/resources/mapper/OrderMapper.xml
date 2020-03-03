@@ -222,7 +222,7 @@
                         and o.expect_start_date &gt;= #{paramsDto.beginTime}
                     </if>
                     <if test="paramsDto.endTime != null">
-                        and o.expect_start_date &lt;= #{paramsDto.endTime}
+                        and o.expect_start_date &lt; #{paramsDto.endTime}
                     </if>
                 </when>
                 <when test="paramsDto.timeType == 2">
@@ -230,7 +230,7 @@
                         and o.expect_end_date &gt;= #{paramsDto.beginTime}
                     </if>
                     <if test="paramsDto.endTime != null">
-                        and o.expect_end_date &lt;= #{paramsDto.endTime}
+                        and o.expect_end_date &lt; #{paramsDto.endTime}
                     </if>
                 </when>
                 <when test="paramsDto.timeType == 3">
@@ -238,7 +238,7 @@
                         and o.create_time &gt;= #{paramsDto.beginTime}
                     </if>
                     <if test="paramsDto.endTime != null">
-                        and o.create_time &lt;= #{paramsDto.endTime}
+                        and o.create_time &lt; #{paramsDto.endTime}
                     </if>
                 </when>
                 <when test="paramsDto.timeType == 4">
@@ -246,7 +246,7 @@
                         and o.check_time &gt;= #{paramsDto.beginTime}
                     </if>
                     <if test="paramsDto.endTime != null">
-                        and o.check_time &lt;= #{paramsDto.endTime}
+                        and o.check_time &lt; #{paramsDto.endTime}
                     </if>
                 </when>
                 <when test="paramsDto.timeType == 5">
@@ -254,7 +254,7 @@
                         and o.finish_time &gt;= #{paramsDto.beginTime}
                     </if>
                     <if test="paramsDto.endTime != null">
-                        and o.finish_time &lt;= #{paramsDto.endTime}
+                        and o.finish_time &lt; #{paramsDto.endTime}
                     </if>
                 </when>
             </choose>
@@ -434,7 +434,7 @@
                 and o.create_time &gt;= #{startDate}
             </if>
             <if test="endDate != null and endDate != 0">
-                and o.create_time &lt;= #{endDate}
+                and o.create_time &lt; #{endDate}
             </if>
             <if test="orderNo != null and orderNo.trim() != ''">
                 and o.no like concat('%',#{orderNo},'%')
