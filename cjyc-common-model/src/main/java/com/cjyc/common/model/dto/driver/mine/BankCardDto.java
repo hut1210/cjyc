@@ -25,6 +25,5 @@ public class BankCardDto extends AppDriverDto {
     private String phone;
 
     @ApiModelProperty(value = "身份证号",required = true)
-    @NotBlank(message = "身份证号不能为空")
     private String idCard;
 }

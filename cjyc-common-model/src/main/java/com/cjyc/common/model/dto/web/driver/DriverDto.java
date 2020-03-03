@@ -59,11 +59,9 @@ public class DriverDto implements Serializable {
     private String idCardBackImg;
 
     @ApiModelProperty(value = "驾驶证正面",required = true)
-    @NotBlank(message = "驾驶证正面不能为空")
     private String driverLicenceFrontImg;
 
     @ApiModelProperty(value = "驾驶证反面",required = true)
-    @NotBlank(message = "驾驶证反面不能为空")
     private String driverLicenceBackImg;
 
     @ApiModelProperty("行驶证正面")

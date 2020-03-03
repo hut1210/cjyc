@@ -1,8 +1,7 @@
 package com.cjyc.common.model.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.*;
+
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -32,6 +31,7 @@ public class Vehicle implements Serializable {
     private Long id;
 
     @ApiModelProperty(value = "承运商id")
+    @TableField(strategy = FieldStrategy.IGNORED)
     private Long carrierId;
 
     @ApiModelProperty(value = "车牌号")

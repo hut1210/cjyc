@@ -691,7 +691,7 @@
                 and wc.expect_start_time &gt;= #{paramsDto.beginExpectStartTime}
             </if>
             <if test="paramsDto.endExpectStartTime != null">
-                and wc.expect_start_time &lt;= #{paramsDto.endExpectStartTime}
+                and wc.expect_start_time &lt; #{paramsDto.endExpectStartTime}
             </if>
             <if test="paramsDto.loadLinkName != null and paramsDto.loadLinkName != ''">
                 and wc.load_link_name = #{paramsDto.loadLinkName}
@@ -706,7 +706,7 @@
                 and wc.load_time &gt;= #{paramsDto.beginLoadTime}
             </if>
             <if test="paramsDto.endLoadTime != null">
-                and wc.load_time &lt;= #{paramsDto.endLoadTime}
+                and wc.load_time &lt; #{paramsDto.endLoadTime}
             </if>
             <if test="paramsDto.unloadLinkName != null and paramsDto.unloadLinkName != ''">
                 and wc.unload_link_name = #{paramsDto.unloadLinkName}
@@ -1419,7 +1419,7 @@
                 and c.pickDate &gt;= #{param.pickDateSt}
             </if>
             <if test="param.pickDateEd != null and param.pickDateEd > 0">
-                and c.pickDate &lt;= #{param.pickDateEd}
+                and c.pickDate &lt; #{param.pickDateEd}
             </if>
             <if test="param.brand != null and param.brand !=''">
                 and c.brand LIKE CONCAT('%',#{param.brand},'%')

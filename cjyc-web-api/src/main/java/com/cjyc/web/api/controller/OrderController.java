@@ -313,7 +313,7 @@ public class OrderController {
                     "结果为空.xls", response);
             return;
         }
-        orderList = orderList.stream().filter(o -> o != null).collect(Collectors.toList());
+        orderList = orderList.stream().filter(Objects::nonNull).collect(Collectors.toList());
         try{
             ExcelUtil.exportExcel(orderList, "订单信息", "订单信息",
                     ListOrderVo.class, System.currentTimeMillis()+"订单信息.xls", response);

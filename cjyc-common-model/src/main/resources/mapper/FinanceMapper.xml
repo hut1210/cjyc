@@ -487,7 +487,7 @@
 
     <select id="getAutoPaidList" parameterType="com.cjyc.common.model.dto.web.finance.PayMentQueryDto"
             resultType="com.cjyc.common.model.vo.web.finance.PaidNewVo">
-        select ww.no as waybillNo,ww.complete_time as completeTime,
+        select ww.id as waybillId,ww.no as waybillNo,ww.complete_time as completeTime,
         ww.freight_fee as freightFee,ww.type,
         if(dc.settle_type=0,'时付','账期') as settleType,
         ww.guide_line as guideLine,ww.carrier_id,
@@ -495,11 +495,13 @@
         wt.driver_name as driverName,
         wt.driver_phone as driverPhone,
         if(ww.freight_pay_state=0,'未付款','已付款') as state,
-        wt.vehicle_plate_no as vehiclePlateNo
+        wt.vehicle_plate_no as vehiclePlateNo,
+        fep.operator
         from w_waybill ww
         left join d_carrier dc on dc.id=ww.carrier_id
         left join w_task wt on wt.waybill_id = ww.id
-        where dc.settle_type=0 and ww.freight_pay_state=1
+        left join f_external_payment fep on fep.waybill_id=ww.id
+        where dc.settle_type=0 and ww.state=100
         <if test="waybillNo != null and waybillNo.trim() != ''">
             and ww.no like concat('%',#{waybillNo},'%')
         </if>
@@ -514,6 +516,9 @@
         </if>
         <if test="invoiceNo!= null and invoiceNo.trim() != ''">
         </if>
+        <if test="state!= null">
+            and ww.freight_pay_state =#{state}
+        </if>
         <if test="carrierName!= null and carrierName.trim() != ''">
             and ww.carrier_name like concat('%',#{carrierName},'%')
         </if>
@@ -526,8 +531,10 @@
         <if test="vehiclePlateNo!= null and vehiclePlateNo.trim() != ''">
             and wt.vehicle_plate_no like concat('%',#{vehiclePlateNo},'%')
         </if>
-
-        order by ww.create_time desc
+        <if test="operator!= null and operator.trim() != ''">
+            and fep.operator like concat('%',#{operator},'%')
+        </if>
+        order by ww.complete_time desc
     </select>
 
     <select id="getCollectReceiveList" parameterType="com.cjyc.common.model.dto.web.finance.CollectReceiveQueryDto"

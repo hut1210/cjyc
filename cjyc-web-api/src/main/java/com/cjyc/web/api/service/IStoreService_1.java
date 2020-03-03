@@ -123,4 +123,10 @@ public interface IStoreService_1 extends IService<Store> {
      * @return
      */
     boolean importStoreExcel(MultipartFile file, Long loginId);
+
+    /**
+     * 获取全部业务中心
+     * @return
+     */
+    ResultVo<List<Store>> findAllStore();
 }

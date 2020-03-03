@@ -435,7 +435,7 @@
                 and o.expect_start_date &gt;= #{paramsDto.beginExpectStartDate,jdbcType=BIGINT}
             </if>
             <if test="paramsDto.endExpectStartDate != null">
-                and o.expect_start_date &lt;= #{paramsDto.endExpectStartDate,jdbcType=BIGINT}
+                and o.expect_start_date &lt; #{paramsDto.endExpectStartDate,jdbcType=BIGINT}
             </if>
             <if test="paramsDto.pickType != null">
                 and o.pick_type = #{paramsDto.pickType,jdbcType=TINYINT}
@@ -754,7 +754,7 @@
                         and o.expect_start_date &gt;= #{paramsDto.beginTime}
                     </if>
                     <if test="paramsDto.endTime != null">
-                        and o.expect_start_date &lt;= #{paramsDto.endTime}
+                        and o.expect_start_date &lt; #{paramsDto.endTime}
                     </if>
                 </when>
                 <when test="paramsDto.timeType == 2">
@@ -762,7 +762,7 @@
                         and o.expect_end_date &gt;= #{paramsDto.beginTime}
                     </if>
                     <if test="paramsDto.endTime != null">
-                        and o.expect_end_date &lt;= #{paramsDto.endTime}
+                        and o.expect_end_date &lt; #{paramsDto.endTime}
                     </if>
                 </when>
                 <when test="paramsDto.timeType == 3">
@@ -770,7 +770,7 @@
                         and o.create_time &gt;= #{paramsDto.beginTime}
                     </if>
                     <if test="paramsDto.endTime != null">
-                        and o.create_time &lt;= #{paramsDto.endTime}
+                        and o.create_time &lt; #{paramsDto.endTime}
                     </if>
                 </when>
                 <when test="paramsDto.timeType == 4">
@@ -778,7 +778,7 @@
                         and o.check_time &gt;= #{paramsDto.beginTime}
                     </if>
                     <if test="paramsDto.endTime != null">
-                        and o.check_time &lt;= #{paramsDto.endTime}
+                        and o.check_time &lt; #{paramsDto.endTime}
                     </if>
                 </when>
                 <when test="paramsDto.timeType == 5">
@@ -786,7 +786,7 @@
                         and o.finish_time &gt;= #{paramsDto.beginTime}
                     </if>
                     <if test="paramsDto.endTime != null">
-                        and o.finish_time &lt;= #{paramsDto.endTime}
+                        and o.finish_time &lt; #{paramsDto.endTime}
                     </if>
                 </when>
             </choose>
@@ -2736,7 +2736,7 @@
             and o.expect_start_date &gt;= #{beginExpectStartDate,jdbcType=BIGINT}
         </if>
         <if test="endExpectStartDate != null">
-            and o.expect_start_date &lt;= #{endExpectStartDate,jdbcType=BIGINT}
+            and o.expect_start_date &lt; #{endExpectStartDate,jdbcType=BIGINT}
         </if>
         <if test="pickType != null">
             and o.pick_type = #{pickType,jdbcType=TINYINT}

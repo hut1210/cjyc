@@ -2,6 +2,7 @@ package com.cjyc.salesman.api.controller;
 
 import com.cjkj.common.model.ResultData;
 import com.cjkj.usercenter.dto.common.SelectRoleResp;
+import com.cjyc.common.model.dao.IAdminDao;
 import com.cjyc.common.model.dto.salesman.account.ForgetPwdDto;
 import com.cjyc.common.model.dto.salesman.login.RoleBtnReqDto;
 import com.cjyc.common.model.entity.Admin;
@@ -30,8 +31,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -54,11 +55,21 @@ public class AccountController {
     private ISysRoleService sysRoleService;
     @Resource
     private ICsRoleService csRoleService;
+    @Resource
+    private IAdminDao adminDao;
 
 
     @ApiOperation(value = "忘记密码")
     @PostMapping("/forgetPwd")
-    public ResultVo forgetPwd(@Valid @RequestBody ForgetPwdDto dto){
+    public ResultVo forgetPwd(@Valid @RequestBody ForgetPwdDto dto, HttpServletRequest request){
+        String loginId = request.getHeader("loginId");
+        if(!StringUtils.isEmpty(loginId)){
+            Long adminId = Long.valueOf(loginId);
+            Admin admin = adminDao.selectById(adminId);
+            if(!dto.getPhone().equals(admin.getPhone())){
+                return BaseResultUtil.fail("输入手机号与当前登录人手机号不符,请检查");
+            }
+        }
         if (csSmsService.validateCaptcha(dto.getPhone(), dto.getCaptcha(),
                 CaptchaTypeEnum.FORGET_LOGIN_PWD, ClientEnum.APP_SALESMAN)) {
             Admin admin = csAdminService.getAdminByPhone(dto.getPhone(), true);

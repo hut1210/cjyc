@@ -265,4 +265,10 @@ public class StoreController_1 {
         boolean result = storeService.importStoreExcel(file, loginId);
         return result ? BaseResultUtil.success() : BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
+
+    @ApiOperation(value = "获取全部业务中心")
+    @PostMapping(value = "/findAllStore")
+    public ResultVo<List<Store>> findAllStore() {
+        return storeService.findAllStore();
+    }
 }

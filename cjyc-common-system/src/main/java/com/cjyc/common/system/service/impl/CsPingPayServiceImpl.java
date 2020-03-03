@@ -222,6 +222,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         }
         log.info("createDriverCode meta ="+meta.toString());
         params.put("metadata",meta);//自定义参数
+        log.info("createDriverCode params ="+params.toString());
         Charge charge = Charge.create(params); // 创建 Charge 对象 方法
         return charge;
     }

@@ -87,6 +87,8 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
     private ICsUserRoleDeptService csUserRoleDeptService;
     @Resource
     private IUserRoleDeptDao userRoleDeptDao;
+    @Resource
+    private IVehicleDao vehicleDao;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -141,7 +143,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
             //保存司机与车辆关系
             if(StringUtils.isNotBlank(dto.getPlateNo()) && dto.getVehicleId() != null){
                 dto.setDriverId(driver.getId());
-                bindDriverVehicle(dto);
+                bindDriverVehicle(dto,dto.getCarrierId());
             }
 
             //保存个人承运商
@@ -237,7 +239,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         }else if(StringUtils.isNotBlank(dto.getPlateNo()) && dvc == null){
             //之前绑定为空，现在不为空，需要绑定
             //车辆与司机绑定
-            bindDriverVehicle(dto);
+            bindDriverVehicle(dto,carrier.getId());
         }
         //更新承运商信息
         if(carrier != null){
@@ -431,7 +433,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
      * 司机与车辆绑定关系
      * @param dto
      */
-    private void bindDriverVehicle(DriverDto dto){
+    private void bindDriverVehicle(DriverDto dto,Long carrierId){
         //车辆与司机绑定
         DriverVehicleCon dvcon = new DriverVehicleCon();
         dvcon.setDriverId(dto.getDriverId());
@@ -448,6 +450,10 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         vr.setRunningState(VehicleRunStateEnum.FREE.code);
         vr.setCreateTime(NOW);
         vehicleRunningDao.insert(vr);
+        //更新车辆信息
+        Vehicle vehicle = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda().eq(Vehicle::getPlateNo, dto.getPlateNo()));
+        vehicle.setCarrierId(carrierId);
+        vehicleDao.updateById(vehicle);
     }
 
     /**
@@ -548,7 +554,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
             //保存司机与车辆关系
             if(StringUtils.isNotBlank(dto.getPlateNo()) && dto.getVehicleId() != null){
                 dto.setDriverId(driver.getId());
-                bindDriverVehicle(dto);
+                bindDriverVehicle(dto,carrier.getId());
             }
             //添加承运商业务范围
             carrierCityConService.batchSave(carrier.getId(),dto.getCodes());
@@ -697,11 +703,17 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         if (!ResultEnum.SUCCESS.getCode().equals(resultVo.getCode())) {
             return BaseResultUtil.fail("修改用户信息失败，原因：" + resultVo.getMsg());
         }
-
+        Vehicle vehicle = null;
         //车牌号不为空 & 之前司机绑定不为空 & 车牌号与之前不同
         DriverVehicleCon dvc = driverVehicleConDao.getDriVehConByDriId(dto.getDriverId());
         if(StringUtils.isNotBlank(dto.getPlateNo()) && dvc != null
                 && !dvc.getVehicleId().equals(dto.getVehicleId())){
+            //更新旧的车辆信息的carrierId
+            Vehicle oleVehicle = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda()
+                                            .eq(Vehicle::getCarrierId, carrier.getId()));
+            oleVehicle.setCarrierId(null);
+            vehicleDao.updateById(oleVehicle);
+
             //更新绑定车辆信息
             dvc.setVehicleId(dto.getVehicleId());
             driverVehicleConDao.updateById(dvc);
@@ -713,15 +725,23 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
                 vr.setCarryCarNum(dto.getDefaultCarryNum());
                 vehicleRunningDao.updateById(vr);
             }
+            //更新车辆信息
+            vehicle = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda().eq(Vehicle::getPlateNo, dto.getPlateNo()));
+            vehicle.setCarrierId(carrier.getId());
+            vehicleDao.updateById(vehicle);
         }else if(StringUtils.isBlank(dto.getPlateNo()) && dvc != null){
             //之前绑定不为空，现在不绑定车辆
             //删除之前绑定关系
             driverVehicleConDao.removeCon(dvc.getDriverId(),dvc.getVehicleId());
             vehicleRunningDao.removeRun(dvc.getDriverId(),dvc.getVehicleId());
+            //更新车辆信息
+            vehicle = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda().eq(Vehicle::getPlateNo, dto.getPlateNo()));
+            vehicle.setCarrierId(null);
+            vehicleDao.updateById(vehicle);
         }else if(StringUtils.isNotBlank(dto.getPlateNo()) && dvc == null){
             //之前绑定为空，现在不为空，需要绑定
             //车辆与司机绑定
-            bindDriverVehicle(dto);
+            bindDriverVehicle(dto,carrier.getId());
         }
         //更新承运商业务范围,先批量删除，再添加
         carrierCityConService.batchDelete(carrier.getId());

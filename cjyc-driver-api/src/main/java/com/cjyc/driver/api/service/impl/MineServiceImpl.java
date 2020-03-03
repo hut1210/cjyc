@@ -58,6 +58,8 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
     @Resource
     private IExistDriverDao existDriverDao;
     @Resource
+    private IRoleDao roleDao;
+    @Resource
     private ICsSmsService csSmsService;
     @Resource
     private ICsVehicleService csVehicleService;
@@ -450,65 +452,149 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
                 .eq(UserRoleDept::getUserId, dto.getLoginId())
                 .eq(UserRoleDept::getId, dto.getRoleId()));
         if(urd == null){
-            return BaseResultUtil.fail("该司机管理员不存在,请检查");
+            return BaseResultUtil.fail("该司机不存在,请检查");
         }
-        //根据车牌号查询库中有没有添加
+        //判断是社会司机还是管理员
+        Role role = roleDao.selectOne(new QueryWrapper<Role>().lambda()
+                .eq(Role::getId, urd.getRoleId()));
+        if(role == null){
+            return BaseResultUtil.fail("该司机角色不存在,请检查");
+        }
+        Role roleName = csRoleService.getByName(YmlProperty.get("cjkj.carrier_personal_driver_role_name"), DeptTypeEnum.CARRIER.code);
+        if(role == null){
+            return BaseResultUtil.fail("个人司机角色不存在，请先添加");
+        }
+        //根据车牌号查询库中有没有添加x
         Vehicle vehicle = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda()
                 .eq(StringUtils.isNotBlank(dto.getPlateNo()),Vehicle::getPlateNo,dto.getPlateNo()));
-        if(dto.getVehicleId() == null){
+        if(role.getRoleName().equals(roleName.getRoleName())){
+            //社会司机时只添加车辆
             if(vehicle != null){
                 return BaseResultUtil.fail("该车辆已存在,请检查");
             }
-            if(dto.getDriverId() != null){
-                boolean result = csVehicleService.verifyDriverVehicle(dto.getDriverId(), null);
-                if(!result){
-                    return BaseResultUtil.fail("该司机已绑定，请检查");
+            //新增
+            DriverVehicleCon vehicleCon = driverVehicleConDao.selectOne(new QueryWrapper<DriverVehicleCon>().lambda()
+                    .eq(DriverVehicleCon::getDriverId, urd.getUserId()));
+            if(dto.getVehicleId() == null){
+                if(vehicleCon != null){
+                    return BaseResultUtil.fail("该司机已绑定车辆,请检查");
                 }
-            }
-            //新增车辆
-            vehicle = new Vehicle();
-            BeanUtils.copyProperties(dto,vehicle);
-            vehicle.setCarrierId(Long.valueOf(urd.getDeptId()));
-            vehicle.setOwnershipType(VehicleOwnerEnum.CARRIER.code);
-            vehicle.setCreateUserId(Long.valueOf(urd.getDeptId()));
-            vehicle.setCreateTime(NOW);
-            vehicleDao.insert(vehicle);
-            if(dto.getDriverId() != null){
-                csVehicleService.saveTransport(null,dto,vehicle);
+                if(vehicleCon == null){
+                    //保存车辆
+                    vehicle = new Vehicle();
+                    BeanUtils.copyProperties(dto,vehicle);
+                    vehicle.setCarrierId(Long.valueOf(urd.getDeptId()));
+                    vehicle.setOwnershipType(VehicleOwnerEnum.PERSONAL.code);
+                    vehicle.setCreateUserId(urd.getUserId());
+                    vehicle.setCreateTime(NOW);
+                    vehicleDao.insert(vehicle);
+                    //保存运力
+                    VehicleRunning vr = new VehicleRunning();
+                    BeanUtils.copyProperties(dto,vr);
+                    vr.setDriverId(dto.getLoginId());
+                    vr.setCarryCarNum(dto.getDefaultCarryNum());
+                    vr.setVehicleId(vehicle.getId());
+                    vr.setState(RunningStateEnum.EFFECTIVE.code);
+                    vr.setRunningState(VehicleRunStateEnum.FREE.code);
+                    vr.setCreateTime(NOW);
+                    vehicleRunningDao.insert(vr);
+                    //保存运力与司机关系
+                    DriverVehicleCon dvc = new DriverVehicleCon();
+                    dvc.setDriverId(dto.getLoginId());
+                    dvc.setVehicleId(vehicle.getId());
+                    driverVehicleConDao.insert(dvc);
+                }
+            }else{
+                //修改
+                //车辆信息没有修改与之前相同直接成功
+                if(vehicle != null && vehicle.getId().equals(dto.getVehicleId())){
+                    return BaseResultUtil.success();
+                }
+                //车辆信息与之前不相同，更新信息
+                VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda()
+                        .eq(dto.getLoginId() != null,VehicleRunning::getDriverId, dto.getLoginId()));
+                DriverVehicleCon dvc = driverVehicleConDao.selectOne(new QueryWrapper<DriverVehicleCon>().lambda()
+                        .eq(dto.getLoginId() != null,DriverVehicleCon::getDriverId, dto.getLoginId()));
+                if(vr != null && dvc != null){
+                    //判断该运力是否在运输中
+                    List<Task> taskList = taskDao.selectList(new QueryWrapper<Task>().lambda()
+                            .eq(Task::getVehicleRunningId,vr.getId())
+                            .eq(Task::getState,TaskStateEnum.TRANSPORTING.code));
+                    if(!CollectionUtils.isEmpty(taskList)){
+                        return BaseResultUtil.fail("该运力正在运输中，不可修改");
+                    }
+                }
+                //获取之前绑定的车辆信息
+                Vehicle oldVehicle = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda().eq(Vehicle::getCarrierId, Long.valueOf(urd.getDeptId())));
+                //更新车辆信息
+                oldVehicle.setPlateNo(dto.getPlateNo());
+                oldVehicle.setDefaultCarryNum(dto.getDefaultCarryNum());
+                vehicleDao.updateById(oldVehicle);
+                //更新运力
+                VehicleRunning vR = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda()
+                        .eq(VehicleRunning::getDriverId, dto.getLoginId())
+                        .eq(VehicleRunning::getVehicleId, oldVehicle.getId()));
+                vR.setPlateNo(dto.getPlateNo());
+                vR.setCarryCarNum(dto.getDefaultCarryNum());
+                vehicleRunningDao.updateById(vR);
             }
         }else{
-            if(vehicle != null && !vehicle.getId().equals(dto.getVehicleId())){
-                return BaseResultUtil.fail("该车辆已存在,请检查");
-            }
-            VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda()
-                    .eq(dto.getVehicleId() != null,VehicleRunning::getVehicleId, dto.getVehicleId()));
-            DriverVehicleCon dvc = driverVehicleConDao.selectOne(new QueryWrapper<DriverVehicleCon>().lambda()
-                    .eq(dto.getVehicleId() != null,DriverVehicleCon::getVehicleId, dto.getVehicleId()));
-            if(vr != null && dvc != null){
-                //判断该运力是否在运输中
-                List<Task> taskList = taskDao.selectList(new QueryWrapper<Task>().lambda()
-                        .eq(Task::getVehicleRunningId,vr.getId())
-                        .eq(Task::getState,TaskStateEnum.TRANSPORTING.code));
-                if(!CollectionUtils.isEmpty(taskList)){
-                    return BaseResultUtil.fail("该运力正在运输中，不可修改");
+            //管理员添加车辆
+            if(dto.getVehicleId() == null){
+                if(vehicle != null){
+                    return BaseResultUtil.fail("该车辆已存在,请检查");
                 }
-            }
-            //更新车辆
-            vehicle = new Vehicle();
-            BeanUtils.copyProperties(dto,vehicle);
-            vehicle.setCreateUserId(Long.valueOf(urd.getDeptId()));
-            vehicleDao.updateById(vehicle);
-            vehicle = vehicleDao.selectById(dto.getVehicleId());
-            //新增没有绑定，修改绑定
-            if(dvc == null && dto.getDriverId() != null){
-                csVehicleService.saveTransport(null,dto,vehicle);
-            }else if(dvc!= null && vr != null && dto.getDriverId() != null && (!dvc.getDriverId().equals(dto.getDriverId()))){
-                //新增与修改时不同的司机
-                csVehicleService.updateTransport(null,dto,vehicle);
-            }else if(dvc != null && vr != null && dto.getDriverId() == null){
-                //新增时有司机，修改时不绑定
-                vehicleRunningDao.removeRun(dvc.getDriverId(),dvc.getVehicleId());
-                driverVehicleConDao.removeCon(dvc.getDriverId(),dvc.getVehicleId());
+                if(dto.getDriverId() != null){
+                    boolean result = csVehicleService.verifyDriverVehicle(dto.getDriverId(), null);
+                    if(!result){
+                        return BaseResultUtil.fail("该司机已绑定，请检查");
+                    }
+                }
+                //新增车辆
+                vehicle = new Vehicle();
+                BeanUtils.copyProperties(dto,vehicle);
+                vehicle.setCarrierId(Long.valueOf(urd.getDeptId()));
+                vehicle.setOwnershipType(VehicleOwnerEnum.CARRIER.code);
+                vehicle.setCreateUserId(Long.valueOf(urd.getDeptId()));
+                vehicle.setCreateTime(NOW);
+                vehicleDao.insert(vehicle);
+                if(dto.getDriverId() != null){
+                    csVehicleService.saveTransport(null,dto,vehicle);
+                }
+            }else{
+                if(vehicle != null && !vehicle.getId().equals(dto.getVehicleId())){
+                    return BaseResultUtil.fail("该车辆已存在,请检查");
+                }
+                VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda()
+                        .eq(dto.getVehicleId() != null,VehicleRunning::getVehicleId, dto.getVehicleId()));
+                DriverVehicleCon dvc = driverVehicleConDao.selectOne(new QueryWrapper<DriverVehicleCon>().lambda()
+                        .eq(dto.getVehicleId() != null,DriverVehicleCon::getVehicleId, dto.getVehicleId()));
+                if(vr != null && dvc != null){
+                    //判断该运力是否在运输中
+                    List<Task> taskList = taskDao.selectList(new QueryWrapper<Task>().lambda()
+                            .eq(Task::getVehicleRunningId,vr.getId())
+                            .eq(Task::getState,TaskStateEnum.TRANSPORTING.code));
+                    if(!CollectionUtils.isEmpty(taskList)){
+                        return BaseResultUtil.fail("该运力正在运输中，不可修改");
+                    }
+                }
+                //更新车辆
+                vehicle = new Vehicle();
+                BeanUtils.copyProperties(dto,vehicle);
+                vehicle.setCreateUserId(Long.valueOf(urd.getDeptId()));
+                vehicleDao.updateById(vehicle);
+                vehicle = vehicleDao.selectById(dto.getVehicleId());
+                //新增没有绑定，修改绑定
+                if(dvc == null && dto.getDriverId() != null){
+                    csVehicleService.saveTransport(null,dto,vehicle);
+                }else if(dvc!= null && vr != null && dto.getDriverId() != null && (!dvc.getDriverId().equals(dto.getDriverId()))){
+                    //新增与修改时不同的司机
+                    csVehicleService.updateTransport(null,dto,vehicle);
+                }else if(dvc != null && vr != null && dto.getDriverId() == null){
+                    //新增时有司机，修改时不绑定
+                    vehicleRunningDao.removeRun(dvc.getDriverId(),dvc.getVehicleId());
+                    driverVehicleConDao.removeCon(dvc.getDriverId(),dvc.getVehicleId());
+                }
             }
         }
         return BaseResultUtil.success();
@@ -782,8 +868,8 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
             return BaseResultUtil.fail("验证码与手机号不匹配或者过期，请核对发送");
         }
         BankCardBind bcb = bankCardBindDao.selectById(dto.getCardId());
-        bcb.setState(UseStateEnum.DISABLED.code);
-        bankCardBindDao.updateById(bcb);
+        log.info("删除银行卡信息：：银行卡id: "+bcb.getId()+" 银行卡卡号："+bcb.getCardNo()+" 手机号：："+bcb.getCardName());
+        bankCardBindDao.deleteById(bcb);
         return BaseResultUtil.success();
     }
 }

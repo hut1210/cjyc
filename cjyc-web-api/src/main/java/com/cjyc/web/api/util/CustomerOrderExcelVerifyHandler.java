@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjyc.common.model.dto.web.order.ImportCustomerOrderDto;
 import com.cjyc.common.model.entity.City;
 import com.cjyc.common.model.entity.Customer;
+import com.cjyc.common.model.entity.defined.FullCity;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.city.CityLevelEnum;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
@@ -36,6 +37,7 @@ public class CustomerOrderExcelVerifyHandler implements IExcelVerifyHandler<Impo
     @Override
     public ExcelVerifyHandlerResult verifyHandler(ImportCustomerOrderDto dto) {
         ExcelVerifyHandlerResult result = new ExcelVerifyHandlerResult(true);
+
         //始发城市
         City stProvince = getCityLikeName(dto.getStartProvince(), CityLevelEnum.PROVINCE.code, null);
         if (null == stProvince) {

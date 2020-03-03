@@ -219,11 +219,11 @@ public class TransactionServiceImpl implements ITransactionService {
                             log.debug("更新运单状态");
                             //更新运单状态
                             tradeBillDao.updateForReceipt(task.getWaybillId(), System.currentTimeMillis());
-                            try{
+                            /*try{
                                 csPingPayService.allinpayToCarrier(task.getWaybillId());
                             }catch (Exception e){
                                 log.error("通联代付给下游付款异常 "+e.getMessage(),e);
-                            }
+                            }*/
 
                             //更新订单状态
                             List<com.cjyc.common.model.entity.Order> list = orderDao.findListByCarNos(orderCarNosList);
