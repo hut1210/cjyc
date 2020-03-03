@@ -779,6 +779,11 @@ public class FinanceServiceImpl implements IFinanceService {
     @Override
     public List<PaidNewVo> exportTimePaid(PayMentQueryDto payMentQueryDto) {
 
+        if(payMentQueryDto.getState()!=null){
+            if(payMentQueryDto.getState()!=0){
+                payMentQueryDto.setState(1);
+            }
+        }
         List<PaidNewVo> paidNewVoList = new ArrayList<>();
         /*Config config = configDao.getByItemKey("external_pay");
         if(config!=null&&config.getState()==1) {//对外支付模式
