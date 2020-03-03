@@ -2458,7 +2458,7 @@
                         from w_waybill_car
                         where state &lt;= 100
                         <if test="bizScope != null">
-                            and wc.end_belong_store_id in
+                            and end_belong_store_id in
                             <foreach collection="bizScope" item="item" index="index" open="(" close=")" separator=",">
                                 #{item}
                             </foreach>
@@ -2528,7 +2528,7 @@
                         from w_waybill_car
                         where state &lt;= 100
                         <if test="bizScope != null">
-                            and wc.end_belong_store_id in
+                            and end_belong_store_id in
                             <foreach collection="bizScope" item="item" index="index" open="(" close=")" separator=",">
                                 #{item}
                             </foreach>
@@ -2604,7 +2604,7 @@
                 from w_waybill_car
                 where state &lt;= 100
                 <if test="bizScope != null">
-                    and wc.end_belong_store_id in
+                    and end_belong_store_id in
                     <foreach collection="bizScope" item="item" index="index" open="(" close=")" separator=",">
                         #{item}
                     </foreach>
