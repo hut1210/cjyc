@@ -127,7 +127,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
         }
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<TaskBillVo> taskList = taskDao.selectHistoryTaskPage(dto);
-        PageInfo<TaskBillVo> pageInfo = new PageInfo(taskList);
+        PageInfo pageInfo = new PageInfo<>(taskList);
         // 填充指导线路
         //fillGuideLine(pageInfo);
         return BaseResultUtil.success(pageInfo);
