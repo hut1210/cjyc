@@ -467,7 +467,7 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
         //根据车牌号查询库中有没有添加
         Vehicle vehicle = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda()
                 .eq(StringUtils.isNotBlank(dto.getPlateNo()),Vehicle::getPlateNo,dto.getPlateNo()));
-        if(role.getRoleName().equals(roleName)){
+        if(role.getRoleName().equals(roleName.getRoleName())){
             //社会司机时只添加车辆
             if(vehicle != null){
                 return BaseResultUtil.fail("该车辆已存在,请检查");
