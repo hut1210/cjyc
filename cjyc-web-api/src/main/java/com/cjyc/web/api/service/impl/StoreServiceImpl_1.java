@@ -391,4 +391,12 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
         }
         return result;
     }
+
+    @Override
+    public ResultVo<List<Store>> findAllStore() {
+        List<Store> stores = storeDao.selectList(new QueryWrapper<Store>().lambda()
+                                            .eq(Store::getIsDelete,DeleteStateEnum.NO_DELETE.code)
+                                            .eq(Store::getState,CommonStateEnum.CHECKED.code));
+        return BaseResultUtil.success(stores);
+    }
 }
