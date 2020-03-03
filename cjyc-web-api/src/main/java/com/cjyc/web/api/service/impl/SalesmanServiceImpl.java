@@ -462,7 +462,7 @@ public class SalesmanServiceImpl extends ServiceImpl<IAdminDao, Admin> implement
             if (dto.getOverwriteFlag().equals(1)) {
                 //覆盖写
                 List<UserRoleDept> userRoleDeptList = userRoleDeptDao.selectList(new QueryWrapper<UserRoleDept>().lambda()
-                        .eq(UserRoleDept::getUserId, admin.getUserId())
+                        .eq(UserRoleDept::getUserId, admin.getId())
                         .eq(UserRoleDept::getDeptType, RoleRangeEnum.INNER.getValue())
                         .eq(UserRoleDept::getUserType, UserTypeEnum.ADMIN.code));
                 if (!CollectionUtils.isEmpty(userRoleDeptList)) {
