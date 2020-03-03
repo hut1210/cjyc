@@ -504,6 +504,12 @@
                 or run.plate_no like CONCAT('%',#{keyword},'%')
                 )
             </if>
+            <if test="waybillType != 2">
+                and surd.mode in(2,4,5,6,7,9)
+            </if>
+            <if test="waybillType == 2">
+                and surd.mode in(3,5,7,9)
+            </if>
         </where>
     </select>
 
@@ -697,7 +703,8 @@
             <if test="mode != null">
                 and  surd.mode = #{mode}
             </if>
-            and  dc.type = 1 and dd.identity = 0 group by dd.phone
+            and  dc.type = 1 and dd.identity = 0 and IFNULL(1, sbcb.state)
+            group by dd.phone
             order by dc.create_time desc,dc.check_time desc
         </where>
     </select>
@@ -734,7 +741,8 @@
         LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
         LEFT JOIN s_bank_card_bind sbcb ON sbcb.user_id = dc.id
       WHERE
-            dc.id = #{carrierId}
+            IFNULL(1, sbcb.state) and dc.id = #{carrierId}
+      limit 1
     </select>
 
     <!--查询符合条件的调度个人司机-->
@@ -742,7 +750,7 @@
             parameterType="com.cjyc.common.model.dto.web.driver.DispatchDriverDto">
         SELECT
             dc.id AS carrierId,
-            dc.`name` AS `name`,
+            ( CASE dc.type WHEN 1 THEN '' WHEN 2 THEN dc.name END ) AS name,
             dd.id AS driverId,
             dd.real_name AS driverName,
             dd.phone AS driverPhone,
@@ -757,15 +765,16 @@
         LEFT JOIN ( SELECT * FROM s_user_role_dept WHERE dept_type = 2 AND user_type = 2 ) surd ON surd.dept_id = dc.id
         LEFT JOIN d_driver dd ON surd.user_id = dd.id
         LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
+        LEFT JOIN s_bank_card_bind sbcb ON sbcb.user_id = dc.id
         <where>
             <if test="realName != null and realName.trim() != ''">
-                and dd.real_name like CONCAT('%',#{realName},'%')
+                dd.real_name like CONCAT('%',#{realName},'%')
             </if>
             <if test="plateNo != null and plateNo.trim() != ''">
-                and dvr.plate_no = #{plateNo}
+                and dvr.plate_no like CONCAT('%',#{plateNo},'%')
             </if>
             <if test="phone != null and phone.trim() != ''">
-                and dd.phone = #{phone}
+                and dd.phone like CONCAT('%',#{phone},'%')
             </if>
             <if test="idCard != null and idCard.trim() != ''">
                 and dd.id_card = #{idCard}
@@ -775,6 +784,48 @@
             AND surd.state = 2
             AND dc.type = 1
             AND dc.mode = 3
+            AND sbcb.bank_name != ''
+            AND sbcb.state = 1
+            group by dd.phone
+        </where>
+    </select>
+
+    <!--查询符合条件的调度个人司机(业务员端)-->
+    <select id="findAppDispatchDriver" resultType="com.cjyc.common.model.vo.web.driver.DispatchDriverVo"
+            parameterType="com.cjyc.common.model.dto.web.driver.DispatchDriverDto">
+        SELECT
+            dc.id AS carrierId,
+            ( CASE dc.type WHEN 1 THEN '' WHEN 2 THEN dc.NAME END ) AS name,
+            dd.id AS driverId,
+            dd.real_name AS driverName,
+            dd.phone AS driverPhone,
+            dvr.plate_no AS vehiclePlateNo,
+            dd.id_card AS idCard,
+            dvr.carry_car_num AS carryCarNum,
+            dvr.occupied_car_num AS occupiedCarNum,
+            dd.business_state AS businessState,
+            surd.MODE AS MODE
+        FROM
+          d_carrier dc
+        LEFT JOIN ( SELECT * FROM s_user_role_dept WHERE dept_type = 2 AND user_type = 2 ) surd ON surd.dept_id = dc.id
+        LEFT JOIN d_driver dd ON surd.user_id = dd.id
+        LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
+        LEFT JOIN s_bank_card_bind sbcb ON dc.id = sbcb.user_id
+        <where>
+            <if test="keyword != null and keyword.trim() !=''">
+               (dd.real_name like concat('%',#{keyword},'%') or
+                dd.phone like concat('%',#{keyword},'%'))
+            </if>
+            <if test="idCard != null and idCard.trim() != ''">
+                and dd.id_card = #{idCard}
+            </if>
+            AND dc.state = 2
+            AND dc.business_state = 0
+            AND surd.state = 2
+            AND dc.type = 1
+            AND dc.mode = 3
+            AND sbcb.bank_name != ''
+            AND sbcb.state = 1
             group by dd.phone
         </where>
     </select>
@@ -812,6 +863,12 @@
         </if>
         <if test="driverIdCard != null and driverIdCard.trim() != ''">
             and dd.id_card = #{driverIdCard}
+        </if>
+        <if test="waybillType != 2">
+            and surd.mode in (2,4,5,6,7,9)
+        </if>
+        <if test="waybillType == 2">
+            and surd.mode in (3,5,7,9)
         </if>
         group by dd.phone
     </select>
@@ -1027,6 +1084,18 @@
             </if>
             and dc.id = #{carrierId} and dc.type = 2 and dc.state &lt; 9
         </where>
+    </select>
+    <select id="findMasterByCarrierId" resultType="com.cjyc.common.model.entity.Driver">
+        SELECT
+            *
+        FROM
+            d_driver dr
+        LEFT JOIN ( SELECT * FROM s_user_role_dept WHERE dept_type = 2 AND user_type = 2 ) urd ON urd.user_id = dr.id
+        LEFT JOIN d_carrier cr ON cr.id = urd.dept_id
+        LEFT JOIN s_role r ON r.id = urd.role_id
+        where cr.id = #{carrierId}
+        and r.role_name = '承运商超级管理员'
+
     </select>
 
 

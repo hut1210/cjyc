@@ -42,7 +42,7 @@ spring:
   ##数据源
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://39.107.96.231:3306/ju_test_dev?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    url: jdbc:mysql://10.253.96.139:3306/cjyc?useUnicode=true&characterEncoding=utf-8&useSSL=false
     username: root
     password: Qaz123$%^231#
     #连接池
@@ -93,6 +93,12 @@ logging:
 
 ##-----------------------------------cjyc-------------------------------------------
 cjkj:
+  push:
+    enabled: true
+    apikey:
+      customer: 47c449cf81974738beeee5c0e14b6805
+      driver: b4ba93a458614c64835315acf1bcc7fe
+      salesman: 672774b924254b2cb96be3a4c5aaae96
   dept_customer_id: 100000
   dept_driver_id: 110000
   dept_admin_id: 120000
@@ -146,8 +152,8 @@ cjyc:
 
   #短信
   sms:
-    ##短信时效(秒)
-    expires: 300
+    ##短信时效(分钟)
+    expires: 5
     ##单日最大发送条数
     daylimit: 20
     miaoxin:
@@ -182,3 +188,14 @@ cjyc:
   carSeries:
     logoImg: https://cjwl-test-bucket.obs.cn-north-1.myhuaweicloud.com:443/
 
+tldf:
+  acctNo: 200100000021418000
+  merchantId: 200100000021418
+  all_userName: 20010000002141804
+  all_password: 111111
+  pfxPassword: 111111
+  url: https://tlt.allinpay.com/aipg/ProcessServlet
+  business_code: 19400
+  bankacct: 110061002018800020878
+  pfxPath: 20010000002141804.p12
+  tltcerPath: allinpay-pds.cer

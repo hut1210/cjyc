@@ -15,5 +15,13 @@ public interface ICsCustomerLineService {
      */
     ResultVo<PageVo<CustomerLineVo>> queryLinePage(CommonDto dto);
 
-    void asyncSave(Order order);
+
+    /**
+     * 根据客户手机号和登录id查询历史线路
+     * @param dto
+     * @return
+     */
+    ResultVo<PageVo<CustomerLineVo>> findCustomerLine(CommonDto dto);
+
+    //void asyncSaveBatch(Order order);
 }

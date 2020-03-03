@@ -1,6 +1,6 @@
 package com.cjyc.common.model.vo.web.vehicle;
 
-import com.cjyc.common.model.util.DateLongSerizlizer;
+import com.cjyc.common.model.serizlizer.DateLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;

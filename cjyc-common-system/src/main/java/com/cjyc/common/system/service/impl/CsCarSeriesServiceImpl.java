@@ -10,7 +10,6 @@ import com.cjyc.common.model.vo.web.carSeries.CarSeriesTree;
 import com.cjyc.common.system.config.LogoImgProperty;
 import com.cjyc.common.system.service.ICsCarSeriesService;
 import com.cjyc.common.system.util.RedisUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -33,31 +32,41 @@ public class CsCarSeriesServiceImpl implements ICsCarSeriesService {
 
     @Override
     public ResultVo<List<CarSeriesTree>> tree(boolean isSearchCache, String keyword) {
-        String key = "";
-        String carSeriesTreeStr = "";
         List<CarSeriesTree> carSeriesTrees = null;
         if(isSearchCache){
             //放入缓存
-            key = RedisKeys.getCarSeriesKey(keyword);
-            carSeriesTreeStr = redisUtils.hget(key,key);
+            String key = RedisKeys.getCarSeriesKey(keyword);
+            String carSeriesTreeStr = redisUtils.hget(key,key);
             carSeriesTrees = JsonUtils.jsonToList(carSeriesTreeStr,CarSeriesTree.class);
             if(CollectionUtils.isEmpty(carSeriesTrees)){
-                String logoImg = LogoImgProperty.logoImg;
-                carSeriesTrees = carSeriesDao.findTree(keyword);
-                if(!CollectionUtils.isEmpty(carSeriesTrees)){
-                    for(CarSeriesTree tree : carSeriesTrees){
-                        List<CarSeriesBrand> brandList = tree.getList();
-                        if(!CollectionUtils.isEmpty(brandList)){
-                            for(CarSeriesBrand brand : brandList){
-                                brand.setLogoImg(logoImg+brand.getLogoImg());
-                            }
-                        }
-                    }
-                }
+                carSeriesTrees = findCarSeriesTree(keyword);
                 redisUtils.hset(key, key, JsonUtils.objectToJson(carSeriesTrees));
                 redisUtils.expire(key, 1, TimeUnit.DAYS);
             }
+        }else{
+            carSeriesTrees = findCarSeriesTree(keyword);
         }
         return BaseResultUtil.success(carSeriesTrees);
+    }
+
+    /**
+     * 获取品牌车系信息
+     * @param keyword
+     * @return
+     */
+    private List<CarSeriesTree> findCarSeriesTree(String keyword){
+        String logoImg = LogoImgProperty.logoImg;
+        List<CarSeriesTree> carSeriesTrees = carSeriesDao.findTree(keyword);
+        if(!CollectionUtils.isEmpty(carSeriesTrees)){
+            for(CarSeriesTree tree : carSeriesTrees){
+                List<CarSeriesBrand> brandList = tree.getList();
+                if(!CollectionUtils.isEmpty(brandList)){
+                    for(CarSeriesBrand brand : brandList){
+                        brand.setLogoImg(logoImg+brand.getLogoImg());
+                    }
+                }
+            }
+        }
+        return carSeriesTrees;
     }
 }

@@ -40,14 +40,6 @@ public interface ICsCustomerService {
      */
     Customer getByPhone(String customerPhone, boolean isCache);
 
-    /**
-     * 保存客户
-     * @author JPG
-     * @since 2019/11/5 12:30
-     * @param customer
-     * @return Customer 返回userId
-     */
-    Customer save(Customer customer);
 
     /**
      * 将用户保存到物流平台
@@ -93,9 +85,18 @@ public interface ICsCustomerService {
      * @param newPhone
      * @return
      */
-    ResultData<Boolean> updateUserToPlatform(Customer customer, Driver driver, String newPhone);
+    ResultData<Boolean> updateUserToPlatform(Customer customer, Driver driver, String newPhone,String newName);
 
+    /**
+     * 保存用户
+     * @param customerPhone
+     * @param customerName
+     * @param loginId
+     * @return
+     */
+    ResultVo<Customer> saveCustomer(String customerPhone,String customerName,Long loginId);
 
+    boolean validateActive(Long id);
 
-
+    ResultVo<Customer> validateAndGetActive(Long id);
 }

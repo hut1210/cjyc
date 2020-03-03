@@ -364,14 +364,7 @@
         LEFT JOIN s_city ct1 on oc.now_area_code = ct1.code
         LEFT JOIN s_city ct2 on s3.city_code = ct2.code
         left join b_admin m on m.id = o.check_user_id
-        left join (
-            select
-            wc1.*
-            from w_waybill w
-            join w_waybill_car wc1 on w.id = wc1.waybill_id
-            where w.state &lt;= 100
-            and wc1.state &lt;= 100
-        ) as wc on wc.order_car_id = oc.id
+        left join w_waybill_car wc on wc.order_car_id = oc.id and wc.state &lt;= 100
         <where>
             and o.state between 25 and 100
             <choose>
@@ -429,20 +422,20 @@
             <if test="paramsDto.endStoreId != null">
                 and o.end_store_id = #{paramsDto.endStoreId,jdbcType=BIGINT}
             </if>
-            <if test="paramsDto.orderNo != null and paramsDto.orderNo != ''">
+            <if test="paramsDto.orderNo != null and paramsDto.orderNo.trim() != ''">
                 and oc.order_no like concat('%', #{paramsDto.orderNo,jdbcType=VARCHAR}, '%')
             </if>
-            <if test="paramsDto.carNo != null and paramsDto.carNo != ''">
+            <if test="paramsDto.carNo != null and paramsDto.carNo.trim() != ''">
                 and oc.no like concat('%', #{paramsDto.carNo,jdbcType=VARCHAR}, '%')
             </if>
-            <if test="paramsDto.vin != null and paramsDto.vin != ''">
+            <if test="paramsDto.vin != null and paramsDto.vin.trim() != ''">
                 and oc.vin like concat('%', #{paramsDto.vin,jdbcType=VARCHAR}, '%')
             </if>
             <if test="paramsDto.beginExpectStartDate != null">
                 and o.expect_start_date &gt;= #{paramsDto.beginExpectStartDate,jdbcType=BIGINT}
             </if>
             <if test="paramsDto.endExpectStartDate != null">
-                and o.expect_start_date &lt;= #{paramsDto.endExpectStartDate,jdbcType=BIGINT}
+                and o.expect_start_date &lt; #{paramsDto.endExpectStartDate,jdbcType=BIGINT}
             </if>
             <if test="paramsDto.pickType != null">
                 and o.pick_type = #{paramsDto.pickType,jdbcType=TINYINT}
@@ -462,13 +455,13 @@
             <if test="paramsDto.backContactPhone != null and paramsDto.backContactPhone != ''">
                 and o.back_contact_phone like concat('%', #{paramsDto.backContactPhone,jdbcType=VARCHAR}, '%')
             </if>
-            <if test="paramsDto.brand != null and paramsDto.brand != ''">
+            <if test="paramsDto.brand != null and paramsDto.brand.trim() != ''">
                 and oc.brand like concat('%', #{paramsDto.brand,jdbcType=VARCHAR}, '%')
             </if>
-            <if test="paramsDto.model != null and paramsDto.model != ''">
+            <if test="paramsDto.model != null and paramsDto.model.trim() != ''">
                 and oc.model like concat('%', #{paramsDto.model,jdbcType=VARCHAR}, '%')
             </if>
-            <if test="paramsDto.plateNo != null and paramsDto.plateNo != ''">
+            <if test="paramsDto.plateNo != null and paramsDto.plateNo.trim() != ''">
                 and oc.plate_no like concat('%', #{paramsDto.plateNo,jdbcType=VARCHAR}, '%')
             </if>
             <if test="paramsDto.startStoreId != null">
@@ -494,14 +487,6 @@
                     <foreach collection="paramsDto.bizScope" item="item" index="index" open="(" close=")" separator=",">
                         #{item}
                     </foreach>
-<!--                    or o.end_belong_store_id in
-                    <foreach collection="paramsDto.bizScope" item="item" index="index" open="(" close=")" separator=",">
-                        #{item}
-                    </foreach>-->
-<!--                    or oc.now_store_id in
-                    <foreach collection="paramsDto.bizScope" item="item" index="index" open="(" close=")" separator=",">
-                        #{item}
-                    </foreach>-->
                     or wc.end_belong_store_id in
                     <foreach collection="paramsDto.bizScope" item="item" index="index" open="(" close=")" separator=",">
                         #{item}
@@ -609,7 +594,7 @@
                     join w_waybill_car wc on w.id = wc.waybill_id
                     where w.state &lt;= 100
                     and wc.state &lt;= 100
-                    order by w.type desc, wc.id desc
+                    /*keep orderby*/order by w.type desc, wc.id desc
                     limit 100000
                 ) as max
                 group by max.order_car_id
@@ -769,7 +754,7 @@
                         and o.expect_start_date &gt;= #{paramsDto.beginTime}
                     </if>
                     <if test="paramsDto.endTime != null">
-                        and o.expect_start_date &lt;= #{paramsDto.endTime}
+                        and o.expect_start_date &lt; #{paramsDto.endTime}
                     </if>
                 </when>
                 <when test="paramsDto.timeType == 2">
@@ -777,7 +762,7 @@
                         and o.expect_end_date &gt;= #{paramsDto.beginTime}
                     </if>
                     <if test="paramsDto.endTime != null">
-                        and o.expect_end_date &lt;= #{paramsDto.endTime}
+                        and o.expect_end_date &lt; #{paramsDto.endTime}
                     </if>
                 </when>
                 <when test="paramsDto.timeType == 3">
@@ -785,7 +770,7 @@
                         and o.create_time &gt;= #{paramsDto.beginTime}
                     </if>
                     <if test="paramsDto.endTime != null">
-                        and o.create_time &lt;= #{paramsDto.endTime}
+                        and o.create_time &lt; #{paramsDto.endTime}
                     </if>
                 </when>
                 <when test="paramsDto.timeType == 4">
@@ -793,7 +778,7 @@
                         and o.check_time &gt;= #{paramsDto.beginTime}
                     </if>
                     <if test="paramsDto.endTime != null">
-                        and o.check_time &lt;= #{paramsDto.endTime}
+                        and o.check_time &lt; #{paramsDto.endTime}
                     </if>
                 </when>
                 <when test="paramsDto.timeType == 5">
@@ -801,7 +786,7 @@
                         and o.finish_time &gt;= #{paramsDto.beginTime}
                     </if>
                     <if test="paramsDto.endTime != null">
-                        and o.finish_time &lt;= #{paramsDto.endTime}
+                        and o.finish_time &lt; #{paramsDto.endTime}
                     </if>
                 </when>
             </choose>
@@ -809,7 +794,7 @@
                 and oc.now_store_id = #{paramsDto.nowStoreId}
             </if>
 
-            <if test="paramsDto.orderNo != null and paramsDto.orderNo != ''">
+            <if test="paramsDto.orderNo != null and paramsDto.orderNo.trim() != ''">
                 and o.no like concat('%', #{paramsDto.orderNo},'%')
             </if>
             <if test="paramsDto.customerName != null and paramsDto.customerName != ''">
@@ -887,7 +872,7 @@
             <if test="paramsDto.isNew != null">
                 and oc.is_new = #{paramsDto.isNew}
             </if>
-            <if test="paramsDto.carNo != null and paramsDto.carNo != ''">
+            <if test="paramsDto.carNo != null and paramsDto.carNo.trim() != ''">
                 and oc.no like concat('%', #{paramsDto.carNo},'%')
             </if>
             <if test="paramsDto.brand != null and paramsDto.brand != ''">
@@ -937,7 +922,7 @@
             CONCAT('${@com.cjyc.common.system.config.LogoImgProperty@logoImg}', t.logo_img) as logoImg
         from
             w_order_car car
-            left join(select brand,logo_img from s_car_series group by brand) t on car.brand=t.brand
+            left join(select brand,logo_img,model from s_car_series) t on car.brand=t.brand and car.model=t.model
             <where>
                 <if test="orderNo != null and orderNo.trim() != ''">
                     and car.order_no = #{orderNo}
@@ -1055,6 +1040,9 @@
             o.finish_time DESC
     </select>
     <sql id="transport_state">
+        <!--提：1待调度，2待提车，3待交车，5已完成，21自送待调度，23自送待交车，25自送已交付，100物流上门
+        干：1待调度，2待提车，3待交车，5已完成, 100无干线
+        送：1待调度，2待提车，3待交车，5已完成，21自提待调度，22自提待提车，23自提待交车，25自提已交付，100物流上门*/-->
         (case
         when oc.pick_type = 4 then 100
         when oc.pick_type &lt;= 1 then
@@ -1085,8 +1073,8 @@
         when oc.back_type &lt;= 1 then
             (case
             when oc.state &lt;= 45 and oc.back_state &lt;= 1 then 21
-            when oc.state &lt;= 45 and oc.back_state > 1 then 23
-            when oc.state > 45 and oc.state &lt; 100 then 23
+            when oc.state &lt;= 45 and oc.back_state > 1 then 22
+            when oc.state > 45 and oc.state &lt; 100  then 23
             when oc.state &gt;= 100 then 25 end)
         else
             (case
@@ -1098,10 +1086,6 @@
     </sql>
     <select id="findTransportStateByOrderId"
             resultType="com.cjyc.common.model.vo.web.order.TransportInfoOrderCarVo">
-
-        <!--提：1待调度，2待提车，3待交车，5已完成，21自送待调度，23自送待交车，25自送已交付，100物流上门
-        干：1待调度，2待提车，3待交车，5已完成, 100无干线
-        送：1待调度，2待提车，3待交车，5已完成，21自提待调度，23自提待交车，25自提已交付，100物流上门*/-->
 
         select
             <include refid="transport_state"/>
@@ -1200,6 +1184,8 @@
     <select id="findStockCar" resultType="com.cjyc.common.model.vo.salesman.mine.StockCarVo"
             parameterType="com.cjyc.common.model.dto.salesman.mine.StockCarDto">
       SELECT
+        wo.start_city AS startCity,
+        wo.end_city AS endCity,
         woc.id AS orderCarId,
         woc.brand AS brand,
         woc.model AS model,
@@ -1414,7 +1400,7 @@
         o.end_area as endArea,
         o.end_area_code as endAreaCode,
         o.end_address as endAddress,
-        o.end_store_id as endStoreId,
+        IFNULL(o.end_store_id, 0) as endStoreId,
         o.end_store_name as endStoreName,
         o.expect_start_date as expectStartDate,
         o.expect_end_date as expectEndDate,
@@ -1427,6 +1413,12 @@
         o.back_contact_name as backContactName,
         o.back_contact_phone as backContactPhone,
         o.state as orderState,
+        se.province as endStoreProvince,
+        se.province_code as endStoreProvinceCode,
+        se.city as endStoreCity,
+        se.city_code as endStoreCityCode,
+        se.area as endStoreArea,
+        se.area_code as endStoreAreaCode,
         se.detail_addr as endStoreAddress,
         oc.*
         from w_order o
@@ -1442,16 +1434,17 @@
         oc.model as model,
         oc.vin as vin,
         oc.pick_type as pickType,
-        oc.pick_state as pickState,
+        (case when oc.pick_state = 0 then 1 else oc.pick_state end) as pickState,
         oc.trunk_state as trunkState,
         oc.back_type as backType,
-        oc.back_state as backState,
+        (case when oc.back_state = 0 then 1 else oc.back_state end) as backState,
         oc.state as state,
         o.start_city_code AS orderStartCityCode,
 	    o.end_city_code AS orderEndCityCode,
         o.start_city AS orderStartCity,
 	    o.end_city AS orderEndCity,
 	    o.expect_start_date as expectStartDate,
+	    o.create_time as createTime,
         temp.waybill_no as waybillNo
     </sql>
     <!--编辑时同时编辑提车、干线、送车注意字段顺序-->
@@ -1473,20 +1466,20 @@
         (case when o.expect_start_date > UNIX_TIMESTAMP(now()) * 1000 then o.expect_start_date else UNIX_TIMESTAMP(now()) * 1000 end) as expectStartTime,
         true as startFixedFlag,
 
-        (case when temp.id is not null then temp.start_province else (case when oc.pick_type != 4 and o.start_store_id > 0 then ss.province else o.start_province end) end ) as endProvince,
-        (case when temp.id is not null then temp.start_province_code else (case when oc.pick_type != 4 and o.start_store_id > 0 then ss.province_code else o.start_province end) end ) as endProvinceCode,
-        (case when temp.id is not null then temp.start_city else (case when oc.pick_type != 4 and o.start_store_id > 0 then ss.city else o.start_city end) end ) as endCity,
-        (case when temp.id is not null then temp.start_city_code else (case when oc.pick_type != 4 and o.start_store_id > 0 then ss.city_code else o.start_city_code end) end ) as endCityCode,
-        (case when temp.id is not null then temp.start_area else (case when oc.pick_type != 4 and o.start_store_id > 0 then ss.area else null end) end ) as endArea,
-        (case when temp.id is not null then temp.start_area_code else (case when oc.pick_type != 4 and o.start_store_id > 0 then ss.area_code else null end) end ) as endAreaCode,
-        (case when temp.id is not null then temp.start_address else (case when oc.pick_type != 4 and o.start_store_id > 0 then ss.detail_addr else null end) end ) as endAddress,
-        (case when temp.id is not null then temp.start_store_id else (case when oc.pick_type != 4 and o.start_store_id > 0 then ss.id else 0 end) end ) as endStoreId,
-        (case when temp.id is not null then temp.start_store_name else (case when oc.pick_type != 4 and o.start_store_id > 0 then ss.name else null end) end ) as endStoreName,
+        (case when temp.id is not null then temp.start_province else (case when o.start_store_id > 0 then ss.province else o.start_province end) end ) as endProvince,
+        (case when temp.id is not null then temp.start_province_code else (case when o.start_store_id > 0 then ss.province_code else o.start_province end) end ) as endProvinceCode,
+        (case when temp.id is not null then temp.start_city else (case when o.start_store_id > 0 then ss.city else o.start_city end) end ) as endCity,
+        (case when temp.id is not null then temp.start_city_code else (case when o.start_store_id > 0 then ss.city_code else o.start_city_code end) end ) as endCityCode,
+        (case when temp.id is not null then temp.start_area else (case when o.start_store_id > 0 then ss.area else null end) end ) as endArea,
+        (case when temp.id is not null then temp.start_area_code else (case when o.start_store_id > 0 then ss.area_code else null end) end ) as endAreaCode,
+        (case when temp.id is not null then temp.start_address else (case when o.start_store_id > 0 then ss.detail_addr else null end) end ) as endAddress,
+        (case when temp.id is not null then temp.start_store_id else (case when o.start_store_id > 0 then ss.id else 0 end) end ) as endStoreId,
+        (case when temp.id is not null then temp.start_store_name else (case when o.start_store_id > 0 then ss.name else null end) end ) as endStoreName,
         concat(ss.province, ss.city, ss.area,ss.detail_addr) as endStoreFullAddress,
-        (case when temp.id is not null then temp.start_belong_store_id else (case when oc.pick_type != 4 and o.start_store_id > 0 then ss.id else 0 end) end ) as endBelongStoreId,
+        (case when temp.id is not null then temp.start_belong_store_id else (case when o.start_store_id > 0 then ss.id else 0 end) end ) as endBelongStoreId,
         (case when temp.id is not null then temp.load_link_user_id else null end) as unloadLinkUserId,
-        (case when temp.id is not null then temp.load_link_name else (case when oc.pick_type != 4 and o.start_store_id > 0 then null else null end) end) as unloadLinkName,
-        (case when temp.id is not null then temp.load_link_phone else (case when oc.pick_type != 4 and o.start_store_id > 0 then null else null end) end ) as unloadLinkPhone,
+        (case when temp.id is not null then temp.load_link_name else null end) as unloadLinkName,
+        (case when temp.id is not null then temp.load_link_phone else null end ) as unloadLinkPhone,
         (case when temp.id is not null then false else true end) as endFixedFlag
     </sql>
     <sql id="pick_wait_dispatch_car_list_For_App">
@@ -1511,24 +1504,25 @@
             and oc.state &lt; 25
             and oc.pick_state &lt; 5
             and oc.pick_type &lt; 4
+            and o.start_store_id > 0
         ) as tb
     </sql>
     <!--编辑时同时编辑提车、干线、送车注意字段顺序-->
     <sql id="back_wait_dispatch_car_field">
-        (case when temp.id is not null then temp.end_province else (case when oc.back_type != 4 and o.end_store_id > 0 then se.province else o.end_province end) end ) as startProvince,
-        (case when temp.id is not null then temp.end_province_code else (case when oc.back_type != 4 and o.end_store_id > 0 then se.province_code else o.end_province_code end) end ) as startProvinceCode,
-        (case when temp.id is not null then temp.end_city else (case when oc.back_type != 4 and o.end_store_id > 0 then se.city else o.end_city end) end ) as startCity,
-        (case when temp.id is not null then temp.end_city_code else (case when oc.back_type != 4 and o.end_store_id > 0 then se.city_code else o.end_city_code end) end ) as startCityCode,
-        (case when temp.id is not null then temp.end_area else (case when oc.back_type != 4 and o.end_store_id > 0 then se.area else null end) end ) as startArea,
-        (case when temp.id is not null then temp.end_area_code else (case when oc.back_type != 4 and o.end_store_id > 0 then se.area_code else null end) end ) as startAreaCode,
-        (case when temp.id is not null then temp.end_address else (case when oc.back_type != 4 and o.end_store_id > 0 then se.detail_addr else null end) end ) as startAddress,
-        (case when temp.id is not null then temp.end_store_id else (case when oc.back_type != 4 and o.end_store_id > 0 then se.id else 0 end) end ) as startStoreId,
-        (case when temp.id is not null then temp.end_store_name else (case when oc.back_type != 4 and o.end_store_id > 0 then se.name else null end) end ) as startStoreName,
+        (case when temp.id is not null then temp.end_province else (case when o.end_store_id > 0 then se.province else o.end_province end) end ) as startProvince,
+        (case when temp.id is not null then temp.end_province_code else (case when o.end_store_id > 0 then se.province_code else o.end_province_code end) end ) as startProvinceCode,
+        (case when temp.id is not null then temp.end_city else (case when o.end_store_id > 0 then se.city else o.end_city end) end ) as startCity,
+        (case when temp.id is not null then temp.end_city_code else (case when o.end_store_id > 0 then se.city_code else o.end_city_code end) end ) as startCityCode,
+        (case when temp.id is not null then temp.end_area else (case when o.end_store_id > 0 then se.area else null end) end ) as startArea,
+        (case when temp.id is not null then temp.end_area_code else (case when o.end_store_id > 0 then se.area_code else null end) end ) as startAreaCode,
+        (case when temp.id is not null then temp.end_address else (case when o.end_store_id > 0 then se.detail_addr else null end) end ) as startAddress,
+        (case when temp.id is not null then temp.end_store_id else (case when o.end_store_id > 0 then se.id else 0 end) end ) as startStoreId,
+        (case when temp.id is not null then temp.end_store_name else (case when o.end_store_id > 0 then se.name else null end) end ) as startStoreName,
         concat(se.province, se.city, se.area,se.detail_addr) as startStoreFullAddress,
-        (case when temp.id is not null then temp.end_belong_store_id else (case when oc.back_type != 4 and o.end_store_id > 0 then se.id else 0 end) end ) as startBelongStoreId,
+        (case when temp.id is not null then temp.end_belong_store_id else (case when o.end_store_id > 0 then se.id else 0 end) end ) as startBelongStoreId,
         (case when temp.id is not null then temp.unload_link_user_id else null end) as loadLinkUserId,
-        (case when temp.id is not null then temp.unload_link_name else (case when oc.back_type != 4 and o.end_store_id > 0 then null else null end) end) as loadLinkName,
-        (case when temp.id is not null then temp.unload_link_phone else (case when oc.back_type != 4 and o.end_store_id > 0 then null else null end) end ) as loadLinkPhone,
+        (case when temp.id is not null then temp.unload_link_name else null end) as loadLinkName,
+        (case when temp.id is not null then temp.unload_link_phone else null end ) as loadLinkPhone,
         UNIX_TIMESTAMP(now()) * 1000 as expectStartTime,
         (case when temp.id is not null then true else false end) as startFixedFlag,
 
@@ -1570,6 +1564,7 @@
             and oc.state &lt; 100
             and oc.back_state &lt; 5
             and oc.back_type &lt; 4
+            and o.end_store_id > 0
         ) as tb
 
     </sql>
@@ -1595,25 +1590,24 @@
         ) as expectStartTime,
         (case when temp.id is not null then true else false end) as startFixedFlag,
 
-        (case when o.end_store_id > 0 and o.back_type != 4 then se.province else o.end_province end) as endProvince,
-        (case when o.end_store_id > 0 and o.back_type != 4 then se.province_code else o.end_province_code end)  as endProvinceCode,
-        (case when o.end_store_id > 0 and o.back_type != 4 then se.city else o.end_city end)  as endCity,
-        (case when o.end_store_id > 0 and o.back_type != 4 then se.city_code else o.end_city_code end)  as endCityCode,
-        (case when o.end_store_id > 0 and o.back_type != 4 then se.area else o.end_area end)  as endArea,
-        (case when o.end_store_id > 0 and o.back_type != 4 then se.area_code else o.end_area_code end)  as endAreaCode,
-        (case when o.end_store_id > 0 and o.back_type != 4 then se.detail_addr else o.end_address end)  as endAddress,
-        (case when o.end_store_id > 0 and o.back_type != 4 then se.id else 0 end)  as endStoreId,
-        (case when o.end_store_id > 0 and o.back_type != 4 then se.name else null end)  as endStoreName,
+        (case when o.end_store_id > 0 and oc.back_type != 4 then se.province else o.end_province end) as endProvince,
+        (case when o.end_store_id > 0 and oc.back_type != 4 then se.province_code else o.end_province_code end)  as endProvinceCode,
+        (case when o.end_store_id > 0 and oc.back_type != 4 then se.city else o.end_city end)  as endCity,
+        (case when o.end_store_id > 0 and oc.back_type != 4 then se.city_code else o.end_city_code end)  as endCityCode,
+        (case when o.end_store_id > 0 and oc.back_type != 4 then se.area else o.end_area end)  as endArea,
+        (case when o.end_store_id > 0 and oc.back_type != 4 then se.area_code else o.end_area_code end)  as endAreaCode,
+        (case when o.end_store_id > 0 and oc.back_type != 4 then se.detail_addr else o.end_address end)  as endAddress,
+        (case when o.end_store_id > 0 and oc.back_type != 4 then se.id else 0 end)  as endStoreId,
+        (case when o.end_store_id > 0 and oc.back_type != 4 then se.name else null end)  as endStoreName,
         concat(se.province, se.city, se.area,se.detail_addr) as endStoreFullAddress,
         o.end_belong_store_id as endBelongStoreId,
-        (case when o.end_store_id > 0 and o.back_type != 4 then null else null end)  as unloadLinkUserId,
-        (case when o.end_store_id > 0 and o.back_type != 4 then null else o.back_contact_name end)  as unloadLinkName,
-        (case when o.end_store_id > 0 and o.back_type != 4 then null else o.back_contact_phone end)  as unloadLinkPhone,
+        (case when o.end_store_id > 0 and oc.back_type != 4 then null else null end)  as unloadLinkUserId,
+        (case when o.end_store_id > 0 and oc.back_type != 4 then null else o.back_contact_name end)  as unloadLinkName,
+        (case when o.end_store_id > 0 and oc.back_type != 4 then null else o.back_contact_phone end)  as unloadLinkPhone,
         false as endFixedFlag
     </sql>
     <sql id="trunk_wait_dispatch_car_list_For_App">
         select * from(
-
             select
             <include refid="trunk_wait_dispatch_car_field"/>,
             <include refid="dispatch_car_field"/>
@@ -1631,7 +1625,7 @@
                     left join s_store s2 on s2.id = wc.end_store_id
                     where w.state &lt;= 100
                     and wc.state &lt;= 100
-                    order by w.type desc, wc.id desc
+                    /*keep orderby*/order by w.type desc, wc.id desc
                     limit 10000
                 ) as max
                 group by max.order_car_id
@@ -1649,7 +1643,7 @@
         shell.orderEndCity as endCity,
         shell.orderEndCityCode as endCityCode,
         shell.endBelongStoreId,
-        shell.expectStartTime as expectStartDate,
+        shell.expectStartDate,
         shell.orderCarId,
         shell.orderCarNo,
         shell.brand,
@@ -1690,16 +1684,17 @@
         ) as shell
         left join(select brand,logo_img from s_car_series group by brand) cs on cs.brand = shell.brand
         group by shell.orderCarId
-        <if test="param.pickDateSort != null">
-            <choose>
-                <when test="param.pickDateSort == 1">
-                    ORDER BY shell.expectStartDate ASC
-                </when>
-                <when test="param.pickDateSort == 2">
-                    ORDER BY shell.expectStartDate DESC
-                </when>
-            </choose>
-        </if>
+        <choose>
+            <when test="param.pickDateSort == 1">
+                ORDER BY shell.expectStartDate ASC, shell.orderCarId
+            </when>
+            <when test="param.pickDateSort == 2">
+                ORDER BY shell.expectStartDate desc, shell.orderCarId
+            </when>
+            <otherwise>
+                ORDER BY shell.createTime DESC, shell.orderCarId
+            </otherwise>
+        </choose>
     </select>
     <sql id="where_bizscope">
         <if test="param.bizScope != null">
@@ -1732,13 +1727,13 @@
                 and tb.expectStartDate &gt;= #{param.pickDateSt}
             </if>
             <if test="param.pickDateEd != null and param.pickDateEd > 0">
-                and tb.expectStartDate &lt;= #{param.pickDateEd}
+                and tb.expectStartDate &lt; #{param.pickDateEd}
             </if>
             <if test="param.startCity != null and param.startCity != ''">
-                and tb.startCityCode = #{param.startCity}
+                and tb.startCity = #{param.startCity}
             </if>
             <if test="param.endCity != null and param.endCity != ''">
-                and tb.endCityCode = #{param.endCity}
+                and tb.endCity = #{param.endCity}
             </if>
         </where>
     </sql>
@@ -2136,104 +2131,120 @@
     </select>
     <select id="findPickCarEndpoint" resultType="com.cjyc.common.model.vo.web.waybill.WaybillCarVo">
         select
-        <include refid="pick_wait_dispatch_car_field"/>,
-
-        oc.pick_fee as freightFee,
-        oc.id as orderCarId,
-        oc.no as orderCarNo,
-        oc.vin as vin,
-        oc.brand as brand,
-        oc.model as model,
-        oc.plate_no as plateNo,
-        oc.pick_type as pickType,
-        oc.back_type as backType,
-        oc.state as orderCarState,
-        oc.pick_state as pickState,
-        oc.trunk_state as trunkState,
-        oc.back_state as backState,
-        o.start_city_code as orderStartCityCode,
-        o.end_city_code as orderEndCityCode,
-        cs.logo_img as logoImg
-        from w_order o
-        join w_order_car oc on oc.order_id = o.id
-        left join s_store ss on ss.id = o.start_store_id
-        left join(select brand,logo_img from s_car_series group by brand) cs on cs.brand = oc.brand
-        left join (
+        *
+        from (
             select
-            wc.*
-            from w_waybill w
-            join w_waybill_car wc on w.id = wc.waybill_id
-            where w.state &lt;= 100
-            and wc.state &lt;= 100
-            and w.type = 2
-            and wc.order_car_id in
+            <include refid="pick_wait_dispatch_car_field"/>,
+
+            oc.pick_fee as freightFee,
+            oc.id as orderCarId,
+            oc.no as orderCarNo,
+            oc.vin as vin,
+            oc.brand as brand,
+            oc.model as model,
+            oc.plate_no as plateNo,
+            oc.pick_type as pickType,
+            oc.back_type as backType,
+            oc.state as orderCarState,
+            oc.pick_state as pickState,
+            oc.trunk_state as trunkState,
+            oc.back_state as backState,
+            o.start_city_code as orderStartCityCode,
+            o.end_city_code as orderEndCityCode,
+            o.expect_start_date as expectStartDate,
+            o.start_store_id as orderStartStoreId,
+            o.end_store_id as orderEndStoreId,
+            CONCAT('${@com.cjyc.common.system.config.LogoImgProperty@logoImg}', cs.logo_img) as logoImg
+            from w_order o
+            join w_order_car oc on oc.order_id = o.id
+            left join s_store ss on ss.id = o.start_store_id
+            left join(select brand,logo_img from s_car_series group by brand) cs on cs.brand = oc.brand
+            left join (
+                select
+                wc.*
+                from w_waybill w
+                join w_waybill_car wc on w.id = wc.waybill_id
+                where w.state &lt;= 100
+                and wc.state &lt;= 100
+                and w.type = 2
+                and wc.order_car_id in
+                <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+                group by wc.order_car_id
+            ) as temp on temp.order_car_id = oc.id
+            <!-- where o.state between 25 and 100
+            and oc.state &lt; 25
+            and oc.pick_state &lt; 5
+            and oc.pick_type &lt; 4 -->
+            where oc.id in
             <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            group by wc.order_car_id
-        ) as temp on temp.order_car_id = oc.id
-        <!-- where o.state between 25 and 100
-        and oc.state &lt; 25
-        and oc.pick_state &lt; 5
-        and oc.pick_type &lt; 4 -->
-        where oc.id in
-        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
-            #{item}
-        </foreach>
+        ) as shell
+        <include refid="sort_For_app"/>
     </select>
     <select id="findBackCarEndpoint" resultType="com.cjyc.common.model.vo.web.waybill.WaybillCarVo">
         select
-        <include refid="back_wait_dispatch_car_field"/>,
-
-        oc.back_fee as freightFee,
-        oc.id as orderCarId,
-        oc.no as orderCarNo,
-        oc.vin as vin,
-        oc.brand as brand,
-        oc.model as model,
-        oc.plate_no as plateNo,
-        oc.pick_type as pickType,
-        oc.back_type as backType,
-        oc.state as orderCarState,
-        oc.pick_state as pickState,
-        oc.trunk_state as trunkState,
-        oc.back_state as backState,
-        o.start_city_code as orderStartCityCode,
-        o.end_city_code as orderEndCityCode,
-        cs.logo_img as logoImg
-        from w_order o
-        join w_order_car oc on oc.order_id = o.id
-        left join s_store se on se.id = o.end_store_id
-        left join(select brand,logo_img from s_car_series group by brand) cs on cs.brand = oc.brand
-        left join (
-            select * from (
+        *
+        from (
             select
-            wc.*,
-            concat(s1.province, s1.city, s1.area,s1.detail_addr) as startStoreFullAddress,
-            concat(s2.province, s2.city, s2.area,s2.detail_addr) as endStoreFullAddress
-            from w_waybill w
-            join w_waybill_car wc on w.id = wc.waybill_id
-            left join s_store s1 on s1.id = wc.start_store_id
-            left join s_store s2 on s2.id = wc.end_store_id
-            where w.state &lt;= 100
-            and wc.state &lt;= 100
-            and wc.order_car_id in
+            <include refid="back_wait_dispatch_car_field"/>,
+
+            oc.back_fee as freightFee,
+            oc.id as orderCarId,
+            oc.no as orderCarNo,
+            oc.vin as vin,
+            oc.brand as brand,
+            oc.model as model,
+            oc.plate_no as plateNo,
+            oc.pick_type as pickType,
+            oc.back_type as backType,
+            oc.state as orderCarState,
+            oc.pick_state as pickState,
+            oc.trunk_state as trunkState,
+            oc.back_state as backState,
+            o.start_city_code as orderStartCityCode,
+            o.expect_start_date as expectStartDate,
+            o.end_city_code as orderEndCityCode,
+            o.start_store_id as orderStartStoreId,
+            o.end_store_id as orderEndStoreId,
+            CONCAT('${@com.cjyc.common.system.config.LogoImgProperty@logoImg}', cs.logo_img) as logoImg
+            from w_order o
+            join w_order_car oc on oc.order_id = o.id
+            left join s_store se on se.id = o.end_store_id
+            left join(select brand,logo_img from s_car_series group by brand) cs on cs.brand = oc.brand
+            left join (
+                select * from (
+                select
+                wc.*,
+                concat(s1.province, s1.city, s1.area,s1.detail_addr) as startStoreFullAddress,
+                concat(s2.province, s2.city, s2.area,s2.detail_addr) as endStoreFullAddress
+                from w_waybill w
+                join w_waybill_car wc on w.id = wc.waybill_id
+                left join s_store s1 on s1.id = wc.start_store_id
+                left join s_store s2 on s2.id = wc.end_store_id
+                where w.state &lt;= 100
+                and wc.state &lt;= 100
+                and wc.order_car_id in
+                <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+                /*keep orderby*/order by w.type desc, wc.id desc
+                limit 10000
+                ) as max
+                group by max.order_car_id
+            ) as temp on temp.order_car_id = oc.id
+            <!--where o.state between 25 and 100
+            and oc.state &lt; 100
+            and oc.back_state &lt; 5
+            and oc.back_type &lt; 4-->
+            where oc.id in
             <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            order by w.type desc, wc.id desc
-            limit 10000
-            ) as max
-            group by max.order_car_id
-        ) as temp on temp.order_car_id = oc.id
-        <!--where o.state between 25 and 100
-        and oc.state &lt; 100
-        and oc.back_state &lt; 5
-        and oc.back_type &lt; 4-->
-        where oc.id in
-        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
-            #{item}
-        </foreach>
+        ) as shell
+        <include refid="sort_For_app"/>
     </select>
     <sql id="order_car_inner_state">
         (case oc.state
@@ -2250,12 +2261,13 @@
         when 100 then '已签收'
         end ) as outterState
     </sql>
+
     <select id="findTrunkCarEndpoint" resultType="com.cjyc.common.model.vo.web.waybill.WaybillCarVo">
         select
         shell.*,
         l.default_freight_fee as lineFreightFee,
         l.id as lineId,
-        l.default_freight_fee as freightFee,
+        IFNULL(l.default_freight_fee, 0) as freightFee,
         (case when l.id is not null then true else false end) as hasLine,
         (shell.expectStartTime + l.days * 24 * 60 * 60 * 1000) as expectEndTime
         from (
@@ -2273,11 +2285,12 @@
             oc.trunk_state as trunkState,
             oc.back_state as backState,
             o.start_city_code as orderStartCityCode,
+            o.expect_start_date as expectStartDate,
             o.end_city_code as orderEndCityCode,
+            o.start_store_id as orderStartStoreId,
+            o.end_store_id as orderEndStoreId,
             <include refid="trunk_wait_dispatch_car_field"/>,
-            cs.logo_img as logoImg,
-
-
+            CONCAT('${@com.cjyc.common.system.config.LogoImgProperty@logoImg}', cs.logo_img) as logoImg,
             (
                 select
                 CONCAT_WS(',',GROUP_CONCAT(wcsub.load_photo_img),GROUP_CONCAT(wcsub.unload_photo_img))
@@ -2308,7 +2321,7 @@
                     <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
                         #{item}
                     </foreach>
-                    order by w.type desc, wc.id desc
+                    /*keep orderby*/order by w.type desc, wc.id desc
                     limit 10000
                 ) as max
                 group by max.order_car_id
@@ -2319,7 +2332,21 @@
             </foreach>
         ) as shell
         left join s_line l on shell.startCityCode = l.from_code and shell.endCityCode = l.to_code
+        <include refid="sort_For_app"/>
     </select>
+    <sql id="sort_For_app">
+        <choose>
+            <when test="sort == 1">
+                ORDER BY shell.expectStartDate ASC, shell.orderCarId
+            </when>
+            <when test="sort == 2">
+                ORDER BY shell.createTime desc, shell.orderCarId
+            </when>
+            <otherwise>
+                ORDER BY shell.expectStartDate DESC, shell.orderCarId
+            </otherwise>
+        </choose>
+    </sql>
     <select id="findTrunkNodes" resultType="java.lang.String">
         select * from (
             select concat(left(wc.start_city,2), '-', left(wc.end_city,2)) as node
@@ -2337,8 +2364,422 @@
 
         select concat(left(shell.startCity,2), '-', left(shell.endCity,2)) as node
         from (
-          <include refid="trunk_wait_dispatch_car_list_For_App"/>
-          where tb.orderCarId = #{orderCarId}
+            select * from(
+                select
+                <include refid="trunk_wait_dispatch_car_field"/>,
+                <include refid="dispatch_car_field"/>
+                from w_order o
+                join w_order_car oc on oc.order_id = o.id
+                left join s_store ss on ss.id = o.start_store_id
+                left join s_store se on se.id = o.end_store_id
+                left join (
+                    select * from (
+                        select
+                        wc.*
+                        from w_waybill w
+                        join w_waybill_car wc on w.id = wc.waybill_id
+                        left join s_store s1 on s1.id = wc.start_store_id
+                        left join s_store s2 on s2.id = wc.end_store_id
+                        where w.state &lt;= 100
+                        and wc.state &lt;= 100
+                        and wc.order_car_id = #{orderCarId}
+                        /*keep orderby*/order by w.type desc, wc.id desc
+                        limit 10000
+                    ) as max
+                    group by max.order_car_id
+                ) temp on temp.order_car_id = oc.id
+                where o.state between 25 and 100
+                and oc.state &lt; 45
+                and oc.trunk_state &lt; 5
+            ) as tb
+              where tb.orderCarId = #{orderCarId}
         ) as shell
     </select>
+    <select id="findOutterState" resultType="java.lang.String">
+        select
+        (case
+        when o.state = 0 then '待提交'
+        when o.state = 2 then '待确认'
+        when o.state = 5 then '待审核'
+        when o.state = 15 then '待支付'
+        when o.state >= 25 and o.state &lt; 100 then (
+            case
+            when oc.state &lt;= 10 then '待运输'
+            when oc.state > 10 and oc.state &lt; 100 then '待运输'
+            when oc.state = 100 then '已签收'
+            end
+            )
+        when o.state = 100 then '已完结'
+        when o.state = 113 then '已取消'
+        end ) as outterState
+        from w_order o
+        join w_order_car oc on o.id = oc.order_id
+        where oc.no = #{orderCarNo}
+    </select>
+    <select id="findWaitDispatchCarListWeb" resultType="com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo">
+        select
+        shell.*,
+        concat(s1.province, s1.city, s1.area, s1.detail_addr) as startStoreFullAddress,
+        concat(s2.province, s2.city, s2.area, s2.detail_addr) as endStoreFullAddress,
+        s1.area_code as startStoreAreaCode,
+        s1.detail_addr as startStoreAddress,
+        s2.area_code as endStoreAreaCode,
+        s2.detail_addr as endStoreAddress,
+        ct1.parent_name as nowCityName,
+        ct2.parent_code as regionCode,
+        ct2.parent_name as region,
+        m.phone as checkUserPhone
+        from (
+            select
+            <include refid="wait_list_for_web_field"/>
+
+            from w_order o
+            join w_order_car oc on oc.order_id = o.id
+            <where>
+                <include refid="wait_list_for_web_where"/>
+                <if test="bizScope != null">
+                    and o.input_store_id in
+                    <foreach collection="bizScope" item="item" index="index" open="(" close=")" separator=",">
+                        #{item}
+                    </foreach>
+                </if>
+            </where>
+            union
+
+            select
+            <include refid="wait_list_for_web_field"/>
+            from w_order o
+            join w_order_car oc on oc.order_id = o.id
+            <where>
+                <include refid="wait_list_for_web_where"/>
+                and EXISTS (
+                    select * from (
+                        select order_car_id
+                        from w_waybill_car
+                        where state &lt;= 100
+                        <if test="bizScope != null">
+                            and end_belong_store_id in
+                            <foreach collection="bizScope" item="item" index="index" open="(" close=")" separator=",">
+                                #{item}
+                            </foreach>
+                        </if>
+                        GROUP BY order_car_id
+                    ) as t where t.order_car_id = oc.id
+                )
+            </where>
+
+        ) as shell
+        LEFT JOIN s_store s on s.id = shell.inputStoreId
+        LEFT JOIN s_store s1 on s1.id = shell.startStoreId
+        LEFT JOIN s_store s2 on s2.id = shell.endStoreId
+        LEFT JOIN s_city ct1 on ct1.code = shell.now_area_code
+        LEFT JOIN s_city ct2 on s.city_code = ct2.code
+        left join b_admin m on m.id = shell.checkUserId
+        order by shell.order_id desc, shell.id
+
+    </select>
+    <select id="countListWaitDispatchCarWeb" resultType="java.util.Map">
+        select
+        count(0) as car_num,
+        IFNULL(shell.startCityCode,'-1') as cityCode,
+        IFNULL(shell.startCity, '无城市') as cityName
+        from (
+            <include refid="count_wait_list_for_web"/>
+        ) as shell
+        group by shell.startCityCode
+    </select>
+    <select id="findLineWaitDispatchCarCountListWeb" resultType="java.util.Map">
+        select
+        count(0) as carNum,
+        shell.startCityCode,
+        shell.startCity,
+        shell.endCityCode,
+        shell.endCity,
+        CONCAT(shell.startCity,'-',shell.endCity) as line
+        from (
+            select
+            <include refid="wait_list_for_web_field"/>
+
+            from w_order o
+            join w_order_car oc on oc.order_id = o.id
+            <where>
+                o.state between 25 and 100
+                and o.start_city_code = #{cityCode}
+                <if test="bizScope != null">
+                    and o.input_store_id in
+                    <foreach collection="bizScope" item="item" index="index" open="(" close=")" separator=",">
+                        #{item}
+                    </foreach>
+                </if>
+            </where>
+
+            union
+
+            select
+            <include refid="wait_list_for_web_field"/>
+            from w_order o
+            join w_order_car oc on oc.order_id = o.id
+            <where>
+                o.state between 25 and 100
+                and o.start_city_code = #{cityCode}
+                and EXISTS (
+                    select * from (
+                        select order_car_id
+                        from w_waybill_car
+                        where state &lt;= 100
+                        <if test="bizScope != null">
+                            and end_belong_store_id in
+                            <foreach collection="bizScope" item="item" index="index" open="(" close=")" separator=",">
+                                #{item}
+                            </foreach>
+                        </if>
+                        GROUP BY order_car_id
+                    ) as t where t.order_car_id = oc.id
+                )
+            </where>
+        ) as shell
+        group by shell.startCityCode, shell.endCityCode
+    </select>
+    <select id="findWaitDispatchCarCountLineListForAppV2" resultType="com.cjyc.common.model.vo.web.dispatch.WaitCountLineVo">
+        select
+        count(0) as carNum,
+        shell.startCityCode,
+        shell.startCity,
+        shell.endCityCode,
+        shell.endCity,
+        CONCAT(shell.startCity,'-',shell.endCity) as line
+        from (
+            <choose>
+                <when test="param.dispatchType == 1">
+                    <include refid="pick_wait_dispatch_car_list_For_App"/>
+                    <where> <include refid="where_bizscope"/> </where>
+                </when>
+                <when test="param.dispatchType == 2">
+                    <include refid="trunk_wait_dispatch_car_list_For_App"/>
+                    <where> <include refid="where_bizscope"/> </where>
+                </when>
+                <when test="param.dispatchType == 3">
+                    <include refid="back_wait_dispatch_car_list_For_App"/>
+                    <where> <include refid="where_bizscope"/> </where>
+                </when>
+                <otherwise>
+                    <include refid="pick_wait_dispatch_car_list_For_App"/>
+                    <where> <include refid="where_bizscope"/> </where>
+                    union ALL
+                    <include refid="trunk_wait_dispatch_car_list_For_App"/>
+                    <where> <include refid="where_bizscope"/> </where>
+                    union ALL
+                    <include refid="back_wait_dispatch_car_list_For_App"/>
+                    <where> <include refid="where_bizscope"/> </where>
+                </otherwise>
+            </choose>
+        ) as shell
+        group by shell.startCityCode, shell.endCityCode
+        order by shell.startCityCode
+    </select>
+    <sql id="count_wait_list_for_web">
+        select
+        <include refid="wait_list_for_web_field"/>
+
+        from w_order o
+        join w_order_car oc on oc.order_id = o.id
+        where o.state between 25 and 100
+        <if test="bizScope != null">
+            and o.input_store_id in
+            <foreach collection="bizScope" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+
+        union
+
+        select
+        <include refid="wait_list_for_web_field"/>
+        from w_order o
+        join w_order_car oc on oc.order_id = o.id
+        where o.state between 25 and 100
+        and EXISTS (
+            select * from (
+                select order_car_id
+                from w_waybill_car
+                where state &lt;= 100
+                <if test="bizScope != null">
+                    and end_belong_store_id in
+                    <foreach collection="bizScope" item="item" index="index" open="(" close=")" separator=",">
+                        #{item}
+                    </foreach>
+                </if>
+                GROUP BY order_car_id
+            ) as t where t.order_car_id = oc.id
+        )
+    </sql>
+    <sql id="wait_list_for_web_field">
+        <include refid="transport_state"/>
+        o.customer_id as customerId,
+        o.customer_name as customerName,
+        o.customer_phone as customerPhone,
+        o.customer_type as customerType,
+        o.input_store_id as inputStoreId,
+        o.input_store_name as inputStoreName,
+        o.start_province as startProvince,
+        o.start_province_code as startProvinceCode,
+        o.start_city as startCity,
+        o.start_city_code as startCityCode,
+        o.start_area as startArea,
+        o.start_area_code as startAreaCode,
+        o.start_address as startAddress,
+        o.start_lng as startLng,
+        o.start_lat as startLat,
+        o.start_store_id as startStoreId,
+        o.start_store_name as startStoreName,
+        o.start_belong_store_id as startBelongStoreId,
+        o.end_province as endProvince,
+        o.end_province_code as endProvinceCode,
+        o.end_city as endCity,
+        o.end_city_code as endCityCode,
+        o.end_area as endArea,
+        o.end_area_code as endAreaCode,
+        o.end_address as endAddress,
+        o.end_lng as endLng,
+        o.end_lat as endLat,
+        o.end_store_id as endStoreId,
+        o.end_store_name as endStoreName,
+        o.end_belong_store_id as endBelongStoreId,
+        o.expect_start_date as expectStartDate,
+        o.expect_end_date as expectEndDate,
+        o.car_num as carNum,
+        o.line_id as lineId,
+        o.pick_contact_name as pickContactName,
+        o.pick_contact_phone as pickContactPhone,
+        o.back_contact_name as backContactName,
+        o.back_contact_phone as backContactPhone,
+        o.source as source,
+        o.create_time as createTime,
+        o.create_user_name as createUserName,
+        o.create_user_id as createUserId,
+        o.allot_to_user_name as allotToUserName,
+        o.allot_to_user_id as allotToUserId,
+        o.check_time as checkTime,
+        o.check_user_name as checkUserName,
+        o.check_user_id as checkUserId,
+        concat(o.start_province, o.start_city, o.start_area, o.start_address) as startFullAddress,
+        concat(o.end_province, o.end_city, o.end_area, o.end_address) as endFullAddress,
+        oc.*
+    </sql>
+    <sql id="wait_list_for_web_where">
+        and o.state between 25 and 100
+        <choose>
+            <when test="dispatchType == 1">
+                and oc.pick_state &lt;= 1 and oc.state &lt; 5 and oc.pick_type &lt; 4
+            </when>
+            <when test="dispatchType == 2">
+                and oc.trunk_state &lt;= 2 and oc.state &lt; 45
+            </when>
+            <when test="dispatchType == 3">
+                and oc.back_state &lt;= 1 and oc.state &lt; 99 and oc.back_type &lt; 4
+            </when>
+            <when test="dispatchType == 4">
+                and (
+                (oc.pick_state >= 5 or oc.pick_type = 4)
+                and (oc.trunk_state >= 5)
+                and (oc.back_state >= 5 or oc.back_type &lt; 4)
+                )
+                or oc.state >= 100
+            </when>
+        </choose>
+        <choose>
+            <when test="signState == 1">
+                and oc.state &lt; 100
+            </when>
+            <when test="signState == 2">
+                and oc.state = 100
+            </when>
+            <otherwise>
+                and oc.state &lt;= 100
+            </otherwise>
+        </choose>
+
+        <if test="startProvinceCode != null and startProvinceCode != ''">
+            and o.start_province_code = #{startProvinceCode,jdbcType=VARCHAR}
+        </if>
+        <if test="startCityCode != null and startCityCode != ''">
+            and o.start_city_code = #{startCityCode,jdbcType=VARCHAR}
+        </if>
+        <if test="startAreaCode != null and startAreaCode != ''">
+            and o.start_area_code = #{startAreaCode,jdbcType=VARCHAR}
+        </if>
+        <if test="startStoreId != null">
+            and o.start_store_id = #{startStoreId,jdbcType=BIGINT}
+        </if>
+        <if test="endProvinceCode != null and endProvinceCode != ''">
+            and o.end_province_code = #{endProvinceCode,jdbcType=VARCHAR}
+        </if>
+        <if test="endCityCode != null and endCityCode != ''">
+            and o.end_city_code = #{endCityCode,jdbcType=VARCHAR}
+        </if>
+        <if test="endAreaCode != null and endAreaCode != ''">
+            and o.end_area_code = #{endAreaCode,jdbcType=VARCHAR}
+        </if>
+        <if test="endStoreId != null">
+            and o.end_store_id = #{endStoreId,jdbcType=BIGINT}
+        </if>
+        <if test="orderNo != null and orderNo.trim() != ''">
+            and oc.order_no like concat('%', #{orderNo,jdbcType=VARCHAR}, '%')
+        </if>
+        <if test="carNo != null and carNo.trim() != ''">
+            and oc.no like concat('%', #{carNo,jdbcType=VARCHAR}, '%')
+        </if>
+        <if test="vin != null and vin.trim() != ''">
+            and oc.vin like concat('%', #{vin,jdbcType=VARCHAR}, '%')
+        </if>
+        <if test="beginExpectStartDate != null">
+            and o.expect_start_date &gt;= #{beginExpectStartDate,jdbcType=BIGINT}
+        </if>
+        <if test="endExpectStartDate != null">
+            and o.expect_start_date &lt; #{endExpectStartDate,jdbcType=BIGINT}
+        </if>
+        <if test="pickType != null">
+            and o.pick_type = #{pickType,jdbcType=TINYINT}
+        </if>
+        <if test="pickContactName != null and pickContactName != ''">
+            and o.pick_contact_name like concat('%', #{pickContactName,jdbcType=VARCHAR}, '%')
+        </if>
+        <if test="pickContactPhone != null and pickContactPhone != ''">
+            and o.pick_contact_phone like concat('%', #{pickContactPhone,jdbcType=VARCHAR}, '%')
+        </if>
+        <if test="backType != null">
+            and o.back_type = #{backType,jdbcType=TINYINT}
+        </if>
+        <if test="backContactName != null and backContactName != ''">
+            and o.back_contact_name like concat('%', #{backContactName,jdbcType=VARCHAR}, '%')
+        </if>
+        <if test="backContactPhone != null and backContactPhone != ''">
+            and o.back_contact_phone like concat('%', #{backContactPhone,jdbcType=VARCHAR}, '%')
+        </if>
+        <if test="brand != null and brand.trim() != ''">
+            and oc.brand like concat('%', #{brand,jdbcType=VARCHAR}, '%')
+        </if>
+        <if test="model != null and model.trim() != ''">
+            and oc.model like concat('%', #{model,jdbcType=VARCHAR}, '%')
+        </if>
+        <if test="plateNo != null and plateNo.trim() != ''">
+            and oc.plate_no like concat('%', #{plateNo,jdbcType=VARCHAR}, '%')
+        </if>
+        <if test="startStoreId != null">
+            and o.start_store_id = #{startStoreId,jdbcType=BIGINT}
+        </if>
+        <if test="endStoreId != null">
+            and o.end_store_id = #{endStoreId,jdbcType=BIGINT}
+        </if>
+        <if test="source != null">
+            and o.source = #{source}
+        </if>
+        <if test="fromToCityList != null and fromToCityList.size > 0">
+            and
+            <foreach collection="fromToCityList" index="index" item="item" open="(" separator=" or " close=")">
+                (o.start_city_code = #{item.fromCityCode}
+                and o.end_city_code = #{item.toCityCode})
+            </foreach>
+        </if>
+    </sql>
 </mapper>

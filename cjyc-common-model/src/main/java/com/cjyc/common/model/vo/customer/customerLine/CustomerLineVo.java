@@ -33,6 +33,52 @@ public class CustomerLineVo implements Serializable {
     @ApiModelProperty("目的地联系人电话")
     private String endContactPhone;
 
+    @Override
+    public boolean equals(Object obj) {
+        if(this == obj){
+            //地址相等
+            return true;
+        }
+        if(obj == null){
+            //非空性：对于任意非空引用x，x.equals(null)应该返回false。s
+            return false;
+        }
+        if(obj instanceof CustomerLineVo){
+            CustomerLineVo other = (CustomerLineVo) obj;
+            //需要比较的字段相等，则这两个对象相等
+            if(equalsStr(this.startAdress, other.startAdress)
+                    && equalsStr(this.startContact, other.startContact)
+                    && equalsStr(this.startContactPhone, other.startContactPhone)
+                    && equalsStr(this.endAdress, other.endAdress)
+                    && equalsStr(this.endContact, other.endContact)
+                    && equalsStr(this.endContactPhone, other.endContactPhone)){
+                return true;
+            }
+        }
+        return false;
+    }
+    private boolean equalsStr(String str1, String str2){
+        if(StringUtils.isEmpty(str1) && StringUtils.isEmpty(str2)){
+            return true;
+        }
+        if(!StringUtils.isEmpty(str1) && str1.equals(str2)){
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result = 31 * result + (startAdress == null ? 0 : startAdress.hashCode());
+        result = 31 * result + (startContact == null ? 0 : startContact.hashCode());
+        result = 31 * result + (startContactPhone == null ? 0 : startContactPhone.hashCode());
+        result = 31 * result + (endAdress == null ? 0 : endAdress.hashCode());
+        result = 31 * result + (endContact == null ? 0 : endContact.hashCode());
+        result = 31 * result + (endContactPhone == null ? 0 : endContactPhone.hashCode());
+        return result;
+    }
+
     public String getStartAdress(){return StringUtils.isBlank(startAdress) ? "":startAdress; }
     public String getStartContact(){return StringUtils.isBlank(startContact) ? "":startContact; }
     public String getStartContactPhone(){return StringUtils.isBlank(startContactPhone) ? "":startContactPhone; }

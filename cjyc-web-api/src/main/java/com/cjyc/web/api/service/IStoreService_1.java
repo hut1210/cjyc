@@ -10,7 +10,8 @@ import com.cjyc.common.model.dto.web.store.StoreUpdateDto;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Store;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.store.StoreVo;
+import com.cjyc.common.model.vo.web.store.StoreVo;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -115,4 +116,17 @@ public interface IStoreService_1 extends IService<Store> {
      * @return com.cjyc.common.model.vo.ResultVo
      */
     ResultVo remove(Long id);
+
+    /**
+     * 导入Excel文件
+     * @param file
+     * @return
+     */
+    boolean importStoreExcel(MultipartFile file, Long loginId);
+
+    /**
+     * 获取全部业务中心
+     * @return
+     */
+    ResultVo<List<Store>> findAllStore();
 }

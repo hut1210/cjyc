@@ -1,6 +1,7 @@
 package com.cjyc.common.model.dao;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.cjyc.common.model.dto.driver.task.DetailQueryDto;
 import com.cjyc.common.model.dto.salesman.dispatch.DispatchListDto;
 import com.cjyc.common.model.dto.salesman.mine.SalesAchieveDto;
 import com.cjyc.common.model.dto.web.WayBillCarrierDto;
@@ -10,7 +11,9 @@ import com.cjyc.common.model.dto.web.waybill.LocalListWaybillCarDto;
 import com.cjyc.common.model.dto.web.waybill.TrunkListWaybillCarDto;
 import com.cjyc.common.model.entity.WaybillCar;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cjyc.common.model.entity.defined.DispatchNum;
 import com.cjyc.common.model.entity.defined.FullWaybillCar;
+import com.cjyc.common.model.entity.defined.BillCarNum;
 import com.cjyc.common.model.vo.salesman.dispatch.DispatchListVo;
 import com.cjyc.common.model.vo.salesman.dispatch.DispatchRecordVo;
 import com.cjyc.common.model.vo.web.WayBillCarrierVo;
@@ -23,6 +26,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -198,4 +202,20 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
     WaybillCar findBackWaybill(Long orderCarId);
 
     int countByStartAddress(@Param("orderCarId") Long orderCarId, @Param("areaCode") String areaCode, @Param("address") String address);
+
+    String findUploadPhoto(Long orderCarId);
+
+    int updateSelfCarryForFinish(Long id);
+
+    WaybillCar selectWaybillCar(DetailQueryDto dto);
+
+    List<WaybillCar>  selectWaybillCarList(Map<String,Object> map);
+
+    DispatchNum countOrderDispatchState(Long orderCarId);
+
+    BillCarNum countUnFinishForState(Long waybillId);
+
+    int updateLoadImgsNull(Long id);
+
+    int countActiveWaybill(@Param("orderCarId") Long orderCarId, @Param("type") int type);
 }

@@ -36,5 +36,5 @@ public interface ILoginService extends IService<Customer> {
      * @param dto
      * @return
      */
-    ResultVo<CustomerLoginVo> loginNew(LoginDto dto);
+    ResultVo<CustomerLoginVo> loginNew(LoginDto dto,String clientId,String clientSecret,String grantType);
 }

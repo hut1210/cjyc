@@ -58,7 +58,7 @@ public class BasicController {
     @PostMapping(value = "/findCity")
     public ResultVo<CityVo> queryCity(@RequestBody KeywordDto dto)
     {
-        return csCityService.queryCity(dto);
+        return csCityService.queryCity(true,dto);
     }
 
     @ApiOperation(value = "查询省/城市区树形结构")
@@ -82,7 +82,7 @@ public class BasicController {
     @ApiOperation(value = "查看用户历史线路")
     @PostMapping(value = "/findLine")
     public ResultVo<PageVo<CustomerLineVo>> queryLinePage(@Validated @RequestBody CommonDto dto){
-        return csCustomerLineService.queryLinePage(dto);
+        return csCustomerLineService.findCustomerLine(dto);
     }
 
     @ApiOperation(value = "模糊查询大客户信息")

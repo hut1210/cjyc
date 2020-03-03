@@ -12,15 +12,20 @@ import com.cjkj.usercenter.dto.yc.UpdateDeptManagerReq;
 import com.cjyc.common.model.dao.ICarrierDao;
 import com.cjyc.common.model.dao.ICarrierDriverConDao;
 import com.cjyc.common.model.dao.IDriverDao;
+import com.cjyc.common.model.dao.ITaskDao;
 import com.cjyc.common.model.dto.web.carrier.CarrierDto;
 import com.cjyc.common.model.dto.web.carrier.DispatchCarrierDto;
 import com.cjyc.common.model.dto.web.carrier.TrailCarrierDto;
 import com.cjyc.common.model.entity.Carrier;
 import com.cjyc.common.model.entity.CarrierDriverCon;
 import com.cjyc.common.model.entity.Driver;
+import com.cjyc.common.model.entity.Task;
 import com.cjyc.common.model.enums.CommonStateEnum;
+import com.cjyc.common.model.enums.task.TaskStateEnum;
+import com.cjyc.common.model.enums.transport.BusinessStateEnum;
 import com.cjyc.common.model.enums.transport.DriverRoleEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.JsonUtils;
 import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -32,6 +37,7 @@ import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.ICsCarrierService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -39,11 +45,14 @@ import javax.annotation.Resource;
 import java.util.List;
 
 @Service
+@Slf4j
 public class CsCarrierServiceImpl implements ICsCarrierService {
     @Resource
     private ICarrierDao carrierDao;
     @Resource
     private IDriverDao driverDao;
+    @Resource
+    private ITaskDao taskDao;
     @Resource
     private ICarrierDriverConDao carrierDriverConDao;
     @Resource
@@ -199,12 +208,46 @@ public class CsCarrierServiceImpl implements ICsCarrierService {
 
 
     /*********************************韵车集成改版 st*****************************/
-
     @Override
     public ResultVo<PageVo<TrailCarrierVo>> trailDriverNew(TrailCarrierDto dto) {
+        log.info("调度中心中提车/送车调度中代驾和拖车列表请求json数据 :: "+ JsonUtils.objectToJson(dto));
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
         List<TrailCarrierVo> carrierVos = carrierDao.findTrailDriverNew(dto);
+        if(!CollectionUtils.isEmpty(carrierVos)){
+            for(TrailCarrierVo vo : carrierVos){
+                //处理该司机当前营运状态
+                Integer taskCount = taskDao.selectCount(new QueryWrapper<Task>().lambda()
+                        .eq(Task::getDriverId, vo.getDriverId())
+                        .lt(Task::getState, TaskStateEnum.FINISHED.code));
+                if(taskCount > 0){
+                    vo.setBusinessState(BusinessStateEnum.OUTAGE.code);
+                }else {
+                    vo.setBusinessState(BusinessStateEnum.BUSINESS.code);
+                }
+            }
+        }
         PageInfo<TrailCarrierVo> pageInfo =  new PageInfo<>(carrierVos);
+        return BaseResultUtil.success(pageInfo);
+    }
+
+
+    @Override
+    public ResultVo<PageVo<TrailCarrierVo>> trailAppDriverNew(TrailCarrierDto dto) {
+        log.info("调度中心中提车/送车调度中代驾和拖车列表请求json数据 :: "+ JsonUtils.objectToJson(dto));
+        PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
+        dto.setKeyword(dto.getPhone());
+        List<TrailCarrierVo> carrierVos = carrierDao.findAppTrailDriverNew(dto);
+        PageInfo<TrailCarrierVo> pageInfo =  new PageInfo<>(carrierVos);
+        return BaseResultUtil.success(pageInfo);
+    }
+
+    @Override
+    public ResultVo<PageVo<DispatchCarrierVo>> dispatchAppCarrier(DispatchCarrierDto dto) {
+        log.info("调度中心中干线调度承运商信息请求json数据 :: "+ JsonUtils.objectToJson(dto));
+        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
+        dto.setKeyword(dto.getLinkmanPhone());
+        List<DispatchCarrierVo> carrierVos = carrierDao.findAppDispatchCarrier(dto);
+        PageInfo<DispatchCarrierVo> pageInfo = new PageInfo<>(carrierVos);
         return BaseResultUtil.success(pageInfo);
     }
 

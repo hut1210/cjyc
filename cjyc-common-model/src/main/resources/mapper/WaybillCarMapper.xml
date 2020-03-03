@@ -10,7 +10,7 @@
         <result column="order_car_id" property="orderCarId"/>
         <result column="order_car_no" property="orderCarNo"/>
         <result column="freight_fee" property="freightFee"/>
-        <result column="start_province" property="startProvince"/>
+        <result column="start_province" property="startProvinselectWaybillCarce"/>
         <result column="start_province_code" property="startProvinceCode"/>
         <result column="start_city" property="startCity"/>
         <result column="start_city_code" property="startCityCode"/>
@@ -462,6 +462,18 @@
         and state &lt; 100
         limit 1
     </update>
+    <update id="updateSelfCarryForFinish">
+        update w_waybill_car
+        set state = 100,
+        load_time = unix_timestamp(now()) * 1000,
+        unload_time = unix_timestamp(now()) * 1000
+        where id = #{id}
+        and state &lt; 100
+        limit 1
+    </update>
+    <update id="updateLoadImgsNull">
+        update set load_photo_img = '' where id = #{id}
+    </update>
 
 
     <select id="findByTaskCarId" resultType="com.cjyc.common.model.entity.WaybillCar">
@@ -628,18 +640,18 @@
                 and wc.state = #{paramsDto.state}
             </if>
             <if test="paramsDto.loginId != null">
-              and w.create_user_id = #{paramsDto.loginId}
+                and w.create_user_id = #{paramsDto.loginId}
             </if>
-            <if test="paramsDto.brand != null and paramsDto.brand != ''">
-                and oc.brand = #{paramsDto.brand}
+            <if test="paramsDto.brand != null and paramsDto.brand.trim() != ''">
+                and oc.brand like concat('%', #{paramsDto.brand}, '%')
             </if>
-            <if test="paramsDto.model != null and paramsDto.model != ''">
-                and oc.model = #{paramsDto.model}
+            <if test="paramsDto.model != null and paramsDto.model.trim() != ''">
+                and oc.model like concat('%', #{paramsDto.model}, '%')
             </if>
-            <if test="paramsDto.plateNo != null and paramsDto.plateNo != ''">
+            <if test="paramsDto.plateNo != null and paramsDto.plateNo.trim() != ''">
                 and oc.plate_no like concat('%', #{paramsDto.plateNo}, '%')
             </if>
-            <if test="paramsDto.vin != null and paramsDto.vin != ''">
+            <if test="paramsDto.vin != null and paramsDto.vin.trim() != ''">
                 and oc.vin like concat('%', #{paramsDto.vin}, '%')
             </if>
             <if test="paramsDto.type != null and paramsDto.type != 0">
@@ -679,7 +691,7 @@
                 and wc.expect_start_time &gt;= #{paramsDto.beginExpectStartTime}
             </if>
             <if test="paramsDto.endExpectStartTime != null">
-                and wc.expect_start_time &lt;= #{paramsDto.endExpectStartTime}
+                and wc.expect_start_time &lt; #{paramsDto.endExpectStartTime}
             </if>
             <if test="paramsDto.loadLinkName != null and paramsDto.loadLinkName != ''">
                 and wc.load_link_name = #{paramsDto.loadLinkName}
@@ -694,7 +706,7 @@
                 and wc.load_time &gt;= #{paramsDto.beginLoadTime}
             </if>
             <if test="paramsDto.endLoadTime != null">
-                and wc.load_time &lt;= #{paramsDto.endLoadTime}
+                and wc.load_time &lt; #{paramsDto.endLoadTime}
             </if>
             <if test="paramsDto.unloadLinkName != null and paramsDto.unloadLinkName != ''">
                 and wc.unload_link_name = #{paramsDto.unloadLinkName}
@@ -711,8 +723,11 @@
             <if test="paramsDto.endUnloadTime != null">
                 and wc.unload_time &lt;= #{paramsDto.endUnloadTime}
             </if>
-            <if test="paramsDto.orderNo != null and paramsDto.orderNo != ''">
+            <if test="paramsDto.orderNo != null and paramsDto.orderNo.trim() != ''">
                 and oc.order_no like concat('%', #{paramsDto.orderNo}, '%')
+            </if>
+            <if test="paramsDto.orderCarNo != null and paramsDto.orderCarNo.trim() != ''">
+                and oc.no like concat('%', #{paramsDto.orderCarNo}, '%')
             </if>
         </where>
         order by w.create_time desc
@@ -832,43 +847,43 @@
             <if test="paramsDto.orderEndAreaCode != null and paramsDto.orderEndAreaCode != ''">
                 and o.end_area_code = #{paramsDto.orderEndAreaCode}
             </if>
-            <if test="paramsDto.orderNo != null and paramsDto.orderNo != ''">
+            <if test="paramsDto.orderNo != null and paramsDto.orderNo.trim() != ''">
                 and o.no like concat('%', #{paramsDto.orderNo}, '%')
             </if>
             <if test="paramsDto.orderSource != null and paramsDto.orderSource != ''">
                 and o.source = #{paramsDto.orderSource}
             </if>
-            <if test="paramsDto.brand != null and paramsDto.brand != ''">
+            <if test="paramsDto.brand != null and paramsDto.brand.trim() != ''">
                 and oc.brand = #{paramsDto.brand}
             </if>
-            <if test="paramsDto.model != null and paramsDto.model != ''">
+            <if test="paramsDto.model != null and paramsDto.model.trim() != ''">
                 and oc.model = #{paramsDto.model}
             </if>
-            <if test="paramsDto.plateNo != null and paramsDto.plateNo != ''">
+            <if test="paramsDto.plateNo != null and paramsDto.plateNo.trim() != ''">
                 and oc.plate_no like concat('%', #{paramsDto.plateNo}, '%')
             </if>
-            <if test="paramsDto.vin != null and paramsDto.vin != ''">
+            <if test="paramsDto.vin != null and paramsDto.vin.trim() != ''">
                 and oc.vin like concat('%', #{paramsDto.vin}, '%')
             </if>
-            <if test="paramsDto.carrierName != null and paramsDto.carrierName != ''">
+            <if test="paramsDto.carrierName != null and paramsDto.carrierName.trim() != ''">
                 and w.carrier_name like concat('%', #{paramsDto.carrierName}, '%')
             </if>
-            <if test="paramsDto.createUser != null and paramsDto.createUser != ''">
-                and w.create_user = #{paramsDto.createUser}
+            <if test="paramsDto.createUser != null and paramsDto.createUser.trim() != ''">
+                and w.create_user like concat('%', #{paramsDto.createUser},'%')
             </if>
-            <if test="paramsDto.driverName != null and paramsDto.driverName != ''">
+            <if test="paramsDto.driverName != null and paramsDto.driverName.trim() != ''">
                 and tb.driver_name like concat('%', #{paramsDto.driverName}, '%')
             </if>
-            <if test="paramsDto.driverPhone != null and paramsDto.driverPhone != ''">
+            <if test="paramsDto.driverPhone != null and paramsDto.driverPhone.trim() != ''">
                 and tb.driver_phone like concat('%', #{paramsDto.driverPhone}, '%')
             </if>
-            <if test="paramsDto.vehiclePlateNo != null and paramsDto.vehiclePlateNo != ''">
+            <if test="paramsDto.vehiclePlateNo != null and paramsDto.vehiclePlateNo.trim() != ''">
                 and tb.vehicle_plate_no like concat('%', #{paramsDto.vehiclePlateNo}, '%')
             </if>
-            <if test="paramsDto.outterState != null and paramsDto.outterState != ''">
+   <!--         <if test="paramsDto.outterState != null and paramsDto.outterState != ''">
                 and wc.outter_state = #{paramsDto.outterState}
-            </if>
-            <if test="paramsDto.waybillNo != null and paramsDto.waybillNo != ''">
+            </if>-->
+            <if test="paramsDto.waybillNo != null and paramsDto.waybillNo.trim() != ''">
                 and wc.waybill_no like concat('%', #{paramsDto.waybillNo}, '%')
             </if>
             <if test="paramsDto.orderCarNo != null and paramsDto.orderCarNo != ''">
@@ -1062,7 +1077,7 @@
         join w_waybill_car wc on wc.waybill_id = w.id
         where wc.order_car_id = #{orderCarId}
         and w.state &lt;= 100
-        and wc.state between 45 and 100
+        and (wc.state between 45 and 100 or (wc.state between 15 and 100 and w.carrier_type = 6))
         and wc.receipt_flag = 1
         limit 1
     </select>
@@ -1404,7 +1419,7 @@
                 and c.pickDate &gt;= #{param.pickDateSt}
             </if>
             <if test="param.pickDateEd != null and param.pickDateEd > 0">
-                and c.pickDate &lt;= #{param.pickDateEd}
+                and c.pickDate &lt; #{param.pickDateEd}
             </if>
             <if test="param.brand != null and param.brand !=''">
                 and c.brand LIKE CONCAT('%',#{param.brand},'%')
@@ -1452,22 +1467,23 @@
         select
             w.carrier_id as carrierId,
             w.type as type,
-            (case w.type when 1 then concat(car.start_city,'-',car.end_city)
-                         when 3 then concat(car.start_city,'-',car.end_city) else w.guide_line end) AS guideLine,
+            /*(case w.type when 1 then concat(car.start_city,'-',car.end_city)
+                         when 3 then concat(car.start_city,'-',car.end_city) else w.guide_line end) AS guideLine,*/
+                         concat(car.start_city,'-',car.end_city) AS guideLine,
             w.no as waybillNo,
             w.carrier_name as carrierName,
             w.carrier_type as carrierType,
             car.load_link_name as loadLinkName,
             car.load_link_phone as loadLinkPhone,
-            car.start_address as startAddress,
+            concat(car.start_city,car.start_area,car.start_address) as startAddress,
             car.unload_link_name as unloadLinkName,
             car.unload_link_phone as unloadLinkPhone,
-            car.end_address as endAddress
+            concat(car.end_city,car.end_area,car.end_address) as endAddress
         from
             w_waybill_car car
             left join w_waybill w on car.waybill_id=w.id
         where
-            order_car_id=#{id}
+            car.order_car_id=#{id} and car.state &lt; 113
     </select>
     <select id="findLastByOderCarId" resultType="com.cjyc.common.model.entity.WaybillCar">
         select
@@ -1719,10 +1735,11 @@
         </if>
     </select>
     <select id="findBackWaybill" resultType="com.cjyc.common.model.entity.WaybillCar">
-        select *
+        select wc.*
         from w_waybill w
         join w_waybill_car wc on w.id = wc.waybill_id
         where w.state &lt;= 100
+        and wc.order_car_id = #{orderCarId}
         and w.type = 3
         and w.carrier_type = 6
         and wc.state &lt; 15
@@ -1737,6 +1754,15 @@
         and wc.order_car_id = #{orderCarId}
         and wc.start_area_code = #{areaCode}
         and wc.start_address = #{address}
+    </select>
+    <select id="findUploadPhoto" resultType="java.lang.String">
+        select
+        CONCAT_WS(',',GROUP_CONCAT(wc.load_photo_img),GROUP_CONCAT(wc.unload_photo_img))
+        from w_waybill w
+        join w_waybill_car wc on wc.waybill_id = w.id
+        where w.state &lt;= 100
+        and wc.state &lt;= 100
+        and wc.order_car_id = #{orderCarId}
     </select>
 
     <delete id="cancelAfterWaybillCar">
@@ -1755,5 +1781,127 @@
             #{item}
         </foreach>
     </delete>
+
+    <select id="selectWaybillCar" parameterType="com.cjyc.common.model.dto.driver.task.DetailQueryDto"
+            resultType="com.cjyc.common.model.entity.WaybillCar">
+        select
+            <include refid="Base_Column_List"/>
+        from
+            w_waybill_car
+        <where>
+            id = #{waybillCarId}
+            /*待提车*/
+            <if test="detailState == 1">
+                and state in(5,15)
+            </if>
+            <if test="storeIds != null and detailState == 1">
+                and (start_belong_store_id in <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
+                                                #{item}
+                                            </foreach>
+                or (ISNULL(start_belong_store_id) or LENGTH(trim(start_belong_store_id)) &lt; 1 or start_belong_store_id = 0))
+            </if>
+            /*待交车*/
+            <if test="detailState == 2">
+                and state in(45,90)
+            </if>
+            <if test="storeIds != null and detailState == 2">
+                and (end_belong_store_id in <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
+                                            #{item}
+                                        </foreach>
+                or (ISNULL(end_belong_store_id) or LENGTH(trim(end_belong_store_id)) &lt; 1 or end_belong_store_id = 0))
+            </if>
+            /*已交付 已入库*/
+            <if test="detailState == 3 or detailState == 5">
+                and state =100
+            </if>
+            <if test="storeIds != null and (detailState == 3 or detailState == 5)">
+                and (end_belong_store_id in <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
+                                                #{item}
+                                            </foreach>
+                or (ISNULL(end_belong_store_id) or LENGTH(trim(end_belong_store_id)) &lt; 1 or end_belong_store_id = 0))
+            </if>
+            /*待入库*/
+            <if test="detailState == 4">
+                and state =90
+            </if>
+            <if test="storeIds != null and detailState == 4">
+                and (end_belong_store_id in <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
+                                            #{item}
+                                        </foreach>
+                or (ISNULL(end_belong_store_id) or LENGTH(trim(end_belong_store_id)) &lt; 1 or end_belong_store_id = 0))
+            </if>
+            /*待出库*/
+            <if test="detailState == 6">
+                and state =15
+            </if>
+            <if test="storeIds != null and detailState == 6">
+                and (start_belong_store_id in <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
+                                                #{item}
+                                            </foreach>
+                or (ISNULL(start_belong_store_id) or LENGTH(trim(start_belong_store_id)) &lt; 1 or start_belong_store_id = 0))
+            </if>
+            /*已出库*/
+            <if test="detailState == 7">
+                and state > 15
+            </if>
+            <if test="storeIds != null and detailState == 7">
+                and (start_belong_store_id in <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
+                                                #{item}
+                                            </foreach>
+                or (ISNULL(start_belong_store_id) or LENGTH(trim(start_belong_store_id)) &lt; 1 or start_belong_store_id = 0))
+            </if>
+        </where>
+    </select>
+    <select id="countOrderDispatchState" resultType="com.cjyc.common.model.entity.defined.DispatchNum">
+        select
+        IFNULL(sum(case when w.type = 1 then 1 else 0 end),0) as pickNum,
+        IFNULL(sum(case when w.type = 2 then 1 else 0 end),0) as trunkNum,
+        IFNULL(sum(case when w.type = 3 then 1 else 0 end),0) as backNum
+        from w_waybill w
+        join w_waybill_car wc on wc.waybill_id = w.id
+        where wc.order_car_id = #{orderCarId}
+        and wc.state &lt;= 100
+
+    </select>
+
+    <select id="selectWaybillCarList" parameterType="java.util.Map" resultType="com.cjyc.common.model.entity.WaybillCar">
+        SELECT
+        car.id,car.state,car.load_photo_img as loadPhotoImg,
+            car.unload_photo_img as unloadPhotoImg
+        FROM
+            w_waybill_car car
+        left join w_waybill w on car.waybill_id=w.id
+        <where>
+            car.order_car_id=#{orderCarId}
+            <if test="waybillType != null and waybillType==1">
+                and car.id &lt; #{waybillCarId}
+            </if>
+            <if test="waybillType != null and waybillType==2">
+                and (car.id &lt; #{waybillCarId} or w.type=1)
+            </if>
+            <if test="waybillType != null and waybillType==3">
+                and (car.id &lt; #{waybillCarId} or w.type in(1,2))
+            </if>
+        </where>
+
+    </select>
+    <select id="countUnFinishForState" resultType="com.cjyc.common.model.entity.defined.BillCarNum">
+        select
+        count(0) as totalCarNum,
+        IFNULL(sum(case when state = 113 then 1 else 0 end), 0) as cancelCarNum,
+        IFNULL(sum(case when state &lt; 100 then 1 else 0 end), 0) as unFinishCarNum
+        from w_waybill_car
+        where waybill_id = #{waybillId}
+    </select>
+    <select id="countActiveWaybill" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM w_waybill w
+        join w_waybill_car wc on w.id = wc.waybill_id
+        WHERE wc.order_car_id = #{orderCarId}
+        AND wc.state &lt;= 100
+        and w.state &lt;= 100
+        AND w.type =#{type}
+    </select>
 
 </mapper>

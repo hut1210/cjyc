@@ -83,9 +83,8 @@ public class InvoiceApplyServiceImpl extends SuperServiceImpl<IInvoiceApplyDao, 
         if (invoice.getType() == InvoiceTypeEnum.PERSONAL_INVOICE.code) {
             invoice.setTitle(dto.getName());
         }
-        Long invoiceId = null;
-        if (dto.getId() != null) {
-            invoiceId = dto.getId();
+        Long invoiceId = dto.getId();
+        if (invoiceId != null && invoiceId != 0) {
             boolean update = customerInvoiceService.updateById(invoice);
             if (!update) {
                 return BaseResultUtil.fail("开票失败");

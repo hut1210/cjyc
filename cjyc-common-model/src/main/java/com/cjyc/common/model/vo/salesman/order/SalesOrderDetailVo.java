@@ -1,11 +1,10 @@
 package com.cjyc.common.model.vo.salesman.order;
 
-import com.cjyc.common.model.util.BigDecimalSerizlizer;
-import com.cjyc.common.model.util.DateLongSerizlizer;
+import com.cjyc.common.model.serizlizer.BigDecimalSerizlizer;
+import com.cjyc.common.model.serizlizer.DateLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
-import io.swagger.annotations.ApiParam;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
@@ -34,6 +33,9 @@ public class SalesOrderDetailVo implements Serializable {
     private Long inputStoreId;
     @ApiModelProperty(value = "订单所属业务中心名称")
     private String inputStoreName;
+    @ApiModelProperty(value = "出发地业务中心ID: -1不经过业务中心")
+    @JsonSerialize(using= ToStringSerializer.class)
+    private Long startStoreId;
     @ApiModelProperty(value = "收车所属业务中心ID")
     @JsonSerialize(using= ToStringSerializer.class)
     private Long startBelongStoreId;
@@ -58,8 +60,10 @@ public class SalesOrderDetailVo implements Serializable {
     @ApiModelProperty(value = "客户id")
     @JsonSerialize(using= ToStringSerializer.class)
     private Long customerId;
-    @ApiModelProperty(value = "大客户名称")
+    @ApiModelProperty(value = "客户名称")
     private String name;
+    @ApiModelProperty(value = "客户手机号")
+    private String customerPhone;
     @ApiModelProperty(value = "合同ID")
     @JsonSerialize(using= ToStringSerializer.class)
     private Long customerContractId;
@@ -70,6 +74,9 @@ public class SalesOrderDetailVo implements Serializable {
     @ApiModelProperty(value = "班线id")
     @JsonSerialize(using= ToStringSerializer.class)
     private Long lineId;
+    @ApiModelProperty(value = "目的地业务中心ID: -1不经过业务中心")
+    @JsonSerialize(using= ToStringSerializer.class)
+    private Long endStoreId;
 
     @ApiModelProperty(value = "发车人")
     private String pickContactName;
@@ -143,10 +150,13 @@ public class SalesOrderDetailVo implements Serializable {
     public Long getInputStoreId(){return inputStoreId == null ? 0:inputStoreId;}
     public String getInputStoreName() {return StringUtils.isBlank(inputStoreName) ? "":inputStoreName;}
     public Long getStartBelongStoreId(){return startBelongStoreId == null ? 0:startBelongStoreId;}
+    public Long getStartStoreId(){return startStoreId == null ? 0:startStoreId;}
+    public Long getEndStoreId(){return endStoreId == null ? 0:endStoreId;}
     public String getStartStoreName(){return StringUtils.isBlank(startStoreName) ? "":startStoreName;}
     public String getEndStoreName(){return StringUtils.isBlank(endStoreName) ? "":endStoreName;}
     public Integer getCustomerType(){return customerType == null ? 0:customerType;}
     public String getName(){return StringUtils.isBlank(name) ? "":name;}
+    public String getCustomerPhone(){return StringUtils.isBlank(customerPhone) ? "":customerPhone;}
     public Long getCustomerId(){return customerId == null ? 0:customerId;}
     public Long getCustomerContractId(){return customerContractId == null ? 0:customerContractId;}
     public String getContactMan(){return StringUtils.isBlank(contactMan) ? "":contactMan;}

@@ -1,7 +1,7 @@
 package com.cjyc.common.model.vo.web.line;
 
-import com.cjyc.common.model.util.BigDecimalSerizlizer;
-import com.cjyc.common.model.util.DateLongSerizlizer;
+import com.cjyc.common.model.serizlizer.BigDecimalSerizlizer;
+import com.cjyc.common.model.serizlizer.DateLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

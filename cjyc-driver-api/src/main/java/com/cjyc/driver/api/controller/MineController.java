@@ -1,5 +1,6 @@
 package com.cjyc.driver.api.controller;
 
+import com.cjyc.common.model.dto.BasePageDto;
 import com.cjyc.common.model.dto.CarrierDriverDto;
 import com.cjyc.common.model.dto.driver.AppDriverDto;
 import com.cjyc.common.model.dto.driver.BaseDriverDto;
@@ -10,6 +11,8 @@ import com.cjyc.common.model.enums.ClientEnum;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.mine.*;
+import com.cjyc.common.model.vo.web.bankInfo.BankInfoVo;
+import com.cjyc.common.system.service.ICsBankInfoService;
 import com.cjyc.common.system.service.ICsDriverService;
 import com.cjyc.common.system.service.ICsSmsService;
 import com.cjyc.common.system.service.ICsVehicleService;
@@ -44,6 +47,8 @@ public class MineController {
     private ICsDriverService csDriverService;
     @Resource
     private ICsSmsService csSmsService;
+    @Resource
+    private ICsBankInfoService csBankInfoService;
 
     @ApiOperation(value = "司机的银行卡信息")
     //@PostMapping(value = "/findBinkCard")
@@ -255,5 +260,11 @@ public class MineController {
     @PostMapping(value = "/removeBankCard")
     public ResultVo removeBankCardNew(@Validated @RequestBody RemoveBankCardDto dto) {
         return mineService.removeBankCardNew(dto);
+    }
+
+    @ApiOperation(value = "获取全部银行信息")
+    @PostMapping(value = "/findBankInfo")
+    public ResultVo<PageVo<BankInfoVo>> findBankInfo(@Validated @RequestBody BankInfoDto dto) {
+        return csBankInfoService.findAppBankInfo(dto);
     }
 }

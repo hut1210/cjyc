@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -46,7 +47,7 @@ public class SmsController {
 
     @ApiOperation(value = "校验短信验证码", notes = " ")
     @PostMapping("/captcha/validate")
-    public ResultVo validate(@RequestBody CaptchaValidatedDto reqDto){
+    public ResultVo validate(@Valid @RequestBody CaptchaValidatedDto reqDto){
         String phone = reqDto.getPhone();
         String captcha = reqDto.getCaptcha();
         Integer type = reqDto.getType();

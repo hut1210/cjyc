@@ -4,8 +4,6 @@ import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.carrier.*;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.carrier.DispatchCarrierVo;
-import com.cjyc.common.model.vo.web.carrier.TrailCarrierVo;
 
 import com.cjyc.common.model.vo.web.carrier.TransportDriverVo;
 import com.cjyc.common.model.vo.web.carrier.TransportVehicleVo;

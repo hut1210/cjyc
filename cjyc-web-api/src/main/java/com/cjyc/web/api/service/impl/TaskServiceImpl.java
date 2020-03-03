@@ -1,10 +1,12 @@
 package com.cjyc.web.api.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cjkj.common.utils.ExcelUtil;
 import com.cjyc.common.model.dao.ICarrierDao;
 import com.cjyc.common.model.dao.ITaskDao;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.task.*;
+import com.cjyc.common.model.dto.web.waybill.CrWaybillDto;
 import com.cjyc.common.model.entity.Carrier;
 import com.cjyc.common.model.entity.Task;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -12,21 +14,26 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyCarrierVo;
-import com.cjyc.common.model.vo.web.task.CrTaskVo;
-import com.cjyc.common.model.vo.web.task.ListByWaybillTaskVo;
-import com.cjyc.common.model.vo.web.task.TaskPageVo;
-import com.cjyc.common.model.vo.web.task.TaskVo;
+import com.cjyc.common.model.vo.web.task.*;
+import com.cjyc.common.model.vo.web.waybill.CrWaybillVo;
+import com.cjyc.common.model.vo.web.waybill.ExportCrWaybillVo;
 import com.cjyc.common.model.vo.web.waybill.WaybillCarVo;
 import com.cjyc.common.system.service.ICsTaskService;
 import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.web.api.service.ITaskService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -139,6 +146,42 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
             pageInfo.setList(list);
         }
         return BaseResultUtil.success(pageInfo);
+    }
+
+    @Override
+    public void exportCrAllottedListExcel(HttpServletRequest request, HttpServletResponse response) {
+        CrTaskDto dto = findCrTaskDto(request);
+        List<CrTaskVo> crTaskVoList = taskDao.findListForMineCarrier(dto);
+        List<ExportCrTaskVo> exportExcelList = Lists.newArrayList();
+        for (CrTaskVo vo : crTaskVoList) {
+            ExportCrTaskVo exportCrTaskVo = new ExportCrTaskVo();
+            BeanUtils.copyProperties(vo, exportCrTaskVo);
+            exportExcelList.add(exportCrTaskVo);
+        }
+        String title = "已指派";
+        String sheetName = "已指派";
+        String fileName = "已指派.xls";
+        try {
+            ExcelUtil.exportExcel(exportExcelList, title, sheetName, ExportCrTaskVo.class, fileName, response);
+        } catch (IOException e) {
+            log.error("导出已指派信息异常:{}",e);
+        }
+    }
+
+    /**
+     * 封装运单excel请求
+     * @param request
+     * @return
+     */
+    private CrTaskDto findCrTaskDto(HttpServletRequest request){
+        CrTaskDto dto = new CrTaskDto();
+        dto.setWaybillNo(request.getParameter("waybillNo"));
+        dto.setTaskNo(request.getParameter("taskNo"));
+        dto.setDriverName(request.getParameter("driverName"));
+        dto.setDriverPhone(request.getParameter("driverPhone"));
+        dto.setVehiclePlateNo(request.getParameter("vehiclePlateNo"));
+        dto.setCarrierId(StringUtils.isBlank(request.getParameter("carrierId")) ? null:Long.valueOf(request.getParameter("carrierId")));
+        return dto;
     }
 
 }

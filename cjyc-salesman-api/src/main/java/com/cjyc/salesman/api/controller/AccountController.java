@@ -1,26 +1,44 @@
 package com.cjyc.salesman.api.controller;
 
 import com.cjkj.common.model.ResultData;
+import com.cjkj.usercenter.dto.common.SelectRoleResp;
+import com.cjyc.common.model.dao.IAdminDao;
 import com.cjyc.common.model.dto.salesman.account.ForgetPwdDto;
+import com.cjyc.common.model.dto.salesman.login.RoleBtnReqDto;
 import com.cjyc.common.model.entity.Admin;
+import com.cjyc.common.model.entity.Role;
 import com.cjyc.common.model.enums.CaptchaTypeEnum;
 import com.cjyc.common.model.enums.ClientEnum;
+import com.cjyc.common.model.enums.role.RoleLoginAppEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.salesman.login.BtnListVo;
+import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.ICsAdminService;
+import com.cjyc.common.system.service.ICsRoleService;
 import com.cjyc.common.system.service.ICsSmsService;
 import com.cjyc.common.system.util.ResultDataUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.experimental.Accessors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 @Api(tags = "业务员APP-账号相关")
 @Accessors(chain = true)
@@ -33,11 +51,25 @@ public class AccountController {
     private ISysUserService sysUserService;
     @Autowired
     private ICsAdminService csAdminService;
+    @Autowired
+    private ISysRoleService sysRoleService;
+    @Resource
+    private ICsRoleService csRoleService;
+    @Resource
+    private IAdminDao adminDao;
 
 
     @ApiOperation(value = "忘记密码")
     @PostMapping("/forgetPwd")
-    public ResultVo forgetPwd(@Valid @RequestBody ForgetPwdDto dto){
+    public ResultVo forgetPwd(@Valid @RequestBody ForgetPwdDto dto, HttpServletRequest request){
+        String loginId = request.getHeader("loginId");
+        if(!StringUtils.isEmpty(loginId)){
+            Long adminId = Long.valueOf(loginId);
+            Admin admin = adminDao.selectById(adminId);
+            if(!dto.getPhone().equals(admin.getPhone())){
+                return BaseResultUtil.fail("输入手机号与当前登录人手机号不符,请检查");
+            }
+        }
         if (csSmsService.validateCaptcha(dto.getPhone(), dto.getCaptcha(),
                 CaptchaTypeEnum.FORGET_LOGIN_PWD, ClientEnum.APP_SALESMAN)) {
             Admin admin = csAdminService.getAdminByPhone(dto.getPhone(), true);
@@ -53,5 +85,104 @@ public class AccountController {
         }else {
             return BaseResultUtil.fail("验证码错误");
         }
+    }
+
+    @ApiOperation(value = "获取登录用户按钮列表")
+    @PostMapping("/getBtnList")
+    public ResultVo<BtnListVo> getRoleBtnList(@Valid @RequestBody RoleBtnReqDto dto) {
+        Admin admin = csAdminService.getById(dto.getLoginId(), true);
+        if (admin == null || admin.getUserId() == null || admin.getUserId() <= 0L) {
+            return BaseResultUtil.fail("用户信息有误，请确认");
+        }
+        ResultData<List<SelectRoleResp>> roleRd = sysRoleService.getListByUserId(admin.getUserId());
+        if (ResultDataUtil.isSuccess(roleRd)) {
+            if (!CollectionUtils.isEmpty(roleRd.getData())) {
+                List<String> roleNameList = roleRd.getData().stream()
+                        .map(r -> r.getRoleName()).collect(Collectors.toList());
+                List<String> btnNameList = new ArrayList<>();
+                Set<String> btnSet = new HashSet<>();
+                List<Role> ycRoleList = csRoleService.getValidInnerRoleList();
+                //是否可登录业务员APP，只需当前用户中有一个角色可登录APP即可登录APP
+                AtomicBoolean canLogin = new AtomicBoolean(false);
+                roleNameList.forEach(name -> {
+                    //判断是否有登录角色
+                    List<Role> existList = ycRoleList.stream().filter(r ->
+                            r.getRoleName().equals(name)).collect(Collectors.toList());
+                    if (!CollectionUtils.isEmpty(existList)) {
+                        Role r = existList.get(0);
+                        if (RoleLoginAppEnum.CAN_LOGIN_APP.getFlag() == r.getLoginApp()) {
+                            canLogin.set(true);
+                            if (!StringUtils.isEmpty(r.getAppBtns())) {
+                                String[] btns = r.getAppBtns().split(",");
+                                for (String btn: btns) {
+                                    btnSet.add(btn);
+                                }
+                            }
+                        }
+                    }
+                });
+                btnNameList.addAll(btnSet);
+                if (!canLogin.get()) {
+                    return BaseResultUtil.fail("此用户不可登录APP");
+                }else {
+                    BtnListVo vo = new BtnListVo();
+                    StringBuilder sb = new StringBuilder("");
+                    btnNameList.forEach(b -> {
+                        if (sb.length() > 0) {
+                            sb.append("," + b);
+                        }else {
+                            sb.append(b);
+                        }
+                    });
+                    vo.setBtnList(sb.toString());
+                    return BaseResultUtil.success(vo);
+                }
+            }else {
+                return BaseResultUtil.fail("角色信息为空");
+            }
+        }else {
+            return BaseResultUtil.fail("角色信息获取失败");
+        }
+    }
+
+    public static void main(String[] args) {
+
+      /*  BigDecimal total = new BigDecimal(999);
+        BigDecimal c1fee = new BigDecimal(333);
+        BigDecimal c2fee = new BigDecimal(333);
+        BigDecimal c3fee = new BigDecimal(333);
+
+        BigDecimal sum = c1fee.add(c2fee).add(c3fee);
+
+        BigDecimal rate1 = c1fee.divide(sum, 10, BigDecimal.ROUND_HALF_DOWN);
+        BigDecimal rate2 = c2fee.divide(sum, 10, BigDecimal.ROUND_HALF_DOWN);
+        BigDecimal rate3 = c3fee.divide(sum, 10, BigDecimal.ROUND_HALF_DOWN);
+
+
+
+        BigDecimal new1 = rate1.multiply(total).setScale(0, BigDecimal.ROUND_DOWN);
+        BigDecimal new2 = rate2.multiply(total).setScale(0, BigDecimal.ROUND_DOWN);
+        BigDecimal new3 = rate3.multiply(total).setScale(0, BigDecimal.ROUND_DOWN);
+        BigDecimal new3_1= total.subtract(new1).subtract(new2);
+        System.out.println(new1);
+        System.out.println(new2);
+        System.out.println(new3);
+        System.out.println(new3_1);*/
+
+        double t = 1001;
+        double i1 = 333;
+        double i2 = 333;
+        double i3 = 333;
+        double it = i1 + i2 + i3;
+
+        double n1 = t * i1 / it;
+        double n2 = t * i2 / it;
+        double n3 = t * i3 / it;
+        double n3_1 = t - n1 - n2;
+
+        System.out.println(n1);
+        System.out.println(n2);
+        System.out.println(n3);
+        System.out.println(n3_1);
     }
 }

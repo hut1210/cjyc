@@ -88,10 +88,10 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
                 .eq(dto.getDriverId() != null, VehicleRunning::getDriverId, dto.getDriverId())
                 .eq(dto.getVehicleId() != null, VehicleRunning::getVehicleId, dto.getVehicleId()));
         if (vr != null) {
-            Task task = taskDao.selectOne(new QueryWrapper<Task>().lambda()
+            List<Task> taskList = taskDao.selectList(new QueryWrapper<Task>().lambda()
                     .eq(Task::getVehicleRunningId,vr.getId())
                     .eq(Task::getState,TaskStateEnum.TRANSPORTING.code));
-            if(task != null){
+            if(!CollectionUtils.isEmpty(taskList)){
                 return BaseResultUtil.fail("该运力正在运输中，不可修改");
             }
         }
@@ -130,7 +130,7 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
     public void exportVehicleExcel(HttpServletRequest request, HttpServletResponse response) {
         SelectVehicleDto dto = getVehicleDto(request);
         List<VehicleVo> vehicleVos = vehicleDao.findVehicle(dto);
-        if (!CollectionUtils.isEmpty(vehicleVos)) {
+        //if (!CollectionUtils.isEmpty(vehicleVos)) {
             // 生成导出数据
             List<VehicleExportExcel> exportExcelList = new ArrayList<>();
             for (VehicleVo vo : vehicleVos) {
@@ -142,13 +142,13 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
             String sheetName = "车辆管理";
             String fileName = "车辆管理.xls";
             try {
-                if(!CollectionUtils.isEmpty(exportExcelList)){
+                //if(!CollectionUtils.isEmpty(exportExcelList)){
                     ExcelUtil.exportExcel(exportExcelList, title, sheetName, VehicleExportExcel.class, fileName, response);
-                }
+                //}
             } catch (IOException e) {
                 log.error("导出车辆管理信息异常:{}",e);
             }
-        }
+        //}
     }
 
     /**

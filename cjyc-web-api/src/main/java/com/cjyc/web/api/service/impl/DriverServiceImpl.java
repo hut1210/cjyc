@@ -87,6 +87,8 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
     private ICsUserRoleDeptService csUserRoleDeptService;
     @Resource
     private IUserRoleDeptDao userRoleDeptDao;
+    @Resource
+    private IVehicleDao vehicleDao;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -141,7 +143,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
             //保存司机与车辆关系
             if(StringUtils.isNotBlank(dto.getPlateNo()) && dto.getVehicleId() != null){
                 dto.setDriverId(driver.getId());
-                bindDriverVehicle(dto);
+                bindDriverVehicle(dto,dto.getCarrierId());
             }
 
             //保存个人承运商
@@ -200,7 +202,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
             return BaseResultUtil.fail("数据错误,请检查");
         }
         //修改司机信息
-        //if(cdc.getState() == CommonStateEnum.CHECK.code){
+        //if(cdc.getState() == CommonStateEnum.D_CHECK.code){
         ResultData rd = csDriverService.updateUserToPlatform(driver);
         if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
             return BaseResultUtil.fail("司机信息同步失败，原因：" + rd.getMsg());
@@ -237,7 +239,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         }else if(StringUtils.isNotBlank(dto.getPlateNo()) && dvc == null){
             //之前绑定为空，现在不为空，需要绑定
             //车辆与司机绑定
-            bindDriverVehicle(dto);
+            bindDriverVehicle(dto,carrier.getId());
         }
         //更新承运商信息
         if(carrier != null){
@@ -346,7 +348,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
             return BaseResultUtil.fail("司机信息错误，请检查");
         }
         //driver.setState(flag.equals(1)?
-                //SalemanStateEnum.REJECTED.code: SalemanStateEnum.CHECK.code);
+                //SalemanStateEnum.REJECTED.code: SalemanStateEnum.D_CHECK.code);
         driverDao.updateById(driver);
         return BaseResultUtil.success();
     }
@@ -363,7 +365,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
     public void exportDriverExcel(HttpServletRequest request, HttpServletResponse response) {
         SelectDriverDto dto = getDriverDto(request);
         List<DriverVo> driverVos = encapPersonDriver(dto);
-        if (!CollectionUtils.isEmpty(driverVos)) {
+        //if (!CollectionUtils.isEmpty(driverVos)) {
             // 生成导出数据
             List<DriverExportExcel> exportExcelList = new ArrayList<>();
             for (DriverVo vo : driverVos) {
@@ -375,13 +377,13 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
             String sheetName = "司机管理";
             String fileName = "司机管理.xls";
             try {
-                if(!CollectionUtils.isEmpty(exportExcelList)){
+                //if(!CollectionUtils.isEmpty(exportExcelList)){
                     ExcelUtil.exportExcel(exportExcelList, title, sheetName, DriverExportExcel.class, fileName, response);
-                }
+                //}
             } catch (IOException e) {
                 log.error("导出司机管理信息异常:{}",e);
             }
-        }
+        //}
     }
 
     /**
@@ -431,7 +433,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
      * 司机与车辆绑定关系
      * @param dto
      */
-    private void bindDriverVehicle(DriverDto dto){
+    private void bindDriverVehicle(DriverDto dto,Long carrierId){
         //车辆与司机绑定
         DriverVehicleCon dvcon = new DriverVehicleCon();
         dvcon.setDriverId(dto.getDriverId());
@@ -448,6 +450,10 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         vr.setRunningState(VehicleRunStateEnum.FREE.code);
         vr.setCreateTime(NOW);
         vehicleRunningDao.insert(vr);
+        //更新车辆信息
+        Vehicle vehicle = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda().eq(Vehicle::getPlateNo, dto.getPlateNo()));
+        vehicle.setCarrierId(carrierId);
+        vehicleDao.updateById(vehicle);
     }
 
     /**
@@ -527,7 +533,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
             carrier.setMode(dto.getMode());
             carrier.setType(CarrierTypeEnum.PERSONAL.code);
             carrier.setSettleType(ModeTypeEnum.TIME.code);
-            carrier.setState(CommonStateEnum.WAIT_CHECK.code);
+            carrier.setState(CommonStateEnum.IN_CHECK.code);
             carrier.setBusinessState(BusinessStateEnum.BUSINESS.code);
             carrier.setCreateTime(NOW);
             carrier.setCreateUserId(dto.getLoginId());
@@ -548,7 +554,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
             //保存司机与车辆关系
             if(StringUtils.isNotBlank(dto.getPlateNo()) && dto.getVehicleId() != null){
                 dto.setDriverId(driver.getId());
-                bindDriverVehicle(dto);
+                bindDriverVehicle(dto,carrier.getId());
             }
             //添加承运商业务范围
             carrierCityConService.batchSave(carrier.getId(),dto.getCodes());
@@ -647,10 +653,10 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         //获取运力信息
         VehicleRunning vRun = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda().eq(VehicleRunning::getDriverId,dto.getDriverId()));
         if(vRun != null){
-            Task task = taskDao.selectOne(new QueryWrapper<Task>().lambda()
+            List<Task> taskList = taskDao.selectList(new QueryWrapper<Task>().lambda()
                         .eq(Task::getVehicleRunningId,vRun.getId())
                         .eq(Task::getState,TaskStateEnum.TRANSPORTING.code));
-            if(task != null){
+            if(!CollectionUtils.isEmpty(taskList)){
                 return BaseResultUtil.fail("该运力正在运输中，不可修改");
             }
         }
@@ -666,19 +672,15 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
             return BaseResultUtil.fail("数据错误,请检查");
         }
         //更新架构组用户信息
-        ResultData<Boolean> updateRd = csCustomerService.updateUserToPlatform(null,driver, dto.getPhone());
+        ResultData<Boolean> updateRd = csCustomerService.updateUserToPlatform(null,driver, dto.getPhone(),dto.getRealName());
         if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
             log.error("修改用户信息失败，原因：" + updateRd.getMsg());
             return BaseResultUtil.fail("修改用户信息失败，原因：" + updateRd.getMsg());
         }
-        //更新司机与用户角色机构关系
-        ResultVo resultVo = csUserRoleDeptService.updateDriverToUserRoleDept(carrier, driver,null, dto.getLoginId(),1);
-        if (!ResultEnum.SUCCESS.getCode().equals(resultVo.getCode())) {
-            return BaseResultUtil.fail("修改用户信息失败，原因：" + resultVo.getMsg());
-        }
+
         //更新承运商信息
         BeanUtils.copyProperties(dto,carrier);
-        carrier.setState(CommonStateEnum.WAIT_CHECK.code);
+        carrier.setState(CommonStateEnum.IN_CHECK.code);
         carrier.setName(dto.getRealName());
         carrier.setLegalName(dto.getRealName());
         carrier.setLegalIdCard(dto.getIdCard());
@@ -693,10 +695,25 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         driver.setCheckUserId(dto.getLoginId());
         super.updateById(driver);
 
+        carrier = carrierDao.selectById(dto.getCarrierId());
+        driver = driverDao.selectById(dto.getDriverId());
+
+        //更新司机与用户角色机构关系
+        ResultVo resultVo = csUserRoleDeptService.updateDriverToUserRoleDept(carrier, driver,null, dto.getLoginId(),1);
+        if (!ResultEnum.SUCCESS.getCode().equals(resultVo.getCode())) {
+            return BaseResultUtil.fail("修改用户信息失败，原因：" + resultVo.getMsg());
+        }
+        Vehicle vehicle = null;
         //车牌号不为空 & 之前司机绑定不为空 & 车牌号与之前不同
         DriverVehicleCon dvc = driverVehicleConDao.getDriVehConByDriId(dto.getDriverId());
         if(StringUtils.isNotBlank(dto.getPlateNo()) && dvc != null
                 && !dvc.getVehicleId().equals(dto.getVehicleId())){
+            //更新旧的车辆信息的carrierId
+            Vehicle oleVehicle = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda()
+                                            .eq(Vehicle::getCarrierId, carrier.getId()));
+            oleVehicle.setCarrierId(null);
+            vehicleDao.updateById(oleVehicle);
+
             //更新绑定车辆信息
             dvc.setVehicleId(dto.getVehicleId());
             driverVehicleConDao.updateById(dvc);
@@ -708,15 +725,23 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
                 vr.setCarryCarNum(dto.getDefaultCarryNum());
                 vehicleRunningDao.updateById(vr);
             }
+            //更新车辆信息
+            vehicle = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda().eq(Vehicle::getPlateNo, dto.getPlateNo()));
+            vehicle.setCarrierId(carrier.getId());
+            vehicleDao.updateById(vehicle);
         }else if(StringUtils.isBlank(dto.getPlateNo()) && dvc != null){
             //之前绑定不为空，现在不绑定车辆
             //删除之前绑定关系
             driverVehicleConDao.removeCon(dvc.getDriverId(),dvc.getVehicleId());
             vehicleRunningDao.removeRun(dvc.getDriverId(),dvc.getVehicleId());
+            //更新车辆信息
+            vehicle = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda().eq(Vehicle::getPlateNo, dto.getPlateNo()));
+            vehicle.setCarrierId(null);
+            vehicleDao.updateById(vehicle);
         }else if(StringUtils.isNotBlank(dto.getPlateNo()) && dvc == null){
             //之前绑定为空，现在不为空，需要绑定
             //车辆与司机绑定
-            bindDriverVehicle(dto);
+            bindDriverVehicle(dto,carrier.getId());
         }
         //更新承运商业务范围,先批量删除，再添加
         carrierCityConService.batchDelete(carrier.getId());
@@ -735,7 +760,17 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
             for(DriverVo vo : driverVos){
                 CarrierCarCount count = carrierCarCountDao.countNew(vo.getCarrierId());
                 if(count != null){
-                    BeanUtils.copyProperties(count,vo);
+                    vo.setTotalIncome(count.getIncome());
+                    vo.setCarNum(count.getCarNum());
+                }
+                //处理该司机当前营运状态
+                Integer taskCount = taskDao.selectCount(new QueryWrapper<Task>().lambda()
+                        .eq(Task::getDriverId, vo.getDriverId())
+                        .lt(Task::getState, TaskStateEnum.FINISHED.code));
+                if(taskCount > 0){
+                    vo.setBusinessState(BusinessStateEnum.OUTAGE.code);
+                }else {
+                    vo.setBusinessState(BusinessStateEnum.BUSINESS.code);
                 }
             }
         }

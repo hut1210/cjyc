@@ -11,7 +11,7 @@ import com.cjyc.common.model.entity.defined.FullCity;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.store.StoreVo;
+import com.cjyc.common.model.vo.web.store.StoreVo;
 import com.cjyc.web.api.service.IStoreService;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
@@ -32,6 +32,7 @@ import java.util.List;
  **/
 @Api(tags = "基础数据-业务中心")
 @RestController
+@Deprecated
 //@RequestMapping("/store")
 public class StoreController {
     @Resource

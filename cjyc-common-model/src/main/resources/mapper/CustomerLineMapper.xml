@@ -25,24 +25,45 @@
     <!-- 根据客户id获取历史线路 -->
     <select id="findCustomerLine" resultType="com.cjyc.common.model.vo.customer.customerLine.CustomerLineVo">
         SELECT
-            id AS id,
-            start_adress AS startAdress,
-            start_contact AS startContact,
-            start_contact_phone AS startContactPhone,
-            end_adress AS endAdress,
-            end_contact AS endContact,
-            end_contact_phone AS endContactPhone
+            wo.id AS id,
+            wo.start_address AS startAdress,
+            wo.pick_contact_name AS startContact,
+            wo.pick_contact_phone AS startContactPhone,
+            wo.end_address AS endAdress,
+            wo.back_contact_name AS endContact,
+            wo.back_contact_phone AS endContactPhone
         FROM
-            c_customer_line
+          w_order wo
         <where>
-            <if test="flag != null and flag == 0">
-                customer_id = #{customerId} and operate_id = #{customerId}
+            <if test="customerId != null">
+                wo.customer_id = #{customerId}
             </if>
-            <if test="flag != null and flag == 1">
-                and operate_id = #{customerId}
-            </if>
-              order by create_time desc
         </where>
+        group by wo.id order by wo.expect_start_date ASC
+    </select>
+
+
+    <!-- 根据客户id和登录id获取历史线路 -->
+    <select id="findAppCustomerLine" resultType="com.cjyc.common.model.vo.customer.customerLine.CustomerLineVo">
+        SELECT
+            wo.id AS id,
+            wo.start_address AS startAdress,
+            wo.pick_contact_name AS startContact,
+            wo.pick_contact_phone AS startContactPhone,
+            wo.end_address AS endAdress,
+            wo.back_contact_name AS endContact,
+            wo.back_contact_phone AS endContactPhone
+        FROM
+          w_order wo
+        <where>
+            <if test="customerId != null">
+                wo.customer_id = #{customerId}
+            </if>
+            <if test="loginId != null">
+                and wo.create_user_id = #{loginId}
+            </if>
+        </where>
+        group by wo.id order by wo.expect_start_date ASC
     </select>
 
 </mapper>

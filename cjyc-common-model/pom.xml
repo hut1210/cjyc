@@ -72,6 +72,7 @@
         <dependency>
             <groupId>com.belerweb</groupId>
             <artifactId>pinyin4j</artifactId>
+            <version>2.5.0</version>
         </dependency>
 
         <!--Excel导入，导出-->
@@ -88,6 +89,7 @@
         <dependency>
             <groupId>com.cjkj</groupId>
             <artifactId>cjkj-usercenter-dto</artifactId>
+            <version>1.5.0</version>
         </dependency>
 
         <!--二维码-->

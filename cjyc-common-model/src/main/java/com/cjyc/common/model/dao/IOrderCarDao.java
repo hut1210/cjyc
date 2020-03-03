@@ -52,6 +52,7 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
      * @author JPG
      * @since 2019/10/15 14:12
      */
+    @Deprecated
     List<Map<String, Object>> countListWaitDispatchCar();
 
     /**
@@ -72,6 +73,7 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
      * @author JPG
      * @since 2019/10/16 8:29
      */
+    @Deprecated
     List<OrderCarWaitDispatchVo> findWaitDispatchCarList(@Param("paramsDto") WaitDispatchListOrderCarDto paramsDto, @Param("bizScope") List<Long> bizScope);
 
     /**
@@ -123,6 +125,7 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
 
     BigDecimal getWLTotalFee(Long orderId);
 
+    @Deprecated
     Map<String, Object> countTotalWaitDispatchCarByStartCity(@Param("paramsDto") LineWaitDispatchCountDto paramsDto);
 
     /**
@@ -248,18 +251,21 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
 
     Map<String, Object> countTotalTrunkWaitDispatchCarByStartCity(@Param("paramsDto") LineWaitDispatchCountDto paramsDto);
 
+    @Deprecated
     Map<String, Object> countTotalTrunkWaitDispatchCar(@Param("paramsDto") BaseWebDto paramsDto);
 
     int updateForFinish(@Param("orderCarId") Long orderCarId, @Param("areaCode")String areaCode);
 
     List<Map<String, Object>> countListWaitDispatchCarV2(@Param("paramsDto") BaseWebDto paramsDto);
 
+    @Deprecated
     Map<String, Object> countTotalWaitDispatchCarV2(@Param("paramsDto")BaseWebDto paramsDto);
 
     List<WaitCountVo> findWaitDispatchCarCountListForApp(@Param("param") BaseSalesDto param);
 
     Map<String, Object> countTotalWaitDispatchCarCountListForApp(@Param("param")BaseSalesDto param);
 
+    @Deprecated
     List<WaitCountLineVo> findWaitDispatchCarCountLineListForApp(@Param("param") WaitCountDto param);
 
     Map<String, Object> countTotalWaitDispatchCarCountLineListForApp(@Param("param")WaitCountLineDto param);
@@ -268,11 +274,21 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
 
     Map<String, Object> countTotalWaitDispatchCarByStartCityV2(@Param("paramsDto")LineWaitCountDto paramsDto);
 
-    List<WaybillCarVo> findPickCarEndpoint(@Param("list")List<Long> orderCarIdList);
+    List<WaybillCarVo> findPickCarEndpoint(@Param("list") List<Long> orderCarIdList, @Param("sort") Integer sort);
 
-    List<WaybillCarVo> findBackCarEndpoint(@Param("list")List<Long> orderCarIdList);
+    List<WaybillCarVo> findBackCarEndpoint(@Param("list")List<Long> orderCarIdList, @Param("sort") Integer sort);
 
-    List<WaybillCarVo> findTrunkCarEndpoint(@Param("list")List<Long> orderCarIdList);
+    List<WaybillCarVo> findTrunkCarEndpoint(@Param("list")List<Long> orderCarIdList, @Param("sort") Integer sort);
 
     List<String> findTrunkNodes(String orderCarId);
+
+    String findOutterState(String orderCarNo);
+
+    List<OrderCarWaitDispatchVo> findWaitDispatchCarListWeb(WaitDispatchListOrderCarDto paramsDto);
+
+    List<Map<String, Object>> countListWaitDispatchCarWeb(BaseWebDto paramsDto);
+
+    List<Map<String, Object>> findLineWaitDispatchCarCountListWeb(LineWaitCountDto paramsDto);
+
+    List<WaitCountLineVo> findWaitDispatchCarCountLineListForAppV2(@Param("param") WaitCountDto paramsDto);
 }

@@ -1,8 +1,9 @@
 package com.cjyc.common.model.vo.salesman.dispatch;
 
-import com.cjyc.common.model.util.BigDecimalSerizlizer;
-import com.cjyc.common.model.util.DateLongSerizlizer;
+import com.cjyc.common.model.serizlizer.BigDecimalSerizlizer;
+import com.cjyc.common.model.serizlizer.DateLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -18,7 +19,8 @@ import java.math.BigDecimal;
 public class HistoryDispatchRecordVo implements Serializable {
     private static final long serialVersionUID = 7800535148779633095L;
     @ApiModelProperty(value = "运单id")
-    private String waybillId;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long waybillId;
 
     @ApiModelProperty(value = "运单编号")
     private String waybillNo;
@@ -36,6 +38,9 @@ public class HistoryDispatchRecordVo implements Serializable {
     @ApiModelProperty(value = "车辆数量")
     private int carNum;
 
+    @ApiModelProperty(value = "承运商类型：1干线-个人承运商，2干线-企业承运商，3同城-业务员，4同城-代驾，5同城-拖车，6客户自己")
+    private Integer carrierType;
+
     @ApiModelProperty(value = "运单运费")
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal freightFee;
@@ -46,7 +51,25 @@ public class HistoryDispatchRecordVo implements Serializable {
     @ApiModelProperty(value = "承运商手机号")
     private String linkmanPhone;
 
+    @ApiModelProperty(value = "订单车辆ID")
+    private Long orderCarId;
+
+    @ApiModelProperty(value = "承运商ID")
+    private Long carrierId;
+
     public String getGuideLine() {
         return guideLine == null ? "" : guideLine;
+    }
+
+    public String getLinkMan() {
+        return linkMan == null ? "" : linkMan;
+    }
+
+    public String getLinkmanPhone() {
+        return linkmanPhone == null ? "" : linkmanPhone;
+    }
+
+    public BigDecimal getFreightFee() {
+        return freightFee == null ? new BigDecimal(0) : freightFee;
     }
 }

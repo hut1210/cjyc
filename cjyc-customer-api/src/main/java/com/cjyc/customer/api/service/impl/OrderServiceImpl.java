@@ -10,21 +10,22 @@ import com.cjyc.common.model.dto.customer.order.OrderDetailDto;
 import com.cjyc.common.model.dto.customer.order.OrderQueryDto;
 import com.cjyc.common.model.dto.customer.order.SimpleSaveOrderDto;
 import com.cjyc.common.model.entity.*;
+import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
+import com.cjyc.common.model.enums.message.PushMsgEnum;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
-import com.cjyc.common.model.enums.order.OrderPickTypeEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.JsonUtils;
 import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.invoice.InvoiceOrderVo;
-import com.cjyc.common.model.vo.customer.order.OrderCarCenterVo;
-import com.cjyc.common.model.vo.customer.order.OrderCenterDetailVo;
-import com.cjyc.common.model.vo.customer.order.OrderCenterVo;
+import com.cjyc.common.model.vo.customer.order.*;
 import com.cjyc.common.system.config.LogoImgProperty;
+import com.cjyc.common.system.service.ICsLineService;
 import com.cjyc.common.system.service.ICsOrderService;
-import com.cjyc.common.system.service.ICsSendNoService;
+import com.cjyc.common.system.service.ICsPushMsgService;
 import com.cjyc.common.system.util.RedisUtils;
 import com.cjyc.customer.api.service.IOrderService;
 import com.github.pagehelper.PageHelper;
@@ -64,9 +65,11 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
     @Resource
     private ICarSeriesDao carSeriesDao;
     @Resource
-    private IStoreDao storeDao;
+    private ICsLineService csLineService;
     @Resource
-    private ICsSendNoService csSendNoService;
+    private IOrderCarLogDao orderCarLogDao;
+    @Resource
+    private ICsPushMsgService csPushMsgService;
 
 
     @Override
@@ -78,18 +81,46 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         if(order.getState() > OrderStateEnum.WAIT_SUBMIT.code){
             return BaseResultUtil.fail("订单已经提交过");
         }
+        if(order.getLineId() == null || order.getLineId() <= 0){
+            Line line = csLineService.getLineByCity(order.getStartCityCode(), order.getEndCityCode(), true);
+            if(line == null){
+                return BaseResultUtil.fail("线路不存在，请重新选择城市");
+            }
+            order.setLineId(line.getId());
+        }
         order.setState(OrderStateEnum.SUBMITTED.code);
         orderDao.updateById(order);
+
+        //给客户发送消息
+        csPushMsgService.send(paramsDto.getLoginId(), UserTypeEnum.CUSTOMER, PushMsgEnum.C_COMMIT_ORDER, order.getNo());
+        //TODO 给所属业务中心业务员发送消息
+
         return BaseResultUtil.success();
     }
 
     @Override
+    public ResultVo<OutterLogVo> ListOrderCarLog(String orderCarNo) {
+        OutterLogVo outterLogVo = new OutterLogVo();
+        String state = orderCarDao.findOutterState(orderCarNo);
+        outterLogVo.setOutterState(state);
+        outterLogVo.setOrderCarNo(orderCarNo);
+        List<OutterOrderCarLogVo> list = orderCarLogDao.findCarLogByOrderNoAndCarNo(orderCarNo.split("-")[0], orderCarNo);
+        outterLogVo.setList(list);
+        return BaseResultUtil.success(outterLogVo);
+    }
+
+    @Override
     public ResultVo<PageVo<OrderCenterVo>> getPage(OrderQueryDto dto) {
+        log.info("====>用户端-查询订单列表,请求json数据 :: "+ JsonUtils.objectToJson(dto));
         if (dto.getEndDate() != null && dto.getEndDate() != 0) {
             dto.setEndDate(TimeStampUtil.convertEndTime(dto.getEndDate()));
         }
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
         List<OrderCenterVo> list = orderDao.selectPage(dto);
+
+        // 刪除车辆信息为空的元素
+        //list.removeIf(item -> CollectionUtils.isEmpty(item.getOrderCarCenterVoList()));
+
         PageInfo<OrderCenterVo> pageInfo = new PageInfo<>(list);
         Map<String, Object> orderCount = getOrderCount(dto.getLoginId());
         return BaseResultUtil.success(pageInfo,orderCount);
@@ -141,6 +172,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
 
     @Override
     public ResultVo<OrderCenterDetailVo> getDetail(OrderDetailDto dto) {
+        log.info("====>用户端-查询订单详情,请求json数据 :: "+JsonUtils.objectToJson(dto));
         OrderCenterDetailVo detailVo = new OrderCenterDetailVo();
         // 查询订单信息
         LambdaQueryWrapper<Order> queryOrderWrapper = new QueryWrapper<Order>().lambda()
@@ -163,41 +195,44 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         detailVo.setCouponName(couponSend == null ? "" : couponSend.getCouponName());
 
         // 查询出发地，目的地业务中心详细地址
-        if (order.getStartStoreId() != null) {
+        /*if (order.getStartStoreId() != null) {
             Store startStore = storeDao.selectById(order.getStartStoreId());
             detailVo.setStartStoreNameDetail(startStore == null ? "" : startStore.getDetailAddr());
         }
         if (order.getEndStoreId() != null) {
             Store endStore = storeDao.selectById(order.getEndStoreId());
             detailVo.setEndStoreNameDetail(endStore == null ? "" : endStore.getDetailAddr());
-        }
+        }*/
 
         // 自提自送订单设置业务中心地址
-        if (OrderPickTypeEnum.SELF.code == order.getPickType()) {
-            detailVo.setStartStoreNameDetail(detailVo.getStartAddress());
-            detailVo.setStartAddress("");
+        /*if (OrderPickTypeEnum.SELF.code == order.getPickType()) {
+            detailVo.setStartAddress(detailVo.getStartStoreNameDetail());
         }
         if (OrderPickTypeEnum.SELF.code == order.getBackType()) {
-            detailVo.setEndStoreNameDetail(detailVo.getEndAddress());
-            detailVo.setEndAddress("");
-        }
+            detailVo.setEndAddress(detailVo.getEndStoreNameDetail());
+        }*/
 
         return BaseResultUtil.success(detailVo);
     }
 
     private void fillFee(OrderCenterDetailVo detailVo, Order order) {
         List<OrderCar> orderCarList = orderCarDao.selectList(new QueryWrapper<OrderCar>().lambda().eq(OrderCar::getOrderId, order.getId()));
-        // 计算待确认订单的物流费与保险费
-        if (order.getState() <= OrderStateEnum.CHECKED.code && order.getState() >= OrderStateEnum.WAIT_SUBMIT.code) {
-            BigDecimal trunkFee = new BigDecimal(0);
-            BigDecimal addInsuranceFee = new BigDecimal(0);
-            for (OrderCar orderCar : orderCarList) {
-                trunkFee = trunkFee.add(orderCar.getTrunkFee());
-                addInsuranceFee = addInsuranceFee.add(orderCar.getAddInsuranceFee());
-            }
-            detailVo.setTrunkFee(trunkFee);
-            detailVo.setAddInsuranceFee(addInsuranceFee);
+        // 计算待确认订单的代驾提车费，拖车送车费，物流费，保险费
+        BigDecimal pickFee = new BigDecimal(0);
+        BigDecimal backFee = new BigDecimal(0);
+        BigDecimal trunkFee = new BigDecimal(0);
+        BigDecimal addInsuranceFee = new BigDecimal(0);
+        for (OrderCar orderCar : orderCarList) {
+            pickFee = pickFee.add(orderCar.getPickFee());
+            backFee = backFee.add(orderCar.getBackFee());
+            trunkFee = trunkFee.add(orderCar.getTrunkFee());
+            addInsuranceFee = addInsuranceFee.add(orderCar.getAddInsuranceFee());
         }
+        detailVo.setPickFee(pickFee);
+        detailVo.setBackFee(backFee);
+        detailVo.setTrunkFee(trunkFee);
+        detailVo.setAddInsuranceFee(addInsuranceFee);
+
 
         // 计算合伙人物流费 与 车辆代收中介费
         if (CustomerTypeEnum.COOPERATOR.code == order.getCustomerType()) {
@@ -231,6 +266,9 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         end.append(order.getEndCity() == null ? "" : order.getEndCity()+" ");
         end.append(order.getEndArea() == null ? "" : order.getEndArea());
         detailVo.setEndProvinceCityAreaName(end.toString().trim());
+
+        detailVo.setStartAddress(order.getStartCity()+order.getStartArea()+order.getStartAddress());
+        detailVo.setEndAddress(order.getEndCity()+order.getEndArea()+order.getEndAddress());
     }
 
     private void getOrderCar(OrderDetailDto dto, OrderCenterDetailVo detailVo) {
@@ -252,7 +290,9 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
                 // 查询车辆图片
                 this.getCarImg(orderCar, orderCarCenter);
                 // 查询品牌logo图片
-                List<CarSeries> carSeriesList = carSeriesDao.selectList(new QueryWrapper<CarSeries>().lambda().eq(CarSeries::getModel, orderCar.getModel()));
+                List<CarSeries> carSeriesList = carSeriesDao.selectList(new QueryWrapper<CarSeries>().lambda()
+                        .eq(CarSeries::getModel, orderCar.getModel())
+                        .eq(CarSeries::getBrand, orderCar.getBrand()));
                 if(!CollectionUtils.isEmpty(carSeriesList)) {
                     orderCarCenter.setLogoImg(LogoImgProperty.logoImg+carSeriesList.get(0).getLogoImg());
                 }

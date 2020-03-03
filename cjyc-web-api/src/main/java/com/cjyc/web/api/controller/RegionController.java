@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @Api(tags = "基础数据-大区管理")
 @RestController
+@Deprecated
 //@RequestMapping("/region")
 public class RegionController {
     @Autowired

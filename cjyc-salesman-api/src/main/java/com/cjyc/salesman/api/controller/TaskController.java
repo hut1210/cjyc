@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.text.MessageFormat;
 
 /**
  * @Description 任务控制层
@@ -56,6 +57,7 @@ public class TaskController {
         //验证用户
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
+        reqDto.setLoginPhone(admin.getPhone());
         reqDto.setLoginType(UserTypeEnum.ADMIN);
         return csTaskService.loadForLocal(reqDto);
     }
@@ -177,7 +179,7 @@ public class TaskController {
     }
 
     /**
-     * 功能描述: 查询提送车列表分页
+     * 功能描述: 查询提送车；提送车历史记录列表
      * @author liuxingxiang
      * @date 2019/12/9
      * @param dto
@@ -190,7 +192,7 @@ public class TaskController {
     }
 
     /**
-     * 功能描述: 查询提送车任务详情
+     * 功能描述: 查询提送车,提送车历史记录任务详情；查询出入库,出入库历史记录任务详情
      * @author liuxingxiang
      * @date 2019/12/9
      * @param dto

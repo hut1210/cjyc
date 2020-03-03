@@ -28,13 +28,10 @@ public class BankInfo implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "开户银行编号")
-    private String openBankCode;
+    private String bankCode;
 
-    @ApiModelProperty(value = "支付行号")
-    private String subBankCode;
-
-    @ApiModelProperty(value = "开户支行名称")
-    private String subBank;
+    @ApiModelProperty(value = "开户行名称")
+    private String bankName;
 
 
 }

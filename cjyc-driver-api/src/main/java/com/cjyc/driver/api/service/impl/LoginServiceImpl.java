@@ -189,7 +189,7 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
     /************************************韵车集成改版 st***********************************/
 
     @Override
-    public ResultVo<DriverLoginVo> loginNew(LoginDto dto) {
+    public ResultVo<DriverLoginVo> loginNew(LoginDto dto,String clientId,String clientSecret,String grantType) {
         //查询该手机号是否在司机表中
         Driver driver = driverDao.selectOne(new QueryWrapper<Driver>().lambda()
                 .eq(Driver::getPhone, dto.getPhone()));
@@ -238,14 +238,14 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
         }
         //调用架构组验证手机号验证码登陆
         AuthMobileLoginReq req = new AuthMobileLoginReq();
-        req.setClientId(LoginProperty.clientId);
-        req.setClientSecret(LoginProperty.clientSecret);
-        req.setGrantType(LoginProperty.grantType);
+        req.setClientId(clientId);
+        req.setClientSecret(clientSecret);
+        req.setGrantType(grantType);
         req.setMobile(dto.getPhone());
         req.setSmsCode(dto.getCode());
         ResultData<AuthLoginResp> rd = sysLoginService.mobileLogin(req);
         if(rd == null || rd.getData() == null || rd.getData().getAccessToken() == null){
-            return BaseResultUtil.getVo(ResultEnum.LOGIN_FAIL.getCode(),ResultEnum.LOGIN_FAIL.getMsg());
+            return BaseResultUtil.fail(rd.getMsg());
         }
         BeanUtils.copyProperties(baseLoginVo,driverLoginVo);
         driverLoginVo.setIdCard(StringUtils.isNotBlank(baseLoginVo.getIdCard()) ? baseLoginVo.getIdCard():"");
@@ -298,7 +298,7 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
         carrierDao.insert(carrier);
 
         //保存司机角色机构关系
-        ResultVo<UserRoleDept> resultVo = csUserRoleDeptService.saveDriverToUserRoleDept(carrier, driver,null, role.getId(), null,1);
+        ResultVo<UserRoleDept> resultVo = csUserRoleDeptService.saveAppDriverToUserRoleDept(carrier, driver, role.getId());
         if (!ResultEnum.SUCCESS.getCode().equals(resultVo.getCode())) {
             return BaseResultUtil.fail("司机信息保存失败，原因：" + rd.getMsg());
         }

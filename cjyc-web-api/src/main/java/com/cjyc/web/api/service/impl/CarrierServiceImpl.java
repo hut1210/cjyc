@@ -10,24 +10,18 @@ import com.cjkj.usercenter.dto.yc.AddDeptAndUserResp;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.carrier.*;
-import com.cjyc.common.model.dto.web.driver.DriverDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.driver.DriverIdentityEnum;
-import com.cjyc.common.model.enums.role.DeptTypeEnum;
-import com.cjyc.common.model.enums.role.RoleLevelEnum;
-import com.cjyc.common.model.enums.role.RoleRangeEnum;
+import com.cjyc.common.model.enums.task.TaskStateEnum;
 import com.cjyc.common.model.enums.transport.*;
-import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.util.LocalDateTimeUtil;
-import com.cjyc.common.model.util.RandomUtil;
-import com.cjyc.common.model.util.YmlProperty;
+import com.cjyc.common.model.util.*;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.carrier.*;
-import com.cjyc.common.model.vo.web.driver.DriverImportExcel;
 import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.feign.ISysUserService;
+import com.cjyc.common.system.service.ICsBankInfoService;
 import com.cjyc.common.system.service.ICsCarrierService;
 import com.cjyc.common.system.service.ICsRoleService;
 import com.cjyc.common.system.util.ResultDataUtil;
@@ -37,7 +31,6 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.util.PropertiesUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -72,6 +65,8 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     @Resource
     private IVehicleDao vehicleDao;
     @Resource
+    private ITaskDao taskDao;
+    @Resource
     private ICarrierCityConService carrierCityConService;
     @Autowired
     private ISysUserService sysUserService;
@@ -83,6 +78,8 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     private ISysRoleService sysRoleService;
     @Resource
     private IUserRoleDeptDao userRoleDeptDao;
+    @Resource
+    private ICsBankInfoService bankInfoService;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -342,7 +339,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     public void exportCarrierExcel(HttpServletRequest request, HttpServletResponse response) {
         SeleCarrierDto dto = getCarrierDto(request);
         List<CarrierVo> carrierVos = encapCarrierNew(dto);
-        if (!CollectionUtils.isEmpty(carrierVos)) {
+        //if (!CollectionUtils.isEmpty(carrierVos)) {
             // 生成导出数据
             List<CarrierExportExcel> exportExcelList = new ArrayList<>();
             for (CarrierVo vo : carrierVos) {
@@ -354,13 +351,13 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             String sheetName = "承运商管理";
             String fileName = "承运商管理.xls";
             try {
-                if(!CollectionUtils.isEmpty(exportExcelList)){
+                //if(!CollectionUtils.isEmpty(exportExcelList)){
                     ExcelUtil.exportExcel(exportExcelList, title, sheetName, CarrierExportExcel.class, fileName, response);
-                }
+                //}
             } catch (IOException e) {
                 log.error("导出承运商管理信息异常:{}",e);
             }
-        }
+        //}
     }
 
     /*********************************韵车集成改版 st*****************************/
@@ -372,6 +369,10 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     @Transactional(rollbackFor = Exception.class)
     @Override
     public ResultVo saveOrModifyCarrierNew(CarrierDto dto) {
+      /*  boolean flag = BankCardUtil.checkBankCard(dto.getCardNo());
+        if(!flag){
+            return BaseResultUtil.fail("银行卡号输入不符合,请检查");
+        }*/
         if (dto.getCarrierId() == null) {
             //新增
             List<Driver> existDriverList = driverDao.selectList(new QueryWrapper<Driver>().lambda()
@@ -586,18 +587,30 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         BankCardBind bcb = new BankCardBind();
         if(dto != null){
             BeanUtils.copyProperties(dto,bcb);
+            bcb.setIdCard(dto.getLegalIdCard());
+            bcb.setCardPhone(dto.getLinkmanPhone());
         }else{
             BeanUtils.copyProperties(excel,bcb);
+            if("对公".equals(excel.getCardType())){
+                bcb.setCardType(1);
+            }else{
+                bcb.setCardType(2);
+            }
+            bcb.setIdCard(excel.getLegalIdCard());
+            bcb.setCardPhone(excel.getLinkmanPhone());
         }
         //承运商id
         bcb.setUserId(carrierId);
         //承运商超级管理员
         bcb.setUserType(UserTypeEnum.DRIVER.code);
-        bcb.setIdCard(dto.getLegalIdCard());
         bcb.setState(UseStateEnum.USABLE.code);
         bcb.setCardColour(RandomUtil.getIntRandom());
         bcb.setCreateTime(NOW);
-        bcb.setCardPhone(dto.getLinkmanPhone());
+        //获取银行编码
+        BankInfo bankInfo = bankInfoService.findBankCode(bcb.getBankName());
+        if(bankInfo != null){
+            bcb.setBankCode(bankInfo.getBankCode());
+        }
         bankCardBindDao.insert(bcb);
     }
 
@@ -697,10 +710,10 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             return BaseResultUtil.fail("根据角色名称：" + CARRIER_SUPER_ROLE_NAME +
                     ",未查询到角色信息");
         }
-        UserRoleDept urd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
-            .eq(UserRoleDept::getDeptId, origCarrier.getId())
-            .eq(UserRoleDept::getRoleId, role.getId()));
         Driver driver = driverDao.selectOne(new QueryWrapper<Driver>().lambda().eq(Driver::getPhone,dto.getLinkmanPhone()));
+        UserRoleDept urd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
+                .eq(UserRoleDept::getDeptId, origCarrier.getId())
+                .eq(UserRoleDept::getUserId, driver.getId()));
         if(origCarrier == null || urd == null || driver == null){
             return BaseResultUtil.fail("数据信息有误");
         }
@@ -813,6 +826,15 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
                 if(count != null){
                     vo.setCarNum(count.getCarNum());
                 }
+                //处理该司机当前营运状态
+                Integer taskCount = taskDao.selectCount(new QueryWrapper<Task>().lambda()
+                        .eq(Task::getDriverId, vo.getDriverId())
+                        .lt(Task::getState, TaskStateEnum.FINISHED.code));
+                if(taskCount > 0){
+                    vo.setBusinessState(BusinessStateEnum.OUTAGE.code);
+                }else{
+                    vo.setBusinessState(BusinessStateEnum.BUSINESS.code);
+                }
             }
         }
         PageInfo<TransportDriverVo> pageInfo = new PageInfo<>(transportDriverVos);
@@ -876,6 +898,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean importCarrierExcel(MultipartFile file, Long loginId) {
         boolean result;
         try {
@@ -905,6 +928,16 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
                     //添加承运商
                     Carrier carrier = new Carrier();
                     BeanUtils.copyProperties(carrierImportExcel,carrier);
+                    if("是".equals(carrierImportExcel.getIsInvoice())){
+                        carrier.setIsInvoice(1);
+                    }else{
+                        carrier.setIsInvoice(0);
+                    }
+                    if("账期".equals(carrierImportExcel.getSettleType())){
+                        carrier.setSettleType(1);
+                    }else{
+                        carrier.setSettleType(0);
+                    }
                     carrier.setState(CommonStateEnum.WAIT_CHECK.code);
                     carrier.setType(CarrierTypeEnum.ENTERPRISE.code);
                     carrier.setBusinessState(BusinessStateEnum.BUSINESS.code);
@@ -935,7 +968,6 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
                     userRoleDept.setDeptType(2);
                     userRoleDept.setUserType(UserTypeEnum.DRIVER.code);
                     userRoleDept.setState(CommonStateEnum.WAIT_CHECK.code);
-                    userRoleDept.setMode(carrierImportExcel.getMode());
                     userRoleDept.setCreateTime(NOW);
                     userRoleDept.setCreateUserId(loginId);
                     userRoleDeptDao.insert(userRoleDept);

@@ -7,22 +7,24 @@ package com.cjyc.common.model.enums.log;
 public enum OrderCarLogEnum {
 
     /***/
-    SUBMIT("客户提交", "", "", 1),
-    COMMIT("业务员提交", "", "", 2),
-    CHECK("客户提交", "", "", 3),
-    IN_STORE("车辆入库", "车辆{0}, 已在{1}入库", "车辆{0}, 已在{1}入库", 5),
-    OUT_STORE("车辆出库", "车辆{0}, 已在{1}出库", "车辆{0}, 已在{1}出库", 6),
-    RECEIPT("客户签收", "车辆{0}, 已确认收车", "车辆{0}, 已确认收车", 4);
+    C_LOAD("已装车", "车辆已在【{0}】装车", "车辆已在【{0}】装车，司机【{1}/{2}】", 21),
+    C_UNLOAD("已卸车", "车辆已在【{0}】卸车", "车辆已在【{0}】卸车，司机【{1}/{2}】", 22),
+    C_UNLOAD_MIDWAY("已卸载", "车辆已在【{0}】卸载", "车辆已在【{0}】卸载，操作人【{1}/{2}】", 23),
+    C_IN_STORE("已入库", "车辆已在【{0}】入库", "车辆已在【{0}】入库，操作人【{1}/{2}】", 24),
+    C_OUT_STORE("已出库", "车辆已在【{0}】出库", "车辆已在【{0}】出库，操作人【{1}/{2}】", 25),
+    C_PAID("已支付", "车辆已支付", "车辆已收款，操作人【{0}/{1}】", 28),
+    C_RECEIPT("已收车", "车辆已确认收车", "车辆已确认收车，司机【{0}/{1}】", 29);
+
 
     private String name;
-    private String innerLog;
     private String outterLog;
+    private String innerLog;
     private int code;
 
-    OrderCarLogEnum(String name, String innerLog, String outterLog, int code) {
+    OrderCarLogEnum(String name, String outterLog, String innerLog, int code) {
         this.name = name;
-        this.innerLog = innerLog;
         this.outterLog = outterLog;
+        this.innerLog = innerLog;
         this.code = code;
     }
 

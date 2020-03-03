@@ -9,7 +9,6 @@ import com.cjyc.common.model.dto.CarrierDriverDto;
 import com.cjyc.common.model.dto.CarrierVehicleDto;
 import com.cjyc.common.model.dto.FreeDto;
 import com.cjyc.common.model.dto.driver.mine.CarrierDriverNameDto;
-import com.cjyc.common.model.dto.web.driver.CarrierDriverListDto;
 import com.cjyc.common.model.dto.web.driver.DispatchDriverDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.CommonStateEnum;
@@ -22,6 +21,7 @@ import com.cjyc.common.model.enums.task.TaskStateEnum;
 import com.cjyc.common.model.enums.transport.*;
 import com.cjyc.common.model.exception.ParameterException;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.JsonUtils;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.FreeDriverVo;
@@ -35,6 +35,7 @@ import com.cjyc.common.system.service.*;
 import com.cjyc.common.system.service.sys.ICsSysService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -44,11 +45,10 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 @Service
+@Slf4j
 public class CsDriverServiceImpl implements ICsDriverService {
     @Resource
     private ICarrierDriverConDao carrierDriverConDao;
@@ -497,9 +497,32 @@ public class CsDriverServiceImpl implements ICsDriverService {
     /************************************韵车集成改版 st***********************************/
 
     @Override
+    public ResultVo<PageVo<DispatchDriverVo>> dispatchAppDriverNew(DispatchDriverDto dto){
+        log.info("干线调度个人(承运商)司机信息请求json数据 :: "+ JsonUtils.objectToJson(dto));
+        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
+        dto.setKeyword(dto.getRealName());
+        List<DispatchDriverVo> dispatchDriverVos = driverDao.findAppDispatchDriver(dto);
+        PageInfo<DispatchDriverVo> pageInfo = new PageInfo<>(dispatchDriverVos);
+        return BaseResultUtil.success(pageInfo);
+    }
+
+    @Override
     public ResultVo<PageVo<DispatchDriverVo>> dispatchDriverNew(DispatchDriverDto dto){
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<DispatchDriverVo> dispatchDriverVos = driverDao.findDispatchDriver(dto);
+        if(!CollectionUtils.isEmpty(dispatchDriverVos)){
+            for(DispatchDriverVo vo : dispatchDriverVos){
+                //处理该司机当前营运状态
+                Integer taskCount = taskDao.selectCount(new QueryWrapper<Task>().lambda()
+                        .eq(Task::getDriverId, vo.getDriverId())
+                        .lt(Task::getState, TaskStateEnum.FINISHED.code));
+                if(taskCount > 0){
+                    vo.setBusinessState(BusinessStateEnum.OUTAGE.code);
+                }else {
+                    vo.setBusinessState(BusinessStateEnum.BUSINESS.code);
+                }
+            }
+        }
         PageInfo<DispatchDriverVo> pageInfo = new PageInfo<>(dispatchDriverVos);
         return BaseResultUtil.success(pageInfo);
     }
@@ -522,6 +545,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResultVo saveOrModifyDriverAppNew(CarrierDriverDto dto){
+        log.info("新增/修改承运商下司机请求json数据 :: "+ JsonUtils.objectToJson(dto));
         Role role = null;
         UserRoleDept urd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
                 .eq(UserRoleDept::getUserId, dto.getLoginId())
@@ -619,6 +643,9 @@ public class CsDriverServiceImpl implements ICsDriverService {
         if(driver == null){
             return BaseResultUtil.fail("该司机不存在，请检查");
         }
+        if(!dto.getPhone().equals(driver.getPhone())){
+            return BaseResultUtil.fail("该下属司机不可修改其手机号");
+        }
         Carrier carrier = carrierDao.selectById(urd.getDeptId());
         if(carrier == null){
             return BaseResultUtil.fail("该承运商不存在，请检查");
@@ -626,15 +653,15 @@ public class CsDriverServiceImpl implements ICsDriverService {
         DriverVehicleCon dvc = driverVehicleConDao.selectOne(new QueryWrapper<DriverVehicleCon>().lambda().eq(DriverVehicleCon::getDriverId,driver.getId()));
         VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda().eq(VehicleRunning::getDriverId,driver.getId()));
         if(vr != null) {
-            Task task = taskDao.selectOne(new QueryWrapper<Task>().lambda()
+            List<Task> taskList = taskDao.selectList(new QueryWrapper<Task>().lambda()
                     .eq(Task::getVehicleRunningId,vr.getId())
                     .eq(Task::getState,TaskStateEnum.TRANSPORTING.code));
-            if(task != null){
+            if(!CollectionUtils.isEmpty(taskList)){
                 return BaseResultUtil.fail("该运力正在运输中，不可修改");
             }
         }
         //更新架构组用户信息
-        ResultData<Boolean> updateRd = csCustomerService.updateUserToPlatform(null,driver, dto.getPhone());
+        ResultData<Boolean> updateRd = csCustomerService.updateUserToPlatform(null,driver, dto.getPhone(),dto.getRealName());
         if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
             return BaseResultUtil.fail("修改用户信息失败，原因：" + updateRd.getMsg());
         }
@@ -800,15 +827,15 @@ public class CsDriverServiceImpl implements ICsDriverService {
         DriverVehicleCon dvc = driverVehicleConDao.selectOne(new QueryWrapper<DriverVehicleCon>().lambda().eq(DriverVehicleCon::getDriverId,driver.getId()));
         VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda().eq(VehicleRunning::getDriverId,driver.getId()));
         if(vr != null) {
-            Task task = taskDao.selectOne(new QueryWrapper<Task>().lambda()
+            List<Task> taskList = taskDao.selectList(new QueryWrapper<Task>().lambda()
                     .eq(Task::getVehicleRunningId,vr.getId())
                     .eq(Task::getState,TaskStateEnum.TRANSPORTING.code));
-            if(task != null){
+            if(!CollectionUtils.isEmpty(taskList)){
                 return BaseResultUtil.fail("该运力正在运输中，不可修改");
             }
         }
         //更新架构组用户信息
-        ResultData<Boolean> updateRd = csCustomerService.updateUserToPlatform(null,driver, dto.getPhone());
+        ResultData<Boolean> updateRd = csCustomerService.updateUserToPlatform(null,driver, dto.getPhone(),dto.getRealName());
         if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
             return BaseResultUtil.fail("修改用户信息失败，原因：" + updateRd.getMsg());
         }

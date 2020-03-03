@@ -1,13 +1,17 @@
 package com.cjyc.web.api.controller;
 
+import com.cjyc.common.model.dto.BasePageDto;
 import com.cjyc.common.model.dto.CarrierDriverDto;
+import com.cjyc.common.model.dto.KeywordDto;
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.carrier.*;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.bankInfo.BankInfoVo;
 import com.cjyc.common.model.vo.web.carrier.*;
+import com.cjyc.common.system.service.ICsBankInfoService;
 import com.cjyc.common.system.service.ICsCarrierService;
 import com.cjyc.common.system.service.ICsDriverService;
 import com.cjyc.web.api.service.ICarrierService;
@@ -21,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  *  @author: zj
@@ -39,6 +44,8 @@ public class CarrierController {
     private ICsDriverService csDriverService;
     @Resource
     private ICsCarrierService csCarrierService;
+    @Resource
+    private ICsBankInfoService csBankInfoService;
 
     @ApiOperation(value = "新增/修改承运商")
 //    @PostMapping(value = "/saveOrModifyCarrier")
@@ -173,6 +180,12 @@ public class CarrierController {
     public ResultVo importCarrierExcel(@RequestParam("file") MultipartFile file, @PathVariable Long loginId){
         boolean result = carrierService.importCarrierExcel(file, loginId);
         return result ? BaseResultUtil.success() : BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
+    }
+
+    @ApiOperation(value = "获取全部银行信息")
+    @PostMapping(value = "/findBankInfo")
+    public ResultVo<List<BankInfoVo>> findBankInfo(@Validated @RequestBody KeywordDto dto) {
+        return csBankInfoService.findWebBankInfo(dto);
     }
 
     /*********************************韵车集成改版 ed*****************************/

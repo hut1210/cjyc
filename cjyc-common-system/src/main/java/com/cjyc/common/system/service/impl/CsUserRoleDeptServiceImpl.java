@@ -84,11 +84,26 @@ public class CsUserRoleDeptServiceImpl implements ICsUserRoleDeptService {
             urd.setState(CommonStateEnum.CHECKED.code);
             urd.setMode(mode);
         }else{
-            urd.setState(CommonStateEnum.WAIT_CHECK.code);
+            urd.setState(CommonStateEnum.IN_CHECK.code);
             urd.setMode(carrier.getMode());
         }
         urd.setCreateTime(NOW);
         urd.setCreateUserId(loginId);
+        userRoleDeptDao.insert(urd);
+        return BaseResultUtil.success(urd);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ResultVo<UserRoleDept> saveAppDriverToUserRoleDept(Carrier carrier, Driver driver, Long roleId) {
+        UserRoleDept urd = new UserRoleDept();
+        urd.setUserId(driver.getId());
+        urd.setRoleId(roleId);
+        urd.setDeptId(carrier.getId()+"");
+        urd.setDeptType(DeptTypeEnum.CARRIER.code);
+        urd.setUserType(UserTypeEnum.DRIVER.code);
+        urd.setState(CommonStateEnum.WAIT_CHECK.code);
+        urd.setCreateTime(NOW);
         userRoleDeptDao.insert(urd);
         return BaseResultUtil.success(urd);
     }
@@ -108,7 +123,7 @@ public class CsUserRoleDeptServiceImpl implements ICsUserRoleDeptService {
             urd.setState(CommonStateEnum.CHECKED.code);
             urd.setMode(mode);
         }else{
-            urd.setState(CommonStateEnum.WAIT_CHECK.code);
+            urd.setState(CommonStateEnum.IN_CHECK.code);
             urd.setMode(carrier.getMode());
         }
         urd.setUpdateUserId(loginId);

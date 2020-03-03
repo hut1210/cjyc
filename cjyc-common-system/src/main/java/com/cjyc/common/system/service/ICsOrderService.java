@@ -1,6 +1,7 @@
 package com.cjyc.common.system.service;
 
 import com.cjyc.common.model.dto.web.order.*;
+import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.order.DispatchAddCarVo;
 
@@ -22,6 +23,10 @@ public interface ICsOrderService {
      * @param reqDto
      */
     ResultVo check(CheckOrderDto reqDto);
+
+    Order fillOrderInputStore(Order order);
+
+    Order fillOrderStoreInfo(Order order, boolean isForceUpdate);
 
     /**
      * 提交并审核

@@ -65,5 +65,7 @@ public interface IAdminDao extends BaseMapper<Admin> {
     List<TypeSalesmanVo> deliverySalesmanNew(TypeSalesmanDto dto);
 
     List<AdminPageVo>  getPageListForSalesmanApp(@Param("param")SalesmanQueryDto dto);
+
+    Admin findAdminByPhone(String phone);
     /************************************韵车集成改版 ed***********************************/
 }

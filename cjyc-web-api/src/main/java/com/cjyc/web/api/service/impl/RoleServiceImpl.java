@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
+import com.cjkj.common.utils.ExcelUtil;
 import com.cjkj.usercenter.dto.common.*;
 import com.cjkj.usercenter.dto.yc.SelectUsersByRoleReq;
 import com.cjkj.usercenter.dto.yc.SelectUsersByRoleResp;
@@ -11,16 +12,19 @@ import com.cjkj.usercenter.dto.yc.UpdateBatchRoleMenusReq;
 import com.cjyc.common.model.dao.IRoleDao;
 import com.cjyc.common.model.dto.web.role.AddRoleDto;
 import com.cjyc.common.model.dto.web.role.ModifyRoleMenusDto;
+import com.cjyc.common.model.dto.web.role.RoleDto;
 import com.cjyc.common.model.dto.web.role.SetRoleForAppDto;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Role;
 import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.enums.role.RoleBtnForAppEnum;
 import com.cjyc.common.model.enums.role.RoleLevelEnum;
+import com.cjyc.common.model.enums.role.RoleLoginAppEnum;
 import com.cjyc.common.model.enums.role.RoleRangeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.role.ExportRoleVo;
 import com.cjyc.common.model.vo.web.role.SelectUserByRoleVo;
 import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysRoleService;
@@ -28,6 +32,7 @@ import com.cjyc.common.system.util.ClpDeptUtil;
 import com.cjyc.common.system.util.ResultDataUtil;
 import com.cjyc.web.api.service.IAdminService;
 import com.cjyc.web.api.service.IRoleService;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +42,9 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -269,6 +277,10 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
         BeanUtils.copyProperties(dto, role);
         role.setRoleLevel(dto.getRoleLevel());
         role.setRoleRange(dto.getRoleRange());
+        if(dto.getRoleRange() != null &&
+                dto.getRoleRange().equals(RoleRangeEnum.INNER.getValue())) {
+            role.setLoginApp(RoleLoginAppEnum.CAN_LOGIN_APP.getFlag());
+        }
         //将物流平台角色标识存储
         Long clpRoleId = saveRd.getData().getRoleId();
         role.setRoleId(clpRoleId);
@@ -652,4 +664,28 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
         role.setDeptIdList(idList);
         return sysRoleService.saveBatch(role);
     }
+
+    @Override
+    public void exportRoleListExcel(HttpServletRequest request, HttpServletResponse response) {
+        RoleDto dto = new RoleDto();
+        dto.setRoleName(request.getParameter("roleName"));
+        List<Role> roleList = roleDao.selectList(new QueryWrapper<Role>().lambda()
+                    .eq(Role::getRoleRange,RoleRangeEnum.INNER.getValue())
+                    .like(org.apache.commons.lang3.StringUtils.isNotBlank(dto.getRoleName()),Role::getRoleName,dto.getRoleName()));
+        List<ExportRoleVo> exportExcelList = Lists.newArrayList();
+        for (Role vo : roleList) {
+            ExportRoleVo exportRoleVo = new ExportRoleVo();
+            BeanUtils.copyProperties(vo, exportRoleVo);
+            exportExcelList.add(exportRoleVo);
+        }
+        String title = "角色管理";
+        String sheetName = "角色管理";
+        String fileName = "角色管理.xls";
+        try {
+            ExcelUtil.exportExcel(exportExcelList, title, sheetName, ExportRoleVo.class, fileName, response);
+        } catch (IOException e) {
+            log.error("导出角色管理信息异常:{}",e);
+        }
+    }
+
 }

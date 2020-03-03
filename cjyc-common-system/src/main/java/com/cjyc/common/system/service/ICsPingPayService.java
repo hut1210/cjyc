@@ -26,6 +26,9 @@ public interface ICsPingPayService {
             APIConnectionException, AuthenticationException, FileNotFoundException;
 
     ResultVo allinpayToCarrier(Long waybillId) throws AuthenticationException, InvalidRequestException, APIConnectionException, APIException, ChannelException, RateLimitException, FileNotFoundException ;
+
+    ResultVo allinpayToCarrierNew(Long waybillId) throws AuthenticationException, InvalidRequestException, APIConnectionException, APIException, ChannelException, RateLimitException, FileNotFoundException ;
+
     ResultVo allinpayToCooperator(Long orderId) throws FileNotFoundException, RateLimitException, APIException, ChannelException, InvalidRequestException, APIConnectionException, AuthenticationException;
 
     Charge prePay(WebPrePayDto prePayDto) throws RateLimitException, APIException, ChannelException, InvalidRequestException,
@@ -41,4 +44,6 @@ public interface ICsPingPayService {
     ResultVo unlock(String orderNo);
 
     ResultVo unlockQrcode(String orderCarNo);
+
+    void cancelOrderRefund(Long orderId);
 }

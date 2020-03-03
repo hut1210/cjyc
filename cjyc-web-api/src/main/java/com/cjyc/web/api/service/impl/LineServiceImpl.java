@@ -1,25 +1,29 @@
 package com.cjyc.web.api.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.utils.ExcelUtil;
 import com.cjyc.common.model.constant.NoConstant;
 import com.cjyc.common.model.dao.ICityDao;
 import com.cjyc.common.model.dao.ILineDao;
 import com.cjyc.common.model.dao.ILineNodeDao;
+import com.cjyc.common.model.dto.CommonDto;
 import com.cjyc.common.model.dto.web.line.*;
+import com.cjyc.common.model.entity.City;
 import com.cjyc.common.model.entity.Line;
 import com.cjyc.common.model.enums.CityLevelEnum;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
+import com.cjyc.common.model.util.PositionUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.city.ProvinceCityVo;
 import com.cjyc.common.model.vo.web.line.LineExportExcel;
 import com.cjyc.common.model.vo.web.line.LineVo;
 import com.cjyc.web.api.service.ILineService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -36,6 +40,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import static com.cjyc.common.model.util.PositionUtil.getLngAndLat;
+
 /**
  * <p>
  * 班线管理 服务实现类
@@ -47,9 +53,6 @@ import java.util.*;
 @Service
 @Slf4j
 public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILineService {
-
-    @Resource
-    private ILineNodeDao lineNodeDao;
 
     @Resource
     private ILineDao lineDao;
@@ -86,7 +89,7 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
     @Override
     public ResultVo<PageVo<LineVo>> findPageLine(SelectLineDto dto) {
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
-        List<LineVo> lineVos = queryAllByTerm(dto);
+        List<LineVo> lineVos = lineDao.findAllLine(dto);
         PageInfo<LineVo> pageInfo = new PageInfo<>(lineVos);
         return BaseResultUtil.success(pageInfo);
     }
@@ -145,8 +148,8 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
         SelectLineDto dto = getSelectLineDto(request);
         //PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         // 查询列表
-        List<LineVo> lineVos = queryAllByTerm(dto);
-        if (!CollectionUtils.isEmpty(lineVos)) {
+        List<LineVo> lineVos = lineDao.findAllLine(dto);
+        //if (!CollectionUtils.isEmpty(lineVos)) {
             // 生成导出数据
             List<LineExportExcel> exportExcelList = new ArrayList<>();
             for (LineVo vo : lineVos) {
@@ -158,13 +161,13 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
             String sheetName = "运输班线";
             String fileName = "运输班线.xls";
             try {
-                if(!CollectionUtils.isEmpty(exportExcelList)){
+                //if(!CollectionUtils.isEmpty(exportExcelList)){
                     ExcelUtil.exportExcel(exportExcelList, title, sheetName, LineExportExcel.class, fileName, response);
-                }
+                //}
             } catch (IOException e) {
                 log.error("导出运输班线异常:{}",e);
             }
-        }
+        //}
     }
 
     @Override
@@ -173,24 +176,39 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
         try {
             List<LineImportExcel> lineImportExcelList = ExcelUtil.importExcel(file, 1, 1, LineImportExcel.class);
             if (!CollectionUtils.isEmpty(lineImportExcelList)) {
-                List<Line> list = new ArrayList<>(10);
+                List<Line> list = Lists.newArrayList();
                 for (LineImportExcel lineExcel : lineImportExcelList) {
                     //根据城市名称查询城市code
-                    String fromCode = cityDao.getCodeByName(lineExcel.getFromCity());
-                    String toCode = cityDao.getCodeByName(lineExcel.getToCity());
-                    if(StringUtils.isNotBlank(fromCode) && StringUtils.isNotBlank(toCode)){
-                        Line line = lineDao.getLinePriceByCode(fromCode,toCode);
+                    City fromCity = cityDao.getCodeByName(lineExcel.getFromCity());
+                    City toCity = cityDao.getCodeByName(lineExcel.getToCity());
+                    if(fromCity != null && toCity != null){
+                        Line line = lineDao.getLinePriceByCode(fromCity.getCode(),toCity.getCode());
                         if(line != null){
                             continue;
                         }
                     }
                     Line line = new Line();
                     BeanUtils.copyProperties(lineExcel,line);
-                    line.setFromCode(fromCode);
-                    line.setToCode(toCode);
-                    line.setCode(fromCode+toCode);
+                    line.setFromProvince(fromCity.getParentName());
+                    line.setFromProvinceCode(fromCity.getParentCode());
+                    line.setFromCity(fromCity.getName());
+                    line.setFromCode(fromCity.getCode());
+
+                    line.setToProvince(toCity.getParentName());
+                    line.setToProvinceCode(toCity.getParentCode());
+                    line.setToCode(toCity.getCode());
+                    line.setToCity(toCity.getName());
+                    line.setCode(fromCity.getCode()+toCity.getCode());
                     line.setDefaultWlFee(lineExcel.getDefaultWlFee() == null ? BigDecimal.ZERO:lineExcel.getDefaultWlFee().multiply(new BigDecimal(100)));
                     line.setDefaultFreightFee(lineExcel.getDefaultFreightFee() == null ? BigDecimal.ZERO:lineExcel.getDefaultFreightFee().multiply(new BigDecimal(100)));
+
+                    String fromCityLocation = PositionUtil.getLngAndLat(lineExcel.getFromCity());
+                    String toCityLocation = PositionUtil.getLngAndLat(lineExcel.getToCity());
+                    double distance = PositionUtil.getDistance(Double.valueOf(fromCityLocation.split(",")[0]), Double.valueOf(fromCityLocation.split(",")[1]), Double.valueOf(toCityLocation.split(",")[0]), Double.valueOf(toCityLocation.split(",")[1]));
+                    BigDecimal bd = new BigDecimal(distance).setScale(0, BigDecimal.ROUND_DOWN);
+                    line.setKilometer(bd);
+
+                    line.setDays(BigDecimal.valueOf(lineExcel.getDays()));
                     line.setName(lineExcel.getFromCity()+NoConstant.SEPARATOR+lineExcel.getToCity());
                     line.setCreateTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
                     line.setCreateUserId(loginId);
@@ -209,46 +227,10 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
 
     private SelectLineDto getSelectLineDto(HttpServletRequest request) {
         SelectLineDto dto = new SelectLineDto();
-        dto.setCurrentPage(Integer.valueOf(request.getParameter("currentPage")));
-        dto.setPageSize(Integer.valueOf(request.getParameter("pageSize")));
-        dto.setFromCityCode(request.getParameter("fromCityCode"));
-        dto.setToCityCode(request.getParameter("toCityCode"));
-        dto.setLineCode(request.getParameter("lineCode"));
+        dto.setFromCityCode(request.getParameter("fromCode"));
+        dto.setToCityCode(request.getParameter("toCode"));
+        dto.setLineCode(request.getParameter("code"));
         return dto;
-    }
-
-    /**
-     * 根据条件查询班线
-     * @param dto
-     * @return
-     */
-    private List<LineVo> queryAllByTerm(SelectLineDto dto){
-        List<LineVo> lineVos = lineDao.getLineByTerm(dto);
-        if(!CollectionUtils.isEmpty(lineVos)){
-            for(LineVo vo : lineVos){
-                //获取起始省市
-                if(StringUtils.isNotBlank(vo.getFromCityCode())){
-                    ProvinceCityVo pcvo = cityDao.getProvinceCityByCode(vo.getFromCityCode());
-                    if(pcvo != null){
-                        vo.setFromProvinceCode(pcvo.getProvinceCode());
-                        vo.setFromProvince(pcvo.getProvinceName());
-                        vo.setFromCityCode(pcvo.getCityCode());
-                        vo.setFromCity(pcvo.getCityName());
-                    }
-                }
-                //获取目的省市
-                if(StringUtils.isNotBlank(vo.getToCityCode())){
-                    ProvinceCityVo pcvo = cityDao.getProvinceCityByCode(vo.getToCityCode());
-                    if(pcvo != null){
-                        vo.setToProvinceCode(pcvo.getProvinceCode());
-                        vo.setToProvince(pcvo.getProvinceName());
-                        vo.setToCity(pcvo.getCityName());
-                        vo.setToCityCode(pcvo.getCityCode());
-                    }
-                }
-            }
-        }
-        return lineVos;
     }
     /**
      * 封装班线line
@@ -257,6 +239,12 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
      */
     private Line encapLine(Line line, AddOrUpdateLineDto dto){
         BeanUtils.copyProperties(dto,line);
+        City fromCity = cityDao.findCityByCode(dto.getFromCode());
+        line.setFromProvince(fromCity.getParentName());
+        line.setFromProvinceCode(fromCity.getParentCode());
+        City toCity = cityDao.findCityByCode(dto.getToCode());
+        line.setToProvince(toCity.getParentName());
+        line.setToProvinceCode(toCity.getParentCode());
         line.setDefaultWlFee(dto.getDefaultWlFee() == null ? BigDecimal.ZERO:dto.getDefaultWlFee().multiply(new BigDecimal(100)));
         line.setDefaultFreightFee(dto.getDefaultFreightFee() == null ? BigDecimal.ZERO:dto.getDefaultFreightFee().multiply(new BigDecimal(100)));
         line.setName(dto.getFromCity()+ NoConstant.SEPARATOR+dto.getToCity());

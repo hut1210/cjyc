@@ -28,7 +28,7 @@ public interface IPingPayService {
 
     Order prePay(PrePayDto reqDto);
 
-    void cancelOrderRefund(String orderCode);
+    ResultVo cancelOrderRefund(String orderCode);
 
     ResultVo<ValidateReceiptCarPayVo> validateCarPayState(CarPayStateDto reqDto, boolean b);
 

@@ -12,41 +12,45 @@ import java.io.Serializable;
 public class TrailCarrierVo implements Serializable {
     private static final long serialVersionUID = -4994289044268667924L;
 
-    @ApiModelProperty("承运商id")
+    @ApiModelProperty(value = "承运商id")
     @JsonSerialize(using = ToStringSerializer.class)
     private Long carrierId;
 
-    @ApiModelProperty("企业名称")
+    @ApiModelProperty(value = "司机id")
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long driverId;
+
+    @ApiModelProperty(value = "企业名称")
     private String businessName;
 
-    @ApiModelProperty("姓名")
+    @ApiModelProperty(value = "姓名")
     private String name;
 
-    @ApiModelProperty("手机号")
+    @ApiModelProperty(value = "手机号")
     private String phone;
 
-    @ApiModelProperty("承运商类型：1个人承运商，2企业承运商")
+    @ApiModelProperty(value = "承运商类型：1个人承运商，2企业承运商")
     private Integer type;
 
-    @ApiModelProperty("车牌号")
+    @ApiModelProperty(value = "车牌号")
     private String plateNo;
 
-    @ApiModelProperty("身份证号")
+    @ApiModelProperty(value = "身份证号")
     private String idCard;
 
-    @ApiModelProperty("承运数")
+    @ApiModelProperty(value = "承运数")
     private Integer carryCarNum;
 
-    @ApiModelProperty("非空车位")
+    @ApiModelProperty(value = "非空车位")
     private Integer occupiedCarNum;
 
-    @ApiModelProperty("承运方式：2 : 代驾  3 : 干线   4：拖车   5：代驾+干线  6：代驾+拖车  7：干线+拖车  9：代驾+干线+拖车")
+    @ApiModelProperty(value = "承运方式：2 : 代驾  3 : 干线   4：拖车   5：代驾+干线  6：代驾+拖车  7：干线+拖车  9：代驾+干线+拖车")
     private Integer mode;
 
-    @ApiModelProperty("运行状态：0空闲，1在途 2繁忙")
+    @ApiModelProperty(value = "运行状态：0空闲，1在途 2繁忙")
     private Integer runningState;
 
-    @ApiModelProperty("营运状态：0营运中(空闲)，1停运中(繁忙)")
+    @ApiModelProperty(value = "营运状态：0营运中(空闲)，1停运中(繁忙)")
     private Integer businessState;
 
     public Long getCarrierId(){return carrierId == null ? 0:carrierId;}

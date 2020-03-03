@@ -7,6 +7,7 @@ import com.cjyc.common.model.dto.customer.freightBill.TransportDto;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.entity.Line;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.JsonUtils;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.customer.api.service.IInquiryService;
 import com.cjyc.customer.api.service.ITransportService;
@@ -31,6 +32,7 @@ public class TransportServiceImpl implements ITransportService {
 
     @Override
     public ResultVo<Map<String,Object>> linePriceByCode(TransportDto dto) {
+        log.info("获取班线请求json数据 :: "+JsonUtils.objectToJson(dto));
         Customer customer = customerDao.selectOne(new QueryWrapper<Customer>().lambda()
                 .eq(Customer::getId, dto.getLgoinId()));
         if(customer == null){

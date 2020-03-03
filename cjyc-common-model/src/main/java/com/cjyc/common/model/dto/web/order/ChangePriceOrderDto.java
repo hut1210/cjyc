@@ -1,5 +1,6 @@
 package com.cjyc.common.model.dto.web.order;
 
+import com.cjyc.common.model.dto.BaseLoginDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -15,15 +16,9 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel
-public class ChangePriceOrderDto {
+public class ChangePriceOrderDto extends BaseLoginDto {
 
 
-    @NotNull
-    @ApiModelProperty(value = "用户ID",required = true)
-    private Long loginId;
-    @NotBlank
-    @ApiModelProperty(value = "操作人(不用传)")
-    private String loginName;
     @NotNull
     @ApiModelProperty(value = "订单ID",required = true)
     private Long orderId;

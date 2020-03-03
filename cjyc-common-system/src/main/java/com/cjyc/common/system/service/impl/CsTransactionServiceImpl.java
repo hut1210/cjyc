@@ -102,6 +102,16 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
     }
 
     @Override
+    public void updateWayBillPayStateNoPay(Long waybillId, long time) {
+        tradeBillDao.updateWayBillPayStateNoPay(waybillId,time);
+    }
+
+    @Override
+    public BigDecimal getAmountByOrderCarNosToPartner(List<String> orderCarNosList) {
+        return tradeBillDao.getAmountByOrderCarNosToPartner(orderCarNosList);
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveTransactions(Object obj, String state) {
         TradeBill tb;

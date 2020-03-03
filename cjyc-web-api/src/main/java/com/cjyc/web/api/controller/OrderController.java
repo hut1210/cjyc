@@ -10,6 +10,7 @@ import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.UserTypeEnum;
+import com.cjyc.common.model.enums.order.OrderPickTypeEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
@@ -26,6 +27,7 @@ import com.cjyc.web.api.util.KeyCustomerOrderExcelVerifyHandler;
 import com.cjyc.web.api.util.PatCustomerOrderExcelVerifyHandler;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -36,6 +38,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -74,14 +77,22 @@ public class OrderController {
 
         if(reqDto.getLoginType() != null && UserTypeEnum.CUSTOMER.code == reqDto.getLoginType()){
             //验证用户存不存在
-            Customer customer = csCustomerService.validate(reqDto.getLoginId());
+            ResultVo<Customer> vo = csCustomerService.validateAndGetActive(reqDto.getLoginId());
+            if(vo.getCode() != ResultEnum.SUCCESS.getCode()){
+                return BaseResultUtil.fail(vo.getMsg());
+            }
+            Customer customer = vo.getData();
             reqDto.setLoginName(customer.getName());
+            reqDto.setLoginPhone(customer.getContactPhone());
+            reqDto.setLoginType(UserTypeEnum.CUSTOMER.code);
             reqDto.setCreateUserId(customer.getId());
             reqDto.setCreateUserName(customer.getName());
         }else{
             //验证用户存不存在
             Admin admin = csAdminService.validate(reqDto.getLoginId());
             reqDto.setLoginName(admin.getName());
+            reqDto.setLoginPhone(admin.getPhone());
+            reqDto.setLoginType(UserTypeEnum.ADMIN.code);
             reqDto.setCreateUserId(admin.getId());
             reqDto.setCreateUserName(admin.getName());
         }
@@ -101,9 +112,14 @@ public class OrderController {
     public ResultVo commit(@Validated @RequestBody CommitOrderDto reqDto) {
         if(reqDto.getLoginType() != null && UserTypeEnum.CUSTOMER.code == reqDto.getLoginType()){
             //验证用户存不存在
-            Customer customer = csCustomerService.validate(reqDto.getLoginId());
+            ResultVo<Customer> vo = csCustomerService.validateAndGetActive(reqDto.getLoginId());
+            if(vo.getCode() != ResultEnum.SUCCESS.getCode()){
+                return BaseResultUtil.fail(vo.getMsg());
+            }
+            Customer customer = vo.getData();
             reqDto.setLoginName(customer.getName());
             reqDto.setLoginPhone(customer.getContactPhone());
+            reqDto.setLoginType(UserTypeEnum.CUSTOMER.code);
             reqDto.setCreateUserId(customer.getId());
             reqDto.setCreateUserName(customer.getName());
         }else{
@@ -111,6 +127,7 @@ public class OrderController {
             Admin admin = csAdminService.validate(reqDto.getLoginId());
             reqDto.setLoginName(admin.getName());
             reqDto.setLoginPhone(admin.getPhone());
+            reqDto.setLoginType(UserTypeEnum.ADMIN.code);
             reqDto.setCreateUserId(admin.getId());
             reqDto.setCreateUserName(admin.getName());
         }
@@ -138,8 +155,7 @@ public class OrderController {
         //验证用户存不存在
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
-        reqDto.setLoginName(admin.getName());
-        reqDto.setLoginName(admin.getName());
+        reqDto.setLoginPhone(admin.getPhone());
         return csOrderService.check(reqDto);
     }
 
@@ -153,6 +169,8 @@ public class OrderController {
         //验证用户存不存在
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
+        reqDto.setLoginPhone(admin.getPhone());
+        reqDto.setLoginType(UserTypeEnum.ADMIN);
         return csOrderService.reject(reqDto);
     }
 
@@ -181,6 +199,7 @@ public class OrderController {
     public ResultVo changePrice(@RequestBody ChangePriceOrderDto reqDto) {
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
+        reqDto.setLoginPhone(admin.getPhone());
         return csOrderService.changePrice(reqDto);
     }
 
@@ -194,6 +213,8 @@ public class OrderController {
     public ResultVo cancel(@RequestBody CancelOrderDto reqDto) {
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
+        reqDto.setLoginPhone(admin.getPhone());
+        reqDto.setLoginType(UserTypeEnum.ADMIN);
         return csOrderService.cancel(reqDto);
     }
 
@@ -279,19 +300,28 @@ public class OrderController {
 
     @ApiOperation(value = "导出全部订单列表")
     @GetMapping(value = "/exportAllList")
-    public ResultVo exportAllList(ListOrderDto reqDto, HttpServletResponse response) {
-        List<ListOrderVo> orderList = orderService.listAll(reqDto);
-        if (CollectionUtils.isEmpty(orderList)) {
-            return BaseResultUtil.success("未查询到结果");
+    public void exportAllList(ListOrderDto reqDto, HttpServletResponse response) throws IOException, InvalidFormatException {
+        ResultVo<List<ListOrderVo>> orderRs = orderService.listAll(reqDto);
+        if (!isResultSuccess(orderRs)) {
+            ExcelUtil.printExcelResult(ExcelUtil.getWorkBookForShowMsg("提示信息", orderRs.getMsg()),
+                    "导出异常.xls", response);
+            return;
         }
-        orderList = orderList.stream().filter(o -> o != null).collect(Collectors.toList());
+        List<ListOrderVo> orderList = orderRs.getData();
+        if (CollectionUtils.isEmpty(orderList)) {
+            ExcelUtil.printExcelResult(ExcelUtil.getWorkBookForShowMsg("提示信息", "未查询到结果信息"),
+                    "结果为空.xls", response);
+            return;
+        }
+        orderList = orderList.stream().filter(Objects::nonNull).collect(Collectors.toList());
         try{
             ExcelUtil.exportExcel(orderList, "订单信息", "订单信息",
                     ListOrderVo.class, System.currentTimeMillis()+"订单信息.xls", response);
-            return null;
+            return ;
         }catch (Exception e) {
             LogUtil.error("导出订单信息异常", e);
-            return BaseResultUtil.fail("导出订单信息异常: " + e.getMessage());
+            ExcelUtil.printExcelResult(ExcelUtil.getWorkBookForShowMsg("提示信息", "导出订单信息异常: " + e.getMessage()),
+                    "导出异常.xls", response);
         }
     }
 
@@ -376,9 +406,7 @@ public class OrderController {
             List<ImportCustomerOrderDto> orderList = null;
             List<ImportCustomerOrderCarDto> carList = null;
             try {
-                ExcelImportResult<ImportCustomerOrderDto> orderResult =
-                        ExcelImportUtil.importExcelMore(file.getInputStream(),
-                                ImportCustomerOrderDto.class, orderParams);
+                ExcelImportResult<ImportCustomerOrderDto> orderResult = ExcelImportUtil.importExcelMore(file.getInputStream(), ImportCustomerOrderDto.class, orderParams);
                 if (orderResult.isVerfiyFail()) {
                     String fileName = "验证失败.xlsx";
                     printExcelResult(orderResult.getFailWorkbook(), fileName, response);
@@ -408,7 +436,7 @@ public class OrderController {
     }
 
     @ApiOperation(value = "大客户订单导入", notes = "验证失败返回失败Excel文件流，其它情况返回json结果信息")
-    @PostMapping(value = "/importKeyCustomerOrder")
+    @PostMapping(value = "/importEnterpriseOrder")
     public void importKeyCustomerOrder(MultipartFile file, Long loginId, HttpServletResponse response) {
         if (file != null && !file.isEmpty() && loginId != null && loginId > 0L) {
             ImportParams orderParams = new ImportParams();
@@ -455,7 +483,7 @@ public class OrderController {
     }
 
     @ApiOperation(value = "合伙人订单导入", notes = "验证失败返回失败Excel文件流，其它情况返回json结果信息")
-    @PostMapping(value = "importPatCustomerOrder")
+    @PostMapping(value = "importCooperatorOrder")
     public void importPatCustomerOrder(MultipartFile file, Long loginId, HttpServletResponse response) {
         if (file != null && !file.isEmpty() && loginId != null && loginId > 0L) {
             ImportParams orderParams = new ImportParams();

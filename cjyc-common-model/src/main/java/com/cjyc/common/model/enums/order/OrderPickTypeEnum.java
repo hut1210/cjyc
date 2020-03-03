@@ -5,7 +5,8 @@ public enum OrderPickTypeEnum {
     SELF("自己", 1),
     PILOT("代驾", 2),
     CONSIGN("拖车", 3),
-    WL("物流上门", 4);
+    WL("物流上门", 4),
+    DISPATCH_SELF("我去提车", 9);
 
     public String name;
     public int code;

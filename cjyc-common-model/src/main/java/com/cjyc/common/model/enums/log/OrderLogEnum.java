@@ -3,31 +3,24 @@ package com.cjyc.common.model.enums.log;
 public enum OrderLogEnum {
 
     /***/
-    SUBMIT("订单提交-客户", "订单已提交，等待业务员确认", "订单已提交，等待业务员确认", 1),
-    COMMIT("订单提交-业务员", "", "", 2),
-    CHECK("订单审核", "订单{0}，已审核", "订单{0}，已审核", 3),
-
-    WAIT_PREPAY("待付款", "订单确认完成，请支付运费", "订单确认完成，待预付物流费", 4),
-    RECEIPT("签收", "订单{0}, 已全部签收", "订单{0}, 已所有车辆全部签收", 5)/*,
-    CHECK("已确认",25),
-    TRANSPORTING("运输中",55),
-    WAIT_PAY("待付款",88),
-    FINISHED("已完成",100),
-    F_RETURN("原返（待）",111),
-    F_EXCEPTION("异常结束",112),
-    F_CANCEL("取消（待）",113),
-    F_OBSOLETE("作废（待）",114)*/;
+    SUBMIT("已下单", "订单，已下单", "订单，已下单，操作人【{0}/{1}】", 1),
+    COMMIT("已确认", "订单，已确认", "订单，已确认，操作人【{0}/{1}】", 2),
+    WAIT_PREPAY("待付款", "订单，已确认，等待支付运费", "订单，已确认，等待支付运费，操作人【{0}/{1}】", 3),
+    PREPAID("已预付款", "订单，已预付款", "订单，订单，已收预付款，操作人【{0}/{1}】", 5),
+    CHECK("已接单", "订单，已接单", "订单，已接单，操作人【{0}/{1}】", 4),
+    FINISH("已交付", "订单，已交付", "订单，已完成，操作人【{0}/{1}】", 100),
+    CANCEL("已取消", "车辆，已取消", "车辆, 已取消，操作人{0}/{1}", 113);
 
 
     private String name;
-    private String innerLog;
     private String outterLog;
+    private String innerLog;
     private int code;
 
-    OrderLogEnum(String name, String innerLog, String outterLog, int code) {
+    OrderLogEnum(String name, String outterLog, String innerLog, int code) {
         this.name = name;
-        this.innerLog = innerLog;
         this.outterLog = outterLog;
+        this.innerLog = innerLog;
         this.code = code;
     }
 

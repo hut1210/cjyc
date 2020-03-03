@@ -148,7 +148,8 @@
             sbcb.card_type AS cardType,
             sbcb.card_name AS cardName,
             sbcb.bank_name AS bankName,
-            sbcb.card_no AS cardNo
+            sbcb.card_no AS cardNo,
+            sbcb.bank_code AS bankCode
         FROM
             d_carrier dc
             LEFT JOIN d_carrier_driver_con dcdc ON dcdc.carrier_id = dc.id
@@ -173,15 +174,16 @@
             dc.is_invoice AS isInvoice
         FROM
             d_carrier dc
+        LEFT JOIN s_bank_card_bind sbcb ON sbcb.user_id = dc.id
         <where>
             <if test="name != null and name.trim() != ''">
                 dc.name like CONCAT('%',#{name},'%')
             </if>
             <if test="linkman != null and linkman.trim() != ''">
-                or dc.linkman like CONCAT('%',#{linkman},'%')
+                and dc.linkman like CONCAT('%',#{linkman},'%')
             </if>
             <if test="linkmanPhone != null and linkmanPhone.trim() != ''">
-                or dc.linkman_phone like CONCAT('%',#{linkmanPhone},'%')
+                and dc.linkman_phone like CONCAT('%',#{linkmanPhone},'%')
             </if>
             <if test="settleType != null">
                 and  dc.settle_type = #{settleType}
@@ -190,6 +192,46 @@
             and dc.state = 2
             and dc.business_state = 0
             and dc.mode in (3,5,7,9)
+            and sbcb.bank_name != ''
+            and sbcb.state = 1
+            group by dc.id
+            order by dc.create_time desc, dc.check_time desc
+        </where>
+    </select>
+
+
+    <!-- 调度出符合条件的承运商(业务员端) -->
+    <select id="findAppDispatchCarrier" resultType="com.cjyc.common.model.vo.web.carrier.DispatchCarrierVo"
+            parameterType="com.cjyc.common.model.dto.web.carrier.DispatchCarrierDto">
+        SELECT
+            dc.id AS carrierId,
+            dc.NAME AS NAME,
+            dc.linkman AS linkman,
+            dc.linkman_phone AS linkmanPhone,
+            dc.legal_name AS legalName,
+            dc.legal_id_card AS legalIdCard,
+            dc.settle_type AS settleType,
+            dc.settle_period AS settlePeriod,
+            dc.MODE AS MODE,
+            dc.is_invoice AS isInvoice
+        FROM
+          d_carrier dc
+        LEFT JOIN s_bank_card_bind sbcb ON dc.id = sbcb.user_id
+        <where>
+            <if test="keyword != null and keyword.trim() !=''">
+               (dc.name like concat('%',#{keyword},'%') or
+                dc.linkman like concat('%',#{keyword},'%') or
+                dc.linkman_phone like concat('%',#{keyword},'%'))
+            </if>
+            <if test="settleType != null">
+                and  dc.settle_type = #{settleType}
+            </if>
+            and dc.type = 2
+            and dc.state = 2
+            and dc.business_state = 0
+            and dc.mode in (3,5,7,9)
+            and sbcb.bank_name != ''
+            and sbcb.state = 1
             group by dc.id
             order by dc.create_time desc, dc.check_time desc
         </where>
@@ -399,7 +441,7 @@
         FROM d_driver dd LEFT JOIN s_user_role_dept urd ON dd.id = urd.user_id
             LEFT JOIN d_carrier dc ON dc.id = urd.dept_id
         where urd.dept_type = 2 AND urd.user_type = 2
-        AND dc.id = #{carrierId} and  dd.phone = #{linkmanPhone}  and  dd.id_card = #{legalIdCard}
+        AND dc.id = #{carrierId} and  dd.phone = #{linkmanPhone}
     </select>
 
     <!-- 根据条件查询承运商 -->
@@ -632,9 +674,10 @@
             parameterType="com.cjyc.common.model.dto.web.carrier.TrailCarrierDto">
         SELECT
             dc.id AS carrierId,
-            dc.NAME AS businessName,
-            ( CASE dc.type WHEN 1 THEN dc.linkman WHEN 2 THEN '' END ) AS NAME,
-            ( CASE dc.type WHEN 1 THEN dc.linkman_phone WHEN 2 THEN '' END ) AS phone,
+            dd.id AS driverId,
+            ( CASE dc.type WHEN 1 THEN '' WHEN 2 THEN dc.NAME END ) AS businessName,
+            dc.linkman AS `name`,
+            dc.linkman_phone AS phone,
             dc.type AS type,
             dc.MODE AS MODE,
             ( CASE dc.type WHEN 1 THEN dvr.plate_no WHEN 2 THEN '' END ) AS plateNo,
@@ -649,6 +692,7 @@
         LEFT JOIN d_driver dd ON dd.id = surd.user_id
         LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
         LEFT JOIN d_carrier_city_con dccc ON dccc.carrier_id = dc.id
+        LEFT JOIN s_bank_card_bind sbcb ON sbcb.user_id = dc.id
         <where>
             <if test="name != null and name.trim() != ''">
                 dc.name like CONCAT('%',#{name},'%')
@@ -657,7 +701,7 @@
                 and  dc.type = #{type}
             </if>
             <if test="phone != null and phone.trim() != ''">
-                and  dc.linkman_phone = #{phone}
+                or  dc.linkman_phone like CONCAT('%',#{phone},'%')
             </if>
             <if test="idCard != null and idCard.trim() != ''">
                 and  dc.legal_id_card = #{idCard}
@@ -678,6 +722,64 @@
             and dc.business_state = 0
             and dd.business_state = 0
             and surd.state = 2
+            AND sbcb.bank_name != ''
+            AND sbcb.state = 1
+            group by dc.id
+            order by dc.create_time desc,dc.check_time desc
+        </where>
+    </select>
+
+
+    <!-- 调度中心中提车送车调度中代驾和拖车列表_改版(App端) -->
+    <select id="findAppTrailDriverNew" resultType="com.cjyc.common.model.vo.web.carrier.TrailCarrierVo"
+            parameterType="com.cjyc.common.model.dto.web.carrier.TrailCarrierDto">
+        SELECT
+            dc.id AS carrierId,
+            ( CASE dc.type WHEN 1 THEN '' WHEN 2 THEN dc.NAME END ) AS businessName,
+            dc.linkman AS `name`,
+            dc.linkman_phone AS phone,
+            dc.type AS type,
+            dc.MODE AS MODE,
+            ( CASE dc.type WHEN 1 THEN dvr.plate_no WHEN 2 THEN '' END ) AS plateNo,
+            ( CASE dc.type WHEN 1 THEN dc.legal_id_card WHEN 2 THEN '' END ) AS idCard,
+            ( CASE dc.type WHEN 1 THEN dvr.carry_car_num WHEN 2 THEN '' END ) AS carryCarNum,
+            ( CASE dc.type WHEN 1 THEN dvr.occupied_car_num WHEN 2 THEN '' END ) AS occupiedCarNum,
+            ( CASE dc.type WHEN 1 THEN dvr.running_state WHEN 2 THEN '' END ) AS runningState,
+            ( CASE dc.type WHEN 1 THEN dd.business_state WHEN 2 THEN '' END ) AS businessState
+        FROM
+          d_carrier dc
+        LEFT JOIN ( SELECT * FROM s_user_role_dept WHERE dept_type = 2 AND user_type = 2 ) surd ON surd.dept_id = dc.id
+        LEFT JOIN d_driver dd ON dd.id = surd.user_id
+        LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
+        LEFT JOIN d_carrier_city_con dccc ON dccc.carrier_id = dc.id
+        LEFT JOIN s_bank_card_bind sbcb ON sbcb.user_id = dc.id
+        <where>
+            <if test="keyword != null and keyword.trim() !=''">
+                (dc.linkman like concat('%',#{keyword},'%') or
+                dc.linkman_phone like concat('%',#{keyword},'%') or
+                dvr.plate_no like concat('%',#{keyword},'%'))
+            </if>
+            <if test="type != null">
+                and  dc.type = #{type}
+            </if>
+            <if test="idCard != null and idCard.trim() != ''">
+                and  dc.legal_id_card = #{idCard}
+            </if>
+            <if test="cityCode != null and cityCode.trim() != ''">
+                and  dccc.city_code = #{cityCode}
+            </if>
+            <if test="mode != null and mode.size() > 0">
+                and dc.mode in
+                <foreach collection="mode" item="item" index="index" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+            and dc.state = 2
+            and dc.business_state = 0
+            and dd.business_state = 0
+            and surd.state = 2
+            AND sbcb.bank_name != ''
+            AND sbcb.state = 1
             group by dc.id
             order by dc.create_time desc,dc.check_time desc
         </where>

@@ -9,6 +9,7 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.RandomUtil;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.system.config.SmsProperty;
 import com.cjyc.common.system.service.ICsSmsService;
 import com.cjyc.common.system.util.MiaoxinSmsUtil;
 import com.cjyc.common.system.util.RedisUtils;
@@ -60,7 +61,7 @@ public class CsSmsServiceImpl implements ICsSmsService {
         String keyPrefix = LocalDateTimeUtil.formatLDT(LocalDateTime.now(), TimePatternConstant.SIMPLE_DATE);
         String countKey = RedisKeys.getSmsCountKey(keyPrefix, phone);
         String count = redisUtils.get(countKey);
-        if(count != null && Integer.valueOf(count) > 20){
+        if(count != null && Integer.valueOf(count) >= SmsProperty.daylimit){
             return BaseResultUtil.fail("发送短信数量超出数量限制，请明天再试");
         }
         //发送短信
@@ -75,10 +76,14 @@ public class CsSmsServiceImpl implements ICsSmsService {
         //放入缓存
         String key = RedisKeys.getCaptchaKey(clientEnum, phone, captchaTypeEnum);
         redisUtils.set(key, captcha);
-        redisUtils.expire(key, 1, TimeUnit.DAYS);
+        redisUtils.expire(key, SmsProperty.expires, TimeUnit.MINUTES);
         //计数缓存
-        redisUtils.incrBy(countKey, 1);
-        redisUtils.expire(countKey, 1, TimeUnit.DAYS);
+        if(redisUtils.hasKey(countKey)){
+            redisUtils.incrBy(countKey, 1);
+        }else{
+            redisUtils.incrBy(countKey, 1);
+            redisUtils.expire(countKey, 1, TimeUnit.DAYS);
+        }
         return BaseResultUtil.success("验证码已发送");
     }
 }

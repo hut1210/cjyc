@@ -1,9 +1,11 @@
 package com.cjyc.web.api.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.cjkj.log.monitor.LogUtil;
 import com.cjyc.common.model.dto.web.BaseWebDto;
 import com.cjyc.common.model.dto.web.dispatch.LineWaitCountDto;
 import com.cjyc.common.model.dto.web.order.*;
-import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -11,16 +13,20 @@ import com.cjyc.common.model.vo.web.order.DispatchAddCarVo;
 import com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo;
 import com.cjyc.common.system.service.ICsOrderService;
 import com.cjyc.web.api.service.IOrderService;
+import com.cjyc.web.api.util.ExcelUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.http.MediaType;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 /**
@@ -46,6 +52,34 @@ public class DispatchController {
     @PostMapping(value = "/wait/list")
     public ResultVo<PageVo<OrderCarWaitDispatchVo>> waitDispatchCarList(@RequestBody WaitDispatchListOrderCarDto reqDto) {
         return orderService.waitDispatchCarList(reqDto);
+    }
+
+    @ApiOperation(value = "导出全部调度池列表")
+    @GetMapping(value = "/wait/exportAllList")
+    public void exportAllList(String param, HttpServletResponse response) {
+        WaitDispatchListOrderCarDto reqDto = JSON.parseObject(param, WaitDispatchListOrderCarDto.class);
+        ResultVo<List<OrderCarWaitDispatchVo>> dispatchRs = orderService.waitDispatchCarAllList(reqDto);
+        if (!isResultSuccess(dispatchRs)) {
+            ExcelUtil.printExcelResult(ExcelUtil.getWorkBookForShowMsg("提示信息", dispatchRs.getMsg()),
+                    "导出异常.xls", response);
+            return;
+        }
+        List<OrderCarWaitDispatchVo> dispatchList = dispatchRs.getData();
+        if (CollectionUtils.isEmpty(dispatchList)) {
+            ExcelUtil.printExcelResult(ExcelUtil.getWorkBookForShowMsg("提示信息", "未查询到结果信息"),
+                    "结果为空.xls", response);
+            return;
+        }
+        dispatchList = dispatchList.stream().filter(d -> d != null).collect(Collectors.toList());
+        try{
+            ExcelUtil.exportExcel(dispatchList, "调度信息", "调度信息",
+                    OrderCarWaitDispatchVo.class, System.currentTimeMillis()+"调度信息.xls", response);
+            return;
+        }catch (Exception e) {
+            LogUtil.error("导出订单信息异常", e);
+            ExcelUtil.printExcelResult(ExcelUtil.getWorkBookForShowMsg("提示信息", "导出调度池信息异常: " + e.getMessage()),
+                    "导出异常.xls", response);
+        }
     }
 
     /**
@@ -131,6 +165,18 @@ public class DispatchController {
     @PostMapping(value = "/car/carry/type/update")
     public ResultVo changeOrderCarCarryType(@Validated @RequestBody ChangeCarryTypeDto dtoList) {
         return csOrderService.changeOrderCarCarryType(dtoList);
+    }
+
+    /**
+     * 检查返回结果是否成功
+     * @param resultVo
+     * @return
+     */
+    private boolean isResultSuccess(ResultVo resultVo) {
+        if (null == resultVo) {
+            return false;
+        }
+        return resultVo.getCode() == ResultEnum.SUCCESS.getCode();
     }
 
 }

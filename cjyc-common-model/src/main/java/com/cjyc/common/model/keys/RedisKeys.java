@@ -1,8 +1,12 @@
 package com.cjyc.common.model.keys;
 
+import com.cjyc.common.model.dto.BasePageDto;
+import com.cjyc.common.model.dto.KeywordDto;
+import com.cjyc.common.model.dto.driver.mine.BankInfoDto;
 import com.cjyc.common.model.enums.CaptchaTypeEnum;
 import com.cjyc.common.model.enums.ClientEnum;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
@@ -40,6 +44,9 @@ public class RedisKeys {
     private final static String LOOP_ALLOT_ADMIN_KEY = "loop:allot:admin";
     private final static String CAR_SERIES = "car:series";
     private final static String THREE_CITY = "three:city";
+    private final static String BANK_INFO = "bankInfo:bankName";
+    private final static String CITY_TREE = "city:tree";
+    private final static String KEYWORD_CITY_TREE = "keyword:city:tree";
 
     private final static String USER_KEY = "user";
 
@@ -49,15 +56,12 @@ public class RedisKeys {
     private final static String WL_PRE_PAY_LOCK = "wl:pre:pay:lock";
     private final static String WL_COLLECT_PAY_LOCK = "wl:collect:pay:lock";
 
-    /**---------------salesman-------------------------------------------------------------------*/
-    /**验证码*/
-    private final static String CAPTCHA_KEY = "cjyc:sale";
     /**---------------driver-------------------------------------------------------------------*/
 
 
     /**---------------customer-------------------------------------------------------------------*/
     public static String getCaptchaKey(ClientEnum clientEnum, String phone, CaptchaTypeEnum captchaTypeEnum) {
-        return getPreixByCilent(clientEnum) + I + CAPTCHA_KEY + I + captchaTypeEnum.getCode() + I + phone;
+        return getPreixByCilent(clientEnum) + I + captchaTypeEnum.getCode() + I + phone;
     }
 
     public static String getSmsCountKey(String date, String phone) {
@@ -133,6 +137,26 @@ public class RedisKeys {
     }
 
     public static String getThreeCityKey(String keyword){
-        return PROJECT_PREFIX + I + THREE_CITY + I + keyword;
+        String key = PROJECT_PREFIX + I + THREE_CITY;
+        if(StringUtils.isNotBlank(keyword)){
+            key = key + I + keyword;
+        }
+        return key;
+    }
+
+    public static String getAppBankInfoKey(BankInfoDto dto){
+        return PROJECT_PREFIX + I + BANK_INFO + I + dto.getCurrentPage() + I + dto.getPageSize() + I + dto.getKeyword();
+    }
+
+    public static String getWebBankInfoKey(KeywordDto dto){
+        return PROJECT_PREFIX + I + BANK_INFO + I + dto.getKeyword();
+    }
+
+    public static String getCityTreeKey(Integer rootLevel, Integer minLeafLevel){
+        return PROJECT_PREFIX + I + CITY_TREE + I + rootLevel + I + minLeafLevel;
+    }
+
+    public static String getKeywordCityTreeKey(String keyword){
+        return PROJECT_PREFIX + I + KEYWORD_CITY_TREE + I + keyword;
     }
 }

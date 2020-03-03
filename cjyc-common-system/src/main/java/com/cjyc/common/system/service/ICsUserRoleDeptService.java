@@ -33,6 +33,15 @@ public interface ICsUserRoleDeptService {
     ResultVo<UserRoleDept> saveDriverToUserRoleDept(Carrier carrier, Driver driver,Integer mode, Long roleId, Long loginId,Integer flag);
 
     /**
+     * app保存司机到用户角色机构关系表中
+     * @param carrier
+     * @param driver
+     * @param roleId
+     */
+    ResultVo<UserRoleDept> saveAppDriverToUserRoleDept(Carrier carrier, Driver driver, Long roleId);
+
+
+    /**
      * 修改司机更新关系表
      * @param carrier
      * @param driver

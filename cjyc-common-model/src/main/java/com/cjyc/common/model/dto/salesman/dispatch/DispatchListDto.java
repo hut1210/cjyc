@@ -1,5 +1,6 @@
 package com.cjyc.common.model.dto.salesman.dispatch;
 
+import com.cjyc.common.model.constant.TimeConstant;
 import com.cjyc.common.model.dto.BasePageDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -33,6 +34,11 @@ public class DispatchListDto extends BasePageDto {
     private Long pickDateSt;
     @ApiModelProperty(value = "提车结束日期")
     private Long pickDateEd;
+
+    public Long getPickDateEd() {
+        return pickDateEd == null ? null : pickDateEd + TimeConstant.MILLS_OF_ONE_DAY;
+    }
+
     @ApiModelProperty(value = "订单号/VIN码")
     private String searchValue;
     @ApiModelProperty(value = "运单号")

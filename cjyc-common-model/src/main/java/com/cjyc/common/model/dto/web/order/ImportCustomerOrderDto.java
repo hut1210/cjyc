@@ -88,4 +88,6 @@ public class ImportCustomerOrderDto {
     private String endProvinceCode;
     private String endCityCode;
     private String endAreaCode;
+    private Long customerId;
+    private Integer customerType;
 }

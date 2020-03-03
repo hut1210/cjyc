@@ -10,9 +10,11 @@ import com.cjyc.common.model.dto.salesman.dispatch.WaitCountDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.entity.defined.BizScope;
 import com.cjyc.common.model.enums.BizScopeEnum;
+import com.cjyc.common.model.enums.waybill.WaybillCarStateEnum;
 import com.cjyc.common.model.enums.waybill.WaybillCarrierTypeEnum;
-import com.cjyc.common.model.enums.waybill.WaybillTypeEnum;
+import com.cjyc.common.model.enums.waybill.WaybillStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.JsonUtils;
 import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
@@ -25,6 +27,9 @@ import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.salesman.api.service.IDispatchService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,6 +48,7 @@ import java.util.Map;
  * @Author Liu Xing Xiang
  * @Date 2019/12/11 13:35
  **/
+@Slf4j
 @Service
 public class DispatchServiceImpl implements IDispatchService {
     /**
@@ -157,7 +163,7 @@ public class DispatchServiceImpl implements IDispatchService {
         if(!CollectionUtils.isEmpty(list)){
             for (WaitDispatchCarListVo vo : list) {
                 List<String> nodes = orderCarDao.findTrunkNodes(vo.getOrderCarId());
-                vo.setTrunkNodes(nodes);
+                vo.setTrunkNodes(nodes == null ? Lists.newArrayList() : nodes);
             }
         }
 
@@ -170,6 +176,7 @@ public class DispatchServiceImpl implements IDispatchService {
 
     @Override
     public ResultVo getWaybillDetail(Long waybillId) {
+        log.info("====>业务员端-历史记录页面-根据运单ID查询历史调度记录明细,请求json数据 :: "+ JsonUtils.objectToJson(waybillId));
         WaybillDetailVo detail = new WaybillDetailVo();
         // 查询运单信息
         Waybill waybill = waybillDao.selectById(waybillId);
@@ -189,7 +196,13 @@ public class DispatchServiceImpl implements IDispatchService {
         }
 
         // 查询车辆信息
-        LambdaQueryWrapper<WaybillCar> queryWrapper = new QueryWrapper<WaybillCar>().lambda().eq(WaybillCar::getWaybillId, waybillId);
+        LambdaQueryWrapper<WaybillCar> queryWrapper = new QueryWrapper<WaybillCar>().lambda()
+                .eq(WaybillCar::getWaybillId, waybillId).le(WaybillCar::getState, WaybillCarStateEnum.UNLOADED.code);
+        if (waybill.getState() > WaybillStateEnum.FINISHED.code) {
+            queryWrapper = new QueryWrapper<WaybillCar>().lambda()
+                    .eq(WaybillCar::getWaybillId, waybillId);
+        }
+
         List<WaybillCar> waybillCarList = waybillCarDao.selectList(queryWrapper);
         List<WaybillCarDetailVo> carDetailVoList = new ArrayList<>(10);
         WaybillCarDetailVo carDetailVo = null;
@@ -198,6 +211,11 @@ public class DispatchServiceImpl implements IDispatchService {
                 carDetailVo = new WaybillCarDetailVo();
                 BeanUtils.copyProperties(waybillCar,carDetailVo);
 
+                // 给详细地址拼接市区
+                /*carDetailVo.setStartAddress(waybillCar.getStartCity()+waybillCar.getStartArea()+waybillCar.getStartAddress());
+                carDetailVo.setEndAddress(waybillCar.getEndCity()+waybillCar.getEndArea()+waybillCar.getEndAddress());*/
+
+
                 // 查询干线线路费
                 if (waybillCar.getLineId() != null) {
                     Line line = lineDao.selectById(waybillCar.getLineId());
@@ -205,11 +223,10 @@ public class DispatchServiceImpl implements IDispatchService {
                 }
 
                 // 指导路线
-                fillGuideLine(detail,waybillCar);
-                carDetailVo.setGuideLine(detail.getGuideLine());
+                carDetailVo.setGuideLine(waybillCar.getStartCity() + "-" + waybillCar.getEndCity());
 
                 // 获取车辆运输图片
-                getCarPhotoImg(carDetailVo,waybillCar);
+                getCarPhotoImg(carDetailVo,waybillCar,waybill);
 
                 // 查询品牌车系信息
                 OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
@@ -217,8 +234,8 @@ public class DispatchServiceImpl implements IDispatchService {
 
                 // 查询提车，送车方式
                 Order order = orderDao.selectById(orderCar.getOrderId());
-                carDetailVo.setPickType(order.getPickType());
-                carDetailVo.setBackType(order.getBackType());
+                carDetailVo.setPickType(orderCar.getPickType());
+                carDetailVo.setBackType(orderCar.getBackType());
                 carDetailVo.setPayType(order.getPayType());
 
 
@@ -236,9 +253,9 @@ public class DispatchServiceImpl implements IDispatchService {
         return BaseResultUtil.success(detail);
     }
 
-    private void getCarPhotoImg(WaybillCarDetailVo carDetailVo,WaybillCar waybillCar) {
+    private void getCarPhotoImg(WaybillCarDetailVo carDetailVo,WaybillCar waybillCar,Waybill waybill) {
         // 查询车辆历史图片
-        StringBuilder sb = getCarHistoryPhotoImg(waybillCar);
+        StringBuilder sb = getCarHistoryPhotoImg(waybillCar,waybill);
 
         // 封装当前车辆图片
         fillCarPhotoImg(waybillCar, sb);
@@ -267,11 +284,16 @@ public class DispatchServiceImpl implements IDispatchService {
         }
     }
 
-    private StringBuilder getCarHistoryPhotoImg(WaybillCar waybillCar) {
-        LambdaQueryWrapper<WaybillCar> query = new QueryWrapper<WaybillCar>().lambda()
+    private StringBuilder getCarHistoryPhotoImg(WaybillCar waybillCar,Waybill waybill) {
+        /*LambdaQueryWrapper<WaybillCar> query = new QueryWrapper<WaybillCar>().lambda()
                 .eq(WaybillCar::getOrderCarId, waybillCar.getOrderCarId())
-                .lt(WaybillCar::getId, waybillCar.getId());
-        List<WaybillCar> waybillCarList = waybillCarDao.selectList(query);
+                .lt(WaybillCar::getId, waybillCar.getId());*/
+
+        Map<String,Object> map = new HashMap<>(3);
+        map.put("orderCarId",waybillCar.getOrderCarId());
+        map.put("waybillCarId",waybillCar.getId());
+        map.put("waybillType",waybill.getType());
+        List<WaybillCar> waybillCarList = waybillCarDao.selectWaybillCarList(map);
         StringBuilder sb = new StringBuilder();
         if (!CollectionUtils.isEmpty(waybillCarList)) {
             for (WaybillCar car : waybillCarList) {
@@ -294,13 +316,6 @@ public class DispatchServiceImpl implements IDispatchService {
         return sb;
     }
 
-    private void fillGuideLine(WaybillDetailVo taskDetailVo, WaybillCar waybillCar) {
-        boolean b = WaybillTypeEnum.PICK.code == taskDetailVo.getType() || WaybillTypeEnum.BACK.code == taskDetailVo.getType();
-        if (b && StringUtils.isEmpty(taskDetailVo.getGuideLine())) {
-            taskDetailVo.setGuideLine(waybillCar.getStartCity() + "-" + waybillCar.getEndCity());
-        }
-    }
-
     @Override
     public ResultVo<ListVo<WaitCountVo>> waitCountList(WaitCountDto paramsDto) {
         // 根据登录ID查询当前业务员所在业务中心ID
@@ -312,19 +327,33 @@ public class DispatchServiceImpl implements IDispatchService {
         paramsDto.setBizScope(bizScope.getStoreIds());
 
         //查询统计
-        Map<String, Object> countInfo = null;
-        List<WaitCountVo> list = orderCarDao.findWaitDispatchCarCountListForApp(paramsDto);
-        if(!CollectionUtils.isEmpty(list)){
-            countInfo = orderCarDao.countTotalWaitDispatchCarCountListForApp(paramsDto);
-
-            for (WaitCountVo vo: list) {
-                paramsDto.setCityCode(vo.getStartCityCode());
-                List<WaitCountLineVo> child = orderCarDao.findWaitDispatchCarCountLineListForApp(paramsDto);
-                vo.setList(child);
+        Map<String, Object> countInfo = Maps.newHashMap();
+        List<WaitCountLineVo> volist = orderCarDao.findWaitDispatchCarCountLineListForAppV2(paramsDto);
+        Map<String, WaitCountVo> map = Maps.newTreeMap();
+        Integer totalCount = 0;
+        if(!CollectionUtils.isEmpty(volist)){
+            for (WaitCountLineVo vo : volist) {
+                String startCityCode = vo.getStartCityCode();
+                if(StringUtils.isEmpty(startCityCode)){
+                    continue;
+                }
+                if(map.containsKey(startCityCode)){
+                    WaitCountVo cvo = map.get(startCityCode);
+                    cvo.getList().add(vo);
+                    cvo.setCarNum(cvo.getCarNum() + vo.getCarNum());
+                }else{
+                    WaitCountVo cvo = new WaitCountVo();
+                    cvo.setCarNum(vo.getCarNum());
+                    cvo.setStartCityCode(startCityCode);
+                    cvo.setStartCity(vo.getStartCity());
+                    cvo.setList(Lists.newArrayList(vo));
+                    map.put(startCityCode, cvo);
+                }
+                totalCount += vo.getCarNum();
             }
         }
-
-        return BaseResultUtil.success(list, countInfo);
+        countInfo.put("totalCount", totalCount);
+        return BaseResultUtil.success(Lists.newArrayList(map.values()), countInfo);
     }
 
 
@@ -360,16 +389,20 @@ public class DispatchServiceImpl implements IDispatchService {
 
     @Override
     public ResultVo getCarDetail(String carNo) {
+        log.info("====>业务员端-调度页面-根据车辆编号查询车辆明细,请求json数据 :: "+JsonUtils.objectToJson(carNo));
         // 查询车辆信息
         DispatchCarDetailVo detail = new DispatchCarDetailVo();
         OrderCar orderCar = orderCarDao.selectOne(new QueryWrapper<OrderCar>().lambda().eq(OrderCar::getNo, carNo));
         String logoImg = carSeriesDao.getLogoImgByBraMod(orderCar.getBrand(), orderCar.getModel());
         detail.setLogoImg(LogoImgProperty.logoImg+logoImg);
         BeanUtils.copyProperties(orderCar,detail);
+        detail.setOrderCarNo(orderCar.getNo());
 
         // 查询订单信息
         Order order = orderDao.selectById(orderCar.getOrderId());
         BeanUtils.copyProperties(order,detail);
+        detail.setStartAddress(order.getStartCity()+order.getStartArea()+order.getStartAddress());
+        detail.setEndAddress(order.getEndCity()+order.getEndArea()+order.getEndAddress());
 
         // 查询调度记录
         List<DispatchRecordVo> dispatchRecordVoList = waybillCarDao.selectWaybillRecordList(orderCar.getId());
@@ -387,6 +420,7 @@ public class DispatchServiceImpl implements IDispatchService {
 
     @Override
     public ResultVo getHistoryRecord(HistoryDispatchRecordDto dto) {
+        log.info("====>业务员端-调度页面-查询历史记录列表分页,请求json数据 :: "+JsonUtils.objectToJson(dto));
         if (dto.getCreateTimeE() != null && dto.getCreateTimeE() != 0) {
             dto.setCreateTimeE(TimeStampUtil.convertEndTime(dto.getCreateTimeE()));
         }
@@ -401,6 +435,36 @@ public class DispatchServiceImpl implements IDispatchService {
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<HistoryDispatchRecordVo> list = waybillDao.selectHistoryDispatchRecord(dto);
         PageInfo<HistoryDispatchRecordVo> pageInfo = new PageInfo(list);
+        // 当承运商是业务员或者客户自己时：查询联系人与联系电话
+        this.getLinkNameAndLinkPhone(pageInfo);
         return BaseResultUtil.success(pageInfo);
+    }
+
+    private void getLinkNameAndLinkPhone(PageInfo<HistoryDispatchRecordVo> pageInfo) {
+        List<HistoryDispatchRecordVo> pageInfoList = pageInfo.getList();
+        if (!CollectionUtils.isEmpty(pageInfoList)) {
+            for (HistoryDispatchRecordVo dispatchRecordVo : pageInfoList) {
+                Integer carrierType = dispatchRecordVo.getCarrierType();
+                if (carrierType != null && carrierType == WaybillCarrierTypeEnum.LOCAL_ADMIN.code) {
+                    // 联系人为业务员
+                    Admin admin = adminDao.selectById(dispatchRecordVo.getCarrierId());
+                    if (admin != null) {
+                        dispatchRecordVo.setLinkMan(admin.getName());
+                        dispatchRecordVo.setLinkmanPhone(admin.getPhone());
+                    }
+                } else if (carrierType != null && carrierType == WaybillCarrierTypeEnum.SELF.code) {
+                    // 联系人为客户自己
+                    OrderCar orderCar = orderCarDao.selectById(dispatchRecordVo.getOrderCarId());
+                    if (orderCar != null) {
+                        Order order = orderDao.selectById(orderCar.getOrderId());
+                        if (order != null) {
+                            dispatchRecordVo.setLinkMan(order.getCustomerName());
+                            dispatchRecordVo.setLinkmanPhone(order.getCustomerPhone());
+                        }
+                    }
+                }
+            }
+            pageInfo.setList(pageInfoList);
+        }
     }
 }

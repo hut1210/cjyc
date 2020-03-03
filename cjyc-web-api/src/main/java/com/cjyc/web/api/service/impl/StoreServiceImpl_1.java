@@ -22,23 +22,30 @@ import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.DeleteStateEnum;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.JsonUtils;
+import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.store.StoreExportExcel;
-import com.cjyc.common.model.vo.store.StoreVo;
+import com.cjyc.common.model.vo.web.customer.PartnerImportExcel;
+import com.cjyc.common.model.vo.web.store.StoreExportExcel;
+import com.cjyc.common.model.vo.web.store.StoreImportExcel;
+import com.cjyc.common.model.vo.web.store.StoreVo;
 import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.web.api.service.IStoreService_1;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -51,6 +58,7 @@ import java.util.Objects;
  * @author JPG
  * @since 2019-10-23
  */
+@Slf4j
 @Service
 public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements IStoreService_1 {
     @Resource
@@ -65,6 +73,8 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
     private ICityDao cityDao;
     @Resource
     private IUserRoleDeptDao userRoleDeptDao;
+
+    private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
     @Override
     public List<Store> getByCityCode(String cityCode) {
@@ -101,6 +111,7 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
 
     @Override
     public ResultVo queryPage(StoreQueryDto dto) {
+        log.info("====>web端-分页查询业务中心列表,请求json数据 :: "+ JsonUtils.objectToJson(dto));
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
         List<Store> list = getStoreList(dto);
         PageInfo<Store> pageInfo = new PageInfo<>(list);
@@ -137,6 +148,7 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
     @Transactional(rollbackFor = Exception.class)
     @Override
     public ResultVo add(StoreAddDto storeAddDto) {
+        log.info("====>web端-新增业务中心,请求json数据 :: "+JsonUtils.objectToJson(storeAddDto));
         // 验证业务中心名称是否重复
         Store queryStore = super.getOne(new QueryWrapper<Store>().lambda()
                 .eq(Store::getName, storeAddDto.getName())
@@ -170,6 +182,7 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
     @Transactional(rollbackFor = Exception.class)
     @Override
     public ResultVo modify(StoreUpdateDto storeUpdateDto) {
+        log.info("====>web端-修改业务中心,请求json数据 :: "+JsonUtils.objectToJson(storeUpdateDto));
         Store store = new Store();
         BeanUtils.copyProperties(storeUpdateDto,store);
         store.setUpdateTime(System.currentTimeMillis());
@@ -190,7 +203,7 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
         // 查询列表
         List<Store> storeList = getStoreList(storeQueryDto);
 
-        if (!CollectionUtils.isEmpty(storeList)) {
+        //if (!CollectionUtils.isEmpty(storeList)) {
             // 生成导出数据
             List<StoreExportExcel> exportExcelList = new ArrayList<>(10);
             for (Store store : storeList) {
@@ -212,7 +225,7 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
             } catch (IOException e) {
                 log.error("导出业务中心异常:{}",e);
             }
-        }
+        //}
     }
 
     @Override
@@ -229,6 +242,7 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
 
     @Override
     public ResultVo getStoreCoveredAreaList(StoreDto dto) {
+        log.info("====>web端-根据业务中心ID查询覆盖区列表,请求json数据 :: "+JsonUtils.objectToJson(dto));
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<FullCity> list = cityDao.selectCoveredList(dto);
         PageInfo pageInfo = new PageInfo(list);
@@ -246,6 +260,7 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
     @Transactional(rollbackFor = Exception.class)
     @Override
     public ResultVo addCoveredArea(StoreDto dto) {
+        log.info("====>web端-新增前业务中心覆盖区域,请求json数据 :: "+JsonUtils.objectToJson(dto));
         StoreCityCon storeCityCon = new StoreCityCon();
         storeCityCon.setStoreId(dto.getStoreId());
         for (String areaCode : dto.getAreaCodeList()) {
@@ -262,6 +277,7 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
     @Transactional(rollbackFor = Exception.class)
     @Override
     public ResultVo removeCoveredArea(StoreDto dto) {
+        log.info("====>web端-删除当前业务中心覆盖区域,请求json数据 :: "+JsonUtils.objectToJson(dto));
         LambdaUpdateWrapper<StoreCityCon> updateWrapper = null;
         for (String areaCode : dto.getAreaCodeList()) {
             updateWrapper = new UpdateWrapper<StoreCityCon>().lambda().eq(StoreCityCon::getStoreId,dto.getStoreId()).eq(StoreCityCon::getAreaCode,areaCode);
@@ -297,6 +313,7 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
     @Transactional(rollbackFor = Exception.class)
     @Override
     public ResultVo remove(Long id) {
+        log.info("====>web端-删除业务中心,请求json数据 :: "+JsonUtils.objectToJson(id));
         // 查询该业务中心下是否关联了用户
         List<UserRoleDept> userRoleDeptList = userRoleDeptDao.selectList(new QueryWrapper<UserRoleDept>().lambda().eq(UserRoleDept::getDeptId, id));
         // 逻辑删除业务中心
@@ -340,5 +357,46 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
                 .eq(Store::getIsDelete,DeleteStateEnum.NO_DELETE.code)
                 .like(!StringUtils.isEmpty(storeQueryDto.getName()),Store::getName,storeQueryDto.getName());
         return super.list(queryWrapper);
+    }
+
+    @Override
+    public boolean importStoreExcel(MultipartFile file, Long loginId) {
+        boolean result;
+        try {
+            List<StoreImportExcel> storeImportExcelList = ExcelUtil.importExcel(file, 0, 1, StoreImportExcel.class);
+            if(!CollectionUtils.isEmpty(storeImportExcelList)){
+                for(StoreImportExcel storeExcel : storeImportExcelList){
+                    Store store = new Store();
+                    store.setName(storeExcel.getName());
+                    store.setProvince(storeExcel.getProvince());
+                    store.setProvinceCode(cityDao.findProvinceCode(storeExcel.getProvince()));
+                    store.setCity(storeExcel.getCity());
+                    store.setCityCode(cityDao.findCodeByName(storeExcel.getCity(),storeExcel.getProvince(),2));
+                    store.setArea(storeExcel.getArea());
+                    store.setAreaCode(cityDao.findCodeByName(storeExcel.getArea(),storeExcel.getCity(),3));
+                    store.setDetailAddr(storeExcel.getDetailAddr());
+                    store.setState(CommonStateEnum.CHECKED.code);
+                    store.setCreateUserId(loginId);
+                    store.setCreateTime(NOW);
+                    store.setIsDelete(DeleteStateEnum.NO_DELETE.code);
+                    storeDao.insert(store);
+                }
+                result = true;
+            }else{
+                result = false;
+            }
+        } catch (Exception e) {
+            log.error("导入业务中心失败异常:{}",e);
+            result = false;
+        }
+        return result;
+    }
+
+    @Override
+    public ResultVo<List<Store>> findAllStore() {
+        List<Store> stores = storeDao.selectList(new QueryWrapper<Store>().lambda()
+                                            .eq(Store::getIsDelete,DeleteStateEnum.NO_DELETE.code)
+                                            .eq(Store::getState,CommonStateEnum.CHECKED.code));
+        return BaseResultUtil.success(stores);
     }
 }

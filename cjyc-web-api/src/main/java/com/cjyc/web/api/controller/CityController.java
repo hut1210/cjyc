@@ -25,6 +25,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -113,4 +115,10 @@ public class CityController {
         return csCityService.findThreeCityByAdminNew(dto);
     }
 
+    @ApiOperation(value = "城市管理导出Excel", notes = "\t 请求接口为/city/exportCityListExcel?regionCode=大区编码&provinceCode=省编码" +
+            "&cityCode=市编码&areaCode=区/县编码")
+    @GetMapping("/exportCityListExcel")
+    public void exportCityListExcel(HttpServletRequest request, HttpServletResponse response){
+        cityService.exportCityListExcel(request,response);
+    }
 }

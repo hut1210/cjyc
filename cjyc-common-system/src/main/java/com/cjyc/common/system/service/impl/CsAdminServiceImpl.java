@@ -15,12 +15,15 @@ import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.*;
 import com.cjyc.common.system.util.RedisUtils;
 import com.cjyc.common.system.util.ResultDataUtil;
+import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -114,17 +117,15 @@ public class CsAdminServiceImpl implements ICsAdminService {
 
     @Override
     public Admin findLoop(Long storeId) {
-        if(storeId == null){
+        if(storeId == null || storeId <= 0){
             return null;
         }
         String key = RedisKeys.getLoopAllotAdminKey(storeId);
         String value = redisUtil.get(key);
         Long cachedId  = StringUtils.isBlank(value) ? 0L : Long.valueOf(value);
-        Store store = storeService.getById(storeId, true);
-
         List<Admin> admins = adminDao.findListByStoreId(storeId);
         if(CollectionUtils.isEmpty(admins)){
-            throw new ParameterException("{0}没有业务员", store.getName());
+            return null;
         }
         Admin selectAdmin = null;
         for (Admin admin: admins) {
@@ -137,5 +138,25 @@ public class CsAdminServiceImpl implements ICsAdminService {
         }
         redisUtil.set(key, String.valueOf(selectAdmin.getId()));
         return selectAdmin;
+    }
+
+    @Override
+    public Map<Long, Admin> findLoops(Collection<Long> storeIds) {
+        Map<Long, Admin> map = Maps.newHashMap();
+        if(CollectionUtils.isEmpty(storeIds)){
+            return null;
+        }
+        for (Long storeId : storeIds) {
+            Admin loop = findLoop(storeId);
+            if(loop != null){
+                map.put(storeId, loop);
+            }
+        }
+        return map;
+    }
+
+    @Override
+    public Admin findAdminByPhone(String phone) {
+        return adminDao.findAdminByPhone(phone);
     }
 }

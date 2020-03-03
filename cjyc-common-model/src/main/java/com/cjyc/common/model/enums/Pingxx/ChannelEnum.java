@@ -47,7 +47,8 @@ public enum ChannelEnum {
     CB_WX_PUB_QR("跨境微信 NATIVE 支付", "cb_wx_pub_qr"),
     CB_WX_PUB_SCAN("跨境微信付款码支付", "cb_wx_pub_scan"),
     PAYPAL("PAYPAL", "paypal"),
-    BALANCE("余额", "balance");
+    BALANCE("余额", "balance"),
+    ALLINPAY("通联代付","allinpay");
 
     private String name;
     private String tag;

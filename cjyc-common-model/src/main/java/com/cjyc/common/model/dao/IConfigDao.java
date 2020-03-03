@@ -21,4 +21,5 @@ public interface IConfigDao extends BaseMapper<Config> {
      */
     List<Config> getAllConfig();
 
+    Config getByItemKey(String key);
 }

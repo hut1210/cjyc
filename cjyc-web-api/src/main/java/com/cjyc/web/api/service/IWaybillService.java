@@ -7,6 +7,8 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.waybill.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -29,7 +31,7 @@ public interface IWaybillService extends IService<Waybill> {
 
     ResultVo<PageVo<TrunkCarListWaybillCarVo>> trunkCarlist(TrunkListWaybillCarDto reqDto);
 
-
+    ResultVo<List<TrunkCarDetailExportVo>> trunkCarAllList(TrunkListWaybillCarDto dto);
 
     ResultVo<List<WaybillCarTransportVo>> getCarByType(Long orderCarId, Integer waybillType);
 
@@ -39,12 +41,12 @@ public interface IWaybillService extends IService<Waybill> {
 
     ResultVo<PageVo<TrunkSubListWaybillVo>> getTrunkSubList(TrunkSubListWaybillDto reqDto);
 
-    List<TrunkSubListWaybillVo> getTrunkSubAllList(TrunkSubListWaybillDto reqDto);
+    ResultVo<List<TrunkSubListExportVo>> getTrunkSubAllList(TrunkSubListWaybillDto reqDto);
 
     ResultVo<WaybillVo> get(GetDto reqDto);
     ResultVo<WaybillVo> get(Long id);
     /************************************韵车集成改版 st***********************************/
     ResultVo<PageVo<CrWaybillVo>> crListForMineCarrierNew(CrWaybillDto reqDto);
 
-
+    void exportCrListExcel(HttpServletRequest request, HttpServletResponse response);
 }

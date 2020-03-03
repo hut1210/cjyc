@@ -2,33 +2,20 @@ package com.cjyc.customer.api.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.cjkj.common.model.ResultData;
-import com.cjkj.common.model.ReturnMsg;
-import com.cjkj.usercenter.dto.common.UpdateUserReq;
-import com.cjyc.common.model.dao.IBankCardBindDao;
-import com.cjyc.common.model.dao.ICustomerDao;
-import com.cjyc.common.model.dao.ICustomerPartnerDao;
-import com.cjyc.common.model.dao.IUserRoleDeptDao;
+import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.customer.partner.ApplyPartnerDto;
-import com.cjyc.common.model.entity.BankCardBind;
-import com.cjyc.common.model.entity.Customer;
-import com.cjyc.common.model.entity.CustomerPartner;
-import com.cjyc.common.model.entity.UserRoleDept;
+import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.UseStateEnum;
 import com.cjyc.common.model.enums.UserTypeEnum;
+import com.cjyc.common.model.enums.customer.CheckTypeEnum;
 import com.cjyc.common.model.enums.customer.CustomerSourceEnum;
 import com.cjyc.common.model.enums.customer.CustomerStateEnum;
-import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.enums.role.DeptTypeEnum;
-import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.util.ExcelUtil;
-import com.cjyc.common.model.util.LocalDateTimeUtil;
-import com.cjyc.common.model.util.YmlProperty;
+import com.cjyc.common.model.util.*;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.system.feign.ISysUserService;
+import com.cjyc.common.system.service.ICsBankInfoService;
 import com.cjyc.common.system.service.ICsUserRoleDeptService;
-import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.customer.api.service.IApplyPartnerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -37,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 
 @Service
 @Slf4j
@@ -50,9 +36,13 @@ public class ApplyPartnerServiceImpl extends ServiceImpl<ICustomerDao, Customer>
     @Resource
     private ICustomerDao customerDao;
     @Resource
+    private ICheckDao checkDao;
+    @Resource
     private IUserRoleDeptDao userRoleDeptDao;
     @Resource
     private ICsUserRoleDeptService csUserRoleDeptService;
+    @Resource
+    private ICsBankInfoService bankInfoService;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -96,6 +86,7 @@ public class ApplyPartnerServiceImpl extends ServiceImpl<ICustomerDao, Customer>
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResultVo applyPartnerNew(ApplyPartnerDto dto) {
+        log.info("申请合伙人请求json数据 :: "+JsonUtils.objectToJson(dto));
         Customer customer = customerDao.selectById(dto.getLoginId());
         UserRoleDept urd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
                 .eq(UserRoleDept::getUserId, dto.getLoginId())
@@ -104,18 +95,42 @@ public class ApplyPartnerServiceImpl extends ServiceImpl<ICustomerDao, Customer>
         if(customer == null || urd == null){
             return BaseResultUtil.fail("该用户不存在,请检查");
         }
-        if(urd.getState() == CommonStateEnum.IN_CHECK.code){
+        boolean flag = BankCardUtil.checkBankCard(dto.getCardNo());
+        if(!flag){
+            return BaseResultUtil.fail("银行卡号输入不符合,请检查");
+        }
+        //查询审核表中是否有该用户信息
+        Check check = checkDao.selectOne(new QueryWrapper<Check>().lambda()
+                .eq(Check::getUserId, dto.getLoginId())
+                .eq(Check::getState, CommonStateEnum.IN_CHECK.code)
+                .eq(Check::getType, CheckTypeEnum.UPGRADE_PARTNER.code)
+                .eq(Check::getSource,CustomerSourceEnum.UPGRADE.code));
+        if(check != null){
             //删除合伙人信息与银行卡信息
             customerPartnerDao.delete(new QueryWrapper<CustomerPartner>().lambda().eq(CustomerPartner::getCustomerId,customer.getId()));
             bankCardBindDao.delete(new QueryWrapper<BankCardBind>().lambda().eq(BankCardBind::getUserId,customer.getId()));
+            checkDao.delete(new QueryWrapper<Check>().lambda().eq(Check::getUserId,dto.getLoginId()).eq(Check::getType,CheckTypeEnum.UPGRADE_PARTNER.code));
         }
-        BeanUtils.copyProperties(dto,customer);
+       /* BeanUtils.copyProperties(dto,customer);
         customer.setAlias(dto.getName());
         customer.setSource(CustomerSourceEnum.UPGRADE.code);
         super.updateById(customer);
 
         //更新用户与角色机构关系
         csUserRoleDeptService.updateCustomerToUserRoleDept(customer,dto.getLoginId());
+*/
+       //保存到审核表中
+        Check ck = new Check();
+        BeanUtils.copyProperties(dto,ck);
+        ck.setUserId(dto.getLoginId());
+        ck.setPhone(customer.getContactPhone());
+        ck.setState(CommonStateEnum.IN_CHECK.code);
+        ck.setType(CheckTypeEnum.UPGRADE_PARTNER.code);
+        ck.setSocialCreditCode(dto.getSocialCreditCode());
+        ck.setSource(CustomerSourceEnum.UPGRADE.code);
+        ck.setCreateTime(NOW);
+        ck.setCreateUserId(dto.getLoginId());
+        checkDao.insert(ck);
 
         //合伙人附加信息
         CustomerPartner cp = new CustomerPartner();
@@ -128,7 +143,13 @@ public class ApplyPartnerServiceImpl extends ServiceImpl<ICustomerDao, Customer>
         bcb.setUserId(dto.getLoginId());
         bcb.setUserType(UserTypeEnum.CUSTOMER.code);
         bcb.setState(UseStateEnum.USABLE.code);
+        bcb.setCardColour(RandomUtil.getIntRandom());
         bcb.setCreateTime(NOW);
+        //获取银行编码
+        BankInfo bankInfo = bankInfoService.findBankCode(bcb.getBankName());
+        if(bankInfo != null){
+            bcb.setBankCode(bankInfo.getBankCode());
+        }
         bankCardBindDao.insert(bcb);
         return BaseResultUtil.success();
     }

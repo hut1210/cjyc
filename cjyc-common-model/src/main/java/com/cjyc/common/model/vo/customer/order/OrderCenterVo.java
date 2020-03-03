@@ -1,6 +1,6 @@
 package com.cjyc.common.model.vo.customer.order;
 
-import com.cjyc.common.model.util.BigDecimalSerizlizer;
+import com.cjyc.common.model.serizlizer.BigDecimalSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;

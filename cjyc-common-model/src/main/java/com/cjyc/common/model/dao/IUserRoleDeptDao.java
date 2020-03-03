@@ -21,4 +21,11 @@ public interface IUserRoleDeptDao extends BaseMapper<UserRoleDept> {
      * @return
      */
     List<Long> getNonSalesmanRoleIds(@Param("userId") Long userId);
+
+    /**
+     * 根据司机ID获取承运商id
+     * @param userId
+     * @return
+     */
+    List<Long> findDeptIds(@Param("userId") Long userId);
 }

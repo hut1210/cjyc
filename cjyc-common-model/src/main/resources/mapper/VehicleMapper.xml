@@ -54,7 +54,6 @@
             </if>
             and dv.ownership_type = 1
         </where>
-          group by dv.plate_no
           order by dv.create_time desc
     </select>
 

@@ -126,14 +126,17 @@
         s2.detail_addr as startStoreAddress,
         s3.detail_addr as endStoreAddress,
         cc.`name` as couponName,
-        w.*
-        from w_order w
-        left join s_store s1 on s1.id = w.input_store_id
-        left join s_store s2 on s2.id = w.start_store_id
-        left join s_store s3 on s3.id = w.end_store_id
-        left join c_coupon_send cs on cs.id = w.coupon_send_id
+        <include refid="order_calculate_fee_field"/>,
+        o.*
+        from w_order o
+        left join w_order_car oc on oc.order_id = o.id
+        left join s_store s1 on s1.id = o.input_store_id
+        left join s_store s2 on s2.id = o.start_store_id
+        left join s_store s3 on s3.id = o.end_store_id
+        left join s_line l on l.id = o.line_id
+        left join c_coupon_send cs on cs.id = o.coupon_send_id
         left join c_coupon cc on cc.id = cs.coupon_id
-        where w.id = #{orderId}
+        where o.id = #{orderId}
     </select>
     <sql id="order_outter_state">
         (case
@@ -164,10 +167,7 @@
         o.*,
         CONCAT(start_province,start_city,start_area,start_address) as startFullAddress,
         CONCAT(end_province,end_city,end_area,end_address) as endFullAddress,
-        (sum(IFNULL(oc.pick_fee,0)) + sum(IFNULL(oc.trunk_fee,0)) + sum(IFNULL(oc.back_fee,0)) +sum(IFNULL(oc.add_insurance_fee,0))) as wlTotalFee,
-        (case when o.customer_type =3 then IFNULL(o.total_fee,0) - ((sum(IFNULL(oc.pick_fee,0)) + sum(IFNULL(oc.trunk_fee,0)) + sum(IFNULL(oc.back_fee,0)) +sum(IFNULL(oc.add_insurance_fee,0)) + IFNULL(o.coupon_offset_fee,0)))
-        else 0 end
-        ) as totalAgencyFee,
+        <include refid="order_calculate_fee_field"/>,
         ct1.parent_name as region,
         ct1.parent_code as regionCode,
         s1.detail_addr as inputStoreAddress,
@@ -180,6 +180,7 @@
         left join s_store s1 on o.input_store_id = s1.id
         left join s_store s2 on o.start_store_id = s2.id
         left join s_store s3 on o.end_store_id = s3.id
+        left join s_line l on l.id = o.line_id
         left join s_city ct1 on s1.province_code = ct1.code
         left join c_customer_contract ht on ht.id = o.customer_contract_id
         <where>
@@ -221,7 +222,7 @@
                         and o.expect_start_date &gt;= #{paramsDto.beginTime}
                     </if>
                     <if test="paramsDto.endTime != null">
-                        and o.expect_start_date &lt;= #{paramsDto.endTime}
+                        and o.expect_start_date &lt; #{paramsDto.endTime}
                     </if>
                 </when>
                 <when test="paramsDto.timeType == 2">
@@ -229,7 +230,7 @@
                         and o.expect_end_date &gt;= #{paramsDto.beginTime}
                     </if>
                     <if test="paramsDto.endTime != null">
-                        and o.expect_end_date &lt;= #{paramsDto.endTime}
+                        and o.expect_end_date &lt; #{paramsDto.endTime}
                     </if>
                 </when>
                 <when test="paramsDto.timeType == 3">
@@ -237,7 +238,7 @@
                         and o.create_time &gt;= #{paramsDto.beginTime}
                     </if>
                     <if test="paramsDto.endTime != null">
-                        and o.create_time &lt;= #{paramsDto.endTime}
+                        and o.create_time &lt; #{paramsDto.endTime}
                     </if>
                 </when>
                 <when test="paramsDto.timeType == 4">
@@ -245,7 +246,7 @@
                         and o.check_time &gt;= #{paramsDto.beginTime}
                     </if>
                     <if test="paramsDto.endTime != null">
-                        and o.check_time &lt;= #{paramsDto.endTime}
+                        and o.check_time &lt; #{paramsDto.endTime}
                     </if>
                 </when>
                 <when test="paramsDto.timeType == 5">
@@ -253,12 +254,12 @@
                         and o.finish_time &gt;= #{paramsDto.beginTime}
                     </if>
                     <if test="paramsDto.endTime != null">
-                        and o.finish_time &lt;= #{paramsDto.endTime}
+                        and o.finish_time &lt; #{paramsDto.endTime}
                     </if>
                 </when>
             </choose>
-            <if test="paramsDto.no != null and paramsDto.no != ''">
-                and o.no = #{paramsDto.no}
+            <if test="paramsDto.no != null and paramsDto.no.trim() != ''">
+                and o.no like concat('%', #{paramsDto.no}, '%')
             </if>
             <if test="paramsDto.customerName != null and paramsDto.customerName != ''">
                 and o.customer_name like concat('%', #{paramsDto.customerName}, '%')
@@ -352,10 +353,20 @@
         group by o.id
         order by o.id desc
     </select>
+    <sql id="order_calculate_fee_field">
+        (case when oc.id > 0 then (
+             sum(IFNULL(oc.pick_fee,0)) + sum(IFNULL(oc.trunk_fee,0)) + sum(IFNULL(oc.back_fee,0)) +sum(IFNULL(oc.add_insurance_fee,0))
+        ) else IFNULL(o.car_num * l.default_wl_fee, 0) end) as wlTotalFee,
 
+        (case when o.customer_type =3 then (
+            case when oc.id > 0 then (
+                 IFNULL(o.total_fee,0) - ((sum(IFNULL(oc.pick_fee,0)) + sum(IFNULL(oc.trunk_fee,0)) + sum(IFNULL(oc.back_fee,0)) +sum(IFNULL(oc.add_insurance_fee,0)) + IFNULL(o.coupon_offset_fee,0)))
+            ) else IFNULL(o.total_fee - IFNULL(o.car_num * l.default_wl_fee, 0), 0) end
+        ) else 0 end) as totalAgencyFee
+    </sql>
     <select id="countForAllTab" resultType="java.util.Map">
         select
-        IFNULL(sum(case when o.state &gt; 0 then 1 else 0 end ),0)  as totalCount,<!--全部订单-->
+        IFNULL(sum(case when o.state > 0 or (o.state = 0 and o.create_user_id = #{paramsDto.loginId}) then 1 else 0 end ),0) as totalCount,<!--全部订单-->
         IFNULL(sum(case when o.state = 0 and o.create_user_id = #{paramsDto.loginId} then 1 else 0 end ),0) as waitCommitCount,<!--待提交-->
         IFNULL(sum(case when o.state &gt; 0 and o.state &lt; 15 then 1 else 0 end ),0)  as waitCheckCount,<!--待确认-->
         IFNULL(sum(case when o.state = 15 then 1 else 0 end ),0)  as waitPrePayCount,<!--带预付款-->
@@ -381,6 +392,8 @@
         </where>
     </select>
 
+
+
     <select id="selectPage" parameterType="com.cjyc.common.model.dto.customer.order.OrderQueryDto"
             resultMap="VinResultMap">
         select
@@ -396,7 +409,7 @@
         from
             w_order o
         <where>
-            customer_id = #{loginId}
+            o.customer_id = #{loginId}
             /*待确认*/
             <if test="state != null and state == 0">
                 and o.state between ${@com.cjyc.common.model.enums.order.OrderStateEnum@WAIT_SUBMIT.code}
@@ -421,7 +434,7 @@
                 and o.create_time &gt;= #{startDate}
             </if>
             <if test="endDate != null and endDate != 0">
-                and o.create_time &lt;= #{endDate}
+                and o.create_time &lt; #{endDate}
             </if>
             <if test="orderNo != null and orderNo.trim() != ''">
                 and o.no like concat('%',#{orderNo},'%')
@@ -479,7 +492,7 @@
             w_order wo
         <where>
             <if test="flag != null and flag == 0">
-                wo.state = 0
+                wo.state = 0 and wo.create_user_id = #{loginId}
             </if>
             <if test="flag != null and flag == 1">
                  and wo.state between 2 and 15
@@ -527,5 +540,16 @@
         <include refid="Base_Column_List"/>
           from w_order
         where create_time between #{beforeStartDay} and #{beforeEndDay}
+    </select>
+    <select id="findByNo" resultType="com.cjyc.common.model.entity.Order">
+        select * from w_order where no = #{orderNo}
+    </select>
+    <select id="countUnArriveStore" resultType="java.lang.Integer">
+        select count(0)
+        from w_order w
+        join w_order_car wc on w.id = wc.order_id
+        where w.id = #{id}
+        and wc.state &lt; 100
+        and (wc.now_store_id is null or wc.now_store_id != w.end_store_id)
     </select>
 </mapper>

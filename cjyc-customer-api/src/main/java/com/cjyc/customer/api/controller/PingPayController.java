@@ -11,6 +11,7 @@ import com.cjyc.common.model.dto.customer.pingxx.PrePayDto;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.StringUtil;
 import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.ValidateReceiptCarPayVo;
@@ -76,7 +77,7 @@ public class PingPayController {
     @ApiOperation("付款")
     @PostMapping("/pay")
     public ResultVo prepay(HttpServletRequest request,@RequestBody PrePayDto reqDto){
-        reqDto.setIp(IPUtil.getIpAddr(request));
+        reqDto.setIp(StringUtil.getIp(IPUtil.getIpAddr(request)));
         Order order;
         try{
             log.debug("pay---------"+reqDto.toString());
@@ -146,7 +147,7 @@ public class PingPayController {
                     }else if("order.refunded".equals(event.getType())){
                         Order order = (Order) data.getObject();
                         if(data.getObject() instanceof Charge){
-                            log.debug("------------->charge.succeeded");
+                            log.debug("------------->order.refunded.succeeded");
                             //transactionService.update((Charge)data.getObject(),event,"1");
                         }
                     }else if("charge.succeeded".equals(event.getType())){
@@ -164,6 +165,11 @@ public class PingPayController {
                         if(data.getObject() instanceof Transfer){
                             log.debug("---------------->transfer.failed");
                             transactionService.transferFailed((Transfer)data.getObject(),event);
+                        }
+                    }else if("refund.succeeded".equals(event.getType())){
+                        if(data.getObject() instanceof Refund) {
+                            log.debug("---------------->refund.succeeded");
+                            transactionService.refund((Refund)data.getObject(),event);
                         }
                     }
                 }
@@ -194,14 +200,14 @@ public class PingPayController {
         return publicKey;
     }
 
-    public static void main(String arg[]) throws Exception{
+    /*public static void main(String arg[]) throws Exception{
         File file = ResourceUtils.getFile(ResourceUtils.CLASSPATH_URL_PREFIX+"pingpp_public_key.pem");
         String pubKeyPath = PingPayController.class.getClassLoader().getResource("pingpp_public_key.pem").getPath();
         InputStream resourceAsStream = PingPayController.class.getClassLoader().getResourceAsStream("pingpp_public_key.pem");
         System.out.println(file.getPath());
         System.out.println(pubKeyPath);
 
-    }
+    }*/
 
     /**
      * 读取文件, 部署 web 程序的时候, 签名和验签内容需要从 request 中获得
@@ -257,7 +263,7 @@ public class PingPayController {
     public ResultVo carCollectPay(HttpServletRequest request, @RequestBody CarCollectPayDto reqDto) {
         Customer customer = csCustomerService.validate(reqDto.getLoginId());
         reqDto.setLoginName(customer.getName());
-        reqDto.setIp(IPUtil.getIpAddr(request));
+        reqDto.setIp(StringUtil.getIp(IPUtil.getIpAddr(request)));
         return pingPayService.carCollectPay(reqDto);
     }
 

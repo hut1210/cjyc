@@ -10,6 +10,10 @@ import com.cjyc.common.model.dto.salesman.customer.SalesCustomerDto;
 import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.entity.Role;
 import com.cjyc.common.model.dto.salesman.mine.AppCustomerIdDto;
+import com.cjyc.common.model.enums.PayModeEnum;
+import com.cjyc.common.model.enums.SendNoTypeEnum;
+import com.cjyc.common.model.enums.customer.CustomerSourceEnum;
+import com.cjyc.common.model.enums.role.DeptTypeEnum;
 import com.cjyc.common.model.enums.role.RoleNameEnum;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.salesman.customer.SalesCustomerListVo;
@@ -25,7 +29,11 @@ import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.ICsCustomerService;
+import com.cjyc.common.system.service.ICsRoleService;
+import com.cjyc.common.system.service.ICsSendNoService;
+import com.cjyc.common.system.service.ICsUserRoleDeptService;
 import com.cjyc.common.system.util.ResultDataUtil;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -48,6 +56,7 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
 
     private static final String CUSTOMER_FIXED_PWD = YmlProperty.get("cjkj.customer.password");
     private static final String CUSTOMER_FIXED_DEPTID = YmlProperty.get("cjkj.dept_customer_id");
+    private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
     @Resource
     private ICustomerDao customerDao;
@@ -57,6 +66,16 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
     private ISysRoleService sysRoleService;
     @Resource
     private StringRedisUtil redisUtil;
+    @Resource
+    private ICsRoleService csRoleService;
+    @Resource
+    private ICsCustomerService csCustomerService;
+    @Resource
+    private ICsSendNoService sendNoService;
+    @Resource
+    private ICsUserRoleDeptService csUserRoleDeptService;
+
+
 
     @Override
     public Customer getByUserId(Long userId, boolean isSearchCache) {
@@ -74,38 +93,6 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
     @Override
     public Customer getByPhone(String customerPhone, boolean isCache) {
         return customerDao.findByPhone(customerPhone);
-    }
-
-    @Override
-    public Customer save(Customer customer) {
-        //
-        ResultData<List<SelectRoleResp>> roleData = sysRoleService.getSingleLevelList(Long.valueOf(CUSTOMER_FIXED_DEPTID));
-        if (roleData == null || roleData.getData() == null) {
-            throw new ServerException(roleData == null ? "添加用户失败" : roleData.getMsg());
-        }
-
-        Long roleId = null;
-        for (SelectRoleResp selectRoleResp : roleData.getData()) {
-            if(selectRoleResp.getRoleName().equals(CustomerTypeEnum.INDIVIDUAL.name)){
-                roleId = selectRoleResp.getRoleId();
-            }
-        }
-        //添加架构组数据
-        AddUserReq addUserReq = new AddUserReq();
-        addUserReq.setAccount(customer.getContactPhone());
-        addUserReq.setPassword(CUSTOMER_FIXED_PWD);
-        addUserReq.setRoleIdList(roleId == null ? null : Collections.singletonList(roleId));
-        addUserReq.setDeptId(Long.valueOf(CUSTOMER_FIXED_DEPTID));
-        addUserReq.setMobile(customer.getContactPhone());
-        addUserReq.setName(customer.getName());
-        ResultData<AddUserResp> resultData = sysUserService.save(addUserReq);
-
-        if(resultData == null || resultData.getData() == null || resultData.getData().getUserId() == null){
-            throw new ServerException(resultData == null ? "添加用户失败" : resultData.getMsg());
-        }
-        customer.setUserId(resultData.getData().getUserId());
-        customerDao.insert(customer);
-        return customer;
     }
 
     @Override
@@ -279,7 +266,7 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
     }
 
     @Override
-    public ResultData<Boolean> updateUserToPlatform(Customer customer, Driver driver, String newPhone) {
+    public ResultData<Boolean> updateUserToPlatform(Customer customer, Driver driver, String newPhone,String newName) {
         String oldPhone = null;
         if(customer != null){
             oldPhone = customer.getContactPhone();
@@ -295,22 +282,92 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
             if (accountRd.getData() != null) {
                 return ResultData.failed("用户账号不允许修改，预修改账号：" + newPhone + " 已存在");
             }
-            UpdateUserReq user = new UpdateUserReq();
-            if(customer != null){
-                user.setName(customer.getName());
-                user.setUserId(customer.getUserId());
-            }else{
-                user.setName(driver.getName());
-                user.setUserId(driver.getUserId());
-            }
-            user.setAccount(newPhone);
-            user.setMobile(newPhone);
-            ResultData rd = sysUserService.updateUser(user);
+            ResultData rd = updateData(customer, driver, newPhone, newName);
             if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
                 return ResultData.failed("用户信息修改失败，原因：" + rd.getMsg());
             }
             return ResultData.ok(true);
+        }else if(oldPhone.equals(newPhone)){
+            if((customer != null && !customer.getName().equals(newName))
+                || (driver != null && !driver.getName().equals(newName))){
+                UpdateUserReq user = new UpdateUserReq();
+                if(customer != null){
+                    user.setUserId(customer.getUserId());
+                }else{
+                    user.setUserId(driver.getUserId());
+                }
+                user.setName(newName);
+                ResultData rd = sysUserService.updateUser(user);
+                if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+                    return ResultData.failed("用户姓名修改失败，原因：" + rd.getMsg());
+                }
+            }
+            return ResultData.ok(true);
         }
         return ResultData.ok(false);
+    }
+
+    @Override
+    public ResultVo<Customer> saveCustomer(String customerPhone,String customerName,Long loginId) {
+        Role role = csRoleService.getByName(YmlProperty.get("cjkj.customer_client_role_name"), DeptTypeEnum.CUSTOMER.code);
+        if(role == null){
+            return BaseResultUtil.fail("C端客户角色不存在，请先添加");
+        }
+        //新增个人用户信息到物流平台
+        ResultData<Long> rd = csCustomerService.addUserToPlatform(customerPhone,customerName,role);
+        if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+            return BaseResultUtil.fail(rd.getMsg());
+        }
+        if(rd.getData() == null){
+            return BaseResultUtil.fail("获取架构组userId失败");
+        }
+        Customer customer = new Customer();
+        customer.setUserId(rd.getData());
+        customer.setCustomerNo(sendNoService.getNo(SendNoTypeEnum.CUSTOMER));
+        customer.setAlias(customerName);
+        customer.setName(customerName);
+        customer.setContactMan(customerName);
+        customer.setContactPhone(customerPhone);
+        customer.setType(CustomerTypeEnum.INDIVIDUAL.code);
+        customer.setPayMode(PayModeEnum.COLLECT.code);
+        customer.setSource(CustomerSourceEnum.WEB.code);
+        customer.setCreateUserId(loginId);
+        customer.setCreateTime(NOW);
+        customer.setCheckUserId(loginId);
+        customer.setCheckTime(NOW);
+        customerDao.insert(customer);
+        //保存用户角色机构关系
+        csUserRoleDeptService.saveCustomerToUserRoleDept(customer, role.getId(), loginId);
+        return BaseResultUtil.success(customer);
+    }
+
+    @Override
+    public boolean validateActive(Long id) {
+        Customer customer = customerDao.findActive(id);
+        boolean b = customer != null;
+        return b;
+    }
+
+    @Override
+    public ResultVo<Customer> validateAndGetActive(Long id) {
+        Customer customer = customerDao.findActive(id);
+        if(customer == null){
+            return BaseResultUtil.fail("用户状态不可用");
+        }
+        return BaseResultUtil.success(customer);
+    }
+
+    private ResultData updateData(Customer customer,Driver driver,String newPhone,String newName){
+        UpdateUserReq user = new UpdateUserReq();
+        if(customer != null){
+            user.setUserId(customer.getUserId());
+        }else{
+            user.setUserId(driver.getUserId());
+        }
+        user.setName(newName);
+        user.setAccount(newPhone);
+        user.setMobile(newPhone);
+        ResultData rd = sysUserService.updateUser(user);
+        return rd;
     }
 }

@@ -132,7 +132,7 @@
                 and  cc.start_period_date >=  #{startPeriodTime}
             </if>
             <if test="endPeriodTime != null">
-                and  cc.end_period_date &lt;= #{endPeriodTime}
+                and  cc.end_period_date &lt; #{endPeriodTime}
             </if>
             and ccs.customer_id = #{customerId}
         </where>

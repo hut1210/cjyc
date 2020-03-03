@@ -20,7 +20,7 @@
         <dependency>
             <groupId>com.cjyc</groupId>
             <artifactId>cjyc-common-system</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <!--web-->
         <dependency>

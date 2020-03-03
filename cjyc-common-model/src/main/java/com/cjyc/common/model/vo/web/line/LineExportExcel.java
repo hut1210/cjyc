@@ -1,6 +1,8 @@
 package com.cjyc.common.model.vo.web.line;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
+import com.cjyc.common.model.constant.TimePatternConstant;
+import com.cjyc.common.model.util.LocalDateTimeUtil;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -38,10 +40,10 @@ public class LineExportExcel implements Serializable {
     private String remark;
 
     @Excel(name = "创建时间" ,orderNum = "9",width = 15)
-    private String createTime;
+    private Long createTime;
 
     @Excel(name = "创建人" ,orderNum = "10",width = 15)
-    private String createUserName;
+    private String createName;
 
     public String getDefaultWlFee() {
         return defaultWlFee == null ? "0.00" : defaultWlFee.divide(new BigDecimal(100)).toString()+".00";
@@ -49,5 +51,12 @@ public class LineExportExcel implements Serializable {
 
     public String getDefaultFreightFee() {
         return defaultFreightFee == null ? "0.00" : defaultFreightFee.divide(new BigDecimal(100)).toString()+".00";
+    }
+
+    public String getCreateTime(){
+        if(createTime != null){
+            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(createTime), TimePatternConstant.COMPLEX_TIME_FORMAT);
+        }
+        return "";
     }
 }

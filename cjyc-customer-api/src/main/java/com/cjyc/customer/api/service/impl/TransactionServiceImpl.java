@@ -2,10 +2,15 @@ package com.cjyc.customer.api.service.impl;
 
 import com.Pingxx.model.MetaDataEntiy;
 import com.Pingxx.model.PingxxMetaData;
+import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.enums.log.OrderCarLogEnum;
-import com.cjyc.common.model.keys.RedisKeys;
-import com.cjyc.common.system.service.ICsOrderCarLogService;
+import com.cjyc.common.model.enums.log.OrderLogEnum;
+import com.cjyc.common.model.enums.message.PushMsgEnum;
+import com.cjyc.common.system.service.*;
 import com.cjyc.common.system.util.MiaoxinSmsUtil;
+import com.cjyc.customer.api.service.IOrderService;
 import com.pingplusplus.model.*;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.entity.*;
@@ -20,17 +25,17 @@ import com.cjyc.common.model.enums.waybill.WaybillStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.BeanMapUtil;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.system.service.ICsSendNoService;
-import com.cjyc.common.system.service.ICsTaskService;
-import com.cjyc.common.system.service.ICsUserService;
 import com.cjyc.common.system.util.RedisUtils;
 import com.cjyc.customer.api.service.ITransactionService;
 import com.pingplusplus.model.Order;
+import com.pingplusplus.model.Refund;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+import springfox.documentation.spring.web.json.Json;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -84,10 +89,21 @@ public class TransactionServiceImpl implements ITransactionService {
     private IWaybillCarDao waybillCarDao;
 
     @Resource
-    private ICsOrderCarLogService csOrderCarLogService;
+    private ICsOrderLogService csOrderLogService;
 
     @Resource
     private IOrderCarDao orderCarDao;
+
+    @Resource
+    private ICsPingPayService csPingPayService;
+
+    @Resource
+    private IOrderService orderService;
+
+    @Resource
+    private IOrderRefundDao orderRefundDao;
+    @Resource
+    private ICsPushMsgService csPushMsgService;
 
     @Override
     public int save(Object obj) {
@@ -143,14 +159,15 @@ public class TransactionServiceImpl implements ITransactionService {
                     log.info(chargeType+" 物流费预付 orderNo ="+orderNo);
                     updateForPrePay(pingxxMetaData);
                 }
-                if(chargeType.equals(String.valueOf(ChargeTypeEnum.DRIVER_COLLECT_QRCODE.getCode()))||chargeType.equals(String.valueOf(ChargeTypeEnum.WEB_OUT_STOCK_QRCODE.getCode()))
-                ||chargeType.equals(String.valueOf(ChargeTypeEnum.SALESMAN_COLLECT_QRCODE.getCode()))){
+                if(chargeType.equals(String.valueOf(ChargeTypeEnum.DRIVER_COLLECT_QRCODE.getCode()))
+                        ||chargeType.equals(String.valueOf(ChargeTypeEnum.WEB_OUT_STOCK_QRCODE.getCode()))
+                        ||chargeType.equals(String.valueOf(ChargeTypeEnum.SALESMAN_COLLECT_QRCODE.getCode()))){
                     Long taskId = Long.valueOf((String)metadata.get("taskId"));
 
                     List<String> taskCarIdList = pingxxMetaData.getTaskCarIdList();
 
                     List<String> orderCarNosList = pingxxMetaData.getOrderCarIds();
-                    log.info("司机出示二维码回调或者后台出库回调");
+                    log.info("【二维码支付回调】司机出示二维码回调或者后台出库回调");
                     Task task = null;
                     if(taskId == null){
                         log.error("回调中参数taskId不存在");
@@ -173,25 +190,40 @@ public class TransactionServiceImpl implements ITransactionService {
                             }
                         }
                     }
-                    UserInfo userInfo = new UserInfo();
-                    if(orderCarNosList==null){
+                    if(CollectionUtils.isEmpty(orderCarNosList)){
                         log.error("回调中参数orderCarNosList不存在");
                         return BaseResultUtil.fail("缺少参数orderCarNosList");
-                    }else{
-                        //修改车辆支付状态
-                        userInfo = userService.getUserInfo(Long.valueOf(pingxxMetaData.getLoginId()), Integer.valueOf(pingxxMetaData.getLoginType()));
-                        csTaskService.updateForTaskCarFinish(taskCarIdList, ChargeTypeEnum.COLLECT_PAY.getCode(), userInfo);
                     }
+
+                    //修改车辆支付状态
+                    UserInfo userInfo = new UserInfo();
+                    try {
+                        userInfo = userService.getUserInfo(Long.valueOf(pingxxMetaData.getLoginId()), Integer.valueOf(pingxxMetaData.getLoginType()));
+                    }catch (Exception e){
+                        log.error("【支付回调-二维码】获取用户信息失败{}", JSON.toJSONString(metadata));
+                        log.error(e.getMessage(), e);
+                    }
+                    csTaskService.updateForTaskCarFinish(taskCarIdList, ChargeTypeEnum.COLLECT_PAY.getCode(), userInfo);
+
                     //验证任务是否完成
                     int row = taskCarDao.countUnFinishByTaskId(taskId);
+                    log.debug("验证任务是否完成 taskId = {},row = {}",taskId,row);
                     if (row == 0) {
+
                         //更新任务状态
                         taskDao.updateStateById(task.getId(), TaskStateEnum.FINISHED.code);
                         //验证运单是否完成
                         int n = waybillCarDao.countUnFinishByWaybillId(task.getWaybillId());
+                        log.debug("验证运单是否完成 waybillId = {},n = {}",task.getWaybillId(),n);
                         if (n == 0) {
+                            log.debug("更新运单状态");
                             //更新运单状态
                             tradeBillDao.updateForReceipt(task.getWaybillId(), System.currentTimeMillis());
+                            /*try{
+                                csPingPayService.allinpayToCarrier(task.getWaybillId());
+                            }catch (Exception e){
+                                log.error("通联代付给下游付款异常 "+e.getMessage(),e);
+                            }*/
 
                             //更新订单状态
                             List<com.cjyc.common.model.entity.Order> list = orderDao.findListByCarNos(orderCarNosList);
@@ -200,6 +232,7 @@ public class TransactionServiceImpl implements ITransactionService {
                             int num = tradeBillDao.countUnFinishByOrderNo(order.getNo());
                             if(num == 0){
                                 orderDao.updateForReceipt(order.getId(),System.currentTimeMillis());
+                                tradeBillDao.updateOrderPayState(order.getNo(),System.currentTimeMillis());
                             }
                         }
                     }
@@ -250,7 +283,16 @@ public class TransactionServiceImpl implements ITransactionService {
         }
 
         message.append("的车辆已完成交车收款，收款金额");
-        BigDecimal freightFee = tradeBillDao.getAmountByOrderCarNos(orderCarNosList);
+        List<com.cjyc.common.model.entity.Order> list = orderDao.findListByCarNos(orderCarNosList);
+        com.cjyc.common.model.entity.Order order = list.get(0);
+
+        BigDecimal freightFee = new BigDecimal("0");
+        if(order!=null&&order.getCustomerType()==3){//合伙人
+            freightFee = tradeBillDao.getAmountByOrderCarNosToPartner(orderCarNosList);
+        }else{//非合伙人
+            freightFee = tradeBillDao.getAmountByOrderCarNos(orderCarNosList);
+        }
+
         if(freightFee!=null){
             message.append(freightFee.divide(new BigDecimal(100)));
         }
@@ -280,20 +322,31 @@ public class TransactionServiceImpl implements ITransactionService {
         String chargeType = pingxxMetaData.getChargeType();
         if(chargeType.equals(String.valueOf(ChargeTypeEnum.UNION_PAY.getCode()))){
 
-            log.info("给承运商付款");
+            log.info("回调给承运商付款");
             //给承运商付款
-            Long waybillId = pingxxMetaData.getWaybillId();
+            Long waybillId = Long.valueOf(pingxxMetaData.getWaybillId());
 
+            String no = tradeBillDao.getTradeBillByPingPayId(transfer.getId());
             try{
-                tradeBillDao.updateWayBillPayState(waybillId,transfer.getId());
+                tradeBillDao.updateWayBillPayState(waybillId,no, System.currentTimeMillis());
             }catch (Exception e){
-                log.error("给承运商付款更新运单支付状态失败"+e.getMessage(),e);
+                log.error("回调给承运商付款更新运单支付状态失败"+e.getMessage(),e);
             }
 
         }
         if(chargeType.equals(String.valueOf(ChargeTypeEnum.UNION_PAY_PARTNER.getCode()))){
-            //给合伙人付款
-            log.info("给合伙人付款");
+            String orderId = pingxxMetaData.getOrderId();
+            com.cjyc.common.model.entity.Order order = orderDao.selectById(orderId);
+            if(order!=null){
+                log.info("回调给合伙人付款");
+                try {
+                    csPingPayService.allinpayToCooperator(order.getId());
+                } catch (Exception e) {
+                    log.error("回调支付合伙人{}（ID{}）服务费失败", order.getCustomerName(), order.getCustomerId());
+                    log.error(e.getMessage(), e);
+                }
+            }
+
         }
 
     }
@@ -306,6 +359,26 @@ public class TransactionServiceImpl implements ITransactionService {
         tradeBill.setState(-2);
         tradeBill.setTradeTime(System.currentTimeMillis());
         tradeBillDao.updateTradeBillByPingPayId(tradeBill);
+    }
+
+    @Override
+    public void refund(Refund refund, Event event) {
+        /*TradeBill tradeBill = new TradeBill();
+        tradeBill.setPingPayId(refund.getId());
+        tradeBill.setState(10);
+        tradeBill.setTradeTime(System.currentTimeMillis());
+        tradeBillDao.updateTradeBillByPingPayId(tradeBill);*/
+        Map<String, Object> metadata = refund.getMetadata();
+        PingxxMetaData pingxxMetaData = BeanMapUtil.mapToBean(metadata, new PingxxMetaData());
+        String orderNo = pingxxMetaData.getOrderNo();
+        log.info("refund orderNo = {}",orderNo);
+        try{
+            orderRefundDao.updateRefund(orderNo);
+        }catch (Exception e){
+            log.error("回调退款更新异常 orderNo = {}",orderNo);
+            log.error(e.getMessage(),e);
+        }
+
     }
 
     @Override
@@ -484,6 +557,7 @@ public class TransactionServiceImpl implements ITransactionService {
             }
             //处理运单订单任务数据
             csTaskService.updateForCarFinish(Arrays.asList(mde.getSourceNos().split(",")), userInfo);
+
         }else if(chargeType == ChargeTypeEnum.PREPAY.getCode() || chargeType == ChargeTypeEnum.PREPAY_QRCODE.getCode()){
             PingxxMetaData pingxxMetaData = BeanMapUtil.mapToBean(metadata, new PingxxMetaData());
             //物流费预付
@@ -492,6 +566,7 @@ public class TransactionServiceImpl implements ITransactionService {
             updateForPrePay(pingxxMetaData);
             String lockKey =getRandomNoKey(orderNo);
             redisUtil.delete(lockKey);
+
         }
 
     }
@@ -501,6 +576,7 @@ public class TransactionServiceImpl implements ITransactionService {
         UserInfo userInfo = userService.getUserInfo(Long.valueOf(pingxxMetaData.getLoginId()), Integer.valueOf(pingxxMetaData.getLoginType()));
         String  orderNo = pingxxMetaData.getOrderNo();
         if(orderNo!=null){
+            com.cjyc.common.model.entity.Order order = orderDao.findByNo(orderNo);
             tradeBillDao.updateOrderState(orderNo,2,System.currentTimeMillis());
             List<String> list = tradeBillDao.getOrderCarNoList(orderNo);
             List<OrderCar> orderCarList = orderCarDao.findListByNos(list);
@@ -509,19 +585,18 @@ public class TransactionServiceImpl implements ITransactionService {
                     OrderCar orderCar = orderCarList.get(i);
                     if(orderCar != null){
                         tradeBillDao.updateOrderCar(orderCar.getNo(),2,System.currentTimeMillis());
-
-                        if(userInfo!=null){
-                            //添加日志
-                            csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.RECEIPT,
-                                    new String[]{MessageFormat.format(OrderCarLogEnum.RECEIPT.getInnerLog(), orderCar.getNo()),
-                                            MessageFormat.format(OrderCarLogEnum.RECEIPT.getOutterLog(), orderCar.getNo())},
-                                    userInfo);
-                        }
-
                     }
-
                 }
             }
+
+            //添加日志
+            csOrderLogService.asyncSave(order, OrderLogEnum.PREPAID,
+                    new String[]{OrderLogEnum.PREPAID.getOutterLog(),
+                            MessageFormat.format(OrderLogEnum.PREPAID.getInnerLog(), userInfo.getName(), userInfo.getPhone())},
+                    userInfo);
+
+            csPushMsgService.send(order.getCustomerId(), UserTypeEnum.CUSTOMER, PushMsgEnum.C_PAID_ORDER, order.getNo());
+
         }
     }
 

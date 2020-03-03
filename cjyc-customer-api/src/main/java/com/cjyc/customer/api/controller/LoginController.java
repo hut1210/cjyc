@@ -10,6 +10,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +32,13 @@ public class LoginController {
     private ILoginService loginService;
     @Resource
     private ICsLoginService csLoginService;
+
+    @Value("${cjyc.customer.clientId}")
+    private String clientId;
+    @Value("${cjyc.customer.clientSecret}")
+    private String clientSecret;
+    @Value("${cjyc.customer.grantType}")
+    private String grantType;
 
     @ApiOperation(value = "获取验证码")
     @PostMapping("/verifyCode")
@@ -64,7 +72,7 @@ public class LoginController {
     //@PostMapping("/loginNew")
     @PostMapping("/login")
     public ResultVo<CustomerLoginVo> loginNew(@Validated @RequestBody LoginDto dto) {
-        return loginService.loginNew(dto);
+        return loginService.loginNew(dto, clientId, clientSecret, grantType);
     }
 
 }

@@ -26,73 +26,6 @@
         <result column="create_user_id" property="createUserId" />
         <result column="input_store_id" property="inputStoreId" />
     </resultMap>
-    <resultMap id="FullWaybillResultVo" type="com.cjyc.common.model.entity.defined.FullWaybill">
-        <id column="id" property="id" />
-        <result column="no" property="no" />
-        <result column="type" property="type" />
-        <result column="source" property="source" />
-        <result column="guide_line" property="guideLine" />
-        <result column="recommend_line" property="recommendLine" />
-        <result column="carrier_id" property="carrierId" />
-        <result column="carrier_type" property="carrierType" />
-        <result column="carrier_name" property="carrierName" />
-        <result column="car_num" property="carNum" />
-        <result column="state" property="state" />
-        <result column="freight_fee" property="freightFee" />
-        <result column="freight_pay_state" property="freightPayState" />
-        <result column="freight_pay_time" property="freightPayTime" />
-        <result column="freight_pay_billno" property="freightPayBillno" />
-        <result column="fixed_freight_fee" property="fixedFreightFee" />
-        <result column="remark" property="remark" />
-        <result column="create_time" property="createTime" />
-        <result column="create_user" property="createUser" />
-        <result column="create_user_id" property="createUserId" />
-        <result column="input_store_id" property="inputStoreId" />
-        <collection property="waybillCarList" ofType="com.cjyc.common.model.entity.WaybillCar" javaType="java.util.List">
-            <id column="waybill_car_id" property="id"/>
-            <result column="waybill_id" property="waybillId"/>
-            <result column="waybill_no" property="waybillNo"/>
-            <result column="order_car_id" property="orderCarId"/>
-            <result column="order_car_no" property="orderCarNo"/>
-            <result column="car_freight_fee" property="freightFee"/>
-            <result column="start_province" property="startProvince"/>
-            <result column="start_province_code" property="startProvinceCode"/>
-            <result column="start_city" property="startCity"/>
-            <result column="start_city_code" property="startCityCode"/>
-            <result column="start_area" property="startArea"/>
-            <result column="start_area_code" property="startAreaCode"/>
-            <result column="start_address" property="startAddress"/>
-            <result column="start_store_name" property="startStoreName"/>
-            <result column="start_store_id" property="startStoreId"/>
-            <result column="start_belong_store_id" property="startBelongStoreId"/>
-            <result column="end_province" property="endProvince"/>
-            <result column="end_province_code" property="endProvinceCode"/>
-            <result column="end_city" property="endCity"/>
-            <result column="end_city_code" property="endCityCode"/>
-            <result column="end_area" property="endArea"/>
-            <result column="end_area_code" property="endAreaCode"/>
-            <result column="end_address" property="endAddress"/>
-            <result column="end_store_name" property="endStoreName"/>
-            <result column="end_store_id" property="endStoreId"/>
-            <result column="end_belong_store_id" property="endBelongStoreId"/>
-            <result column="line_id" property="lineId"/>
-            <result column="car_state" property="state"/>
-            <result column="expect_start_time" property="expectStartTime"/>
-            <result column="expect_end_time" property="expectEndTime"/>
-            <result column="load_link_name" property="loadLinkName"/>
-            <result column="load_link_user_id" property="loadLinkUserId"/>
-            <result column="load_link_phone" property="loadLinkPhone"/>
-            <result column="load_photo_img" property="loadPhotoImg"/>
-            <result column="load_time" property="loadTime"/>
-            <result column="unload_link_name" property="unloadLinkName"/>
-            <result column="unload_link_user_id" property="unloadLinkUserId"/>
-            <result column="unload_link_phone" property="unloadLinkPhone"/>
-            <result column="unload_photo_img" property="unloadPhotoImg"/>
-            <result column="unload_time" property="unloadTime"/>
-            <result column="receipt_flag" property="receiptFlag" />
-            <result column="car_create_time" property="createTime"/>
-        </collection>
-    </resultMap>
     <resultMap id="TrunkListResultMap" type="com.cjyc.common.model.vo.web.waybill.TrunkListWaybillVo">
         <id column="id" property="id" />
         <result column="no" property="no" />
@@ -324,7 +257,7 @@
         where id = #{id}
         and state &lt; 100
     </update>
-    <update id="updateForLoad">
+    <update id="updateForOutStore">
         update w_waybill
         set state = 55
         where id = #{id}
@@ -357,6 +290,29 @@
         )
         where w.id = #{id}
         limit 1
+    </update>
+    <update id="updateNumAndFreightFee">
+        update w_waybill
+        set car_num = (
+            select count(0)
+            from w_waybill_car
+            where waybill_id = #{waybillId}
+            and state &lt;= 100
+        ),
+        freight_fee = (
+            select sum(IFNULL(wc.freight_fee,0))
+            from w_waybill_car wc
+            where wc.waybill_id = #{waybillId}
+            and wc.state &lt;= 100
+        )
+        where id = #{waybillId}
+    </update>
+    <update id="updateForOver">
+        update w_waybill
+        set state = #{state},
+        complete_time = UNIX_TIMESTAMP(NOW()) * 1000
+        where id = #{id}
+        and state &lt; 100
     </update>
     <select id="findByNo" resultType="com.cjyc.common.model.entity.Waybill">
         select
@@ -487,7 +443,7 @@
             (case when w.carrier_type != 2 then dr.id_card else null end) as idCard,
             (case when w.carrier_type != 2 then vr.plate_no else null end) as vehiclePlateNo
         from w_waybill w
-        LEFT JOIN w_task t on t.waybill_id = w.id
+        LEFT JOIN w_task t on t.waybill_id = w.id and t.state &lt;= 100
         LEFT JOIN d_driver dr on dr.id = t.driver_id
         left join d_vehicle_running vr on vr.driver_id = t.driver_id
         where w.id = #{id}
@@ -529,11 +485,11 @@
             <if test="paramsDto.state != null">
                 and w.state = #{paramsDto.state}
             </if>
-            <if test="paramsDto.waybillNo != null and paramsDto.waybillNo != ''">
+            <if test="paramsDto.waybillNo != null and paramsDto.waybillNo.trim() != ''">
                 and w.no like concat('%', #{paramsDto.waybillNo}, '%')
             </if>
             <if test="paramsDto.guideLine != null and paramsDto.guideLine != ''">
-                and w.guide_line  = #{paramsDto.guideLine}
+                and w.guide_line  like concat('%', #{paramsDto.guideLine}, '%')
             </if>
             <if test="paramsDto.carrierName != null and paramsDto.carrierName != ''">
                 and w.carrier_name like concat('%', #{paramsDto.carrierName}, '%')
@@ -585,22 +541,22 @@
             <if test="paramsDto.loginId != null">
                 and w.create_user_id = #{paramsDto.loginId}
             </if>
-            <if test="paramsDto.waybillNo != null and paramsDto.waybillNo != ''">
+            <if test="paramsDto.waybillNo != null and paramsDto.waybillNo.trim() != ''">
                 and w.no like concat('%', #{paramsDto.waybillNo}, '%')
             </if>
-            <if test="paramsDto.guideLine != null and paramsDto.guideLine != ''">
-                and w.guide_line  = #{paramsDto.guideLine}
+            <if test="paramsDto.guideLine != null and paramsDto.guideLine.trim() != ''">
+                and w.guide_line like concat('%', #{paramsDto.guideLine}, '%')
             </if>
-            <if test="paramsDto.carrierName != null and paramsDto.carrierName != ''">
+            <if test="paramsDto.carrierName != null and paramsDto.carrierName.trim() != ''">
                 and w.carrier_name like concat('%', #{paramsDto.carrierName}, '%')
             </if>
-            <if test="paramsDto.driverName != null and paramsDto.driverName != ''">
+            <if test="paramsDto.driverName != null and paramsDto.driverName.trim() != ''">
                 and t.driver_name  like concat('%', #{paramsDto.driverName}, '%')
             </if>
-            <if test="paramsDto.driverPhone != null and paramsDto.driverPhone != ''">
+            <if test="paramsDto.driverPhone != null and paramsDto.driverPhone.trim() != ''">
                 and t.driver_phone like concat('%', #{paramsDto.driverPhone}, '%')
             </if>
-            <if test="paramsDto.vehiclePlateNo != null and paramsDto.vehiclePlateNo != ''">
+            <if test="paramsDto.vehiclePlateNo != null and paramsDto.vehiclePlateNo.trim() != ''">
                 and t.vehicle_plate_no like concat('%', #{paramsDto.vehiclePlateNo}, '%')
             </if>
             <if test="paramsDto.beginCreateTime != null">
@@ -742,22 +698,26 @@
             w.id as waybillId,
             w.no as waybillNo,
             w.type as waybillType,
-            (case w.type when 1 then concat(car.start_city,'-',car.end_city)
+           (case w.type when 1 then concat(car.start_city,'-',car.end_city)
                          when 3 then concat(car.start_city,'-',car.end_city) else w.guide_line end) AS guideLine,
             w.car_num as carNum,
             w.freight_fee as freightFee,
             w.create_time as createTime,
+            w.carrier_type as carrierType,
             carrier.linkman as linkMan,
-            carrier.linkman_phone as linkmanPhone
+            carrier.linkman_phone as linkmanPhone,
+            car.order_car_id as orderCarId,
+            w.carrier_id as carrierId
         from
             w_waybill w
             left join d_carrier carrier on w.carrier_id=carrier.id
-            left join w_waybill_car car on w.id=car.waybill_id and w.type in(1,3)
+            left join w_waybill_car car on w.id=car.waybill_id
         <where>
             <if test="bizStoreIds != null">
-                and input_store_id in <foreach collection="bizStoreIds" item="item" index="index" open="(" close=")" separator=",">
+                and (w.input_store_id in <foreach collection="bizStoreIds" item="item" index="index" open="(" close=")" separator=",">
                                         #{item}
                                     </foreach>
+                or w.create_user_id=#{loginId})
             </if>
             <if test="key != null and key.trim() != ''">
                 and (carrier.linkman_phone like CONCAT('%',#{key},'%') or w.no like CONCAT('%',#{key},'%'))
@@ -781,6 +741,7 @@
                 and w.guide_line like concat('%-',#{endCity},'%')
             </if>
         </where>
+        group by w.id
         order by w.id desc
     </select>
 
@@ -796,14 +757,6 @@
 
         where dc.id = #{carrierId}
 
-    </select>
-    <select id="findFullWaybillById" resultType="com.cjyc.common.model.entity.defined.FullWaybill">
-        select
-        w.*,
-        <include refid="Base_Car_Column_List_Rename_id"/>
-        from w_waybill w
-        join w_waybill_car wc on w.id = wc.waybill_id
-        and w.id = #{waybillId}
     </select>
     <select id="findListByWaybillCarIds" resultType="com.cjyc.common.model.entity.Waybill">
         select w.*

@@ -9,11 +9,10 @@ import com.cjyc.common.model.dto.web.store.StoreUpdateDto;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Store;
 import com.cjyc.common.model.entity.defined.FullCity;
+import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.store.StoreVo;
-import com.cjyc.common.system.service.ICsStoreService;
-import com.cjyc.web.api.service.IStoreService;
+import com.cjyc.common.model.vo.web.store.StoreVo;
 import com.cjyc.web.api.service.IStoreService_1;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
@@ -21,6 +20,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -117,7 +117,7 @@ public class StoreController_1 {
      * @author liuxingxiang
      * @date 2019/12/17
      * @param storeQueryDto
-     * @return com.cjyc.common.model.vo.ResultVo<com.github.pagehelper.PageInfo<com.cjyc.common.model.vo.store.StoreVo>>
+     * @return com.cjyc.common.model.vo.ResultVo<com.github.pagehelper.PageInfo<com.cjyc.common.model.vo.web.store.StoreVo>>
      */
     @ApiOperation(value = "分页查询业务中心列表", notes = "\t 请求接口为json格式")
     @PostMapping("/queryPage")
@@ -257,5 +257,18 @@ public class StoreController_1 {
     @PostMapping("/removeCoveredArea")
     public ResultVo removeCoveredArea(@RequestBody @Validated({StoreDto.AddAndRemoveCoveredArea.class}) StoreDto dto) {
         return storeService.removeCoveredArea(dto);
+    }
+
+    @ApiOperation(value = "导入Excel", notes = "\t 请求接口为/importStoreExcel/loginId(导入用户ID)格式")
+    @PostMapping("/importStoreExcel/{loginId}")
+    public ResultVo importStoreExcel(@RequestParam("file") MultipartFile file, @PathVariable Long loginId){
+        boolean result = storeService.importStoreExcel(file, loginId);
+        return result ? BaseResultUtil.success() : BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
+    }
+
+    @ApiOperation(value = "获取全部业务中心")
+    @PostMapping(value = "/findAllStore")
+    public ResultVo<List<Store>> findAllStore() {
+        return storeService.findAllStore();
     }
 }

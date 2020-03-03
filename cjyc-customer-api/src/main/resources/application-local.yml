@@ -33,6 +33,7 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://39.107.96.231:3306/ju_test_dev?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    #url: jdbc:mysql://10.253.96.139:3306/cjyc?useUnicode=true&characterEncoding=utf-8&useSSL=false
     username: root
     password: Qaz123$%^231#
     #连接池
@@ -81,6 +82,12 @@ logging:
 
 
 cjkj:
+  push:
+    enabled: true
+    apikey:
+      customer: 47c449cf81974738beeee5c0e14b6805
+      driver: b4ba93a458614c64835315acf1bcc7fe
+      salesman: 672774b924254b2cb96be3a4c5aaae96
   dept_customer_id: 100000
   dept_driver_id: 110000
   dept_admin_id: 120000
@@ -131,8 +138,8 @@ cjyc:
 
   #短信
   sms:
-    ##短信时效(秒)
-    expires: 300
+    ##短信时效(分钟)
+    expires: 5
     ##单日最大发送条数
     daylimit: 20
     miaoxin:
@@ -147,7 +154,10 @@ cjyc:
       enabled: true
       appKey: 8a4abf674ba61fc9c47d6616
       masterSecret: 6fc93a75e2f813f4798e88ff
-
+  customer:
+    clientId: "1186108891007336449"
+    clientSecret: acffa1064e9a629d3140e5b36be31bd3
+    grantType: mobile
   #支付
   pay:
     ping++:

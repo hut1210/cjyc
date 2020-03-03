@@ -7,7 +7,13 @@
         <id column="id" property="id" />
         <result column="code" property="code" />
         <result column="name" property="name" />
+        <result column="from_province" property="fromProvince" />
+        <result column="from_province_code" property="fromProvinceCode" />
+        <result column="from_city" property="fromCity" />
         <result column="from_code" property="fromCode" />
+        <result column="to_province" property="toProvince" />
+        <result column="to_province_code" property="toProvinceCode" />
+        <result column="to_city" property="toCity" />
         <result column="to_code" property="toCode" />
         <result column="level" property="level" />
         <result column="kilometer" property="kilometer" />
@@ -24,7 +30,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, code, name, from_code, to_code, level, kilometer, days, state, default_wl_fee, default_freight_fee, remark, create_time, create_user_id, update_user_id, update_time
+        id, code, name, from_province, from_province_code, from_city, from_code, to_province, to_province_code, to_city, to_code, level, kilometer, days, state, default_wl_fee, default_freight_fee, remark, create_time, create_user_id, update_user_id, update_time
     </sql>
 
 
@@ -45,12 +51,18 @@
     </select>
 
     <!-- 通过条件查询班线 -->
-    <select id="getLineByTerm" resultType="com.cjyc.common.model.vo.web.line.LineVo"
+    <select id="findAllLine" resultType="com.cjyc.common.model.vo.web.line.LineVo"
                                 parameterType="com.cjyc.common.model.dto.web.line.SelectLineDto">
         SELECT
             sl.id AS id,
             sl.code AS code,
+            sl.from_province_code AS fromProvinceCode,
+            sl.from_province AS fromProvince,
+            sl.from_city AS fromCity,
             sl.from_code AS fromCityCode,
+            sl.to_province_code AS toProvinceCode,
+            sl.to_province AS toProvince,
+            sl.to_city AS toCity,
             sl.to_code AS toCityCode,
             sl.default_wl_fee AS defaultWlFee,
             sl.default_freight_fee AS defaultFreightFee,
@@ -62,7 +74,7 @@
             sl.update_time as updateTime,
             bad.name as updateName
         FROM
-        s_line sl
+          s_line sl
         left join b_admin ba on ba.id = sl.create_user_id
         left join b_admin bad on bad.id = sl.update_user_id
         <where>
@@ -93,6 +105,26 @@
         from s_line
         where from_code = #{startCityCode}
         and to_code = #{endCityCode}
+    </select>
+    <select id="validateCarLine" resultType="com.cjyc.common.model.vo.salesman.dispatch.ValidateLineVo">
+            select
+            #{orderCarNo} as orderCarNo,
+            (case when id > 0 then true else false end) as hasLine,
+            id as lineId,
+            default_freight_fee as lineFreightFee
+            from s_line
+            <where>
+                and from_code = #{fromCode} and to_code = #{toCode}
+            </where>
+    </select>
+    <select id="findOneByArea" resultType="com.cjyc.common.model.entity.Line">
+        select
+        <include refid="Base_Column_List"/>
+        from s_line
+        where from_code = (select parent_code from s_city where `code` = #{startAreaCode})
+        and to_code = (select parent_code from s_city where `code` = #{endAreaCode})
+        limit 1
+
     </select>
 
 </mapper>

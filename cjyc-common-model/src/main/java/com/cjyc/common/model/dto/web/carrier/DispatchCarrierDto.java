@@ -25,4 +25,7 @@ public class DispatchCarrierDto extends BasePageDto {
 
     @ApiModelProperty("1个人承运商，2企业承运商")
     private Integer type;
+
+    @ApiModelProperty(value = "关键字")
+    private String keyword;
 }

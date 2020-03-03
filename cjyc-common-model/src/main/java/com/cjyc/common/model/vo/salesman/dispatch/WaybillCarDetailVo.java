@@ -1,7 +1,7 @@
 package com.cjyc.common.model.vo.salesman.dispatch;
 
-import com.cjyc.common.model.util.BigDecimalSerizlizer;
-import com.cjyc.common.model.util.DateLongSerizlizer;
+import com.cjyc.common.model.serizlizer.BigDecimalSerizlizer;
+import com.cjyc.common.model.serizlizer.DateLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
@@ -174,6 +174,9 @@ public class WaybillCarDetailVo implements Serializable {
     @ApiModelProperty(value = "线路ID")
     private Long lineId;
 
+    @ApiModelProperty(value = "是否有线路")
+    private boolean hasLine;
+
     @ApiModelProperty(value = "预计到达时间")
     private Long expectEndTime;
 
@@ -336,4 +339,12 @@ public class WaybillCarDetailVo implements Serializable {
     public String getUnloadLinkPhone() {
         return unloadLinkPhone == null ? "" : unloadLinkPhone;
     }
+
+    public boolean isHasLine() {
+        if (lineId != null && lineId > 0) {
+            hasLine = true;
+        }
+        return hasLine;
+    }
+
 }

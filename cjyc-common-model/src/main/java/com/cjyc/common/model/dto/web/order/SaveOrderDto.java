@@ -1,5 +1,6 @@
 package com.cjyc.common.model.dto.web.order;
 
+import com.cjyc.common.model.dto.BaseLoginDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -33,6 +34,8 @@ public class SaveOrderDto {
     private Integer loginType;
     @ApiModelProperty(hidden = true)
     private String loginName;
+    @ApiModelProperty(hidden = true)
+    private String loginPhone;
     @ApiModelProperty(hidden = true)
     private Integer state;
     @ApiModelProperty(value = "物流券抵消金额")

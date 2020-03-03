@@ -2,6 +2,7 @@ package com.cjyc.common.model.dao;
 
 import com.cjyc.common.model.entity.TaskCar;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cjyc.common.model.entity.defined.BillCarNum;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Collection;
@@ -31,4 +32,6 @@ public interface ITaskCarDao extends BaseMapper<TaskCar> {
     int countUnFinishByTaskId(Long taskId);
 
     int deleteByTaskId(Long taskId);
+
+    BillCarNum countUnFinishForState(Long id);
 }

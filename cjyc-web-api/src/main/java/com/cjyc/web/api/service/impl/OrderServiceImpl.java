@@ -10,11 +10,13 @@ import com.cjyc.common.model.entity.defined.BizScope;
 import com.cjyc.common.model.entity.defined.FullCity;
 import com.cjyc.common.model.entity.defined.FullWaybillCar;
 import com.cjyc.common.model.enums.BizScopeEnum;
+import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
 import com.cjyc.common.model.enums.city.CityLevelEnum;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
+import com.cjyc.common.model.exception.ParameterException;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
@@ -28,6 +30,7 @@ import com.cjyc.web.api.service.IOrderService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -71,8 +74,12 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     private ICsCityService csCityService;
     @Resource
     private ICsSysService csSysService;
+    @Resource
+    private ICsAdminService csAdminService;
     @Autowired
     private ICsSendNoService csSendNoService;
+    @Resource
+    private ICsCustomerService csCustomerService;
 
 
     @Transactional(rollbackFor = Exception.class)
@@ -96,28 +103,25 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
                 }
             });
             //生成订单号并批量保存
-            orderMap.forEach(new BiConsumer<Integer, ImportCustomerOrderDto>() {
-                @Override
-                public void accept(Integer integer, ImportCustomerOrderDto dto) {
-                    String orderNo = csSendNoService.getNo(SendNoTypeEnum.ORDER);
-                    List<ImportCustomerOrderCarDto> carList = carMap.get(dto.getOrderNo());
-                    if (!CollectionUtils.isEmpty(carList)) {
-                        //保存订单、车辆信息
-                        BigDecimal totalFee = new BigDecimal(0);
-                        for (ImportCustomerOrderCarDto c: carList) {
-                            totalFee = totalFee.add(c.getPickFee())
-                                    .add(c.getSendFee()).add(c.getWlFee());
-                        }
-                        Order order = packCustomerOrderForImport(dto, orderNo,
-                                admin, carList.size(), totalFee);
-                        orderDao.insert(order);
-                        Long orderId = order.getId();
-                        for (int i = 1; i < carList.size() + 1; i++) {
-                            String carNo = csSendNoService.formatNo(orderNo, i, 3);
-                            OrderCar car = packCustomerCarForImport(orderNo, orderId,
-                                    carNo, carList.get(i-1));
-                            orderCarDao.insert(car);
-                        }
+            orderMap.forEach((integer, dto) -> {
+                String orderNo = csSendNoService.getNo(SendNoTypeEnum.ORDER);
+
+                List<ImportCustomerOrderCarDto> carList1 = carMap.get(dto.getOrderNo());
+                if (!CollectionUtils.isEmpty(carList1)) {
+                    //保存订单、车辆信息
+                    BigDecimal totalFee = new BigDecimal(0);
+                    for (ImportCustomerOrderCarDto c: carList1) {
+                        totalFee = totalFee.add(c.getPickFee())
+                                .add(c.getSendFee()).add(c.getWlFee());
+                    }
+
+                    Order order = packCustomerOrderForImport(dto, orderNo, admin, carList1.size(), totalFee);
+                    orderDao.insert(order);
+                    Long orderId = order.getId();
+                    for (int i = 1; i < carList1.size() + 1; i++) {
+                        String carNo = csSendNoService.formatNo(orderNo, i, 3);
+                        OrderCar car = packCustomerCarForImport(order, carNo, carList1.get(i-1));
+                        orderCarDao.insert(car);
                     }
                 }
             });
@@ -151,13 +155,12 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
                     List<ImportKeyCustomerOrderCarDto> carList = carMap.get(dto.getOrderNo());
                     if (!CollectionUtils.isEmpty(carList)) {
                         //导入大客户订单信息
-                        Order order = packKeyCustomerOrderForImport(dto, orderNo,
-                                admin, carList.size());
+                        Order order = packKeyCustomerOrderForImport(dto, orderNo, admin, carList.size());
                         orderDao.insert(order);
                         Long orderId = order.getId();
                         for (int i = 1; i < carList.size() + 1; i++) {
                             String carNo = csSendNoService.formatNo(orderNo, i, 3);
-                            OrderCar car = packKeyCustomerCarForImport(orderNo, orderId,
+                            OrderCar car = packKeyCustomerCarForImport(order,
                                     carNo, carList.get(i-1));
                             orderCarDao.insert(car);
                         }
@@ -207,7 +210,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
                         Long orderId = order.getId();
                         for (int i = 1; i < carList.size() + 1; i++) {
                             String carNo = csSendNoService.formatNo(orderNo, i, 3);
-                            OrderCar car = packPatCustomerCarForImport(orderNo, orderId,
+                            OrderCar car = packPatCustomerCarForImport(order,
                                     carNo, carList.get(i-1));
                             orderCarDao.insert(car);
                         }
@@ -220,7 +223,14 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
 
     @Override
     public OrderCarVo getCarVoById(Long orderCarId) {
-        return orderCarDao.findVoById(orderCarId);
+        OrderCarVo vo = orderCarDao.findVoById(orderCarId);
+        Admin admin = csAdminService.findLoop(vo.getEndStoreId());
+        if(admin != null){
+            vo.setEndStoreLooplinkUserId(admin.getUserId());
+            vo.setEndStoreLooplinkName(admin.getName());
+            vo.setEndStoreLooplinkPhone(admin.getPhone());
+        }
+        return vo;
     }
 
     @Override
@@ -413,11 +423,14 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         }
 
         paramsDto.setBizScope(bizScope.getStoreIds());
-        List<Map<String, Object>> list = orderCarDao.countListWaitDispatchCarV2(paramsDto);
-        //查询统计
-        Map<String, Object> countInfo = null;
-        if (list != null && !list.isEmpty()) {
-            countInfo = orderCarDao.countTotalWaitDispatchCarV2(paramsDto);
+        List<Map<String, Object>> list = orderCarDao.countListWaitDispatchCarWeb(paramsDto);
+        //统计
+        Map<String, Object> countInfo = Maps.newHashMap();
+        if (!CollectionUtils.isEmpty(list)) {
+            Long sum = list.stream().map(m -> m.get("car_num") == null ? 0 : (Long) m.get("car_num")).reduce(Long::sum).get();
+            countInfo.put("totalCount", sum);
+        }else{
+            countInfo.put("totalCount", 0);
         }
         return BaseResultUtil.success(list, countInfo);
     }
@@ -432,11 +445,14 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
 
         paramsDto.setBizScope(bizScope.getStoreIds());
         //查询统计列表
-        List<Map<String, Object>> list = orderCarDao.findLineWaitDispatchCarCountListV2(paramsDto);
+        List<Map<String, Object>> list = orderCarDao.findLineWaitDispatchCarCountListWeb(paramsDto);
         //查询统计
-        Map<String, Object> countInfo = null;
-        if (list != null && !list.isEmpty()) {
-            countInfo = orderCarDao.countTotalWaitDispatchCarByStartCityV2(paramsDto);
+        Map<String, Object> countInfo = Maps.newHashMap();
+        if (!CollectionUtils.isEmpty(list)) {
+            Long sum = list.stream().map(m -> m.get("carNum") == null ? 0 : (Long) m.get("carNum")).reduce(Long::sum).get();
+            countInfo.put("totalCount", sum);
+        }else{
+            countInfo.put("totalCount", 0);
         }
         return BaseResultUtil.success(list, countInfo);
     }
@@ -451,11 +467,10 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         paramsDto.setBizScope(bizScope.getStoreIds());
 
         List<Map<String, Object>> list = orderCarDao.countTrunkListWaitDispatchCar(paramsDto);
-        //查询统计
-        Map<String, Object> countInfo = null;
-        if (list != null && !list.isEmpty()) {
-            countInfo = orderCarDao.countTotalTrunkWaitDispatchCar(paramsDto);
-        }
+        //统计
+        Map<String, Object> countInfo = Maps.newHashMap();
+        countInfo.put("totalCount", CollectionUtils.isEmpty(list) ? 0 : list.size());
+
         return BaseResultUtil.success(list, countInfo);
     }
 
@@ -491,11 +506,10 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
 
         //查询统计列表
         List<Map<String, Object>> list = orderCarDao.findLineWaitDispatchTrunkCarCountList(paramsDto);
-        //查询统计
-        Map<String, Object> countInfo = null;
-        if (list != null && !list.isEmpty()) {
-            countInfo = orderCarDao.countTotalTrunkWaitDispatchCarByStartCity(paramsDto);
-        }
+        //统计
+        Map<String, Object> countInfo = Maps.newHashMap();
+        countInfo.put("totalCount", CollectionUtils.isEmpty(list) ? 0 : list.size());
+
         return BaseResultUtil.success(list, countInfo);
     }
 
@@ -512,13 +526,24 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
 
         paramsDto.setBizScope(bizScope.getStoreIds());
         PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
-        List<OrderCarWaitDispatchVo> list = orderCarDao.findWaitDispatchCarList(paramsDto);
+        List<OrderCarWaitDispatchVo> list = orderCarDao.findWaitDispatchCarListWeb(paramsDto);
         PageInfo<OrderCarWaitDispatchVo> pageInfo = new PageInfo<>(list);
         if (paramsDto.getCurrentPage() > pageInfo.getPages()) {
             pageInfo.setList(null);
         }
 
         return BaseResultUtil.success(pageInfo);
+    }
+
+    @Override
+    public ResultVo<List<OrderCarWaitDispatchVo>> waitDispatchCarAllList(WaitDispatchListOrderCarDto dto) {
+        //查询角色业务中心范围
+        BizScope bizScope = csSysService.getBizScopeBySysRoleIdNew(dto.getLoginId(), dto.getRoleId(), true);
+        if(bizScope == null || bizScope.getCode() == BizScopeEnum.NONE.code){
+            return BaseResultUtil.fail("没有数据权限");
+        }
+        dto.setBizScope(bizScope.getStoreIds());
+        return BaseResultUtil.success(orderCarDao.findWaitDispatchCarList(dto));
     }
 
     @Override
@@ -575,8 +600,14 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
 
 
     @Override
-    public List<ListOrderVo> listAll(ListOrderDto dto) {
-        return orderDao.findListSelective(dto);
+    public ResultVo<List<ListOrderVo>> listAll(ListOrderDto dto) {
+        //查询角色业务中心范围
+        BizScope bizScope = csSysService.getBizScopeBySysRoleIdNew(dto.getLoginId(), dto.getRoleId(), true);
+        if(bizScope == null || BizScopeEnum.NONE.code == bizScope.getCode()){
+            return BaseResultUtil.fail("没有数据权限");
+        }
+        dto.setBizScope(bizScope.getCode() == 0 ? null : bizScope.getStoreIds());
+        return BaseResultUtil.success(orderDao.findListSelective(dto));
     }
 
     @Override
@@ -614,6 +645,17 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
      */
     private Order packCustomerOrderForImport(ImportCustomerOrderDto dto, String orderNo,
                                              Admin admin, int carNum, BigDecimal totalFee) {
+
+        //验证用户
+        Customer customer = csCustomerService.getByPhone(dto.getCustomerPhone(), true);
+        if (customer == null) {
+            ResultVo<Customer> res = csCustomerService.saveCustomer(dto.getCustomerPhone(), dto.getCustomerName(), admin.getId());
+            if(res.getCode() == ResultEnum.SUCCESS.getCode()){
+                customer = res.getData();
+            }else{
+                throw new ParameterException(res.getMsg());
+            }
+        }
         Order order = new Order();
         order.setNo(orderNo);
         order.setState(OrderStateEnum.WAIT_SUBMIT.code);
@@ -632,6 +674,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
                 pickType = 4;
         }
         order.setPickType(pickType);
+        order.setPickContactName(dto.getPickPerson());
+        order.setPickContactPhone(dto.getPickPhone());
         int backType = 0;
         switch (dto.getDeliveryType()) {
             case "自提":
@@ -666,14 +710,16 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         order.setStartProvinceCode(dto.getStartProvinceCode());
         order.setExpectEndDate(dto.getSendDate().getTime());
         order.setExpectStartDate(dto.getPickDate().getTime());
+        order.setRemark("批量导入");
         //创建人信息
-        order.setCreateUserId(admin.getUserId());
+        order.setCreateUserId(admin.getId());
         order.setCreateTime(System.currentTimeMillis());
         order.setCreateUserName(admin.getName());
         order.setTotalFee(totalFee);//车辆信息列表：提车费、物流费、送车费总和
-        order.setCustomerName(dto.getCustomerName());
+        order.setCustomerId(customer.getId());
+        order.setCustomerName(customer.getName());
         order.setCustomerPhone(dto.getCustomerPhone());
-        order.setCustomerType(CustomerTypeEnum.INDIVIDUAL.code);
+        order.setCustomerType(customer.getType());
         order.setEndAddress(dto.getDeliveryAddr());
 //        order.setEndBelongStoreId();
 //        order.setEndStoreId();
@@ -683,7 +729,6 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
 //        order.setFinishTime();
 //        order.setEndLat();
 //        order.setEndLng();
-//        order.setBackFee();
 //        order.setStartBelongStoreId()
 //        order.setAddInsuranceFee();
 //        order.setHurryDays();
@@ -695,25 +740,25 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         order.setPayType("到付".equals(dto.getPayType())?0: 1);
 //        order.setStartStoreId();
 //        order.setStartStoreName();
-//        order.setTrunkFee();
 //        order.setWlPayState();
 //        order.setWlPayTime();
+        //
+        csOrderService.fillOrderInputStore(order);
+        csOrderService.fillOrderStoreInfo(order, true);
         return order;
     }
 
     /**
      * Customer car信息包装
-     * @param orderNo
-     * @param orderId
      * @param no
      * @param dto
      * @return
      */
-    private OrderCar packCustomerCarForImport(String orderNo, Long orderId, String no,
+    private OrderCar packCustomerCarForImport(Order order, String no,
                                               ImportCustomerOrderCarDto dto) {
         OrderCar car = new OrderCar();
-        car.setOrderId(orderId);
-        car.setOrderNo(orderNo);
+        car.setOrderId(order.getId());
+        car.setOrderNo(order.getNo());
         car.setNo(no);
         car.setBrand(dto.getBrand());
         car.setModel(dto.getModel());
@@ -724,7 +769,9 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         car.setValuation(dto.getVehicleValue() == null?null: dto.getVehicleValue().intValue());
         car.setState(OrderCarStateEnum.WAIT_ROUTE.code);
         car.setPickFee(dto.getPickFee());
+        car.setPickType(order.getPickType());
         car.setBackFee(dto.getSendFee());
+        car.setBackType(order.getBackType());
         car.setTrunkFee(dto.getWlFee());
         return car;
     }
@@ -739,6 +786,16 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
      */
     private Order packKeyCustomerOrderForImport(ImportKeyCustomerOrderDto dto, String orderNo,
                                                 Admin admin, int carNum) {
+        //验证用户
+        Customer customer = csCustomerService.getByPhone(dto.getCustomerPhone(), true);
+        if (customer == null) {
+            ResultVo<Customer> res = csCustomerService.saveCustomer(dto.getCustomerPhone(), dto.getCustomerName(), admin.getId());
+            if(res.getCode() == ResultEnum.SUCCESS.getCode()){
+                customer = res.getData();
+            }else{
+                throw new ParameterException(res.getMsg());
+            }
+        }
         Order order = new Order();
         order.setNo(orderNo);
         order.setState(OrderStateEnum.WAIT_SUBMIT.code);
@@ -757,6 +814,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
                 pickType = 4;
         }
         order.setPickType(pickType);
+        order.setPickContactName(dto.getPickPerson());
+        order.setPickContactPhone(dto.getPickPhone());
         int backType = 0;
         switch (dto.getDeliveryType()) {
             case "自提":
@@ -792,13 +851,14 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         order.setExpectEndDate(dto.getSendDate().getTime());
         order.setExpectStartDate(dto.getPickDate().getTime());
         //创建人信息
-        order.setCreateUserId(admin.getUserId());
+        order.setCreateUserId(admin.getId());
         order.setCreateTime(System.currentTimeMillis());
         order.setCreateUserName(admin.getName());
 //        order.setTotalFee();// 计算规则
-        order.setCustomerName(dto.getCustomerName());
+        order.setCustomerId(customer.getId());
+        order.setCustomerName(customer.getName());
         order.setCustomerPhone(dto.getCustomerPhone());
-        order.setCustomerType(CustomerTypeEnum.INDIVIDUAL.code);
+        order.setCustomerType(customer.getType());
         order.setEndAddress(dto.getDeliveryAddr());
 //        order.setEndBelongStoreId();
 //        order.setEndStoreId();
@@ -823,22 +883,22 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
 //        order.setTrunkFee();
 //        order.setWlPayState();
 //        order.setWlPayTime();
+        csOrderService.fillOrderInputStore(order);
+        csOrderService.fillOrderStoreInfo(order, true);
         return order;
     }
 
     /**
      * 大客户导入车辆封装
-     * @param orderNo
-     * @param orderId
      * @param no
      * @param dto
      * @return
      */
-    private OrderCar packKeyCustomerCarForImport(String orderNo, Long orderId, String no,
+    private OrderCar packKeyCustomerCarForImport(Order order, String no,
                                               ImportKeyCustomerOrderCarDto dto) {
         OrderCar car = new OrderCar();
-        car.setOrderId(orderId);
-        car.setOrderNo(orderNo);
+        car.setOrderId(order.getId());
+        car.setOrderNo(order.getNo());
         car.setNo(no);
         car.setBrand(dto.getBrand());
         car.setModel(dto.getModel());
@@ -848,6 +908,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         car.setIsNew("是".equals(dto.getIsNew())?1: 0);
         car.setValuation(dto.getVehicleValue() == null?null: dto.getVehicleValue().intValue());
         car.setState(OrderCarStateEnum.WAIT_ROUTE.code);
+        car.setPickType(order.getPickType());
+        car.setBackType(order.getBackType());
         car.setTrunkFee(dto.getWlFee());
         return car;
     }
@@ -862,6 +924,16 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
      */
     private Order packPatCustomerOrderForImport(ImportPatCustomerOrderDto dto, String orderNo,
                                              Admin admin, int carNum, BigDecimal totalFee) {
+        //验证用户
+        Customer customer = csCustomerService.getByPhone(dto.getCustomerPhone(), true);
+        if (customer == null) {
+            ResultVo<Customer> res = csCustomerService.saveCustomer(dto.getCustomerPhone(), dto.getCustomerName(), admin.getId());
+            if(res.getCode() == ResultEnum.SUCCESS.getCode()){
+                customer = res.getData();
+            }else{
+                throw new ParameterException(res.getMsg());
+            }
+        }
         Order order = new Order();
         order.setNo(orderNo);
         order.setState(OrderStateEnum.WAIT_SUBMIT.code);
@@ -880,6 +952,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
                 pickType = 4;
         }
         order.setPickType(pickType);
+        order.setPickContactName(dto.getPickPerson());
+        order.setPickContactPhone(dto.getPickPhone());
         int backType = 0;
         switch (dto.getDeliveryType()) {
             case "自提":
@@ -915,13 +989,14 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         order.setExpectEndDate(dto.getSendDate().getTime());
         order.setExpectStartDate(dto.getPickDate().getTime());
         //创建人信息
-        order.setCreateUserId(admin.getUserId());
+        order.setCreateUserId(admin.getId());
         order.setCreateTime(System.currentTimeMillis());
         order.setCreateUserName(admin.getName());
         order.setTotalFee(totalFee);//车辆信息列表：提车费、物流费、送车费总和
-        order.setCustomerName(dto.getCustomerName());
+        order.setCustomerId(customer.getId());
+        order.setCustomerName(customer.getName());
         order.setCustomerPhone(dto.getCustomerPhone());
-        order.setCustomerType(CustomerTypeEnum.INDIVIDUAL.code);
+        order.setCustomerType(customer.getType());
         order.setEndAddress(dto.getDeliveryAddr());
 //        order.setEndBelongStoreId();
 //        order.setEndStoreId();
@@ -946,22 +1021,22 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
 //        order.setTrunkFee();
 //        order.setWlPayState();
 //        order.setWlPayTime();
+        csOrderService.fillOrderInputStore(order);
+        csOrderService.fillOrderStoreInfo(order, true);
         return order;
     }
 
     /**
      * 合伙人 car信息包装
-     * @param orderNo
-     * @param orderId
      * @param no
      * @param dto
      * @return
      */
-    private OrderCar packPatCustomerCarForImport(String orderNo, Long orderId, String no,
+    private OrderCar packPatCustomerCarForImport(Order order, String no,
                                               ImportPatCustomerOrderCarDto dto) {
         OrderCar car = new OrderCar();
-        car.setOrderId(orderId);
-        car.setOrderNo(orderNo);
+        car.setOrderId(order.getId());
+        car.setOrderNo(order.getNo());
         car.setNo(no);
         car.setBrand(dto.getBrand());
         car.setModel(dto.getModel());
@@ -972,7 +1047,9 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         car.setValuation(dto.getVehicleValue() == null?null: dto.getVehicleValue().intValue());
         car.setState(OrderCarStateEnum.WAIT_ROUTE.code);
         car.setPickFee(dto.getPickFee());
+        car.setPickType(order.getPickType());
         car.setBackFee(dto.getSendFee());
+        car.setBackType(order.getBackType());
         car.setTrunkFee(dto.getWlFee());
         return car;
     }

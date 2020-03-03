@@ -237,8 +237,16 @@
             <if test="param.inputStoreId != null and param.inputStoreId != ''">
                 AND sur.dept_id = #{param.inputStoreId}
             </if>
+            and ba.state = 2
         </where>
         GROUP BY ba.phone
         ORDER BY create_time DESC
+    </select>
+
+    <select id="findAdminByPhone" resultType="com.cjyc.common.model.entity.Admin">
+        select
+        <include refid="Base_Column_List"/>
+        from b_admin
+        where phone = #{phone} and state = 2
     </select>
 </mapper>

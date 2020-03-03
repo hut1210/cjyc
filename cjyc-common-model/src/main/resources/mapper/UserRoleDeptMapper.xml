@@ -53,4 +53,11 @@
         )
     </select>
 
+
+    <!-- 根据司机ID获取承运商ids -->
+    <select id="findDeptIds" resultType="java.lang.Long" parameterType="java.lang.Long">
+         select dept_id from s_user_role_dept
+          where dept_type = 2 and user_type = 2 and user_id = #{userId}
+    </select>
+
 </mapper>

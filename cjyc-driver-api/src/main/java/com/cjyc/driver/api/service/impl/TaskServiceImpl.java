@@ -16,6 +16,7 @@ import com.cjyc.common.model.enums.waybill.WaybillCarStateEnum;
 import com.cjyc.common.model.enums.waybill.WaybillCarrierTypeEnum;
 import com.cjyc.common.model.enums.waybill.WaybillTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.JsonUtils;
 import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -35,8 +36,8 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
+import java.text.MessageFormat;
+import java.util.*;
 
 /**
  * <p>
@@ -68,23 +69,25 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
 
     @Override
     public ResultVo<PageVo<TaskBillVo>> getWaitHandleTaskPage(BaseDriverDto dto) {
+        log.info("====>司机端-查询待分配任务列表,请求json数据 :: "+ JsonUtils.objectToJson(dto));
         // 分页查询待分配的运单信息
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<TaskBillVo> taskList = waybillDao.selectWaitHandleTaskPage(dto);
         PageInfo pageInfo = new PageInfo(taskList);
         // 填充指导线路
-        fillGuideLine(pageInfo);
+        //fillGuideLine(pageInfo);
         return BaseResultUtil.success(pageInfo);
     }
 
     @Override
     public ResultVo<PageVo<TaskBillVo>> getNoFinishTaskPage(NoFinishTaskQueryDto dto) {
+        log.info("====>司机端-分页查询提车,交车任务列表,请求json数据 :: "+JsonUtils.objectToJson(dto));
         // 分页查询提车，交车任务信息
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<TaskBillVo> taskList = taskDao.selectNoFinishTaskPage(dto);
         PageInfo pageInfo = new PageInfo(taskList);
         // 填充指导线路
-        fillGuideLine(pageInfo);
+        //fillGuideLine(pageInfo);
         return BaseResultUtil.success(pageInfo);
     }
 
@@ -115,6 +118,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
 
     @Override
     public ResultVo<PageVo<TaskBillVo>> getHistoryTaskPage(TaskQueryDto dto) {
+        log.info("====>司机端-分页查询历史记录列表,请求json数据 :: "+JsonUtils.objectToJson(dto));
         if (dto.getCompleteTimeE() != null && dto.getCompleteTimeE() != 0) {
             dto.setCompleteTimeE(TimeStampUtil.convertEndTime(dto.getCompleteTimeE()));
         }
@@ -123,28 +127,15 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
         }
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<TaskBillVo> taskList = taskDao.selectHistoryTaskPage(dto);
-        PageInfo<TaskBillVo> pageInfo = new PageInfo(taskList);
+        PageInfo pageInfo = new PageInfo<>(taskList);
         // 填充指导线路
-        fillGuideLine(pageInfo);
+        //fillGuideLine(pageInfo);
         return BaseResultUtil.success(pageInfo);
-    }
-
-    private void fillGuideLine(PageInfo<TaskBillVo> pageInfo) {
-        List<TaskBillVo> list = pageInfo.getList();
-        if (!CollectionUtils.isEmpty(list)) {
-            for (TaskBillVo taskBillVo : list) {
-                Integer type = taskBillVo.getType();
-                boolean b = WaybillTypeEnum.PICK.code == type || WaybillTypeEnum.BACK.code == type;
-                if (StringUtils.isEmpty(taskBillVo.getGuideLine()) && b) {
-                    taskBillVo.setGuideLine(taskBillVo.getStartCity() +"-"+ taskBillVo.getEndCity());
-                }
-            }
-        }
-        pageInfo.setList(list);
     }
 
     @Override
     public ResultVo<PageVo<TaskBillVo>> getFinishTaskPage(TaskQueryDto dto) {
+        log.info("====>司机端-分页查询已交付任务列表,请求json数据 :: "+JsonUtils.objectToJson(dto));
         if (dto.getCompleteTimeE() != null && dto.getCompleteTimeE() != 0) {
             dto.setCompleteTimeE(TimeStampUtil.convertEndTime(dto.getCompleteTimeE()));
         }
@@ -156,12 +147,13 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
         List<TaskBillVo> taskList = taskDao.selectFinishTaskPage(dto);
         PageInfo<TaskBillVo> pageInfo = new PageInfo(taskList);
         // 填充指导线路
-        fillGuideLine(pageInfo);
+        //fillGuideLine(pageInfo);
         return BaseResultUtil.success(pageInfo);
     }
 
     @Override
     public ResultVo<TaskDetailVo> getNoHandleDetail(DetailQueryDto dto) {
+        log.info("====>司机端-查询待分配任务明细,请求json数据 :: "+JsonUtils.objectToJson(dto));
         TaskDetailVo taskDetailVo = new TaskDetailVo();
         // 查询运单信息
         Long waybillId = dto.getWaybillId();
@@ -184,15 +176,18 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                 carDetailVo = new CarDetailVo();
                 BeanUtils.copyProperties(waybillCar,carDetailVo);
 
+                // 给详细地址拼接市区
+                carDetailVo.setStartAddress(waybillCar.getStartCity()+waybillCar.getStartArea()+waybillCar.getStartAddress());
+                carDetailVo.setEndAddress(waybillCar.getEndCity()+waybillCar.getEndArea()+waybillCar.getEndAddress());
+
                 // 获取运单车辆费用
                 freightFee = freightFee.add(waybillCar.getFreightFee()==null?new BigDecimal(0):waybillCar.getFreightFee());
 
                 // 如果指导路线为空，且运单是提车或者送车，将始发成和结束城市用“-”拼接
-                fillGuideLine(taskDetailVo,waybillCar);
-                carDetailVo.setGuideLine(taskDetailVo.getGuideLine());
+                carDetailVo.setGuideLine(waybillCar.getStartCity() + "-" + waybillCar.getEndCity());
 
                 // 查询除了当前车辆运单的历史车辆运单图片
-                getHistoryWaybillCarImg(carDetailVo, waybillCar,dto.getDetailType());
+                getHistoryWaybillCarImg(carDetailVo, waybillCar,dto.getDetailType(),waybill);
 
                 // 查询品牌车系信息
                 OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
@@ -213,15 +208,9 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
         return BaseResultUtil.success(taskDetailVo);
     }
 
-    private void fillGuideLine(TaskDetailVo taskDetailVo,WaybillCar waybillCar) {
-        boolean b = WaybillTypeEnum.PICK.code == taskDetailVo.getType() || WaybillTypeEnum.BACK.code == taskDetailVo.getType();
-        if (b && StringUtils.isEmpty(taskDetailVo.getGuideLine())) {
-            taskDetailVo.setGuideLine(waybillCar.getStartCity() + "-" + waybillCar.getEndCity());
-        }
-    }
-
     @Override
     public ResultVo<TaskDetailVo> getHistoryDetail(DetailQueryDto dto) {
+        log.info("====>司机端-查询已分配任务明细,请求json数据 :: "+JsonUtils.objectToJson(dto));
         TaskDetailVo taskDetailVo = new TaskDetailVo();
         // 查询运单信息
         Long waybillId = dto.getWaybillId();
@@ -260,15 +249,19 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                     carDetailVo.setWaybillCarState(waybillCar.getState());
                     BeanUtils.copyProperties(waybillCar,carDetailVo);
 
+                    // 给详细地址拼接市区
+                    carDetailVo.setStartAddress(waybillCar.getStartCity()+waybillCar.getStartArea()+waybillCar.getStartAddress());
+                    carDetailVo.setEndAddress(waybillCar.getEndCity()+waybillCar.getEndArea()+waybillCar.getEndAddress());
+
+
                     // 查询除了当前车辆运单的历史车辆运单图片
-                    getHistoryWaybillCarImg(carDetailVo, waybillCar,detailType);
+                    getHistoryWaybillCarImg(carDetailVo, waybillCar,detailType,waybill);
 
                     // 运费
                     freightFee = freightFee.add(waybillCar.getFreightFee()==null?new BigDecimal(0):waybillCar.getFreightFee());
 
-                    // 如果指导路线为空，且运单是提车或者送车，将始发成和结束城市用“-”拼接
-                    fillGuideLine(taskDetailVo,waybillCar);
-                    carDetailVo.setGuideLine(taskDetailVo.getGuideLine());
+                    // 如果指导路线，运单是提车或者送车，将始发成和结束城市用“-”拼接
+                    carDetailVo.setGuideLine(waybillCar.getStartCity()+"-"+waybillCar.getEndCity());
 
                     // 查询品牌车系信息
                     OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
@@ -285,22 +278,12 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                     carDetailVo.setId(taskCar.getId());
                     carDetailVo.setWaybillCarState(waybillCar.getState());
                     carDetailVoList.add(carDetailVo);
-
-                    // todo 测试车辆图片
-                    String[] split = carDetailVo.getHistoryLoadPhotoImg().split(",");
-                    log.info("===>历史图片数量："+split.length);
-                    String[] string1 = StringUtils.isEmpty(carDetailVo.getLoadPhotoImg()) ? new String[]{}
-                            : carDetailVo.getLoadPhotoImg().split(",");
-                    log.info("===>提车图片数量："+string1.length);
-                    String[] string2 = StringUtils.isEmpty(carDetailVo.getUnloadPhotoImg()) ? new String[]{}
-                            : carDetailVo.getUnloadPhotoImg().split(",");
-                    log.info("===>收车图片数量："+string2.length);
                 }
             }
         }
-        if (FieldConstant.ALL_TASK == dto.getDetailType()) {
+        /*if (FieldConstant.ALL_TASK == dto.getDetailType()) {
             taskDetailVo.setState(task.getState());
-        }
+        }*/
         taskDetailVo.setFreightFee(freightFee);
         taskDetailVo.setCarDetailVoList(carDetailVoList);
         return BaseResultUtil.success(taskDetailVo);
@@ -323,10 +306,13 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
         return waybillCarDao.selectOne(query);
     }
 
-    private void getHistoryWaybillCarImg(CarDetailVo carDetailVo, WaybillCar waybillCar,String detailType) {
-        List<WaybillCar> waybillCarList = waybillCarDao.selectList(new QueryWrapper<WaybillCar>().lambda()
-                .eq(WaybillCar::getOrderCarNo, waybillCar.getOrderCarNo())
-                .lt(WaybillCar::getId, waybillCar.getId()));
+    private void getHistoryWaybillCarImg(CarDetailVo carDetailVo, WaybillCar waybillCar,String detailType,Waybill waybill) {
+        Map<String,Object> map = new HashMap<>(3);
+        map.put("orderCarId",waybillCar.getOrderCarId());
+        map.put("waybillCarId",waybillCar.getId());
+        map.put("waybillType",waybill.getType());
+        List<WaybillCar> waybillCarList = waybillCarDao.selectWaybillCarList(map);
+
         StrBuilder sb = new StrBuilder();
         // 封装历史运单车辆图片
         fillHistoryWaybillCarImg(waybillCarList, sb);
@@ -339,6 +325,9 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
     private void fillHistoryWaybillCarImg(List<WaybillCar> waybillCarList, StrBuilder sb) {
         if (!CollectionUtils.isEmpty(waybillCarList)) {
             for (WaybillCar car : waybillCarList) {
+                if(car.getState() > WaybillCarStateEnum.UNLOADED.code){
+                    continue;
+                }
                 String loadPhotoImg = car.getLoadPhotoImg();
                 if (sb.length() > 0 && !StringUtils.isEmpty(loadPhotoImg)) {
                     sb.append(",");

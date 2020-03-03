@@ -49,11 +49,18 @@
         where id = #{taskId}
         and state &lt; 100
     </update>
-    <update id="updateForLoad">
+    <update id="updateForOutStore">
         update w_task
         set state = 55
         where id = #{id}
         and state &lt; 55
+    </update>
+    <update id="updateForCancel">
+        update w_task
+        set state = 113,
+        complete_time = UNIX_TIMESTAMP(NOW()) * 1000
+        where id = #{id}
+        and state &lt; 100
     </update>
     <update id="updateForFinish">
         update w_task
@@ -76,6 +83,13 @@
     <update id="updateLoadNum">
         update w_task set load_car_num = load_car_num + #{count}
         where id = #{taskId}
+    </update>
+    <update id="updateForOver">
+        update w_task
+        set state = #{state},
+        complete_time = UNIX_TIMESTAMP(NOW()) * 1000
+        where id = #{id}
+        and state &lt; 100
     </update>
     <delete id="cancelBywaybillId">
         update w_task
@@ -199,10 +213,10 @@
                 and w.type = #{type}
             </if>
             <if test="expectStartDateS != null and expectStartDateS != 0">
-                and car.expect_start_date >= #{expectStartDateS}
+                and car.expect_start_time >= #{expectStartDateS}
             </if>
             <if test="expectStartDateE != null and expectStartDateE != 0">
-                and car.expect_start_date &lt;= #{expectStartDateE}
+                and car.expect_start_time &lt;= #{expectStartDateE}
             </if>
             <if test="completeTimeS != null and completeTimeS != 0">
                 and car.unload_time >= #{completeTimeS}
@@ -261,10 +275,10 @@
                 and w.type = #{type}
             </if>
             <if test="expectStartDateS != null and expectStartDateS != 0">
-                and car.expect_start_date >= #{expectStartDateS}
+                and car.expect_start_time >= #{expectStartDateS}
             </if>
             <if test="expectStartDateE != null and expectStartDateE != 0">
-                and car.expect_start_date &lt;= #{expectStartDateE}
+                and car.expect_start_time &lt;= #{expectStartDateE}
             </if>
             <if test="completeTimeS != null and completeTimeS != 0">
                 and t.complete_time >= #{completeTimeS}

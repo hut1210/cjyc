@@ -159,8 +159,8 @@ public class CsSendNoServiceImpl implements ICsSendNoService {
             }
 
             String setKey = getSendNoSetKey(sendNoTypeEnum.prefix, time);
-            if (!redisUtil.hasKey(lockKey)) {
-                redisUtil.expire(lockKey, 1, TimeUnit.DAYS);
+            if (!redisUtil.hasKey(setKey)) {
+                redisUtil.expire(setKey, 1, TimeUnit.DAYS);
             }
             Set<String> set = redisUtil.sMembers(setKey);
             if (CollectionUtils.isEmpty(set)) {

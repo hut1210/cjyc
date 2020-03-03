@@ -48,6 +48,8 @@ public class WaybillController {
             return BaseResultUtil.fail("当前用户不存在");
         }
         reqDto.setLoginName(driver.getName());
+        reqDto.setLoginPhone(driver.getPhone());
+        reqDto.setLoginType(UserTypeEnum.DRIVER);
         return csTaskService.replenishInfo(reqDto);
     }
 
@@ -62,6 +64,7 @@ public class WaybillController {
         //验证用户
         Driver driver = csDriverService.validate(reqDto.getLoginId());
         reqDto.setLoginName(driver.getName());
+        reqDto.setLoginPhone(driver.getPhone());
         reqDto.setLoginType(UserTypeEnum.DRIVER);
 
         return csTaskService.loadForLocal(reqDto);
@@ -92,6 +95,8 @@ public class WaybillController {
         //验证用户
         Driver driver = csDriverService.validate(reqDto.getLoginId());
         reqDto.setLoginName(driver.getName());
+        reqDto.setLoginPhone(driver.getPhone());
+        reqDto.setLoginType(UserTypeEnum.DRIVER);
         return csTaskService.load(reqDto);
     }
 
@@ -105,6 +110,8 @@ public class WaybillController {
         //验证用户
         Driver driver = csDriverService.validate(reqDto.getLoginId());
         reqDto.setLoginName(driver.getName());
+        reqDto.setLoginPhone(driver.getPhone());
+        reqDto.setLoginType(UserTypeEnum.DRIVER);
         return csTaskService.unload(reqDto);
     }
 
@@ -119,6 +126,7 @@ public class WaybillController {
         Driver driver = csDriverService.validate(reqDto.getLoginId());
         reqDto.setLoginName(driver.getName());
         reqDto.setLoginPhone(driver.getPhone());
+        reqDto.setLoginType(UserTypeEnum.DRIVER);
         reqDto.setClientEnum(ClientEnum.APP_DRIVER);
         return csTaskService.receipt(reqDto);
     }

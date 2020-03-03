@@ -1,8 +1,10 @@
 package com.cjyc.common.model.dao;
 
+import com.cjyc.common.model.dto.web.dispatch.ValidateLineDto;
 import com.cjyc.common.model.dto.web.line.SelectLineDto;
 import com.cjyc.common.model.entity.Line;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cjyc.common.model.vo.salesman.dispatch.ValidateLineVo;
 import com.cjyc.common.model.vo.web.line.LineVo;
 import org.apache.ibatis.annotations.Param;
 
@@ -31,9 +33,13 @@ public interface ILineDao extends BaseMapper<Line> {
      * @param dto
      * @return
      */
-    List<LineVo> getLineByTerm(SelectLineDto dto);
+    List<LineVo> findAllLine(SelectLineDto dto);
 
     Line findOneByCity(@Param("startCityCode") String startCityCode, @Param("endCityCode")String endCityCode);
 
     List<Line> findListByCity(@Param("startCityCode") String startCityCode, @Param("endCityCode")String endCityCode);
+
+    ValidateLineVo validateCarLine(ValidateLineDto paramsDto);
+
+    Line findOneByArea(@Param("startAreaCode") String startAreaCode, @Param("endAreaCode") String endAreaCode);
 }

@@ -78,9 +78,10 @@
         <include refid="Base_Column_List"/>
         from s_store
         where is_delete = 0
+        and state = 2
     </select>
 
-    <select id="findVoAll" resultType="com.cjyc.common.model.vo.store.StoreVo">
+    <select id="findVoAll" resultType="com.cjyc.common.model.vo.web.store.StoreVo">
         select
         s.*,
         m.phone as  contactAdminPhone,
@@ -106,7 +107,7 @@
             </foreach>
         </where>
     </select>
-    <select id="findVoByIds" resultType="com.cjyc.common.model.vo.store.StoreVo">
+    <select id="findVoByIds" resultType="com.cjyc.common.model.vo.web.store.StoreVo">
         select
         s.*,
         m.phone as contactAdminPhone,
@@ -183,7 +184,18 @@
         and is_delete = 0
         limit 1
     </select>
-
+    <select id="findList" resultType="com.cjyc.common.model.entity.Store">
+        select
+        <include refid="Base_Column_List"/>
+        from s_store
+        <where>
+            and is_delete = 0
+            and state = 2
+            <if test="name != null and name.trim() != ''">
+                and `name` like concat('%', #{name},'%')
+            </if>
+        </where>
+    </select>
 
 
 </mapper>

@@ -5,7 +5,6 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.finance.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
@@ -16,7 +15,7 @@ import java.util.List;
 public interface IFinanceService {
     ResultVo<PageVo<FinanceVo>> getFinanceList(FinanceQueryDto financeQueryDto);
 
-    void exportExcel(HttpServletRequest request, HttpServletResponse response);
+    List<ExportFinanceVo> exportExcel(FinanceQueryDto financeQueryDto);
 
     ResultVo<PageVo<FinanceReceiptVo>> getFinanceReceiptList(FinanceQueryDto financeQueryDto);
 
@@ -69,4 +68,20 @@ public interface IFinanceService {
     ResultVo paid(PayablePaidQueryDto payablePaidQueryDto);
 
     ResultVo payableDetail(String serialNumber);
+
+    ResultVo<PageVo<PaidNewVo>> getPaidListNew(PayMentQueryDto payMentQueryDto);
+
+    ResultVo externalPayment(ExternalPaymentDto externalPaymentDto);
+
+    List<PaymentVo> exportPaymentExcel(FinanceQueryDto financeQueryDto);
+
+    List<FinancePayableVo> exportPayableAll(PayableQueryDto payableQueryDto);
+
+    List<SettlementVo> exportPayableCollect(WaitTicketCollectDto waitTicketCollectDto);
+
+    List<SettlementVo> exportPayment(WaitPaymentDto waitPaymentDto);
+
+    List<PayablePaidVo> exportPaid(PayablePaidQueryDto payablePaidQueryDto);
+
+    List<PaidNewVo> exportTimePaid(PayMentQueryDto payMentQueryDto);
 }

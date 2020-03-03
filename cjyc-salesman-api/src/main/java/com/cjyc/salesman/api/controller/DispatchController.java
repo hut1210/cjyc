@@ -4,6 +4,8 @@ import com.cjyc.common.model.dto.CommonDto;
 import com.cjyc.common.model.dto.salesman.dispatch.*;
 import com.cjyc.common.model.dto.web.carrier.DispatchCarrierDto;
 import com.cjyc.common.model.dto.web.carrier.TrailCarrierDto;
+import com.cjyc.common.model.dto.web.dispatch.ValidateLineDto;
+import com.cjyc.common.model.dto.web.dispatch.ValidateLineShellDto;
 import com.cjyc.common.model.dto.web.driver.DispatchDriverDto;
 import com.cjyc.common.model.dto.web.order.ComputeCarEndpointDto;
 import com.cjyc.common.model.vo.ListVo;
@@ -17,10 +19,12 @@ import com.cjyc.common.model.vo.web.driver.DispatchDriverVo;
 import com.cjyc.common.model.vo.web.order.DispatchAddCarVo;
 import com.cjyc.common.system.service.ICsCarrierService;
 import com.cjyc.common.system.service.ICsDriverService;
+import com.cjyc.common.system.service.ICsLineService;
 import com.cjyc.common.system.service.ICsOrderService;
 import com.cjyc.salesman.api.service.IDispatchService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -31,6 +35,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.util.Enumeration;
+import java.util.List;
 
 /**
  * @Description 调度模块接口控制层
@@ -49,6 +57,8 @@ public class DispatchController {
     private ICsDriverService csDriverService;
     @Resource
     private ICsOrderService csOrderService;
+    @Resource
+    private ICsLineService csLineService;
 
     /**
      * 功能描述: 查询所有出发城市-目的地城市的车辆数量
@@ -104,6 +114,15 @@ public class DispatchController {
     }
 
     /**
+     * @author JPG
+     */
+    @ApiOperation(value = "根据订单车辆ID查询调度起始地和目的地")
+    @PostMapping(value = "/lines/validate")
+    public ResultVo<ListVo<ValidateLineVo>> validateLines(@RequestBody ValidateLineShellDto reqDto) {
+        return csLineService.validateLines(reqDto);
+    }
+
+    /**
      * 功能描述: 调度页面-根据车辆编号查询车辆明细
      * @author liuxingxiang
      * @date 2019/12/13
@@ -132,7 +151,7 @@ public class DispatchController {
     @ApiOperation(value = "调度中心中干线调度承运商信息")
     @PostMapping(value = "/dispatchCarrier")
     public ResultVo<PageVo<DispatchCarrierVo>> dispatchCarrier(@RequestBody DispatchCarrierDto dto){
-        return csCarrierService.dispatchCarrier(dto);
+        return csCarrierService.dispatchAppCarrier(dto);
     }
 
     @ApiOperation(value = "干线调度个人(承运商)司机信息")
@@ -167,14 +186,14 @@ public class DispatchController {
     //@PostMapping(value = "/dispatchDriverNew")
     @PostMapping(value = "/dispatchDriver")
     public ResultVo<PageVo<DispatchDriverVo>> dispatchDriverNew(@RequestBody DispatchDriverDto dto){
-        return csDriverService.dispatchDriverNew(dto);
+        return csDriverService.dispatchAppDriverNew(dto);
     }
 
     @ApiOperation(value = "调度中心中提车/送车调度中代驾和拖车列表_改版")
     //@PostMapping(value = "/traileDriver")
     @PostMapping(value = "/traileDriver")
     public ResultVo<PageVo<TrailCarrierVo>> trailDriverNew(@RequestBody TrailCarrierDto dto){
-        return csCarrierService.trailDriverNew(dto);
+        return csCarrierService.trailAppDriverNew(dto);
     }
 
 }

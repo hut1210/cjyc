@@ -5,6 +5,9 @@ import com.cjyc.common.model.dto.salesman.order.SalesOrderQueryDto;
 import com.cjyc.common.model.dto.salesman.order.SalesmanQueryDto;
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.entity.Admin;
+import com.cjyc.common.model.enums.PayModeEnum;
+import com.cjyc.common.model.enums.UserTypeEnum;
+import com.cjyc.common.model.enums.order.OrderPickTypeEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
@@ -54,9 +57,15 @@ public class OrderController {
         //验证用户存不存在
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
+        reqDto.setLoginPhone(admin.getPhone());
+        reqDto.setLoginType(UserTypeEnum.ADMIN.code);
         reqDto.setCreateUserId(admin.getId());
         reqDto.setCreateUserName(admin.getName());
         reqDto.setState(OrderStateEnum.WAIT_SUBMIT.code);
+        //业务员上门变为代驾上门
+        if(OrderPickTypeEnum.DISPATCH_SELF.code == reqDto.getPickType()){
+            reqDto.setPickType(OrderPickTypeEnum.PILOT.code);
+        }
 
         return csOrderService.save(reqDto);
     }
@@ -73,8 +82,18 @@ public class OrderController {
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
         reqDto.setLoginPhone(admin.getPhone());
+        reqDto.setLoginType(UserTypeEnum.ADMIN.code);
         reqDto.setCreateUserId(admin.getId());
         reqDto.setCreateUserName(admin.getName());
+        //业务员上门变为代驾上门
+        if(OrderPickTypeEnum.DISPATCH_SELF.code == reqDto.getPickType()){
+            if(reqDto.getPayType() == PayModeEnum.PREPAY.code){
+                return BaseResultUtil.fail("预付订单不能选择业务员上门，付款成功后再进行调度");
+            }
+            reqDto.setPickType(OrderPickTypeEnum.PILOT.code);
+            reqDto.setDispatch(true);
+        }
+
         //发送短信
         return csOrderService.commitAndCheck(reqDto);
     }
@@ -105,6 +124,7 @@ public class OrderController {
         //验证用户存不存在
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
+        reqDto.setLoginPhone(admin.getPhone());
         return csOrderService.check(reqDto);
     }
 
@@ -160,6 +180,8 @@ public class OrderController {
     public ResultVo cancel(@RequestBody CancelOrderDto reqDto) {
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
+        reqDto.setLoginPhone(admin.getPhone());
+        reqDto.setLoginType(UserTypeEnum.ADMIN);
         return csOrderService.cancel(reqDto);
     }
 
@@ -193,6 +215,7 @@ public class OrderController {
         OrderCarVo vo = orderService.getCarVoById(reqDto.getOrderCarId());
         return BaseResultUtil.success(vo);
     }
+
 
 
 }

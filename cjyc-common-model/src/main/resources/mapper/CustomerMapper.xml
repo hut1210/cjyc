@@ -37,6 +37,108 @@
         id, user_id, customer_no, name, alias, contact_man, contact_phone, contact_address, customer_nature, social_credit_code, initial, photo_img, sex, id_card, id_card_front_img, id_card_back_img, type, source, company_id, state, pay_mode, register_time, create_user_id, create_time, check_time, check_user_id
     </sql>
 
+    <sql id="Base_Column_Customer_List">
+        cc.id AS customerId,
+            cc.user_id AS userId,
+            cc.customer_no AS customerNo,
+            cc.NAME AS NAME,
+            surd.state AS state,
+            cc.contact_man AS contactMan,
+            cc.contact_phone AS contactPhone,
+            ccp.is_taxpayer AS isTaxpayer,
+            ccp.is_invoice AS isInvoice,
+            ccp.settle_type AS settleType,
+            ccp.settle_period AS settlePeriod,
+            sbcb.description AS description,
+            cc.social_credit_code AS socialCreditCode,
+            cc.source AS source,
+            cc.create_time AS registerTime,
+            ba.NAME AS createUserName
+    </sql>
+
+    <sql id="Base_Column_Check_List">
+            cc.id AS customerId,
+            cc.user_id AS userId,
+            cc.customer_no AS customerNo,
+            sc.NAME AS NAME,
+            sc.state AS state,
+            sc.contact_man AS contactMan,
+            cc.contact_phone AS contactPhone,
+            ccp.is_taxpayer AS isTaxpayer,
+            ccp.is_invoice AS isInvoice,
+            ccp.settle_type AS settleType,
+            ccp.settle_period AS settlePeriod,
+            sbcb.description AS description,
+            cc.social_credit_code AS socialCreditCode,
+            sc.source AS source,
+            cc.create_time AS registerTime,
+            ba.NAME AS createUserName
+    </sql>
+
+    <sql id="Customer_Where">
+        <where>
+            <if test="customerNo != null and customerNo.trim() != ''">
+                and cc.customer_no like concat('%',#{customerNo},'%')
+            </if>
+            <if test="name != null and name.trim() != ''">
+                and cc.name like concat('%',#{name},'%')
+            </if>
+            <if test="contactMan != null  and contactMan.trim() != ''">
+                and  cc.contact_man like concat('%',#{contactMan},'%')
+            </if>
+            <if test="contactPhone != null  and contactPhone.trim() != ''">
+                and cc.contact_phone like concat('%',#{contactPhone},'%')
+            </if>
+            <if test="socialCreditCode != null  and socialCreditCode.trim() != ''">
+                and  cc.social_credit_code like concat('%',#{socialCreditCode},'%')
+            </if>
+            <if test="source != null">
+                and  cc.source = #{source}
+            </if>
+            <if test="settleType != null">
+                and  ccp.settle_type = #{settleType}
+            </if>
+            <if test="isInvoice != null">
+                and  ccp.is_invoice = #{isInvoice}
+            </if>
+            and cc.type = 3 order by cc.create_time desc,cc.check_time desc
+        </where>
+    </sql>
+
+    <sql id="Check_Where">
+        <where>
+            <if test="name != null and name.trim() != ''">
+                and sc.name like concat('%',#{name},'%')
+            </if>
+            <if test="contactMan != null  and contactMan.trim() != ''">
+                and  sc.contact_man like concat('%',#{contactMan},'%')
+            </if>
+            <if test="contactPhone != null  and contactPhone.trim() != ''">
+                and  sc.phone like concat('%',#{contactPhone},'%')
+            </if>
+            <if test="customerNo != null and customerNo.trim() != ''">
+                and cc.customer_no like concat('%',#{customerNo},'%')
+            </if>
+            <if test="socialCreditCode != null  and socialCreditCode.trim() != ''">
+                and  cc.social_credit_code like concat('%',#{socialCreditCode},'%')
+            </if>
+            <if test="source != null">
+                and  sc.source = #{source}
+            </if>
+            <if test="settleType != null">
+                and  ccp.settle_type = #{settleType}
+            </if>
+            <if test="isInvoice != null">
+                and  ccp.is_invoice = #{isInvoice}
+            </if>
+            AND cc.type = 1
+            AND sc.state = 1
+            AND sc.type = 0
+            AND sc.source = 4
+            ORDER BY sc.create_time DESC
+        </where>
+    </sql>
+
     <!-- 根据用户userId查询用户 -->
     <select id="getCustomerByUserId" resultType="com.cjyc.common.model.entity.Customer"
                                     parameterType="java.lang.Long">
@@ -208,37 +310,38 @@
 
     <select id="showPartner" resultType="com.cjyc.common.model.vo.web.customer.ShowPartnerVo"
                 parameterType="java.lang.Long">
-          SELECT
-            cc.id AS customerId,
-            cc.NAME AS NAME,
-            cc.contact_man AS contactMan,
-            cc.contact_phone AS contactPhone,
-            cc.social_credit_code AS socialCreditCode,
-            cc.contact_address AS contactAddress,
-            ccp.is_taxpayer AS isTaxpayer,
-            ccp.is_invoice AS isInvoice,
-            ccp.settle_type AS settleType,
-            ccp.settle_period AS settlePeriod,
-            sbcb.card_type AS cardType,
-            sbcb.bank_name AS bankName,
-            sbcb.card_no AS cardNo,
-            sbcb.card_name AS cardName,
-            sbcb.description AS description,
-            sbcb.bank_licence AS bankLicence,
-            sbcb.id_card AS idCard,
-            ccp.business_license_front_img AS businessLicenseFrontImg,
-            ccp.business_license_back_img AS businessLicenseBackImg,
-            ccp.legal_idCard_front_img AS legalIdcardFrontImg,
-            ccp.legal_idCard_back_img AS legalIdcardBackImg,
-            ccp.linkman_idCard_front_img AS linkmanIdcardFrontImg,
-            ccp.linkman_idCard_back_img AS linkmanIdcardBackImg,
-            ccp.authorization_front_img AS authorizationFrontImg,
-            ccp.authorization_back_img AS authorizationBackImg
-        FROM
-              c_customer cc
-            LEFT JOIN c_customer_partner ccp ON ccp.customer_id = cc.id
-            LEFT JOIN s_bank_card_bind sbcb ON sbcb.user_id = cc.id
-            where cc.id = #{customerId}
+              SELECT
+                cc.id AS customerId,
+                cc.NAME AS NAME,
+                cc.contact_man AS contactMan,
+                cc.contact_phone AS contactPhone,
+                cc.social_credit_code AS socialCreditCode,
+                cc.contact_address AS contactAddress,
+                ccp.is_taxpayer AS isTaxpayer,
+                ccp.is_invoice AS isInvoice,
+                ccp.settle_type AS settleType,
+                ccp.settle_period AS settlePeriod,
+                sbcb.card_type AS cardType,
+                sbcb.bank_name AS bankName,
+                sbcb.card_no AS cardNo,
+                sbcb.card_name AS cardName,
+                sbcb.description AS description,
+                sbcb.bank_licence AS bankLicence,
+                sbcb.id_card AS idCard,
+                sbcb.bank_code AS bankCode,
+                ccp.business_license_front_img AS businessLicenseFrontImg,
+                ccp.business_license_back_img AS businessLicenseBackImg,
+                ccp.legal_idCard_front_img AS legalIdcardFrontImg,
+                ccp.legal_idCard_back_img AS legalIdcardBackImg,
+                ccp.linkman_idCard_front_img AS linkmanIdcardFrontImg,
+                ccp.linkman_idCard_back_img AS linkmanIdcardBackImg,
+                ccp.authorization_front_img AS authorizationFrontImg,
+                ccp.authorization_back_img AS authorizationBackImg
+            FROM
+                c_customer cc
+                LEFT JOIN c_customer_partner ccp ON ccp.customer_id = cc.id
+                LEFT JOIN s_bank_card_bind sbcb ON sbcb.user_id = cc.id
+            WHERE cc.id = #{customerId}
     </select>
 
     <select id="findByPhone" resultType="com.cjyc.common.model.entity.Customer" parameterType="java.lang.String">
@@ -312,6 +415,7 @@
             parameterType="com.cjyc.common.model.dto.salesman.customer.SalesCustomerDto">
         SELECT
             cc.id AS customerId,
+            cc.name AS customerName,
             cc.contact_man AS contactMan,
             cc.contact_phone AS contactPhone
         FROM
@@ -321,7 +425,8 @@
                 cc.contact_phone like concat('%',#{phone},'%')
             </if>
             <if test="name != null and name.trim() !=''">
-                and cc.contact_man like concat('%',#{name},'%')
+                and (cc.contact_man like concat('%',#{name},'%')
+                 or cc.name like concat('%',#{name},'%'))
             </if>
         </where>
     </select>
@@ -511,8 +616,44 @@
             <if test="flag != null and flag == 0">
                 and  surd.state = 2
             </if>
-            and (cc.type = 3 or (cc.type = 1 and surd.state = 1)) order by cc.create_time desc,cc.check_time desc
+            and cc.type = 3 order by cc.create_time desc,cc.check_time desc
         </where>
     </select>
+    <select id="findActive" resultType="com.cjyc.common.model.entity.Customer">
+        SELECT
+         cc.*
+        FROM
+         c_customer cc
+        LEFT JOIN  s_user_role_dept  surd ON surd.user_id = cc.id
+        WHERE cc.id = #{id}
+        and surd.state = 2
+        group by cc.id
+    </select>
 
+    <!-- 根据条件查询合伙人(客户列表) -->
+    <select id="findPartner" resultType="com.cjyc.common.model.vo.web.customer.CustomerPartnerVo"
+            parameterType="com.cjyc.common.model.dto.web.customer.CustomerPartnerDto">
+        ( SELECT
+            <include refid="Base_Column_Customer_List"/>
+        FROM
+            c_customer cc
+        LEFT JOIN c_customer_partner ccp ON ccp.customer_id = cc.id
+        LEFT JOIN s_bank_card_bind sbcb ON sbcb.user_id = cc.id
+        LEFT JOIN b_admin ba ON ba.id = cc.create_user_id
+        LEFT JOIN ( SELECT * FROM s_user_role_dept WHERE dept_type = 3 AND user_type = 3 ) surd ON surd.user_id = cc.id
+        <include refid="Customer_Where"/>
+	    ) UNION ALL
+	    (
+        SELECT
+            <include refid="Base_Column_Check_List"/>
+        FROM
+            c_customer cc
+            LEFT JOIN c_customer_partner ccp ON ccp.customer_id = cc.id
+            LEFT JOIN s_bank_card_bind sbcb ON sbcb.user_id = cc.id
+            LEFT JOIN b_admin ba ON ba.id = cc.create_user_id
+            LEFT JOIN ( SELECT * FROM s_user_role_dept WHERE dept_type = 3 AND user_type = 3 ) surd ON surd.user_id = cc.id
+            LEFT JOIN s_check sc ON sc.user_id = cc.id
+            <include refid="Check_Where"/>
+            )
+    </select>
 </mapper>

@@ -1,5 +1,6 @@
 package com.cjyc.common.model.vo.driver.waybill;
 
+import com.cjyc.common.model.serizlizer.BigDecimalSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
@@ -40,6 +41,7 @@ public class WaitAllotVo {
     private Integer allottedCarNum;
 
     @ApiModelProperty(value = "运单总运费")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal freightFee;
 
     @ApiModelProperty(value = "运费是否固定（包板）0否，1是")

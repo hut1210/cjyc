@@ -90,6 +90,10 @@
     <update id="updateOrderState" parameterType="map">
         update w_order set wl_pay_state = #{wlPayState}, wl_pay_time = #{wlPayTime},state=25 where no =#{orderNo}
     </update>
+
+    <update id="updateOrderPayState" parameterType="map">
+        update w_order set wl_pay_state = 2, wl_pay_time = #{wlPayTime} where no =#{orderNo}
+    </update>
     <update id="updateForPaySuccess">
         update f_trade_bill
         set state = 2,
@@ -102,7 +106,19 @@
     </select>
 
     <select id="getAmountByOrderCarNos" parameterType="java.util.List" resultType="java.math.BigDecimal">
-        select sum(freight_fee) from w_waybill_car wwc where order_car_no in
+        <!--select sum(freight_fee) from w_waybill_car wwc where order_car_no in-->
+        <!--select sum(pick_fee+trunk_fee+back_fee+add_insurance_fee-coupon_offset_fee) from w_order_car  where no in
+        <foreach collection="orderCarNos" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>-->
+        select sum(total_fee-coupon_offset_fee) from w_order_car  where no in
+        <foreach collection="orderCarNos" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="getAmountByOrderCarNosToPartner" parameterType="java.util.List" resultType="java.math.BigDecimal">
+        select sum(total_fee) from w_order_car  where no in
         <foreach collection="orderCarNos" index="index" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>
@@ -145,6 +161,13 @@
     </select>
 
     <update id="updateWayBillPayState" parameterType="map" >
-        update w_waybill set freight_pay_state = 1 where id =#{waybillId}
+        update w_waybill set freight_pay_state = 1,freight_pay_time=#{time},freight_pay_billno=#{no} where id =#{waybillId}
     </update>
+    <select id="getTradeBillByPingPayId" resultType="java.lang.String">
+        select no from f_trade_bill where ping_pay_id = #{pingPayId}
+    </select>
+    <update id="updateWayBillPayStateNoPay" parameterType="map" >
+        update w_waybill set freight_pay_state = 1,freight_pay_time=#{time} where id =#{waybillId}
+    </update>
+
 </mapper>

@@ -3,6 +3,7 @@ package com.cjyc.common.model.dto.web.waybill;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -37,6 +38,7 @@ public class UpdateLocalDto {
 
     @NotNull(message = "车辆信息不能为空")
     @ApiModelProperty(value = "车辆信息", required = true)
+    @Valid
     private UpdateLocalCarDto carDto;
 
 }

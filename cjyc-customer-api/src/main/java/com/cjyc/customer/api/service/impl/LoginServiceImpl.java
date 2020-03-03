@@ -8,18 +8,17 @@ import com.cjkj.common.service.impl.SuperServiceImpl;
 import com.cjkj.usercenter.dto.common.auth.AuthLoginReq;
 import com.cjkj.usercenter.dto.common.auth.AuthLoginResp;
 import com.cjkj.usercenter.dto.common.auth.AuthMobileLoginReq;
+import com.cjyc.common.model.dao.ICheckDao;
 import com.cjyc.common.model.dao.ICustomerDao;
 import com.cjyc.common.model.dao.IUserRoleDeptDao;
 import com.cjyc.common.model.dto.LoginDto;
 import com.cjyc.common.model.dto.salesman.login.LoginByPhoneDto;
+import com.cjyc.common.model.entity.Check;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.entity.Role;
 import com.cjyc.common.model.entity.UserRoleDept;
 import com.cjyc.common.model.enums.*;
-import com.cjyc.common.model.enums.customer.CustomerPayEnum;
-import com.cjyc.common.model.enums.customer.CustomerSourceEnum;
-import com.cjyc.common.model.enums.customer.CustomerStateEnum;
-import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
+import com.cjyc.common.model.enums.customer.*;
 import com.cjyc.common.model.enums.role.DeptTypeEnum;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -54,6 +53,8 @@ public class LoginServiceImpl extends SuperServiceImpl<ICustomerDao, Customer> i
 
     @Resource
     private ICustomerDao customerDao;
+    @Resource
+    private ICheckDao checkDao;
     @Autowired
     private StringRedisUtil redisUtil;
     @Resource
@@ -201,7 +202,7 @@ public class LoginServiceImpl extends SuperServiceImpl<ICustomerDao, Customer> i
         customer.setPayMode(PayModeEnum.COLLECT.code);
         customer.setRegisterTime(currentTimeMillis);
         customer.setCreateTime(currentTimeMillis);
-        customer = comCustomerService.save(customer);
+        //customer = comCustomerService.save(customer);
         return customer;
     }
 
@@ -210,7 +211,7 @@ public class LoginServiceImpl extends SuperServiceImpl<ICustomerDao, Customer> i
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResultVo<CustomerLoginVo> loginNew(LoginDto dto) {
+    public ResultVo<CustomerLoginVo> loginNew(LoginDto dto,String clientId,String clientSecret,String grantType) {
         Customer customer = customerDao.selectOne(new QueryWrapper<Customer>().lambda()
                 .eq(Customer::getContactPhone, dto.getPhone()));
         if(customer == null){
@@ -233,31 +234,44 @@ public class LoginServiceImpl extends SuperServiceImpl<ICustomerDao, Customer> i
             if(urd == null){
                 return BaseResultUtil.fail("数据错误,请先检查");
             }
-            if((urd.getState() == CustomerStateEnum.REJECT.code) || (urd.getState() == CustomerStateEnum.FROZEN.code)){
+            if((urd.getState() == CommonStateEnum.REJECT.code) || (urd.getState() == CommonStateEnum.FROZEN.code)){
                 return BaseResultUtil.fail("账号处于冻结/审核拒绝不能登录app");
             }
         }
+        Check check = checkDao.selectOne(new QueryWrapper<Check>().lambda()
+                .eq(Check::getUserId, customer.getId())
+                .eq(Check::getState, CommonStateEnum.IN_CHECK.code)
+                .eq(Check::getType, CheckTypeEnum.UPGRADE_PARTNER.code)
+                .eq(Check::getSource,CustomerSourceEnum.UPGRADE.code));
         //调用架构组验证手机号验证码登陆
         AuthMobileLoginReq req = new AuthMobileLoginReq();
-        req.setClientId(LoginProperty.clientId);
-        req.setClientSecret(LoginProperty.clientSecret);
-        req.setGrantType(LoginProperty.grantType);
+        req.setClientId(clientId);
+        req.setClientSecret(clientSecret);
+        req.setGrantType(grantType);
         req.setMobile(dto.getPhone());
         req.setSmsCode(dto.getCode());
         ResultData<AuthLoginResp> rd = sysLoginService.mobileLogin(req);
         if(rd == null || rd.getData() == null || rd.getData().getAccessToken() == null){
-            return BaseResultUtil.getVo(ResultEnum.LOGIN_FAIL.getCode(),ResultEnum.LOGIN_FAIL.getMsg());
+            return BaseResultUtil.fail(rd.getMsg());
         }
         //组装返回给移动端
         CustomerLoginVo loginVo = new CustomerLoginVo();
-        BeanUtils.copyProperties(customer,loginVo);
-        loginVo.setState(urd.getState());
+        if(check != null){
+            loginVo.setId(customer.getId());
+            loginVo.setState(CommonStateEnum.IN_CHECK.code);
+            loginVo.setName(check.getName());
+            loginVo.setContactMan(check.getContactMan());
+            loginVo.setType(CustomerTypeEnum.INDIVIDUAL.code);
+        }else{
+            BeanUtils.copyProperties(customer,loginVo);
+            loginVo.setState(urd.getState());
+            loginVo.setName(customer.getName());
+            loginVo.setContactMan(customer.getContactMan());
+        }
+        loginVo.setPhone(customer.getContactPhone());
         loginVo.setUserId(customer.getUserId() == null ? 0 : customer.getUserId());
         loginVo.setAccessToken(rd.getData().getAccessToken());
         loginVo.setPhotoImg(StringUtils.isNotBlank(customer.getPhotoImg()) ? customer.getPhotoImg():"");
-        loginVo.setName(customer.getName());
-        loginVo.setContactMan(customer.getContactMan());
-        loginVo.setPhone(customer.getContactPhone());
         return BaseResultUtil.success(loginVo);
     }
 

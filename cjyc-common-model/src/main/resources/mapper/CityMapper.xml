@@ -115,7 +115,7 @@
     <select id="getCityTreeByKeyword" resultType="com.cjyc.common.model.entity.City" parameterType="java.lang.String">
         select
           <include refid="Base_Column_List"/>
-        from s_city  where name like concat('%',#{name},'%')
+        from s_city  where (name like concat('%',#{name},'%') or parent_name like concat('%',#{name},'%')) and level in (1,2)
     </select>
 
     <!--根据城市编码获取省市集合 -->
@@ -129,12 +129,12 @@
         <foreach collection="codeSet" item="item" index="index" open="(" close=")" separator=",">
             #{item}
         </foreach>
-          and level in (1,2,3)
+          and level in (1,2)
     </select>
 
     <!--根据城市名称模糊匹配查询城市code -->
-    <select id="getCodeByName" resultType="java.lang.String" parameterType="java.lang.String">
-        select code from s_city where name like concat('%',#{name},'%') and level = 2
+    <select id="getCodeByName" resultType="com.cjyc.common.model.entity.City" parameterType="java.lang.String">
+        select <include refid="Base_Column_List"/> from s_city where name = #{name} and level = 2
     </select>
 
 
@@ -209,7 +209,7 @@
     <select id="findFullCity" resultType="com.cjyc.common.model.entity.defined.FullCity">
         select
             c1.`name` as area,
-            c1.code as areaCode,
+            c1.`code` as areaCode,
             c2.`name` as city,
             c2.`code` as cityCode,
             c2.parent_name as province,
@@ -404,6 +404,23 @@
                 and c3.code=#{areaCode}
             </if>
         </where>
+    </select>
+
+    <!--根据城市/区名称模糊匹配查询城市code -->
+    <select id="findCodeByName" resultType="java.lang.String">
+        select code from s_city where name like concat('%',#{name},'%') and parent_name like concat('%',#{parentName},'%')  and level = #{level}
+    </select>
+
+    <!--根据省名称模糊匹配查询城市code -->
+    <select id="findProvinceCode" resultType="java.lang.String">
+        select code from s_city where name like concat('%',#{name},'%')  and level = 1
+    </select>
+
+    <!--根据城市编码获取城市相关信息 -->
+    <select id="findCityByCode" resultType="com.cjyc.common.model.entity.City"
+            parameterType="java.lang.String">
+        select <include refid="Base_Column_List"/>
+            from s_city where code = #{cityCode}
     </select>
 
 </mapper>

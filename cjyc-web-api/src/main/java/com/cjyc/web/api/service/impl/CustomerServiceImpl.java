@@ -14,25 +14,20 @@ import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.customer.*;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.*;
+import com.cjyc.common.model.enums.customer.CheckTypeEnum;
 import com.cjyc.common.model.enums.customer.CustomerSourceEnum;
 import com.cjyc.common.model.enums.customer.CustomerStateEnum;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.enums.role.DeptTypeEnum;
 import com.cjyc.common.model.exception.ServerException;
-import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.util.LocalDateTimeUtil;
-import com.cjyc.common.model.util.RandomUtil;
-import com.cjyc.common.model.util.YmlProperty;
+import com.cjyc.common.model.util.*;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.customer.*;
 import com.cjyc.common.model.vo.web.coupon.CustomerCouponSendVo;
 import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.feign.ISysUserService;
-import com.cjyc.common.system.service.ICsCustomerService;
-import com.cjyc.common.system.service.ICsRoleService;
-import com.cjyc.common.system.service.ICsSendNoService;
-import com.cjyc.common.system.service.ICsUserRoleDeptService;
+import com.cjyc.common.system.service.*;
 import com.cjyc.web.api.service.ICustomerContractService;
 import com.cjyc.web.api.service.ICustomerService;
 import com.github.pagehelper.PageHelper;
@@ -82,6 +77,8 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     @Resource
     private IDriverDao driverDao;
     @Resource
+    private ICheckDao checkDao;
+    @Resource
     private ICustomerCountDao customerCountDao;
     @Resource
     private ICsSendNoService sendNoService;
@@ -95,6 +92,10 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     private ICsUserRoleDeptService csUserRoleDeptService;
     @Resource
     private IUserRoleDeptDao userRoleDeptDao;
+    @Resource
+    private IBankInfoDao bankInfoDao;
+    @Resource
+    private ICsBankInfoService bankInfoService;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -104,7 +105,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         CustomerInfoVo infoVo = new CustomerInfoVo();
         if(customer != null){
             infoVo.setCustomerId(customer.getId());
-            infoVo.setContactMan(customer.getContactMan());
+            infoVo.setContactMan(customer.getName());
             infoVo.setContactPhone(customer.getContactPhone());
             return BaseResultUtil.success(infoVo);
         }
@@ -606,7 +607,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         // 获取参数
         SelectCustomerDto dto = getSelectCustomerDto(request);
         List<CustomerVo> customerVos = encapClientCustomer(dto);
-        if (!CollectionUtils.isEmpty(customerVos)) {
+        //if (!CollectionUtils.isEmpty(customerVos)) {
             // 生成导出数据
             List<CustomerExportExcel> exportExcelList = new ArrayList<>();
             for (CustomerVo vo : customerVos) {
@@ -618,13 +619,13 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             String sheetName = "C端客户";
             String fileName = "C端客户.xls";
             try {
-                if(!CollectionUtils.isEmpty(exportExcelList)){
+                //if(!CollectionUtils.isEmpty(exportExcelList)){
                     ExcelUtil.exportExcel(exportExcelList, title, sheetName, CustomerExportExcel.class, fileName, response);
-                }
+                //}
             } catch (IOException e) {
                 log.error("导出C端客户异常:{}",e);
             }
-        }
+        //}
     }
 
     @Override
@@ -632,7 +633,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         // 获取参数
         SelectKeyCustomerDto dto = getKeyCustomerDto(request);
         List<ListKeyCustomerVo> keyCustomerList = encapKeyAccountCustomer(dto);
-        if (!CollectionUtils.isEmpty(keyCustomerList)) {
+        //if (!CollectionUtils.isEmpty(keyCustomerList)) {
             // 生成导出数据
             List<KeyExportExcel> exportExcelList = new ArrayList<>();
             for (ListKeyCustomerVo vo : keyCustomerList) {
@@ -644,20 +645,20 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             String sheetName = "大客户";
             String fileName = "大客户.xls";
             try {
-                if(!CollectionUtils.isEmpty(exportExcelList)){
+                //if(!CollectionUtils.isEmpty(exportExcelList)){
                     ExcelUtil.exportExcel(exportExcelList, title, sheetName, KeyExportExcel.class, fileName, response);
-                }
+                //}
             } catch (IOException e) {
                 log.error("导出大客户异常:{}",e);
             }
-        }
+        //}
     }
 
     @Override
     public void exportPartnerExcel(HttpServletRequest request, HttpServletResponse response) {
         CustomerPartnerDto dto = getPartnerDto(request);
-        List<CustomerPartnerVo> partnerVos = encapCoPartner(dto);
-        if (!CollectionUtils.isEmpty(partnerVos)) {
+        List<CustomerPartnerVo> partnerVos = encapExportPartner(dto);
+        //if (!CollectionUtils.isEmpty(partnerVos)) {
             // 生成导出数据
             List<PartnerExportExcel> exportExcelList = new ArrayList<>();
             for (CustomerPartnerVo vo : partnerVos) {
@@ -669,13 +670,13 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             String sheetName = "合伙人";
             String fileName = "合伙人.xls";
             try {
-                if(!CollectionUtils.isEmpty(exportExcelList)){
+                //if(!CollectionUtils.isEmpty(exportExcelList)){
                     ExcelUtil.exportExcel(exportExcelList, title, sheetName, PartnerExportExcel.class, fileName, response);
-                }
+                //}
             } catch (IOException e) {
                 log.error("导出合伙人信息异常:{}",e);
             }
-        }
+        //}
     }
 
     /**
@@ -817,6 +818,11 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         bcb.setCardColour(RandomUtil.getIntRandom());
         bcb.setState(UseStateEnum.USABLE.code);
         bcb.setCreateTime(now);
+        //获取银行编码
+        BankInfo bankInfo = bankInfoService.findBankCode(bcb.getBankName());
+        if(bankInfo != null){
+            bcb.setBankCode(bankInfo.getBankCode());
+        }
         bankCardBindDao.insert(bcb);
     }
 
@@ -915,7 +921,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         if(customer == null){
             return BaseResultUtil.fail("该客户不存在,请检查");
         }
-        ResultData<Boolean> updateRd = csCustomerService.updateUserToPlatform(customer,null, dto.getContactPhone());
+        ResultData<Boolean> updateRd = csCustomerService.updateUserToPlatform(customer,null, dto.getContactPhone(),dto.getContactMan());
         if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
             log.error("修改用户信息失败，原因：" + updateRd.getMsg());
             return BaseResultUtil.fail("修改用户信息失败，原因：" + updateRd.getMsg());
@@ -1062,7 +1068,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     public ResultVo findPartnerNew(CustomerPartnerDto dto) {
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<CustomerPartnerVo> partnerVos = encapCoPartner(dto);
-        PageInfo<CustomerPartnerVo> pageInfo = new PageInfo<>(partnerVos);
+        PageInfo<CustomerPartnerVo> pageInfo = new PageInfo(partnerVos);
         return BaseResultUtil.success(pageInfo);
     }
 
@@ -1082,15 +1088,44 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             return BaseResultUtil.fail("角色不存在,请先添加角色");
         }
         //审核通过
+        Check check = null;
         if(dto.getFlag() == FlagEnum.AUDIT_PASS.code){
-            //合伙人或者是从用户端升级成为的合伙人(此时为c端客户状态为审核中)
-            if(customer.getType() == CustomerTypeEnum.COOPERATOR.code || (customer.getType() == CustomerTypeEnum.INDIVIDUAL.code && urd.getState() == CommonStateEnum.IN_CHECK.code)){
+            check = checkDao.selectOne(new QueryWrapper<Check>().lambda()
+                    .eq(Check::getUserId, dto.getId())
+                    .eq(Check::getState, CommonStateEnum.IN_CHECK.code)
+                    .eq(Check::getType, CheckTypeEnum.UPGRADE_PARTNER.code)
+                    .eq(Check::getSource,CustomerSourceEnum.UPGRADE.code));
+            if(check != null){
                 //合伙人更新结构组角色
                 ResultData updateRd = updatePlatformRole(customer.getUserId(),role.getRoleId());
                 if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
                     return BaseResultUtil.fail("更新组织下的所有角色失败");
                 }
+                //更新成合伙人信息
+                customer.setName(check.getName());
+                customer.setContactMan(check.getContactMan());
+                customer.setContactAddress(check.getContactAddress());
+                customer.setType(CustomerTypeEnum.COOPERATOR.code);
+                customer.setSource(CustomerSourceEnum.UPGRADE.code);
+                customer.setSocialCreditCode(check.getSocialCreditCode());
+                //更新审核表
+                check.setState(CommonStateEnum.CHECKED.code);
+                check.setCheckUserId(dto.getLoginId());
+                check.setCheckTime(NOW);
+                //更新关联表角色id
+                urd.setRoleId(role.getId());
             }
+            //合伙人或者是从用户端升级成为的合伙人(此时为c端客户状态为审核中)
+            /*if(customer.getType() == CustomerTypeEnum.COOPERATOR.code || (customer.getType() == CustomerTypeEnum.INDIVIDUAL.code && urd.getState() == CommonStateEnum.IN_CHECK.code)){
+                //合伙人更新结构组角色
+                ResultData updateRd = updatePlatformRole(customer.getUserId(),role.getRoleId());
+                if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
+                    return BaseResultUtil.fail("更新组织下的所有角色失败");
+                }
+                customer.setType(CustomerTypeEnum.COOPERATOR.code);
+                urd.setRoleId(role.getId());
+            }*/
+            customer.setState(CommonStateEnum.CHECKED.code);
             urd.setState(CommonStateEnum.CHECKED.code);
         }else if(dto.getFlag() == FlagEnum.AUDIT_REJECT.code){
             //审核拒绝
@@ -1124,6 +1159,9 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         customer.setCheckUserId(dto.getLoginId());
         customerDao.updateById(customer);
         userRoleDeptDao.updateById(urd);
+        if(check != null){
+            checkDao.updateById(check);
+        }
         return BaseResultUtil.success();
     }
 
@@ -1151,7 +1189,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         Customer customer = customerDao.selectById(dto.getCustomerId());
         if(null != customer){
             //判断手机号是否存在
-            ResultData<Boolean> updateRd = csCustomerService.updateUserToPlatform(customer,null, dto.getContactPhone());
+            ResultData<Boolean> updateRd = csCustomerService.updateUserToPlatform(customer,null, dto.getContactPhone(),dto.getContactMan());
             if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
                 log.error("修改用户信息失败，原因：" + updateRd.getMsg());
                 return BaseResultUtil.fail("修改用户信息失败，原因：" + updateRd.getMsg());
@@ -1188,6 +1226,10 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         Role role = csRoleService.getByName(YmlProperty.get("cjkj.customer_copartner_role_name"), DeptTypeEnum.CUSTOMER.code);
         if(role == null){
             return BaseResultUtil.fail("合伙人角色不存在，请先添加");
+        }
+        boolean flag = BankCardUtil.checkBankCard(dto.getCardNo());
+        if(!flag){
+            return BaseResultUtil.fail("银行卡号输入不符合,请检查");
         }
         //保存大客户信息到物流平台
         ResultData<Long> rd = csCustomerService.addUserToPlatform(dto.getContactPhone(),dto.getContactMan(),role);
@@ -1228,8 +1270,12 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         if(customer == null){
             return BaseResultUtil.fail("合伙人不存在,数据错误，请检查");
         }
+        boolean flag = BankCardUtil.checkBankCard(dto.getCardNo());
+        if(!flag){
+            return BaseResultUtil.fail("银行卡号输入不符合,请检查");
+        }
         //更新架构组用户数据
-        ResultData<Boolean> updateRd = csCustomerService.updateUserToPlatform(customer,null, dto.getContactPhone());
+        ResultData<Boolean> updateRd = csCustomerService.updateUserToPlatform(customer,null, dto.getContactPhone(),dto.getContactMan());
         if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
             log.error("修改用户信息失败，原因：" + updateRd.getMsg());
             return BaseResultUtil.fail("修改用户信息失败，原因：" + updateRd.getMsg());
@@ -1294,7 +1340,30 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
      * @return
      */
     private List<CustomerPartnerVo> encapCoPartner(CustomerPartnerDto dto){
-        List<CustomerPartnerVo> coPartnerVos = customerDao.findCoPartner(dto);
+        List<CustomerPartnerVo> coPartnerVos = null;
+        if(dto.getFlag() == 0){
+            coPartnerVos = customerDao.findCoPartner(dto);
+        }else{
+            coPartnerVos = customerDao.findPartner(dto);
+        }
+        if(!CollectionUtils.isEmpty(coPartnerVos)){
+            for(CustomerPartnerVo vo : coPartnerVos){
+                CustomerCountVo count = customerCountDao.count(vo.getCustomerId());
+                if(count != null){
+                    BeanUtils.copyProperties(count,vo);
+                }
+            }
+        }
+        return coPartnerVos;
+    }
+
+    /**
+     * 封装查询合伙人信息
+     * @param dto
+     * @return
+     */
+    private List<CustomerPartnerVo> encapExportPartner(CustomerPartnerDto dto){
+        List<CustomerPartnerVo> coPartnerVos = customerDao.findPartner(dto);
         if(!CollectionUtils.isEmpty(coPartnerVos)){
             for(CustomerPartnerVo vo : coPartnerVos){
                 CustomerCountVo count = customerCountDao.count(vo.getCustomerId());
@@ -1452,6 +1521,30 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             }
         }catch (Exception e){
             log.error("导入合伙人失败异常:{}",e);
+            result = false;
+        }
+        return result;
+    }
+
+
+    @Override
+    public boolean importBankInfoExcel(MultipartFile file) {
+        boolean result;
+        try {
+            List<BankInfoImportExcel> bankInfoImportExcelList = ExcelUtil.importExcel(file, 0, 1, BankInfoImportExcel.class);
+            if(!CollectionUtils.isEmpty(bankInfoImportExcelList)){
+                for(BankInfoImportExcel bankInfoExcel : bankInfoImportExcelList){
+                    BankInfo bankInfo = new BankInfo();
+                    bankInfo.setBankCode(bankInfoExcel.getBankCode());
+                    bankInfo.setBankName(bankInfoExcel.getBankName());
+                    bankInfoDao.insert(bankInfo);
+                }
+                result = true;
+            }else {
+                result = false;
+            }
+        }catch (Exception e){
+            log.error("导入银行信息失败异常:{}",e);
             result = false;
         }
         return result;

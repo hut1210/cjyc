@@ -7,6 +7,7 @@ import com.cjyc.common.model.dto.web.mineCarrier.MyWaybillDto;
 import com.cjyc.common.model.dto.web.mineCarrier.SettlementDetailQueryDto;
 import com.cjyc.common.model.dto.web.waybill.*;
 import com.cjyc.common.model.entity.Waybill;
+import com.cjyc.common.model.entity.WaybillCar;
 import com.cjyc.common.model.entity.defined.FullWaybill;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.task.TaskBillVo;
@@ -110,15 +111,18 @@ public interface IWaybillDao extends BaseMapper<Waybill> {
 
     List<SettlementDetailVo> getSettlementDetail(SettlementDetailQueryDto settlementDetailQueryDto);
 
-    int updateForLoad(Long id);
+    int updateForOutStore(Long id);
 
     int updateForFinish(Long id);
 
-    FullWaybill findFullWaybillById(Long waybillId);
 
     int updateNum(@Param("waybillId") Long waybillId);
 
     int updateFreightFee(Long id);
 
     List<Waybill> findListByWaybillCarIds(@Param("collection") Collection<Long> waybillCarIds);
+
+    int updateNumAndFreightFee(@Param("waybillId") Long waybillId);
+
+    int updateForOver(@Param("id") Long id, @Param("state") int state);
 }

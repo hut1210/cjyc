@@ -14,6 +14,7 @@ import com.cjyc.common.model.enums.waybill.WaybillCarStateEnum;
 import com.cjyc.common.model.enums.waybill.WaybillCarrierTypeEnum;
 import com.cjyc.common.model.enums.waybill.WaybillTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.JsonUtils;
 import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -34,7 +35,9 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description 任务业务接口实现类
@@ -63,6 +66,7 @@ public class TaskServiceImpl implements ITaskService {
 
     @Override
     public ResultVo<PageVo<TaskWaybillVo>> getCarryPage(TaskWaybillQueryDto dto) {
+        log.info("====>业务员端-分页查询提送车；提送车历史记录列表,请求json数据 :: "+ JsonUtils.objectToJson(dto));
         if (dto.getCompleteTimeE() != null && dto.getCompleteTimeE() != 0) {
             dto.setCompleteTimeE(TimeStampUtil.convertEndTime(dto.getCompleteTimeE()));
         }
@@ -79,6 +83,7 @@ public class TaskServiceImpl implements ITaskService {
 
     @Override
     public ResultVo<TaskDetailVo> getCarryDetail(DetailQueryDto dto) {
+        log.info("====>业务员端-查询提送车,提送车历史记录任务详情；查询出入库,出入库历史记录任务详情,请求json数据 :: "+JsonUtils.objectToJson(dto));
         TaskDetailVo taskDetailVo = new TaskDetailVo();
         // 查询运单信息
         Long waybillId = dto.getWaybillId();
@@ -111,22 +116,39 @@ public class TaskServiceImpl implements ITaskService {
         List<CarDetailVo> carDetailVoList = new ArrayList<>(10);
         BigDecimal freightFee = new BigDecimal(0);
         if (!CollectionUtils.isEmpty(taskCarList)) {
+            // 根据登录ID查询当前业务员所在业务中心ID
+            BizScope bizScope = csSysService.getBizScopeByLoginIdNew(dto.getLoginId(), true);
+
+            // 判断当前登录人是否有权限访问
+            if (BizScopeEnum.NONE.code == bizScope.getCode()) {
+                return BaseResultUtil.fail("您没有访问权限!");
+            }
+
+            dto.setStoreIds(bizScope.getStoreIds());
+
             CarDetailVo carDetailVo = null;
             for (TaskCar taskCar : taskCarList) {
                 // 查询任务单车辆信息
                 String detailState = dto.getDetailState();
-                WaybillCar waybillCar = getWaybillCar(detailState, taskCar);
+                //WaybillCar waybillCar = getWaybillCar(detailState, taskCar);
+
+                dto.setWaybillCarId(taskCar.getWaybillCarId());
+                WaybillCar waybillCar = waybillCarDao.selectWaybillCar(dto);
                 if (waybillCar != null) {
                     carDetailVo = new CarDetailVo();
                     BeanUtils.copyProperties(waybillCar,carDetailVo);
                     freightFee = freightFee.add(waybillCar.getFreightFee());
 
-                    // 如果指导路线为空，且运单是提车或者送车，将始发成和结束城市用“-”拼接
-                    fillGuideLine(taskDetailVo,waybillCar);
-                    carDetailVo.setGuideLine(taskDetailVo.getGuideLine());
+                    // 给详细地址拼接市区
+                    carDetailVo.setStartAddress(waybillCar.getStartCity()+waybillCar.getStartArea()+waybillCar.getStartAddress());
+                    carDetailVo.setEndAddress(waybillCar.getEndCity()+waybillCar.getEndArea()+waybillCar.getEndAddress());
+
+
+                    // 指导路线,运单是提车或者送车，将始发成和结束城市用“-”拼接
+                    carDetailVo.setGuideLine(waybillCar.getStartCity() + "-" + waybillCar.getEndCity());
 
                     // 获取车辆运输图片
-                    getCarPhotoImg(carDetailVo, detailState, waybillCar);
+                    getCarPhotoImg(carDetailVo, detailState, waybillCar,waybill);
 
                     // 查询品牌车系信息
                     OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
@@ -144,16 +166,6 @@ public class TaskServiceImpl implements ITaskService {
                     carDetailVo.setId(taskCar.getId());
                     carDetailVo.setWaybillCarState(waybillCar.getState());
                     carDetailVoList.add(carDetailVo);
-
-                    // todo 测试车辆图片
-                    String[] split = carDetailVo.getHistoryLoadPhotoImg().split(",");
-                    log.info("===>历史图片数量："+split.length);
-                    String[] string1 = StringUtils.isEmpty(carDetailVo.getLoadPhotoImg()) ? new String[]{}
-                            : carDetailVo.getLoadPhotoImg().split(",");
-                    log.info("===>提车图片数量："+string1.length);
-                    String[] string2 = StringUtils.isEmpty(carDetailVo.getUnloadPhotoImg()) ? new String[]{}
-                            : carDetailVo.getUnloadPhotoImg().split(",");
-                    log.info("===>收车图片数量："+string2.length);
                 }
             }
         }
@@ -162,9 +174,9 @@ public class TaskServiceImpl implements ITaskService {
         return BaseResultUtil.success(taskDetailVo);
     }
 
-    private void getCarPhotoImg(CarDetailVo carDetailVo, String detailState, WaybillCar waybillCar) {
+    private void getCarPhotoImg(CarDetailVo carDetailVo, String detailState, WaybillCar waybillCar,Waybill waybill) {
         // 查询车辆历史图片
-        StringBuilder sb = getCarHistoryPhotoImg(waybillCar);
+        StringBuilder sb = getCarHistoryPhotoImg(waybillCar,waybill);
 
         // 封装当前车辆图片
         fillCarPhotoImg(detailState, waybillCar, sb);
@@ -173,12 +185,6 @@ public class TaskServiceImpl implements ITaskService {
         carDetailVo.setHistoryLoadPhotoImg(sb.toString());
     }
 
-    private void fillGuideLine(TaskDetailVo taskDetailVo,WaybillCar waybillCar) {
-        boolean b = WaybillTypeEnum.PICK.code == taskDetailVo.getType() || WaybillTypeEnum.BACK.code == taskDetailVo.getType();
-        if (b && StringUtils.isEmpty(taskDetailVo.getGuideLine())) {
-            taskDetailVo.setGuideLine(waybillCar.getStartCity() + "-" + waybillCar.getEndCity());
-        }
-    }
 
     private void fillCarPhotoImg(String detailState, WaybillCar waybillCar, StringBuilder sb) {
         if (FieldConstant.WAIT_TO_CAR.equals(detailState)
@@ -209,11 +215,12 @@ public class TaskServiceImpl implements ITaskService {
         }
     }
 
-    private StringBuilder getCarHistoryPhotoImg(WaybillCar waybillCar) {
-        LambdaQueryWrapper<WaybillCar> query = new QueryWrapper<WaybillCar>().lambda()
-                .eq(WaybillCar::getOrderCarId, waybillCar.getOrderCarId())
-                .lt(WaybillCar::getId, waybillCar.getId());
-        List<WaybillCar> waybillCarList = waybillCarDao.selectList(query);
+    private StringBuilder getCarHistoryPhotoImg(WaybillCar waybillCar,Waybill waybill) {
+        Map<String,Object> map = new HashMap<>(3);
+        map.put("orderCarId",waybillCar.getOrderCarId());
+        map.put("waybillCarId",waybillCar.getId());
+        map.put("waybillType",waybill.getType());
+        List<WaybillCar> waybillCarList = waybillCarDao.selectWaybillCarList(map);
         StringBuilder sb = new StringBuilder();
         if (!CollectionUtils.isEmpty(waybillCarList)) {
             for (WaybillCar car : waybillCarList) {
@@ -263,6 +270,7 @@ public class TaskServiceImpl implements ITaskService {
 
     @Override
     public ResultVo<PageVo<TaskWaybillVo>> getOutAndInStoragePage(OutAndInStorageQueryDto dto) {
+        log.info("====>业务员端-分页查询出入库，出入库历史记录列表,请求json数据 :: "+JsonUtils.objectToJson(dto));
         if (dto.getInStorageTimeE() != null && dto.getInStorageTimeE() != 0) {
             dto.setInStorageTimeE(TimeStampUtil.convertEndTime(dto.getInStorageTimeE()));
         }

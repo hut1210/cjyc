@@ -26,6 +26,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -41,6 +42,10 @@ import java.util.List;
 @Slf4j
 @Service
 public class CarSeriesServiceImpl extends ServiceImpl<ICarSeriesDao,CarSeries> implements ICarSeriesService {
+
+    @Resource
+    private ICarSeriesDao carSeriesDao;
+
     @Override
     public ResultVo add(CarSeriesAddDto carSeriesAddDto) {
         // 唯一性校验
@@ -58,10 +63,11 @@ public class CarSeriesServiceImpl extends ServiceImpl<ICarSeriesDao,CarSeries> i
     private CarSeries getCarSeries(CarSeriesAddDto carSeriesAddDto) {
         CarSeries carSeries = new CarSeries();
         carSeries.setCarCode(StringUtil.getUUID());
+        String logoImg = carSeriesDao.getLogoImgByBraMod(carSeriesAddDto.getBrand(),null);
         carSeries.setBrand(carSeriesAddDto.getBrand());
         carSeries.setModel(carSeriesAddDto.getModel());
         carSeries.setPinInitial(StringUtil.getFirstPinYinHeadChar(carSeriesAddDto.getBrand()));
-        carSeries.setLogoImg(StringUtil.getCarLogoURL(carSeriesAddDto.getBrand()));
+        carSeries.setLogoImg(logoImg);
         carSeries.setCreateTime(System.currentTimeMillis());
         carSeries.setCreateUserId(carSeriesAddDto.getCreateUserId());
         return carSeries;
@@ -144,7 +150,7 @@ public class CarSeriesServiceImpl extends ServiceImpl<ICarSeriesDao,CarSeries> i
         // 查询列表
         List<CarSeries> list = getCarSeriesList(carSeriesQueryDto);
 
-        if (!CollectionUtils.isEmpty(list)) {
+        //if (!CollectionUtils.isEmpty(list)) {
             // 生成导出数据
             List<CarSeriesExportExcel> exportExcelList = new ArrayList<>(10);
             for (CarSeries carSeries : list) {
@@ -160,7 +166,7 @@ public class CarSeriesServiceImpl extends ServiceImpl<ICarSeriesDao,CarSeries> i
             } catch (IOException e) {
                 log.error("导出品牌车系异常:",e);
             }
-        }
+        //}
     }
 
     @Override
