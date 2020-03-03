@@ -72,6 +72,9 @@ public class FinanceServiceImpl implements IFinanceService {
     @Resource
     private IConfigDao configDao;
 
+    @Resource
+    private IPaymentErrorLogDao paymentErrorLogDao;
+
     @Override
     public ResultVo<PageVo<FinanceVo>> getFinanceList(FinanceQueryDto financeQueryDto) {
         PageHelper.startPage(financeQueryDto.getCurrentPage(), financeQueryDto.getPageSize());
@@ -614,13 +617,13 @@ public class FinanceServiceImpl implements IFinanceService {
     public ResultVo<PageVo<PaidNewVo>> getPaidListNew(PayMentQueryDto payMentQueryDto) {
         log.info("payMentQueryDto = "+payMentQueryDto.toString());
         List<PaidNewVo> financeVoList = new ArrayList<>();
-        Config config = configDao.getByItemKey("external_pay");
+        /*Config config = configDao.getByItemKey("external_pay");
         if(config!=null&&config.getState()==1) {//对外支付模式
             log.info("config.getState() "+config.getState().toString());
             financeVoList = getExternalPaidList(payMentQueryDto);
-        }else{//自动付款
+        }else{//自动付款*/
             financeVoList = getAutoPaidList(payMentQueryDto);
-        }
+        /*}*/
         log.info("financeVoList = "+financeVoList.size());
         PageInfo<PaidNewVo> pageInfo = new PageInfo<>(financeVoList);
         return BaseResultUtil.success(pageInfo,getCountInfo());

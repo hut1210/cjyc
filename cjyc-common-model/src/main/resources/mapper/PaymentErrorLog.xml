@@ -8,4 +8,8 @@
         <result column="remark" property="remark" />
         <result column="create_time" property="createTime" />
     </resultMap>
+
+    <select id="getByWayBillNo" resultType="com.cjyc.common.model.entity.PaymentErrorLog">
+        select * from f_payment_error_log where remark like concat('%',#{waybillNo},'%') limit 1
+    </select>
 </mapper>

@@ -499,7 +499,7 @@
         from w_waybill ww
         left join d_carrier dc on dc.id=ww.carrier_id
         left join w_task wt on wt.waybill_id = ww.id
-        where dc.settle_type=0 and ww.freight_pay_state=1
+        where dc.settle_type=0
         <if test="waybillNo != null and waybillNo.trim() != ''">
             and ww.no like concat('%',#{waybillNo},'%')
         </if>
