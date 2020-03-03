@@ -514,6 +514,9 @@
         </if>
         <if test="invoiceNo!= null and invoiceNo.trim() != ''">
         </if>
+        <if test="state!= null">
+            and ww.freight_pay_state =#{state}
+        </if>
         <if test="carrierName!= null and carrierName.trim() != ''">
             and ww.carrier_name like concat('%',#{carrierName},'%')
         </if>
