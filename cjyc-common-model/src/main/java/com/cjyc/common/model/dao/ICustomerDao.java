@@ -9,6 +9,7 @@ import com.cjyc.common.model.entity.Customer;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.vo.salesman.customer.SalesCustomerVo;
+import com.cjyc.common.model.vo.salesman.customer.SalesKeyCustomerVo;
 import com.cjyc.common.model.vo.web.customer.*;
 import org.apache.ibatis.annotations.Param;
 
@@ -85,7 +86,7 @@ public interface ICustomerDao extends BaseMapper<Customer> {
 
     List<SalesCustomerVo> findCustomerPhoneName(SalesCustomerDto dto);
 
-    List<SalesCustomerVo> findSalesKeyCustomter(SalesCustomerDto dto);
+    List<SalesKeyCustomerVo> findSalesKeyCustomter(SalesCustomerDto dto);
 
 
     /************************************韵车集成改版 st***********************************/

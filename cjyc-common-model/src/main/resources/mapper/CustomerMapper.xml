@@ -431,7 +431,7 @@
         </where>
     </select>
 
-    <select id="findSalesKeyCustomter" resultType="com.cjyc.common.model.vo.salesman.customer.SalesCustomerVo"
+    <select id="findSalesKeyCustomter" resultType="com.cjyc.common.model.vo.salesman.customer.SalesKeyCustomerVo"
             parameterType="com.cjyc.common.model.dto.salesman.customer.SalesCustomerDto">
         SELECT
             cc.id AS customerId,

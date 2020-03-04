@@ -15,6 +15,7 @@ import com.cjyc.common.model.enums.SendNoTypeEnum;
 import com.cjyc.common.model.enums.customer.CustomerSourceEnum;
 import com.cjyc.common.model.enums.role.DeptTypeEnum;
 import com.cjyc.common.model.enums.role.RoleNameEnum;
+import com.cjyc.common.model.util.JsonUtils;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.salesman.customer.SalesCustomerListVo;
 import com.cjyc.common.model.entity.Customer;
@@ -24,6 +25,8 @@ import com.cjyc.common.model.exception.ServerException;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.salesman.customer.SalesCustomerVo;
+import com.cjyc.common.model.vo.salesman.customer.SalesKeyCustomerListVo;
+import com.cjyc.common.model.vo.salesman.customer.SalesKeyCustomerVo;
 import com.cjyc.common.model.vo.salesman.mine.AppContractVo;
 import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.model.vo.ResultVo;
@@ -33,6 +36,7 @@ import com.cjyc.common.system.service.ICsRoleService;
 import com.cjyc.common.system.service.ICsSendNoService;
 import com.cjyc.common.system.service.ICsUserRoleDeptService;
 import com.cjyc.common.system.util.ResultDataUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,6 +55,7 @@ import java.util.stream.Collectors;
  * @author JPG
  */
 @Service
+@Slf4j
 @Transactional(rollbackFor = RuntimeException.class)
 public class CsCustomerServiceImpl implements ICsCustomerService {
 
@@ -186,9 +191,10 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
     }
 
     @Override
-    public ResultVo<SalesCustomerListVo> findKeyCustomer(SalesCustomerDto dto) {
-        List<SalesCustomerVo> salesKeyCustomter = customerDao.findSalesKeyCustomter(dto);
-        SalesCustomerListVo listVo = new SalesCustomerListVo();
+    public ResultVo<SalesKeyCustomerListVo> findKeyCustomer(SalesCustomerDto dto) {
+        log.info("大客户查询请求json数据 :: "+ JsonUtils.objectToJson(dto));
+        List<SalesKeyCustomerVo> salesKeyCustomter = customerDao.findSalesKeyCustomter(dto);
+        SalesKeyCustomerListVo listVo = new SalesKeyCustomerListVo();
         listVo.setList(salesKeyCustomter);
         return BaseResultUtil.success(listVo);
     }

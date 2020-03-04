@@ -13,6 +13,7 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.city.CityVo;
 import com.cjyc.common.model.vo.customer.customerLine.CustomerLineVo;
 import com.cjyc.common.model.vo.customer.customerLine.StoreListVo;
+import com.cjyc.common.model.vo.salesman.customer.SalesKeyCustomerListVo;
 import com.cjyc.common.model.vo.salesman.mine.AppContractVo;
 import com.cjyc.common.model.vo.web.carSeries.CarSeriesTree;
 import com.cjyc.common.system.service.*;
@@ -87,7 +88,7 @@ public class BasicController {
 
     @ApiOperation(value = "模糊查询大客户信息")
     @PostMapping(value = "/findKeyCustomer")
-    public ResultVo<SalesCustomerListVo> findKeyCustomer(@RequestBody SalesCustomerDto dto){
+    public ResultVo<SalesKeyCustomerListVo> findKeyCustomer(@RequestBody SalesCustomerDto dto){
         return csCustomerService.findKeyCustomer(dto);
     }
 
