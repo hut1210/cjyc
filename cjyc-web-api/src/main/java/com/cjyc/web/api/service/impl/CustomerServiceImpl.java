@@ -1016,7 +1016,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                 .eq(Customer::getType,1));
         //查询审核表中是否有该用户信息
         Check check = checkDao.selectOne(new QueryWrapper<Check>().lambda()
-                .eq(Check::getUserId, dto.getLoginId())
+                .eq(customer.getId() != null,Check::getUserId, customer.getId())
                 .eq(Check::getState, CommonStateEnum.IN_CHECK.code));
         if(customer != null && check == null){
             if(dto.getFlag()){
@@ -1312,7 +1312,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
            && urd.getState() == CommonStateEnum.CHECKED.code){
             //查询审核表中是否有该用户信息
             Check check = checkDao.selectOne(new QueryWrapper<Check>().lambda()
-                    .eq(Check::getUserId, dto.getLoginId())
+                    .eq(Check::getUserId, customer.getId())
                     .eq(Check::getState, CommonStateEnum.IN_CHECK.code)
                     .eq(Check::getType, CheckTypeEnum.UPGRADE_PARTNER.code)
                     .eq(Check::getSource,CustomerSourceEnum.UPGRADE.code));
