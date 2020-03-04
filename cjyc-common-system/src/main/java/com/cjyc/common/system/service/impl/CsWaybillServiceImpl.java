@@ -1167,6 +1167,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
     }
 
     private OrderCar getOrderCarForChangeTrunk(OrderCar orderCar, WaybillCar waybillCar, Order order) {
+        LogUtil.debug("【计算车辆状态】-------->{}", JSON.toJSONString(orderCar));
         Long orderCarId = orderCar.getId();
         OrderCar noc = new OrderCar();
         noc.setId(orderCarId);
@@ -1215,6 +1216,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 noc.setBackType(OrderPickTypeEnum.WL.code);
             }
         }
+        LogUtil.debug("【计算车辆状态】-------->{}", JSON.toJSONString(noc));
         return noc;
     }
 

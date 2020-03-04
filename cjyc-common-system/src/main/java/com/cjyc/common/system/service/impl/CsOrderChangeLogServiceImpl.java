@@ -78,7 +78,7 @@ public class CsOrderChangeLogServiceImpl implements ICsOrderChangeLogService {
         if(oldOrder == null || newOrder == null){
             return false;
         }
-        if(castNullToZero(oldOrder.getTotalFee()).compareTo(castNullToZero(newOrder.getTotalFee())) != 0){
+        if(nullToZero(oldOrder.getTotalFee()).compareTo(nullToZero(newOrder.getTotalFee())) != 0){
             return true;
         }
 
@@ -112,7 +112,7 @@ public class CsOrderChangeLogServiceImpl implements ICsOrderChangeLogService {
                 .add(car.getAddInsuranceFee() == null ? BigDecimal.ZERO : car.getAddInsuranceFee());
     }
 
-    private BigDecimal castNullToZero(BigDecimal totalFee) {
+    private BigDecimal nullToZero(BigDecimal totalFee) {
         return totalFee == null ? BigDecimal.ZERO : totalFee;
     }
 
