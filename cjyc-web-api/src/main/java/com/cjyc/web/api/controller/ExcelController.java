@@ -34,10 +34,10 @@ public class ExcelController {
     @ApiOperation(value = "导出订单改价记录")
     @GetMapping(value = "/order/change/price/simple/export")
     public void exportOrderChangePriceSimple(ChangePriceExportDto reqDto, HttpServletResponse response){
-        ResultVo<List<FullOrder>> resultVo = excelService.listOrderChangePriceSimple(reqDto);
-        if (resultVo.getCode() != ResultEnum.SUCCESS.getCode()) {
+        //ResultVo<List<FullOrder>> resultVo = excelService.listOrderChangePriceSimple(reqDto);
+        /*if (resultVo.getCode() != ResultEnum.SUCCESS.getCode()) {
             return;
-        }
+        }*/
     }
     @ApiOperation(value = "导出订单改价记录")
     @GetMapping(value = "/order/change/price/full/export")
