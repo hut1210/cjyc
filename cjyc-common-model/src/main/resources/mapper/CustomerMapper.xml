@@ -38,7 +38,7 @@
     </sql>
 
     <sql id="Base_Column_Customer_List">
-        cc.id AS customerId,
+            cc.id AS customerId,
             cc.user_id AS userId,
             cc.customer_no AS customerNo,
             cc.NAME AS NAME,
@@ -633,19 +633,20 @@
     <!-- 根据条件查询合伙人(客户列表) -->
     <select id="findPartner" resultType="com.cjyc.common.model.vo.web.customer.CustomerPartnerVo"
             parameterType="com.cjyc.common.model.dto.web.customer.CustomerPartnerDto">
+        select * from (
         ( SELECT
             <include refid="Base_Column_Customer_List"/>
         FROM
-            c_customer cc
+        c_customer cc
         LEFT JOIN c_customer_partner ccp ON ccp.customer_id = cc.id
         LEFT JOIN s_bank_card_bind sbcb ON sbcb.user_id = cc.id
         LEFT JOIN b_admin ba ON ba.id = cc.create_user_id
         LEFT JOIN ( SELECT * FROM s_user_role_dept WHERE dept_type = 3 AND user_type = 3 ) surd ON surd.user_id = cc.id
-        <include refid="Customer_Where"/>
-	    ) UNION ALL
-	    (
+        <include refid="Customer_Where"/>) UNION ALL
+        (
         SELECT
-            <include refid="Base_Column_Check_List"/>
+        <include
+                refid="Base_Column_Check_List"/>
         FROM
             c_customer cc
             LEFT JOIN c_customer_partner ccp ON ccp.customer_id = cc.id
@@ -655,5 +656,7 @@
             LEFT JOIN s_check sc ON sc.user_id = cc.id
             <include refid="Check_Where"/>
             )
+        ) as tab
+        order by tab.registerTime desc
     </select>
 </mapper>
