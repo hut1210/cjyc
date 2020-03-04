@@ -369,10 +369,6 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     @Transactional(rollbackFor = Exception.class)
     @Override
     public ResultVo saveOrModifyCarrierNew(CarrierDto dto) {
-      /*  boolean flag = BankCardUtil.checkBankCard(dto.getCardNo());
-        if(!flag){
-            return BaseResultUtil.fail("银行卡号输入不符合,请检查");
-        }*/
         if (dto.getCarrierId() == null) {
             //新增
             List<Driver> existDriverList = driverDao.selectList(new QueryWrapper<Driver>().lambda()

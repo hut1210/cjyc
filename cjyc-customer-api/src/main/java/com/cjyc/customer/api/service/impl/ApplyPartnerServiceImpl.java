@@ -95,10 +95,6 @@ public class ApplyPartnerServiceImpl extends ServiceImpl<ICustomerDao, Customer>
         if(customer == null || urd == null){
             return BaseResultUtil.fail("该用户不存在,请检查");
         }
-        boolean flag = BankCardUtil.checkBankCard(dto.getCardNo());
-        if(!flag){
-            return BaseResultUtil.fail("银行卡号输入不符合,请检查");
-        }
         //查询审核表中是否有该用户信息
         Check check = checkDao.selectOne(new QueryWrapper<Check>().lambda()
                 .eq(Check::getUserId, dto.getLoginId())
@@ -111,14 +107,6 @@ public class ApplyPartnerServiceImpl extends ServiceImpl<ICustomerDao, Customer>
             bankCardBindDao.delete(new QueryWrapper<BankCardBind>().lambda().eq(BankCardBind::getUserId,customer.getId()));
             checkDao.delete(new QueryWrapper<Check>().lambda().eq(Check::getUserId,dto.getLoginId()).eq(Check::getType,CheckTypeEnum.UPGRADE_PARTNER.code));
         }
-       /* BeanUtils.copyProperties(dto,customer);
-        customer.setAlias(dto.getName());
-        customer.setSource(CustomerSourceEnum.UPGRADE.code);
-        super.updateById(customer);
-
-        //更新用户与角色机构关系
-        csUserRoleDeptService.updateCustomerToUserRoleDept(customer,dto.getLoginId());
-*/
        //保存到审核表中
         Check ck = new Check();
         BeanUtils.copyProperties(dto,ck);
@@ -136,6 +124,7 @@ public class ApplyPartnerServiceImpl extends ServiceImpl<ICustomerDao, Customer>
         CustomerPartner cp = new CustomerPartner();
         BeanUtils.copyProperties(dto,cp);
         cp.setCustomerId(customer.getId());
+        cp.setSettlePeriod(dto.getSettlePeriod());
         customerPartnerDao.insert(cp);
         //创建合伙人银行信息
         BankCardBind bcb = new BankCardBind();
