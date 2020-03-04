@@ -740,12 +740,12 @@
             dc.linkman_phone AS phone,
             dc.type AS type,
             dc.MODE AS MODE,
-            ( CASE dc.type WHEN 1 THEN dvr.plate_no WHEN 2 THEN '' END ) AS plateNo,
-            ( CASE dc.type WHEN 1 THEN dc.legal_id_card WHEN 2 THEN '' END ) AS idCard,
-            ( CASE dc.type WHEN 1 THEN dvr.carry_car_num WHEN 2 THEN '' END ) AS carryCarNum,
-            ( CASE dc.type WHEN 1 THEN dvr.occupied_car_num WHEN 2 THEN '' END ) AS occupiedCarNum,
-            ( CASE dc.type WHEN 1 THEN dvr.running_state WHEN 2 THEN '' END ) AS runningState,
-            ( CASE dc.type WHEN 1 THEN dd.business_state WHEN 2 THEN '' END ) AS businessState
+            dvr.plate_no AS plateNo,
+            dc.legal_id_card  AS idCard,
+            dvr.carry_car_num AS carryCarNum,
+            dvr.occupied_car_num AS occupiedCarNum,
+            dvr.running_state AS runningState,
+            dd.business_state AS businessState
         FROM
           d_carrier dc
         LEFT JOIN ( SELECT * FROM s_user_role_dept WHERE dept_type = 2 AND user_type = 2 ) surd ON surd.dept_id = dc.id
