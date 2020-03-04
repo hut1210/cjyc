@@ -1218,8 +1218,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
     }
 
 
-
-    private boolean validateIsArriveEndStore(Long orderEndStoreId, Long waybillCarEndStoreId) {
+    @Override
+    public boolean validateIsArriveEndStore(Long orderEndStoreId, Long waybillCarEndStoreId) {
         if (orderEndStoreId == null || orderEndStoreId <= 0) {
             return false;
         }

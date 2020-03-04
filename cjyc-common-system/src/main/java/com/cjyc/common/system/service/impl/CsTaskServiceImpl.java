@@ -650,8 +650,8 @@ public class CsTaskServiceImpl implements ICsTaskService {
             }else{
                 //添加卸车物流
                 csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.C_UNLOAD,
-                        new String[]{MessageFormat.format(OrderCarLogEnum.C_UNLOAD.getOutterLog(), getAddress(waybillCar.getStartProvince(), waybillCar.getStartCity(), waybillCar.getStartArea(), waybillCar.getStartAddress())),
-                                MessageFormat.format(OrderCarLogEnum.C_UNLOAD.getInnerLog(), getAddress(waybillCar.getStartProvince(), waybillCar.getStartCity(), waybillCar.getStartArea(), waybillCar.getStartAddress()), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
+                        new String[]{MessageFormat.format(OrderCarLogEnum.C_UNLOAD.getOutterLog(), getAddress(waybillCar.getEndProvince(), waybillCar.getEndCity(), waybillCar.getEndArea(), waybillCar.getEndAddress())),
+                                MessageFormat.format(OrderCarLogEnum.C_UNLOAD.getInnerLog(), getAddress(waybillCar.getEndProvince(), waybillCar.getEndCity(), waybillCar.getEndArea(), waybillCar.getEndAddress()), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
                         userInfo);
             }
 
@@ -689,7 +689,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
         //下一段是否调度
         int m = waybillCarDao.countByStartAddress(waybillCar.getOrderCarId(), waybillCar.getEndAreaCode(),waybillCar.getEndAddress());
         //计算是否到达目的地城市范围
-        if (order.getEndStoreId() != null && order.getEndStoreId().equals(waybillCar.getEndStoreId())) {
+        if (csWaybillService.validateIsArriveEndStore(order.getEndStoreId(), waybillCar.getEndStoreId())) {
             //配送
             newState = m == 0 ? OrderCarStateEnum.WAIT_BACK_DISPATCH.code : OrderCarStateEnum.WAIT_BACK.code;
             //更新自提运单状态

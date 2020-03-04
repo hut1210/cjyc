@@ -12,6 +12,7 @@ import com.cjyc.common.model.dto.web.waybill.SaveLocalWaybillDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.entity.defined.BizScope;
 import com.cjyc.common.model.entity.defined.FullCity;
+import com.cjyc.common.model.entity.defined.FullOrder;
 import com.cjyc.common.model.entity.defined.UserInfo;
 import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.city.CityLevelEnum;
@@ -97,6 +98,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
     private ICsPingPayService csPingPayService;
     @Resource
     private ICsPushMsgService csPushMsgService;
+    @Resource
+    private ICsOrderChangeLogService csOrderChangeLogService;
 
     @Override
     public ResultVo save(SaveOrderDto paramsDto) {
@@ -237,6 +240,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
         //提交订单
         Order order = commitOrder(paramsDto);
+
         //推送给客户消息
         csPushMsgService.send(order.getCustomerId(), UserTypeEnum.CUSTOMER, PushMsgEnum.C_COMMIT_ORDER, order.getNo());
 
@@ -272,8 +276,10 @@ public class CsOrderServiceImpl implements ICsOrderService {
     }
 
     private Order commitOrder(CommitOrderDto paramsDto) {
+        UserInfo userInfo = new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), UserTypeEnum.ADMIN);
         String lockKey = null;
         boolean isNewOrder = false;
+        FullOrder oldOrder = null;
         try {
             //获取参数
             Long orderId = paramsDto.getOrderId();
@@ -286,6 +292,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 if (order != null) {
                     lockKey = RedisKeys.getDispatchLockForOrderUpdate(order.getNo());
                     redisLock.lock(lockKey, 30000, 100, 300);
+                    oldOrder = getFullOrder(order);
                 }
             }
             //新建订单
@@ -375,8 +382,6 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 orderCarDao.updateById(orderCar);
             });
 
-            //合计费用：提、干、送、保险
-            //fillOrderFeeInfo(order, ocList);
             order.setCarNum(ocList.size());
             orderDao.updateById(order);
 
@@ -385,7 +390,11 @@ public class CsOrderServiceImpl implements ICsOrderService {
             //记录订单日志
             csOrderLogService.asyncSave(order, OrderLogEnum.COMMIT,
                     new String[]{OrderLogEnum.COMMIT.getOutterLog(), MessageFormat.format(OrderLogEnum.COMMIT.getInnerLog(), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
-                    new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), UserTypeEnum.ADMIN));
+                    userInfo);
+            //订单改价
+            if(oldOrder != null && OrderStateEnum.WAIT_SUBMIT.code < oldOrder.getState()){
+                csOrderChangeLogService.asyncSaveForChangePrice(oldOrder, getFullOrder(order, ocList), "提交订单", userInfo);
+            }
             return order;
         } finally {
             if (!isNewOrder) {
@@ -393,6 +402,27 @@ public class CsOrderServiceImpl implements ICsOrderService {
             }
         }
 
+    }
+    private FullOrder getFullOrder(Order order, List<OrderCar> cars) {
+        if(order == null){
+            return null;
+        }
+        FullOrder fullOrder = new FullOrder();
+        BeanUtils.copyProperties(order, fullOrder);
+        fullOrder.setList(cars == null ? Lists.newArrayList() : cars);
+        return fullOrder;
+    }
+    private FullOrder getFullOrder(Order order) {
+        if(order == null){
+            return null;
+        }
+        return getFullOrder(order, orderCarDao.findListByOrderId(order.getId()));
+    }
+    private FullOrder getFullOrder(Long orderId) {
+        if(orderId == null){
+            return null;
+        }
+        return getFullOrder(orderDao.selectById(orderId));
     }
 
     private Order fillOrderExpectEndTime(Order order) {
@@ -1078,7 +1108,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
             return BaseResultUtil.fail("订单已完结，不能修改价格");
         }
         //记录历史数据
-        OrderVo oldOrderVo = getFullOrderVo(order, new OrderVo());
+        FullOrder oldOrder = getFullOrder(order);
 
         /**2、更新或保存车辆信息*/
         order.setTotalFee(MoneyUtil.convertYuanToFen(paramsDto.getTotalFee()));
@@ -1125,19 +1155,13 @@ public class CsOrderServiceImpl implements ICsOrderService {
         }
         log.debug("【订单改价】均分金额后" + JSON.toJSONString(orderCarList));
 
-        //合计费用：提、干、送、保险
-        //fillOrderFeeInfo(order, orderCarList);
-
         orderDao.updateById(order);
 
         //变更记录
-        OrderVo newOrderVo = new OrderVo();
-        BeanUtils.copyProperties(order, newOrderVo);
-        newOrderVo.setOrderCarList(orderCarList);
-
+        FullOrder newOrder = getFullOrder(order, orderCarList);
         //日志
         orderChangeLogService.asyncSave(order, OrderChangeTypeEnum.CHANGE_FEE,
-                new String[]{JSON.toJSONString(oldOrderVo), JSON.toJSONString(newOrderVo), paramsDto.getReason()},
+                new String[]{JSON.toJSONString(oldOrder), JSON.toJSONString(newOrder), paramsDto.getReason()},
                 new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone()));
         return BaseResultUtil.success();
     }
@@ -1154,7 +1178,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         Long orderId = paramsDto.getOrderId();
         Order order = orderDao.selectById(orderId);
         //记录历史数据
-        OrderVo oldOrderVo = getFullOrderVo(order, new OrderVo());
+        FullOrder oldOrder = getFullOrder(order);
 
         List<ReplenishOrderCarDto> list = paramsDto.getOrderCarList();
         for (ReplenishOrderCarDto dto : list) {
@@ -1170,11 +1194,10 @@ public class CsOrderServiceImpl implements ICsOrderService {
             orderCarDao.updateById(noc);
         }
 
-        OrderVo newOrderVo = getFullOrderVo(order, new OrderVo());
-
+        FullOrder newOrder = getFullOrder(order);
         //日志
         orderChangeLogService.asyncSave(order, OrderChangeTypeEnum.CHANGE_ORDER,
-                new String[]{JSON.toJSONString(oldOrderVo), JSON.toJSONString(newOrderVo), ""},
+                new String[]{JSON.toJSONString(oldOrder), JSON.toJSONString(newOrder), ""},
                 new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone()));
         return BaseResultUtil.success();
     }

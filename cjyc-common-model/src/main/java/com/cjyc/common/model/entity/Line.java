@@ -20,7 +20,6 @@ import lombok.experimental.Accessors;
  * @since 2020-02-18
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("s_line")
 @ApiModel(value="Line对象", description="班线管理")

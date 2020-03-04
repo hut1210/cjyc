@@ -19,7 +19,6 @@ import lombok.experimental.Accessors;
  * @since 2019-10-29
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("s_bank_card_bind")
 @ApiModel(value="BankCardBind对象", description="银行卡绑定信息表")

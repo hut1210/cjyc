@@ -17,7 +17,6 @@ import java.math.BigDecimal;
  * @Date:2019/11/25 15:44
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("f_invoice_apply")
 @ApiModel(value="InvoiceReceipt对象", description="发票申请结算信息表")

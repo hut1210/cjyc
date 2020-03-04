@@ -19,7 +19,6 @@ import lombok.experimental.Accessors;
  * @since 2020-02-27
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("s_check")
 @ApiModel(value="Check对象", description="系统审核表")

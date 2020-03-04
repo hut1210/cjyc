@@ -102,7 +102,6 @@ public class ListOrderDto extends BasePageDto {
     @ApiModelProperty(value = "收车人联系方式")
     private String backContactPhone;
 
-
     @ApiModelProperty(value = "线路ID")
     private Long lineId;
 

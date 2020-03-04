@@ -30,6 +30,8 @@ public interface ICsWaybillService {
      */
     ResultVo saveTrunk(SaveTrunkWaybillDto paramsDto);
 
+    boolean validateIsArriveEndStore(Long orderEndStoreId, Long waybillCarEndStoreId);
+
     /**
      * 取消调度
      * @author JPG

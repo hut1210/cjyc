@@ -20,7 +20,6 @@ import java.io.Serializable;
  * @since 2019-10-29
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("s_city")
 @ApiModel(value="City对象", description="城市表")

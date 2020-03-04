@@ -19,7 +19,6 @@ import lombok.experimental.Accessors;
  * @since 2019-11-08
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("d_vehicle_running")
 @ApiModel(value="VehicleRunning对象", description="运行运力池表")

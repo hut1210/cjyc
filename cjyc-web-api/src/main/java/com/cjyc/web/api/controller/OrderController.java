@@ -317,7 +317,6 @@ public class OrderController {
         try{
             ExcelUtil.exportExcel(orderList, "订单信息", "订单信息",
                     ListOrderVo.class, System.currentTimeMillis()+"订单信息.xls", response);
-            return ;
         }catch (Exception e) {
             LogUtil.error("导出订单信息异常", e);
             ExcelUtil.printExcelResult(ExcelUtil.getWorkBookForShowMsg("提示信息", "导出订单信息异常: " + e.getMessage()),

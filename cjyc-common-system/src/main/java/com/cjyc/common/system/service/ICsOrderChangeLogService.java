@@ -2,6 +2,7 @@ package com.cjyc.common.system.service;
 
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.entity.OrderChangeLog;
+import com.cjyc.common.model.entity.defined.FullOrder;
 import com.cjyc.common.model.entity.defined.UserInfo;
 import com.cjyc.common.model.enums.order.OrderChangeTypeEnum;
 
@@ -25,4 +26,6 @@ public interface ICsOrderChangeLogService {
      * @param userInfo {创建人ID，创建人名称}
      */
     void asyncSave(Order order, OrderChangeTypeEnum changeType, String[] content, UserInfo userInfo);
+
+    void asyncSaveForChangePrice(FullOrder oldOrder, FullOrder newOrder, String reason, UserInfo userInfo);
 }

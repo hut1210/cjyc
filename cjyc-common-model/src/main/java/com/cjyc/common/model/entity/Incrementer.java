@@ -19,7 +19,6 @@ import lombok.experimental.Accessors;
  * @since 2019-10-29
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("a_incrementer")
 @ApiModel(value="Incrementer对象", description="订单、任务编号自增表")

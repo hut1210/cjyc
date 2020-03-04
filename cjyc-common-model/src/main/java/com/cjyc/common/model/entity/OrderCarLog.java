@@ -19,7 +19,6 @@ import lombok.experimental.Accessors;
  * @since 2019-11-28
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("w_order_car_log")
 @ApiModel(value="OrderCarLog对象", description="车辆物流轨迹")

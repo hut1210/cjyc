@@ -19,7 +19,6 @@ import lombok.experimental.Accessors;
  * @since 2019-10-29
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("f_finance_receipt_detail")
 @ApiModel(value="FinanceReceiptDetail对象", description="财务收款单明细表")
