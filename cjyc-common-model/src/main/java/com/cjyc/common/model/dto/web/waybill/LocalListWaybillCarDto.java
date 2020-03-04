@@ -4,13 +4,16 @@ import com.cjyc.common.model.dto.BasePageDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.Set;
+
 @Data
 public class LocalListWaybillCarDto extends BasePageDto {
     @ApiModelProperty(value = "登录ID")
     private Long loginId;
     @ApiModelProperty(value = "角色ID")
     private Long roleId;
-
+    @ApiModelProperty(hidden = true)
+    private Set<Long> bizScope;
     @ApiModelProperty(value = "业务中心ID")
     private Long storeId;
     @ApiModelProperty(value = "订单编号")

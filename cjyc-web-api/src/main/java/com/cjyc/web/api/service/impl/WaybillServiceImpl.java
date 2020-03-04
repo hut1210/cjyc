@@ -89,7 +89,7 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
         if(bizScope.getCode() == BizScopeEnum.CHINA.code){
             paramsDto.setLoginId(null);
         }
-
+        paramsDto.setBizScope(bizScope.getStoreIds());
         PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
         List<LocalListWaybillCarVo> list = waybillCarDao.findListLocal(paramsDto);
         PageInfo<LocalListWaybillCarVo> pageInfo = new PageInfo<>(list);
@@ -114,7 +114,7 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
         if(bizScope.getCode() == BizScopeEnum.CHINA.code){
             paramsDto.setLoginId(null);
         }
-
+        paramsDto.setBizScope(bizScope.getStoreIds());
         PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
         List<TrunkMainListWaybillVo> list = waybillDao.findMainListTrunk(paramsDto);
         PageInfo<TrunkMainListWaybillVo> pageInfo = new PageInfo<>(list);
@@ -139,7 +139,7 @@ public class WaybillServiceImpl extends ServiceImpl<IWaybillDao, Waybill> implem
         if(bizScope.getCode() == BizScopeEnum.CHINA.code){
             paramsDto.setLoginId(null);
         }
-
+        paramsDto.setBizScope(bizScope.getStoreIds());
         PageHelper.startPage(paramsDto.getCurrentPage(), paramsDto.getPageSize(), true);
         List<TrunkSubListWaybillVo> list = waybillDao.findSubListTrunk(paramsDto);
         PageInfo<TrunkSubListWaybillVo> pageInfo = new PageInfo<>(list);

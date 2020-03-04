@@ -624,6 +624,13 @@
         ) as tb on tb.waybill_car_id = wc.id
         <where>
             w.type != 2
+            <if test="paramsDto.bizScope != null">
+                and (w.create_user_id = #{paramsDto.loginId}
+                or w.input_store_id in
+                <foreach collection="paramsDto.bizScope" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>)
+            </if>
             <if test="paramsDto.carrierName != null and paramsDto.carrierName.trim() != ''">
                 and w.carrier_name like concat('%', #{paramsDto.carrierName},'%')
             </if>
@@ -638,9 +645,6 @@
             </if>
             <if test="paramsDto.state != null">
                 and wc.state = #{paramsDto.state}
-            </if>
-            <if test="paramsDto.loginId != null">
-                and w.create_user_id = #{paramsDto.loginId}
             </if>
             <if test="paramsDto.brand != null and paramsDto.brand.trim() != ''">
                 and oc.brand like concat('%', #{paramsDto.brand}, '%')
@@ -823,8 +827,12 @@
         ) as tb on tb.waybill_car_id = wc.id
         <where>
             w.type = 2
-            <if test="paramsDto.loginId != null">
-                and wc.create_user_id = #{paramsDto.loginId}
+            <if test="paramsDto.bizScope != null">
+                and (w.create_user_id = #{paramsDto.loginId}
+                or w.input_store_id in
+                <foreach collection="paramsDto.bizScope" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>)
             </if>
             <if test="paramsDto.state != null">
                 and wc.state = #{paramsDto.state}
@@ -923,13 +931,13 @@
                 and wc.expect_start_time &gt;= #{paramsDto.beginExpectStartTime}
             </if>
             <if test="paramsDto.endExpectStartTime != null and paramsDto.endExpectStartTime != ''">
-                and wc.expect_start_time &lt;= #{paramsDto.endExpectStartTime}
+                and wc.expect_start_time &lt; #{paramsDto.endExpectStartTime}
             </if>
             <if test="paramsDto.beginExpectEndTime != null">
                 and wc.expect_end_time &gt;= #{paramsDto.beginExpectEndTime}
             </if>
             <if test="paramsDto.endExpectEndTime != null and paramsDto.endExpectEndTime != ''">
-                and wc.expect_end_time &lt;= #{paramsDto.endExpectEndTime}
+                and wc.expect_end_time &lt; #{paramsDto.endExpectEndTime}
             </if>
             <if test="paramsDto.loadLinkName != null and paramsDto.loadLinkName != ''">
                 and wc.load_link_name = #{paramsDto.loadLinkName}
@@ -941,7 +949,7 @@
                 and wc.load_time &gt;= #{paramsDto.beginLoadTime}
             </if>
             <if test="paramsDto.endLoadTime != null">
-                and wc.load_time &lt;= #{paramsDto.endLoadTime}
+                and wc.load_time &lt; #{paramsDto.endLoadTime}
             </if>
             <if test="paramsDto.unloadLinkName != null and paramsDto.unloadLinkName != ''">
                 and wc.unload_link_name = #{paramsDto.unloadLinkName}
@@ -956,13 +964,13 @@
                 and wc.unload_time &gt;= #{paramsDto.beginUnloadTime}
             </if>
             <if test="paramsDto.endUnloadTime != null">
-                and wc.unload_time &lt;= #{paramsDto.endUnloadTime}
+                and wc.unload_time &lt; #{paramsDto.endUnloadTime}
             </if>
             <if test="paramsDto.beginCreateTime != null">
                 and wc.create_time &gt;= #{paramsDto.beginCreateTime}
             </if>
             <if test="paramsDto.endCreateTime != null">
-                and wc.create_time &lt;= #{paramsDto.endCreateTime}
+                and wc.create_time &lt; #{paramsDto.endCreateTime}
             </if>
             <if test="paramsDto.nowStoreId != null">
                 and wc.now_store_id &lt;= #{paramsDto.nowStoreId}

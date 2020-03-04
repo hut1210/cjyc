@@ -4,12 +4,15 @@ import com.cjyc.common.model.dto.BasePageDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.Set;
+
 @Data
 public class TrunkMainListWaybillDto extends BasePageDto {
 
     private Long loginId;
     private Long roleId;
-
+    @ApiModelProperty(hidden = true)
+    private Set<Long> bizScope;
     @ApiModelProperty(value = "运单单号", required = true)
     private String waybillNo;
 

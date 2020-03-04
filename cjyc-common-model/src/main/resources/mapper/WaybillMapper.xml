@@ -479,8 +479,12 @@
         ) as tb on tb.waybill_id = w.id
         <where>
             w.type = 2
-            <if test="paramsDto.loginId != null">
-                and w.create_user_id = #{paramsDto.loginId}
+            <if test="paramsDto.bizScope != null">
+                and (w.create_user_id = #{paramsDto.loginId}
+                or w.input_store_id in
+                <foreach collection="paramsDto.bizScope" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>)
             </if>
             <if test="paramsDto.state != null">
                 and w.state = #{paramsDto.state}
@@ -535,11 +539,15 @@
         left join d_vehicle_running vr on vr.driver_id = t.driver_id
         <where>
             w.type = 2
+            <if test="paramsDto.bizScope != null">
+                and (w.create_user_id = #{paramsDto.loginId}
+                or w.input_store_id in
+                <foreach collection="paramsDto.bizScope" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>)
+            </if>
             <if test="paramsDto.state != null">
                 and t.state = #{paramsDto.state}
-            </if>
-            <if test="paramsDto.loginId != null">
-                and w.create_user_id = #{paramsDto.loginId}
             </if>
             <if test="paramsDto.waybillNo != null and paramsDto.waybillNo.trim() != ''">
                 and w.no like concat('%', #{paramsDto.waybillNo}, '%')
@@ -560,10 +568,10 @@
                 and t.vehicle_plate_no like concat('%', #{paramsDto.vehiclePlateNo}, '%')
             </if>
             <if test="paramsDto.beginCreateTime != null">
-                and t.create_time  &gt; #{paramsDto.beginCreateTime}
+                and t.create_time  &gt;= #{paramsDto.beginCreateTime}
             </if>
             <if test="paramsDto.endCreateTime != null">
-                and t.create_time  &lt;= #{paramsDto.endCreateTime}
+                and t.create_time  &lt; #{paramsDto.endCreateTime}
             </if>
         </where>
         group by t.id
