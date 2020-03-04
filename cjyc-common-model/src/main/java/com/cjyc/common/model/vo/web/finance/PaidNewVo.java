@@ -83,4 +83,16 @@ public class PaidNewVo implements Serializable {
     @ApiModelProperty(value = "付款操作人")
     @Excel(name = "付款操作人" ,orderNum = "11")
     private String operator;
+
+    @ApiModelProperty(value = "持卡人")
+    @Excel(name = "持卡人" ,orderNum = "12")
+    private String cardName;
+
+    @ApiModelProperty(value = "开户行")
+    @Excel(name = "开户行" ,orderNum = "13")
+    private String bankName;
+
+    @ApiModelProperty(value = "银行卡号")
+    @Excel(name = "银行卡号" ,orderNum = "14")
+    private String cardNo;
 }

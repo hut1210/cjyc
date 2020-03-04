@@ -496,11 +496,15 @@
         wt.driver_phone as driverPhone,
         if(ww.freight_pay_state=0,'未付款','已付款') as state,
         wt.vehicle_plate_no as vehiclePlateNo,
+        sbcb.card_name as cardName,
+        sbcb.card_no as cardNo,
+        sbcb.bank_name as bankName,
         fep.operator
         from w_waybill ww
         left join d_carrier dc on dc.id=ww.carrier_id
         left join w_task wt on wt.waybill_id = ww.id
         left join f_external_payment fep on fep.waybill_id=ww.id
+        left join s_bank_card_bind sbcb on sbcb.user_id = ww.carrier_id
         where dc.settle_type=0 and ww.state=100
         <if test="waybillNo != null and waybillNo.trim() != ''">
             and ww.no like concat('%',#{waybillNo},'%')
