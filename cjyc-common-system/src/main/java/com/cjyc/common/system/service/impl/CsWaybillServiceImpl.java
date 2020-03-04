@@ -879,6 +879,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 waybillCarDao.insert(waybillCar);
 
                 //更新订单车辆状态
+                LogUtil.debug("【干线调度】获取车辆状态");
                 OrderCar noc = getOrderCarForChangeTrunk(orderCar, waybillCar, order);
                 orderCarDao.updateById(noc);
 
@@ -1086,6 +1087,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 }
 
                 //更新车辆信息
+                LogUtil.debug("【干线调度修改】获取车辆状态");
                 OrderCar noc = getOrderCarForChangeTrunk(orderCar, waybillCar, order);
                 orderCarDao.updateById(noc);
                 //提取信息
@@ -1212,6 +1214,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
         //是否交付客户-干送运单
         if (validateIsArriveDest(waybillCar, order)) {
+            LogUtil.debug("【计算车辆状态】isArriveDest, 交付客户-干送运单");
             noc.setTrunkState(OrderCarTrunkStateEnum.DISPATCHED.code);
             //验证是否存在送车运单
             int i = waybillCarDao.countActiveWaybill(orderCarId, WaybillTypeEnum.BACK.code);
@@ -1416,6 +1419,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
      */
     @Override
     public ResultVo trunkMidwayUnload(TrunkMidwayUnload paramsDto) {
+        LogUtil.debug("【卸载车辆】-------------------->{}", JSON.toJSONString(paramsDto));
         List<Long> carIdList = paramsDto.getWaybillCarIdList();
 
         if (!csStoreService.validateStoreParam(paramsDto.getEndStoreId(), paramsDto.getEndStoreName())) {
@@ -1501,6 +1505,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 }
 
                 //更新车辆状态和所在位置和状态、调度状态
+                LogUtil.debug("【卸载车辆】获取车辆状态");
                 OrderCar noc = getOrderCarForChangeTrunk(orderCar, waybillCar, order);
                 if (validateIsArriveDest(waybillCar, order)) {
                     noc.setState(OrderCarStateEnum.SIGNED.code);
