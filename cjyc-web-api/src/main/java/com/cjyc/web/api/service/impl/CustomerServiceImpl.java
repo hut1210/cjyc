@@ -1014,63 +1014,66 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         customer =  customerDao.selectOne(new QueryWrapper<Customer>().lambda()
                 .eq(Customer::getContactPhone,dto.getContactPhone())
                 .eq(Customer::getType,1));
-        //查询审核表中是否有该用户信息
-        Check check = checkDao.selectOne(new QueryWrapper<Check>().lambda()
-                .eq(customer.getId() != null,Check::getUserId, customer.getId())
-                .eq(Check::getState, CommonStateEnum.IN_CHECK.code));
-        if(customer != null && check == null){
-            if(dto.getFlag()){
-                UserRoleDept urd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
-                        .eq(UserRoleDept::getUserId, customer.getId())
-                        .eq(UserRoleDept::getDeptType, DeptTypeEnum.CUSTOMER.code)
-                        .eq(UserRoleDept::getUserType, UserTypeEnum.CUSTOMER.code));
-                if(urd == null){
-                    return BaseResultUtil.fail("数据错误,请先检查");
-                }
-                if((urd.getState() == CustomerStateEnum.FROZEN.code) || (urd.getState() == CustomerStateEnum.REJECT.code)){
-                    //冻结/审核拒绝
-                    return BaseResultUtil.fail("该账号已被冻结或被审核拒绝,不可升级");
-                }
-                //前端重置为true，升级为合伙人
-                //保存到审核表中
-                Check ck = new Check();
-                BeanUtils.copyProperties(dto,ck);
-                ck.setUserId(customer.getId());
-                ck.setPhone(customer.getContactPhone());
-                ck.setState(CommonStateEnum.IN_CHECK.code);
-                ck.setType(CheckTypeEnum.UPGRADE_PARTNER.code);
-                ck.setSocialCreditCode(dto.getSocialCreditCode());
-                ck.setSource(CustomerSourceEnum.UPGRADE.code);
-                ck.setCreateTime(NOW);
-                ck.setCreateUserId(dto.getLoginId());
-                checkDao.insert(ck);
+        //升级合伙人操作待升级的合伙人
+        if(customer != null){
+            //查询审核表中是否有该用户信息
+            Check check = checkDao.selectOne(new QueryWrapper<Check>().lambda()
+                    .eq(customer.getId() != null,Check::getUserId, customer.getId())
+                    .eq(Check::getState, CommonStateEnum.IN_CHECK.code));
+            if(check == null){
+                if(dto.getFlag()){
+                    UserRoleDept urd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
+                            .eq(UserRoleDept::getUserId, customer.getId())
+                            .eq(UserRoleDept::getDeptType, DeptTypeEnum.CUSTOMER.code)
+                            .eq(UserRoleDept::getUserType, UserTypeEnum.CUSTOMER.code));
+                    if(urd == null){
+                        return BaseResultUtil.fail("数据错误,请先检查");
+                    }
+                    if((urd.getState() == CustomerStateEnum.FROZEN.code) || (urd.getState() == CustomerStateEnum.REJECT.code)){
+                        //冻结/审核拒绝
+                        return BaseResultUtil.fail("该账号已被冻结或被审核拒绝,不可升级");
+                    }
+                    //前端重置为true，升级为合伙人
+                    //保存到审核表中
+                    Check ck = new Check();
+                    BeanUtils.copyProperties(dto,ck);
+                    ck.setUserId(customer.getId());
+                    ck.setPhone(customer.getContactPhone());
+                    ck.setState(CommonStateEnum.IN_CHECK.code);
+                    ck.setType(CheckTypeEnum.UPGRADE_PARTNER.code);
+                    ck.setSocialCreditCode(dto.getSocialCreditCode());
+                    ck.setSource(CustomerSourceEnum.UPGRADE.code);
+                    ck.setCreateTime(NOW);
+                    ck.setCreateUserId(dto.getLoginId());
+                    checkDao.insert(ck);
 
-                //合伙人附加信息
-                CustomerPartner cp = new CustomerPartner();
-                BeanUtils.copyProperties(dto,cp);
-                cp.setCustomerId(customer.getId());
-                cp.setSettlePeriod(dto.getSettlePeriod());
-                customerPartnerDao.insert(cp);
-                //创建合伙人银行信息
-                BankCardBind bcb = new BankCardBind();
-                BeanUtils.copyProperties(dto,bcb);
-                bcb.setUserId(customer.getId());
-                bcb.setUserType(UserTypeEnum.CUSTOMER.code);
-                bcb.setState(UseStateEnum.USABLE.code);
-                bcb.setCardColour(RandomUtil.getIntRandom());
-                bcb.setCardPhone(dto.getContactPhone());
-                bcb.setIdCard(customer.getIdCard());
-                bcb.setCreateTime(NOW);
-                //获取银行编码
-                BankInfo bankInfo = bankInfoService.findBankCode(bcb.getBankName());
-                if(bankInfo != null){
-                    bcb.setBankCode(bankInfo.getBankCode());
+                    //合伙人附加信息
+                    CustomerPartner cp = new CustomerPartner();
+                    BeanUtils.copyProperties(dto,cp);
+                    cp.setCustomerId(customer.getId());
+                    cp.setSettlePeriod(dto.getSettlePeriod());
+                    customerPartnerDao.insert(cp);
+                    //创建合伙人银行信息
+                    BankCardBind bcb = new BankCardBind();
+                    BeanUtils.copyProperties(dto,bcb);
+                    bcb.setUserId(customer.getId());
+                    bcb.setUserType(UserTypeEnum.CUSTOMER.code);
+                    bcb.setState(UseStateEnum.USABLE.code);
+                    bcb.setCardColour(RandomUtil.getIntRandom());
+                    bcb.setCardPhone(dto.getContactPhone());
+                    bcb.setIdCard(customer.getIdCard());
+                    bcb.setCreateTime(NOW);
+                    //获取银行编码
+                    BankInfo bankInfo = bankInfoService.findBankCode(bcb.getBankName());
+                    if(bankInfo != null){
+                        bcb.setBankCode(bankInfo.getBankCode());
+                    }
+                    bankCardBindDao.insert(bcb);
+                    return BaseResultUtil.success();
+                }else{
+                    //返回前端，flag重置为true
+                    return BaseResultUtil.getVo(ResultEnum.UPGRADE_CUSTOMER.getCode(),ResultEnum.UPGRADE_CUSTOMER.getMsg());
                 }
-                bankCardBindDao.insert(bcb);
-                return BaseResultUtil.success();
-            }else{
-                //返回前端，flag重置为true
-                return BaseResultUtil.getVo(ResultEnum.UPGRADE_CUSTOMER.getCode(),ResultEnum.UPGRADE_CUSTOMER.getMsg());
             }
         }
         if(dto.getCustomerId() == null){
@@ -1320,7 +1323,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                 //删除合伙人信息与银行卡信息
                 customerPartnerDao.delete(new QueryWrapper<CustomerPartner>().lambda().eq(CustomerPartner::getCustomerId,customer.getId()));
                 bankCardBindDao.delete(new QueryWrapper<BankCardBind>().lambda().eq(BankCardBind::getUserId,customer.getId()));
-                checkDao.delete(new QueryWrapper<Check>().lambda().eq(Check::getUserId,dto.getLoginId()).eq(Check::getType,CheckTypeEnum.UPGRADE_PARTNER.code));
+                checkDao.delete(new QueryWrapper<Check>().lambda().eq(Check::getUserId,customer.getId()).eq(Check::getType,CheckTypeEnum.UPGRADE_PARTNER.code));
             }
             //保存到审核表中
             Check ck = new Check();
