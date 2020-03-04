@@ -62,7 +62,6 @@ public class PartnerDto implements Serializable {
 
     @ApiModelProperty(value = "开户名称",required = true)
     @NotBlank(message = "开户名称不能为空")
-    @Pattern(regexp = RegexConstant.REGEX_ZH,message = "开户名称请输入中文")
     private String cardName;
 
     @ApiModelProperty(value = "银行卡号",required = true)

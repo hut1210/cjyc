@@ -1263,10 +1263,6 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         if(role == null){
             return BaseResultUtil.fail("合伙人角色不存在，请先添加");
         }
-        boolean flag = BankCardUtil.checkBankCard(dto.getCardNo());
-        if(!flag){
-            return BaseResultUtil.fail("银行卡号输入不符合,请检查");
-        }
         //保存大客户信息到物流平台
         ResultData<Long> rd = csCustomerService.addUserToPlatform(dto.getContactPhone(),dto.getContactMan(),role);
         if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
