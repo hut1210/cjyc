@@ -1177,7 +1177,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             noc.setPickState(dsEntity.getPickNum() > 0 ? OrderCarLocalStateEnum.DISPATCHED.code : OrderCarLocalStateEnum.WAIT_DISPATCH.code);
         }
         noc.setTrunkState(dsEntity.getTrunkNum() > 0 ? OrderCarTrunkStateEnum.WAIT_NEXT_DISPATCH.code : OrderCarTrunkStateEnum.WAIT_DISPATCH.code);
-
+        noc.setBackState(dsEntity.getBackNum() > 0 ? OrderCarLocalStateEnum.DISPATCHED.code : OrderCarLocalStateEnum.WAIT_DISPATCH.code);
         //第一段干线运单
         int n = waybillCarDao.countPrevTrunk(waybillCar.getId());
         if (n == 0) {
