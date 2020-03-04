@@ -125,4 +125,6 @@ public interface IWaybillDao extends BaseMapper<Waybill> {
     int updateNumAndFreightFee(@Param("waybillId") Long waybillId);
 
     int updateForOver(@Param("id") Long id, @Param("state") int state);
+
+    int countMultiStepUnpassStore(Long waybillId);
 }

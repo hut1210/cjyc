@@ -2,16 +2,13 @@ package com.cjyc.common.system.service;
 
 import com.cjkj.common.model.ResultData;
 import com.cjkj.usercenter.dto.common.SelectRoleResp;
-import com.cjyc.common.model.dto.CommonDto;
 import com.cjyc.common.model.dto.salesman.customer.SalesCustomerDto;
 import com.cjyc.common.model.dto.salesman.mine.AppCustomerIdDto;
+import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.entity.Role;
-import com.cjyc.common.model.vo.PageVo;
-import com.cjyc.common.model.vo.customer.customerLine.CustomerLineVo;
-import com.cjyc.common.model.vo.salesman.customer.SalesCustomerListVo;
-import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.salesman.customer.SalesCustomerListVo;
 import com.cjyc.common.model.vo.salesman.customer.SalesKeyCustomerListVo;
 import com.cjyc.common.model.vo.salesman.mine.AppContractVo;
 

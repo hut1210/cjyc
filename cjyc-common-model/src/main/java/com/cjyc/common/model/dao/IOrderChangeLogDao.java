@@ -1,5 +1,6 @@
 package com.cjyc.common.model.dao;
 
+import com.cjyc.common.model.dto.web.excel.ChangePriceExportDto;
 import com.cjyc.common.model.dto.web.order.ListOrderChangeLogDto;
 import com.cjyc.common.model.entity.OrderChangeLog;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -19,4 +20,6 @@ import java.util.List;
 public interface IOrderChangeLogDao extends BaseMapper<OrderChangeLog> {
 
     List<ListOrderChangeLogVo> findList(@Param("paramsDto") ListOrderChangeLogDto paramsDto);
+
+    List<OrderChangeLog> findAll(ChangePriceExportDto reqDto);
 }

@@ -767,5 +767,14 @@
             #{item}
         </foreach>
     </select>
+    <select id="countMultiStepUnpassStore" resultType="java.lang.Integer">
+        select count(0)
+        from w_waybill w
+        join w_waybill_car wc on wc.waybill_id = w.id
+        where w.id = #{waybillId}
+        and wc.receipt_flag != 1
+        and (wc.end_store_id is null or wc.end_store_id = 0)
+
+    </select>
 
 </mapper>

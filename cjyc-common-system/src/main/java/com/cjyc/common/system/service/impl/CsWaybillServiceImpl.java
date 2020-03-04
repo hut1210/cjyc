@@ -3,6 +3,7 @@ package com.cjyc.common.system.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.cjkj.common.redis.lock.RedisDistributedLock;
 import com.cjkj.common.redis.template.StringRedisUtil;
+import com.cjkj.log.monitor.LogUtil;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.waybill.*;
 import com.cjyc.common.model.entity.*;
@@ -1544,7 +1545,15 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         waybillDao.updateForOver(waybillId, newState);
         if (newState == WaybillStateEnum.FINISHED.code) {
             try {
-                csPingPayService.allinpayToCarrier(waybillId);
+                //验证是否有不在业务中心中转的车辆，如果有不支付物流费
+                int n = waybillDao.countMultiStepUnpassStore(waybillId);
+                if(n <= 0){
+                    LogUtil.debug("【完成运单】准备支付运费");
+                    csPingPayService.allinpayToCarrier(waybillId);
+                }else{
+                    LogUtil.debug("【完成运单】运单{}中包含非业务中心中转车辆，业务员确认后支付运费", waybillId);
+                }
+
             } catch (Exception e) {
                 log.error("完成运单（ID：{}）支付司机运费失败！", waybillId);
                 log.error(e.getMessage(), e);
