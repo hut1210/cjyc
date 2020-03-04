@@ -1283,7 +1283,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 if(!vo.getOrderEndStoreId().equals(vo.getStartStoreId())){
                     return BaseResultUtil.fail("车辆{0},尚未调度到订单目的业务中心，无法配送调度", vo.getOrderCarNo());
                 }
-                if (vo.getOrderEndCityCode() != null && vo.getOrderEndCityCode() != null && !vo.getOrderEndCityCode().equals(vo.getStartCityCode())) {
+                if (vo.getOrderEndCityCode() == null || !vo.getOrderEndCityCode().equals(vo.getStartCityCode())) {
                     return BaseResultUtil.fail("车辆{0},干线尚未调度到订单目的地城市范围内，不能送车调度", vo.getOrderCarNo());
                 }
                 //验证数据范围
