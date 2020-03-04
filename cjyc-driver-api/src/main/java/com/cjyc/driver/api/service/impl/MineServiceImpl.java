@@ -828,11 +828,6 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
         if(bankCardInfoNum >= 1){
             return BaseResultUtil.fail("该司机已绑定过银行卡,不可再绑定");
         }
-
-        boolean flag = BankCardUtil.checkBankCard(dto.getCardNo());
-        if(!flag){
-            return BaseResultUtil.fail("银行卡号输入不符合,请检查");
-        }
         BankCardBind bcb = new BankCardBind();
         bcb.setUserId(Long.valueOf(urd.getDeptId()));
         bcb.setCardNo(dto.getCardNo());

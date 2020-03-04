@@ -69,7 +69,15 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao, Customer> imp
 
     @Override
     public ResultVo<ShowPartnerVo> showPartner(AppCustomerDto dto) {
-        ShowPartnerVo partnerVo = customerDao.showPartner(dto.getLoginId());
+        Check check = checkDao.selectOne(new QueryWrapper<Check>().lambda()
+                .eq(Check::getUserId, dto.getLoginId())
+                .eq(Check::getState, CommonStateEnum.IN_CHECK.code));
+        ShowPartnerVo partnerVo = null;
+        if(check != null){
+            partnerVo = customerDao.showUpPartner(dto.getLoginId());
+        }else{
+            partnerVo = customerDao.showPartner(dto.getLoginId());
+        }
         return BaseResultUtil.success(partnerVo);
     }
 

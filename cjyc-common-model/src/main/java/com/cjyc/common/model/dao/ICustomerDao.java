@@ -133,4 +133,11 @@ public interface ICustomerDao extends BaseMapper<Customer> {
      * @return
      */
     List<CustomerPartnerVo> findPartner(CustomerPartnerDto dto);
+
+    /**
+     * 查看升级合伙人信息
+     * @param customerId
+     * @return
+     */
+    ShowPartnerVo showUpPartner(@Param("customerId") Long customerId);
 }
