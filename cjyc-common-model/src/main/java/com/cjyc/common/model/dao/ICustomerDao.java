@@ -122,12 +122,6 @@ public interface ICustomerDao extends BaseMapper<Customer> {
     Customer findActive(Long id);
 
     /**
-     * 查询符合条件的C端用户升级成合伙人信息
-     * @return
-     */
-    List<CustomerPartnerVo> findUpgrade(CustomerPartnerDto dto);
-
-    /**
      * 根据条件查询合伙人
      * @param dto
      * @return
