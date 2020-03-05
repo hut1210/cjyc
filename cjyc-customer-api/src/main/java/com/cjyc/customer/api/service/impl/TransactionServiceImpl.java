@@ -359,7 +359,7 @@ public class TransactionServiceImpl implements ITransactionService {
         if(chargeType.equals(String.valueOf(ChargeTypeEnum.UNION_PAY_PARTNER.getCode()))){
             String orderId = pingxxMetaData.getOrderId();
             com.cjyc.common.model.entity.Order order = orderDao.selectById(orderId);
-            if(order!=null){
+            /*if(order!=null){
                 log.info("回调给合伙人付款");
                 try {
                     csPingPayService.allinpayToCooperator(order.getId());
@@ -367,7 +367,7 @@ public class TransactionServiceImpl implements ITransactionService {
                     log.error("回调支付合伙人{}（ID{}）服务费失败", order.getCustomerName(), order.getCustomerId());
                     log.error(e.getMessage(), e);
                 }
-            }
+            }*/
 
         }
 
