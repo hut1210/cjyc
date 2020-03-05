@@ -3,6 +3,7 @@ package com.cjyc.common.model.dto.web.driver;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 @Data
@@ -18,6 +19,6 @@ public class DeleteDriverDto implements Serializable {
     private Long driverId;
 
     @ApiModelProperty(value = "司机手机号",required = true)
-    @NotNull(message = "司机手机号不能为空")
+    @NotBlank(message = "司机手机号不能为空")
     private String phone;
 }

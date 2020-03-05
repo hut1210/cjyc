@@ -163,7 +163,7 @@ public class DriverController {
 
     @ApiOperation(value = "根据司机id,承运商id，手机号删除社会司机信息")
     @PostMapping(value = "/deleteDriverInfo")
-    public ResultVo deleteDriverInfo(@RequestBody @Validated DeleteDriverDto dto){
+    public ResultVo deleteDriverInfo(@Validated @RequestBody DeleteDriverDto dto){
         return driverService.deleteDriverInfo(dto);
     }
 }
