@@ -140,7 +140,7 @@ public class LoginController {
     private ResultData<Map<String, Object>> doPreLogin(String account) {
         Admin admin = csAdminService.getAdminByPhone(account, true);
         if (admin == null || admin.getUserId() == null || admin.getUserId() <= 0L) {
-            return ResultData.failed("用户信息有误，请确认");
+            return ResultData.failed("用户信息不存在于系统中，请联系管理员");
         }
         admin = csAdminService.findAdminByPhone(account);
         if(admin == null){
