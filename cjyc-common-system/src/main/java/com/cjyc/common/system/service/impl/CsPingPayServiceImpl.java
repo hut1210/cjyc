@@ -558,7 +558,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
     public ResultVo allinpayToCooperator(Long orderId) throws FileNotFoundException, RateLimitException, APIException, ChannelException, InvalidRequestException, APIConnectionException, AuthenticationException {
         log.info("完成订单（ID：{}），支付合伙人服务费", orderId);
         //支付校验
-        Order order = null;
+        /*Order order = null;
         try{
             order = orderDao.selectById(orderId);
 
@@ -633,7 +633,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             log.error(e.getMessage(), e);
             addPaymentErrorLog("【通联代付支付服务费】订单"+order.getNo()+"，支付服务费失败");
             return BaseResultUtil.fail("合伙人通联代付异常");
-        }
+        }*/
 
         return BaseResultUtil.success("合伙人通联代付成功");
     }

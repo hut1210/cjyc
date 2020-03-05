@@ -154,10 +154,32 @@ public class TransactionServiceImpl implements ITransactionService {
             if(chargeType!=null){
                 if(chargeType.equals(String.valueOf(ChargeTypeEnum.WEB_PREPAY_QRCODE.getCode()))||
                         chargeType.equals(String.valueOf(ChargeTypeEnum.SALES_PREPAY_QRCODE.getCode()))){
+                    log.info("后台物流费预付回调，charge = {}",charge.toString());
+                    Integer payFee = charge.getAmount();
+                    BigDecimal amount = new BigDecimal(payFee.toString());
                     log.info("预付码回调"+chargeType);
                     String orderNo = pingxxMetaData.getOrderNo();
                     log.info(chargeType+" 物流费预付 orderNo ="+orderNo);
-                    updateForPrePay(pingxxMetaData);
+                    //校验订单金额是否有改变
+                    if(orderNo!=null){
+                        com.cjyc.common.model.entity.Order ord = orderDao.findByNo(orderNo);
+                        if(ord!=null){
+                            BigDecimal totalFee = ord.getTotalFee();
+
+                            if(totalFee.compareTo(amount)==0){//订单金额没有改变
+                                updateForPrePay(pingxxMetaData);
+                            }else{//订单金额不一致，退款
+                                log.info("物流费预付,订单金额不一致，退款 orderNo = ",orderNo);
+                                csPingPayService.cancelOrderRefund(ord.getId());
+                            }
+                        }else{
+                            log.error("物流费预付回调查询订单不存在，charge = {}",charge.toString());
+                        }
+
+                    }else{
+                        log.error("物流费预付回调订单编号为null，charge = {}",charge.toString());
+                    }
+                    //updateForPrePay(pingxxMetaData);
                 }
                 if(chargeType.equals(String.valueOf(ChargeTypeEnum.DRIVER_COLLECT_QRCODE.getCode()))
                         ||chargeType.equals(String.valueOf(ChargeTypeEnum.WEB_OUT_STOCK_QRCODE.getCode()))
@@ -559,11 +581,34 @@ public class TransactionServiceImpl implements ITransactionService {
             csTaskService.updateForCarFinish(Arrays.asList(mde.getSourceNos().split(",")), userInfo);
 
         }else if(chargeType == ChargeTypeEnum.PREPAY.getCode() || chargeType == ChargeTypeEnum.PREPAY_QRCODE.getCode()){
+            log.info("物流费预付回调，order = {}",order.toString());
+            Integer payFee = order.getAmount();
+            BigDecimal amount = new BigDecimal(payFee.toString());
             PingxxMetaData pingxxMetaData = BeanMapUtil.mapToBean(metadata, new PingxxMetaData());
             //物流费预付
             String orderNo = pingxxMetaData.getOrderNo();
             log.info(chargeType+" 物流费预付 orderNo ="+orderNo);
-            updateForPrePay(pingxxMetaData);
+            //校验订单金额是否有改变
+            if(orderNo!=null){
+                com.cjyc.common.model.entity.Order ord = orderDao.findByNo(orderNo);
+                if(ord!=null){
+                    BigDecimal totalFee = ord.getTotalFee();
+
+                    if(totalFee.compareTo(amount)==0){//订单金额没有改变
+                        updateForPrePay(pingxxMetaData);
+                    }else{//订单金额不一致，退款
+                        log.info("物流费预付,订单金额不一致，退款 orderNo = ",orderNo);
+                        csPingPayService.cancelOrderRefund(ord.getId());
+                    }
+                }else{
+                    log.error("物流费预付回调查询订单不存在，order = {}",order.toString());
+                }
+
+            }else{
+                log.error("物流费预付回调订单编号为null，order = {}",order.toString());
+            }
+
+
             String lockKey =getRandomNoKey(orderNo);
             redisUtil.delete(lockKey);
 
