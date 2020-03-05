@@ -160,4 +160,10 @@ public class DriverController {
         boolean result = driverService.importDriverExcel(file, loginId);
         return result ? BaseResultUtil.success() : BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
+
+    @ApiOperation(value = "根据司机id,承运商id，手机号删除社会司机信息")
+    @PostMapping(value = "/deleteDriverInfo")
+    public ResultVo deleteDriverInfo(@RequestBody @Validated DeleteDriverDto dto){
+        return driverService.deleteDriverInfo(dto);
+    }
 }

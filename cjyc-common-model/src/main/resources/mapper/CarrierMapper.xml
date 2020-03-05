@@ -784,4 +784,34 @@
             order by dc.create_time desc,dc.check_time desc
         </where>
     </select>
+
+
+    <!--查询个人承运商中是否存在_改版-->
+    <select id="existPersonalCarrierExcel" resultType="java.lang.Integer">
+        SELECT
+        count( dd.id )
+        FROM
+        d_carrier dc
+        LEFT JOIN ( SELECT * FROM s_user_role_dept WHERE dept_type = 2 AND user_type = 2 ) surd ON surd.dept_id = dc.id
+        LEFT JOIN d_driver dd ON dd.id = surd.user_id
+        <where>
+            <if test="(phone != null and phone.trim() != '') or (idCard != null and idCard.trim() != '')">
+                (dd.phone = #{phone} OR dd.id_card = #{idCard})
+            </if>
+            AND dc.type = 1
+        </where>
+    </select>
+
+    <!--查询企业承运商中是否存在_改版-->
+    <select id="existBusinessCarrierExcel" resultType="java.lang.Integer">
+        SELECT
+          count( dd.id )
+        FROM
+          d_carrier dc
+        LEFT JOIN (SELECT * FROM s_user_role_dept WHERE dept_type = 2 AND user_type = 2) surd ON surd.dept_id = dc.id
+        LEFT JOIN d_driver dd ON dd.id = surd.user_id
+        <where>
+             dc.id = #{carrierId} and (dd.phone = #{phone} or dd.id_card = #{idCard}) and dc.type = 2
+        </where>
+    </select>
 </mapper>

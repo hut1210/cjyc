@@ -7,6 +7,7 @@ import com.cjkj.common.model.ReturnMsg;
 import com.cjkj.common.utils.ExcelUtil;
 import com.cjkj.usercenter.dto.common.AddUserReq;
 import com.cjkj.usercenter.dto.common.AddUserResp;
+import com.cjkj.usercenter.dto.common.UpdateUserReq;
 import com.cjkj.usercenter.dto.common.UserResp;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.OperateDto;
@@ -29,6 +30,7 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.carrier.ExistCarrierVo;
 import com.cjyc.common.model.vo.web.driver.*;
 import com.cjyc.common.model.vo.web.user.DriverListVo;
+import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.service.*;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.web.api.service.ICarrierCityConService;
@@ -49,6 +51,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -89,6 +92,12 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
     private IUserRoleDeptDao userRoleDeptDao;
     @Resource
     private IVehicleDao vehicleDao;
+    @Resource
+    private IWaybillDao waybillDao;
+    @Resource
+    private IBankCardBindDao bankCardBindDao;
+    @Resource
+    private ISysRoleService sysRoleService;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -848,5 +857,69 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
             result = false;
         }
         return result;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ResultVo deleteDriverInfo(DeleteDriverDto dto) {
+        //验证司机 & 个人承运商在数据库中有无数据
+        Driver driver = driverDao.selectById(dto.getDriverId());
+        Carrier carrier = carrierDao.selectById(dto.getCarrierId());
+        if(driver == null || carrier == null){
+            return BaseResultUtil.fail("该司机数据信息错误,请联系管理员");
+        }
+        //验证该司机与角色绑定关系
+        UserRoleDept urd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
+                .eq(UserRoleDept::getUserId, dto.getDriverId())
+                .eq(UserRoleDept::getDeptId, dto.getCarrierId())
+                .eq(UserRoleDept::getDeptType, DeptTypeEnum.CARRIER.code)
+                .eq(UserRoleDept::getUserType, UserTypeEnum.DRIVER.code));
+        if(urd == null){
+            return BaseResultUtil.fail("该司机关系数据错误,请联系管理员");
+        }
+        //验证司机有无运单数据
+        List<Waybill> waybillList = waybillDao.selectList(new QueryWrapper<Waybill>().lambda()
+                .eq(Waybill::getCarrierId, dto.getCarrierId()));
+        if(!CollectionUtils.isEmpty(waybillList)){
+            return BaseResultUtil.fail("该司机有运单数据,不可删除");
+        }
+        //验证司机有无任务数据信息
+        List<Task> taskList = taskDao.selectList(new QueryWrapper<Task>().lambda()
+                .eq(Task::getDriverId, dto.getDriverId()));
+        if(!CollectionUtils.isEmpty(taskList)){
+            return BaseResultUtil.fail("该司机有任务数据,不可删除");
+        }
+        //撤销在架构组相关角色
+        Role role = csRoleService.getByName(YmlProperty.get("cjkj.carrier_personal_driver_role_name"), DeptTypeEnum.CARRIER.code);
+        if(role == null){
+            return BaseResultUtil.fail("角色不存在,请先添加角色");
+        }
+        UpdateUserReq uur = new UpdateUserReq();
+        uur.setUserId(driver.getUserId());
+        uur.setRoleIdList(Arrays.asList(role.getRoleId()));
+        ResultData resultData = sysRoleService.revokeRole(driver.getUserId(), role.getRoleId());
+        if (!ReturnMsg.SUCCESS.getCode().equals(resultData.getCode())) {
+            return BaseResultUtil.fail("解除社会角色失败");
+        }
+        //删除韵车库中相关数据
+        //删除司机绑定银行卡数据
+        bankCardBindDao.delete(new QueryWrapper<BankCardBind>().lambda().eq(BankCardBind::getUserId,dto.getCarrierId()).eq(BankCardBind::getUserType,UserTypeEnum.DRIVER.code));
+        //删除司机运力信息
+        vehicleRunningDao.delete(new QueryWrapper<VehicleRunning>().lambda().eq(VehicleRunning::getDriverId,dto.getDriverId()));
+        //删除车辆信息
+        vehicleDao.delete(new QueryWrapper<Vehicle>().lambda().eq(Vehicle::getCarrierId,dto.getCarrierId()));
+        //删除司机与车辆信息
+        driverVehicleConDao.delete(new QueryWrapper<DriverVehicleCon>().lambda().eq(DriverVehicleCon::getDriverId,dto.getDriverId()));
+        //删除司机与角色绑定关系
+        userRoleDeptDao.delete(new QueryWrapper<UserRoleDept>().lambda()
+                                .eq(UserRoleDept::getUserId,dto.getDriverId())
+                                .eq(UserRoleDept::getDeptId,dto.getCarrierId())
+                                .eq(UserRoleDept::getDeptType,DeptTypeEnum.CARRIER.code)
+                                .eq(UserRoleDept::getUserType,UserTypeEnum.DRIVER.code));
+        //删除承运商信息
+        carrierDao.deleteById(dto.getCarrierId());
+        //删除司机信息
+        driverDao.deleteById(dto.getDriverId());
+        return BaseResultUtil.success();
     }
 }
