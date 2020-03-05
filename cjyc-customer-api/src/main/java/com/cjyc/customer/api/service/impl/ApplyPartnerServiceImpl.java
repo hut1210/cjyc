@@ -40,8 +40,6 @@ public class ApplyPartnerServiceImpl extends ServiceImpl<ICustomerDao, Customer>
     @Resource
     private IUserRoleDeptDao userRoleDeptDao;
     @Resource
-    private ICsUserRoleDeptService csUserRoleDeptService;
-    @Resource
     private ICsBankInfoService bankInfoService;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
