@@ -161,7 +161,7 @@ public class TransactionServiceImpl implements ITransactionService {
                     String orderNo = pingxxMetaData.getOrderNo();
                     log.info(chargeType+" 物流费预付 orderNo ="+orderNo);
                     //校验订单金额是否有改变
-                    if(orderNo!=null){
+                    /*if(orderNo!=null){
                         com.cjyc.common.model.entity.Order ord = orderDao.findByNo(orderNo);
                         if(ord!=null){
                             BigDecimal totalFee = ord.getTotalFee();
@@ -178,8 +178,8 @@ public class TransactionServiceImpl implements ITransactionService {
 
                     }else{
                         log.error("物流费预付回调订单编号为null，charge = {}",charge.toString());
-                    }
-                    //updateForPrePay(pingxxMetaData);
+                    }*/
+                    updateForPrePay(pingxxMetaData);
                 }
                 if(chargeType.equals(String.valueOf(ChargeTypeEnum.DRIVER_COLLECT_QRCODE.getCode()))
                         ||chargeType.equals(String.valueOf(ChargeTypeEnum.WEB_OUT_STOCK_QRCODE.getCode()))
@@ -589,7 +589,7 @@ public class TransactionServiceImpl implements ITransactionService {
             String orderNo = pingxxMetaData.getOrderNo();
             log.info(chargeType+" 物流费预付 orderNo ="+orderNo);
             //校验订单金额是否有改变
-            if(orderNo!=null){
+            /*if(orderNo!=null){
                 com.cjyc.common.model.entity.Order ord = orderDao.findByNo(orderNo);
                 if(ord!=null){
                     BigDecimal totalFee = ord.getTotalFee();
@@ -606,9 +606,9 @@ public class TransactionServiceImpl implements ITransactionService {
 
             }else{
                 log.error("物流费预付回调订单编号为null，order = {}",order.toString());
-            }
+            }*/
 
-
+            updateForPrePay(pingxxMetaData);
             String lockKey =getRandomNoKey(orderNo);
             redisUtil.delete(lockKey);
 
