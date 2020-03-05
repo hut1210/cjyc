@@ -49,7 +49,8 @@ public class CsPingxxServiceImpl implements ICsPingxxService {
     }
 
 
-    private Order payPingOrder(Object app, String channel, Integer amount, String pingOrderId) throws RateLimitException, APIException, ChannelException, InvalidRequestException, APIConnectionException, AuthenticationException {
+    private Order payPingOrder(Object app, String channel, Integer amount, String pingOrderId) throws RateLimitException, APIException, ChannelException, InvalidRequestException, APIConnectionException, AuthenticationException, FileNotFoundException {
+        initPingApiKey();
         Pingpp.appId = app.toString();
         Map<String, Object> params = Maps.newHashMap();
         params.put("channel", channel);
