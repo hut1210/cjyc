@@ -139,6 +139,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
             order.setNo(csSendNoService.getNo(SendNoTypeEnum.ORDER));
             order.setSource(paramsDto.getClientId());
             order.setCreateTime(currentTimeMillis);
+            order.setCreateUserId(paramsDto.getLoginId());
+            order.setCreateUserName(paramsDto.getLoginName());
         }
         order.setState(paramsDto.getState());
         order.setTotalFee(MoneyUtil.yuanToFen(order.getTotalFee()));
@@ -291,7 +293,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 order = orderDao.selectById(orderId);
                 if (order != null) {
                     lockKey = RedisKeys.getDispatchLockForOrderUpdate(order.getNo());
-                    redisLock.lock(lockKey, 30000, 100, 300);
+                    redisLock.lock(lockKey, 60000, 100, 300);
                     oldOrder = getFullOrder(order);
                 }
             }
@@ -312,10 +314,13 @@ public class CsOrderServiceImpl implements ICsOrderService {
             fillOrderLocalCarryTypeInfo(order);
             //计算预计到达时间
             fillOrderExpectEndTime(order);
+
             //订单编号
             if (isNewOrder) {
                 order.setNo(csSendNoService.getNo(SendNoTypeEnum.ORDER));
                 order.setSource(paramsDto.getClientId());
+                order.setCreateUserId(paramsDto.getLoginId());
+                order.setCreateUserName(paramsDto.getLoginName());
                 order.setCreateTime(currentTimeMillis);
             }
             order.setState(OrderStateEnum.SUBMITTED.code);

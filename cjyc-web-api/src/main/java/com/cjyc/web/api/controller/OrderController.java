@@ -85,16 +85,12 @@ public class OrderController {
             reqDto.setLoginName(customer.getName());
             reqDto.setLoginPhone(customer.getContactPhone());
             reqDto.setLoginType(UserTypeEnum.CUSTOMER.code);
-            reqDto.setCreateUserId(customer.getId());
-            reqDto.setCreateUserName(customer.getName());
         }else{
             //验证用户存不存在
             Admin admin = csAdminService.validate(reqDto.getLoginId());
             reqDto.setLoginName(admin.getName());
             reqDto.setLoginPhone(admin.getPhone());
             reqDto.setLoginType(UserTypeEnum.ADMIN.code);
-            reqDto.setCreateUserId(admin.getId());
-            reqDto.setCreateUserName(admin.getName());
         }
         reqDto.setState(OrderStateEnum.WAIT_SUBMIT.code);
         ResultVo resultVo = csOrderService.save(reqDto);
@@ -120,16 +116,12 @@ public class OrderController {
             reqDto.setLoginName(customer.getName());
             reqDto.setLoginPhone(customer.getContactPhone());
             reqDto.setLoginType(UserTypeEnum.CUSTOMER.code);
-            reqDto.setCreateUserId(customer.getId());
-            reqDto.setCreateUserName(customer.getName());
         }else{
             //验证用户存不存在
             Admin admin = csAdminService.validate(reqDto.getLoginId());
             reqDto.setLoginName(admin.getName());
             reqDto.setLoginPhone(admin.getPhone());
             reqDto.setLoginType(UserTypeEnum.ADMIN.code);
-            reqDto.setCreateUserId(admin.getId());
-            reqDto.setCreateUserName(admin.getName());
         }
         //发送短信
         return csOrderService.commit(reqDto);

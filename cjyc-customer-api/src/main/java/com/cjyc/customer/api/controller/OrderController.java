@@ -63,8 +63,6 @@ public class OrderController {
         reqDto.setLoginPhone(customer.getContactPhone());
         reqDto.setLoginType(UserTypeEnum.CUSTOMER.code);
 
-        reqDto.setCreateUserId(customer.getUserId());
-        reqDto.setCreateUserName(customer.getName());
         reqDto.setState(OrderStateEnum.WAIT_SUBMIT.code);
         //干线费用
         List<SaveOrderCarDto> carList = reqDto.getOrderCarList();
@@ -94,8 +92,6 @@ public class OrderController {
         reqDto.setCustomerId(customer.getId());
         reqDto.setCustomerName(customer.getName());
         reqDto.setCustomerType(customer.getType());
-        reqDto.setCreateUserId(customer.getUserId());
-        reqDto.setCreateUserName(customer.getName());
         reqDto.setState(OrderStateEnum.SUBMITTED.code);
         //干线费用
         List<SaveOrderCarDto> carList = reqDto.getOrderCarList();
