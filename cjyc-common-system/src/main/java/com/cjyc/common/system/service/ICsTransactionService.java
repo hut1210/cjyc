@@ -42,4 +42,6 @@ public interface ICsTransactionService {
     void saveCooperatorTransactions(Transfer transfer, String s);
 
     void saveWebPrePayTransactions(Charge charge, String s);
+
+    void saveSalesPrePayTransactions(Charge charge, String s);
 }

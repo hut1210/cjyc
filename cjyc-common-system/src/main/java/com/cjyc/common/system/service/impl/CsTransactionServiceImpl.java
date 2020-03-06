@@ -137,14 +137,29 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
         }
 
         Map<String, Object> metadata = charge.getMetadata();
-        List<String> orderCarIds = (List<String>) metadata.get("orderCarIds");
-        if(orderCarIds != null){
-            for(int i=0;i<orderCarIds.size();i++){
-                TradeBillDetail tradeBillDetail = new TradeBillDetail();
-                tradeBillDetail.setTradeBillId(Long.valueOf(tb.getId()));
-                tradeBillDetail.setSourceNo(orderCarIds.get(i)==null?null:orderCarIds.get(i));
-                tradeBillDetailDao.insert(tradeBillDetail);
-            }
+        String orderNo = (String) metadata.get("orderNo");
+        if(orderNo != null){
+            TradeBillDetail tradeBillDetail = new TradeBillDetail();
+            tradeBillDetail.setTradeBillId(Long.valueOf(tb.getId()));
+            tradeBillDetail.setSourceNo(orderNo==null?null:orderNo);
+            tradeBillDetailDao.insert(tradeBillDetail);
+        }
+    }
+
+    @Override
+    public void saveSalesPrePayTransactions(Charge charge, String state) {
+        TradeBill tb = chargeToTransactions(charge, null,state);
+        if(tb != null){
+            tradeBillDao.insert(tb);
+        }
+
+        Map<String, Object> metadata = charge.getMetadata();
+        String orderNo = (String) metadata.get("orderNo");
+        if(orderNo != null){
+            TradeBillDetail tradeBillDetail = new TradeBillDetail();
+            tradeBillDetail.setTradeBillId(Long.valueOf(tb.getId()));
+            tradeBillDetail.setSourceNo(orderNo==null?null:orderNo);
+            tradeBillDetailDao.insert(tradeBillDetail);
         }
     }
 

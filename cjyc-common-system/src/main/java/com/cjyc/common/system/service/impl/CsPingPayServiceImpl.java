@@ -857,7 +857,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
 
             charge = createDriverCode(om);
 
-            cStransactionService.saveTransactions(charge, "0");
+            cStransactionService.saveSalesPrePayTransactions(charge, "0");
         /*} catch (Exception e) {
             log.error("业务员预付款出示二维码异常",e);
         }*/
