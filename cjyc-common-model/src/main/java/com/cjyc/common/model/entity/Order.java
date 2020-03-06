@@ -234,7 +234,6 @@ public class Order implements Serializable {
 
     @ApiModelProperty(value = "应收总价：收车后客户应支付平台的费用，计算值")
     @JsonSerialize(using = BigDecimalSerizlizer.class)
-    @Excel(name = "订单金额(元)", orderNum = "6")
     private BigDecimal totalFee;
 
     @ApiModelProperty(value = "应收订单定金（保留字段）")

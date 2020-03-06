@@ -4,6 +4,7 @@ import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.serizlizer.BigDecimalSerizlizer;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
+import com.cjyc.common.model.util.MoneyUtil;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -27,8 +28,8 @@ public class ListOrderVo extends Order {
 //    @Excel(name = "目的地址（全）", orderNum = "1")
     private String endFullAddress;
 
+
     @ApiModelProperty("总物流费")
-    @Excel(name = "总费用(元)", orderNum = "7")
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal wlTotalFee;
     @ApiModelProperty("大区")
@@ -53,7 +54,6 @@ public class ListOrderVo extends Order {
     @Excel(name = "账期/天", orderNum = "9")
     private String settlePeriod;
     @ApiModelProperty("总服务费")
-    @Excel(name = "合伙人服务费(元)", orderNum = "8")
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal totalAgencyFee;
     @Excel(name = "订单状态", orderNum = "1")
@@ -76,15 +76,33 @@ public class ListOrderVo extends Order {
     private String createTimeStr;
     @Excel(name = "接单时间", orderNum = "32")
     private String checkTimeStr;
+    @Excel(name = "订单金额(元)", orderNum = "6")
+    private String totalFeeStr;
+    @Excel(name = "总费用(元)", orderNum = "7")
+    private String wlTotalFeeStr;
+    @Excel(name = "合伙人服务费(元)", orderNum = "8")
+    private String totalAgencyFeeStr;
 
+    public String getTotalFeeStr() {
+        return MoneyUtil.fenToYuan(getTotalFee()).toString();
+    }
+
+    public String getWlTotalFeeStr() {
+        return MoneyUtil.fenToYuan(getWlTotalFee()).toString();
+    }
+
+    public String getTotalAgencyFeeStr() {
+        return MoneyUtil.fenToYuan(getTotalAgencyFee()).toString();
+    }
 
     public String getCheckTimeStr() {
         Long date = getCheckTime();
         if (null == date || date <= 0L) {
             return "";
         }
-        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd");
+        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy/MM/dd");
     }
+
 
     public String getCreateTimeStr() {
         Long date = getCreateTime();
@@ -93,6 +111,7 @@ public class ListOrderVo extends Order {
         }
         return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd");
     }
+
 
     public String getBackTypeStr() {
         Integer backType = getBackType();
@@ -213,7 +232,7 @@ public class ListOrderVo extends Order {
             case 0:
                 str = "待提交"; break;
             case 2:
-                str = "待分配"; break;
+                str = "待确认"; break;
             case 5:
                 str = "待确认"; break;
             case 10:

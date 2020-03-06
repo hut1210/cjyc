@@ -771,7 +771,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             waybill.setCarrierType(carrierInfo.getCarryType());
             waybill.setCarNum(dtoList.size());
             waybill.setState(WaybillStateEnum.ALLOT_CONFIRM.code);
-            waybill.setFreightFee(MoneyUtil.convertYuanToFen(paramsDto.getFreightFee()));
+            waybill.setFreightFee(MoneyUtil.yuanToFen(paramsDto.getFreightFee()));
             waybill.setRemark(paramsDto.getRemark());
             waybill.setCreateTime(currentTimeMillis);
             waybill.setCreateUser(paramsDto.getLoginName());
@@ -862,7 +862,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 BeanUtils.copyProperties(dto, waybillCar);
                 waybillCar.setWaybillId(waybill.getId());
                 waybillCar.setWaybillNo(waybill.getNo());
-                waybillCar.setFreightFee(MoneyUtil.convertYuanToFen(dto.getFreightFee()));
+                waybillCar.setFreightFee(MoneyUtil.yuanToFen(dto.getFreightFee()));
                 waybillCar.setOrderCarId(orderCar.getId());
                 //城市信息赋值
                 fillWaybillCarCityInfo(waybillCar);
@@ -959,7 +959,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             waybill.setCarrierName(carrierInfo.getCarrierName());
             waybill.setCarrierType(carrierInfo.getCarryType());
             waybill.setCarNum(dtoList.size());
-            waybill.setFreightFee(MoneyUtil.convertYuanToFen(paramsDto.getFreightFee()));
+            waybill.setFreightFee(MoneyUtil.yuanToFen(paramsDto.getFreightFee()));
             waybill.setFixedFreightFee(paramsDto.getFixedFreightFee());
             waybill.setRemark(paramsDto.getRemark());
             if (!CollectionUtils.isEmpty(dtoList)) {
@@ -1062,7 +1062,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 BeanUtils.copyProperties(dto, waybillCar);
                 waybillCar.setWaybillId(waybill.getId());
                 waybillCar.setWaybillNo(waybill.getNo());
-                waybillCar.setFreightFee(MoneyUtil.convertYuanToFen(dto.getFreightFee()));
+                waybillCar.setFreightFee(MoneyUtil.yuanToFen(dto.getFreightFee()));
                 //城市信息赋值
                 fillWaybillCarCityInfo(waybillCar);
                 //业务中心信息赋值
@@ -1577,7 +1577,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         if (CollectionUtils.isEmpty(waybillCars)) {
             return;
         }
-        newTotalFee = MoneyUtil.convertYuanToFen(newTotalFee);
+        newTotalFee = MoneyUtil.yuanToFen(newTotalFee);
         if (newTotalFee.compareTo(oldTotalFee) == 0) {
             return;
         } else if (newTotalFee.compareTo(BigDecimal.ZERO) == 0) {

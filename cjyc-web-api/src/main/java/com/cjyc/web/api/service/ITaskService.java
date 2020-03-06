@@ -25,17 +25,6 @@ import java.util.List;
  */
 public interface ITaskService extends IService<Task> {
 
-    ResultVo allot(AllotTaskDto paramsDto);
-
-    ResultVo<ResultReasonVo> load(LoadTaskDto paramsDto);
-
-    ResultVo<ResultReasonVo> unload(UnLoadTaskDto paramsDto);
-
-    ResultVo<ResultReasonVo> inStore(InStoreTaskDto paramsDto);
-
-    ResultVo<ResultReasonVo> outStore(OutStoreTaskDto paramsDto);
-
-    ResultVo receipt(ReceiptTaskDto paramsDto);
 
     ResultVo<List<ListByWaybillTaskVo>> getlistByWaybillId(Long waybillId);
 
