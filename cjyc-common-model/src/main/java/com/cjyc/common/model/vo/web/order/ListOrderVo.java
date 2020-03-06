@@ -22,10 +22,8 @@ public class ListOrderVo extends Order {
     @ApiModelProperty("状态")
     private String outterState;
     @ApiModelProperty("出发地址（全）")
-//    @Excel(name = "出发地址（全）", orderNum = "0")
     private String startFullAddress;
     @ApiModelProperty("目的地址（全）")
-//    @Excel(name = "目的地址（全）", orderNum = "1")
     private String endFullAddress;
 
 
@@ -80,19 +78,19 @@ public class ListOrderVo extends Order {
     private String totalFeeStr;
     @Excel(name = "总费用(元)", orderNum = "7")
     private String wlTotalFeeStr;
-    @Excel(name = "合伙人服务费(元)", orderNum = "8")
+    @Excel(name = "合伙人服务费(元)",  orderNum = "8")
     private String totalAgencyFeeStr;
 
     public String getTotalFeeStr() {
-        return MoneyUtil.fenToYuan(getTotalFee()).toString();
+        return MoneyUtil.fenToYuan(getTotalFee(), MoneyUtil.PATTERN_TWO);
     }
 
     public String getWlTotalFeeStr() {
-        return MoneyUtil.fenToYuan(getWlTotalFee()).toString();
+        return MoneyUtil.fenToYuan(getWlTotalFee(), MoneyUtil.PATTERN_TWO);
     }
 
     public String getTotalAgencyFeeStr() {
-        return MoneyUtil.fenToYuan(getTotalAgencyFee()).toString();
+        return MoneyUtil.fenToYuan(getTotalAgencyFee(), MoneyUtil.PATTERN_TWO);
     }
 
     public String getCheckTimeStr() {
@@ -109,7 +107,7 @@ public class ListOrderVo extends Order {
         if (null == date || date <= 0L) {
             return "";
         }
-        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd");
+        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy/MM/dd");
     }
 
 
@@ -137,7 +135,7 @@ public class ListOrderVo extends Order {
         if (null == date || date <= 0L) {
             return "";
         }
-        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd");
+        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy/MM/dd");
     }
 
     public String getPickTypeStr() {
@@ -164,7 +162,7 @@ public class ListOrderVo extends Order {
         if (null == date || date <= 0L) {
             return "";
         }
-        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd");
+        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy/MM/dd");
     }
 
     public String getCustomerTypeStr() {

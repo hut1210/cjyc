@@ -105,17 +105,14 @@ public class OrderCar implements Serializable {
 
     @ApiModelProperty(value = "车辆应收提车费")
     @JsonSerialize(using = BigDecimalSerizlizer.class)
-    @Excel(name = "提车费(元)", orderNum = "15")
     private BigDecimal pickFee;
 
     @ApiModelProperty(value = "车辆应收干线费")
     @JsonSerialize(using = BigDecimalSerizlizer.class)
-    @Excel(name = "物流费(元)", orderNum = "16")
     private BigDecimal trunkFee;
 
     @ApiModelProperty(value = "车辆应收送车费")
     @JsonSerialize(using = BigDecimalSerizlizer.class)
-    @Excel(name = "送车费(元)", orderNum = "17")
     private BigDecimal backFee;
 
     @ApiModelProperty(value = "实际提车类型")
@@ -127,7 +124,6 @@ public class OrderCar implements Serializable {
 
     @ApiModelProperty(value = "车辆应收保险费")
     @JsonSerialize(using = BigDecimalSerizlizer.class)
-    @Excel(name = "保费(元)", orderNum = "14")
     private BigDecimal addInsuranceFee;
 
     @ApiModelProperty(value = "保额/万")
@@ -144,7 +140,6 @@ public class OrderCar implements Serializable {
 
     @ApiModelProperty(value = "单车总费用")
     @JsonSerialize(using = BigDecimalSerizlizer.class)
-    @Excel(name = "实收总运费(元)", orderNum = "18")
     private BigDecimal totalFee;
 
     @ApiModelProperty(value = "应收状态：0未支付，2已支付")
