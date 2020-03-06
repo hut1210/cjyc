@@ -44,7 +44,7 @@ public class CsAppVersionServiceImpl extends ServiceImpl<IAppVersionDao, AppVers
                 .eq(AppVersion::getVersion, dto.getVersion())
                 .eq(AppVersion::getIsActive, UseStateEnum.USABLE.code));
         if(oldApp == null){
-            return BaseResultUtil.fail("未找到该记录，请检查参数");
+            return BaseResultUtil.success();
         }
         List<AppVersion> appVersionList = appVersionDao.selectList(new QueryWrapper<AppVersion>().lambda()
                 .eq(AppVersion::getSystemType, dto.getSystemType())
