@@ -3,9 +3,7 @@ package com.cjyc.customer.api.service.impl;
 import com.Pingxx.model.MetaDataEntiy;
 import com.Pingxx.model.PingxxMetaData;
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjyc.common.model.enums.UserTypeEnum;
-import com.cjyc.common.model.enums.log.OrderCarLogEnum;
 import com.cjyc.common.model.enums.log.OrderLogEnum;
 import com.cjyc.common.model.enums.message.PushMsgEnum;
 import com.cjyc.common.system.service.*;
@@ -35,7 +33,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import springfox.documentation.spring.web.json.Json;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -362,6 +359,8 @@ public class TransactionServiceImpl implements ITransactionService {
             com.cjyc.common.model.entity.Order order = orderDao.selectById(orderId);
 
             //TODO 更新合伙人打款状态
+            String orderNo = String.valueOf(pingxxMetaData.getOrderNo());
+            tradeBillDao.updateOrderFlag(orderNo, "2");
 
         }
 

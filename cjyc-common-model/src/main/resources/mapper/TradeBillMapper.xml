@@ -170,4 +170,8 @@
         update w_waybill set freight_pay_state = 1,freight_pay_time=#{time} where id =#{waybillId}
     </update>
 
+    <update id="updateOrderFlag" parameterType="map">
+        update w_order set flag=#{state} where no = #{orderNo}
+    </update>
+
 </mapper>

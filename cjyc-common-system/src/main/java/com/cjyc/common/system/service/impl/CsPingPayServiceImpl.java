@@ -399,6 +399,10 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                     }
                     //TODO 再次校验
                     waybill = waybillDao.selectById(waybillId);
+                    if(waybill.getFreightPayState()==1){
+                        log.error("运费已支付完成,请勿重复支付 waybillId = {}", waybillId);
+                        return BaseResultUtil.fail("运费已支付完成,请勿重复支付");
+                    }
                     Long carrierId = waybill.getCarrierId();
                     BaseCarrierVo baseCarrierVo = carrierDao.showCarrierById(carrierId);
                     log.info("【通联代付支付运费】运单Id{},支付状态 state {}",waybillId,waybill.getFreightPayState());
@@ -515,6 +519,10 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                     }
                     //TODO 再次校验
                     waybill = waybillDao.selectById(waybillId);
+                    if(waybill.getFreightPayState()==1){
+                        log.error("运费已支付完成,请勿重复支付 waybillId = {}", waybillId);
+                        return BaseResultUtil.fail("运费已支付完成,请勿重复支付");
+                    }
                     Long carrierId = waybill.getCarrierId();
                     BaseCarrierVo baseCarrierVo = carrierDao.showCarrierById(carrierId);
                     log.info("【对外支付模式，通联代付支付运费】运单Id{},支付状态 state {}",waybillId,waybill.getFreightPayState());
@@ -580,6 +588,12 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                         log.error("合伙人服务费已支付完成,请勿重复支付 orderId = {}", orderId);
                         return BaseResultUtil.fail("合伙人服务费已支付完成,请勿重复支付");
                     }
+
+                    order = orderDao.selectById(orderId);
+                    if(order.getFlag()!=null&& order.getFlag().equals("2")){
+                        log.error("合伙人服务费已支付完成,请勿重复支付 orderId = {}", orderId);
+                        return BaseResultUtil.fail("合伙人服务费已支付完成,请勿重复支付");
+                    }
                     //TODO 再次校验
                     Long customId = order.getCustomerId();
                     ShowPartnerVo showPartnerVo = customerDao.showPartner(customId);
@@ -595,6 +609,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                         if(showPartnerVo!=null && showPartnerVo.getCardName()!=null && showPartnerVo.getCardNo()!=null
                         && showPartnerVo.getBankCode()!=null){
                             Transfer transfer = allinpayToCooperatorCreate(showPartnerVo,payableFee,order.getNo(),orderId);
+                            cStransactionService.updateOrderFlag(order.getNo(),"1");
                             cStransactionService.saveCooperatorTransactions(transfer, "0");
                         }else{
                             log.error("【通联代付支付合伙人费用】收款人信息不全 orderId = {}", orderId);

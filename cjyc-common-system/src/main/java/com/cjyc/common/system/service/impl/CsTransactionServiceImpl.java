@@ -164,6 +164,11 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
     }
 
     @Override
+    public void updateOrderFlag(String orderNo,String state) {
+        tradeBillDao.updateOrderFlag(orderNo,state);
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveTransactions(Object obj, String state) {
         TradeBill tb;

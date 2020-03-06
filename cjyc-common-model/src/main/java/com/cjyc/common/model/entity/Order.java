@@ -262,5 +262,6 @@ public class Order implements Serializable {
     @ApiModelProperty(value = "优惠券id")
     private Long couponSendId;
 
-
+    @ApiModelProperty(value = "合伙人支付标志 -1 支付失败 0未支付 1正在支付 2支付成功")
+    private String flag;
 }

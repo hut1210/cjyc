@@ -44,4 +44,6 @@ public interface ICsTransactionService {
     void saveWebPrePayTransactions(Charge charge, String s);
 
     void saveSalesPrePayTransactions(Charge charge, String s);
+
+    void updateOrderFlag(String orderNo,String state);
 }
