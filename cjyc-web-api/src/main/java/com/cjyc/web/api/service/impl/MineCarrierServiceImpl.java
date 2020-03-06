@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
+import com.cjkj.common.utils.ExcelUtil;
 import com.cjkj.usercenter.dto.common.SelectRoleResp;
 import com.cjkj.usercenter.dto.common.UpdateUserReq;
 import com.cjyc.common.model.dao.*;
@@ -24,24 +25,23 @@ import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.mineCarrier.SettlementDetailVo;
-import com.cjyc.common.model.vo.web.mineCarrier.MyCarVo;
-import com.cjyc.common.model.vo.web.mineCarrier.MyDriverVo;
-import com.cjyc.common.model.vo.web.mineCarrier.MyWaybillVo;
+import com.cjyc.common.model.vo.web.carrier.CarrierImportExcel;
+import com.cjyc.common.model.vo.web.mineCarrier.*;
 import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.feign.ISysUserService;
-import com.cjyc.common.system.service.ICsDriverService;
-import com.cjyc.common.system.service.ICsRoleService;
-import com.cjyc.common.system.service.ICsVehicleService;
+import com.cjyc.common.system.service.*;
 import com.cjyc.common.system.service.sys.ICsSysService;
+import com.cjyc.common.system.util.ResultDataUtil;
 import com.cjyc.web.api.service.IMineCarrierService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
@@ -85,6 +85,10 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
     private IUserRoleDeptDao userRoleDeptDao;
     @Resource
     private ICsRoleService csRoleService;
+    @Resource
+    private ICsUserRoleDeptService csUserRoleDeptService;
+    @Resource
+    private ICsCustomerService csCustomerService;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -475,5 +479,139 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
         List<MyCarVo> carVos = vehicleDao.findMyCarNew(dto);
         PageInfo<MyCarVo> pageInfo = new PageInfo<>(carVos);
         return BaseResultUtil.success(pageInfo);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean importCarrierDriverExcel(MultipartFile file, Long loginId,Long carrierId) {
+        boolean result;
+        try {
+            List<CarrierDriversImportExcel> carrierDriverList = ExcelUtil.importExcel(file, 0, 1, CarrierDriversImportExcel.class);
+            if(!CollectionUtils.isEmpty(carrierDriverList)){
+                for(CarrierDriversImportExcel excel : carrierDriverList){
+                    Role role = null;
+                    //判断登录用户是否存在
+                    Driver dri = driverDao.selectById(loginId);
+                    if(dri == null){
+                        continue;
+                    }
+                    UserRoleDept urd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
+                            .eq(UserRoleDept::getDeptId, carrierId)
+                            .eq(UserRoleDept::getUserId, loginId)
+                            .eq(UserRoleDept::getDeptType, DeptTypeEnum.CARRIER.code)
+                            .eq(UserRoleDept::getUserType, UserTypeEnum.DRIVER.code));
+                    if(urd == null){
+                        continue;
+                    }
+                    Carrier carrier = carrierDao.selectById(carrierId);
+                    if(carrier.getState() != CommonStateEnum.CHECKED.code){
+                        continue;
+                    }
+                    //验证在个人司机池中是否存在
+                    Integer count = carrierDao.existPersonalCarrierExcel(excel.getPhone(),excel.getIdCard());
+                    if(count > 0){
+                        continue;
+                    }
+                    //验证在该承运商下是否有相同的
+                    count = carrierDao.existBusinessCarrierExcel(carrierId,excel.getPhone(),excel.getIdCard());
+                    if(count > 0){
+                        continue;
+                    }
+                    //验证车牌号是否已存在车辆表中
+                    if(StringUtils.isNotBlank(excel.getPlateNo())){
+                        Vehicle vehicle = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda()
+                                .eq(Vehicle::getPlateNo, excel.getPlateNo()));
+                        if(vehicle != null){
+                            continue;
+                        }
+                    }
+                    //验证车牌号是否已绑定司机
+                    if(StringUtils.isNotBlank(excel.getPlateNo())){
+                        VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda()
+                                .eq(VehicleRunning::getPlateNo, excel.getPlateNo()));
+                        if(vr != null){
+                            continue;
+                        }
+                    }
+
+                    //验证司机是否已存在
+                    Driver driver = driverDao.selectOne(new QueryWrapper<Driver>().lambda()
+                            .eq(Driver::getPhone, excel.getPhone()));
+                    if(driver != null){
+                        continue;
+                    }
+                    //验证角色是否有
+                    role = csRoleService.getByName(YmlProperty.get("cjkj.carrier_sub_driver_role_name"), DeptTypeEnum.CARRIER.code);
+                    if(role == null){
+                        continue;
+                    }
+                    //添加司机信息到架构组
+                    ResultData<Long> rd = csCustomerService.addUserToPlatform(excel.getPhone(),excel.getIdCard(),role);
+                    if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
+                        continue;
+                    }
+                    //验证架构组返回userId为空
+                    if(rd.getData() == null){
+                        continue;
+                    }
+                    //保存司机
+                    driver = new Driver();
+                    BeanUtils.copyProperties(excel,driver);
+                    driver.setUserId(rd.getData());
+                    driver.setName(excel.getRealName());
+                    driver.setType(DriverTypeEnum.SOCIETY.code);
+                    driver.setIdentity(DriverIdentityEnum.GENERAL_DRIVER.code);
+                    driver.setBusinessState(BusinessStateEnum.BUSINESS.code);
+                    //承运商超级管理员登陆
+                    driver.setSource(DriverSourceEnum.CARRIER_ADMIN.code);
+                    driver.setCreateUserId(loginId);
+                    driver.setCreateTime(NOW);
+                    driverDao.insert(driver);
+
+                    Integer mode = null;
+                    //保存司机与承运商关系
+                    if("代驾".equals(excel.getMode())){
+                        mode = 2;
+                    }else if("干线".equals(excel.getMode())){
+                        mode = 3;
+                    }else if("拖车".equals(excel.getMode())){
+                        mode = 4;
+                    }
+                    csUserRoleDeptService.saveDriverToUserRoleDept(carrier, driver, mode, role.getId(), loginId,0);
+                    if(StringUtils.isNotBlank(excel.getPlateNo())){
+                        //保存车辆信息
+                        Vehicle vehicle = new Vehicle();
+                        BeanUtils.copyProperties(excel,vehicle);
+                        vehicle.setCarrierId(carrier.getId());
+                        vehicle.setOwnershipType(VehicleOwnerEnum.CARRIER.code);
+                        vehicle.setCreateUserId(loginId);
+                        vehicle.setCreateTime(NOW);
+                        vehicleDao.insert(vehicle);
+                        //保存司机与车辆关系
+                        DriverVehicleCon dvc = new DriverVehicleCon();
+                        dvc.setVehicleId(vehicle.getId());
+                        dvc.setDriverId(driver.getId());
+                        driverVehicleConDao.insert(dvc);
+                        //保存运力信息
+                        VehicleRunning vr = new VehicleRunning();
+                        vr.setDriverId(driver.getId());
+                        vr.setVehicleId(vehicle.getId());
+                        vr.setPlateNo(excel.getPlateNo());
+                        vr.setCarryCarNum(excel.getDefaultCarryNum());
+                        vr.setState(RunningStateEnum.EFFECTIVE.code);
+                        vr.setRunningState(VehicleRunStateEnum.FREE.code);
+                        vr.setCreateTime(NOW);
+                        vehicleRunningDao.insert(vr);
+                    }
+                }
+                result = true;
+            } else {
+                result = false;
+            }
+        } catch (Exception e) {
+            log.error("导入承运商下司机失败异常:{}", e);
+            result = false;
+        }
+        return result;
     }
 }
