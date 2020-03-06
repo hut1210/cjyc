@@ -46,4 +46,6 @@ public interface ICsTransactionService {
     void saveSalesPrePayTransactions(Charge charge, String s);
 
     void updateOrderFlag(String orderNo,String state);
+
+    BigDecimal getWlFeeCount(Long carrierId);
 }

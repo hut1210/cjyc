@@ -397,12 +397,14 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                         log.error("运费已支付完成,请勿重复支付 waybillId = {}", waybillId);
                         return BaseResultUtil.fail("运费已支付完成,请勿重复支付");
                     }
-                    //TODO 再次校验
+
                     waybill = waybillDao.selectById(waybillId);
                     if(waybill.getFreightPayState()==1){
                         log.error("运费已支付完成,请勿重复支付 waybillId = {}", waybillId);
                         return BaseResultUtil.fail("运费已支付完成,请勿重复支付");
                     }
+                    //TODO 再次校验
+
                     Long carrierId = waybill.getCarrierId();
                     BaseCarrierVo baseCarrierVo = carrierDao.showCarrierById(carrierId);
                     log.info("【通联代付支付运费】运单Id{},支付状态 state {}",waybillId,waybill.getFreightPayState());
@@ -477,6 +479,16 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         return BaseResultUtil.success("通联代付成功");
     }
 
+    /**
+     * 对比承运商应得运费与已得运费
+     */
+    private BigDecimal contrastAmount(Long carrierId){
+
+        BigDecimal wlFeeCount = cStransactionService.getWlFeeCount(carrierId);
+
+        return wlFeeCount;
+    }
+
     private void savePaymentRecord(Long carrierId,Long waybillId){
         try{
             PaymentRecord paymentRecord = new PaymentRecord();
@@ -517,12 +529,15 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                         log.error("运费已支付完成,请勿重复支付 waybillId = {}", waybillId);
                         return BaseResultUtil.fail("运费已支付完成,请勿重复支付");
                     }
-                    //TODO 再次校验
+
                     waybill = waybillDao.selectById(waybillId);
                     if(waybill.getFreightPayState()==1){
                         log.error("运费已支付完成,请勿重复支付 waybillId = {}", waybillId);
                         return BaseResultUtil.fail("运费已支付完成,请勿重复支付");
                     }
+
+                    //TODO 再次校验
+
                     Long carrierId = waybill.getCarrierId();
                     BaseCarrierVo baseCarrierVo = carrierDao.showCarrierById(carrierId);
                     log.info("【对外支付模式，通联代付支付运费】运单Id{},支付状态 state {}",waybillId,waybill.getFreightPayState());

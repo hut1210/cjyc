@@ -169,6 +169,11 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
     }
 
     @Override
+    public BigDecimal getWlFeeCount(Long carrierId) {
+        return tradeBillDao.getWlFeeCount(carrierId);
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveTransactions(Object obj, String state) {
         TradeBill tb;
@@ -298,6 +303,7 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
     }
 
     private TradeBill chargeToTransactions(Charge charge,Event event,String state) {
+        log.info(charge.toString());
         TradeBill tb = new TradeBill();
         tb.setSubject(charge.getSubject());
         tb.setBody(charge.getBody());
@@ -318,11 +324,12 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
         }
         Map<String, Object> metadata = charge.getMetadata();
         if(metadata!=null){
-            String type =(String) metadata.get("chargeType");
+            PingxxMetaData pingxxMetaData =  BeanMapUtil.mapToBean(metadata, new PingxxMetaData());
+            String chargeType = pingxxMetaData.getChargeType();
+            log.info("chargeType ="+chargeType);
 
-            tb.setType((Integer.valueOf(type)));
+            tb.setType((Integer.valueOf(chargeType)));
         }
-        tb.setType(0);
         tb.setPingPayId(charge.getId());
         tb.setState(Integer.valueOf(state));//待支付/已支付/付款失败
         tb.setNo(csSendNoService.getNo(SendNoTypeEnum.RECEIPT));

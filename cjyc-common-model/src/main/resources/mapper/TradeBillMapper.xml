@@ -174,4 +174,8 @@
         update w_order set flag=#{state} where no = #{orderNo}
     </update>
 
+    <select id="getWlFeeCount" resultType="java.math.BigDecimal">
+        select sum(freight_fee) from w_waybill where carrier_id = #{carrierId} and state = 100
+    </select>
+
 </mapper>
