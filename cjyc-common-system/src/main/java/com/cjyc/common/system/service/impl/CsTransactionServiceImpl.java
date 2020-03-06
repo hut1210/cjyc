@@ -288,6 +288,14 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
             //BigDecimal channelFee = dictionaryService.getChannelFee(charge.getChannel(), order.getAmount().toString());
             tb.setChannelFee(new BigDecimal(0));
         }
+        Map<String, Object> metadata = order.getMetadata();
+        if(metadata!=null){
+            PingxxMetaData pingxxMetaData =  BeanMapUtil.mapToBean(metadata, new PingxxMetaData());
+            String chargeType = pingxxMetaData.getChargeType();
+            log.info("chargeType ="+chargeType);
+
+            tb.setType((Integer.valueOf(chargeType)));
+        }
         String uid = order.getUid();
         tb.setPayerId(Long.valueOf(uid));
 
