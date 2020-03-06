@@ -6,6 +6,8 @@ import com.cjyc.common.model.dto.web.excel.ChangePriceExportDto;
 import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.entity.OrderChangeLog;
 import com.cjyc.common.model.entity.defined.FullOrder;
+import com.cjyc.common.model.util.LocalDateTimeUtil;
+import com.cjyc.common.model.util.MoneyUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.excel.ImportOrderChangePriceVo;
 import com.cjyc.web.api.service.IExcelService;
@@ -30,25 +32,34 @@ public class ExcelServiceImpl implements IExcelService {
         List<OrderChangeLog> list = orderChangeLogDao.findAll(reqDto);
         for (OrderChangeLog orderChangeLog : list) {
             FullOrder[] fos = getFullOrderFromChangeLog(orderChangeLog);
-            ImportOrderChangePriceVo iocp = getByFullOrder(fos);
+            ImportOrderChangePriceVo iocp = getByFullOrder(fos, orderChangeLog);
 
         }
         return null;
     }
 
-    private ImportOrderChangePriceVo getByFullOrder(FullOrder[] fos) {
+    private ImportOrderChangePriceVo getByFullOrder(FullOrder[] fos, OrderChangeLog ocl) {
         ImportOrderChangePriceVo vo = new ImportOrderChangePriceVo();
-        vo.setNo(fos[1].getNo());
+        vo.setCreateUserName(ocl.getCreateUser());
+        vo.setNo(ocl.getOrderNo());
         vo.setCustomerName(fos[1].getCustomerName());
-        vo.setCustomerTypeStr(String.valueOf(fos[1].getCustomerType()));
-        vo.setOldTotalFee(nullToZero(fos[0].getTotalFee()));
-        vo.setOldWlTotalFee(getWlFee(fos[0].getList()));
-        vo.setOldAgencyFee(vo.getOldTotalFee());
-/*        vo.setNewTotalFee();
-        vo.setNewWlTotalFee();
-        vo.setNewAgencyFee();*/
-        return null;
+        vo.setCustomerType(fos[1].getCustomerType());
+        vo.setCreateTimeStr(LocalDateTimeUtil.formatLong(ocl.getCreateTime(), "yyyy/MM/dd"));
+        vo.setOldCarNum(fos[0].getCarNum());
 
+        BigDecimal totalFee = fos[0].getTotalFee();
+        BigDecimal wlFee = getWlFee(fos[0].getList());
+        vo.setOldTotalFee(MoneyUtil.fenToYuan(wlFee, MoneyUtil.PATTERN_TWO));
+        vo.setOldWlTotalFee(MoneyUtil.fenToYuan(totalFee, MoneyUtil.PATTERN_TWO));
+        vo.setOldAgencyFee(MoneyUtil.fenToYuan(totalFee.subtract(wlFee), MoneyUtil.PATTERN_TWO));
+
+        BigDecimal totalFee2 = fos[1].getTotalFee();
+        BigDecimal wlFee2 = getWlFee(fos[1].getList());
+        vo.setNewCarNum(fos[1].getCarNum());
+        vo.setNewAgencyFee(MoneyUtil.fenToYuan(totalFee2, MoneyUtil.PATTERN_TWO));
+        vo.setNewWlTotalFee(MoneyUtil.fenToYuan(wlFee2, MoneyUtil.PATTERN_TWO));
+        vo.setNewTotalFee(MoneyUtil.fenToYuan(totalFee2.subtract(wlFee2), MoneyUtil.PATTERN_TWO));
+        return vo;
     }
 
     private BigDecimal getWlFee(List<OrderCar> list) {
@@ -61,10 +72,10 @@ public class ExcelServiceImpl implements IExcelService {
             if (orderCar == null) {
                 continue;
             }
-            wlFee = wlFee.add(nullToZero(orderCar.getPickFee()))
-                    .add(nullToZero(orderCar.getTrunkFee()))
-                    .add(nullToZero(orderCar.getBackFee()))
-                    .add(nullToZero(orderCar.getAddInsuranceFee()));
+            wlFee = wlFee.add(MoneyUtil.nullToZero(orderCar.getPickFee()))
+                    .add(MoneyUtil.nullToZero(orderCar.getTrunkFee()))
+                    .add(MoneyUtil.nullToZero(orderCar.getBackFee()))
+                    .add(MoneyUtil.nullToZero(orderCar.getAddInsuranceFee()));
 
         }
         return wlFee;
@@ -86,9 +97,5 @@ public class ExcelServiceImpl implements IExcelService {
         }
 
         return new FullOrder[]{oFullOrder, nFullOrder};
-    }
-
-    private BigDecimal nullToZero(BigDecimal fee) {
-        return fee == null ? BigDecimal.ZERO : fee;
     }
 }

@@ -10,6 +10,7 @@ import com.cjyc.common.model.entity.defined.FullOrder;
 import com.cjyc.common.model.entity.defined.UserInfo;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.order.OrderChangeTypeEnum;
+import com.cjyc.common.model.util.MoneyUtil;
 import com.cjyc.common.system.service.ICsOrderChangeLogService;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -78,7 +79,7 @@ public class CsOrderChangeLogServiceImpl implements ICsOrderChangeLogService {
         if(oldOrder == null || newOrder == null){
             return false;
         }
-        if(nullToZero(oldOrder.getTotalFee()).compareTo(nullToZero(newOrder.getTotalFee())) != 0){
+        if(MoneyUtil.nullToZero(oldOrder.getTotalFee()).compareTo(MoneyUtil.nullToZero(newOrder.getTotalFee())) != 0){
             return true;
         }
 
@@ -112,8 +113,5 @@ public class CsOrderChangeLogServiceImpl implements ICsOrderChangeLogService {
                 .add(car.getAddInsuranceFee() == null ? BigDecimal.ZERO : car.getAddInsuranceFee());
     }
 
-    private BigDecimal nullToZero(BigDecimal totalFee) {
-        return totalFee == null ? BigDecimal.ZERO : totalFee;
-    }
 
 }

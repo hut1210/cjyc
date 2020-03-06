@@ -21,4 +21,9 @@ public class MoneyUtil {
         return df.format(bd);
     }
 
+
+    public static BigDecimal nullToZero(BigDecimal fee) {
+        return fee == null ? BigDecimal.ZERO : fee;
+    }
+
 }

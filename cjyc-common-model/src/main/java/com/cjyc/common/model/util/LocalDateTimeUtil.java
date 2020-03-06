@@ -93,6 +93,16 @@ public class LocalDateTimeUtil {
     }
 
     /**
+     * 获取指定时间的指定格式
+     * @param pattern 格式
+     * @return
+     */
+    public static String formatLong(Long time,String pattern) {
+        return convertLongToLDT(time).format(DateTimeFormatter.ofPattern(pattern));
+    }
+
+
+    /**
      * 日期加上一个数,根据temporalUnit不同加不同值,temporalUnit为ChronoUnit.*
      * @param localDateTime 被加时间
      * @param number 被加数

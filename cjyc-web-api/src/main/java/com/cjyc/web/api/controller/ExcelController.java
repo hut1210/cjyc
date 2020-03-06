@@ -2,6 +2,10 @@ package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.web.excel.ChangePriceExportDto;
 import com.cjyc.common.model.dto.web.order.ListOrderDto;
+import com.cjyc.common.model.entity.defined.FullOrder;
+import com.cjyc.common.model.enums.ResultEnum;
+import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.excel.ImportOrderChangePriceVo;
 import com.cjyc.web.api.service.IExcelService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -12,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 @Api(tags = "导入导出")
 @RestController
@@ -26,10 +31,10 @@ public class ExcelController {
     @ApiOperation(value = "导出订单改价记录")
     @GetMapping(value = "/order/change/price/simple/export")
     public void exportOrderChangePriceSimple(ChangePriceExportDto reqDto, HttpServletResponse response){
-        //ResultVo<List<FullOrder>> resultVo = excelService.listOrderChangePriceSimple(reqDto);
-        /*if (resultVo.getCode() != ResultEnum.SUCCESS.getCode()) {
+        ResultVo<List<ImportOrderChangePriceVo>> resultVo = excelService.listOrderChangePriceSimple(reqDto);
+        if (resultVo.getCode() != ResultEnum.SUCCESS.getCode()) {
             return;
-        }*/
+        }
     }
     @ApiOperation(value = "导出订单改价记录")
     @GetMapping(value = "/order/change/price/full/export")
