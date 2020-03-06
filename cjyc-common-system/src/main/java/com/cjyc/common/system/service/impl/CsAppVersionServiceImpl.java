@@ -69,7 +69,7 @@ public class CsAppVersionServiceImpl extends ServiceImpl<IAppVersionDao, AppVers
                 return BaseResultUtil.success(vo);
             }
         }
-        return BaseResultUtil.fail("获取信息错误，请联系管理员");
+        return BaseResultUtil.success();
     }
 
     /**
