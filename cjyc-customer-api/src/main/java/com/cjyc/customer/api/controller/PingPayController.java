@@ -16,6 +16,7 @@ import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.ValidateReceiptCarPayVo;
 import com.cjyc.common.system.service.ICsCustomerService;
+import com.cjyc.common.system.service.ICsPingPayService;
 import com.cjyc.common.system.service.ICsPingxxService;
 import com.cjyc.customer.api.service.IPingPayService;
 import com.cjyc.customer.api.service.ITransactionService;
@@ -27,10 +28,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.util.ResourceUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -59,6 +57,21 @@ public class PingPayController {
     private ICsCustomerService csCustomerService;
     @Resource
     private ICsPingxxService csPingxxService;
+
+    @Resource
+    private ICsPingPayService csPingPayService;
+
+    @ApiOperation("支付合伙人")
+    @PostMapping("/allinpay/{orderId}")
+    public ResultVo allinpay(HttpServletRequest request,@PathVariable Long orderId){
+
+        try{
+            return csPingPayService.allinpayToCooperator(orderId);
+        }catch (Exception e){
+            log.error(e.getMessage(),e);
+            return BaseResultUtil.fail(e.getMessage());
+        }
+    }
 
 /*    @ApiOperation("付款")
     @PostMapping("/order/pre/pay")

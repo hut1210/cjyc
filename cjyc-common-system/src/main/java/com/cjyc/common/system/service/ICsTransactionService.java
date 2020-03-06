@@ -3,6 +3,7 @@ package com.cjyc.common.system.service;
 import com.Pingxx.model.Order;
 import com.cjyc.common.model.entity.TradeBill;
 import com.pingplusplus.model.Event;
+import com.pingplusplus.model.Transfer;
 import org.apache.ibatis.annotations.Param;
 
 import java.math.BigDecimal;
@@ -36,4 +37,6 @@ public interface ICsTransactionService {
     void updateWayBillPayStateNoPay(Long waybillId,long time);
 
     BigDecimal getAmountByOrderCarNosToPartner(List<String> orderCarNosList);
+
+    void saveCooperatorTransactions(Transfer transfer, String s);
 }

@@ -106,6 +106,7 @@ public class TransactionServiceImpl implements ITransactionService {
     private ICsPushMsgService csPushMsgService;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int save(Object obj) {
         TradeBill bill;
         if(obj instanceof TradeBill){
@@ -359,15 +360,8 @@ public class TransactionServiceImpl implements ITransactionService {
         if(chargeType.equals(String.valueOf(ChargeTypeEnum.UNION_PAY_PARTNER.getCode()))){
             String orderId = pingxxMetaData.getOrderId();
             com.cjyc.common.model.entity.Order order = orderDao.selectById(orderId);
-            /*if(order!=null){
-                log.info("回调给合伙人付款");
-                try {
-                    csPingPayService.allinpayToCooperator(order.getId());
-                } catch (Exception e) {
-                    log.error("回调支付合伙人{}（ID{}）服务费失败", order.getCustomerName(), order.getCustomerId());
-                    log.error(e.getMessage(), e);
-                }
-            }*/
+
+            //TODO 更新合伙人打款状态
 
         }
 
@@ -550,6 +544,7 @@ public class TransactionServiceImpl implements ITransactionService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void updateTransactions(Order order, Event event, String state) {
         /**
          * 更新f_trade_bill状态，更新车辆付款状态,物流费支付时间,更新订单状态
