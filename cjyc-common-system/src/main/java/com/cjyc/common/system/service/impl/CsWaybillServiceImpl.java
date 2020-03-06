@@ -136,7 +136,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 //加锁
                 String lockKey = RedisKeys.getDispatchLock(orderCarNo);
                 log.debug("缓存：key->{}", lockKey);
-                if (!redisLock.lock(lockKey, 20000, 10, 150L)) {
+                if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
                     return BaseResultUtil.fail("车辆{0}，其他人正在调度", orderCarNo);
                 }
@@ -209,8 +209,9 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
             Long currentMillisTime = System.currentTimeMillis();
             for (SaveLocalWaybillDto dto : list) {
-
-                //TODO 验证提车和送车人是否与订单一致
+                if(dto == null){
+                    continue;
+                }
                 CarrierInfo carrierInfo = carrierMap.get(dto.getCarrierId());
                 OrderCar orderCar = getOrderCarFromMap(orderCarMap, dto.getOrderCarId());
                 Order order = getOrderFromMap(orderMap, orderCar.getOrderId());
@@ -401,14 +402,6 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             Long orderCarId = dto.getOrderCarId();
             Long carrierId = paramsDto.getCarrierId();
 
-            if (!csStoreService.validateStoreParam(dto.getStartStoreId(), dto.getStartStoreName())) {
-                log.error("业务中心参数错误(updateLocal):" + JSON.toJSONString(paramsDto));
-                return BaseResultUtil.fail("运单中车辆{0}，始发地业务中心参数错误", orderCarNo);
-            }
-            if (!csStoreService.validateStoreParam(dto.getEndStoreId(), dto.getEndStoreName())) {
-                log.error("业务中心参数错误(updateLocal):" + JSON.toJSONString(paramsDto));
-                return BaseResultUtil.fail("运单中车辆{0}，目的地业务中心参数错误", orderCarNo);
-            }
             //【验证】承运商是否可以运营
             CarrierInfo carrierInfo = validateLocalCarrierInfo(carrierId, paramsDto.getCarrierName(), paramsDto.getCarrierType(), paramsDto.getType(),
                     new UserInfo(dto.getLoadLinkUserId(), dto.getLoadLinkName(), dto.getLoadLinkPhone()),
@@ -419,6 +412,12 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             if (waybill == null) {
                 return BaseResultUtil.fail("运单不存在");
             }
+            String lockKey = RedisKeys.getDispatchLock(waybill.getNo());
+            if (!redisLock.lock(lockKey, 120000, 100, 300L)) {
+                return BaseResultUtil.fail("运单{0}，其他人正在修改", waybill.getNo());
+            }
+            lockSet.add(lockKey);
+
             validateReAllotCarrier(carrierInfo, waybill.getCarrierId());
             if (waybill.getState() >= WaybillStateEnum.TRANSPORTING.code) {
                 return BaseResultUtil.fail("运输中运单不允许修改");
@@ -426,12 +425,20 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
             /**验证运单车辆信息*/
             //加锁
-            String lockKey = RedisKeys.getDispatchLock(orderCarNo);
-            if (!redisLock.lock(lockKey, 20000, 10, 150L)) {
+            String lockCarKey = RedisKeys.getDispatchLock(orderCarNo);
+            if (!redisLock.lock(lockCarKey, 120000, 10, 150L)) {
                 return BaseResultUtil.fail("运单中车辆{0}，其他人正在调度", orderCarNo);
             }
-            lockSet.add(lockKey);
+            lockSet.add(lockCarKey);
 
+            if (!csStoreService.validateStoreParam(dto.getStartStoreId(), dto.getStartStoreName())) {
+                log.error("业务中心参数错误(updateLocal):" + JSON.toJSONString(paramsDto));
+                return BaseResultUtil.fail("运单中车辆{0}，始发地业务中心参数错误", orderCarNo);
+            }
+            if (!csStoreService.validateStoreParam(dto.getEndStoreId(), dto.getEndStoreName())) {
+                log.error("业务中心参数错误(updateLocal):" + JSON.toJSONString(paramsDto));
+                return BaseResultUtil.fail("运单中车辆{0}，目的地业务中心参数错误", orderCarNo);
+            }
             //【验证】订单车辆状态
             OrderCar orderCar = orderCarDao.selectById(orderCarId);
             if (orderCar == null) {
@@ -796,6 +803,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             /**2、运单中车辆循环验证*/
             Set<String> orderCarNoSet = Sets.newHashSet();
             List<WaybillCar> waybillCars = Lists.newArrayList();
+            Map<Long, Order> orderMap = Maps.newHashMap();
+            Map<Long, OrderCar> orderCarMap = Maps.newHashMap();
             for (SaveTrunkWaybillCarDto dto : dtoList) {
                 if (dto == null) {
                     continue;
@@ -819,7 +828,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 }
 
                 //验证订单车辆状态
-                OrderCar orderCar = orderCarDao.selectById(orderCarId);
+                OrderCar orderCar = getOrderCarFromMap(orderCarMap, orderCarId);
                 if (orderCar == null) {
                     return BaseResultUtil.fail("运单车辆{0}，不存在", orderCarNo);
                 }
@@ -827,7 +836,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                     return BaseResultUtil.fail("运单中车辆{0}，无法提车调度", orderCarNo);
                 }
                 //验证订单状态
-                Order order = orderDao.selectById(orderCar.getOrderId());
+                Order order = getOrderFromMap(orderMap, orderCar.getOrderId());
                 if (order == null) {
                     return BaseResultUtil.fail("运单中车辆{0}，所属订单车辆不存在", orderCarNo);
                 }
@@ -861,7 +870,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
                 //同一订单车辆不能重复
                 if (orderCarNoSet.contains(dto.getOrderCarNo())) {
-                    throw new ServerException("运单中车辆{0}，重复", dto.getOrderCarNo());
+                    return BaseResultUtil.fail("运单中车辆{0}，重复", dto.getOrderCarNo());
                 }
 
             }
@@ -892,8 +901,11 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             waybillDao.insert(waybill);
 
             for (SaveTrunkWaybillCarDto dto : dtoList) {
-                OrderCar orderCar = orderCarDao.selectById(dto.getOrderCarId());
-                Order order = orderDao.selectById(orderCar.getOrderId());
+                if(dto == null){
+                    continue;
+                }
+                OrderCar orderCar = getOrderCarFromMap(orderCarMap, dto.getOrderCarId());
+                Order order = getOrderFromMap(orderMap, orderCar.getOrderId());
                 WaybillCar waybillCar = new WaybillCar();
                 BeanUtils.copyProperties(dto, waybillCar);
                 waybillCar.setWaybillId(waybill.getId());
@@ -993,6 +1005,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             }
 
             /**2、运单中车辆循环*/
+            Map<Long, Order> orderMap = Maps.newHashMap();
+            Map<Long, OrderCar> orderCarMap = Maps.newHashMap();
             for (UpdateTrunkWaybillCarDto dto : dtoList) {
                 if (dto == null) {
                     continue;
@@ -1021,7 +1035,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                     waybillCar = waybillCarDao.selectById(dto.getId());
                     log.debug("【干线调度修改】已有车辆修改：" + JSON.toJSONString(waybillCar));
                     if (waybillCar.getState() != null && waybillCar.getState() >= WaybillCarStateEnum.LOADED.code && carrierInfo.isReAllotCarrier()) {
-                        throw new ParameterException("运单中车辆{0}，运输中不能修改司机，请使用[卸载车辆]功能", orderCarNo);
+                        return BaseResultUtil.fail("运单中车辆{0}，运输中不能修改司机，请使用[卸载车辆]功能", orderCarNo);
                     }
                     if(waybillCar.getState() != null && waybillCar.getState() >= WaybillCarStateEnum.UNLOADED.code){
                         continue;
@@ -1033,7 +1047,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 }
 
                 //验证订单车辆状态
-                OrderCar orderCar = orderCarDao.selectById(orderCarId);
+                OrderCar orderCar = getOrderCarFromMap(orderCarMap, orderCarId);
                 if (orderCar == null) {
                     return BaseResultUtil.fail("运单中车辆{0}，不存在", orderCarNo);
                 }
@@ -1041,7 +1055,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                     return BaseResultUtil.fail("运单中车辆{0}，无法提车调度", orderCarNo);
                 }
                 //验证订单状态
-                Order order = orderDao.selectById(orderCar.getOrderId());
+                Order order = getOrderFromMap(orderMap, orderCar.getOrderId());
                 if (order == null) {
                     return BaseResultUtil.fail("运单中车辆{0}，所属订单车辆不存在", orderCarNo);
                 }
@@ -1056,7 +1070,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 //validateLine(line, dto.getLineId());
                 dto.setLineId(line == null ? null : line.getId());
                 if (paramsDto.getFixedFreightFee() && (dto.getLineId() == null || dto.getLineId() <= 0)) {
-                    throw new ParameterException("运单中车辆{0}，线路不能为空", orderCarNo);
+                    return BaseResultUtil.fail("运单中车辆{0}，线路不能为空", orderCarNo);
                 }
                 //验证出发地与上一次调度目的地是否一致
                 WaybillCar prevWc = dto.getId() == null ? waybillCarDao.findLastByOderCarId(orderCarId) : waybillCarDao.findLastByOderCarIdAndId(waybillCar.getId(), orderCarId);
@@ -1076,8 +1090,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             waybill.setRemark(paramsDto.getRemark());
             if (!CollectionUtils.isEmpty(dtoList)) {
                 Set<String> startAreaCodeSet = dtoList.stream().map(UpdateTrunkWaybillCarDto::getStartAreaCode).collect(Collectors.toSet());
-                Set<String> EndAreaCodeSet = dtoList.stream().map(UpdateTrunkWaybillCarDto::getEndAreaCode).collect(Collectors.toSet());
-                waybill.setGuideLine(computeGuideLine(startAreaCodeSet, EndAreaCodeSet, paramsDto.getGuideLine(), dtoList.size()));
+                Set<String> endAreaCodeSet = dtoList.stream().map(UpdateTrunkWaybillCarDto::getEndAreaCode).collect(Collectors.toSet());
+                waybill.setGuideLine(computeGuideLine(startAreaCodeSet, endAreaCodeSet, paramsDto.getGuideLine(), dtoList.size()));
             }
             waybillDao.updateByIdForNull(waybill);
 
@@ -1086,6 +1100,9 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             List<WaybillCar> newWaybillCars = Lists.newArrayList();
             List<WaybillCar> waybillCars = Lists.newArrayList();
             for (UpdateTrunkWaybillCarDto dto : dtoList) {
+                if(dto == null){
+                    continue;
+                }
                 String orderCarNo = dto.getOrderCarNo();
                 Long orderCarId = dto.getOrderCarId();
                 boolean isNewWaybillCar = false;

@@ -1,15 +1,12 @@
 package com.cjyc.common.model.dto.web.excel;
 
-import com.cjyc.common.model.util.LocalDateTimeUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 
 @Data
 public class ChangePriceExportDto {
@@ -21,8 +18,7 @@ public class ChangePriceExportDto {
     @ApiModelProperty(hidden = true)
     private Long startDate;
 
-    public String getEndDate() {
-c
+    public Long getEndDate() {
         if(StringUtils.isBlank(getEndDateStr())){
             return null;
         }
@@ -34,11 +30,23 @@ c
         }else{
             pt = "yyyy.MM.dd";
         }
-        DateTimeFormatter.ofPattern(pt).parse(getEndDateStr());
-        return LocalDateTimeUtil.convertToLong(LocalDateTime.parse(getEndDateStr(),DateTimeFormatter.ofPattern(pt)));
+        LocalDate localDate = LocalDate.parse(getEndDateStr(), DateTimeFormatter.ofPattern(pt));
+        return localDate.atStartOfDay(ZoneOffset.ofHours(8)).toInstant().toEpochMilli();
     }
 
-    public String getStartDate() {
-        return "";
+    public Long getStartDate() {
+        if(StringUtils.isBlank(getStartDateStr())){
+            return null;
+        }
+        String pt;
+        if(getEndDateStr().contains("/")){
+            pt = "yyyy/MM/dd";
+        }else if(getEndDateStr().contains("-")){
+            pt = "yyyy-MM-dd";
+        }else{
+            pt = "yyyy.MM.dd";
+        }
+        LocalDate localDate = LocalDate.parse(getEndDateStr(), DateTimeFormatter.ofPattern(pt));
+        return localDate.atStartOfDay(ZoneOffset.ofHours(8)).toInstant().toEpochMilli();
     }
 }

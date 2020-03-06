@@ -6,6 +6,7 @@ import com.cjyc.common.model.dto.web.excel.ChangePriceExportDto;
 import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.entity.OrderChangeLog;
 import com.cjyc.common.model.entity.defined.FullOrder;
+import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.MoneyUtil;
 import com.cjyc.common.model.vo.ResultVo;
@@ -33,9 +34,9 @@ public class ExcelServiceImpl implements IExcelService {
         for (OrderChangeLog orderChangeLog : list) {
             FullOrder[] fos = getFullOrderFromChangeLog(orderChangeLog);
             ImportOrderChangePriceVo iocp = getByFullOrder(fos, orderChangeLog);
-
+            resList.add(iocp);
         }
-        return null;
+        return BaseResultUtil.success(resList);
     }
 
     private ImportOrderChangePriceVo getByFullOrder(FullOrder[] fos, OrderChangeLog ocl) {
