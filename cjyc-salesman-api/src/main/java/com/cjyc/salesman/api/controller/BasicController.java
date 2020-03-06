@@ -1,5 +1,6 @@
 package com.cjyc.salesman.api.controller;
 
+import com.cjyc.common.model.dto.AppVersionDto;
 import com.cjyc.common.model.dto.CommonDto;
 import com.cjyc.common.model.dto.KeywordDto;
 import com.cjyc.common.model.dto.AdminDto;
@@ -7,6 +8,7 @@ import com.cjyc.common.model.dto.customer.freightBill.FindStoreDto;
 import com.cjyc.common.model.dto.customer.freightBill.TransportDto;
 import com.cjyc.common.model.dto.salesman.customer.SalesCustomerDto;
 import com.cjyc.common.model.dto.salesman.mine.AppCustomerIdDto;
+import com.cjyc.common.model.vo.AppVersionVo;
 import com.cjyc.common.model.vo.salesman.customer.SalesCustomerListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -48,6 +50,8 @@ public class BasicController {
     private ICsCustomerService csCustomerService;
     @Resource
     private ICsLineService csLineService;
+    @Resource
+    private ICsAppVersionService appVersionService;
 
     @ApiOperation(value = "查看品牌车系")
     @PostMapping(value = "/findCarSeries")
@@ -102,6 +106,12 @@ public class BasicController {
     @PostMapping(value = "/linePriceByCode")
     public ResultVo<Map<String,Object>> linePriceByCode(@Validated @RequestBody TransportDto dto){
         return csLineService.linePriceByCode(dto);
+    }
+
+    @ApiOperation(value = "业务员端检查app版本是否更新")
+    @PostMapping(value = "/updateAppVersion")
+    public ResultVo<AppVersionVo> updateAppVersion(@Validated @RequestBody AppVersionDto dto){
+        return appVersionService.updateAppVersion(dto);
     }
 
 }
