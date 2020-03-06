@@ -2,6 +2,7 @@ package com.cjyc.common.system.service;
 
 import com.Pingxx.model.Order;
 import com.cjyc.common.model.entity.TradeBill;
+import com.pingplusplus.model.Charge;
 import com.pingplusplus.model.Event;
 import com.pingplusplus.model.Transfer;
 import org.apache.ibatis.annotations.Param;
@@ -39,4 +40,6 @@ public interface ICsTransactionService {
     BigDecimal getAmountByOrderCarNosToPartner(List<String> orderCarNosList);
 
     void saveCooperatorTransactions(Transfer transfer, String s);
+
+    void saveWebPrePayTransactions(Charge charge, String s);
 }

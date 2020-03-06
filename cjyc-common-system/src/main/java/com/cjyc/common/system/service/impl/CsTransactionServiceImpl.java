@@ -130,6 +130,25 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
     }
 
     @Override
+    public void saveWebPrePayTransactions(Charge charge, String state) {
+        TradeBill tb = chargeToTransactions(charge, null,state);
+        if(tb != null){
+            tradeBillDao.insert(tb);
+        }
+
+        Map<String, Object> metadata = charge.getMetadata();
+        List<String> orderCarIds = (List<String>) metadata.get("orderCarIds");
+        if(orderCarIds != null){
+            for(int i=0;i<orderCarIds.size();i++){
+                TradeBillDetail tradeBillDetail = new TradeBillDetail();
+                tradeBillDetail.setTradeBillId(Long.valueOf(tb.getId()));
+                tradeBillDetail.setSourceNo(orderCarIds.get(i)==null?null:orderCarIds.get(i));
+                tradeBillDetailDao.insert(tradeBillDetail);
+            }
+        }
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveTransactions(Object obj, String state) {
         TradeBill tb;
