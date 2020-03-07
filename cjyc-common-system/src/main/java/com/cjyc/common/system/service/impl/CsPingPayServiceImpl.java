@@ -598,6 +598,16 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         return BaseResultUtil.success("通联代付成功");
     }
 
+    /**
+     * 对比合伙人应得运费与已得运费
+     */
+    private BigDecimal contrastCooperatorAmount(Long customId){
+
+        BigDecimal wlFeeCount = cStransactionService.getCooperatorServiceFeeCount(customId);
+
+        return wlFeeCount;
+    }
+
     @Override
     public ResultVo allinpayToCooperator(Long orderId) throws FileNotFoundException, RateLimitException, APIException, ChannelException, InvalidRequestException, APIConnectionException, AuthenticationException {
         log.info("完成订单（ID：{}），支付合伙人服务费", orderId);

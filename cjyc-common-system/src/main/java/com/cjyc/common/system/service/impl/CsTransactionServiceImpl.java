@@ -173,6 +173,11 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
     }
 
     @Override
+    public BigDecimal getCooperatorServiceFeeCount(Long customId) {
+        return null;
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveTransactions(Object obj, String state) {
         TradeBill tb;

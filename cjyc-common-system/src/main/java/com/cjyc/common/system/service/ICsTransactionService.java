@@ -47,4 +47,6 @@ public interface ICsTransactionService {
     void updateOrderFlag(String orderNo, String state, long l);
 
     BigDecimal getWlFeeCount(Long carrierId);
+
+    BigDecimal getCooperatorServiceFeeCount(Long customId);
 }
