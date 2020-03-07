@@ -14,6 +14,6 @@
     </update>
 
     <select id="selectByOrderCode" resultType="com.cjyc.common.model.entity.Refund">
-        select * from w_order_refund where order_no =#{orderCode}
+        select * from w_order_refund where order_no =#{orderCode} for update
     </select>
 </mapper>
