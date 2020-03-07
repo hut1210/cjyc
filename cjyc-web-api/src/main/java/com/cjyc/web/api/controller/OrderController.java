@@ -25,10 +25,12 @@ import com.cjyc.web.api.util.CustomerOrderExcelVerifyHandler;
 import com.cjyc.web.api.util.ExcelUtil;
 import com.cjyc.web.api.util.KeyCustomerOrderExcelVerifyHandler;
 import com.cjyc.web.api.util.PatCustomerOrderExcelVerifyHandler;
+import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.util.CollectionUtils;
@@ -39,6 +41,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -356,9 +359,15 @@ public class OrderController {
             return BaseResultUtil.success("未查询到结果");
         }
         carList = carList.stream().filter(Objects::nonNull).collect(Collectors.toList());
+        List<ExcelListOrderCarVo> excelOrderCarVoList = Lists.newArrayList();
+        for(ListOrderCarVo vo : carList){
+            ExcelListOrderCarVo excelOrderCarVo = new ExcelListOrderCarVo();
+            BeanUtils.copyProperties(vo,excelOrderCarVo);
+            excelOrderCarVoList.add(excelOrderCarVo);
+        }
         try {
-            ExcelUtil.exportExcel(carList, "车辆信息", "车辆信息",
-                    ListOrderCarVo.class, System.currentTimeMillis()+"车辆信息.xls", response);
+            ExcelUtil.exportExcel(excelOrderCarVoList, "车辆信息", "车辆信息",
+                    ExcelListOrderCarVo.class, System.currentTimeMillis()+"车辆信息.xls", response);
             return null;
         }catch (Exception e) {
             LogUtil.error("导出车辆信息异常", e);
