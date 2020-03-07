@@ -36,6 +36,7 @@ import com.pingplusplus.model.Charge;
 import com.pingplusplus.model.Transfer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.bouncycastle.pqc.math.linearalgebra.BigEndianConversions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -440,10 +441,15 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                                 if(baseCarrierVo.getSettleType()==0){
                                     if(baseCarrierVo.getCardName()!=null && baseCarrierVo.getCardNo()!=null
                                             && baseCarrierVo.getBankCode()!=null){
-                                        Transfer transfer = allinpayTransferDriverCreate(baseCarrierVo,waybill);
-                                        log.debug("【自动打款模式，通联代付支付运费】运单{}，支付运费，账单{}", waybill.getNo(), transfer);
-                                        tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"2");
-                                        cStransactionService.saveTransactions(transfer, "1");
+                                        BigDecimal fee = contrastAmount(carrierId);
+                                        log.info("【自动打款模式】运单Id {},fee = {},要打款金额{}",waybillId,fee,waybill.getFreightFee());
+                                        if(waybill.getFreightFee().compareTo(fee)<=0){
+                                            Transfer transfer = allinpayTransferDriverCreate(baseCarrierVo,waybill);
+                                            log.debug("【自动打款模式，通联代付支付运费】运单{}，支付运费，账单{}", waybill.getNo(), transfer);
+                                            tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"2");
+                                            cStransactionService.saveTransactions(transfer, "1");
+                                        }
+
                                     }else{
                                         log.error("【自动打款模式，通联代付支付运费】收款人信息不全 waybillId = {}", waybillId);
                                         addPaymentErrorLog("auto allinpay 收款人信息不全 waybillId ="+waybillId);
@@ -490,9 +496,11 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
      */
     private BigDecimal contrastAmount(Long carrierId){
 
-        BigDecimal wlFeeCount = cStransactionService.getWlFeeCount(carrierId);
+        BigDecimal wlFeeCount = cStransactionService.getWlFeeCount(carrierId);//应得费用
 
-        return wlFeeCount;
+        BigDecimal receiveFeeCount = cStransactionService.getReceiveFeeCount(carrierId);//已得费用
+
+        return wlFeeCount.subtract(receiveFeeCount);
     }
 
     private void savePaymentRecord(Long carrierId,Long waybillId){
@@ -564,10 +572,15 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                             if(baseCarrierVo.getSettleType()==0){
                                 if(baseCarrierVo.getCardName()!=null && baseCarrierVo.getCardNo()!=null
                                         && baseCarrierVo.getBankCode()!=null){
-                                    Transfer transfer = allinpayTransferDriverCreate(baseCarrierVo,waybill);
-                                    log.debug("【对外支付模式，通联代付支付运费】运单{}，支付运费，账单{}", waybill.getNo(), transfer);
-                                    tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"2");//打款中
-                                    cStransactionService.saveTransactions(transfer, "1");
+                                    BigDecimal fee = contrastAmount(carrierId);
+                                    log.info("【自动打款模式】运单Id {},fee = {},要打款金额{}",waybillId,fee,waybill.getFreightFee());
+                                    if(waybill.getFreightFee().compareTo(fee)<=0){
+                                        Transfer transfer = allinpayTransferDriverCreate(baseCarrierVo,waybill);
+                                        log.debug("【对外支付模式，通联代付支付运费】运单{}，支付运费，账单{}", waybill.getNo(), transfer);
+                                        tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"2");//打款中
+                                        cStransactionService.saveTransactions(transfer, "1");
+                                    }
+
                                 }else{
                                     log.error("【对外支付模式，通联代付支付运费】收款人信息不全 waybillId = {}", waybillId);
                                     addPaymentErrorLog("external allinpay 收款人信息不全 waybillId ="+waybillId);
@@ -610,13 +623,21 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
     /**
      * 对比合伙人应得运费与已得运费
      */
-    private BigDecimal contrastCooperatorAmount(Long customId){
+    public BigDecimal contrastCooperatorAmount(Long customId){
 
-        BigDecimal deservedFeeCount = cStransactionService.getCooperatorServiceFeeCount(customId);//应得运费
+        BigDecimal orderCount = cStransactionService.getCooperatorServiceFeeCount(customId);//总订单运费
 
-        BigDecimal receiveFeeCount = cStransactionService.getCooperatorServiceReceiveFeeCount(customId);//已得费用
+        BigDecimal orderCarCount = cStransactionService.getCooperatorServiceFeeCarCount(customId);//总车辆运费
 
-        return null;
+        BigDecimal deservedFee = orderCount.subtract(orderCarCount);//应得费用
+
+        BigDecimal receiveOrderCount = cStransactionService.getCooperatorServiceReceiveFeeCount(customId);
+
+        BigDecimal receiveOrderCarCount = cStransactionService.getCooperatorServiceReceiveCarFeeCount(customId);//
+
+        BigDecimal receiverFee = receiveOrderCount.subtract(receiveOrderCarCount);
+
+        return deservedFee.subtract(receiverFee);
     }
 
     @Override
@@ -658,7 +679,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                         }
 
                     }
-                    //TODO 再次校验
+
                     Long customId = order.getCustomerId();
                     ShowPartnerVo showPartnerVo = customerDao.showPartner(customId);
 
@@ -672,9 +693,15 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                     if(payableFee.compareTo(BigDecimal.ZERO)>0){
                         if(showPartnerVo!=null && showPartnerVo.getCardName()!=null && showPartnerVo.getCardNo()!=null
                         && showPartnerVo.getBankCode()!=null){
-                            Transfer transfer = allinpayToCooperatorCreate(showPartnerVo,payableFee,order.getNo(),orderId);
-                            cStransactionService.updateOrderFlag(order.getNo(),"1",System.currentTimeMillis());//付款中
-                            cStransactionService.saveCooperatorTransactions(transfer, "1");
+                            //TODO 再次校验
+                            BigDecimal fee = contrastCooperatorAmount(customId);
+                            log.info("支付合伙人服务费 payableFee.compareTo(fee)={},fee={}",payableFee.compareTo(fee),fee);
+                            if(payableFee.compareTo(fee)<=0){
+                                Transfer transfer = allinpayToCooperatorCreate(showPartnerVo,payableFee,order.getNo(),orderId);
+                                cStransactionService.updateOrderFlag(order.getNo(),"1",System.currentTimeMillis());//付款中
+                                cStransactionService.saveCooperatorTransactions(transfer, "1");
+                            }
+
                         }else{
                             log.error("【通联代付支付合伙人费用】收款人信息不全 orderId = {}", orderId);
                             addPaymentErrorLog("【通联代付支付合伙人费用】收款人信息不全 orderId = "+orderId);

@@ -18,6 +18,7 @@ import com.cjyc.common.model.vo.customer.order.ValidateReceiptCarPayVo;
 import com.cjyc.common.system.service.ICsCustomerService;
 import com.cjyc.common.system.service.ICsPingPayService;
 import com.cjyc.common.system.service.ICsPingxxService;
+import com.cjyc.common.system.service.ICsTransactionService;
 import com.cjyc.customer.api.service.IPingPayService;
 import com.cjyc.customer.api.service.ITransactionService;
 import com.pingplusplus.model.*;
@@ -60,6 +61,9 @@ public class PingPayController {
 
     @Resource
     private ICsPingPayService csPingPayService;
+
+    @Autowired
+    private ICsTransactionService csTransactionService;
 
     @ApiOperation("支付合伙人")
     @PostMapping("/allinpay/{orderId}")

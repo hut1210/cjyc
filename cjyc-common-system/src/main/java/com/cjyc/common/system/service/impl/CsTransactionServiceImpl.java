@@ -171,17 +171,56 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
 
     @Override
     public BigDecimal getWlFeeCount(Long carrierId) {
-        return tradeBillDao.getWlFeeCount(carrierId);
+        BigDecimal fee = tradeBillDao.getWlFeeCount(carrierId);
+        if(fee==null){
+            return new BigDecimal("0");
+        }
+        return fee;
+    }
+
+    @Override
+    public BigDecimal getReceiveFeeCount(Long carrierId) {
+        BigDecimal fee = tradeBillDao.getReceiveFeeCount(carrierId);
+        if(fee==null){
+            return new BigDecimal("0");
+        }
+        return fee;
     }
 
     @Override
     public BigDecimal getCooperatorServiceFeeCount(Long customId) {
-        return tradeBillDao.getCooperatorServiceFeeCount(customId);
+        BigDecimal fee = tradeBillDao.getCooperatorServiceFeeCount(customId);
+        if(fee==null){
+            return new BigDecimal("0");
+        }
+        return fee;
+    }
+
+    @Override
+    public BigDecimal getCooperatorServiceFeeCarCount(Long customId) {
+        BigDecimal fee = tradeBillDao.getCooperatorServiceFeeCarCount(customId);
+        if(fee==null){
+            return new BigDecimal("0");
+        }
+        return fee;
     }
 
     @Override
     public BigDecimal getCooperatorServiceReceiveFeeCount(Long customId) {
-        return null;
+        BigDecimal fee = tradeBillDao.getCooperatorServiceReceiveFeeCount(customId);
+        if(fee==null){
+            return new BigDecimal("0");
+        }
+        return fee;
+    }
+
+    @Override
+    public BigDecimal getCooperatorServiceReceiveCarFeeCount(Long customId) {
+        BigDecimal fee = tradeBillDao.getCooperatorServiceReceiveCarFeeCount(customId);
+        if(fee==null){
+            return new BigDecimal("0");
+        }
+        return fee;
     }
 
     @Override

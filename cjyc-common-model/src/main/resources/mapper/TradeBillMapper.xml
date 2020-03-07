@@ -178,8 +178,30 @@
         select sum(freight_fee) from w_waybill where carrier_id = #{carrierId} and state = 100
     </select>
 
+    <select id="getReceiveFeeCount" resultType="java.math.BigDecimal">
+        select sum(freight_fee) from w_waybill where carrier_id = #{carrierId} and state = 100 and freight_pay_state =1
+    </select>
+
     <select id="getCooperatorServiceFeeCount" parameterType="java.lang.Long" resultType="java.math.BigDecimal">
-        select sum(total_fee+coupon_offset_fee) from w_order where customer_id=#{} and customer_type=3 and state=100;
+        select sum(total_fee+coupon_offset_fee) from w_order where customer_id=#{customId} and customer_type=3 and state=100;
+    </select>
+
+    <select id="getCooperatorServiceFeeCarCount" parameterType="java.lang.Long" resultType="java.math.BigDecimal">
+        select sum(woc.pick_fee+woc.trunk_fee+woc.back_fee+woc.add_insurance_fee)
+        from w_order wo
+        left join w_order_car woc on woc.order_id = wo.id
+        where wo.customer_id =#{customId} and wo.customer_type=3 and wo.state=100;
+    </select>
+
+    <select id="getCooperatorServiceReceiveFeeCount" parameterType="java.lang.Long" resultType="java.math.BigDecimal">
+        select sum(total_fee+coupon_offset_fee) from w_order where customer_id=#{customId} and customer_type=3 and state=100 and flag=2;
+    </select>
+
+    <select id="getCooperatorServiceReceiveCarFeeCount" parameterType="java.lang.Long" resultType="java.math.BigDecimal">
+        select sum(woc.pick_fee+woc.trunk_fee+woc.back_fee+woc.add_insurance_fee)
+        from w_order wo
+        left join w_order_car woc on woc.order_id = wo.id
+        where wo.customer_id =#{customId} and wo.customer_type=3 and wo.state=100 and wo.flag=2;
     </select>
 
 </mapper>

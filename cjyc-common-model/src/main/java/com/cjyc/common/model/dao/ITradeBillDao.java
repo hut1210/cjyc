@@ -62,5 +62,13 @@ public interface ITradeBillDao extends BaseMapper<TradeBill> {
 
     BigDecimal getWlFeeCount(Long carrierId);
 
+    BigDecimal getReceiveFeeCount(Long carrierId);
+
     BigDecimal getCooperatorServiceFeeCount(Long customId);
+
+    BigDecimal getCooperatorServiceFeeCarCount(Long customId);
+
+    BigDecimal getCooperatorServiceReceiveFeeCount(Long customId);
+
+    BigDecimal getCooperatorServiceReceiveCarFeeCount(Long customId);
 }

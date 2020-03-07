@@ -11,6 +11,7 @@ import com.pingplusplus.exception.*;
 import com.pingplusplus.model.Charge;
 
 import java.io.FileNotFoundException;
+import java.math.BigDecimal;
 
 /**
  * @Author: Hut
@@ -46,4 +47,6 @@ public interface ICsPingPayService {
     ResultVo unlockQrcode(String orderCarNo);
 
     void cancelOrderRefund(Long orderId);
+
+    BigDecimal contrastCooperatorAmount(Long customId);
 }

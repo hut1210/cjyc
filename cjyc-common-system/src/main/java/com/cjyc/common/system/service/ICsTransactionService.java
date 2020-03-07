@@ -49,4 +49,10 @@ public interface ICsTransactionService {
     BigDecimal getCooperatorServiceFeeCount(Long customId);
 
     BigDecimal getCooperatorServiceReceiveFeeCount(Long customId);
+
+    BigDecimal getCooperatorServiceFeeCarCount(Long customId);
+
+    BigDecimal getCooperatorServiceReceiveCarFeeCount(Long customId);
+
+    BigDecimal getReceiveFeeCount(Long carrierId);
 }
