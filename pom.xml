@@ -22,6 +22,7 @@
         <module>cjyc-web-api</module>
         <module>cjyc-common-model</module>
         <module>cjyc-common-system</module>
+        <module>cjyc-server-pay</module>
         <module>cjyc-scheduler-finance</module>
     </modules>
 
