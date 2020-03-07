@@ -166,7 +166,7 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
         // 保存业务中心
         boolean result =  super.save(store);
         //保存业务中心覆盖区县
-        if(result && areaCodeList != null){
+        if(result && !CollectionUtils.isEmpty(areaCodeList)){
             for(String areaCode : areaCodeList){
                 StoreCityCon scc = new StoreCityCon();
                 scc.setStoreId(store.getId());
@@ -421,11 +421,11 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
         //根据城市编码获取下面所有区县code
         List<City> areaCityList = cityDao.selectList(new QueryWrapper<City>().lambda()
                 .eq(City::getParentCode, cityCode));
-        if(StringUtils.isEmpty(areaCityList)){
+        if(CollectionUtils.isEmpty(areaCityList)){
             return null;
         }
         List<String> areaCodeList = areaCityList.stream().map(City::getCode).collect(Collectors.toList());
-        if (areaCodeList == null) {
+        if (CollectionUtils.isEmpty(areaCityList)) {
             return null;
         }
         //获取该城市下已绑定的业务中心的区县code
@@ -435,7 +435,7 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
         if(!CollectionUtils.isEmpty(storeCityConList)){
             coverAreaCodeList = storeCityConList.stream().map(StoreCityCon::getAreaCode).collect(Collectors.toList());
         }
-        if(coverAreaCodeList != null){
+        if(!CollectionUtils.isEmpty(coverAreaCodeList)){
             areaCodeList.removeAll(coverAreaCodeList);
         }
         return areaCodeList;
