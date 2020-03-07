@@ -584,19 +584,19 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                                 }else{
                                     log.error("【对外支付模式，通联代付支付运费】收款人信息不全 waybillId = {}", waybillId);
                                     addPaymentErrorLog("external allinpay 收款人信息不全 waybillId ="+waybillId);
-                                    tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"-1");//付款失败
+                                    tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"-2");//付款失败
                                     return BaseResultUtil.fail("通联代付失败,收款人信息不全");
                                 }
                             }else{
                                 log.error("【对外支付模式，通联代付支付运费】收款人为账期用户 waybillId = {}", waybillId);
                                 addPaymentErrorLog("external allinpay 收款人为账期用户 waybillId = "+waybillId);
-                                tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"-1");//付款失败
+                                tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"-2");//付款失败
                                 return BaseResultUtil.fail("通联代付失败,收款人为账期用户");
                             }
                         }else{
                             log.error("【对外支付模式，通联代付支付运费】收款人不存在 waybillId = {}", waybillId);
                             addPaymentErrorLog("external allinpay 收款人不存在 waybillId = "+waybillId);
-                            tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"-1");//付款失败
+                            tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"-2");//付款失败
                             return BaseResultUtil.fail("通联代付失败,收款人不存在");
                         }
 
@@ -613,7 +613,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             log.error("【对外支付模式，通联代付支付运费】运单{}，支付运费支付失败", waybill.getNo());
             log.error(e.getMessage(), e);
             addPaymentErrorLog("external allinpay 运单"+waybill.getNo()+"，支付运费支付失败");
-            tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"-1");//付款失败
+            tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"-2");//付款失败
             return BaseResultUtil.fail("通联代付失败");
         }
 

@@ -374,6 +374,35 @@ public class TransactionServiceImpl implements ITransactionService {
         tradeBill.setState(-2);
         tradeBill.setTradeTime(System.currentTimeMillis());
         tradeBillDao.updateTradeBillByPingPayId(tradeBill);
+
+        //更新运单支付状态
+        Map<String, Object> metadata = transfer.getMetadata();
+        PingxxMetaData pingxxMetaData = BeanMapUtil.mapToBean(metadata, new PingxxMetaData());
+        String chargeType = pingxxMetaData.getChargeType();
+        if(chargeType.equals(String.valueOf(ChargeTypeEnum.UNION_PAY.getCode()))){
+
+            log.info("回调给承运商付款失败");
+            //给承运商付款
+            Long waybillId = Long.valueOf(pingxxMetaData.getWaybillId());
+
+            String no = tradeBillDao.getTradeBillByPingPayId(transfer.getId());
+            try{
+                tradeBillDao.updateWayBillPayState(waybillId,no, System.currentTimeMillis(),"-2");
+            }catch (Exception e){
+                log.error("回调给承运商付款更新运单支付状态失败"+e.getMessage(),e);
+            }
+
+        }
+        if(chargeType.equals(String.valueOf(ChargeTypeEnum.UNION_PAY_PARTNER.getCode()))){
+            log.info("回调给合伙人付款失败");
+            String orderId = pingxxMetaData.getOrderId();
+            com.cjyc.common.model.entity.Order order = orderDao.selectById(orderId);
+
+            //更新合伙人打款状态
+            String orderNo = String.valueOf(pingxxMetaData.getOrderNo());
+            tradeBillDao.updateOrderFlag(orderNo, "-2", System.currentTimeMillis());
+
+        }
     }
 
     @Override
