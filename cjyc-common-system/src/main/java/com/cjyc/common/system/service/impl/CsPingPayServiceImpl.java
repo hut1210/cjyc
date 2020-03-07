@@ -445,7 +445,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                                         Transfer transfer = allinpayTransferDriverCreate(baseCarrierVo,waybill);
                                         log.debug("【自动打款模式，通联代付支付运费】运单{}，支付运费，账单{}", waybill.getNo(), transfer);
                                         tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"2");
-                                        cStransactionService.saveTransactions(transfer, "0");
+                                        cStransactionService.saveTransactions(transfer, "1");
                                     }else{
                                         log.error("【自动打款模式，通联代付支付运费】收款人信息不全 waybillId = {}", waybillId);
                                         addPaymentErrorLog("auto allinpay 收款人信息不全 waybillId ="+waybillId);
@@ -558,7 +558,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                                     Transfer transfer = allinpayTransferDriverCreate(baseCarrierVo,waybill);
                                     log.debug("【对外支付模式，通联代付支付运费】运单{}，支付运费，账单{}", waybill.getNo(), transfer);
                                     tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"2");//打款中
-                                    cStransactionService.saveTransactions(transfer, "0");
+                                    cStransactionService.saveTransactions(transfer, "1");
                                 }else{
                                     log.error("【对外支付模式，通联代付支付运费】收款人信息不全 waybillId = {}", waybillId);
                                     addPaymentErrorLog("external allinpay 收款人信息不全 waybillId ="+waybillId);
@@ -648,7 +648,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                         && showPartnerVo.getBankCode()!=null){
                             Transfer transfer = allinpayToCooperatorCreate(showPartnerVo,payableFee,order.getNo(),orderId);
                             cStransactionService.updateOrderFlag(order.getNo(),"1",System.currentTimeMillis());//付款中
-                            cStransactionService.saveCooperatorTransactions(transfer, "0");
+                            cStransactionService.saveCooperatorTransactions(transfer, "1");
                         }else{
                             log.error("【通联代付支付合伙人费用】收款人信息不全 orderId = {}", orderId);
                             addPaymentErrorLog("【通联代付支付合伙人费用】收款人信息不全 orderId = "+orderId);
