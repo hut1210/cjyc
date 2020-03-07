@@ -635,9 +635,9 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     @Override
     public List<ListOrderCarVo> carListAll(ListOrderCarDto dto) {
         List<ListOrderCarVo> list = orderCarDao.findListSelective(dto);
-        list.forEach(vo -> {
+       /* list.forEach(vo -> {
             vo.setTotalFee(MoneyUtil.yuanToFen(vo.getTotalFee()));
-        });
+        });*/
         return list;
     }
 

@@ -436,7 +436,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                         }
                     }else{//自动打款模式
                         log.info("【自动打款模式】运单Id {}",waybillId);
-                        if(waybill != null && waybill.getFreightPayState()==0 && waybill.getFreightFee().compareTo(BigDecimal.ZERO)>0){
+                        if(waybill != null && waybill.getFreightPayState()!=1 && waybill.getFreightFee().compareTo(BigDecimal.ZERO)>0){
                             if(baseCarrierVo!=null){
                                 if(baseCarrierVo.getSettleType()==0){
                                     if(baseCarrierVo.getCardName()!=null && baseCarrierVo.getCardNo()!=null
@@ -566,14 +566,14 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                     Long carrierId = waybill.getCarrierId();
                     BaseCarrierVo baseCarrierVo = carrierDao.showCarrierById(carrierId);
                     log.info("【对外支付模式，通联代付支付运费】运单Id{},支付状态 state {}",waybillId,waybill.getFreightPayState());
-                    if(waybill != null && waybill.getFreightPayState()==0 && waybill.getFreightFee().compareTo(BigDecimal.ZERO)>0){
+                    if(waybill != null && waybill.getFreightPayState()!=1 && waybill.getFreightFee().compareTo(BigDecimal.ZERO)>0){
 
                         if(baseCarrierVo!=null){
                             if(baseCarrierVo.getSettleType()==0){
                                 if(baseCarrierVo.getCardName()!=null && baseCarrierVo.getCardNo()!=null
                                         && baseCarrierVo.getBankCode()!=null){
                                     BigDecimal fee = contrastAmount(carrierId);
-                                    log.info("【自动打款模式】运单Id {},fee = {},要打款金额{}",waybillId,fee,waybill.getFreightFee());
+                                    log.info("【对外支付模式】运单Id {},fee = {},要打款金额{}",waybillId,fee,waybill.getFreightFee());
                                     if(waybill.getFreightFee().compareTo(fee)<=0){
                                         Transfer transfer = allinpayTransferDriverCreate(baseCarrierVo,waybill);
                                         log.debug("【对外支付模式，通联代付支付运费】运单{}，支付运费，账单{}", waybill.getNo(), transfer);

@@ -151,10 +151,12 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
     public ResultVo add(StoreAddDto storeAddDto) {
         log.info("====>web端-新增业务中心,请求json数据 :: "+JsonUtils.objectToJson(storeAddDto));
         // 验证业务中心名称是否重复
-        Store queryStore = super.getOne(new QueryWrapper<Store>().lambda()
+        List<Store> storeList = storeDao.selectList(new QueryWrapper<Store>().lambda()
                 .eq(Store::getName, storeAddDto.getName())
+                .or()
+                .eq(Store::getCityCode, storeAddDto.getCityCode())
                 .eq(Store::getIsDelete,DeleteStateEnum.NO_DELETE.code));
-        if(queryStore != null){
+        if(!CollectionUtils.isEmpty(storeList)){
             return BaseResultUtil.getVo(ResultEnum.EXIST_STORE.getCode(),ResultEnum.EXIST_STORE.getMsg());
         }
         // 封装入库参数
@@ -164,7 +166,7 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
         // 保存业务中心
         boolean result =  super.save(store);
         //保存业务中心覆盖区县
-        if(result && !CollectionUtils.isEmpty(areaCodeList)){
+        if(result && areaCodeList != null){
             for(String areaCode : areaCodeList){
                 StoreCityCon scc = new StoreCityCon();
                 scc.setStoreId(store.getId());
@@ -420,11 +422,11 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
         List<City> areaCityList = cityDao.selectList(new QueryWrapper<City>().lambda()
                 .eq(City::getParentCode, cityCode));
         if(StringUtils.isEmpty(areaCityList)){
-            return new ArrayList<>();
+            return null;
         }
         List<String> areaCodeList = areaCityList.stream().map(City::getCode).collect(Collectors.toList());
-        if (areaCodeList.isEmpty()) {
-            return new ArrayList<>();
+        if (areaCodeList == null) {
+            return null;
         }
         //获取该城市下已绑定的业务中心的区县code
         List<String> coverAreaCodeList = null;
@@ -433,7 +435,9 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
         if(!CollectionUtils.isEmpty(storeCityConList)){
             coverAreaCodeList = storeCityConList.stream().map(StoreCityCon::getAreaCode).collect(Collectors.toList());
         }
-        areaCodeList.removeAll(coverAreaCodeList);
+        if(coverAreaCodeList != null){
+            areaCodeList.removeAll(coverAreaCodeList);
+        }
         return areaCodeList;
     }
 }
