@@ -52,41 +52,8 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
     @Resource
     private ITaskDao taskDao;
     @Resource
-    private ICsTaskService csTaskService;
-    @Resource
-    private ICsSysService csSysService;
-    @Resource
     private ICarrierDao carrierDao;
 
-    @Override
-    public ResultVo allot(AllotTaskDto paramsDto) {
-        return csTaskService.allot(paramsDto);
-    }
-
-    @Override
-    public ResultVo<ResultReasonVo> load(LoadTaskDto paramsDto) {
-        return csTaskService.load(paramsDto);
-    }
-
-    @Override
-    public ResultVo<ResultReasonVo> unload(UnLoadTaskDto paramsDto) {
-        return csTaskService.unload(paramsDto);
-    }
-
-    @Override
-    public ResultVo<ResultReasonVo> inStore(InStoreTaskDto paramsDto) {
-        return csTaskService.inStore(paramsDto);
-    }
-
-    @Override
-    public ResultVo<ResultReasonVo> outStore(OutStoreTaskDto paramsDto) {
-        return csTaskService.outStore(paramsDto);
-    }
-
-    @Override
-    public ResultVo receipt(ReceiptTaskDto reqDto) {
-        return csTaskService.receipt(reqDto);
-    }
 
     @Override
     public ResultVo<List<ListByWaybillTaskVo>> getlistByWaybillId(Long waybillId) {

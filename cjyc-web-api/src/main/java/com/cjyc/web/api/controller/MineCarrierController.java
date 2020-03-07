@@ -6,6 +6,7 @@ import com.cjyc.common.model.dto.FreeDto;
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.mineCarrier.*;
 import com.cjyc.common.model.entity.Carrier;
+import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.FreeVehicleVo;
 import com.cjyc.common.model.vo.PageVo;
@@ -25,6 +26,7 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -158,6 +160,13 @@ public class MineCarrierController {
     @PostMapping(value = "/findCarrierFreeVehicle")
     public ResultVo<List<FreeVehicleVo>> findCarrierFreeVehicleNew(@RequestBody FreeDto dto){
         return csVehicleService.findCarrierFreeVehicleNew(dto);
+    }
+
+    @ApiOperation(value = "承运商下属司机导入Excel", notes = "\t 请求接口为/importCarrierDriverExcel/loginId(导入用户ID)格式")
+    @PostMapping("/importCarrierDriverExcel/{loginId}/{carrierId}")
+    public ResultVo importCarrierDriverExcel(@RequestParam("file") MultipartFile file, @PathVariable Long loginId,@PathVariable Long carrierId){
+        boolean result = mimeCarrierService.importCarrierDriverExcel(file, loginId,carrierId);
+        return result ? BaseResultUtil.success() : BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
 
 }

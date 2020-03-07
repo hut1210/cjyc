@@ -11,6 +11,7 @@ import com.cjyc.common.model.vo.web.mineCarrier.SettlementDetailVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyCarVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyDriverVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyWaybillVo;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface IMineCarrierService extends IService<Carrier> {
 
@@ -86,5 +87,13 @@ public interface IMineCarrierService extends IService<Carrier> {
      * @return
      */
     ResultVo<PageVo<MyCarVo>> findPageCarNew(QueryMyCarDto dto);
+
+
+    /**
+     * 承运商导入Excel文件
+     * @param file
+     * @return
+     */
+    boolean importCarrierDriverExcel(MultipartFile file, Long loginId,Long carrierId);
 
 }

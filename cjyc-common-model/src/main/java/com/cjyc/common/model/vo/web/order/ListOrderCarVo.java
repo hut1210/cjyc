@@ -4,6 +4,7 @@ import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.serizlizer.BigDecimalSerizlizer;
+import com.cjyc.common.model.util.MoneyUtil;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModel;
@@ -252,4 +253,36 @@ public class ListOrderCarVo extends OrderCar {
     @ApiModelProperty(value = "大区")
     private String region;
 
+
+
+    @Excel(name = "保费(元)", orderNum = "14")
+    private String addInsuranceFeeStr;
+    @Excel(name = "提车费(元)", orderNum = "15")
+    private String pickFeeStr;
+    @Excel(name = "物流费(元)", orderNum = "16")
+    private String trunkFeeStr;
+    @Excel(name = "送车费(元)", orderNum = "17")
+    private String backFeeStr;
+    @Excel(name = "实收总运费(元)", orderNum = "18")
+    private String totalFeeStr;
+
+    public String getAddInsuranceFeeStr() {
+        return MoneyUtil.fenToYuan(getAddInsuranceFee(), MoneyUtil.PATTERN_TWO);
+    }
+
+    public String getPickFeeStr() {
+        return MoneyUtil.fenToYuan(getPickFee(), MoneyUtil.PATTERN_TWO);
+    }
+
+    public String getTrunkFeeStr() {
+        return MoneyUtil.fenToYuan(getTrunkFee(), MoneyUtil.PATTERN_TWO);
+    }
+
+    public String getBackFeeStr() {
+        return MoneyUtil.fenToYuan(getBackFee(), MoneyUtil.PATTERN_TWO);
+    }
+
+    public String getTotalFeeStr() {
+        return MoneyUtil.fenToYuan(getAddInsuranceFee(), MoneyUtil.PATTERN_TWO);
+    }
 }

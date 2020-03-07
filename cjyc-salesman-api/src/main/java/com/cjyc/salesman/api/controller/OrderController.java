@@ -59,8 +59,6 @@ public class OrderController {
         reqDto.setLoginName(admin.getName());
         reqDto.setLoginPhone(admin.getPhone());
         reqDto.setLoginType(UserTypeEnum.ADMIN.code);
-        reqDto.setCreateUserId(admin.getId());
-        reqDto.setCreateUserName(admin.getName());
         reqDto.setState(OrderStateEnum.WAIT_SUBMIT.code);
         //业务员上门变为代驾上门
         if(OrderPickTypeEnum.DISPATCH_SELF.code == reqDto.getPickType()){
@@ -83,8 +81,6 @@ public class OrderController {
         reqDto.setLoginName(admin.getName());
         reqDto.setLoginPhone(admin.getPhone());
         reqDto.setLoginType(UserTypeEnum.ADMIN.code);
-        reqDto.setCreateUserId(admin.getId());
-        reqDto.setCreateUserName(admin.getName());
         //业务员上门变为代驾上门
         if(OrderPickTypeEnum.DISPATCH_SELF.code == reqDto.getPickType()){
             if(reqDto.getPayType() == PayModeEnum.PREPAY.code){

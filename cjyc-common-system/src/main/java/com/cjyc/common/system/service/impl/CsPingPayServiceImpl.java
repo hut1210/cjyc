@@ -623,7 +623,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
 
     @Override
     public ResultVo allinpayToCooperator(Long orderId) throws FileNotFoundException, RateLimitException, APIException, ChannelException, InvalidRequestException, APIConnectionException, AuthenticationException {
-        log.info("完成订单（ID：{}），支付合伙人服务费", orderId);
+        /*log.info("完成订单（ID：{}），支付合伙人服务费", orderId);
         //支付校验
         Order order = null;
         try{

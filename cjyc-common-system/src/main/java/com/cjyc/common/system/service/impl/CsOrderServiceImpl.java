@@ -139,9 +139,11 @@ public class CsOrderServiceImpl implements ICsOrderService {
             order.setNo(csSendNoService.getNo(SendNoTypeEnum.ORDER));
             order.setSource(paramsDto.getClientId());
             order.setCreateTime(currentTimeMillis);
+            order.setCreateUserId(paramsDto.getLoginId());
+            order.setCreateUserName(paramsDto.getLoginName());
         }
         order.setState(paramsDto.getState());
-        order.setTotalFee(MoneyUtil.convertYuanToFen(order.getTotalFee()));
+        order.setTotalFee(MoneyUtil.yuanToFen(order.getTotalFee()));
 
         //更新或插入订单
         int row = isNewOrder ? orderDao.insert(order) : orderDao.updateById(order);
@@ -178,10 +180,10 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 orderCar.setPickType(order.getPickType());
                 orderCar.setBackType(order.getBackType());
                 orderCar.setNowAreaCode(order.getStartAreaCode());
-                orderCar.setPickFee(MoneyUtil.convertYuanToFen(dto.getPickFee()));
-                orderCar.setTrunkFee(MoneyUtil.convertYuanToFen(dto.getTrunkFee()));
-                orderCar.setBackFee(MoneyUtil.convertYuanToFen(dto.getBackFee()));
-                orderCar.setAddInsuranceFee(MoneyUtil.convertYuanToFen(dto.getAddInsuranceFee()));
+                orderCar.setPickFee(MoneyUtil.yuanToFen(dto.getPickFee()));
+                orderCar.setTrunkFee(MoneyUtil.yuanToFen(dto.getTrunkFee()));
+                orderCar.setBackFee(MoneyUtil.yuanToFen(dto.getBackFee()));
+                orderCar.setAddInsuranceFee(MoneyUtil.yuanToFen(dto.getAddInsuranceFee()));
                 orderCarDao.insert(orderCar);
                 //统计数量
                 noCount++;
@@ -291,7 +293,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 order = orderDao.selectById(orderId);
                 if (order != null) {
                     lockKey = RedisKeys.getDispatchLockForOrderUpdate(order.getNo());
-                    redisLock.lock(lockKey, 30000, 100, 300);
+                    redisLock.lock(lockKey, 60000, 100, 300);
                     oldOrder = getFullOrder(order);
                 }
             }
@@ -312,14 +314,17 @@ public class CsOrderServiceImpl implements ICsOrderService {
             fillOrderLocalCarryTypeInfo(order);
             //计算预计到达时间
             fillOrderExpectEndTime(order);
+
             //订单编号
             if (isNewOrder) {
                 order.setNo(csSendNoService.getNo(SendNoTypeEnum.ORDER));
                 order.setSource(paramsDto.getClientId());
+                order.setCreateUserId(paramsDto.getLoginId());
+                order.setCreateUserName(paramsDto.getLoginName());
                 order.setCreateTime(currentTimeMillis);
             }
             order.setState(OrderStateEnum.SUBMITTED.code);
-            order.setTotalFee(MoneyUtil.convertYuanToFen(paramsDto.getTotalFee()));
+            order.setTotalFee(MoneyUtil.yuanToFen(paramsDto.getTotalFee()));
 
             //更新或插入订单
             int row = isNewOrder ? orderDao.insert(order) : orderDao.updateById(order);
@@ -354,10 +359,10 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 orderCar.setBackType(order.getBackType());
                 orderCar.setNowAreaCode(order.getStartAreaCode());
                 orderCar.setState(OrderCarStateEnum.WAIT_ROUTE.code);
-                orderCar.setPickFee(MoneyUtil.convertYuanToFen(dto.getPickFee()));
-                orderCar.setTrunkFee(MoneyUtil.convertYuanToFen(dto.getTrunkFee()));
-                orderCar.setBackFee(MoneyUtil.convertYuanToFen(dto.getBackFee()));
-                orderCar.setAddInsuranceFee(MoneyUtil.convertYuanToFen(dto.getAddInsuranceFee()));
+                orderCar.setPickFee(MoneyUtil.yuanToFen(dto.getPickFee()));
+                orderCar.setTrunkFee(MoneyUtil.yuanToFen(dto.getTrunkFee()));
+                orderCar.setBackFee(MoneyUtil.yuanToFen(dto.getBackFee()));
+                orderCar.setAddInsuranceFee(MoneyUtil.yuanToFen(dto.getAddInsuranceFee()));
                 orderCarDao.insert(orderCar);
 
                 //提取数据
@@ -1111,7 +1116,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         FullOrder oldOrder = getFullOrder(order);
 
         /**2、更新或保存车辆信息*/
-        order.setTotalFee(MoneyUtil.convertYuanToFen(paramsDto.getTotalFee()));
+        order.setTotalFee(MoneyUtil.yuanToFen(paramsDto.getTotalFee()));
         List<ChangePriceOrderCarDto> carDtoList = paramsDto.getOrderCarList();
         //费用统计变量
         for (ChangePriceOrderCarDto dto : carDtoList) {
@@ -1130,10 +1135,10 @@ public class CsOrderServiceImpl implements ICsOrderService {
             OrderCar orderCar = orderCarDao.selectById(dto.getId());
             OrderCar noc = new OrderCar();
             noc.setId(orderCar.getId());
-            noc.setPickFee(MoneyUtil.convertYuanToFen(dto.getPickFee()));
-            noc.setTrunkFee(MoneyUtil.convertYuanToFen(dto.getTrunkFee()));
-            noc.setBackFee(MoneyUtil.convertYuanToFen(dto.getBackFee()));
-            noc.setAddInsuranceFee(MoneyUtil.convertYuanToFen(dto.getAddInsuranceFee()));
+            noc.setPickFee(MoneyUtil.yuanToFen(dto.getPickFee()));
+            noc.setTrunkFee(MoneyUtil.yuanToFen(dto.getTrunkFee()));
+            noc.setBackFee(MoneyUtil.yuanToFen(dto.getBackFee()));
+            noc.setAddInsuranceFee(MoneyUtil.yuanToFen(dto.getAddInsuranceFee()));
             noc.setAddInsuranceAmount(dto.getAddInsuranceAmount());
             orderCarDao.updateById(noc);
         }

@@ -195,4 +195,23 @@ public interface ICarrierDao extends BaseMapper<Carrier> {
      */
     List<TrailCarrierVo> findAppTrailDriverNew(TrailCarrierDto dto);
 
+
+    /**
+     * 判断个人承运商下司机是否存在
+     * @param phone
+     * @param idCard
+     * @return
+     */
+    Integer existPersonalCarrierExcel(@Param("phone") String phone,@Param("idCard") String idCard);
+
+
+    /**
+     * 判断在该承运商下司机是否存在
+     * @param carrierId
+     * @param phone
+     * @param idCard
+     * @return
+     */
+    Integer existBusinessCarrierExcel(@Param("carrierId") Long carrierId,@Param("phone") String phone,@Param("idCard") String idCard);
+
 }

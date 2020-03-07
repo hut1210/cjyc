@@ -5,8 +5,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import java.io.Serializable;
 @Data
 public class TypeSalesmanDto extends BasePageDto {
     private static final long serialVersionUID = -9045863844526822893L;

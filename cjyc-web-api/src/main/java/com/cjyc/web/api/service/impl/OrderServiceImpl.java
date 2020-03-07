@@ -18,6 +18,7 @@ import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.exception.ParameterException;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.MoneyUtil;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -607,6 +608,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
             return BaseResultUtil.fail("没有数据权限");
         }
         dto.setBizScope(bizScope.getCode() == 0 ? null : bizScope.getStoreIds());
+
         return BaseResultUtil.success(orderDao.findListSelective(dto));
     }
 
@@ -632,7 +634,11 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
 
     @Override
     public List<ListOrderCarVo> carListAll(ListOrderCarDto dto) {
-        return orderCarDao.findListSelective(dto);
+        List<ListOrderCarVo> list = orderCarDao.findListSelective(dto);
+        list.forEach(vo -> {
+            vo.setTotalFee(MoneyUtil.yuanToFen(vo.getTotalFee()));
+        });
+        return list;
     }
 
     /**

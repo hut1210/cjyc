@@ -126,4 +126,11 @@ public interface IDriverService {
      * @return
      */
     boolean importDriverExcel(MultipartFile file, Long loginId);
+
+    /**
+     * 根据司机id 承运商id，手机号删除司机信息
+     * @param dto
+     * @return
+     */
+    ResultVo deleteDriverInfo(DeleteDriverDto dto);
 }
