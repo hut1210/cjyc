@@ -669,6 +669,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                     }
 
                     order = orderDao.selectById(orderId);
+                    //TODO 其他状态没有判断，锁定固定状态支付，而不是锁定固定状态不知福
                     if(order.getFlag()!=null){
                         if(order.getFlag().equals("1")){
                             log.error("合伙人服务费支付中,请勿重复支付 orderId = {}", orderId);
