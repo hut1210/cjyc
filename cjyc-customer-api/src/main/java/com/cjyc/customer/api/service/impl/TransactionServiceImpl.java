@@ -348,7 +348,7 @@ public class TransactionServiceImpl implements ITransactionService {
 
             String no = tradeBillDao.getTradeBillByPingPayId(transfer.getId());
             try{
-                tradeBillDao.updateWayBillPayState(waybillId,no, System.currentTimeMillis());
+                tradeBillDao.updateWayBillPayState(waybillId,no, System.currentTimeMillis(),"1");
             }catch (Exception e){
                 log.error("回调给承运商付款更新运单支付状态失败"+e.getMessage(),e);
             }
@@ -358,9 +358,9 @@ public class TransactionServiceImpl implements ITransactionService {
             String orderId = pingxxMetaData.getOrderId();
             com.cjyc.common.model.entity.Order order = orderDao.selectById(orderId);
 
-            //TODO 更新合伙人打款状态
+            //更新合伙人打款状态
             String orderNo = String.valueOf(pingxxMetaData.getOrderNo());
-            tradeBillDao.updateOrderFlag(orderNo, "2");
+            tradeBillDao.updateOrderFlag(orderNo, "2", System.currentTimeMillis());
 
         }
 

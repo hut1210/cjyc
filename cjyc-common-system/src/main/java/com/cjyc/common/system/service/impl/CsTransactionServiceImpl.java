@@ -34,7 +34,6 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
 
 /**
  * @Author:Hut
@@ -164,8 +163,8 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
     }
 
     @Override
-    public void updateOrderFlag(String orderNo,String state) {
-        tradeBillDao.updateOrderFlag(orderNo,state);
+    public void updateOrderFlag(String orderNo, String state, long payTime) {
+        tradeBillDao.updateOrderFlag(orderNo,state,payTime);
     }
 
     @Override

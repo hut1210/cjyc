@@ -5,7 +5,6 @@ import com.cjyc.common.model.entity.TradeBill;
 import com.pingplusplus.model.Charge;
 import com.pingplusplus.model.Event;
 import com.pingplusplus.model.Transfer;
-import org.apache.ibatis.annotations.Param;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -45,7 +44,7 @@ public interface ICsTransactionService {
 
     void saveSalesPrePayTransactions(Charge charge, String s);
 
-    void updateOrderFlag(String orderNo,String state);
+    void updateOrderFlag(String orderNo, String state, long l);
 
     BigDecimal getWlFeeCount(Long carrierId);
 }
