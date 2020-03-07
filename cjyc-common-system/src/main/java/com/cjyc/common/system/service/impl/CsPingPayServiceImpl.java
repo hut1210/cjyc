@@ -397,11 +397,21 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                 try{
                     TradeBill tradeBill = cStransactionService.getTradeBillByOrderNoAndType(String.valueOf(waybillId),ChargeTypeEnum.UNION_PAY.getCode());
                     if(tradeBill != null){
-                        log.error("运费已支付完成,请勿重复支付 waybillId = {}", waybillId);
-                        return BaseResultUtil.fail("运费已支付完成,请勿重复支付");
+                        if(tradeBill.getState()==1){
+                            log.error("运费正在支付中,请勿重复支付 waybillId = {}", waybillId);
+                            return BaseResultUtil.fail("运费正在支付中,请勿重复支付");
+                        }
+                        if(tradeBill.getState()==2){
+                            log.error("运费已支付完成,请勿重复支付 waybillId = {}", waybillId);
+                            return BaseResultUtil.fail("运费已支付完成,请勿重复支付");
+                        }
                     }
 
                     waybill = waybillDao.selectById(waybillId);
+                    if(waybill.getFreightPayState()==2){
+                        log.error("运费正在支付,请勿重复支付 waybillId = {}", waybillId);
+                        return BaseResultUtil.fail("运费正在支付,请勿重复支付");
+                    }
                     if(waybill.getFreightPayState()==1){
                         log.error("运费已支付完成,请勿重复支付 waybillId = {}", waybillId);
                         return BaseResultUtil.fail("运费已支付完成,请勿重复支付");
@@ -534,11 +544,22 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                 try{
                     TradeBill tradeBill = cStransactionService.getTradeBillByOrderNoAndType(String.valueOf(waybillId),ChargeTypeEnum.UNION_PAY.getCode());
                     if(tradeBill != null){
-                        log.error("运费已支付完成,请勿重复支付 waybillId = {}", waybillId);
-                        return BaseResultUtil.fail("运费已支付完成,请勿重复支付");
+                        if(tradeBill.getState()==1){
+                            log.error("运费正在支付中,请勿重复支付 waybillId = {}", waybillId);
+                            return BaseResultUtil.fail("运费正在支付中,请勿重复支付");
+                        }
+                        if(tradeBill.getState()==2){
+                            log.error("运费已支付完成,请勿重复支付 waybillId = {}", waybillId);
+                            return BaseResultUtil.fail("运费已支付完成,请勿重复支付");
+                        }
+
                     }
 
                     waybill = waybillDao.selectById(waybillId);
+                    if(waybill.getFreightPayState()==2){
+                        log.error("运费正在支付,请勿重复支付 waybillId = {}", waybillId);
+                        return BaseResultUtil.fail("运费正在支付,请勿重复支付");
+                    }
                     if(waybill.getFreightPayState()==1){
                         log.error("运费已支付完成,请勿重复支付 waybillId = {}", waybillId);
                         return BaseResultUtil.fail("运费已支付完成,请勿重复支付");
@@ -623,14 +644,29 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                     TradeBill tradeBill = cStransactionService.getTradeBillByOrderNoAndType(order.getNo(),ChargeTypeEnum.UNION_PAY_PARTNER.getCode());
                     log.debug("【通联代付支付服务费】订单{}，支付服务费，账单内容{}", order.getNo(), tradeBill);
                     if(tradeBill != null){
-                        log.error("合伙人服务费已支付完成,请勿重复支付 orderId = {}", orderId);
-                        return BaseResultUtil.fail("合伙人服务费已支付完成,请勿重复支付");
+
+                        if(tradeBill.getState()==1){
+                            log.error("合伙人服务费正在支付中,请勿重复支付 orderId = {}", orderId);
+                            return BaseResultUtil.fail("合伙人服务费正在支付中,请勿重复支付");
+                        }
+                        if(tradeBill.getState()==2){
+                            log.error("合伙人服务费已支付完成,请勿重复支付 orderId = {}", orderId);
+                            return BaseResultUtil.fail("合伙人服务费已支付完成,请勿重复支付");
+                        }
+
                     }
 
                     order = orderDao.selectById(orderId);
-                    if(order.getFlag()!=null&& order.getFlag().equals("2")){
-                        log.error("合伙人服务费已支付完成,请勿重复支付 orderId = {}", orderId);
-                        return BaseResultUtil.fail("合伙人服务费已支付完成,请勿重复支付");
+                    if(order.getFlag()!=null){
+                        if(order.getFlag().equals("1")){
+                            log.error("合伙人服务费支付中,请勿重复支付 orderId = {}", orderId);
+                            return BaseResultUtil.fail("合伙人服务费支付中,请勿重复支付");
+                        }
+                        if(order.getFlag().equals("2")){
+                            log.error("合伙人服务费已支付完成,请勿重复支付 orderId = {}", orderId);
+                            return BaseResultUtil.fail("合伙人服务费已支付完成,请勿重复支付");
+                        }
+
                     }
                     //TODO 再次校验
                     Long customId = order.getCustomerId();
