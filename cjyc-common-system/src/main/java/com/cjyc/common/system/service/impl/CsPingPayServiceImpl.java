@@ -3,11 +3,7 @@ package com.cjyc.common.system.service.impl;
 import com.Pingxx.model.OrderModel;
 import com.Pingxx.model.OrderRefund;
 import com.Pingxx.model.PingxxMetaData;
-import com.cjkj.common.utils.DateUtil;
-import com.cjkj.log.monitor.LogUtil;
 import com.cjyc.common.model.dao.*;
-import com.cjyc.common.model.dto.customer.pingxx.ExternalPaymentDto;
-import com.cjyc.common.model.dto.customer.pingxx.PrePayDto;
 import com.cjyc.common.model.dto.customer.pingxx.SweepCodeDto;
 import com.cjyc.common.model.dto.customer.pingxx.ValidateSweepCodeDto;
 import com.cjyc.common.model.dto.web.pingxx.SalesPrePayDto;
@@ -18,16 +14,13 @@ import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.exception.CommonException;
-import com.cjyc.common.model.exception.ServerException;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.BeanMapUtil;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.customer.order.ValidateReceiptCarPayVo;
 import com.cjyc.common.model.vo.customer.order.ValidateSweepCodePayVo;
 import com.cjyc.common.model.vo.web.carrier.BaseCarrierVo;
 import com.cjyc.common.model.vo.web.customer.ShowPartnerVo;
-import com.cjyc.common.model.vo.web.order.OrderVo;
 import com.cjyc.common.model.vo.web.task.TaskVo;
 import com.cjyc.common.system.config.PingProperty;
 import com.cjyc.common.system.service.ICsPingPayService;
@@ -35,7 +28,6 @@ import com.cjyc.common.system.service.ICsSmsService;
 import com.cjyc.common.system.service.ICsTransactionService;
 import com.cjyc.common.system.util.RedisLock;
 import com.cjyc.common.system.util.RedisUtils;
-import com.fasterxml.jackson.databind.ser.Serializers;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.pingplusplus.Pingpp;
@@ -49,8 +41,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.ResourceUtils;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import java.io.FileNotFoundException;
@@ -811,7 +801,12 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         String orderNo = prePayDto.getOrderNo();
         TradeBill tradeBill = cStransactionService.getTradeBillByOrderNo(orderNo);
         if(tradeBill != null){
-            throw new CommonException("订单已支付完成","1");
+            com.cjyc.common.model.entity.Order o = orderDao.findByNo(orderNo);
+            if(o!=null){
+                if(o.getWlPayState()==2){
+                    throw new CommonException("订单已支付完成","1");
+                }
+            }
         }/*else{
             log.info("webPrePay orderNo ="+orderNo);
             String lockKey =getRandomNoKey(orderNo);
@@ -917,7 +912,12 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         String orderNo = salesPrePayDto.getOrderNo();
         TradeBill tradeBill = cStransactionService.getTradeBillByOrderNo(orderNo);
         if(tradeBill != null){
-            throw new CommonException("订单已支付完成","1");
+            com.cjyc.common.model.entity.Order o = orderDao.findByNo(orderNo);
+            if(o!=null){
+                if(o.getWlPayState()==2){
+                    throw new CommonException("订单已支付完成","1");
+                }
+            }
         }/*else{
             log.info("salesPrePay orderNo ="+orderNo);
             String lockKey =getRandomNoKey(orderNo);
