@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 
@@ -70,37 +70,37 @@ public class CustomerInvoiceVo implements Serializable {
         return defaultFlag == null ? 0 : defaultFlag;
     }
     public String getTitle() {
-        if (type == InvoiceTypeEnum.PERSONAL_INVOICE.code && StringUtils.isEmpty(title)) {
+        if (type == InvoiceTypeEnum.PERSONAL_INVOICE.code && StringUtils.isBlank(title)) {
             title = name;
         }
         return title == null ? "" : title;
     }
     public String getName() {
-        return name == null ? "" : name;
+        return StringUtils.isBlank(name) ? "" : name;
     }
     public String getTaxCode() {
-        return taxCode == null ? "" : taxCode;
+        return StringUtils.isBlank(taxCode) ? "" : taxCode;
     }
     public String getInvoiceAddress() {
-        return invoiceAddress == null ? "" : invoiceAddress;
+        return StringUtils.isBlank(invoiceAddress) ? "" : invoiceAddress;
     }
     public String getTel() {
-        return tel == null ? "" : tel;
+        return StringUtils.isBlank(tel) ? "" : tel;
     }
     public String getBankName() {
-        return bankName == null ? "" : bankName;
+        return StringUtils.isBlank(bankName) ? "" : bankName;
     }
     public String getBankAccount() {
-        return bankAccount == null ? "" : bankAccount;
+        return StringUtils.isBlank(bankAccount) ? "" : bankAccount;
     }
     public String getPickupPerson() {
-        return pickupPerson == null ? "" : pickupPerson;
+        return StringUtils.isBlank(pickupPerson) ? "" : pickupPerson;
     }
     public String getPickupPhone() {
-        return pickupPhone == null ? "" : pickupPhone;
+        return StringUtils.isBlank(pickupPhone) ? "" : pickupPhone;
     }
     public String getPickupAddress() {
-        return pickupAddress == null ? "" : pickupAddress;
+        return StringUtils.isBlank(pickupAddress) ? "" : pickupAddress;
     }
     public Integer getType() {
         return type == null ? -1 : type;

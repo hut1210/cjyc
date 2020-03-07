@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -79,15 +80,15 @@ public class TaskDetailVo implements Serializable {
         return carrierId == null ? 0 : carrierId;
     }
     public String getDriverName() {
-        return driverName == null ? "" : driverName;
+        return StringUtils.isBlank(driverName) ? "" : driverName;
     }
     public String getDriverPhone() {
-        return driverPhone == null ? "" : driverPhone;
+        return StringUtils.isBlank(driverPhone) ? "" : driverPhone;
     }
     public String getVehiclePlateNo() {
-        return vehiclePlateNo == null ? "" : vehiclePlateNo;
+        return StringUtils.isBlank(vehiclePlateNo) ? "" : vehiclePlateNo;
     }
     public String getGuideLine() {
-        return guideLine == null ? "" : guideLine;
+        return StringUtils.isBlank(guideLine) ? "" : guideLine;
     }
 }

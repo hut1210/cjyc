@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 
@@ -57,6 +58,6 @@ public class DispatchRecordVo implements Serializable {
     private String endAddress;
 
     public String getGuideLine() {
-        return guideLine == null ? "" : guideLine;
+        return StringUtils.isBlank(guideLine) ? "" : guideLine;
     }
 }

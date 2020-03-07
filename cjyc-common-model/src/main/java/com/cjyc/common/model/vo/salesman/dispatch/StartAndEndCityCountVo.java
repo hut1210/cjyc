@@ -2,6 +2,7 @@ package com.cjyc.common.model.vo.salesman.dispatch;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 
@@ -29,18 +30,18 @@ public class StartAndEndCityCountVo implements Serializable {
     private int carCount;
 
     public String getStartCityCode() {
-        return startCityCode == null ? "" : startCityCode;
+        return StringUtils.isBlank(startCityCode) ? "" : startCityCode;
     }
 
     public String getStartCity() {
-        return startCity == null ? "" : startCity;
+        return StringUtils.isBlank(startCity) ? "" : startCity;
     }
 
     public String getEndCityCode() {
-        return endCityCode == null ? "" : endCityCode;
+        return StringUtils.isBlank(endCityCode) ? "" : endCityCode;
     }
 
     public String getEndCity() {
-        return endCity == null ? "" : endCity;
+        return StringUtils.isBlank(endCity) ? "" : endCity;
     }
 }

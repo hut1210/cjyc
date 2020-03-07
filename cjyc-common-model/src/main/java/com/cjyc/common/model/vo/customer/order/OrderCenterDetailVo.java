@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -171,49 +172,49 @@ public class OrderCenterDetailVo implements Serializable {
         return startStoreId == null ? 0 : startStoreId;
     }
     public String getStartStoreName() {
-        return startStoreName == null ? "" : startStoreName;
+        return StringUtils.isBlank(startStoreName) ? "" : startStoreName;
     }
     public String getStartStoreNameDetail() {
-        return startStoreNameDetail == null ? "" : startStoreNameDetail;
+        return StringUtils.isBlank(startStoreNameDetail) ? "" : startStoreNameDetail;
     }
     public Long getEndStoreId() {
         return endStoreId == null ? 0 : endStoreId;
     }
     public String getEndStoreName() {
-        return endStoreName == null ? "" : endStoreName;
+        return StringUtils.isBlank(endStoreName) ? "" : endStoreName;
     }
     public String getEndStoreNameDetail() {
-        return endStoreNameDetail == null ? "" : endStoreNameDetail;
+        return StringUtils.isBlank(endStoreNameDetail) ? "" : endStoreNameDetail;
     }
     public String getStartCity() {
-        return startCity == null ? "" : startCity;
+        return StringUtils.isBlank(startCity) ? "" : startCity;
     }
     public String getEndCity() {
-        return endCity == null ? "" : endCity;
+        return StringUtils.isBlank(endCity) ? "" : endCity;
     }
     public String getStartProvinceCode() {
-        return startProvinceCode == null ? "" : startProvinceCode;
+        return StringUtils.isBlank(startProvinceCode) ? "" : startProvinceCode;
     }
     public String getStartCityCode() {
-        return startCityCode == null ? "" : startCityCode;
+        return StringUtils.isBlank(startCityCode) ? "" : startCityCode;
     }
     public String getStartAreaCode() {
-        return startAreaCode == null ? "" : startAreaCode;
+        return StringUtils.isBlank(startAreaCode) ? "" : startAreaCode;
     }
     public String getStartProvinceCityAreaName() {
-        return startProvinceCityAreaName == null ? "" : startProvinceCityAreaName;
+        return StringUtils.isBlank(startProvinceCityAreaName) ? "" : startProvinceCityAreaName;
     }
     public String getEndProvinceCode() {
-        return endProvinceCode == null ? "" : endProvinceCode;
+        return StringUtils.isBlank(endProvinceCode) ? "" : endProvinceCode;
     }
     public String getEndCityCode() {
-        return endCityCode == null ? "" : endCityCode;
+        return StringUtils.isBlank(endCityCode) ? "" : endCityCode;
     }
     public String getEndAreaCode() {
-        return endAreaCode == null ? "" : endAreaCode;
+        return StringUtils.isBlank(endAreaCode) ? "" : endAreaCode;
     }
     public String getEndProvinceCityAreaName() {
-        return endProvinceCityAreaName == null ? "" : endProvinceCityAreaName;
+        return StringUtils.isBlank(endProvinceCityAreaName) ? "" : endProvinceCityAreaName;
     }
     public Long getCreateTime() {
         return createTime == null ? 0 : createTime;
@@ -222,22 +223,22 @@ public class OrderCenterDetailVo implements Serializable {
         return expectStartDate == null ? 0 : expectStartDate;
     }
     public String getPickContactName() {
-        return pickContactName == null ? "" : pickContactName;
+        return StringUtils.isBlank(pickContactName) ? "" : pickContactName;
     }
     public String getPickContactPhone() {
-        return pickContactPhone == null ? "" : pickContactPhone;
+        return StringUtils.isBlank(pickContactPhone) ? "" : pickContactPhone;
     }
     public String getStartAddress() {
-        return startAddress == null ? "" : startAddress;
+        return StringUtils.isBlank(startAddress) ? "" : startAddress;
     }
     public String getBackContactName() {
-        return backContactName == null ? "" : backContactName;
+        return StringUtils.isBlank(backContactName) ? "" : backContactName;
     }
     public String getBackContactPhone() {
-        return backContactPhone == null ? "" : backContactPhone;
+        return StringUtils.isBlank(backContactPhone) ? "" : backContactPhone;
     }
     public String getEndAddress() {
-        return endAddress == null ? "" : endAddress;
+        return StringUtils.isBlank(endAddress) ? "" : endAddress;
     }
     public BigDecimal getPickFee() {
         return pickFee == null ? new BigDecimal(0) : pickFee;
@@ -258,7 +259,7 @@ public class OrderCenterDetailVo implements Serializable {
         return totalFee == null ? new BigDecimal(0) : totalFee;
     }
     public String getCouponName() {
-        return couponName == null ? "" : couponName;
+        return StringUtils.isBlank(couponName) ? "" : couponName;
     }
     public Long getCouponSendId() {
         return couponSendId == null ? 0 : couponSendId;

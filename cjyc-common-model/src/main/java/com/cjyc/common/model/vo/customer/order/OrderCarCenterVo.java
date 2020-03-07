@@ -4,6 +4,8 @@ import com.cjyc.common.model.serizlizer.BigDecimalSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.CollectionUtils;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -63,22 +65,22 @@ public class OrderCarCenterVo implements Serializable {
         return isNew == null ? 0 : isNew;
     }
     public String getLogoImg() {
-        return logoImg == null ? "" : logoImg;
+        return StringUtils.isBlank(logoImg) ? "" : logoImg;
     }
     public String getBrand() {
-        return brand == null ? "" : brand;
+        return StringUtils.isBlank(brand) ? "" : brand;
     }
     public String getModel() {
-        return model == null ? "" : model;
+        return StringUtils.isBlank(model) ? "" : model;
     }
     public String getPlateNo() {
-        return plateNo == null ? "" : plateNo;
+        return StringUtils.isBlank(plateNo) ? "" : plateNo;
     }
     public String getVin() {
-        return vin == null ? "" : vin;
+        return StringUtils.isBlank(vin) ? "" : vin;
     }
     public List<String> getCarImgList() {
-        return carImgList == null ? new ArrayList<>(0) : carImgList;
+        return CollectionUtils.isEmpty(carImgList) ? new ArrayList<>(0) : carImgList;
     }
     public BigDecimal getAddInsuranceFee() {
         return addInsuranceFee == null ? new BigDecimal(0) : addInsuranceFee;

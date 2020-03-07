@@ -5,6 +5,7 @@ import com.cjyc.common.model.serizlizer.DateLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -37,15 +38,15 @@ public class InvoiceOrderVo implements Serializable {
     private int carNum;
 
     public String getOrderNo() {
-        return orderNo == null ? "" : orderNo;
+        return StringUtils.isBlank(orderNo) ? "" : orderNo;
     }
 
     public String getStartCity() {
-        return startCity == null ? "" : startCity;
+        return StringUtils.isBlank(startCity) ? "" : startCity;
     }
 
     public String getEndCity() {
-        return endCity == null ? "" : endCity;
+        return StringUtils.isBlank(endCity) ? "" : endCity;
     }
 
     public Long getFinishTime() {

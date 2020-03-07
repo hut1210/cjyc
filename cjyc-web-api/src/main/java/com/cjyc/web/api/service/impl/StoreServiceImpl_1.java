@@ -157,7 +157,7 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
                 .eq(Store::getCityCode, storeAddDto.getCityCode())
                 .eq(Store::getIsDelete,DeleteStateEnum.NO_DELETE.code));
         if(!CollectionUtils.isEmpty(storeList)){
-            return BaseResultUtil.getVo(ResultEnum.EXIST_STORE.getCode(),ResultEnum.EXIST_STORE.getMsg());
+            return BaseResultUtil.fail("该业务中心已存在或该城市已绑定业务中心,请重新输入");
         }
         // 封装入库参数
         Store store = getStore(storeAddDto);
