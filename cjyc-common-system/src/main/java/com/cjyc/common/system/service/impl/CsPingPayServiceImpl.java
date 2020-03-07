@@ -48,16 +48,14 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
 /**
  * @Author: Hut
- * @Date: 2019/12/9 19:291
+ * @Date: 2020/03/07 15:51
  */
 @Service
 @Slf4j
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
 public class CsPingPayServiceImpl implements ICsPingPayService {
-
     @Autowired
     private ICsTransactionService cStransactionService;
 
@@ -134,47 +132,47 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         //创建Charge对象
         Charge charge = new Charge();
         //try {
-            List<String> tempList = sweepCodeDto.getTaskCarIdList();
+        List<String> tempList = sweepCodeDto.getTaskCarIdList();
 
-            List<Long> taskCarIdList = convertToLongList(tempList);
-            List<String> orderCarNosList = cStransactionService.getOrderCarNosByTaskCarIds(taskCarIdList);
+        List<Long> taskCarIdList = convertToLongList(tempList);
+        List<String> orderCarNosList = cStransactionService.getOrderCarNosByTaskCarIds(taskCarIdList);
 
-            List<com.cjyc.common.model.entity.Order> list = orderDao.findListByCarNos(orderCarNosList);
-            com.cjyc.common.model.entity.Order order = list.get(0);
+        List<com.cjyc.common.model.entity.Order> list = orderDao.findListByCarNos(orderCarNosList);
+        com.cjyc.common.model.entity.Order order = list.get(0);
 
-            BigDecimal freightFee = new BigDecimal("0");
-            if(order!=null&&order.getCustomerType()==3){//合伙人
-                freightFee = cStransactionService.getAmountByOrderCarNosToPartner(orderCarNosList);
-            }else{//非合伙人
-                freightFee = cStransactionService.getAmountByOrderCarNos(orderCarNosList);
-            }
+        BigDecimal freightFee = new BigDecimal("0");
+        if(order!=null&&order.getCustomerType()==3){//合伙人
+            freightFee = cStransactionService.getAmountByOrderCarNosToPartner(orderCarNosList);
+        }else{//非合伙人
+            freightFee = cStransactionService.getAmountByOrderCarNos(orderCarNosList);
+        }
 
-            log.info("客户扫码支付费用={}，车辆编号={}",freightFee,orderCarNosList.toString());
-            om.setAmount(freightFee);
-            pingxxMetaData.setLoginId(String.valueOf(sweepCodeDto.getLoginId()));
-            pingxxMetaData.setOrderCarIds(orderCarNosList);
-            pingxxMetaData.setChannel(sweepCodeDto.getChannel());
-            pingxxMetaData.setTaskId(String.valueOf(sweepCodeDto.getTaskId()));
-            pingxxMetaData.setTaskCarIdList(sweepCodeDto.getTaskCarIdList());
+        log.info("客户扫码支付费用={}，车辆编号={}",freightFee,orderCarNosList.toString());
+        om.setAmount(freightFee);
+        pingxxMetaData.setLoginId(String.valueOf(sweepCodeDto.getLoginId()));
+        pingxxMetaData.setOrderCarIds(orderCarNosList);
+        pingxxMetaData.setChannel(sweepCodeDto.getChannel());
+        pingxxMetaData.setTaskId(String.valueOf(sweepCodeDto.getTaskId()));
+        pingxxMetaData.setTaskCarIdList(sweepCodeDto.getTaskCarIdList());
 
-            if(sweepCodeDto.getClientType()==ClientEnum.APP_DRIVER.code){
-                om.setSubject("司机端收款码功能!");
-                om.setBody("司机端生成二维码！");
-                pingxxMetaData.setLoginType(String.valueOf(UserTypeEnum.DRIVER.code));
-                pingxxMetaData.setChargeType(String.valueOf(ChargeTypeEnum.DRIVER_COLLECT_QRCODE.getCode()));
-            }else{
-                om.setSubject("业务员收款码功能!");
-                om.setBody("业务员端生成二维码！");
-                pingxxMetaData.setLoginType(String.valueOf(UserTypeEnum.ADMIN.code));
-                pingxxMetaData.setChargeType(String.valueOf(ChargeTypeEnum.SALESMAN_COLLECT_QRCODE.getCode()));
-            }
-            pingxxMetaData.setClientType(String.valueOf(sweepCodeDto.getClientType()));
-            om.setPingxxMetaData(pingxxMetaData);
-            om.setDescription("韵车订单号："+om.getPingxxMetaData().getOrderNo());
+        if(sweepCodeDto.getClientType()==ClientEnum.APP_DRIVER.code){
+            om.setSubject("司机端收款码功能!");
+            om.setBody("司机端生成二维码！");
+            pingxxMetaData.setLoginType(String.valueOf(UserTypeEnum.DRIVER.code));
+            pingxxMetaData.setChargeType(String.valueOf(ChargeTypeEnum.DRIVER_COLLECT_QRCODE.getCode()));
+        }else{
+            om.setSubject("业务员收款码功能!");
+            om.setBody("业务员端生成二维码！");
+            pingxxMetaData.setLoginType(String.valueOf(UserTypeEnum.ADMIN.code));
+            pingxxMetaData.setChargeType(String.valueOf(ChargeTypeEnum.SALESMAN_COLLECT_QRCODE.getCode()));
+        }
+        pingxxMetaData.setClientType(String.valueOf(sweepCodeDto.getClientType()));
+        om.setPingxxMetaData(pingxxMetaData);
+        om.setDescription("韵车订单号："+om.getPingxxMetaData().getOrderNo());
 
-            charge = createDriverCode(om);
+        charge = createDriverCode(om);
 
-            cStransactionService.saveTransactions(charge, "0");
+        cStransactionService.saveTransactions(charge, "0");
        /* } catch (Exception e) {
             log.error("扫码支付异常",e);
         }*/
@@ -233,7 +231,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
     public ResultVo<ValidateSweepCodePayVo> validateCarPayState(ValidateSweepCodeDto validateSweepCodeDto, boolean addLock) {
 
         log.info("validateCarPayState validateSweepCodeDto.getClientType()= "+validateSweepCodeDto.getClientType()+" validateSweepCodeDto.getCode()="+validateSweepCodeDto.getCode()
-        +" addLock="+addLock);
+                +" addLock="+addLock);
         if(validateSweepCodeDto.getClientType()!=null){
             if(validateSweepCodeDto.getClientType().equals("4")||validateSweepCodeDto.getClientType().equals("2")){
                 if(validateSweepCodeDto.getCode()==null){
@@ -515,7 +513,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
      * @param paymentRecord
      */
     private void addPaymentRecord(PaymentRecord paymentRecord){
-       paymentRecordDao.insert(paymentRecord);
+        paymentRecordDao.insert(paymentRecord);
     }
 
     private void addPaymentErrorLog(String remark){
@@ -623,7 +621,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
 
     @Override
     public ResultVo allinpayToCooperator(Long orderId) throws FileNotFoundException, RateLimitException, APIException, ChannelException, InvalidRequestException, APIConnectionException, AuthenticationException {
-        /*log.info("完成订单（ID：{}），支付合伙人服务费", orderId);
+        log.info("完成订单（ID：{}），支付合伙人服务费", orderId);
         //支付校验
         Order order = null;
         try{
@@ -928,29 +926,29 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             }
         }*/
         //try {
-            om.setClientIp(salesPrePayDto.getIp());
-            BigDecimal wlFee = cStransactionService.getAmountByOrderNo(salesPrePayDto.getOrderNo());
-            om.setClientIp(salesPrePayDto.getIp());
-            om.setAmount(wlFee);
-            om.setSubject(ChargeTypeEnum.SALES_PREPAY_QRCODE.getName());
-            om.setBody("业务员订单预付款");
+        om.setClientIp(salesPrePayDto.getIp());
+        BigDecimal wlFee = cStransactionService.getAmountByOrderNo(salesPrePayDto.getOrderNo());
+        om.setClientIp(salesPrePayDto.getIp());
+        om.setAmount(wlFee);
+        om.setSubject(ChargeTypeEnum.SALES_PREPAY_QRCODE.getName());
+        om.setBody("业务员订单预付款");
 
-            PingxxMetaData pingxxMetaData = new PingxxMetaData();
-            pingxxMetaData.setPingAppId(PingProperty.userAppId);
-            pingxxMetaData.setChannel(salesPrePayDto.getChannel());
-            pingxxMetaData.setOrderNo(salesPrePayDto.getOrderNo());
-            pingxxMetaData.setChargeType(String.valueOf(ChargeTypeEnum.SALES_PREPAY_QRCODE.getCode()));
-            pingxxMetaData.setClientType(String.valueOf(ClientEnum.App_PREPAY_SALESMAN));
-            pingxxMetaData.setLoginId(String.valueOf(salesPrePayDto.getLoginId()));
-            pingxxMetaData.setLoginType(String.valueOf(UserTypeEnum.ADMIN.code));
+        PingxxMetaData pingxxMetaData = new PingxxMetaData();
+        pingxxMetaData.setPingAppId(PingProperty.userAppId);
+        pingxxMetaData.setChannel(salesPrePayDto.getChannel());
+        pingxxMetaData.setOrderNo(salesPrePayDto.getOrderNo());
+        pingxxMetaData.setChargeType(String.valueOf(ChargeTypeEnum.SALES_PREPAY_QRCODE.getCode()));
+        pingxxMetaData.setClientType(String.valueOf(ClientEnum.App_PREPAY_SALESMAN));
+        pingxxMetaData.setLoginId(String.valueOf(salesPrePayDto.getLoginId()));
+        pingxxMetaData.setLoginType(String.valueOf(UserTypeEnum.ADMIN.code));
 
-            om.setPingxxMetaData(pingxxMetaData);
-            // 备注：订单号
-            om.setDescription("韵车订单号："+om.getPingxxMetaData().getOrderNo());
+        om.setPingxxMetaData(pingxxMetaData);
+        // 备注：订单号
+        om.setDescription("韵车订单号："+om.getPingxxMetaData().getOrderNo());
 
-            charge = createDriverCode(om);
+        charge = createDriverCode(om);
 
-            cStransactionService.saveSalesPrePayTransactions(charge, "0");
+        cStransactionService.saveSalesPrePayTransactions(charge, "0");
         /*} catch (Exception e) {
             log.error("业务员预付款出示二维码异常",e);
         }*/
@@ -974,7 +972,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             String key = RedisKeys.getWlCollectPayLockKey(orderCarNo);
             redisUtils.delete(key);
         }catch (Exception e){
-           return BaseResultUtil.fail("解锁扫码付款");
+            return BaseResultUtil.fail("解锁扫码付款");
         }
         return BaseResultUtil.success();
     }

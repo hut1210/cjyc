@@ -1,5 +1,4 @@
 package com.cjyc.common.system.service;
-
 import com.Pingxx.model.Order;
 import com.cjyc.common.model.entity.TradeBill;
 import com.pingplusplus.model.Charge;
@@ -8,10 +7,9 @@ import com.pingplusplus.model.Transfer;
 
 import java.math.BigDecimal;
 import java.util.List;
-
 /**
- * @Author:Hut
- * @Date:2019/11/20 16:40
+ * @Author: Hut
+ * @Date: 2020/03/07 15:49
  */
 public interface ICsTransactionService {
     void saveTransactions(Object obj, String state);
