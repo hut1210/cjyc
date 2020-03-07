@@ -53,7 +53,7 @@ public class AppVersion implements Serializable {
     private Integer isActive;
 
     @ApiModelProperty(value = "创建人id")
-    private Long createUseId;
+    private Long createUserId;
 
     @ApiModelProperty(value = "创建时间")
     private Long createTime;
