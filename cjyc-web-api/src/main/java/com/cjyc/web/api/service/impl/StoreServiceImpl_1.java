@@ -162,7 +162,7 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
         // 封装入库参数
         Store store = getStore(storeAddDto);
         //新增城市下面的未覆盖的区县
-        List<String> areaCodeList = findAreaCode(storeAddDto.getCityCode());
+        List<String> areaCodeList = findAreaCodeList(storeAddDto.getCityCode());
         // 保存业务中心
         boolean result =  super.save(store);
         //保存业务中心覆盖区县
@@ -418,21 +418,18 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
      * @param cityCode
      * @return
      */
-    private List<String> findAreaCode(String cityCode){
+    private List<String> findAreaCodeList(String cityCode){
         //根据城市编码获取下面所有区县code
         List<City> areaCityList = cityDao.selectList(new QueryWrapper<City>().lambda()
                 .eq(City::getParentCode, cityCode));
-        if(CollectionUtils.isEmpty(areaCityList)){
-            return null;
-        }
-        List<String> areaCodeList = areaCityList.stream().map(City::getCode).collect(Collectors.toList());
-        if (CollectionUtils.isEmpty(areaCityList)) {
-            return null;
+        List<String> areaCodeList = null;
+        if(!CollectionUtils.isEmpty(areaCityList)){
+            areaCodeList = areaCityList.stream().map(City::getCode).collect(Collectors.toList());
         }
         //获取该城市下已绑定的业务中心的区县code
         List<String> coverAreaCodeList = null;
         List<StoreCityCon> storeCityConList = storeCityConDao.selectList(new QueryWrapper<StoreCityCon>().lambda()
-                .in(StoreCityCon::getAreaCode, areaCodeList));
+                                                             .in(StoreCityCon::getAreaCode, areaCodeList));
         if(!CollectionUtils.isEmpty(storeCityConList)){
             coverAreaCodeList = storeCityConList.stream().map(StoreCityCon::getAreaCode).collect(Collectors.toList());
         }
