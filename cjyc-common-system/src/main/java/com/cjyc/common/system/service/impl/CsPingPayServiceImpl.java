@@ -652,6 +652,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                 lock.lock();
                 try{
                     log.debug("【通联代付支付服务费】订单{}，准备支付服务费", order.getNo());
+                    //TODO 什么时间什么情况下创建账单，查询最后一条的依据？？
                     TradeBill tradeBill = cStransactionService.getTradeBillByOrderNoAndType(order.getNo(),ChargeTypeEnum.UNION_PAY_PARTNER.getCode());
                     log.debug("【通联代付支付服务费】订单{}，支付服务费，账单内容{}", order.getNo(), tradeBill);
                     if(tradeBill != null){
@@ -687,7 +688,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                     log.info("支付合伙人服务费wlFee={},orderId ={}",wlFee,orderId);
                     //新增打款记录日志
                     savePaymentRecord(orderId);
-
+                    //TODO 金额空指针
                     BigDecimal payableFee = order.getTotalFee().subtract(wlFee).add(order.getCouponOffsetFee());//给合伙人费用
                     log.info("支付合伙人服务费 payableFee={},orderId ={}",payableFee,orderId);
                     if(payableFee.compareTo(BigDecimal.ZERO)>0){
