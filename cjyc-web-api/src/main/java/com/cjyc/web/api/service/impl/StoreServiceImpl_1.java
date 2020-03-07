@@ -367,7 +367,8 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
                 .eq(!StringUtils.isEmpty(storeQueryDto.getCityCode()),Store::getCityCode,storeQueryDto.getCityCode())
                 .eq(!StringUtils.isEmpty(storeQueryDto.getAreaCode()),Store::getAreaCode,storeQueryDto.getAreaCode())
                 .eq(Store::getIsDelete,DeleteStateEnum.NO_DELETE.code)
-                .like(!StringUtils.isEmpty(storeQueryDto.getName()),Store::getName,storeQueryDto.getName());
+                .like(!StringUtils.isEmpty(storeQueryDto.getName()),Store::getName,storeQueryDto.getName())
+                .orderByDesc(Store::getCreateTime);
         return super.list(queryWrapper);
     }
 
