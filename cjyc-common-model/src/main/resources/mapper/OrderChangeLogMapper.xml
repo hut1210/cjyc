@@ -39,13 +39,13 @@
     <select id="findAll" resultType="com.cjyc.common.model.entity.OrderChangeLog">
         select * from w_order_change_log
         where type = 1
-        <if test="startTime != null">
-            and create_time >= #{startTime}
+        <if test="startDate != null">
+            and create_time >= #{startDate}
         </if>
-        <if test="endTime != null">
-            and create_time &lt; #{endTime}
+        <if test="endDate != null">
+            and create_time &lt; #{endDate}
         </if>
-        order by id desc
+        order by order_id
 
     </select>
 

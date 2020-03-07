@@ -9,47 +9,39 @@ import java.math.BigDecimal;
 
 @Data
 public class ImportOrderChangePriceVo {
-    @Excel(name = "修改人", needMerge = true, orderNum = "1")
-    private String createUserName;
-
-    @Excel(name = "订单编号", needMerge = true, orderNum = "2")
+    @Excel(name = "订单编号", needMerge = true,  width = 15,orderNum = "0")
     private String no;
-    @Excel(name = "客户名称", orderNum = "3")
+    @Excel(name = "修改人", orderNum = "1")
+    private String createUserName;
+    @Excel(name = "订单创建人", width = 15, orderNum = "2")
+    private String orderCreateUserName;
+
+    @Excel(name = "客户名称", width = 15, orderNum = "3")
     private String customerName;
     @Excel(name = "客户类型", orderNum = "4")
     private String customerTypeStr;
-    private Integer customerType;
-    @Excel(name = "修改时间", orderNum = "5")
+    @Excel(name = "修改时间", width = 15, orderNum = "5")
     private String createTimeStr;
 
-    @Excel(name = "修改前车辆数", orderNum = "6")
+    @Excel(name = "旧状态", width = 18, orderNum = "11")
+    private String oldState;
+    @Excel(name = "旧车辆数", orderNum = "12")
     private Integer oldCarNum;
-    @Excel(name = "修改前服务费", orderNum = "7")
+    @Excel(name = "旧服务费", orderNum = "13")
     private String oldAgencyFee;
-    @Excel(name = "修改前物流费", orderNum = "8")
+    @Excel(name = "旧物流费", orderNum = "14")
     private String oldWlTotalFee;
-    @Excel(name = "修改前订单金额", orderNum = "9")
+    @Excel(name = "旧订单金额", orderNum = "15")
     private String oldTotalFee;
-    @Excel(name = "修改后车辆数", orderNum = "10")
+    @Excel(name = "新状态", width = 18, orderNum = "21")
+    private String newState;
+    @Excel(name = "新车辆数", orderNum = "22")
     private Integer newCarNum;
-    @Excel(name = "修改后服务费", orderNum = "11")
+    @Excel(name = "新服务费", orderNum = "23")
     private String newAgencyFee;
-    @Excel(name = "修改后物流费", orderNum = "12")
+    @Excel(name = "新物流费", orderNum = "24")
     private String newWlTotalFee;
-    @Excel(name = "修改后订单金额", orderNum = "13")
+    @Excel(name = "新订单金额", orderNum = "25")
     private String newTotalFee;
-
-    public String getCustomerType() {
-        switch (customerTypeStr) {
-            case "1":
-                return "个人";
-            case "2":
-                return "企业";
-            case "3":
-                return "合伙人";
-            default:
-                return "";
-        }
-    }
 
 }

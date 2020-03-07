@@ -304,6 +304,9 @@ public class CsOrderServiceImpl implements ICsOrderService {
             }
             //copy属性
             BeanUtils.copyProperties(paramsDto, order);
+            if(order.getCustomerId() == null){
+                throw new ParameterException("客户身份信息有误, 请联系管理员");
+            }
             //城市信息
             fillOrderCityInfo(order);
             //所属业务中心

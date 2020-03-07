@@ -71,7 +71,7 @@ public interface ICsWaybillService {
 
     void cancelWaybill(Waybill waybill);
 
-    void cancelWaybillCar(Integer waybillType, WaybillCar waybillCar);
+    void cancelWaybillCar(Waybill waybill, WaybillCar waybillCar);
     void cancelWaybillCar(WaybillCar waybillCar);
 
 }

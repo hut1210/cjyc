@@ -42,25 +42,64 @@ public class ExcelServiceImpl implements IExcelService {
     private ImportOrderChangePriceVo getByFullOrder(FullOrder[] fos, OrderChangeLog ocl) {
         ImportOrderChangePriceVo vo = new ImportOrderChangePriceVo();
         vo.setCreateUserName(ocl.getCreateUser());
+        vo.setOrderCreateUserName(fos[0].getCreateUserName());
         vo.setNo(ocl.getOrderNo());
         vo.setCustomerName(fos[1].getCustomerName());
-        vo.setCustomerType(fos[1].getCustomerType());
+        vo.setCustomerTypeStr(getCustomerTypeStr(fos[1].getCustomerType()));
         vo.setCreateTimeStr(LocalDateTimeUtil.formatLong(ocl.getCreateTime(), "yyyy/MM/dd"));
+
+        BigDecimal oldTotalFee = fos[0].getTotalFee();
+        BigDecimal oldWlFee = getWlFee(fos[0].getList());
+        vo.setOldState(getOrderState(fos[0].getState()));
         vo.setOldCarNum(fos[0].getCarNum());
+        vo.setOldTotalFee(MoneyUtil.fenToYuan(oldTotalFee, MoneyUtil.PATTERN_TWO));
+        vo.setOldWlTotalFee(MoneyUtil.fenToYuan(oldWlFee, MoneyUtil.PATTERN_TWO));
+        vo.setOldAgencyFee(MoneyUtil.fenToYuan(oldTotalFee.subtract(oldWlFee), MoneyUtil.PATTERN_TWO));
 
-        BigDecimal totalFee = fos[0].getTotalFee();
-        BigDecimal wlFee = getWlFee(fos[0].getList());
-        vo.setOldTotalFee(MoneyUtil.fenToYuan(wlFee, MoneyUtil.PATTERN_TWO));
-        vo.setOldWlTotalFee(MoneyUtil.fenToYuan(totalFee, MoneyUtil.PATTERN_TWO));
-        vo.setOldAgencyFee(MoneyUtil.fenToYuan(totalFee.subtract(wlFee), MoneyUtil.PATTERN_TWO));
-
-        BigDecimal totalFee2 = fos[1].getTotalFee();
-        BigDecimal wlFee2 = getWlFee(fos[1].getList());
+        BigDecimal newTotalFee = fos[1].getTotalFee();
+        BigDecimal newWlFee = getWlFee(fos[1].getList());
+        vo.setNewState(getOrderState(fos[1].getState()));
         vo.setNewCarNum(fos[1].getCarNum());
-        vo.setNewAgencyFee(MoneyUtil.fenToYuan(totalFee2, MoneyUtil.PATTERN_TWO));
-        vo.setNewWlTotalFee(MoneyUtil.fenToYuan(wlFee2, MoneyUtil.PATTERN_TWO));
-        vo.setNewTotalFee(MoneyUtil.fenToYuan(totalFee2.subtract(wlFee2), MoneyUtil.PATTERN_TWO));
+        vo.setNewTotalFee(MoneyUtil.fenToYuan(newTotalFee, MoneyUtil.PATTERN_TWO));
+        vo.setNewWlTotalFee(MoneyUtil.fenToYuan(newWlFee, MoneyUtil.PATTERN_TWO));
+        vo.setNewAgencyFee(MoneyUtil.fenToYuan(newTotalFee.subtract(newWlFee), MoneyUtil.PATTERN_TWO));
         return vo;
+    }
+
+    private String getOrderState(Integer state) {
+        switch (state) {
+            case 0:
+                return "预订单";
+            case 2:
+                return "待确认(客户提交)";
+            case 5:
+                return "待确认(业务员提交)";
+            case 15:
+                return "待付款";
+            case 25:
+                return "待调度";
+            case 55:
+                return "运输中";
+            case 100:
+                return "已交付";
+            case 113:
+                return "已取消";
+            default:
+                return "";
+        }
+    }
+
+    private String getCustomerTypeStr(Integer customerType) {
+        switch (customerType) {
+            case 1:
+                return "个人";
+            case 2:
+                return "企业";
+            case 3:
+                return "合伙人";
+            default:
+                return "";
+        }
     }
 
     private BigDecimal getWlFee(List<OrderCar> list) {
@@ -83,19 +122,10 @@ public class ExcelServiceImpl implements IExcelService {
     }
 
     private FullOrder[] getFullOrderFromChangeLog(OrderChangeLog orderChangeLog) {
-        FullOrder oFullOrder;
-        if (StringUtils.isNotBlank(orderChangeLog.getOldContent())) {
-            oFullOrder = JSON.parseObject(orderChangeLog.getOldContent(), FullOrder.class);
-        } else {
-            oFullOrder = new FullOrder();
-        }
 
-        FullOrder nFullOrder;
-        if (StringUtils.isNotBlank(orderChangeLog.getOldContent())) {
-            nFullOrder = JSON.parseObject(orderChangeLog.getOldContent(), FullOrder.class);
-        } else {
-            nFullOrder = new FullOrder();
-        }
+        FullOrder oFullOrder = StringUtils.isBlank(orderChangeLog.getOldContent()) ? new FullOrder() : JSON.parseObject(orderChangeLog.getOldContent(), FullOrder.class);
+
+        FullOrder nFullOrder = StringUtils.isBlank(orderChangeLog.getOldContent()) ? new FullOrder() : JSON.parseObject(orderChangeLog.getNewContent(), FullOrder.class);
 
         return new FullOrder[]{oFullOrder, nFullOrder};
     }
