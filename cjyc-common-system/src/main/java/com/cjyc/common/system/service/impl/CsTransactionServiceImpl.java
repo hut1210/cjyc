@@ -129,6 +129,7 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void saveWebPrePayTransactions(Charge charge, String state) {
         TradeBill tb = chargeToTransactions(charge, null,state);
         if(tb != null){
@@ -146,6 +147,7 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void saveSalesPrePayTransactions(Charge charge, String state) {
         TradeBill tb = chargeToTransactions(charge, null,state);
         if(tb != null){
