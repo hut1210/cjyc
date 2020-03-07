@@ -74,13 +74,13 @@
     <select id="getTradeBillByOrderNo" parameterType="String" resultType="com.cjyc.common.model.entity.TradeBill">
         select ftb.* from f_trade_bill ftb
         left join f_trade_bill_detail ftbd on ftb.id = ftbd.trade_bill_id
-        where ftbd.source_no = #{orderNo} and state =2 and (type=1 or type=7 or type=9) order by create_time desc limit 1
+        where ftbd.source_no = #{orderNo} and state =2 and (type=1 or type=7 or type=9) order by create_time desc limit 1 for update
     </select>
 
     <select id="getTradeBillByOrderNoAndType" parameterType="map" resultType="com.cjyc.common.model.entity.TradeBill">
         select ftb.* from f_trade_bill ftb
         left join f_trade_bill_detail ftbd on ftb.id = ftbd.trade_bill_id
-        where ftbd.source_no = #{orderNo} and type=#{type} order by create_time desc limit 1
+        where ftbd.source_no = #{orderNo} and type=#{type} order by create_time desc limit 1 for update
     </select>
 
     <select id="getAmountByOrderNo" parameterType="String" resultType="java.math.BigDecimal">
