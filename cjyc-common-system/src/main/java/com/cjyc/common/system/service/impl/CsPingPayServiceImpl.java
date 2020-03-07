@@ -614,9 +614,11 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
      */
     private BigDecimal contrastCooperatorAmount(Long customId){
 
-        BigDecimal wlFeeCount = cStransactionService.getCooperatorServiceFeeCount(customId);
+        BigDecimal deservedFeeCount = cStransactionService.getCooperatorServiceFeeCount(customId);//应得运费
 
-        return wlFeeCount;
+        BigDecimal receiveFeeCount = cStransactionService.getCooperatorServiceReceiveFeeCount(customId);//已得费用
+
+        return null;
     }
 
     @Override

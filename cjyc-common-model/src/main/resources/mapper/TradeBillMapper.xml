@@ -178,4 +178,8 @@
         select sum(freight_fee) from w_waybill where carrier_id = #{carrierId} and state = 100
     </select>
 
+    <select id="getCooperatorServiceFeeCount" parameterType="java.lang.Long" resultType="java.math.BigDecimal">
+        select sum(total_fee+coupon_offset_fee) from w_order where customer_id=#{} and customer_type=3 and state=100;
+    </select>
+
 </mapper>

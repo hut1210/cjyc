@@ -61,4 +61,6 @@ public interface ITradeBillDao extends BaseMapper<TradeBill> {
     void updateOrderFlag(@Param("orderNo") String orderNo, @Param("state") String state, @Param("payTime")long payTime);
 
     BigDecimal getWlFeeCount(Long carrierId);
+
+    BigDecimal getCooperatorServiceFeeCount(Long customId);
 }

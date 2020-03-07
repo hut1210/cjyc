@@ -176,6 +176,11 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
 
     @Override
     public BigDecimal getCooperatorServiceFeeCount(Long customId) {
+        return tradeBillDao.getCooperatorServiceFeeCount(customId);
+    }
+
+    @Override
+    public BigDecimal getCooperatorServiceReceiveFeeCount(Long customId) {
         return null;
     }
 
