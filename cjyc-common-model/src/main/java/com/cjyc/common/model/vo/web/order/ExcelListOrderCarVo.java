@@ -111,7 +111,7 @@ public class ExcelListOrderCarVo implements Serializable {
     public String getTrunkFee() { return MoneyUtil.fenToYuan(trunkFee, MoneyUtil.PATTERN_TWO); }
     public String getBackFee() { return MoneyUtil.fenToYuan(backFee, MoneyUtil.PATTERN_TWO); }
     public String getSource(){
-        if(source == null){
+        if(source != null){
             if(source != 1){
                 return "WEB管理后台";
             }else if(source == 2){
