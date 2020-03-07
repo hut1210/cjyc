@@ -1,16 +1,15 @@
 package com.cjyc.common.system.service;
-
 import com.Pingxx.model.Order;
 import com.cjyc.common.model.entity.TradeBill;
+import com.pingplusplus.model.Charge;
 import com.pingplusplus.model.Event;
-import org.apache.ibatis.annotations.Param;
+import com.pingplusplus.model.Transfer;
 
 import java.math.BigDecimal;
 import java.util.List;
-
 /**
- * @Author:Hut
- * @Date:2019/11/20 16:40
+ * @Author: Hut
+ * @Date: 2020/03/07 15:49
  */
 public interface ICsTransactionService {
     void saveTransactions(Object obj, String state);
@@ -36,4 +35,18 @@ public interface ICsTransactionService {
     void updateWayBillPayStateNoPay(Long waybillId,long time);
 
     BigDecimal getAmountByOrderCarNosToPartner(List<String> orderCarNosList);
+
+    void saveCooperatorTransactions(Transfer transfer, String s);
+
+    void saveWebPrePayTransactions(Charge charge, String s);
+
+    void saveSalesPrePayTransactions(Charge charge, String s);
+
+    void updateOrderFlag(String orderNo, String state, long l);
+
+    BigDecimal getWlFeeCount(Long carrierId);
+
+    BigDecimal getCooperatorServiceFeeCount(Long customId);
+
+    BigDecimal getCooperatorServiceReceiveFeeCount(Long customId);
 }

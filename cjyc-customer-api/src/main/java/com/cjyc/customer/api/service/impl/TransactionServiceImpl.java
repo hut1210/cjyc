@@ -3,9 +3,7 @@ package com.cjyc.customer.api.service.impl;
 import com.Pingxx.model.MetaDataEntiy;
 import com.Pingxx.model.PingxxMetaData;
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjyc.common.model.enums.UserTypeEnum;
-import com.cjyc.common.model.enums.log.OrderCarLogEnum;
 import com.cjyc.common.model.enums.log.OrderLogEnum;
 import com.cjyc.common.model.enums.message.PushMsgEnum;
 import com.cjyc.common.system.service.*;
@@ -35,7 +33,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import springfox.documentation.spring.web.json.Json;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -106,6 +103,7 @@ public class TransactionServiceImpl implements ITransactionService {
     private ICsPushMsgService csPushMsgService;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int save(Object obj) {
         TradeBill bill;
         if(obj instanceof TradeBill){
@@ -350,7 +348,7 @@ public class TransactionServiceImpl implements ITransactionService {
 
             String no = tradeBillDao.getTradeBillByPingPayId(transfer.getId());
             try{
-                tradeBillDao.updateWayBillPayState(waybillId,no, System.currentTimeMillis());
+                tradeBillDao.updateWayBillPayState(waybillId,no, System.currentTimeMillis(),"1");
             }catch (Exception e){
                 log.error("回调给承运商付款更新运单支付状态失败"+e.getMessage(),e);
             }
@@ -359,15 +357,10 @@ public class TransactionServiceImpl implements ITransactionService {
         if(chargeType.equals(String.valueOf(ChargeTypeEnum.UNION_PAY_PARTNER.getCode()))){
             String orderId = pingxxMetaData.getOrderId();
             com.cjyc.common.model.entity.Order order = orderDao.selectById(orderId);
-            /*if(order!=null){
-                log.info("回调给合伙人付款");
-                try {
-                    csPingPayService.allinpayToCooperator(order.getId());
-                } catch (Exception e) {
-                    log.error("回调支付合伙人{}（ID{}）服务费失败", order.getCustomerName(), order.getCustomerId());
-                    log.error(e.getMessage(), e);
-                }
-            }*/
+
+            //更新合伙人打款状态
+            String orderNo = String.valueOf(pingxxMetaData.getOrderNo());
+            tradeBillDao.updateOrderFlag(orderNo, "2", System.currentTimeMillis());
 
         }
 
@@ -550,6 +543,7 @@ public class TransactionServiceImpl implements ITransactionService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void updateTransactions(Order order, Event event, String state) {
         /**
          * 更新f_trade_bill状态，更新车辆付款状态,物流费支付时间,更新订单状态

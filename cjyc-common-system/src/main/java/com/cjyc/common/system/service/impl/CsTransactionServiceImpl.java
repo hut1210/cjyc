@@ -34,7 +34,6 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
 
 /**
  * @Author:Hut
@@ -109,6 +108,80 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
     @Override
     public BigDecimal getAmountByOrderCarNosToPartner(List<String> orderCarNosList) {
         return tradeBillDao.getAmountByOrderCarNosToPartner(orderCarNosList);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveCooperatorTransactions(Transfer transfer, String state) {
+        TradeBill tb = transferToTransactions(transfer,null,state);
+        if(tb != null){
+            tradeBillDao.insert(tb);
+        }
+
+        Map<String, Object> metadata = transfer.getMetadata();
+        String orderNo = (String) metadata.get("orderNo");
+        if(orderNo != null){
+            TradeBillDetail tradeBillDetail = new TradeBillDetail();
+            tradeBillDetail.setTradeBillId(Long.valueOf(tb.getId()));
+            tradeBillDetail.setSourceNo(orderNo==null?null:orderNo);
+            tradeBillDetailDao.insert(tradeBillDetail);
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveWebPrePayTransactions(Charge charge, String state) {
+        TradeBill tb = chargeToTransactions(charge, null,state);
+        if(tb != null){
+            tradeBillDao.insert(tb);
+        }
+
+        Map<String, Object> metadata = charge.getMetadata();
+        String orderNo = (String) metadata.get("orderNo");
+        if(orderNo != null){
+            TradeBillDetail tradeBillDetail = new TradeBillDetail();
+            tradeBillDetail.setTradeBillId(Long.valueOf(tb.getId()));
+            tradeBillDetail.setSourceNo(orderNo==null?null:orderNo);
+            tradeBillDetailDao.insert(tradeBillDetail);
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveSalesPrePayTransactions(Charge charge, String state) {
+        TradeBill tb = chargeToTransactions(charge, null,state);
+        if(tb != null){
+            tradeBillDao.insert(tb);
+        }
+
+        Map<String, Object> metadata = charge.getMetadata();
+        String orderNo = (String) metadata.get("orderNo");
+        if(orderNo != null){
+            TradeBillDetail tradeBillDetail = new TradeBillDetail();
+            tradeBillDetail.setTradeBillId(Long.valueOf(tb.getId()));
+            tradeBillDetail.setSourceNo(orderNo==null?null:orderNo);
+            tradeBillDetailDao.insert(tradeBillDetail);
+        }
+    }
+
+    @Override
+    public void updateOrderFlag(String orderNo, String state, long payTime) {
+        tradeBillDao.updateOrderFlag(orderNo,state,payTime);
+    }
+
+    @Override
+    public BigDecimal getWlFeeCount(Long carrierId) {
+        return tradeBillDao.getWlFeeCount(carrierId);
+    }
+
+    @Override
+    public BigDecimal getCooperatorServiceFeeCount(Long customId) {
+        return tradeBillDao.getCooperatorServiceFeeCount(customId);
+    }
+
+    @Override
+    public BigDecimal getCooperatorServiceReceiveFeeCount(Long customId) {
+        return null;
     }
 
     @Override
@@ -226,6 +299,14 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
             //BigDecimal channelFee = dictionaryService.getChannelFee(charge.getChannel(), order.getAmount().toString());
             tb.setChannelFee(new BigDecimal(0));
         }
+        Map<String, Object> metadata = order.getMetadata();
+        if(metadata!=null){
+            PingxxMetaData pingxxMetaData =  BeanMapUtil.mapToBean(metadata, new PingxxMetaData());
+            String chargeType = pingxxMetaData.getChargeType();
+            log.info("chargeType ="+chargeType);
+
+            tb.setType((Integer.valueOf(chargeType)));
+        }
         String uid = order.getUid();
         tb.setPayerId(Long.valueOf(uid));
 
@@ -241,6 +322,7 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
     }
 
     private TradeBill chargeToTransactions(Charge charge,Event event,String state) {
+        log.info(charge.toString());
         TradeBill tb = new TradeBill();
         tb.setSubject(charge.getSubject());
         tb.setBody(charge.getBody());
@@ -261,11 +343,12 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
         }
         Map<String, Object> metadata = charge.getMetadata();
         if(metadata!=null){
-            String type =(String) metadata.get("chargeType");
+            PingxxMetaData pingxxMetaData =  BeanMapUtil.mapToBean(metadata, new PingxxMetaData());
+            String chargeType = pingxxMetaData.getChargeType();
+            log.info("chargeType ="+chargeType);
 
-            tb.setType((Integer.valueOf(type)));
+            tb.setType((Integer.valueOf(chargeType)));
         }
-        tb.setType(0);
         tb.setPingPayId(charge.getId());
         tb.setState(Integer.valueOf(state));//待支付/已支付/付款失败
         tb.setNo(csSendNoService.getNo(SendNoTypeEnum.RECEIPT));
@@ -273,6 +356,7 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
     }
 
     private TradeBill transferToTransactions(Transfer transfer,Event event,String state) {
+        log.info("transferToTransactions transfer = "+transfer.toString());
         TradeBill tb = new TradeBill();
         Map<String, Object> metadata = transfer.getMetadata();
 
@@ -319,6 +403,7 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void updateTransactions(Order order, Event event, String state) {
         /**
          * 更新f_trade_bill状态，更新车辆付款状态,物流费支付时间,更新订单状态

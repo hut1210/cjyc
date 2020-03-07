@@ -31,6 +31,7 @@ import com.cjyc.common.system.config.PingProperty;
 import com.cjyc.common.system.service.ICsPingxxService;
 import com.cjyc.common.system.service.ICsSendNoService;
 import com.cjyc.common.system.service.ICsTaskService;
+import com.cjyc.common.system.service.ICsTransactionService;
 import com.cjyc.common.system.util.RedisLock;
 import com.cjyc.common.system.util.RedisUtils;
 import com.cjyc.customer.api.dto.OrderModel;
@@ -90,6 +91,9 @@ public class PingPayServiceImpl implements IPingPayService {
     @Resource
     private IOrderRefundDao orderRefundDao;
 
+    @Autowired
+    private ICsTransactionService csTransactionService;
+
     private final Lock lock = new ReentrantLock();
 
     @Override
@@ -130,7 +134,12 @@ public class PingPayServiceImpl implements IPingPayService {
 
         TradeBill tradeBill = transactionService.getTradeBillByOrderNo(reqDto.getOrderNo());
         if(tradeBill != null){
-            throw new CommonException("订单已支付完成","1");
+            com.cjyc.common.model.entity.Order o = orderDao.findByNo(reqDto.getOrderNo());
+            if(o!=null){
+                if(o.getWlPayState()==2){
+                    throw new CommonException("订单已支付完成","1");
+                }
+            }
         }else{
             log.info("pay orderNo ="+orderNo);
             String lockKey =getRandomNoKey(orderNo);

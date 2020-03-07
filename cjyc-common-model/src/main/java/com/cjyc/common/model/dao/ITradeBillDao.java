@@ -48,7 +48,7 @@ public interface ITradeBillDao extends BaseMapper<TradeBill> {
 
     TradeBill getTradeBillByOrderNoAndType(@Param("orderNo")String orderNo,@Param("type") int type);
 
-    void updateWayBillPayState(@Param("waybillId") Long waybillId, @Param("no") String no,@Param("time") long time);
+    void updateWayBillPayState(@Param("waybillId") Long waybillId, @Param("no") String no, @Param("time") long time,@Param("state") String state);
 
     String getTradeBillByPingPayId(String pingPayId);
 
@@ -57,4 +57,10 @@ public interface ITradeBillDao extends BaseMapper<TradeBill> {
     BigDecimal getAmountByOrderCarNosToPartner(@Param("orderCarNos")List<String> orderCarNos);
 
     void updateOrderPayState(@Param("orderNo")String no,@Param("wlPayTime") long currentTimeMillis);
+
+    void updateOrderFlag(@Param("orderNo") String orderNo, @Param("state") String state, @Param("payTime")long payTime);
+
+    BigDecimal getWlFeeCount(Long carrierId);
+
+    BigDecimal getCooperatorServiceFeeCount(Long customId);
 }

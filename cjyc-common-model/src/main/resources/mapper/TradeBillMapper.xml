@@ -74,13 +74,13 @@
     <select id="getTradeBillByOrderNo" parameterType="String" resultType="com.cjyc.common.model.entity.TradeBill">
         select ftb.* from f_trade_bill ftb
         left join f_trade_bill_detail ftbd on ftb.id = ftbd.trade_bill_id
-        where ftbd.source_no = #{orderNo} and state =2 order by create_time desc limit 1
+        where ftbd.source_no = #{orderNo} and state =2 and (type=1 or type=7 or type=9) order by create_time desc limit 1
     </select>
 
     <select id="getTradeBillByOrderNoAndType" parameterType="map" resultType="com.cjyc.common.model.entity.TradeBill">
         select ftb.* from f_trade_bill ftb
         left join f_trade_bill_detail ftbd on ftb.id = ftbd.trade_bill_id
-        where ftbd.source_no = #{orderNo} and state =2 and type=#{type} order by create_time desc limit 1
+        where ftbd.source_no = #{orderNo} and type=#{type} order by create_time desc limit 1
     </select>
 
     <select id="getAmountByOrderNo" parameterType="String" resultType="java.math.BigDecimal">
@@ -161,7 +161,7 @@
     </select>
 
     <update id="updateWayBillPayState" parameterType="map" >
-        update w_waybill set freight_pay_state = 1,freight_pay_time=#{time},freight_pay_billno=#{no} where id =#{waybillId}
+        update w_waybill set freight_pay_state =#{state},freight_pay_time=#{time},freight_pay_billno=#{no} where id =#{waybillId}
     </update>
     <select id="getTradeBillByPingPayId" resultType="java.lang.String">
         select no from f_trade_bill where ping_pay_id = #{pingPayId}
@@ -169,5 +169,17 @@
     <update id="updateWayBillPayStateNoPay" parameterType="map" >
         update w_waybill set freight_pay_state = 1,freight_pay_time=#{time} where id =#{waybillId}
     </update>
+
+    <update id="updateOrderFlag" parameterType="map">
+        update w_order set flag=#{state},service_fee_pay_time=#{payTime} where no = #{orderNo}
+    </update>
+
+    <select id="getWlFeeCount" resultType="java.math.BigDecimal">
+        select sum(freight_fee) from w_waybill where carrier_id = #{carrierId} and state = 100
+    </select>
+
+    <select id="getCooperatorServiceFeeCount" parameterType="java.lang.Long" resultType="java.math.BigDecimal">
+        select sum(total_fee+coupon_offset_fee) from w_order where customer_id=#{} and customer_type=3 and state=100;
+    </select>
 
 </mapper>
