@@ -433,7 +433,9 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
         if(!CollectionUtils.isEmpty(storeCityConList)){
             coverAreaCodeList = storeCityConList.stream().map(StoreCityCon::getAreaCode).collect(Collectors.toList());
         }
-        areaCodeList.removeAll(coverAreaCodeList);
+        if(!coverAreaCodeList.isEmpty()){
+            areaCodeList.removeAll(coverAreaCodeList);
+        }
         return areaCodeList;
     }
 }

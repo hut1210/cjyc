@@ -12,161 +12,94 @@ import java.math.BigDecimal;
 public class ExcelListOrderCarVo implements Serializable {
     private static final long serialVersionUID = -3419537142436486450L;
 
-    @Excel(name = "车辆编码", orderNum = "0")
+    @Excel(name = "车辆编码", orderNum = "0",width = 20)
     private String no;
-    @Excel(name = "vin码", orderNum = "1")
+    @Excel(name = "vin码", orderNum = "1",width = 20)
     private String vin;
-    @Excel(name = "提车运输状态 1待调度，2待提车，3待交车，5已完成，21自送待调度，23自送待交车，25自送已交付，100物流上门", orderNum = "2")
-    private Integer pickTransportState;
-    @Excel(name = "干线运输状态 1待调度，2待提车，3待交车，5已完成, 100无干线", orderNum = "3")
-    private Integer trunkTransportState;
-    @Excel(name = "送车运输状态 1待调度，2待提车，3待交车，5已完成，21自提待调度，23自提待交车，25自提已交付，100物流上门", orderNum = "4")
-    private Integer backTransportState;
-    @Excel(name = "应收状态：0未支付，2已支付", orderNum = "5")
+    @Excel(name = "付款状态", orderNum = "2",width = 15)
     private Integer wlPayState;
-    @Excel(name = "品牌", orderNum = "6")
+    @Excel(name = "品牌", orderNum = "3",width = 15)
     private String brand;
-    @Excel(name = "车系", orderNum = "7")
+    @Excel(name = "车系", orderNum = "4",width = 15)
     private String model;
-    @Excel(name = "实收总运费(元)", orderNum = "8")
+    @Excel(name = "实收总运费(元)", orderNum = "5",width = 15)
     private BigDecimal totalFee;
-    @Excel(name = "订单编号", orderNum = "9")
+    @Excel(name = "订单编号", orderNum = "6",width = 20)
     private String orderNo;
-    @Excel(name = "订单来源：1WEB管理后台, 2业务员APP, 4司机APP, 6用户端APP, 7用户端小程序", orderNum = "10")
+    @Excel(name = "订单来源", orderNum = "7",width = 15)
     private Integer source;
-    @Excel(name = "大区", orderNum = "11")
+    @Excel(name = "大区", orderNum = "8",width = 15)
     private String region;
-    @Excel(name = "订单状态：0待提交，2待分配，5待确认，10待复确认，15待预付款，25已确认，55运输中，88待付款，100已完成，111原返（待），112异常结束，113取消（待），114作废（待）", orderNum = "12")
+    @Excel(name = "订单状态", orderNum = "9",width = 15)
     private String outterState;
-    @Excel(name = "下单客户", orderNum = "13")
+    @Excel(name = "下单客户", orderNum = "10",width = 20)
     private String customerPhone;
-    @Excel(name = "客户名称", orderNum = "14")
+    @Excel(name = "客户名称", orderNum = "11",width = 20)
     private String customerName;
-    @Excel(name = "始发城市", orderNum = "15")
+    @Excel(name = "始发城市", orderNum = "12",width = 15)
     private String startCity;
-    @Excel(name = "目的城市", orderNum = "16")
+    @Excel(name = "目的城市", orderNum = "13",width = 15)
     private String endCity;
-    @Excel(name = "出发地业务中心", orderNum = "17")
+    @Excel(name = "出发地业务中心", orderNum = "14",width = 20)
     private String startStoreName;
-    @Excel(name = "目的地业务中心名称", orderNum = "18")
+    @Excel(name = "目的地业务中心", orderNum = "15",width = 20)
     private String endStoreName;
-    @Excel(name = "预计出发时间（提车日期）", orderNum = "19")
+    @Excel(name = "提车日期", orderNum = "16",width = 20)
     private Long expectStartDate;
-    @Excel(name = "提车方式:1 自送，2代驾上门，3拖车上门，4物流上门", orderNum = "20")
+    @Excel(name = "提车方式", orderNum = "17",width = 15)
     private Integer pickType;
-    @Excel(name = "提车联系人", orderNum = "21")
+    @Excel(name = "提车联系人", orderNum = "18",width = 20)
     private String pickContactName;
-    @Excel(name = "提车联系方式", orderNum = "22")
+    @Excel(name = "提车联系方式", orderNum = "19",width = 20)
     private String pickContactPhone;
-    @Excel(name = "提车地址", orderNum = "23")
+    @Excel(name = "提车地址", orderNum = "20",width = 20)
     private String startFullAddress;
-    @Excel(name = "预计到达时间", orderNum = "24")
+    @Excel(name = "预计到达时间", orderNum = "21",width = 20)
     private Long expectEndDate;
-    @Excel(name = "送车方式： 1 自提，2代驾上门，3拖车上门，4物流上门", orderNum = "25")
+    @Excel(name = "送车方式", orderNum = "22",width = 15)
     private Integer backType;
-    @Excel(name = "交车联系人", orderNum = "26")
+    @Excel(name = "交车联系人", orderNum = "23",width = 20)
     private String backContactName;
-    @Excel(name = "交车电话", orderNum = "27")
+    @Excel(name = "交车电话", orderNum = "24",width = 20)
     private String backContactPhone;
-    @Excel(name = "交车地址", orderNum = "28")
+    @Excel(name = "交车地址", orderNum = "25",width = 20)
     private String endFullAddress;
-    @Excel(name = "订单备注", orderNum = "29")
+    @Excel(name = "订单备注", orderNum = "26",width = 15)
     private String remark;
-    @Excel(name = "客户付款方式：0到付（默认），1预付，2账期", orderNum = "30")
+    @Excel(name = "客户付款方式", orderNum = "27",width = 15)
     private Integer payType;
-    @Excel(name = "是否能动 0-否 1-是", orderNum = "31")
+    @Excel(name = "是否能动", orderNum = "28",width = 15)
     private Integer isMove;
-    @Excel(name = "车牌号", orderNum = "32")
+    @Excel(name = "车牌号", orderNum = "29",width = 15)
     private String plateNo;
-    @Excel(name = "车值(万元)", orderNum = "33")
+    @Excel(name = "车值(万元)", orderNum = "30",width = 15)
     private Integer valuation;
-    @Excel(name = "追保额(万元)", orderNum = "34")
+    @Excel(name = "追保额(万元)", orderNum = "31",width = 15)
     private Integer addInsuranceAmount;
-    @Excel(name = "保费(元)", orderNum = "35")
+    @Excel(name = "保费(元)", orderNum = "32",width = 15)
     private BigDecimal addInsuranceFee;
-    @Excel(name = "提车费(元)", orderNum = "36")
+    @Excel(name = "提车费(元)", orderNum = "33",width = 15)
     private BigDecimal pickFee;
-    @Excel(name = "物流费(元)", orderNum = "37")
+    @Excel(name = "物流费(元)", orderNum = "34",width = 15)
     private BigDecimal trunkFee;
-    @Excel(name = "送车费(元)", orderNum = "38")
+    @Excel(name = "送车费(元)", orderNum = "35",width = 15)
     private BigDecimal backFee;
-    @Excel(name = "是否新车 0-否 1-是", orderNum = "39")
+    @Excel(name = "是否新车", orderNum = "36",width = 15)
     private Integer isNew;
-    @Excel(name = "下单时间", orderNum = "40")
+    @Excel(name = "下单时间", orderNum = "37",width = 20)
     private Long createTime;
-    @Excel(name = "下单人", orderNum = "41")
+    @Excel(name = "下单人", orderNum = "38",width = 20)
     private String createUserName;
-    @Excel(name = "接单时间", orderNum = "42")
+    @Excel(name = "接单时间", orderNum = "39",width = 20)
     private Long checkTime;
-    @Excel(name = "接单人", orderNum = "43")
+    @Excel(name = "接单人", orderNum = "40",width = 20)
     private String checkUserName;
-
-    public String getPickTransportState(){
-        if(pickTransportState == null){
-            if(pickTransportState == 1){
-                return "待调度";
-            }else if(pickTransportState == 2){
-                return "待提车";
-            }else if(pickTransportState == 3){
-                return "待交车";
-            }else if(pickTransportState == 5){
-                return "已完成";
-            }else if(pickTransportState == 21){
-                return "自送待调度";
-            }else if(pickTransportState == 23){
-                return "自送待交车";
-            }else if(pickTransportState == 25){
-                return "自送已交付";
-            }else if(pickTransportState == 100){
-                return "物流上门";
-            }
-        }
-        return "";
-    }
-    public String getTrunkTransportState(){
-        if(trunkTransportState == null){
-            if(trunkTransportState == 1){
-                return "待调度";
-            }else if(trunkTransportState == 2){
-                return "待提车";
-            }else if(trunkTransportState == 3){
-                return "待交车";
-            }else if(trunkTransportState == 5){
-                return "已完成";
-            }else if(trunkTransportState == 100){
-                return "无干线";
-            }
-        }
-        return "";
-    }
-    public String getBackTransportState(){
-        if(backTransportState == null){
-            if(backTransportState == 1){
-                return "待调度";
-            }else if(backTransportState == 2){
-                return "待提车";
-            }else if(backTransportState == 3){
-                return "待交车";
-            }else if(backTransportState == 5){
-                return "已完成";
-            }else if(backTransportState == 21){
-                return "自提待调度";
-            }else if(backTransportState == 23){
-                return "自提待交车";
-            }else if(backTransportState == 25){
-                return "自提已交付";
-            }else if(backTransportState == 100){
-                return "物流上门";
-            }
-        }
-        return "";
-    }
 
     public String getWlPayState(){
         if(wlPayState != null){
             if(wlPayState == 0){
                 return "未支付";
-            }else if(wlPayState == 1){
+            }else if(wlPayState == 2){
                 return "已支付";
             }
         }
@@ -179,7 +112,7 @@ public class ExcelListOrderCarVo implements Serializable {
     public String getBackFee() { return MoneyUtil.fenToYuan(backFee, MoneyUtil.PATTERN_TWO); }
     public String getSource(){
         if(source == null){
-            if(source == 1){
+            if(source != 1){
                 return "WEB管理后台";
             }else if(source == 2){
                 return "业务员APP";
@@ -218,7 +151,7 @@ public class ExcelListOrderCarVo implements Serializable {
         return "";
     }
     public String getPickType(){
-        if(pickType == null){
+        if(pickType != null){
             if(pickType == 1){
                 return "自送";
             }else if(pickType == 2){
@@ -232,7 +165,7 @@ public class ExcelListOrderCarVo implements Serializable {
         return "";
     }
     public String getBackType(){
-        if(backType == null){
+        if(backType != null){
             if(backType == 1){
                 return "自提";
             }else if(backType == 2){
@@ -246,7 +179,7 @@ public class ExcelListOrderCarVo implements Serializable {
         return "";
     }
     public String getPayType(){
-        if(payType == null){
+        if(payType != null){
             if(payType == 0){
                 return "到付";
             }else if(payType == 1){
@@ -258,7 +191,7 @@ public class ExcelListOrderCarVo implements Serializable {
         return "";
     }
     public String getIsMove(){
-        if(isMove == null){
+        if(isMove != null){
             if(isMove == 0){
                 return "否";
             }else if(isMove == 1){
@@ -268,7 +201,7 @@ public class ExcelListOrderCarVo implements Serializable {
         return "";
     }
     public String getIsNew(){
-        if(isNew == null){
+        if(isNew != null){
             if(isNew == 0){
                 return "否";
             }else if(isNew == 1){
