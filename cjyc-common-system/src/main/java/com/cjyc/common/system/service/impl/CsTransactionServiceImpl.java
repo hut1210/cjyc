@@ -14,11 +14,9 @@ import com.cjyc.common.model.enums.Pingxx.ChannelEnum;
 import com.cjyc.common.model.enums.Pingxx.LiveModeEnum;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
 import com.cjyc.common.model.util.BeanMapUtil;
-import com.cjyc.common.system.service.ICsSendNoService;
-import com.cjyc.common.system.service.ICsTaskService;
-import com.cjyc.common.system.service.ICsTransactionService;
-import com.cjyc.common.system.service.ICsUserService;
+import com.cjyc.common.system.service.*;
 import com.cjyc.common.system.util.RedisUtils;
+import com.pingplusplus.exception.*;
 import com.pingplusplus.model.Charge;
 import com.pingplusplus.model.ChargeCollection;
 import com.pingplusplus.model.Event;
@@ -30,10 +28,12 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.io.FileNotFoundException;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 
 /**
  * @Author:Hut
@@ -59,6 +59,12 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
     private ICsTaskService csTaskService;
     @Resource
     private ICsUserService userService;
+
+    @Autowired
+    private ExecutorService executorService;
+
+    @Autowired
+    private ICsPingPayService csPingPayService;
 
     @Override
     public int save(Object obj) {
@@ -185,6 +191,34 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
             return new BigDecimal("0");
         }
         return fee;
+    }
+
+    @Override
+    public void payToCooperator() {
+        List<Long> orderIds = tradeBillDao.getNopayOrder();
+        if(orderIds!=null){
+            log.info("orderIds "+orderIds.toString());
+        }
+
+        for(int i=0;i<orderIds.size();i++){
+            final Long orderId = orderIds.get(i);
+            executorService.execute(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        csPingPayService.allinpayToCooperator(orderId);
+                    } catch (Exception e) {
+                        log.error("定时任务付合伙人服务费失败 orderId= {}",orderId);
+                        log.error(e.getMessage(),e);
+                    }
+                }
+            });
+        }
+    }
+
+    @Override
+    public void getPayingOrder() {
+
     }
 
     @Override
