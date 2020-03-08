@@ -420,11 +420,10 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
      */
     private List<String> findAreaCodeList(String cityCode){
         //根据城市编码获取下面所有区县code
-        List<City> areaCityList = cityDao.selectList(new QueryWrapper<City>().lambda()
-                                         .eq(City::getParentCode, cityCode));
+        List<City> cityList = cityDao.selectList(new QueryWrapper<City>().lambda().eq(City::getParentCode, cityCode));
         List<String> areaCodeList = null;
-        if(!CollectionUtils.isEmpty(areaCityList)){
-            areaCodeList = areaCityList.stream().map(City::getCode).collect(Collectors.toList());
+        if(!CollectionUtils.isEmpty(cityList)){
+            areaCodeList = cityList.stream().map(City::getCode).collect(Collectors.toList());
         }
         //获取该城市下已绑定的业务中心的区县code
         List<String> coverAreaCodeList = null;
