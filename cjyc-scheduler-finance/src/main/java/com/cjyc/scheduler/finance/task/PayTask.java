@@ -10,23 +10,25 @@ import org.springframework.stereotype.Component;
 
 /**
  * @Author: Hut
- * @Date: 2020/03/08 9:30
+ * @Date: 2020/03/08 9:48
  */
+
 @Component
 @EnableScheduling
 @Configuration
 @Slf4j
-public class FinanceTask {
+public class PayTask {
+
     @Autowired
     private ICsTransactionService csTransactionService;
-    @Scheduled(cron = "0/90 * * * * ?")
-    private void task() {
 
-        //查询订单更新支付中单子状态
-        try{
-            csTransactionService.getPayingOrder();
+    @Scheduled(cron = "0/60 * * * * ?")
+    private void task() {
+        log.info("定时给合伙人打款");
+        try {
+            csTransactionService.payToCooperator();
         }catch (Exception e){
-            log.error("查询订单中单子失败 {}",e.getMessage());
+            log.error("定时打款失败 {}",e.getMessage());
         }
 
     }
