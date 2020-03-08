@@ -6,6 +6,7 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.order.DispatchAddCarVo;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * 订单公用业务
@@ -25,6 +26,10 @@ public interface ICsOrderService {
     ResultVo check(CheckOrderDto reqDto);
 
     Order fillOrderInputStore(Order order);
+
+    Set<String> validateOrderCarPlateNoInfo(Set<String> plateNoSet, String plateNo);
+
+    Set<String> validateOrderCarVinInfo(Set<String> vinSet, String vin);
 
     Order fillOrderStoreInfo(Order order, boolean isForceUpdate);
 

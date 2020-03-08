@@ -98,7 +98,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
     @Resource
     private ICsOrderLogService csOrderLogService;
     @Resource
-    private ICsPingPayService csPingPayService;
+    private ICsOrderService csOrderService;
     @Resource
     private ICsPushMsgService csPushMsgService;
 
@@ -389,6 +389,8 @@ public class CsTaskServiceImpl implements ICsTaskService {
         Set<CarStorageLog> storageLogSet = Sets.newHashSet();
         List<PushInfo> pushCustomerList = Lists.newArrayList();
         Set<String> directLoadCarNoSet = Sets.newHashSet();
+        Set<String> vinSet = Sets.newHashSet();
+        Set<String> plateNoSet = Sets.newHashSet();
         for (Long taskCarId : paramsDto.getTaskCarIdList()) {
             WaybillCar waybillCar = waybillCarDao.findByTaskCarId(taskCarId);
             if (waybillCar == null) {
@@ -430,6 +432,8 @@ public class CsTaskServiceImpl implements ICsTaskService {
             if (!validateOrderCarInfo(orderCar)) {
                 throw new ParameterException("订单车辆{0}信息不完整", orderCarNo);
             }
+            csOrderService.validateOrderCarVinInfo(vinSet, orderCar.getVin());
+            csOrderService.validateOrderCarPlateNoInfo(plateNoSet, orderCar.getPlateNo());
             //运单和车辆状态
             int waybillCarNewState = WaybillCarStateEnum.WAIT_LOAD_CONFIRM.code;
             int orderCarNewState = orderCar.getState();
