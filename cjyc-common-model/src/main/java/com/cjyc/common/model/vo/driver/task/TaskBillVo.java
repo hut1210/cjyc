@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -77,10 +78,10 @@ public class TaskBillVo implements Serializable {
     private String endCity;
 
     public String getStartCity() {
-        return startCity == null ? "" : startCity;
+        return StringUtils.isBlank(startCity) ? "" : startCity;
     }
     public String getEndCity() {
-        return endCity == null ? "" : endCity;
+        return StringUtils.isBlank(endCity) ? "" : endCity;
     }
     public Long getWaybillId() {
         return waybillId == null ? 0 : waybillId;
@@ -92,7 +93,7 @@ public class TaskBillVo implements Serializable {
         return taskState == null ? -1 : taskState;
     }
     public String getWaybillNo() {
-        return waybillNo == null ? "" : waybillNo;
+        return StringUtils.isBlank(waybillNo) ? "" : waybillNo;
     }
     public Integer getType() {
         return type == null ? -1 : type;
@@ -113,16 +114,16 @@ public class TaskBillVo implements Serializable {
         return completeTime == null ? 0 : completeTime;
     }
     public String getDriverName() {
-        return driverName == null ? "" : driverName;
+        return StringUtils.isBlank(driverName) ? "" : driverName;
     }
     public String getDriverPhone() {
-        return driverPhone == null ? "" : driverPhone;
+        return StringUtils.isBlank(driverPhone) ? "" : driverPhone;
     }
     public String getVehiclePlateNo() {
-        return vehiclePlateNo == null ? "" : vehiclePlateNo;
+        return StringUtils.isBlank(vehiclePlateNo) ? "" : vehiclePlateNo;
     }
     public String getGuideLine() {
-        return guideLine == null ? "" : guideLine;
+        return StringUtils.isBlank(guideLine) ? "" : guideLine;
     }
     public Integer getCarNum() {
         return carNum == null ? 0 : carNum;

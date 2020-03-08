@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -53,15 +54,15 @@ public class InvoiceApplyVo implements Serializable {
     private Integer state;
 
     public String getCustomerName() {
-        return customerName == null ? "" : customerName;
+        return StringUtils.isBlank(customerName) ? "" : customerName;
     }
 
     public String getInvoiceNo() {
-        return invoiceNo == null ? "" : invoiceNo;
+        return StringUtils.isBlank(invoiceNo) ? "" : invoiceNo;
     }
 
     public String getOperationName() {
-        return operationName == null ? "" : operationName;
+        return StringUtils.isBlank(operationName) ? "" : operationName;
     }
 
     public Long getApplyTime() {

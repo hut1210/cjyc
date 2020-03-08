@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 
@@ -51,19 +52,19 @@ public class TaskDriverVo implements Serializable {
     private Integer businessState;
 
     public String getPhone() {
-        return phone == null ? "" : phone;
+        return StringUtils.isBlank(phone) ? "" : phone;
     }
     public String getIdCard() {
-        return idCard == null ? "" : idCard;
+        return StringUtils.isBlank(idCard) ? "" : idCard;
     }
     public String getRealName() {
-        return realName == null ? "" : realName;
+        return StringUtils.isBlank(realName) ? "" : realName;
     }
     public Integer getRunningState() {
         return runningState == null ? -1 : runningState;
     }
     public String getPlateNo() {
-        return plateNo == null ? "" : plateNo;
+        return StringUtils.isBlank(plateNo) ? "" : plateNo;
     }
     public Integer getCarryCarNum() {
         return carryCarNum == null ? 0 : carryCarNum;

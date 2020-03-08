@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.CollectionUtils;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -49,16 +51,16 @@ public class OrderCenterVo implements Serializable {
         return lineId == null ? 0 : lineId;
     }
     public String getNo() {
-        return no == null ? "" : no;
+        return StringUtils.isBlank(no) ? "" : no;
     }
     public String getStartCity() {
-        return startCity == null ? "" : startCity;
+        return StringUtils.isBlank(startCity) ? "" : startCity;
     }
     public String getEndCity() {
-        return endCity == null ? "" : endCity;
+        return StringUtils.isBlank(endCity) ? "" : endCity;
     }
     public String getState() {
-        return state == null ? "-1" : state;
+        return StringUtils.isBlank(state) ? "-1" : state;
     }
     public BigDecimal getTotalFee() {
         return totalFee == null ? new BigDecimal(0) : totalFee;
@@ -67,6 +69,6 @@ public class OrderCenterVo implements Serializable {
         return carNum == null ? 0 : carNum;
     }
     public List<OrderCarCenterVo> getOrderCarCenterVoList() {
-        return orderCarCenterVoList == null ? new ArrayList<>(0) : orderCarCenterVoList;
+        return CollectionUtils.isEmpty(orderCarCenterVoList) ? new ArrayList<>(0) : orderCarCenterVoList;
     }
 }

@@ -39,21 +39,21 @@ public class CsAppVersionServiceImpl extends ServiceImpl<IAppVersionDao, AppVers
     @Override
     public ResultVo<AppVersionVo> updateAppVersion(AppVersionDto dto) {
         //验证库中是否有值
-        AppVersion oldApp = appVersionDao.selectOne(new QueryWrapper<AppVersion>().lambda()
-                .eq(AppVersion::getSystemType, dto.getSystemType())
-                .eq(AppVersion::getAppType, dto.getAppType())
-                .eq(AppVersion::getVersion, dto.getVersion())
-                .eq(AppVersion::getIsActive, UseStateEnum.USABLE.code));
+        List<AppVersion> oldAppList = appVersionDao.selectList(new QueryWrapper<AppVersion>().lambda()
+                                         .eq(AppVersion::getSystemType, dto.getSystemType())
+                                         .eq(AppVersion::getAppType, dto.getAppType())
+                                         .eq(AppVersion::getVersion, dto.getVersion())
+                                         .eq(AppVersion::getIsActive, UseStateEnum.USABLE.code));
         //如果不存在则成功返回
-        if(oldApp == null){
+        if(CollectionUtils.isEmpty(oldAppList)){
             return BaseResultUtil.success();
         }
         //获取库中符合条件的数据
         List<AppVersion> appVersionList = appVersionDao.selectList(new QueryWrapper<AppVersion>().lambda()
-                .eq(AppVersion::getSystemType, dto.getSystemType())
-                .eq(AppVersion::getAppType, dto.getAppType())
-                .eq(AppVersion::getIsActive, UseStateEnum.USABLE.code)
-                .orderByDesc(AppVersion::getId));
+                                                        .eq(AppVersion::getSystemType, dto.getSystemType())
+                                                        .eq(AppVersion::getAppType, dto.getAppType())
+                                                        .eq(AppVersion::getIsActive, UseStateEnum.USABLE.code)
+                                                        .orderByDesc(AppVersion::getId));
         AppVersion newApp = null;
         if(!CollectionUtils.isEmpty(appVersionList)){
             //获取id最大的appVersion
@@ -63,14 +63,14 @@ public class CsAppVersionServiceImpl extends ServiceImpl<IAppVersionDao, AppVers
             AppVersionVo vo = new AppVersionVo();
             BeanUtils.copyProperties(newApp,vo);
             //比较新的版本与请求传过来的比较
-            if(newApp != oldApp && !newApp.getVersion().equals(dto.getVersion())){
+            if(newApp != oldAppList.get(0) && !newApp.getVersion().equals(dto.getVersion())){
                 String message = encapMessage(newApp);
                 vo.setMessage(message);
                 return BaseResultUtil.success(vo);
             }else if(newApp.getVersion().equals(dto.getVersion())){
                 //新版本与旧版本相同
-                BeanUtils.copyProperties(oldApp,vo);
-                String message = encapMessage(oldApp);
+                BeanUtils.copyProperties(oldAppList.get(0),vo);
+                String message = encapMessage(oldAppList.get(0));
                 vo.setMessage(message);
                 vo.setIsUpdate(0);
                 return BaseResultUtil.success(vo);

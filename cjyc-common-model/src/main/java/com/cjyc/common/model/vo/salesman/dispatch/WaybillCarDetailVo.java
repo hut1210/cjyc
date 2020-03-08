@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -205,25 +206,25 @@ public class WaybillCarDetailVo implements Serializable {
         return freightFee == null ? new BigDecimal(0) : freightFee;
     }
     public String getStartProvince() {
-        return startProvince == null ? "" : startProvince;
+        return StringUtils.isBlank(startProvince) ? "" : startProvince;
     }
     public String getStartProvinceCode() {
         return startProvinceCode == null ? "" : startProvinceCode;
     }
     public String getStartCity() {
-        return startCity == null ? "" : startCity;
+        return StringUtils.isBlank(startCity) ? "" : startCity;
     }
     public String getStartCityCode() {
-        return startCityCode == null ? "" : startCityCode;
+        return StringUtils.isBlank(startCityCode) ? "" : startCityCode;
     }
     public String getStartArea() {
-        return startArea == null ? "" : startArea;
+        return StringUtils.isBlank(startArea) ? "" : startArea;
     }
     public String getStartAreaCode() {
-        return startAreaCode == null ? "" : startAreaCode;
+        return StringUtils.isBlank(startAreaCode) ? "" : startAreaCode;
     }
     public String getStartStoreName() {
-        return startStoreName == null ? "" : startStoreName;
+        return StringUtils.isBlank(startStoreName) ? "" : startStoreName;
     }
     public Long getStartStoreId() {
         return startStoreId == null ? 0 : startStoreId;
@@ -232,25 +233,25 @@ public class WaybillCarDetailVo implements Serializable {
         return startBelongStoreId == null ? 0 : startBelongStoreId;
     }
     public String getEndProvince() {
-        return endProvince == null ? "" : endProvince;
+        return StringUtils.isBlank(endProvince) ? "" : endProvince;
     }
     public String getEndProvinceCode() {
-        return endProvinceCode == null ? "" : endProvinceCode;
+        return StringUtils.isBlank(endProvinceCode) ? "" : endProvinceCode;
     }
     public String getEndCity() {
-        return endCity == null ? "" : endCity;
+        return StringUtils.isBlank(endCity) ? "" : endCity;
     }
     public String getEndCityCode() {
-        return endCityCode == null ? "" : endCityCode;
+        return StringUtils.isBlank(endCityCode) ? "" : endCityCode;
     }
     public String getEndArea() {
-        return endArea == null ? "" : endArea;
+        return StringUtils.isBlank(endArea) ? "" : endArea;
     }
     public String getEndAreaCode() {
-        return endAreaCode == null ? "" : endAreaCode;
+        return StringUtils.isBlank(endAreaCode) ? "" : endAreaCode;
     }
     public String getEndStoreName() {
-        return endStoreName == null ? "" : endStoreName;
+        return StringUtils.isBlank(endStoreName) ? "" : endStoreName;
     }
     public Long getEndStoreId() {
         return endStoreId == null ? 0 : endStoreId;
@@ -283,28 +284,28 @@ public class WaybillCarDetailVo implements Serializable {
         return backType == null ? -1 : backType;
     }
     public String getGuideLine() {
-        return guideLine == null ? "" : guideLine;
+        return StringUtils.isBlank(guideLine) ? "" : guideLine;
     }
     public String getLogoPhotoImg() {
-        return logoPhotoImg == null ? "" : logoPhotoImg;
+        return StringUtils.isBlank(logoPhotoImg) ? "" : logoPhotoImg;
     }
     public String getHistoryLoadPhotoImg() {
-        return historyLoadPhotoImg == null ? "" : historyLoadPhotoImg;
+        return StringUtils.isBlank(historyLoadPhotoImg) ? "" : historyLoadPhotoImg;
     }
     public Integer getWaybillCarState() {
         return waybillCarState == null ? -1 : waybillCarState;
     }
     public String getStartAddress() {
-        return startAddress == null ? "" : startAddress;
+        return StringUtils.isBlank(startAddress) ? "" : startAddress;
     }
     public String getEndAddress() {
-        return endAddress == null ? "" : endAddress;
+        return StringUtils.isBlank(endAddress) ? "" : endAddress;
     }
     public String getBrand() {
-        return brand == null ? "" : brand;
+        return StringUtils.isBlank(brand) ? "" : brand;
     }
     public String getModel() {
-        return model == null ? "" : model;
+        return StringUtils.isBlank(model) ? "" : model;
     }
     public Integer getPayType() {
         return payType == null ? -1 : payType;
@@ -316,28 +317,28 @@ public class WaybillCarDetailVo implements Serializable {
         return unloadTime == null ? 0 : unloadTime;
     }
     public String getLoadPhotoImg() {
-        return loadPhotoImg == null ? "" : loadPhotoImg;
+        return StringUtils.isBlank(loadPhotoImg) ? "" : loadPhotoImg;
     }
     public String getUnloadPhotoImg() {
-        return unloadPhotoImg == null ? "" : unloadPhotoImg;
+        return StringUtils.isBlank(unloadPhotoImg) ? "" : unloadPhotoImg;
     }
     public String getPlateNo() {
-        return plateNo == null ? "" : plateNo;
+        return StringUtils.isBlank(plateNo) ? "" : plateNo;
     }
     public String getVin() {
-        return vin == null ? "" : vin;
+        return StringUtils.isBlank(vin) ? "" : vin;
     }
     public String getLoadLinkName() {
-        return loadLinkName == null ? "" : loadLinkName;
+        return StringUtils.isBlank(loadLinkName) ? "" : loadLinkName;
     }
     public String getLoadLinkPhone() {
-        return loadLinkPhone == null ? "" : loadLinkPhone;
+        return StringUtils.isBlank(loadLinkPhone) ? "" : loadLinkPhone;
     }
     public String getUnloadLinkName() {
-        return unloadLinkName == null ? "" : unloadLinkName;
+        return StringUtils.isBlank(unloadLinkName) ? "" : unloadLinkName;
     }
     public String getUnloadLinkPhone() {
-        return unloadLinkPhone == null ? "" : unloadLinkPhone;
+        return StringUtils.isBlank(unloadLinkPhone) ? "" : unloadLinkPhone;
     }
 
     public boolean isHasLine() {
