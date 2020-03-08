@@ -682,6 +682,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                     }
                     //验证是否有未支付或者支付中或者已支付的
                     //TODO 什么时间什么情况下创建账单，查询最后一条的依据？？
+                    //TOOD 没有验证账单唯一性
                     TradeBill tradeBill = cStransactionService.getTradeBillByOrderNoAndType(order.getNo(),ChargeTypeEnum.UNION_PAY_PARTNER.getCode());
                     log.debug("【通联代付支付服务费】订单{}，支付服务费，账单内容{}", order.getNo(), tradeBill);
                     if(tradeBill != null){
@@ -696,7 +697,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                         }
 
                     }
-
+                    //验证性的
                     Long customId = order.getCustomerId();
                     ShowPartnerVo showPartnerVo = customerDao.showPartner(customId);
 

@@ -1458,8 +1458,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
         return orderCarlist;
 
     }
-
-    private BigDecimal getCarWlFee(OrderCar orderCar) {
+    @Override
+    public BigDecimal getCarWlFee(OrderCar orderCar) {
         return BigDecimal.ZERO.add(MoneyUtil.nullToZero(orderCar.getPickFee()))
                 .add(MoneyUtil.nullToZero(orderCar.getTrunkFee()))
                 .add(MoneyUtil.nullToZero(orderCar.getBackFee()))

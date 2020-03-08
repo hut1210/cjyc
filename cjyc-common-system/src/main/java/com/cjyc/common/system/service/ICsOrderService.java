@@ -2,9 +2,11 @@ package com.cjyc.common.system.service;
 
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.entity.Order;
+import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.order.DispatchAddCarVo;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
 
@@ -99,4 +101,6 @@ public interface ICsOrderService {
     ResultVo simpleCommitAndCheck(CheckOrderDto reqDto);
 
     ResultVo changeOrderCarCarryType(ChangeCarryTypeDto reqDto);
+
+    BigDecimal getCarWlFee(OrderCar orderCar);
 }

@@ -130,6 +130,7 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
         }
         Map<String,Object> map = new HashMap<>(10);
         map.put("defaultWlFee",line.getDefaultWlFee() == null ? BigDecimal.ZERO : line.getDefaultWlFee().divide(new BigDecimal(100)));
+        map.put("lineId",line.getDefaultWlFee() == null ? null : line.getId());
         return BaseResultUtil.success(map);
     }
 
