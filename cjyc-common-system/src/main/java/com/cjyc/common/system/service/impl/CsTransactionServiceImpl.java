@@ -258,7 +258,7 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
                         }
 
                     } catch (Exception e) {
-                        log.error("定时任务付合伙人服务费失败 orderId= {}",orderId);
+                        log.error("定时更新未支付的账单失败 orderId= {}",orderId);
                         log.error(e.getMessage(),e);
                     }
                 }
