@@ -212,5 +212,11 @@
         select id from w_order wo where wo.customer_type=3 and wo.state=100 and wo.flag=1;
     </select>
 
+    <select id="getTradeBillList" parameterType="map" resultType="com.cjyc.common.model.entity.TradeBill">
+        select ftb.* from f_trade_bill ftb
+        left join f_trade_bill_detail ftbd on ftb.id = ftbd.trade_bill_id
+        where ftbd.source_no = #{orderNo} and type=#{type} order by create_time desc limit 1 for update
+    </select>
+
 
 </mapper>

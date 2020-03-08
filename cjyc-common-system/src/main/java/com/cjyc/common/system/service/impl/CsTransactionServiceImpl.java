@@ -246,14 +246,20 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
                         //30分钟未支付的账单
                         com.cjyc.common.model.entity.Order order = orderDao.selectById(orderId);
                         if(order!=null){
-                            TradeBill tradeBill = tradeBillDao.getTradeBillByOrderNoAndType(order.getNo(),ChargeTypeEnum.UNION_PAY_PARTNER.getCode());
-                            if(tradeBill!=null&&tradeBill.getState()==1){
-                                if(tradeBill.getTradeTime()!=null){
-                                    Long time = System.currentTimeMillis()-tradeBill.getTradeTime();
-                                    if(time>1800){
-                                        updateFailOrder(order.getNo());
+                            List<TradeBill> tradeBills = tradeBillDao.getTradeBillList(order.getNo(),ChargeTypeEnum.UNION_PAY_PARTNER.getCode());
+                            if(tradeBills!=null){
+                                if(tradeBills.size()==1){
+                                    TradeBill tradeBill = tradeBills.get(0);
+                                    if(tradeBill!=null&&tradeBill.getState()==1){
+                                        if(tradeBill.getTradeTime()!=null){
+                                            Long time = System.currentTimeMillis()-tradeBill.getTradeTime();
+                                            if(time>1800){
+                                                updateFailOrder(order.getNo());
+                                            }
+                                        }
                                     }
                                 }
+
                             }
                         }
 
@@ -276,15 +282,28 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
     public ResultVo updateFailOrder(String orderNo) {
 
         tradeBillDao.updateOrderFlag(orderNo,"0",0);
-        TradeBill tradeBill = tradeBillDao.getTradeBillByOrderNoAndType(orderNo,ChargeTypeEnum.UNION_PAY_PARTNER.getCode());
-        if(tradeBill!=null&& tradeBill.getState()==1){
-            TradeBill tb = new TradeBill();
-            tb.setPingPayId(tradeBill.getPingPayId());
-            tb.setState(-2);
-            tb.setTradeTime(System.currentTimeMillis());
-            tradeBillDao.updateTradeBillByPingPayId(tb);
+
+        List<TradeBill> tradeBills = tradeBillDao.getTradeBillList(orderNo,ChargeTypeEnum.UNION_PAY_PARTNER.getCode());
+        if(tradeBills!=null){
+            if(tradeBills.size()==1){
+                TradeBill tradeBill = tradeBills.get(0);
+                if(tradeBill!=null&& tradeBill.getState()==1){
+                    TradeBill tb = new TradeBill();
+                    tb.setPingPayId(tradeBill.getPingPayId());
+                    tb.setState(-2);
+                    tb.setTradeTime(System.currentTimeMillis());
+                    tradeBillDao.updateTradeBillByPingPayId(tb);
+                }
+            }
+
         }
+
         return BaseResultUtil.success();
+    }
+
+    @Override
+    public List<TradeBill> getTradeBillList(String orderNo, int type) {
+        return tradeBillDao.getTradeBillList(orderNo,type);
     }
 
     @Override

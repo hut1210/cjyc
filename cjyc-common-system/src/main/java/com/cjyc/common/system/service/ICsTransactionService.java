@@ -62,4 +62,6 @@ public interface ICsTransactionService {
     void getPayingOrder();
 
     ResultVo updateFailOrder(String orderNo);
+
+    List<TradeBill> getTradeBillList(String no, int code);
 }

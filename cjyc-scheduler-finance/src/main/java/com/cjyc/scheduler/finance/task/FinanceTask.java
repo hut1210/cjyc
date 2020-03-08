@@ -22,6 +22,7 @@ public class FinanceTask {
     @Scheduled(cron = "0/90 * * * * ?")
     private void task() {
 
+        log.info("定时更新订单是支付中账单是待支付的");
         //查询订单更新支付中单子状态
         try{
             csTransactionService.getPayingOrder();

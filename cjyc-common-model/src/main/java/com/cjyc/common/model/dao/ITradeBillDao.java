@@ -75,4 +75,6 @@ public interface ITradeBillDao extends BaseMapper<TradeBill> {
     List<Long> getNopayOrder();
 
     List<Long> getPayingOrder();
+
+    List<TradeBill> getTradeBillList(@Param("orderNo")String orderNo,@Param("type") int type);
 }
