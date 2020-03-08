@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 
@@ -102,28 +103,28 @@ public class CarDetailVo implements Serializable {
         return backType == null ? -1 : backType;
     }
     public String getGuideLine() {
-        return guideLine == null ? "" : guideLine;
+        return StringUtils.isBlank(guideLine) ? "" : guideLine;
     }
     public String getLogoPhotoImg() {
-        return logoPhotoImg == null ? "" : logoPhotoImg;
+        return StringUtils.isBlank(logoPhotoImg) ? "" : logoPhotoImg;
     }
     public String getHistoryLoadPhotoImg() {
-        return historyLoadPhotoImg == null ? "" : historyLoadPhotoImg;
+        return StringUtils.isBlank(historyLoadPhotoImg) ? "" : historyLoadPhotoImg;
     }
     public Integer getWaybillCarState() {
         return waybillCarState == null ? -1 : waybillCarState;
     }
     public String getStartAddress() {
-        return startAddress == null ? "" : startAddress;
+        return StringUtils.isBlank(startAddress) ? "" : startAddress;
     }
     public String getEndAddress() {
-        return endAddress == null ? "" : endAddress;
+        return StringUtils.isBlank(endAddress) ? "" : endAddress;
     }
     public String getBrand() {
-        return brand == null ? "" : brand;
+        return StringUtils.isBlank(brand) ? "" : brand;
     }
     public String getModel() {
-        return model == null ? "" : model;
+        return StringUtils.isBlank(model) ? "" : model;
     }
     public Integer getPayType() {
         return payType == null ? -1 : payType;
@@ -135,28 +136,28 @@ public class CarDetailVo implements Serializable {
         return unloadTime == null ? 0 : unloadTime;
     }
     public String getLoadPhotoImg() {
-        return loadPhotoImg == null ? "" : loadPhotoImg;
+        return StringUtils.isBlank(loadPhotoImg) ? "" : loadPhotoImg;
     }
     public String getUnloadPhotoImg() {
-        return unloadPhotoImg == null ? "" : unloadPhotoImg;
+        return StringUtils.isBlank(unloadPhotoImg) ? "" : unloadPhotoImg;
     }
     public String getPlateNo() {
-        return plateNo == null ? "" : plateNo;
+        return StringUtils.isBlank(plateNo) ? "" : plateNo;
     }
     public String getVin() {
-        return vin == null ? "" : vin;
+        return StringUtils.isBlank(vin) ? "" : vin;
     }
     public String getLoadLinkName() {
-        return loadLinkName == null ? "" : loadLinkName;
+        return StringUtils.isBlank(loadLinkName) ? "" : loadLinkName;
     }
     public String getLoadLinkPhone() {
-        return loadLinkPhone == null ? "" : loadLinkPhone;
+        return StringUtils.isBlank(loadLinkPhone) ? "" : loadLinkPhone;
     }
     public String getUnloadLinkName() {
-        return unloadLinkName == null ? "" : unloadLinkName;
+        return StringUtils.isBlank(unloadLinkName) ? "" : unloadLinkName;
     }
     public String getUnloadLinkPhone() {
-        return unloadLinkPhone == null ? "" : unloadLinkPhone;
+        return StringUtils.isBlank(unloadLinkPhone) ? "" : unloadLinkPhone;
     }
     public Integer getReceiptFlag() {
         if (receiptFlag == null) {

@@ -2,6 +2,7 @@ package com.cjyc.common.model.vo.salesman.dispatch;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.util.CollectionUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -36,6 +37,6 @@ public class CityCarCountVo implements Serializable {
     }
 
     public List<StartAndEndCityCountVo> getStartAndEndCityCountList() {
-        return startAndEndCityCountList == null ? new ArrayList<>(0) : startAndEndCityCountList;
+        return CollectionUtils.isEmpty(startAndEndCityCountList) ? new ArrayList<>(0) : startAndEndCityCountList;
     }
 }

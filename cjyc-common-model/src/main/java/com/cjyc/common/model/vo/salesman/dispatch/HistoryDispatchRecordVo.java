@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -58,15 +59,15 @@ public class HistoryDispatchRecordVo implements Serializable {
     private Long carrierId;
 
     public String getGuideLine() {
-        return guideLine == null ? "" : guideLine;
+        return StringUtils.isBlank(guideLine) ? "" : guideLine;
     }
 
     public String getLinkMan() {
-        return linkMan == null ? "" : linkMan;
+        return StringUtils.isBlank(linkMan) ? "" : linkMan;
     }
 
     public String getLinkmanPhone() {
-        return linkmanPhone == null ? "" : linkmanPhone;
+        return StringUtils.isBlank(linkmanPhone) ? "" : linkmanPhone;
     }
 
     public BigDecimal getFreightFee() {

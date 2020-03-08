@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -78,7 +79,7 @@ public class TaskWaybillVo implements Serializable {
         return taskCarId == null ? 0 : taskCarId;
     }
     public String getWaybillNo() {
-        return waybillNo == null ? "" : waybillNo;
+        return StringUtils.isBlank(waybillNo) ? "" : waybillNo;
     }
     public Integer getType() {
         return type == null ? -1 : type;
@@ -93,7 +94,7 @@ public class TaskWaybillVo implements Serializable {
         return carNum == null ? 0 : carNum;
     }
     public String getGuideLine() {
-        return guideLine == null ? "" : guideLine;
+        return StringUtils.isBlank(guideLine) ? "" : guideLine;
     }
     public Long getUnloadTime() {
         return unloadTime ==null ? 0 : unloadTime;

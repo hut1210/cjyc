@@ -2,6 +2,7 @@ package com.cjyc.common.model.vo.salesman.store;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 @Data
 public class StoreLoopAdminVo extends StoreVo {
@@ -13,14 +14,14 @@ public class StoreLoopAdminVo extends StoreVo {
     private String storeLooplinkPhone;
 
     public Long getStoreLooplinkUserId() {
-        return storeLooplinkUserId;
+        return storeLooplinkUserId == null ? 0 : storeLooplinkUserId;
     }
 
     public String getStoreLooplinkName() {
-        return storeLooplinkName == null ? "" : storeLooplinkName;
+        return StringUtils.isBlank(storeLooplinkName) ? "" : storeLooplinkName;
     }
 
     public String getStoreLooplinkPhone() {
-        return storeLooplinkPhone == null ? "" : storeLooplinkPhone;
+        return StringUtils.isBlank(storeLooplinkPhone) ? "" : storeLooplinkPhone;
     }
 }

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 
@@ -89,43 +89,43 @@ public class StoreVo implements Serializable {
     }
 
     public String getName() {
-        return StringUtils.isEmpty(name)?"" : name;
+        return StringUtils.isBlank(name)?"" : name;
     }
 
     public String getProvince() {
-        return StringUtils.isEmpty(province)?"" : province;
+        return StringUtils.isBlank(province)?"" : province;
     }
 
     public String getProvinceCode() {
-        return StringUtils.isEmpty(provinceCode)?"" : provinceCode;
+        return StringUtils.isBlank(provinceCode)?"" : provinceCode;
     }
 
     public String getCity() {
-        return StringUtils.isEmpty(city)?"" : city;
+        return StringUtils.isBlank(city)?"" : city;
     }
 
     public String getCityCode() {
-        return StringUtils.isEmpty(cityCode)?"" : cityCode;
+        return StringUtils.isBlank(cityCode)?"" : cityCode;
     }
 
     public String getArea() {
-        return StringUtils.isEmpty(area)?"" : area;
+        return StringUtils.isBlank(area)?"" : area;
     }
 
     public String getAreaCode() {
-        return StringUtils.isEmpty(areaCode)?"" : areaCode;
+        return StringUtils.isBlank(areaCode)?"" : areaCode;
     }
 
     public String getDetailAddr() {
-        return StringUtils.isEmpty(detailAddr)?"" : detailAddr;
+        return StringUtils.isBlank(detailAddr)?"" : detailAddr;
     }
 
     public String getLng() {
-        return StringUtils.isEmpty(lng)?"" : lng;
+        return StringUtils.isBlank(lng)?"" : lng;
     }
 
     public String getLat() {
-        return StringUtils.isEmpty(lat)?"" : lat;
+        return StringUtils.isBlank(lat)?"" : lat;
     }
 
     public Integer getState() {
@@ -145,7 +145,7 @@ public class StoreVo implements Serializable {
     }
 
     public String getOperationName() {
-        return StringUtils.isEmpty(operationName)?"" : operationName;
+        return StringUtils.isBlank(operationName)?"" : operationName;
     }
 
     public Long getUpdateTime() {
@@ -153,11 +153,11 @@ public class StoreVo implements Serializable {
     }
 
     public String getRemark() {
-        return StringUtils.isEmpty(remark)?"" : remark;
+        return StringUtils.isBlank(remark)?"" : remark;
     }
 
     public String getFullAddress() {
-        return StringUtils.isEmpty(fullAddress)?"" : fullAddress;
+        return StringUtils.isBlank(fullAddress)?"" : fullAddress;
     }
 
     public Integer getIsDelete() {
