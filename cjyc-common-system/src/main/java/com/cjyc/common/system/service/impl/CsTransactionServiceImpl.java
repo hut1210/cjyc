@@ -3,6 +3,7 @@ package com.cjyc.common.system.service.impl;
 import com.Pingxx.model.MetaDataEntiy;
 import com.Pingxx.model.Order;
 import com.Pingxx.model.PingxxMetaData;
+import com.cjyc.common.model.dao.IOrderDao;
 import com.cjyc.common.model.dao.ITradeBillDao;
 import com.cjyc.common.model.dao.ITradeBillDetailDao;
 import com.cjyc.common.model.entity.TradeBill;
@@ -68,6 +69,9 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
 
     @Autowired
     private ICsPingPayService csPingPayService;
+
+    @Resource
+    private IOrderDao orderDao;
 
     @Override
     public int save(Object obj) {
@@ -196,6 +200,9 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
         return fee;
     }
 
+    /**
+     * 给合伙人付款
+     */
     @Override
     public void payToCooperator() {
         List<Long> orderIds = tradeBillDao.getNopayOrder();
@@ -224,7 +231,39 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
      */
     @Override
     public void getPayingOrder() {
+        //订单为支付中
+        List<Long> orderIds = tradeBillDao.getPayingOrder();
+        if(orderIds!=null){
+            log.info("orderIds "+orderIds.toString());
+        }
 
+        for(int i=0;i<orderIds.size();i++){
+            final Long orderId = orderIds.get(i);
+            executorService.execute(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        //30分钟未支付的账单
+                        com.cjyc.common.model.entity.Order order = orderDao.selectById(orderId);
+                        if(order!=null){
+                            TradeBill tradeBill = tradeBillDao.getTradeBillByOrderNoAndType(order.getNo(),ChargeTypeEnum.UNION_PAY_PARTNER.getCode());
+                            if(tradeBill!=null&&tradeBill.getState()==1){
+                                if(tradeBill.getTradeTime()!=null){
+                                    Long time = System.currentTimeMillis()-tradeBill.getTradeTime();
+                                    if(time>1800){
+                                        updateFailOrder(order.getNo());
+                                    }
+                                }
+                            }
+                        }
+
+                    } catch (Exception e) {
+                        log.error("定时任务付合伙人服务费失败 orderId= {}",orderId);
+                        log.error(e.getMessage(),e);
+                    }
+                }
+            });
+        }
     }
 
     /**

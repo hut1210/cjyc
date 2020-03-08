@@ -6,6 +6,8 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.finance.*;
+import com.cjyc.common.system.service.ICsPingPayService;
+import com.cjyc.common.system.service.ICsTransactionService;
 import com.cjyc.web.api.service.IFinanceService;
 import com.cjyc.web.api.util.ExcelUtil;
 import io.swagger.annotations.Api;
@@ -15,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
@@ -32,6 +36,12 @@ public class FinancePayableController {
 
     @Autowired
     private IFinanceService financeService;
+
+    @Autowired
+    private ICsTransactionService csTransactionService;
+
+    @Resource
+    private ICsPingPayService csPingPayService;
 
     @ApiOperation(value = "财务应付账款列表")
     @PostMapping(value = "/list")
@@ -221,4 +231,22 @@ public class FinancePayableController {
     public ResultVo externalPayment(@RequestBody ExternalPaymentDto externalPaymentDto){
         return financeService.externalPayment(externalPaymentDto);
     }
+    @ApiOperation(value = "更新合伙人付款状态")
+    @PostMapping(value = "/allinpay/{orderNo}")
+    public ResultVo pay(@PathVariable String orderNo){
+        return csTransactionService.updateFailOrder(orderNo);
+    }
+
+    @ApiOperation("支付合伙人")
+    @PostMapping("/allinpay/{orderId}")
+    public ResultVo allinpay(@PathVariable Long orderId){
+
+        try{
+            return csPingPayService.allinpayToCooperator(orderId);
+        }catch (Exception e){
+            log.error(e.getMessage(),e);
+            return BaseResultUtil.fail("人工支付合伙人费用异常");
+        }
+    }
+
 }
