@@ -21,13 +21,13 @@ public class AppVersionVo implements Serializable {
     @ApiModelProperty(value = "app类型 0：用户端  1 : 司机端  2：业务员端")
     private Integer appType;
 
-    @ApiModelProperty(value = "系统版本号")
+    @ApiModelProperty(value = "app版本号")
     private String version;
 
     @ApiModelProperty(value = "0：不更新  1：更新  2：强制更新")
     private Integer isUpdate;
 
-    @ApiModelProperty(value = "版本更新描述")
+    @ApiModelProperty(value = "app更新描述")
     private String message;
 
     @ApiModelProperty(value = "下载路径")
