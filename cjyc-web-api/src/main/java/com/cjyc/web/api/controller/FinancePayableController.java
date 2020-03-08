@@ -232,14 +232,14 @@ public class FinancePayableController {
         return financeService.externalPayment(externalPaymentDto);
     }
     @ApiOperation(value = "更新合伙人付款状态")
-    @PostMapping(value = "/allinpay/{orderNo}")
-    public ResultVo pay(@PathVariable String orderNo){
+    @PostMapping(value = "/update/{orderNo}")
+    public ResultVo updateCooperatorState(@PathVariable String orderNo){
         return csTransactionService.updateFailOrder(orderNo);
     }
 
-    @ApiOperation("支付合伙人")
-    @PostMapping("/allinpay/{orderId}")
-    public ResultVo allinpay(@PathVariable Long orderId){
+    @ApiOperation("人工支付合伙人服务费")
+    @PostMapping("/pay/{orderId}")
+    public ResultVo payToCooperator(@PathVariable Long orderId){
 
         try{
             return csPingPayService.allinpayToCooperator(orderId);
