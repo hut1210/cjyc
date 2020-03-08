@@ -10,6 +10,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>cjyc-scheduler-finance</artifactId>
+    <packaging>jar</packaging>
+    <properties>
+        <main.class>com.cjyc.scheduler.finance.FinanceApplication</main.class>
+    </properties>
     <dependencies>
         <!-- 项目内部module -->
         <dependency>
