@@ -13,7 +13,9 @@ import com.cjyc.common.model.enums.PayStateEnum;
 import com.cjyc.common.model.enums.Pingxx.ChannelEnum;
 import com.cjyc.common.model.enums.Pingxx.LiveModeEnum;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
+import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.BeanMapUtil;
+import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.service.*;
 import com.cjyc.common.system.util.RedisUtils;
 import com.pingplusplus.exception.*;
@@ -26,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.yaml.snakeyaml.representer.BaseRepresenter;
 
 import javax.annotation.Resource;
 import java.io.FileNotFoundException;
@@ -216,9 +219,33 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
         }
     }
 
+    /**
+     * 因未收到回调，未改状态
+     */
     @Override
     public void getPayingOrder() {
 
+    }
+
+    /**
+     * 更新订单状态为0，账单状态为支付失败
+     * @param orderNo
+     * @return
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ResultVo updateFailOrder(String orderNo) {
+
+        tradeBillDao.updateOrderFlag(orderNo,"0",0);
+        TradeBill tradeBill = tradeBillDao.getTradeBillByOrderNoAndType(orderNo,ChargeTypeEnum.UNION_PAY_PARTNER.getCode());
+        if(tradeBill!=null&& tradeBill.getState()==1){
+            TradeBill tb = new TradeBill();
+            tb.setPingPayId(tradeBill.getPingPayId());
+            tb.setState(-2);
+            tb.setTradeTime(System.currentTimeMillis());
+            tradeBillDao.updateTradeBillByPingPayId(tb);
+        }
+        return BaseResultUtil.success();
     }
 
     @Override

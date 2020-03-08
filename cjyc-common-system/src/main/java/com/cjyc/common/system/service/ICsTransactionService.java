@@ -1,6 +1,7 @@
 package com.cjyc.common.system.service;
 import com.Pingxx.model.Order;
 import com.cjyc.common.model.entity.TradeBill;
+import com.cjyc.common.model.vo.ResultVo;
 import com.pingplusplus.model.Charge;
 import com.pingplusplus.model.Event;
 import com.pingplusplus.model.Transfer;
@@ -59,4 +60,6 @@ public interface ICsTransactionService {
     void payToCooperator();
 
     void getPayingOrder();
+
+    ResultVo updateFailOrder(String orderNo);
 }

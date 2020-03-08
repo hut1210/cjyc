@@ -208,4 +208,5 @@
         select id from w_order wo where wo.customer_type=3 and wo.state=100 and wo.flag=0;
     </select>
 
+
 </mapper>
