@@ -16,6 +16,7 @@ import com.cjyc.common.system.service.ICsAdminService;
 import com.cjyc.common.system.service.ICsWaybillService;
 import com.cjyc.web.api.service.IWaybillService;
 import com.cjyc.web.api.util.WaybillValueToDesc;
+import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -194,8 +195,13 @@ public class WaybillController {
             return;
         }
         try {
-            List<ExportLocalListWaybillCarVo> rsList = dealLocalListForExport(list);
-            ExcelUtil.exportExcel(rsList, "运单信息", "运单信息",
+            List<ExportLocalListWaybillCarVo> exportList =  Lists.newArrayList();
+            for(LocalListWaybillCarVo vo : list){
+                ExportLocalListWaybillCarVo excelVo = new ExportLocalListWaybillCarVo();
+                BeanUtils.copyProperties(vo,excelVo);
+                exportList.add(excelVo);
+            }
+            ExcelUtil.exportExcel(exportList, "运单信息", "运单信息",
                     ExportLocalListWaybillCarVo.class, System.currentTimeMillis() + "运单信息.xls", response);
             return;
         } catch (Exception e) {
@@ -423,31 +429,6 @@ public class WaybillController {
             return false;
         }
         return resultVo.getCode() == ResultEnum.SUCCESS.getCode();
-    }
-
-    /**
-     * 导出LocalListWaybillCarVo对象信息封装
-     *
-     * @param list
-     * @return
-     */
-    private List<ExportLocalListWaybillCarVo> dealLocalListForExport(List<LocalListWaybillCarVo> list) {
-        List<ExportLocalListWaybillCarVo> rsList = new ArrayList<>();
-        if (CollectionUtils.isEmpty(list)) {
-            return null;
-        }
-        list.forEach(l -> {
-            ExportLocalListWaybillCarVo vo = new ExportLocalListWaybillCarVo();
-            BeanUtils.copyProperties(l, vo);
-            vo.setStateDesc(l.getState() == null ? null :
-                    WaybillValueToDesc.convertStateToDesc(l.getState()));
-            vo.setTypeDesc(l.getType() == null ? null :
-                    WaybillValueToDesc.convertTypeToDesc(l.getType()));
-            vo.setIsNewDesc(l.getIsNew() == null ? null :
-                    WaybillValueToDesc.convertIsNewDesc(l.getIsNew()));
-            rsList.add(vo);
-        });
-        return rsList;
     }
 
     /**

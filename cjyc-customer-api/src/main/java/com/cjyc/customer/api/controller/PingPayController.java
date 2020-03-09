@@ -134,7 +134,6 @@ public class PingPayController {
 
     @ApiOperation("回调")
     @PostMapping("/webhooksNotice")
-    @Async
     public ResultVo webhooksNotice(HttpServletRequest request){
         try{
             request.setCharacterEncoding("UTF8");
