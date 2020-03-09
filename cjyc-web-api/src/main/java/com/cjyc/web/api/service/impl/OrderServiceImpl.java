@@ -749,8 +749,12 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
 //        order.setWlPayState();
 //        order.setWlPayTime();
         //
+        Line line = csLineService.getLineByCity(dto.getStartCityCode(), dto.getEndCityCode(), true);
+        if(line != null){
+            order.setLineId(line.getId());
+        }
         csOrderService.fillOrderInputStore(order);
-        csOrderService.fillOrderStoreInfo(order, true);
+        csOrderService.fillOrderStoreInfo(order, false);
         return order;
     }
 
@@ -889,8 +893,12 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
 //        order.setTrunkFee();
 //        order.setWlPayState();
 //        order.setWlPayTime();
+        Line line = csLineService.getLineByCity(dto.getStartCityCode(), dto.getEndCityCode(), true);
+        if(line != null){
+            order.setLineId(line.getId());
+        }
         csOrderService.fillOrderInputStore(order);
-        csOrderService.fillOrderStoreInfo(order, true);
+        csOrderService.fillOrderStoreInfo(order, false);
         return order;
     }
 
@@ -1027,8 +1035,12 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
 //        order.setTrunkFee();
 //        order.setWlPayState();
 //        order.setWlPayTime();
+        Line line = csLineService.getLineByCity(dto.getStartCityCode(), dto.getEndCityCode(), true);
+        if(line != null){
+            order.setLineId(line.getId());
+        }
         csOrderService.fillOrderInputStore(order);
-        csOrderService.fillOrderStoreInfo(order, true);
+        csOrderService.fillOrderStoreInfo(order, false);
         return order;
     }
 

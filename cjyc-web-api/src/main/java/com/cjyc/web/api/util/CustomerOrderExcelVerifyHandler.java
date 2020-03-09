@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjyc.common.model.dto.web.order.ImportCustomerOrderDto;
 import com.cjyc.common.model.entity.City;
 import com.cjyc.common.model.entity.Customer;
+import com.cjyc.common.model.entity.Line;
 import com.cjyc.common.model.entity.defined.FullCity;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.city.CityLevelEnum;
@@ -14,11 +15,13 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.service.ICsAdminService;
 import com.cjyc.common.system.service.ICsCustomerService;
+import com.cjyc.common.system.service.ICsLineService;
 import com.cjyc.web.api.service.ICityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -31,6 +34,8 @@ import java.util.List;
 public class CustomerOrderExcelVerifyHandler implements IExcelVerifyHandler<ImportCustomerOrderDto> {
     @Autowired
     private ICityService cityService;
+    @Resource
+    private ICsLineService csLineService;
     @Resource
     private ICsCustomerService csCustomerService;
 

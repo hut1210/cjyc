@@ -593,7 +593,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         long currentTimeMillis = System.currentTimeMillis();
 
         Order order = orderDao.selectById(orderId);
-        fillOrderStoreInfo(order, true);
+        fillOrderStoreInfo(order, false);
         //验证必要信息是否完全
         validateOrderFeild(order);
 
