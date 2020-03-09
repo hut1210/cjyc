@@ -57,13 +57,13 @@ public class FinanceServiceImpl implements IFinanceService {
     @Resource
     private IOrderService orderService;
 
-    @Autowired
+    @Resource
     private ICsPingPayService csPingPayService;
 
-    @Autowired
+    @Resource
     private IExternalPaymentDao externalPaymentDao;
 
-    @Autowired
+    @Resource
     private ICsAdminService csAdminService;
 
     @Resource
@@ -366,8 +366,8 @@ public class FinanceServiceImpl implements IFinanceService {
         FinanceQueryDto fqd = new FinanceQueryDto();
         List<PaymentVo> pv = financeDao.getPaymentList(fqd);
         List<PaymentVo> paymentVos = new ArrayList<>();
-        for(int i=0;i<pv.size();i++){
-            PaymentVo paymentVo = financeVoList.get(i);
+        for(int j=0;j<pv.size();j++){
+            PaymentVo paymentVo = financeVoList.get(j);
             if(paymentVo!=null&&paymentVo.getType()!=null){
                 if(paymentVo.getType()==2){//企业
                     Integer settleType = financeDao.getCustomerContractById(paymentVo.getCustomerContractId());
