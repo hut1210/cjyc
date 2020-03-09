@@ -360,6 +360,9 @@ public class FinanceServiceImpl implements IFinanceService {
                         paymentVoList.add(paymentVo);
                     }
                 }
+                if(paymentVo.getType()==1){
+                    paymentVoList.add(paymentVo);
+                }
             }
         }
         PageInfo<PaymentVo> pageInfo = new PageInfo<>(paymentVoList);
@@ -367,7 +370,7 @@ public class FinanceServiceImpl implements IFinanceService {
         List<PaymentVo> pv = financeDao.getPaymentList(fqd);
         List<PaymentVo> paymentVos = new ArrayList<>();
         for(int j=0;j<pv.size();j++){
-            PaymentVo paymentVo = financeVoList.get(j);
+            PaymentVo paymentVo = pv.get(j);
             if(paymentVo!=null&&paymentVo.getType()!=null){
                 if(paymentVo.getType()==2){//企业
                     Integer settleType = financeDao.getCustomerContractById(paymentVo.getCustomerContractId());
@@ -381,6 +384,9 @@ public class FinanceServiceImpl implements IFinanceService {
                         paymentVo.setPayModeName("时付");
                         paymentVos.add(paymentVo);
                     }
+                }
+                if(paymentVo.getType()==1){
+                    paymentVoList.add(paymentVo);
                 }
             }
         }
