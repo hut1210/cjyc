@@ -1060,41 +1060,50 @@ public class CsOrderServiceImpl implements ICsOrderService {
      */
     @Override
     public ResultVo cancel(CancelOrderDto paramsDto) {
-        //取消订单
-        Order order = orderDao.selectById(paramsDto.getOrderId());
-        if (order == null) {
-            return BaseResultUtil.fail("订单不存在");
+
+        String lockKey = RedisKeys.getCancelKey(paramsDto.getOrderId());
+        try {
+            if (!redisLock.lock(lockKey, 120000, 100, 200)) {
+                return BaseResultUtil.fail("当前订单{0}其他人正在操作，", paramsDto.getOrderId());
+            }
+            //取消订单
+            Order order = orderDao.selectById(paramsDto.getOrderId());
+            if (order == null) {
+                return BaseResultUtil.fail("订单不存在");
+            }
+            if (order.getState() >= OrderStateEnum.TRANSPORTING.code) {
+                return BaseResultUtil.fail("订单运输中，不允许取消");
+            }
+            String oldStateName = OrderStateEnum.valueOf(order.getState()).name;
+
+            order.setState(OrderStateEnum.F_CANCEL.code);
+            orderDao.updateById(order);
+
+            //取消所有调度
+            List<OrderCar> orderCars = orderCarDao.findListByOrderId(order.getId());
+            if (!CollectionUtils.isEmpty(orderCars)) {
+                List<Long> collect = orderCars.stream().map(OrderCar::getId).collect(Collectors.toList());
+                List<WaybillCar> waybillCars = waybillCarDao.findListByOrderCarIds(collect);
+                waybillCars.forEach(wc -> csWaybillService.cancelWaybillCar(wc));
+            }
+            //退款
+            csPingPayService.cancelOrderRefund(order.getId());
+
+            //添加操作日志
+            orderChangeLogService.asyncSave(order, OrderChangeTypeEnum.CANCEL,
+                    new String[]{oldStateName, OrderStateEnum.F_CANCEL.name, paramsDto.getReason()},
+                    new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone()));
+
+            //记录订单日志
+            csOrderLogService.asyncSave(order, OrderLogEnum.CANCEL,
+                    new String[]{OrderLogEnum.CANCEL.getOutterLog(),
+                            MessageFormat.format(OrderLogEnum.CANCEL.getInnerLog(), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
+                    new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), paramsDto.getLoginType()));
+            //TODO 发送消息
+            return BaseResultUtil.success();
+        } finally {
+            redisLock.releaseLock(lockKey);
         }
-        if (order.getState() >= OrderStateEnum.TRANSPORTING.code) {
-            return BaseResultUtil.fail("订单运输中，不允许取消");
-        }
-        String oldStateName = OrderStateEnum.valueOf(order.getState()).name;
-
-        order.setState(OrderStateEnum.F_CANCEL.code);
-        orderDao.updateById(order);
-
-        //取消所有调度
-        List<OrderCar> orderCars = orderCarDao.findListByOrderId(order.getId());
-        if (!CollectionUtils.isEmpty(orderCars)) {
-            List<Long> collect = orderCars.stream().map(OrderCar::getId).collect(Collectors.toList());
-            List<WaybillCar> waybillCars = waybillCarDao.findListByOrderCarIds(collect);
-            waybillCars.forEach(wc -> csWaybillService.cancelWaybillCar(wc));
-        }
-        //退款
-        csPingPayService.cancelOrderRefund(order.getId());
-
-        //添加操作日志
-        orderChangeLogService.asyncSave(order, OrderChangeTypeEnum.CANCEL,
-                new String[]{oldStateName, OrderStateEnum.F_CANCEL.name, paramsDto.getReason()},
-                new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone()));
-
-        //记录订单日志
-        csOrderLogService.asyncSave(order, OrderLogEnum.CANCEL,
-                new String[]{OrderLogEnum.CANCEL.getOutterLog(),
-                        MessageFormat.format(OrderLogEnum.CANCEL.getInnerLog(), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
-                new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), paramsDto.getLoginType()));
-        //TODO 发送消息
-        return BaseResultUtil.success();
     }
 
     @Override
